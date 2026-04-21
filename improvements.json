@@ -67,11 +67,12 @@
       "title": "Add middleware and dependency injection mapping",
       "category": "code-quality",
       "severity": "minor",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-20",
-      "body": "Framework migrations require converting middleware patterns: Flask @require_auth decorators → FastAPI Depends(get_current_user), Express app.use(auth) → NestJS @UseGuards(), Django @login_required → FastAPI dependencies. Migration config should support 'middlewareMappings' with source pattern (decorator/function name), target pattern (dependency/guard/interceptor), and conversion notes. This enables automated migration guidance for authentication, logging, rate limiting middleware.",
-      "files": ["src/validator/migration-config-schema.json", "src/analyzer/middleware-detector.ts"],
-      "related": ["WO-MIGRATION-VALIDATION-001"]
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Implemented MiddlewareMapping interface matching migration-config-schema.json structure. Added detection for Flask (@login_required, @require_auth, @limiter.limit, @cross_origin), Django (@login_required, @permission_required, @csrf_*), and Express (app.use(auth), rateLimit) middleware patterns. Each mapping includes target framework pattern, conversion notes, and autoConvertible flag. Migration guidance covers Flask→FastAPI, Django→FastAPI, Express→NestJS conversions.",
+      "files": ["src/analyzer/middleware-detector.ts"],
+      "related": ["WO-MIGRATION-VALIDATION-001", "IMP-CORE-010"]
     },
     {
       "id": "IMP-CORE-050",
@@ -96,5 +97,5 @@
       "files": ["src/registry/entity-registry.ts"]
     }
   ],
-  "_note": "2 open items after completing 038, 050, 051. 039, 042, 044 also archived. Counter remains at 52. Last updated 2026-04-21."
+  "_note": "1 open item after completing 038, 043, 050, 051. 039, 042, 044 also archived. Counter remains at 52. Last updated 2026-04-21."
 }
