@@ -3,8 +3,8 @@
   "schema_version": "1.0",
   "project": "coderef-core",
   "scope": "scanner",
-  "counter": 51,
-  "last_updated": "2026-04-21",
+  "counter": 52,
+  "last_updated": "2026-04-21T20:40:00Z",
   "last_pruned": "2026-04-20",
   "archived": [
     "IMP-CORE-003",
@@ -119,7 +119,87 @@
       "body": "Framework migrations require converting middleware patterns: Flask @require_auth decorators → FastAPI Depends(get_current_user), Express app.use(auth) → NestJS @UseGuards(), Django @login_required → FastAPI dependencies. Migration config should support 'middlewareMappings' with source pattern (decorator/function name), target pattern (dependency/guard/interceptor), and conversion notes. This enables automated migration guidance for authentication, logging, rate limiting middleware.",
       "files": ["src/validator/migration-config-schema.json", "src/analyzer/middleware-detector.ts"],
       "related": ["WO-MIGRATION-VALIDATION-001"]
+    },
+    {
+      "id": "IMP-CORE-045",
+      "title": "Foundation docs only use 10% of available .coderef data",
+      "category": "docs",
+      "severity": "major",
+      "status": "done",
+      "logged": "2026-04-21",
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Created INDEX.md (1,921 elements), EXPORTS.md (781 exported APIs), RELATIONSHIPS.md (9,629 edges), HOTSPOTS.md (complexity analysis). Enhanced API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md with UUID anchors and live data. All docs now auto-generate from .coderef scan data.",
+      "files": ["coderef/foundation-docs/*.md"],
+      "related": ["WO-FOUNDATION-DOCS-001"]
+    },
+    {
+      "id": "IMP-CORE-046",
+      "title": "Documentation line numbers are 3+ months stale",
+      "category": "docs",
+      "severity": "major",
+      "status": "done",
+      "logged": "2026-04-21",
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Implemented UUID anchor system across all 8 foundation docs. UUIDs link docs to code elements and persist across file moves. Line numbers now derived from live .coderef/index.json data. Stale line number problem eliminated.",
+      "files": ["coderef/foundation-docs/API.md", "coderef/foundation-docs/COMPONENTS.md"],
+      "related": ["WO-FOUNDATION-DOCS-001"]
+    },
+    {
+      "id": "IMP-CORE-047",
+      "title": "No CI validation for documentation freshness",
+      "category": "testing",
+      "severity": "major",
+      "status": "done",
+      "logged": "2026-04-21",
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Created validate-docs.js CI gate script. Validates: all 8 required docs present, docs are newer than .coderef/index.json, all UUID anchors reference valid elements, auto-generation markers present. Script returns exit code 0 on success, 1 on failure.",
+      "files": ["coderef/foundation-docs/"],
+      "related": ["WO-FOUNDATION-DOCS-001", "SCRIPT-004"]
+    },
+    {
+      "id": "IMP-CORE-048",
+      "title": "Complexity scores invisible to developers",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "done",
+      "logged": "2026-04-21",
+      "completed": "2026-04-21",
+      "body": "COMPLETED: HOTSPOTS.md now displays complexity analysis with badges. COMPONENTS.md enhanced with complexity analysis section. Top critical functions documented with complexity scores and dependent counts.",
+      "files": [".coderef/context.json", "coderef/foundation-docs/COMPONENTS.md"],
+      "related": ["WO-FOUNDATION-DOCS-001", "LOGIC-004"]
+    },
+    {
+      "id": "IMP-CORE-049",
+      "title": "Missing dependency relationship visualization",
+      "category": "docs",
+      "severity": "minor",
+      "status": "done",
+      "logged": "2026-04-21",
+      "completed": "2026-04-21",
+      "body": "COMPLETED: RELATIONSHIPS.md created with 9,629 dependency edges visualized. ARCHITECTURE.md enhanced with dependency graph statistics. Includes: most-referenced components table, entry points analysis, sample dependency chains.",
+      "files": [".coderef/graph.json", "coderef/foundation-docs/ARCHITECTURE.md"],
+      "related": ["WO-FOUNDATION-DOCS-001", "LOGIC-002"]
+    },
+    {
+      "id": "IMP-CORE-050",
+      "title": "TODO comments in fuzzy-resolver need resolution",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "src/context/fuzzy-resolver.ts contains 3 TODO comments indicating incomplete fuzzy matching logic for file path resolution. This is used by the context discovery system; unresolved TODOs may cause incorrect file matching when multiple files share similar names.",
+      "files": ["src/context/fuzzy-resolver.ts"]
+    },
+    {
+      "id": "IMP-CORE-051",
+      "title": "Registry has unresolved implementation notes",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "src/registry/entity-registry.ts has 2 TODO/FIXME comments regarding entity deduplication and cache invalidation edge cases. These were noted during development but not resolved before merge.",
+      "files": ["src/registry/entity-registry.ts"]
     }
   ],
-  "_note": "6 active improvements as of 2026-04-20. Pruned: 039, 042, 044. Remaining: detector modularization (035), route-parsers plugins (036), GraphQL/tRPC detection (037), framework registry (038), semantic mapping (040), breaking changes (041), middleware mapping (043)."
+  "_note": "13 items: 5 done (foundation docs 045-049), 8 open (036, 038, 043, 050, 051 + 3 with wrong titles: 037, 040, 041), 39 archived. Last updated 2026-04-21."
 }
