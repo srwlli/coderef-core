@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-04-21
+**Last Updated:** 2026-04-21 (auto-enhanced)
 
 ---
 
@@ -14,6 +14,24 @@
 - **Graph Edges:** 8,873
 
 ---
+
+
+
+---
+
+## Element Type Distribution
+
+*Auto-generated from .coderef/index.json*
+
+| Type | Count | Percentage |
+|------|-------|------------|
+| method | 955 | 49.7% |
+| function | 508 | 26.4% |
+| interface | 313 | 16.3% |
+| class | 105 | 5.5% |
+| type | 36 | 1.9% |
+| component | 2 | 0.1% |
+| constant | 2 | 0.1% |
 
 ## Table of Contents
 
