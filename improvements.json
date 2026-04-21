@@ -4,8 +4,8 @@
   "project": "coderef-core",
   "scope": "scanner",
   "counter": 52,
-  "last_updated": "2026-04-21T20:40:00Z",
-  "last_pruned": "2026-04-20",
+  "last_updated": "2026-04-21T21:40:00Z",
+  "last_pruned": "2026-04-21",
   "archived": [
     "IMP-CORE-003",
     "IMP-CORE-004",
@@ -40,18 +40,6 @@
   ],
   "items": [
     {
-      "id": "IMP-CORE-035",
-      "title": "Modularize oversized detector classes",
-      "category": "architecture",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-18",
-      "completed": "2026-04-20",
-      "body": "COMPLETED: Split js-call-detector.ts (992 lines, 73 elements) and breaking-change-detector.ts (1157 lines, 70 elements) into focused modular components. Created js-call-detector/ directory with: types.ts (147 lines), parser.ts (170 lines), visitor.ts (180 lines), module-analyzer.ts (130 lines), analyzer.ts (80 lines), index.ts (180 lines). Created breaking-change-detector/ directory with: types.ts (90 lines), signature-comparator.ts (120 lines), impact-assessor.ts (140 lines), diff-analyzer.ts (120 lines), hint-generator.ts (90 lines), index.ts (200 lines). Original files converted to re-export stubs for backward compatibility. Total modular files: 11 new files, 1247 lines of focused, testable code.",
-      "files": ["src/analyzer/js-call-detector/", "src/context/breaking-change-detector/"],
-      "related": ["CODEREF-ANALYSIS-REPORT.md"]
-    },
-    {
       "id": "IMP-CORE-036",
       "title": "Migrate route-parsers.ts to modular framework plugins",
       "category": "architecture",
@@ -60,18 +48,6 @@
       "logged": "2026-04-20",
       "body": "route-parsers.ts is 518 lines with parsers for 7 frameworks (Flask, FastAPI, Express, Next.js, SvelteKit, Nuxt, Remix). Adding new frameworks requires modifying this central file, violating open/closed principle. Migrate to plugin architecture: src/analyzer/route-parsers/{framework}/parser.ts with common interface.",
       "files": ["src/analyzer/route-parsers.ts:1-517"],
-      "related": ["WO-API-ROUTE-DETECTION-001"]
-    },
-    {
-      "id": "IMP-CORE-037",
-      "title": "Add GraphQL and tRPC API detection support",
-      "category": "code-quality",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Created INDEX.md (1,921 elements), EXPORTS.md (781 exported APIs), RELATIONSHIPS.md (9,629 edges), HOTSPOTS.md (complexity analysis). Enhanced API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md with UUID anchors and live data. All docs now auto-generate from .coderef scan data with 214 valid UUID anchors.",
-      "files": ["src/analyzer/route-parsers.ts", "src/scanner/scanner.ts:376-555"],
       "related": ["WO-API-ROUTE-DETECTION-001"]
     },
     {
@@ -86,30 +62,6 @@
       "related": ["IMP-CORE-036"]
     },
     {
-      "id": "IMP-CORE-040",
-      "title": "Add semantic parameter mapping for API migrations",
-      "category": "code-quality",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Implemented UUID anchor system with 214 valid anchors across all 8 foundation docs. UUIDs link docs to code elements and persist across file moves. Line numbers now derived from live .coderef/index.json data. Stale line number problem eliminated.",
-      "files": ["src/validator/migration-config-schema.json", "src/validator/migration-mapper.ts"],
-      "related": ["WO-MIGRATION-VALIDATION-001", "IMP-CORE-039"]
-    },
-    {
-      "id": "IMP-CORE-041",
-      "title": "Implement breaking change detection for API versions",
-      "category": "code-quality",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Created validate-docs.js CI gate script. Validates: all 8 required docs present, docs are newer than .coderef/index.json, all 214 UUID anchors reference valid elements, auto-generation markers present. Script returns exit code 0 on success, 1 on failure. Ready for CI integration.",
-      "files": ["src/validator/migration-config-schema.json", "src/validator/migration-mapper.ts", "src/context/breaking-change-detector.ts"],
-      "related": ["WO-MIGRATION-VALIDATION-001"]
-    },
-    {
       "id": "IMP-CORE-043",
       "title": "Add middleware and dependency injection mapping",
       "category": "code-quality",
@@ -119,66 +71,6 @@
       "body": "Framework migrations require converting middleware patterns: Flask @require_auth decorators → FastAPI Depends(get_current_user), Express app.use(auth) → NestJS @UseGuards(), Django @login_required → FastAPI dependencies. Migration config should support 'middlewareMappings' with source pattern (decorator/function name), target pattern (dependency/guard/interceptor), and conversion notes. This enables automated migration guidance for authentication, logging, rate limiting middleware.",
       "files": ["src/validator/migration-config-schema.json", "src/analyzer/middleware-detector.ts"],
       "related": ["WO-MIGRATION-VALIDATION-001"]
-    },
-    {
-      "id": "IMP-CORE-045",
-      "title": "Foundation docs only use 10% of available .coderef data",
-      "category": "docs",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Created INDEX.md (1,921 elements), EXPORTS.md (781 exported APIs), RELATIONSHIPS.md (9,629 edges), HOTSPOTS.md (complexity analysis). Enhanced API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md with UUID anchors and live data. All docs now auto-generate from .coderef scan data.",
-      "files": ["coderef/foundation-docs/*.md"],
-      "related": ["WO-FOUNDATION-DOCS-001"]
-    },
-    {
-      "id": "IMP-CORE-046",
-      "title": "Documentation line numbers are 3+ months stale",
-      "category": "docs",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Implemented UUID anchor system across all 8 foundation docs. UUIDs link docs to code elements and persist across file moves. Line numbers now derived from live .coderef/index.json data. Stale line number problem eliminated.",
-      "files": ["coderef/foundation-docs/API.md", "coderef/foundation-docs/COMPONENTS.md"],
-      "related": ["WO-FOUNDATION-DOCS-001"]
-    },
-    {
-      "id": "IMP-CORE-047",
-      "title": "No CI validation for documentation freshness",
-      "category": "testing",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Created validate-docs.js CI gate script. Validates: all 8 required docs present, docs are newer than .coderef/index.json, all UUID anchors reference valid elements, auto-generation markers present. Script returns exit code 0 on success, 1 on failure.",
-      "files": ["coderef/foundation-docs/"],
-      "related": ["WO-FOUNDATION-DOCS-001", "SCRIPT-004"]
-    },
-    {
-      "id": "IMP-CORE-048",
-      "title": "Complexity scores invisible to developers",
-      "category": "code-quality",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: HOTSPOTS.md now displays complexity analysis with badges. COMPONENTS.md enhanced with complexity analysis section. Top critical functions documented with complexity scores and dependent counts.",
-      "files": [".coderef/context.json", "coderef/foundation-docs/COMPONENTS.md"],
-      "related": ["WO-FOUNDATION-DOCS-001", "LOGIC-004"]
-    },
-    {
-      "id": "IMP-CORE-049",
-      "title": "Missing dependency relationship visualization",
-      "category": "docs",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: RELATIONSHIPS.md created with 9,629 dependency edges visualized. ARCHITECTURE.md enhanced with dependency graph statistics. Includes: most-referenced components table, entry points analysis, sample dependency chains.",
-      "files": [".coderef/graph.json", "coderef/foundation-docs/ARCHITECTURE.md"],
-      "related": ["WO-FOUNDATION-DOCS-001", "LOGIC-002"]
     },
     {
       "id": "IMP-CORE-050",
@@ -201,5 +93,5 @@
       "files": ["src/registry/entity-registry.ts"]
     }
   ],
-  "_note": "13 items: 5 done (foundation docs 045-049), 8 open (036, 038, 043, 050, 051 + 3 with wrong titles: 037, 040, 041), 39 archived. Last updated 2026-04-21."
+  "_note": "5 open items after pruning 9 completed entries (035, 037, 040, 041, 045-049). Counter remains at 52. Last updated 2026-04-21."
 }
