@@ -1,0 +1,11 @@
+/**
+ * File Generation System
+ * @see coderef/reference-sheets/file generation system/file generation system.md
+ *
+ * /** @module File Generation System */
+ * /** @category {{type}} */
+ * /** @file {{file_path}} */
+ * /** @emits {{event_name}} - {{description}} */
+ * /** @listens {{event_name}} */
+ * /** @requires {{dependency}} */
+ */

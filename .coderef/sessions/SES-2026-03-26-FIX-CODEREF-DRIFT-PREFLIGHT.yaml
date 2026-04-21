@@ -1,0 +1,92 @@
+session_metadata:
+  session_id: SES-2026-03-26-FIX-CODEREF-DRIFT-PREFLIGHT
+  date: 2026-03-26
+  agent: Codex
+  workorder_id: WO-FIX-CODEREF-DRIFT-PREFLIGHT-001
+
+tools_used:
+  - name: coderef-workflow.gather_context
+    purpose: seeded the workorder context in the correct coderef-core project
+  - name: coderef-workflow.generate_agent_communication
+    purpose: generated the agent entry artifact from the seeded plan
+  - name: coderef-workflow.validate_implementation_plan
+    purpose: validated the seeded plan after manual workorder completion
+  - name: node ../../node_modules/vitest/vitest.mjs run __tests__/generators/drift-generator.test.ts
+    purpose: targeted drift-generator regression verification
+    source: agent_reported
+  - name: npm run build
+    purpose: rebuilt coderef-core dist output after the drift-generator fix
+    source: agent_reported
+  - name: coderef populate/scan for coderef-workflow
+    purpose: verified downstream drift report generation after the fix
+    source: agent_reported
+
+files_modified:
+  created:
+    - coderef/workorder/fix-coderef-drift-preflight/context.json
+    - coderef/workorder/fix-coderef-drift-preflight/analysis.json
+    - coderef/workorder/fix-coderef-drift-preflight/plan.json
+    - coderef/workorder/fix-coderef-drift-preflight/communication.json
+    - .coderef/index-baseline-fix-coderef-drift-preflight.json
+    - .coderef/sessions/SES-2026-03-26-FIX-CODEREF-DRIFT-PREFLIGHT.yaml
+  modified:
+    - src/pipeline/generators/drift-generator.ts
+    - __tests__/generators/drift-generator.test.ts
+    - dist/src/pipeline/generators/drift-generator.js
+    - coderef/workorder/fix-coderef-drift-preflight/communication.json
+  deleted: []
+
+documents_generated:
+  - coderef/workorder/fix-coderef-drift-preflight/context.json
+  - coderef/workorder/fix-coderef-drift-preflight/analysis.json
+  - coderef/workorder/fix-coderef-drift-preflight/plan.json
+  - coderef/workorder/fix-coderef-drift-preflight/communication.json
+
+decisions:
+  - Treat coderef/workorder/{feature_name}/ as the canonical session/workorder directory.
+  - Keep strict CodeRef preflight intact and fix the real drift bug upstream instead of adding a downstream bypass.
+  - Make communication.json the required execution entry artifact for the seeded workorder.
+  - Seed the incomplete coderef-core workorder manually after the strict flow stopped at drift preflight, then validate the seeded plan through the real server tools.
+
+outcomes:
+  - The drift generator now normalizes both current scan elements and previous index elements to project-relative forward-slash paths before identity comparison.
+  - Drift report payloads for added, deleted, and modified entries now use the same normalized path format.
+  - The coderef-core workorder fix-coderef-drift-preflight was fully seeded with context.json, analysis.json, plan.json, and communication.json.
+  - The seeded plan in coderef-core validated with PASS and score 100 through coderef-workflow.validate_implementation_plan.
+  - Agent-reported downstream verification showed coderef-workflow populate now emits driftPercentage 0 and strict planning preflight clears drift validation.
+
+issues_encountered:
+  - issue: The canonical strict create-workorder flow initially stopped at analyze_project_for_planning because coderef-workflow reported false 200 percent drift after a fresh populate.
+    status: resolved
+    resolution: The root cause was traced to coderef-core drift comparison mixing absolute current paths with relative previous index paths.
+  - issue: The original workorder was first created in the wrong repo and had to be recreated in coderef-core.
+    status: resolved
+    resolution: The misplaced workorder and baseline snapshot were removed from coderef-workflow after the correct coderef-core workorder was created.
+  - issue: forbidden_files_unchanged could not be claimed for the external workflow repo because tool_handlers.py was already modified before this session.
+    status: open
+    resolution: Left unset rather than asserting a clean Git verification that was not proven.
+
+tracking:
+  status: complete_for_drift_fix
+  next_boundary: Open a separate follow-up workorder for wrapper and session-contract alignment now that the strict drift blocker is fixed.
+  workorder_path: coderef/workorder/fix-coderef-drift-preflight
+  validation:
+    local_seed_plan_validation:
+      status: PASS
+      score: 100
+      source: direct_run
+    drift_generator_test:
+      status: PASS
+      details: 2 of 2 tests green
+      source: agent_reported
+    coderef_core_build:
+      status: PASS
+      source: agent_reported
+    downstream_repopulate:
+      status: PASS
+      details: coderef-workflow driftPercentage reported as 0 with empty change lists
+      source: agent_reported
+    strict_preflight:
+      status: PASS
+      details: PlanningWorkflow.analyze_project_for_planning cleared strict drift validation
+      source: agent_reported

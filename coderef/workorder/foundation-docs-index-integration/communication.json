@@ -1,0 +1,63 @@
+{
+  "workorder_id": "WO-FOUNDATION-DOCS-001",
+  "feature_name": "foundation-docs-index-integration",
+  "created": "2026-04-21T09:50:00Z",
+  "agents": [],
+  "handoff_summary": {
+    "current_phase": "Phase 1: Setup",
+    "completed_tasks": [],
+    "pending_tasks": [
+      "SETUP-001: Create scripts/ directory",
+      "SETUP-002: Create shared utilities for reading .coderef JSON files"
+    ],
+    "blocking_issues": []
+  },
+  "must_read_first": [
+    "plan.json - Complete implementation plan",
+    ".coderef/index.json - Source data (1,921 elements)",
+    ".coderef/graph.json - Dependency edges (9,629)",
+    ".coderef/context.json - Complexity analysis"
+  ],
+  "allowed_files": [
+    "scripts/**/*",
+    "coderef/foundation-docs/*.md",
+    "coderef/foundation-docs/**/*.md"
+  ],
+  "forbidden_files": [
+    "src/**/*",
+    "__tests__/**/*",
+    "package.json",
+    "tsconfig.json"
+  ],
+  "success_criteria": {
+    "all_new_docs_created": "INDEX.md, RELATIONSHIPS.md, EXPORTS.md, HOTSPOTS.md",
+    "all_enhanced_docs_updated": "API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md",
+    "uuid_anchors_present": "All enhanced docs contain <!-- coderef:uuid=... --> comments",
+    "scripts_functional": "4 generation scripts + 1 validation script",
+    "ci_gate_passes": "validate-docs.js confirms docs match .coderef data"
+  },
+  "context_notes": {
+    "data_inventory": {
+      "index.json": "390 KB, 1,921 elements (508 functions, 955 methods, 313 interfaces, 105 classes)",
+      "graph.json": "3.4 MB, 9,629 dependency edges",
+      "context.json": "14 KB, complexity scores, entry points, critical functions",
+      "stats": "296 files, 75,601 lines, 41% exported (781), 10% async (195)"
+    },
+    "top_files_by_density": [
+      "src/pipeline/generators/context-generator.ts: 66 elements",
+      "src/scanner/tree-sitter-scanner.ts: 62 elements",
+      "src/pipeline/extractors/element-extractor.ts: 34 elements"
+    ],
+    "critical_functions": [
+      "ASTElementScanner.visitNode - complexity 63",
+      "JSCallDetector.extractExportsFromAST - complexity 55",
+      "JSCallDetector.extractElementsFromAST - complexity 52"
+    ],
+    "key_patterns": [
+      "Foundation docs are projections of .coderef data",
+      "UUID-based traceability between docs and code",
+      "Auto-generation pipeline from scan data",
+      "CI validation for doc freshness"
+    ]
+  }
+}

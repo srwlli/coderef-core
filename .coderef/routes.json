@@ -1,0 +1,428 @@
+{
+  "totalRoutes": 34,
+  "byFramework": {
+    "express": [
+      {
+        "name": "router",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/__tests__/orphan-detection.test.ts",
+        "line": 74,
+        "route": {
+          "path": "/",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express",
+          "blueprint": "router"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/validator/report-generator.test.ts",
+        "line": 331,
+        "route": {
+          "path": "/api/users",
+          "methods": [
+            "POST"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "apiRouter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 292,
+        "route": {
+          "path": "/data",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express",
+          "blueprint": "apiRouter"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 336,
+        "route": {
+          "path": "/express/data",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 328,
+        "route": {
+          "path": "/fastapi/items",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 164,
+        "route": {
+          "path": "/items",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "customRouter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 304,
+        "route": {
+          "path": "/items",
+          "methods": [
+            "POST"
+          ],
+          "framework": "express",
+          "blueprint": "customRouter"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 117,
+        "route": {
+          "path": "/items",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 121,
+        "route": {
+          "path": "/items",
+          "methods": [
+            "POST"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 125,
+        "route": {
+          "path": "/items/{item_id}",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 129,
+        "route": {
+          "path": "/items/{item_id}",
+          "methods": [
+            "PUT"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 133,
+        "route": {
+          "path": "/items/{item_id}",
+          "methods": [
+            "DELETE"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "router",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 203,
+        "route": {
+          "path": "/login",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express",
+          "blueprint": "router"
+        }
+      },
+      {
+        "name": "router",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 222,
+        "route": {
+          "path": "/login",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express",
+          "blueprint": "router"
+        }
+      },
+      {
+        "name": "authRouter",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 215,
+        "route": {
+          "path": "/signup",
+          "methods": [
+            "POST"
+          ],
+          "framework": "express",
+          "blueprint": "authRouter"
+        }
+      },
+      {
+        "name": "router",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 223,
+        "route": {
+          "path": "/signup",
+          "methods": [
+            "POST"
+          ],
+          "framework": "express",
+          "blueprint": "router"
+        }
+      },
+      {
+        "name": "api",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/frontend-call-parsers.test.ts",
+        "line": 198,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express",
+          "blueprint": "api"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 102,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 113,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "POST"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 179,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 191,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "POST"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 449,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 457,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 174,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 178,
+        "route": {
+          "path": "/users",
+          "methods": [
+            "POST"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 227,
+        "route": {
+          "path": "/users/:id",
+          "methods": [
+            "PUT"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 239,
+        "route": {
+          "path": "/users/:id",
+          "methods": [
+            "DELETE"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 251,
+        "route": {
+          "path": "/users/:id",
+          "methods": [
+            "PATCH"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 182,
+        "route": {
+          "path": "/users/:id",
+          "methods": [
+            "GET"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 186,
+        "route": {
+          "path": "/users/:id",
+          "methods": [
+            "PUT"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/tests/route-detection-integration.test.ts",
+        "line": 190,
+        "route": {
+          "path": "/users/:id",
+          "methods": [
+            "DELETE"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 124,
+        "route": {
+          "path": "/users/{user_id}",
+          "methods": [
+            "PUT"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 135,
+        "route": {
+          "path": "/users/{user_id}",
+          "methods": [
+            "DELETE"
+          ],
+          "framework": "express"
+        }
+      },
+      {
+        "name": "app",
+        "file": "C:/Users/willh/Desktop/coderef-dashboard/packages/coderef-core/src/analyzer/route-parsers.test.ts",
+        "line": 146,
+        "route": {
+          "path": "/users/{user_id}",
+          "methods": [
+            "PATCH"
+          ],
+          "framework": "express"
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "generatedAt": "2026-03-02T01:30:50.365Z",
+    "projectPath": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core",
+    "scanVersion": "1.0.0"
+  }
+}

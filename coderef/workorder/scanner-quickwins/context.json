@@ -1,0 +1,25 @@
+{
+  "workorder_id": "WO-SCANNER-QUICKWINS-001",
+  "feature_name": "scanner-quickwins",
+  "created_at": "2026-01-15T14:30:00.000Z",
+  "agent_id": "coderef-core",
+  "parent_session": "context-enhancement-v2",
+  "requirements": [
+    "Pattern ordering for +15% performance",
+    "Configuration presets for 30-second setup",
+    "Structured error reporting with context and suggestions",
+    "Python pattern expansion for +30% coverage"
+  ],
+  "constraints": [
+    "Backward compatible with existing scanner API",
+    "No breaking changes to pattern format",
+    "Maintain < 50MB memory usage"
+  ],
+  "success_criteria": {
+    "task_1": "500-file scan time reduced by 15% (benchmarked)",
+    "task_2": "Presets allow 30-second configuration (demonstrated)",
+    "task_3": "Errors include file:line, context, suggestions (validated)",
+    "task_4": "Python coverage reaches 90% on test corpus (measured)"
+  },
+  "implementation_reference": "C:\\Users\\willh\\.mcp-servers\\coderef\\sessions\\context-enhancement-v2\\coderef-core\\instructions.json"
+}

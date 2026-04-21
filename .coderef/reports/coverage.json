@@ -1,0 +1,1156 @@
+{
+  "summary": {
+    "totalFiles": 229,
+    "testedFiles": 70,
+    "coveragePercentage": 31
+  },
+  "files": [
+    {
+      "file": "demo-all-modules.ts",
+      "tested": false
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "tested": false
+    },
+    {
+      "file": "index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/adapter/graph-to-elements.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/adapter/graph-to-elements.ts",
+      "tested": false
+    },
+    {
+      "file": "src/analyzer/analyzer-service.ts",
+      "tested": false
+    },
+    {
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "tested": true,
+      "testFile": "__tests__/ast-element-scanner.test.ts"
+    },
+    {
+      "file": "src/analyzer/call-detector.ts",
+      "tested": true,
+      "testFile": "__tests__/js-call-detector.test.ts"
+    },
+    {
+      "file": "src/analyzer/dynamic-import-detector.ts",
+      "tested": false
+    },
+    {
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "tested": true,
+      "testFile": "src/analyzer/frontend-call-parsers.test.ts"
+    },
+    {
+      "file": "src/analyzer/graph-analyzer.ts",
+      "tested": false
+    },
+    {
+      "file": "src/analyzer/graph-builder.ts",
+      "tested": false
+    },
+    {
+      "file": "src/analyzer/graph-error.ts",
+      "tested": false
+    },
+    {
+      "file": "src/analyzer/graph-helpers.ts",
+      "tested": true,
+      "testFile": "__tests__/graph-helpers.test.ts"
+    },
+    {
+      "file": "src/analyzer/import-parser.ts",
+      "tested": false
+    },
+    {
+      "file": "src/analyzer/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/analyzer/js-call-detector.ts",
+      "tested": true,
+      "testFile": "__tests__/js-call-detector.test.ts"
+    },
+    {
+      "file": "src/analyzer/js-parser.ts",
+      "tested": true,
+      "testFile": "__tests__/js-parser.test.ts"
+    },
+    {
+      "file": "src/analyzer/route-parsers.ts",
+      "tested": true,
+      "testFile": "src/analyzer/route-parsers.test.ts"
+    },
+    {
+      "file": "src/cli/detect-languages.ts",
+      "tested": false
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "tested": true,
+      "testFile": "__tests__/populate-cli.test.ts"
+    },
+    {
+      "file": "src/cli/scan-frontend-calls.ts",
+      "tested": false
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "tested": true,
+      "testFile": "src/cli/validate-routes.test.ts"
+    },
+    {
+      "file": "src/config/presets.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/agentic-formatter.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "tested": true,
+      "testFile": "src/context/__tests__/breaking-change-detector.test.ts"
+    },
+    {
+      "file": "src/context/complexity-scorer.ts",
+      "tested": true,
+      "testFile": "src/context/__tests__/complexity-scorer.test.ts"
+    },
+    {
+      "file": "src/context/context-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/context-generator.test.ts"
+    },
+    {
+      "file": "src/context/context-tracker.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/edge-case-detector.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/entry-point-detector.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/example-extractor.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/fuzzy-resolver.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/fuzzy-resolver.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/impact-simulator.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/impact-simulator.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/index.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/context/markdown-formatter.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/multi-hop-traversal.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/multi-hop-traversal.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/task-context-generator.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/test-pattern-analyzer.ts",
+      "tested": false
+    },
+    {
+      "file": "src/context/types.ts",
+      "tested": false
+    },
+    {
+      "file": "src/errors/CodeRefError.ts",
+      "tested": false
+    },
+    {
+      "file": "src/errors/FileNotFoundError.ts",
+      "tested": false
+    },
+    {
+      "file": "src/errors/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/errors/IndexError.ts",
+      "tested": false
+    },
+    {
+      "file": "src/errors/ParseError.ts",
+      "tested": false
+    },
+    {
+      "file": "src/errors/ScanError.ts",
+      "tested": false
+    },
+    {
+      "file": "src/errors/ValidationError.ts",
+      "tested": false
+    },
+    {
+      "file": "src/export/graph-exporter.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/export/graph-exporter.ts",
+      "tested": false
+    },
+    {
+      "file": "src/export/index.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/export/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/fileGeneration/analyzeCoverage.ts",
+      "tested": false
+    },
+    {
+      "file": "src/fileGeneration/buildDependencyGraph.ts",
+      "tested": true,
+      "testFile": "src/fileGeneration/__tests__/buildDependencyGraph.test.ts"
+    },
+    {
+      "file": "src/fileGeneration/detectDrift.ts",
+      "tested": false
+    },
+    {
+      "file": "src/fileGeneration/detectPatterns.ts",
+      "tested": false
+    },
+    {
+      "file": "src/fileGeneration/generateContext.ts",
+      "tested": true,
+      "testFile": "src/fileGeneration/__tests__/generateContext.test.ts"
+    },
+    {
+      "file": "src/fileGeneration/generateDiagrams.ts",
+      "tested": false
+    },
+    {
+      "file": "src/fileGeneration/saveFrontendCalls.ts",
+      "tested": true,
+      "testFile": "src/fileGeneration/saveFrontendCalls.test.ts"
+    },
+    {
+      "file": "src/fileGeneration/saveIndex.ts",
+      "tested": true,
+      "testFile": "src/fileGeneration/__tests__/saveIndex.test.ts"
+    },
+    {
+      "file": "src/fileGeneration/validateReferences.ts",
+      "tested": false
+    },
+    {
+      "file": "src/formatter/formatter.ts",
+      "tested": false
+    },
+    {
+      "file": "src/generator/generateFrontendCalls.ts",
+      "tested": false
+    },
+    {
+      "file": "src/generator/generateRoutes.ts",
+      "tested": true,
+      "testFile": "src/generator/generateRoutes.test.ts"
+    },
+    {
+      "file": "src/index.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/indexer/index-store.ts",
+      "tested": false
+    },
+    {
+      "file": "src/indexer/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/indexer/indexer-service.ts",
+      "tested": false
+    },
+    {
+      "file": "src/indexer/metadata-index.ts",
+      "tested": false
+    },
+    {
+      "file": "src/indexer/query-engine.ts",
+      "tested": false
+    },
+    {
+      "file": "src/indexer/relationship-index.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/ai-prompt-generator.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/ai-prompt-generator.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/index.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/llm/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/integration/llm/llm-provider.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/llm/llm-provider.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/llm/openai-provider.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/answer-generation-service.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/answer-generation-service.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/chunk-converter.test.ts"
+    },
+    {
+      "file": "src/integration/rag/code-chunk.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/code-chunk.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/confidence-scorer.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/confidence-scorer.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/confidence-scorer.test.ts"
+    },
+    {
+      "file": "src/integration/rag/context-builder.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/context-builder.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/conversation-manager.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/conversation-manager.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/embedding-service.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/embedding-service.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/embedding-text-generator.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/embedding-text-generator.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/embedding-text-generator.test.ts"
+    },
+    {
+      "file": "src/integration/rag/graph-reranker.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/graph-reranker.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/graph-reranker.test.ts"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/index.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/prompt-templates.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/prompt-templates.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/rag-config.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/rag-config.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/semantic-search.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/semantic-search.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/chroma-store.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/vector-store.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/vector-store.ts",
+      "tested": false
+    },
+    {
+      "file": "src/parser/parser.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "tested": true,
+      "testFile": "src/analyzer/frontend-call-parsers.test.ts"
+    },
+    {
+      "file": "src/pipeline/extractors/element-extractor.ts",
+      "tested": true,
+      "testFile": "__tests__/element-extractor.test.ts"
+    },
+    {
+      "file": "src/pipeline/extractors/relationship-extractor.ts",
+      "tested": true,
+      "testFile": "__tests__/relationship-extractor.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/complexity-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/complexity-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/context-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/coverage-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/coverage-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/diagram-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/diagram-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/drift-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/drift-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/export-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/export-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/graph-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/graph-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/graph-output.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/generators/index-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/index-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/pattern-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/generators/validation-generator.ts",
+      "tested": true,
+      "testFile": "__tests__/generators/validation-generator.test.ts"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "tested": true,
+      "testFile": "__tests__/grammar-registry.test.ts"
+    },
+    {
+      "file": "src/pipeline/ignore-rules.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/types.ts",
+      "tested": false
+    },
+    {
+      "file": "src/query/query-executor.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "tested": false
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "tested": false
+    },
+    {
+      "file": "src/registry/types.ts",
+      "tested": false
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "tested": false
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "tested": false
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "tested": true,
+      "testFile": "src/scanner/__tests__/lru-cache.test.ts"
+    },
+    {
+      "file": "src/scanner/scanner-worker.ts",
+      "tested": false
+    },
+    {
+      "file": "src/scanner/scanner.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "tested": true,
+      "testFile": "src/scanner/__tests__/ast-mode.test.ts"
+    },
+    {
+      "file": "src/scanner/tree-sitter-scanner.ts",
+      "tested": true,
+      "testFile": "__tests__/tree-sitter-scanner.test.ts"
+    },
+    {
+      "file": "src/search/index.ts",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "tested": false
+    },
+    {
+      "file": "src/search-client.ts",
+      "tested": false
+    },
+    {
+      "file": "src/types/types.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/types/types.ts",
+      "tested": false
+    },
+    {
+      "file": "src/utils/logger.ts",
+      "tested": false
+    },
+    {
+      "file": "src/validator/migration-mapper.ts",
+      "tested": true,
+      "testFile": "src/validator/migration-mapper.test.ts"
+    },
+    {
+      "file": "src/validator/report-generator.ts",
+      "tested": true,
+      "testFile": "src/validator/report-generator.test.ts"
+    },
+    {
+      "file": "src/validator/route-matcher.ts",
+      "tested": true,
+      "testFile": "src/validator/route-matcher.test.ts"
+    },
+    {
+      "file": "src/validator/route-normalizer.ts",
+      "tested": true,
+      "testFile": "src/validator/route-normalizer.test.ts"
+    },
+    {
+      "file": "src/validator/route-validator.ts",
+      "tested": true,
+      "testFile": "src/validator/route-validator.test.ts"
+    },
+    {
+      "file": "src/validator/validator.d.ts",
+      "tested": false
+    },
+    {
+      "file": "src/validator/validator.ts",
+      "tested": true,
+      "testFile": "src/validator/migration-mapper.test.ts"
+    },
+    {
+      "file": "types.d.ts",
+      "tested": false
+    },
+    {
+      "file": "utils/fs.d.ts",
+      "tested": false
+    },
+    {
+      "file": "utils/fs.ts",
+      "tested": false
+    },
+    {
+      "file": "vitest.config.ts",
+      "tested": false
+    },
+    {
+      "file": "scanner.js",
+      "tested": true,
+      "testFile": "src/scanner/__tests__/ast-mode.test.ts"
+    },
+    {
+      "file": "src/adapter/graph-to-elements.js",
+      "tested": false
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "tested": false
+    },
+    {
+      "file": "src/context/fuzzy-resolver.js",
+      "tested": false
+    },
+    {
+      "file": "src/context/impact-simulator.js",
+      "tested": false
+    },
+    {
+      "file": "src/context/index.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/context/multi-hop-traversal.js",
+      "tested": false
+    },
+    {
+      "file": "src/export/graph-exporter.js",
+      "tested": false
+    },
+    {
+      "file": "src/export/index.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/index.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/integration/ai-prompt-generator.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/index.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/llm/llm-provider.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/answer-generation-service.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/chunk-converter.test.ts"
+    },
+    {
+      "file": "src/integration/rag/code-chunk.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/confidence-scorer.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/confidence-scorer.test.ts"
+    },
+    {
+      "file": "src/integration/rag/context-builder.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/conversation-manager.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/embedding-service.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/embedding-text-generator.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/embedding-text-generator.test.ts"
+    },
+    {
+      "file": "src/integration/rag/graph-reranker.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/graph-reranker.test.ts"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/index.js",
+      "tested": true,
+      "testFile": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/prompt-templates.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/rag-config.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/rag/semantic-search.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "tested": false
+    },
+    {
+      "file": "src/integration/vector/vector-store.js",
+      "tested": false
+    },
+    {
+      "file": "src/parser/parser.js",
+      "tested": true,
+      "testFile": "src/analyzer/frontend-call-parsers.test.ts"
+    },
+    {
+      "file": "src/query/query-executor.js",
+      "tested": false
+    },
+    {
+      "file": "src/types/types.js",
+      "tested": false
+    },
+    {
+      "file": "src/validator/validator.js",
+      "tested": true,
+      "testFile": "src/validator/migration-mapper.test.ts"
+    },
+    {
+      "file": "test-ast-scanner.js",
+      "tested": false
+    },
+    {
+      "file": "types.js",
+      "tested": false
+    },
+    {
+      "file": "utils/fs.js",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/01-element-classification/apply_iteration_5.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/03-test-coverage-linkage/apply_iteration_1.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/04-async-pattern-detection/apply_iteration_1.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/05-context-summary-signal/apply_iteration_1.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/06-test-gap-precision/apply_iteration_1.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "tested": false
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "tested": false
+    },
+    {
+      "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
+      "tested": true,
+      "testFile": "scripts/setup-coderef-dir/test_setup_coderef_dirs.py"
+    }
+  ],
+  "untested": [
+    "demo-all-modules.ts",
+    "examples/nextjs-api-route.ts",
+    "src/adapter/graph-to-elements.d.ts",
+    "src/adapter/graph-to-elements.ts",
+    "src/analyzer/analyzer-service.ts",
+    "src/analyzer/dynamic-import-detector.ts",
+    "src/analyzer/graph-analyzer.ts",
+    "src/analyzer/graph-builder.ts",
+    "src/analyzer/graph-error.ts",
+    "src/analyzer/import-parser.ts",
+    "src/cli/detect-languages.ts",
+    "src/cli/scan-frontend-calls.ts",
+    "src/config/presets.ts",
+    "src/context/agentic-formatter.ts",
+    "src/context/context-tracker.d.ts",
+    "src/context/context-tracker.ts",
+    "src/context/edge-case-detector.ts",
+    "src/context/entry-point-detector.ts",
+    "src/context/example-extractor.ts",
+    "src/context/fuzzy-resolver.d.ts",
+    "src/context/fuzzy-resolver.ts",
+    "src/context/impact-simulator.d.ts",
+    "src/context/impact-simulator.ts",
+    "src/context/index.d.ts",
+    "src/context/markdown-formatter.ts",
+    "src/context/multi-hop-traversal.d.ts",
+    "src/context/multi-hop-traversal.ts",
+    "src/context/task-context-generator.ts",
+    "src/context/test-pattern-analyzer.ts",
+    "src/context/types.ts",
+    "src/errors/CodeRefError.ts",
+    "src/errors/FileNotFoundError.ts",
+    "src/errors/IndexError.ts",
+    "src/errors/ParseError.ts",
+    "src/errors/ScanError.ts",
+    "src/errors/ValidationError.ts",
+    "src/export/graph-exporter.d.ts",
+    "src/export/graph-exporter.ts",
+    "src/export/index.d.ts",
+    "src/fileGeneration/analyzeCoverage.ts",
+    "src/fileGeneration/detectDrift.ts",
+    "src/fileGeneration/detectPatterns.ts",
+    "src/fileGeneration/generateDiagrams.ts",
+    "src/fileGeneration/validateReferences.ts",
+    "src/formatter/formatter.ts",
+    "src/generator/generateFrontendCalls.ts",
+    "src/index.d.ts",
+    "src/indexer/index-store.ts",
+    "src/indexer/indexer-service.ts",
+    "src/indexer/metadata-index.ts",
+    "src/indexer/query-engine.ts",
+    "src/indexer/relationship-index.ts",
+    "src/integration/ai-prompt-generator.d.ts",
+    "src/integration/ai-prompt-generator.ts",
+    "src/integration/index.d.ts",
+    "src/integration/llm/anthropic-provider.d.ts",
+    "src/integration/llm/anthropic-provider.ts",
+    "src/integration/llm/llm-provider.d.ts",
+    "src/integration/llm/llm-provider.ts",
+    "src/integration/llm/openai-provider.d.ts",
+    "src/integration/llm/openai-provider.ts",
+    "src/integration/rag/answer-generation-service.d.ts",
+    "src/integration/rag/answer-generation-service.ts",
+    "src/integration/rag/chunk-converter.d.ts",
+    "src/integration/rag/code-chunk.d.ts",
+    "src/integration/rag/code-chunk.ts",
+    "src/integration/rag/confidence-scorer.d.ts",
+    "src/integration/rag/context-builder.d.ts",
+    "src/integration/rag/context-builder.ts",
+    "src/integration/rag/conversation-manager.d.ts",
+    "src/integration/rag/conversation-manager.ts",
+    "src/integration/rag/embedding-service.d.ts",
+    "src/integration/rag/embedding-service.ts",
+    "src/integration/rag/embedding-text-generator.d.ts",
+    "src/integration/rag/graph-reranker.d.ts",
+    "src/integration/rag/incremental-indexer.d.ts",
+    "src/integration/rag/incremental-indexer.ts",
+    "src/integration/rag/index.d.ts",
+    "src/integration/rag/indexing-orchestrator.d.ts",
+    "src/integration/rag/indexing-orchestrator.ts",
+    "src/integration/rag/prompt-templates.d.ts",
+    "src/integration/rag/prompt-templates.ts",
+    "src/integration/rag/rag-config.d.ts",
+    "src/integration/rag/rag-config.ts",
+    "src/integration/rag/semantic-search.d.ts",
+    "src/integration/rag/semantic-search.ts",
+    "src/integration/vector/chroma-store.d.ts",
+    "src/integration/vector/chroma-store.ts",
+    "src/integration/vector/pinecone-store.d.ts",
+    "src/integration/vector/pinecone-store.ts",
+    "src/integration/vector/sqlite-store.ts",
+    "src/integration/vector/vector-store.d.ts",
+    "src/integration/vector/vector-store.ts",
+    "src/parser/parser.d.ts",
+    "src/pipeline/generators/graph-output.ts",
+    "src/pipeline/generators/registry-generator.ts",
+    "src/pipeline/ignore-rules.ts",
+    "src/pipeline/orchestrator.ts",
+    "src/pipeline/types.ts",
+    "src/query/query-executor.d.ts",
+    "src/query/query-executor.ts",
+    "src/registry/entity-registry.ts",
+    "src/registry/types.ts",
+    "src/scanner/error-reporter.ts",
+    "src/scanner/frontend-scanner.ts",
+    "src/scanner/scanner-worker.ts",
+    "src/scanner/scanner.d.ts",
+    "src/search/search-engine.ts",
+    "src/search-client.ts",
+    "src/types/types.d.ts",
+    "src/types/types.ts",
+    "src/utils/logger.ts",
+    "src/validator/validator.d.ts",
+    "types.d.ts",
+    "utils/fs.d.ts",
+    "utils/fs.ts",
+    "vitest.config.ts",
+    "src/adapter/graph-to-elements.js",
+    "src/context/context-tracker.js",
+    "src/context/fuzzy-resolver.js",
+    "src/context/impact-simulator.js",
+    "src/context/multi-hop-traversal.js",
+    "src/export/graph-exporter.js",
+    "src/integration/ai-prompt-generator.js",
+    "src/integration/llm/anthropic-provider.js",
+    "src/integration/llm/llm-provider.js",
+    "src/integration/llm/openai-provider.js",
+    "src/integration/rag/answer-generation-service.js",
+    "src/integration/rag/code-chunk.js",
+    "src/integration/rag/context-builder.js",
+    "src/integration/rag/conversation-manager.js",
+    "src/integration/rag/embedding-service.js",
+    "src/integration/rag/incremental-indexer.js",
+    "src/integration/rag/indexing-orchestrator.js",
+    "src/integration/rag/prompt-templates.js",
+    "src/integration/rag/rag-config.js",
+    "src/integration/rag/semantic-search.js",
+    "src/integration/vector/chroma-store.js",
+    "src/integration/vector/pinecone-store.js",
+    "src/integration/vector/vector-store.js",
+    "src/query/query-executor.js",
+    "src/types/types.js",
+    "test-ast-scanner.js",
+    "types.js",
+    "utils/fs.js",
+    "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
+    "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+    "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+    "autoresearch/scanner-quality/01-element-classification/apply_iteration_5.py",
+    "autoresearch/scanner-quality/03-test-coverage-linkage/apply_iteration_1.py",
+    "autoresearch/scanner-quality/04-async-pattern-detection/apply_iteration_1.py",
+    "autoresearch/scanner-quality/05-context-summary-signal/apply_iteration_1.py",
+    "autoresearch/scanner-quality/06-test-gap-precision/apply_iteration_1.py",
+    "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+    "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+    "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+    "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+    "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+    "autoresearch/scanner-quality/scripts/verify_test_linkage.py"
+  ]
+}

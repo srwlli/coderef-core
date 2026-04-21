@@ -1,0 +1,194 @@
+{
+  "feature": "FIX_CODEREF_DRIFT_PREFLIGHT",
+  "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+  "from": "Agent 1",
+  "to": "Agent N",
+  "date": "2026-03-25",
+  "task": "Implement FIX_CODEREF_DRIFT_PREFLIGHT following 2 implementation phases",
+  "instruction": "Execute all tasks for FIX_CODEREF_DRIFT_PREFLIGHT and update task status in communication.json as you complete each one",
+  "tasks": [
+    {
+      "id": "STEP-001",
+      "description": "Review Source fix and regression coverage requirements",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Reviewed context.json, analysis.json, plan.json, and communication.json requirements for the drift-preflight fix."
+    },
+    {
+      "id": "STEP-002",
+      "description": "Read src/pipeline/generators/drift-generator.ts and src/pipeline/generators/index-generator.ts to confirm where absolute-versus-relative path normalization diverges.",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Confirmed index-generator writes project-relative paths while drift-generator previously compared raw absolute current paths against relative previous index entries."
+    },
+    {
+      "id": "STEP-003",
+      "description": "Edit src/pipeline/generators/drift-generator.ts so both current scan elements and previous index elements are normalized to project-relative forward-slash paths before identity maps are built.",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Normalized both current and previous drift elements to project-relative forward-slash paths before map construction."
+    },
+    {
+      "id": "STEP-004",
+      "description": "Edit drift report output generation so added, deleted, and modified file entries also use the normalized project-relative path format.",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Added, deleted, and modified drift report entries now emit normalized relative file paths via normalized element copies."
+    },
+    {
+      "id": "STEP-005",
+      "description": "Add a drift-generator regression test covering unchanged elements where previous index paths are relative and current state paths are absolute.",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Added a regression test proving mixed relative/absolute unchanged elements report zero drift."
+    },
+    {
+      "id": "STEP-006",
+      "description": "Run the coderef-core drift generator test file and confirm the new regression plus existing drift behavior both pass.",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Ran node ../../node_modules/vitest/vitest.mjs run __tests__/generators/drift-generator.test.ts outside the sandbox; 2 tests passed."
+    },
+    {
+      "id": "STEP-007",
+      "description": "Review Build and downstream verification requirements",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Reviewed downstream verification targets in coderef-workflow, including processors/coderef_preflight.py and PlanningWorkflow.analyze_project_for_planning()."
+    },
+    {
+      "id": "STEP-008",
+      "description": "Rebuild coderef-core so dist/src/pipeline/generators/drift-generator.js reflects the source normalization fix.",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Ran npm run build successfully; dist/src/pipeline/generators/drift-generator.js now includes the normalization helpers."
+    },
+    {
+      "id": "STEP-009",
+      "description": "Repopulate coderef-workflow and confirm the regenerated drift.json no longer reports false 200% drift for an unchanged scan.",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Repopulated C:\\Users\\willh\\.mcp-servers\\coderef-workflow with the rebuilt populate CLI; drift generator reported 0% drift and regenerated .coderef/reports/drift.json with empty change sets."
+    },
+    {
+      "id": "STEP-010",
+      "description": "Check that coderef-workflow strict planning preflight accepts the fresh populate and that analyze_project_for_planning can continue past drift validation.",
+      "status": "complete",
+      "completed_at": "2026-03-25T22:59:06.8849150-04:00",
+      "notes": "Ran PlanningWorkflow.analyze_project_for_planning() in coderef-workflow; the log reported 'Strict CodeRef preflight passed' and analysis continued with inventory_source='coderef_index'."
+    }
+  ],
+  "progress": {
+    "total": 10,
+    "complete": 10,
+    "in_progress": 0,
+    "pending": 0,
+    "blocked": 0,
+    "percent": 100
+  },
+  "details": {
+    "work_area": "coderef\\workorder\\fix-coderef-drift-preflight",
+    "forbidden_files": [
+      "server.py - DO NOT MODIFY (production MCP server)",
+      "tool_handlers.py - DO NOT MODIFY (existing handlers)"
+    ],
+    "allowed_files": [
+      "Update src/pipeline/generators/drift-generator.ts",
+      "Update __tests__/generators/drift-generator.test.ts",
+      "Update dist/src/pipeline/generators/drift-generator.js"
+    ],
+    "context": {
+      "feature_name": "fix-coderef-drift-preflight",
+      "goal": "Implement fix-coderef-drift-preflight",
+      "dependencies": [],
+      "references": [
+        "plan.json section 4_key_features",
+        "plan.json section 6_implementation_phases"
+      ]
+    }
+  },
+  "testing_checklist": [
+    "1. Run all unit tests for the feature",
+    "2. Verify integration tests pass",
+    "3. Check forbidden files unchanged (git diff)",
+    "4. Build project successfully",
+    "5. Manual test of feature functionality"
+  ],
+  "success_criteria": [
+    "The drift generator reports 0 changed elements for unchanged scans with mixed absolute and relative source paths.",
+    "The existing added, deleted, and modified drift behavior still passes in the test suite.",
+    "The rebuilt drift generator emits normalized relative file paths in drift.json entries.",
+    "The regenerated coderef-workflow drift report is at or below 10% when the scan is unchanged.",
+    "coderef-workflow strict preflight advances past drift validation after the repopulate."
+  ],
+  "agent_1_status": "READY - Planning complete, awaiting agent assignment",
+  "agent_N_status": "COMPLETE - Source fix, regression coverage, build, and downstream verification finished",
+  "agent_N_assigned_at": "2026-03-25T22:59:06.8849150-04:00",
+  "agent_N_completion": {
+    "status": "complete",
+    "timestamp": "2026-03-25T22:59:06.8849150-04:00",
+    "changes_made": [
+      "src/pipeline/generators/drift-generator.ts",
+      "__tests__/generators/drift-generator.test.ts",
+      "dist/src/pipeline/generators/drift-generator.js"
+    ],
+    "verification": {
+      "forbidden_files_unchanged": null,
+      "tests_passing": true,
+      "build_successful": true
+    },
+    "commit_hash": null,
+    "commit_message": null
+  },
+  "agent_1_verification": {
+    "status": null,
+    "verified_at": null,
+    "verified_by": "Agent 1",
+    "code_review": {
+      "passed": null,
+      "comments": []
+    },
+    "independent_tests": {
+      "passed": null,
+      "test_results": []
+    },
+    "forbidden_files_check": {
+      "passed": null,
+      "files_verified": []
+    },
+    "production_integration": {
+      "passed": null,
+      "integration_tests": []
+    },
+    "final_approval": null
+  },
+  "context_experts": {
+    "loaded": [],
+    "created_this_session": [],
+    "suggested": [],
+    "stale": []
+  },
+  "metadata": {
+    "created_at": "2026-03-25T22:32:48.216461",
+    "updated_at": "2026-03-25T22:59:06.8849150-04:00",
+    "version": "1.0.0",
+    "template_version": "1.1.0",
+    "generated_from_plan": "coderef\\workorder\\fix-coderef-drift-preflight\\plan.json"
+  },
+  "handoff_prompt_template": {
+    "description": "Standardized prompt template for agent handoffs (STUB-015)",
+    "usage": "Use this template when transferring work to another agent",
+    "template": "You are being handed off the following work:\n\n## Context\n- **Feature**: {{feature_name}}\n- **Workorder**: {{workorder_id}}\n- **Current Progress**: {{progress_percent}}% ({{completed}}/{{total}} tasks)\n\n## Files\n- **Plan**: coderef/working/{{feature_name}}/plan.json\n- **Communication**: coderef/working/{{feature_name}}/communication.json\n- **Context**: coderef/working/{{feature_name}}/context.json\n\n## Current State\n{{current_state_summary}}\n\n## Next Tasks\n{{next_tasks_list}}\n\n## Important Notes\n- Forbidden files: {{forbidden_files}}\n- Success criteria: {{success_criteria}}\n\n## Instructions\n1. Read the plan.json and communication.json\n2. Continue from the next pending task\n3. Update task status in plan.json as you work\n4. Do not modify forbidden files\n5. Run tests before marking complete",
+    "variables": {
+      "feature_name": "From communication.json feature field",
+      "workorder_id": "From communication.json workorder_id field",
+      "progress_percent": "From communication.json progress.percent field",
+      "completed": "From communication.json progress.complete field",
+      "total": "From communication.json progress.total field",
+      "current_state_summary": "Generated from git status and recent commits",
+      "next_tasks_list": "First 3 pending tasks from tasks array",
+      "forbidden_files": "From communication.json details.forbidden_files",
+      "success_criteria": "From communication.json success_criteria"
+    }
+  }
+}

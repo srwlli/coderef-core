@@ -1,0 +1,47 @@
+{
+  "version": "1.0.0",
+  "name": "Flask to FastAPI Migration",
+  "mappings": {
+    "paths": {
+      "/users/<int:id>": "/users/{id}",
+      "/posts/<slug>": "/posts/{slug}",
+      "/items/<int:item_id>/comments/<int:comment_id>": "/items/{item_id}/comments/{comment_id}",
+      "/auth/login": "/auth/token"
+    },
+    "patterns": [
+      {
+        "find": "/<int:([a-z_]+)>",
+        "replace": "/{$1}"
+      },
+      {
+        "find": "/<string:([a-z_]+)>",
+        "replace": "/{$1}"
+      },
+      {
+        "find": "/<([a-z_]+)>",
+        "replace": "/{$1}"
+      }
+    ],
+    "methodChanges": {
+      "/auth/token": {
+        "old": "POST",
+        "new": "POST"
+      }
+    },
+    "deprecated": [
+      "/legacy/upload",
+      "/api/v0/users"
+    ],
+    "added": [
+      "/docs",
+      "/openapi.json",
+      "/health"
+    ]
+  },
+  "metadata": {
+    "source": "Flask",
+    "target": "FastAPI",
+    "createdAt": "2024-01-15T11:00:00Z",
+    "description": "Converts Flask route parameter syntax to FastAPI path parameters. Adds OpenAPI documentation endpoints."
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "feature_name": "ast-based-complexity-calculation",
+  "description": "Replace regex-based complexity calculation in coderef-core with AST-based calculation using the existing tree-sitter parser. Current implementation uses naive regex counting (if/for/while/&&/||) which is inaccurate. Tree-sitter AST parser is available but not being used for complexity metrics.",
+  "goal": "Implement proper cyclomatic complexity calculation using AST traversal for accurate metrics instead of regex pattern matching",
+  "requirements": [
+    "Replace regex-based complexity counting in complexity-generator.ts with AST-based calculation",
+    "Leverage existing tree-sitter-scanner.ts for AST parsing",
+    "Implement proper cyclomatic complexity: 1 + number of decision points (if/for/while/catch/&&/||/?:)",
+    "Accurate line attribution and scope awareness for complexity scores",
+    "Maintain backward compatibility with existing complexity.json output format"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "complexity_accuracy": "Complexity scores match standard cyclomatic complexity definition",
+    "coverage": "All existing test cases pass with new calculation method",
+    "integration": "Seamless integration with existing pipeline without breaking changes",
+    "performance": "AST-based calculation within 20% performance of regex-based"
+  },
+  "_metadata": {
+    "workorder_id": "WO-AST-BASED-COMPLEXITY-CALCULATION-001",
+    "workorder_assigned_at": "2026-04-18T06:44:13.349256+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-AST-BASED-COMPLEXITY-CALCULATION-001",
+    "feature_id": "ast-based-complexity-calculation",
+    "last_updated": "2026-04-18",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-18"
+  }
+}

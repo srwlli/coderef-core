@@ -1,0 +1,39 @@
+{
+  "feature_name": "fix-coderef-drift-preflight",
+  "description": "Fix false strict CodeRef preflight failures caused by drift.json reporting 200% drift after a fresh populate because drift comparison mixes absolute and relative file paths.",
+  "goal": "Make fresh .coderef artifacts pass strict planning when unchanged by normalizing drift comparison to a stable path format.",
+  "requirements": [
+    "Reproduce and document the false 200% drift condition seen after a fresh populate in coderef-workflow.",
+    "Normalize current and previous drift comparison element file paths to the same project-relative format before IDs are compared.",
+    "Ensure drift.json added, deleted, and modified entries use the normalized path format.",
+    "Add a regression test where the previous index uses relative paths and the current scan state uses absolute paths but reports zero drift for unchanged elements.",
+    "Preserve the strict 10% drift gate instead of weakening or bypassing strict planning preflight."
+  ],
+  "out_of_scope": [
+    "Adding heuristic bypasses in coderef-workflow preflight.",
+    "Broad scanner redesign beyond the drift normalization defect.",
+    "Renaming MCP tools or weakening the strict planning contract."
+  ],
+  "constraints": [
+    "Keep the strict planning contract intact.",
+    "Do not add regex or manifest fallback to the strict path.",
+    "Keep the fix focused on stable path normalization for drift comparison."
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+    "workorder_assigned_at": "2026-03-26T02:19:51.779018+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+    "feature_id": "fix-coderef-drift-preflight",
+    "last_updated": "2026-03-26",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-04-25"
+  }
+}

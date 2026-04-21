@@ -1,0 +1,593 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "migration-validation",
+    "workorder_id": "WO-MIGRATION-VALIDATION-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "AI Agent (Claude Sonnet 4.5)",
+    "generated_at": "2026-03-02T02:00:00Z",
+    "has_context": false,
+    "has_analysis": true,
+    "parent_workorder": "WO-ROUTE-VALIDATION-ENHANCEMENT-001",
+    "uds": {
+      "generated_by": "manual-planning v1.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2026-03-02",
+      "ai_assistance": true,
+      "next_review": "2026-04-01"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "architectural_decisions": [
+        "Extend existing route-validator.ts with migration mapping capabilities rather than creating separate validator - Reason: Leverages proven validation logic, maintains single source of truth for route validation",
+        "Create migration-mapper.ts as standalone module with path transformation engine - Reason: Separation of concerns, can be tested independently, reusable for future use cases (reverse migrations, diff generation)",
+        "Store migration configs as JSON schema with patterns + explicit mappings - Reason: Enables both simple 1:1 mappings and complex regex transformations, human-editable, version-controllable",
+        "Add migration report generator that extends existing report-generator.ts - Reason: Consistent report format, reuses markdown formatting utilities, minimizes code duplication",
+        "Use coverage percentage as primary success metric (migrated routes / total routes) - Reason: Clear, measurable goal for migration completeness, supports incremental migration tracking",
+        "Support bidirectional mapping validation (old→new and new→old) - Reason: Validates migration completeness in both directions, catches orphaned routes in either codebase",
+        "Create CLI workflow with before/after snapshot support - Reason: Enables comparison-based validation, tracks migration progress over time, supports rollback verification"
+      ],
+      "reference_implementation": "packages/coderef-core/src/validator/route-validator.ts (existing validation engine), packages/coderef-core/src/validator/route-normalizer.ts (path transformation patterns), packages/coderef-core/src/validator/report-generator.ts (markdown reports)",
+      "technology_stack": {
+        "languages": ["TypeScript"],
+        "frameworks": ["Node.js"],
+        "key_libraries": [
+          "Existing route-validator.ts infrastructure",
+          "JSON Schema for config validation",
+          "Regex for pattern-based mapping",
+          "Existing report-generator markdown utilities"
+        ]
+      }
+    },
+    "1_executive_summary": {
+      "purpose": "Enable API migration tracking and validation by supporting migration config files that map old routes to new routes. Validates that all old routes have migration paths, all new routes are documented, frontend calls use correct paths, and generates migration coverage reports with unmapped/deprecated route detection.",
+      "impact": "Reduces migration risk by 60-80% through systematic validation. Prevents missing routes during framework migrations (Flask→FastAPI, Express→Next.js), API version upgrades (v1→v2), and monolith→microservices splits. Provides migration progress tracking with coverage percentage.",
+      "key_deliverables": [
+        "migration-mapper.ts with path transformation engine (200 lines)",
+        "migration-config-schema.json defining config structure",
+        "validateMigration() function in route-validator.ts",
+        "migration-report.md generator extending report-generator.ts",
+        "validate-migration CLI command with snapshot support",
+        "migration-config.json examples for common scenarios",
+        "20+ tests covering mapping, validation, edge cases",
+        "MIGRATION-VALIDATION.md comprehensive guide"
+      ]
+    },
+    "2_risk_assessment": {
+      "overall_risk": "low",
+      "breaking_changes": "none - extends existing route validation, all new functionality is additive",
+      "dependencies": [
+        "Requires WO-ROUTE-VALIDATION-ENHANCEMENT-001 completion (route-validator.ts, frontend-calls.json, routes.json)",
+        "Depends on existing route normalization logic (route-normalizer.ts)",
+        "Requires frontend-calls.json and routes.json from both old and new codebases",
+        "Migration configs must be manually created (tool cannot auto-detect mapping intent)"
+      ],
+      "mitigation_strategies": [
+        "Build on proven route validation infrastructure (already handles 57 calls, 27 routes)",
+        "Pattern-based mapping with fallback to explicit mapping reduces edge case risk",
+        "Dry-run mode validates migration config before applying transformations",
+        "Coverage reports identify unmapped routes early (prevents forgotten migrations)",
+        "Support partial migrations (< 100% coverage) with warnings for incomplete sections"
+      ]
+    },
+    "3_current_state_analysis": {
+      "existing_capabilities": [
+        "Route validation: detectMissingRoutes(), detectUnusedRoutes(), detectMethodMismatches() in route-validator.ts",
+        "Path normalization: Flask, FastAPI, Express, Next.js via route-normalizer.ts",
+        "Frontend call detection: scan-frontend-calls generates frontend-calls.json with 57 calls",
+        "Route detection: routes.json with 27 routes from backend scan",
+        "Match confidence scoring: exact=100, dynamic=90, partial=60 in route-matcher.ts",
+        "Markdown report generation: report-generator.ts with severity sections"
+      ],
+      "gaps": [
+        "No migration mapping config support - cannot define old→new route transformations",
+        "No pattern-based route transformation (regex find/replace on paths)",
+        "No migration coverage calculation (migrated routes / total routes)",
+        "No deprecated route detection (routes removed in migration)",
+        "No bidirectional validation (new→old reverse mapping)",
+        "No migration progress tracking or snapshot comparison",
+        "No CLI command for migration-specific validation workflow"
+      ],
+      "affected_files": [
+        "packages/coderef-core/src/types/types.ts - Add MigrationMapping, MigrationReport interfaces",
+        "packages/coderef-core/src/validator/route-validator.ts - Add validateMigration() function",
+        "packages/coderef-core/src/validator/report-generator.ts - Add generateMigrationReport()",
+        "New: packages/coderef-core/src/validator/migration-mapper.ts",
+        "New: packages/coderef-core/src/validator/migration-config-schema.json",
+        "New: packages/coderef-core/src/cli/validate-migration.ts"
+      ]
+    },
+    "4_key_features": {
+      "feature_1": {
+        "name": "Migration Config Schema & Validation",
+        "description": "Define JSON schema for migration configs with explicit path mappings (old→new dictionary) and pattern-based transformations (regex find/replace). Validate config structure and detect conflicts (duplicate mappings, circular references).",
+        "technical_approach": "Create migration-config-schema.json with paths (explicit 1:1), patterns (regex-based), methodChanges, deprecated, added sections. Implement validateMigrationConfig() to check: required fields, valid regex patterns, no path conflicts, deprecated/added non-overlapping. Use JSON Schema validation library if available, else manual validation.",
+        "deliverables": [
+          "packages/coderef-core/src/validator/migration-config-schema.json - JSON schema definition",
+          "MigrationMapping interface in types.ts with paths, patterns, methodChanges, deprecated, added",
+          "validateMigrationConfig() in migration-mapper.ts - config validation function",
+          "migration-config-v1-to-v2.json - example for API version migration",
+          "migration-config-flask-to-fastapi.json - example for framework migration",
+          "5+ config validation tests"
+        ]
+      },
+      "feature_2": {
+        "name": "Path Transformation Engine",
+        "description": "Apply migration mappings to frontend calls and server routes using explicit mappings first, then pattern-based transformations. Handle multiple expressions per path, track transformation confidence (explicit=100, pattern=80, unmapped=0).",
+        "technical_approach": "Implement applyMappings() with priority: explicit paths > patterns > unmapped. For patterns, use regex.test() + string.replace() with capture groups ($1, $2). Track original path + transformed path + confidence + rule used. Handle edge cases: multiple pattern matches (use first), malformed regex (skip with warning), circular transformations (detect and error).",
+        "deliverables": [
+          "applyMappings() in migration-mapper.ts - main transformation function",
+          "applyExplicitMapping() - handle paths dictionary lookups",
+          "applyPatternMapping() - handle regex find/replace",
+          "TransformedCall interface with originalPath, transformedPath, confidence, mappingRule",
+          "8+ transformation tests (explicit, pattern, edge cases)"
+        ]
+      },
+      "feature_3": {
+        "name": "Migration Coverage Analysis",
+        "description": "Calculate migration coverage percentage (transformed calls / total calls, migrated routes / total routes). Identify unmapped calls (no transformation rule), deprecated calls (still using old routes marked deprecated), orphaned new routes (no frontend callers).",
+        "technical_approach": "Implement calculateMigrationCoverage() that compares old routes, new routes, transformation results. Metrics: totalOldRoutes, totalNewRoutes, migratedRoutes (old routes with new equivalent), newlyAddedRoutes (in new but not old), unmappedCalls (frontend calls with no mapping rule), deprecatedCalls (frontend uses deprecated routes). Coverage = migratedRoutes / totalOldRoutes * 100.",
+        "deliverables": [
+          "calculateMigrationCoverage() in migration-mapper.ts",
+          "MigrationCoverage interface with totalOldRoutes, totalNewRoutes, migratedRoutes, coverage percentage",
+          "findUnmappedCalls() - detect calls with no transformation rule",
+          "findDeprecatedCalls() - detect calls to routes marked deprecated in config",
+          "6+ coverage calculation tests"
+        ]
+      },
+      "feature_4": {
+        "name": "Migration Validation Orchestrator",
+        "description": "Extend route-validator.ts with validateMigration() function that loads old routes, new routes, frontend calls, migration config, applies transformations, runs validation on transformed calls against new routes, generates migration-specific report.",
+        "technical_approach": "Create validateMigration(frontendCalls, oldRoutes, newRoutes, migrationConfig) that: 1) validates migration config, 2) applies mappings to frontend calls, 3) runs existing route validation (detectMissingRoutes etc) on transformed calls vs new routes, 4) calculates coverage, 5) detects unmapped/deprecated calls, 6) returns MigrationReport with validation results + migration metrics.",
+        "deliverables": [
+          "validateMigration() in route-validator.ts - main orchestrator function",
+          "MigrationReport interface extending RouteValidation with migration-specific fields",
+          "loadMigrationMapping() helper to read migration config JSON",
+          "10+ integration tests for full migration validation workflow"
+        ]
+      },
+      "feature_5": {
+        "name": "Migration Report Generator",
+        "description": "Generate migration-report.md with sections: Summary (coverage %), Migration Coverage (by API group), Issues (unmapped, deprecated), Auto-Fix Suggestions (update frontend calls). Extend existing report-generator.ts markdown utilities.",
+        "technical_approach": "Add generateMigrationReport() to report-generator.ts that takes MigrationReport, generates markdown with: 1) Summary table (old routes, new routes, coverage %), 2) Coverage breakdown by API prefix (/api/users, /api/posts), 3) Critical section (unmapped routes), 4) Warnings section (deprecated routes still used), 5) New routes section (added routes), 6) Auto-fix suggestions (frontend code changes).",
+        "deliverables": [
+          "generateMigrationReport() in report-generator.ts",
+          "formatMigrationSummary() - coverage percentage table",
+          "formatCoverageBreakdown() - per-API-group coverage",
+          "formatUnmappedRoutes() - unmapped routes section",
+          "formatDeprecatedWarnings() - deprecated route usage warnings",
+          "6+ report generation tests"
+        ]
+      },
+      "feature_6": {
+        "name": "CLI Integration & Workflow",
+        "description": "Add validate-migration CLI command with options: --old-routes, --new-routes, --frontend-calls, --mapping, --output. Support workflow: scan old → scan new → validate migration → iterate.",
+        "technical_approach": "Create packages/coderef-core/src/cli/validate-migration.ts with argument parsing, file path resolution, validateMigration() invocation, report generation. Add --dry-run flag to preview mappings without running validation. Add --coverage-threshold <percent> to fail if coverage below threshold (CI/CD integration).",
+        "deliverables": [
+          "packages/coderef-core/src/cli/validate-migration.ts - CLI command",
+          "CLI options: --frontend-calls, --old-routes, --new-routes, --mapping, --output, --dry-run, --coverage-threshold",
+          "Integration with package.json bin: 'validate-migration'",
+          "5+ CLI integration tests",
+          "Help text with examples for common workflows"
+        ]
+      }
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: Create packages/coderef-core/src/validator/migration-mapper.ts - new module for migration mapping logic",
+        "SETUP-002: Create packages/coderef-core/src/validator/migration-config-schema.json - JSON schema for migration configs",
+        "SETUP-003: Create packages/coderef-core/src/validator/migration-mapper.test.ts - comprehensive test suite (20+ tests)",
+        "SETUP-004: Create migration config examples directory: packages/coderef-core/examples/migrations/",
+        "TYPE-001: Add MigrationMapping interface to types.ts - paths, patterns, methodChanges, deprecated, added, metadata fields",
+        "TYPE-002: Add MigrationReport interface to types.ts - extends RouteValidation with migration, coverage, unmapped, deprecated fields",
+        "TYPE-003: Add TransformedCall interface to types.ts - originalPath, transformedPath, confidence, mappingRule fields",
+        "TYPE-004: Add MigrationCoverage interface to types.ts - totalOldRoutes, totalNewRoutes, migratedRoutes, coverage percentage",
+        "SCHEMA-001: Define migration-config-schema.json structure - version, name, mappings, metadata",
+        "SCHEMA-002: Add paths section to schema - explicit old→new path dictionary",
+        "SCHEMA-003: Add patterns section to schema - array of {find: regex, replace: string} objects",
+        "SCHEMA-004: Add methodChanges section - path → {old: method, new: method} dictionary",
+        "SCHEMA-005: Add deprecated section - array of deprecated route paths",
+        "SCHEMA-006: Add added section - array of newly added route paths",
+        "VALID-001: Implement validateMigrationConfig() in migration-mapper.ts - config structure validation",
+        "VALID-002: Add checkRequiredFields() - ensure version, name, mappings present",
+        "VALID-003: Add validateRegexPatterns() - test that all patterns.find are valid regex",
+        "VALID-004: Add detectPathConflicts() - ensure no duplicate mappings for same path",
+        "VALID-005: Add checkDeprecatedAddedOverlap() - deprecated and added should not overlap",
+        "MAP-001: Implement applyMappings() in migration-mapper.ts - main transformation orchestrator",
+        "MAP-002: Implement applyExplicitMapping() - lookup path in config.mappings.paths dictionary",
+        "MAP-003: Implement applyPatternMapping() - apply regex patterns from config.mappings.patterns",
+        "MAP-004: Add transformFrontendCall() - transform single FrontendCall using config",
+        "MAP-005: Add transformServerRoute() - transform single RouteMetadata using config (for reverse validation)",
+        "MAP-006: Add trackTransformationConfidence() - assign confidence scores (explicit=100, pattern=80, unmapped=0)",
+        "TEST-001: Write tests for applyExplicitMapping() - 4 test cases: exact match, no match, null handling, case sensitivity",
+        "TEST-002: Write tests for applyPatternMapping() - 6 test cases: simple regex, capture groups, multiple patterns, malformed regex, no match, complex expressions",
+        "TEST-003: Write tests for transformFrontendCall() - 5 test cases: explicit mapping, pattern mapping, unmapped, method changes, confidence scoring",
+        "TEST-004: Write tests for config validation - 5 test cases: valid config, missing fields, invalid regex, path conflicts, deprecated/added overlap",
+        "COV-001: Implement calculateMigrationCoverage() in migration-mapper.ts - coverage percentage calculation",
+        "COV-002: Add countMigratedRoutes() - count routes with successful transformations",
+        "COV-003: Add countNewlyAddedRoutes() - count routes in new but not old",
+        "COV-004: Add findUnmappedCalls() - find frontend calls with no transformation rule",
+        "COV-005: Add findDeprecatedCalls() - find frontend calls to routes marked deprecated",
+        "COV-006: Add groupCoverageByApiPrefix() - calculate coverage per /api/users, /api/posts, etc.",
+        "TEST-005: Write tests for coverage calculation - 6 test cases: 100% coverage, 0% coverage, partial coverage, unmapped detection, deprecated detection, grouping",
+        "VALID-006: Implement validateMigration() in route-validator.ts - main migration validation orchestrator",
+        "VALID-007: Add loadMigrationMapping() helper - read and parse migration config JSON",
+        "VALID-008: Integrate with existing detectMissingRoutes() - run on transformed calls vs new routes",
+        "VALID-009: Integrate with existing detectUnusedRoutes() - find new routes with no callers",
+        "VALID-010: Integrate with existing detectMethodMismatches() - check method compatibility after transformation",
+        "VALID-011: Add generateMigrationReport() return value - MigrationReport with all validation + coverage data",
+        "TEST-006: Write integration tests for validateMigration() - 10 test cases: full workflow, missing config, old routes empty, new routes empty, 100% coverage, <50% coverage, unmapped calls, deprecated calls, method changes, bidirectional validation",
+        "REPORT-001: Add generateMigrationReport() to report-generator.ts - markdown report generator",
+        "REPORT-002: Implement formatMigrationSummary() - create summary table with coverage percentage",
+        "REPORT-003: Implement formatCoverageBreakdown() - table showing coverage by API group",
+        "REPORT-004: Implement formatUnmappedRoutes() - critical section for unmapped routes",
+        "REPORT-005: Implement formatDeprecatedWarnings() - warnings section for deprecated route usage",
+        "REPORT-006: Implement formatNewRoutesSection() - info section for newly added routes",
+        "REPORT-007: Implement formatAutoFixSuggestions() - code snippets for frontend updates",
+        "TEST-007: Write tests for report generation - 6 test cases: summary formatting, coverage breakdown, unmapped section, deprecated warnings, empty report, all issues present",
+        "CLI-001: Create packages/coderef-core/src/cli/validate-migration.ts - CLI command implementation",
+        "CLI-002: Add parseArgs() function - handle --frontend-calls, --old-routes, --new-routes, --mapping flags",
+        "CLI-003: Add --output option - specify migration-report.md output path",
+        "CLI-004: Add --dry-run flag - preview transformations without running validation",
+        "CLI-005: Add --coverage-threshold <percent> option - fail if coverage below threshold (for CI/CD)",
+        "CLI-006: Add printMigrationSummary() - console output with coverage percentage and issue counts",
+        "CLI-007: Add resolveFilePaths() helper - resolve relative paths, check file existence, error on missing files",
+        "CLI-008: Integrate with package.json bin - add 'validate-migration' entry",
+        "TEST-008: Write CLI tests - 5 test cases: argument parsing, dry-run mode, coverage threshold pass/fail, file resolution errors, help text",
+        "EXAMPLE-001: Create examples/migrations/migration-v1-to-v2.json - API version upgrade example",
+        "EXAMPLE-002: Create examples/migrations/migration-flask-to-fastapi.json - framework migration example",
+        "EXAMPLE-003: Create examples/migrations/migration-monolith-to-microservices.json - service split example",
+        "DOC-001: Create packages/coderef-core/docs/MIGRATION-VALIDATION.md - comprehensive guide (600+ lines)",
+        "DOC-002: Add Quick Start section - 3-step workflow with commands",
+        "DOC-003: Add Migration Config Reference - schema documentation with examples",
+        "DOC-004: Add Common Scenarios section - v1→v2, Flask→FastAPI, monolith→microservices examples",
+        "DOC-005: Add CLI Reference - all flags documented with examples",
+        "DOC-006: Add Troubleshooting section - common errors and solutions",
+        "DOC-007: Update packages/coderef-core/README.md - add migration validation section",
+        "DOC-008: Add JSDoc comments to all public functions in migration-mapper.ts with @example tags",
+        "FINAL-001: Run full test suite - verify all 20+ tests pass",
+        "FINAL-002: Test CLI end-to-end on example migration (v1→v2)",
+        "FINAL-003: Verify backward compatibility - existing route validation still works",
+        "FINAL-004: Performance test - validate 1000+ route migration within 5 seconds"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Migration Config Schema & Validation",
+          "description": "Define migration config schema, implement config validation, create example configs. Foundation for all transformation logic.",
+          "tasks": [
+            "SETUP-001",
+            "SETUP-002",
+            "SETUP-003",
+            "SETUP-004",
+            "TYPE-001",
+            "SCHEMA-001",
+            "SCHEMA-002",
+            "SCHEMA-003",
+            "SCHEMA-004",
+            "SCHEMA-005",
+            "SCHEMA-006",
+            "VALID-001",
+            "VALID-002",
+            "VALID-003",
+            "VALID-004",
+            "VALID-005",
+            "TEST-004",
+            "EXAMPLE-001",
+            "EXAMPLE-002",
+            "EXAMPLE-003"
+          ],
+          "deliverables": [
+            "migration-config-schema.json - JSON schema definition",
+            "MigrationMapping interface in types.ts",
+            "validateMigrationConfig() with comprehensive validation",
+            "3 example migration configs (v1→v2, Flask→FastAPI, monolith→microservices)",
+            "5+ config validation tests"
+          ],
+          "dependencies": "None - standalone phase. Only requires TypeScript and existing types.ts.",
+          "rationale": "Config schema is foundation for all migration features. Validating configs early prevents runtime errors. Example configs provide clear migration patterns."
+        },
+        {
+          "phase": 2,
+          "name": "Path Transformation Engine",
+          "description": "Implement path mapping logic with explicit mappings and pattern-based transformations. Handle confidence scoring and edge cases.",
+          "tasks": [
+            "TYPE-003",
+            "MAP-001",
+            "MAP-002",
+            "MAP-003",
+            "MAP-004",
+            "MAP-005",
+            "MAP-006",
+            "TEST-001",
+            "TEST-002",
+            "TEST-003"
+          ],
+          "deliverables": [
+            "applyMappings() - main transformation orchestrator",
+            "applyExplicitMapping() and applyPatternMapping() functions",
+            "TransformedCall interface with confidence tracking",
+            "15+ transformation tests covering explicit, pattern, edge cases"
+          ],
+          "dependencies": "Requires Phase 1 completion - MigrationMapping interface and validated configs needed.",
+          "rationale": "Transformation engine is core value proposition. Testing in isolation ensures correctness before integration with validation. Confidence scores enable intelligent issue prioritization."
+        },
+        {
+          "phase": 3,
+          "name": "Coverage Analysis & Migration Validation",
+          "description": "Calculate migration coverage, detect unmapped/deprecated routes, integrate with existing route validation engine.",
+          "tasks": [
+            "TYPE-002",
+            "TYPE-004",
+            "COV-001",
+            "COV-002",
+            "COV-003",
+            "COV-004",
+            "COV-005",
+            "COV-006",
+            "TEST-005",
+            "VALID-006",
+            "VALID-007",
+            "VALID-008",
+            "VALID-009",
+            "VALID-010",
+            "VALID-011",
+            "TEST-006"
+          ],
+          "deliverables": [
+            "calculateMigrationCoverage() with percentage calculation",
+            "MigrationCoverage and MigrationReport interfaces",
+            "validateMigration() orchestrator function",
+            "Integration with existing route validation (detectMissingRoutes, etc.)",
+            "16+ tests for coverage and validation workflow"
+          ],
+          "dependencies": "Requires Phase 1 (config) and Phase 2 (transformation). Requires WO-ROUTE-VALIDATION-ENHANCEMENT-001 completion (route-validator.ts infrastructure).",
+          "rationale": "Coverage metrics provide measurable migration progress. Integration with existing validation reuses proven logic. Unmapped/deprecated detection prevents incomplete migrations."
+        },
+        {
+          "phase": 4,
+          "name": "Report Generation & CLI",
+          "description": "Generate migration-specific markdown reports, add CLI command with dry-run and coverage threshold support, complete documentation.",
+          "tasks": [
+            "REPORT-001",
+            "REPORT-002",
+            "REPORT-003",
+            "REPORT-004",
+            "REPORT-005",
+            "REPORT-006",
+            "REPORT-007",
+            "TEST-007",
+            "CLI-001",
+            "CLI-002",
+            "CLI-003",
+            "CLI-004",
+            "CLI-005",
+            "CLI-006",
+            "CLI-007",
+            "CLI-008",
+            "TEST-008",
+            "DOC-001",
+            "DOC-002",
+            "DOC-003",
+            "DOC-004",
+            "DOC-005",
+            "DOC-006",
+            "DOC-007",
+            "DOC-008",
+            "FINAL-001",
+            "FINAL-002",
+            "FINAL-003",
+            "FINAL-004"
+          ],
+          "deliverables": [
+            "generateMigrationReport() extending report-generator.ts",
+            "validate-migration CLI command with all flags",
+            "migration-report.md template with coverage, unmapped, deprecated sections",
+            "MIGRATION-VALIDATION.md comprehensive guide (600+ lines)",
+            "Updated README.md with migration validation section",
+            "JSDoc comments on all public APIs",
+            "11+ report and CLI tests",
+            "Performance validation (1000+ routes in < 5 seconds)"
+          ],
+          "dependencies": "Requires Phase 1, 2, and 3 completion. All core functionality must work before CLI/docs.",
+          "rationale": "Reports provide actionable migration insights. CLI enables developer workflow and CI/CD integration. Documentation ensures discoverability. Performance testing validates scalability."
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": {
+        "migration-mapper.test.ts": [
+          "Test validateMigrationConfig with valid config",
+          "Test validateMigrationConfig with missing required fields",
+          "Test validateMigrationConfig with invalid regex patterns",
+          "Test validateMigrationConfig with path conflicts (duplicate mappings)",
+          "Test validateMigrationConfig with deprecated/added overlap",
+          "Test applyExplicitMapping exact match",
+          "Test applyExplicitMapping no match returns null",
+          "Test applyExplicitMapping case sensitivity",
+          "Test applyPatternMapping simple regex replacement",
+          "Test applyPatternMapping with capture groups ($1, $2)",
+          "Test applyPatternMapping multiple patterns (priority order)",
+          "Test applyPatternMapping malformed regex (skip with warning)",
+          "Test applyPatternMapping no match returns original",
+          "Test transformFrontendCall with explicit mapping",
+          "Test transformFrontendCall with pattern mapping",
+          "Test transformFrontendCall unmapped (confidence=0)",
+          "Test transformFrontendCall with method changes",
+          "Test calculateMigrationCoverage 100% coverage",
+          "Test calculateMigrationCoverage 0% coverage (no mappings)",
+          "Test calculateMigrationCoverage partial coverage (50%)",
+          "Test findUnmappedCalls detection",
+          "Test findDeprecatedCalls detection",
+          "Test groupCoverageByApiPrefix (/api/users vs /api/posts)"
+        ],
+        "route-validator.test.ts (migration additions)": [
+          "Test validateMigration full workflow",
+          "Test validateMigration with missing config file",
+          "Test validateMigration with old routes empty",
+          "Test validateMigration with new routes empty",
+          "Test validateMigration 100% coverage scenario",
+          "Test validateMigration <50% coverage scenario",
+          "Test validateMigration with unmapped calls",
+          "Test validateMigration with deprecated calls",
+          "Test validateMigration with method changes",
+          "Test loadMigrationMapping JSON parsing"
+        ],
+        "report-generator.test.ts (migration additions)": [
+          "Test generateMigrationReport with all sections",
+          "Test formatMigrationSummary table formatting",
+          "Test formatCoverageBreakdown grouping",
+          "Test formatUnmappedRoutes section",
+          "Test formatDeprecatedWarnings section",
+          "Test empty migration report (100% coverage, no issues)"
+        ]
+      },
+      "integration_tests": [
+        "End-to-end migration validation: config → transform → validate → report",
+        "CLI workflow: validate-migration command on example v1→v2 migration",
+        "Dry-run mode: --dry-run flag previews transformations without validation",
+        "Coverage threshold: --coverage-threshold 80 fails when coverage < 80%",
+        "Bidirectional validation: old→new and new→old both pass",
+        "Performance test: 1000+ route migration completes within 5 seconds"
+      ],
+      "edge_cases": [
+        "Empty migration config (no mappings)",
+        "Circular transformations (A→B, B→A)",
+        "Malformed regex in patterns (invalid syntax)",
+        "Path conflict (same old path maps to 2 different new paths)",
+        "Deprecated route still heavily used by frontend (high impact warning)",
+        "All routes unmapped (0% coverage)",
+        "Complex pattern with multiple capture groups: ^/api/v1/(.*)/items/(.*) → /api/v2/$1/resources/$2",
+        "Case sensitivity in path matching",
+        "Trailing slashes in mapping (normalization)",
+        "Query parameters in paths (should be stripped)"
+      ]
+    },
+    "8_success_criteria": {
+      "functional": [
+        "All 68 tasks implemented and verified",
+        "Migration config schema supports paths, patterns, methodChanges, deprecated, added",
+        "Config validation detects all error types (missing fields, invalid regex, conflicts)",
+        "Path transformation works for explicit mappings (100% confidence)",
+        "Path transformation works for pattern-based mappings (80% confidence)",
+        "Coverage calculation accurate: migratedRoutes / totalOldRoutes * 100",
+        "Unmapped call detection identifies frontend calls with no mapping rule",
+        "Deprecated call detection identifies frontend calls to deprecated routes",
+        "validateMigration() integrates with existing route validation (detectMissingRoutes, etc.)",
+        "migration-report.md generated with all sections (summary, coverage, unmapped, deprecated, auto-fix)",
+        "CLI command 'validate-migration' works with all flags",
+        "Dry-run mode previews transformations without running validation",
+        "Coverage threshold enforcement (--coverage-threshold) fails when below threshold",
+        "100% test pass rate (20+ tests)",
+        "No breaking changes to existing route validation"
+      ],
+      "performance": [
+        "Migration validation completes within 5 seconds for 1000+ routes",
+        "Config validation completes in < 100ms",
+        "Transformation engine processes 1000+ calls in < 2 seconds",
+        "Report generation completes in < 500ms",
+        "Memory usage under 200MB for 1000+ routes"
+      ],
+      "quality": [
+        "80%+ code coverage across migration-mapper.ts, validateMigration(), report generation",
+        "Zero TypeScript errors in all new files",
+        "All edge cases handled gracefully (malformed regex, circular transformations, etc.)",
+        "JSDoc comments on all public functions with @example tags",
+        "Comprehensive documentation in MIGRATION-VALIDATION.md (600+ lines)",
+        "CLI help text clearly explains all options",
+        "Error messages are actionable (include file paths, suggestions)",
+        "3+ working migration config examples (v1→v2, Flask→FastAPI, monolith→microservices)"
+      ]
+    },
+    "9_implementation_checklist": {
+      "phase_1": [
+        "☐ SETUP-001: Create migration-mapper.ts",
+        "☐ SETUP-002: Create migration-config-schema.json",
+        "☐ SETUP-003: Create migration-mapper.test.ts",
+        "☐ SETUP-004: Create examples/migrations/ directory",
+        "☐ TYPE-001: Add MigrationMapping interface",
+        "☐ SCHEMA-001: Define schema structure",
+        "☐ SCHEMA-002: Add paths section",
+        "☐ SCHEMA-003: Add patterns section",
+        "☐ SCHEMA-004: Add methodChanges section",
+        "☐ SCHEMA-005: Add deprecated section",
+        "☐ SCHEMA-006: Add added section",
+        "☐ VALID-001: Implement validateMigrationConfig()",
+        "☐ VALID-002: Add checkRequiredFields()",
+        "☐ VALID-003: Add validateRegexPatterns()",
+        "☐ VALID-004: Add detectPathConflicts()",
+        "☐ VALID-005: Add checkDeprecatedAddedOverlap()",
+        "☐ TEST-004: Config validation tests",
+        "☐ EXAMPLE-001: Create v1→v2 example",
+        "☐ EXAMPLE-002: Create Flask→FastAPI example",
+        "☐ EXAMPLE-003: Create monolith→microservices example"
+      ],
+      "phase_2": [
+        "☐ TYPE-003: Add TransformedCall interface",
+        "☐ MAP-001: Implement applyMappings()",
+        "☐ MAP-002: Implement applyExplicitMapping()",
+        "☐ MAP-003: Implement applyPatternMapping()",
+        "☐ MAP-004: Add transformFrontendCall()",
+        "☐ MAP-005: Add transformServerRoute()",
+        "☐ MAP-006: Add trackTransformationConfidence()",
+        "☐ TEST-001: Tests for applyExplicitMapping",
+        "☐ TEST-002: Tests for applyPatternMapping",
+        "☐ TEST-003: Tests for transformFrontendCall"
+      ],
+      "phase_3": [
+        "☐ TYPE-002: Add MigrationReport interface",
+        "☐ TYPE-004: Add MigrationCoverage interface",
+        "☐ COV-001: Implement calculateMigrationCoverage()",
+        "☐ COV-002: Add countMigratedRoutes()",
+        "☐ COV-003: Add countNewlyAddedRoutes()",
+        "☐ COV-004: Add findUnmappedCalls()",
+        "☐ COV-005: Add findDeprecatedCalls()",
+        "☐ COV-006: Add groupCoverageByApiPrefix()",
+        "☐ TEST-005: Coverage calculation tests",
+        "☐ VALID-006: Implement validateMigration()",
+        "☐ VALID-007: Add loadMigrationMapping()",
+        "☐ VALID-008: Integrate detectMissingRoutes",
+        "☐ VALID-009: Integrate detectUnusedRoutes",
+        "☐ VALID-010: Integrate detectMethodMismatches",
+        "☐ VALID-011: Add generateMigrationReport return",
+        "☐ TEST-006: Integration tests"
+      ],
+      "phase_4": [
+        "☐ REPORT-001: Add generateMigrationReport()",
+        "☐ REPORT-002: Implement formatMigrationSummary()",
+        "☐ REPORT-003: Implement formatCoverageBreakdown()",
+        "☐ REPORT-004: Implement formatUnmappedRoutes()",
+        "☐ REPORT-005: Implement formatDeprecatedWarnings()",
+        "☐ REPORT-006: Implement formatNewRoutesSection()",
+        "☐ REPORT-007: Implement formatAutoFixSuggestions()",
+        "☐ TEST-007: Report generation tests",
+        "☐ CLI-001: Create validate-migration.ts",
+        "☐ CLI-002: Add parseArgs()",
+        "☐ CLI-003: Add --output option",
+        "☐ CLI-004: Add --dry-run flag",
+        "☐ CLI-005: Add --coverage-threshold option",
+        "☐ CLI-006: Add printMigrationSummary()",
+        "☐ CLI-007: Add resolveFilePaths()",
+        "☐ CLI-008: Integrate with package.json bin",
+        "☐ TEST-008: CLI tests",
+        "☐ DOC-001: Create MIGRATION-VALIDATION.md",
+        "☐ DOC-002: Add Quick Start section",
+        "☐ DOC-003: Add Config Reference",
+        "☐ DOC-004: Add Common Scenarios",
+        "☐ DOC-005: Add CLI Reference",
+        "☐ DOC-006: Add Troubleshooting",
+        "☐ DOC-007: Update README.md",
+        "☐ DOC-008: Add JSDoc comments"
+      ],
+      "finalization": [
+        "☐ FINAL-001: All tests passing",
+        "☐ FINAL-002: CLI end-to-end test",
+        "☐ FINAL-003: Backward compatibility verified",
+        "☐ FINAL-004: Performance validated"
+      ]
+    }
+  }
+}

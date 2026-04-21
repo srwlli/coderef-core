@@ -1,0 +1,70 @@
+{
+  "feature_name": "fix-coderef-drift-preflight",
+  "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+  "summary": {
+    "current_state": "coderef-core writes relative file paths into .coderef/index.json, but the drift generator compares raw current scan elements that still carry absolute file paths. Because element identity is file:name:line, the same unchanged element fails to match between scans.",
+    "target_state": "Drift detection should normalize both current and previous elements to the same project-relative path format before computing added, deleted, modified, and driftPercentage, so unchanged rescans report 0% drift.",
+    "user_visible_failure": "coderef-workflow strict planning currently hard-fails on a fresh populate because .coderef/reports/drift.json reports 200% drift with every element appearing both added and deleted."
+  },
+  "key_files": [
+    {
+      "path": "src/pipeline/generators/drift-generator.ts",
+      "reason": "Owns drift detection, element identity, and the report output that currently mixes absolute and relative paths."
+    },
+    {
+      "path": "__tests__/generators/drift-generator.test.ts",
+      "reason": "Needs a regression test that proves unchanged elements do not drift when previous index paths are relative and current state paths are absolute."
+    },
+    {
+      "path": "src/pipeline/generators/index-generator.ts",
+      "reason": "Defines the canonical relative path format already written into index.json and should remain the normalization target."
+    },
+    {
+      "path": "dist/src/pipeline/generators/drift-generator.js",
+      "reason": "Built output must reflect the source fix after the TypeScript build."
+    }
+  ],
+  "document_refs": [
+    "README.md",
+    "PROOF-OF-FIXES.md"
+  ],
+  "external_refs": [
+    "C:/Users/willh/.mcp-servers/coderef-workflow/.coderef/reports/drift.json",
+    "C:/Users/willh/.mcp-servers/coderef-workflow/processors/coderef_preflight.py"
+  ],
+  "root_cause": {
+    "mismatch": "previous index elements use relative file paths while current pipeline state elements use absolute file paths",
+    "identity_rule": "drift-generator element IDs are built as file:name:line",
+    "effect": "all unchanged elements miss identity matching and are counted as both added and deleted"
+  },
+  "gaps_and_risks": [
+    "If only the drift percentage is patched in downstream preflight, drift.json will remain incorrect and other consumers will still see false drift.",
+    "If only current elements are normalized and report payloads still emit absolute file paths, downstream artifacts will stay inconsistent.",
+    "If the regression test does not cover absolute-versus-relative identity matching, the bug can recur during future scanner refactors."
+  ],
+  "recommended_change": {
+    "workflow": "Normalize both current and previous elements to the same project-relative path format before map construction and before writing added, deleted, and modified report entries.",
+    "tests": [
+      "Add a regression case where previous index uses relative paths and the current state uses absolute paths for the same unchanged element, expecting 0% drift.",
+      "Keep the existing added/deleted/modified test intact so real drift still registers correctly."
+    ],
+    "validation": "Rebuild coderef-core, repopulate coderef-workflow, and confirm strict preflight no longer fails on false 200% drift."
+  },
+  "_metadata": {
+    "saved_to": "coderef/workorder/fix-coderef-drift-preflight/analysis.json",
+    "feature_name": "fix-coderef-drift-preflight",
+    "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+    "generated_at": "2026-03-25T22:00:00-04:00",
+    "generated_by": "manual-workorder-seed"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow manual seed",
+    "document_type": "Project Analysis",
+    "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+    "feature_id": "fix-coderef-drift-preflight",
+    "last_updated": "2026-03-25",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-04-24"
+  }
+}

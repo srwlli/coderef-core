@@ -1,0 +1,51 @@
+{
+  "feature_name": "coderef-consolidation",
+  "description": "Consolidate three separate CodeRef implementations (root directory, src/, and coderef-core-updates/) into one unified system with working regex scanner (multi-language), working AST scanner (TypeScript/JavaScript), unified EBNF-based CodeRef2 parser, unified type system, and adapter layer for converting AST graph to ElementData[] output",
+  "goal": "Eliminate code duplication across three locations, resolve type conflicts between incompatible type systems, reduce maintenance burden of changing code in multiple places, unify feature fragmentation, and remove build confusion from excluded coderef-core-updates/ directory",
+  "requirements": [
+    "Working regex scanner with multi-language support (TS, JS, Python, Go, etc.)",
+    "Working AST element scanner for TypeScript/JavaScript with high accuracy",
+    "Unified EBNF-based CodeRef2 parser",
+    "Unified type system with ElementData and ScanOptions in src/types/types.ts",
+    "Both scanners producing ElementData[] output format",
+    "Adapter layer for converting DependencyGraph to ElementData[]",
+    "Compatibility shim for gradual migration of external consumers",
+    "All tests passing after each migration phase",
+    "No TypeScript compilation errors",
+    "Documentation updated to reflect new API"
+  ],
+  "out_of_scope": [
+    "Adding new scanner features during migration",
+    "Rewriting scanner logic or algorithms",
+    "Changing ElementData structure or schema",
+    "Migrating external consumer codebases",
+    "Performance optimizations beyond maintaining current level"
+  ],
+  "constraints": [
+    "Maintain backward compatibility during migration period using compatibility shim",
+    "No breaking changes for external consumers using root parser/types",
+    "Type structures must match exactly between root and src/ during migration",
+    "Build configuration must exclude root files except scanner.ts if kept in root",
+    "All imports must eventually use src/ versions",
+    "No performance regression allowed",
+    "Test coverage must be maintained at current level",
+    "Migration must preserve all existing scanner functionality"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-CODEREF-CONSOLIDATION-001",
+    "workorder_assigned_at": "2026-01-08T09:19:31.834796+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-CODEREF-CONSOLIDATION-001",
+    "feature_id": "coderef-consolidation",
+    "last_updated": "2026-01-08",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-02-07"
+  }
+}

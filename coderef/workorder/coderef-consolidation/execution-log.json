@@ -1,0 +1,310 @@
+[
+  {
+    "timestamp": "2026-01-08T04:49:37.586187",
+    "workorder_id": "WO-CODEREF-CONSOLIDATION-001",
+    "feature_name": "coderef-consolidation",
+    "task_count": 60,
+    "tasks": [
+      {
+        "content": "PRE-IMPL-001: Review migration-strategy.md and CODEBASE-AUDIT-REPORT.md",
+        "activeForm": "PRE-IMPL-001: Reviewing migration-strategy.md and CODEBASE-AUDIT-REPORT.md",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-002: Verify ElementData and ScanOptions structures match between root and src/",
+        "activeForm": "PRE-IMPL-002: Verifying ElementData and ScanOptions structures match between root and src/",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-003: Create backup branch before starting migration",
+        "activeForm": "PRE-IMPL-003: Creating backup branch before starting migration",
+        "status": "pending"
+      },
+      {
+        "content": "PRE-IMPL-004: Set baseline metrics (test pass rate, build time, scanner performance)",
+        "activeForm": "PRE-IMPL-004: Seting baseline metrics (test pass rate, build time, scanner performance)",
+        "status": "pending"
+      },
+      {
+        "content": "REVIEW-001: Review coderef-core-updates/ scanner implementation",
+        "activeForm": "REVIEW-001: Reviewing coderef-core-updates/ scanner implementation",
+        "status": "pending"
+      },
+      {
+        "content": "REVIEW-002: Review coderef-core-updates/ parser implementation",
+        "activeForm": "REVIEW-002: Reviewing coderef-core-updates/ parser implementation",
+        "status": "pending"
+      },
+      {
+        "content": "REVIEW-003: Compare AST scanner implementations",
+        "activeForm": "REVIEW-003: Compareing AST scanner implementations",
+        "status": "pending"
+      },
+      {
+        "content": "REVIEW-004: Document findings and extract useful features",
+        "activeForm": "REVIEW-004: Documenting findings and extract useful features",
+        "status": "pending"
+      },
+      {
+        "content": "MIGRATE-001: Verify ElementData structure match",
+        "activeForm": "MIGRATE-001: Verifying ElementData structure match",
+        "status": "pending"
+      },
+      {
+        "content": "MIGRATE-002: Verify ScanOptions structure match",
+        "activeForm": "MIGRATE-002: Verifying ScanOptions structure match",
+        "status": "pending"
+      },
+      {
+        "content": "MIGRATE-003: Move ElementData to src/types/types.ts",
+        "activeForm": "MIGRATE-003: Moveing ElementData to src/types/types.ts",
+        "status": "pending"
+      },
+      {
+        "content": "MIGRATE-004: Move ScanOptions to src/types/types.ts",
+        "activeForm": "MIGRATE-004: Moveing ScanOptions to src/types/types.ts",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-001: Update scanner.ts imports",
+        "activeForm": "UPDATE-001: Updating scanner.ts imports",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-002: Update src/adapter/graph-to-elements.ts imports",
+        "activeForm": "UPDATE-002: Updating src/adapter/graph-to-elements.ts imports",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-003: Update src/context/types.ts imports",
+        "activeForm": "UPDATE-003: Updating src/context/types.ts imports",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-004: Update src/index.ts exports",
+        "activeForm": "UPDATE-004: Updating src/index.ts exports",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-005: Update src/context/context-generator.ts",
+        "activeForm": "UPDATE-005: Updating src/context/context-generator.ts",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-006: Update src/context/breaking-change-detector.ts",
+        "activeForm": "UPDATE-006: Updating src/context/breaking-change-detector.ts",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-001: Run TypeScript compiler",
+        "activeForm": "TEST-001: Running TypeScript compiler",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-002: Run test suite",
+        "activeForm": "TEST-002: Running test suite",
+        "status": "pending"
+      },
+      {
+        "content": "DOCS-001: Update parseCoderefTag documentation",
+        "activeForm": "DOCS-001: Updating parseCoderefTag documentation",
+        "status": "pending"
+      },
+      {
+        "content": "DOCS-002: Update ParsedCoderef documentation",
+        "activeForm": "DOCS-002: Updating ParsedCoderef documentation",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-007: Update src/index.ts to export from src/parser",
+        "activeForm": "UPDATE-007: Updating src/index.ts to export from src/parser",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-003: Verify all parser imports migrated",
+        "activeForm": "TEST-003: Verifying all parser imports migrated",
+        "status": "pending"
+      },
+      {
+        "content": "CLEANUP-001: Remove ParsedCoderef from root types.ts",
+        "activeForm": "CLEANUP-001: Removeing ParsedCoderef from root types.ts",
+        "status": "pending"
+      },
+      {
+        "content": "CLEANUP-002: Remove remaining legacy types",
+        "activeForm": "CLEANUP-002: Removeing remaining legacy types",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-008: Update src/index.ts exports",
+        "activeForm": "UPDATE-008: Updating src/index.ts exports",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-004: Run TypeScript compiler",
+        "activeForm": "TEST-004: Running TypeScript compiler",
+        "status": "pending"
+      },
+      {
+        "content": "CONFIG-001: Update tsconfig.json exclude parser.ts",
+        "activeForm": "CONFIG-001: Updating tsconfig.json exclude parser.ts",
+        "status": "pending"
+      },
+      {
+        "content": "CONFIG-002: Update tsconfig.json exclude types.ts",
+        "activeForm": "CONFIG-002: Updating tsconfig.json exclude types.ts",
+        "status": "pending"
+      },
+      {
+        "content": "CONFIG-003: Update package.json exports",
+        "activeForm": "CONFIG-003: Updating package.json exports",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-005: Run build process",
+        "activeForm": "TEST-005: Running build process",
+        "status": "pending"
+      },
+      {
+        "content": "MIGRATE-005: Create src/scanner/ directory",
+        "activeForm": "MIGRATE-005: Creating src/scanner/ directory",
+        "status": "pending"
+      },
+      {
+        "content": "MIGRATE-006: Move scanner.ts to src/scanner/",
+        "activeForm": "MIGRATE-006: Moveing scanner.ts to src/scanner/",
+        "status": "pending"
+      },
+      {
+        "content": "MIGRATE-007: Update all scanner imports",
+        "activeForm": "MIGRATE-007: Updating all scanner imports",
+        "status": "pending"
+      },
+      {
+        "content": "MIGRATE-008: Update scanner imports to src/types",
+        "activeForm": "MIGRATE-008: Updating scanner imports to src/types",
+        "status": "pending"
+      },
+      {
+        "content": "CLEANUP-003: Verify Phase 0 review complete",
+        "activeForm": "CLEANUP-003: Verifying Phase 0 review complete",
+        "status": "pending"
+      },
+      {
+        "content": "CLEANUP-004: Remove coderef-core-updates/",
+        "activeForm": "CLEANUP-004: Removeing coderef-core-updates/",
+        "status": "pending"
+      },
+      {
+        "content": "CLEANUP-005: Archive documentation if needed",
+        "activeForm": "CLEANUP-005: Archiveing documentation if needed",
+        "status": "pending"
+      },
+      {
+        "content": "CLEANUP-006: Delete root parser.ts",
+        "activeForm": "CLEANUP-006: Deleteing root parser.ts",
+        "status": "pending"
+      },
+      {
+        "content": "CLEANUP-007: Delete root types.ts",
+        "activeForm": "CLEANUP-007: Deleteing root types.ts",
+        "status": "pending"
+      },
+      {
+        "content": "UPDATE-009: Clean up src/index.ts exports",
+        "activeForm": "UPDATE-009: Cleaning up src/index.ts exports",
+        "status": "pending"
+      },
+      {
+        "content": "DOCS-003: Update README with new imports",
+        "activeForm": "DOCS-003: Updating README with new imports",
+        "status": "pending"
+      },
+      {
+        "content": "DOCS-004: Update API docs with migration guide",
+        "activeForm": "DOCS-004: Updating API docs with migration guide",
+        "status": "pending"
+      },
+      {
+        "content": "DOCS-005: Add CHANGELOG entry",
+        "activeForm": "DOCS-005: Adding CHANGELOG entry",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-006: All tests passing",
+        "activeForm": "TEST-006: Alling tests passing",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-007: No TypeScript errors",
+        "activeForm": "TEST-007: Noing TypeScript errors",
+        "status": "pending"
+      },
+      {
+        "content": "TEST-008: Build succeeds",
+        "activeForm": "TEST-008: Building succeeds",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-001: Unified type system - all scanners produce ElementData[]",
+        "activeForm": "FINAL-VE-001: Unifieding type system - all scanners produce ElementData[]",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-002: Single source of truth - only src/ types remain",
+        "activeForm": "FINAL-VE-002: Singleing source of truth - only src/ types remain",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-003: Scanner in src/scanner/ with preserved functionality",
+        "activeForm": "FINAL-VE-003: Scannering in src/scanner/ with preserved functionality",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-004: Parser in src/parser/ only",
+        "activeForm": "FINAL-VE-004: Parsering in src/parser/ only",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-005: coderef-core-updates/ removed",
+        "activeForm": "FINAL-VE-005: coderef-core-updates/ing removed",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-006: Root parser.ts and types.ts deleted",
+        "activeForm": "FINAL-VE-006: Rooting parser.ts and types.ts deleted",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-007: All tests passing",
+        "activeForm": "FINAL-VE-007: Alling tests passing",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-008: Zero TypeScript errors",
+        "activeForm": "FINAL-VE-008: Zeroing TypeScript errors",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-009: Build succeeds",
+        "activeForm": "FINAL-VE-009: Building succeeds",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-010: Documentation complete with migration guide",
+        "activeForm": "FINAL-VE-010: Documentationing complete with migration guide",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-011: No performance regression",
+        "activeForm": "FINAL-VE-011: Noing performance regression",
+        "status": "pending"
+      },
+      {
+        "content": "FINAL-VE-012: BREAKING CHANGE clearly documented",
+        "activeForm": "FINAL-VE-012: BREAKINGing CHANGE clearly documented",
+        "status": "pending"
+      }
+    ]
+  }
+]

@@ -1,0 +1,11 @@
+/**
+ * Pattern Detection System
+ * @see coderef/reference-sheets/pattern detection system/pattern detection system.md
+ *
+ * /** @module Pattern Detection System */
+ * /** @category {{type}} */
+ * /** @file {{file_path}} */
+ * /** @emits {{event_name}} - {{description}} */
+ * /** @listens {{event_name}} */
+ * /** @requires {{dependency}} */
+ */

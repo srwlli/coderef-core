@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schemas.coderef.com/workorder-analysis/v1",
+  "workorder_id": "WO-CODEREF-CORE-REGISTRY-001",
+  "project_id": "coderef-dashboard",
+  "feature_name": "core-registry-implementation",
+  "analyzed_at": "2026-04-13T23:30:00Z",
+  "root_cause": "Scanner generates very large redundant JSON files by embedding full metadata in graph nodes and complexity reports instead of using references to canonical entity definitions",
+  "current_state": {
+    "graph_json_size_kb": 672,
+    "complexity_json_size_kb": 102,
+    "total_elements_count": "varies by project",
+    "deduplication_ratio": "1.0 (no deduplication)",
+    "architecture": "Flat embedding pattern with repeated metadata"
+  },
+  "target_state": {
+    "graph_json_size_reduction_percent": 60,
+    "complexity_json_size_reduction_percent": 50,
+    "deduplication_ratio": "5.0+ (based on SCRAPER-MARY pattern)",
+    "architecture": "UUID-based entity registry with reference-based graph"
+  },
+  "key_files": [
+    "src/pipeline/generators/graph-generator.ts",
+    "src/pipeline/generators/index-generator.ts",
+    "src/pipeline/generators/complexity-generator.ts",
+    "src/pipeline/orchestrator.ts",
+    "src/cli/populate.ts"
+  ],
+  "implementation_approach": {
+    "phase_1_registry": "Create entity registry with UUID5-based deduplication",
+    "phase_2_graph_refactor": "Update graph generator to use UUID references",
+    "phase_3_selective_modes": "Add CLI flags for selective scanning",
+    "phase_4_slim_outputs": "Implement summary-only output formats",
+    "phase_5_testing": "Integration testing with sample codebases",
+    "phase_6_cleanup": "Doc-discovery, session-logging, active-work.json cleanup"
+  },
+  "risks": [
+    "Breaking changes if consumers rely on embedded metadata",
+    "UUID generation performance overhead",
+    "Complexity of migration path for existing scans"
+  ],
+  "mitigations": [
+    "Maintain dual output during transition (legacy + registry)",
+    "Use deterministic UUID5 for reproducibility",
+    "Provide migration guide and compatibility layer"
+  ]
+}

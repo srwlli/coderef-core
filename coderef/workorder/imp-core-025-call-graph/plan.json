@@ -1,0 +1,113 @@
+{
+  "workorder_id": "WO-CALL-GRAPH-025",
+  "feature_name": "imp-core-025-call-graph",
+  "title": "Add call graph relationships to context for planning",
+  "version": "1.0.0",
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "title": "Add callGraph field to ProjectContext interface",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "TASK-001",
+          "title": "Add CallGraphNode and CallGraphEdge types",
+          "description": "Define TypeScript interfaces for call graph nodes (critical functions) and edges (caller -> callee relationships)",
+          "status": "pending",
+          "files": ["src/pipeline/generators/context-generator.ts:16-73"],
+          "verification": "TypeScript compiles without errors"
+        },
+        {
+          "task_id": "TASK-002",
+          "title": "Add callGraph field to ProjectContext interface",
+          "description": "Add callGraph array field to ProjectContext containing nodes (critical functions) and edges (relationships)",
+          "status": "pending",
+          "files": ["src/pipeline/generators/context-generator.ts:16-73"],
+          "verification": "Interface includes callGraph field with proper typing"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_2",
+      "title": "Implement extractCallGraph method",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "TASK-003",
+          "title": "Create extractCallGraph method",
+          "description": "New private method that traverses state.graph.edges to build call relationships between critical functions. Filter to only include edges where both source and target are in criticalFunctions list.",
+          "status": "pending",
+          "files": ["src/pipeline/generators/context-generator.ts"],
+          "verification": "Method returns CallGraph with nodes and edges"
+        },
+        {
+          "task_id": "TASK-004",
+          "title": "Add circular dependency detection",
+          "description": "Detect and flag circular call chains (A calls B calls C calls A) in the call graph",
+          "status": "pending",
+          "files": ["src/pipeline/generators/context-generator.ts"],
+          "verification": "Circular chains are identified and marked"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_3",
+      "title": "Integrate callGraph into buildContext",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "TASK-005",
+          "title": "Update buildContext to include callGraph",
+          "description": "Add callGraph: this.extractCallGraph(state, criticalFunctions) to the buildContext return object",
+          "status": "pending",
+          "files": ["src/pipeline/generators/context-generator.ts:99-120"],
+          "verification": "context.json output includes callGraph field"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_4",
+      "title": "Add call graph to Markdown output",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "TASK-006",
+          "title": "Update generateMarkdown with call graph section",
+          "description": "Add '## Call Graph Relationships' section to Markdown output showing function-to-function calls, dependency chains, and circular dependencies",
+          "status": "pending",
+          "files": ["src/pipeline/generators/context-generator.ts:845-900"],
+          "verification": "context.md includes call graph visualization"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_5",
+      "title": "Testing and validation",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "TASK-007",
+          "title": "Run context generator tests",
+          "description": "Verify existing tests pass and new call graph functionality works correctly",
+          "status": "pending",
+          "command": "pnpm test --run src/pipeline/generators",
+          "verification": "All tests pass"
+        },
+        {
+          "task_id": "TASK-008",
+          "title": "Validate output format",
+          "description": "Generate context for test project and verify callGraph structure matches expected format",
+          "status": "pending",
+          "verification": "JSON structure valid, edges reference valid nodes"
+        }
+      ]
+    }
+  ],
+  "metadata": {
+    "created": "2026-04-18T06:00:00Z",
+    "author": "CODEREF-CORE",
+    "related_improvement": "IMP-CORE-025",
+    "parallel_safe_with": ["IMP-CORE-024"],
+    "estimated_effort": "medium"
+  }
+}

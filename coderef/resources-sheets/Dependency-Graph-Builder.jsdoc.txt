@@ -1,0 +1,11 @@
+/**
+ * Dependency Graph Builder
+ * @see coderef/reference-sheets/dependency graph builder/dependency graph builder.md
+ *
+ * /** @module Dependency Graph Builder */
+ * /** @category {{type}} */
+ * /** @file {{file_path}} */
+ * /** @emits {{event_name}} - {{description}} */
+ * /** @listens {{event_name}} */
+ * /** @requires {{dependency}} */
+ */

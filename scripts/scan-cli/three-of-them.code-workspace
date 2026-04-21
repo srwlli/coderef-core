@@ -1,0 +1,14 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../../../../.mcp-servers/coderef-docs"
+		},
+		{
+			"path": "../../../.."
+		}
+	],
+	"settings": {}
+}

@@ -1,0 +1,1954 @@
+{
+  "foundation_docs": {
+    "available": [
+      "README.md (root)",
+      "API.md (coderef/foundation-docs)",
+      "ARCHITECTURE.md (coderef/foundation-docs)",
+      "COMPONENTS.md (coderef/foundation-docs)",
+      "SCHEMA.md (coderef/foundation-docs)"
+    ],
+    "missing": [
+      "USER-GUIDE.md"
+    ]
+  },
+  "foundation_doc_content": {
+    "ARCHITECTURE.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# Architecture Documentation\n\n**Project:** @coderef/core\n**Version:** 2.0.0\n**Last Updated:** 2026-01-09\n\n---\n\n## Table of Contents\n\n1. [System Overview](#system-overview)\n2. [Architecture Principles](#architecture-principles)\n3. [Module Organization](#module-organization)\n4. [Core Components](#core-components)\n5. [Data Flow](#data-flow)\n6. [Integration Points](#integration-points)\n7. [Performance & Scalability](#performance--scalability)\n8. [Security](#security)\n9. [Deployment](#deployment)\n10.",
+      "headers": [
+        "Architecture Documentation",
+        "Table of Contents",
+        "System Overview",
+        "Purpose",
+        "High-Level Architecture",
+        "Key Characteristics",
+        "Architecture Principles",
+        "1. **Separation of Concerns**",
+        "2. **Pure Functions**",
+        "3. **Composition Over Inheritance**"
+      ],
+      "size": 28049
+    },
+    "API.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# API Reference\n\n**Project:** @coderef/core\n**Version:** 2.0.0\n**Last Updated:** 2026-01-09\n\n---\n\n## Table of Contents\n\n1. [Scanner API](#scanner-api)\n2. [Analyzer API](#analyzer-api)\n3. [File Generation API](#file-generation-api)\n4. [Query API](#query-api)\n5. [Type System API](#type-system-api)\n6. [Integration API](#integration-api)\n7. [Utility APIs](#utility-apis)\n8. [Error Handling](#error-handling)\n9. [TypeScript Types](#typescript-types)\n\n---\n\n## Scanner API\n\n### `scanCurrentElements()`\n\nSc",
+      "headers": [
+        "API Reference",
+        "Table of Contents",
+        "Scanner API",
+        "`scanCurrentElements()`",
+        "`LANGUAGE_PATTERNS`",
+        "Analyzer API",
+        "`AnalyzerService`",
+        "`analyze()`",
+        "`queryRelationships()`",
+        "`setElementMap()`"
+      ],
+      "size": 22206
+    },
+    "COMPONENTS.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# Component Catalog\n\n**Project:** @coderef/core\n**Version:** 2.0.0\n**Last Updated:** 2026-01-09\n\n---\n\n## Table of Contents\n\n1. [Overview](#overview)\n2. [Scanner Components](#scanner-components)\n3. [Analyzer Components](#analyzer-components)\n4. [File Generation Components](#file-generation-components)\n5. [Query Components](#query-components)\n6. [Type System Components](#type-system-components)\n7. [Indexer Components](#indexer-components)\n8. [Integration Components](#integration-components)\n9. [Ut",
+      "headers": [
+        "Component Catalog",
+        "Table of Contents",
+        "Overview",
+        "Scanner Components",
+        "`scanCurrentElements()` (Function)",
+        "`LANGUAGE_PATTERNS` (Constant)",
+        "Analyzer Components",
+        "`AnalyzerService` (Class)",
+        "`GraphBuilder` (Class)",
+        "`GraphAnalyzer` (Class)"
+      ],
+      "size": 21002
+    },
+    "SCHEMA.md": {
+      "location": "coderef\\foundation-docs",
+      "preview": "# Schema Reference\n\n**Project:** @coderef/core\n**Version:** 2.0.0\n**Last Updated:** 2026-01-09\n\n---\n\n## Table of Contents\n\n1. [Overview](#overview)\n2. [Core Data Models](#core-data-models)\n3. [Analyzer Models](#analyzer-models)\n4. [File Generation Models](#file-generation-models)\n5. [Query Models](#query-models)\n6. [Type System Models](#type-system-models)\n7. [Integration Models](#integration-models)\n8. [Configuration Models](#configuration-models)\n9. [Schema Validation](#schema-validation)\n\n---",
+      "headers": [
+        "Schema Reference",
+        "Table of Contents",
+        "Overview",
+        "Core Data Models",
+        "`ElementData`",
+        "`ScanOptions`",
+        "Analyzer Models",
+        "`DependencyGraph`",
+        "`GraphNode`",
+        "`GraphEdge`"
+      ],
+      "size": 18333
+    },
+    "README.md": {
+      "location": "root",
+      "preview": "# @coderef/core\n\n> Core scanning and analysis library for the CodeRef Dashboard ecosystem\n\n[![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](package.json)\n[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)\n[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)\n\n## Overview\n\n**@coderef/core** is a powerful TypeScript library that provides code scanning, dependency analysis, and intelligent context generation fo",
+      "headers": [
+        "@coderef/core",
+        "Overview",
+        "Key Features",
+        "Use Cases",
+        "Installation",
+        "Quick Start",
+        "Basic Scanning",
+        "Generate Output Files",
+        "Dependency Analysis",
+        "Core Modules"
+      ],
+      "size": 23166
+    }
+  },
+  "inventory_data": {
+    "source": "coderef_index",
+    "total_elements": 1977,
+    "by_type": {
+      "function": 435,
+      "interface": 279,
+      "type": 36,
+      "component": 2,
+      "class": 148,
+      "method": 1071,
+      "constant": 6
+    },
+    "files": 220,
+    "utilization": ".coderef/index.json (preprocessed)"
+  },
+  "coding_standards": {
+    "available": [],
+    "missing": [
+      "BEHAVIOR-STANDARDS.md",
+      "COMPONENT-PATTERN.md",
+      "UI-STANDARDS.md",
+      "UX-PATTERNS.md",
+      "COMPONENT-INDEX.md"
+    ]
+  },
+  "reference_components": {
+    "primary": null,
+    "secondary": [],
+    "total_found": 0,
+    "note": "Using fallback - coderef tools unavailable"
+  },
+  "key_patterns_identified": [
+    "errorHandling: 527 instances",
+    "  - try-catch",
+    "  - try-catch",
+    "  - try-catch",
+    "asyncPatterns: 202 instances",
+    "  - main",
+    "  - POST",
+    "  - GET",
+    "testGaps: 35 instances",
+    "  - loadIgnorePatterns",
+    "  - validateReferences",
+    "  - convertGraphToElements"
+  ],
+  "technology_stack": {
+    "language": "JavaScript/TypeScript",
+    "framework": "unknown",
+    "database": "unknown",
+    "testing": "Vitest",
+    "build": "Vite"
+  },
+  "project_structure": {
+    "main_directories": [
+      ".coderef",
+      "docs",
+      "__tests__",
+      "autoresearch\\pipeline-quality",
+      "coderef\\resources-sheets",
+      "src\\analyzer",
+      "src\\context",
+      "src\\export",
+      "src\\fileGeneration",
+      "src\\integration"
+    ],
+    "file_counts": {
+      "src\\integration\\rag": 75,
+      "src\\context": 36,
+      "__tests__": 28,
+      "coderef\\resources-sheets": 23,
+      "src\\validator": 17,
+      "src\\integration\\vector": 17,
+      "src\\analyzer": 16,
+      "src\\integration\\llm": 16,
+      "docs": 12,
+      "__tests__\\generators": 12
+    },
+    "organization_pattern": "modular (src-based)"
+  },
+  "gaps_and_risks": [
+    "Low test coverage: 0% (target: \u226580%)",
+    "Missing foundation docs: USER-GUIDE.md",
+    "No coding standards directory found (coderef/standards/)",
+    "No CI configuration found (.github/workflows/, .gitlab-ci.yml, etc.)"
+  ],
+  "dependency_analysis": null,
+  "impact_analysis": null,
+  "complexity_analysis": null,
+  "architecture_diagram": null,
+  "type_system": {
+    "interfaces": [
+      {
+        "name": "MockEnvironment",
+        "file": "__tests__/generators/helpers.ts",
+        "line": 8
+      },
+      {
+        "name": "TestResult",
+        "file": "__tests__/integration.test.ts",
+        "line": 23
+      },
+      {
+        "name": "ConversionOptions",
+        "file": "src/adapter/graph-to-elements.d.ts",
+        "line": 9
+      },
+      {
+        "name": "ConversionOptions",
+        "file": "src/adapter/graph-to-elements.ts",
+        "line": 13
+      },
+      {
+        "name": "AnalysisResult",
+        "file": "src/analyzer/analyzer-service.ts",
+        "line": 27
+      },
+      {
+        "name": "ASTScanResult",
+        "file": "src/analyzer/ast-element-scanner.ts",
+        "line": 24
+      },
+      {
+        "name": "CallExpression",
+        "file": "src/analyzer/call-detector.ts",
+        "line": 23
+      },
+      {
+        "name": "CallEdge",
+        "file": "src/analyzer/call-detector.ts",
+        "line": 38
+      },
+      {
+        "name": "DynamicImport",
+        "file": "src/analyzer/dynamic-import-detector.ts",
+        "line": 21
+      },
+      {
+        "name": "DynamicCallEdge",
+        "file": "src/analyzer/dynamic-import-detector.ts",
+        "line": 47
+      },
+      {
+        "name": "TraversalPath",
+        "file": "src/analyzer/graph-analyzer.ts",
+        "line": 19
+      },
+      {
+        "name": "CircularDependency",
+        "file": "src/analyzer/graph-analyzer.ts",
+        "line": 29
+      },
+      {
+        "name": "GraphNode",
+        "file": "src/analyzer/graph-builder.ts",
+        "line": 22
+      },
+      {
+        "name": "GraphEdge",
+        "file": "src/analyzer/graph-builder.ts",
+        "line": 35
+      },
+      {
+        "name": "DependencyGraph",
+        "file": "src/analyzer/graph-builder.ts",
+        "line": 46
+      },
+      {
+        "name": "ElementReference",
+        "file": "src/analyzer/graph-helpers.ts",
+        "line": 20
+      },
+      {
+        "name": "ImportStatement",
+        "file": "src/analyzer/import-parser.ts",
+        "line": 21
+      },
+      {
+        "name": "ImportEdge",
+        "file": "src/analyzer/import-parser.ts",
+        "line": 34
+      },
+      {
+        "name": "Parameter",
+        "file": "src/analyzer/js-call-detector.ts",
+        "line": 23
+      },
+      {
+        "name": "CallExpression",
+        "file": "src/analyzer/js-call-detector.ts",
+        "line": 33
+      },
+      {
+        "name": "CallEdge",
+        "file": "src/analyzer/js-call-detector.ts",
+        "line": 48
+      },
+      {
+        "name": "ModuleImport",
+        "file": "src/analyzer/js-call-detector.ts",
+        "line": 58
+      },
+      {
+        "name": "ModuleExport",
+        "file": "src/analyzer/js-call-detector.ts",
+        "line": 70
+      },
+      {
+        "name": "TraversalContext",
+        "file": "src/analyzer/js-call-detector.ts",
+        "line": 80
+      },
+      {
+        "name": "JSParseOptions",
+        "file": "src/analyzer/js-parser.ts",
+        "line": 17
+      },
+      {
+        "name": "JSParseResult",
+        "file": "src/analyzer/js-parser.ts",
+        "line": 58
+      },
+      {
+        "name": "CliArgs",
+        "file": "src/cli/populate.ts",
+        "line": 28
+      },
+      {
+        "name": "GeneratorRunner",
+        "file": "src/cli/populate.ts",
+        "line": 41
+      },
+      {
+        "name": "GeneratorFailure",
+        "file": "src/cli/populate.ts",
+        "line": 48
+      },
+      {
+        "name": "CliArgs",
+        "file": "src/cli/scan-frontend-calls.ts",
+        "line": 9
+      },
+      {
+        "name": "CliArgs",
+        "file": "src/cli/validate-routes.ts",
+        "line": 36
+      },
+      {
+        "name": "ScanPreset",
+        "file": "src/config/presets.ts",
+        "line": 8
+      },
+      {
+        "name": "SignatureChange",
+        "file": "src/context/breaking-change-detector.ts",
+        "line": 33
+      },
+      {
+        "name": "ImpactedCallSite",
+        "file": "src/context/breaking-change-detector.ts",
+        "line": 53
+      },
+      {
+        "name": "MigrationHint",
+        "file": "src/context/breaking-change-detector.ts",
+        "line": 65
+      },
+      {
+        "name": "BreakingChangeReport",
+        "file": "src/context/breaking-change-detector.ts",
+        "line": 75
+      },
+      {
+        "name": "ContextOptions",
+        "file": "src/context/context-generator.ts",
+        "line": 17
+      },
+      {
+        "name": "ContextResult",
+        "file": "src/context/context-generator.ts",
+        "line": 31
+      },
+      {
+        "name": "ContextEntry",
+        "file": "src/context/context-tracker.d.ts",
+        "line": 14
+      },
+      {
+        "name": "ContextHistory",
+        "file": "src/context/context-tracker.d.ts",
+        "line": 25
+      },
+      {
+        "name": "ContextEntry",
+        "file": "src/context/context-tracker.ts",
+        "line": 15
+      },
+      {
+        "name": "ContextHistory",
+        "file": "src/context/context-tracker.ts",
+        "line": 27
+      },
+      {
+        "name": "FuzzyMatch",
+        "file": "src/context/fuzzy-resolver.d.ts",
+        "line": 14
+      },
+      {
+        "name": "DriftResult",
+        "file": "src/context/fuzzy-resolver.d.ts",
+        "line": 30
+      },
+      {
+        "name": "FuzzyMatch",
+        "file": "src/context/fuzzy-resolver.ts",
+        "line": 16
+      },
+      {
+        "name": "DriftResult",
+        "file": "src/context/fuzzy-resolver.ts",
+        "line": 33
+      },
+      {
+        "name": "ElementImpact",
+        "file": "src/context/impact-simulator.d.ts",
+        "line": 15
+      },
+      {
+        "name": "BlastRadius",
+        "file": "src/context/impact-simulator.d.ts",
+        "line": 27
+      },
+      {
+        "name": "ImpactSummary",
+        "file": "src/context/impact-simulator.d.ts",
+        "line": 41
+      },
+      {
+        "name": "ElementImpact",
+        "file": "src/context/impact-simulator.ts",
+        "line": 17
+      },
+      {
+        "name": "BlastRadius",
+        "file": "src/context/impact-simulator.ts",
+        "line": 30
+      },
+      {
+        "name": "ImpactSummary",
+        "file": "src/context/impact-simulator.ts",
+        "line": 45
+      },
+      {
+        "name": "ContextData",
+        "file": "src/context/markdown-formatter.ts",
+        "line": 13
+      },
+      {
+        "name": "TraversalResult",
+        "file": "src/context/multi-hop-traversal.d.ts",
+        "line": 16
+      },
+      {
+        "name": "MultiHopResult",
+        "file": "src/context/multi-hop-traversal.d.ts",
+        "line": 26
+      },
+      {
+        "name": "TraversalResult",
+        "file": "src/context/multi-hop-traversal.ts",
+        "line": 19
+      },
+      {
+        "name": "MultiHopResult",
+        "file": "src/context/multi-hop-traversal.ts",
+        "line": 30
+      },
+      {
+        "name": "ComplexityMetrics",
+        "file": "src/context/types.ts",
+        "line": 24
+      },
+      {
+        "name": "ElementComplexity",
+        "file": "src/context/types.ts",
+        "line": 38
+      },
+      {
+        "name": "ContextFilterCriteria",
+        "file": "src/context/types.ts",
+        "line": 61
+      },
+      {
+        "name": "ImpactScope",
+        "file": "src/context/types.ts",
+        "line": 77
+      },
+      {
+        "name": "TaskSpecificContext",
+        "file": "src/context/types.ts",
+        "line": 93
+      },
+      {
+        "name": "TaskContext",
+        "file": "src/context/types.ts",
+        "line": 117
+      },
+      {
+        "name": "EdgeCaseIssue",
+        "file": "src/context/types.ts",
+        "line": 143
+      },
+      {
+        "name": "EdgeCaseDetection",
+        "file": "src/context/types.ts",
+        "line": 167
+      },
+      {
+        "name": "TestPattern",
+        "file": "src/context/types.ts",
+        "line": 187
+      },
+      {
+        "name": "TestFileInfo",
+        "file": "src/context/types.ts",
+        "line": 207
+      },
+      {
+        "name": "TestPatternAnalysis",
+        "file": "src/context/types.ts",
+        "line": 223
+      },
+      {
+        "name": "CodeExample",
+        "file": "src/context/types.ts",
+        "line": 245
+      },
+      {
+        "name": "PatternGroup",
+        "file": "src/context/types.ts",
+        "line": 267
+      },
+      {
+        "name": "CodeExamplesResult",
+        "file": "src/context/types.ts",
+        "line": 285
+      },
+      {
+        "name": "ConfidenceBreakdown",
+        "file": "src/context/types.ts",
+        "line": 301
+      },
+      {
+        "name": "AgenticContext",
+        "file": "src/context/types.ts",
+        "line": 318
+      },
+      {
+        "name": "ContextGenerationOptions",
+        "file": "src/context/types.ts",
+        "line": 398
+      },
+      {
+        "name": "SignatureChange",
+        "file": "src/context/types.ts",
+        "line": 424
+      },
+      {
+        "name": "ImpactedCallSite",
+        "file": "src/context/types.ts",
+        "line": 456
+      },
+      {
+        "name": "MigrationHint",
+        "file": "src/context/types.ts",
+        "line": 474
+      },
+      {
+        "name": "BreakingChangeReport",
+        "file": "src/context/types.ts",
+        "line": 488
+      },
+      {
+        "name": "CodeRefErrorOptions",
+        "file": "src/errors/CodeRefError.ts",
+        "line": 16
+      },
+      {
+        "name": "ExportedGraph",
+        "file": "src/export/graph-exporter.d.ts",
+        "line": 19
+      },
+      {
+        "name": "ProtobufSchema",
+        "file": "src/export/graph-exporter.d.ts",
+        "line": 54
+      },
+      {
+        "name": "ExportedGraph",
+        "file": "src/export/graph-exporter.ts",
+        "line": 22
+      },
+      {
+        "name": "ProtobufSchema",
+        "file": "src/export/graph-exporter.ts",
+        "line": 58
+      },
+      {
+        "name": "CoverageReport",
+        "file": "src/fileGeneration/analyzeCoverage.ts",
+        "line": 13
+      },
+      {
+        "name": "DependencyGraph",
+        "file": "src/fileGeneration/buildDependencyGraph.ts",
+        "line": 15
+      },
+      {
+        "name": "GraphNode",
+        "file": "src/fileGeneration/buildDependencyGraph.ts",
+        "line": 28
+      },
+      {
+        "name": "GraphEdge",
+        "file": "src/fileGeneration/buildDependencyGraph.ts",
+        "line": 37
+      },
+      {
+        "name": "DriftReport",
+        "file": "src/fileGeneration/detectDrift.ts",
+        "line": 13
+      },
+      {
+        "name": "PatternReport",
+        "file": "src/fileGeneration/detectPatterns.ts",
+        "line": 13
+      },
+      {
+        "name": "PatternMatch",
+        "file": "src/fileGeneration/detectPatterns.ts",
+        "line": 33
+      },
+      {
+        "name": "ProjectContext",
+        "file": "src/fileGeneration/generateContext.ts",
+        "line": 15
+      },
+      {
+        "name": "FrontendCallElement",
+        "file": "src/fileGeneration/saveFrontendCalls.ts",
+        "line": 14
+      },
+      {
+        "name": "FrontendCallsOutput",
+        "file": "src/fileGeneration/saveFrontendCalls.ts",
+        "line": 32
+      },
+      {
+        "name": "ValidationReport",
+        "file": "src/fileGeneration/validateReferences.ts",
+        "line": 13
+      },
+      {
+        "name": "ValidationIssue",
+        "file": "src/fileGeneration/validateReferences.ts",
+        "line": 26
+      },
+      {
+        "name": "FrontendCallElement",
+        "file": "src/generator/generateFrontendCalls.ts",
+        "line": 12
+      },
+      {
+        "name": "FrontendCallsOutput",
+        "file": "src/generator/generateFrontendCalls.ts",
+        "line": 26
+      },
+      {
+        "name": "RouteElement",
+        "file": "src/generator/generateRoutes.ts",
+        "line": 13
+      },
+      {
+        "name": "RoutesOutput",
+        "file": "src/generator/generateRoutes.ts",
+        "line": 27
+      },
+      {
+        "name": "FrontendCallElement",
+        "file": "src/generator/generateRoutes.ts",
+        "line": 203
+      },
+      {
+        "name": "FrontendCallsOutput",
+        "file": "src/generator/generateRoutes.ts",
+        "line": 221
+      },
+      {
+        "name": "IndexRecord",
+        "file": "src/indexer/index-store.ts",
+        "line": 18
+      },
+      {
+        "name": "IndexStorage",
+        "file": "src/indexer/index-store.ts",
+        "line": 32
+      },
+      {
+        "name": "IndexStats",
+        "file": "src/indexer/index-store.ts",
+        "line": 52
+      },
+      {
+        "name": "IndexingResult",
+        "file": "src/indexer/indexer-service.ts",
+        "line": 36
+      },
+      {
+        "name": "BatchIndexingResult",
+        "file": "src/indexer/indexer-service.ts",
+        "line": 47
+      },
+      {
+        "name": "IndexerStats",
+        "file": "src/indexer/indexer-service.ts",
+        "line": 63
+      },
+      {
+        "name": "MetadataIndexEntry",
+        "file": "src/indexer/metadata-index.ts",
+        "line": 44
+      },
+      {
+        "name": "QueryResult",
+        "file": "src/indexer/query-engine.ts",
+        "line": 17
+      },
+      {
+        "name": "QueryEngineConfig",
+        "file": "src/indexer/query-engine.ts",
+        "line": 32
+      },
+      {
+        "name": "CacheEntry",
+        "file": "src/indexer/query-engine.ts",
+        "line": 41
+      },
+      {
+        "name": "RelationshipEdge",
+        "file": "src/indexer/relationship-index.ts",
+        "line": 47
+      },
+      {
+        "name": "GraphNode",
+        "file": "src/indexer/relationship-index.ts",
+        "line": 57
+      },
+      {
+        "name": "GeneratedPrompt",
+        "file": "src/integration/ai-prompt-generator.d.ts",
+        "line": 20
+      },
+      {
+        "name": "GeneratedPrompt",
+        "file": "src/integration/ai-prompt-generator.ts",
+        "line": 23
+      },
+      {
+        "name": "CompletionOptions",
+        "file": "src/integration/llm/llm-provider.d.ts",
+        "line": 11
+      },
+      {
+        "name": "LLMResponse",
+        "file": "src/integration/llm/llm-provider.d.ts",
+        "line": 30
+      },
+      {
+        "name": "LLMProvider",
+        "file": "src/integration/llm/llm-provider.d.ts",
+        "line": 85
+      },
+      {
+        "name": "LLMProviderConfig",
+        "file": "src/integration/llm/llm-provider.d.ts",
+        "line": 156
+      },
+      {
+        "name": "CompletionOptions",
+        "file": "src/integration/llm/llm-provider.ts",
+        "line": 12
+      },
+      {
+        "name": "LLMResponse",
+        "file": "src/integration/llm/llm-provider.ts",
+        "line": 38
+      },
+      {
+        "name": "LLMProvider",
+        "file": "src/integration/llm/llm-provider.ts",
+        "line": 119
+      },
+      {
+        "name": "LLMProviderConfig",
+        "file": "src/integration/llm/llm-provider.ts",
+        "line": 196
+      },
+      {
+        "name": "AnswerOptions",
+        "file": "src/integration/rag/answer-generation-service.d.ts",
+        "line": 22
+      },
+      {
+        "name": "Answer",
+        "file": "src/integration/rag/answer-generation-service.d.ts",
+        "line": 42
+      },
+      {
+        "name": "AnswerOptions",
+        "file": "src/integration/rag/answer-generation-service.ts",
+        "line": 40
+      },
+      {
+        "name": "Answer",
+        "file": "src/integration/rag/answer-generation-service.ts",
+        "line": 66
+      },
+      {
+        "name": "CodeChunk",
+        "file": "src/integration/rag/code-chunk.d.ts",
+        "line": 16
+      },
+      {
+        "name": "ChunkOptions",
+        "file": "src/integration/rag/code-chunk.d.ts",
+        "line": 112
+      },
+      {
+        "name": "ChunkGenerationResult",
+        "file": "src/integration/rag/code-chunk.d.ts",
+        "line": 142
+      },
+      {
+        "name": "ChunkGenerationError",
+        "file": "src/integration/rag/code-chunk.d.ts",
+        "line": 159
+      },
+      {
+        "name": "ChunkStatistics",
+        "file": "src/integration/rag/code-chunk.d.ts",
+        "line": 176
+      },
+      {
+        "name": "CodeChunk",
+        "file": "src/integration/rag/code-chunk.ts",
+        "line": 17
+      },
+      {
+        "name": "ChunkOptions",
+        "file": "src/integration/rag/code-chunk.ts",
+        "line": 131
+      },
+      {
+        "name": "ChunkGenerationResult",
+        "file": "src/integration/rag/code-chunk.ts",
+        "line": 166
+      },
+      {
+        "name": "ChunkGenerationError",
+        "file": "src/integration/rag/code-chunk.ts",
+        "line": 186
+      },
+      {
+        "name": "ChunkStatistics",
+        "file": "src/integration/rag/code-chunk.ts",
+        "line": 206
+      },
+      {
+        "name": "ConfidenceBreakdown",
+        "file": "src/integration/rag/confidence-scorer.d.ts",
+        "line": 15
+      },
+      {
+        "name": "ConfidenceScoringOptions",
+        "file": "src/integration/rag/confidence-scorer.d.ts",
+        "line": 46
+      },
+      {
+        "name": "PerformanceMetrics",
+        "file": "src/integration/rag/confidence-scorer.d.ts",
+        "line": 61
+      },
+      {
+        "name": "ConfidenceBreakdown",
+        "file": "src/integration/rag/confidence-scorer.ts",
+        "line": 19
+      },
+      {
+        "name": "ConfidenceScoringOptions",
+        "file": "src/integration/rag/confidence-scorer.ts",
+        "line": 60
+      },
+      {
+        "name": "PerformanceMetrics",
+        "file": "src/integration/rag/confidence-scorer.ts",
+        "line": 80
+      },
+      {
+        "name": "ContextBuilderOptions",
+        "file": "src/integration/rag/context-builder.d.ts",
+        "line": 17
+      },
+      {
+        "name": "BuiltContext",
+        "file": "src/integration/rag/context-builder.d.ts",
+        "line": 36
+      },
+      {
+        "name": "ContextBuilderOptions",
+        "file": "src/integration/rag/context-builder.ts",
+        "line": 19
+      },
+      {
+        "name": "BuiltContext",
+        "file": "src/integration/rag/context-builder.ts",
+        "line": 45
+      },
+      {
+        "name": "ConversationMessage",
+        "file": "src/integration/rag/conversation-manager.d.ts",
+        "line": 15
+      },
+      {
+        "name": "ConversationSession",
+        "file": "src/integration/rag/conversation-manager.d.ts",
+        "line": 43
+      },
+      {
+        "name": "ConversationOptions",
+        "file": "src/integration/rag/conversation-manager.d.ts",
+        "line": 67
+      },
+      {
+        "name": "ConversationMessage",
+        "file": "src/integration/rag/conversation-manager.ts",
+        "line": 17
+      },
+      {
+        "name": "ConversationSession",
+        "file": "src/integration/rag/conversation-manager.ts",
+        "line": 53
+      },
+      {
+        "name": "ConversationOptions",
+        "file": "src/integration/rag/conversation-manager.ts",
+        "line": 85
+      },
+      {
+        "name": "EmbeddedChunk",
+        "file": "src/integration/rag/embedding-service.d.ts",
+        "line": 14
+      },
+      {
+        "name": "EmbeddingProgress",
+        "file": "src/integration/rag/embedding-service.d.ts",
+        "line": 31
+      },
+      {
+        "name": "EmbeddingServiceOptions",
+        "file": "src/integration/rag/embedding-service.d.ts",
+        "line": 48
+      },
+      {
+        "name": "EmbeddingResult",
+        "file": "src/integration/rag/embedding-service.d.ts",
+        "line": 63
+      },
+      {
+        "name": "EmbeddingError",
+        "file": "src/integration/rag/embedding-service.d.ts",
+        "line": 76
+      },
+      {
+        "name": "EmbeddingStatistics",
+        "file": "src/integration/rag/embedding-service.d.ts",
+        "line": 87
+      },
+      {
+        "name": "EmbeddedChunk",
+        "file": "src/integration/rag/embedding-service.ts",
+        "line": 19
+      },
+      {
+        "name": "EmbeddingProgress",
+        "file": "src/integration/rag/embedding-service.ts",
+        "line": 41
+      },
+      {
+        "name": "EmbeddingServiceOptions",
+        "file": "src/integration/rag/embedding-service.ts",
+        "line": 64
+      },
+      {
+        "name": "EmbeddingResult",
+        "file": "src/integration/rag/embedding-service.ts",
+        "line": 84
+      },
+      {
+        "name": "EmbeddingError",
+        "file": "src/integration/rag/embedding-service.ts",
+        "line": 101
+      },
+      {
+        "name": "EmbeddingStatistics",
+        "file": "src/integration/rag/embedding-service.ts",
+        "line": 115
+      },
+      {
+        "name": "TextGenerationOptions",
+        "file": "src/integration/rag/embedding-text-generator.d.ts",
+        "line": 12
+      },
+      {
+        "name": "TextGenerationOptions",
+        "file": "src/integration/rag/embedding-text-generator.ts",
+        "line": 14
+      },
+      {
+        "name": "ReRankingOptions",
+        "file": "src/integration/rag/graph-reranker.d.ts",
+        "line": 14
+      },
+      {
+        "name": "ReRankedResult",
+        "file": "src/integration/rag/graph-reranker.d.ts",
+        "line": 39
+      },
+      {
+        "name": "RankingExplanation",
+        "file": "src/integration/rag/graph-reranker.d.ts",
+        "line": 52
+      },
+      {
+        "name": "ReRankingOptions",
+        "file": "src/integration/rag/graph-reranker.ts",
+        "line": 16
+      },
+      {
+        "name": "ReRankedResult",
+        "file": "src/integration/rag/graph-reranker.ts",
+        "line": 56
+      },
+      {
+        "name": "RankingExplanation",
+        "file": "src/integration/rag/graph-reranker.ts",
+        "line": 73
+      },
+      {
+        "name": "NodeGraphStats",
+        "file": "src/integration/rag/graph-reranker.ts",
+        "line": 96
+      },
+      {
+        "name": "FileIndexState",
+        "file": "src/integration/rag/incremental-indexer.d.ts",
+        "line": 12
+      },
+      {
+        "name": "IndexState",
+        "file": "src/integration/rag/incremental-indexer.d.ts",
+        "line": 27
+      },
+      {
+        "name": "IncrementalAnalysisResult",
+        "file": "src/integration/rag/incremental-indexer.d.ts",
+        "line": 42
+      },
+      {
+        "name": "IncrementalIndexOptions",
+        "file": "src/integration/rag/incremental-indexer.d.ts",
+        "line": 65
+      },
+      {
+        "name": "FileIndexState",
+        "file": "src/integration/rag/incremental-indexer.ts",
+        "line": 18
+      },
+      {
+        "name": "IndexState",
+        "file": "src/integration/rag/incremental-indexer.ts",
+        "line": 38
+      },
+      {
+        "name": "IncrementalAnalysisResult",
+        "file": "src/integration/rag/incremental-indexer.ts",
+        "line": 58
+      },
+      {
+        "name": "IncrementalIndexOptions",
+        "file": "src/integration/rag/incremental-indexer.ts",
+        "line": 88
+      },
+      {
+        "name": "IndexingProgress",
+        "file": "src/integration/rag/indexing-orchestrator.d.ts",
+        "line": 26
+      },
+      {
+        "name": "IndexingOptions",
+        "file": "src/integration/rag/indexing-orchestrator.d.ts",
+        "line": 51
+      },
+      {
+        "name": "IndexingResult",
+        "file": "src/integration/rag/indexing-orchestrator.d.ts",
+        "line": 72
+      },
+      {
+        "name": "IndexingStatistics",
+        "file": "src/integration/rag/indexing-orchestrator.d.ts",
+        "line": 91
+      },
+      {
+        "name": "IndexingError",
+        "file": "src/integration/rag/indexing-orchestrator.d.ts",
+        "line": 106
+      },
+      {
+        "name": "IndexingProgress",
+        "file": "src/integration/rag/indexing-orchestrator.ts",
+        "line": 39
+      },
+      {
+        "name": "IndexingOptions",
+        "file": "src/integration/rag/indexing-orchestrator.ts",
+        "line": 70
+      },
+      {
+        "name": "IndexingResult",
+        "file": "src/integration/rag/indexing-orchestrator.ts",
+        "line": 99
+      },
+      {
+        "name": "IndexingStatistics",
+        "file": "src/integration/rag/indexing-orchestrator.ts",
+        "line": 125
+      },
+      {
+        "name": "IndexingError",
+        "file": "src/integration/rag/indexing-orchestrator.ts",
+        "line": 145
+      },
+      {
+        "name": "PromptVariables",
+        "file": "src/integration/rag/prompt-templates.d.ts",
+        "line": 14
+      },
+      {
+        "name": "PromptVariables",
+        "file": "src/integration/rag/prompt-templates.ts",
+        "line": 15
+      },
+      {
+        "name": "RAGConfig",
+        "file": "src/integration/rag/rag-config.d.ts",
+        "line": 15
+      },
+      {
+        "name": "RAGConfig",
+        "file": "src/integration/rag/rag-config.ts",
+        "line": 17
+      },
+      {
+        "name": "SearchResult",
+        "file": "src/integration/rag/semantic-search.d.ts",
+        "line": 16
+      },
+      {
+        "name": "SearchOptions",
+        "file": "src/integration/rag/semantic-search.d.ts",
+        "line": 29
+      },
+      {
+        "name": "QueryContext",
+        "file": "src/integration/rag/semantic-search.d.ts",
+        "line": 50
+      },
+      {
+        "name": "SearchResponse",
+        "file": "src/integration/rag/semantic-search.d.ts",
+        "line": 63
+      },
+      {
+        "name": "SearchResult",
+        "file": "src/integration/rag/semantic-search.ts",
+        "line": 22
+      },
+      {
+        "name": "SearchOptions",
+        "file": "src/integration/rag/semantic-search.ts",
+        "line": 39
+      },
+      {
+        "name": "QueryContext",
+        "file": "src/integration/rag/semantic-search.ts",
+        "line": 68
+      },
+      {
+        "name": "SearchResponse",
+        "file": "src/integration/rag/semantic-search.ts",
+        "line": 85
+      },
+      {
+        "name": "StorageData",
+        "file": "src/integration/vector/sqlite-store.ts",
+        "line": 33
+      },
+      {
+        "name": "StoredRecord",
+        "file": "src/integration/vector/sqlite-store.ts",
+        "line": 42
+      },
+      {
+        "name": "CodeChunkMetadata",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 13
+      },
+      {
+        "name": "VectorRecord",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 44
+      },
+      {
+        "name": "QueryOptions",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 55
+      },
+      {
+        "name": "VectorMatch",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 72
+      },
+      {
+        "name": "QueryResult",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 85
+      },
+      {
+        "name": "VectorStoreStats",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 94
+      },
+      {
+        "name": "VectorStore",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 135
+      },
+      {
+        "name": "VectorStoreConfig",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 239
+      },
+      {
+        "name": "CodeChunkMetadata",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 14
+      },
+      {
+        "name": "VectorRecord",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 58
+      },
+      {
+        "name": "QueryOptions",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 72
+      },
+      {
+        "name": "VectorMatch",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 95
+      },
+      {
+        "name": "VectorQueryResult",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 112
+      },
+      {
+        "name": "VectorStoreStats",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 123
+      },
+      {
+        "name": "VectorStore",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 184
+      },
+      {
+        "name": "VectorStoreConfig",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 294
+      },
+      {
+        "name": "ParsedCodeRef",
+        "file": "src/parser/parser.d.ts",
+        "line": 12
+      },
+      {
+        "name": "ParserOptions",
+        "file": "src/parser/parser.d.ts",
+        "line": 24
+      },
+      {
+        "name": "ParsedCodeRef",
+        "file": "src/parser/parser.ts",
+        "line": 13
+      },
+      {
+        "name": "ParserOptions",
+        "file": "src/parser/parser.ts",
+        "line": 26
+      },
+      {
+        "name": "ComplexityMetrics",
+        "file": "src/pipeline/generators/complexity-generator.ts",
+        "line": 15
+      },
+      {
+        "name": "ProjectContext",
+        "file": "src/pipeline/generators/context-generator.ts",
+        "line": 15
+      },
+      {
+        "name": "CoverageReport",
+        "file": "src/pipeline/generators/coverage-generator.ts",
+        "line": 14
+      },
+      {
+        "name": "DriftReport",
+        "file": "src/pipeline/generators/drift-generator.ts",
+        "line": 15
+      },
+      {
+        "name": "PatternReport",
+        "file": "src/pipeline/generators/pattern-generator.ts",
+        "line": 15
+      },
+      {
+        "name": "ValidationReport",
+        "file": "src/pipeline/generators/validation-generator.ts",
+        "line": 14
+      },
+      {
+        "name": "PipelineOptions",
+        "file": "src/pipeline/types.ts",
+        "line": 14
+      },
+      {
+        "name": "PipelineState",
+        "file": "src/pipeline/types.ts",
+        "line": 42
+      },
+      {
+        "name": "ImportRelationship",
+        "file": "src/pipeline/types.ts",
+        "line": 120
+      },
+      {
+        "name": "CallRelationship",
+        "file": "src/pipeline/types.ts",
+        "line": 140
+      },
+      {
+        "name": "QueryRequest",
+        "file": "src/query/query-executor.d.ts",
+        "line": 20
+      },
+      {
+        "name": "QueryResult",
+        "file": "src/query/query-executor.d.ts",
+        "line": 30
+      },
+      {
+        "name": "QueryRequest",
+        "file": "src/query/query-executor.ts",
+        "line": 31
+      },
+      {
+        "name": "QueryResult",
+        "file": "src/query/query-executor.ts",
+        "line": 42
+      },
+      {
+        "name": "EntityRecord",
+        "file": "src/registry/types.ts",
+        "line": 4
+      },
+      {
+        "name": "RegistryState",
+        "file": "src/registry/types.ts",
+        "line": 24
+      },
+      {
+        "name": "EntityLookup",
+        "file": "src/registry/types.ts",
+        "line": 40
+      },
+      {
+        "name": "TestObject",
+        "file": "src/scanner/__tests__/lru-cache.test.ts",
+        "line": 150
+      },
+      {
+        "name": "ScanError",
+        "file": "src/scanner/error-reporter.ts",
+        "line": 21
+      },
+      {
+        "name": "ScanStats",
+        "file": "src/scanner/error-reporter.ts",
+        "line": 53
+      },
+      {
+        "name": "ScanResult",
+        "file": "src/scanner/error-reporter.ts",
+        "line": 80
+      },
+      {
+        "name": "CacheEntry",
+        "file": "src/scanner/lru-cache.ts",
+        "line": 13
+      },
+      {
+        "name": "ScanCacheEntry",
+        "file": "src/scanner/lru-cache.ts",
+        "line": 201
+      },
+      {
+        "name": "WorkerMessage",
+        "file": "src/scanner/scanner-worker.ts",
+        "line": 19
+      },
+      {
+        "name": "PatternConfig",
+        "file": "src/scanner/scanner.ts",
+        "line": 18
+      },
+      {
+        "name": "SearchIndexEntry",
+        "file": "src/search/search-engine.ts",
+        "line": 16
+      },
+      {
+        "name": "SearchResult",
+        "file": "src/search/search-engine.ts",
+        "line": 34
+      },
+      {
+        "name": "SearchOptions",
+        "file": "src/search/search-engine.ts",
+        "line": 52
+      },
+      {
+        "name": "TagCloudEntry",
+        "file": "src/search/search-engine.ts",
+        "line": 541
+      },
+      {
+        "name": "SearchStatistics",
+        "file": "src/search/search-engine.ts",
+        "line": 550
+      },
+      {
+        "name": "TypeMetadata",
+        "file": "src/types/types.d.ts",
+        "line": 36
+      },
+      {
+        "name": "TypeMetadata",
+        "file": "src/types/types.ts",
+        "line": 39
+      },
+      {
+        "name": "RouteMetadata",
+        "file": "src/types/types.ts",
+        "line": 227
+      },
+      {
+        "name": "FrontendCall",
+        "file": "src/types/types.ts",
+        "line": 242
+      },
+      {
+        "name": "ValidationIssue",
+        "file": "src/types/types.ts",
+        "line": 261
+      },
+      {
+        "name": "RouteValidation",
+        "file": "src/types/types.ts",
+        "line": 280
+      },
+      {
+        "name": "ElementData",
+        "file": "src/types/types.ts",
+        "line": 304
+      },
+      {
+        "name": "ScanOptions",
+        "file": "src/types/types.ts",
+        "line": 368
+      },
+      {
+        "name": "ScanProgress",
+        "file": "src/types/types.ts",
+        "line": 448
+      },
+      {
+        "name": "MigrationMapping",
+        "file": "src/types/types.ts",
+        "line": 465
+      },
+      {
+        "name": "TransformedCall",
+        "file": "src/types/types.ts",
+        "line": 508
+      },
+      {
+        "name": "MigrationCoverage",
+        "file": "src/types/types.ts",
+        "line": 523
+      },
+      {
+        "name": "MigrationReport",
+        "file": "src/types/types.ts",
+        "line": 541
+      },
+      {
+        "name": "LoggerConfig",
+        "file": "src/utils/logger.ts",
+        "line": 16
+      },
+      {
+        "name": "RouteMatch",
+        "file": "src/validator/route-matcher.ts",
+        "line": 11
+      },
+      {
+        "name": "NormalizedRoute",
+        "file": "src/validator/route-normalizer.ts",
+        "line": 9
+      },
+      {
+        "name": "ValidationResult",
+        "file": "src/validator/validator.d.ts",
+        "line": 14
+      },
+      {
+        "name": "ValidatorOptions",
+        "file": "src/validator/validator.d.ts",
+        "line": 20
+      },
+      {
+        "name": "ValidationResult",
+        "file": "src/validator/validator.ts",
+        "line": 16
+      },
+      {
+        "name": "ValidatorOptions",
+        "file": "src/validator/validator.ts",
+        "line": 23
+      },
+      {
+        "name": "ElementData",
+        "file": "types.d.ts",
+        "line": 4
+      },
+      {
+        "name": "ScanOptions",
+        "file": "types.d.ts",
+        "line": 50
+      },
+      {
+        "name": "ParsedCoderef",
+        "file": "types.d.ts",
+        "line": 74
+      }
+    ],
+    "type_aliases": [
+      {
+        "name": "Options",
+        "file": "__tests__/scanner-export.test.ts",
+        "line": 203
+      },
+      {
+        "name": "Element",
+        "file": "__tests__/scanner-export.test.ts",
+        "line": 204
+      },
+      {
+        "name": "ApiResponse",
+        "file": "examples/nextjs-api-route.ts",
+        "line": 26
+      },
+      {
+        "name": "ScanRequest",
+        "file": "examples/nextjs-api-route.ts",
+        "line": 39
+      },
+      {
+        "name": "ScanResult",
+        "file": "examples/nextjs-api-route.ts",
+        "line": 51
+      },
+      {
+        "name": "ValidationResult",
+        "file": "examples/nextjs-api-route.ts",
+        "line": 181
+      },
+      {
+        "name": "SupportedCliLanguage",
+        "file": "src/cli/detect-languages.ts",
+        "line": 18
+      },
+      {
+        "name": "ExportFormat",
+        "file": "src/export/graph-exporter.d.ts",
+        "line": 15
+      },
+      {
+        "name": "ExportFormat",
+        "file": "src/export/graph-exporter.ts",
+        "line": 17
+      },
+      {
+        "name": "IndexingStage",
+        "file": "src/indexer/indexer-service.ts",
+        "line": 22
+      },
+      {
+        "name": "MetadataCategory",
+        "file": "src/indexer/metadata-index.ts",
+        "line": 17
+      },
+      {
+        "name": "QueryFilter",
+        "file": "src/indexer/query-engine.ts",
+        "line": 27
+      },
+      {
+        "name": "RelationshipType",
+        "file": "src/indexer/relationship-index.ts",
+        "line": 16
+      },
+      {
+        "name": "AIQueryType",
+        "file": "src/integration/ai-prompt-generator.d.ts",
+        "line": 16
+      },
+      {
+        "name": "AIQueryType",
+        "file": "src/integration/ai-prompt-generator.ts",
+        "line": 18
+      },
+      {
+        "name": "LLMProviderFactory",
+        "file": "src/integration/llm/llm-provider.d.ts",
+        "line": 152
+      },
+      {
+        "name": "LLMProviderFactory",
+        "file": "src/integration/llm/llm-provider.ts",
+        "line": 191
+      },
+      {
+        "name": "ProgressCallback",
+        "file": "src/integration/rag/embedding-service.d.ts",
+        "line": 27
+      },
+      {
+        "name": "ProgressCallback",
+        "file": "src/integration/rag/embedding-service.ts",
+        "line": 36
+      },
+      {
+        "name": "QueryStrategy",
+        "file": "src/integration/rag/graph-reranker.d.ts",
+        "line": 35
+      },
+      {
+        "name": "QueryStrategy",
+        "file": "src/integration/rag/graph-reranker.ts",
+        "line": 45
+      },
+      {
+        "name": "IndexingProgressCallback",
+        "file": "src/integration/rag/indexing-orchestrator.d.ts",
+        "line": 22
+      },
+      {
+        "name": "IndexingProgressCallback",
+        "file": "src/integration/rag/indexing-orchestrator.ts",
+        "line": 34
+      },
+      {
+        "name": "VectorStoreFactory",
+        "file": "src/integration/vector/vector-store.d.ts",
+        "line": 262
+      },
+      {
+        "name": "VectorStoreFactory",
+        "file": "src/integration/vector/vector-store.ts",
+        "line": 326
+      },
+      {
+        "name": "LanguageExtension",
+        "file": "src/pipeline/types.ts",
+        "line": 68
+      },
+      {
+        "name": "QueryType",
+        "file": "src/query/query-executor.d.ts",
+        "line": 16
+      },
+      {
+        "name": "QueryType",
+        "file": "src/query/query-executor.ts",
+        "line": 18
+      },
+      {
+        "name": "ScanErrorType",
+        "file": "src/scanner/error-reporter.ts",
+        "line": 6
+      },
+      {
+        "name": "ScanErrorSeverity",
+        "file": "src/scanner/error-reporter.ts",
+        "line": 15
+      },
+      {
+        "name": "EnrichedElementData",
+        "file": "src/scanner/tree-sitter-scanner.ts",
+        "line": 38
+      },
+      {
+        "name": "LogLevel",
+        "file": "src/utils/logger.ts",
+        "line": 11
+      },
+      {
+        "name": "IndexedCoderef",
+        "file": "types.d.ts",
+        "line": 13
+      },
+      {
+        "name": "DriftStatus",
+        "file": "types.d.ts",
+        "line": 24
+      },
+      {
+        "name": "DriftReport",
+        "file": "types.d.ts",
+        "line": 28
+      },
+      {
+        "name": "DriftDetectionOptions",
+        "file": "types.d.ts",
+        "line": 41
+      }
+    ]
+  },
+  "decorators": [],
+  "change_impact_analysis": {
+    "high_risk_changes": [],
+    "impact_reports": {
+      "main": "# Impact Analysis: main\n\n## Summary\n\n- **Affected Elements:** 0\n- **Risk Level:** LOW\n"
+    },
+    "warnings": [],
+    "total_elements_analyzed": 1
+  },
+  "async_patterns": {
+    "count": 30,
+    "patterns": [
+      {
+        "name": "main",
+        "type": "function",
+        "file": "demo-all-modules.ts"
+      },
+      {
+        "name": "AnalyzerService.analyze",
+        "type": "method",
+        "file": "src/analyzer/analyzer-service.ts"
+      },
+      {
+        "name": "AnalyzerService.saveGraph",
+        "type": "method",
+        "file": "src/analyzer/analyzer-service.ts"
+      },
+      {
+        "name": "AnalyzerService.loadGraph",
+        "type": "method",
+        "file": "src/analyzer/analyzer-service.ts"
+      },
+      {
+        "name": "AnalyzerService.findFiles",
+        "type": "method",
+        "file": "src/analyzer/analyzer-service.ts"
+      },
+      {
+        "name": "scanDirectory",
+        "type": "function",
+        "file": "src/cli/detect-languages.ts"
+      },
+      {
+        "name": "detectProjectLanguages",
+        "type": "function",
+        "file": "src/cli/detect-languages.ts"
+      },
+      {
+        "name": "runGenerator",
+        "type": "function",
+        "file": "src/cli/populate.ts"
+      },
+      {
+        "name": "run",
+        "type": "function",
+        "file": "src/cli/populate.ts"
+      },
+      {
+        "name": "main",
+        "type": "function",
+        "file": "src/cli/populate.ts"
+      }
+    ],
+    "guidance": "Found 30 async functions/methods. Consider concurrency implications, error handling (Promise rejection, try/catch), and race conditions when planning features."
+  },
+  "test_gaps": {
+    "count": 35,
+    "gaps": [
+      {
+        "name": "ASTElementScanner.visitNode",
+        "complexity": 63,
+        "file": "src/analyzer/ast-element-scanner.ts"
+      },
+      {
+        "name": "JSCallDetector.extractExportsFromAST",
+        "complexity": 55,
+        "file": "src/analyzer/js-call-detector.ts"
+      },
+      {
+        "name": "JSCallDetector.extractElementsFromAST",
+        "complexity": 52,
+        "file": "src/analyzer/js-call-detector.ts"
+      },
+      {
+        "name": "scanCurrentElements",
+        "complexity": 40,
+        "file": "src/scanner/scanner.ts"
+      },
+      {
+        "name": "EmbeddingTextGenerator.generate",
+        "complexity": 29,
+        "file": "src/integration/rag/embedding-text-generator.ts"
+      },
+      {
+        "name": "JSCallDetector.extractImportsFromAST",
+        "complexity": 37,
+        "file": "src/analyzer/js-call-detector.ts"
+      },
+      {
+        "name": "ContextBuilder.buildContext",
+        "complexity": 26,
+        "file": "src/integration/rag/context-builder.ts"
+      },
+      {
+        "name": "CodeRefValidator.validateMetadata",
+        "complexity": 36,
+        "file": "src/validator/validator.ts"
+      },
+      {
+        "name": "SemanticSearchService.search",
+        "complexity": 25,
+        "file": "src/integration/rag/semantic-search.ts"
+      },
+      {
+        "name": "SearchIndex.search",
+        "complexity": 34,
+        "file": "src/search/search-engine.ts"
+      },
+      {
+        "name": "GraphBuilder.importGraphFromJSON",
+        "complexity": 22,
+        "file": "src/analyzer/graph-builder.ts"
+      },
+      {
+        "name": "JSCallDetector.visitNode",
+        "complexity": 32,
+        "file": "src/analyzer/js-call-detector.ts"
+      },
+      {
+        "name": "ContextBuilder.buildResultSection",
+        "complexity": 22,
+        "file": "src/integration/rag/context-builder.ts"
+      },
+      {
+        "name": "EmbeddingService.embedChunks",
+        "complexity": 22,
+        "file": "src/integration/rag/embedding-service.ts"
+      },
+      {
+        "name": "CodeRefParser.parse",
+        "complexity": 29,
+        "file": "src/parser/parser.ts"
+      }
+    ],
+    "summary": "Found 35 functions without test coverage. Prioritized by complexity and architectural importance."
+  },
+  "telemetry_summary": {
+    "total_sources_used": 4,
+    "coderef_file_reads": {
+      "count": 4,
+      "percentage": 100.0,
+      "files": [
+        ".coderef/index.json",
+        ".coderef/index.json (type system)",
+        ".coderef/index.json (decorators)",
+        ".coderef/context.md"
+      ]
+    },
+    "mcp_tool_calls": {
+      "count": 0,
+      "success_count": 0,
+      "percentage": 0.0,
+      "tools": []
+    },
+    "foundation_doc_reads": {
+      "count": 0,
+      "percentage": 0.0,
+      "docs": []
+    }
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Project Analysis",
+    "workorder_id": "WO-CODEREF-CORE-TEST-ALIGNMENT-001",
+    "feature_id": "coderef-core-test-alignment",
+    "last_updated": "2026-04-14",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-14",
+    "validation_score": null,
+    "validation_errors": null,
+    "validation_warnings": null
+  }
+}

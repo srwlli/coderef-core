@@ -1,0 +1,36 @@
+{
+  "feature_name": "coderef-core-standalone-migration",
+  "description": "Move coderef-core from DASHBOARD/packages/coderef-core to standalone CODEREF/coderef-core location. The tool is self-contained with its own package.json, build system, and CLI binaries. This separates the core scanning/parsing tool from the dashboard application.",
+  "goal": "Separate coderef-core as a standalone tool in its own repository location, independent of the dashboard monorepo structure",
+  "requirements": [
+    "Copy coderef-core from DASHBOARD/packages/coderef-core to CODEREF/coderef-core",
+    "Update MCP server configurations to reference new path",
+    "Remove coderef-core from dashboard workspaces",
+    "Verify standalone build and test work",
+    "Ensure CLI binaries remain accessible"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "build": "npm run build passes in new location",
+    "mcp": "MCP servers can still execute coderef-core CLI tools",
+    "tests": "npm test passes",
+    "workspace": "Dashboard builds without coderef-core in workspaces"
+  },
+  "_metadata": {
+    "workorder_id": "WO-CODEREF-CORE-STANDALONE-MIGRATION-001",
+    "workorder_assigned_at": "2026-04-21T04:56:31.157400+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-CODEREF-CORE-STANDALONE-MIGRATION-001",
+    "feature_id": "coderef-core-standalone-migration",
+    "last_updated": "2026-04-21",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-21"
+  }
+}

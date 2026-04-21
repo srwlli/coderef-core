@@ -1,0 +1,11 @@
+/**
+ * API Routes System
+ * @see coderef/reference-sheets/api routes system/api routes system.md
+ *
+ * /** @module API Routes System */
+ * /** @category {{type}} */
+ * /** @file {{file_path}} */
+ * /** @emits {{event_name}} - {{description}} */
+ * /** @listens {{event_name}} */
+ * /** @requires {{dependency}} */
+ */

@@ -1,0 +1,30 @@
+{
+  "workorder_id": "WO-CALL-GRAPH-025",
+  "feature_name": "imp-core-025-call-graph",
+  "title": "Add call graph relationships to context for planning",
+  "goal": "Enable MCP server to understand function-to-function call relationships for better planning",
+  "requirements": [
+    "Add callGraph field to ProjectContext interface",
+    "Implement extractCallGraph method using state.graph.edges",
+    "Show which critical functions call which others",
+    "Detect circular call dependencies",
+    "Output call graph in both JSON and Markdown formats"
+  ],
+  "constraints": [
+    "Only analyze relationships between critical functions (not all elements)",
+    "Must use existing state.graph data structure",
+    "Parallel safe with IMP-CORE-024 (different context fields)",
+    "Maintain backward compatibility"
+  ],
+  "out_of_scope": [
+    "External dependency analysis (covered by IMP-CORE-026)",
+    "Design pattern detection (covered by IMP-CORE-027)",
+    "Performance optimizations (covered by IMP-CORE-028)",
+    "MCP server export changes (covered by IMP-CORE-029)"
+  ],
+  "related_workorders": [
+    "IMP-CORE-024: Improve context generator for AI planning",
+    "IMP-CORE-026: Implement dependency risk analysis"
+  ],
+  "created": "2026-04-18T06:00:00Z"
+}

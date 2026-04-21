@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schemas.coderef.com/workorder-communication/v1",
+  "workorder_id": "WO-CODEREF-CORE-REGISTRY-001",
+  "status": "ready",
+  "phase": "phase-0",
+  "generation_mode": "manual",
+  "created": "2026-04-13T23:30:00Z",
+  "last_updated": "2026-04-13T23:30:00Z",
+  "handoff_summary": {
+    "current_phase": "phase-0-preflight",
+    "next_action": "Run preflight checks to verify improvements.json exists and build environment is functional",
+    "blockers": [],
+    "ready_to_execute": true
+  },
+  "key_files": {
+    "context": "coderef/workorder/core-registry-implementation/context.json",
+    "analysis": "coderef/workorder/core-registry-implementation/analysis.json",
+    "plan": "coderef/workorder/core-registry-implementation/plan.json",
+    "communication": "coderef/workorder/core-registry-implementation/communication.json"
+  },
+  "execution_notes": [
+    "WORKORDER CREATED: WO-CODEREF-CORE-REGISTRY-001",
+    "Target improvements: IMP-CORE-001 (Registry), IMP-CORE-007 (Selective Scan), IMP-CORE-008 (Complexity Summary)",
+    "Core objective: Implement UUID-based Entity Registry to reduce graph.json size by ~60%",
+    "Phase structure: 6 phases (preflight, entity-registry, selective-scanning, slim-complexity, integration-testing, improvements-tracking, cleanup)",
+    "Constraint: No cross-repo commits - only commit to Dashboard repo",
+    "Constraint: Preserve monotonic counter in improvements.json",
+    "Phase 6 mandatory: Must include doc-discovery, session-logging, and active-work.json cleanup",
+    "Reference: SCRAPER-MARY pattern for UUID-based deduplication achieved 5.88x reduction"
+  ],
+  "next_boundary": {
+    "description": "Phase-0 preflight verification",
+    "entry_point": "T0-1 - Verify improvements.json exists with target improvements",
+    "stop_condition": "All preflight checks pass before proceeding to phase-1 entity-registry implementation"
+  },
+  "related_workorders": [
+    "WO-CODEREF-CONTEXT-OPTIMIZATION-001 (sibling workorder for coderef-context server)"
+  ]
+}

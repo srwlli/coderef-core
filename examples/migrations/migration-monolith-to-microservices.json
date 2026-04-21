@@ -1,0 +1,51 @@
+{
+  "version": "1.0.0",
+  "name": "Monolith to Microservices Migration",
+  "mappings": {
+    "patterns": [
+      {
+        "find": "^/api/users/(.*)$",
+        "replace": "/users-service/api/$1"
+      },
+      {
+        "find": "^/api/posts/(.*)$",
+        "replace": "/content-service/api/$1"
+      },
+      {
+        "find": "^/api/comments/(.*)$",
+        "replace": "/content-service/api/comments/$1"
+      },
+      {
+        "find": "^/api/auth/(.*)$",
+        "replace": "/auth-service/api/$1"
+      },
+      {
+        "find": "^/api/files/(.*)$",
+        "replace": "/storage-service/api/$1"
+      }
+    ],
+    "paths": {
+      "/api/search": "/search-service/api/search",
+      "/api/analytics": "/analytics-service/api/events"
+    },
+    "methodChanges": {},
+    "deprecated": [
+      "/api/legacy/reports",
+      "/api/admin/stats"
+    ],
+    "added": [
+      "/users-service/health",
+      "/content-service/health",
+      "/auth-service/health",
+      "/storage-service/health",
+      "/search-service/health",
+      "/analytics-service/health"
+    ]
+  },
+  "metadata": {
+    "source": "Monolith",
+    "target": "Microservices",
+    "createdAt": "2024-01-15T12:00:00Z",
+    "description": "Splits monolithic API into domain-driven microservices: users, content, auth, storage, search, analytics. Adds health check endpoints for each service."
+  }
+}

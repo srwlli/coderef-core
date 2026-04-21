@@ -1,0 +1,155 @@
+You are an expert implementation planner. Generate a detailed, executable plan for this feature:
+
+**FEATURE:** foundation-docs-index-integration
+
+**DESCRIPTION:** Create new foundation documentation files (INDEX.md, RELATIONSHIPS.md, EXPORTS.md, HOTSPOTS.md) and enhance existing docs (API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md) by leveraging data from .coderef/index.json, graph.json, and context.json. Build auto-generation pipeline to keep docs synchronized with codebase.
+
+**GOAL:** Transform static foundation docs into living documentation that auto-populates from .coderef scan data, providing traceability, relationship maps, and complexity analysis for developers
+
+**REQUIREMENTS (10 total):**
+- Create INDEX.md as human-browsable element registry from index.json
+- Create RELATIONSHIPS.md visualizing dependency graphs from graph.json edges
+- Create EXPORTS.md documenting public API surface (781 exported elements)
+- Create HOTSPOTS.md merging complexity scores from context.json
+- Enhance API.md with live parameter tables from index.json
+- Enhance COMPONENTS.md with complexity badges and UUID links
+- Enhance ARCHITECTURE.md with Mermaid diagrams from graph.json
+- Create doc generation scripts (Node.js) for auto-regeneration
+- Add UUID anchor comments to markdown for traceability
+- Validate docs match index.json (CI gate script)
+
+**CONSTRAINTS (0 total):**
+- None specified
+
+---
+
+**CRITICAL: You have COMPLETE codebase context. USE IT EXPLICITLY.**
+
+**CODE INVENTORY (.coderef/index.json):**
+- Total elements: 7
+- Available: Functions, classes, components with exact file paths and line numbers
+
+**CODING PATTERNS (.coderef/reports/patterns.json):**
+- 0 patterns identified
+- Includes: Error handling patterns, naming conventions, code organization rules
+
+**DEPENDENCY GRAPH (.coderef/graph.json):**
+- 1921 nodes in dependency graph
+- Use for: Dependency analysis, impact assessment, task ordering
+
+**TEST COVERAGE (.coderef/reports/coverage.json):**
+- Overall coverage: unknown%
+- Use for: Identifying test gaps, planning test strategy
+
+**ARCHITECTURE (ARCHITECTURE.md preview):**
+Not available...
+
+**API REFERENCE (API.md preview):**
+Not available...
+
+---
+
+**YOUR TASK - Generate Implementation Plan**
+
+You MUST create a plan.json following the 10-section structure below.
+
+**MANDATORY REQUIREMENTS:**
+
+1. **DEPENDENCY ANALYSIS** (use coderef data):
+   - Check which existing functions/classes this feature depends on (use index.json)
+   - Identify which files will be modified (check code inventory for exact paths)
+   - Analyze dependency chains (use graph.json if available)
+
+2. **PATTERN ADHERENCE** (use patterns.json):
+   - Follow existing coding patterns from patterns.json
+   - Match error handling approaches
+   - Use established naming conventions
+
+3. **TASK BREAKDOWN** (be SPECIFIC - most important):
+   - Break each requirement into FILE-LEVEL tasks
+   - Example: "IMPL-001: Modify src/auth/jwt.service.ts lines 45-60 - add generateRefreshToken() method"
+   - NOT: "IMPL-001: Implement JWT tokens"
+   - Include exact file paths from code inventory
+   - Reference specific line numbers where changes occur
+
+4. **PHASE PLANNING** (use dependencies):
+   - Order tasks by dependency (what must happen first?)
+   - Identify parallel vs sequential work
+   - Create realistic phases (not always 4!)
+   - Add "dependencies" and "rationale" fields to each phase
+
+5. **TESTING STRATEGY** (use coverage.json):
+   - Address current test coverage gaps
+   - Specify which test files to create/modify
+   - Include edge cases and integration tests
+
+---
+
+**OUTPUT FORMAT:**
+
+Return a JSON object with this structure:
+
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "foundation-docs-index-integration",
+    "workorder_id": "WO-FOUNDATION-DOCS-INDEX-INTEGRATION-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "AI Agent",
+    "has_context": true,
+    "has_analysis": true
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": { ... },
+    "1_executive_summary": { ... },
+    "2_risk_assessment": { ... },
+    "3_current_state_analysis": { ... },
+    "4_key_features": { ... },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: Specific setup task with file paths",
+        "IMPL-001: Modify path/to/file.py lines X-Y - add specific method/function",
+        "IMPL-002: Create path/to/new_file.py - implement specific component",
+        ...
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Descriptive Phase Name",
+          "description": "What this phase accomplishes",
+          "tasks": ["SETUP-001", "IMPL-001"],
+          "deliverables": ["Specific deliverable 1", "Specific deliverable 2"],
+          "dependencies": "Sequential - SETUP-001 must complete before IMPL-001",
+          "rationale": "Why this phase grouping makes sense"
+        }
+      ]
+    },
+    "7_testing_strategy": { ... },
+    "8_success_criteria": { ... },
+    "9_implementation_checklist": { ... }
+  }
+}
+
+---
+
+**VALIDATION RULES:**
+
+- ✅ Every task MUST reference specific files from code inventory
+- ✅ Every task MUST consider existing patterns from patterns.json
+- ✅ Every phase MUST have dependency-ordered tasks with rationale
+- ✅ Risk assessment MUST address breaking changes and dependencies
+- ✅ Testing strategy MUST address gaps from coverage.json
+- ✅ NO time estimates (hours/minutes) - use complexity levels instead
+- ✅ NO questions in plan - answer everything
+
+**EXAMPLE TASK (GOOD):**
+"IMPL-003: Modify generators/planning_generator.py lines 232-285 - Replace _generate_plan_internal() with _generate_plan_with_agent() async method that launches Task agent with coderef context"
+
+**EXAMPLE TASK (BAD):**
+"IMPL-003: Implement AI agent integration following existing patterns"
+
+---
+
+Generate the complete plan now. Be specific, reference actual files, and use the codebase intelligence provided.

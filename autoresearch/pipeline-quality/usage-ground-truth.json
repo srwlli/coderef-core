@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "campaign": "pipeline-quality",
+  "loop": "07-critical-function-pipeline",
+  "tier": "usage",
+  "created": "2026-04-10",
+  "description": "Functions referenced in workorder planning - measures scanner's utility for planning workflows",
+  "labeling_criteria": [
+    "Appears in workorder plan.json files (actual mentions or conceptual references)",
+    "High-level APIs and orchestrators",
+    "Widely-used utilities (high dependent count)",
+    "Core pipeline functions referenced in planning"
+  ],
+  "critical_functions": [
+    "createErrorResponse",
+    "buildDependencyGraph",
+    "generateContext",
+    "detectPatterns",
+    "saveIndex",
+    "analyzeCoverage",
+    "scanCurrentElements",
+    "AnalyzerService.analyze",
+    "QueryExecutor.execute",
+    "ContextGenerator.generate"
+  ],
+  "actual_mentions": {
+    "createErrorResponse": "4 direct mentions in workorders",
+    "detectPatterns": "5 direct mentions in workorders",
+    "buildDependencyGraph": "1 direct mention",
+    "generateContext": "1 direct mention",
+    "saveIndex": "Referenced in api-route-detection plan",
+    "analyzeCoverage": "Core pipeline function",
+    "scanCurrentElements": "Core scanner entry point",
+    "AnalyzerService.analyze": "Service pattern referenced in planning",
+    "QueryExecutor.execute": "Query execution pattern",
+    "ContextGenerator.generate": "Generator pattern used in planning"
+  },
+  "notes": [
+    "This ground truth focuses on WORKORDER UTILITY",
+    "Functions must be useful for planning and impact analysis",
+    "Goal: Validate scanner helps workorder creation",
+    "Target detection: 90%+ (9/10 functions)",
+    "These are the functions planners actually need to know about"
+  ]
+}

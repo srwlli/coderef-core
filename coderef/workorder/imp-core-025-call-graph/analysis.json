@@ -1,0 +1,64 @@
+{
+  "workorder_id": "WO-CALL-GRAPH-025",
+  "analysis_date": "2026-04-18T06:00:00Z",
+  "project_structure": {
+    "target_file": "src/pipeline/generators/context-generator.ts",
+    "file_size_lines": 1000,
+    "key_interfaces": [
+      "ProjectContext (lines 16-73)",
+      "PipelineState (from '../types.js')"
+    ],
+    "existing_methods": [
+      "generate() - main entry point",
+      "buildContext() - builds context object (line 99)",
+      "findCriticalFunctions() - finds high-impact functions (line 271)",
+      "buildDependentCounts() - calculates dependents from graph (line 424)",
+      "generateMarkdown() - creates Markdown output (line 845)"
+    ]
+  },
+  "graph_structure": {
+    "available_in": "PipelineState.graph",
+    "edge_type": "ExportedGraph['edges']",
+    "edge_properties": ["source", "target", "type"],
+    "existing_usage": "buildDependentCounts() traverses edges to count dependents"
+  },
+  "implementation_strategy": {
+    "new_types": [
+      "CallGraphNode - { id, name, file, complexity, dependents }",
+      "CallGraphEdge - { source, target, callType }",
+      "CallGraph - { nodes: CallGraphNode[], edges: CallGraphEdge[], circularChains: string[][] }"
+    ],
+    "new_methods": [
+      "extractCallGraph(state, criticalFunctions): CallGraph",
+      "detectCircularChains(edges, nodes): string[][]"
+    ],
+    "modified_interfaces": [
+      "ProjectContext.callGraph: CallGraph"
+    ],
+    "integration_points": [
+      "buildContext() return object - add callGraph field",
+      "generateMarkdown() - add ## Call Graph Relationships section"
+    ]
+  },
+  "dependencies": {
+    "internal": [
+      "PipelineState.graph.edges",
+      "criticalFunctions array (from findCriticalFunctions)"
+    ],
+    "external": [],
+    "blocking": []
+  },
+  "risks": [
+    {
+      "risk": "Graph traversal performance on large projects",
+      "mitigation": "Filter to critical functions only (limit to top 20-50)"
+    },
+    {
+      "risk": "Edge resolution ambiguity (multiple functions with same name)",
+      "mitigation": "Use element ID for matching, fall back to file+name"
+    }
+  ],
+  "estimated_complexity": "medium",
+  "estimated_lines_changed": 150,
+  "estimated_files_modified": 1
+}

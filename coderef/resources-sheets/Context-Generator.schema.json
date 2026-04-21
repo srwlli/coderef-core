@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ContextGenerator",
+  "type": "object",
+  "properties": {
+    "architecture": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exports": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "file_path": {
+          "type": "string"
+        },
+        "lines_of_code": {
+          "type": "number"
+        }
+      },
+      "required": [
+        "type",
+        "file_path"
+      ]
+    },
+    "integration": {
+      "type": "object",
+      "properties": {
+        "used_by": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "uses": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "events": {
+          "type": "object",
+          "properties": {
+            "emits": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "listens": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

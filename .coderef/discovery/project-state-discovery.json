@@ -1,0 +1,2362 @@
+{
+  "metadata": {
+    "project_name": "coderef-core",
+    "project_path": "C:\\Users\\willh\\Desktop\\CODEREF\\DASHBOARD\\packages\\coderef-core",
+    "generated_at": "2026-04-14T03:35:05.167894+00:00",
+    "total_files_scanned": 111,
+    "type_library_version": "1.3.0",
+    "coverage_percent": 78.4,
+    "classified_count": 87,
+    "unclassified_count": 24
+  },
+  "type_summary": [
+    {
+      "type_id": 1,
+      "type_name": "Skill",
+      "count": 0,
+      "files": []
+    },
+    {
+      "type_id": 2,
+      "type_name": "Plan",
+      "count": 5,
+      "files": [
+        "autoresearch/pipeline-quality/MASTER-PLAN.md",
+        "autoresearch/scanner-quality/MASTER-PLAN.md",
+        "coderef/resource/scanner/TYPESCRIPT-IMPLEMENTATION-PLAN.md",
+        "src/coderef/AGENT-CONTEXT-FOR-MIGRATION-PLAN.md",
+        "src/coderef/migration-strategy.md"
+      ]
+    },
+    {
+      "type_id": 3,
+      "type_name": "Report",
+      "count": 15,
+      "files": [
+        ".coderef/exports/diagram-wrapped.md",
+        "__tests__/WO-CODEREF-CLI-IMPLEMENTATION-001-Phase2-Test-Results.md",
+        "__tests__/WO-CODEREF-CLI-IMPLEMENTATION-001-scanExecutor-test-spec.md",
+        "__tests__/WO-CODEREF-CLI-IMPLEMENTATION-001-test-summary.md",
+        "autoresearch/pipeline-quality/CAMPAIGN-SUMMARY.md",
+        "coderef/reference/SCANNER-IMPLEMENTATION-REFERENCE.md",
+        "coderef/resource/API-SCANNER-CONTRACT.md",
+        "coderef/resource/SCAN-EXECUTOR.md",
+        "coderef/resource/scanner/SCANNER-SYSTEM.md",
+        "CODEREF-ANALYSIS-REPORT.md",
+        "DUPLICATE-FILES-AUDIT.md",
+        "EXECUTIVE-SUMMARY.md",
+        "PROOF-OF-FIXES.md",
+        "src/coderef/CODEBASE-AUDIT-REPORT.md",
+        "TEST-FAILURE-ROOT-CAUSES.md"
+      ]
+    },
+    {
+      "type_id": 4,
+      "type_name": "Deliverables",
+      "count": 0,
+      "files": []
+    },
+    {
+      "type_id": 5,
+      "type_name": "Stub",
+      "count": 0,
+      "files": []
+    },
+    {
+      "type_id": 6,
+      "type_name": "README",
+      "count": 3,
+      "files": [
+        ".coderef/reports/complexity/README.md",
+        "docs/README.md",
+        "README.md"
+      ]
+    },
+    {
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "count": 8,
+      "files": [
+        "coderef/foundation-docs/API.md",
+        "coderef/foundation-docs/ARCHITECTURE.md",
+        "coderef/foundation-docs/COMPONENTS.md",
+        "coderef/foundation-docs/SCHEMA.md",
+        "docs/API.md",
+        "docs/ARCHITECTURE.md",
+        "docs/COMPONENTS.md",
+        "docs/SCHEMA.md"
+      ]
+    },
+    {
+      "type_id": 8,
+      "type_name": "Changelog",
+      "count": 0,
+      "files": []
+    },
+    {
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "count": 28,
+      "files": [
+        "coderef/resource/RESOURCE-SHEET.md",
+        "coderef/resource/SCRIPTS-RESOURCE-SHEET.md",
+        "coderef/resource/Setup-Coderef-Dir-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/Api-Routes-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/Context-Generator-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/File-Generation-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/INDEX.md",
+        "coderef/resources-sheets/Navigation-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/Pattern-Detection-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/ScanExecutor-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/Scanner-Effectiveness-Improvements-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/Scanner-Ui-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/systems/Context-Generator-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/systems/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/systems/File-Generation-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/systems/Scanner-UI-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/systems/Theme-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/Theme-System-RESOURCE-SHEET.md",
+        "scripts/setup-coderef-dir/RESOURCE-SHEET.md",
+        "src/.coderef/graph.json-RESOURCE-SHEET.md",
+        "src/.coderef/index.json-RESOURCE-SHEET.md",
+        "src/adapter/adapter-RESOURCE-SHEET.md",
+        "src/errors/errors-RESOURCE-SHEET.md",
+        "src/formatter/formatter-RESOURCE-SHEET.md",
+        "src/parser/parser-RESOURCE-SHEET.md",
+        "src/scanner/CONSOLIDATED-SCANNER-RESOURCE-SHEET.md",
+        "src/validator/validator-RESOURCE-SHEET.md"
+      ]
+    },
+    {
+      "type_id": 10,
+      "type_name": "Guide",
+      "count": 12,
+      "files": [
+        "autoresearch/LOOPS-REFERENCE.md",
+        "autoresearch/scanner-quality/AUTORESEARCH-WORKFLOW.md",
+        "coderef/resource/data-flow-architecture.md",
+        "coderef/resource/GRAPH-HELPERS-MIGRATION.md",
+        "docs/AGENT-WORKFLOW-GUIDE.md",
+        "docs/MIGRATION-VALIDATION-QUICKREF.md",
+        "docs/MIGRATION-VALIDATION-SPEC.md",
+        "docs/MIGRATION-VALIDATION.md",
+        "guide-to-coderef-core.md",
+        "scripts/scan-cli/REFERENCE.md",
+        "scripts/scan-cli/USAGE.md",
+        "scripts/setup-coderef-dir/USAGE.md"
+      ]
+    },
+    {
+      "type_id": 11,
+      "type_name": "Standards",
+      "count": 0,
+      "files": []
+    },
+    {
+      "type_id": 12,
+      "type_name": "Session Log",
+      "count": 4,
+      "files": [
+        "coderef/sessions/coderef-cli-implementation/AGENTS.md",
+        "coderef/sessions/coderef-cli-implementation/GEMINI.md",
+        "coderef/sessions/coderef-cli-implementation/implementor-output.md",
+        "coderef/sessions/coderef-cli-implementation/orchestrator-output.md"
+      ]
+    },
+    {
+      "type_id": 13,
+      "type_name": "Agent Handoff",
+      "count": 7,
+      "files": [
+        "coderef/workorder/coderef-cli-typescript-implementation/FULL-CLI-INTEGRATION.md",
+        "coderef/workorder/coderef-consolidation/PHASE-0-REVIEW-FINDINGS.md",
+        "coderef/workorder/fix-windows-spawn-exec/fix-scanner-phase1.md",
+        "coderef/workorder/fix-windows-spawn-exec/typescript-port-solution.md",
+        "coderef/workorder/migration-validation/plan.md",
+        "coderef/workorder/scanner-integration/WORKORDER-SUMMARY-REPORT.md",
+        "coderef/workorder/wo-unified-coderef-pipeline-001/plan.md"
+      ]
+    },
+    {
+      "type_id": 14,
+      "type_name": "Template",
+      "count": 0,
+      "files": []
+    },
+    {
+      "type_id": 15,
+      "type_name": "Index/Registry",
+      "count": 1,
+      "files": [
+        "src/.coderef/INDEX.md"
+      ]
+    },
+    {
+      "type_id": 16,
+      "type_name": "Persona",
+      "count": 0,
+      "files": []
+    },
+    {
+      "type_id": 17,
+      "type_name": "Agent Context",
+      "count": 4,
+      "files": [
+        ".coderef/context.md",
+        "CLAUDE.md",
+        "coderef/sessions/coderef-cli-implementation/CLAUDE.md",
+        "scripts/CLAUDE.md"
+      ]
+    },
+    {
+      "type_id": 18,
+      "type_name": "Prompt",
+      "count": 0,
+      "files": []
+    },
+    {
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "count": 24,
+      "files": [
+        "AGENTS.md",
+        "autoresearch/pipeline-quality/07-critical-function-pipeline/goal.md",
+        "autoresearch/pipeline-quality/08-test-gap-pipeline/goal.md",
+        "autoresearch/pipeline-quality/09-async-pattern-pipeline/goal.md",
+        "autoresearch/pipeline-quality/AGENT2-PROGRESS.md",
+        "autoresearch/pipeline-quality/AUTO-INJECTION-IMPLEMENTATION.md",
+        "autoresearch/pipeline-quality/AUTO-INJECTION-PATHS.md",
+        "autoresearch/pipeline-quality/BASELINES.md",
+        "autoresearch/scanner-quality/01-element-classification/goal.md",
+        "autoresearch/scanner-quality/02-export-relationships/goal.md",
+        "autoresearch/scanner-quality/03-test-coverage-linkage/goal.md",
+        "autoresearch/scanner-quality/04-async-pattern-detection/goal.md",
+        "autoresearch/scanner-quality/05-context-summary-signal/goal.md",
+        "autoresearch/scanner-quality/06-test-gap-precision/goal.md",
+        "autoresearch/scanner-quality/BASELINES.md",
+        "autoresearch/scanner-quality/VERIFY-CONTRACTS.md",
+        "coderef/resource/API-ACCESS.md",
+        "docs/FRONTEND-CALL-DETECTION.md",
+        "docs/ROUTE-DETECTION.md",
+        "docs/ROUTE-VALIDATION.md",
+        "GEMINI.md",
+        "IMPORTANT-WORKORDER-FILES.md",
+        "scripts/AGENTS.md",
+        "scripts/GEMINI.md"
+      ]
+    }
+  ],
+  "files": [
+    {
+      "path": ".coderef/context.md",
+      "filename": "context.md",
+      "directory": ".coderef",
+      "type_id": 17,
+      "type_name": "Agent Context",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-04-14T01:54:28.524816+00:00",
+      "size_bytes": 9958
+    },
+    {
+      "path": ".coderef/exports/diagram-wrapped.md",
+      "filename": "diagram-wrapped.md",
+      "directory": ".coderef/exports",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {},
+      "last_modified": "2026-04-14T01:54:28.472688+00:00",
+      "size_bytes": 19107
+    },
+    {
+      "path": ".coderef/reports/complexity/README.md",
+      "filename": "README.md",
+      "directory": ".coderef/reports/complexity",
+      "type_id": 6,
+      "type_name": "README",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {},
+      "last_modified": "2026-01-04T09:32:04.785407+00:00",
+      "size_bytes": 158
+    },
+    {
+      "path": "__tests__/WO-CODEREF-CLI-IMPLEMENTATION-001-Phase2-Test-Results.md",
+      "filename": "WO-CODEREF-CLI-IMPLEMENTATION-001-Phase2-Test-Results.md",
+      "directory": "__tests__",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Test File": "`packages/dashboard/src/app/api/scanner/lib/scanExecutor.test.ts`",
+        "Test Suite": "Phase 2: Caching & File Generation",
+        "Date": "2026-01-09",
+        "Total Tests": "16 tests",
+        "Passed": "16 \u2705",
+        "Failed": "0",
+        "Status": "\u2705 **ALL TESTS PASSING**"
+      },
+      "last_modified": "2026-01-14T21:27:45.842264+00:00",
+      "size_bytes": 5265
+    },
+    {
+      "path": "__tests__/WO-CODEREF-CLI-IMPLEMENTATION-001-scanExecutor-test-spec.md",
+      "filename": "WO-CODEREF-CLI-IMPLEMENTATION-001-scanExecutor-test-spec.md",
+      "directory": "__tests__",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Location": "`packages/dashboard/src/app/api/scanner/lib/__tests__/scanExecutor.test.ts`",
+        "Purpose": "Test caching and parallel file generation in scanExecutor"
+      },
+      "last_modified": "2026-01-09T23:50:21.960605+00:00",
+      "size_bytes": 10360
+    },
+    {
+      "path": "__tests__/WO-CODEREF-CLI-IMPLEMENTATION-001-test-summary.md",
+      "filename": "WO-CODEREF-CLI-IMPLEMENTATION-001-test-summary.md",
+      "directory": "__tests__",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Goal": "Replace Python subprocess with TypeScript, add caching, enable parallel generation",
+        "Location": "`src/fileGeneration/__tests__/`"
+      },
+      "last_modified": "2026-01-09T23:50:21.960605+00:00",
+      "size_bytes": 4780
+    },
+    {
+      "path": "AGENTS.md",
+      "filename": "AGENTS.md",
+      "directory": ".",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:35:02.503713+00:00",
+      "size_bytes": 175
+    },
+    {
+      "path": "autoresearch/LOOPS-REFERENCE.md",
+      "filename": "LOOPS-REFERENCE.md",
+      "directory": "autoresearch",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-04-10T04:08:19.923781+00:00",
+      "size_bytes": 3020
+    },
+    {
+      "path": "autoresearch/pipeline-quality/07-critical-function-pipeline/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/pipeline-quality/07-critical-function-pipeline",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Status": "COMPLETE (Manual fix + Two-tier ground truth)",
+        "Final Score": "0.640000 (two-tier, accurate) - **1,180% improvement!**",
+        "Date Completed": "2026-04-10",
+        "Baseline": "0.050000 (single-tier, misleading)"
+      },
+      "last_modified": "2026-04-10T22:00:02.487524+00:00",
+      "size_bytes": 8834
+    },
+    {
+      "path": "autoresearch/pipeline-quality/08-test-gap-pipeline/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/pipeline-quality/08-test-gap-pipeline",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Status": "\u2705 COMPLETE (Manual Fix - Weighted Metric)",
+        "Baseline": "0.019494 (multiplicative) / 0.145652 (weighted)",
+        "Final Score": "0.400000 (weighted) - **80% of target 0.50**",
+        "Date Created": "2026-04-10",
+        "Date Completed": "2026-04-10"
+      },
+      "last_modified": "2026-04-10T23:53:22.447014+00:00",
+      "size_bytes": 8245
+    },
+    {
+      "path": "autoresearch/pipeline-quality/09-async-pattern-pipeline/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/pipeline-quality/09-async-pattern-pipeline",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Status": "\u2705 COMPLETE (Weighted Metric)",
+        "Baseline": "0.187500 (multiplicative) / 0.593750 (weighted)",
+        "Final Score": "0.593750 (weighted) - **74% of target 0.80**",
+        "Date Created": "2026-04-10",
+        "Date Completed": "2026-04-10"
+      },
+      "last_modified": "2026-04-11T00:55:53.995465+00:00",
+      "size_bytes": 8565
+    },
+    {
+      "path": "autoresearch/pipeline-quality/AGENT2-PROGRESS.md",
+      "filename": "AGENT2-PROGRESS.md",
+      "directory": "autoresearch/pipeline-quality",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Date": "2026-04-11",
+        "Status": "Foundation Laid, Integration Pending"
+      },
+      "last_modified": "2026-04-11T01:53:14.856233+00:00",
+      "size_bytes": 8800
+    },
+    {
+      "path": "autoresearch/pipeline-quality/AUTO-INJECTION-IMPLEMENTATION.md",
+      "filename": "AUTO-INJECTION-IMPLEMENTATION.md",
+      "directory": "autoresearch/pipeline-quality",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Date": "2026-04-11",
+        "Status": "\u2705 IMPLEMENTED"
+      },
+      "last_modified": "2026-04-11T02:32:47.071774+00:00",
+      "size_bytes": 11932
+    },
+    {
+      "path": "autoresearch/pipeline-quality/AUTO-INJECTION-PATHS.md",
+      "filename": "AUTO-INJECTION-PATHS.md",
+      "directory": "autoresearch/pipeline-quality",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Date": "2026-04-11",
+        "Purpose": "Path reference for Loop 8 & 9 auto-injection implementation and testing"
+      },
+      "last_modified": "2026-04-11T04:44:05.222758+00:00",
+      "size_bytes": 2837
+    },
+    {
+      "path": "autoresearch/pipeline-quality/BASELINES.md",
+      "filename": "BASELINES.md",
+      "directory": "autoresearch/pipeline-quality",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-04-11T00:58:17.475531+00:00",
+      "size_bytes": 22797
+    },
+    {
+      "path": "autoresearch/pipeline-quality/CAMPAIGN-SUMMARY.md",
+      "filename": "CAMPAIGN-SUMMARY.md",
+      "directory": "autoresearch/pipeline-quality",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Campaign": "Validate scanner outputs improve downstream workorders",
+        "Date Completed": "2026-04-10",
+        "Loops Completed": "7, 8, 9 (3/3 pipeline loops)",
+        "Key Finding": "Scanner detection (Agent 1) works well, but workorder integration (Agent 2) needs implementation."
+      },
+      "last_modified": "2026-04-11T01:00:48.518666+00:00",
+      "size_bytes": 10688
+    },
+    {
+      "path": "autoresearch/pipeline-quality/MASTER-PLAN.md",
+      "filename": "MASTER-PLAN.md",
+      "directory": "autoresearch/pipeline-quality",
+      "type_id": 2,
+      "type_name": "Plan",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-04-10T19:15:17.792128+00:00",
+      "size_bytes": 11799
+    },
+    {
+      "path": "autoresearch/scanner-quality/01-element-classification/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/01-element-classification",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Goal": "Improve coderef-core scanner element extraction and classification quality for Python repositories so properties and methods are not emitted as duplicated top-level exports when scanning the stl-agent corpus.",
+        "Metric": "element_classification_score",
+        "Direction": "higher_is_better",
+        "Verify": "python autoresearch/scanner-quality/scripts/verify_element_classification.py --corpus-root C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent --scan-dir C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent/.coderef",
+        "Scope": "",
+        "Iterations": "15",
+        "Budget": "180"
+      },
+      "last_modified": "2026-04-10T08:59:43.271038+00:00",
+      "size_bytes": 1508
+    },
+    {
+      "path": "autoresearch/scanner-quality/02-export-relationships/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/02-export-relationships",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Goal": "Improve coderef-core scanner export and relationship accuracy so entry points and exported symbol summaries match actual code structure for the stl-agent corpus.",
+        "Metric": "export_relationship_precision",
+        "Direction": "higher_is_better",
+        "Verify": "python autoresearch/scanner-quality/scripts/verify_export_relationships.py --corpus-root C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent --scan-dir C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent/.coderef",
+        "Scope": "",
+        "Iterations": "15",
+        "Budget": "180"
+      },
+      "last_modified": "2026-04-10T04:09:43.330286+00:00",
+      "size_bytes": 1280
+    },
+    {
+      "path": "autoresearch/scanner-quality/03-test-coverage-linkage/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/03-test-coverage-linkage",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Goal": "Improve coderef-core scanner test discovery and coverage linkage so tested production files are recognized correctly for the stl-agent corpus.",
+        "Metric": "test_link_accuracy",
+        "Direction": "higher_is_better",
+        "Verify": "python autoresearch/scanner-quality/scripts/verify_test_linkage.py --corpus-root C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent --scan-dir C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent/.coderef",
+        "Scope": "",
+        "Iterations": "20",
+        "Budget": "180"
+      },
+      "last_modified": "2026-04-10T04:09:56.890741+00:00",
+      "size_bytes": 1402
+    },
+    {
+      "path": "autoresearch/scanner-quality/04-async-pattern-detection/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/04-async-pattern-detection",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Goal": "Improve coderef-core async pattern detection so real async functions and async boundaries are surfaced correctly when scanning the stl-agent corpus.",
+        "Metric": "async_pattern_recall",
+        "Direction": "higher_is_better",
+        "Verify": "python autoresearch/scanner-quality/scripts/verify_async_patterns.py --corpus-root C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent --scan-dir C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent/.coderef",
+        "Scope": "",
+        "Iterations": "15",
+        "Budget": "180"
+      },
+      "last_modified": "2026-04-10T04:10:08.467716+00:00",
+      "size_bytes": 1240
+    },
+    {
+      "path": "autoresearch/scanner-quality/05-context-summary-signal/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/05-context-summary-signal",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Goal": "Improve coderef-core context summary precision so scanner onboarding summaries highlight real production hotspots and suppress test-helper noise for the stl-agent corpus.",
+        "Metric": "context_summary_precision",
+        "Direction": "higher_is_better",
+        "Verify": "python autoresearch/scanner-quality/scripts/verify_context_signal.py --corpus-root C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent --scan-dir C:/Users/willh/Desktop/CODEREF/ASSISTANT/projects/stl-agent/.coderef",
+        "Scope": "",
+        "Iterations": "15",
+        "Budget": "180"
+      },
+      "last_modified": "2026-04-10T04:10:20.058458+00:00",
+      "size_bytes": 1288
+    },
+    {
+      "path": "autoresearch/scanner-quality/06-test-gap-precision/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/06-test-gap-precision",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Impact": "~30-40 false positives out of 67 total testGaps entries (~40-50% noise)."
+      },
+      "last_modified": "2026-04-10T16:51:26.984985+00:00",
+      "size_bytes": 2704
+    },
+    {
+      "path": "autoresearch/scanner-quality/AUTORESEARCH-WORKFLOW.md",
+      "filename": "AUTORESEARCH-WORKFLOW.md",
+      "directory": "autoresearch/scanner-quality",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-04-10T04:08:49.855433+00:00",
+      "size_bytes": 3062
+    },
+    {
+      "path": "autoresearch/scanner-quality/BASELINES.md",
+      "filename": "BASELINES.md",
+      "directory": "autoresearch/scanner-quality",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-04-10T18:08:49.528198+00:00",
+      "size_bytes": 3444
+    },
+    {
+      "path": "autoresearch/scanner-quality/MASTER-PLAN.md",
+      "filename": "MASTER-PLAN.md",
+      "directory": "autoresearch/scanner-quality",
+      "type_id": 2,
+      "type_name": "Plan",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-04-05T09:56:58.920700+00:00",
+      "size_bytes": 3858
+    },
+    {
+      "path": "autoresearch/scanner-quality/VERIFY-CONTRACTS.md",
+      "filename": "VERIFY-CONTRACTS.md",
+      "directory": "autoresearch/scanner-quality",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-04-10T04:09:06.626288+00:00",
+      "size_bytes": 3039
+    },
+    {
+      "path": "CLAUDE.md",
+      "filename": "CLAUDE.md",
+      "directory": ".",
+      "type_id": 17,
+      "type_name": "Agent Context",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:34:51.438309+00:00",
+      "size_bytes": 175
+    },
+    {
+      "path": "coderef/foundation-docs/API.md",
+      "filename": "API.md",
+      "directory": "coderef/foundation-docs",
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Project": "@coderef/core",
+        "Version": "2.0.0",
+        "Last Updated": "2026-01-09"
+      },
+      "last_modified": "2026-01-10T02:40:21.682488+00:00",
+      "size_bytes": 23319
+    },
+    {
+      "path": "coderef/foundation-docs/ARCHITECTURE.md",
+      "filename": "ARCHITECTURE.md",
+      "directory": "coderef/foundation-docs",
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Project": "@coderef/core",
+        "Version": "2.0.0",
+        "Last Updated": "2026-01-09"
+      },
+      "last_modified": "2026-01-10T02:37:09.327497+00:00",
+      "size_bytes": 32370
+    },
+    {
+      "path": "coderef/foundation-docs/COMPONENTS.md",
+      "filename": "COMPONENTS.md",
+      "directory": "coderef/foundation-docs",
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Project": "@coderef/core",
+        "Version": "2.0.0",
+        "Last Updated": "2026-01-09"
+      },
+      "last_modified": "2026-01-10T02:45:23.723460+00:00",
+      "size_bytes": 22487
+    },
+    {
+      "path": "coderef/foundation-docs/SCHEMA.md",
+      "filename": "SCHEMA.md",
+      "directory": "coderef/foundation-docs",
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Project": "@coderef/core",
+        "Version": "2.0.0",
+        "Last Updated": "2026-01-09"
+      },
+      "last_modified": "2026-01-10T02:42:53.779277+00:00",
+      "size_bytes": 19283
+    },
+    {
+      "path": "coderef/reference/SCANNER-IMPLEMENTATION-REFERENCE.md",
+      "filename": "SCANNER-IMPLEMENTATION-REFERENCE.md",
+      "directory": "coderef/reference",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "date": "2026-01-08",
+        "subject": "Scanner Implementation Reference",
+        "status": "TESTING_REQUIRED",
+        "category": "reference",
+        "version": "1.0.0",
+        "related_files": ""
+      },
+      "last_modified": "2026-01-08T21:00:49.768435+00:00",
+      "size_bytes": 18667
+    },
+    {
+      "path": "coderef/resource/API-ACCESS.md",
+      "filename": "API-ACCESS.md",
+      "directory": "coderef/resource",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Category": "API Client Library",
+        "Type": "TypeScript Module (Fetch Wrappers)",
+        "File": "`packages/dashboard/src/lib/coderef/api-access.ts`",
+        "Created": "2026-01-02",
+        "Updated": "2026-01-04 (WO-CORE-DASHBOARD-INTEGRATION-001)",
+        "Lines of Code": "205 (+48 lines - ScanApi namespace)",
+        "Generated by": "Resource Sheet Generation Workflow",
+        "Timestamp": "2026-01-02",
+        "Auto-fill Rate": "Manual (comprehensive analysis)",
+        "Element": "CodeRefApi (api-access.ts)"
+      },
+      "last_modified": "2026-01-04T07:03:28.920300+00:00",
+      "size_bytes": 30703
+    },
+    {
+      "path": "coderef/resource/API-SCANNER-CONTRACT.md",
+      "filename": "API-SCANNER-CONTRACT.md",
+      "directory": "coderef/resource",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Version": "2.0.0",
+        "Purpose": "API contract for consuming @coderef/core scanner functions in external applications (e.g., coderef-dashboard)",
+        "Audience": "Dashboard developers, API integrators"
+      },
+      "last_modified": "2026-01-04T07:21:19.356914+00:00",
+      "size_bytes": 16179
+    },
+    {
+      "path": "coderef/resource/data-flow-architecture.md",
+      "filename": "data-flow-architecture.md",
+      "directory": "coderef/resource",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)",
+        "Date": "2026-01-02",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-03T03:59:27.146584+00:00",
+      "size_bytes": 27888
+    },
+    {
+      "path": "coderef/resource/GRAPH-HELPERS-MIGRATION.md",
+      "filename": "GRAPH-HELPERS-MIGRATION.md",
+      "directory": "coderef/resource",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Version": "1.0.0",
+        "Date": "2026-01-03",
+        "Workorder": "WO-RESOURCE-SHEET-GRAPH-INTEGRATION-001"
+      },
+      "last_modified": "2026-01-04T08:49:13.036984+00:00",
+      "size_bytes": 16835
+    },
+    {
+      "path": "coderef/resource/RESOURCE-SHEET.md",
+      "filename": "RESOURCE-SHEET.md",
+      "directory": "coderef/resource",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)",
+        "Date": "2026-01-03",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-04T08:49:13.873110+00:00",
+      "size_bytes": 36147
+    },
+    {
+      "path": "coderef/resource/SCAN-EXECUTOR.md",
+      "filename": "SCAN-EXECUTOR.md",
+      "directory": "coderef/resource",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Category": "Backend Service / Process Orchestrator",
+        "Type": "Node.js Class (EventEmitter)",
+        "File": "`packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts`",
+        "Created": "2026-01-02",
+        "Updated": "2026-01-04 (WO-CORE-DASHBOARD-INTEGRATION-001)",
+        "Lines of Code": "176 (reduced from 343 after HTTP-based scan integration)",
+        "Generated by": "Resource Sheet Generation Workflow",
+        "Timestamp": "2026-01-02",
+        "Auto-fill Rate": "Manual (comprehensive analysis)",
+        "Element": "ScanExecutor"
+      },
+      "last_modified": "2026-01-04T06:59:15.704259+00:00",
+      "size_bytes": 34439
+    },
+    {
+      "path": "coderef/resource/scanner/SCANNER-SYSTEM.md",
+      "filename": "SCANNER-SYSTEM.md",
+      "directory": "coderef/resource/scanner",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)",
+        "Date": "2026-01-04",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-04T22:08:48.951850+00:00",
+      "size_bytes": 23150
+    },
+    {
+      "path": "coderef/resource/scanner/TYPESCRIPT-IMPLEMENTATION-PLAN.md",
+      "filename": "TYPESCRIPT-IMPLEMENTATION-PLAN.md",
+      "directory": "coderef/resource/scanner",
+      "type_id": 2,
+      "type_name": "Plan",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Created": "2026-01-04",
+        "Status": "Implementation Guide",
+        "Purpose": "Port CodeRef CLI functionality to pure TypeScript for self-contained dashboard",
+        "Location": "`C:\\Users\\willh\\Desktop\\projects\\coderef-system\\scripts\\`"
+      },
+      "last_modified": "2026-01-05T04:11:44.431333+00:00",
+      "size_bytes": 41850
+    },
+    {
+      "path": "coderef/resource/SCRIPTS-RESOURCE-SHEET.md",
+      "filename": "SCRIPTS-RESOURCE-SHEET.md",
+      "directory": "coderef/resource",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Last Updated": "2026-01-03",
+        "Status": "Authoritative Script Inventory",
+        "Total Scripts": "65+ across 10 categories"
+      },
+      "last_modified": "2026-01-04T08:49:13.072539+00:00",
+      "size_bytes": 8657
+    },
+    {
+      "path": "coderef/resource/Setup-Coderef-Dir-RESOURCE-SHEET.md",
+      "filename": "Setup-Coderef-Dir-RESOURCE-SHEET.md",
+      "directory": "coderef/resource",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "agent": "Claude Sonnet 4.5",
+        "date": "2026-01-04",
+        "task": "CREATE",
+        "subject": "Setup-Coderef-Dir",
+        "parent_project": "coderef-core",
+        "category": "utility",
+        "version": "1.0.0",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-04T22:21:28.227175+00:00",
+      "size_bytes": 3537
+    },
+    {
+      "path": "coderef/resources-sheets/Api-Routes-System-RESOURCE-SHEET.md",
+      "filename": "Api-Routes-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4.5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "API Routes System",
+        "parent_project": "coderef-dashboard",
+        "category": "service",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T21:36:18.588286+00:00",
+      "size_bytes": 20470
+    },
+    {
+      "path": "coderef/resources-sheets/Context-Generator-RESOURCE-SHEET.md",
+      "filename": "Context-Generator-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4.5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "Context Generator",
+        "parent_project": "coderef-core",
+        "category": "service",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T00:49:10.860160+00:00",
+      "size_bytes": 18882
+    },
+    {
+      "path": "coderef/resources-sheets/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+      "filename": "Dependency-Graph-Builder-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4.5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "Dependency Graph Builder",
+        "parent_project": "coderef-core",
+        "category": "service",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T00:49:10.846301+00:00",
+      "size_bytes": 18388
+    },
+    {
+      "path": "coderef/resources-sheets/File-Generation-System-RESOURCE-SHEET.md",
+      "filename": "File-Generation-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4.5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "File Generation System",
+        "parent_project": "coderef-core",
+        "category": "system",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T21:27:45.843431+00:00",
+      "size_bytes": 19422
+    },
+    {
+      "path": "coderef/resources-sheets/INDEX.md",
+      "filename": "INDEX.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4.5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "Resource Sheets Index",
+        "parent_project": "coderef-dashboard",
+        "category": "other",
+        "version": "\"1.0.0\"",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T21:36:18.593582+00:00",
+      "size_bytes": 11752
+    },
+    {
+      "path": "coderef/resources-sheets/Navigation-System-RESOURCE-SHEET.md",
+      "filename": "Navigation-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4.5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "Navigation System",
+        "parent_project": "coderef-dashboard",
+        "category": "component",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T21:36:18.588286+00:00",
+      "size_bytes": 16345
+    },
+    {
+      "path": "coderef/resources-sheets/Pattern-Detection-System-RESOURCE-SHEET.md",
+      "filename": "Pattern-Detection-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4.5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "Pattern Detection System",
+        "parent_project": "coderef-core",
+        "category": "service",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T21:36:18.588286+00:00",
+      "size_bytes": 17380
+    },
+    {
+      "path": "coderef/resources-sheets/ScanExecutor-RESOURCE-SHEET.md",
+      "filename": "ScanExecutor-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4.5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "ScanExecutor",
+        "parent_project": "coderef-dashboard",
+        "category": "service",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T21:36:18.588286+00:00",
+      "size_bytes": 19819
+    },
+    {
+      "path": "coderef/resources-sheets/Scanner-Effectiveness-Improvements-RESOURCE-SHEET.md",
+      "filename": "Scanner-Effectiveness-Improvements-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude_sonnet_4_5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "Scanner Effectiveness Improvements",
+        "parent_project": "coderef-dashboard",
+        "category": "utility",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T21:51:51.279648+00:00",
+      "size_bytes": 38541
+    },
+    {
+      "path": "coderef/resources-sheets/Scanner-Ui-System-RESOURCE-SHEET.md",
+      "filename": "Scanner-Ui-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4-5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "Scanner UI System",
+        "parent_project": "coderef-dashboard",
+        "category": "component",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T00:34:02.360604+00:00",
+      "size_bytes": 16099
+    },
+    {
+      "path": "coderef/resources-sheets/systems/Context-Generator-RESOURCE-SHEET.md",
+      "filename": "Context-Generator-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets/systems",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-01-14T00:34:54.707885+00:00",
+      "size_bytes": 0
+    },
+    {
+      "path": "coderef/resources-sheets/systems/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+      "filename": "Dependency-Graph-Builder-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets/systems",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-01-14T00:34:54.707885+00:00",
+      "size_bytes": 0
+    },
+    {
+      "path": "coderef/resources-sheets/systems/File-Generation-System-RESOURCE-SHEET.md",
+      "filename": "File-Generation-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets/systems",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-01-14T00:34:54.707885+00:00",
+      "size_bytes": 0
+    },
+    {
+      "path": "coderef/resources-sheets/systems/Scanner-UI-System-RESOURCE-SHEET.md",
+      "filename": "Scanner-UI-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets/systems",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-01-14T00:34:54.707885+00:00",
+      "size_bytes": 0
+    },
+    {
+      "path": "coderef/resources-sheets/systems/Theme-System-RESOURCE-SHEET.md",
+      "filename": "Theme-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets/systems",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-01-14T00:34:54.718219+00:00",
+      "size_bytes": 0
+    },
+    {
+      "path": "coderef/resources-sheets/Theme-System-RESOURCE-SHEET.md",
+      "filename": "Theme-System-RESOURCE-SHEET.md",
+      "directory": "coderef/resources-sheets",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "agent": "claude-sonnet-4-5",
+        "date": "\"2026-01-13\"",
+        "task": "DOCUMENT",
+        "subject": "Theme System",
+        "parent_project": "coderef-dashboard",
+        "category": "component",
+        "version": "\"1.0.0\"",
+        "related_files": "",
+        "status": "APPROVED"
+      },
+      "last_modified": "2026-01-14T00:34:02.360604+00:00",
+      "size_bytes": 14263
+    },
+    {
+      "path": "coderef/sessions/coderef-cli-implementation/AGENTS.md",
+      "filename": "AGENTS.md",
+      "directory": "coderef/sessions/coderef-cli-implementation",
+      "type_id": 12,
+      "type_name": "Session Log",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:40:12.042536+00:00",
+      "size_bytes": 219
+    },
+    {
+      "path": "coderef/sessions/coderef-cli-implementation/CLAUDE.md",
+      "filename": "CLAUDE.md",
+      "directory": "coderef/sessions/coderef-cli-implementation",
+      "type_id": 17,
+      "type_name": "Agent Context",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:40:01.092704+00:00",
+      "size_bytes": 219
+    },
+    {
+      "path": "coderef/sessions/coderef-cli-implementation/GEMINI.md",
+      "filename": "GEMINI.md",
+      "directory": "coderef/sessions/coderef-cli-implementation",
+      "type_id": 12,
+      "type_name": "Session Log",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:40:06.568851+00:00",
+      "size_bytes": 219
+    },
+    {
+      "path": "coderef/sessions/coderef-cli-implementation/implementor-output.md",
+      "filename": "implementor-output.md",
+      "directory": "coderef/sessions/coderef-cli-implementation",
+      "type_id": 12,
+      "type_name": "Session Log",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "Workorder": "WO-CODEREF-CLI-IMPLEMENTATION-001",
+        "Agent": "CodeRef Core Implementor",
+        "Completed": "2026-01-09",
+        "Status": "\u2705 Phase 1 Implementation Complete"
+      },
+      "last_modified": "2026-01-10T01:18:28.459891+00:00",
+      "size_bytes": 18460
+    },
+    {
+      "path": "coderef/sessions/coderef-cli-implementation/orchestrator-output.md",
+      "filename": "orchestrator-output.md",
+      "directory": "coderef/sessions/coderef-cli-implementation",
+      "type_id": 12,
+      "type_name": "Session Log",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "Session": "WO-CODEREF-CLI-IMPLEMENTATION-001",
+        "Created": "2026-01-09",
+        "Orchestrator": "CodeRef Assistant",
+        "Goal": "Implement file generation functions so that clicking \"Scan\" in the dashboard UI produces all 16 output files in the `.coderef/` directory.",
+        "Access Method": "Dashboard UI \u2192 Scanner Page \u2192 Scan Button \u2192 Files Generated"
+      },
+      "last_modified": "2026-01-09T23:35:43.931172+00:00",
+      "size_bytes": 24291
+    },
+    {
+      "path": "coderef/workorder/coderef-cli-typescript-implementation/FULL-CLI-INTEGRATION.md",
+      "filename": "FULL-CLI-INTEGRATION.md",
+      "directory": "coderef/workorder/coderef-cli-typescript-implementation",
+      "type_id": 13,
+      "type_name": "Agent Handoff",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "Created": "2026-01-04",
+        "Updated": "2026-01-09 (Clarified dashboard implementation goal)",
+        "Purpose": "Implement file generation functions in coderef-dashboard scanner",
+        "Reference Source": "CodeRef CLI capabilities (for guidance only)",
+        "WE ARE IMPLEMENTING": "File generation functions into the coderef-dashboard scanner UI",
+        "WE ARE NOT BUILDING": "A new CLI tool",
+        "Goal": "When a user clicks \"Scan\" in the dashboard, the scanner should:",
+        "Access Method": "Dashboard UI \u2192 Scanner Page \u2192 Scan Button",
+        "Implementation Location": "`packages/coderef-core/src/` (TypeScript functions called by dashboard)"
+      },
+      "last_modified": "2026-01-09T23:23:34.496985+00:00",
+      "size_bytes": 23125
+    },
+    {
+      "path": "coderef/workorder/coderef-consolidation/PHASE-0-REVIEW-FINDINGS.md",
+      "filename": "PHASE-0-REVIEW-FINDINGS.md",
+      "directory": "coderef/workorder/coderef-consolidation",
+      "type_id": 13,
+      "type_name": "Agent Handoff",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "Workorder": "WO-CODEREF-CONSOLIDATION-001",
+        "Phase": "0 - Pre-Migration Review",
+        "Date": "2026-01-08",
+        "Reviewer": "AI Assistant",
+        "Recommendation": "**ARCHIVE WITHOUT INTEGRATION**"
+      },
+      "last_modified": "2026-01-08T10:02:31.777632+00:00",
+      "size_bytes": 10955
+    },
+    {
+      "path": "coderef/workorder/fix-windows-spawn-exec/fix-scanner-phase1.md",
+      "filename": "fix-scanner-phase1.md",
+      "directory": "coderef/workorder/fix-windows-spawn-exec",
+      "type_id": 13,
+      "type_name": "Agent Handoff",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "name": "Fix Windows spawn issue with exec",
+        "overview": "Replace Node.js spawn() with exec() in scanExecutor.ts to fix Windows cmd.exe ENOENT error. This will unblock Phase 0 (Directories) and Phase 2 (Populate) execution on Windows by using exec's automatic shell resolution instead of manual shell path configuration.",
+        "todos": "",
+        "- id": "test-error-handling",
+        "content": "Test error handling with invalid project paths",
+        "status": "pending",
+        "dependencies": ""
+      },
+      "last_modified": "2026-01-09T18:17:26.225847+00:00",
+      "size_bytes": 13151
+    },
+    {
+      "path": "coderef/workorder/fix-windows-spawn-exec/typescript-port-solution.md",
+      "filename": "typescript-port-solution.md",
+      "directory": "coderef/workorder/fix-windows-spawn-exec",
+      "type_id": 13,
+      "type_name": "Agent Handoff",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {},
+      "last_modified": "2026-01-09T18:20:11.298388+00:00",
+      "size_bytes": 15556
+    },
+    {
+      "path": "coderef/workorder/migration-validation/plan.md",
+      "filename": "plan.md",
+      "directory": "coderef/workorder/migration-validation",
+      "type_id": 13,
+      "type_name": "Agent Handoff",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "Workorder ID": "WO-MIGRATION-VALIDATION-001",
+        "Version": "1.0.0",
+        "Status": "Planning",
+        "Generated": "2026-03-02T02:00:00Z",
+        "Parent Workorder": "WO-ROUTE-VALIDATION-ENHANCEMENT-001"
+      },
+      "last_modified": "2026-03-02T01:52:14.781597+00:00",
+      "size_bytes": 25236
+    },
+    {
+      "path": "coderef/workorder/scanner-integration/WORKORDER-SUMMARY-REPORT.md",
+      "filename": "WORKORDER-SUMMARY-REPORT.md",
+      "directory": "coderef/workorder/scanner-integration",
+      "type_id": 13,
+      "type_name": "Agent Handoff",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "Workorder ID": "WO-SCANNER-INTEGRATION-001",
+        "Feature Name": "scanner-integration",
+        "Status": "\u2705 **COMPLETE** (Phases 1-5)",
+        "Created": "2026-01-15",
+        "Completed": "2026-01-16",
+        "Assigned Agent": "claude-sonnet-4-5",
+        "Session ID": "scanner-integration-phases-4-5"
+      },
+      "last_modified": "2026-01-16T21:18:26.583290+00:00",
+      "size_bytes": 11935
+    },
+    {
+      "path": "coderef/workorder/wo-unified-coderef-pipeline-001/plan.md",
+      "filename": "plan.md",
+      "directory": "coderef/workorder/wo-unified-coderef-pipeline-001",
+      "type_id": 13,
+      "type_name": "Agent Handoff",
+      "confidence": "MEDIUM",
+      "detection_method": "directory",
+      "frontmatter": {
+        "Date": "2026-03-12",
+        "Status": "Replanned to match actual repository state",
+        "Scope": "`packages/coderef-core` only"
+      },
+      "last_modified": "2026-03-12T18:49:07.218315+00:00",
+      "size_bytes": 9211
+    },
+    {
+      "path": "CODEREF-ANALYSIS-REPORT.md",
+      "filename": "CODEREF-ANALYSIS-REPORT.md",
+      "directory": ".",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Generated": "2026-01-17",
+        "Codebase Version": "WO-SCANNER-INTEGRATION-001 (Complete \u2705)",
+        "Data Source": "`.coderef/index.json` (2,516 elements scanned)",
+        "Total Elements": "2,516 (n = 100%)",
+        "Total Files": "166",
+        "Test Suites": "23 files (402 test-related elements)"
+      },
+      "last_modified": "2026-01-17T18:57:14.056976+00:00",
+      "size_bytes": 22794
+    },
+    {
+      "path": "docs/AGENT-WORKFLOW-GUIDE.md",
+      "filename": "AGENT-WORKFLOW-GUIDE.md",
+      "directory": "docs",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-03-02T04:45:01.243579+00:00",
+      "size_bytes": 27865
+    },
+    {
+      "path": "docs/API.md",
+      "filename": "API.md",
+      "directory": "docs",
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Date": "2025-09-17",
+        "Version": "2.0.0"
+      },
+      "last_modified": "2026-01-16T08:41:46.841566+00:00",
+      "size_bytes": 18307
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "filename": "ARCHITECTURE.md",
+      "directory": "docs",
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Date": "2025-09-17",
+        "Version": "2.0.0"
+      },
+      "last_modified": "2026-01-08T10:38:16.998491+00:00",
+      "size_bytes": 20523
+    },
+    {
+      "path": "docs/COMPONENTS.md",
+      "filename": "COMPONENTS.md",
+      "directory": "docs",
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Framework": "TypeScript/Node.js",
+        "Version": "2.0.0"
+      },
+      "last_modified": "2026-01-08T10:38:17.061393+00:00",
+      "size_bytes": 20217
+    },
+    {
+      "path": "docs/FRONTEND-CALL-DETECTION.md",
+      "filename": "FRONTEND-CALL-DETECTION.md",
+      "directory": "docs",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-03-01T21:54:07.353307+00:00",
+      "size_bytes": 8329
+    },
+    {
+      "path": "docs/MIGRATION-VALIDATION-QUICKREF.md",
+      "filename": "MIGRATION-VALIDATION-QUICKREF.md",
+      "directory": "docs",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-03-02T03:24:43.067925+00:00",
+      "size_bytes": 15786
+    },
+    {
+      "path": "docs/MIGRATION-VALIDATION-SPEC.md",
+      "filename": "MIGRATION-VALIDATION-SPEC.md",
+      "directory": "docs",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-03-02T03:17:30.663775+00:00",
+      "size_bytes": 47793
+    },
+    {
+      "path": "docs/MIGRATION-VALIDATION.md",
+      "filename": "MIGRATION-VALIDATION.md",
+      "directory": "docs",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-03-02T03:03:55.738603+00:00",
+      "size_bytes": 22120
+    },
+    {
+      "path": "docs/README.md",
+      "filename": "README.md",
+      "directory": "docs",
+      "type_id": 6,
+      "type_name": "README",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Project Name": "Coderef Core - Semantic Code Reference Engine",
+        "Date": "2025-09-17",
+        "Version": "2.0.0",
+        "Maintainer": "Coderef Development Team"
+      },
+      "last_modified": "2026-01-08T10:38:17.111338+00:00",
+      "size_bytes": 8932
+    },
+    {
+      "path": "docs/ROUTE-DETECTION.md",
+      "filename": "ROUTE-DETECTION.md",
+      "directory": "docs",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-03-01T03:55:26.943190+00:00",
+      "size_bytes": 11191
+    },
+    {
+      "path": "docs/ROUTE-VALIDATION.md",
+      "filename": "ROUTE-VALIDATION.md",
+      "directory": "docs",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-03-01T20:34:03.603395+00:00",
+      "size_bytes": 21536
+    },
+    {
+      "path": "docs/SCHEMA.md",
+      "filename": "SCHEMA.md",
+      "directory": "docs",
+      "type_id": 7,
+      "type_name": "Foundation Doc",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {
+        "Date": "2025-09-17",
+        "Schema Version": "2.0.0",
+        "Maintainer": "Coderef Development Team"
+      },
+      "last_modified": "2026-01-16T08:45:48.287895+00:00",
+      "size_bytes": 15056
+    },
+    {
+      "path": "DUPLICATE-FILES-AUDIT.md",
+      "filename": "DUPLICATE-FILES-AUDIT.md",
+      "directory": ".",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Date": "2025-01-27",
+        "Auditor": "AI Assistant",
+        "Scope": "Complete audit of duplicate files between root and src/ directories"
+      },
+      "last_modified": "2026-01-07T17:31:08.852872+00:00",
+      "size_bytes": 11663
+    },
+    {
+      "path": "EXECUTIVE-SUMMARY.md",
+      "filename": "EXECUTIVE-SUMMARY.md",
+      "directory": ".",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Date": "2026-01-17",
+        "Codebase Status": "Production-Ready \u2705",
+        "Scanner Version": "v2.0.0 (WO-SCANNER-INTEGRATION-001)"
+      },
+      "last_modified": "2026-01-17T19:39:08.899499+00:00",
+      "size_bytes": 5129
+    },
+    {
+      "path": "GEMINI.md",
+      "filename": "GEMINI.md",
+      "directory": ".",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:34:56.814924+00:00",
+      "size_bytes": 175
+    },
+    {
+      "path": "guide-to-coderef-core.md",
+      "filename": "guide-to-coderef-core.md",
+      "directory": ".",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-01-08T10:35:24.505798+00:00",
+      "size_bytes": 36116
+    },
+    {
+      "path": "IMPORTANT-WORKORDER-FILES.md",
+      "filename": "IMPORTANT-WORKORDER-FILES.md",
+      "directory": ".",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {
+        "Date": "April 13, 2026",
+        "Session Summary": "CodeRef scanner & context server improvements",
+        "Workorder ID": "WO-CODEREF-FIX-COMPLEXITY-ESTIMATION-001",
+        "Improvement": "IMP-004 - Use actual complexity data from complexity.json reports"
+      },
+      "last_modified": "2026-04-13T23:18:50.712746+00:00",
+      "size_bytes": 4672
+    },
+    {
+      "path": "PROOF-OF-FIXES.md",
+      "filename": "PROOF-OF-FIXES.md",
+      "directory": ".",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Date": "2026-01-16",
+        "Workorder": "WO-SCANNER-INTEGRATION-001",
+        "Status": "\u2705 ALL FIXES VERIFIED"
+      },
+      "last_modified": "2026-01-17T18:07:28.637220+00:00",
+      "size_bytes": 9129
+    },
+    {
+      "path": "README.md",
+      "filename": "README.md",
+      "directory": ".",
+      "type_id": 6,
+      "type_name": "README",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {},
+      "last_modified": "2026-04-10T18:45:44.317279+00:00",
+      "size_bytes": 24201
+    },
+    {
+      "path": "scripts/AGENTS.md",
+      "filename": "AGENTS.md",
+      "directory": "scripts",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:36:19.107927+00:00",
+      "size_bytes": 183
+    },
+    {
+      "path": "scripts/CLAUDE.md",
+      "filename": "CLAUDE.md",
+      "directory": "scripts",
+      "type_id": 17,
+      "type_name": "Agent Context",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:36:08.129244+00:00",
+      "size_bytes": 183
+    },
+    {
+      "path": "scripts/GEMINI.md",
+      "filename": "GEMINI.md",
+      "directory": "scripts",
+      "type_id": 19,
+      "type_name": "Unclassified",
+      "confidence": "LOW",
+      "detection_method": "unclassified",
+      "frontmatter": {},
+      "last_modified": "2026-04-12T23:36:14.029602+00:00",
+      "size_bytes": 183
+    },
+    {
+      "path": "scripts/scan-cli/REFERENCE.md",
+      "filename": "REFERENCE.md",
+      "directory": "scripts/scan-cli",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {},
+      "last_modified": "2026-01-09T18:43:07.736101+00:00",
+      "size_bytes": 1048
+    },
+    {
+      "path": "scripts/scan-cli/USAGE.md",
+      "filename": "USAGE.md",
+      "directory": "scripts/scan-cli",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {},
+      "last_modified": "2026-01-09T18:42:34.729865+00:00",
+      "size_bytes": 1369
+    },
+    {
+      "path": "scripts/setup-coderef-dir/RESOURCE-SHEET.md",
+      "filename": "RESOURCE-SHEET.md",
+      "directory": "scripts/setup-coderef-dir",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Category": "Utility Script / Directory Initializer",
+        "Type": "Python CLI Tool",
+        "Directory": "`packages/coderef-core/scripts/setup-coderef-dir/`",
+        "Created": "2026-01-04",
+        "Status": "\u2705 Production-ready (all tests passing)",
+        "Version": "1.0.0",
+        "Generated by": "Resource Sheet Generation",
+        "Last Updated": "2026-01-07",
+        "Maintained by": "CodeRef Core Team"
+      },
+      "last_modified": "2026-01-09T18:39:09.760287+00:00",
+      "size_bytes": 15268
+    },
+    {
+      "path": "scripts/setup-coderef-dir/USAGE.md",
+      "filename": "USAGE.md",
+      "directory": "scripts/setup-coderef-dir",
+      "type_id": 10,
+      "type_name": "Guide",
+      "confidence": "HIGH",
+      "detection_method": "filename_exact",
+      "frontmatter": {},
+      "last_modified": "2026-03-13T21:00:44.256024+00:00",
+      "size_bytes": 2290
+    },
+    {
+      "path": "src/.coderef/graph.json-RESOURCE-SHEET.md",
+      "filename": "graph.json-RESOURCE-SHEET.md",
+      "directory": "src/.coderef",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5",
+        "Date": "2025-01-27",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-07T17:16:26.168730+00:00",
+      "size_bytes": 12880
+    },
+    {
+      "path": "src/.coderef/index.json-RESOURCE-SHEET.md",
+      "filename": "index.json-RESOURCE-SHEET.md",
+      "directory": "src/.coderef",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5",
+        "Date": "2025-01-27",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-07T17:16:26.166349+00:00",
+      "size_bytes": 9750
+    },
+    {
+      "path": "src/.coderef/INDEX.md",
+      "filename": "INDEX.md",
+      "directory": "src/.coderef",
+      "type_id": 15,
+      "type_name": "Index/Registry",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Last Updated": "2025-01-27",
+        "Status": "Generated CodeRef Artifacts",
+        "Location": "`src/.coderef/`"
+      },
+      "last_modified": "2026-01-07T17:03:00.271672+00:00",
+      "size_bytes": 6000
+    },
+    {
+      "path": "src/adapter/adapter-RESOURCE-SHEET.md",
+      "filename": "adapter-RESOURCE-SHEET.md",
+      "directory": "src/adapter",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5",
+        "Date": "2025-01-27",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-07T15:50:17.629387+00:00",
+      "size_bytes": 7849
+    },
+    {
+      "path": "src/coderef/AGENT-CONTEXT-FOR-MIGRATION-PLAN.md",
+      "filename": "AGENT-CONTEXT-FOR-MIGRATION-PLAN.md",
+      "directory": "src/coderef",
+      "type_id": 2,
+      "type_name": "Plan",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Purpose": "This document provides comprehensive context for an AI agent to create a `plan.json` implementing the migration strategy defined in `migration-strategy.md`.",
+        "Created": "2026-01-07",
+        "Goal": "Consolidate three separate CodeRef implementations (root, `src/`, `coderef-core-updates/`) into **one unified system** with:"
+      },
+      "last_modified": "2026-01-08T09:11:01.957553+00:00",
+      "size_bytes": 15499
+    },
+    {
+      "path": "src/coderef/CODEBASE-AUDIT-REPORT.md",
+      "filename": "CODEBASE-AUDIT-REPORT.md",
+      "directory": "src/coderef",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Date": "2026-01-07",
+        "Auditor": "AI Assistant",
+        "Scope": "Complete audit of all CodeRef implementations across 3 locations:"
+      },
+      "last_modified": "2026-01-08T03:03:47.568182+00:00",
+      "size_bytes": 16084
+    },
+    {
+      "path": "src/coderef/migration-strategy.md",
+      "filename": "migration-strategy.md",
+      "directory": "src/coderef",
+      "type_id": 2,
+      "type_name": "Plan",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Status": "Legacy Phase 2 + Active utilities"
+      },
+      "last_modified": "2026-01-08T03:53:05.622576+00:00",
+      "size_bytes": 19396
+    },
+    {
+      "path": "src/errors/errors-RESOURCE-SHEET.md",
+      "filename": "errors-RESOURCE-SHEET.md",
+      "directory": "src/errors",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5",
+        "Date": "2025-01-27",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-07T15:50:17.605546+00:00",
+      "size_bytes": 7604
+    },
+    {
+      "path": "src/formatter/formatter-RESOURCE-SHEET.md",
+      "filename": "formatter-RESOURCE-SHEET.md",
+      "directory": "src/formatter",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5",
+        "Date": "2025-01-27",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-07T15:50:17.605546+00:00",
+      "size_bytes": 7602
+    },
+    {
+      "path": "src/parser/parser-RESOURCE-SHEET.md",
+      "filename": "parser-RESOURCE-SHEET.md",
+      "directory": "src/parser",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5",
+        "Date": "2025-01-27",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-07T15:50:17.605546+00:00",
+      "size_bytes": 9070
+    },
+    {
+      "path": "src/scanner/CONSOLIDATED-SCANNER-RESOURCE-SHEET.md",
+      "filename": "CONSOLIDATED-SCANNER-RESOURCE-SHEET.md",
+      "directory": "src/scanner",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Module": "`@coderef/core/scanner`",
+        "File": "`src/scanner/scanner.ts`",
+        "Status": "\u2705 Production Ready (Consolidated 2026-01-08)",
+        "Workorder": "WO-CODEREF-CONSOLIDATION-001",
+        "Test Results": "1,148 elements detected in coderef-core src/"
+      },
+      "last_modified": "2026-01-08T18:52:02.028966+00:00",
+      "size_bytes": 23520
+    },
+    {
+      "path": "src/validator/validator-RESOURCE-SHEET.md",
+      "filename": "validator-RESOURCE-SHEET.md",
+      "directory": "src/validator",
+      "type_id": 9,
+      "type_name": "Resource Sheet",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Agent": "Claude Sonnet 4.5",
+        "Date": "2025-01-27",
+        "Task": "DOCUMENT"
+      },
+      "last_modified": "2026-01-07T15:50:17.607616+00:00",
+      "size_bytes": 10115
+    },
+    {
+      "path": "TEST-FAILURE-ROOT-CAUSES.md",
+      "filename": "TEST-FAILURE-ROOT-CAUSES.md",
+      "directory": ".",
+      "type_id": 3,
+      "type_name": "Report",
+      "confidence": "HIGH",
+      "detection_method": "filename_pattern",
+      "frontmatter": {
+        "Date": "2026-01-16",
+        "Test Status": "566/571 passing (99.1%)",
+        "Failures": "5 tests across 5 files"
+      },
+      "last_modified": "2026-01-16T20:38:07.520731+00:00",
+      "size_bytes": 8608
+    }
+  ],
+  "unclassified": [
+    {
+      "path": "AGENTS.md",
+      "filename": "AGENTS.md",
+      "directory": ".",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/pipeline-quality/07-critical-function-pipeline/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/pipeline-quality/07-critical-function-pipeline",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/pipeline-quality/08-test-gap-pipeline/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/pipeline-quality/08-test-gap-pipeline",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/pipeline-quality/09-async-pattern-pipeline/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/pipeline-quality/09-async-pattern-pipeline",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/pipeline-quality/AGENT2-PROGRESS.md",
+      "filename": "AGENT2-PROGRESS.md",
+      "directory": "autoresearch/pipeline-quality",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/pipeline-quality/AUTO-INJECTION-IMPLEMENTATION.md",
+      "filename": "AUTO-INJECTION-IMPLEMENTATION.md",
+      "directory": "autoresearch/pipeline-quality",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/pipeline-quality/AUTO-INJECTION-PATHS.md",
+      "filename": "AUTO-INJECTION-PATHS.md",
+      "directory": "autoresearch/pipeline-quality",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/pipeline-quality/BASELINES.md",
+      "filename": "BASELINES.md",
+      "directory": "autoresearch/pipeline-quality",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/scanner-quality/01-element-classification/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/01-element-classification",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/scanner-quality/02-export-relationships/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/02-export-relationships",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/scanner-quality/03-test-coverage-linkage/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/03-test-coverage-linkage",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/scanner-quality/04-async-pattern-detection/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/04-async-pattern-detection",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/scanner-quality/05-context-summary-signal/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/05-context-summary-signal",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/scanner-quality/06-test-gap-precision/goal.md",
+      "filename": "goal.md",
+      "directory": "autoresearch/scanner-quality/06-test-gap-precision",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/scanner-quality/BASELINES.md",
+      "filename": "BASELINES.md",
+      "directory": "autoresearch/scanner-quality",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "autoresearch/scanner-quality/VERIFY-CONTRACTS.md",
+      "filename": "VERIFY-CONTRACTS.md",
+      "directory": "autoresearch/scanner-quality",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "coderef/resource/API-ACCESS.md",
+      "filename": "API-ACCESS.md",
+      "directory": "coderef/resource",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "docs/FRONTEND-CALL-DETECTION.md",
+      "filename": "FRONTEND-CALL-DETECTION.md",
+      "directory": "docs",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "docs/ROUTE-DETECTION.md",
+      "filename": "ROUTE-DETECTION.md",
+      "directory": "docs",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "docs/ROUTE-VALIDATION.md",
+      "filename": "ROUTE-VALIDATION.md",
+      "directory": "docs",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "GEMINI.md",
+      "filename": "GEMINI.md",
+      "directory": ".",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "IMPORTANT-WORKORDER-FILES.md",
+      "filename": "IMPORTANT-WORKORDER-FILES.md",
+      "directory": ".",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "scripts/AGENTS.md",
+      "filename": "AGENTS.md",
+      "directory": "scripts",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    },
+    {
+      "path": "scripts/GEMINI.md",
+      "filename": "GEMINI.md",
+      "directory": "scripts",
+      "suggested_type": null,
+      "reason": "No pattern match"
+    }
+  ],
+  "duplicates": [
+    {
+      "base_name": "AGENTS.md",
+      "count": 3,
+      "files": [
+        "AGENTS.md",
+        "coderef/sessions/coderef-cli-implementation/AGENTS.md",
+        "scripts/AGENTS.md"
+      ]
+    },
+    {
+      "base_name": "API.md",
+      "count": 2,
+      "files": [
+        "coderef/foundation-docs/API.md",
+        "docs/API.md"
+      ]
+    },
+    {
+      "base_name": "ARCHITECTURE.md",
+      "count": 2,
+      "files": [
+        "coderef/foundation-docs/ARCHITECTURE.md",
+        "docs/ARCHITECTURE.md"
+      ]
+    },
+    {
+      "base_name": "BASELINES.md",
+      "count": 2,
+      "files": [
+        "autoresearch/pipeline-quality/BASELINES.md",
+        "autoresearch/scanner-quality/BASELINES.md"
+      ]
+    },
+    {
+      "base_name": "CLAUDE.md",
+      "count": 3,
+      "files": [
+        "CLAUDE.md",
+        "coderef/sessions/coderef-cli-implementation/CLAUDE.md",
+        "scripts/CLAUDE.md"
+      ]
+    },
+    {
+      "base_name": "COMPONENTS.md",
+      "count": 2,
+      "files": [
+        "coderef/foundation-docs/COMPONENTS.md",
+        "docs/COMPONENTS.md"
+      ]
+    },
+    {
+      "base_name": "Context-Generator-RESOURCE-SHEET.md",
+      "count": 2,
+      "files": [
+        "coderef/resources-sheets/Context-Generator-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/systems/Context-Generator-RESOURCE-SHEET.md"
+      ]
+    },
+    {
+      "base_name": "Dependency-Graph-Builder-RESOURCE-SHEET.md",
+      "count": 2,
+      "files": [
+        "coderef/resources-sheets/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/systems/Dependency-Graph-Builder-RESOURCE-SHEET.md"
+      ]
+    },
+    {
+      "base_name": "File-Generation-System-RESOURCE-SHEET.md",
+      "count": 2,
+      "files": [
+        "coderef/resources-sheets/File-Generation-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/systems/File-Generation-System-RESOURCE-SHEET.md"
+      ]
+    },
+    {
+      "base_name": "GEMINI.md",
+      "count": 3,
+      "files": [
+        "coderef/sessions/coderef-cli-implementation/GEMINI.md",
+        "GEMINI.md",
+        "scripts/GEMINI.md"
+      ]
+    },
+    {
+      "base_name": "INDEX.md",
+      "count": 2,
+      "files": [
+        "coderef/resources-sheets/INDEX.md",
+        "src/.coderef/INDEX.md"
+      ]
+    },
+    {
+      "base_name": "MASTER-PLAN.md",
+      "count": 2,
+      "files": [
+        "autoresearch/pipeline-quality/MASTER-PLAN.md",
+        "autoresearch/scanner-quality/MASTER-PLAN.md"
+      ]
+    },
+    {
+      "base_name": "README.md",
+      "count": 3,
+      "files": [
+        ".coderef/reports/complexity/README.md",
+        "docs/README.md",
+        "README.md"
+      ]
+    },
+    {
+      "base_name": "RESOURCE-SHEET.md",
+      "count": 2,
+      "files": [
+        "coderef/resource/RESOURCE-SHEET.md",
+        "scripts/setup-coderef-dir/RESOURCE-SHEET.md"
+      ]
+    },
+    {
+      "base_name": "SCHEMA.md",
+      "count": 2,
+      "files": [
+        "coderef/foundation-docs/SCHEMA.md",
+        "docs/SCHEMA.md"
+      ]
+    },
+    {
+      "base_name": "Theme-System-RESOURCE-SHEET.md",
+      "count": 2,
+      "files": [
+        "coderef/resources-sheets/systems/Theme-System-RESOURCE-SHEET.md",
+        "coderef/resources-sheets/Theme-System-RESOURCE-SHEET.md"
+      ]
+    },
+    {
+      "base_name": "USAGE.md",
+      "count": 2,
+      "files": [
+        "scripts/scan-cli/USAGE.md",
+        "scripts/setup-coderef-dir/USAGE.md"
+      ]
+    },
+    {
+      "base_name": "goal.md",
+      "count": 9,
+      "files": [
+        "autoresearch/pipeline-quality/07-critical-function-pipeline/goal.md",
+        "autoresearch/pipeline-quality/08-test-gap-pipeline/goal.md",
+        "autoresearch/pipeline-quality/09-async-pattern-pipeline/goal.md",
+        "autoresearch/scanner-quality/01-element-classification/goal.md",
+        "autoresearch/scanner-quality/02-export-relationships/goal.md",
+        "autoresearch/scanner-quality/03-test-coverage-linkage/goal.md",
+        "autoresearch/scanner-quality/04-async-pattern-detection/goal.md",
+        "autoresearch/scanner-quality/05-context-summary-signal/goal.md",
+        "autoresearch/scanner-quality/06-test-gap-precision/goal.md"
+      ]
+    },
+    {
+      "base_name": "plan.md",
+      "count": 2,
+      "files": [
+        "coderef/workorder/migration-validation/plan.md",
+        "coderef/workorder/wo-unified-coderef-pipeline-001/plan.md"
+      ]
+    }
+  ],
+  "frontmatter_stats": {
+    "yaml_count": 29,
+    "bold_key_count": 45,
+    "none_count": 37,
+    "adoption_percent": 66.7
+  }
+}

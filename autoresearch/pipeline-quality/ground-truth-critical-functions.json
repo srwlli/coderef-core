@@ -1,0 +1,63 @@
+{
+  "version": "1.0.0",
+  "campaign": "pipeline-quality",
+  "loop": "07-critical-function-pipeline",
+  "created": "2026-04-10",
+  "description": "Manually labeled critical functions for the dashboard codebase",
+  "labeling_criteria": [
+    "High complexity (cyclomatic complexity > 15)",
+    "High dependent count (called by many functions)",
+    "Entry points (API routes, CLI commands, top-level React components)",
+    "Core orchestrators (service classes, pipeline coordinators)"
+  ],
+  "critical_functions": [
+    "scanCurrentElements",
+    "buildDependencyGraph",
+    "generateContext",
+    "detectPatterns",
+    "analyzeCoverage",
+    "saveIndex",
+    "ASTElementScanner.visitNode",
+    "JSCallDetector.extractExportsFromAST",
+    "JSCallDetector.extractElementsFromAST",
+    "JSCallDetector.extractImportsFromAST",
+    "AnalyzerService.analyze",
+    "QueryExecutor.execute",
+    "SearchIndex.search",
+    "ContextGenerator.generate",
+    "PatternGenerator.detect",
+    "DiagramGenerator.generate",
+    "createErrorResponse",
+    "handleDragEnd",
+    "fetchResources",
+    "BoardTargetAdapterClass.addToTarget"
+  ],
+  "labeling_rationale": {
+    "scanCurrentElements": "Complexity: 101, LOC: 521 - Main scanner entry point",
+    "buildDependencyGraph": "Core pipeline orchestrator for graph construction",
+    "generateContext": "Core pipeline orchestrator for context.md generation",
+    "detectPatterns": "Core pipeline orchestrator for pattern detection",
+    "analyzeCoverage": "Core pipeline orchestrator for coverage analysis",
+    "saveIndex": "Core pipeline orchestrator for index persistence",
+    "ASTElementScanner.visitNode": "Complexity: 63, LOC: 245 - AST traversal engine",
+    "JSCallDetector.extractExportsFromAST": "Complexity: 55, LOC: 115 - Export detection",
+    "JSCallDetector.extractElementsFromAST": "Complexity: 52, LOC: 131 - Element extraction",
+    "JSCallDetector.extractImportsFromAST": "Complexity: 37, LOC: 87 - Import parsing",
+    "AnalyzerService.analyze": "Core analysis service orchestrator",
+    "QueryExecutor.execute": "Query execution entry point",
+    "SearchIndex.search": "Complexity: 34, LOC: 245 - Search orchestrator",
+    "ContextGenerator.generate": "Context generation service",
+    "PatternGenerator.detect": "Pattern detection service",
+    "DiagramGenerator.generate": "Diagram generation service",
+    "createErrorResponse": "Dependents: 151 - Most depended-on function in codebase",
+    "handleDragEnd": "Complexity: 50, LOC: 439 - Board canvas orchestrator",
+    "fetchResources": "Complexity: 43, LOC: 373 - Resource loading orchestrator",
+    "BoardTargetAdapterClass.addToTarget": "Complexity: 34, LOC: 149 - Board operations"
+  },
+  "notes": [
+    "This ground truth is subjective - critical depends on project goals",
+    "Prioritize functions that appear in multiple workflows",
+    "Include both high-level orchestrators and frequently-called utilities",
+    "Exclude test helpers, mock functions, and scaffolding code"
+  ]
+}

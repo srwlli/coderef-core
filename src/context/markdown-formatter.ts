@@ -1,0 +1,233 @@
+/**
+ * Markdown Formatter
+ * Converts context data to human-readable markdown
+ *
+ * Part of WO-CONTEXT-GENERATION-001
+ */
+
+import type { ElementData } from '../types/types.js';
+
+/**
+ * Context data structure for markdown generation
+ */
+export interface ContextData {
+  overview: {
+    sourceDir: string;
+    languages: string[];
+    totalFiles: number;
+    totalElements: number;
+  };
+  entryPoints: ElementData[];
+  criticalFunctions: Array<ElementData & { score: number }>;
+  architecturePatterns: {
+    errorHandling: number;
+    barrelExports: number;
+    decorators: number;
+    asyncAwait: number;
+  };
+  dependencies: {
+    nodeCount: number;
+    edgeCount: number;
+    circularity: number;
+    isolatedNodes: number;
+  };
+  health: {
+    testCoverage?: number;
+    complexity: number;
+    maintainability: string;
+  };
+}
+
+/**
+ * Formats context data as readable markdown
+ */
+export class MarkdownFormatter {
+  /**
+   * Generate complete CONTEXT.md from context data
+   * @param data - Context data to format
+   * @returns Markdown string
+   */
+  format(data: ContextData): string {
+    const sections = [
+      this.formatHeader(),
+      this.formatOverview(data.overview),
+      this.formatEntryPoints(data.entryPoints),
+      this.formatCriticalFunctions(data.criticalFunctions),
+      this.formatArchitecture(data.architecturePatterns),
+      this.formatDependencies(data.dependencies),
+      this.formatHealth(data.health),
+      this.formatFooter(),
+    ];
+
+    return sections.join('\n\n');
+  }
+
+  /**
+   * Format document header
+   */
+  private formatHeader(): string {
+    const now = new Date().toISOString().split('T')[0];
+    return `# Codebase Context
+
+**Generated:** ${now}
+**Purpose:** Quick codebase understanding for humans and AI agents`;
+  }
+
+  /**
+   * Format overview section
+   */
+  private formatOverview(overview: ContextData['overview']): string {
+    return `## Overview
+
+- **Source Directory:** \`${overview.sourceDir}\`
+- **Languages:** ${overview.languages.join(', ')}
+- **Total Files:** ${overview.totalFiles}
+- **Total Elements:** ${overview.totalElements}`;
+  }
+
+  /**
+   * Format entry points section
+   */
+  private formatEntryPoints(entryPoints: ElementData[]): string {
+    if (entryPoints.length === 0) {
+      return `## Entry Points
+
+*No entry points detected*`;
+    }
+
+    const lines = [`## Entry Points\n`];
+
+    // Group by type
+    const byType = this.groupByType(entryPoints);
+
+    for (const [type, elements] of Object.entries(byType)) {
+      lines.push(`### ${this.capitalizeType(type)}\n`);
+      for (const el of elements) {
+        lines.push(`- **${el.name}** - \`${el.file}:${el.line}\``);
+      }
+      lines.push('');
+    }
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Format critical functions section
+   */
+  private formatCriticalFunctions(
+    functions: Array<ElementData & { score: number }>
+  ): string {
+    if (functions.length === 0) {
+      return `## Critical Functions
+
+*No functions analyzed*`;
+    }
+
+    const lines = [
+      `## Critical Functions\n`,
+      `Top ${Math.min(20, functions.length)} functions by importance:\n`,
+    ];
+
+    for (let i = 0; i < Math.min(20, functions.length); i++) {
+      const func = functions[i];
+      lines.push(
+        `${i + 1}. **${func.name}** (score: ${func.score}) - \`${func.file}:${func.line}\``
+      );
+    }
+
+    return lines.join('\n');
+  }
+
+  /**
+   * Format architecture patterns section
+   */
+  private formatArchitecture(patterns: ContextData['architecturePatterns']): string {
+    return `## Architecture Patterns
+
+- **Error Handling:** ${patterns.errorHandling} try-catch blocks
+- **Barrel Exports:** ${patterns.barrelExports} export-from statements
+- **Decorators:** ${patterns.decorators} decorator usages
+- **Async/Await:** ${patterns.asyncAwait} async functions`;
+  }
+
+  /**
+   * Format dependency graph section
+   */
+  private formatDependencies(deps: ContextData['dependencies']): string {
+    return `## Dependency Graph
+
+### Statistics
+
+- **Nodes:** ${deps.nodeCount}
+- **Edges:** ${deps.edgeCount}
+- **Circularity:** ${deps.circularity.toFixed(1)}%
+- **Isolated Nodes:** ${deps.isolatedNodes}
+
+### Visualization
+
+\`\`\`mermaid
+graph LR
+    A[Entry Points] --> B[Core Functions]
+    B --> C[Utilities]
+    B --> D[External Dependencies]
+\`\`\`
+
+*Note: Run \`pnpm start diagram ./src\` for detailed dependency diagram*`;
+  }
+
+  /**
+   * Format health metrics section
+   */
+  private formatHealth(health: ContextData['health']): string {
+    const coverage = health.testCoverage !== undefined
+      ? `${health.testCoverage.toFixed(1)}%`
+      : 'Unknown';
+
+    return `## Health Metrics
+
+- **Test Coverage:** ${coverage}
+- **Avg Complexity:** ${health.complexity.toFixed(1)}
+- **Maintainability:** ${health.maintainability}`;
+  }
+
+  /**
+   * Format document footer
+   */
+  private formatFooter(): string {
+    return `---
+
+*Generated by CodeRef Context Generator*
+*Run \`pnpm start context ./src\` to regenerate*`;
+  }
+
+  /**
+   * Group elements by type
+   */
+  private groupByType(elements: ElementData[]): Record<string, ElementData[]> {
+    const grouped: Record<string, ElementData[]> = {};
+    for (const el of elements) {
+      if (!grouped[el.type]) {
+        grouped[el.type] = [];
+      }
+      grouped[el.type].push(el);
+    }
+    return grouped;
+  }
+
+  /**
+   * Capitalize element type for display
+   */
+  private capitalizeType(type: string): string {
+    const typeMap: Record<string, string> = {
+      function: 'Functions',
+      class: 'Classes',
+      method: 'Methods',
+      constant: 'Constants',
+      interface: 'Interfaces',
+      type: 'Types',
+    };
+    return typeMap[type] || type.charAt(0).toUpperCase() + type.slice(1);
+  }
+}
+
+export default MarkdownFormatter;

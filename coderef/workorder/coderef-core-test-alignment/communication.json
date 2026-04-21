@@ -1,0 +1,182 @@
+{
+  "feature": "CODEREF_CORE_TEST_ALIGNMENT",
+  "workorder_id": "WO-CODEREF-CORE-TEST-ALIGNMENT-001",
+  "from": "Agent 1",
+  "to": "Agent N",
+  "date": "2026-04-13",
+  "task": "Implement CODEREF_CORE_TEST_ALIGNMENT following 0 implementation phases",
+  "instruction": "Start in communication.json for CODEREF_CORE_TEST_ALIGNMENT, then read coderef/workorder/coderef-core-test-alignment/plan.json, coderef/workorder/coderef-core-test-alignment/context.json, coderef/workorder/coderef-core-test-alignment/analysis.json before making edits. Keep context.json, analysis.json, and plan.json read-only, and update communication.json as you complete each task.",
+  "must_read_first": [
+    "coderef/workorder/coderef-core-test-alignment/communication.json",
+    "coderef/workorder/coderef-core-test-alignment/plan.json",
+    "coderef/workorder/coderef-core-test-alignment/context.json",
+    "coderef/workorder/coderef-core-test-alignment/analysis.json"
+  ],
+  "entry_protocol": [
+    "Start with communication.json to understand current status, edit boundaries, and next tasks.",
+    "Read plan.json before making edits so execution stays aligned with the master contract.",
+    "Read context.json and analysis.json for requirements, constraints, and discovered references.",
+    "Open every path listed in must_read_first before writing code.",
+    "Update communication.json with status and handoff notes as work progresses."
+  ],
+  "tasks": [],
+  "progress": {
+    "total": 0,
+    "complete": 0,
+    "in_progress": 0,
+    "pending": 0,
+    "blocked": 0,
+    "percent": 0
+  },
+  "details": {
+    "work_area": "coderef/workorder/coderef-core-test-alignment",
+    "forbidden_files": [
+      "coderef/workorder/coderef-core-test-alignment/plan.json - READ ONLY workorder artifact",
+      "coderef/workorder/coderef-core-test-alignment/context.json - READ ONLY workorder artifact",
+      "coderef/workorder/coderef-core-test-alignment/analysis.json - READ ONLY workorder artifact"
+    ],
+    "allowed_files": [
+      "coderef/workorder/coderef-core-test-alignment/communication.json - Primary execution entrypoint and runtime handoff state."
+    ],
+    "handoff_refs": [
+      {
+        "path": "coderef/workorder/coderef-core-test-alignment/communication.json",
+        "reason": "Primary execution entrypoint and runtime handoff state.",
+        "source": "workorder.communication",
+        "sources": [
+          "workorder.communication"
+        ],
+        "required": true,
+        "read_first": true,
+        "writable": true,
+        "kind": "artifact"
+      },
+      {
+        "path": "coderef/workorder/coderef-core-test-alignment/plan.json",
+        "reason": "Master implementation contract and task breakdown.",
+        "source": "workorder.plan",
+        "sources": [
+          "workorder.plan"
+        ],
+        "required": true,
+        "read_first": true,
+        "writable": false,
+        "kind": "artifact"
+      },
+      {
+        "path": "coderef/workorder/coderef-core-test-alignment/context.json",
+        "reason": "Original requirements, constraints, and success criteria.",
+        "source": "workorder.context",
+        "sources": [
+          "workorder.context"
+        ],
+        "required": true,
+        "read_first": true,
+        "writable": false,
+        "kind": "artifact"
+      },
+      {
+        "path": "coderef/workorder/coderef-core-test-alignment/analysis.json",
+        "reason": "Project findings plus discovered file and document references.",
+        "source": "workorder.analysis",
+        "sources": [
+          "workorder.analysis"
+        ],
+        "required": true,
+        "read_first": true,
+        "writable": false,
+        "kind": "artifact"
+      }
+    ],
+    "context": {
+      "feature_name": "coderef-core-test-alignment",
+      "goal": "Implement coderef-core-test-alignment",
+      "dependencies": [],
+      "references": [
+        "coderef/workorder/coderef-core-test-alignment/communication.json",
+        "coderef/workorder/coderef-core-test-alignment/plan.json",
+        "coderef/workorder/coderef-core-test-alignment/context.json",
+        "coderef/workorder/coderef-core-test-alignment/analysis.json"
+      ],
+      "constraints": [
+        "Keep monotonic improvement counter stable"
+      ]
+    }
+  },
+  "testing_checklist": [
+    "1. Run all unit tests for the feature",
+    "2. Verify integration tests pass",
+    "3. Check forbidden files unchanged (git diff)",
+    "4. Build project successfully",
+    "5. Manual test of feature functionality",
+    "6. Update communication.json with completion notes before handoff"
+  ],
+  "success_criteria": [],
+  "agent_1_status": "READY - Planning complete, awaiting agent assignment",
+  "agent_N_status": null,
+  "agent_N_assigned_at": null,
+  "agent_N_completion": {
+    "status": null,
+    "timestamp": null,
+    "changes_made": [],
+    "verification": {
+      "forbidden_files_unchanged": null,
+      "tests_passing": null,
+      "build_successful": null
+    },
+    "commit_hash": null,
+    "commit_message": null
+  },
+  "agent_1_verification": {
+    "status": null,
+    "verified_at": null,
+    "verified_by": "Agent 1",
+    "code_review": {
+      "passed": null,
+      "comments": []
+    },
+    "independent_tests": {
+      "passed": null,
+      "test_results": []
+    },
+    "forbidden_files_check": {
+      "passed": null,
+      "files_verified": []
+    },
+    "production_integration": {
+      "passed": null,
+      "integration_tests": []
+    },
+    "final_approval": null
+  },
+  "context_experts": {
+    "loaded": [],
+    "created_this_session": [],
+    "suggested": [],
+    "stale": []
+  },
+  "metadata": {
+    "created_at": "2026-04-13T22:48:03.535773",
+    "updated_at": "2026-04-13T22:48:03.535776",
+    "version": "1.1.0",
+    "template_version": "1.3.0",
+    "generated_from_plan": "coderef/workorder/coderef-core-test-alignment/plan.json"
+  },
+  "handoff_prompt_template": {
+    "description": "Standardized prompt template for agent handoffs (STUB-015)",
+    "usage": "Use this template when transferring work to another agent",
+    "template": "You are being handed off the following work:\n\n## Context\n- **Feature**: {{feature_name}}\n- **Workorder**: {{workorder_id}}\n- **Current Progress**: {{progress_percent}}% ({{completed}}/{{total}} tasks)\n\n## Files\n- **Communication**: coderef/workorder/{{feature_name}}/communication.json\n- **Plan**: coderef/workorder/{{feature_name}}/plan.json\n- **Context**: coderef/workorder/{{feature_name}}/context.json\n- **Analysis**: coderef/workorder/{{feature_name}}/analysis.json\n\n## Read First\n{{must_read_first}}\n\n## Current State\n{{current_state_summary}}\n\n## Next Tasks\n{{next_tasks_list}}\n\n## Important Notes\n- Forbidden files: {{forbidden_files}}\n- Success criteria: {{success_criteria}}\n\n## Instructions\n1. Start in communication.json\n2. Read the must_read_first paths before editing\n3. Continue from the next pending task\n4. Update communication.json as you work\n5. Keep read-only workorder artifacts unchanged unless explicitly reassigned",
+    "variables": {
+      "feature_name": "From communication.json feature field",
+      "workorder_id": "From communication.json workorder_id field",
+      "progress_percent": "From communication.json progress.percent field",
+      "completed": "From communication.json progress.complete field",
+      "total": "From communication.json progress.total field",
+      "must_read_first": "Formatted list from communication.json must_read_first",
+      "current_state_summary": "Generated from git status and recent commits",
+      "next_tasks_list": "First 3 pending tasks from tasks array",
+      "forbidden_files": "From communication.json details.forbidden_files",
+      "success_criteria": "From communication.json success_criteria"
+    }
+  }
+}

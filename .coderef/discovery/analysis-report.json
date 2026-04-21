@@ -1,0 +1,671 @@
+{
+  "metadata": {
+    "generated_at": "2026-04-13T23:35:05.283868",
+    "source": "project-state-discovery.json",
+    "library_version": "1.3.0",
+    "scope": "project",
+    "project_name": "coderef-core",
+    "project_path": "C:\\Users\\willh\\Desktop\\CODEREF\\DASHBOARD\\packages\\coderef-core",
+    "skill_version": "1.1.0"
+  },
+  "coverage": {
+    "percent": 78.4,
+    "status": "[WARN]",
+    "missing_types": [
+      "Changelog",
+      "Deliverables",
+      "Persona",
+      "Prompt",
+      "Skill",
+      "Standards",
+      "Stub",
+      "Template"
+    ],
+    "low_coverage_projects": []
+  },
+  "compliance": {
+    "score": 78.4,
+    "rename_suggestions_count": 24,
+    "high_confidence_count": 3
+  },
+  "duplicates": {
+    "cross_project_count": 0,
+    "intra_project_count": 19,
+    "filenames": [
+      "AGENTS.md",
+      "API.md",
+      "ARCHITECTURE.md",
+      "BASELINES.md",
+      "CLAUDE.md",
+      "COMPONENTS.md",
+      "Context-Generator-RESOURCE-SHEET.md",
+      "Dependency-Graph-Builder-RESOURCE-SHEET.md",
+      "File-Generation-System-RESOURCE-SHEET.md",
+      "GEMINI.md",
+      "INDEX.md",
+      "MASTER-PLAN.md",
+      "README.md",
+      "RESOURCE-SHEET.md",
+      "SCHEMA.md",
+      "Theme-System-RESOURCE-SHEET.md",
+      "USAGE.md",
+      "goal.md",
+      "plan.md"
+    ]
+  },
+  "anomalies": [
+    "Resource Sheet: 25.2% (above 5-20% baseline)",
+    "Unclassified: 21.6% (above 0-10% baseline)",
+    "README: 2.7% (below 5-10% baseline)",
+    "Index/Registry: 0.9% (below 1-5% baseline)",
+    "Deliverables: 0.0% (below 3-8% baseline)",
+    "Skill: 0.0% (below 1-5% baseline)",
+    "Standards: 0.0% (below 2-8% baseline)",
+    "Stub: 0.0% (below 1-5% baseline)"
+  ],
+  "recommendations": {
+    "P0": [],
+    "P1": [
+      "RENAME: coderef-core has 78.4% coverage (24 unclassified files). Review unclassified files.",
+      "RENAME: Unclassified: 21.6% (above 0-10% baseline). Apply naming conventions or extend type library."
+    ],
+    "P2": [
+      "CONSOLIDATE: 19 duplicate basenames within the target project need review."
+    ],
+    "P3": [
+      "REVIEW: Resource Sheet: 25.2% (above 5-20% baseline). May indicate documentation imbalance.",
+      "REVIEW: README: 2.7% (below 5-10% baseline). May indicate documentation imbalance.",
+      "REVIEW: Index/Registry: 0.9% (below 1-5% baseline). May indicate documentation imbalance.",
+      "REVIEW: Deliverables: 0.0% (below 3-8% baseline). May indicate documentation imbalance.",
+      "REVIEW: Skill: 0.0% (below 1-5% baseline). May indicate documentation imbalance.",
+      "REVIEW: Standards: 0.0% (below 2-8% baseline). May indicate documentation imbalance.",
+      "REVIEW: Stub: 0.0% (below 1-5% baseline). May indicate documentation imbalance."
+    ]
+  },
+  "candidate_sets": {
+    "compare_pairs": [
+      {
+        "id": "cmp-001",
+        "basename": "AGENTS.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "AGENTS.md",
+            "basename": "AGENTS.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/sessions/coderef-cli-implementation/AGENTS.md",
+            "basename": "AGENTS.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-002",
+        "basename": "BASELINES.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/BASELINES.md",
+            "basename": "BASELINES.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/BASELINES.md",
+            "basename": "BASELINES.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-003",
+        "basename": "Context-Generator-RESOURCE-SHEET.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/Context-Generator-RESOURCE-SHEET.md",
+            "basename": "Context-Generator-RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/systems/Context-Generator-RESOURCE-SHEET.md",
+            "basename": "Context-Generator-RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-004",
+        "basename": "Dependency-Graph-Builder-RESOURCE-SHEET.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+            "basename": "Dependency-Graph-Builder-RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/systems/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+            "basename": "Dependency-Graph-Builder-RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-005",
+        "basename": "File-Generation-System-RESOURCE-SHEET.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/File-Generation-System-RESOURCE-SHEET.md",
+            "basename": "File-Generation-System-RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/systems/File-Generation-System-RESOURCE-SHEET.md",
+            "basename": "File-Generation-System-RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-006",
+        "basename": "GEMINI.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "GEMINI.md",
+            "basename": "GEMINI.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/sessions/coderef-cli-implementation/GEMINI.md",
+            "basename": "GEMINI.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-007",
+        "basename": "INDEX.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/INDEX.md",
+            "basename": "INDEX.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "src/.coderef/INDEX.md",
+            "basename": "INDEX.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-008",
+        "basename": "MASTER-PLAN.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/MASTER-PLAN.md",
+            "basename": "MASTER-PLAN.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/MASTER-PLAN.md",
+            "basename": "MASTER-PLAN.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-009",
+        "basename": "RESOURCE-SHEET.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resource/RESOURCE-SHEET.md",
+            "basename": "RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "scripts/setup-coderef-dir/RESOURCE-SHEET.md",
+            "basename": "RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-010",
+        "basename": "Theme-System-RESOURCE-SHEET.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/Theme-System-RESOURCE-SHEET.md",
+            "basename": "Theme-System-RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/systems/Theme-System-RESOURCE-SHEET.md",
+            "basename": "Theme-System-RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-011",
+        "basename": "USAGE.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "scripts/scan-cli/USAGE.md",
+            "basename": "USAGE.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "scripts/setup-coderef-dir/USAGE.md",
+            "basename": "USAGE.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-012",
+        "basename": "goal.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/07-critical-function-pipeline/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/08-test-gap-pipeline/goal.md",
+            "basename": "goal.md"
+          }
+        ]
+      },
+      {
+        "id": "cmp-013",
+        "basename": "plan.md",
+        "reason": "duplicate filename within target project",
+        "selection_method": "basename-in-project-compare",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/workorder/migration-validation/plan.md",
+            "basename": "plan.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/workorder/wo-unified-coderef-pipeline-001/plan.md",
+            "basename": "plan.md"
+          }
+        ]
+      }
+    ],
+    "merge_sets": [
+      {
+        "id": "merge-001",
+        "project": "coderef-core",
+        "basename": "AGENTS.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "AGENTS.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "AGENTS.md",
+            "basename": "AGENTS.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/sessions/coderef-cli-implementation/AGENTS.md",
+            "basename": "AGENTS.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "scripts/AGENTS.md",
+            "basename": "AGENTS.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-002",
+        "project": "coderef-core",
+        "basename": "BASELINES.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "autoresearch/scanner-quality/BASELINES.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/BASELINES.md",
+            "basename": "BASELINES.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/BASELINES.md",
+            "basename": "BASELINES.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-003",
+        "project": "coderef-core",
+        "basename": "Context-Generator-RESOURCE-SHEET.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "coderef/resources-sheets/Context-Generator-RESOURCE-SHEET.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/Context-Generator-RESOURCE-SHEET.md",
+            "basename": "Context-Generator-RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/systems/Context-Generator-RESOURCE-SHEET.md",
+            "basename": "Context-Generator-RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-004",
+        "project": "coderef-core",
+        "basename": "Dependency-Graph-Builder-RESOURCE-SHEET.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "coderef/resources-sheets/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+            "basename": "Dependency-Graph-Builder-RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/systems/Dependency-Graph-Builder-RESOURCE-SHEET.md",
+            "basename": "Dependency-Graph-Builder-RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-005",
+        "project": "coderef-core",
+        "basename": "File-Generation-System-RESOURCE-SHEET.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "coderef/resources-sheets/File-Generation-System-RESOURCE-SHEET.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/File-Generation-System-RESOURCE-SHEET.md",
+            "basename": "File-Generation-System-RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/systems/File-Generation-System-RESOURCE-SHEET.md",
+            "basename": "File-Generation-System-RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-006",
+        "project": "coderef-core",
+        "basename": "GEMINI.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "GEMINI.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/sessions/coderef-cli-implementation/GEMINI.md",
+            "basename": "GEMINI.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "GEMINI.md",
+            "basename": "GEMINI.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "scripts/GEMINI.md",
+            "basename": "GEMINI.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-007",
+        "project": "coderef-core",
+        "basename": "INDEX.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "src/.coderef/INDEX.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/INDEX.md",
+            "basename": "INDEX.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "src/.coderef/INDEX.md",
+            "basename": "INDEX.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-008",
+        "project": "coderef-core",
+        "basename": "MASTER-PLAN.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "autoresearch/scanner-quality/MASTER-PLAN.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/MASTER-PLAN.md",
+            "basename": "MASTER-PLAN.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/MASTER-PLAN.md",
+            "basename": "MASTER-PLAN.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-009",
+        "project": "coderef-core",
+        "basename": "RESOURCE-SHEET.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "coderef/resource/RESOURCE-SHEET.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resource/RESOURCE-SHEET.md",
+            "basename": "RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "scripts/setup-coderef-dir/RESOURCE-SHEET.md",
+            "basename": "RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-010",
+        "project": "coderef-core",
+        "basename": "Theme-System-RESOURCE-SHEET.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "coderef/resources-sheets/Theme-System-RESOURCE-SHEET.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/systems/Theme-System-RESOURCE-SHEET.md",
+            "basename": "Theme-System-RESOURCE-SHEET.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/resources-sheets/Theme-System-RESOURCE-SHEET.md",
+            "basename": "Theme-System-RESOURCE-SHEET.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-011",
+        "project": "coderef-core",
+        "basename": "USAGE.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "scripts/scan-cli/USAGE.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "scripts/scan-cli/USAGE.md",
+            "basename": "USAGE.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "scripts/setup-coderef-dir/USAGE.md",
+            "basename": "USAGE.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-012",
+        "project": "coderef-core",
+        "basename": "goal.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "autoresearch/pipeline-quality/08-test-gap-pipeline/goal.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/07-critical-function-pipeline/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/08-test-gap-pipeline/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/pipeline-quality/09-async-pattern-pipeline/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/01-element-classification/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/02-export-relationships/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/03-test-coverage-linkage/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/04-async-pattern-detection/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/05-context-summary-signal/goal.md",
+            "basename": "goal.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "autoresearch/scanner-quality/06-test-gap-precision/goal.md",
+            "basename": "goal.md"
+          }
+        ]
+      },
+      {
+        "id": "merge-013",
+        "project": "coderef-core",
+        "basename": "plan.md",
+        "reason": "same basename appears multiple times within one project",
+        "selection_method": "basename-in-project",
+        "target_path": "coderef/workorder/migration-validation/plan.md",
+        "files": [
+          {
+            "project": "coderef-core",
+            "path": "coderef/workorder/migration-validation/plan.md",
+            "basename": "plan.md"
+          },
+          {
+            "project": "coderef-core",
+            "path": "coderef/workorder/wo-unified-coderef-pipeline-001/plan.md",
+            "basename": "plan.md"
+          }
+        ]
+      }
+    ],
+    "stale_review": [
+      {
+        "id": "stale-001",
+        "reason": "time-sensitive report naming suggests stale-claim review",
+        "selection_method": "report-keywords",
+        "project": "coderef-core",
+        "path": "DUPLICATE-FILES-AUDIT.md",
+        "basename": "DUPLICATE-FILES-AUDIT.md",
+        "signals": [
+          "AUDIT"
+        ]
+      },
+      {
+        "id": "stale-002",
+        "reason": "time-sensitive report naming suggests stale-claim review",
+        "selection_method": "report-keywords",
+        "project": "coderef-core",
+        "path": "TEST-FAILURE-ROOT-CAUSES.md",
+        "basename": "TEST-FAILURE-ROOT-CAUSES.md",
+        "signals": [
+          "ROOT-CAUSE"
+        ]
+      },
+      {
+        "id": "stale-003",
+        "reason": "time-sensitive report naming suggests stale-claim review",
+        "selection_method": "report-keywords",
+        "project": "coderef-core",
+        "path": "src/coderef/CODEBASE-AUDIT-REPORT.md",
+        "basename": "CODEBASE-AUDIT-REPORT.md",
+        "signals": [
+          "AUDIT"
+        ]
+      }
+    ],
+    "selection_notes": [
+      "Heuristic candidates only. Audit must confirm before prescribing actions.",
+      "Compare pairs are based on duplicate basenames inside the target project.",
+      "Merge sets are limited to same-project duplicate basenames that are not archived-only.",
+      "Stale review candidates are report-like files with time-sensitive naming signals."
+    ]
+  }
+}

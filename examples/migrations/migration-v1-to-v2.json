@@ -1,0 +1,36 @@
+{
+  "version": "1.0.0",
+  "name": "API v1 to v2 Migration",
+  "mappings": {
+    "patterns": [
+      {
+        "find": "^/api/v1/(.*)$",
+        "replace": "/api/v2/$1"
+      }
+    ],
+    "paths": {
+      "/api/upload": "/api/v2/files/upload",
+      "/api/legacy/export": "/api/v2/export"
+    },
+    "methodChanges": {
+      "/api/v2/auth": {
+        "old": "POST",
+        "new": "PUT"
+      }
+    },
+    "deprecated": [
+      "/api/legacy/upload",
+      "/api/v1/old-endpoint"
+    ],
+    "added": [
+      "/api/v2/webhooks",
+      "/api/v2/files/batch"
+    ]
+  },
+  "metadata": {
+    "source": "API v1",
+    "target": "API v2",
+    "createdAt": "2024-01-15T10:00:00Z",
+    "description": "Migrates from API v1 to v2 with new file upload endpoints and webhook support"
+  }
+}

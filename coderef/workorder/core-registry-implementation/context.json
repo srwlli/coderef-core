@@ -1,0 +1,31 @@
+{
+  "$schema": "https://schemas.coderef.com/workorder-context/v1",
+  "workorder_id": "WO-CODEREF-CORE-REGISTRY-001",
+  "feature_name": "core-registry-implementation",
+  "project_id": "coderef-dashboard",
+  "created": "2026-04-13T23:30:00Z",
+  "description": "Implement UUID-based Entity Registry at generator level to deduplicate metadata and reduce graph.json size by ~60%",
+  "goal": "Reduce scanner output file size and improve performance through entity deduplication",
+  "requirements": [
+    "Implement UUID-based entity registry (IMP-CORE-001)",
+    "Add selective scanning modes (IMP-CORE-007)",
+    "Implement slim complexity summary output (IMP-CORE-008)"
+  ],
+  "out_of_scope": [
+    "Cross-repo changes to coderef-context server",
+    "Breaking changes to existing API contracts",
+    "Removal of existing output formats (must maintain backward compatibility)"
+  ],
+  "constraints": [
+    "No cross-repo commits - only commit to Dashboard repo",
+    "Preserve monotonic counter in improvements.json",
+    "Maintain backward compatibility with existing output formats",
+    "Phase 6 must include doc-discovery, session-logging, and active-work.json cleanup"
+  ],
+  "target_improvements": [
+    "IMP-CORE-001",
+    "IMP-CORE-007",
+    "IMP-CORE-008"
+  ],
+  "related_analysis": "C:/Users/willh/Desktop/CODEREF/DASHBOARD/CODEREF-SCANNER-CONTEXT-ANALYSIS-REPORT.md"
+}

@@ -1,0 +1,69 @@
+{
+  "workorder_id": "WO-CODEREF-CLI-IMPLEMENTATION-001",
+  "task": "Implement file generation functions for CodeRef Dashboard Scanner",
+  "description": "Implement TypeScript functions in @coderef/core to generate all 16 output files when user clicks Scan in dashboard. CLI documentation is reference only - we are NOT building a CLI tool.",
+
+  "orchestrator_instructions": {
+    "role": "Review existing plan and create dashboard-focused implementation guide",
+    "steps": {
+      "step_1": "READ C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core\\coderef\\workorder\\coderef-cli-typescript-implementation\\FULL-CLI-INTEGRATION.md",
+      "step_2": "ANALYZE dashboard scanner integration point (scanExecutor.ts) and current file generation gaps",
+      "step_3": "SYNTHESIZE implementation plan focusing on: (1) TypeScript functions to implement in @coderef/core, (2) Integration with scanExecutor.ts, (3) File generation sequence for dashboard scanner",
+      "step_4": "CREATE orchestrator-output.md with: function signatures, implementation priorities (Phase 1: saveIndex + generateContext), integration strategy for dashboard",
+      "step_5": "UPDATE communication.json orchestrator status to 'complete' when done"
+    }
+  },
+
+  "agent_instructions": {
+    "role": "Implement optimized file generation with caching and parallel processing",
+    "steps": {
+      "step_1": "READ orchestrator-output.md for optimized implementation plan (cache + parallel generation)",
+      "step_2": "READ FULL-CLI-INTEGRATION.md to understand 16 output files (CLI reference only)",
+      "step_3": "ANALYZE packages/coderef-core/src/ structure and scanExecutor.ts integration point",
+      "step_4": "IMPLEMENT Phase 1 functions in @coderef/core: saveIndex(), generateContext(), buildDependencyGraph()",
+      "step_5": "MODIFY scanExecutor.ts (3 changes): Add scanResults cache property, Cache elements in runScanForProject(), Replace runPopulateForProject() with runGenerateForProject() using cached data + parallel generation",
+      "step_6": "TEST by scanning a project via dashboard UI and verify: no re-scanning, parallel generation, all 16 files generated, 3-5x performance improvement",
+      "step_7": "CREATE implementor-output.md documenting: functions implemented, cache strategy, parallel generation, performance comparison, files verified, next phase steps",
+      "step_8": "UPDATE communication.json agent status to 'complete' when phase is done"
+    }
+  },
+
+  "output_format": "markdown",
+
+  "output_template": {
+    "orchestrator": "# Revised Implementation Plan\n\n## Priority Changes\n- [List key priority shifts]\n\n## Recommended Sequence\n1. [First step]\n2. [Second step]\n...\n\n## Directory Structure Focus\n- [Directory creation strategy]\n- [File generation order]\n\n## Implementation Notes\n- [Key considerations]",
+    "implementor": "# Implementation Report\n\n## Functions Implemented\n- [Function list with status]\n\n## Directory Structure Created\n- [Directories and files generated]\n\n## Testing Results\n- [Test outcomes]\n\n## Next Steps\n- [Remaining work]"
+  },
+
+  "quality_standards": {
+    "completeness": "Orchestrator must address all 9 CLI commands and 16 output files. Implementor must create working directory structure and at least 2 file generation functions.",
+    "accuracy": "Plan must reflect current FULL-CLI-INTEGRATION.md content and align with existing coderef-core architecture",
+    "format": "Markdown output with clear sections. Code examples must be valid TypeScript."
+  },
+
+  "context": {
+    "implementation_target": "Dashboard scanner integration (NOT building CLI tool)",
+    "access_method": "User clicks 'Scan' button in dashboard UI (two-phase: Scan + Generate)",
+    "current_status": "Phase 1 (Scan) works but discards results. Phase 2 (Populate) uses Python subprocess (re-scans wastefully)",
+    "problems": [
+      "Scan results discarded (not cached)",
+      "Phase 2 re-scans entire codebase (slow)",
+      "Python subprocess dependency (spawn issues)",
+      "Sequential file generation (no parallelization)"
+    ],
+    "optimizations": [
+      "Add scanResults cache (Map<string, ElementData[]>)",
+      "Cache elements in Phase 1 (no re-scan needed)",
+      "Parallel file generation (Promise.all + Promise.allSettled)",
+      "Rename runPopulateForProject() to runGenerateForProject() (clearer)",
+      "3-5x performance improvement expected"
+    ],
+    "goal": "After clicking Scan + Generate in dashboard: cache results, generate 16 files in parallel, 3-5x faster than Python",
+    "target_files": 16,
+    "target_structure": ".coderef/ with 4 subdirectories (base, reports/, diagrams/, exports/)",
+    "agent_working_directory": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core",
+    "integration_point": "../dashboard/src/app/api/scanner/lib/scanExecutor.ts (relative to agent working directory)",
+    "implementation_location": "src/fileGeneration/ (functions in this package, exported and called by scanExecutor)",
+    "cli_reference": "C:\\Users\\willh\\Desktop\\coderef-dashboard\\packages\\coderef-core\\coderef\\workorder\\coderef-cli-typescript-implementation\\FULL-CLI-INTEGRATION.md (documentation reference only)"
+  }
+}

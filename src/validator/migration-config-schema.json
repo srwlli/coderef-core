@@ -1,0 +1,639 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Migration Configuration Schema",
+  "description": "Schema for API migration configuration files (v1→v2, Flask→FastAPI, etc.)",
+  "type": "object",
+  "required": ["version", "name", "mappings", "metadata"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "description": "Config schema version (semver format)"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 100,
+      "description": "Human-readable migration name (e.g., 'API v1 to v2', 'Flask to FastAPI')"
+    },
+    "mappings": {
+      "type": "object",
+      "description": "Route transformation mappings",
+      "properties": {
+        "paths": {
+          "type": "object",
+          "description": "Explicit 1:1 path mappings (old → new)",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "examples": [
+            {
+              "/api/upload": "/api/v2/files/upload",
+              "/users/<int:id>": "/users/{id}"
+            }
+          ]
+        },
+        "patterns": {
+          "type": "array",
+          "description": "Regex-based pattern transformations (applied in order)",
+          "items": {
+            "type": "object",
+            "required": ["find", "replace"],
+            "properties": {
+              "find": {
+                "type": "string",
+                "description": "Regex pattern to match (JavaScript regex syntax)"
+              },
+              "replace": {
+                "type": "string",
+                "description": "Replacement string (supports $1, $2 capture groups)"
+              }
+            }
+          },
+          "examples": [
+            [
+              {
+                "find": "^/api/v1/(.*)",
+                "replace": "/api/v2/$1"
+              }
+            ]
+          ]
+        },
+        "methodChanges": {
+          "type": "object",
+          "description": "HTTP method changes for specific paths",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["old", "new"],
+            "properties": {
+              "old": {
+                "type": "string",
+                "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+              },
+              "new": {
+                "type": "string",
+                "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"]
+              }
+            }
+          },
+          "examples": [
+            {
+              "/api/auth": {
+                "old": "POST",
+                "new": "PUT"
+              }
+            }
+          ]
+        },
+        "deprecated": {
+          "type": "array",
+          "description": "Routes deprecated in migration (no new equivalent)",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            [
+              "/api/legacy/export",
+              "/api/v1/upload"
+            ]
+          ]
+        },
+        "added": {
+          "type": "array",
+          "description": "Routes newly added in target (not in source)",
+          "items": {
+            "type": "string"
+          },
+          "examples": [
+            [
+              "/api/v2/files/upload",
+              "/api/v2/webhooks"
+            ]
+          ]
+        },
+        "semanticMappings": {
+          "type": "array",
+          "description": "Semantic parameter mappings for framework migrations (e.g., Flask <int:id> to FastAPI {id:int})",
+          "items": {
+            "type": "object",
+            "required": ["parameterName", "source", "target"],
+            "properties": {
+              "parameterName": {
+                "type": "string",
+                "description": "Parameter name (e.g., 'id', 'user_id')"
+              },
+              "location": {
+                "type": "string",
+                "enum": ["path", "query", "body", "header"],
+                "description": "Parameter location in HTTP request"
+              },
+              "source": {
+                "type": "object",
+                "description": "Source framework parameter definition",
+                "required": ["framework", "type"],
+                "properties": {
+                  "framework": {
+                    "type": "string",
+                    "enum": ["flask", "express", "django", "fastapi"],
+                    "description": "Source framework"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["int", "string", "float", "uuid", "path", "any"],
+                    "description": "Source parameter type converter"
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "description": "Source URL pattern (e.g., '<int:id>', ':id')"
+                  },
+                  "validation": {
+                    "type": "object",
+                    "description": "Source validation constraints",
+                    "properties": {
+                      "min": { "type": "number" },
+                      "max": { "type": "number" },
+                      "regex": { "type": "string" },
+                      "required": { "type": "boolean" }
+                    }
+                  }
+                }
+              },
+              "target": {
+                "type": "object",
+                "description": "Target framework parameter definition",
+                "required": ["framework", "type"],
+                "properties": {
+                  "framework": {
+                    "type": "string",
+                    "enum": ["fastapi", "nestjs", "express", "flask"],
+                    "description": "Target framework"
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": ["int", "string", "float", "uuid", "Path", "Query", "Body"],
+                    "description": "Target Pydantic or framework type"
+                  },
+                  "pydanticSchema": {
+                    "type": "string",
+                    "description": "Pydantic schema reference (e.g., 'UserID', 'PositiveInt')"
+                  },
+                  "validation": {
+                    "type": "object",
+                    "description": "Target validation constraints (Pydantic Field() args)",
+                    "properties": {
+                      "ge": { "type": "number", "description": "Greater than or equal" },
+                      "le": { "type": "number", "description": "Less than or equal" },
+                      "min_length": { "type": "integer" },
+                      "max_length": { "type": "integer" },
+                      "pattern": { "type": "string", "description": "Regex pattern" },
+                      "description": { "type": "string" }
+                    }
+                  }
+                }
+              },
+              "conversionNotes": {
+                "type": "string",
+                "description": "Notes on conversion logic or edge cases"
+              }
+            }
+          },
+          "examples": [
+            [
+              {
+                "parameterName": "id",
+                "location": "path",
+                "source": {
+                  "framework": "flask",
+                  "type": "int",
+                  "pattern": "<int:id>",
+                  "validation": { "min": 1 }
+                },
+                "target": {
+                  "framework": "fastapi",
+                  "type": "int",
+                  "pydanticSchema": "PositiveInt",
+                  "validation": { "ge": 1, "description": "User ID must be positive" }
+                }
+              },
+              {
+                "parameterName": "uuid",
+                "location": "path",
+                "source": {
+                  "framework": "flask",
+                  "type": "uuid",
+                  "pattern": "<uuid:doc_id>"
+                },
+                "target": {
+                  "framework": "fastapi",
+                  "type": "uuid",
+                  "pydanticSchema": "UUID4"
+                }
+              }
+            ]
+          ]
+        },
+        "breakingChanges": {
+          "type": "array",
+          "description": "Structured breaking changes between API versions with impact assessment",
+          "items": {
+            "type": "object",
+            "required": ["path", "changeType"],
+            "properties": {
+              "path": {
+                "type": "string",
+                "description": "API path affected by breaking change (e.g., '/api/users')"
+              },
+              "changeType": {
+                "type": "string",
+                "enum": ["method_removed", "method_added", "response_schema_changed", "request_body_changed", "path_removed", "path_renamed", "auth_changed", "rate_limit_changed"],
+                "description": "Type of breaking change"
+              },
+              "method": {
+                "type": "string",
+                "enum": ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"],
+                "description": "HTTP method affected (if applicable)"
+              },
+              "oldValue": {
+                "type": "object",
+                "description": "Previous state before change",
+                "properties": {
+                  "exists": { "type": "boolean" },
+                  "method": { "type": "string" },
+                  "responseSchema": { "type": "string" },
+                  "requestBodySchema": { "type": "string" },
+                  "authRequired": { "type": "boolean" },
+                  "rateLimit": { "type": "string" }
+                }
+              },
+              "newValue": {
+                "type": "object",
+                "description": "New state after change",
+                "properties": {
+                  "exists": { "type": "boolean" },
+                  "method": { "type": "string" },
+                  "responseSchema": { "type": "string" },
+                  "requestBodySchema": { "type": "string" },
+                  "authRequired": { "type": "boolean" },
+                  "rateLimit": { "type": "string" }
+                }
+              },
+              "impactLevel": {
+                "type": "string",
+                "enum": ["high", "medium", "low"],
+                "description": "Impact severity based on usage frequency and API stability"
+              },
+              "impactScore": {
+                "type": "number",
+                "minimum": 0,
+                "maximum": 100,
+                "description": "Numeric impact score (0-100) for sorting and filtering"
+              },
+              "affectedCallers": {
+                "type": "array",
+                "description": "Frontend/API callers detected that use this endpoint",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "file": { "type": "string", "description": "Source file path" },
+                    "line": { "type": "integer" },
+                    "callSite": { "type": "string", "description": "Function/component name" },
+                    "confidence": { "type": "number", "minimum": 0, "maximum": 1 }
+                  }
+                }
+              },
+              "migrationHint": {
+                "type": "string",
+                "description": "Human-readable guidance for migration"
+              },
+              "autoFixable": {
+                "type": "boolean",
+                "description": "Whether this change can be auto-fixed via codemod",
+                "default": false
+              }
+            }
+          },
+          "examples": [
+            [
+              {
+                "path": "/api/users",
+                "changeType": "method_removed",
+                "method": "POST",
+                "oldValue": { "exists": true, "method": "POST" },
+                "newValue": { "exists": false },
+                "impactLevel": "high",
+                "impactScore": 85,
+                "affectedCallers": [
+                  { "file": "frontend/src/api/users.ts", "line": 42, "callSite": "createUser", "confidence": 0.95 }
+                ],
+                "migrationHint": "Use POST /api/v2/users instead",
+                "autoFixable": true
+              },
+              {
+                "path": "/api/auth/token",
+                "changeType": "response_schema_changed",
+                "method": "POST",
+                "oldValue": { "responseSchema": "{token: string}" },
+                "newValue": { "responseSchema": "{access_token: string, refresh_token: string}" },
+                "impactLevel": "medium",
+                "impactScore": 60,
+                "migrationHint": "Update destructuring to use access_token instead of token"
+              }
+            ]
+          ]
+        },
+        "middlewareMappings": {
+          "type": "array",
+          "description": "Middleware and dependency injection conversion patterns between frameworks",
+          "items": {
+            "type": "object",
+            "required": ["name", "source", "target"],
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Middleware/decorator name (e.g., 'require_auth', 'rate_limit')"
+              },
+              "category": {
+                "type": "string",
+                "enum": ["authentication", "authorization", "rate_limiting", "logging", "cors", "validation", "compression", "error_handling"],
+                "description": "Middleware functional category"
+              },
+              "source": {
+                "type": "object",
+                "description": "Source framework middleware definition",
+                "required": ["framework", "pattern"],
+                "properties": {
+                  "framework": {
+                    "type": "string",
+                    "enum": ["flask", "express", "django", "fastapi", "nestjs"],
+                    "description": "Source framework"
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "description": "Source pattern (e.g., '@require_auth', 'app.use(auth)', 'login_required')"
+                  },
+                  "patternType": {
+                    "type": "string",
+                    "enum": ["decorator", "function", "middleware_chain", "guard", "interceptor"],
+                    "description": "Type of middleware pattern"
+                  },
+                  "importPath": {
+                    "type": "string",
+                    "description": "Import path for source middleware (e.g., 'flask_login')"
+                  },
+                  "arguments": {
+                    "type": "array",
+                    "description": "Arguments passed to middleware",
+                    "items": { "type": "string" }
+                  }
+                }
+              },
+              "target": {
+                "type": "object",
+                "description": "Target framework middleware definition",
+                "required": ["framework", "pattern"],
+                "properties": {
+                  "framework": {
+                    "type": "string",
+                    "enum": ["fastapi", "nestjs", "express", "flask"],
+                    "description": "Target framework"
+                  },
+                  "pattern": {
+                    "type": "string",
+                    "description": "Target pattern (e.g., 'Depends(get_current_user)', '@UseGuards(AuthGuard)')"
+                  },
+                  "patternType": {
+                    "type": "string",
+                    "enum": ["decorator", "function", "middleware_chain", "guard", "interceptor", "dependency"],
+                    "description": "Type of middleware pattern in target framework"
+                  },
+                  "importPath": {
+                    "type": "string",
+                    "description": "Import path for target middleware (e.g., 'fastapi', '@nestjs/common')"
+                  },
+                  "dependencyFunction": {
+                    "type": "string",
+                    "description": "Dependency injection function name (e.g., 'get_current_user')"
+                  },
+                  "arguments": {
+                    "type": "array",
+                    "description": "Arguments passed to target middleware",
+                    "items": { "type": "string" }
+                  }
+                }
+              },
+              "conversionNotes": {
+                "type": "string",
+                "description": "Notes on conversion logic, edge cases, or manual steps required"
+              },
+              "autoConvertible": {
+                "type": "boolean",
+                "description": "Whether this middleware can be auto-converted",
+                "default": true
+              }
+            }
+          },
+          "examples": [
+            [
+              {
+                "name": "require_auth",
+                "category": "authentication",
+                "source": {
+                  "framework": "flask",
+                  "pattern": "@require_auth",
+                  "patternType": "decorator",
+                  "importPath": "flask_login"
+                },
+                "target": {
+                  "framework": "fastapi",
+                  "pattern": "Depends(get_current_user)",
+                  "patternType": "dependency",
+                  "importPath": "fastapi",
+                  "dependencyFunction": "get_current_user"
+                },
+                "conversionNotes": "Requires creating get_current_user() dependency function"
+              },
+              {
+                "name": "auth_middleware",
+                "category": "authentication",
+                "source": {
+                  "framework": "express",
+                  "pattern": "app.use(auth)",
+                  "patternType": "middleware_chain",
+                  "importPath": "./middleware/auth"
+                },
+                "target": {
+                  "framework": "nestjs",
+                  "pattern": "@UseGuards(AuthGuard)",
+                  "patternType": "guard",
+                  "importPath": "@nestjs/common"
+                }
+              },
+              {
+                "name": "login_required",
+                "category": "authentication",
+                "source": {
+                  "framework": "django",
+                  "pattern": "@login_required",
+                  "patternType": "decorator"
+                },
+                "target": {
+                  "framework": "fastapi",
+                  "pattern": "Depends(require_active_user)",
+                  "patternType": "dependency"
+                }
+              }
+            ]
+          ]
+        },
+        "schemaMappings": {
+          "type": "array",
+          "description": "Request/response schema transformations for API routes",
+          "items": {
+            "type": "object",
+            "required": ["route"],
+            "properties": {
+              "route": {
+                "type": "string",
+                "description": "API route path (e.g., /api/users)"
+              },
+              "requestBody": {
+                "type": "object",
+                "description": "Request body transformation details",
+                "properties": {
+                  "oldContentType": {
+                    "type": "string",
+                    "enum": ["application/json", "application/x-www-form-urlencoded", "multipart/form-data", "text/plain"],
+                    "description": "Original request content type"
+                  },
+                  "newContentType": {
+                    "type": "string",
+                    "enum": ["application/json", "application/x-www-form-urlencoded", "multipart/form-data", "text/plain"],
+                    "description": "New request content type"
+                  },
+                  "fieldMappings": {
+                    "type": "array",
+                    "description": "Field name/type mappings between old and new schema",
+                    "items": {
+                      "type": "object",
+                      "required": ["oldField", "newField"],
+                      "properties": {
+                        "oldField": { "type": "string" },
+                        "newField": { "type": "string" },
+                        "oldType": { "type": "string" },
+                        "newType": { "type": "string" },
+                        "transform": {
+                          "type": "string",
+                          "description": "Transformation logic (e.g., 'snake_case → camelCase')"
+                        }
+                      }
+                    }
+                  },
+                  "validationMigration": {
+                    "type": "string",
+                    "description": "Notes on validation rule migration (e.g., 'Flask manual → FastAPI Pydantic')"
+                  }
+                }
+              },
+              "response": {
+                "type": "object",
+                "description": "Response structure transformation",
+                "properties": {
+                  "statusCodeChanges": {
+                    "type": "object",
+                    "description": "HTTP status code mappings",
+                    "additionalProperties": {
+                      "type": "object",
+                      "properties": {
+                        "old": { "type": "integer" },
+                        "new": { "type": "integer" },
+                        "reason": { "type": "string" }
+                      }
+                    }
+                  },
+                  "fieldMappings": {
+                    "type": "array",
+                    "description": "Response field mappings",
+                    "items": {
+                      "type": "object",
+                      "required": ["oldField", "newField"],
+                      "properties": {
+                        "oldField": { "type": "string" },
+                        "newField": { "type": "string" },
+                        "oldType": { "type": "string" },
+                        "newType": { "type": "string" }
+                      }
+                    }
+                  },
+                  "wrapInEnvelope": {
+                    "type": "boolean",
+                    "description": "Whether response is now wrapped in a standard envelope (e.g., {data: ...})",
+                    "default": false
+                  }
+                }
+              },
+              "examples": {
+                "type": "object",
+                "description": "Example request/response pairs for testing",
+                "properties": {
+                  "request": {
+                    "type": "object",
+                    "description": "Example request payload",
+                    "properties": {
+                      "old": {},
+                      "new": {}
+                    }
+                  },
+                  "response": {
+                    "type": "object",
+                    "description": "Example response payload",
+                    "properties": {
+                      "old": {},
+                      "new": {}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "examples": [
+            [
+              {
+                "route": "/api/users",
+                "requestBody": {
+                  "oldContentType": "application/x-www-form-urlencoded",
+                  "newContentType": "application/json",
+                  "fieldMappings": [
+                    { "oldField": "user_name", "newField": "username", "transform": "snake_case → camelCase" }
+                  ]
+                }
+              }
+            ]
+          ]
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["source", "target", "createdAt"],
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Source system/version (e.g., 'Flask', 'API v1')"
+        },
+        "target": {
+          "type": "string",
+          "description": "Target system/version (e.g., 'FastAPI', 'API v2')"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 timestamp when config was created"
+        },
+        "description": {
+          "type": "string",
+          "description": "Optional migration description"
+        }
+      }
+    }
+  }
+}

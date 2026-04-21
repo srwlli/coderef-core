@@ -1,0 +1,34 @@
+# Build artifacts
+node_modules/
+dist/
+build/
+out/
+*.min.js
+*.bundle.js
+
+# CodeRef generated files (avoid recursive scanning)
+.coderef/validate-build-cjs/
+.coderef/validate-build/
+.coderef-scanner-debug.log
+
+# Test fixtures and temp files
+__tests__/__test-files-js-detector__/
+__tests__/fixtures/
+temp/
+tmp/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+.nyc_output/
+
+# TypeScript build
+*.js.map
+*.d.ts.map
+
+# OS files
+.DS_Store
+Thumbs.db

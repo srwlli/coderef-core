@@ -1,0 +1,574 @@
+{
+  "stats": {
+    "totalFiles": 296,
+    "totalElements": 1977,
+    "totalLines": 75601,
+    "languages": [
+      "ts",
+      "js",
+      "py"
+    ]
+  },
+  "entryPoints": [
+    {
+      "name": "convertGraphToElements",
+      "file": "src/adapter/graph-to-elements.ts",
+      "type": "function"
+    },
+    {
+      "name": "getConversionStats",
+      "file": "src/adapter/graph-to-elements.ts",
+      "type": "function"
+    },
+    {
+      "name": "visit",
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "type": "function"
+    },
+    {
+      "name": "visit",
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "type": "function"
+    },
+    {
+      "name": "visit",
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "type": "function"
+    },
+    {
+      "name": "visit",
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "type": "function"
+    },
+    {
+      "name": "scanFileWithAST",
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "type": "function"
+    },
+    {
+      "name": "scanFilesWithAST",
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "type": "function"
+    },
+    {
+      "name": "parseFetchCalls",
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "type": "function"
+    },
+    {
+      "name": "parseAxiosCalls",
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "type": "function"
+    },
+    {
+      "name": "parseReactQueryCalls",
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "type": "function"
+    },
+    {
+      "name": "parseCustomApiCalls",
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "type": "function"
+    },
+    {
+      "name": "extractHttpMethod",
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "type": "function"
+    },
+    {
+      "name": "extractCallLocation",
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "type": "function"
+    },
+    {
+      "name": "dfs",
+      "file": "src/analyzer/graph-analyzer.ts",
+      "type": "function"
+    },
+    {
+      "name": "dfs",
+      "file": "src/analyzer/graph-analyzer.ts",
+      "type": "function"
+    },
+    {
+      "name": "dfs",
+      "file": "src/analyzer/graph-analyzer.ts",
+      "type": "function"
+    },
+    {
+      "name": "dfs",
+      "file": "src/analyzer/graph-analyzer.ts",
+      "type": "function"
+    },
+    {
+      "name": "parseNodeId",
+      "file": "src/analyzer/graph-helpers.ts",
+      "type": "function"
+    },
+    {
+      "name": "getImportsForElement",
+      "file": "src/analyzer/graph-helpers.ts",
+      "type": "function"
+    }
+  ],
+  "criticalFunctions": [
+    {
+      "name": "scanCurrentElements",
+      "file": "src/scanner/scanner.ts",
+      "complexity": 40,
+      "dependents": 1
+    },
+    {
+      "name": "ASTElementScanner.visitNode",
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "complexity": 63,
+      "dependents": 0
+    },
+    {
+      "name": "EmbeddingTextGenerator.generate",
+      "file": "src/integration/rag/embedding-text-generator.ts",
+      "complexity": 29,
+      "dependents": 0
+    },
+    {
+      "name": "JSCallDetector.extractExportsFromAST",
+      "file": "src/analyzer/js-call-detector.ts",
+      "complexity": 55,
+      "dependents": 0
+    },
+    {
+      "name": "JSCallDetector.extractElementsFromAST",
+      "file": "src/analyzer/js-call-detector.ts",
+      "complexity": 52,
+      "dependents": 0
+    },
+    {
+      "name": "buildDependencyGraph",
+      "file": "src/fileGeneration/buildDependencyGraph.ts",
+      "complexity": 8,
+      "dependents": 0
+    },
+    {
+      "name": "analyzeCoverage",
+      "file": "src/fileGeneration/analyzeCoverage.ts",
+      "complexity": 6,
+      "dependents": 0
+    },
+    {
+      "name": "ComplexityGenerator.generate",
+      "file": "src/pipeline/generators/complexity-generator.ts",
+      "complexity": 6,
+      "dependents": 0
+    },
+    {
+      "name": "AnalyzerService.analyze",
+      "file": "src/analyzer/analyzer-service.ts",
+      "complexity": 5,
+      "dependents": 0
+    },
+    {
+      "name": "QueryExecutor.execute",
+      "file": "src/query/query-executor.ts",
+      "complexity": 4,
+      "dependents": 0
+    },
+    {
+      "name": "IndexGenerator.generate",
+      "file": "src/pipeline/generators/index-generator.ts",
+      "complexity": 3,
+      "dependents": 0
+    },
+    {
+      "name": "ContextGenerator.generate",
+      "file": "src/context/context-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    },
+    {
+      "name": "CoverageGenerator.generate",
+      "file": "src/pipeline/generators/coverage-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    },
+    {
+      "name": "DiagramGenerator.generate",
+      "file": "src/pipeline/generators/diagram-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    },
+    {
+      "name": "DriftGenerator.generate",
+      "file": "src/pipeline/generators/drift-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    },
+    {
+      "name": "ExportGenerator.generate",
+      "file": "src/pipeline/generators/export-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    },
+    {
+      "name": "GraphGenerator.generate",
+      "file": "src/pipeline/generators/graph-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    },
+    {
+      "name": "PatternGenerator.generate",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    },
+    {
+      "name": "RegistryGenerator.generate",
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    },
+    {
+      "name": "ValidationGenerator.generate",
+      "file": "src/pipeline/generators/validation-generator.ts",
+      "complexity": 2,
+      "dependents": 0
+    }
+  ],
+  "asyncPatterns": [
+    {
+      "name": "main",
+      "file": "demo-all-modules.ts",
+      "type": "function"
+    },
+    {
+      "name": "AnalyzerService.analyze",
+      "file": "src/analyzer/analyzer-service.ts",
+      "type": "method"
+    },
+    {
+      "name": "AnalyzerService.saveGraph",
+      "file": "src/analyzer/analyzer-service.ts",
+      "type": "method"
+    },
+    {
+      "name": "AnalyzerService.loadGraph",
+      "file": "src/analyzer/analyzer-service.ts",
+      "type": "method"
+    },
+    {
+      "name": "AnalyzerService.findFiles",
+      "file": "src/analyzer/analyzer-service.ts",
+      "type": "method"
+    },
+    {
+      "name": "scanDirectory",
+      "file": "src/cli/detect-languages.ts",
+      "type": "function"
+    },
+    {
+      "name": "detectProjectLanguages",
+      "file": "src/cli/detect-languages.ts",
+      "type": "function"
+    },
+    {
+      "name": "runGenerator",
+      "file": "src/cli/populate.ts",
+      "type": "function"
+    },
+    {
+      "name": "run",
+      "file": "src/cli/populate.ts",
+      "type": "function"
+    },
+    {
+      "name": "main",
+      "file": "src/cli/populate.ts",
+      "type": "function"
+    },
+    {
+      "name": "main",
+      "file": "src/cli/scan-frontend-calls.ts",
+      "type": "function"
+    },
+    {
+      "name": "resolveFilePaths",
+      "file": "src/cli/validate-routes.ts",
+      "type": "function"
+    },
+    {
+      "name": "main",
+      "file": "src/cli/validate-routes.ts",
+      "type": "function"
+    },
+    {
+      "name": "BreakingChangeDetector.detectChanges",
+      "file": "src/context/breaking-change-detector.ts",
+      "type": "method"
+    },
+    {
+      "name": "BreakingChangeDetector.findImpactedCallSites",
+      "file": "src/context/breaking-change-detector.ts",
+      "type": "method"
+    },
+    {
+      "name": "BreakingChangeDetector.getChangedElements",
+      "file": "src/context/breaking-change-detector.ts",
+      "type": "method"
+    },
+    {
+      "name": "BreakingChangeDetector.extractSignaturesFromRef",
+      "file": "src/context/breaking-change-detector.ts",
+      "type": "method"
+    },
+    {
+      "name": "BreakingChangeDetector.extractSignaturesFromWorktree",
+      "file": "src/context/breaking-change-detector.ts",
+      "type": "method"
+    },
+    {
+      "name": "ContextGenerator.generate",
+      "file": "src/context/context-generator.ts",
+      "type": "method"
+    },
+    {
+      "name": "ContextGenerator.detectPatterns",
+      "file": "src/context/context-generator.ts",
+      "type": "method"
+    },
+    {
+      "name": "analyzeCoverage",
+      "file": "src/fileGeneration/analyzeCoverage.ts",
+      "type": "function"
+    },
+    {
+      "name": "buildDependencyGraph",
+      "file": "src/fileGeneration/buildDependencyGraph.ts",
+      "type": "function"
+    },
+    {
+      "name": "detectDrift",
+      "file": "src/fileGeneration/detectDrift.ts",
+      "type": "function"
+    },
+    {
+      "name": "loadPreviousScan",
+      "file": "src/fileGeneration/detectDrift.ts",
+      "type": "function"
+    },
+    {
+      "name": "writeReport",
+      "file": "src/fileGeneration/detectDrift.ts",
+      "type": "function"
+    },
+    {
+      "name": "detectPatterns",
+      "file": "src/fileGeneration/detectPatterns.ts",
+      "type": "function"
+    },
+    {
+      "name": "generateContext",
+      "file": "src/fileGeneration/generateContext.ts",
+      "type": "function"
+    },
+    {
+      "name": "generateDiagrams",
+      "file": "src/fileGeneration/generateDiagrams.ts",
+      "type": "function"
+    },
+    {
+      "name": "saveFrontendCalls",
+      "file": "src/fileGeneration/saveFrontendCalls.ts",
+      "type": "function"
+    },
+    {
+      "name": "generateFrontendCallsOutput",
+      "file": "src/fileGeneration/saveFrontendCalls.ts",
+      "type": "function"
+    }
+  ],
+  "testGaps": [
+    {
+      "name": "ASTElementScanner.visitNode",
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "complexity": 63
+    },
+    {
+      "name": "JSCallDetector.extractExportsFromAST",
+      "file": "src/analyzer/js-call-detector.ts",
+      "complexity": 55
+    },
+    {
+      "name": "JSCallDetector.extractElementsFromAST",
+      "file": "src/analyzer/js-call-detector.ts",
+      "complexity": 52
+    },
+    {
+      "name": "scanCurrentElements",
+      "file": "src/scanner/scanner.ts",
+      "complexity": 40
+    },
+    {
+      "name": "EmbeddingTextGenerator.generate",
+      "file": "src/integration/rag/embedding-text-generator.ts",
+      "complexity": 29
+    },
+    {
+      "name": "JSCallDetector.extractImportsFromAST",
+      "file": "src/analyzer/js-call-detector.ts",
+      "complexity": 37
+    },
+    {
+      "name": "ContextBuilder.buildContext",
+      "file": "src/integration/rag/context-builder.ts",
+      "complexity": 26
+    },
+    {
+      "name": "CodeRefValidator.validateMetadata",
+      "file": "src/validator/validator.ts",
+      "complexity": 36
+    },
+    {
+      "name": "SemanticSearchService.search",
+      "file": "src/integration/rag/semantic-search.ts",
+      "complexity": 25
+    },
+    {
+      "name": "SearchIndex.search",
+      "file": "src/search/search-engine.ts",
+      "complexity": 34
+    },
+    {
+      "name": "GraphBuilder.importGraphFromJSON",
+      "file": "src/analyzer/graph-builder.ts",
+      "complexity": 22
+    },
+    {
+      "name": "JSCallDetector.visitNode",
+      "file": "src/analyzer/js-call-detector.ts",
+      "complexity": 32
+    },
+    {
+      "name": "ContextBuilder.buildResultSection",
+      "file": "src/integration/rag/context-builder.ts",
+      "complexity": 22
+    },
+    {
+      "name": "EmbeddingService.embedChunks",
+      "file": "src/integration/rag/embedding-service.ts",
+      "complexity": 22
+    },
+    {
+      "name": "CodeRefParser.parse",
+      "file": "src/parser/parser.ts",
+      "complexity": 29
+    },
+    {
+      "name": "convertGraphToElements",
+      "file": "src/adapter/graph-to-elements.ts",
+      "complexity": 28
+    },
+    {
+      "name": "GraphAnalyzer.traverse",
+      "file": "src/analyzer/graph-analyzer.ts",
+      "complexity": 18
+    },
+    {
+      "name": "QueryExecutor.executeQuery",
+      "file": "src/query/query-executor.ts",
+      "complexity": 18
+    },
+    {
+      "name": "GraphReRanker.rerank",
+      "file": "src/integration/rag/graph-reranker.ts",
+      "complexity": 27
+    },
+    {
+      "name": "ChromaStore.query",
+      "file": "src/integration/vector/chroma-store.ts",
+      "complexity": 27
+    },
+    {
+      "name": "AnswerGenerationService.generateAnswer",
+      "file": "src/integration/rag/answer-generation-service.ts",
+      "complexity": 16
+    },
+    {
+      "name": "PipelineOrchestrator.run",
+      "file": "src/pipeline/orchestrator.ts",
+      "complexity": 16
+    },
+    {
+      "name": "JSCallDetector.extractParametersFromAST",
+      "file": "src/analyzer/js-call-detector.ts",
+      "complexity": 24
+    },
+    {
+      "name": "detectPreset",
+      "file": "src/config/presets.ts",
+      "complexity": 24
+    },
+    {
+      "name": "OpenAIProvider.complete",
+      "file": "src/integration/llm/openai-provider.ts",
+      "complexity": 24
+    },
+    {
+      "name": "PromptTemplateBuilder.detectQuestionType",
+      "file": "src/integration/rag/prompt-templates.ts",
+      "complexity": 14
+    },
+    {
+      "name": "TreeSitterScanner.extractCppParameters",
+      "file": "src/scanner/tree-sitter-scanner.ts",
+      "complexity": 14
+    },
+    {
+      "name": "TaskContextGenerator.filterByTaskRelevance",
+      "file": "src/context/task-context-generator.ts",
+      "complexity": 13
+    },
+    {
+      "name": "AIPromptGenerator.synthesizeContext",
+      "file": "src/integration/ai-prompt-generator.ts",
+      "complexity": 13
+    },
+    {
+      "name": "ChunkConverter.convertGraph",
+      "file": "src/integration/rag/chunk-converter.ts",
+      "complexity": 23
+    },
+    {
+      "name": "ChunkConverter.extractDocumentation",
+      "file": "src/integration/rag/chunk-converter.ts",
+      "complexity": 23
+    },
+    {
+      "name": "ContextGenerator.resolveTargetElementId",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "complexity": 13
+    },
+    {
+      "name": "TreeSitterScanner.extractPythonParameters",
+      "file": "src/scanner/tree-sitter-scanner.ts",
+      "complexity": 13
+    },
+    {
+      "name": "TreeSitterScanner.extractParameters",
+      "file": "src/scanner/tree-sitter-scanner.ts",
+      "complexity": 13
+    },
+    {
+      "name": "CodeRefValidator.validate",
+      "file": "src/validator/validator.ts",
+      "complexity": 23
+    }
+  ],
+  "moduleStructure": {
+    ".": 7,
+    "examples": 1,
+    "scripts": 3,
+    "src": 231,
+    "utils": 3,
+    "__tests__": 37,
+    "autoresearch": 14
+  }
+}

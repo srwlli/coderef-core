@@ -1,0 +1,11 @@
+/**
+ * ContextGenerator
+ * @see coderef/reference-sheets/contextgenerator/contextgenerator.md
+ *
+ * /** @module ContextGenerator */
+ * /** @category {{type}} */
+ * /** @file {{file_path}} */
+ * /** @emits {{event_name}} - {{description}} */
+ * /** @listens {{event_name}} */
+ * /** @requires {{dependency}} */
+ */

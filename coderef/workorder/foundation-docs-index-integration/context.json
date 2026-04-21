@@ -1,0 +1,42 @@
+{
+  "feature_name": "foundation-docs-index-integration",
+  "description": "Create new foundation documentation files (INDEX.md, RELATIONSHIPS.md, EXPORTS.md, HOTSPOTS.md) and enhance existing docs (API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md) by leveraging data from .coderef/index.json, graph.json, and context.json. Build auto-generation pipeline to keep docs synchronized with codebase.",
+  "goal": "Transform static foundation docs into living documentation that auto-populates from .coderef scan data, providing traceability, relationship maps, and complexity analysis for developers",
+  "requirements": [
+    "Create INDEX.md as human-browsable element registry from index.json",
+    "Create RELATIONSHIPS.md visualizing dependency graphs from graph.json edges",
+    "Create EXPORTS.md documenting public API surface (781 exported elements)",
+    "Create HOTSPOTS.md merging complexity scores from context.json",
+    "Enhance API.md with live parameter tables from index.json",
+    "Enhance COMPONENTS.md with complexity badges and UUID links",
+    "Enhance ARCHITECTURE.md with Mermaid diagrams from graph.json",
+    "Create doc generation scripts (Node.js) for auto-regeneration",
+    "Add UUID anchor comments to markdown for traceability",
+    "Validate docs match index.json (CI gate script)"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "auto_generation": "Scripts exist to regenerate all docs from .coderef data",
+    "ci_integration": "Validation script passes/fails based on doc freshness",
+    "documentation_coverage": "100% of index.json elements discoverable via INDEX.md",
+    "enhancement": "Existing 4 foundation docs updated with live data fields",
+    "traceability": "Every documented element has UUID comment anchor"
+  },
+  "_metadata": {
+    "workorder_id": "WO-FOUNDATION-DOCS-INDEX-INTEGRATION-001",
+    "workorder_assigned_at": "2026-04-21T09:32:44.755283+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-FOUNDATION-DOCS-INDEX-INTEGRATION-001",
+    "feature_id": "foundation-docs-index-integration",
+    "last_updated": "2026-04-21",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-21"
+  }
+}

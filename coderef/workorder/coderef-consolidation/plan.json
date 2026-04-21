@@ -1,0 +1,620 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "coderef-consolidation",
+    "workorder_id": "WO-CODEREF-CONSOLIDATION-001",
+    "version": "1.0.0",
+    "status": "planning",
+    "generated_by": "PlanningGenerator",
+    "has_context": true,
+    "has_analysis": false,
+    "description": "Consolidate three separate CodeRef implementations into one unified system",
+    "complexity": "high",
+    "estimated_duration": "2-3 weeks",
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2026-01-08",
+      "ai_assistance": true,
+      "next_review": "2026-02-07"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs_available": [
+        "migration-strategy.md - Complete 7-phase migration plan",
+        "CODEBASE-AUDIT-REPORT.md - Full codebase audit with feature mapping",
+        "AGENT-CONTEXT-FOR-MIGRATION-PLAN.md - Comprehensive agent context",
+        "master-context-index.md - 173 context files across ecosystem"
+      ],
+      "foundation_docs_missing": [],
+      "coding_standards": [
+        "Follow existing TypeScript patterns in src/",
+        "Maintain backward compatibility during migration",
+        "Use compatibility shims for gradual migration",
+        "Preserve all existing scanner functionality"
+      ],
+      "reference_components": [
+        "src/types/types.ts - Current Phase 3+ type system (SOURCE OF TRUTH)",
+        "src/parser/parser.ts - EBNF-based CodeRef2 parser (443 lines)",
+        "src/analyzer/ast-element-scanner.ts - AST element scanner",
+        "src/adapter/graph-to-elements.ts - Graph to ElementData[] adapter",
+        "scanner.ts (root) - Regex-based multi-language scanner (649 lines)"
+      ],
+      "similar_patterns": [
+        "Type migration patterns from existing codebase",
+        "Deprecation warning patterns",
+        "Compatibility shim patterns for API migration"
+      ],
+      "test_patterns": [
+        "Existing test structure in __tests__/ directories",
+        "Type compatibility tests",
+        "Import path verification tests"
+      ],
+      "key_files_to_review": [
+        "Root: parser.ts, types.ts, scanner.ts, index.ts, utils/fs.ts",
+        "src/: types/types.ts, parser/parser.ts, adapter/graph-to-elements.ts, context/types.ts, context/context-generator.ts, context/breaking-change-detector.ts, index.ts",
+        "coderef-core-updates/: scanner.ts, parser.ts, types.ts (experimental, excluded from build)",
+        "Config: tsconfig.json, package.json"
+      ]
+    },
+    "1_executive_summary": {
+      "purpose": "Consolidate three separate CodeRef implementations (root directory, src/, and coderef-core-updates/) into one unified system to eliminate code duplication, resolve type conflicts, and reduce maintenance burden",
+      "value_proposition": "Single source of truth for CodeRef functionality with unified type system, parser, and scanners - reducing maintenance from 3 locations to 1 while preserving all existing functionality",
+      "real_world_analogy": "Like merging three separate utility libraries that grew organically over time into one cohesive package - eliminating duplicate code while keeping all the features that make each one useful",
+      "use_case": "Developer uses CodeRef scanner \u2192 System uses unified type system (ElementData from src/types) \u2192 Both regex and AST scanners produce ElementData[] \u2192 Adapter converts graph analysis to same format \u2192 All tools work with consistent data structure",
+      "output": "Unified CodeRef system with: (1) Working regex scanner for multi-language support, (2) Working AST scanner for TypeScript/JavaScript, (3) Unified EBNF parser, (4) Single type system in src/types/types.ts, (5) Adapter layer for graph \u2192 ElementData[] conversion, (6) Compatibility shim for external consumers during migration period",
+      "complexity": "High - touching 20+ files across 3 locations with breaking change potential and migration period management"
+    },
+    "2_risk_assessment": {
+      "overall_risk": "high",
+      "complexity": "high (20+ files across 3 locations, potential breaking changes, migration period management)",
+      "scope": "10 requirements affecting type system, parser, scanners, imports/exports, and build configuration",
+      "file_system_risk": "medium (file deletions, directory removal, import path changes)",
+      "high_risks": [
+        {
+          "risk": "Breaking external consumers using root parser/types",
+          "impact": "High - external packages may fail",
+          "probability": "Medium",
+          "mitigation": "Create compatibility shim for gradual migration, maintain shim until v3.0.0"
+        },
+        {
+          "risk": "Type incompatibility during migration",
+          "impact": "High - build failures, runtime errors",
+          "probability": "Medium",
+          "mitigation": "Verify ElementData and ScanOptions structures match exactly before migration, comprehensive testing after each phase"
+        },
+        {
+          "risk": "Import path changes breaking internal modules",
+          "impact": "High - compilation errors across codebase",
+          "probability": "High",
+          "mitigation": "Update all imports systematically, verify with TypeScript compiler after each change"
+        }
+      ],
+      "medium_risks": [
+        {
+          "risk": "coderef-core-updates/ contains undocumented features",
+          "impact": "Medium - feature loss if not reviewed",
+          "probability": "Low",
+          "mitigation": "Thorough Phase 0 review comparing implementations, document findings before removal"
+        }
+      ],
+      "performance_concerns": [
+        "No performance regression expected - pure refactoring without algorithm changes",
+        "Monitor build time after tsconfig.json updates"
+      ],
+      "security_considerations": [
+        "No new security concerns - maintaining existing validation patterns",
+        "Type safety preserved through TypeScript compiler checks"
+      ],
+      "breaking_changes": "Potential breaking changes for external consumers - mitigated with compatibility shim"
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "Root files: parser.ts (146 lines, legacy), types.ts (100 lines, legacy), scanner.ts (649 lines, active), index.ts, utils/fs.ts (131 lines, active)",
+        "src/types/types.ts (222 lines, SOURCE OF TRUTH)",
+        "src/parser/parser.ts (443 lines, EBNF-based)",
+        "src/adapter/graph-to-elements.ts (converts DependencyGraph to ElementData[])",
+        "src/context/types.ts (re-exports ElementData)",
+        "src/context/context-generator.ts (uses root scanner)",
+        "src/context/breaking-change-detector.ts (uses root scanner)",
+        "src/index.ts (re-exports from root and src/)",
+        "coderef-core-updates/coderef-core/scanner.ts (experimental, AST-based)",
+        "coderef-core-updates/coderef-core/parser.ts (experimental)",
+        "coderef-core-updates/coderef-core/types.ts (experimental)",
+        "tsconfig.json (build configuration)",
+        "package.json (exports configuration)",
+        "Documentation files referencing old API (parseCoderefTag, ParsedCoderef)"
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "scanner.ts imports ElementData and ScanOptions from root types.ts",
+          "src/adapter/graph-to-elements.ts imports ElementData from ../../types.js",
+          "src/context/types.ts re-exports ElementData from root",
+          "src/index.ts re-exports ElementData and ScanOptions from root",
+          "src/context/context-generator.ts uses root scanner.ts",
+          "src/context/breaking-change-detector.ts uses root scanner.ts"
+        ],
+        "existing_external": [
+          "TypeScript compiler (tsc)",
+          "Existing test framework"
+        ],
+        "new_external": [],
+        "new_internal": [
+          "Compatibility shim for gradual migration (parser-compat.ts, types-compat.ts)"
+        ]
+      },
+      "architecture_context": "Three separate implementations with overlapping functionality: (1) Root directory contains legacy Phase 2 parser and types plus active regex scanner and utilities, (2) src/ directory contains Phase 3+ implementation with EBNF parser, CodeRef2 types, AST scanner, and graph analyzer (SOURCE OF TRUTH), (3) coderef-core-updates/ contains experimental AST scanner excluded from build. Goal: Consolidate to src/ as single source while preserving regex scanner functionality.",
+      "current_import_chains": [
+        "scanner.ts (root) \u2192 ElementData (root types.ts)",
+        "src/adapter/graph-to-elements.ts \u2192 ElementData (root types.ts via ../../types.js)",
+        "src/context/types.ts \u2192 ElementData (root types.ts)",
+        "src/index.ts \u2192 ElementData, ScanOptions (root types.ts)",
+        "All of these must be updated to use src/types/types.ts"
+      ]
+    },
+    "4_key_features": {
+      "primary_features": [
+        "Type migration: Move ElementData and ScanOptions from root types.ts to src/types/types.ts",
+        "Parser migration: Remove root parser.ts, update all imports to src/parser/parser.ts",
+        "Types cleanup: Remove legacy types from root types.ts after import migration complete",
+        "Scanner consolidation: Move scanner.ts from root to src/scanner/scanner.ts",
+        "Configuration updates: Update tsconfig.json to exclude root files, update package.json exports to src/",
+        "coderef-core-updates/ removal: Review experimental code, extract useful features, remove directory",
+        "File removal: Delete root parser.ts and types.ts - BREAKING CHANGE with no compatibility period",
+        "Documentation updates: Update all docs with new import paths and migration instructions"
+      ],
+      "secondary_features": [
+        "Scanner consolidation: Move scanner.ts to src/scanner/ for consistency with unified system architecture",
+        "Import path migration: Systematically update all internal imports to use src/types/types.ts",
+        "Breaking change management: Force complete migration without backward compatibility period"
+      ],
+      "edge_case_handling": [
+        "Type structure mismatch between root and src/ ElementData - verify exact match before migration",
+        "External consumers using old import paths - BREAKING CHANGE: no compatibility shim, update imports directly",
+        "Build failures during migration - rollback capability after each phase",
+        "Hidden features in coderef-core-updates/ - thorough Phase 0 review before removal"
+      ],
+      "configuration_options": [
+        "Scanner location: MOVE to src/scanner/ (decided - higher consistency)",
+        "Compatibility shim: NO SHIM - nothing works anyway so compatibility not needed",
+        "Migration strategy: FORCE BREAKING CHANGE to work to completion - no gradual migration"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "REVIEW-001: Review coderef-core-updates/ experimental scanner implementation",
+        "REVIEW-002: Review coderef-core-updates/ experimental parser implementation",
+        "REVIEW-003: Compare AST scanner implementations (coderef-core-updates vs src/analyzer)",
+        "REVIEW-004: Document findings and extract any unique features worth preserving",
+        "MIGRATE-001: Verify ElementData structure matches between root types.ts and src/types/types.ts",
+        "MIGRATE-002: Verify ScanOptions structure matches between root types.ts and src/types/types.ts",
+        "MIGRATE-003: Move ElementData from root types.ts to src/types/types.ts",
+        "MIGRATE-004: Move ScanOptions from root types.ts to src/types/types.ts",
+        "UPDATE-001: Update scanner.ts imports to use src/types/types.ts",
+        "UPDATE-002: Update src/adapter/graph-to-elements.ts imports to use src/types/types.ts",
+        "UPDATE-003: Update src/context/types.ts imports to use src/types/types.ts",
+        "UPDATE-004: Update src/index.ts exports to use src/types/types.ts",
+        "UPDATE-005: Update src/context/context-generator.ts imports if needed",
+        "UPDATE-006: Update src/context/breaking-change-detector.ts imports if needed",
+        "TEST-001: Run TypeScript compiler to verify no type errors after migration",
+        "TEST-002: Run existing test suite to verify all tests pass",
+        "DOCS-001: Update documentation files referencing parseCoderefTag with new import paths",
+        "DOCS-002: Update documentation files referencing ParsedCoderef with new import paths",
+        "UPDATE-007: Update src/index.ts to export from src/parser instead of root",
+        "TEST-003: Verify all imports migrated from root parser.ts",
+        "CLEANUP-001: Remove ParsedCoderef type from root types.ts",
+        "CLEANUP-002: Remove any remaining legacy types from root types.ts",
+        "UPDATE-008: Update src/index.ts to remove legacy type exports",
+        "TEST-004: Run TypeScript compiler to verify no errors after cleanup",
+        "CONFIG-001: Update tsconfig.json to exclude root parser.ts",
+        "CONFIG-002: Update tsconfig.json to exclude root types.ts",
+        "CONFIG-003: Update package.json exports to point to src/ versions",
+        "TEST-005: Run build process to verify configuration changes work",
+        "MIGRATE-005: Create src/scanner/ directory",
+        "MIGRATE-006: Move scanner.ts to src/scanner/scanner.ts",
+        "MIGRATE-007: Update all imports to new scanner location",
+        "MIGRATE-008: Update scanner.ts imports to use src/types/types.ts",
+        "CLEANUP-003: Verify coderef-core-updates/ review complete (REVIEW-004 done)",
+        "CLEANUP-004: Remove coderef-core-updates/ directory",
+        "CLEANUP-005: Archive coderef-core-updates/ documentation if needed",
+        "CLEANUP-006: Delete root parser.ts file",
+        "CLEANUP-007: Delete root types.ts file",
+        "UPDATE-009: Clean up src/index.ts exports (remove deleted file exports)",
+        "DOCS-003: Update README with new import paths",
+        "DOCS-004: Update API documentation with migration guide",
+        "DOCS-005: Add CHANGELOG entry for breaking changes and migration path",
+        "TEST-006: Final verification - all tests passing",
+        "TEST-007: Final verification - no TypeScript errors",
+        "TEST-008: Final verification - build succeeds"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 0,
+          "name": "Phase 0: Review coderef-core-updates/",
+          "description": "Pre-migration phase - review experimental code and extract useful features before proceeding with consolidation",
+          "tasks": [
+            "REVIEW-001",
+            "REVIEW-002",
+            "REVIEW-003",
+            "REVIEW-004"
+          ],
+          "deliverables": [
+            "coderef-core-updates/ review complete",
+            "AST scanner implementations compared",
+            "Findings documented",
+            "Unique features extracted or documented for future reference"
+          ],
+          "dependencies": [],
+          "risk_level": "low"
+        },
+        {
+          "phase": 1,
+          "name": "Phase 1: Type Migration (ElementData & ScanOptions)",
+          "description": "Move ElementData and ScanOptions from root types.ts to src/types/types.ts and update all internal imports",
+          "tasks": [
+            "MIGRATE-001",
+            "MIGRATE-002",
+            "MIGRATE-003",
+            "MIGRATE-004",
+            "UPDATE-001",
+            "UPDATE-002",
+            "UPDATE-003",
+            "UPDATE-004",
+            "UPDATE-005",
+            "UPDATE-006",
+            "TEST-001",
+            "TEST-002"
+          ],
+          "deliverables": [
+            "ElementData and ScanOptions in src/types/types.ts",
+            "All internal imports updated to use src/types",
+            "TypeScript compiler passes with no errors",
+            "All existing tests pass"
+          ],
+          "dependencies": ["Phase 0 complete"],
+          "risk_level": "high",
+          "rollback_strategy": "Revert type migration commits, restore imports to root types.ts"
+        },
+        {
+          "phase": 2,
+          "name": "Phase 2: Parser Migration",
+          "description": "Update all imports to use src/parser, remove root parser.ts references, update documentation - BREAKING CHANGE",
+          "tasks": [
+            "DOCS-001",
+            "DOCS-002",
+            "UPDATE-007",
+            "TEST-003"
+          ],
+          "deliverables": [
+            "Documentation updated with new import paths",
+            "src/index.ts exports from src/parser",
+            "All imports migrated from root parser verified",
+            "No compatibility shim - direct breaking change"
+          ],
+          "dependencies": ["Phase 1 complete"],
+          "risk_level": "high - breaking change with no backward compatibility"
+        },
+        {
+          "phase": 3,
+          "name": "Phase 3: Types Cleanup",
+          "description": "Remove legacy types from root types.ts after verifying all imports migrated",
+          "tasks": [
+            "CLEANUP-001",
+            "CLEANUP-002",
+            "UPDATE-008",
+            "TEST-004"
+          ],
+          "deliverables": [
+            "Legacy types removed from root types.ts",
+            "src/index.ts updated to remove legacy exports",
+            "TypeScript compiler passes",
+            "No references to removed types"
+          ],
+          "dependencies": ["Phase 2 complete"],
+          "risk_level": "medium"
+        },
+        {
+          "phase": 4,
+          "name": "Phase 4: Configuration Updates",
+          "description": "Update tsconfig.json and package.json to exclude root files and point to src/ versions",
+          "tasks": [
+            "CONFIG-001",
+            "CONFIG-002",
+            "CONFIG-003",
+            "TEST-005"
+          ],
+          "deliverables": [
+            "tsconfig.json excludes root parser.ts and types.ts",
+            "package.json exports point to src/ versions",
+            "Build process succeeds",
+            "Generated files correct"
+          ],
+          "dependencies": ["Phase 3 complete"],
+          "risk_level": "medium"
+        },
+        {
+          "phase": 5,
+          "name": "Phase 5: Scanner Consolidation",
+          "description": "Move scanner.ts from root to src/scanner/ for unified system architecture - DECIDED",
+          "tasks": [
+            "MIGRATE-005",
+            "MIGRATE-006",
+            "MIGRATE-007",
+            "MIGRATE-008"
+          ],
+          "deliverables": [
+            "src/scanner/ directory created",
+            "scanner.ts moved to src/scanner/scanner.ts",
+            "All imports updated to new scanner location",
+            "Scanner imports updated to use src/types/types.ts",
+            "Scanner functionality preserved"
+          ],
+          "dependencies": ["Phase 4 complete"],
+          "risk_level": "medium - moving active scanner with wide usage"
+        },
+        {
+          "phase": 6,
+          "name": "Phase 6: Remove coderef-core-updates/",
+          "description": "Remove experimental directory after Phase 0 review complete and findings documented",
+          "tasks": [
+            "CLEANUP-003",
+            "CLEANUP-004",
+            "CLEANUP-005"
+          ],
+          "deliverables": [
+            "coderef-core-updates/ directory removed",
+            "Documentation archived if needed",
+            "No build references to removed directory"
+          ],
+          "dependencies": ["Phase 0 complete", "Phase 5 complete"],
+          "risk_level": "low"
+        },
+        {
+          "phase": 7,
+          "name": "Phase 7: File Removal & Finalization",
+          "description": "Delete root parser.ts and types.ts, clean up exports, update documentation, final verification",
+          "tasks": [
+            "CLEANUP-006",
+            "CLEANUP-007",
+            "UPDATE-009",
+            "DOCS-003",
+            "DOCS-004",
+            "DOCS-005",
+            "TEST-006",
+            "TEST-007",
+            "TEST-008"
+          ],
+          "deliverables": [
+            "Root parser.ts deleted",
+            "Root types.ts deleted",
+            "src/index.ts cleaned up",
+            "README updated with new import paths",
+            "API docs include migration guide",
+            "CHANGELOG entry added",
+            "All tests passing",
+            "No TypeScript errors",
+            "Build succeeds"
+          ],
+          "dependencies": ["Phase 6 complete"],
+          "risk_level": "low"
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "Type compatibility tests - verify ElementData and ScanOptions structures match exactly",
+        "Import path tests - verify all imports resolve correctly after migration",
+        "Scanner functionality tests - verify regex scanner produces ElementData[] after move",
+        "AST scanner tests - verify AST element scanner produces ElementData[]",
+        "Parser tests - verify EBNF parser functionality unchanged",
+        "Maintain existing test coverage - no regression in test pass rate"
+      ],
+      "integration_tests": [
+        "End-to-end scanner workflow - file input → regex scanner → ElementData[] output",
+        "AST analysis workflow - TypeScript file → AST scanner → DependencyGraph → adapter → ElementData[]",
+        "Parser integration - verify parseCoderef2 works with new import paths",
+        "Build system integration - verify tsconfig and package.json changes work correctly"
+      ],
+      "compiler_verification": [
+        "Run tsc after each phase to verify no TypeScript errors",
+        "Verify no circular dependencies introduced",
+        "Check all exports resolve correctly from src/index.ts"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "Type structure mismatch during migration",
+          "setup": "Compare ElementData in root types.ts vs src/types/types.ts",
+          "expected_behavior": "Structures match exactly - no missing or extra fields",
+          "verification": "Manual code review + TypeScript compiler check",
+          "error_handling": "Fail migration if mismatch detected"
+        },
+        {
+          "scenario": "Missing import after file deletion",
+          "setup": "Delete root parser.ts and types.ts",
+          "expected_behavior": "All imports updated to src/ versions - no broken imports",
+          "verification": "TypeScript compiler shows zero errors",
+          "error_handling": "Rollback to previous phase if compiler errors found"
+        },
+        {
+          "scenario": "Scanner functionality regression",
+          "setup": "Move scanner.ts to src/scanner/",
+          "expected_behavior": "Scanner produces identical ElementData[] output",
+          "verification": "Run existing scanner tests - all pass",
+          "error_handling": "Fix import paths and verify output format"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "Unified type system",
+          "metric": "All scanners produce ElementData[]",
+          "target": "Regex scanner, AST scanner, and graph adapter all output ElementData[]",
+          "validation": "Run scanner tests and verify output types"
+        },
+        {
+          "requirement": "Single source of truth",
+          "metric": "All types defined in src/types/types.ts",
+          "target": "No duplicate type definitions in root - only src/ types remain",
+          "validation": "Code review + TypeScript compilation"
+        },
+        {
+          "requirement": "Consolidated parser",
+          "metric": "EBNF parser in src/parser/parser.ts",
+          "target": "Root parser.ts deleted - only src/parser remains",
+          "validation": "File system check + all imports use src/parser"
+        },
+        {
+          "requirement": "Scanner consolidation",
+          "metric": "Scanner in src/scanner/scanner.ts",
+          "target": "Root scanner.ts moved to src/scanner/ with updated imports",
+          "validation": "File system check + scanner functionality preserved"
+        },
+        {
+          "requirement": "Directory cleanup",
+          "metric": "coderef-core-updates/ removed",
+          "target": "Experimental directory deleted after Phase 0 review",
+          "validation": "File system check - directory no longer exists"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "Type safety",
+          "metric": "TypeScript compiler",
+          "target": "Zero type errors after migration",
+          "validation": "Run tsc --noEmit"
+        },
+        {
+          "requirement": "Test coverage maintained",
+          "metric": "Test pass rate",
+          "target": "100% of existing tests pass",
+          "validation": "Run npm test"
+        },
+        {
+          "requirement": "Build success",
+          "metric": "Build process",
+          "target": "npm run build succeeds with no errors",
+          "validation": "Run build command"
+        },
+        {
+          "requirement": "Import consistency",
+          "metric": "All imports use src/ paths",
+          "target": "No imports from root parser.ts or types.ts",
+          "validation": "Grep codebase for old import patterns"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "No performance regression",
+          "metric": "Scanner execution time",
+          "target": "Identical or better performance vs baseline",
+          "validation": "Run performance benchmarks before and after"
+        },
+        {
+          "requirement": "Build time unchanged",
+          "metric": "npm run build duration",
+          "target": "Within 5% of baseline build time",
+          "validation": "Time build process"
+        }
+      ],
+      "documentation_requirements": [
+        {
+          "requirement": "Migration guide complete",
+          "metric": "Documentation files updated",
+          "target": "README, API docs, and CHANGELOG include migration instructions",
+          "validation": "Manual review of docs"
+        },
+        {
+          "requirement": "New import paths documented",
+          "metric": "All old API references updated",
+          "target": "Zero references to parseCoderefTag or ParsedCoderef from root",
+          "validation": "Grep documentation for old API names"
+        }
+      ]
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "\u2610 Review migration-strategy.md and CODEBASE-AUDIT-REPORT.md",
+        "\u2610 Verify ElementData and ScanOptions structures match between root and src/",
+        "\u2610 Create backup branch before starting migration",
+        "\u2610 Set baseline metrics (test pass rate, build time, scanner performance)"
+      ],
+      "phase_0_review": [
+        "\u2610 REVIEW-001: Review coderef-core-updates/ scanner implementation",
+        "\u2610 REVIEW-002: Review coderef-core-updates/ parser implementation",
+        "\u2610 REVIEW-003: Compare AST scanner implementations",
+        "\u2610 REVIEW-004: Document findings and extract useful features"
+      ],
+      "phase_1_type_migration": [
+        "\u2610 MIGRATE-001: Verify ElementData structure match",
+        "\u2610 MIGRATE-002: Verify ScanOptions structure match",
+        "\u2610 MIGRATE-003: Move ElementData to src/types/types.ts",
+        "\u2610 MIGRATE-004: Move ScanOptions to src/types/types.ts",
+        "\u2610 UPDATE-001: Update scanner.ts imports",
+        "\u2610 UPDATE-002: Update src/adapter/graph-to-elements.ts imports",
+        "\u2610 UPDATE-003: Update src/context/types.ts imports",
+        "\u2610 UPDATE-004: Update src/index.ts exports",
+        "\u2610 UPDATE-005: Update src/context/context-generator.ts",
+        "\u2610 UPDATE-006: Update src/context/breaking-change-detector.ts",
+        "\u2610 TEST-001: Run TypeScript compiler",
+        "\u2610 TEST-002: Run test suite"
+      ],
+      "phase_2_parser_migration": [
+        "\u2610 DOCS-001: Update parseCoderefTag documentation",
+        "\u2610 DOCS-002: Update ParsedCoderef documentation",
+        "\u2610 UPDATE-007: Update src/index.ts to export from src/parser",
+        "\u2610 TEST-003: Verify all parser imports migrated"
+      ],
+      "phase_3_types_cleanup": [
+        "\u2610 CLEANUP-001: Remove ParsedCoderef from root types.ts",
+        "\u2610 CLEANUP-002: Remove remaining legacy types",
+        "\u2610 UPDATE-008: Update src/index.ts exports",
+        "\u2610 TEST-004: Run TypeScript compiler"
+      ],
+      "phase_4_configuration": [
+        "\u2610 CONFIG-001: Update tsconfig.json exclude parser.ts",
+        "\u2610 CONFIG-002: Update tsconfig.json exclude types.ts",
+        "\u2610 CONFIG-003: Update package.json exports",
+        "\u2610 TEST-005: Run build process"
+      ],
+      "phase_5_scanner_consolidation": [
+        "\u2610 MIGRATE-005: Create src/scanner/ directory",
+        "\u2610 MIGRATE-006: Move scanner.ts to src/scanner/",
+        "\u2610 MIGRATE-007: Update all scanner imports",
+        "\u2610 MIGRATE-008: Update scanner imports to src/types"
+      ],
+      "phase_6_directory_removal": [
+        "\u2610 CLEANUP-003: Verify Phase 0 review complete",
+        "\u2610 CLEANUP-004: Remove coderef-core-updates/",
+        "\u2610 CLEANUP-005: Archive documentation if needed"
+      ],
+      "phase_7_finalization": [
+        "\u2610 CLEANUP-006: Delete root parser.ts",
+        "\u2610 CLEANUP-007: Delete root types.ts",
+        "\u2610 UPDATE-009: Clean up src/index.ts exports",
+        "\u2610 DOCS-003: Update README with new imports",
+        "\u2610 DOCS-004: Update API docs with migration guide",
+        "\u2610 DOCS-005: Add CHANGELOG entry",
+        "\u2610 TEST-006: All tests passing",
+        "\u2610 TEST-007: No TypeScript errors",
+        "\u2610 TEST-008: Build succeeds"
+      ],
+      "final_verification": [
+        "\u2610 Unified type system - all scanners produce ElementData[]",
+        "\u2610 Single source of truth - only src/ types remain",
+        "\u2610 Scanner in src/scanner/ with preserved functionality",
+        "\u2610 Parser in src/parser/ only",
+        "\u2610 coderef-core-updates/ removed",
+        "\u2610 Root parser.ts and types.ts deleted",
+        "\u2610 All tests passing",
+        "\u2610 Zero TypeScript errors",
+        "\u2610 Build succeeds",
+        "\u2610 Documentation complete with migration guide",
+        "\u2610 No performance regression",
+        "\u2610 BREAKING CHANGE clearly documented"
+      ]
+    }
+  }
+}

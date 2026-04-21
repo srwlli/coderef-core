@@ -1,0 +1,170 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "fix-coderef-drift-preflight",
+    "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+    "status": "planning",
+    "generated_by": "manual-workorder-seed",
+    "has_context": true,
+    "has_analysis": true,
+    "generation_mode": "manual_followthrough",
+    "requires_agent_finalization": false,
+    "agent_finalization_status": "not_requested",
+    "finalized_from_agent": false
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "references": [
+        "coderef/workorder/fix-coderef-drift-preflight/context.json",
+        "coderef/workorder/fix-coderef-drift-preflight/analysis.json",
+        "src/pipeline/generators/drift-generator.ts",
+        "__tests__/generators/drift-generator.test.ts",
+        "src/pipeline/generators/index-generator.ts"
+      ]
+    },
+    "1_executive_summary": {
+      "goal": "Make fresh rescans report zero drift when the code inventory is unchanged so strict CodeRef planning can trust drift.json again.",
+      "description": "Fix the drift generator to compare elements using a stable project-relative path format instead of mixing absolute current paths with relative previous index paths.",
+      "scope": "Update coderef-core drift detection and regression tests, rebuild the package, then verify coderef-workflow no longer reports false 200% drift after populate."
+    },
+    "2_risk_assessment": {
+      "risks": [
+        "If path normalization changes the report payload but not the identity key, the false added and deleted counts will persist.",
+        "If the fix changes real drift semantics, existing drift coverage may regress and hide legitimate added, deleted, or modified elements.",
+        "If the built dist output is not regenerated, downstream consumers will continue running the broken drift generator."
+      ]
+    },
+    "3_current_state_analysis": {
+      "current_state": [
+        "index-generator already writes project-relative file paths into index.json.",
+        "drift-generator currently builds current element IDs from raw state.elements, and those elements retain absolute file paths.",
+        "coderef-workflow strict preflight correctly rejects drift over 10%, so the false 200% report blocks create-workorder and create-plan until coderef-core is fixed."
+      ]
+    },
+    "4_key_features": {
+      "features": [
+        "Normalize current and previous drift comparison elements to the same project-relative path convention.",
+        "Return added, deleted, and modified entries using normalized file paths for a stable drift report contract.",
+        "Add a regression test covering relative previous index paths versus absolute current scan paths.",
+        "Verify the fix by rebuilding coderef-core and repopulating coderef-workflow."
+      ]
+    },
+    "5_task_id_system": {
+      "workorder": {
+        "id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+        "name": "fix-coderef-drift-preflight",
+        "feature_dir": "coderef/workorder/fix-coderef-drift-preflight"
+      },
+      "tasks": [
+        {
+          "id": "READ-001",
+          "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+          "description": "Read src/pipeline/generators/drift-generator.ts and src/pipeline/generators/index-generator.ts to confirm where absolute-versus-relative path normalization diverges."
+        },
+        {
+          "id": "EDIT-001",
+          "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+          "description": "Edit src/pipeline/generators/drift-generator.ts so both current scan elements and previous index elements are normalized to project-relative forward-slash paths before identity maps are built."
+        },
+        {
+          "id": "EDIT-002",
+          "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+          "description": "Edit drift report output generation so added, deleted, and modified file entries also use the normalized project-relative path format."
+        },
+        {
+          "id": "TEST-001",
+          "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+          "description": "Add a drift-generator regression test covering unchanged elements where previous index paths are relative and current state paths are absolute."
+        },
+        {
+          "id": "TEST-002",
+          "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+          "description": "Run the coderef-core drift generator test file and confirm the new regression plus existing drift behavior both pass."
+        },
+        {
+          "id": "RUN-001",
+          "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+          "description": "Rebuild coderef-core so dist/src/pipeline/generators/drift-generator.js reflects the source normalization fix."
+        },
+        {
+          "id": "RUN-002",
+          "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+          "description": "Repopulate coderef-workflow and confirm the regenerated drift.json no longer reports false 200% drift for an unchanged scan."
+        },
+        {
+          "id": "CHECK-001",
+          "workorder_id": "WO-FIX-CODEREF-DRIFT-PREFLIGHT-001",
+          "description": "Check that coderef-workflow strict planning preflight accepts the fresh populate and that analyze_project_for_planning can continue past drift validation."
+        }
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Source fix and regression coverage",
+          "tasks": [
+            "READ-001",
+            "EDIT-001",
+            "EDIT-002",
+            "TEST-001",
+            "TEST-002"
+          ],
+          "deliverables": [
+            "Update src/pipeline/generators/drift-generator.ts",
+            "Update __tests__/generators/drift-generator.test.ts"
+          ],
+          "validation": [
+            "The drift generator reports 0 changed elements for unchanged scans with mixed absolute and relative source paths.",
+            "The existing added, deleted, and modified drift behavior still passes in the test suite."
+          ]
+        },
+        {
+          "phase": 2,
+          "name": "Build and downstream verification",
+          "tasks": [
+            "RUN-001",
+            "RUN-002",
+            "CHECK-001"
+          ],
+          "deliverables": [
+            "Update dist/src/pipeline/generators/drift-generator.js",
+            "Regenerate coderef-workflow .coderef artifacts with corrected drift.json"
+          ],
+          "validation": [
+            "The rebuilt drift generator emits normalized relative file paths in drift.json entries.",
+            "The regenerated coderef-workflow drift report is at or below 10% when the scan is unchanged.",
+            "coderef-workflow strict preflight advances past drift validation after the repopulate."
+          ]
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "tests": [
+        "pnpm vitest run __tests__/generators/drift-generator.test.ts"
+      ],
+      "edge_cases": [
+        "Edge case: previous index stores relative paths while current state holds absolute paths for the same unchanged element.",
+        "Edge case: modified elements still report real attribute changes after path normalization.",
+        "Edge case: deleted elements remain deleted when an element truly disappears between scans.",
+        "Edge case: added elements remain added when a new element truly appears between scans.",
+        "Edge case: report payloads use forward-slash relative paths consistently across added, deleted, and modified entries."
+      ]
+    },
+    "8_success_criteria": {
+      "criteria": [
+        "The new drift generator regression test passes and driftPercentage is exactly 0 for the unchanged mixed-path scenario.",
+        "The coderef-core drift generator test file passes with 100% of its cases green after the change.",
+        "A fresh repopulate of coderef-workflow no longer reports 200% drift for an unchanged scan and stays at or below the 10% strict threshold.",
+        "Strict planning in coderef-workflow can proceed past drift preflight without adding any bypass or weakening the threshold."
+      ]
+    },
+    "9_implementation_checklist": {
+      "items": [
+        "Keep the strict 10% drift gate unchanged.",
+        "Do not patch around the bug in coderef-workflow before fixing coderef-core.",
+        "Keep path normalization logic local to drift detection and report shaping rather than redesigning the scanner pipeline.",
+        "Stop after downstream verification once the corrected drift report is confirmed."
+      ]
+    }
+  }
+}

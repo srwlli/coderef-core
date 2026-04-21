@@ -1,0 +1,398 @@
+{
+  "META_DOCUMENTATION": {
+    "feature_name": "foundation-docs-index-integration",
+    "workorder_id": "WO-FOUNDATION-DOCS-001",
+    "status": "finalized",
+    "version": "1.0.0",
+    "generated_by": "Agent Finalization - Manual Draft",
+    "has_context": true,
+    "has_analysis": true,
+    "requires_agent_finalization": false,
+    "agent_finalization_status": "completed",
+    "generation_mode": "agent_finalized",
+    "finalized_from_agent": true,
+    "agent_prompt_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\foundation-docs-index-integration\\agent-prompt.txt",
+    "refactoring_candidates_count": 0,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2026-04-21",
+      "ai_assistance": true,
+      "next_review": "2026-05-21"
+    }
+  },
+  "UNIVERSAL_PLANNING_STRUCTURE": {
+    "0_preparation": {
+      "foundation_docs": {
+        "available": [
+          "API.md - API reference with TypeScript signatures",
+          "ARCHITECTURE.md - System overview and module organization",
+          "COMPONENTS.md - Component catalog by module",
+          "SCHEMA.md - Data models and type definitions",
+          "AGENTS.md - Agent context and rules (root)",
+          "CLAUDE.md - Thin pointer to CONTEXT.md"
+        ],
+        "missing": []
+      },
+      "coding_standards": {
+        "available": [
+          "TypeScript with strict typing",
+          "Pure functions preferred over classes",
+          "Composition over inheritance",
+          "In-process operations (no subprocess overhead)"
+        ],
+        "missing": []
+      },
+      "reference_components": {
+        "primary": "coderef/foundation-docs/*.md",
+        "secondary": [
+          ".coderef/index.json - 1,921 elements",
+          ".coderef/graph.json - 9,629 edges",
+          ".coderef/context.json - complexity analysis"
+        ]
+      },
+      "key_patterns_identified": [
+        "Foundation docs are projections of .coderef data",
+        "UUID-based traceability between docs and code",
+        "Auto-generation pipeline from scan data",
+        "CI validation for doc freshness"
+      ],
+      "technology_stack": {
+        "languages": ["TypeScript", "JavaScript", "Python"],
+        "frameworks": ["Node.js scripts"],
+        "key_libraries": ["glob", "minimatch", "TypeScript compiler API"]
+      },
+      "gaps_and_risks": [
+        "Currently using only ~10% of .coderef data in docs",
+        "Line numbers in docs are stale (3+ months old)",
+        "No automated regeneration pipeline",
+        "Missing UUID traceability links",
+        "Complexity scores not surfaced in docs"
+      ],
+      "data_inventory": {
+        "index.json": "390 KB, 1,921 elements with UUIDs, params, async flags",
+        "graph.json": "3.4 MB, 9,629 dependency edges",
+        "context.json": "14 KB, complexity scores, entry points",
+        "stats": "296 files, 75,601 lines, 41% exported, 10% async"
+      }
+    },
+    "1_executive_summary": {
+      "purpose": "Create new foundation documentation files (INDEX.md, RELATIONSHIPS.md, EXPORTS.md, HOTSPOTS.md) and enhance existing docs (API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md) by leveraging data from .coderef/index.json, graph.json, and context.json. Build auto-generation pipeline to keep docs synchronized with codebase.",
+      "value_proposition": "Transform static foundation docs into living documentation that auto-populates from .coderef scan data, providing traceability, relationship maps, and complexity analysis for developers",
+      "real_world_analogy": "Similar to building foundation-docs-index-integration - systematically implementing each requirement to deliver complete functionality",
+      "use_case": "User requests foundation-docs-index-integration \u2192 System implements: Create INDEX.md as human-browsable element registry from index.json, Create RELATIONSHIPS.md visualizing dependency graphs from graph.json edges, Create EXPORTS.md documenting public API surface (781 exported elements) \u2192 Feature is functional",
+      "output": "Implemented 10 requirements: Create INDEX.md as human-browsable element registry from index.json, Create RELATIONSHIPS.md visualizing dependency graphs from graph.json edges, Create EXPORTS.md documenting public API surface (781 exported elements)"
+    },
+    "2_risk_assessment": {
+      "overall_risk": "medium",
+      "complexity": "high (estimated 15+ files)",
+      "scope": "Estimated 10 requirements affecting multiple components",
+      "file_system_risk": "low (standard code changes only)",
+      "dependencies": [
+        "None identified - may require discovery during implementation"
+      ],
+      "performance_concerns": [
+        "No significant performance concerns identified - monitor during implementation"
+      ],
+      "security_considerations": [
+        "Follow existing security patterns - review during implementation"
+      ],
+      "breaking_changes": "none (extending existing functionality)",
+      "concurrency_risks": [
+        "No async patterns detected"
+      ]
+    },
+    "3_current_state_analysis": {
+      "affected_files": [
+        "Identify during implementation based on feature scope"
+      ],
+      "dependencies": {
+        "existing_internal": [
+          "Existing modules and components - identify during implementation"
+        ],
+        "existing_external": [
+          "Standard project dependencies"
+        ],
+        "new_external": [],
+        "new_internal": []
+      },
+      "architecture_context": "Standard implementation following existing project architecture and patterns"
+    },
+    "4_key_features": {
+      "primary_features": [
+        "Create INDEX.md as human-browsable element registry from index.json",
+        "Create RELATIONSHIPS.md visualizing dependency graphs from graph.json edges",
+        "Create EXPORTS.md documenting public API surface (781 exported elements)",
+        "Create HOTSPOTS.md merging complexity scores from context.json",
+        "Enhance API.md with live parameter tables from index.json"
+      ],
+      "secondary_features": [
+        "Enhance COMPONENTS.md with complexity badges and UUID links",
+        "Enhance ARCHITECTURE.md with Mermaid diagrams from graph.json",
+        "Create doc generation scripts (Node.js) for auto-regeneration",
+        "Add UUID anchor comments to markdown for traceability",
+        "Validate docs match index.json (CI gate script)"
+      ],
+      "edge_case_handling": [
+        "Empty or null input validation",
+        "Invalid input error handling",
+        "Boundary conditions and limits"
+      ],
+      "configuration_options": [
+        "None"
+      ]
+    },
+    "5_task_id_system": {
+      "tasks": [
+        "SETUP-001: Create scripts/ directory and setup doc generation infrastructure",
+        "SETUP-002: Create shared utilities for reading .coderef JSON files",
+        "LOGIC-001: Generate INDEX.md - master element registry from index.json",
+        "LOGIC-002: Generate RELATIONSHIPS.md - dependency visualizer from graph.json",
+        "LOGIC-003: Generate EXPORTS.md - public API surface (781 exported elements)",
+        "LOGIC-004: Generate HOTSPOTS.md - complexity & risk analysis from context.json",
+        "ENHANCE-001: Update API.md with UUID anchors and live parameter tables",
+        "ENHANCE-002: Update COMPONENTS.md with complexity badges and file density metrics",
+        "ENHANCE-003: Update ARCHITECTURE.md with Mermaid diagrams from graph.json",
+        "ENHANCE-004: Update SCHEMA.md with auto-generated type statistics",
+        "SCRIPT-001: Create generate-index-md.js script",
+        "SCRIPT-002: Create generate-exports-md.js script",
+        "SCRIPT-003: Create generate-hotspots-md.js script",
+        "SCRIPT-004: Create validate-docs.js CI gate script",
+        "TEST-001: Verify all 4 new docs generate correctly",
+        "TEST-002: Verify enhanced docs contain UUID anchors",
+        "DOC-001: Create README for doc generation scripts",
+        "FINAL-001: Run full regeneration and verify outputs"
+      ]
+    },
+    "6_implementation_phases": {
+      "phases": [
+        {
+          "phase": 1,
+          "name": "Phase 1: Setup",
+          "description": "Create scripts directory and shared utilities for reading .coderef JSON files",
+          "tasks": ["SETUP-001", "SETUP-002"],
+          "deliverables": [
+            "scripts/ directory exists",
+            "shared JSON loader utility",
+            "Error handling for missing .coderef files"
+          ],
+          "complexity_metrics": {
+            "estimated_complexity": "low",
+            "task_count": 2,
+            "files_affected": 2
+          }
+        },
+        {
+          "phase": 2,
+          "name": "Phase 2: New Documentation",
+          "description": "Generate 4 new foundation docs from .coderef data",
+          "tasks": ["LOGIC-001", "LOGIC-002", "LOGIC-003", "LOGIC-004", "SCRIPT-001", "SCRIPT-002", "SCRIPT-003"],
+          "deliverables": [
+            "INDEX.md - master element registry (1,921 elements)",
+            "RELATIONSHIPS.md - dependency visualizer (9,629 edges)",
+            "EXPORTS.md - public API (781 exported elements)",
+            "HOTSPOTS.md - complexity analysis (critical functions)"
+          ],
+          "complexity_metrics": {
+            "estimated_complexity": "medium",
+            "task_count": 7,
+            "files_affected": 7
+          }
+        },
+        {
+          "phase": 3,
+          "name": "Phase 3: Enhanced Documentation",
+          "description": "Update existing 4 foundation docs with live data and UUID anchors",
+          "tasks": ["ENHANCE-001", "ENHANCE-002", "ENHANCE-003", "ENHANCE-004"],
+          "deliverables": [
+            "API.md with UUID anchors and live parameter tables",
+            "COMPONENTS.md with complexity badges",
+            "ARCHITECTURE.md with Mermaid diagrams",
+            "SCHEMA.md with auto-generated statistics"
+          ],
+          "complexity_metrics": {
+            "estimated_complexity": "medium",
+            "task_count": 4,
+            "files_affected": 4
+          }
+        },
+        {
+          "phase": 4,
+          "name": "Phase 4: CI Integration",
+          "description": "Create validation script and finalize documentation",
+          "tasks": ["SCRIPT-004", "TEST-001", "TEST-002", "DOC-001", "FINAL-001"],
+          "deliverables": [
+            "validate-docs.js CI gate script",
+            "README for doc generation scripts",
+            "All tests passing",
+            "All 8 docs verified generated correctly"
+          ],
+          "complexity_metrics": {
+            "estimated_complexity": "low",
+            "task_count": 5,
+            "files_affected": 3
+          }
+        }
+      ]
+    },
+    "7_testing_strategy": {
+      "unit_tests": [
+        "Test individual functions and methods in isolation",
+        "Verify input validation and error handling",
+        "Test edge cases and boundary conditions",
+        "Achieve minimum 80% code coverage"
+      ],
+      "integration_tests": [
+        "Test component interactions and data flow",
+        "Verify end-to-end functionality",
+        "Test integration with existing systems"
+      ],
+      "end_to_end_tests": [
+        "Not applicable"
+      ],
+      "edge_case_scenarios": [
+        {
+          "scenario": "Empty or null input provided",
+          "setup": "Call function with None or empty string",
+          "expected_behavior": "Function validates input and returns appropriate error",
+          "verification": "Assert error message and status code",
+          "error_handling": "ValueError or ValidationError"
+        },
+        {
+          "scenario": "Invalid input format provided",
+          "setup": "Call function with malformed or incorrect data type",
+          "expected_behavior": "Function validates input type and returns error",
+          "verification": "Assert error message indicates invalid format",
+          "error_handling": "TypeError or ValidationError"
+        },
+        {
+          "scenario": "Boundary conditions at limits",
+          "setup": "Test with minimum and maximum allowed values",
+          "expected_behavior": "Function handles boundary values correctly",
+          "verification": "Assert results are within expected range",
+          "error_handling": "No error expected for valid boundaries"
+        }
+      ]
+    },
+    "8_success_criteria": {
+      "functional_requirements": [
+        {
+          "requirement": "Feature implementation complete",
+          "metric": "All requirements implemented",
+          "target": "100% of specified requirements",
+          "validation": "Manual verification against requirements list"
+        },
+        {
+          "requirement": "Integration successful",
+          "metric": "Feature works with existing system",
+          "target": "No breaking changes to existing functionality",
+          "validation": "Run full test suite"
+        },
+        {
+          "requirement": "Create INDEX.md as human-browsable element registry from index.json",
+          "metric": "Functionality verified",
+          "target": "Works as specified",
+          "validation": "Test cases for: Create INDEX.md as human-browsable element registry from index.json"
+        },
+        {
+          "requirement": "Create RELATIONSHIPS.md visualizing dependency graphs from graph.json edges",
+          "metric": "Functionality verified",
+          "target": "Works as specified",
+          "validation": "Test cases for: Create RELATIONSHIPS.md visualizing dependency graphs from graph.json edges"
+        },
+        {
+          "requirement": "Create EXPORTS.md documenting public API surface (781 exported elements)",
+          "metric": "Functionality verified",
+          "target": "Works as specified",
+          "validation": "Test cases for: Create EXPORTS.md documenting public API surface (781 exported elements)"
+        }
+      ],
+      "quality_requirements": [
+        {
+          "requirement": "Code coverage",
+          "metric": "Line coverage",
+          "target": ">80%",
+          "validation": "Run coverage tool"
+        },
+        {
+          "requirement": "Code quality",
+          "metric": "Linter passes",
+          "target": "Zero linting errors",
+          "validation": "Run linter"
+        },
+        {
+          "requirement": "Type safety",
+          "metric": "Type checker passes",
+          "target": "Zero type errors",
+          "validation": "Run type checker"
+        }
+      ],
+      "performance_requirements": [
+        {
+          "requirement": "Response time",
+          "metric": "Execution time",
+          "target": "< 1 second for typical operations",
+          "validation": "Performance tests"
+        }
+      ],
+      "security_requirements": [
+        {
+          "requirement": "Input validation",
+          "metric": "All inputs validated",
+          "target": "100% validation coverage",
+          "validation": "Security review"
+        }
+      ]
+    },
+    "9_implementation_checklist": {
+      "pre_implementation": [
+        "\u2610 Review complete plan for gaps or ambiguities",
+        "\u2610 Verify all requirements are clear and testable",
+        "\u2610 Confirm .coderef/index.json, graph.json, context.json exist and are fresh"
+      ],
+      "phase_1": [
+        "\u2610 SETUP-001: Create scripts/ directory",
+        "\u2610 SETUP-002: Create shared utilities for reading .coderef JSON files"
+      ],
+      "phase_2": [
+        "\u2610 LOGIC-001: Generate INDEX.md from index.json",
+        "\u2610 LOGIC-002: Generate RELATIONSHIPS.md from graph.json",
+        "\u2610 LOGIC-003: Generate EXPORTS.md (781 exported elements)",
+        "\u2610 LOGIC-004: Generate HOTSPOTS.md from context.json",
+        "\u2610 SCRIPT-001: Create generate-index-md.js",
+        "\u2610 SCRIPT-002: Create generate-exports-md.js",
+        "\u2610 SCRIPT-003: Create generate-hotspots-md.js"
+      ],
+      "phase_3": [
+        "\u2610 ENHANCE-001: Update API.md with UUID anchors and live parameter tables",
+        "\u2610 ENHANCE-002: Update COMPONENTS.md with complexity badges",
+        "\u2610 ENHANCE-003: Update ARCHITECTURE.md with Mermaid diagrams",
+        "\u2610 ENHANCE-004: Update SCHEMA.md with auto-generated statistics"
+      ],
+      "phase_4": [
+        "\u2610 SCRIPT-004: Create validate-docs.js CI gate script",
+        "\u2610 TEST-001: Verify all 4 new docs generate correctly",
+        "\u2610 TEST-002: Verify enhanced docs contain UUID anchors",
+        "\u2610 DOC-001: Create README for doc generation scripts",
+        "\u2610 FINAL-001: Run full regeneration and verify outputs"
+      ],
+      "finalization": [
+        "\u2610 All 8 docs generated and validated",
+        "\u2610 UUID anchors present in enhanced docs",
+        "\u2610 CI validation script passes",
+        "\u2610 Documentation README complete",
+        "\u2610 Changelog entry created with version bump"
+      ]
+    },
+    "refactoring_candidates": {
+      "total_count": 0,
+      "candidates": [],
+      "recommendations": [
+        "Review high-complexity elements before making changes",
+        "Consider breaking down functions with score >10 into smaller units",
+        "Add comprehensive tests for critical-risk elements",
+        "Use dependency injection to reduce coupling in complex classes"
+      ]
+    }
+  }
+}

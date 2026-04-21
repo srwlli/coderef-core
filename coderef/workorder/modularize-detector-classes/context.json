@@ -1,0 +1,34 @@
+{
+  "feature_name": "modularize-detector-classes",
+  "description": "Modularize oversized detector classes - split js-call-detector.ts (73 elements) and breaking-change-detector.ts (70 elements) into focused modules",
+  "goal": "Improve maintainability and testability by splitting monolithic detector files into focused, single-responsibility modules",
+  "requirements": [
+    "Split js-call-detector.ts into parser, visitor, and analyzer modules",
+    "Split breaking-change-detector.ts into diff-analyzer, impact-assessor, and signature-comparator modules",
+    "Create index.ts public API for each module",
+    "Maintain backward compatibility with existing exports",
+    "All existing tests must pass"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "completion": "Both detector files refactored into modular structure",
+    "quality": "No regression in test coverage, cleaner architecture"
+  },
+  "_metadata": {
+    "workorder_id": "WO-MODULARIZE-DETECTOR-CLASSES-001",
+    "workorder_assigned_at": "2026-04-20T10:44:57.558322+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-MODULARIZE-DETECTOR-CLASSES-001",
+    "feature_id": "modularize-detector-classes",
+    "last_updated": "2026-04-20",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-20"
+  }
+}

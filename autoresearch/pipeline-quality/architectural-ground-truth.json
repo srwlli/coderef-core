@@ -1,0 +1,42 @@
+{
+  "version": "1.0.0",
+  "campaign": "pipeline-quality",
+  "loop": "07-critical-function-pipeline",
+  "tier": "architectural",
+  "created": "2026-04-10",
+  "description": "High-complexity infrastructure and core orchestrators - measures scanner's ability to find architecturally critical code",
+  "labeling_criteria": [
+    "High cyclomatic complexity (> 15)",
+    "Core AST/parsing infrastructure",
+    "Pipeline orchestrators (regardless of workorder usage)",
+    "Complex UI orchestrators (drag-drop, state management)"
+  ],
+  "critical_functions": [
+    "scanCurrentElements",
+    "ASTElementScanner.visitNode",
+    "JSCallDetector.extractExportsFromAST",
+    "JSCallDetector.extractElementsFromAST",
+    "JSCallDetector.extractImportsFromAST",
+    "handleDragEnd",
+    "handleBoardTargetPickerSelect",
+    "getNotePath",
+    "loadUrlWithRetry",
+    "fetchResources",
+    "JSCallDetector.visitNode",
+    "SearchIndex.search",
+    "BoardTargetAdapterClass.addToTarget",
+    "handleConfirmKill",
+    "handleCreateAnother",
+    "CodeRefValidator.validateMetadata",
+    "EmbeddingTextGenerator.generate",
+    "ContextBuilder.buildContext",
+    "handleFullPage",
+    "handleGenerate"
+  ],
+  "notes": [
+    "This ground truth focuses on COMPLEXITY and ARCHITECTURE",
+    "Functions may not appear in workorders - that's OK",
+    "Goal: Validate scanner finds complex/critical infrastructure",
+    "Target detection: 80%+ (16/20 functions)"
+  ]
+}

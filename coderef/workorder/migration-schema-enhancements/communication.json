@@ -1,0 +1,65 @@
+{
+  "workorder_id": "WO-MIGRATION-SCHEMA-ENHANCEMENTS-001",
+  "feature_name": "migration-schema-enhancements",
+  "agent_assignment": {
+    "domain": "MCP",
+    "assigned_at": "2026-04-20T23:51:36.662922+00:00",
+    "status": "ready"
+  },
+  "context_summary": {
+    "description": "Complete the migration configuration schema enhancements for IMP-CORE-040, 041, and 043. Add semantic parameter mapping with type converters and validation constraints, structured breaking changes tracking with impact levels, and middleware conversion mappings between frameworks.",
+    "goal": "Enable comprehensive API migration configuration with semantic parameter mapping, breaking change tracking, and middleware conversion support",
+    "key_requirements": [
+      "Add semanticMappings section to migration-config-schema.json",
+      "Add breakingChanges section to migration-config-schema.json",
+      "Add middlewareMappings section to migration-config-schema.json",
+      "Update migration-mapper.ts to support new schema sections",
+      "Add tests for new schema sections and mapping logic",
+      "Generate migration guide documentation"
+    ],
+    "improvements_addressed": ["IMP-CORE-040", "IMP-CORE-041", "IMP-CORE-043"]
+  },
+  "must_read_first": [
+    "coderef/workorder/migration-schema-enhancements/context.json",
+    "coderef/workorder/migration-schema-enhancements/analysis.json",
+    "coderef/workorder/migration-schema-enhancements/plan.json",
+    "src/validator/migration-config-schema.json",
+    "src/analyzer/migration-route-analyzer.ts",
+    "src/analyzer/middleware-detector.ts"
+  ],
+  "allowed_files": [
+    "src/validator/migration-config-schema.json",
+    "src/validator/migration-mapper.ts",
+    "src/validator/migration-mapper.test.ts",
+    "src/analyzer/migration-route-analyzer.ts",
+    "src/analyzer/migration-route-analyzer.test.ts",
+    "docs/MIGRATION-GUIDE.md"
+  ],
+  "forbidden_files": [
+    "src/scanner/scanner.ts",
+    "src/analyzer/route-parsers.ts",
+    "src/types/types.ts"
+  ],
+  "execution_protocol": {
+    "phases": 5,
+    "current_phase": "phase_0",
+    "hard_stops": true,
+    "checkpoint_commit_after_each_phase": true
+  },
+  "success_criteria": {
+    "schema_validation": "All new sections validate correctly against JSON schema",
+    "test_coverage": "Unit tests cover all new mapping types",
+    "documentation": "Migration guide documents all new configuration options",
+    "integration": "MigrationRouteAnalyzer can read and process all new sections"
+  },
+  "estimated_duration": "11.5 hours",
+  "next_actions": [
+    "Read must_read_first files",
+    "Start Phase 0: Schema Foundation",
+    "Execute tasks SCHEMA-001 through SCHEMA-004"
+  ],
+  "handoff_protocol": {
+    "status_update_format": "Phase X complete - Y tasks done, Z tests passing",
+    "checkpoint_location": "After each phase in plan.json"
+  }
+}

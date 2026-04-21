@@ -1,0 +1,62 @@
+{
+  "version": "1.0.0",
+  "campaign": "pipeline-quality",
+  "loop": "08-test-gap-pipeline",
+  "created": "2026-04-10",
+  "description": "Manually labeled high-value test gaps - functions that SHOULD have tests but don't",
+  "labeling_criteria": [
+    "High complexity (> 10)",
+    "Public APIs and exported functions",
+    "Core pipeline orchestrators",
+    "Critical utilities with edge cases",
+    "Functions likely to have bugs"
+  ],
+  "high_value_test_gaps": [
+    "convertGraphToElements",
+    "detectPreset",
+    "loadIgnorePatterns",
+    "createScanError",
+    "validateReferences",
+    "printScanErrors",
+    "analyzeCoverage",
+    "detectDrift",
+    "detectPatterns",
+    "generateDiagrams",
+    "formatFrontendCallsJson",
+    "sortFrontendCalls",
+    "generateFrontendCalls",
+    "createIndexStore",
+    "createIndexerService",
+    "createQueryEngine",
+    "loadPreset",
+    "mergePresets",
+    "applyPreset",
+    "formatCodeRef",
+    "formatCodeRefs",
+    "shouldIgnorePath",
+    "formatScanError",
+    "validateCliLanguages",
+    "detectProjectLanguages",
+    "formatSupportedLanguages",
+    "getConversionStats",
+    "saveFrontendCallsToFile",
+    "filterFrontendCallElements",
+    "normalizeGraphForOutput"
+  ],
+  "rationale": {
+    "convertGraphToElements": "Complexity: 28 - Core graph conversion logic",
+    "detectPreset": "Complexity: 24 - Preset detection with multiple branches",
+    "loadIgnorePatterns": "Complexity: 11 - File system + pattern matching",
+    "validateReferences": "Complexity: 9 - Critical validation logic",
+    "analyzeCoverage": "Complexity: 6 - Core pipeline orchestrator",
+    "detectDrift": "Low complexity but critical - drift detection",
+    "detectPatterns": "Low complexity but critical - pattern detection",
+    "generateDiagrams": "Diagram generation - output quality matters"
+  },
+  "notes": [
+    "These 30 functions are high-priority for test coverage",
+    "Selected from 249 total testGaps",
+    "Prioritized by: complexity + API visibility + criticality",
+    "Excludes: internal helpers, trivial wrappers, deprecated code"
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "title": "UUID Test Alignment",
+  "phases": [
+    {
+      "name": "Phase 1: Test Footprint Normalization",
+      "description": "Adapt core test definitions to align with updated structural outputs from graph.",
+      "tasks": [
+        {
+          "id": "T1-1",
+          "title": "Update element-extractor assertions",
+          "description": "Port AST expectations strictly to UUIDs matching active code registry.",
+          "status": "complete",
+          "files": [
+            "packages/coderef-core/__tests__/element-extractor.test.ts"
+          ]
+        },
+        {
+          "id": "T1-2",
+          "title": "Update relationship-extractor expectations",
+          "description": "Force dependency mapping checks to match scalar string UUID targets.",
+          "status": "complete",
+          "files": [
+            "packages/coderef-core/__tests__/relationship-extractor.test.ts"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phase 2: Generator Constraints",
+      "description": "Correct deduplication counters and strict resolver logic in workflow tests.",
+      "tasks": [
+        {
+          "id": "T2-1",
+          "title": "Stabilize root-cause alignment tests",
+          "description": "Refactor length expectations from 20 -> 10 to account for strict valid registry collapse.",
+          "status": "complete",
+          "files": [
+            "packages/coderef-core/__tests__/generators/root-cause-alignment.test.ts"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Phase 3: Cleanup and Verification",
+      "description": "Fix pathing discrepancies and wrap with holistic validation.",
+      "tasks": [
+        {
+          "id": "T3-1",
+          "title": "Fix parallel processing imports",
+          "description": "Migrate relative imports for scanner.js referencing to absolute local references natively.",
+          "status": "complete",
+          "files": [
+            "packages/coderef-core/src/scanner/__tests__/parallel-processing.test.ts"
+          ]
+        },
+        {
+          "id": "T3-2",
+          "title": "Holistic jest run",
+          "description": "Verify comprehensive coverage.",
+          "status": "complete",
+          "files": [
+            "packages/coderef-core/package.json"
+          ]
+        }
+      ]
+    }
+  ],
+  "risks_and_mitigations": [
+    {
+      "risk": "Tests might miss deep regressions",
+      "mitigation": "Ensure vitest captures global bounds accurately vs legacy formats"
+    }
+  ],
+  "META_DOCUMENTATION": {
+    "requires_agent_finalization": false,
+    "agent_finalization_status": "completed",
+    "feature_name": "coderef-core-test-alignment",
+    "workorder_id": "WO-CODEREF-CORE-TEST-ALIGNMENT-001",
+    "generated_by": "PlanningWorkflow.commit_plan",
+    "has_context": true,
+    "has_analysis": true,
+    "generation_mode": "session_commit",
+    "finalized_from_agent": true,
+    "uds": {
+      "generated_by": "coderef-workflow v2.0.0",
+      "document_type": "Implementation Plan",
+      "last_updated": "2026-04-14",
+      "ai_assistance": true,
+      "next_review": "2026-05-14"
+    }
+  }
+}

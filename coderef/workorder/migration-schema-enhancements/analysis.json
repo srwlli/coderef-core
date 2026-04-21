@@ -1,0 +1,105 @@
+{
+  "project_name": "coderef-core",
+  "project_path": "C:\\Users\\willh\\Desktop\\CODEREF\\DASHBOARD\\packages\\coderef-core",
+  "analysis_date": "2026-04-20",
+  "schema_version": "3.0.0",
+  "workorder_id": "WO-MIGRATION-SCHEMA-ENHANCEMENTS-001",
+  "feature_name": "migration-schema-enhancements",
+  "project_stats": {
+    "total_files": 296,
+    "total_elements": 1977,
+    "total_lines": 75601,
+    "languages": ["ts", "js", "py"],
+    "test_coverage_percent": 31
+  },
+  "relevant_files": {
+    "schema": [
+      "src/validator/migration-config-schema.json"
+    ],
+    "implementation": [
+      "src/validator/migration-mapper.ts",
+      "src/analyzer/migration-route-analyzer.ts",
+      "src/analyzer/middleware-detector.ts"
+    ],
+    "tests": [
+      "src/analyzer/migration-route-analyzer.test.ts",
+      "src/validator/migration-mapper.test.ts"
+    ],
+    "documentation": [
+      "docs/API.md",
+      "docs/ARCHITECTURE.md"
+    ]
+  },
+  "current_state": {
+    "migration-config-schema.json": {
+      "exists": true,
+      "sections": ["mappings", "metadata"],
+      "missing_sections": ["semanticMappings", "breakingChanges", "middlewareMappings"],
+      "has_method_changes": true,
+      "has_schema_mappings": true
+    },
+    "migration-route-analyzer.ts": {
+      "exists": true,
+      "status": "partially_complete",
+      "breaking_change_detection": "basic_implementation",
+      "semantic_mapping": "not_implemented",
+      "middleware_mapping": "detection_only"
+    },
+    "middleware-detector.ts": {
+      "exists": true,
+      "status": "complete",
+      "frameworks_supported": ["express", "fastapi", "nestjs", "angular"],
+      "conversion_mappings": "not_implemented"
+    }
+  },
+  "improvements_addressed": [
+    {
+      "id": "IMP-CORE-040",
+      "title": "Add semantic parameter mapping for API migrations",
+      "current_status": "not_implemented",
+      "target_files": ["src/validator/migration-config-schema.json"]
+    },
+    {
+      "id": "IMP-CORE-041",
+      "title": "Implement breaking change detection for API versions",
+      "current_status": "partially_implemented",
+      "target_files": ["src/validator/migration-config-schema.json", "src/analyzer/migration-route-analyzer.ts"]
+    },
+    {
+      "id": "IMP-CORE-043",
+      "title": "Add middleware and dependency injection mapping",
+      "current_status": "detection_complete_mapping_missing",
+      "target_files": ["src/validator/migration-config-schema.json"]
+    }
+  ],
+  "dependencies": [
+    {
+      "file": "src/types/types.ts",
+      "elements": ["RouteMetadata", "FrontendCall", "ElementData"]
+    },
+    {
+      "file": "src/analyzer/route-parsers.ts",
+      "elements": ["parseFlaskRoute", "parseFastAPIRoute", "parseExpressRoute"]
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Schema changes may break existing migration configs",
+      "mitigation": "Add schema version bump and backward compatibility layer"
+    },
+    {
+      "risk": "Breaking change detection may have false positives",
+      "mitigation": "Implement confidence scoring and manual review flags"
+    }
+  ],
+  "estimated_complexity": "medium",
+  "estimated_effort_hours": 16,
+  "recommended_approach": " phased_implementation",
+  "phases": [
+    "Phase 1: Update migration-config-schema.json with new sections",
+    "Phase 2: Implement semantic parameter mapping logic",
+    "Phase 3: Enhance breaking change detection with impact levels",
+    "Phase 4: Add middleware conversion mappings",
+    "Phase 5: Write tests and documentation"
+  ]
+}

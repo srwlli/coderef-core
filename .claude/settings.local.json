@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mv:*)",
+      "Bash(python test_setup_coderef_dirs.py:*)",
+      "Bash(python:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(git rm:*)",
+      "Bash(git reset:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(node:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(nul)",
+      "Bash(npm test:*)",
+      "Bash(test:*)",
+      "Bash(cat:*)",
+      "mcp__papertrail__validate_document",
+      "Bash(/dev/null)",
+      "Bash(git ls-tree:*)",
+      "Bash(git push:*)",
+      "mcp__coderef-context__coderef_context",
+      "mcp__coderef-context__coderef_scan",
+      "Bash(powershell -Command \"Get-Content ''C:\\Users\\willh\\Desktop\\coderef-dashboard\\.coderef\\reports\\patterns.json'' | Select-Object -First 1 | ConvertFrom-Json | ConvertTo-Json -Depth 1\")",
+      "Bash(powershell:*)",
+      "Bash(mkdir:*)"
+    ]
+  },
+  "enabledMcpjsonServers": [
+    "coderef-personas",
+    "coderef-context",
+    "coderef-docs",
+    "coderef-workflow",
+    "coderef-testing",
+    "papertrail"
+  ]
+}

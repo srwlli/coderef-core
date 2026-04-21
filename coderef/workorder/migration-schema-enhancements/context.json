@@ -1,0 +1,37 @@
+{
+  "feature_name": "migration-schema-enhancements",
+  "description": "Complete the migration configuration schema enhancements for IMP-CORE-040, 041, and 043. Add semantic parameter mapping with type converters and validation constraints, structured breaking changes tracking with impact levels, and middleware conversion mappings between frameworks.",
+  "goal": "Enable comprehensive API migration configuration with semantic parameter mapping, breaking change tracking, and middleware conversion support",
+  "requirements": [
+    "Add semanticMappings section to migration-config-schema.json with parameter type converters (int/string/float/uuid), validation constraints, and Pydantic schema references",
+    "Add breakingChanges section to migration-config-schema.json with structured change types (method_removed, response_schema_changed), impact levels (high/medium/low), and affected caller detection",
+    "Add middlewareMappings section to migration-config-schema.json with framework conversion patterns (Flask @require_auth to FastAPI Depends, Express middleware to NestJS guards)",
+    "Update migration-mapper.ts to support new schema sections",
+    "Add tests for new schema sections and mapping logic",
+    "Generate migration guide documentation"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "documentation": "Migration guide documents all new configuration options",
+    "integration": "MigrationRouteAnalyzer can read and process all new sections",
+    "schema_validation": "All new sections validate correctly against JSON schema",
+    "test_coverage": "Unit tests cover all new mapping types"
+  },
+  "_metadata": {
+    "workorder_id": "WO-MIGRATION-SCHEMA-ENHANCEMENTS-001",
+    "workorder_assigned_at": "2026-04-20T23:51:36.662922+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-MIGRATION-SCHEMA-ENHANCEMENTS-001",
+    "feature_id": "migration-schema-enhancements",
+    "last_updated": "2026-04-20",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-20"
+  }
+}

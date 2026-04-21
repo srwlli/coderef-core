@@ -1,0 +1,256 @@
+{
+  "$schema": "../../src/validator/migration-config-schema.json",
+  "version": "1.0.0",
+  "name": "Flask to FastAPI with Schema Transformations",
+  "mappings": {
+    "paths": {
+      "/users/<int:id>": "/users/{id}",
+      "/auth/login": "/auth/token",
+      "/upload": "/files/upload"
+    },
+    "patterns": [
+      {
+        "find": "/<int:([a-z_]+)>",
+        "replace": "/{$1}"
+      },
+      {
+        "find": "/<string:([a-z_]+)>",
+        "replace": "/{$1}"
+      }
+    ],
+    "methodChanges": {
+      "/auth/token": {
+        "old": "POST",
+        "new": "POST"
+      }
+    },
+    "deprecated": [
+      "/legacy/upload",
+      "/api/v0/users"
+    ],
+    "added": [
+      "/docs",
+      "/openapi.json",
+      "/health"
+    ],
+    "schemaMappings": [
+      {
+        "route": "/users",
+        "requestBody": {
+          "oldContentType": "application/x-www-form-urlencoded",
+          "newContentType": "application/json",
+          "fieldMappings": [
+            {
+              "oldField": "user_name",
+              "newField": "username",
+              "oldType": "string",
+              "newType": "str",
+              "transform": "snake_case → camelCase"
+            },
+            {
+              "oldField": "first_name",
+              "newField": "firstName",
+              "oldType": "string",
+              "newType": "str",
+              "transform": "snake_case → camelCase"
+            },
+            {
+              "oldField": "last_name",
+              "newField": "lastName",
+              "oldType": "string",
+              "newType": "str",
+              "transform": "snake_case → camelCase"
+            },
+            {
+              "oldField": "is_admin",
+              "newField": "isAdmin",
+              "oldType": "boolean",
+              "newType": "bool",
+              "transform": "snake_case → camelCase"
+            }
+          ],
+          "validationMigration": "Flask-WTF manual validation → FastAPI Pydantic UserCreate model with Field validators"
+        },
+        "response": {
+          "statusCodeChanges": {
+            "201": {
+              "old": 200,
+              "new": 201,
+              "reason": "FastAPI returns 201 for successful POST with Location header"
+            }
+          },
+          "fieldMappings": [
+            {
+              "oldField": "user_id",
+              "newField": "id",
+              "oldType": "integer",
+              "newType": "int"
+            },
+            {
+              "oldField": "created_at",
+              "newField": "createdAt",
+              "oldType": "datetime",
+              "newType": "datetime"
+            }
+          ],
+          "wrapInEnvelope": true
+        },
+        "examples": {
+          "request": {
+            "old": "user_name=john_doe&first_name=John&last_name=Doe&is_admin=false",
+            "new": {
+              "username": "john_doe",
+              "firstName": "John",
+              "lastName": "Doe",
+              "isAdmin": false
+            }
+          },
+          "response": {
+            "old": {
+              "user_id": 123,
+              "user_name": "john_doe",
+              "message": "User created"
+            },
+            "new": {
+              "data": {
+                "id": 123,
+                "username": "john_doe",
+                "firstName": "John",
+                "lastName": "Doe",
+                "isAdmin": false,
+                "createdAt": "2024-01-15T10:30:00Z"
+              },
+              "message": "User created successfully"
+            }
+          }
+        }
+      },
+      {
+        "route": "/auth/token",
+        "requestBody": {
+          "oldContentType": "application/x-www-form-urlencoded",
+          "newContentType": "application/json",
+          "fieldMappings": [
+            {
+              "oldField": "username",
+              "newField": "username",
+              "oldType": "string",
+              "newType": "str"
+            },
+            {
+              "oldField": "password",
+              "newField": "password",
+              "oldType": "string",
+              "newType": "SecretStr",
+              "transform": "Plain string → Pydantic SecretStr for security"
+            }
+          ],
+          "validationMigration": "Flask manual password check → FastAPI OAuth2PasswordRequestForm with Pydantic validation"
+        },
+        "response": {
+          "fieldMappings": [
+            {
+              "oldField": "access_token",
+              "newField": "access_token",
+              "oldType": "string",
+              "newType": "str"
+            },
+            {
+              "oldField": "token_type",
+              "newField": "token_type",
+              "oldType": "string",
+              "newType": "str"
+            },
+            {
+              "oldField": "expires_in",
+              "newField": "expires_in",
+              "oldType": "integer",
+              "newType": "int"
+            }
+          ],
+          "wrapInEnvelope": false
+        },
+        "examples": {
+          "request": {
+            "old": "username=john&password=secret123",
+            "new": {
+              "username": "john",
+              "password": "secret123"
+            }
+          },
+          "response": {
+            "old": {
+              "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+              "token_type": "Bearer",
+              "expires_in": 3600
+            },
+            "new": {
+              "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9...",
+              "token_type": "bearer",
+              "expires_in": 3600
+            }
+          }
+        }
+      },
+      {
+        "route": "/files/upload",
+        "requestBody": {
+          "oldContentType": "multipart/form-data",
+          "newContentType": "multipart/form-data",
+          "fieldMappings": [
+            {
+              "oldField": "file",
+              "newField": "file",
+              "oldType": "FileStorage",
+              "newType": "UploadFile",
+              "transform": "Flask FileStorage → FastAPI UploadFile with StreamingResponse"
+            },
+            {
+              "oldField": "description",
+              "newField": "description",
+              "oldType": "string",
+              "newType": "str | None"
+            }
+          ],
+          "validationMigration": "Flask request.files manual handling → FastAPI File/UploadFile with size/type validators"
+        },
+        "response": {
+          "statusCodeChanges": {
+            "201": {
+              "old": 200,
+              "new": 201,
+              "reason": "Created with Location header pointing to file"
+            }
+          },
+          "fieldMappings": [
+            {
+              "oldField": "file_url",
+              "newField": "url",
+              "oldType": "string",
+              "newType": "HttpUrl"
+            },
+            {
+              "oldField": "file_name",
+              "newField": "filename",
+              "oldType": "string",
+              "newType": "str"
+            },
+            {
+              "oldField": "file_size",
+              "newField": "size",
+              "oldType": "integer",
+              "newType": "int"
+            }
+          ],
+          "wrapInEnvelope": true
+        }
+      }
+    ]
+  },
+  "metadata": {
+    "source": "Flask",
+    "target": "FastAPI",
+    "createdAt": "2024-01-15T11:00:00Z",
+    "description": "Complete migration with form-data to JSON transformations, field naming convention changes (snake_case → camelCase), Pydantic validation adoption, and standardized response envelopes"
+  }
+}

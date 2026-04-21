@@ -1,0 +1,11 @@
+/**
+ * Navigation System
+ * @see coderef/reference-sheets/navigation system/navigation system.md
+ *
+ * /** @module Navigation System */
+ * /** @category {{type}} */
+ * /** @file {{file_path}} */
+ * /** @emits {{event_name}} - {{description}} */
+ * /** @listens {{event_name}} */
+ * /** @requires {{dependency}} */
+ */

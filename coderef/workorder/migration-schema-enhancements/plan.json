@@ -1,0 +1,227 @@
+{
+  "$schema": "https://schemas.coderef.com/planning/v1",
+  "workorder_id": "WO-MIGRATION-SCHEMA-ENHANCEMENTS-001",
+  "feature_name": "migration-schema-enhancements",
+  "version": "1.0.0",
+  "title": "Migration Schema Enhancements for IMP-CORE-040, 041, 043",
+  "description": "Complete the migration configuration schema enhancements with semantic parameter mapping, structured breaking change tracking, and middleware conversion mappings",
+  "goal": "Enable comprehensive API migration configuration with semantic parameter mapping, breaking change tracking, and middleware conversion support",
+  "phases": [
+    {
+      "phase_id": "phase_0",
+      "name": "Schema Foundation",
+      "description": "Update migration-config-schema.json with new sections for semanticMappings, breakingChanges, and middlewareMappings",
+      "order": 0,
+      "tasks": [
+        {
+          "task_id": "SCHEMA-001",
+          "title": "Add semanticMappings section to schema",
+          "description": "Add semanticMappings array with parameter type converters, validation constraints, and Pydantic schema references",
+          "type": "EDIT",
+          "target_files": ["src/validator/migration-config-schema.json"],
+          "success_criteria": "semanticMappings section validates with all required properties",
+          "estimated_minutes": 45
+        },
+        {
+          "task_id": "SCHEMA-002",
+          "title": "Add breakingChanges section to schema",
+          "description": "Add breakingChanges array with structured change types, impact levels, and affected caller detection",
+          "type": "EDIT",
+          "target_files": ["src/validator/migration-config-schema.json"],
+          "success_criteria": "breakingChanges section validates with all change types",
+          "estimated_minutes": 45
+        },
+        {
+          "task_id": "SCHEMA-003",
+          "title": "Add middlewareMappings section to schema",
+          "description": "Add middlewareMappings array with framework conversion patterns (Flask to FastAPI, Express to NestJS)",
+          "type": "EDIT",
+          "target_files": ["src/validator/migration-config-schema.json"],
+          "success_criteria": "middlewareMappings section validates with all framework patterns",
+          "estimated_minutes": 45
+        },
+        {
+          "task_id": "SCHEMA-004",
+          "title": "Update schema version and test validation",
+          "description": "Bump schema version and verify all new sections validate correctly",
+          "type": "TEST",
+          "target_files": ["src/validator/migration-config-schema.json"],
+          "success_criteria": "Schema validation passes for all new sections",
+          "estimated_minutes": 30
+        }
+      ],
+      "stop_criteria": "All schema sections added and validated"
+    },
+    {
+      "phase_id": "phase_1",
+      "name": "Semantic Parameter Mapping Implementation",
+      "description": "Implement semantic parameter mapping logic in migration-mapper.ts",
+      "order": 1,
+      "tasks": [
+        {
+          "task_id": "SEMANTIC-001",
+          "title": "Create SemanticParameterMapper class",
+          "description": "Implement class to handle parameter type conversions (int, string, float, uuid)",
+          "type": "WRITE",
+          "target_files": ["src/validator/migration-mapper.ts"],
+          "success_criteria": "Mapper handles all parameter type converters",
+          "estimated_minutes": 60
+        },
+        {
+          "task_id": "SEMANTIC-002",
+          "title": "Add validation constraint mapping",
+          "description": "Map validation constraints between frameworks (Flask manual to FastAPI Pydantic)",
+          "type": "EDIT",
+          "target_files": ["src/validator/migration-mapper.ts"],
+          "success_criteria": "Validation constraints map correctly between frameworks",
+          "estimated_minutes": 45
+        },
+        {
+          "task_id": "SEMANTIC-003",
+          "title": "Add parameter location mapping",
+          "description": "Handle path/query/body parameter location mappings",
+          "type": "EDIT",
+          "target_files": ["src/validator/migration-mapper.ts"],
+          "success_criteria": "Parameter locations map correctly (path/query/body)",
+          "estimated_minutes": 45
+        },
+        {
+          "task_id": "SEMANTIC-004",
+          "title": "Write tests for semantic mapping",
+          "description": "Add unit tests for all semantic mapping scenarios",
+          "type": "WRITE",
+          "target_files": ["src/validator/migration-mapper.test.ts"],
+          "success_criteria": "All semantic mapping tests pass",
+          "estimated_minutes": 60
+        }
+      ],
+      "stop_criteria": "Semantic mapping implementation complete with tests"
+    },
+    {
+      "phase_id": "phase_2",
+      "name": "Breaking Change Detection Enhancement",
+      "description": "Enhance breaking change detection with impact levels and structured change types",
+      "order": 2,
+      "tasks": [
+        {
+          "task_id": "BREAKING-001",
+          "title": "Add impact level calculation",
+          "description": "Implement impact level scoring (high/medium/low) based on usage frequency and API stability",
+          "type": "EDIT",
+          "target_files": ["src/analyzer/migration-route-analyzer.ts"],
+          "success_criteria": "Impact levels calculate correctly for all breaking changes",
+          "estimated_minutes": 60
+        },
+        {
+          "task_id": "BREAKING-002",
+          "title": "Add affected caller detection",
+          "description": "Integrate with frontend scan to detect affected callers for breaking changes",
+          "type": "EDIT",
+          "target_files": ["src/analyzer/migration-route-analyzer.ts"],
+          "success_criteria": "Affected callers detected from frontend scan data",
+          "estimated_minutes": 60
+        },
+        {
+          "task_id": "BREAKING-003",
+          "title": "Write tests for breaking change detection",
+          "description": "Add unit tests for impact levels and affected caller detection",
+          "type": "WRITE",
+          "target_files": ["src/analyzer/migration-route-analyzer.test.ts"],
+          "success_criteria": "All breaking change tests pass",
+          "estimated_minutes": 60
+        }
+      ],
+      "stop_criteria": "Breaking change detection enhanced with tests"
+    },
+    {
+      "phase_id": "phase_3",
+      "name": "Middleware Conversion Mapping",
+      "description": "Add middleware conversion mapping support to migration configuration",
+      "order": 3,
+      "tasks": [
+        {
+          "task_id": "MIDDLEWARE-001",
+          "title": "Create MiddlewareConversionMapper",
+          "description": "Implement mapper for converting middleware patterns between frameworks",
+          "type": "WRITE",
+          "target_files": ["src/validator/migration-mapper.ts"],
+          "success_criteria": "Middleware conversions map correctly (Flask decorator to FastAPI Depends)",
+          "estimated_minutes": 60
+        },
+        {
+          "task_id": "MIDDLEWARE-002",
+          "title": "Add framework-specific conversion patterns",
+          "description": "Add patterns for Express middleware to NestJS guards, Django to FastAPI",
+          "type": "EDIT",
+          "target_files": ["src/validator/migration-mapper.ts"],
+          "success_criteria": "All framework conversion patterns implemented",
+          "estimated_minutes": 45
+        },
+        {
+          "task_id": "MIDDLEWARE-003",
+          "title": "Write tests for middleware mapping",
+          "description": "Add unit tests for all middleware conversion scenarios",
+          "type": "WRITE",
+          "target_files": ["src/validator/migration-mapper.test.ts"],
+          "success_criteria": "All middleware mapping tests pass",
+          "estimated_minutes": 45
+        }
+      ],
+      "stop_criteria": "Middleware mapping implementation complete with tests"
+    },
+    {
+      "phase_id": "phase_4",
+      "name": "Documentation and Integration",
+      "description": "Write migration guide documentation and integrate with MigrationRouteAnalyzer",
+      "order": 4,
+      "tasks": [
+        {
+          "task_id": "DOCS-001",
+          "title": "Write migration guide documentation",
+          "description": "Document all new configuration options with examples",
+          "type": "WRITE",
+          "target_files": ["docs/MIGRATION-GUIDE.md"],
+          "success_criteria": "Migration guide complete with examples for all new sections",
+          "estimated_minutes": 60
+        },
+        {
+          "task_id": "INTEGRATE-001",
+          "title": "Integrate with MigrationRouteAnalyzer",
+          "description": "Update MigrationRouteAnalyzer to read and process all new schema sections",
+          "type": "EDIT",
+          "target_files": ["src/analyzer/migration-route-analyzer.ts"],
+          "success_criteria": "MigrationRouteAnalyzer processes all new sections correctly",
+          "estimated_minutes": 45
+        },
+        {
+          "task_id": "TEST-001",
+          "title": "Run full test suite",
+          "description": "Run all tests to ensure no regressions",
+          "type": "RUN",
+          "target_files": [],
+          "command": "npm test",
+          "success_criteria": "All tests pass (571/571)",
+          "estimated_minutes": 10
+        },
+        {
+          "task_id": "COMMIT-001",
+          "title": "Commit all changes",
+          "description": "Commit all workorder changes with proper message",
+          "type": "COMMIT",
+          "target_files": [],
+          "success_criteria": "All changes committed",
+          "estimated_minutes": 10
+        }
+      ],
+      "stop_criteria": "Documentation complete and all tests pass"
+    }
+  ],
+  "metadata": {
+    "created_at": "2026-04-20T23:51:36.662922+00:00",
+    "total_tasks": 16,
+    "estimated_total_minutes": 690,
+    "improvements_addressed": ["IMP-CORE-040", "IMP-CORE-041", "IMP-CORE-043"],
+    "priority": "high",
+    "complexity": "medium"
+  }
+}

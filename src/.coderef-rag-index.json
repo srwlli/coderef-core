@@ -1,0 +1,1051 @@
+{
+  "version": "1.0",
+  "lastIndexed": 1766229358358,
+  "basePath": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src",
+  "files": [
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\index.ts",
+      "hash": "c4ab52c3b8c8073043eed36a37d7eab980ff703238dff7ed262b0f9c97b7e5d5",
+      "timestamp": 1766229358321,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "context\\index.js",
+      "hash": "18274bc03db2ee9e242b0e583f88e9627f8d4f2db8649a736b763ff8e35c7726",
+      "timestamp": 1766229358321,
+      "chunks": [
+        "file:context\\index.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "export\\index.js",
+      "hash": "2e2addd0a9f7ae64f1f7b43ce4eb534f57d3481bf77d2f48d4e43aa0cefcef85",
+      "timestamp": 1766229358321,
+      "chunks": [
+        "file:export\\index.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\index.js",
+      "hash": "7c3d2f0e9c841de990b867bfd93ef09a1ded6051fad5bb72fec3632dfe33f628",
+      "timestamp": 1766229358322,
+      "chunks": [
+        "file:integration\\index.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "parser\\parser.js",
+      "hash": "2b7d3bf944e6294b649e2aacf8513e47b408d83d31295b7046863424be794a2e",
+      "timestamp": 1766229358322,
+      "chunks": [
+        "file:parser\\parser.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "query\\query-executor.js",
+      "hash": "e36ad5e02466e50eed06f1c4b472e20ae6c84a92a4551b6655c57481a8bf38df",
+      "timestamp": 1766229358322,
+      "chunks": [
+        "file:query\\query-executor.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "validator\\validator.js",
+      "hash": "039b28826f985dee81ccdf0f4f5e666e34844b7b0eaec7a21dd214ec1c2245c8",
+      "timestamp": 1766229358323,
+      "chunks": [
+        "file:validator\\validator.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "types\\types.js",
+      "hash": "56f736397672b53f898ffc5f5473e7b2b91ae112f5f07c77ad1cd8d3151a09bf",
+      "timestamp": 1766229358323,
+      "chunks": [
+        "file:types\\types.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "adapter\\graph-to-elements.js",
+      "hash": "f3b355916b5dd2f9dced37558f96c4a368909d5c2c858db1496c888203d4e484",
+      "timestamp": 1766229358323,
+      "chunks": [
+        "file:adapter\\graph-to-elements.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "..\\scanner.js",
+      "hash": "645222528e8300409aa7626d9e91304ba41c78ade9032665b927dd3c2e81450e",
+      "timestamp": 1766229358323,
+      "chunks": [
+        "file:..\\scanner.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\index.d.ts",
+      "hash": "3aab57e6b01a90536de43a90f1501f82888e3867caa404deaa0414e31d6c8d06",
+      "timestamp": 1766229358324,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\index.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\validator\\validator.ts",
+      "hash": "c50d566219255fdc7d57ed7da78d8220847e6e506371170958dfeb9e46e9b753",
+      "timestamp": 1766229358324,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\validator\\validator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\validator\\validator.d.ts",
+      "hash": "79578facbd7b7dca13501a75e23ad85926582a3322b15e13c729c15d9c796446",
+      "timestamp": 1766229358324,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\validator\\validator.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\query\\query-executor.ts",
+      "hash": "de36801d4c04a0d82d9385b088153d533d60eda9b334bb9d5b8a81950a4bb04b",
+      "timestamp": 1766229358325,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\query\\query-executor.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\query\\query-executor.d.ts",
+      "hash": "88139545ade6fa5d988b4e2542ea2485d5f98cb27ef33960c38e062563353004",
+      "timestamp": 1766229358325,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\query\\query-executor.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\index.ts",
+      "hash": "8feebeea9c88a124888486695522c334f43bfebbb4614c1bc01ad18f45df9adc",
+      "timestamp": 1766229358325,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\ai-prompt-generator.js",
+      "hash": "de70aef7e61ace67692b88ec7cd2e61465f0c47330e2ad44617477611785066a",
+      "timestamp": 1766229358327,
+      "chunks": [
+        "file:integration\\ai-prompt-generator.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\index.js",
+      "hash": "fed58dd5101e93c54046fd89dfb13ce45279253b0c33b0cedef2225f60e3c36a",
+      "timestamp": 1766229358328,
+      "chunks": [
+        "file:integration\\rag\\index.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\index.d.ts",
+      "hash": "963b17e4c9c4e08cfe3b80eff603d9bcd9d48c1f2cc0b5f0f012e4a8e2e053fb",
+      "timestamp": 1766229358328,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\index.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\llm\\llm-provider.js",
+      "hash": "f2bd2da10fe7a3b5b97e64b3f87445dce171693d714f88cf2757b5f80a97903d",
+      "timestamp": 1766229358328,
+      "chunks": [
+        "file:integration\\llm\\llm-provider.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\llm\\openai-provider.js",
+      "hash": "df7123b41f1dd6fb9b0d510d28c74caa2fd491d5a0d107e3f9961f1c4f9dac45",
+      "timestamp": 1766229358329,
+      "chunks": [
+        "file:integration\\llm\\openai-provider.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\llm\\anthropic-provider.js",
+      "hash": "8cd7f3b0e35a6bc98d063138656ee54d25e668eb092fd6df67c338495cfd67d2",
+      "timestamp": 1766229358329,
+      "chunks": [
+        "file:integration\\llm\\anthropic-provider.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\vector\\vector-store.js",
+      "hash": "0926a9d9f3f1819096ec52372bd83904aa4e2ce52fc6db241430dddb8d164d97",
+      "timestamp": 1766229358329,
+      "chunks": [
+        "file:integration\\vector\\vector-store.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\vector\\pinecone-store.js",
+      "hash": "51e81d24610adc36078ac91cef4cd221aedf67b0ef63f161efc5a5ff5588e1bb",
+      "timestamp": 1766229358330,
+      "chunks": [
+        "file:integration\\vector\\pinecone-store.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\vector\\chroma-store.js",
+      "hash": "1b98ffa7b9146a796f6897a918dc5ab7c1d0908d303ac23d969f1e42cff82311",
+      "timestamp": 1766229358330,
+      "chunks": [
+        "file:integration\\vector\\chroma-store.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\ai-prompt-generator.ts",
+      "hash": "c1d4940b7a6efbd0fd8247acd8f348f2062390ef750e354cdeaae428e4166396",
+      "timestamp": 1766229358330,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\ai-prompt-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "context\\context-tracker.js",
+      "hash": "2e41ac50156effccf7fed972ba55eeea4701fe6d8055d52a6d715d108d548bb5",
+      "timestamp": 1766229358331,
+      "chunks": [
+        "file:context\\context-tracker.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\ai-prompt-generator.d.ts",
+      "hash": "993a0fe501bcc2b949cb3a419b616bebb9592bbe0c152cb60198d817bea449b7",
+      "timestamp": 1766229358331,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\ai-prompt-generator.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\pinecone-store.ts",
+      "hash": "f5550927b1af8dd8934460a5cbf18706e0595a6e1f48a1723e225e27a8b19095",
+      "timestamp": 1766229358331,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\pinecone-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\index.ts",
+      "hash": "5d1228df5a055635e5a9a876aac8536efe254c324f378e14a5c56c54c0d79bd8",
+      "timestamp": 1766229358332,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\chroma-store.ts",
+      "hash": "7bfde48d2fd1e22669fab32c78bf55e35d54ef9927445ee3428e75e64356bb16",
+      "timestamp": 1766229358332,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\chroma-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\indexing-orchestrator.ts",
+      "hash": "0ecddab2e6a08dadafd6fb5322a6bdc27cc1350d7ae17fc6293bc330a0da8cb9",
+      "timestamp": 1766229358332,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\indexing-orchestrator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\chunk-converter.js",
+      "hash": "9ecf3436bf384c6c76779fa3e62ed67f4fe798c7502115ce7e6bb3c114491b2c",
+      "timestamp": 1766229358332,
+      "chunks": [
+        "file:integration\\rag\\chunk-converter.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\indexing-orchestrator.d.ts",
+      "hash": "f2f01167e60bb3b8d2727f102b91f69c973ef2acfc1a4eebfec2b299876efefb",
+      "timestamp": 1766229358333,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\indexing-orchestrator.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\embedding-service.js",
+      "hash": "b18c26fb34755a6785214b486562f30e6c3ccd094cbd34ebe620783d48079b76",
+      "timestamp": 1766229358333,
+      "chunks": [
+        "file:integration\\rag\\embedding-service.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\incremental-indexer.js",
+      "hash": "39b56e71fd015fae947c8d8c63df8bb3c16187da415e2546fdb9907b8fa43330",
+      "timestamp": 1766229358333,
+      "chunks": [
+        "file:integration\\rag\\incremental-indexer.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\index.ts",
+      "hash": "0dd16603b4d7274c10bff5f012b97b7b877ad5f4e84ec49cf94ab0622fdbc494",
+      "timestamp": 1766229358334,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\code-chunk.js",
+      "hash": "964b41c0469faece0adf3f52b4f1510e8db1675afc21fd39b826eabd90090a42",
+      "timestamp": 1766229358334,
+      "chunks": [
+        "file:integration\\rag\\code-chunk.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\embedding-text-generator.js",
+      "hash": "ced2efd2a680b9328eece3b4d102cafbec7b4138833d4979c8d987898dbfbd23",
+      "timestamp": 1766229358334,
+      "chunks": [
+        "file:integration\\rag\\embedding-text-generator.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\indexing-orchestrator.js",
+      "hash": "4192b966fd4d83d7fb53f5c0b8463f92c7aab55de36f47aa90654b4cca7f3932",
+      "timestamp": 1766229358335,
+      "chunks": [
+        "file:integration\\rag\\indexing-orchestrator.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\semantic-search.js",
+      "hash": "c8b021197e7132f8606c078784742c03fa7ce000f3649e33e3db87ec7056bc09",
+      "timestamp": 1766229358335,
+      "chunks": [
+        "file:integration\\rag\\semantic-search.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\graph-reranker.js",
+      "hash": "494399a82ab4ac6c219b31d358f06e2da222f826015567d7813b0a43c938c3b9",
+      "timestamp": 1766229358335,
+      "chunks": [
+        "file:integration\\rag\\graph-reranker.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\context-builder.js",
+      "hash": "1d73b7cbe79c4462260aa6634aebdaababc643ab1865c358e3b3e12507fdaae2",
+      "timestamp": 1766229358336,
+      "chunks": [
+        "file:integration\\rag\\context-builder.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\prompt-templates.js",
+      "hash": "13ac1293d92c35ad488c219b567531a6bb535bb50b5425f8059dd6a7b2ca63ba",
+      "timestamp": 1766229358336,
+      "chunks": [
+        "file:integration\\rag\\prompt-templates.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\answer-generation-service.js",
+      "hash": "df19b4654d889950de62d1bac0e51a55d869d4b953286517f748863f5bc26005",
+      "timestamp": 1766229358336,
+      "chunks": [
+        "file:integration\\rag\\answer-generation-service.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\conversation-manager.js",
+      "hash": "c4e7035be325edf7ebb5c5df4351d2d2730ec599d27ccd6ef37687655fa1ff1c",
+      "timestamp": 1766229358337,
+      "chunks": [
+        "file:integration\\rag\\conversation-manager.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\confidence-scorer.js",
+      "hash": "20f3e2bffa1defbb95b9fd27ae901e567dc63820361dab9c3d535040b709ce9d",
+      "timestamp": 1766229358337,
+      "chunks": [
+        "file:integration\\rag\\confidence-scorer.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "integration\\rag\\rag-config.js",
+      "hash": "171dac70c768ab06bfebb6fc7920072158153dc8fb369fbffeaeeb42655995b9",
+      "timestamp": 1766229358337,
+      "chunks": [
+        "file:integration\\rag\\rag-config.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\index.d.ts",
+      "hash": "74f3c095ca304a44e329e0b93b390650e4b4071484b3683185206f0fec5b11eb",
+      "timestamp": 1766229358337,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\index.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\embedding-service.d.ts",
+      "hash": "3f58444437e647b2db25fb18ac90466ecd94ef717ea0fd1e450760fd8de7cf91",
+      "timestamp": 1766229358338,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\embedding-service.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\answer-generation-service.d.ts",
+      "hash": "2eb404fcb3206fd998c50489e76fae4128146e0f863426e635917dc0df67554b",
+      "timestamp": 1766229358338,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\answer-generation-service.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\llm\\openai-provider.ts",
+      "hash": "6a2a9c7bf71effd15b9c6e417dc1db495898adc491885ef670e8186a416156cc",
+      "timestamp": 1766229358338,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\llm\\openai-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\llm\\index.ts",
+      "hash": "dbfcd1513452010f8cf1a174d31cafd3715c47faf5d0abd9e8d6947b1f6fd7f7",
+      "timestamp": 1766229358339,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\llm\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\llm\\anthropic-provider.ts",
+      "hash": "5547dc6338172d1d51405d74c68cc76569cdca37498b359ef5c03af53f0f767c",
+      "timestamp": 1766229358339,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\llm\\anthropic-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\relationship-index.ts",
+      "hash": "6a0653b59889341a2e5ce388a1f35adb4901b3d4d3feba07ec09d32acfe2f591",
+      "timestamp": 1766229358339,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\relationship-index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\query-engine.ts",
+      "hash": "fc936a4d53915d58995db268e2fab697dc50cd3c2600b912c21fca6c22e4acbb",
+      "timestamp": 1766229358340,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\query-engine.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\metadata-index.ts",
+      "hash": "4c0d6ffc3964f9f11d6163792c42dc9049e20d92be473d575183574eff357499",
+      "timestamp": 1766229358340,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\metadata-index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\indexer-service.ts",
+      "hash": "dada5465500a0a3a386f80bd5a8cde46cbf56ea974fae23c744b3f31f9de5439",
+      "timestamp": 1766229358340,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\indexer-service.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\index-store.ts",
+      "hash": "d54626727dc926cae08869be2fdb4d903a7586704c34efdc12804af8bddcddcd",
+      "timestamp": 1766229358341,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\indexer\\index-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\formatter\\formatter.ts",
+      "hash": "7359d5c01df7b527b401de4d6e673ef3b335f4d0180c9c5ce3dad39073b82127",
+      "timestamp": 1766229358341,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\formatter\\formatter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\export\\index.ts",
+      "hash": "d39a562315b4668e3a2f931a2b451b840ab50361cbcc2332bea70429937837d9",
+      "timestamp": 1766229358341,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\export\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "export\\graph-exporter.js",
+      "hash": "9dd2677bbecc4e2662bf8634739c06a4645b3430548edec7707a02d5d7725ac9",
+      "timestamp": 1766229358341,
+      "chunks": [
+        "file:export\\graph-exporter.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\export\\index.d.ts",
+      "hash": "a48263c916a25a5fa9676f6ecb6534a3558ca4ab499cf6222049b12880ce896b",
+      "timestamp": 1766229358342,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\export\\index.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\export\\graph-exporter.ts",
+      "hash": "d3225a66fcfaf1f4b41246fc14cfcb19ee6d4e20cb2a6c59e85c0711323ffe1b",
+      "timestamp": 1766229358342,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\export\\graph-exporter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\export\\graph-exporter.d.ts",
+      "hash": "5e2497fbf01d8e635d9a390bfbd368c3b9cbbc9f03fd98d8a43f32adbb3ed0a2",
+      "timestamp": 1766229358342,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\export\\graph-exporter.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\ValidationError.ts",
+      "hash": "35d3404f0540c8e305f1b6661b53cb1fd14e80cb3adf5f32f70100236723afe0",
+      "timestamp": 1766229358343,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\ValidationError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\ScanError.ts",
+      "hash": "1e04fe279fdca9f5f0ca02cc45325e905dca079154b14cbeb496001b4a0730ae",
+      "timestamp": 1766229358343,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\ScanError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\ParseError.ts",
+      "hash": "4ed785b09a94498691f09e05f384765e5a2ab22c29a4804a31893c092f731c47",
+      "timestamp": 1766229358343,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\ParseError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\IndexError.ts",
+      "hash": "1f2ef88585e3bc0b186800b39b66a18ca5a1c92a2902ef881d64681933ed0eb6",
+      "timestamp": 1766229358343,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\IndexError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\index.ts",
+      "hash": "f031cf1dd8778d9966a97ea11cfaada574b466b03d54d5f786b3a8bd18828336",
+      "timestamp": 1766229358344,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\FileNotFoundError.ts",
+      "hash": "85d4b3a8670d608e786a5906e312110a8d0c577aa5757cf507d72ddc72096c77",
+      "timestamp": 1766229358344,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\FileNotFoundError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\multi-hop-traversal.ts",
+      "hash": "18f75d04adbf76801c255164a8f5ecb4fc229bca468199978a5c97691dfb293d",
+      "timestamp": 1766229358344,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\multi-hop-traversal.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\multi-hop-traversal.d.ts",
+      "hash": "ba859221a406a6f358b9a3ef24b8860a6afc29dd49720ecd8ce0a893975c11c6",
+      "timestamp": 1766229358345,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\multi-hop-traversal.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\index.ts",
+      "hash": "d8ffba317aec2c875a0e277c60079f650e64b12532465bb41d9d8f76949ed092",
+      "timestamp": 1766229358345,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "context\\multi-hop-traversal.js",
+      "hash": "5d11e1b50fa8102dfee3c6e557c0f7abaab332b965b855eda7b1ba6ac087d087",
+      "timestamp": 1766229358345,
+      "chunks": [
+        "file:context\\multi-hop-traversal.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "context\\fuzzy-resolver.js",
+      "hash": "1a3c669e4604bec7b0d19267ee4620686ec8259c2782255a46b37341cfddd3db",
+      "timestamp": 1766229358346,
+      "chunks": [
+        "file:context\\fuzzy-resolver.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "context\\impact-simulator.js",
+      "hash": "2b7a90e6c9d0035db800522901d8dc0356e013d75b963d48595a1587221ad6b5",
+      "timestamp": 1766229358346,
+      "chunks": [
+        "file:context\\impact-simulator.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\index.d.ts",
+      "hash": "bc6dd17b6e99db4b6ce371325d3b1a8d5105ffecdf7d774918dfea109d38c038",
+      "timestamp": 1766229358346,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\index.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\impact-simulator.ts",
+      "hash": "1c6735ba216fbf7da228db4bdb7f153513844b74bb1cbad7e865ebb3715682bd",
+      "timestamp": 1766229358347,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\impact-simulator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\impact-simulator.d.ts",
+      "hash": "49edb5b8825cf409a81943567109318fef367e17c397451b49211ddeb9725ec1",
+      "timestamp": 1766229358347,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\impact-simulator.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\fuzzy-resolver.ts",
+      "hash": "a36250579c1691d47b78d8f9f563b2d5f9d49ff099ea3915e161463a8683c2eb",
+      "timestamp": 1766229358347,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\fuzzy-resolver.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\fuzzy-resolver.d.ts",
+      "hash": "aee830d30e3203961433e998f6499908af528539b1a62aa9ba54f5e05e6d6266",
+      "timestamp": 1766229358348,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\fuzzy-resolver.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\js-call-detector.ts",
+      "hash": "0dea3ed8821d8dc5a97b8a3b6719883315c656a9d16958e4591946c0053634e8",
+      "timestamp": 1766229358348,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\js-call-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\index.ts",
+      "hash": "54ace8f14eb9ddf26fbb3e3ba713a2071ce113714fa769ee7ef594d94ee692ad",
+      "timestamp": 1766229358348,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\graph-builder.ts",
+      "hash": "40ba2a522f461b44eed0c8e16af8228d32bb7c715ed7bb04e3a17b7e4c1d4b2d",
+      "timestamp": 1766229358349,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\graph-builder.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\graph-analyzer.ts",
+      "hash": "ce5e330ca8df122b95eb03ee01d0da20ec4b9bf7dd4b09deb60a707896382902",
+      "timestamp": 1766229358349,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\graph-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\dynamic-import-detector.ts",
+      "hash": "e5b2f7c1a0c6879acb3baed26373256b3c2098f8314842ecb654ddde72c49739",
+      "timestamp": 1766229358349,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\dynamic-import-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\ast-element-scanner.ts",
+      "hash": "aad16a5a06e27ce8f5a536f2f7a3f93fd5d28d187695e74f59f89e1145d039f5",
+      "timestamp": 1766229358350,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\ast-element-scanner.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "..\\types.js",
+      "hash": "6b6474c7b1f676c7bf4c64bd289e010a470db99b55529a009392971df379cfbb",
+      "timestamp": 1766229358350,
+      "chunks": [
+        "file:..\\types.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\analyzer-service.ts",
+      "hash": "af147b6daa7c0b8e576e8aa8a8439d5ff7db42e19d13f6422da411567c74f576",
+      "timestamp": 1766229358350,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\analyzer-service.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\adapter\\graph-to-elements.ts",
+      "hash": "dfbbb86bb2d65058baf6efb92a6750fdff65bc49233f54d6895dcaa3ee2ee72e",
+      "timestamp": 1766229358351,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\adapter\\graph-to-elements.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\adapter\\graph-to-elements.d.ts",
+      "hash": "8ff0b42b24db8f8ebc857f87396b33911e33a84273d3647d7a805bbb4f6c6714",
+      "timestamp": 1766229358351,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\adapter\\graph-to-elements.d.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\utils\\logger.ts",
+      "hash": "4749efedf80079f5f71d15ba96a4cc207ab5a4c8aac978c0e23516423d7d12e4",
+      "timestamp": 1766229358351,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\utils\\logger.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\types\\types.ts",
+      "hash": "e12b4b9bbb0fe482fffb35ed566357ea0c2e4e59e4d1a7abb4d0a9b3145a729d",
+      "timestamp": 1766229358351,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\types\\types.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\parser\\parser.ts",
+      "hash": "80b145eafd8142e94c7841ce2904dbc5c33ee0491e07a3749e3ed9b2bf4ec2a3",
+      "timestamp": 1766229358352,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\parser\\parser.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\vector-store.ts",
+      "hash": "1f656906583d4b0659d3d9730e8a5c7e67982e7e1c6a46dd40af0ef9aba34f53",
+      "timestamp": 1766229358352,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\vector-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\sqlite-store.ts",
+      "hash": "018dbf07678d363f88f811f8e83ddcb2676f932e0365be3f353874d603ddfad7",
+      "timestamp": 1766229358352,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\vector\\sqlite-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\semantic-search.ts",
+      "hash": "9a694c17dc53ca47c6d8d40b60eea061f4df1182af31ba8224b8fcd90512f55e",
+      "timestamp": 1766229358352,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\semantic-search.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\rag-config.ts",
+      "hash": "73e65f83b1e2c8512238c6b88f95c16d6ef8916866efb26f3efce0a8fe02b0fc",
+      "timestamp": 1766229358353,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\rag-config.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\prompt-templates.ts",
+      "hash": "a798b14268409eb5c25a67ac8f2353320df556f1dd5effdb8096e80246ae72e5",
+      "timestamp": 1766229358353,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\prompt-templates.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\incremental-indexer.ts",
+      "hash": "a4fdfe43ccffcc7914040dbf4e98e6763075f132d4bb238f8d109bd8fa946d23",
+      "timestamp": 1766229358353,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\incremental-indexer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\graph-reranker.ts",
+      "hash": "2519469f80d8d79ea957c31b7e04545ef9dd564582f20cd49e2fb003b924a380",
+      "timestamp": 1766229358354,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\graph-reranker.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\embedding-text-generator.ts",
+      "hash": "5e2fed9954e05b16dedd95b4681bec2ed84616e6031178a848bc88aad7c09a37",
+      "timestamp": 1766229358354,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\embedding-text-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\embedding-service.ts",
+      "hash": "0debd9be69b6c1e7646ee420f28acc872cc26fc76b80ff052a99c29c3481d6b0",
+      "timestamp": 1766229358354,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\embedding-service.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\conversation-manager.ts",
+      "hash": "7a0df06696f9e24e5604cd402a644a4de5ad929ee6dd331579769567f3ff79f5",
+      "timestamp": 1766229358355,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\conversation-manager.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\context-builder.ts",
+      "hash": "dd6ecb44730e0e10f99314130ee1a422567fda046dcb97c7d9f0748e26c1f2e4",
+      "timestamp": 1766229358355,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\context-builder.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\confidence-scorer.ts",
+      "hash": "bef106ab54d0eec728ace6823a74f6dfd1ca476bbbba3d575d9658ac2d578cb0",
+      "timestamp": 1766229358356,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\confidence-scorer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\chunk-converter.ts",
+      "hash": "3c7f6ea55a4eccfcc5f57c2acb440599884b8d8225e91d56699e00785c54bbdc",
+      "timestamp": 1766229358356,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\chunk-converter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\answer-generation-service.ts",
+      "hash": "a7734e3624ae9f80b1357e97001c4cb758d49445ea0e0c3cecfe4613e526879d",
+      "timestamp": 1766229358356,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\rag\\answer-generation-service.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\llm\\llm-provider.ts",
+      "hash": "60c45cc3dfc9b5c1f61e987684509a6963cb44aaed9daa3a659fdb4dd8080db5",
+      "timestamp": 1766229358357,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\integration\\llm\\llm-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\CodeRefError.ts",
+      "hash": "45499f969da4eaf0c80d28eacdbc2134bebaa48bfc1540985657c5088fdb5e32",
+      "timestamp": 1766229358357,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\errors\\CodeRefError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\context-tracker.ts",
+      "hash": "004ebfea5b5a4c2d1dec01f089074e4f9c750d1a83df26cc2849e7e5991317f1",
+      "timestamp": 1766229358357,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\context\\context-tracker.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\js-parser.ts",
+      "hash": "9d3da5d75acc0cf625cd4a778531155db1d9addc9ed4f1902d43bb73ece8954f",
+      "timestamp": 1766229358358,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\js-parser.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\import-parser.ts",
+      "hash": "001e0e07c34b9d90c7006934023a79bc041133383eee67c712c91d4a6f4b2a20",
+      "timestamp": 1766229358358,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\import-parser.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\graph-error.ts",
+      "hash": "f06500f4b1fe2a0be3af133e98c29360836450e14b31247f728cef561a551c4c",
+      "timestamp": 1766229358358,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\graph-error.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\call-detector.ts",
+      "hash": "702b09042f69460fb0c8c2549f7b48df00c1e4b12802f84b55f53e351de52976",
+      "timestamp": 1766229358358,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\projects\\coderef-system\\packages\\core\\src\\analyzer\\call-detector.ts"
+      ],
+      "chunkCount": 1
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "feature_name": "coderef-core-test-alignment",
+  "description": "Align coderef-core test suite assertions globally with the new UUID-based Registry footprint.",
+  "goal": "Fix 37 broken pipeline regression tests relying on obsolete mock data schemas.",
+  "requirements": [
+    "Update AST generator mocks to export UUID instead of structured payload graphs",
+    "Ensure component and dependency resolution expects unique semantic strings",
+    "Fix path-relative assertions in scanner parallelization suites",
+    "Adjust duplicate tolerance counts under the strict UUID context resolution engine"
+  ],
+  "out_of_scope": [
+    "Architectural changes to the code CLI"
+  ],
+  "constraints": [
+    "Keep monotonic improvement counter stable"
+  ],
+  "decisions": {},
+  "success_criteria": {},
+  "_metadata": {
+    "workorder_id": "WO-CODEREF-CORE-TEST-ALIGNMENT-001",
+    "workorder_assigned_at": "2026-04-14T02:48:02.393662+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-CODEREF-CORE-TEST-ALIGNMENT-001",
+    "feature_id": "coderef-core-test-alignment",
+    "last_updated": "2026-04-14",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-14"
+  }
+}

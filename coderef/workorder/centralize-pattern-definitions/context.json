@@ -1,0 +1,36 @@
+{
+  "feature_name": "centralize-pattern-definitions",
+  "description": "Centralize pattern definitions to eliminate code duplication in scanner.ts. Same regex patterns defined 4 times for ts/js/tsx/jsx in LANGUAGE_PATTERNS. Create PATTERN_TEMPLATES with language-specific variations.",
+  "goal": "Reduce maintenance burden and prevent pattern drift by extracting common patterns into reusable templates",
+  "requirements": [
+    "Extract BASE_PATTERNS from ts block (lines 34-99)",
+    "Define PATTERN_TEMPLATES record with language keys",
+    "Map templates to LANGUAGE_PATTERNS",
+    "Delete duplicated js/tsx/jsx blocks (lines 101-281)",
+    "Ensure all tests pass",
+    "Maintain identical pattern matching behavior"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "lines_reduced": "800 lines \u2192 ~200 lines",
+    "no_regression": "Pattern detection unchanged for ts/js/tsx/jsx",
+    "tests_pass": "pnpm test -- --run passes"
+  },
+  "_metadata": {
+    "workorder_id": "WO-CENTRALIZE-PATTERN-DEFINITIONS-001",
+    "workorder_assigned_at": "2026-04-18T04:50:29.673347+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-CENTRALIZE-PATTERN-DEFINITIONS-001",
+    "feature_id": "centralize-pattern-definitions",
+    "last_updated": "2026-04-18",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-18"
+  }
+}

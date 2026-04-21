@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-CALL-GRAPH-025",
+  "feature_name": "imp-core-025-call-graph",
+  "agent_assigned": "CODEREF-CORE",
+  "status": "ready_for_execution",
+  "current_phase": "phase_1",
+  "must_read_first": [
+    "coderef/workorder/imp-core-025-call-graph/plan.json",
+    "src/pipeline/generators/context-generator.ts",
+    "src/pipeline/types.ts"
+  ],
+  "allowed_files": [
+    "src/pipeline/generators/context-generator.ts",
+    "src/pipeline/generators/__tests__/context-generator.test.ts"
+  ],
+  "forbidden_files": [
+    "src/pipeline/orchestrator.ts",
+    "src/pipeline/generators/complexity-generator.ts",
+    "src/pipeline/generators/pattern-generator.ts"
+  ],
+  "success_criteria": [
+    "ProjectContext interface has callGraph field with proper typing",
+    "extractCallGraph method implemented and tested",
+    "buildContext includes callGraph in return object",
+    "generateMarkdown outputs call graph section",
+    "All tests pass",
+    "IMP-CORE-025 marked as completed in improvements.json"
+  ],
+  "execution_order": [
+    "Phase 1: Add callGraph field to ProjectContext interface",
+    "Phase 2: Implement extractCallGraph method",
+    "Phase 3: Integrate callGraph into buildContext",
+    "Phase 4: Add call graph to Markdown output",
+    "Phase 5: Testing and validation"
+  ],
+  "notes": [
+    "Parallel safe with IMP-CORE-024 (different context fields)",
+    "Use state.graph.edges to build relationships",
+    "Filter to only critical functions (high complexity + high dependents)",
+    "Detect circular dependencies in call chains"
+  ],
+  "updated": "2026-04-18T06:00:00Z"
+}

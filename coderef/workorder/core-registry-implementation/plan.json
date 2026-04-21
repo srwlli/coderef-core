@@ -1,0 +1,288 @@
+{
+  "$schema": "https://schemas.coderef.com/implementation-plan/v1",
+  "workorder_id": "WO-CODEREF-CORE-REGISTRY-001",
+  "feature_name": "core-registry-implementation",
+  "created": "2026-04-13T23:30:00Z",
+  "phases": [
+    {
+      "phase_id": "phase-0",
+      "name": "preflight",
+      "description": "Verify prerequisites and environment setup",
+      "tasks": [
+        {
+          "task_id": "T0-1",
+          "verb": "CHECK",
+          "description": "Verify improvements.json exists with IMP-CORE-001, IMP-CORE-007, IMP-CORE-008",
+          "success_criteria": "All three improvements present with status 'open'",
+          "files": ["packages/coderef-core/improvements.json"]
+        },
+        {
+          "task_id": "T0-2",
+          "verb": "CHECK",
+          "description": "Verify TypeScript build environment is functional",
+          "success_criteria": "npm run build completes without errors",
+          "command": "npm run build"
+        },
+        {
+          "task_id": "T0-3",
+          "verb": "CHECK",
+          "description": "Verify tree-sitter grammars are installed",
+          "success_criteria": "node_modules contains tree-sitter-* packages",
+          "files": ["node_modules"]
+        }
+      ]
+    },
+    {
+      "phase_id": "phase-1",
+      "name": "entity-registry",
+      "description": "Implement UUID-based entity registry system (IMP-CORE-001)",
+      "tasks": [
+        {
+          "task_id": "T1-1",
+          "verb": "WRITE",
+          "description": "Create src/registry/entity-registry.ts with UUID5-based deduplication",
+          "success_criteria": "File exists with EntityRegistry class, UUID5 generation, composite key support",
+          "files": ["src/registry/entity-registry.ts"],
+          "references": ["C:/Users/willh/Desktop/CODEREF/SCRAPER/SCRAPER-BEAUTY/REGISTRY_GUIDE.md"]
+        },
+        {
+          "task_id": "T1-2",
+          "verb": "WRITE",
+          "description": "Create src/registry/types.ts for registry data structures",
+          "success_criteria": "File exists with EntityRecord, RegistryState, UUID generation types",
+          "files": ["src/registry/types.ts"]
+        },
+        {
+          "task_id": "T1-3",
+          "verb": "EDIT",
+          "description": "Update graph-generator.ts to use entity registry for node deduplication",
+          "success_criteria": "Graph nodes reference UUIDs instead of embedding full metadata",
+          "files": ["src/pipeline/generators/graph-generator.ts"]
+        },
+        {
+          "task_id": "T1-4",
+          "verb": "EDIT",
+          "description": "Update index-generator.ts to use entity registry for element deduplication",
+          "success_criteria": "Index elements reference UUIDs where applicable",
+          "files": ["src/pipeline/generators/index-generator.ts"]
+        },
+        {
+          "task_id": "T1-5",
+          "verb": "WRITE",
+          "description": "Add registry-generator.ts to output registry/entities.json",
+          "success_criteria": "Registry file generated with canonical entity definitions",
+          "files": ["src/pipeline/generators/registry-generator.ts"]
+        },
+        {
+          "task_id": "T1-6",
+          "verb": "TEST",
+          "description": "Unit tests for entity registry UUID generation and deduplication",
+          "success_criteria": "Tests pass with >90% coverage",
+          "files": ["tests/registry.test.ts"]
+        },
+        {
+          "task_id": "T1-7",
+          "verb": "COMMIT",
+          "description": "Commit phase-1 entity registry implementation",
+          "success_criteria": "Git commit created with descriptive message",
+          "commit_message": "feat: implement UUID-based entity registry for deduplication (IMP-CORE-001)"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase-2",
+      "name": "selective-scanning",
+      "description": "Add selective scanning modes (IMP-CORE-007)",
+      "tasks": [
+        {
+          "task_id": "T2-1",
+          "verb": "EDIT",
+          "description": "Add --mode flag to populate.ts CLI (minimal, context, full)",
+          "success_criteria": "CLI accepts --mode flag with validation",
+          "files": ["src/cli/populate.ts"]
+        },
+        {
+          "task_id": "T2-2",
+          "verb": "EDIT",
+          "description": "Update orchestrator.ts to support generator filtering by mode",
+          "success_criteria": "Orchestrator can run subset of generators based on mode",
+          "files": ["src/pipeline/orchestrator.ts"]
+        },
+        {
+          "task_id": "T2-3",
+          "verb": "EDIT",
+          "description": "Add --select flag to populate.ts for specific generator selection",
+          "success_criteria": "CLI accepts --select flag with comma-separated generator names",
+          "files": ["src/cli/populate.ts"]
+        },
+        {
+          "task_id": "T2-4",
+          "verb": "TEST",
+          "description": "Test selective scanning modes reduce execution time",
+          "success_criteria": "Minimal mode completes in <50% of full mode time",
+          "files": ["tests/selective-scan.test.ts"]
+        },
+        {
+          "task_id": "T2-5",
+          "verb": "COMMIT",
+          "description": "Commit phase-2 selective scanning implementation",
+          "success_criteria": "Git commit created with descriptive message",
+          "commit_message": "feat: add selective scanning modes (IMP-CORE-007)"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase-3",
+      "name": "slim-complexity",
+      "description": "Implement slim complexity summary output (IMP-CORE-008)",
+      "tasks": [
+        {
+          "task_id": "T3-1",
+          "verb": "EDIT",
+          "description": "Update complexity-generator.ts to always generate summary.json",
+          "success_criteria": "Summary file generated with high-complexity items only",
+          "files": ["src/pipeline/generators/complexity-generator.ts"]
+        },
+        {
+          "task_id": "T3-2",
+          "verb": "EDIT",
+          "description": "Add --slim flag to complexity-generator for summary-only mode",
+          "success_criteria": "Flag suppresses full complexity.json output",
+          "files": ["src/pipeline/generators/complexity-generator.ts"]
+        },
+        {
+          "task_id": "T3-3",
+          "verb": "TEST",
+          "description": "Verify summary.json contains only high-complexity items (>10)",
+          "success_criteria": "Summary has <20% of full complexity.json entries",
+          "files": ["tests/complexity-summary.test.ts"]
+        },
+        {
+          "task_id": "T3-4",
+          "verb": "COMMIT",
+          "description": "Commit phase-3 slim complexity implementation",
+          "success_criteria": "Git commit created with descriptive message",
+          "commit_message": "feat: add slim complexity summary output (IMP-CORE-008)"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase-4",
+      "name": "integration-testing",
+      "description": "Integration testing with sample codebases",
+      "tasks": [
+        {
+          "task_id": "T4-1",
+          "verb": "RUN",
+          "description": "Run full scan on test codebase with registry enabled",
+          "success_criteria": "Scan completes, registry file generated, graph.json size reduced by >50%",
+          "command": "npm run populate -- --test-repo"
+        },
+        {
+          "task_id": "T4-2",
+          "verb": "CHECK",
+          "description": "Verify graph.json size reduction meets target",
+          "success_criteria": "graph.json size reduced by 60% vs baseline",
+          "files": [".coderef/graph.json"]
+        },
+        {
+          "task_id": "T4-3",
+          "verb": "RUN",
+          "description": "Test selective scanning modes on test codebase",
+          "success_criteria": "Minimal mode completes in <50% time, produces only index+graph",
+          "command": "npm run populate -- --mode minimal"
+        },
+        {
+          "task_id": "T4-4",
+          "verb": "COMMIT",
+          "description": "Commit phase-4 integration test results",
+          "success_criteria": "Git commit with test results documentation",
+          "commit_message": "test: integration testing for registry and selective scanning"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase-5",
+      "name": "improvements-tracking",
+      "description": "Update improvements.json for completed items",
+      "tasks": [
+        {
+          "task_id": "T5-1",
+          "verb": "EDIT",
+          "description": "Mark IMP-CORE-001 as done with outs array",
+          "success_criteria": "IMP-CORE-001 status='done', outs populated with file changes",
+          "files": ["improvements.json"]
+        },
+        {
+          "task_id": "T5-2",
+          "verb": "EDIT",
+          "description": "Mark IMP-CORE-007 as done with outs array",
+          "success_criteria": "IMP-CORE-007 status='done', outs populated",
+          "files": ["improvements.json"]
+        },
+        {
+          "task_id": "T5-3",
+          "verb": "EDIT",
+          "description": "Mark IMP-CORE-008 as done with outs array",
+          "success_criteria": "IMP-CORE-008 status='done', outs populated",
+          "files": ["improvements.json"]
+        },
+        {
+          "task_id": "T5-4",
+          "verb": "COMMIT",
+          "description": "Commit improvements.json updates",
+          "success_criteria": "Git commit with improvements tracking",
+          "commit_message": "chore: mark IMP-CORE-001, IMP-CORE-007, IMP-CORE-008 as done"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase-6",
+      "name": "cleanup",
+      "description": "Doc-discovery, session-logging, and active-work.json cleanup",
+      "tasks": [
+        {
+          "task_id": "T6-1",
+          "verb": "RUN",
+          "description": "Run document discovery to update documentation",
+          "success_criteria": "Documentation reflects new registry architecture",
+          "command": "npm run doc-discovery"
+        },
+        {
+          "task_id": "T6-2",
+          "verb": "EDIT",
+          "description": "Update session logging in workorder communication",
+          "success_criteria": "communication.json updated with execution summary",
+          "files": ["coderef/workorder/core-registry-implementation/communication.json"]
+        },
+        {
+          "task_id": "T6-3",
+          "verb": "CHECK",
+          "description": "Clean up active-work.json if present",
+          "success_criteria": "active-work.json removed or marked complete",
+          "files": ["coderef/active-work.json"]
+        },
+        {
+          "task_id": "T6-4",
+          "verb": "COMMIT",
+          "description": "Final commit for phase-6 cleanup",
+          "success_criteria": "Git commit with cleanup documentation",
+          "commit_message": "chore: phase-6 cleanup - doc-discovery and session logging"
+        }
+      ]
+    }
+  ],
+  "success_criteria": [
+    "Entity registry implemented with UUID5-based deduplication",
+    "graph.json size reduced by 60% or more",
+    "Selective scanning modes functional and tested",
+    "Slim complexity summary output implemented",
+    "All target improvements marked as done",
+    "Documentation updated and cleanup complete"
+  ],
+  "next_boundary": {
+    "description": "Phase-0 preflight verification",
+    "entry_point": "T0-1",
+    "stop_condition": "All preflight checks pass before proceeding to phase-1"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "feature_name": "docs-quality-metrics",
+  "description": "Implement documentation quality metrics including README completeness analysis (sections present), JSDoc/TSDoc coverage ratio (documented vs total exports), CHANGELOG presence and recency tracking, API documentation completeness, and code comment density calculation. These metrics help prioritize documentation work alongside code improvements.",
+  "goal": "Add comprehensive documentation quality analysis to measure coverage, completeness, and freshness of project documentation",
+  "requirements": [
+    "Detect and parse README.md files with section completeness scoring",
+    "Calculate JSDoc/TSDoc coverage ratio (documented exports vs total exports)",
+    "Detect CHANGELOG presence and calculate recency (last update)",
+    "Measure API documentation completeness",
+    "Calculate code comment density (lines of comments vs total lines)",
+    "Generate documentation quality score (0-100)",
+    "Create docs-coverage-generator.ts for output generation",
+    "Create readme-analyzer.ts for README parsing",
+    "Integrate into ContextGenerator with markdown output section"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "accuracy": "Coverage ratios accurate within 5%",
+    "coverage": "All major documentation types analyzed (README, JSDoc, CHANGELOG, comments)",
+    "integration": "Results appear in context.json and context.md"
+  },
+  "_metadata": {
+    "workorder_id": "WO-DOCS-QUALITY-METRICS-001",
+    "workorder_assigned_at": "2026-04-19T23:10:56.945930+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-DOCS-QUALITY-METRICS-001",
+    "feature_id": "docs-quality-metrics",
+    "last_updated": "2026-04-19",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-19"
+  }
+}

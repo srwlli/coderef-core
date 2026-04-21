@@ -1,0 +1,353 @@
+{
+  "description": "Sample DependencyGraph fixture for testing graph-helpers.ts query functions",
+  "project": "test-codebase",
+  "nodes": [
+    {
+      "id": "services/auth.ts:AuthService",
+      "name": "AuthService",
+      "type": "class",
+      "file": "services/auth.ts",
+      "line": 15,
+      "metadata": {
+        "exports": {
+          "named": ["AuthService", "login", "logout", "refreshToken"],
+          "default": null
+        }
+      }
+    },
+    {
+      "id": "components/LoginForm.tsx:LoginForm",
+      "name": "LoginForm",
+      "type": "component",
+      "file": "components/LoginForm.tsx",
+      "line": 12,
+      "metadata": {
+        "exports": {
+          "named": ["LoginForm"],
+          "default": "LoginForm"
+        }
+      }
+    },
+    {
+      "id": "components/Button.tsx:PrimaryButton",
+      "name": "PrimaryButton",
+      "type": "component",
+      "file": "components/Button.tsx",
+      "line": 8,
+      "metadata": {
+        "exports": {
+          "named": ["PrimaryButton", "SecondaryButton", "ButtonProps"],
+          "default": null
+        }
+      }
+    },
+    {
+      "id": "hooks/useAuth.ts:useAuth",
+      "name": "useAuth",
+      "type": "hook",
+      "file": "hooks/useAuth.ts",
+      "line": 5,
+      "metadata": {
+        "exports": {
+          "named": ["useAuth"],
+          "default": "useAuth"
+        }
+      }
+    },
+    {
+      "id": "utils/jwt.ts:validateToken",
+      "name": "validateToken",
+      "type": "function",
+      "file": "utils/jwt.ts",
+      "line": 24,
+      "metadata": {
+        "exports": {
+          "named": ["validateToken", "generateToken", "refreshToken"],
+          "default": null
+        }
+      }
+    },
+    {
+      "id": "api/client.ts:apiClient",
+      "name": "apiClient",
+      "type": "object",
+      "file": "api/client.ts",
+      "line": 10,
+      "metadata": {
+        "exports": {
+          "named": ["apiClient"],
+          "default": "apiClient"
+        }
+      }
+    },
+    {
+      "id": "pages/Dashboard.tsx:Dashboard",
+      "name": "Dashboard",
+      "type": "component",
+      "file": "pages/Dashboard.tsx",
+      "line": 18,
+      "metadata": {
+        "exports": {
+          "named": [],
+          "default": "Dashboard"
+        }
+      }
+    },
+    {
+      "id": "hooks/useProjects.ts:useProjects",
+      "name": "useProjects",
+      "type": "hook",
+      "file": "hooks/useProjects.ts",
+      "line": 8,
+      "metadata": {
+        "exports": {
+          "named": ["useProjects"],
+          "default": null
+        }
+      }
+    },
+    {
+      "id": "components/ProjectList.tsx:ProjectList",
+      "name": "ProjectList",
+      "type": "component",
+      "file": "components/ProjectList.tsx",
+      "line": 15,
+      "metadata": {
+        "exports": {
+          "named": ["ProjectList"],
+          "default": null
+        }
+      }
+    },
+    {
+      "id": "theme/tokens.ts:tokens",
+      "name": "tokens",
+      "type": "object",
+      "file": "theme/tokens.ts",
+      "line": 1,
+      "metadata": {
+        "exports": {
+          "named": ["tokens", "colors", "spacing"],
+          "default": null
+        }
+      }
+    },
+    {
+      "id": "utils/classNames.ts:classNames",
+      "name": "classNames",
+      "type": "function",
+      "file": "utils/classNames.ts",
+      "line": 3,
+      "metadata": {
+        "exports": {
+          "named": ["classNames"],
+          "default": "classNames"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "services/auth.ts:AuthService",
+      "target": "utils/jwt.ts:validateToken",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/utils/jwt",
+        "statements": [{"type": "named", "line": 3}]
+      }
+    },
+    {
+      "source": "services/auth.ts:AuthService",
+      "target": "api/client.ts:apiClient",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/api/client",
+        "statements": [{"type": "named", "line": 4}]
+      }
+    },
+    {
+      "source": "services/auth.ts:AuthService",
+      "target": "utils/jwt.ts:validateToken",
+      "type": "calls",
+      "weight": 3,
+      "metadata": {
+        "callSites": [25, 42, 67]
+      }
+    },
+    {
+      "source": "services/auth.ts:AuthService",
+      "target": "api/client.ts:apiClient",
+      "type": "calls",
+      "weight": 2,
+      "metadata": {
+        "callSites": [30, 72]
+      }
+    },
+    {
+      "source": "components/LoginForm.tsx:LoginForm",
+      "target": "hooks/useAuth.ts:useAuth",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/hooks/useAuth",
+        "statements": [{"type": "named", "line": 2}]
+      }
+    },
+    {
+      "source": "components/LoginForm.tsx:LoginForm",
+      "target": "components/Button.tsx:PrimaryButton",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/components/Button",
+        "statements": [{"type": "named", "line": 3}]
+      }
+    },
+    {
+      "source": "components/LoginForm.tsx:LoginForm",
+      "target": "hooks/useAuth.ts:useAuth",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {
+        "callSites": [24]
+      }
+    },
+    {
+      "source": "hooks/useAuth.ts:useAuth",
+      "target": "services/auth.ts:AuthService",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/services/auth",
+        "statements": [{"type": "named", "line": 1}]
+      }
+    },
+    {
+      "source": "hooks/useAuth.ts:useAuth",
+      "target": "services/auth.ts:AuthService",
+      "type": "calls",
+      "weight": 2,
+      "metadata": {
+        "callSites": [15, 22]
+      }
+    },
+    {
+      "source": "pages/Dashboard.tsx:Dashboard",
+      "target": "hooks/useAuth.ts:useAuth",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/hooks/useAuth",
+        "statements": [{"type": "named", "line": 3}]
+      }
+    },
+    {
+      "source": "pages/Dashboard.tsx:Dashboard",
+      "target": "hooks/useProjects.ts:useProjects",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/hooks/useProjects",
+        "statements": [{"type": "named", "line": 4}]
+      }
+    },
+    {
+      "source": "pages/Dashboard.tsx:Dashboard",
+      "target": "components/ProjectList.tsx:ProjectList",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/components/ProjectList",
+        "statements": [{"type": "named", "line": 5}]
+      }
+    },
+    {
+      "source": "pages/Dashboard.tsx:Dashboard",
+      "target": "hooks/useAuth.ts:useAuth",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {
+        "callSites": [45]
+      }
+    },
+    {
+      "source": "pages/Dashboard.tsx:Dashboard",
+      "target": "hooks/useProjects.ts:useProjects",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {
+        "callSites": [46]
+      }
+    },
+    {
+      "source": "components/Button.tsx:PrimaryButton",
+      "target": "theme/tokens.ts:tokens",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/theme/tokens",
+        "statements": [{"type": "named", "line": 1}]
+      }
+    },
+    {
+      "source": "components/Button.tsx:PrimaryButton",
+      "target": "utils/classNames.ts:classNames",
+      "type": "imports",
+      "weight": 1,
+      "metadata": {
+        "source": "@/utils/classNames",
+        "statements": [{"type": "named", "line": 2}]
+      }
+    },
+    {
+      "source": "components/Button.tsx:PrimaryButton",
+      "target": "utils/classNames.ts:classNames",
+      "type": "calls",
+      "weight": 1,
+      "metadata": {
+        "callSites": [18]
+      }
+    }
+  ],
+  "expectedQueryResults": {
+    "getImportsForElement": {
+      "services/auth.ts:AuthService": ["@/utils/jwt", "@/api/client"],
+      "components/LoginForm.tsx:LoginForm": ["@/hooks/useAuth", "@/components/Button"],
+      "pages/Dashboard.tsx:Dashboard": ["@/hooks/useAuth", "@/hooks/useProjects", "@/components/ProjectList"],
+      "components/Button.tsx:PrimaryButton": ["@/theme/tokens", "@/utils/classNames"]
+    },
+    "getExportsForElement": {
+      "services/auth.ts:AuthService": ["AuthService", "login", "logout", "refreshToken"],
+      "components/Button.tsx:PrimaryButton": ["PrimaryButton", "SecondaryButton", "ButtonProps"],
+      "hooks/useAuth.ts:useAuth": ["useAuth"],
+      "pages/Dashboard.tsx:Dashboard": ["Dashboard"]
+    },
+    "getConsumersForElement": {
+      "hooks/useAuth.ts:useAuth": [
+        {"name": "LoginForm", "file": "components/LoginForm.tsx", "line": 12},
+        {"name": "Dashboard", "file": "pages/Dashboard.tsx", "line": 18}
+      ],
+      "services/auth.ts:AuthService": [
+        {"name": "useAuth", "file": "hooks/useAuth.ts", "line": 5}
+      ],
+      "components/Button.tsx:PrimaryButton": [
+        {"name": "LoginForm", "file": "components/LoginForm.tsx", "line": 12}
+      ]
+    },
+    "getDependenciesForElement": {
+      "services/auth.ts:AuthService": [
+        {"name": "validateToken", "file": "utils/jwt.ts", "line": 24},
+        {"name": "apiClient", "file": "api/client.ts", "line": 10}
+      ],
+      "pages/Dashboard.tsx:Dashboard": [
+        {"name": "useAuth", "file": "hooks/useAuth.ts", "line": 5},
+        {"name": "useProjects", "file": "hooks/useProjects.ts", "line": 8}
+      ],
+      "components/Button.tsx:PrimaryButton": [
+        {"name": "classNames", "file": "utils/classNames.ts", "line": 3}
+      ]
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "workorder_id": "WO-SCANNER-INTEGRATION-001",
+  "feature_name": "scanner-integration",
+  "description": "Complete scanner integration with 7 major improvements: AST integration for 95% accuracy, parallel processing for 3-5x performance, LRU caching, relationship tracking, dynamic imports support, and progress reporting",
+  "goal": "Transform scanner from regex-only to hybrid AST+regex system with parallel processing, achieving 95% accuracy and 3-5x performance improvement",
+  "requirements": [
+    "Hybrid AST + regex integration for 95% accuracy (up from 85%)",
+    "Parallel file processing with worker threads for 3-5x performance",
+    "LRU caching system with memory cap for repeated scans",
+    "Relationship tracking (imports, dependencies, function calls)",
+    "Dynamic import support with ESM detection",
+    "Real-time progress reporting with streaming results",
+    "Update communication.json after each task completion"
+  ],
+  "out_of_scope": [
+    "CLI tool changes (focus on core library only)",
+    "Breaking API changes to existing scanner interface",
+    "UI dashboard integration (scanner UI already exists)"
+  ],
+  "constraints": [
+    "Maintain backward compatibility with existing scanCurrentElements API",
+    "No breaking changes to ElementData interface",
+    "Must work with existing preset system",
+    "Performance improvements must be measurable and documented"
+  ],
+  "created_at": "2026-01-15T00:00:00.000Z",
+  "status": "planning"
+}

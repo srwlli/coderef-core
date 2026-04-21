@@ -1,0 +1,866 @@
+{
+  "workorder_id": "WO-SCANNER-INTEGRATION-001",
+  "feature_name": "scanner-integration",
+  "version": "1.0.0",
+  "created_at": "2026-01-15T00:00:00.000Z",
+  "updated_at": "2026-01-15T00:00:00.000Z",
+  "status": "planning",
+
+  "META_DOCUMENTATION": {
+    "purpose": "Complete scanner integration with 7 major improvements: AST integration, parallel processing, LRU caching, relationship tracking, dynamic imports, and progress reporting",
+    "scope": "Core library improvements only (no CLI or UI changes)",
+    "constraints": [
+      "Maintain backward compatibility with existing scanCurrentElements API",
+      "No breaking changes to ElementData interface",
+      "Must work with existing preset system",
+      "Performance improvements must be measurable and documented"
+    ],
+    "success_criteria": {
+      "accuracy": "95%+ for TypeScript/JavaScript (up from 85%)",
+      "performance": "3-5x faster on 500-file projects (1185ms → 300-400ms)",
+      "memory": "LRU cache capped at 50MB",
+      "compatibility": "Zero breaking changes to public API",
+      "testing": "Comprehensive test suite with benchmarks"
+    }
+  },
+
+  "CONTEXT": {
+    "user_requirements": [
+      "Hybrid AST + regex integration for 95% accuracy",
+      "Parallel file processing with worker threads for 3-5x performance",
+      "LRU caching system with memory cap for repeated scans",
+      "Relationship tracking (imports, dependencies, function calls)",
+      "Dynamic import support with ESM detection",
+      "Real-time progress reporting with streaming results",
+      "Update communication.json after each task completion"
+    ],
+    "project_constraints": {
+      "existing_api": "scanCurrentElements(root, langs, options) must remain compatible",
+      "element_data_interface": "Cannot add breaking changes to ElementData type",
+      "integration_points": [
+        "packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts uses scanCurrentElements",
+        "Existing preset system must continue to work"
+      ]
+    },
+    "resource_sheet": "coderef/resources-sheets/Scanner-Effectiveness-Improvements-RESOURCE-SHEET.md (v1.0.0, 15 improvements cataloged)"
+  },
+
+  "ANALYSIS": {
+    "current_state": {
+      "scanner_engine": "Regex-based pattern matching",
+      "processing_model": "Sequential single-threaded",
+      "accuracy": "85% for TypeScript/JavaScript",
+      "performance": "~1185ms for 500 files",
+      "languages": 10,
+      "element_types": 7
+    },
+    "key_files": {
+      "scanner": "src/scanner/scanner.ts (primary implementation)",
+      "ast_infrastructure": "src/analyzer/js-call-detector.ts (acorn parser already integrated)",
+      "file_generation": "src/fileGeneration/*.ts (8 functions for output generation)",
+      "types": "src/types/types.ts (ElementData, ScanOptions interfaces)"
+    },
+    "gaps_identified": [
+      "Missing TypeScript interfaces, type aliases, decorators",
+      "No parallel processing (single-threaded bottleneck)",
+      "Unbounded memory usage in cache Map",
+      "No relationship tracking between elements",
+      "No dynamic import detection",
+      "No progress reporting mechanism"
+    ]
+  },
+
+  "ARCHITECTURE": {
+    "architectural_changes": [
+      {
+        "component": "Scanner Engine",
+        "change": "Add hybrid AST + regex mode with useAST option",
+        "impact": "Extends existing scanner.ts without breaking changes",
+        "files": ["src/scanner/scanner.ts", "src/analyzer/js-call-detector.ts"]
+      },
+      {
+        "component": "Processing Model",
+        "change": "Add worker thread pool for parallel file processing",
+        "impact": "New worker file, optional parallel mode in ScanOptions",
+        "files": ["src/scanner/scanner-worker.ts (NEW)", "src/scanner/scanner.ts"]
+      },
+      {
+        "component": "Caching Layer",
+        "change": "Replace unbounded Map with LRU cache implementation",
+        "impact": "Internal implementation change, no API surface change",
+        "files": ["src/scanner/lru-cache.ts (NEW)", "src/scanner/scanner.ts"]
+      },
+      {
+        "component": "Relationship Tracking",
+        "change": "Add import/dependency tracking to ElementData (optional fields)",
+        "impact": "Non-breaking extension to ElementData interface",
+        "files": ["src/types/types.ts", "src/scanner/scanner.ts"]
+      },
+      {
+        "component": "Progress Reporting",
+        "change": "Add EventEmitter-based progress callback system",
+        "impact": "New optional onProgress callback in ScanOptions",
+        "files": ["src/scanner/scanner.ts", "src/types/types.ts"]
+      }
+    ],
+    "integration_strategy": "Feature flags and optional parameters ensure backward compatibility while enabling new capabilities"
+  },
+
+  "IMPLEMENTATION_PHASES": [
+    {
+      "phase": "Phase 1: AST Integration",
+      "priority": "P1",
+      "description": "Implement hybrid AST + regex approach for 95% accuracy",
+      "effort_estimate": "6-8 hours",
+      "tasks": [
+        {
+          "task_id": "SETUP-001",
+          "category": "setup",
+          "title": "Add AST dependencies and types",
+          "description": "Install any additional TypeScript AST parsing dependencies if needed, extend ScanOptions with useAST flag",
+          "files_to_modify": [
+            "src/types/types.ts"
+          ],
+          "implementation_details": {
+            "type_changes": [
+              "Add useAST?: boolean to ScanOptions interface",
+              "Add fallbackToRegex?: boolean to ScanOptions (default: true)"
+            ]
+          },
+          "acceptance_criteria": [
+            "ScanOptions interface includes useAST flag",
+            "TypeScript compilation passes",
+            "No breaking changes to existing ScanOptions usage"
+          ],
+          "estimated_effort": "30 minutes"
+        },
+        {
+          "task_id": "IMPL-001",
+          "category": "implementation",
+          "title": "Extend js-call-detector for element extraction",
+          "description": "Enhance src/analyzer/js-call-detector.ts to extract interfaces, type aliases, decorators, class properties beyond just calls/imports",
+          "files_to_modify": [
+            "src/analyzer/js-call-detector.ts"
+          ],
+          "implementation_details": {
+            "new_node_handlers": [
+              "TSInterfaceDeclaration → extract interface name",
+              "TSTypeAliasDeclaration → extract type alias name",
+              "Decorator → extract decorator name",
+              "ClassProperty → extract property name",
+              "PropertyDefinition → extract class field name"
+            ],
+            "return_format": "Return ElementData[] instead of just calls/imports"
+          },
+          "acceptance_criteria": [
+            "Detects TypeScript interfaces with correct line numbers",
+            "Detects type aliases",
+            "Detects decorators (@Component, @Injectable, etc.)",
+            "Detects class properties and arrow method fields",
+            "Returns ElementData[] format matching scanner output"
+          ],
+          "estimated_effort": "3-4 hours"
+        },
+        {
+          "task_id": "IMPL-002",
+          "category": "implementation",
+          "title": "Add AST mode to scanCurrentElements",
+          "description": "Integrate AST-based extraction into scanner.ts scanCurrentElements function with regex fallback on parse errors",
+          "files_to_modify": [
+            "src/scanner/scanner.ts"
+          ],
+          "implementation_details": {
+            "logic": [
+              "Check if options.useAST is true",
+              "For TS/JS files, call enhanced js-call-detector first",
+              "If AST parse fails and fallbackToRegex=true, use existing regex patterns",
+              "Deduplicate results (AST + regex may find same elements)",
+              "Merge AST results with regex results"
+            ],
+            "error_handling": "Catch acorn parse errors, log warning, fallback to regex"
+          },
+          "acceptance_criteria": [
+            "AST mode detects 95%+ elements in test TypeScript files",
+            "Fallback to regex works on syntax errors",
+            "No performance regression when useAST=false (default)",
+            "Deduplication prevents duplicate elements"
+          ],
+          "estimated_effort": "2-3 hours"
+        },
+        {
+          "task_id": "TEST-001",
+          "category": "testing",
+          "title": "Create AST mode test suite",
+          "description": "Create 20+ TypeScript fixture files covering interfaces, decorators, generics, class properties, arrow methods",
+          "files_to_create": [
+            "src/scanner/__tests__/fixtures/ast-elements.ts"
+          ],
+          "implementation_details": {
+            "test_cases": [
+              "Interface declarations",
+              "Type aliases with generics",
+              "Class decorators",
+              "Method decorators",
+              "Class properties",
+              "Arrow function methods",
+              "Export syntax variants"
+            ]
+          },
+          "acceptance_criteria": [
+            "All 20+ fixtures correctly detected by AST mode",
+            "Accuracy >= 95% on fixture set",
+            "Performance benchmarks documented (AST vs regex)"
+          ],
+          "estimated_effort": "1-2 hours"
+        }
+      ]
+    },
+    {
+      "phase": "Phase 2: Parallel Processing",
+      "priority": "P1",
+      "description": "Implement worker thread pool for 3-5x performance improvement",
+      "effort_estimate": "8-10 hours",
+      "tasks": [
+        {
+          "task_id": "SETUP-002",
+          "category": "setup",
+          "title": "Add worker_threads types and configuration",
+          "description": "Configure TypeScript to support worker_threads module, add parallel option to ScanOptions",
+          "files_to_modify": [
+            "src/types/types.ts",
+            "tsconfig.json"
+          ],
+          "implementation_details": {
+            "type_changes": [
+              "Add parallel?: boolean | { workers?: number } to ScanOptions",
+              "Add workerPoolSize?: number to ScanOptions (default: CPU cores - 1)"
+            ],
+            "tsconfig": "Ensure Node.js worker_threads types are included"
+          },
+          "acceptance_criteria": [
+            "ScanOptions includes parallel configuration",
+            "TypeScript recognizes worker_threads types",
+            "Default values documented"
+          ],
+          "estimated_effort": "30 minutes"
+        },
+        {
+          "task_id": "IMPL-003",
+          "category": "implementation",
+          "title": "Create scanner worker implementation",
+          "description": "Create src/scanner/scanner-worker.ts that processes files in worker threads using existing scan logic",
+          "files_to_create": [
+            "src/scanner/scanner-worker.ts"
+          ],
+          "implementation_details": {
+            "worker_logic": [
+              "Worker receives: file paths array, language, options",
+              "Worker uses existing scanFileSync logic",
+              "Worker returns: ElementData[] + stats",
+              "Worker handles errors gracefully (return ScanError)"
+            ],
+            "message_protocol": "{ type: 'scan', files: string[], lang: string, options: ScanOptions }"
+          },
+          "acceptance_criteria": [
+            "Worker can scan files independently",
+            "Worker returns proper ElementData[] format",
+            "Worker handles parse errors without crashing",
+            "Message protocol is type-safe"
+          ],
+          "estimated_effort": "3-4 hours"
+        },
+        {
+          "task_id": "IMPL-004",
+          "category": "implementation",
+          "title": "Add worker pool management to scanner",
+          "description": "Implement worker pool in scanner.ts that distributes files across workers using Promise.all",
+          "files_to_modify": [
+            "src/scanner/scanner.ts"
+          ],
+          "implementation_details": {
+            "pool_logic": [
+              "Create N workers based on options.workerPoolSize",
+              "Split file list into N chunks",
+              "Assign each chunk to a worker",
+              "Collect results with Promise.all",
+              "Terminate workers after scan",
+              "Fallback to sequential mode if worker creation fails"
+            ],
+            "chunk_strategy": "Round-robin distribution to balance load"
+          },
+          "acceptance_criteria": [
+            "Worker pool created with correct size",
+            "Files distributed evenly across workers",
+            "Results aggregated correctly",
+            "Workers terminated after scan",
+            "Fallback to sequential mode on worker errors"
+          ],
+          "estimated_effort": "3-4 hours"
+        },
+        {
+          "task_id": "TEST-002",
+          "category": "testing",
+          "title": "Create parallel processing benchmarks",
+          "description": "Benchmark parallel vs sequential mode on 100, 500, 1000 file projects",
+          "files_to_create": [
+            "src/scanner/__tests__/parallel-benchmark.test.ts"
+          ],
+          "implementation_details": {
+            "test_scenarios": [
+              "100 files: Measure overhead",
+              "500 files: Target 3x speedup",
+              "1000 files: Target 5x speedup",
+              "Single file: Ensure no regression"
+            ],
+            "metrics": ["total_ms", "files_per_second", "speedup_factor"]
+          },
+          "acceptance_criteria": [
+            "3-5x speedup on 500+ file projects",
+            "No regression on small projects",
+            "Benchmarks documented in plan or DELIVERABLES"
+          ],
+          "estimated_effort": "2 hours"
+        }
+      ]
+    },
+    {
+      "phase": "Phase 3: LRU Caching",
+      "priority": "P2",
+      "description": "Replace unbounded Map with LRU cache (50MB cap)",
+      "effort_estimate": "4-6 hours",
+      "tasks": [
+        {
+          "task_id": "IMPL-005",
+          "category": "implementation",
+          "title": "Implement LRU cache class",
+          "description": "Create src/scanner/lru-cache.ts with size-based eviction and TTL support",
+          "files_to_create": [
+            "src/scanner/lru-cache.ts"
+          ],
+          "implementation_details": {
+            "class_interface": {
+              "constructor": "new LRUCache<K, V>(maxSizeBytes: number, ttlMs?: number)",
+              "methods": [
+                "get(key: K): V | undefined",
+                "set(key: K, value: V): void",
+                "has(key: K): boolean",
+                "delete(key: K): boolean",
+                "clear(): void",
+                "size(): number"
+              ]
+            },
+            "eviction_policy": "Least recently used (access time tracking)",
+            "size_calculation": "Estimate JSON.stringify(value).length per entry"
+          },
+          "acceptance_criteria": [
+            "Cache respects maxSizeBytes limit",
+            "LRU eviction works correctly",
+            "TTL expiration works (if specified)",
+            "Size calculation is accurate within 10%"
+          ],
+          "estimated_effort": "3-4 hours"
+        },
+        {
+          "task_id": "IMPL-006",
+          "category": "implementation",
+          "title": "Replace Map with LRU cache in scanner",
+          "description": "Replace global cache Map in scanner.ts with LRU cache instance (50MB default)",
+          "files_to_modify": [
+            "src/scanner/scanner.ts"
+          ],
+          "implementation_details": {
+            "cache_config": {
+              "max_size": "50MB (configurable via options.cacheSize)",
+              "ttl": "3600000ms (1 hour, configurable)",
+              "key_format": "file:mtime:lang"
+            },
+            "migration": "Replace all cache.get/set/has calls with LRUCache methods"
+          },
+          "acceptance_criteria": [
+            "Cache memory usage capped at 50MB",
+            "Eviction happens automatically",
+            "Cache hit rate remains high (>80% on repeated scans)",
+            "No memory leaks"
+          ],
+          "estimated_effort": "1-2 hours"
+        },
+        {
+          "task_id": "TEST-003",
+          "category": "testing",
+          "title": "Test LRU cache eviction and memory cap",
+          "description": "Create unit tests verifying eviction, size limits, and TTL expiration",
+          "files_to_create": [
+            "src/scanner/__tests__/lru-cache.test.ts"
+          ],
+          "implementation_details": {
+            "test_cases": [
+              "Eviction when max size exceeded",
+              "LRU order maintained",
+              "TTL expiration",
+              "Size calculation accuracy",
+              "Repeated access updates LRU order"
+            ]
+          },
+          "acceptance_criteria": [
+            "All eviction tests pass",
+            "Memory stays within 50MB ± 5%",
+            "TTL tests pass"
+          ],
+          "estimated_effort": "1 hour"
+        }
+      ]
+    },
+    {
+      "phase": "Phase 4: Relationship Tracking",
+      "priority": "P2",
+      "description": "Track imports, dependencies, and function calls",
+      "effort_estimate": "5-7 hours",
+      "tasks": [
+        {
+          "task_id": "SETUP-003",
+          "category": "setup",
+          "title": "Extend ElementData with relationship fields",
+          "description": "Add optional imports, dependencies, calls fields to ElementData interface",
+          "files_to_modify": [
+            "src/types/types.ts"
+          ],
+          "implementation_details": {
+            "new_fields": [
+              "imports?: string[] (imported module paths)",
+              "dependencies?: string[] (dependency names)",
+              "calls?: string[] (function names called within this element)",
+              "exports?: string[] (named exports from this file)"
+            ],
+            "backward_compatibility": "All fields optional, default undefined"
+          },
+          "acceptance_criteria": [
+            "ElementData interface extended without breaking changes",
+            "TypeScript compilation passes",
+            "Existing code continues to work"
+          ],
+          "estimated_effort": "30 minutes"
+        },
+        {
+          "task_id": "IMPL-007",
+          "category": "implementation",
+          "title": "Extract import statements during scan",
+          "description": "Parse import/require statements and populate imports field in ElementData",
+          "files_to_modify": [
+            "src/scanner/scanner.ts",
+            "src/analyzer/js-call-detector.ts"
+          ],
+          "implementation_details": {
+            "import_detection": [
+              "ESM imports: import { foo } from 'bar'",
+              "CommonJS: require('module')",
+              "Dynamic imports: import('module')",
+              "Side-effect imports: import 'styles.css'"
+            ],
+            "storage": "Store import paths in ElementData.imports array per file"
+          },
+          "acceptance_criteria": [
+            "All import types detected correctly",
+            "Import paths stored in ElementData",
+            "Works with both AST and regex modes"
+          ],
+          "estimated_effort": "2-3 hours"
+        },
+        {
+          "task_id": "IMPL-008",
+          "category": "implementation",
+          "title": "Extract function call relationships",
+          "description": "Track which functions are called within each scanned element using AST",
+          "files_to_modify": [
+            "src/analyzer/js-call-detector.ts"
+          ],
+          "implementation_details": {
+            "call_detection": [
+              "Direct calls: foo()",
+              "Method calls: obj.method()",
+              "Constructor calls: new Class()",
+              "Chained calls: obj.method1().method2()"
+            ],
+            "scope": "Only track calls within function bodies, not global scope"
+          },
+          "acceptance_criteria": [
+            "Function calls extracted per element",
+            "Method calls attributed to correct element",
+            "No false positives from string literals"
+          ],
+          "estimated_effort": "2-3 hours"
+        },
+        {
+          "task_id": "TEST-004",
+          "category": "testing",
+          "title": "Test relationship tracking accuracy",
+          "description": "Create fixtures with known imports/calls and verify extraction",
+          "files_to_create": [
+            "src/scanner/__tests__/relationship-tracking.test.ts"
+          ],
+          "implementation_details": {
+            "test_fixtures": [
+              "File with multiple imports",
+              "File with dynamic imports",
+              "Function with multiple calls",
+              "Class with method calls"
+            ]
+          },
+          "acceptance_criteria": [
+            "All imports detected correctly",
+            "All calls tracked accurately",
+            "No false positives or negatives"
+          ],
+          "estimated_effort": "1 hour"
+        }
+      ]
+    },
+    {
+      "phase": "Phase 5: Dynamic Imports & Progress Reporting",
+      "priority": "P3",
+      "description": "Add dynamic import detection and real-time progress callbacks",
+      "effort_estimate": "3-5 hours",
+      "tasks": [
+        {
+          "task_id": "IMPL-009",
+          "category": "implementation",
+          "title": "Detect dynamic imports (ESM and CommonJS)",
+          "description": "Extend import detection to handle import() and require() runtime expressions",
+          "files_to_modify": [
+            "src/scanner/scanner.ts",
+            "src/analyzer/js-call-detector.ts"
+          ],
+          "implementation_details": {
+            "detection_patterns": [
+              "import() expressions: import('./module')",
+              "require() calls: require('module')",
+              "Template literals: import(`./locale/${lang}.js`)"
+            ],
+            "storage": "Add dynamicImports?: string[] field to ElementData (optional)"
+          },
+          "acceptance_criteria": [
+            "import() expressions detected",
+            "require() calls detected",
+            "Template literal imports handled (extract template pattern)",
+            "Stored in separate dynamicImports field"
+          ],
+          "estimated_effort": "1-2 hours"
+        },
+        {
+          "task_id": "IMPL-010",
+          "category": "implementation",
+          "title": "Add progress reporting callback",
+          "description": "Add onProgress callback to ScanOptions for real-time scan updates",
+          "files_to_modify": [
+            "src/types/types.ts",
+            "src/scanner/scanner.ts"
+          ],
+          "implementation_details": {
+            "callback_signature": "onProgress?: (event: ScanProgressEvent) => void",
+            "event_interface": {
+              "type": "'start' | 'file' | 'complete' | 'error'",
+              "file": "string (current file path)",
+              "filesProcessed": "number",
+              "totalFiles": "number",
+              "elementsFound": "number",
+              "error": "ScanError (if type='error')"
+            },
+            "emit_points": [
+              "Start of scan (type='start')",
+              "After each file (type='file')",
+              "End of scan (type='complete')",
+              "On errors (type='error')"
+            ]
+          },
+          "acceptance_criteria": [
+            "onProgress callback fires at correct times",
+            "Progress events include accurate counts",
+            "Works with both sequential and parallel modes",
+            "No performance impact when callback not provided"
+          ],
+          "estimated_effort": "1-2 hours"
+        },
+        {
+          "task_id": "TEST-005",
+          "category": "testing",
+          "title": "Test progress reporting and dynamic imports",
+          "description": "Verify progress callback events and dynamic import detection",
+          "files_to_create": [
+            "src/scanner/__tests__/progress-reporting.test.ts",
+            "src/scanner/__tests__/dynamic-imports.test.ts"
+          ],
+          "implementation_details": {
+            "test_cases": [
+              "Progress events fire in correct order",
+              "Event counts are accurate",
+              "Dynamic imports detected in test fixtures",
+              "Template literal imports handled"
+            ]
+          },
+          "acceptance_criteria": [
+            "All progress events captured",
+            "Event sequence correct",
+            "Dynamic import detection >= 90% accuracy"
+          ],
+          "estimated_effort": "1 hour"
+        }
+      ]
+    },
+    {
+      "phase": "Phase 6: Documentation & Integration",
+      "priority": "P3",
+      "description": "Update documentation and integration tests",
+      "effort_estimate": "3-4 hours",
+      "tasks": [
+        {
+          "task_id": "DOC-001",
+          "category": "documentation",
+          "title": "Update API documentation",
+          "description": "Document all new ScanOptions flags, ElementData fields, and usage examples",
+          "files_to_modify": [
+            "coderef/foundation-docs/API.md",
+            "coderef/foundation-docs/SCHEMA.md"
+          ],
+          "implementation_details": {
+            "sections_to_add": [
+              "AST mode usage examples",
+              "Parallel processing configuration",
+              "LRU cache tuning",
+              "Relationship tracking data structure",
+              "Progress reporting callback example"
+            ]
+          },
+          "acceptance_criteria": [
+            "API.md includes all new options",
+            "SCHEMA.md updated with new ElementData fields",
+            "Usage examples provided"
+          ],
+          "estimated_effort": "2 hours"
+        },
+        {
+          "task_id": "TEST-006",
+          "category": "testing",
+          "title": "Integration test with dashboard scanner UI",
+          "description": "Test new scanner features with packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts",
+          "files_to_test": [
+            "packages/dashboard/src/app/api/scanner/lib/scanExecutor.ts"
+          ],
+          "implementation_details": {
+            "test_scenarios": [
+              "Scan with AST mode enabled",
+              "Scan with parallel processing",
+              "Progress reporting through SSE",
+              "Relationship data visible in results"
+            ]
+          },
+          "acceptance_criteria": [
+            "Dashboard scanner UI works with new features",
+            "No breaking changes detected",
+            "Progress updates stream to UI",
+            "Backward compatibility verified"
+          ],
+          "estimated_effort": "1-2 hours"
+        }
+      ]
+    },
+    {
+      "phase": "Phase 7: Performance Validation & Communication",
+      "priority": "P3",
+      "description": "Validate success criteria and update communication.json",
+      "effort_estimate": "2-3 hours",
+      "tasks": [
+        {
+          "task_id": "VALIDATE-001",
+          "category": "validation",
+          "title": "Run comprehensive performance benchmarks",
+          "description": "Benchmark all improvements against baseline: accuracy, speed, memory",
+          "implementation_details": {
+            "benchmarks": [
+              "Accuracy: Run on 100+ TypeScript files, measure detection rate",
+              "Performance: 500-file scan, measure speedup (target: 3-5x)",
+              "Memory: Monitor cache size, verify 50MB cap",
+              "Compatibility: Run existing tests, verify zero breaking changes"
+            ],
+            "baseline": "1185ms for 500 files, 85% accuracy"
+          },
+          "acceptance_criteria": [
+            "Accuracy >= 95% on test corpus",
+            "Performance 3-5x faster (300-400ms for 500 files)",
+            "Memory stays within 50MB cap",
+            "All existing tests pass"
+          ],
+          "estimated_effort": "2 hours"
+        },
+        {
+          "task_id": "COMM-001",
+          "category": "communication",
+          "title": "Update communication.json after each phase",
+          "description": "After completing each phase (1-6), update coderef/workorder/scanner-integration/communication.json with status and results",
+          "files_to_modify": [
+            "coderef/workorder/scanner-integration/communication.json"
+          ],
+          "implementation_details": {
+            "update_strategy": "After each phase completes, mark all tasks in that phase as complete, update metrics",
+            "fields_to_update": [
+              "tasks[].status → 'complete'",
+              "phase_completion → 'Phase N: Complete'",
+              "success_metrics → update with actual measurements"
+            ]
+          },
+          "acceptance_criteria": [
+            "communication.json updated after each phase",
+            "Status reflects actual progress",
+            "Metrics documented"
+          ],
+          "estimated_effort": "30 minutes (spread across phases)"
+        }
+      ]
+    }
+  ],
+
+  "TESTING_STRATEGY": {
+    "unit_tests": [
+      "AST element extraction accuracy (20+ fixtures)",
+      "Parallel processing correctness (worker pool logic)",
+      "LRU cache eviction and size limits",
+      "Relationship tracking (imports, calls)",
+      "Dynamic import detection",
+      "Progress event sequence"
+    ],
+    "integration_tests": [
+      "Dashboard scanner UI integration",
+      "Backward compatibility with existing API",
+      "End-to-end scan with all features enabled"
+    ],
+    "performance_benchmarks": [
+      "Sequential vs parallel (100, 500, 1000 files)",
+      "AST mode vs regex mode (accuracy and speed)",
+      "Cache hit rate over multiple scans",
+      "Memory usage under load"
+    ]
+  },
+
+  "ROLLOUT_PLAN": {
+    "stage_1_internal": {
+      "description": "Enable features in development mode, collect metrics",
+      "duration": "1 week",
+      "success_criteria": "No crashes, performance targets met"
+    },
+    "stage_2_opt_in": {
+      "description": "Add feature flags, allow users to opt in",
+      "duration": "2 weeks",
+      "success_criteria": "Positive feedback, no bug reports"
+    },
+    "stage_3_default": {
+      "description": "Make AST mode and parallel processing default (with fallback)",
+      "duration": "Ongoing",
+      "success_criteria": "Zero breaking changes confirmed"
+    }
+  },
+
+  "RISKS_AND_MITIGATIONS": {
+    "high_risk": [
+      {
+        "risk": "Worker thread overhead negates performance gains on small projects",
+        "mitigation": "Add auto-detection: only use workers for projects with 50+ files",
+        "contingency": "Make parallel mode opt-in instead of default"
+      },
+      {
+        "risk": "AST parsing failures cause complete scan failures",
+        "mitigation": "Implement robust fallback to regex on parse errors",
+        "contingency": "Make AST mode opt-in initially"
+      }
+    ],
+    "medium_risk": [
+      {
+        "risk": "LRU cache eviction causes thrashing on very large projects",
+        "mitigation": "Tune cache size based on project size",
+        "contingency": "Allow disabling cache via options.cacheSize = 0"
+      },
+      {
+        "risk": "Progress reporting overhead slows down scans",
+        "mitigation": "Throttle events (emit max 1 per 100ms)",
+        "contingency": "Skip progress events if no callback provided"
+      }
+    ]
+  },
+
+  "DEPENDENCIES": {
+    "external": [
+      {
+        "name": "acorn",
+        "version": "^8.0.0",
+        "purpose": "AST parsing (already in project)",
+        "status": "existing"
+      },
+      {
+        "name": "worker_threads",
+        "version": "Node.js built-in",
+        "purpose": "Parallel processing",
+        "status": "existing"
+      }
+    ],
+    "internal": [
+      {
+        "component": "src/analyzer/js-call-detector.ts",
+        "usage": "Extended for element extraction",
+        "impact": "Requires modification"
+      },
+      {
+        "component": "src/types/types.ts",
+        "usage": "Extended with new ScanOptions and ElementData fields",
+        "impact": "Non-breaking extensions"
+      }
+    ]
+  },
+
+  "SUCCESS_METRICS": {
+    "accuracy": {
+      "baseline": "85% for TypeScript/JavaScript",
+      "target": "95%+",
+      "measurement": "Test corpus of 100+ TS files with known elements"
+    },
+    "performance": {
+      "baseline": "1185ms for 500 files",
+      "target": "300-400ms (3-5x faster)",
+      "measurement": "Benchmark on real project with 500+ files"
+    },
+    "memory": {
+      "baseline": "Unbounded (potential memory leak)",
+      "target": "50MB cap for cache",
+      "measurement": "Monitor heap size during large project scans"
+    },
+    "compatibility": {
+      "baseline": "N/A",
+      "target": "Zero breaking changes",
+      "measurement": "All existing tests pass, dashboard integration unaffected"
+    }
+  },
+
+  "MILESTONES": [
+    {
+      "milestone": "M1: AST Integration Complete",
+      "date": "TBD",
+      "deliverables": ["AST-based element extraction working", "95% accuracy achieved", "Test suite passing"]
+    },
+    {
+      "milestone": "M2: Parallel Processing Complete",
+      "date": "TBD",
+      "deliverables": ["Worker pool implementation", "3-5x speedup measured", "Benchmarks documented"]
+    },
+    {
+      "milestone": "M3: Caching & Relationships Complete",
+      "date": "TBD",
+      "deliverables": ["LRU cache implemented", "Relationship tracking working", "Memory cap verified"]
+    },
+    {
+      "milestone": "M4: Progress Reporting & Documentation Complete",
+      "date": "TBD",
+      "deliverables": ["Progress callbacks working", "API docs updated", "Integration tests passing"]
+    },
+    {
+      "milestone": "M5: All Phases Complete",
+      "date": "TBD",
+      "deliverables": ["All 7 improvements implemented", "Success criteria validated", "communication.json updated"]
+    }
+  ]
+}

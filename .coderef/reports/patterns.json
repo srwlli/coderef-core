@@ -1,0 +1,3829 @@
+{
+  "decorators": [],
+  "errorHandling": [
+    {
+      "file": "demo-all-modules.ts",
+      "line": 79,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "demo-all-modules.ts",
+      "line": 308,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "demo-all-modules.ts",
+      "line": 318,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "demo-all-modules.ts",
+      "line": 328,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "demo-all-modules.ts",
+      "line": 373,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 93,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 103,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 166,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 195,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 204,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 213,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 228,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 239,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 255,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 271,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 377,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 386,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 413,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 459,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "examples/nextjs-api-route.ts",
+      "line": 493,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 99,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 102,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 127,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 130,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 145,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 148,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 150,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 159,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 162,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 164,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 172,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 181,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 189,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 195,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 310,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 320,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 330,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 333,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 334,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 343,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/scan-cli/test_scan_cli.test.ts",
+      "line": 346,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/analyzer/analyzer-service.ts",
+      "line": 281,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/analyzer-service.ts",
+      "line": 288,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/analyzer/analyzer-service.ts",
+      "line": 311,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "line": 56,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "line": 84,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/call-detector.ts",
+      "line": 62,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dynamic-import-detector.ts",
+      "line": 73,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dynamic-import-detector.ts",
+      "line": 353,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "line": 31,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "line": 90,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "line": 151,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frontend-call-parsers.ts",
+      "line": 222,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/import-parser.ts",
+      "line": 58,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/import-parser.ts",
+      "line": 272,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/import-parser.ts",
+      "line": 284,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/js-parser.ts",
+      "line": 95,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/js-parser.ts",
+      "line": 101,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/js-parser.ts",
+      "line": 121,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/js-parser.ts",
+      "line": 138,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/analyzer/js-parser.ts",
+      "line": 146,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/detect-languages.ts",
+      "line": 84,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/detect-languages.ts",
+      "line": 90,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/detect-languages.ts",
+      "line": 94,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/detect-languages.ts",
+      "line": 106,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 21,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 188,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 213,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 245,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 308,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/scan-frontend-calls.ts",
+      "line": 133,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.test.ts",
+      "line": 26,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.test.ts",
+      "line": 158,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.test.ts",
+      "line": 161,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/validate-routes.test.ts",
+      "line": 170,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.test.ts",
+      "line": 175,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/validate-routes.test.ts",
+      "line": 391,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.test.ts",
+      "line": 396,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 155,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 158,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 170,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 176,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 179,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 183,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 186,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 252,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "line": 294,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/config/presets.ts",
+      "line": 196,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/config/presets.ts",
+      "line": 237,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 131,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 412,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 421,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 480,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 850,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 908,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 922,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 963,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 993,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-generator.ts",
+      "line": 10,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-generator.ts",
+      "line": 100,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-generator.ts",
+      "line": 217,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-generator.ts",
+      "line": 224,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.d.ts",
+      "line": 14,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 54,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 77,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 82,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 93,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 96,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 101,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 122,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 124,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 140,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 142,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 205,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 212,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 229,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 244,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 249,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 250,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 284,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 285,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 298,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/entry-point-detector.ts",
+      "line": 44,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/entry-point-detector.ts",
+      "line": 50,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/entry-point-detector.ts",
+      "line": 54,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/entry-point-detector.ts",
+      "line": 67,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/entry-point-detector.ts",
+      "line": 101,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/entry-point-detector.ts",
+      "line": 113,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/example-extractor.ts",
+      "line": 38,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/index.d.ts",
+      "line": 6,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/index.ts",
+      "line": 7,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/markdown-formatter.ts",
+      "line": 91,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/markdown-formatter.ts",
+      "line": 92,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/markdown-formatter.ts",
+      "line": 147,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/task-context-generator.ts",
+      "line": 249,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/__tests__/complexity-scorer.test.ts",
+      "line": 316,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/export/graph-exporter.ts",
+      "line": 286,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/detectDrift.ts",
+      "line": 99,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/detectDrift.ts",
+      "line": 105,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/fileGeneration/saveFrontendCalls.test.ts",
+      "line": 25,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/__tests__/buildDependencyGraph.test.ts",
+      "line": 82,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/__tests__/buildDependencyGraph.test.ts",
+      "line": 87,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/__tests__/buildDependencyGraph.test.ts",
+      "line": 115,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/__tests__/buildDependencyGraph.test.ts",
+      "line": 136,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/__tests__/generateContext.test.ts",
+      "line": 77,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/__tests__/generateContext.test.ts",
+      "line": 82,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/__tests__/saveIndex.test.ts",
+      "line": 71,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/fileGeneration/__tests__/saveIndex.test.ts",
+      "line": 76,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/formatter/formatter.ts",
+      "line": 94,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/index.ts",
+      "line": 142,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/index.ts",
+      "line": 263,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/indexer-service.ts",
+      "line": 56,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/indexer/indexer-service.ts",
+      "line": 87,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/indexer/indexer-service.ts",
+      "line": 106,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/indexer-service.ts",
+      "line": 140,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/indexer/indexer-service.ts",
+      "line": 146,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/indexer/indexer-service.ts",
+      "line": 300,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/indexer/metadata-index.ts",
+      "line": 44,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/metadata-index.ts",
+      "line": 218,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/metadata-index.ts",
+      "line": 308,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/metadata-index.ts",
+      "line": 309,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/metadata-index.ts",
+      "line": 319,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/query-engine.ts",
+      "line": 41,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/query-engine.ts",
+      "line": 366,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/indexer/query-engine.ts",
+      "line": 383,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 86,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 87,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 130,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 172,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 176,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 178,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 182,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 220,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 264,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 284,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 64,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 65,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 105,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 119,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 120,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 130,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 140,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 146,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 169,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 173,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 175,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 179,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 216,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 260,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 280,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/answer-generation-service.ts",
+      "line": 147,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/answer-generation-service.ts",
+      "line": 230,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 65,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 67,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 82,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 90,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 214,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/embedding-service.ts",
+      "line": 180,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/embedding-service.ts",
+      "line": 207,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 113,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 131,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 144,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 160,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 353,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 360,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 369,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 372,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 430,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 205,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 431,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 434,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 71,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 79,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 99,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 121,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 137,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 194,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 214,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 225,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 241,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 254,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 270,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 276,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 295,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 310,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 342,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 71,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 98,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 110,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 143,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 166,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 182,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 218,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 238,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 244,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 260,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 266,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 282,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 293,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 323,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 359,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 158,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 189,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 219,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 260,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 340,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 368,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 62,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 166,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 209,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 238,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 311,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 321,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 329,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 404,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 22,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 68,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 99,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 126,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 253,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 525,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 539,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/drift-generator.ts",
+      "line": 57,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/export-generator.ts",
+      "line": 117,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/graph-output.ts",
+      "line": 3,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/graph-output.ts",
+      "line": 67,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/index-generator.ts",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/index-generator.ts",
+      "line": 66,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "line": 95,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "line": 336,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "line": 13,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "line": 18,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "line": 30,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "line": 41,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 27,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 42,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 43,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 59,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 81,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 93,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 115,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 120,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 135,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/ignore-rules.ts",
+      "line": 51,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/ignore-rules.ts",
+      "line": 74,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/index.ts",
+      "line": 7,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 21,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 25,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 95,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 194,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 201,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 211,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 216,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 288,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "line": 104,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "line": 106,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "line": 108,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "line": 329,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "line": 2,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "line": 9,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "line": 10,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "line": 89,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/types.ts",
+      "line": 24,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 127,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 136,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 208,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 235,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 239,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 19,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 198,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 201,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 205,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 209,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 212,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 13,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 43,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 93,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 141,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 142,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 201,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 209,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner-worker.ts",
+      "line": 39,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner-worker.ts",
+      "line": 53,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner-worker.ts",
+      "line": 59,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner-worker.ts",
+      "line": 117,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/scanner.d.ts",
+      "line": 44,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 10,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 776,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 862,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 879,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 882,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 909,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 911,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 918,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 948,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 965,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 999,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 1057,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 1143,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 1512,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/tree-sitter-scanner.ts",
+      "line": 83,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/__tests__/lru-cache.test.ts",
+      "line": 9,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/__tests__/lru-cache.test.ts",
+      "line": 252,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/__tests__/lru-cache.test.ts",
+      "line": 272,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/__tests__/lru-cache.test.ts",
+      "line": 278,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 16,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 76,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 96,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 113,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 122,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 139,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 541,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 590,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 609,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 652,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/search/search-engine.ts",
+      "line": 706,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/validator/migration-mapper.ts",
+      "line": 107,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/validator/migration-mapper.ts",
+      "line": 194,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/validator/route-validator.ts",
+      "line": 27,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/validator/route-validator.ts",
+      "line": 68,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/validator/route-validator.ts",
+      "line": 342,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "utils/fs.ts",
+      "line": 45,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "utils/fs.ts",
+      "line": 61,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/analyzer.test.ts",
+      "line": 681,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/analyzer.test.ts",
+      "line": 698,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/analyzer.test.ts",
+      "line": 713,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/ast-element-scanner.test.ts",
+      "line": 287,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/ast-element-scanner.test.ts",
+      "line": 335,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/element-extractor.test.ts",
+      "line": 16,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/generators/helpers.ts",
+      "line": 37,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/generators/pattern-generator.test.ts",
+      "line": 33,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/generators/root-cause-alignment.test.ts",
+      "line": 279,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/grammar-registry.test.ts",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/grammar-registry.test.ts",
+      "line": 17,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/indexer.test.ts",
+      "line": 768,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/integration.test.ts",
+      "line": 340,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/integration.test.ts",
+      "line": 345,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "__tests__/integration.test.ts",
+      "line": 353,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "__tests__/integration.test.ts",
+      "line": 526,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "__tests__/orphan-detection.test.ts",
+      "line": 38,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/orphan-detection.test.ts",
+      "line": 144,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline-integration.test.ts",
+      "line": 308,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/populate-cli.test.ts",
+      "line": 19,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/relationship-extractor.test.ts",
+      "line": 16,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/scanner-standalone.test.ts",
+      "line": 291,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/scanner-standalone.test.ts",
+      "line": 317,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scanner.js",
+      "line": 157,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 170,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 172,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 191,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 193,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 199,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 219,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 227,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 289,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 28,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 47,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 51,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 60,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 62,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 66,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 83,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 85,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 98,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 100,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 182,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 195,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 199,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 200,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 231,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 232,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.js",
+      "line": 243,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/export/graph-exporter.js",
+      "line": 201,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 65,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 66,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 141,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 144,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 150,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 202,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 211,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/llm-provider.js",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 49,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 50,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 98,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 99,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 118,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 145,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 148,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 154,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 207,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 216,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/answer-generation-service.js",
+      "line": 44,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.js",
+      "line": 38,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.js",
+      "line": 55,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/embedding-service.js",
+      "line": 43,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 26,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 54,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 220,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 235,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 281,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.js",
+      "line": 58,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.js",
+      "line": 181,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 52,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 75,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 107,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 169,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 190,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 216,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 221,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 268,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 49,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 82,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 105,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 138,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 184,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 203,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 222,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 273,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/parser/parser.js",
+      "line": 39,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.js",
+      "line": 127,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.js",
+      "line": 171,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.js",
+      "line": 198,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/parser/parser.js",
+      "line": 263,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.js",
+      "line": 272,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.js",
+      "line": 279,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.js",
+      "line": 348,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/query/query-executor.js",
+      "line": 58,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/query/query-executor.js",
+      "line": 245,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "utils/fs.js",
+      "line": 40,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "utils/fs.js",
+      "line": 56,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/test-ast-analyzer.js",
+      "line": 16,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/test-ast-analyzer.js",
+      "line": 83,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
+      "line": 191,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+      "line": 100,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+      "line": 112,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+      "line": 354,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+      "line": 58,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+      "line": 68,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+      "line": 267,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/01-element-classification/apply_iteration_5.py",
+      "line": 79,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/03-test-coverage-linkage/apply_iteration_1.py",
+      "line": 47,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/04-async-pattern-detection/apply_iteration_1.py",
+      "line": 44,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/05-context-summary-signal/apply_iteration_1.py",
+      "line": 55,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/06-test-gap-precision/apply_iteration_1.py",
+      "line": 112,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 54,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 65,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 76,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 85,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 88,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 198,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 202,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 52,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 63,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 74,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 83,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 207,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 211,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 63,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 67,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 79,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 90,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 99,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 102,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 219,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 223,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 56,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 68,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 79,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 88,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 91,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 160,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 164,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 43,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 54,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 94,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 165,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 169,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 56,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 68,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 79,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 88,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 91,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 202,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 206,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
+      "line": 112,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
+      "line": 141,
+      "pattern": "error-handling"
+    }
+  ],
+  "asyncPatterns": [
+    {
+      "name": "main",
+      "file": "demo-all-modules.ts",
+      "line": 78
+    },
+    {
+      "name": "POST",
+      "file": "examples/nextjs-api-route.ts",
+      "line": 90
+    },
+    {
+      "name": "GET",
+      "file": "examples/nextjs-api-route.ts",
+      "line": 371
+    },
+    {
+      "name": "AnalyzerService.analyze",
+      "file": "src/analyzer/analyzer-service.ts",
+      "line": 67
+    },
+    {
+      "name": "AnalyzerService.saveGraph",
+      "file": "src/analyzer/analyzer-service.ts",
+      "line": 249
+    },
+    {
+      "name": "AnalyzerService.loadGraph",
+      "file": "src/analyzer/analyzer-service.ts",
+      "line": 269
+    },
+    {
+      "name": "AnalyzerService.findFiles",
+      "file": "src/analyzer/analyzer-service.ts",
+      "line": 306
+    },
+    {
+      "name": "scanDirectory",
+      "file": "src/cli/detect-languages.ts",
+      "line": 77
+    },
+    {
+      "name": "detectProjectLanguages",
+      "file": "src/cli/detect-languages.ts",
+      "line": 120
+    },
+    {
+      "name": "runGenerator",
+      "file": "src/cli/populate.ts",
+      "line": 177
+    },
+    {
+      "name": "run",
+      "file": "src/cli/populate.ts",
+      "line": 210
+    },
+    {
+      "name": "main",
+      "file": "src/cli/populate.ts",
+      "line": 316
+    },
+    {
+      "name": "main",
+      "file": "src/cli/scan-frontend-calls.ts",
+      "line": 132
+    },
+    {
+      "name": "resolveFilePaths",
+      "file": "src/cli/validate-routes.ts",
+      "line": 146
+    },
+    {
+      "name": "main",
+      "file": "src/cli/validate-routes.ts",
+      "line": 243
+    },
+    {
+      "name": "BreakingChangeDetector.detectChanges",
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 123
+    },
+    {
+      "name": "BreakingChangeDetector.findImpactedCallSites",
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 406
+    },
+    {
+      "name": "BreakingChangeDetector.getChangedElements",
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 906
+    },
+    {
+      "name": "BreakingChangeDetector.extractSignaturesFromRef",
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 959
+    },
+    {
+      "name": "BreakingChangeDetector.extractSignaturesFromWorktree",
+      "file": "src/context/breaking-change-detector.ts",
+      "line": 990
+    },
+    {
+      "name": "ContextGenerator.generate",
+      "file": "src/context/context-generator.ts",
+      "line": 64
+    },
+    {
+      "name": "ContextGenerator.detectPatterns",
+      "file": "src/context/context-generator.ts",
+      "line": 195
+    },
+    {
+      "name": "analyzeCoverage",
+      "file": "src/fileGeneration/analyzeCoverage.ts",
+      "line": 34
+    },
+    {
+      "name": "buildDependencyGraph",
+      "file": "src/fileGeneration/buildDependencyGraph.ts",
+      "line": 59
+    },
+    {
+      "name": "detectDrift",
+      "file": "src/fileGeneration/detectDrift.ts",
+      "line": 39
+    },
+    {
+      "name": "loadPreviousScan",
+      "file": "src/fileGeneration/detectDrift.ts",
+      "line": 96
+    },
+    {
+      "name": "writeReport",
+      "file": "src/fileGeneration/detectDrift.ts",
+      "line": 166
+    },
+    {
+      "name": "detectPatterns",
+      "file": "src/fileGeneration/detectPatterns.ts",
+      "line": 48
+    },
+    {
+      "name": "generateContext",
+      "file": "src/fileGeneration/generateContext.ts",
+      "line": 43
+    },
+    {
+      "name": "generateDiagrams",
+      "file": "src/fileGeneration/generateDiagrams.ts",
+      "line": 24
+    },
+    {
+      "name": "saveFrontendCalls",
+      "file": "src/fileGeneration/saveFrontendCalls.ts",
+      "line": 139
+    },
+    {
+      "name": "generateFrontendCallsOutput",
+      "file": "src/fileGeneration/saveFrontendCalls.ts",
+      "line": 176
+    },
+    {
+      "name": "countFrontendCalls",
+      "file": "src/fileGeneration/saveFrontendCalls.ts",
+      "line": 196
+    },
+    {
+      "name": "saveIndex",
+      "file": "src/fileGeneration/saveIndex.ts",
+      "line": 28
+    },
+    {
+      "name": "validateReferences",
+      "file": "src/fileGeneration/validateReferences.ts",
+      "line": 43
+    },
+    {
+      "name": "saveFrontendCallsToFile",
+      "file": "src/generator/generateFrontendCalls.ts",
+      "line": 178
+    },
+    {
+      "name": "saveRoutesToFile",
+      "file": "src/generator/generateRoutes.ts",
+      "line": 179
+    },
+    {
+      "name": "saveFrontendCallsToFile",
+      "file": "src/generator/generateRoutes.ts",
+      "line": 379
+    },
+    {
+      "name": "AnthropicProvider.complete",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 85
+    },
+    {
+      "name": "AnthropicProvider.embed",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 141
+    },
+    {
+      "name": "AnthropicProvider.withRetry",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 172
+    },
+    {
+      "name": "OpenAIProvider.complete",
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 63
+    },
+    {
+      "name": "OpenAIProvider.embed",
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 114
+    },
+    {
+      "name": "OpenAIProvider.withRetry",
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 169
+    },
+    {
+      "name": "AnswerGenerationService.generateAnswer",
+      "file": "src/integration/rag/answer-generation-service.ts",
+      "line": 140
+    },
+    {
+      "name": "AnswerGenerationService.generateVariations",
+      "file": "src/integration/rag/answer-generation-service.ts",
+      "line": 360
+    },
+    {
+      "name": "ChunkConverter.convertGraph",
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 33
+    },
+    {
+      "name": "ChunkConverter.convertNode",
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 110
+    },
+    {
+      "name": "ChunkConverter.readFile",
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 198
+    },
+    {
+      "name": "ChunkConverter.fileExists",
+      "file": "src/integration/rag/chunk-converter.ts",
+      "line": 209
+    },
+    {
+      "name": "EmbeddingService.embedChunks",
+      "file": "src/integration/rag/embedding-service.ts",
+      "line": 150
+    },
+    {
+      "name": "EmbeddingService.embedChunk",
+      "file": "src/integration/rag/embedding-service.ts",
+      "line": 266
+    },
+    {
+      "name": "EmbeddingService.embedText",
+      "file": "src/integration/rag/embedding-service.ts",
+      "line": 284
+    },
+    {
+      "name": "IncrementalIndexer.loadState",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 112
+    },
+    {
+      "name": "IncrementalIndexer.saveState",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 143
+    },
+    {
+      "name": "IncrementalIndexer.analyzeChanges",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 168
+    },
+    {
+      "name": "IncrementalIndexer.filterChangedChunks",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 254
+    },
+    {
+      "name": "IncrementalIndexer.updateState",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 300
+    },
+    {
+      "name": "IncrementalIndexer.hashFile",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 352
+    },
+    {
+      "name": "IncrementalIndexer.clearState",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 368
+    },
+    {
+      "name": "IncrementalIndexer.getStatistics",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 382
+    },
+    {
+      "name": "IncrementalIndexer.needsReindexing",
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 417
+    },
+    {
+      "name": "IndexingOrchestrator.indexCodebase",
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 183
+    },
+    {
+      "name": "IndexingOrchestrator.getIndexStats",
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 445
+    },
+    {
+      "name": "IndexingOrchestrator.clearIndex",
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 463
+    },
+    {
+      "name": "SemanticSearchService.search",
+      "file": "src/integration/rag/semantic-search.ts",
+      "line": 119
+    },
+    {
+      "name": "SemanticSearchService.multiQuerySearch",
+      "file": "src/integration/rag/semantic-search.ts",
+      "line": 200
+    },
+    {
+      "name": "SemanticSearchService.findSimilar",
+      "file": "src/integration/rag/semantic-search.ts",
+      "line": 239
+    },
+    {
+      "name": "SemanticSearchService.searchByExample",
+      "file": "src/integration/rag/semantic-search.ts",
+      "line": 251
+    },
+    {
+      "name": "SemanticSearchService.getRelated",
+      "file": "src/integration/rag/semantic-search.ts",
+      "line": 287
+    },
+    {
+      "name": "SemanticSearchService.embedQuery",
+      "file": "src/integration/rag/semantic-search.ts",
+      "line": 299
+    },
+    {
+      "name": "ChromaStore.initialize",
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 70
+    },
+    {
+      "name": "ChromaStore.upsert",
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 87
+    },
+    {
+      "name": "ChromaStore.query",
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 129
+    },
+    {
+      "name": "ChromaStore.delete",
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 202
+    },
+    {
+      "name": "ChromaStore.clear",
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 233
+    },
+    {
+      "name": "ChromaStore.stats",
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 262
+    },
+    {
+      "name": "createChromaStore",
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 352
+    },
+    {
+      "name": "PineconeStore.initialize",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 70
+    },
+    {
+      "name": "PineconeStore.waitForIndexReady",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 106
+    },
+    {
+      "name": "PineconeStore.upsert",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 131
+    },
+    {
+      "name": "PineconeStore.query",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 174
+    },
+    {
+      "name": "PineconeStore.delete",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 226
+    },
+    {
+      "name": "PineconeStore.clear",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 252
+    },
+    {
+      "name": "PineconeStore.stats",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 274
+    },
+    {
+      "name": "createPineconeStore",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 369
+    },
+    {
+      "name": "SQLiteVectorStore.initialize",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 157
+    },
+    {
+      "name": "SQLiteVectorStore.save",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 188
+    },
+    {
+      "name": "SQLiteVectorStore.upsert",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 216
+    },
+    {
+      "name": "SQLiteVectorStore.query",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 257
+    },
+    {
+      "name": "SQLiteVectorStore.delete",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 337
+    },
+    {
+      "name": "SQLiteVectorStore.clear",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 365
+    },
+    {
+      "name": "SQLiteVectorStore.stats",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 398
+    },
+    {
+      "name": "ComplexityGenerator.generate",
+      "file": "src/pipeline/generators/complexity-generator.ts",
+      "line": 34
+    },
+    {
+      "name": "ContextGenerator.generate",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 52
+    },
+    {
+      "name": "ContextGenerator.loadComplexityData",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 96
+    },
+    {
+      "name": "CoverageGenerator.generate",
+      "file": "src/pipeline/generators/coverage-generator.ts",
+      "line": 32
+    },
+    {
+      "name": "DiagramGenerator.generate",
+      "file": "src/pipeline/generators/diagram-generator.ts",
+      "line": 18
+    },
+    {
+      "name": "DriftGenerator.generate",
+      "file": "src/pipeline/generators/drift-generator.ts",
+      "line": 37
+    },
+    {
+      "name": "DriftGenerator.detectDrift",
+      "file": "src/pipeline/generators/drift-generator.ts",
+      "line": 51
+    },
+    {
+      "name": "ExportGenerator.generate",
+      "file": "src/pipeline/generators/export-generator.ts",
+      "line": 19
+    },
+    {
+      "name": "ExportGenerator.generateJSONExport",
+      "file": "src/pipeline/generators/export-generator.ts",
+      "line": 38
+    },
+    {
+      "name": "ExportGenerator.generateJSONLD",
+      "file": "src/pipeline/generators/export-generator.ts",
+      "line": 46
+    },
+    {
+      "name": "ExportGenerator.generateWrappedDiagram",
+      "file": "src/pipeline/generators/export-generator.ts",
+      "line": 79
+    },
+    {
+      "name": "ExportGenerator.readDependencyDiagram",
+      "file": "src/pipeline/generators/export-generator.ts",
+      "line": 114
+    },
+    {
+      "name": "GraphGenerator.generate",
+      "file": "src/pipeline/generators/graph-generator.ts",
+      "line": 26
+    },
+    {
+      "name": "IndexGenerator.generate",
+      "file": "src/pipeline/generators/index-generator.ts",
+      "line": 27
+    },
+    {
+      "name": "PatternGenerator.generate",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "line": 49
+    },
+    {
+      "name": "PatternGenerator.detectTestGaps",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "line": 136
+    },
+    {
+      "name": "PatternGenerator.loadComplexityData",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "line": 334
+    },
+    {
+      "name": "RegistryGenerator.generate",
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "line": 25
+    },
+    {
+      "name": "ValidationGenerator.generate",
+      "file": "src/pipeline/generators/validation-generator.ts",
+      "line": 29
+    },
+    {
+      "name": "GrammarRegistry.getParser",
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 56
+    },
+    {
+      "name": "GrammarRegistry.loadGrammar",
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 107
+    },
+    {
+      "name": "GrammarRegistry.preloadGrammars",
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 183
+    },
+    {
+      "name": "loadIgnorePatterns",
+      "file": "src/pipeline/ignore-rules.ts",
+      "line": 37
+    },
+    {
+      "name": "PipelineOrchestrator.run",
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 56
+    },
+    {
+      "name": "PipelineOrchestrator.discoverFiles",
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 161
+    },
+    {
+      "name": "PipelineOrchestrator.scanDirectory",
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 186
+    },
+    {
+      "name": "PipelineOrchestrator.processFile",
+      "file": "src/pipeline/orchestrator.ts",
+      "line": 239
+    },
+    {
+      "name": "QueryExecutor.execute",
+      "file": "src/query/query-executor.ts",
+      "line": 89
+    },
+    {
+      "name": "QueryExecutor.executeQuery",
+      "file": "src/query/query-executor.ts",
+      "line": 139
+    },
+    {
+      "name": "QueryExecutor.executeBatch",
+      "file": "src/query/query-executor.ts",
+      "line": 297
+    },
+    {
+      "name": "QueryExecutor.queryWithFilter",
+      "file": "src/query/query-executor.ts",
+      "line": 311
+    },
+    {
+      "name": "QueryExecutor.healthCheck",
+      "file": "src/query/query-executor.ts",
+      "line": 328
+    },
+    {
+      "name": "scanFileForFrontendCalls",
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 18
+    },
+    {
+      "name": "attachFrontendCalls",
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 62
+    },
+    {
+      "name": "scanProjectForFrontendCalls",
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 131
+    },
+    {
+      "name": "findFiles",
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 195
+    },
+    {
+      "name": "scanFilesInParallel",
+      "file": "src/scanner/scanner.ts",
+      "line": 698
+    },
+    {
+      "name": "scanCurrentElements",
+      "file": "src/scanner/scanner.ts",
+      "line": 797
+    },
+    {
+      "name": "GrammarLoader.loadGrammar",
+      "file": "src/scanner/tree-sitter-scanner.ts",
+      "line": 71
+    },
+    {
+      "name": "TreeSitterScanner.scanFile",
+      "file": "src/scanner/tree-sitter-scanner.ts",
+      "line": 146
+    },
+    {
+      "name": "saveMarkdownReport",
+      "file": "src/validator/report-generator.ts",
+      "line": 274
+    },
+    {
+      "name": "loadFrontendCalls",
+      "file": "src/validator/route-validator.ts",
+      "line": 26
+    },
+    {
+      "name": "loadServerRoutes",
+      "file": "src/validator/route-validator.ts",
+      "line": 65
+    },
+    {
+      "name": "generateValidationReport",
+      "file": "src/validator/route-validator.ts",
+      "line": 268
+    },
+    {
+      "name": "saveValidationReport",
+      "file": "src/validator/route-validator.ts",
+      "line": 322
+    },
+    {
+      "name": "loadMigrationMapping",
+      "file": "src/validator/route-validator.ts",
+      "line": 341
+    },
+    {
+      "name": "validateMigration",
+      "file": "src/validator/route-validator.ts",
+      "line": 369
+    },
+    {
+      "name": "createMockEnvironment",
+      "file": "__tests__/generators/helpers.ts",
+      "line": 19
+    },
+    {
+      "name": "cleanupEnvironment",
+      "file": "__tests__/generators/helpers.ts",
+      "line": 201
+    },
+    {
+      "name": "readJson",
+      "file": "__tests__/generators/helpers.ts",
+      "line": 205
+    },
+    {
+      "name": "readText",
+      "file": "__tests__/generators/helpers.ts",
+      "line": 210
+    },
+    {
+      "name": "createContextDiagnosticEnvironment",
+      "file": "__tests__/generators/root-cause-alignment.test.ts",
+      "line": 25
+    },
+    {
+      "name": "createDuplicateNameEnvironment",
+      "file": "__tests__/generators/root-cause-alignment.test.ts",
+      "line": 99
+    },
+    {
+      "name": "runAllTests",
+      "file": "__tests__/integration.test.ts",
+      "line": 471
+    },
+    {
+      "name": "handleScanRequest",
+      "file": "__tests__/scanner-standalone.test.ts",
+      "line": 290
+    },
+    {
+      "name": "scanCurrentElements",
+      "file": "scanner.js",
+      "line": 115
+    },
+    {
+      "name": "AnthropicProvider.complete",
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 64
+    },
+    {
+      "name": "AnthropicProvider.embed",
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 114
+    },
+    {
+      "name": "AnthropicProvider.withRetry",
+      "file": "src/integration/llm/anthropic-provider.js",
+      "line": 141
+    },
+    {
+      "name": "OpenAIProvider.complete",
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 48
+    },
+    {
+      "name": "OpenAIProvider.embed",
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 94
+    },
+    {
+      "name": "OpenAIProvider.withRetry",
+      "file": "src/integration/llm/openai-provider.js",
+      "line": 145
+    },
+    {
+      "name": "AnswerGenerationService.generateAnswer",
+      "file": "src/integration/rag/answer-generation-service.js",
+      "line": 41
+    },
+    {
+      "name": "AnswerGenerationService.generateVariations",
+      "file": "src/integration/rag/answer-generation-service.js",
+      "line": 209
+    },
+    {
+      "name": "ChunkConverter.convertGraph",
+      "file": "src/integration/rag/chunk-converter.js",
+      "line": 21
+    },
+    {
+      "name": "ChunkConverter.convertNode",
+      "file": "src/integration/rag/chunk-converter.js",
+      "line": 77
+    },
+    {
+      "name": "ChunkConverter.readFile",
+      "file": "src/integration/rag/chunk-converter.js",
+      "line": 139
+    },
+    {
+      "name": "EmbeddingService.embedChunks",
+      "file": "src/integration/rag/embedding-service.js",
+      "line": 22
+    },
+    {
+      "name": "EmbeddingService.embedChunk",
+      "file": "src/integration/rag/embedding-service.js",
+      "line": 111
+    },
+    {
+      "name": "EmbeddingService.embedText",
+      "file": "src/integration/rag/embedding-service.js",
+      "line": 124
+    },
+    {
+      "name": "IncrementalIndexer.loadState",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 25
+    },
+    {
+      "name": "IncrementalIndexer.saveState",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 53
+    },
+    {
+      "name": "IncrementalIndexer.analyzeChanges",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 71
+    },
+    {
+      "name": "IncrementalIndexer.filterChangedChunks",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 146
+    },
+    {
+      "name": "IncrementalIndexer.updateState",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 177
+    },
+    {
+      "name": "IncrementalIndexer.hashFile",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 219
+    },
+    {
+      "name": "IncrementalIndexer.clearState",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 234
+    },
+    {
+      "name": "IncrementalIndexer.getStatistics",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 248
+    },
+    {
+      "name": "IncrementalIndexer.needsReindexing",
+      "file": "src/integration/rag/incremental-indexer.js",
+      "line": 272
+    },
+    {
+      "name": "IndexingOrchestrator.indexCodebase",
+      "file": "src/integration/rag/indexing-orchestrator.js",
+      "line": 44
+    },
+    {
+      "name": "IndexingOrchestrator.getIndexStats",
+      "file": "src/integration/rag/indexing-orchestrator.js",
+      "line": 190
+    },
+    {
+      "name": "IndexingOrchestrator.clearIndex",
+      "file": "src/integration/rag/indexing-orchestrator.js",
+      "line": 202
+    },
+    {
+      "name": "SemanticSearchService.search",
+      "file": "src/integration/rag/semantic-search.js",
+      "line": 26
+    },
+    {
+      "name": "SemanticSearchService.multiQuerySearch",
+      "file": "src/integration/rag/semantic-search.js",
+      "line": 88
+    },
+    {
+      "name": "SemanticSearchService.findSimilar",
+      "file": "src/integration/rag/semantic-search.js",
+      "line": 117
+    },
+    {
+      "name": "SemanticSearchService.searchByExample",
+      "file": "src/integration/rag/semantic-search.js",
+      "line": 125
+    },
+    {
+      "name": "SemanticSearchService.getRelated",
+      "file": "src/integration/rag/semantic-search.js",
+      "line": 153
+    },
+    {
+      "name": "SemanticSearchService.embedQuery",
+      "file": "src/integration/rag/semantic-search.js",
+      "line": 160
+    },
+    {
+      "name": "ChromaStore.initialize",
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 51
+    },
+    {
+      "name": "ChromaStore.upsert",
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 68
+    },
+    {
+      "name": "ChromaStore.query",
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 103
+    },
+    {
+      "name": "ChromaStore.delete",
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 162
+    },
+    {
+      "name": "ChromaStore.clear",
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 186
+    },
+    {
+      "name": "ChromaStore.stats",
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 212
+    },
+    {
+      "name": "createChromaStore",
+      "file": "src/integration/vector/chroma-store.js",
+      "line": 274
+    },
+    {
+      "name": "PineconeStore.initialize",
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 48
+    },
+    {
+      "name": "PineconeStore.waitForIndexReady",
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 79
+    },
+    {
+      "name": "PineconeStore.upsert",
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 98
+    },
+    {
+      "name": "PineconeStore.query",
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 134
+    },
+    {
+      "name": "PineconeStore.delete",
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 177
+    },
+    {
+      "name": "PineconeStore.clear",
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 199
+    },
+    {
+      "name": "PineconeStore.stats",
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 218
+    },
+    {
+      "name": "createPineconeStore",
+      "file": "src/integration/vector/pinecone-store.js",
+      "line": 279
+    },
+    {
+      "name": "QueryExecutor.execute",
+      "file": "src/query/query-executor.js",
+      "line": 44
+    },
+    {
+      "name": "QueryExecutor.executeQuery",
+      "file": "src/query/query-executor.js",
+      "line": 87
+    },
+    {
+      "name": "QueryExecutor.executeBatch",
+      "file": "src/query/query-executor.js",
+      "line": 221
+    },
+    {
+      "name": "QueryExecutor.queryWithFilter",
+      "file": "src/query/query-executor.js",
+      "line": 232
+    },
+    {
+      "name": "QueryExecutor.healthCheck",
+      "file": "src/query/query-executor.js",
+      "line": 244
+    },
+    {
+      "name": "testASTAnalyzer",
+      "file": "__tests__/test-ast-analyzer.js",
+      "line": 13
+    }
+  ],
+  "testGaps": [
+    {
+      "name": "loadIgnorePatterns",
+      "file": "src/pipeline/ignore-rules.ts",
+      "reason": "High complexity (11), Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "validateReferences",
+      "file": "src/fileGeneration/validateReferences.ts",
+      "reason": "Medium complexity (9), Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "convertGraphToElements",
+      "file": "src/adapter/graph-to-elements.ts",
+      "reason": "High complexity (28), Core pipeline function"
+    },
+    {
+      "name": "detectPreset",
+      "file": "src/config/presets.ts",
+      "reason": "High complexity (24), Core pipeline function"
+    },
+    {
+      "name": "createScanError",
+      "file": "src/scanner/error-reporter.ts",
+      "reason": "Medium complexity (10), Core pipeline function"
+    },
+    {
+      "name": "analyzeCoverage",
+      "file": "src/fileGeneration/analyzeCoverage.ts",
+      "reason": "Medium complexity (6), Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "printScanErrors",
+      "file": "src/scanner/error-reporter.ts",
+      "reason": "Medium complexity (8), Core pipeline function"
+    },
+    {
+      "name": "formatFrontendCallsJson",
+      "file": "src/generator/generateFrontendCalls.ts",
+      "reason": "Medium complexity (7), Core pipeline function"
+    },
+    {
+      "name": "getConversionStats",
+      "file": "src/adapter/graph-to-elements.ts",
+      "reason": "Medium complexity (6), Core pipeline function"
+    },
+    {
+      "name": "validateCliLanguages",
+      "file": "src/cli/detect-languages.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "createMetadataIndex",
+      "file": "src/indexer/metadata-index.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "createRelationshipIndex",
+      "file": "src/indexer/relationship-index.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "normalizeGraphForOutput",
+      "file": "src/pipeline/generators/graph-output.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "formatScanError",
+      "file": "src/scanner/error-reporter.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "detectDrift",
+      "file": "src/fileGeneration/detectDrift.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "sortFrontendCalls",
+      "file": "src/generator/generateFrontendCalls.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "saveFrontendCallsToFile",
+      "file": "src/generator/generateFrontendCalls.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "detectProjectLanguages",
+      "file": "src/cli/detect-languages.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "mergePresets",
+      "file": "src/config/presets.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "detectPatterns",
+      "file": "src/fileGeneration/detectPatterns.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "generateDiagrams",
+      "file": "src/fileGeneration/generateDiagrams.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "createChromaStore",
+      "file": "src/integration/vector/chroma-store.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "createPineconeStore",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "loadJsonFile",
+      "file": "utils/fs.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "loadPreset",
+      "file": "src/config/presets.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "generateFrontendCalls",
+      "file": "src/generator/generateFrontendCalls.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "createIndexerService",
+      "file": "src/indexer/indexer-service.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "createQueryEngine",
+      "file": "src/indexer/query-engine.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "createScanErrorWithContext",
+      "file": "src/scanner/error-reporter.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "normalizeCoderefPath",
+      "file": "utils/fs.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "saveJsonFile",
+      "file": "utils/fs.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "formatSupportedLanguages",
+      "file": "src/cli/detect-languages.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "applyPreset",
+      "file": "src/config/presets.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "formatCodeRef",
+      "file": "src/formatter/formatter.ts",
+      "reason": "Core pipeline function"
+    },
+    {
+      "name": "formatCodeRefs",
+      "file": "src/formatter/formatter.ts",
+      "reason": "Core pipeline function"
+    }
+  ]
+}
