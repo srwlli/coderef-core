@@ -20,6 +20,8 @@ import {
   parseFastAPIRoute
 } from '../analyzer/route-parsers.js';
 import { parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls } from '../analyzer/frontend-call-parsers.js';
+import { frameworkRegistry, type FrameworkDetectionResult } from './framework-registry.js';
+import './register-frameworks.js'; // Auto-register default frameworks
 
 /**
  * Pattern configuration with optional route metadata extraction
@@ -432,19 +434,24 @@ class Scanner {
       }
     }
 
-    // WO-API-ROUTE-DETECTION-001: Next.js route detection (file-based routing)
-    this.processNextJsRoute(file, content);
-
-    // IMP-CORE-004: Next.js Pages Router, SvelteKit, Nuxt, Remix detection
-    this.processNextJsPagesRoute(file, content);
-    this.processSvelteKitRoute(file, content);
-    this.processNuxtRoute(file, content);
-    this.processRemixRoute(file, content);
+    // IMP-CORE-038: Framework detection via registry pattern
+    // Use framework registry for all framework route detection
+    const frameworkResults = frameworkRegistry.detectAll(file, content);
+    for (const result of frameworkResults) {
+      const element: ElementData = {
+        type: result.elementType as ElementData['type'],
+        name: result.elementName,
+        file,
+        line: 1,
+        exported: true,
+        route: result.route
+      };
+      this.addElement(element);
+    }
   }
 
   /**
-   * IMP-CORE-004: Detect Next.js Pages Router API routes (file-based routing)
-   * Checks if file is a Next.js Pages route file: pages/api/*.ts
+   * @deprecated Use frameworkRegistry instead. Kept for backward compatibility.
    */
   private processNextJsPagesRoute(file: string, content: string): void {
     const routeMetadata = parseNextJsPagesRoute(file, content);
