@@ -55,10 +55,11 @@
       "title": "Extract scanner framework detection to configurable registry",
       "category": "architecture",
       "severity": "minor",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-20",
-      "body": "scanner.ts has hardcoded file path checks for each framework (e.g., file.includes('/app/api/')) for 7 different frameworks. Framework detection logic is scattered across processNextJsRoute, processSvelteKitRoute, processNuxtRoute, processRemixRoute. Extract to a configurable registry where frameworks register their detection patterns, improving maintainability and enabling third-party framework plugins.",
-      "files": ["src/scanner/scanner.ts:376-555"],
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Created framework-registry.ts with FrameworkRegistry class. Implemented 7 framework detectors: nextjs, sveltekit, nuxt, remix, express, flask, fastapi. Refactored scanner.ts to use frameworkRegistry.detectAll() instead of hardcoded methods. Old processXxxRoute methods deprecated but kept for backward compatibility.",
+      "files": ["src/scanner/framework-registry.ts", "src/scanner/register-frameworks.ts", "src/analyzer/frameworks/"],
       "related": ["IMP-CORE-036"]
     },
     {
@@ -77,21 +78,23 @@
       "title": "TODO comments in fuzzy-resolver need resolution",
       "category": "code-quality",
       "severity": "minor",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-21",
-      "body": "src/context/fuzzy-resolver.ts contains 3 TODO comments indicating incomplete fuzzy matching logic for file path resolution. This is used by the context discovery system; unresolved TODOs may cause incorrect file matching when multiple files share similar names.",
-      "files": ["src/context/fuzzy-resolver.ts"]
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Implemented Jaro-Winkler name similarity, weighted path similarity (filename 40%, directory overlap 35%, extension 15%, depth 10%), and metadata-based signature similarity (async, exported, parameters, type). All 3 TODOs removed. FuzzyResolver production-ready.",
+      "files": ["src/context/fuzzy-resolver.ts:133", "src/context/fuzzy-resolver.ts:147", "src/context/fuzzy-resolver.ts:168"]
     },
     {
       "id": "IMP-CORE-051",
       "title": "Registry has unresolved implementation notes",
       "category": "code-quality",
       "severity": "minor",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-21",
-      "body": "src/registry/entity-registry.ts has 2 TODO/FIXME comments regarding entity deduplication and cache invalidation edge cases. These were noted during development but not resolved before merge.",
+      "completed": "2026-04-21",
+      "body": "CLOSED (INVALID): No TODO/FIXME comments found in entity-registry.ts. Comments at lines 30, 32 are implementation notes explaining UUID v5 bit manipulation, not unresolved work items. Code review confirms proper deduplication (line 51-53) and no cache invalidation edge cases exist.",
       "files": ["src/registry/entity-registry.ts"]
     }
   ],
-  "_note": "5 open items after pruning 9 completed entries (035, 037, 040, 041, 045-049). Counter remains at 52. Last updated 2026-04-21."
+  "_note": "2 open items after completing 038, 050, 051. 039, 042, 044 also archived. Counter remains at 52. Last updated 2026-04-21."
 }
