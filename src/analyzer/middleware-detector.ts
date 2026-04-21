@@ -1,16 +1,43 @@
 /**
- * IMP-CORE-010: Middleware and Dependency Injection Detector
+ * IMP-CORE-010, IMP-CORE-043: Middleware and Dependency Injection Detector
  *
  * Detects middleware chains and DI patterns:
  * - Express middleware chains (app.use, app.get, etc.)
  * - FastAPI dependencies (Depends, dependency injection)
  * - NestJS providers, modules, controllers (@Module, @Injectable, @Controller)
  * - Angular DI (@Injectable, providers, NgModule)
- * - TSyringe/typed-di container usage
- * - InversifyJS bindings
+ * - Flask decorators (@require_auth, @login_required)
+ * - Django decorators (@login_required, @permission_required)
+ * - Middleware pattern mapping for framework migrations
  */
 
 import type { ElementData } from '../types/types.js';
+
+/**
+ * Middleware pattern mapping for framework migrations
+ * Matches migration-config-schema.json middlewareMappings structure
+ */
+export interface MiddlewareMapping {
+  name: string;
+  category: 'authentication' | 'authorization' | 'rate_limiting' | 'logging' | 'cors' | 'validation' | 'compression' | 'error_handling' | 'security';
+  source: {
+    framework: 'flask' | 'express' | 'django' | 'fastapi' | 'nestjs';
+    pattern: string;
+    patternType: 'decorator' | 'function' | 'middleware_chain' | 'guard' | 'interceptor';
+    importPath?: string;
+    arguments?: string[];
+  };
+  target: {
+    framework: 'fastapi' | 'nestjs' | 'express' | 'flask';
+    pattern: string;
+    patternType: 'decorator' | 'function' | 'middleware_chain' | 'guard' | 'interceptor' | 'dependency';
+    importPath?: string;
+    dependencyFunction?: string;
+    arguments?: string[];
+  };
+  conversionNotes?: string;
+  autoConvertible: boolean;
+}
 
 export interface MiddlewareChain {
   framework: 'express' | 'fastify' | 'koa' | 'nestjs' | 'fastapi';
@@ -55,6 +82,7 @@ export interface DIImport {
 export interface MiddlewareAnalysis {
   chains: MiddlewareChain[];
   containers: DIContainer[];
+  mappings: MiddlewareMapping[];
   totalMiddlewares: number;
   totalRoutes: number;
   totalProviders: number;
@@ -78,15 +106,274 @@ export class MiddlewareDetector {
   detect(): Partial<MiddlewareAnalysis> {
     const chains = this.detectMiddlewareChains();
     const containers = this.detectDIContainers();
+    const mappings = this.detectMiddlewareMappings();
 
     return {
       chains,
       containers,
+      mappings,
       totalMiddlewares: chains.reduce((sum, c) => sum + c.handlers.filter(h => h.type === 'middleware').length, 0),
       totalRoutes: chains.reduce((sum, c) => sum + c.handlers.filter(h => h.type === 'route').length, 0),
       totalProviders: containers.reduce((sum, c) => sum + c.providers.length, 0),
-      frameworkBreakdown: this.calculateFrameworkBreakdown(chains, containers),
+      frameworkBreakdown: this.calculateFrameworkBreakdown(chains, containers, mappings),
     };
+  }
+
+  /**
+   * IMP-CORE-043: Detect middleware patterns for framework migration mapping
+   * Detects Flask/Django decorators and maps to target framework equivalents
+   */
+  private detectMiddlewareMappings(): MiddlewareMapping[] {
+    const mappings: MiddlewareMapping[] = [];
+
+    // Flask decorator detection
+    mappings.push(...this.detectFlaskMiddlewareMappings());
+
+    // Django decorator detection
+    mappings.push(...this.detectDjangoMiddlewareMappings());
+
+    // Express middleware chain detection
+    mappings.push(...this.detectExpressMiddlewareMappings());
+
+    return mappings;
+  }
+
+  /**
+   * Detect Flask middleware decorators and create migration mappings
+   */
+  private detectFlaskMiddlewareMappings(): MiddlewareMapping[] {
+    const mappings: MiddlewareMapping[] = [];
+
+    // Pattern: Flask authentication decorators
+    const flaskAuthPattern = /@(\w+)\.(login_required|require_auth)\s*(?:\([^)]*\))?/g;
+    let match;
+
+    while ((match = flaskAuthPattern.exec(this.content)) !== null) {
+      const decoratorName = match[2];
+      const line = this.getLineNumber(match.index);
+
+      if (decoratorName === 'login_required') {
+        mappings.push({
+          name: 'login_required',
+          category: 'authentication',
+          source: {
+            framework: 'flask',
+            pattern: '@login_required',
+            patternType: 'decorator',
+            importPath: 'flask_login'
+          },
+          target: {
+            framework: 'fastapi',
+            pattern: 'Depends(require_active_user)',
+            patternType: 'dependency',
+            importPath: 'fastapi',
+            dependencyFunction: 'require_active_user'
+          },
+          conversionNotes: 'Requires creating require_active_user() dependency function. Consider using OAuth2PasswordBearer for token-based auth.',
+          autoConvertible: false
+        });
+      } else if (decoratorName === 'require_auth') {
+        mappings.push({
+          name: 'require_auth',
+          category: 'authentication',
+          source: {
+            framework: 'flask',
+            pattern: '@require_auth',
+            patternType: 'decorator',
+            importPath: 'flask_login'
+          },
+          target: {
+            framework: 'fastapi',
+            pattern: 'Depends(get_current_user)',
+            patternType: 'dependency',
+            importPath: 'fastapi',
+            dependencyFunction: 'get_current_user'
+          },
+          conversionNotes: 'Requires creating get_current_user() dependency function that validates JWT/API tokens.',
+          autoConvertible: false
+        });
+      }
+    }
+
+    // Flask rate limiting
+    const rateLimitPattern = /@limiter\.limit\s*\(['"]([^'"]+)['"]/g;
+    while ((match = rateLimitPattern.exec(this.content)) !== null) {
+      mappings.push({
+        name: 'rate_limit',
+        category: 'rate_limiting',
+        source: {
+          framework: 'flask',
+          pattern: `@limiter.limit('${match[1]}')`,
+          patternType: 'decorator',
+          importPath: 'flask_limiter'
+        },
+        target: {
+          framework: 'fastapi',
+          pattern: 'Depends(rate_limit)',
+          patternType: 'dependency',
+          importPath: 'slowapi'
+        },
+        conversionNotes: 'Install slowapi for FastAPI rate limiting. Create custom dependency or use slowapi.Limiter.',
+        autoConvertible: true
+      });
+    }
+
+    // Flask CORS
+    const corsPattern = /@cross_origin\s*(?:\([^)]*\))?/g;
+    while ((match = corsPattern.exec(this.content)) !== null) {
+      mappings.push({
+        name: 'cors',
+        category: 'cors',
+        source: {
+          framework: 'flask',
+          pattern: '@cross_origin()',
+          patternType: 'decorator',
+          importPath: 'flask_cors'
+        },
+        target: {
+          framework: 'fastapi',
+          pattern: 'CORSMiddleware',
+          patternType: 'middleware_chain',
+          importPath: 'fastapi.middleware.cors'
+        },
+        conversionNotes: 'Move CORS to app-level middleware in FastAPI: app.add_middleware(CORSMiddleware, ...)',
+        autoConvertible: true
+      });
+    }
+
+    return mappings;
+  }
+
+  /**
+   * Detect Django middleware decorators and create migration mappings
+   */
+  private detectDjangoMiddlewareMappings(): MiddlewareMapping[] {
+    const mappings: MiddlewareMapping[] = [];
+
+    // Django authentication decorators
+    const djangoAuthPattern = /@(login_required|permission_required|user_passes_test)\s*(?:\([^)]*\))?/g;
+    let match;
+
+    while ((match = djangoAuthPattern.exec(this.content)) !== null) {
+      const decoratorName = match[1];
+
+      if (decoratorName === 'login_required') {
+        mappings.push({
+          name: 'login_required',
+          category: 'authentication',
+          source: {
+            framework: 'django',
+            pattern: '@login_required',
+            patternType: 'decorator'
+          },
+          target: {
+            framework: 'fastapi',
+            pattern: 'Depends(require_active_user)',
+            patternType: 'dependency',
+            importPath: 'fastapi'
+          },
+          conversionNotes: 'Django session auth → FastAPI token auth. Replace session-based with JWT/OAuth2.',
+          autoConvertible: false
+        });
+      } else if (decoratorName === 'permission_required') {
+        mappings.push({
+          name: 'permission_required',
+          category: 'authorization',
+          source: {
+            framework: 'django',
+            pattern: '@permission_required("...")',
+            patternType: 'decorator'
+          },
+          target: {
+            framework: 'fastapi',
+            pattern: '@require_permissions',
+            patternType: 'decorator'
+          },
+          conversionNotes: 'Django permissions → custom FastAPI dependency or RBAC system.',
+          autoConvertible: false
+        });
+      }
+    }
+
+    // Django CSRF protection (not applicable in FastAPI)
+    const csrfPattern = /@csrf_protect|@csrf_exempt/g;
+    while ((match = csrfPattern.exec(this.content)) !== null) {
+      mappings.push({
+        name: 'csrf_handling',
+        category: 'security',
+        source: {
+          framework: 'django',
+          pattern: match[0],
+          patternType: 'decorator'
+        },
+        target: {
+          framework: 'fastapi',
+          pattern: 'N/A (stateless API)',
+          patternType: 'decorator'
+        },
+        conversionNotes: 'CSRF not needed for stateless FastAPI with token auth. Remove decorator.',
+        autoConvertible: true
+      });
+    }
+
+    return mappings;
+  }
+
+  /**
+   * Detect Express middleware patterns for migration
+   */
+  private detectExpressMiddlewareMappings(): MiddlewareMapping[] {
+    const mappings: MiddlewareMapping[] = [];
+
+    // Express auth middleware
+    const expressAuthPattern = /app\.use\s*\(\s*(?:require\s*\(\s*['"]\.\/middleware\/auth['"]\s*\)|auth|authenticate|ensureAuthenticated)/g;
+    let match;
+
+    while ((match = expressAuthPattern.exec(this.content)) !== null) {
+      mappings.push({
+        name: 'auth_middleware',
+        category: 'authentication',
+        source: {
+          framework: 'express',
+          pattern: 'app.use(auth)',
+          patternType: 'middleware_chain',
+          importPath: './middleware/auth'
+        },
+        target: {
+          framework: 'nestjs',
+          pattern: '@UseGuards(AuthGuard)',
+          patternType: 'guard',
+          importPath: '@nestjs/common'
+        },
+        conversionNotes: 'Express middleware → NestJS Guard. Implement CanActivate interface.',
+        autoConvertible: false
+      });
+    }
+
+    // Express rate limiting
+    const expressRateLimitPattern = /app\.use\s*\(\s*rateLimit\s*\(/g;
+    while ((match = expressRateLimitPattern.exec(this.content)) !== null) {
+      mappings.push({
+        name: 'express_rate_limit',
+        category: 'rate_limiting',
+        source: {
+          framework: 'express',
+          pattern: 'app.use(rateLimit({...}))',
+          patternType: 'middleware_chain',
+          importPath: 'express-rate-limit'
+        },
+        target: {
+          framework: 'nestjs',
+          pattern: '@UseInterceptors(RateLimitInterceptor)',
+          patternType: 'interceptor',
+          importPath: '@nestjs/throttler'
+        },
+        conversionNotes: 'Use @nestjs/throttler or implement custom RateLimitInterceptor.',
+        autoConvertible: true
+      });
+    }
+
+    return mappings;
   }
 
   /**
@@ -441,7 +728,8 @@ export class MiddlewareDetector {
    */
   private calculateFrameworkBreakdown(
     chains: MiddlewareChain[],
-    containers: DIContainer[]
+    containers: DIContainer[],
+    mappings: MiddlewareMapping[]
   ): Record<string, number> {
     const breakdown: Record<string, number> = {};
     
@@ -451,6 +739,10 @@ export class MiddlewareDetector {
     
     containers.forEach(container => {
       breakdown[container.framework] = (breakdown[container.framework] || 0) + 1;
+    });
+    
+    mappings.forEach(mapping => {
+      breakdown[mapping.source.framework] = (breakdown[mapping.source.framework] || 0) + 1;
     });
     
     return breakdown;
@@ -473,6 +765,7 @@ export function analyzeMiddlewareAndDI(
 ): MiddlewareAnalysis {
   const allChains: MiddlewareChain[] = [];
   const allContainers: DIContainer[] = [];
+  const allMappings: MiddlewareMapping[] = [];
 
   for (const [file, content] of files) {
     const fileElements = elements.filter(e => e.file === file);
@@ -481,15 +774,17 @@ export function analyzeMiddlewareAndDI(
     
     allChains.push(...(result.chains || []));
     allContainers.push(...(result.containers || []));
+    allMappings.push(...(result.mappings || []));
   }
 
   return {
     chains: allChains,
     containers: allContainers,
+    mappings: allMappings,
     totalMiddlewares: allChains.reduce((sum, c) => sum + c.handlers.filter(h => h.type === 'middleware').length, 0),
     totalRoutes: allChains.reduce((sum, c) => sum + c.handlers.filter(h => h.type === 'route').length, 0),
     totalProviders: allContainers.reduce((sum, c) => sum + c.providers.length, 0),
-    frameworkBreakdown: calculateTotalFrameworkBreakdown(allChains, allContainers),
+    frameworkBreakdown: calculateTotalFrameworkBreakdown(allChains, allContainers, allMappings),
   };
 }
 
@@ -498,7 +793,8 @@ export function analyzeMiddlewareAndDI(
  */
 function calculateTotalFrameworkBreakdown(
   chains: MiddlewareChain[],
-  containers: DIContainer[]
+  containers: DIContainer[],
+  mappings: MiddlewareMapping[]
 ): Record<string, number> {
   const breakdown: Record<string, number> = {};
   
@@ -508,6 +804,10 @@ function calculateTotalFrameworkBreakdown(
   
   containers.forEach(container => {
     breakdown[container.framework] = (breakdown[container.framework] || 0) + 1;
+  });
+  
+  mappings.forEach(mapping => {
+    breakdown[mapping.source.framework] = (breakdown[mapping.source.framework] || 0) + 1;
   });
   
   return breakdown;
