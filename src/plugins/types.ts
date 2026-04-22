@@ -86,6 +86,18 @@ export interface CodeDetector extends FrameworkDetector {
  * General detection result (extends FrameworkDetectionResult)
  */
 export interface DetectionResult extends FrameworkDetectionResult {
+  /** Element type (overrides elementType for consistency) */
+  type?: 'function' | 'class' | 'interface' | 'type' | 'method' | 'component' | 'constant' | string;
+  /** Element name (alias for elementName) */
+  name?: string;
+  /** Line number in file */
+  line?: number;
+  /** Whether element is exported */
+  exported?: boolean;
+  /** Whether function is async */
+  async?: boolean;
+  /** Function parameters */
+  parameters?: string[];
   /** Additional metadata from detection */
   metadata?: Record<string, any>;
   /** Confidence score 0-1 */

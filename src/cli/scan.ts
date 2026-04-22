@@ -15,6 +15,8 @@ import { scanCurrentElements } from '../scanner/scanner.js';
 
 interface ScanOptions {
   languages?: string[];
+  plugins?: string[];
+  disablePlugins?: boolean;
 }
 
 const SUPPORTED_LANGUAGES = ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'];
@@ -29,6 +31,8 @@ function printHelp(): void {
   console.log('');
   console.log('Options:');
   console.log('  --languages     Comma-separated list of languages (default: all 10)');
+  console.log('  --plugins       Comma-separated list of plugins to enable');
+  console.log('  --no-plugins    Disable all plugins');
   console.log('  --help, -h      Show this help message');
   console.log('');
   console.log('Examples:');
@@ -119,6 +123,17 @@ async function main(): Promise<void> {
   const langIndex = args.indexOf('--languages');
   if (langIndex !== -1 && args[langIndex + 1]) {
     options.languages = parseLanguages(args[langIndex + 1]);
+  }
+
+  // Parse plugin options
+  const noPluginsIndex = args.indexOf('--no-plugins');
+  if (noPluginsIndex !== -1) {
+    options.disablePlugins = true;
+  }
+
+  const pluginsIndex = args.indexOf('--plugins');
+  if (pluginsIndex !== -1 && args[pluginsIndex + 1]) {
+    options.plugins = args[pluginsIndex + 1].split(',').map(p => p.trim());
   }
 
   await scanProject(projectPath, options);
