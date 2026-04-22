@@ -19,9 +19,11 @@ let OpenAIProvider: any;
 let AnthropicProvider: any;
 let OllamaProvider: any;
 let SQLiteVectorStore: any;
+let PineconeStore: any;
+let ChromaStore: any;
 let IndexingOrchestrator: any;
 
-async function loadRAGDependencies(providerName: string) {
+async function loadRAGDependencies(providerName: string, storeName: string = 'sqlite') {
   // Only load the provider we need
   if (providerName === 'openai') {
     const llmModule = await import('../integration/llm/openai-provider.js');
@@ -37,8 +39,22 @@ async function loadRAGDependencies(providerName: string) {
     OllamaProvider = ollamaModule.OllamaProvider;
   }
 
-  const vectorModule = await import('../integration/vector/sqlite-store.js');
-  SQLiteVectorStore = vectorModule.SQLiteVectorStore;
+  // Load vector store based on selection
+  if (storeName === 'sqlite') {
+    const vectorModule = await import('../integration/vector/sqlite-store.js');
+    SQLiteVectorStore = vectorModule.SQLiteVectorStore;
+  } else if (storeName === 'pinecone') {
+    const pineconeModule = await import('../integration/vector/pinecone-store.js');
+    PineconeStore = pineconeModule.PineconeStore;
+  } else if (storeName === 'chroma') {
+    const chromaModule = await import('../integration/vector/chroma-store.js');
+    ChromaStore = chromaModule.ChromaStore;
+  }
+  // Always load SQLite as fallback
+  if (storeName !== 'sqlite') {
+    const vectorModule = await import('../integration/vector/sqlite-store.js');
+    SQLiteVectorStore = vectorModule.SQLiteVectorStore;
+  }
 
   const ragModule = await import('../integration/rag/indexing-orchestrator.js');
   IndexingOrchestrator = ragModule.IndexingOrchestrator;
@@ -250,13 +266,48 @@ async function createVectorStore(
   projectDir: string,
   llmProvider: any
 ): Promise<any> {
-  const storagePath = process.env.CODEREF_SQLITE_PATH
-    || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
-
   // Get dimensions from provider (dimension is defined in MODEL_REGISTRY)
   const dimension = llmProvider?.getEmbeddingDimensions?.() ??
     (() => { throw new Error(`Provider does not support embeddings or getEmbeddingDimensions() not implemented`); })();
 
+  switch (store) {
+    case 'pinecone': {
+      const apiKey = process.env.PINECONE_API_KEY;
+      if (!apiKey) {
+        console.warn('[rag-index] PINECONE_API_KEY not set, falling back to SQLite');
+        break;
+      }
+      const indexName = process.env.PINECONE_INDEX_NAME || 'coderef-index';
+      return new PineconeStore({
+        apiKey,
+        indexName,
+        dimension,
+      });
+    }
+
+    case 'chroma': {
+      const host = process.env.CHROMA_URL || 'http://localhost:8000';
+      return new ChromaStore({
+        host,
+        indexName: 'coderef-collection',
+        dimension,
+      });
+    }
+
+    case 'sqlite':
+    default: {
+      const storagePath = process.env.CODEREF_SQLITE_PATH
+        || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
+      return new SQLiteVectorStore({
+        storagePath,
+        dimension,
+      });
+    }
+  }
+
+  // Fallback to SQLite for unknown stores or missing config
+  const storagePath = process.env.CODEREF_SQLITE_PATH
+    || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
   return new SQLiteVectorStore({
     storagePath,
     dimension,
@@ -285,7 +336,7 @@ async function main(): Promise<void> {
 
     // Load optional RAG dependencies
     try {
-      await loadRAGDependencies(args.provider);
+      await loadRAGDependencies(args.provider, args.store);
     } catch (error) {
       console.error('Error: Failed to load RAG dependencies.');
       console.error('Make sure the optional dependencies are installed:');

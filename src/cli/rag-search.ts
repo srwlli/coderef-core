@@ -17,9 +17,11 @@ let OpenAIProvider: any;
 let AnthropicProvider: any;
 let OllamaProvider: any;
 let SQLiteVectorStore: any;
+let PineconeStore: any;
+let ChromaStore: any;
 let SemanticSearchService: any;
 
-async function loadRAGDependencies(providerName: string) {
+async function loadRAGDependencies(providerName: string, storeName: string = 'sqlite') {
   // Only load the provider we need
   if (providerName === 'openai') {
     const llmModule = await import('../integration/llm/openai-provider.js');
@@ -35,8 +37,22 @@ async function loadRAGDependencies(providerName: string) {
     OllamaProvider = ollamaModule.OllamaProvider;
   }
 
-  const vectorModule = await import('../integration/vector/sqlite-store.js');
-  SQLiteVectorStore = vectorModule.SQLiteVectorStore;
+  // Load vector store based on selection
+  if (storeName === 'sqlite') {
+    const vectorModule = await import('../integration/vector/sqlite-store.js');
+    SQLiteVectorStore = vectorModule.SQLiteVectorStore;
+  } else if (storeName === 'pinecone') {
+    const pineconeModule = await import('../integration/vector/pinecone-store.js');
+    PineconeStore = pineconeModule.PineconeStore;
+  } else if (storeName === 'chroma') {
+    const chromaModule = await import('../integration/vector/chroma-store.js');
+    ChromaStore = chromaModule.ChromaStore;
+  }
+  // Always load SQLite as fallback
+  if (storeName !== 'sqlite') {
+    const vectorModule = await import('../integration/vector/sqlite-store.js');
+    SQLiteVectorStore = vectorModule.SQLiteVectorStore;
+  }
 
   const searchModule = await import('../integration/rag/semantic-search.js');
   SemanticSearchService = searchModule.SemanticSearchService;
@@ -252,9 +268,44 @@ async function createVectorStore(
   store: string,
   projectDir: string
 ): Promise<any> {
+  switch (store) {
+    case 'pinecone': {
+      const apiKey = process.env.PINECONE_API_KEY;
+      if (!apiKey) {
+        console.warn('[rag-search] PINECONE_API_KEY not set, falling back to SQLite');
+        break;
+      }
+      const indexName = process.env.PINECONE_INDEX_NAME || 'coderef-index';
+      return new PineconeStore({
+        apiKey,
+        indexName,
+        dimension: 1536,
+      });
+    }
+
+    case 'chroma': {
+      const host = process.env.CHROMA_URL || 'http://localhost:8000';
+      return new ChromaStore({
+        host,
+        indexName: 'coderef-collection',
+        dimension: 1536,
+      });
+    }
+
+    case 'sqlite':
+    default: {
+      const storagePath = process.env.CODEREF_SQLITE_PATH
+        || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
+      return new SQLiteVectorStore({
+        storagePath,
+        dimension: 1536,
+      });
+    }
+  }
+
+  // Fallback to SQLite
   const storagePath = process.env.CODEREF_SQLITE_PATH
     || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
-
   return new SQLiteVectorStore({
     storagePath,
     dimension: 1536,
@@ -326,7 +377,7 @@ async function main(): Promise<void> {
 
     // Load optional RAG dependencies
     try {
-      await loadRAGDependencies(args.provider);
+      await loadRAGDependencies(args.provider, args.store);
     } catch (error) {
       console.error('Error: Failed to load RAG dependencies.');
       console.error('Make sure the optional dependencies are installed:');
