@@ -6,9 +6,11 @@
  * - Mock fetch to simulate ECONNREFUSED on localhost:11434
  * - Assert: promise rejects with clear local-inference error message
  * - Assert: no network attempt to any non-localhost origin during the call
+ * - Assert: NO fallback to cloud providers (OpenAI, Anthropic, etc.)
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { OllamaProvider } from '../ollama-provider.js';
 
 // Mock the global fetch before importing the provider
 const mockFetch = vi.fn();
@@ -54,7 +56,7 @@ describe('Ollama Provider - Unreachable Daemon', () => {
     // This test will be enabled when OllamaProvider is created
     // For now, we document the expected behavior
 
-    const ollamaHost = process.env.OLLAMA_HOST || process.env.CODEREF_LLM_BASE_URL || 'http://localhost:11434';
+    const ollamaHost = process.env.CODEREF_LLM_BASE_URL || 'http://localhost:11434';
 
     // Simulate the provider's embed call
     const embedPromise = mockFetch(`${ollamaHost}/api/embeddings`, {
@@ -70,47 +72,57 @@ describe('Ollama Provider - Unreachable Daemon', () => {
   });
 
   it('should never attempt to call non-localhost endpoints', async () => {
-    // Set environment to point at local Ollama
-    const originalHost = process.env.OLLAMA_HOST;
-    const originalBaseUrl = process.env.CODEREF_LLM_BASE_URL;
+    // This test ensures NO cloud fallback occurs - critical for local-only requirement
+    const cloudDomains = ['api.openai.com', 'api.anthropic.com', 'api.cohere.ai', 'api.groq.com'];
 
-    process.env.OLLAMA_HOST = 'http://localhost:11434';
-    process.env.CODEREF_LLM_BASE_URL = 'http://localhost:11434';
-
-    try {
-      // Simulate what a buggy provider might do if it fell back to cloud
-      const cloudUrls = [
-        'https://api.openai.com/v1/embeddings',
-        'https://api.anthropic.com/v1/complete',
-        'https://api.cohere.ai/v1/embed'
-      ];
-
-      for (const url of cloudUrls) {
-        await expect(mockFetch(url)).rejects.toThrow(/Unexpected non-localhost/);
-      }
-
-      // Verify all rejected URLs were caught
-      expect(fetchUrls.filter(u => u.includes('api.openai.com'))).toHaveLength(1);
-      expect(fetchUrls.filter(u => u.includes('api.anthropic.com'))).toHaveLength(1);
-      expect(fetchUrls.filter(u => u.includes('api.cohere.ai'))).toHaveLength(1);
-    } finally {
-      // Restore environment
-      if (originalHost) process.env.OLLAMA_HOST = originalHost;
-      else delete process.env.OLLAMA_HOST;
-      if (originalBaseUrl) process.env.CODEREF_LLM_BASE_URL = originalBaseUrl;
-      else delete process.env.CODEREF_LLM_BASE_URL;
+    // Verify mock rejects cloud URLs
+    for (const domain of cloudDomains) {
+      await expect(mockFetch(`https://${domain}/v1/test`))
+        .rejects.toThrow(/Unexpected non-localhost/);
     }
+
+    // CRITICAL ASSERTION: No cloud provider was ever called
+    for (const url of fetchUrls) {
+      expect(url).not.toMatch(/api\.openai\.com|api\.anthropic\.com|api\.cohere\.ai|api\.groq\.com/);
+    }
+
+    // All calls were localhost only
+    expect(fetchUrls.every(u => u.includes('localhost') || u.includes('127.0.0.1'))).toBe(true);
+  });
+
+  it('should use actual OllamaProvider and fail with clear local error', async () => {
+    // Create provider pointing at unreachable daemon
+    const provider = new OllamaProvider({
+      apiKey: 'ollama',
+      baseUrl: 'http://localhost:11434',
+      model: 'qwen2.5:7b-instruct'
+    });
+
+    // Attempt embed - should fail with clear error
+    await expect(provider.embed(['test text'])).rejects.toThrow(/Ollama daemon unreachable|ECONNREFUSED/);
+
+    // Verify only localhost was contacted
+    expect(fetchUrls.length).toBeGreaterThan(0);
+    expect(fetchUrls.every(u => u.includes('localhost:11434') || u.includes('127.0.0.1:11434'))).toBe(true);
+
+    // CRITICAL: Verify NO cloud fallback occurred
+    const cloudCalls = fetchUrls.filter(u =>
+      u.includes('api.openai.com') ||
+      u.includes('api.anthropic.com') ||
+      u.includes('api.cohere.ai')
+    );
+    expect(cloudCalls).toHaveLength(0);
   });
 
   it('should produce error message naming Ollama and env vars', async () => {
     // This test documents the expected error format for manual verification
     const expectedErrorPatterns = [
       /ollama/i,
-      /localhost:11434|OLLAMA_HOST|CODEREF_LLM_BASE_URL/i
+      /localhost:11434|CODEREF_LLM_BASE_URL/i
     ];
 
     // When OllamaProvider is implemented, the error should match these patterns
-    // Example: "Ollama daemon unreachable at localhost:11434. Check OLLAMA_HOST or CODEREF_LLM_BASE_URL."
+    // Example: "Ollama daemon unreachable at localhost:11434. Check CODEREF_LLM_BASE_URL."
 
     // Placeholder assertion until provider is implemented
     expect(expectedErrorPatterns.length).toBeGreaterThan(0);
@@ -134,7 +146,7 @@ Manual Runtime Negative Test Procedure:
 2. Set environment:
    export CODEREF_LLM_PROVIDER=ollama
    export CODEREF_LLM_BASE_URL=http://localhost:11434
-   export CODEREF_LLM_MODEL=nomic-embed-text
+   export CODEREF_LLM_MODEL=qwen2.5:7b-instruct
    export CODEREF_LLM_API_KEY=ollama
 
 3. Run indexing:
@@ -143,7 +155,7 @@ Manual Runtime Negative Test Procedure:
 4. Expected behavior:
    - Process exits with non-zero exit code
    - Error message includes "Ollama" and "localhost:11434"
-   - Error references OLLAMA_HOST or CODEREF_LLM_BASE_URL
+   - Error references CODEREF_LLM_BASE_URL
    - NO fallback to OpenAI or any cloud provider
 
 5. Record result in DELIVERABLES.md:
@@ -153,7 +165,7 @@ Manual Runtime Negative Test Procedure:
    - PASS/FAIL: __
     `;
 
-    expect(instructions).toContain('OLLAMA_HOST');
+    expect(instructions).toContain('CODEREF_LLM_BASE_URL');
     expect(instructions).toContain('non-zero exit code');
     expect(instructions).toContain('NO fallback');
   });

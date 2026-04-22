@@ -210,10 +210,9 @@ function createLLMProvider(provider: string): any {
   if (provider === 'ollama') {
     // Ollama uses generic env vars (no API key required)
     const baseUrl = process.env.CODEREF_LLM_BASE_URL ||
-                    process.env.OLLAMA_HOST ||
                     'http://localhost:11434';
     const apiKey = process.env.CODEREF_LLM_API_KEY || 'ollama';
-    const model = process.env.CODEREF_LLM_MODEL || 'gemma4-coderef:latest';
+    const model = process.env.CODEREF_LLM_MODEL || 'qwen2.5:7b-instruct';
 
     return new OllamaProvider({
       apiKey,

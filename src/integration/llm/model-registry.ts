@@ -122,7 +122,7 @@ export const MODEL_REGISTRY: Record<string, ProviderSpec> = {
    * - all-minilm: 384
    * - mxbai-embed-large: 1024
    *
-   * Default is 768 for nomic-embed-text. Override with OLLAMA_EMBEDDING_MODEL.
+   * Default is 768 for nomic-embed-text. Override with CODEREF_LLM_EMBED_MODEL.
    *
    * ENVIRONMENT SETUP:
    * - Set CODEREF_LLM_PROVIDER=ollama
@@ -132,18 +132,18 @@ export const MODEL_REGISTRY: Record<string, ProviderSpec> = {
    */
   ollama: {
     name: 'ollama',
-    hostEnv: 'OLLAMA_HOST',
+    hostEnv: 'CODEREF_LLM_BASE_URL',
     defaultHost: 'http://localhost:11434',
     supportsEmbeddings: true,
     supportsBatchEmbed: false, // Ollama embeddings API is single-text per call
     embeddingModel: {
       name: 'nomic-embed-text',
       dimensions: 768, // Measured: ollama show nomic-embed-text
-      envOverride: 'OLLAMA_EMBEDDING_MODEL'
+      envOverride: 'CODEREF_LLM_EMBED_MODEL'
     },
     generationModel: {
-      name: 'gemma4-coderef:latest',
-      envOverride: 'OLLAMA_MODEL'
+      name: 'qwen2.5:7b-instruct',
+      envOverride: 'CODEREF_LLM_MODEL'
     }
   }
 };

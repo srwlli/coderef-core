@@ -11,7 +11,7 @@
  * ENVIRONMENT:
  * - CODEREF_LLM_PROVIDER=ollama
  * - CODEREF_LLM_BASE_URL=http://localhost:11434 (or your Ollama host)
- * - CODEREF_LLM_MODEL=nomic-embed-text (embedding) or gemma4-coderef:latest (generation)
+ * - CODEREF_LLM_MODEL=nomic-embed-text (embedding) or qwen2.5:7b-instruct (generation)
  * - CODEREF_LLM_API_KEY=ollama (any non-empty string, not actually used)
  *
  * NEGATIVE TEST: See __tests__/ollama-provider-unreachable.test.ts
@@ -58,7 +58,7 @@ interface OllamaGenerateResponse {
  * const provider = new OllamaProvider({
  *   apiKey: 'ollama',  // Any non-empty string
  *   baseUrl: 'http://localhost:11434',
- *   model: 'gemma4-coderef:latest'
+ *   model: 'qwen2.5:7b-instruct'
  * });
  *
  * // Generate embeddings
@@ -87,7 +87,6 @@ export class OllamaProvider implements LLMProvider {
 
     // Use provided baseUrl or default from registry/env
     this.baseUrl = config.baseUrl ||
-      process.env.OLLAMA_HOST ||
       spec.defaultHost;
 
     // Trim trailing slash
@@ -371,7 +370,7 @@ export class OllamaProvider implements LLMProvider {
     if (error.cause?.code === 'ECONNREFUSED' || error.code === 'ECONNREFUSED') {
       return new LLMError(
         `Ollama daemon unreachable at ${this.baseUrl}. ` +
-        `Ensure Ollama is running (ollama serve) or check CODEREF_LLM_BASE_URL / OLLAMA_HOST.`,
+        `Ensure Ollama is running (ollama serve) or check CODEREF_LLM_BASE_URL.`,
         LLMErrorCode.NETWORK_ERROR,
         error,
         false // Not retryable - requires user action
