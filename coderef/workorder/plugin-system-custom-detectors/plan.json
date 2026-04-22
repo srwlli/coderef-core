@@ -1,0 +1,171 @@
+{
+  "schema_version": "1.0",
+  "workorder_id": "WO-PLUGIN-SYSTEM-001",
+  "feature_name": "plugin-system-custom-detectors",
+  "title": "Introduce plugin system for custom detectors",
+  "description": "Build plugin architecture enabling third-party extensions, custom pattern definitions, and domain-specific analysis without modifying core code. Extends existing FrameworkRegistry pattern.",
+  "status": "approved",
+  "created_at": "2026-04-22",
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "title": "Plugin API Core",
+      "description": "Define plugin interfaces and registry",
+      "tasks": [
+        {
+          "task_id": "PS-001",
+          "title": "Define Plugin interface",
+          "description": "Create Plugin interface with name, version, detectors[], hooks[]",
+          "files": ["src/plugins/types.ts"],
+          "estimated_hours": 2
+        },
+        {
+          "task_id": "PS-002",
+          "title": "Define Detector interface",
+          "description": "Extend FrameworkDetector to general CodeDetector for any pattern",
+          "files": ["src/plugins/types.ts"],
+          "estimated_hours": 2
+        },
+        {
+          "task_id": "PS-003",
+          "title": "Create PluginRegistry",
+          "description": "Build registry for loading and managing plugins",
+          "files": ["src/plugins/plugin-registry.ts"],
+          "estimated_hours": 4
+        },
+        {
+          "task_id": "PS-004",
+          "title": "Plugin manifest schema",
+          "description": "Define coderef-plugin.json manifest format",
+          "files": ["src/plugins/manifest-schema.ts"],
+          "estimated_hours": 2
+        }
+      ],
+      "success_criteria": [
+        "Plugin and Detector interfaces defined",
+        "PluginRegistry can register/unregister plugins",
+        "Manifest schema validated"
+      ]
+    },
+    {
+      "phase_id": "phase_2",
+      "title": "Plugin Loader",
+      "description": "Implement plugin discovery and loading",
+      "tasks": [
+        {
+          "task_id": "PS-005",
+          "title": "npm package loader",
+          "description": "Discover and load @coderef/* packages from node_modules",
+          "files": ["src/plugins/loaders/npm-loader.ts"],
+          "estimated_hours": 4
+        },
+        {
+          "task_id": "PS-006",
+          "title": "Local plugin loader",
+          "description": "Load plugins from .coderef/plugins/ directory",
+          "files": ["src/plugins/loaders/local-loader.ts"],
+          "estimated_hours": 3
+        },
+        {
+          "task_id": "PS-007",
+          "title": "Config-based loader",
+          "description": "Load plugins from coderef.config.js plugins array",
+          "files": ["src/plugins/loaders/config-loader.ts"],
+          "estimated_hours": 3
+        },
+        {
+          "task_id": "PS-008",
+          "title": "Plugin validation",
+          "description": "Validate plugin manifests and detector compatibility",
+          "files": ["src/plugins/validator.ts"],
+          "estimated_hours": 3
+        }
+      ],
+      "success_criteria": [
+        "npm packages auto-discovered",
+        "Local plugins load from .coderef/plugins/",
+        "Config-based registration works",
+        "Invalid plugins rejected with clear errors"
+      ]
+    },
+    {
+      "phase_id": "phase_3",
+      "title": "Integration",
+      "description": "Wire plugins into scanner and analyzer",
+      "tasks": [
+        {
+          "task_id": "PS-009",
+          "title": "Scanner integration",
+          "description": "Execute plugin detectors during scan phase",
+          "files": ["src/scanner/scanner.ts"],
+          "estimated_hours": 4
+        },
+        {
+          "task_id": "PS-010",
+          "title": "Graph builder hooks",
+          "description": "Allow plugins to add custom graph edges",
+          "files": ["src/analyzer/graph-builder.ts"],
+          "estimated_hours": 4
+        },
+        {
+          "task_id": "PS-011",
+          "title": "CLI --plugin flag",
+          "description": "Add CLI option to enable/disable specific plugins",
+          "files": ["src/cli/scan.ts"],
+          "estimated_hours": 2
+        }
+      ],
+      "success_criteria": [
+        "Plugin detectors run during scan",
+        "Custom graph edges appear in output",
+        "CLI --plugin flag works"
+      ]
+    },
+    {
+      "phase_id": "phase_4",
+      "title": "Documentation and Example",
+      "description": "Create documentation and example plugin",
+      "tasks": [
+        {
+          "task_id": "PS-012",
+          "title": "Example plugin",
+          "description": "Create @coderef/example-detector demonstrating pattern",
+          "files": ["examples/plugins/example-detector/"],
+          "estimated_hours": 3
+        },
+        {
+          "task_id": "PS-013",
+          "title": "Plugin API documentation",
+          "description": "Document interfaces, manifest format, and best practices",
+          "files": ["docs/plugins/API.md"],
+          "estimated_hours": 3
+        },
+        {
+          "task_id": "PS-014",
+          "title": "Update improvements.json",
+          "description": "Mark IMP-CORE-054 as done with completion notes",
+          "files": ["improvements.json"],
+          "estimated_hours": 1
+        }
+      ],
+      "success_criteria": [
+        "Example plugin published",
+        "Documentation complete",
+        "IMP-CORE-054 marked done"
+      ]
+    }
+  ],
+  "total_estimated_hours": 35,
+  "related_improvements": ["IMP-CORE-038", "IMP-CORE-054"],
+  "related_workorders": [],
+  "hard_stops": [
+    {
+      "after_phase": "phase_1",
+      "checkpoint": "Plugin API interfaces approved before implementation"
+    },
+    {
+      "after_phase": "phase_2",
+      "checkpoint": "All three loaders (npm, local, config) validated"
+    }
+  ]
+}

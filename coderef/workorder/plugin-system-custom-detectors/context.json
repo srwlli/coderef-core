@@ -1,0 +1,46 @@
+{
+  "feature_name": "plugin-system-custom-detectors",
+  "description": "Implement plugin system for custom detectors and framework extensions. Build on existing framework-registry.ts pattern to enable third-party extensions, custom pattern definitions, and domain-specific analysis without modifying core code.",
+  "goal": "Enable ecosystem maturity via plugin architecture - users can install or create custom detectors for frameworks, security rules, compliance checks, and graph relationships without core code changes",
+  "requirements": [
+    "Plugin loader that discovers and loads detectors from node_modules/@coderef/* and local .coderef/plugins/",
+    "Plugin manifest format with name, version, detectors[], hooks[], dependencies",
+    "Detector API interface matching existing FrameworkDetector pattern",
+    "Extension points for: custom element types, graph relationship rules, analysis hooks",
+    "Configuration support in coderef.config.js for plugin registration",
+    "Documentation and example plugin template",
+    "Backwards compatibility with existing framework-registry.ts"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "functional": [
+      "Plugins load automatically from @coderef/* packages",
+      "Custom detectors discover framework-specific patterns",
+      "Graph edges extended via plugin-defined relationships",
+      "Zero core code changes for new framework support",
+      "Example plugin published demonstrating Django detection"
+    ],
+    "testing": [
+      "Unit tests for plugin loader",
+      "Integration test with sample plugin",
+      "Plugin validation (manifest schema, detector compatibility)"
+    ]
+  },
+  "_metadata": {
+    "workorder_id": "WO-PLUGIN-SYSTEM-CUSTOM-DETECTORS-001",
+    "workorder_assigned_at": "2026-04-22T20:58:08.987901+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-PLUGIN-SYSTEM-CUSTOM-DETECTORS-001",
+    "feature_id": "plugin-system-custom-detectors",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-22"
+  }
+}

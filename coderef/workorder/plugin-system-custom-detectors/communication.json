@@ -1,0 +1,84 @@
+{
+  "$schema": "https://schemas.coderef.com/communication/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-PLUGIN-SYSTEM-001",
+  "feature_name": "plugin-system-custom-detectors",
+  "created_at": "2026-04-22T16:30:00Z",
+  "last_updated": "2026-04-22T16:30:00Z",
+  "status": "ready_for_execution",
+  "handoff": {
+    "from": "PLANNING",
+    "to": "EXECUTION",
+    "status": "ready_for_execution"
+  },
+  "must_read_first": [
+    "coderef/workorder/plugin-system-custom-detectors/plan.json",
+    "coderef/workorder/plugin-system-custom-detectors/analysis.json",
+    "coderef/workorder/plugin-system-custom-detectors/context.json",
+    "src/scanner/framework-registry.ts"
+  ],
+  "execution_context": {
+    "current_phase": "phase_1",
+    "current_task": "PS-001",
+    "tasks_completed": [],
+    "tasks_remaining": 14
+  },
+  "allowed": [
+    "READ existing framework-registry.ts for pattern reference",
+    "WRITE new plugin system files in src/plugins/",
+    "WRITE example plugin in examples/plugins/",
+    "EDIT scanner.ts to call plugin detectors",
+    "EDIT graph-builder.ts for custom edges",
+    "EDIT CLI files for --plugin flag",
+    "CREATE tests for plugin loader and registry",
+    "UPDATE improvements.json to mark done",
+    "COMMIT and PUSH changes",
+    "UPDATE workorder tracking"
+  ],
+  "forbidden": [
+    "DELETE FrameworkRegistry or existing framework detection",
+    "BREAK existing detector interface without migration path",
+    "MODIFY core scanner logic without backwards compatibility",
+    "ARCHIVE workorder before all 14 tasks complete"
+  ],
+  "success_criteria": {
+    "functional": [
+      "Plugin and Detector interfaces defined and exported",
+      "PluginRegistry can load/unload plugins",
+      "npm packages auto-discovered from @coderef/*",
+      "Local plugins load from .coderef/plugins/",
+      "Config-based registration works",
+      "Plugin detectors execute during scan",
+      "Custom graph edges appear in output",
+      "CLI --plugin flag enables/disables plugins",
+      "Example plugin demonstrates pattern",
+      "Documentation published",
+      "IMP-CORE-054 marked done in improvements.json"
+    ],
+    "testing": [
+      "Unit tests for PluginRegistry",
+      "Unit tests for plugin loaders (npm, local, config)",
+      "Integration test with example plugin",
+      "Plugin validation tests"
+    ],
+    "quality": [
+      "No regression in existing framework detection",
+      "Backwards compatibility maintained",
+      "Error handling for invalid plugins"
+    ]
+  },
+  "contact": {
+    "workorder_path": "coderef/workorder/plugin-system-custom-detectors",
+    "related_improvement": "IMP-CORE-054"
+  },
+  "_uds": {
+    "generated_by": "create-workorder skill",
+    "document_type": "Agent Communication",
+    "workorder_id": "WO-PLUGIN-SYSTEM-001",
+    "feature_id": "plugin-system-custom-detectors",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "READY",
+    "next_review": "2026-04-22"
+  }
+}

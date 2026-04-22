@@ -1,0 +1,45 @@
+{
+  "schema_version": "1.0",
+  "project": "coderef-core",
+  "analysis_date": "2026-04-22",
+  "foundation_docs_available": true,
+  "coderef_outputs_available": true,
+  "reference_components": [
+    {
+      "name": "FrameworkRegistry",
+      "path": "src/scanner/framework-registry.ts",
+      "purpose": "Existing plugin-style registry for framework detectors - pattern to extend"
+    },
+    {
+      "name": "FrameworkDetector",
+      "path": "src/scanner/framework-registry.ts",
+      "purpose": "Interface for framework-specific route detectors"
+    }
+  ],
+  "project_patterns": {
+    "architecture": "Modular scanner with registry pattern",
+    "plugin_foundation": "FrameworkRegistry provides registration/discovery pattern",
+    "extension_points": [
+      "src/scanner/ - Element detection",
+      "src/analyzer/ - Analysis and graph building",
+      "src/cli/ - Command interfaces"
+    ]
+  },
+  "relevant_improvements": [
+    {
+      "id": "IMP-CORE-038",
+      "status": "done",
+      "relation": "Foundation - FrameworkRegistry pattern to extend"
+    },
+    {
+      "id": "IMP-CORE-054",
+      "status": "open",
+      "relation": "This workorder - Plugin system implementation"
+    }
+  ],
+  "notes": [
+    "FrameworkRegistry already implements registration/discovery/unregistration",
+    "Plugin system extends this pattern to general detectors, graph rules, and hooks",
+    "Should maintain backwards compatibility with existing FrameworkDetector interface"
+  ]
+}
