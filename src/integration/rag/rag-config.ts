@@ -12,12 +12,17 @@ import type { LLMProviderConfig } from '../llm/llm-provider.js';
 import type { VectorStoreConfig } from '../vector/vector-store.js';
 
 /**
+ * Supported LLM provider names (extensible for future providers)
+ */
+export type LLMProviderName = 'openai' | 'anthropic' | string;
+
+/**
  * Complete RAG system configuration
  */
 export interface RAGConfig {
   /** LLM provider configuration */
   llm: {
-    provider: 'openai' | 'anthropic';
+    provider: LLMProviderName;
     config: LLMProviderConfig;
   };
 
@@ -62,6 +67,10 @@ export const ENV_VARS = {
   OPENAI_ORG: 'OPENAI_ORGANIZATION',
   ANTHROPIC_API_KEY: 'ANTHROPIC_API_KEY',
   ANTHROPIC_MODEL: 'CODEREF_ANTHROPIC_MODEL',
+  // Generic LLM configuration (for custom/local providers)
+  LLM_BASE_URL: 'CODEREF_LLM_BASE_URL',
+  LLM_API_KEY: 'CODEREF_LLM_API_KEY',
+  LLM_MODEL: 'CODEREF_LLM_MODEL',
 
   // Vector Store
   VECTOR_STORE_PROVIDER: 'CODEREF_VECTOR_STORE',
@@ -153,10 +162,11 @@ export class RAGConfigLoader {
   /**
    * Get LLM provider from environment
    */
-  private getLLMProvider(): 'openai' | 'anthropic' {
+  private getLLMProvider(): LLMProviderName {
     const provider = process.env[ENV_VARS.LLM_PROVIDER]?.toLowerCase();
 
-    if (provider === 'openai' || provider === 'anthropic') {
+    // Accept any provider string - validation happens at provider creation time
+    if (provider) {
       return provider;
     }
 
@@ -170,15 +180,16 @@ export class RAGConfigLoader {
     }
 
     throw new ConfigError(
-      `LLM provider not configured. Set ${ENV_VARS.LLM_PROVIDER} to 'openai' or 'anthropic', ` +
-      `or provide ${ENV_VARS.OPENAI_API_KEY} or ${ENV_VARS.ANTHROPIC_API_KEY}`
+      `LLM provider not configured. Set ${ENV_VARS.LLM_PROVIDER} to a provider name ` +
+      `(e.g., 'openai', 'anthropic', 'ollama'), or provide ${ENV_VARS.OPENAI_API_KEY} or ${ENV_VARS.ANTHROPIC_API_KEY}`
     );
   }
 
   /**
    * Get LLM provider configuration
    */
-  private getLLMConfig(provider: 'openai' | 'anthropic'): LLMProviderConfig {
+  private getLLMConfig(provider: LLMProviderName): LLMProviderConfig {
+    // OpenAI provider
     if (provider === 'openai') {
       const apiKey = process.env[ENV_VARS.OPENAI_API_KEY];
       if (!apiKey) {
@@ -194,7 +205,10 @@ export class RAGConfigLoader {
         maxRetries: 3,
         timeout: 60000
       };
-    } else {
+    }
+
+    // Anthropic provider
+    if (provider === 'anthropic') {
       const apiKey = process.env[ENV_VARS.ANTHROPIC_API_KEY];
       if (!apiKey) {
         throw new ConfigError(
@@ -209,6 +223,27 @@ export class RAGConfigLoader {
         timeout: 60000
       };
     }
+
+    // Generic provider configuration (for custom/local providers like Ollama)
+    // Uses generic env vars: CODEREF_LLM_BASE_URL, CODEREF_LLM_API_KEY, CODEREF_LLM_MODEL
+    const apiKey = process.env[ENV_VARS.LLM_API_KEY] || '';
+    const baseUrl = process.env[ENV_VARS.LLM_BASE_URL];
+    const model = process.env[ENV_VARS.LLM_MODEL];
+
+    if (!baseUrl && !apiKey) {
+      throw new ConfigError(
+        `Provider '${provider}' requires configuration. Set ${ENV_VARS.LLM_BASE_URL} ` +
+        `(for local providers like Ollama) or ${ENV_VARS.LLM_API_KEY} (for custom APIs)`
+      );
+    }
+
+    return {
+      apiKey,
+      model: model || 'default',
+      baseUrl,
+      maxRetries: 3,
+      timeout: 60000
+    };
   }
 
   /**
@@ -250,7 +285,7 @@ export class RAGConfigLoader {
         apiKey,
         environment: process.env[ENV_VARS.PINECONE_ENVIRONMENT],
         indexName,
-        dimension: 1536, // OpenAI embedding dimension
+        dimension: 0, // Determined at runtime from provider.getEmbeddingDimensions()
         metric: 'cosine'
       };
     } else if (provider === 'chroma') {
@@ -263,7 +298,7 @@ export class RAGConfigLoader {
         host,
         port,
         indexName,
-        dimension: 1536,
+        dimension: 0, // Determined at runtime from provider.getEmbeddingDimensions()
         metric: 'cosine'
       };
     } else {
@@ -274,7 +309,7 @@ export class RAGConfigLoader {
       return {
         storagePath,
         indexName,
-        dimension: 1536,
+        dimension: 0, // Determined at runtime from provider.getEmbeddingDimensions()
         metric: 'cosine'
       };
     }
@@ -339,8 +374,12 @@ export class RAGConfigLoader {
     const errors: string[] = [];
 
     // Validate LLM config
-    if (!config.llm.config.apiKey) {
-      errors.push('LLM API key is required');
+    // Note: Some providers (like local Ollama) may not require an API key
+    // Provider-specific validation happens at provider creation time
+    const knownProviders = ['openai', 'anthropic'];
+    const isKnownProvider = knownProviders.includes(config.llm.provider);
+    if (isKnownProvider && !config.llm.config.apiKey) {
+      errors.push(`LLM API key is required for provider '${config.llm.provider}'`);
     }
 
     // Validate vector store config

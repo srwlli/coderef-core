@@ -12,6 +12,7 @@ import type {
   LLMProviderConfig
 } from './llm-provider.js';
 import { LLMError, LLMErrorCode } from './llm-provider.js';
+import { getProviderSpec, supportsEmbeddings } from './model-registry.js';
 
 /**
  * OpenAI provider implementation
@@ -161,6 +162,33 @@ export class OpenAIProvider implements LLMProvider {
    */
   getModel(): string {
     return this.model;
+  }
+
+  /**
+   * Get embedding dimensions for OpenAI
+   * Reads from MODEL_REGISTRY - single source of truth
+   */
+  getEmbeddingDimensions(): number {
+    const spec = getProviderSpec('openai');
+    if (!spec || !spec.supportsEmbeddings) {
+      throw new LLMError(
+        'OpenAI provider not found or does not support embeddings',
+        LLMErrorCode.UNKNOWN
+      );
+    }
+    // Allow large model override
+    if (this.embeddingModel === 'text-embedding-3-large') {
+      const largeSpec = getProviderSpec('openai-large');
+      return largeSpec?.embeddingModel.dimensions ?? 3072;
+    }
+    return spec.embeddingModel.dimensions;
+  }
+
+  /**
+   * Check if this provider supports embeddings
+   */
+  supportsEmbeddings(): boolean {
+    return supportsEmbeddings('openai');
   }
 
   /**

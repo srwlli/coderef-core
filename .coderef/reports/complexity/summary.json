@@ -1,9 +1,17 @@
 {
-  "totalElements": 1506,
-  "averageComplexity": 4.6,
-  "averageLOC": 27.9,
-  "highComplexityCount": 156,
+  "totalElements": 1508,
+  "averageComplexity": 5,
+  "averageLOC": 31.1,
+  "highComplexityCount": 183,
   "elements": [
+    {
+      "element": "ContextGenerator.generateMarkdown",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 102,
+      "loc": 545,
+      "parameters": 2
+    },
     {
       "element": "scanCurrentElements",
       "file": "src/scanner/scanner.ts",
@@ -21,19 +29,19 @@
       "parameters": 6
     },
     {
-      "element": "JSCallDetector.extractExportsFromAST",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
+      "element": "extractExportsFromAST",
+      "file": "src/analyzer/js-call-detector/module-analyzer.ts",
+      "type": "function",
       "complexity": 55,
-      "loc": 115,
+      "loc": 101,
       "parameters": 2
     },
     {
-      "element": "JSCallDetector.extractElementsFromAST",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
-      "complexity": 52,
-      "loc": 131,
+      "element": "extractElementsFromAST",
+      "file": "src/analyzer/js-call-detector/visitor.ts",
+      "type": "function",
+      "complexity": 51,
+      "loc": 122,
       "parameters": 4
     },
     {
@@ -53,11 +61,11 @@
       "parameters": 1
     },
     {
-      "element": "JSCallDetector.extractImportsFromAST",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
+      "element": "extractImportsFromAST",
+      "file": "src/analyzer/js-call-detector/module-analyzer.ts",
+      "type": "function",
       "complexity": 37,
-      "loc": 87,
+      "loc": 86,
       "parameters": 2
     },
     {
@@ -69,12 +77,12 @@
       "parameters": 1
     },
     {
-      "element": "CodeRefValidator.validateMetadata",
-      "file": "src/validator/validator.js",
-      "type": "method",
-      "complexity": 36,
-      "loc": 62,
-      "parameters": 1
+      "element": "main",
+      "file": "src/cli/rag-status.ts",
+      "type": "function",
+      "complexity": 35,
+      "loc": 204,
+      "parameters": 0
     },
     {
       "element": "SearchIndex.search",
@@ -85,12 +93,60 @@
       "parameters": 2
     },
     {
-      "element": "JSCallDetector.visitNode",
-      "file": "src/analyzer/js-call-detector.ts",
+      "element": "ContractDetector.parseOpenApi",
+      "file": "src/analyzer/contract-detector.ts",
       "type": "method",
+      "complexity": 32,
+      "loc": 59,
+      "parameters": 1
+    },
+    {
+      "element": "visitNode",
+      "file": "src/analyzer/js-call-detector/visitor.ts",
+      "type": "function",
       "complexity": 32,
       "loc": 72,
       "parameters": 4
+    },
+    {
+      "element": "ContextGenerator.detectTechStack",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 32,
+      "loc": 89,
+      "parameters": 3
+    },
+    {
+      "element": "generateExportsMd",
+      "file": "scripts/doc-gen/generate-exports-md.js",
+      "type": "function",
+      "complexity": 32,
+      "loc": 195,
+      "parameters": 0
+    },
+    {
+      "element": "DatabaseDetector.detectPrisma",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 31,
+      "loc": 116,
+      "parameters": 0
+    },
+    {
+      "element": "ProjectClassifier.detectApiSubtype",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 30,
+      "loc": 35,
+      "parameters": 2
+    },
+    {
+      "element": "ProjectClassifier.detectWebSubtype",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 30,
+      "loc": 32,
+      "parameters": 2
     },
     {
       "element": "EmbeddingTextGenerator.generate",
@@ -106,22 +162,6 @@
       "type": "method",
       "complexity": 29,
       "loc": 196,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingTextGenerator.generate",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 29,
-      "loc": 68,
-      "parameters": 2
-    },
-    {
-      "element": "CodeRefParser.parse",
-      "file": "src/parser/parser.js",
-      "type": "method",
-      "complexity": 29,
-      "loc": 177,
       "parameters": 1
     },
     {
@@ -149,12 +189,20 @@
       "parameters": 2
     },
     {
-      "element": "convertGraphToElements",
-      "file": "src/adapter/graph-to-elements.js",
-      "type": "function",
+      "element": "ContextGenerator.detectMVCPatterns",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
       "complexity": 28,
-      "loc": 75,
-      "parameters": 1
+      "loc": 58,
+      "parameters": 2
+    },
+    {
+      "element": "parseNextJsPagesRoute",
+      "file": "src/analyzer/route-parsers.ts",
+      "type": "function",
+      "complexity": 27,
+      "loc": 57,
+      "parameters": 2
     },
     {
       "element": "ContextBuilder.buildContext",
@@ -173,28 +221,44 @@
       "parameters": 3
     },
     {
-      "element": "GraphReRanker.rerank",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 27,
-      "loc": 67,
-      "parameters": 2
-    },
-    {
-      "element": "ChromaStore.query",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "method",
-      "complexity": 27,
-      "loc": 59,
-      "parameters": 2
-    },
-    {
-      "element": "ContextBuilder.buildContext",
-      "file": "src/integration/rag/context-builder.js",
+      "element": "ProjectClassifier.analyzeApiService",
+      "file": "src/analyzer/project-classifier.ts",
       "type": "method",
       "complexity": 26,
-      "loc": 43,
-      "parameters": 2
+      "loc": 59,
+      "parameters": 3
+    },
+    {
+      "element": "ContractDetector.parseProtobuf",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 25,
+      "loc": 108,
+      "parameters": 1
+    },
+    {
+      "element": "DocsAnalyzer.analyzeJSDocCoverage",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 25,
+      "loc": 48,
+      "parameters": 0
+    },
+    {
+      "element": "DocsAnalyzer.analyzeChangelog",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 25,
+      "loc": 91,
+      "parameters": 0
+    },
+    {
+      "element": "extractRouteMetadata",
+      "file": "src/analyzer/route-parsers.ts",
+      "type": "function",
+      "complexity": 25,
+      "loc": 58,
+      "parameters": 5
     },
     {
       "element": "OpenAIProvider.complete",
@@ -213,20 +277,28 @@
       "parameters": 2
     },
     {
-      "element": "SemanticSearchService.search",
-      "file": "src/integration/rag/semantic-search.js",
+      "element": "PipelineOrchestrator.run",
+      "file": "src/pipeline/orchestrator.ts",
       "type": "method",
       "complexity": 25,
-      "loc": 62,
-      "parameters": 3
+      "loc": 155,
+      "parameters": 2
     },
     {
-      "element": "JSCallDetector.extractParametersFromAST",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
+      "element": "extractParametersFromAST",
+      "file": "src/analyzer/js-call-detector/visitor.ts",
+      "type": "function",
       "complexity": 24,
       "loc": 51,
       "parameters": 4
+    },
+    {
+      "element": "parseArgs",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 24,
+      "loc": 85,
+      "parameters": 1
     },
     {
       "element": "detectPreset",
@@ -237,12 +309,12 @@
       "parameters": 1
     },
     {
-      "element": "OpenAIProvider.complete",
-      "file": "src/integration/llm/openai-provider.js",
-      "type": "method",
-      "complexity": 24,
-      "loc": 46,
-      "parameters": 2
+      "element": "main",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 23,
+      "loc": 189,
+      "parameters": 0
     },
     {
       "element": "ChunkConverter.extractDocumentation",
@@ -269,36 +341,20 @@
       "parameters": 1
     },
     {
-      "element": "ChunkConverter.convertGraph",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 23,
-      "loc": 56,
-      "parameters": 2
-    },
-    {
-      "element": "ChunkConverter.extractDocumentation",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 23,
-      "loc": 67,
-      "parameters": 3
-    },
-    {
-      "element": "CodeRefValidator.validate",
-      "file": "src/validator/validator.js",
-      "type": "method",
-      "complexity": 23,
-      "loc": 70,
-      "parameters": 1
-    },
-    {
       "element": "GraphBuilder.importGraphFromJSON",
       "file": "src/analyzer/graph-builder.ts",
       "type": "method",
       "complexity": 22,
       "loc": 130,
       "parameters": 1
+    },
+    {
+      "element": "FuzzyResolver.calculateSignatureSimilarity",
+      "file": "src/context/fuzzy-resolver.ts",
+      "type": "method",
+      "complexity": 22,
+      "loc": 48,
+      "parameters": 2
     },
     {
       "element": "ContextBuilder.buildResultSection",
@@ -309,20 +365,20 @@
       "parameters": 3
     },
     {
-      "element": "ContextBuilder.buildResultSection",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
+      "element": "validateDocs",
+      "file": "scripts/doc-gen/validate-docs.js",
+      "type": "function",
       "complexity": 22,
-      "loc": 78,
-      "parameters": 3
+      "loc": 144,
+      "parameters": 0
     },
     {
-      "element": "EmbeddingService.embedChunks",
-      "file": "src/integration/rag/embedding-service.js",
+      "element": "DocsAnalyzer.analyzeReadme",
+      "file": "src/analyzer/docs-analyzer.ts",
       "type": "method",
-      "complexity": 22,
-      "loc": 89,
-      "parameters": 2
+      "complexity": 21,
+      "loc": 108,
+      "parameters": 0
     },
     {
       "element": "DynamicImportDetector.visitNode",
@@ -341,19 +397,19 @@
       "parameters": 1
     },
     {
+      "element": "normalizeParsedIndex",
+      "file": "src/fileGeneration/index-storage.ts",
+      "type": "function",
+      "complexity": 21,
+      "loc": 36,
+      "parameters": 1
+    },
+    {
       "element": "PineconeStore.query",
       "file": "src/integration/vector/pinecone-store.ts",
       "type": "method",
       "complexity": 21,
       "loc": 52,
-      "parameters": 2
-    },
-    {
-      "element": "PineconeStore.query",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 20,
-      "loc": 43,
       "parameters": 2
     },
     {
@@ -365,6 +421,14 @@
       "parameters": 4
     },
     {
+      "element": "DatabaseDetector.parseTypeormEntity",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 19,
+      "loc": 76,
+      "parameters": 1
+    },
+    {
       "element": "DynamicImportDetector.extractImportedSymbols",
       "file": "src/analyzer/dynamic-import-detector.ts",
       "type": "method",
@@ -373,11 +437,11 @@
       "parameters": 1
     },
     {
-      "element": "JSCallDetector.extractParameter",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
+      "element": "extractParameter",
+      "file": "src/analyzer/js-call-detector/parser.ts",
+      "type": "function",
       "complexity": 19,
-      "loc": 85,
+      "loc": 82,
       "parameters": 1
     },
     {
@@ -397,6 +461,14 @@
       "parameters": 3
     },
     {
+      "element": "GraphExporter.calculateNodePositions",
+      "file": "src/export/graph-exporter.ts",
+      "type": "method",
+      "complexity": 19,
+      "loc": 138,
+      "parameters": 0
+    },
+    {
       "element": "createTestFile",
       "file": "__tests__/orphan-detection.test.ts",
       "type": "function",
@@ -405,12 +477,12 @@
       "parameters": 2
     },
     {
-      "element": "MultiHopTraversal.bfsTraversal",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
+      "element": "generateHotspotsMd",
+      "file": "scripts/doc-gen/generate-hotspots-md.js",
+      "type": "function",
       "complexity": 19,
-      "loc": 66,
-      "parameters": 3
+      "loc": 175,
+      "parameters": 0
     },
     {
       "element": "GraphAnalyzer.traverse",
@@ -421,11 +493,59 @@
       "parameters": 3
     },
     {
-      "element": "JSCallDetector.parseCallExpression",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
+      "element": "parseCallExpression",
+      "file": "src/analyzer/js-call-detector/parser.ts",
+      "type": "function",
       "complexity": 18,
       "loc": 65,
+      "parameters": 3
+    },
+    {
+      "element": "MigrationRouteAnalyzer.detectBreakingChanges",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 18,
+      "loc": 110,
+      "parameters": 2
+    },
+    {
+      "element": "ProjectClassifier.analyzeWebApp",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 18,
+      "loc": 50,
+      "parameters": 3
+    },
+    {
+      "element": "parseArgs",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 18,
+      "loc": 75,
+      "parameters": 1
+    },
+    {
+      "element": "formatResult",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 18,
+      "loc": 28,
+      "parameters": 2
+    },
+    {
+      "element": "main",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 18,
+      "loc": 138,
+      "parameters": 0
+    },
+    {
+      "element": "PatternGenerator.detectMiddleware",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "type": "method",
+      "complexity": 18,
+      "loc": 76,
       "parameters": 3
     },
     {
@@ -434,14 +554,6 @@
       "type": "method",
       "complexity": 18,
       "loc": 52,
-      "parameters": 1
-    },
-    {
-      "element": "QueryExecutor.executeQuery",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 18,
-      "loc": 42,
       "parameters": 1
     },
     {
@@ -477,6 +589,14 @@
       "parameters": 2
     },
     {
+      "element": "PatternGenerator.detectDependencyInjection",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "type": "method",
+      "complexity": 17,
+      "loc": 91,
+      "parameters": 2
+    },
+    {
       "element": "main",
       "file": "demo-all-modules.ts",
       "type": "function",
@@ -493,12 +613,28 @@
       "parameters": 3
     },
     {
+      "element": "ConfigAnalyzer.parseYaml",
+      "file": "src/analyzer/config-analyzer.ts",
+      "type": "method",
+      "complexity": 16,
+      "loc": 40,
+      "parameters": 1
+    },
+    {
       "element": "main",
       "file": "src/cli/scan-frontend-calls.ts",
       "type": "function",
       "complexity": 16,
       "loc": 85,
       "parameters": 0
+    },
+    {
+      "element": "calculateConfidence",
+      "file": "src/context/breaking-change-detector/impact-assessor.ts",
+      "type": "function",
+      "complexity": 16,
+      "loc": 49,
+      "parameters": 2
     },
     {
       "element": "RelationshipExtractor.extractTypeScriptImports",
@@ -509,14 +645,6 @@
       "parameters": 4
     },
     {
-      "element": "PipelineOrchestrator.run",
-      "file": "src/pipeline/orchestrator.ts",
-      "type": "method",
-      "complexity": 16,
-      "loc": 105,
-      "parameters": 2
-    },
-    {
       "element": "testDogfoodingBaselineElements",
       "file": "__tests__/integration.test.ts",
       "type": "function",
@@ -525,20 +653,28 @@
       "parameters": 0
     },
     {
-      "element": "AnswerGenerationService.generateAnswer",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "type": "method",
+      "element": "generateRelationshipsMd",
+      "file": "scripts/doc-gen/generate-relationships-md.js",
+      "type": "function",
       "complexity": 16,
-      "loc": 69,
-      "parameters": 2
+      "loc": 204,
+      "parameters": 0
     },
     {
-      "element": "ConfidenceScorer.calculateConfidence",
-      "file": "src/integration/rag/confidence-scorer.js",
+      "element": "ConfigAnalyzer.analyzeDockerfile",
+      "file": "src/analyzer/config-analyzer.ts",
       "type": "method",
-      "complexity": 16,
-      "loc": 52,
-      "parameters": 2
+      "complexity": 15,
+      "loc": 68,
+      "parameters": 0
+    },
+    {
+      "element": "ContractDetector.parseGraphql",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 15,
+      "loc": 93,
+      "parameters": 1
     },
     {
       "element": "parseReactQueryCalls",
@@ -546,6 +682,22 @@
       "type": "function",
       "complexity": 15,
       "loc": 69,
+      "parameters": 2
+    },
+    {
+      "element": "ProjectClassifier.getPurposeDescription",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 15,
+      "loc": 32,
+      "parameters": 3
+    },
+    {
+      "element": "ProjectClassifier.getUseCases",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 15,
+      "loc": 31,
       "parameters": 2
     },
     {
@@ -601,32 +753,8 @@
       "file": "src/scanner/scanner.ts",
       "type": "function",
       "complexity": 15,
-      "loc": 99,
+      "loc": 101,
       "parameters": 3
-    },
-    {
-      "element": "ChunkConverter.convertNode",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 15,
-      "loc": 50,
-      "parameters": 4
-    },
-    {
-      "element": "GraphReRanker.calculateQueryBoost",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 15,
-      "loc": 24,
-      "parameters": 2
-    },
-    {
-      "element": "RAGConfigLoader.validateConfig",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 15,
-      "loc": 32,
-      "parameters": 1
     },
     {
       "element": "createTestProject",
@@ -637,27 +765,27 @@
       "parameters": 1
     },
     {
-      "element": "BreakingChangeDetector.detectChanges",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "ProjectClassifier.analyzeMobileApp",
+      "file": "src/analyzer/project-classifier.ts",
       "type": "method",
       "complexity": 14,
-      "loc": 108,
-      "parameters": 4
-    },
-    {
-      "element": "BreakingChangeDetector.calculateConfidence",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 14,
-      "loc": 53,
+      "loc": 37,
       "parameters": 2
     },
     {
-      "element": "BreakingChangeDetector.getChangedElements",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "BreakingChangeDetector.detectChanges",
+      "file": "src/context/breaking-change-detector/index.ts",
       "type": "method",
       "complexity": 14,
-      "loc": 53,
+      "loc": 105,
+      "parameters": 4
+    },
+    {
+      "element": "FuzzyResolver.calculatePathSimilarity",
+      "file": "src/context/fuzzy-resolver.ts",
+      "type": "method",
+      "complexity": 14,
+      "loc": 42,
       "parameters": 2
     },
     {
@@ -701,6 +829,14 @@
       "parameters": 5
     },
     {
+      "element": "ContextGenerator.generateRiskHeatMap",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 14,
+      "loc": 62,
+      "parameters": 4
+    },
+    {
       "element": "isLineCommented",
       "file": "src/scanner/scanner.ts",
       "type": "function",
@@ -725,36 +861,44 @@
       "parameters": 5
     },
     {
-      "element": "GraphExporter.validateExport",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
+      "element": "enhanceArchitectureMd",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
+      "type": "function",
       "complexity": 14,
-      "loc": 45,
-      "parameters": 1
+      "loc": 46,
+      "parameters": 0
     },
     {
-      "element": "IncrementalIndexer.analyzeChanges",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
+      "element": "generateIndexMd",
+      "file": "scripts/doc-gen/generate-index-md.js",
+      "type": "function",
       "complexity": 14,
-      "loc": 75,
-      "parameters": 2
+      "loc": 127,
+      "parameters": 0
     },
     {
-      "element": "PromptTemplateBuilder.detectQuestionType",
-      "file": "src/integration/rag/prompt-templates.js",
+      "element": "ConfigAnalyzer.analyzePackageJson",
+      "file": "src/analyzer/config-analyzer.ts",
       "type": "method",
-      "complexity": 14,
-      "loc": 30,
-      "parameters": 1
+      "complexity": 13,
+      "loc": 32,
+      "parameters": 0
     },
     {
-      "element": "CodeRefParser.parseMetadataValue",
-      "file": "src/parser/parser.js",
+      "element": "ConfigAnalyzer.analyzeDockerCompose",
+      "file": "src/analyzer/config-analyzer.ts",
       "type": "method",
-      "complexity": 14,
-      "loc": 40,
-      "parameters": 1
+      "complexity": 13,
+      "loc": 49,
+      "parameters": 0
+    },
+    {
+      "element": "DesignPatternDetector.detectObserver",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 13,
+      "loc": 39,
+      "parameters": 3
     },
     {
       "element": "parseJavaScript",
@@ -765,20 +909,28 @@
       "parameters": 2
     },
     {
-      "element": "extractRouteMetadata",
+      "element": "parseExpressRoute",
       "file": "src/analyzer/route-parsers.ts",
       "type": "function",
       "complexity": 13,
-      "loc": 34,
-      "parameters": 5
+      "loc": 105,
+      "parameters": 3
     },
     {
-      "element": "BreakingChangeDetector.extractParameters",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "parseNuxtRoute",
+      "file": "src/analyzer/route-parsers.ts",
+      "type": "function",
+      "complexity": 13,
+      "loc": 62,
+      "parameters": 2
+    },
+    {
+      "element": "FuzzyResolver.calculateJaroDistance",
+      "file": "src/context/fuzzy-resolver.ts",
       "type": "method",
       "complexity": 13,
-      "loc": 26,
-      "parameters": 1
+      "loc": 48,
+      "parameters": 2
     },
     {
       "element": "ImpactSimulator.calculateBlastRadius",
@@ -841,7 +993,7 @@
       "file": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts",
       "type": "function",
       "complexity": 13,
-      "loc": 448,
+      "loc": 453,
       "parameters": 1
     },
     {
@@ -901,6 +1053,30 @@
       "parameters": 4
     },
     {
+      "element": "ContextGenerator.generateExecutiveSummary",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 13,
+      "loc": 69,
+      "parameters": 4
+    },
+    {
+      "element": "ContextGenerator.detectUnusedDependencies",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 13,
+      "loc": 45,
+      "parameters": 2
+    },
+    {
+      "element": "HealthGenerator.generateMarkdown",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "type": "method",
+      "complexity": 13,
+      "loc": 95,
+      "parameters": 1
+    },
+    {
       "element": "isLikelyApiCall",
       "file": "src/scanner/frontend-scanner.ts",
       "type": "function",
@@ -925,68 +1101,76 @@
       "parameters": 2
     },
     {
-      "element": "ImpactSimulator.calculateBlastRadius",
-      "file": "src/context/impact-simulator.js",
+      "element": "ConfigAnalyzer.analyzeGitHubActions",
+      "file": "src/analyzer/config-analyzer.ts",
       "type": "method",
-      "complexity": 13,
-      "loc": 77,
+      "complexity": 12,
+      "loc": 69,
+      "parameters": 0
+    },
+    {
+      "element": "DatabaseDetector.parseSequelizeModel",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 12,
+      "loc": 70,
       "parameters": 1
     },
     {
-      "element": "AIPromptGenerator.synthesizeContext",
-      "file": "src/integration/ai-prompt-generator.js",
+      "element": "DependencyAnalyzer.checkPeerDependencies",
+      "file": "src/analyzer/dependency-analyzer.ts",
       "type": "method",
-      "complexity": 13,
-      "loc": 53,
-      "parameters": 4
-    },
-    {
-      "element": "GraphReRanker.inferQueryStrategy",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 13,
-      "loc": 27,
+      "complexity": 12,
+      "loc": 29,
       "parameters": 1
     },
     {
-      "element": "PineconeStore.handleError",
-      "file": "src/integration/vector/pinecone-store.js",
+      "element": "DocsAnalyzer.findExportedItems",
+      "file": "src/analyzer/docs-analyzer.ts",
       "type": "method",
-      "complexity": 13,
-      "loc": 21,
+      "complexity": 12,
+      "loc": 38,
       "parameters": 1
     },
     {
-      "element": "CodeRefParser.splitMetadataEntries",
-      "file": "src/parser/parser.js",
+      "element": "EntryPointDetector.detectByFilePattern",
+      "file": "src/analyzer/entry-detector.ts",
       "type": "method",
-      "complexity": 13,
-      "loc": 36,
+      "complexity": 12,
+      "loc": 74,
       "parameters": 1
     },
     {
-      "element": "JSCallDetector.parseNewExpression",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
+      "element": "parseNewExpression",
+      "file": "src/analyzer/js-call-detector/parser.ts",
+      "type": "function",
       "complexity": 12,
       "loc": 37,
       "parameters": 3
     },
     {
-      "element": "parseExpressRoute",
-      "file": "src/analyzer/route-parsers.ts",
-      "type": "function",
-      "complexity": 12,
-      "loc": 100,
-      "parameters": 3
-    },
-    {
-      "element": "BreakingChangeDetector.extractCallContext",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "ProjectClassifier.analyzeDesktopApp",
+      "file": "src/analyzer/project-classifier.ts",
       "type": "method",
       "complexity": 12,
-      "loc": 55,
+      "loc": 30,
       "parameters": 2
+    },
+    {
+      "element": "extractCallContext",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "type": "function",
+      "complexity": 12,
+      "loc": 48,
+      "parameters": 2
+    },
+    {
+      "element": "calculateSeverity",
+      "file": "src/context/breaking-change-detector/impact-assessor.ts",
+      "type": "function",
+      "complexity": 12,
+      "loc": 55,
+      "parameters": 3
     },
     {
       "element": "AnthropicProvider.handleError",
@@ -1029,20 +1213,36 @@
       "parameters": 5
     },
     {
-      "element": "ComplexityGenerator.computeMetrics",
-      "file": "src/pipeline/generators/complexity-generator.ts",
-      "type": "method",
-      "complexity": 12,
-      "loc": 43,
-      "parameters": 3
-    },
-    {
       "element": "ContextGenerator.findAsyncPatterns",
       "file": "src/pipeline/generators/context-generator.ts",
       "type": "method",
       "complexity": 12,
       "loc": 28,
       "parameters": 2
+    },
+    {
+      "element": "ContextGenerator.generateWorkOrderPriorities",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 12,
+      "loc": 79,
+      "parameters": 4
+    },
+    {
+      "element": "ContextGenerator.extractCallGraph",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 12,
+      "loc": 67,
+      "parameters": 2
+    },
+    {
+      "element": "IncrementalCache.checkFiles",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 12,
+      "loc": 68,
+      "parameters": 1
     },
     {
       "element": "Scanner.processLine",
@@ -1077,44 +1277,12 @@
       "parameters": 1
     },
     {
-      "element": "AnthropicProvider.complete",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "type": "method",
+      "element": "applyModifications",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
       "complexity": 12,
-      "loc": 50,
+      "loc": 64,
       "parameters": 2
-    },
-    {
-      "element": "AnthropicProvider.handleError",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "type": "method",
-      "complexity": 12,
-      "loc": 36,
-      "parameters": 1
-    },
-    {
-      "element": "OpenAIProvider.handleError",
-      "file": "src/integration/llm/openai-provider.js",
-      "type": "method",
-      "complexity": 12,
-      "loc": 36,
-      "parameters": 1
-    },
-    {
-      "element": "ConfidenceScorer.generateExplanation",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 12,
-      "loc": 49,
-      "parameters": 3
-    },
-    {
-      "element": "CodeRefParser.parseMetadata",
-      "file": "src/parser/parser.js",
-      "type": "method",
-      "complexity": 12,
-      "loc": 36,
-      "parameters": 1
     },
     {
       "element": "validateScanRequest",
@@ -1125,12 +1293,60 @@
       "parameters": 1
     },
     {
+      "element": "ContractDetector.parseYaml",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 47,
+      "parameters": 1
+    },
+    {
+      "element": "DesignPatternDetector.detectAdapter",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 37,
+      "parameters": 3
+    },
+    {
+      "element": "DesignPatternDetector.detectFacade",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 37,
+      "parameters": 3
+    },
+    {
+      "element": "DocsAnalyzer.analyzeCommentDensity",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 59,
+      "parameters": 0
+    },
+    {
+      "element": "DocsAnalyzer.generateRecommendations",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 58,
+      "parameters": 5
+    },
+    {
       "element": "getExportsForElement",
       "file": "src/analyzer/graph-helpers.ts",
       "type": "function",
       "complexity": 11,
       "loc": 53,
       "parameters": 2
+    },
+    {
+      "element": "ProjectClassifier.analyzeLibrary",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 48,
+      "parameters": 3
     },
     {
       "element": "parseArgs",
@@ -1149,11 +1365,11 @@
       "parameters": 0
     },
     {
-      "element": "BreakingChangeDetector.compareSignatures",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "compareSignatures",
+      "file": "src/context/breaking-change-detector/signature-comparator.ts",
+      "type": "function",
       "complexity": 11,
-      "loc": 86,
+      "loc": 85,
       "parameters": 2
     },
     {
@@ -1205,6 +1421,22 @@
       "parameters": 5
     },
     {
+      "element": "ContextGenerator.detectOutdatedDependencies",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 45,
+      "parameters": 1
+    },
+    {
+      "element": "ContextGenerator.detectMicroservices",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 40,
+      "parameters": 2
+    },
+    {
       "element": "loadIgnorePatterns",
       "file": "src/pipeline/ignore-rules.ts",
       "type": "function",
@@ -1213,27 +1445,11 @@
       "parameters": 3
     },
     {
-      "element": "AnswerGenerationService.calculateConfidence",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "type": "method",
+      "element": "createSampleReferences",
+      "file": "__tests__/indexer.test.ts",
+      "type": "function",
       "complexity": 11,
-      "loc": 54,
-      "parameters": 3
-    },
-    {
-      "element": "ChromaStore.handleError",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "method",
-      "complexity": 11,
-      "loc": 20,
-      "parameters": 1
-    },
-    {
-      "element": "CodeRefParser.isValidElement",
-      "file": "src/parser/parser.js",
-      "type": "method",
-      "complexity": 11,
-      "loc": 29,
+      "loc": 819,
       "parameters": 1
     },
     {
@@ -1253,6 +1469,22 @@
       "parameters": 0
     },
     {
+      "element": "DatabaseDetector.parseMongooseSchema",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 10,
+      "loc": 48,
+      "parameters": 1
+    },
+    {
+      "element": "DesignPatternDetector.detectProxy",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 10,
+      "loc": 38,
+      "parameters": 3
+    },
+    {
       "element": "parseAxiosCalls",
       "file": "src/analyzer/frontend-call-parsers.ts",
       "type": "function",
@@ -1269,20 +1501,28 @@
       "parameters": 2
     },
     {
-      "element": "BreakingChangeDetector.findImpactedCallSites",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "MiddlewareDetector.detectFlaskMiddlewareMappings",
+      "file": "src/analyzer/middleware-detector.ts",
       "type": "method",
       "complexity": 10,
-      "loc": 68,
+      "loc": 106,
+      "parameters": 0
+    },
+    {
+      "element": "MigrationRouteAnalyzer.detectAffectedCallers",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 10,
+      "loc": 40,
       "parameters": 2
     },
     {
-      "element": "BreakingChangeDetector.calculateSeverity",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "findImpactedCallSites",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "type": "function",
       "complexity": 10,
-      "loc": 53,
-      "parameters": 2
+      "loc": 59,
+      "parameters": 3
     },
     {
       "element": "ContextTracker.mergeContext",
@@ -1349,6 +1589,14 @@
       "parameters": 5
     },
     {
+      "element": "ContextGenerator.detectCircularImportRisks",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 10,
+      "loc": 45,
+      "parameters": 1
+    },
+    {
       "element": "createScanError",
       "file": "src/scanner/error-reporter.ts",
       "type": "function",
@@ -1361,7 +1609,7 @@
       "file": "src/scanner/scanner.ts",
       "type": "method",
       "complexity": 10,
-      "loc": 39,
+      "loc": 38,
       "parameters": 2
     },
     {
@@ -1371,14 +1619,6 @@
       "complexity": 10,
       "loc": 42,
       "parameters": 4
-    },
-    {
-      "element": "TreeSitterScanner.isPythonAsync",
-      "file": "src/scanner/tree-sitter-scanner.ts",
-      "type": "method",
-      "complexity": 10,
-      "loc": 23,
-      "parameters": 1
     },
     {
       "element": "TreeSitterScanner.extractGoParameters",
@@ -1397,28 +1637,28 @@
       "parameters": 0
     },
     {
+      "element": "SemanticParameterMapper.detectFromPattern",
+      "file": "src/validator/migration-mapper.ts",
+      "type": "method",
+      "complexity": 10,
+      "loc": 49,
+      "parameters": 2
+    },
+    {
+      "element": "SemanticParameterMapper.mapValidation",
+      "file": "src/validator/migration-mapper.ts",
+      "type": "method",
+      "complexity": 10,
+      "loc": 40,
+      "parameters": 3
+    },
+    {
       "element": "calculateMatchConfidence",
       "file": "src/validator/route-matcher.ts",
       "type": "function",
       "complexity": 10,
       "loc": 72,
       "parameters": 3
-    },
-    {
-      "element": "ContextTracker.mergeContext",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 10,
-      "loc": 27,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.trimHistory",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 10,
-      "loc": 20,
-      "parameters": 1
     },
     {
       "element": "mapErrorToResponse",
@@ -1435,6 +1675,86 @@
       "complexity": 9,
       "loc": 41,
       "parameters": 3
+    },
+    {
+      "element": "DatabaseDetector.detect",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 32,
+      "parameters": 0
+    },
+    {
+      "element": "DependencyAnalyzer.generateRecommendations",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 48,
+      "parameters": 7
+    },
+    {
+      "element": "DesignPatternDetector.detectSingleton",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 39,
+      "parameters": 3
+    },
+    {
+      "element": "DesignPatternDetector.detectFactory",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 38,
+      "parameters": 3
+    },
+    {
+      "element": "DesignPatternDetector.detectStrategy",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 39,
+      "parameters": 3
+    },
+    {
+      "element": "DesignPatternDetector.detectDecorator",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 39,
+      "parameters": 3
+    },
+    {
+      "element": "DesignPatternDetector.detectCommand",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 38,
+      "parameters": 3
+    },
+    {
+      "element": "DesignPatternDetector.detectBuilder",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 37,
+      "parameters": 3
+    },
+    {
+      "element": "DocsAnalyzer.findSourceFiles",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 32,
+      "parameters": 0
+    },
+    {
+      "element": "DocsAnalyzer.findSourceFilesRecursive",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 32,
+      "parameters": 1
     },
     {
       "element": "DynamicImportDetector.parseDynamicImport",
@@ -1493,11 +1813,35 @@
       "parameters": 2
     },
     {
-      "element": "BreakingChangeDetector.generateMigrationHints",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "MigrationRouteAnalyzer.getFrameworkStats",
+      "file": "src/analyzer/migration-route-analyzer.ts",
       "type": "method",
       "complexity": 9,
-      "loc": 43,
+      "loc": 42,
+      "parameters": 0
+    },
+    {
+      "element": "ProjectClassifier.analyzeCliTool",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 35,
+      "parameters": 2
+    },
+    {
+      "element": "parseArgs",
+      "file": "src/cli/rag-status.ts",
+      "type": "function",
+      "complexity": 9,
+      "loc": 39,
+      "parameters": 1
+    },
+    {
+      "element": "generateMigrationHints",
+      "file": "src/context/breaking-change-detector/hint-generator.ts",
+      "type": "function",
+      "complexity": 9,
+      "loc": 39,
       "parameters": 2
     },
     {
@@ -1521,7 +1865,7 @@
       "file": "src/context/fuzzy-resolver.ts",
       "type": "method",
       "complexity": 9,
-      "loc": 78,
+      "loc": 79,
       "parameters": 2
     },
     {
@@ -1581,6 +1925,22 @@
       "parameters": 4
     },
     {
+      "element": "ComplexityGenerator.computeMetrics",
+      "file": "src/pipeline/generators/complexity-generator.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 44,
+      "parameters": 3
+    },
+    {
+      "element": "ContextGenerator.determineOrganizationType",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 24,
+      "parameters": 2
+    },
+    {
       "element": "CoverageGenerator.isTestFile",
       "file": "src/pipeline/generators/coverage-generator.ts",
       "type": "method",
@@ -1613,6 +1973,14 @@
       "parameters": 2
     },
     {
+      "element": "generateUpdateReport",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
+      "complexity": 9,
+      "loc": 55,
+      "parameters": 1
+    },
+    {
       "element": "validateMigrationConfig",
       "file": "src/validator/migration-mapper.ts",
       "type": "function",
@@ -1621,44 +1989,20 @@
       "parameters": 1
     },
     {
+      "element": "SemanticParameterMapper.mapParameter",
+      "file": "src/validator/migration-mapper.ts",
+      "type": "method",
+      "complexity": 9,
+      "loc": 54,
+      "parameters": 4
+    },
+    {
       "element": "dynamicMatch",
       "file": "src/validator/route-matcher.ts",
       "type": "function",
       "complexity": 9,
       "loc": 49,
       "parameters": 2
-    },
-    {
-      "element": "beforeEach",
-      "file": "__tests__/indexer.test.ts",
-      "type": "function",
-      "complexity": 9,
-      "loc": 797,
-      "parameters": 1
-    },
-    {
-      "element": "FuzzyResolver.findMovedElements",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 9,
-      "loc": 64,
-      "parameters": 1
-    },
-    {
-      "element": "AnswerGenerationService.validateAnswer",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "type": "method",
-      "complexity": 9,
-      "loc": 29,
-      "parameters": 1
-    },
-    {
-      "element": "PineconeStore.stats",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 9,
-      "loc": 22,
-      "parameters": 0
     },
     {
       "element": "main",
@@ -1693,6 +2037,14 @@
       "parameters": 2
     },
     {
+      "element": "DocsAnalyzer.calculateOverallScore",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 8,
+      "loc": 60,
+      "parameters": 5
+    },
+    {
       "element": "extractHttpMethod",
       "file": "src/analyzer/frontend-call-parsers.ts",
       "type": "function",
@@ -1709,11 +2061,19 @@
       "parameters": 2
     },
     {
-      "element": "JSCallDetector.buildCallEdges",
-      "file": "src/analyzer/js-call-detector.ts",
+      "element": "buildCallEdges",
+      "file": "src/analyzer/js-call-detector/analyzer.ts",
+      "type": "function",
+      "complexity": 8,
+      "loc": 47,
+      "parameters": 3
+    },
+    {
+      "element": "MigrationRouteAnalyzer.findMatchingRoute",
+      "file": "src/analyzer/migration-route-analyzer.ts",
       "type": "method",
       "complexity": 8,
-      "loc": 46,
+      "loc": 37,
       "parameters": 2
     },
     {
@@ -1725,11 +2085,19 @@
       "parameters": 4
     },
     {
-      "element": "BreakingChangeDetector.compareParameters",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "main",
+      "file": "src/cli/scan.ts",
+      "type": "function",
       "complexity": 8,
-      "loc": 54,
+      "loc": 26,
+      "parameters": 0
+    },
+    {
+      "element": "compareParameters",
+      "file": "src/context/breaking-change-detector/signature-comparator.ts",
+      "type": "function",
+      "complexity": 8,
+      "loc": 51,
       "parameters": 2
     },
     {
@@ -1755,6 +2123,14 @@
       "complexity": 8,
       "loc": 99,
       "parameters": 2
+    },
+    {
+      "element": "toCompactElements",
+      "file": "src/fileGeneration/index-storage.ts",
+      "type": "function",
+      "complexity": 8,
+      "loc": 18,
+      "parameters": 1
     },
     {
       "element": "RelationshipIndex.indexRecord",
@@ -1837,6 +2213,30 @@
       "parameters": 2
     },
     {
+      "element": "ContextGenerator.analyzeDependencyRisks",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 8,
+      "loc": 52,
+      "parameters": 1
+    },
+    {
+      "element": "ContextGenerator.analyzeArchitecture",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 8,
+      "loc": 58,
+      "parameters": 2
+    },
+    {
+      "element": "PatternGenerator.calculateFileCoverage",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "type": "method",
+      "complexity": 8,
+      "loc": 35,
+      "parameters": 1
+    },
+    {
       "element": "printScanErrors",
       "file": "src/scanner/error-reporter.ts",
       "type": "function",
@@ -1877,6 +2277,14 @@
       "parameters": 2
     },
     {
+      "element": "calculatePathConfidence",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
+      "complexity": 8,
+      "loc": 54,
+      "parameters": 4
+    },
+    {
       "element": "CodeRefValidator.isValidElement",
       "file": "src/validator/validator.ts",
       "type": "method",
@@ -1885,52 +2293,12 @@
       "parameters": 1
     },
     {
-      "element": "FuzzyResolver.findSimilarElements",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
+      "element": "enhanceAPIMd",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
+      "type": "function",
       "complexity": 8,
-      "loc": 26,
-      "parameters": 2
-    },
-    {
-      "element": "ChunkConverter.calculateStatistics",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 8,
-      "loc": 36,
-      "parameters": 1
-    },
-    {
-      "element": "ConfidenceScorer.scoreAnswerCompleteness",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 8,
-      "loc": 27,
-      "parameters": 2
-    },
-    {
-      "element": "ConversationManager.getSessionStats",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 8,
-      "loc": 24,
-      "parameters": 1
-    },
-    {
-      "element": "PromptValidator.validatePrompt",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 8,
-      "loc": 30,
-      "parameters": 1
-    },
-    {
-      "element": "CodeRefValidator.isValidElement",
-      "file": "src/validator/validator.js",
-      "type": "method",
-      "complexity": 8,
-      "loc": 22,
-      "parameters": 1
+      "loc": 47,
+      "parameters": 0
     },
     {
       "element": "main",
@@ -1957,11 +2325,51 @@
       "parameters": 1
     },
     {
+      "element": "ConfigAnalyzer.analyze",
+      "file": "src/analyzer/config-analyzer.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 35,
+      "parameters": 0
+    },
+    {
+      "element": "ConfigAnalyzer.analyzeEnvFiles",
+      "file": "src/analyzer/config-analyzer.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 42,
+      "parameters": 0
+    },
+    {
+      "element": "DependencyAnalyzer.getVulnerabilities",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 21,
+      "parameters": 1
+    },
+    {
+      "element": "DocsAnalyzer.analyzeApiDocs",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 41,
+      "parameters": 0
+    },
+    {
       "element": "DynamicImportDetector.getImportType",
       "file": "src/analyzer/dynamic-import-detector.ts",
       "type": "method",
       "complexity": 7,
       "loc": 28,
+      "parameters": 1
+    },
+    {
+      "element": "EntryPointDetector.detectByCodePattern",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 53,
       "parameters": 1
     },
     {
@@ -1989,19 +2397,75 @@
       "parameters": 2
     },
     {
-      "element": "JSCallDetector.extractObjectName",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
+      "element": "analyzeCallPatterns",
+      "file": "src/analyzer/js-call-detector/analyzer.ts",
+      "type": "function",
+      "complexity": 7,
+      "loc": 35,
+      "parameters": 2
+    },
+    {
+      "element": "extractObjectName",
+      "file": "src/analyzer/js-call-detector/parser.ts",
+      "type": "function",
       "complexity": 7,
       "loc": 16,
       "parameters": 1
     },
     {
-      "element": "JSCallDetector.analyzeCallPatterns",
-      "file": "src/analyzer/js-call-detector.ts",
+      "element": "MiddlewareDetector.detectDjangoMiddlewareMappings",
+      "file": "src/analyzer/middleware-detector.ts",
       "type": "method",
       "complexity": 7,
-      "loc": 42,
+      "loc": 75,
+      "parameters": 0
+    },
+    {
+      "element": "MiddlewareDetector.detectFastAPI",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 31,
+      "parameters": 0
+    },
+    {
+      "element": "parseSvelteKitRoute",
+      "file": "src/analyzer/route-parsers.ts",
+      "type": "function",
+      "complexity": 7,
+      "loc": 62,
+      "parameters": 2
+    },
+    {
+      "element": "parseRemixRoute",
+      "file": "src/analyzer/route-parsers.ts",
+      "type": "function",
+      "complexity": 7,
+      "loc": 53,
+      "parameters": 2
+    },
+    {
+      "element": "createLLMProvider",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 7,
+      "loc": 27,
+      "parameters": 1
+    },
+    {
+      "element": "createLLMProvider",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 7,
+      "loc": 27,
+      "parameters": 1
+    },
+    {
+      "element": "formatRelativeTime",
+      "file": "src/cli/rag-status.ts",
+      "type": "function",
+      "complexity": 7,
+      "loc": 27,
       "parameters": 1
     },
     {
@@ -2157,11 +2621,35 @@
       "parameters": 1
     },
     {
+      "element": "ContextGenerator.detectFeatureBasedArchitecture",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 31,
+      "parameters": 1
+    },
+    {
+      "element": "ContextGenerator.detectRepositoryPattern",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 28,
+      "parameters": 1
+    },
+    {
+      "element": "ContextGenerator.generateArchitectureRecommendations",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 32,
+      "parameters": 3
+    },
+    {
       "element": "DriftGenerator.detectDrift",
       "file": "src/pipeline/generators/drift-generator.ts",
       "type": "method",
       "complexity": 7,
-      "loc": 81,
+      "loc": 80,
       "parameters": 2
     },
     {
@@ -2189,11 +2677,27 @@
       "parameters": 2
     },
     {
+      "element": "IncrementalCache.load",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 32,
+      "parameters": 0
+    },
+    {
       "element": "findFiles",
       "file": "src/scanner/frontend-scanner.ts",
       "type": "function",
       "complexity": 7,
       "loc": 34,
+      "parameters": 2
+    },
+    {
+      "element": "Scanner.processSvelteKitRoute",
+      "file": "src/scanner/scanner.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 35,
       "parameters": 2
     },
     {
@@ -2213,6 +2717,22 @@
       "parameters": 2
     },
     {
+      "element": "generateUpdateSuggestions",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
+      "complexity": 7,
+      "loc": 60,
+      "parameters": 2
+    },
+    {
+      "element": "generateModifications",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
+      "complexity": 7,
+      "loc": 48,
+      "parameters": 2
+    },
+    {
       "element": "checkRequiredFields",
       "file": "src/validator/migration-mapper.ts",
       "type": "function",
@@ -2225,7 +2745,7 @@
       "file": "src/validator/migration-mapper.ts",
       "type": "function",
       "complexity": 7,
-      "loc": 37,
+      "loc": 44,
       "parameters": 1
     },
     {
@@ -2277,92 +2797,12 @@
       "parameters": 0
     },
     {
-      "element": "ImpactSimulator.getTransitiveDependents",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
+      "element": "enhanceComponentsMd",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
+      "type": "function",
       "complexity": 7,
-      "loc": 25,
-      "parameters": 2
-    },
-    {
-      "element": "AnswerGenerationService.analyzeAnswer",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 20,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingService.validateEmbeddings",
-      "file": "src/integration/rag/embedding-service.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 33,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingTextGenerator.generateQueryText",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 17,
-      "parameters": 2
-    },
-    {
-      "element": "PromptTemplateBuilder.buildInstructionsFromPreferences",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 22,
-      "parameters": 1
-    },
-    {
-      "element": "RAGConfigLoader.getVectorStoreConfig",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 32,
-      "parameters": 1
-    },
-    {
-      "element": "SemanticSearchService.multiQuerySearch",
-      "file": "src/integration/rag/semantic-search.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 29,
-      "parameters": 3
-    },
-    {
-      "element": "ChromaStore.stats",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 36,
+      "loc": 56,
       "parameters": 0
-    },
-    {
-      "element": "PineconeStore.upsert",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 36,
-      "parameters": 2
-    },
-    {
-      "element": "CodeRefParser.isValidPath",
-      "file": "src/parser/parser.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 22,
-      "parameters": 1
-    },
-    {
-      "element": "CodeRefValidator.isValidPath",
-      "file": "src/validator/validator.js",
-      "type": "method",
-      "complexity": 7,
-      "loc": 13,
-      "parameters": 1
     },
     {
       "element": "calculateSummary",
@@ -2379,6 +2819,54 @@
       "complexity": 6,
       "loc": 17,
       "parameters": 1
+    },
+    {
+      "element": "ConfigAnalyzer.analyzeTsConfig",
+      "file": "src/analyzer/config-analyzer.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 46,
+      "parameters": 0
+    },
+    {
+      "element": "DatabaseDetector.detectDatabases",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 39,
+      "parameters": 4
+    },
+    {
+      "element": "DependencyAnalyzer.calculateSeverity",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 19,
+      "parameters": 4
+    },
+    {
+      "element": "DesignPatternDetector.enrichWithCrossReferences",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 24,
+      "parameters": 0
+    },
+    {
+      "element": "EntryPointDetector.detectPackageJsonEntry",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 31,
+      "parameters": 2
+    },
+    {
+      "element": "EntryPointDetector.markPrimaryEntryPoint",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 38,
+      "parameters": 0
     },
     {
       "element": "extractPath",
@@ -2403,6 +2891,14 @@
       "complexity": 6,
       "loc": 49,
       "parameters": 2
+    },
+    {
+      "element": "MiddlewareDetector.detectExpressHandlers",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 27,
+      "parameters": 1
     },
     {
       "element": "parseFlaskRoute",
@@ -2437,20 +2933,12 @@
       "parameters": 5
     },
     {
-      "element": "BreakingChangeDetector.adjustForContextualFactors",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 6,
-      "loc": 35,
-      "parameters": 2
-    },
-    {
-      "element": "BreakingChangeDetector.hasExportKeywordOnParent",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "adjustForContextualFactors",
+      "file": "src/context/breaking-change-detector/impact-assessor.ts",
+      "type": "function",
       "complexity": 6,
       "loc": 17,
-      "parameters": 1
+      "parameters": 2
     },
     {
       "element": "ContextGenerator.generate",
@@ -2458,14 +2946,6 @@
       "type": "method",
       "complexity": 6,
       "loc": 97,
-      "parameters": 2
-    },
-    {
-      "element": "FuzzyResolver.calculatePathSimilarity",
-      "file": "src/context/fuzzy-resolver.ts",
-      "type": "method",
-      "complexity": 6,
-      "loc": 21,
       "parameters": 2
     },
     {
@@ -2485,12 +2965,28 @@
       "parameters": 1
     },
     {
+      "element": "GraphExporter.buildProtobufData",
+      "file": "src/export/graph-exporter.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 33,
+      "parameters": 0
+    },
+    {
       "element": "analyzeCoverage",
       "file": "src/fileGeneration/analyzeCoverage.ts",
       "type": "function",
       "complexity": 6,
       "loc": 65,
       "parameters": 2
+    },
+    {
+      "element": "getApiEndpointStats",
+      "file": "src/fileGeneration/detectPatterns.ts",
+      "type": "function",
+      "complexity": 6,
+      "loc": 36,
+      "parameters": 1
     },
     {
       "element": "buildCallDependencies",
@@ -2765,12 +3261,28 @@
       "parameters": 2
     },
     {
+      "element": "ContextGenerator.determineCallTypeFast",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 15,
+      "parameters": 2
+    },
+    {
       "element": "CoverageGenerator.calculateCoverage",
       "file": "src/pipeline/generators/coverage-generator.ts",
       "type": "method",
       "complexity": 6,
       "loc": 47,
       "parameters": 1
+    },
+    {
+      "element": "HealthGenerator.determineOverallHealth",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 19,
+      "parameters": 3
     },
     {
       "element": "PatternGenerator.detectErrorHandling",
@@ -2785,7 +3297,7 @@
       "file": "src/pipeline/generators/pattern-generator.ts",
       "type": "method",
       "complexity": 6,
-      "loc": 25,
+      "loc": 27,
       "parameters": 3
     },
     {
@@ -2811,6 +3323,22 @@
       "complexity": 6,
       "loc": 32,
       "parameters": 3
+    },
+    {
+      "element": "Scanner.processFile",
+      "file": "src/scanner/scanner.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 36,
+      "parameters": 4
+    },
+    {
+      "element": "Scanner.processRemixRoute",
+      "file": "src/scanner/scanner.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 31,
+      "parameters": 2
     },
     {
       "element": "deduplicateElements",
@@ -2861,140 +3389,20 @@
       "parameters": 2
     },
     {
+      "element": "createTestFile",
+      "file": "__tests__/accuracy-validation.test.ts",
+      "type": "function",
+      "complexity": 6,
+      "loc": 306,
+      "parameters": 2
+    },
+    {
       "element": "isEntirelyCommented",
       "file": "scanner.js",
       "type": "function",
       "complexity": 6,
       "loc": 47,
       "parameters": 1
-    },
-    {
-      "element": "getConversionStats",
-      "file": "src/adapter/graph-to-elements.js",
-      "type": "function",
-      "complexity": 6,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "FuzzyResolver.calculatePathSimilarity",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 20,
-      "parameters": 2
-    },
-    {
-      "element": "AnthropicProvider.withRetry",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 26,
-      "parameters": 1
-    },
-    {
-      "element": "OpenAIProvider.withRetry",
-      "file": "src/integration/llm/openai-provider.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 26,
-      "parameters": 1
-    },
-    {
-      "element": "AnswerGenerationService.extractRelatedQuestions",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 18,
-      "parameters": 1
-    },
-    {
-      "element": "ConfidenceScorer.scoreCodeQuality",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 30,
-      "parameters": 1
-    },
-    {
-      "element": "ConfidenceScorer.generateRecommendations",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 23,
-      "parameters": 3
-    },
-    {
-      "element": "ContextBuilder.validateContext",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 24,
-      "parameters": 1
-    },
-    {
-      "element": "GraphReRanker.analyzeReRankingImpact",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 36,
-      "parameters": 2
-    },
-    {
-      "element": "IncrementalIndexer.loadState",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 28,
-      "parameters": 0
-    },
-    {
-      "element": "IncrementalIndexer.updateState",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 42,
-      "parameters": 1
-    },
-    {
-      "element": "RAGConfigLoader.getLLMProvider",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 18,
-      "parameters": 0
-    },
-    {
-      "element": "RAGConfigLoader.getLLMConfig",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 30,
-      "parameters": 1
-    },
-    {
-      "element": "RAGConfigLoader.printConfigSummary",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 19,
-      "parameters": 1
-    },
-    {
-      "element": "SemanticSearchService.searchByExample",
-      "file": "src/integration/rag/semantic-search.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 28,
-      "parameters": 2
-    },
-    {
-      "element": "CodeRefValidator.levenshteinDistance",
-      "file": "src/validator/validator.js",
-      "type": "method",
-      "complexity": 6,
-      "loc": 27,
-      "parameters": 2
     },
     {
       "element": "AnalyzerService.analyze",
@@ -3011,6 +3419,38 @@
       "complexity": 5,
       "loc": 37,
       "parameters": 1
+    },
+    {
+      "element": "ContractDetector.parseJsonSchema",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 23,
+      "parameters": 1
+    },
+    {
+      "element": "DependencyAnalyzer.generateReport",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 54,
+      "parameters": 1
+    },
+    {
+      "element": "DependencyAnalyzer.getHealthLevel",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 11,
+      "parameters": 1
+    },
+    {
+      "element": "DesignPatternDetector.extractClassName",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 25,
+      "parameters": 2
     },
     {
       "element": "DynamicImportDetector.extractNamespaceVariable",
@@ -3069,12 +3509,36 @@
       "parameters": 1
     },
     {
-      "element": "JSCallDetector.detectElements",
-      "file": "src/analyzer/js-call-detector.ts",
+      "element": "MiddlewareDetector.detectExpressChains",
+      "file": "src/analyzer/middleware-detector.ts",
       "type": "method",
       "complexity": 5,
-      "loc": 27,
+      "loc": 26,
+      "parameters": 0
+    },
+    {
+      "element": "MiddlewareDetector.extractConstructorDeps",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 24,
       "parameters": 1
+    },
+    {
+      "element": "analyzeMiddlewareAndDI",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "function",
+      "complexity": 5,
+      "loc": 32,
+      "parameters": 2
+    },
+    {
+      "element": "MigrationRouteAnalyzer.calculateImpactScore",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 49,
+      "parameters": 2
     },
     {
       "element": "validateCliLanguages",
@@ -3085,19 +3549,19 @@
       "parameters": 1
     },
     {
-      "element": "BreakingChangeDetector.scoreCallType",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "scanProject",
+      "file": "src/cli/scan.ts",
+      "type": "function",
       "complexity": 5,
-      "loc": 22,
-      "parameters": 1
+      "loc": 37,
+      "parameters": 2
     },
     {
-      "element": "BreakingChangeDetector.hasExportKeyword",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "scoreCallType",
+      "file": "src/context/breaking-change-detector/impact-assessor.ts",
+      "type": "function",
       "complexity": 5,
-      "loc": 19,
+      "loc": 18,
       "parameters": 1
     },
     {
@@ -3185,15 +3649,7 @@
       "file": "src/export/graph-exporter.ts",
       "type": "method",
       "complexity": 5,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "detectApiEndpoints",
-      "file": "src/fileGeneration/detectPatterns.ts",
-      "type": "function",
-      "complexity": 5,
-      "loc": 24,
+      "loc": 16,
       "parameters": 1
     },
     {
@@ -3203,6 +3659,30 @@
       "complexity": 5,
       "loc": 29,
       "parameters": 1
+    },
+    {
+      "element": "fromCompactElements",
+      "file": "src/fileGeneration/index-storage.ts",
+      "type": "function",
+      "complexity": 5,
+      "loc": 16,
+      "parameters": 1
+    },
+    {
+      "element": "createVerboseIndexFile",
+      "file": "src/fileGeneration/index-storage.ts",
+      "type": "function",
+      "complexity": 5,
+      "loc": 16,
+      "parameters": 2
+    },
+    {
+      "element": "createCompactIndexFile",
+      "file": "src/fileGeneration/index-storage.ts",
+      "type": "function",
+      "complexity": 5,
+      "loc": 16,
+      "parameters": 2
     },
     {
       "element": "CodeRefFormatter.formatMetadataEntry",
@@ -3453,6 +3933,38 @@
       "parameters": 3
     },
     {
+      "element": "ContextGenerator.detectLayeredArchitecture",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 33,
+      "parameters": 1
+    },
+    {
+      "element": "ContextGenerator.detectHexagonalArchitecture",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 33,
+      "parameters": 1
+    },
+    {
+      "element": "ContextGenerator.assessCoupling",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 19,
+      "parameters": 2
+    },
+    {
+      "element": "ContextGenerator.assessCohesion",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 15,
+      "parameters": 2
+    },
+    {
       "element": "DiagramGenerator.generateDOT",
       "file": "src/pipeline/generators/diagram-generator.ts",
       "type": "method",
@@ -3525,14 +4037,6 @@
       "parameters": 2
     },
     {
-      "element": "Scanner.processFile",
-      "file": "src/scanner/scanner.ts",
-      "type": "method",
-      "complexity": 5,
-      "loc": 21,
-      "parameters": 4
-    },
-    {
       "element": "shouldExcludePath",
       "file": "src/scanner/scanner.ts",
       "type": "function",
@@ -3589,6 +4093,14 @@
       "parameters": 1
     },
     {
+      "element": "generateGitPatch",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
+      "complexity": 5,
+      "loc": 52,
+      "parameters": 2
+    },
+    {
       "element": "validateRegexPatterns",
       "file": "src/validator/migration-mapper.ts",
       "type": "function",
@@ -3625,7 +4137,7 @@
       "file": "src/validator/route-normalizer.ts",
       "type": "function",
       "complexity": 5,
-      "loc": 24,
+      "loc": 32,
       "parameters": 2
     },
     {
@@ -3657,8 +4169,16 @@
       "file": "__tests__/generators/helpers.ts",
       "type": "function",
       "complexity": 5,
-      "loc": 182,
+      "loc": 193,
       "parameters": 0
+    },
+    {
+      "element": "createSampleRef",
+      "file": "__tests__/indexer.test.ts",
+      "type": "function",
+      "complexity": 5,
+      "loc": 21,
+      "parameters": 5
     },
     {
       "element": "testParserValidReferences",
@@ -3685,164 +4205,12 @@
       "parameters": 4
     },
     {
-      "element": "ContextTracker.cleanupExpiredContexts",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
+      "element": "enhanceSchemamd",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
+      "type": "function",
       "complexity": 5,
-      "loc": 15,
+      "loc": 56,
       "parameters": 0
-    },
-    {
-      "element": "FuzzyResolver.generateMatchReason",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 13,
-      "parameters": 4
-    },
-    {
-      "element": "ConfidenceScorer.scoreRetrievalQuality",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 17,
-      "parameters": 1
-    },
-    {
-      "element": "ConfidenceScorer.determineConfidenceLevel",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 14,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.getHistoryForContext",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 17,
-      "parameters": 2
-    },
-    {
-      "element": "EmbeddingService.calculateSimilarity",
-      "file": "src/integration/rag/embedding-service.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 23,
-      "parameters": 2
-    },
-    {
-      "element": "EmbeddingTextGenerator.validateText",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 25,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingTextGenerator.generateComparisonText",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 41,
-      "parameters": 2
-    },
-    {
-      "element": "GraphReRanker.calculateRankingFactors",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 27,
-      "parameters": 2
-    },
-    {
-      "element": "GraphReRanker.calculateGraphScore",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 6,
-      "parameters": 2
-    },
-    {
-      "element": "GraphReRanker.calculateQualityScore",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 6,
-      "parameters": 2
-    },
-    {
-      "element": "PromptTemplateBuilder.buildPrompt",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 28,
-      "parameters": 1
-    },
-    {
-      "element": "RAGConfigLoader.getVectorStoreProvider",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 15,
-      "parameters": 0
-    },
-    {
-      "element": "SemanticSearchService.enhanceQuery",
-      "file": "src/integration/rag/semantic-search.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 21,
-      "parameters": 2
-    },
-    {
-      "element": "SemanticSearchService.suggestQueryImprovements",
-      "file": "src/integration/rag/semantic-search.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 22,
-      "parameters": 2
-    },
-    {
-      "element": "ChromaStore.upsert",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 35,
-      "parameters": 2
-    },
-    {
-      "element": "ChromaStore.delete",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 24,
-      "parameters": 2
-    },
-    {
-      "element": "PineconeStore.waitForIndexReady",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 19,
-      "parameters": 0
-    },
-    {
-      "element": "PineconeStore.delete",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 22,
-      "parameters": 2
-    },
-    {
-      "element": "QueryExecutor.flattenPaths",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 5,
-      "loc": 17,
-      "parameters": 1
     },
     {
       "element": "AnalyzerService.createAnalysisResult",
@@ -3882,6 +4250,70 @@
       "type": "method",
       "complexity": 4,
       "loc": 18,
+      "parameters": 1
+    },
+    {
+      "element": "ContractDetector.detectOpenApiSpecs",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 27,
+      "parameters": 0
+    },
+    {
+      "element": "ContractDetector.detectGraphqlSchemas",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 26,
+      "parameters": 0
+    },
+    {
+      "element": "ContractDetector.detectProtobufDefs",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 23,
+      "parameters": 0
+    },
+    {
+      "element": "ContractDetector.detectJsonSchemas",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 23,
+      "parameters": 0
+    },
+    {
+      "element": "DatabaseDetector.detectTypeorm",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 23,
+      "parameters": 0
+    },
+    {
+      "element": "DatabaseDetector.detectSequelize",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 22,
+      "parameters": 0
+    },
+    {
+      "element": "DatabaseDetector.detectMongoose",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 23,
+      "parameters": 0
+    },
+    {
+      "element": "DocsAnalyzer.determineQualityLevel",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 10,
       "parameters": 1
     },
     {
@@ -3926,7 +4358,7 @@
     },
     {
       "element": "JSCallDetector.detectCalls",
-      "file": "src/analyzer/js-call-detector.ts",
+      "file": "src/analyzer/js-call-detector/index.ts",
       "type": "method",
       "complexity": 4,
       "loc": 22,
@@ -3934,7 +4366,7 @@
     },
     {
       "element": "JSCallDetector.getFileParameters",
-      "file": "src/analyzer/js-call-detector.ts",
+      "file": "src/analyzer/js-call-detector/index.ts",
       "type": "method",
       "complexity": 4,
       "loc": 22,
@@ -3942,7 +4374,7 @@
     },
     {
       "element": "JSCallDetector.detectImports",
-      "file": "src/analyzer/js-call-detector.ts",
+      "file": "src/analyzer/js-call-detector/index.ts",
       "type": "method",
       "complexity": 4,
       "loc": 22,
@@ -3950,7 +4382,7 @@
     },
     {
       "element": "JSCallDetector.detectExports",
-      "file": "src/analyzer/js-call-detector.ts",
+      "file": "src/analyzer/js-call-detector/index.ts",
       "type": "method",
       "complexity": 4,
       "loc": 22,
@@ -3981,11 +4413,43 @@
       "parameters": 1
     },
     {
-      "element": "BreakingChangeDetector.isCompatibleCall",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "MiddlewareDetector.detectExpressMiddlewareMappings",
+      "file": "src/analyzer/middleware-detector.ts",
       "type": "method",
       "complexity": 4,
-      "loc": 55,
+      "loc": 57,
+      "parameters": 0
+    },
+    {
+      "element": "MiddlewareDetector.calculateFrameworkBreakdown",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 25,
+      "parameters": 3
+    },
+    {
+      "element": "calculateTotalFrameworkBreakdown",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "function",
+      "complexity": 4,
+      "loc": 22,
+      "parameters": 3
+    },
+    {
+      "element": "ProjectClassifier.classify",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 53,
+      "parameters": 3
+    },
+    {
+      "element": "isCompatibleCall",
+      "file": "src/context/breaking-change-detector/impact-assessor.ts",
+      "type": "function",
+      "complexity": 4,
+      "loc": 12,
       "parameters": 2
     },
     {
@@ -4057,15 +4521,7 @@
       "file": "src/context/fuzzy-resolver.ts",
       "type": "method",
       "complexity": 4,
-      "loc": 14,
-      "parameters": 2
-    },
-    {
-      "element": "FuzzyResolver.calculateSignatureSimilarity",
-      "file": "src/context/fuzzy-resolver.ts",
-      "type": "method",
-      "complexity": 4,
-      "loc": 11,
+      "loc": 17,
       "parameters": 2
     },
     {
@@ -4129,7 +4585,7 @@
       "file": "src/fileGeneration/detectPatterns.ts",
       "type": "function",
       "complexity": 4,
-      "loc": 25,
+      "loc": 31,
       "parameters": 1
     },
     {
@@ -4337,7 +4793,15 @@
       "file": "src/pipeline/generators/context-generator.ts",
       "type": "method",
       "complexity": 4,
-      "loc": 12,
+      "loc": 16,
+      "parameters": 1
+    },
+    {
+      "element": "ContextGenerator.getRiskLevel",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 11,
       "parameters": 1
     },
     {
@@ -4370,6 +4834,14 @@
       "type": "method",
       "complexity": 4,
       "loc": 48,
+      "parameters": 1
+    },
+    {
+      "element": "IncrementalCache.updateCache",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 27,
       "parameters": 1
     },
     {
@@ -4509,28 +4981,12 @@
       "parameters": 1
     },
     {
-      "element": "createTestFile",
-      "file": "__tests__/accuracy-validation.test.ts",
-      "type": "function",
-      "complexity": 4,
-      "loc": 294,
-      "parameters": 2
-    },
-    {
       "element": "countAbsoluteEdgeReferences",
       "file": "__tests__/generators/root-cause-alignment.test.ts",
       "type": "function",
       "complexity": 4,
       "loc": 8,
       "parameters": 1
-    },
-    {
-      "element": "createSampleRef",
-      "file": "__tests__/indexer.test.ts",
-      "type": "function",
-      "complexity": 4,
-      "loc": 19,
-      "parameters": 5
     },
     {
       "element": "recordTest",
@@ -4573,259 +5029,19 @@
       "parameters": 0
     },
     {
-      "element": "ContextTracker.getContext",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "ContextTracker.getContextEntry",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "ContextTracker.getContextKeys",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 15,
-      "parameters": 0
-    },
-    {
-      "element": "ContextTracker.getAllContext",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 15,
-      "parameters": 0
-    },
-    {
-      "element": "FuzzyResolver.calculateNameSimilarity",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 14,
-      "parameters": 2
-    },
-    {
-      "element": "FuzzyResolver.calculateSignatureSimilarity",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 11,
-      "parameters": 2
-    },
-    {
-      "element": "ImpactSimulator.calculateSeverity",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 12,
-      "parameters": 1
-    },
-    {
-      "element": "ImpactSimulator.generateMitigationStrategies",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 25,
-      "parameters": 2
-    },
-    {
-      "element": "ImpactSimulator.buildCascadeChain",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 22,
-      "parameters": 1
-    },
-    {
-      "element": "MultiHopTraversal.usedBy",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 32,
-      "parameters": 2
-    },
-    {
-      "element": "MultiHopTraversal.calls",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 32,
-      "parameters": 2
-    },
-    {
-      "element": "MultiHopTraversal.traverse",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 15,
-      "parameters": 3
-    },
-    {
-      "element": "GraphExporter.export",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "GraphExporter.calculateStatistics",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 19,
-      "parameters": 0
-    },
-    {
-      "element": "AnthropicProvider.mapStopReason",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 14,
-      "parameters": 1
-    },
-    {
-      "element": "OpenAIProvider.mapFinishReason",
-      "file": "src/integration/llm/openai-provider.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "ChunkConverter.extractRelatedElements",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 12,
-      "parameters": 3
-    },
-    {
-      "element": "ContextBuilder.truncateToTokenLimit",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 26,
-      "parameters": 2
-    },
-    {
-      "element": "ConversationManager.getOrCreateSession",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 16,
-      "parameters": 2
-    },
-    {
-      "element": "ConversationManager.addUserMessage",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 23,
-      "parameters": 3
-    },
-    {
-      "element": "ConversationManager.addAssistantMessage",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 29,
-      "parameters": 2
-    },
-    {
-      "element": "IncrementalIndexer.filterChangedChunks",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 31,
-      "parameters": 2
-    },
-    {
-      "element": "IncrementalIndexer.needsReindexing",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 19,
-      "parameters": 1
-    },
-    {
-      "element": "ChromaStore.clear",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 26,
-      "parameters": 1
-    },
-    {
-      "element": "PineconeStore.initialize",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 31,
-      "parameters": 0
-    },
-    {
-      "element": "PineconeStore.clear",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 19,
-      "parameters": 1
-    },
-    {
-      "element": "PineconeStore.buildFilter",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 12,
-      "parameters": 1
-    },
-    {
-      "element": "QueryExecutor.execute",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 43,
-      "parameters": 1
-    },
-    {
-      "element": "QueryExecutor.pathToNodes",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 9,
-      "parameters": 1
-    },
-    {
-      "element": "QueryExecutor.generateCacheKey",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 4,
-      "loc": 13,
-      "parameters": 1
-    },
-    {
-      "element": "isValidTypeDesignator",
-      "file": "src/types/types.js",
+      "element": "complexityBadge",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
       "type": "function",
       "complexity": 4,
       "loc": 7,
       "parameters": 1
     },
     {
-      "element": "CodeRefValidator.isValidTypeDesignator",
-      "file": "src/validator/validator.js",
-      "type": "method",
+      "element": "complexityBadge",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
       "complexity": 4,
-      "loc": 8,
+      "loc": 12,
       "parameters": 1
     },
     {
@@ -4893,12 +5109,60 @@
       "parameters": 1
     },
     {
+      "element": "DependencyAnalyzer.runNpmAudit",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 28,
+      "parameters": 0
+    },
+    {
+      "element": "DependencyAnalyzer.isLicenseCompatible",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 25,
+      "parameters": 1
+    },
+    {
+      "element": "DependencyAnalyzer.calculateHealthScore",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 20,
+      "parameters": 1
+    },
+    {
+      "element": "DesignPatternDetector.calculateBreakdown",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 14,
+      "parameters": 0
+    },
+    {
       "element": "DynamicImportDetector.detectDynamicImports",
       "file": "src/analyzer/dynamic-import-detector.ts",
       "type": "method",
       "complexity": 3,
       "loc": 30,
       "parameters": 1
+    },
+    {
+      "element": "EntryPointDetector.addEntryPoint",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 24,
+      "parameters": 5
+    },
+    {
+      "element": "EntryPointDetector.sortEntryPoints",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 25,
+      "parameters": 0
     },
     {
       "element": "extractCallLocation",
@@ -4949,6 +5213,14 @@
       "parameters": 2
     },
     {
+      "element": "JSCallDetector.detectElements",
+      "file": "src/analyzer/js-call-detector/index.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 14,
+      "parameters": 1
+    },
+    {
       "element": "getSourceTypeFromExtension",
       "file": "src/analyzer/js-parser.ts",
       "type": "function",
@@ -4957,12 +5229,116 @@
       "parameters": 1
     },
     {
+      "element": "MiddlewareDetector.extractNestJSProviders",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 30,
+      "parameters": 1
+    },
+    {
+      "element": "MiddlewareDetector.extractNestJSImports",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 24,
+      "parameters": 1
+    },
+    {
+      "element": "MiddlewareDetector.extractNestJSExports",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 21,
+      "parameters": 1
+    },
+    {
+      "element": "MiddlewareDetector.extractAngularProviders",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 28,
+      "parameters": 1
+    },
+    {
+      "element": "MiddlewareDetector.extractAngularImports",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 23,
+      "parameters": 1
+    },
+    {
+      "element": "MiddlewareDetector.extractAngularExports",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 21,
+      "parameters": 1
+    },
+    {
+      "element": "MigrationRouteAnalyzer.findOrphanedCalls",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 31,
+      "parameters": 1
+    },
+    {
+      "element": "MigrationRouteAnalyzer.exportForMigration",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 22,
+      "parameters": 0
+    },
+    {
+      "element": "MigrationRouteAnalyzer.findSimilarRoute",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 16,
+      "parameters": 2
+    },
+    {
+      "element": "MigrationRouteAnalyzer.matchPathWithParams",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 31,
+      "parameters": 2
+    },
+    {
+      "element": "ProjectClassifier.buildHybridClassification",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 20,
+      "parameters": 3
+    },
+    {
       "element": "parseNextJsRoute",
       "file": "src/analyzer/route-parsers.ts",
       "type": "function",
       "complexity": 3,
-      "loc": 40,
+      "loc": 35,
       "parameters": 2
+    },
+    {
+      "element": "formatDuration",
+      "file": "src/cli/rag-status.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 11,
+      "parameters": 1
+    },
+    {
+      "element": "validateProjectPath",
+      "file": "src/cli/scan.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 16,
+      "parameters": 1
     },
     {
       "element": "mergePresets",
@@ -4981,19 +5357,27 @@
       "parameters": 1
     },
     {
-      "element": "BreakingChangeDetector.suggestOptionsObjectPattern",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "getChangedElements",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "type": "function",
       "complexity": 3,
-      "loc": 25,
+      "loc": 12,
+      "parameters": 2
+    },
+    {
+      "element": "suggestOptionsObjectPattern",
+      "file": "src/context/breaking-change-detector/hint-generator.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 10,
       "parameters": 1
     },
     {
-      "element": "BreakingChangeDetector.calculateReportConfidence",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "calculateReportConfidence",
+      "file": "src/context/breaking-change-detector/impact-assessor.ts",
+      "type": "function",
       "complexity": 3,
-      "loc": 23,
+      "loc": 18,
       "parameters": 1
     },
     {
@@ -5051,6 +5435,14 @@
       "complexity": 3,
       "loc": 39,
       "parameters": 1
+    },
+    {
+      "element": "FuzzyResolver.commonPrefixLength",
+      "file": "src/context/fuzzy-resolver.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 13,
+      "parameters": 3
     },
     {
       "element": "FuzzyResolver.setSimilarityThreshold",
@@ -5177,7 +5569,7 @@
       "file": "src/fileGeneration/detectDrift.ts",
       "type": "function",
       "complexity": 3,
-      "loc": 18,
+      "loc": 14,
       "parameters": 1
     },
     {
@@ -5222,10 +5614,10 @@
     },
     {
       "element": "getElementCountsByType",
-      "file": "src/fileGeneration/saveIndex.ts",
+      "file": "src/fileGeneration/index-storage.ts",
       "type": "function",
       "complexity": 3,
-      "loc": 10,
+      "loc": 8,
       "parameters": 1
     },
     {
@@ -5509,12 +5901,28 @@
       "parameters": 1
     },
     {
-      "element": "ContextGenerator.generateMarkdown",
+      "element": "ComplexityGenerator.calculateComplexity",
+      "file": "src/pipeline/generators/complexity-generator.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 23,
+      "parameters": 3
+    },
+    {
+      "element": "ContextGenerator.detectCircularChains",
       "file": "src/pipeline/generators/context-generator.ts",
       "type": "method",
       "complexity": 3,
-      "loc": 64,
+      "loc": 15,
       "parameters": 2
+    },
+    {
+      "element": "ContextGenerator.loadPackageJson",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 13,
+      "parameters": 1
     },
     {
       "element": "DiagramGenerator.getNodeLabel",
@@ -5557,11 +5965,19 @@
       "parameters": 2
     },
     {
+      "element": "HealthGenerator.calculateMaintenanceScore",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 24,
+      "parameters": 1
+    },
+    {
       "element": "IndexGenerator.generate",
       "file": "src/pipeline/generators/index-generator.ts",
       "type": "method",
       "complexity": 3,
-      "loc": 31,
+      "loc": 30,
       "parameters": 2
     },
     {
@@ -5589,6 +6005,14 @@
       "parameters": 1
     },
     {
+      "element": "IncrementalCache.save",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 27,
+      "parameters": 0
+    },
+    {
       "element": "PipelineOrchestrator.processFile",
       "file": "src/pipeline/orchestrator.ts",
       "type": "method",
@@ -5603,6 +6027,22 @@
       "complexity": 3,
       "loc": 18,
       "parameters": 1
+    },
+    {
+      "element": "FrameworkRegistry.detect",
+      "file": "src/scanner/framework-registry.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 14,
+      "parameters": 2
+    },
+    {
+      "element": "FrameworkRegistry.detectAll",
+      "file": "src/scanner/framework-registry.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 14,
+      "parameters": 2
     },
     {
       "element": "scanFileForFrontendCalls",
@@ -5677,12 +6117,36 @@
       "parameters": 2
     },
     {
+      "element": "getConfidenceLevel",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 26,
+      "parameters": 1
+    },
+    {
       "element": "checkDeprecatedAddedOverlap",
       "file": "src/validator/migration-mapper.ts",
       "type": "function",
       "complexity": 3,
       "loc": 29,
       "parameters": 2
+    },
+    {
+      "element": "SemanticParameterMapper.getLocationSyntax",
+      "file": "src/validator/migration-mapper.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 36,
+      "parameters": 2
+    },
+    {
+      "element": "SemanticParameterMapper.addMapping",
+      "file": "src/validator/migration-mapper.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 13,
+      "parameters": 1
     },
     {
       "element": "formatAutoFixSection",
@@ -5725,14 +6189,6 @@
       "parameters": 2
     },
     {
-      "element": "createSampleReferences",
-      "file": "__tests__/indexer.test.ts",
-      "type": "function",
-      "complexity": 3,
-      "loc": 29,
-      "parameters": 1
-    },
-    {
       "element": "testParserWithBlockReferences",
       "file": "__tests__/integration.test.ts",
       "type": "function",
@@ -5770,262 +6226,6 @@
       "type": "function",
       "complexity": 3,
       "loc": 9,
-      "parameters": 1
-    },
-    {
-      "element": "ContextTracker.getHistory",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 11,
-      "parameters": 0
-    },
-    {
-      "element": "ContextTracker.importFromJSON",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 18,
-      "parameters": 1
-    },
-    {
-      "element": "FuzzyResolver.setSimilarityThreshold",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 10,
-      "parameters": 1
-    },
-    {
-      "element": "ImpactSimulator.extractModuleName",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 13,
-      "parameters": 1
-    },
-    {
-      "element": "MultiHopTraversal.dependsOn",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 32,
-      "parameters": 2
-    },
-    {
-      "element": "MultiHopTraversal.setMaxDepth",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 10,
-      "parameters": 1
-    },
-    {
-      "element": "MultiHopTraversal.setMaxResults",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 9,
-      "parameters": 1
-    },
-    {
-      "element": "GraphExporter.buildEdgeArray",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 15,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.calculateNodeColors",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 18,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.calculateEdgeWeights",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 12,
-      "parameters": 0
-    },
-    {
-      "element": "AIPromptGenerator.optimizePromptForTokens",
-      "file": "src/integration/ai-prompt-generator.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 22,
-      "parameters": 2
-    },
-    {
-      "element": "AIPromptGenerator.setMaxContextDepth",
-      "file": "src/integration/ai-prompt-generator.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 9,
-      "parameters": 1
-    },
-    {
-      "element": "OpenAIProvider.embed",
-      "file": "src/integration/llm/openai-provider.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 23,
-      "parameters": 1
-    },
-    {
-      "element": "ChunkConverter.groupNodesByFile",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 12,
-      "parameters": 1
-    },
-    {
-      "element": "ChunkConverter.extractDependencies",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 9,
-      "parameters": 2
-    },
-    {
-      "element": "ChunkConverter.extractDependents",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 9,
-      "parameters": 2
-    },
-    {
-      "element": "ConfidenceScorer.scoreLLMCertainty",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 29,
-      "parameters": 1
-    },
-    {
-      "element": "ConfidenceScorer.updatePerformanceHistory",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 18,
-      "parameters": 1
-    },
-    {
-      "element": "ConfidenceScorer.compareConfidence",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 11,
-      "parameters": 1
-    },
-    {
-      "element": "ContextBuilder.buildCompactContext",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 17,
-      "parameters": 1
-    },
-    {
-      "element": "ContextBuilder.getUniqueCounts",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 15,
-      "parameters": 2
-    },
-    {
-      "element": "ConversationManager.clearExpiredSessions",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 13,
-      "parameters": 0
-    },
-    {
-      "element": "ConversationManager.summarizeConversation",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 26,
-      "parameters": 1
-    },
-    {
-      "element": "GraphReRanker.calculateCentrality",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 11,
-      "parameters": 1
-    },
-    {
-      "element": "IncrementalIndexer.hashFile",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "IncrementalIndexer.clearState",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 14,
-      "parameters": 0
-    },
-    {
-      "element": "IncrementalIndexer.getStatistics",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 24,
-      "parameters": 0
-    },
-    {
-      "element": "RAGConfigLoader.getGenerationSettings",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 11,
-      "parameters": 0
-    },
-    {
-      "element": "SemanticSearchService.analyzeResults",
-      "file": "src/integration/rag/semantic-search.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 28,
-      "parameters": 1
-    },
-    {
-      "element": "QueryExecutor.getFromCache",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "getTypePriority",
-      "file": "src/types/types.js",
-      "type": "function",
-      "complexity": 3,
-      "loc": 7,
-      "parameters": 1
-    },
-    {
-      "element": "CodeRefValidator.getSimilarTypes",
-      "file": "src/validator/validator.js",
-      "type": "method",
-      "complexity": 3,
-      "loc": 18,
       "parameters": 1
     },
     {
@@ -6077,6 +6277,118 @@
       "parameters": 0
     },
     {
+      "element": "ContractDetector.globToRegex",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 12,
+      "parameters": 1
+    },
+    {
+      "element": "DatabaseDetector.globToRegex",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 13,
+      "parameters": 1
+    },
+    {
+      "element": "DependencyAnalyzer.analyze",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 20,
+      "parameters": 0
+    },
+    {
+      "element": "DependencyAnalyzer.getAllDependencies",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 12,
+      "parameters": 0
+    },
+    {
+      "element": "DependencyAnalyzer.checkIfOutdated",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 12,
+      "parameters": 2
+    },
+    {
+      "element": "DependencyAnalyzer.getLicenseInfo",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 15,
+      "parameters": 1
+    },
+    {
+      "element": "analyzeDependencyHealth",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 12,
+      "parameters": 1
+    },
+    {
+      "element": "DesignPatternDetector.analyze",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 23,
+      "parameters": 0
+    },
+    {
+      "element": "DocsAnalyzer.analyze",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 46,
+      "parameters": 0
+    },
+    {
+      "element": "EntryPointDetector.detect",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 28,
+      "parameters": 3
+    },
+    {
+      "element": "JSCallDetector.buildCallEdges",
+      "file": "src/analyzer/js-call-detector/index.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 10,
+      "parameters": 2
+    },
+    {
+      "element": "MiddlewareDetector.detectNestJS",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 31,
+      "parameters": 0
+    },
+    {
+      "element": "MiddlewareDetector.detectAngular",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 31,
+      "parameters": 0
+    },
+    {
+      "element": "MigrationRouteAnalyzer.findRouteByPathAndMethods",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 11,
+      "parameters": 3
+    },
+    {
       "element": "parseFastAPIRoute",
       "file": "src/analyzer/route-parsers.ts",
       "type": "function",
@@ -6099,6 +6411,46 @@
       "complexity": 2,
       "loc": 13,
       "parameters": 0
+    },
+    {
+      "element": "createVectorStore",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 16,
+      "parameters": 2
+    },
+    {
+      "element": "printHelp",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 51,
+      "parameters": 0
+    },
+    {
+      "element": "createVectorStore",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 16,
+      "parameters": 2
+    },
+    {
+      "element": "formatBytes",
+      "file": "src/cli/rag-status.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 11,
+      "parameters": 1
+    },
+    {
+      "element": "parseLanguages",
+      "file": "src/cli/scan.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 13,
+      "parameters": 1
     },
     {
       "element": "loadPreset",
@@ -6125,36 +6477,12 @@
       "parameters": 1
     },
     {
-      "element": "BreakingChangeDetector.analyzeDifference",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "analyzeDifference",
+      "file": "src/context/breaking-change-detector/signature-comparator.ts",
+      "type": "function",
       "complexity": 2,
-      "loc": 22,
+      "loc": 12,
       "parameters": 2
-    },
-    {
-      "element": "BreakingChangeDetector.extractSignaturesFromRef",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 2,
-      "loc": 31,
-      "parameters": 2
-    },
-    {
-      "element": "BreakingChangeDetector.extractSignaturesFromWorktree",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 2,
-      "loc": 31,
-      "parameters": 1
-    },
-    {
-      "element": "BreakingChangeDetector.extractReturnType",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 2,
-      "loc": 13,
-      "parameters": 1
     },
     {
       "element": "ContextTracker.addToHistory",
@@ -6229,20 +6557,36 @@
       "parameters": 0
     },
     {
-      "element": "GraphExporter.calculateNodePositions",
-      "file": "src/export/graph-exporter.ts",
-      "type": "method",
-      "complexity": 2,
-      "loc": 23,
-      "parameters": 0
-    },
-    {
       "element": "detectDrift",
       "file": "src/fileGeneration/detectDrift.ts",
       "type": "function",
       "complexity": 2,
       "loc": 57,
       "parameters": 2
+    },
+    {
+      "element": "writeIndexVariants",
+      "file": "src/fileGeneration/index-storage.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 37,
+      "parameters": 3
+    },
+    {
+      "element": "readJsonMaybeGz",
+      "file": "src/fileGeneration/index-storage.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 6,
+      "parameters": 1
+    },
+    {
+      "element": "loadIndexFromCoderefDir",
+      "file": "src/fileGeneration/index-storage.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 25,
+      "parameters": 1
     },
     {
       "element": "generateFrontendCallsOutput",
@@ -6885,20 +7229,20 @@
       "parameters": 1
     },
     {
-      "element": "ContextGenerator.findEntryPoints",
-      "file": "src/pipeline/generators/context-generator.ts",
-      "type": "method",
-      "complexity": 2,
-      "loc": 11,
-      "parameters": 2
-    },
-    {
       "element": "ContextGenerator.getElementId",
       "file": "src/pipeline/generators/context-generator.ts",
       "type": "method",
       "complexity": 2,
       "loc": 8,
       "parameters": 1
+    },
+    {
+      "element": "ContextGenerator.calculateDependencyRiskScore",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 19,
+      "parameters": 2
     },
     {
       "element": "CoverageGenerator.generate",
@@ -6965,12 +7309,44 @@
       "parameters": 2
     },
     {
+      "element": "HealthGenerator.calculateSecurityScore",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 33,
+      "parameters": 1
+    },
+    {
+      "element": "generateHealthReport",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 15,
+      "parameters": 2
+    },
+    {
       "element": "PatternGenerator.generate",
       "file": "src/pipeline/generators/pattern-generator.ts",
       "type": "method",
       "complexity": 2,
-      "loc": 22,
+      "loc": 28,
       "parameters": 2
+    },
+    {
+      "element": "PatternGenerator.mapNestJSDecorator",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 15,
+      "parameters": 1
+    },
+    {
+      "element": "PatternGenerator.loadCoverageData",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 24,
+      "parameters": 1
     },
     {
       "element": "RegistryGenerator.generate",
@@ -7019,6 +7395,22 @@
       "complexity": 2,
       "loc": 15,
       "parameters": 4
+    },
+    {
+      "element": "IncrementalCache.removeDeletedFiles",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 9,
+      "parameters": 1
+    },
+    {
+      "element": "IncrementalCache.getStats",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 13,
+      "parameters": 0
     },
     {
       "element": "PipelineOrchestrator.discoverFiles",
@@ -7109,6 +7501,22 @@
       "parameters": 1
     },
     {
+      "element": "Scanner.processNextJsPagesRoute",
+      "file": "src/scanner/scanner.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 21,
+      "parameters": 2
+    },
+    {
+      "element": "Scanner.processNuxtRoute",
+      "file": "src/scanner/scanner.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 21,
+      "parameters": 2
+    },
+    {
       "element": "traverse",
       "file": "src/scanner/tree-sitter-scanner.ts",
       "type": "function",
@@ -7123,6 +7531,14 @@
       "complexity": 2,
       "loc": 1,
       "parameters": 2
+    },
+    {
+      "element": "TreeSitterScanner.isPythonAsync",
+      "file": "src/scanner/tree-sitter-scanner.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 10,
+      "parameters": 1
     },
     {
       "element": "TreeSitterScanner.extractPythonReturnType",
@@ -7349,6 +7765,14 @@
       "parameters": 2
     },
     {
+      "element": "SemanticParameterMapper.inferPydanticSchema",
+      "file": "src/validator/migration-mapper.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 25,
+      "parameters": 2
+    },
+    {
       "element": "formatIssueSummary",
       "file": "src/validator/report-generator.ts",
       "type": "function",
@@ -7533,292 +7957,60 @@
       "parameters": 2
     },
     {
-      "element": "ContextTracker.setContext",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 19,
-      "parameters": 3
-    },
-    {
-      "element": "ContextTracker.addToHistory",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 10,
-      "parameters": 1
-    },
-    {
-      "element": "ContextTracker.stopCleanupTimer",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 9,
-      "parameters": 0
-    },
-    {
-      "element": "ImpactSimulator.getImpactSummary",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 31,
-      "parameters": 2
-    },
-    {
-      "element": "GraphExporter.buildExportedGraph",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 17,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.buildNodeArray",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 16,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.calculateNodePositions",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 19,
-      "parameters": 0
-    },
-    {
-      "element": "AIPromptGenerator.generatePrompt",
-      "file": "src/integration/ai-prompt-generator.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 41,
-      "parameters": 3
-    },
-    {
-      "element": "AIPromptGenerator.setMaxTokens",
-      "file": "src/integration/ai-prompt-generator.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 10,
-      "parameters": 1
-    },
-    {
-      "element": "OpenAIProvider.countTokens",
-      "file": "src/integration/llm/openai-provider.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 16,
-      "parameters": 1
-    },
-    {
-      "element": "AnswerGenerationService.generateVariations",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 15,
-      "parameters": 2
-    },
-    {
-      "element": "ChunkConverter.readFile",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 10,
-      "parameters": 1
-    },
-    {
-      "element": "ChunkConverter.extractElementName",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 7,
-      "parameters": 1
-    },
-    {
-      "element": "ChunkConverter.detectLanguage",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 22,
-      "parameters": 1
-    },
-    {
-      "element": "ChunkConverter.extractSourceCode",
-      "file": "src/integration/rag/chunk-converter.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 21,
-      "parameters": 3
-    },
-    {
-      "element": "ConfidenceScorer.scoreSourceDiversity",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 14,
-      "parameters": 1
-    },
-    {
-      "element": "ContextBuilder.buildTableOfContents",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.getHistory",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 7,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.exportConversation",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 10,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.startCleanupInterval",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 12,
-      "parameters": 0
-    },
-    {
-      "element": "EmbeddingService.createBatches",
-      "file": "src/integration/rag/embedding-service.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 10,
-      "parameters": 2
-    },
-    {
-      "element": "EmbeddingTextGenerator.generateNaturalDescription",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 18,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingTextGenerator.generateStructuredDescription",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 15,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingTextGenerator.getTypeDescription",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 27,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingTextGenerator.calculateTextStatistics",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 26,
-      "parameters": 1
-    },
-    {
-      "element": "IncrementalIndexer.saveState",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 18,
-      "parameters": 1
-    },
-    {
-      "element": "PromptTemplateBuilder.buildQAPrompt",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 14,
-      "parameters": 1
-    },
-    {
-      "element": "PromptTemplateBuilder.buildConversationalPrompt",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 10,
-      "parameters": 1
-    },
-    {
-      "element": "RAGConfigLoader.getIndexingSettings",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 13,
-      "parameters": 0
-    },
-    {
-      "element": "RAGConfigLoader.getSearchSettings",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 11,
-      "parameters": 0
-    },
-    {
-      "element": "ChromaStore.initialize",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 17,
-      "parameters": 0
-    },
-    {
-      "element": "QueryExecutor.recordPerformance",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 10,
-      "parameters": 2
-    },
-    {
-      "element": "QueryExecutor.getPerformanceStats",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 13,
-      "parameters": 0
-    },
-    {
-      "element": "QueryExecutor.executeBatch",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 2,
-      "loc": 11,
-      "parameters": 1
-    },
-    {
-      "element": "getTypeMetadata",
-      "file": "src/types/types.js",
+      "element": "main",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
       "type": "function",
       "complexity": 2,
-      "loc": 7,
+      "loc": 17,
+      "parameters": 0
+    },
+    {
+      "element": "readCoderefFile",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
+      "complexity": 2,
+      "loc": 14,
       "parameters": 1
     },
     {
-      "element": "CodeRefValidator.calculateSimilarity",
-      "file": "src/validator/validator.js",
-      "type": "method",
+      "element": "ensureFoundationDocsDir",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
       "complexity": 2,
-      "loc": 10,
-      "parameters": 2
+      "loc": 11,
+      "parameters": 0
+    },
+    {
+      "element": "countByExtension",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
+      "complexity": 2,
+      "loc": 14,
+      "parameters": 1
+    },
+    {
+      "element": "groupByType",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
+      "complexity": 2,
+      "loc": 15,
+      "parameters": 1
+    },
+    {
+      "element": "getTopFilesByDensity",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
+      "complexity": 2,
+      "loc": 16,
+      "parameters": 1
+    },
+    {
+      "element": "escapeMarkdown",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
+      "complexity": 2,
+      "loc": 21,
+      "parameters": 1
     },
     {
       "element": "normalizeCoderefPath",
@@ -8037,6 +8229,166 @@
       "parameters": 0
     },
     {
+      "element": "analyzeProjectConfig",
+      "file": "src/analyzer/config-analyzer.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 5,
+      "parameters": 1
+    },
+    {
+      "element": "ContractDetector.detect",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 32,
+      "parameters": 0
+    },
+    {
+      "element": "ContractDetector.glob",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 4,
+      "parameters": 1
+    },
+    {
+      "element": "traverse",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 1,
+      "parameters": 1
+    },
+    {
+      "element": "traverse",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 1,
+      "parameters": 1
+    },
+    {
+      "element": "analyzeContracts",
+      "file": "src/analyzer/contract-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 5,
+      "parameters": 1
+    },
+    {
+      "element": "DatabaseDetector.glob",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 4,
+      "parameters": 1
+    },
+    {
+      "element": "traverse",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 1,
+      "parameters": 1
+    },
+    {
+      "element": "traverse",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 1,
+      "parameters": 1
+    },
+    {
+      "element": "analyzeDatabase",
+      "file": "src/analyzer/database-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 5,
+      "parameters": 1
+    },
+    {
+      "element": "DependencyAnalyzer.loadPackageJson",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 13,
+      "parameters": 0
+    },
+    {
+      "element": "DependencyAnalyzer.analyzeDependency",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 36,
+      "parameters": 2
+    },
+    {
+      "element": "DependencyAnalyzer.getLatestVersion",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 15,
+      "parameters": 1
+    },
+    {
+      "element": "DependencyAnalyzer.checkIfUsed",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 16,
+      "parameters": 1
+    },
+    {
+      "element": "DesignPatternDetector.findSourceFiles",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 4,
+      "parameters": 0
+    },
+    {
+      "element": "traverse",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 1,
+      "parameters": 1
+    },
+    {
+      "element": "DesignPatternDetector.analyzeFile",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 24,
+      "parameters": 1
+    },
+    {
+      "element": "traverse",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 1,
+      "parameters": 1
+    },
+    {
+      "element": "analyzeDesignPatterns",
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 5,
+      "parameters": 1
+    },
+    {
+      "element": "analyzeDocs",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 5,
+      "parameters": 1
+    },
+    {
       "element": "DynamicImportDetector.isDynamicImport",
       "file": "src/analyzer/dynamic-import-detector.ts",
       "type": "method",
@@ -8051,6 +8403,38 @@
       "complexity": 1,
       "loc": 7,
       "parameters": 0
+    },
+    {
+      "element": "EntryPointDetector.isServerBootstrap",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 22,
+      "parameters": 1
+    },
+    {
+      "element": "EntryPointDetector.isCliCommand",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 18,
+      "parameters": 1
+    },
+    {
+      "element": "EntryPointDetector.isJobHandler",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 19,
+      "parameters": 1
+    },
+    {
+      "element": "EntryPointDetector.isServerlessHandler",
+      "file": "src/analyzer/entry-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 19,
+      "parameters": 1
     },
     {
       "element": "GraphAnalyzer.detectCircularDependencies",
@@ -8149,16 +8533,8 @@
       "parameters": 0
     },
     {
-      "element": "JSCallDetector.isNestedCall",
-      "file": "src/analyzer/js-call-detector.ts",
-      "type": "method",
-      "complexity": 1,
-      "loc": 9,
-      "parameters": 1
-    },
-    {
-      "element": "JSCallDetector.extractParameters",
-      "file": "src/analyzer/js-call-detector.ts",
+      "element": "JSCallDetector.analyzeCallPatterns",
+      "file": "src/analyzer/js-call-detector/index.ts",
       "type": "method",
       "complexity": 1,
       "loc": 7,
@@ -8166,11 +8542,27 @@
     },
     {
       "element": "JSCallDetector.clearCache",
-      "file": "src/analyzer/js-call-detector.ts",
+      "file": "src/analyzer/js-call-detector/index.ts",
       "type": "method",
       "complexity": 1,
       "loc": 10,
       "parameters": 0
+    },
+    {
+      "element": "isNestedCall",
+      "file": "src/analyzer/js-call-detector/parser.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 9,
+      "parameters": 1
+    },
+    {
+      "element": "extractParameters",
+      "file": "src/analyzer/js-call-detector/parser.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 1
     },
     {
       "element": "parseJavaScriptFileAuto",
@@ -8178,6 +8570,118 @@
       "type": "function",
       "complexity": 1,
       "loc": 14,
+      "parameters": 1
+    },
+    {
+      "element": "MiddlewareDetector.detect",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 20,
+      "parameters": 0
+    },
+    {
+      "element": "MiddlewareDetector.detectMiddlewareMappings",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 18,
+      "parameters": 0
+    },
+    {
+      "element": "MiddlewareDetector.detectMiddlewareChains",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 15,
+      "parameters": 0
+    },
+    {
+      "element": "MiddlewareDetector.detectDIContainers",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 15,
+      "parameters": 0
+    },
+    {
+      "element": "MiddlewareDetector.getLineNumber",
+      "file": "src/analyzer/middleware-detector.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 1
+    },
+    {
+      "element": "MigrationRouteAnalyzer.extractAllRoutes",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 22,
+      "parameters": 0
+    },
+    {
+      "element": "MigrationRouteAnalyzer.findRoutesByFramework",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 17,
+      "parameters": 1
+    },
+    {
+      "element": "MigrationRouteAnalyzer.findRouteByPath",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 2
+    },
+    {
+      "element": "MigrationRouteAnalyzer.isSimilarPath",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 15,
+      "parameters": 2
+    },
+    {
+      "element": "extractAllRoutes",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 12,
+      "parameters": 1
+    },
+    {
+      "element": "findOrphanedCalls",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 15,
+      "parameters": 2
+    },
+    {
+      "element": "detectBreakingChanges",
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 13,
+      "parameters": 2
+    },
+    {
+      "element": "ProjectClassifier.buildClassification",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 22,
+      "parameters": 4
+    },
+    {
+      "element": "ProjectClassifier.loadPackageJson",
+      "file": "src/analyzer/project-classifier.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 12,
       "parameters": 1
     },
     {
@@ -8213,11 +8717,51 @@
       "parameters": 0
     },
     {
+      "element": "loadRAGDependencies",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 14,
+      "parameters": 0
+    },
+    {
+      "element": "printHelp",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 45,
+      "parameters": 0
+    },
+    {
+      "element": "loadRAGDependencies",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 14,
+      "parameters": 0
+    },
+    {
+      "element": "printHelp",
+      "file": "src/cli/rag-status.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 35,
+      "parameters": 0
+    },
+    {
       "element": "printHelp",
       "file": "src/cli/scan-frontend-calls.ts",
       "type": "function",
       "complexity": 1,
       "loc": 70,
+      "parameters": 0
+    },
+    {
+      "element": "printHelp",
+      "file": "src/cli/scan.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 18,
       "parameters": 0
     },
     {
@@ -8253,67 +8797,59 @@
       "parameters": 1
     },
     {
-      "element": "BreakingChangeDetector.isBreakingChange",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
+      "element": "extractSignaturesFromRef",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 12,
+      "parameters": 2
+    },
+    {
+      "element": "extractSignaturesFromWorktree",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 1
+    },
+    {
+      "element": "suggestWrapPattern",
+      "file": "src/context/breaking-change-detector/hint-generator.ts",
+      "type": "function",
       "complexity": 1,
       "loc": 13,
       "parameters": 1
     },
     {
-      "element": "BreakingChangeDetector.suggestWrapPattern",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 1,
-      "loc": 16,
-      "parameters": 1
-    },
-    {
-      "element": "BreakingChangeDetector.suggestRenamePattern",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 1,
-      "loc": 16,
-      "parameters": 1
-    },
-    {
-      "element": "BreakingChangeDetector.suggestAdapterPattern",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 1,
-      "loc": 18,
-      "parameters": 1
-    },
-    {
-      "element": "BreakingChangeDetector.suggestDefaultParamPattern",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 1,
-      "loc": 18,
-      "parameters": 1
-    },
-    {
-      "element": "BreakingChangeDetector.extractSignaturesFromAST",
-      "file": "src/context/breaking-change-detector.ts",
-      "type": "method",
-      "complexity": 1,
-      "loc": 3,
-      "parameters": 1
-    },
-    {
-      "element": "visit",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "suggestRenamePattern",
+      "file": "src/context/breaking-change-detector/hint-generator.ts",
       "type": "function",
       "complexity": 1,
-      "loc": 1,
+      "loc": 13,
       "parameters": 1
     },
     {
-      "element": "visit",
-      "file": "src/context/breaking-change-detector.ts",
+      "element": "suggestAdapterPattern",
+      "file": "src/context/breaking-change-detector/hint-generator.ts",
       "type": "function",
       "complexity": 1,
-      "loc": 1,
+      "loc": 13,
+      "parameters": 1
+    },
+    {
+      "element": "suggestDefaultParamPattern",
+      "file": "src/context/breaking-change-detector/hint-generator.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 13,
+      "parameters": 1
+    },
+    {
+      "element": "isBreakingChange",
+      "file": "src/context/breaking-change-detector/signature-comparator.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 8,
       "parameters": 1
     },
     {
@@ -8653,7 +9189,7 @@
       "parameters": 1
     },
     {
-      "element": "GraphExporter.exportAsJSON",
+      "element": "GraphExporter.exportAsProtobufBase64",
       "file": "src/export/graph-exporter.ts",
       "type": "method",
       "complexity": 1,
@@ -8661,11 +9197,27 @@
       "parameters": 0
     },
     {
+      "element": "GraphExporter.exportAsJSON",
+      "file": "src/export/graph-exporter.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 9,
+      "parameters": 0
+    },
+    {
       "element": "GraphExporter.exportAsProtobuf",
       "file": "src/export/graph-exporter.ts",
       "type": "method",
       "complexity": 1,
-      "loc": 10,
+      "loc": 15,
+      "parameters": 0
+    },
+    {
+      "element": "GraphExporter.buildProtobufSchema",
+      "file": "src/export/graph-exporter.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 47,
       "parameters": 0
     },
     {
@@ -8733,6 +9285,14 @@
       "parameters": 2
     },
     {
+      "element": "detectApiEndpoints",
+      "file": "src/fileGeneration/detectPatterns.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 23,
+      "parameters": 1
+    },
+    {
       "element": "generateContext",
       "file": "src/fileGeneration/generateContext.ts",
       "type": "function",
@@ -8761,7 +9321,7 @@
       "file": "src/fileGeneration/saveIndex.ts",
       "type": "function",
       "complexity": 1,
-      "loc": 31,
+      "loc": 12,
       "parameters": 2
     },
     {
@@ -9837,14 +10397,6 @@
       "parameters": 2
     },
     {
-      "element": "ComplexityGenerator.calculateComplexity",
-      "file": "src/pipeline/generators/complexity-generator.ts",
-      "type": "method",
-      "complexity": 1,
-      "loc": 13,
-      "parameters": 3
-    },
-    {
       "element": "ComplexityGenerator.calculateLOC",
       "file": "src/pipeline/generators/complexity-generator.ts",
       "type": "method",
@@ -9857,8 +10409,16 @@
       "file": "src/pipeline/generators/context-generator.ts",
       "type": "method",
       "complexity": 1,
-      "loc": 24,
+      "loc": 59,
       "parameters": 2
+    },
+    {
+      "element": "ContextGenerator.findEntryPoints",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 11,
+      "parameters": 1
     },
     {
       "element": "ContextGenerator.findTestGaps",
@@ -9925,6 +10485,14 @@
       "parameters": 2
     },
     {
+      "element": "dfs",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 1,
+      "parameters": 1
+    },
+    {
       "element": "isTestFile",
       "file": "src/pipeline/generators/context-generator.ts",
       "type": "function",
@@ -9958,6 +10526,14 @@
     },
     {
       "element": "isOrchestrator",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 1,
+      "parameters": 1
+    },
+    {
+      "element": "dfs",
       "file": "src/pipeline/generators/context-generator.ts",
       "type": "function",
       "complexity": 1,
@@ -10067,6 +10643,22 @@
       "complexity": 1,
       "loc": 5,
       "parameters": 1
+    },
+    {
+      "element": "HealthGenerator.generate",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 20,
+      "parameters": 1
+    },
+    {
+      "element": "HealthGenerator.analyzeDependencies",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 0
     },
     {
       "element": "PatternGenerator.detectAsyncPatterns",
@@ -10181,6 +10773,30 @@
       "parameters": 0
     },
     {
+      "element": "IncrementalCache.computeFileHash",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 1
+    },
+    {
+      "element": "IncrementalCache.clear",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 15,
+      "parameters": 0
+    },
+    {
+      "element": "IncrementalCache.isEnabled",
+      "file": "src/pipeline/incremental-cache.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 5,
+      "parameters": 0
+    },
+    {
       "element": "PipelineOrchestrator.getFileAndNameKey",
       "file": "src/pipeline/orchestrator.ts",
       "type": "method",
@@ -10285,6 +10901,46 @@
       "parameters": 1
     },
     {
+      "element": "FrameworkRegistry.register",
+      "file": "src/scanner/framework-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 1
+    },
+    {
+      "element": "FrameworkRegistry.unregister",
+      "file": "src/scanner/framework-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 1
+    },
+    {
+      "element": "FrameworkRegistry.getRegisteredFrameworks",
+      "file": "src/scanner/framework-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "FrameworkRegistry.isFrameworkRegistered",
+      "file": "src/scanner/framework-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 1
+    },
+    {
+      "element": "FrameworkRegistry.clear",
+      "file": "src/scanner/framework-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 11,
+      "parameters": 0
+    },
+    {
       "element": "isFrontendFile",
       "file": "src/scanner/frontend-scanner.ts",
       "type": "function",
@@ -10323,6 +10979,14 @@
       "complexity": 1,
       "loc": 4,
       "parameters": 1
+    },
+    {
+      "element": "registerDefaultFrameworks",
+      "file": "src/scanner/register-frameworks.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 15,
+      "parameters": 0
     },
     {
       "element": "Scanner.addElement",
@@ -10385,7 +11049,7 @@
       "file": "src/scanner/tree-sitter-scanner.ts",
       "type": "method",
       "complexity": 1,
-      "loc": 9,
+      "loc": 7,
       "parameters": 4
     },
     {
@@ -10629,12 +11293,44 @@
       "parameters": 0
     },
     {
+      "element": "batchProcessCalls",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 35,
+      "parameters": 2
+    },
+    {
+      "element": "exportBatchResults",
+      "file": "src/validator/frontend-update-generator.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 50,
+      "parameters": 1
+    },
+    {
       "element": "findDeprecatedCalls",
       "file": "src/validator/migration-mapper.ts",
       "type": "function",
       "complexity": 1,
       "loc": 14,
       "parameters": 2
+    },
+    {
+      "element": "SemanticParameterMapper.getMappings",
+      "file": "src/validator/migration-mapper.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "SemanticParameterMapper.clearMappings",
+      "file": "src/validator/migration-mapper.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 5,
+      "parameters": 0
     },
     {
       "element": "saveMarkdownReport",
@@ -10729,32 +11425,8 @@
       "file": "__tests__/generators/root-cause-alignment.test.ts",
       "type": "function",
       "complexity": 1,
-      "loc": 188,
+      "loc": 187,
       "parameters": 0
-    },
-    {
-      "element": "describe",
-      "file": "__tests__/indexer.test.ts",
-      "type": "function",
-      "complexity": 1,
-      "loc": 1,
-      "parameters": 2
-    },
-    {
-      "element": "it",
-      "file": "__tests__/indexer.test.ts",
-      "type": "function",
-      "complexity": 1,
-      "loc": 1,
-      "parameters": 2
-    },
-    {
-      "element": "expect",
-      "file": "__tests__/indexer.test.ts",
-      "type": "function",
-      "complexity": 1,
-      "loc": 9,
-      "parameters": 1
     },
     {
       "element": "startTestGroup",
@@ -10789,732 +11461,68 @@
       "parameters": 0
     },
     {
-      "element": "ContextTracker.hasContext",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "ContextTracker.deleteContext",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "ContextTracker.clearContext",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "ContextTracker.getKeyHistory",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "ContextTracker.getRecentHistory",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "ContextTracker.getConversationId",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "ContextTracker.exportToJSON",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 15,
-      "parameters": 0
-    },
-    {
-      "element": "ContextTracker.getStatistics",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 16,
-      "parameters": 0
-    },
-    {
-      "element": "ContextTracker.startCleanupTimer",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 8,
-      "parameters": 0
-    },
-    {
-      "element": "ContextTracker.generateId",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "ContextTracker.destroy",
-      "file": "src/context/context-tracker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 8,
-      "parameters": 0
-    },
-    {
-      "element": "FuzzyResolver.calculateCombinedSimilarity",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 11,
-      "parameters": 3
-    },
-    {
-      "element": "FuzzyResolver.clearCache",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "FuzzyResolver.getCacheStats",
-      "file": "src/context/fuzzy-resolver.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 10,
-      "parameters": 0
-    },
-    {
-      "element": "ImpactSimulator.calculateRiskScore",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 10,
-      "parameters": 3
-    },
-    {
-      "element": "ImpactSimulator.clearCache",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "ImpactSimulator.getCacheStats",
-      "file": "src/context/impact-simulator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 11,
-      "parameters": 0
-    },
-    {
-      "element": "MultiHopTraversal.clearCache",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "MultiHopTraversal.getCacheStats",
-      "file": "src/context/multi-hop-traversal.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 11,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.exportAsJSON",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 7,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.exportAsProtobuf",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 9,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.buildVisualizationData",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 11,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.generateLayoutHints",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 18,
-      "parameters": 0
-    },
-    {
-      "element": "GraphExporter.setFormat",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "GraphExporter.setIncludeVisualization",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "GraphExporter.getExportStats",
-      "file": "src/export/graph-exporter.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 12,
-      "parameters": 0
-    },
-    {
-      "element": "AIPromptGenerator.getTemplate",
-      "file": "src/integration/ai-prompt-generator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 50,
-      "parameters": 1
-    },
-    {
-      "element": "AIPromptGenerator.applyTemplate",
-      "file": "src/integration/ai-prompt-generator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 9,
-      "parameters": 2
-    },
-    {
-      "element": "AIPromptGenerator.estimateTokens",
-      "file": "src/integration/ai-prompt-generator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "AIPromptGenerator.getStatistics",
-      "file": "src/integration/ai-prompt-generator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 11,
-      "parameters": 0
-    },
-    {
-      "element": "AnthropicProvider.embed",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 9,
-      "parameters": 1
-    },
-    {
-      "element": "AnthropicProvider.countTokens",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "AnthropicProvider.getProviderName",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "AnthropicProvider.getModel",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "createAnthropicProvider",
-      "file": "src/integration/llm/anthropic-provider.js",
+      "element": "readJson",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
       "type": "function",
       "complexity": 1,
-      "loc": 4,
-      "parameters": 2
+      "loc": 8,
+      "parameters": 1
     },
     {
-      "element": "OpenAIProvider.getProviderName",
-      "file": "src/integration/llm/openai-provider.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "OpenAIProvider.getModel",
-      "file": "src/integration/llm/openai-provider.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "createOpenAIProvider",
-      "file": "src/integration/llm/openai-provider.js",
+      "element": "uuidAnchor",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
       "type": "function",
       "complexity": 1,
       "loc": 4,
       "parameters": 1
     },
     {
-      "element": "AnswerGenerationService.setGraph",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "type": "method",
+      "element": "formatDate",
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
+      "type": "function",
       "complexity": 1,
-      "loc": 6,
+      "loc": 4,
       "parameters": 1
     },
     {
-      "element": "AnswerGenerationService.generateNoResultsAnswer",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "type": "method",
+      "element": "writeFoundationDoc",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
       "complexity": 1,
-      "loc": 27,
+      "loc": 12,
       "parameters": 2
     },
     {
-      "element": "ConfidenceScorer.getPerformanceStats",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "ConfidenceScorer.resetPerformanceHistory",
-      "file": "src/integration/rag/confidence-scorer.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 11,
-      "parameters": 0
-    },
-    {
-      "element": "ContextBuilder.buildSummary",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 16,
-      "parameters": 2
-    },
-    {
-      "element": "ContextBuilder.buildMinimalContext",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
+      "element": "formatDate",
+      "file": "scripts/doc-gen/utils.js",
+      "type": "function",
       "complexity": 1,
       "loc": 10,
       "parameters": 1
     },
     {
-      "element": "ContextBuilder.buildWithTemplate",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 7,
-      "parameters": 2
-    },
-    {
-      "element": "ContextBuilder.estimateTokens",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 7,
-      "parameters": 1
-    },
-    {
-      "element": "ContextBuilder.buildContextSummary",
-      "file": "src/integration/rag/context-builder.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 13,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.createSession",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 19,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.clearSession",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.getActiveSessions",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "ConversationManager.importConversation",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 8,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.isSessionExpired",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 7,
-      "parameters": 1
-    },
-    {
-      "element": "ConversationManager.generateSessionId",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "ConversationManager.generateMessageId",
-      "file": "src/integration/rag/conversation-manager.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "EmbeddingService.embedChunk",
-      "file": "src/integration/rag/embedding-service.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 13,
-      "parameters": 2
-    },
-    {
-      "element": "EmbeddingService.embedText",
-      "file": "src/integration/rag/embedding-service.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 7,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingService.delay",
-      "file": "src/integration/rag/embedding-service.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 10,
-      "parameters": 1
-    },
-    {
-      "element": "EmbeddingService.estimateCost",
-      "file": "src/integration/rag/embedding-service.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 14,
-      "parameters": 2
-    },
-    {
-      "element": "EmbeddingService.findSimilar",
-      "file": "src/integration/rag/embedding-service.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 11,
-      "parameters": 2
-    },
-    {
-      "element": "EmbeddingTextGenerator.generateBatch",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 11,
-      "parameters": 2
-    },
-    {
-      "element": "EmbeddingTextGenerator.estimateTokens",
-      "file": "src/integration/rag/embedding-text-generator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "GraphReRanker.setGraph",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "GraphReRanker.toReRankedResult",
-      "file": "src/integration/rag/graph-reranker.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 17,
-      "parameters": 3
-    },
-    {
-      "element": "IndexingOrchestrator.indexCodebase",
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 3,
-      "parameters": 1
-    },
-    {
-      "element": "reportProgress",
-      "file": "src/integration/rag/indexing-orchestrator.js",
+      "element": "uuidAnchor",
+      "file": "scripts/doc-gen/utils.js",
       "type": "function",
-      "complexity": 1,
-      "loc": 1,
-      "parameters": 5
-    },
-    {
-      "element": "IndexingOrchestrator.getIndexStats",
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 12,
-      "parameters": 0
-    },
-    {
-      "element": "IndexingOrchestrator.clearIndex",
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "type": "method",
       "complexity": 1,
       "loc": 9,
       "parameters": 1
     },
     {
-      "element": "reportProgress",
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "type": "function",
-      "complexity": 1,
-      "loc": 1,
-      "parameters": 5
-    },
-    {
-      "element": "PromptTemplateBuilder.buildExplanationPrompt",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 8,
-      "parameters": 1
-    },
-    {
-      "element": "PromptTemplateBuilder.buildComparisonPrompt",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 9,
-      "parameters": 1
-    },
-    {
-      "element": "PromptTemplateBuilder.buildBestPracticesPrompt",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 9,
-      "parameters": 1
-    },
-    {
-      "element": "PromptValidator.estimateTokens",
-      "file": "src/integration/rag/prompt-templates.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "RAGConfigLoader.loadConfig",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 28,
-      "parameters": 0
-    },
-    {
-      "element": "RAGConfigLoader.generateEnvTemplate",
-      "file": "src/integration/rag/rag-config.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 38,
-      "parameters": 0
-    },
-    {
-      "element": "SemanticSearchService.findSimilar",
-      "file": "src/integration/rag/semantic-search.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 8,
-      "parameters": 2
-    },
-    {
-      "element": "SemanticSearchService.getRelated",
-      "file": "src/integration/rag/semantic-search.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 7,
-      "parameters": 2
-    },
-    {
-      "element": "SemanticSearchService.embedQuery",
-      "file": "src/integration/rag/semantic-search.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 7,
-      "parameters": 1
-    },
-    {
-      "element": "ChromaStore.getProviderName",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "createChromaStore",
-      "file": "src/integration/vector/chroma-store.js",
-      "type": "function",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "PineconeStore.getProviderName",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "createPineconeStore",
-      "file": "src/integration/vector/pinecone-store.js",
-      "type": "function",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 1
-    },
-    {
-      "element": "parseCodeRef",
-      "file": "src/parser/parser.js",
-      "type": "function",
-      "complexity": 1,
-      "loc": 7,
-      "parameters": 2
-    },
-    {
-      "element": "parseCodeRefs",
-      "file": "src/parser/parser.js",
-      "type": "function",
-      "complexity": 1,
-      "loc": 5,
-      "parameters": 2
-    },
-    {
-      "element": "QueryExecutor.clearCache",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 6,
-      "parameters": 0
-    },
-    {
-      "element": "QueryExecutor.resetPerformanceStats",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 9,
-      "parameters": 0
-    },
-    {
-      "element": "QueryExecutor.queryWithFilter",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 12,
-      "parameters": 2
-    },
-    {
-      "element": "QueryExecutor.healthCheck",
-      "file": "src/query/query-executor.js",
-      "type": "method",
-      "complexity": 1,
-      "loc": 12,
-      "parameters": 0
-    },
-    {
-      "element": "getHighPriorityTypes",
-      "file": "src/types/types.js",
+      "element": "getFileMtime",
+      "file": "scripts/doc-gen/validate-docs.js",
       "type": "function",
       "complexity": 1,
       "loc": 8,
-      "parameters": 0
-    },
-    {
-      "element": "getTypesByPriority",
-      "file": "src/types/types.js",
-      "type": "function",
-      "complexity": 1,
-      "loc": 6,
       "parameters": 1
     },
     {
-      "element": "validateCodeRef",
-      "file": "src/validator/validator.js",
+      "element": "readJson",
+      "file": "scripts/doc-gen/validate-docs.js",
       "type": "function",
       "complexity": 1,
-      "loc": 7,
-      "parameters": 2
-    },
-    {
-      "element": "validateCodeRefs",
-      "file": "src/validator/validator.js",
-      "type": "function",
-      "complexity": 1,
-      "loc": 5,
-      "parameters": 2
+      "loc": 8,
+      "parameters": 1
     },
     {
       "element": "writeLines",
@@ -11986,6 +11994,14 @@
       "type": "function",
       "complexity": 1,
       "loc": 64,
+      "parameters": 0
+    },
+    {
+      "element": "create",
+      "file": "create_wo.py",
+      "type": "function",
+      "complexity": 1,
+      "loc": 117,
       "parameters": 0
     },
     {

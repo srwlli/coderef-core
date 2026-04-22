@@ -11,6 +11,7 @@ import type {
   LLMProviderConfig
 } from './llm-provider.js';
 import { LLMError, LLMErrorCode } from './llm-provider.js';
+import { supportsEmbeddings, ProviderDoesNotSupportEmbeddings } from './model-registry.js';
 import { OpenAIProvider } from './openai-provider.js';
 
 /**
@@ -167,6 +168,21 @@ export class AnthropicProvider implements LLMProvider {
   }
 
   /**
+   * Get embedding dimensions for Anthropic
+   * @throws ProviderDoesNotSupportEmbeddings - Anthropic does not support embeddings
+   */
+  getEmbeddingDimensions(): number {
+    throw new ProviderDoesNotSupportEmbeddings('anthropic');
+  }
+
+  /**
+   * Check if this provider supports embeddings
+   */
+  supportsEmbeddings(): boolean {
+    return supportsEmbeddings('anthropic');
+  }
+
+  /**
    * Retry logic with exponential backoff
    */
   private async withRetry<T>(fn: () => Promise<T>): Promise<T> {
@@ -271,7 +287,7 @@ export class AnthropicProvider implements LLMProvider {
 
     // Network errors
     if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
-      return new LLMError(
+      throw new LLMError(
         'Network error connecting to Anthropic',
         LLMErrorCode.NETWORK_ERROR,
         error,
@@ -280,7 +296,7 @@ export class AnthropicProvider implements LLMProvider {
     }
 
     // Unknown error
-    return new LLMError(
+    throw new LLMError(
       `Unexpected error: ${error.message}`,
       LLMErrorCode.UNKNOWN,
       error,

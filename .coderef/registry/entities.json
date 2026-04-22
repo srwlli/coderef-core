@@ -3596,278 +3596,328 @@
       "async": false,
       "uuid": "9f0c37ce-2425-5765-b426-db3831422907"
     },
-    "96d93df5-682e-5815-884c-bf371ab3cd10": {
+    "5773ea11-a503-5956-bbdb-54abef4f6ef8": {
+      "type": "interface",
+      "name": "MiddlewareMapping",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
+      "line": 20,
+      "exported": true,
+      "uuid": "5773ea11-a503-5956-bbdb-54abef4f6ef8"
+    },
+    "f1384d3e-503a-58b8-afe5-29e61a2d4a87": {
       "type": "interface",
       "name": "MiddlewareChain",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 15,
+      "line": 42,
       "exported": true,
-      "uuid": "96d93df5-682e-5815-884c-bf371ab3cd10"
+      "uuid": "f1384d3e-503a-58b8-afe5-29e61a2d4a87"
     },
-    "8f7dc045-bd16-57ca-b160-9bcbff55d573": {
+    "65d19c54-22e1-56fc-82f7-38f47103f4e5": {
       "type": "interface",
       "name": "MiddlewareHandler",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 23,
+      "line": 50,
       "exported": true,
-      "uuid": "8f7dc045-bd16-57ca-b160-9bcbff55d573"
+      "uuid": "65d19c54-22e1-56fc-82f7-38f47103f4e5"
     },
-    "029a5e3a-e64d-5e56-813c-6eb51d799584": {
+    "4c6d1c82-ed0f-58a0-b99f-e7f73b0fad89": {
       "type": "interface",
       "name": "DIContainer",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 31,
+      "line": 58,
       "exported": true,
-      "uuid": "029a5e3a-e64d-5e56-813c-6eb51d799584"
+      "uuid": "4c6d1c82-ed0f-58a0-b99f-e7f73b0fad89"
     },
-    "7caff549-4544-5514-b1b8-acfd6e15c29b": {
+    "1778c5ea-4b02-5e57-a606-37f07375089b": {
       "type": "interface",
       "name": "DIProvider",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 40,
+      "line": 67,
       "exported": true,
-      "uuid": "7caff549-4544-5514-b1b8-acfd6e15c29b"
+      "uuid": "1778c5ea-4b02-5e57-a606-37f07375089b"
     },
-    "93e5361b-b03a-57aa-bf5a-5f7868b24602": {
+    "5ed95d04-cc9e-5129-8896-28651d58a626": {
       "type": "interface",
       "name": "DIImport",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 49,
+      "line": 76,
       "exported": true,
-      "uuid": "93e5361b-b03a-57aa-bf5a-5f7868b24602"
+      "uuid": "5ed95d04-cc9e-5129-8896-28651d58a626"
     },
-    "61e7f5bd-e9a2-5c96-8a4a-b259c1ba4074": {
+    "d0099589-90d1-533c-95a5-66fa6241d202": {
       "type": "interface",
       "name": "MiddlewareAnalysis",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 55,
+      "line": 82,
       "exported": true,
-      "uuid": "61e7f5bd-e9a2-5c96-8a4a-b259c1ba4074"
+      "uuid": "d0099589-90d1-533c-95a5-66fa6241d202"
     },
-    "f04a16bd-cd2b-59fd-8b26-7eef3118b5ff": {
+    "4c5f20ab-a0a8-5054-be81-ddcb5e0b6c80": {
       "type": "class",
       "name": "MiddlewareDetector",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 64,
+      "line": 92,
       "exported": true,
-      "uuid": "f04a16bd-cd2b-59fd-8b26-7eef3118b5ff"
+      "uuid": "4c5f20ab-a0a8-5054-be81-ddcb5e0b6c80"
     },
-    "e4832a4c-60f1-5abd-9b7e-26905a5d8871": {
+    "1c9608b3-730e-5e18-bd36-cc68f01ced3a": {
       "type": "method",
       "name": "MiddlewareDetector.detect",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 78,
+      "line": 106,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "e4832a4c-60f1-5abd-9b7e-26905a5d8871"
+      "uuid": "1c9608b3-730e-5e18-bd36-cc68f01ced3a"
     },
-    "d826dac3-d885-5422-a10d-8928793338d6": {
+    "9f86f914-cd32-5fad-b9d8-b277bac2d3ab": {
+      "type": "method",
+      "name": "MiddlewareDetector.detectMiddlewareMappings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
+      "line": 126,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "9f86f914-cd32-5fad-b9d8-b277bac2d3ab"
+    },
+    "99ad18f8-deee-5860-b0cd-21ecc6cfa65a": {
+      "type": "method",
+      "name": "MiddlewareDetector.detectFlaskMiddlewareMappings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
+      "line": 144,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "99ad18f8-deee-5860-b0cd-21ecc6cfa65a"
+    },
+    "864efbb1-8cd7-54a0-b362-8de7c8bb24b9": {
+      "type": "method",
+      "name": "MiddlewareDetector.detectDjangoMiddlewareMappings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
+      "line": 250,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "864efbb1-8cd7-54a0-b362-8de7c8bb24b9"
+    },
+    "729979d2-390f-5fca-9f1f-8c37b038deed": {
+      "type": "method",
+      "name": "MiddlewareDetector.detectExpressMiddlewareMappings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
+      "line": 325,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "729979d2-390f-5fca-9f1f-8c37b038deed"
+    },
+    "89dbebf6-07cc-5e51-90ab-22cb065d0309": {
       "type": "method",
       "name": "MiddlewareDetector.detectExpressChains",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 95,
+      "line": 382,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "d826dac3-d885-5422-a10d-8928793338d6"
+      "uuid": "89dbebf6-07cc-5e51-90ab-22cb065d0309"
     },
-    "212d7c8a-1fa9-56df-b4e7-d33a66edcef7": {
+    "f5a0683a-e9e2-5028-9bd8-373e49f88833": {
       "type": "method",
       "name": "MiddlewareDetector.detectExpressHandlers",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 121,
+      "line": 408,
       "parameters": [
         "appName"
       ],
       "exported": false,
       "async": false,
-      "uuid": "212d7c8a-1fa9-56df-b4e7-d33a66edcef7"
+      "uuid": "f5a0683a-e9e2-5028-9bd8-373e49f88833"
     },
-    "7b39970d-573b-56b3-9d55-f97351f01120": {
+    "eb711008-f53a-58fa-814a-14912d259dde": {
       "type": "method",
       "name": "MiddlewareDetector.detectNestJS",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 148,
+      "line": 435,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "7b39970d-573b-56b3-9d55-f97351f01120"
+      "uuid": "eb711008-f53a-58fa-814a-14912d259dde"
     },
-    "a279c5c5-30fa-5d0d-a502-d09664039635": {
+    "182602f6-1e48-563a-ae03-415e7ac4ca77": {
       "type": "method",
       "name": "MiddlewareDetector.extractNestJSProviders",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 179,
+      "line": 466,
       "parameters": [
         "moduleContent"
       ],
       "exported": false,
       "async": false,
-      "uuid": "a279c5c5-30fa-5d0d-a502-d09664039635"
+      "uuid": "182602f6-1e48-563a-ae03-415e7ac4ca77"
     },
-    "b9a538f2-0b4a-5b09-b853-a4d9e74f1d7d": {
+    "f940d21a-a0fd-5645-9de6-85866421aac6": {
       "type": "method",
       "name": "MiddlewareDetector.extractNestJSImports",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 209,
+      "line": 496,
       "parameters": [
         "moduleContent"
       ],
       "exported": false,
       "async": false,
-      "uuid": "b9a538f2-0b4a-5b09-b853-a4d9e74f1d7d"
+      "uuid": "f940d21a-a0fd-5645-9de6-85866421aac6"
     },
-    "3205a585-979c-50da-9645-a1e0750f8603": {
+    "b6c88794-d7d1-5438-8d84-79abaf4eace2": {
       "type": "method",
       "name": "MiddlewareDetector.extractNestJSExports",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 233,
+      "line": 520,
       "parameters": [
         "moduleContent"
       ],
       "exported": false,
       "async": false,
-      "uuid": "3205a585-979c-50da-9645-a1e0750f8603"
+      "uuid": "b6c88794-d7d1-5438-8d84-79abaf4eace2"
     },
-    "7e633f45-a42b-5fe9-9751-5858f6b17ba9": {
+    "5542804c-8155-582d-b9bd-1f5ffd1cb3f4": {
       "type": "method",
       "name": "MiddlewareDetector.extractConstructorDeps",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 254,
+      "line": 541,
       "parameters": [
         "className"
       ],
       "exported": false,
       "async": false,
-      "uuid": "7e633f45-a42b-5fe9-9751-5858f6b17ba9"
+      "uuid": "5542804c-8155-582d-b9bd-1f5ffd1cb3f4"
     },
-    "75a1ca12-80ce-527a-9a33-c628b601e16e": {
+    "5d4f6ea5-f572-52a0-9522-16d8c45f90d8": {
       "type": "method",
       "name": "MiddlewareDetector.detectAngular",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 278,
+      "line": 565,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "75a1ca12-80ce-527a-9a33-c628b601e16e"
+      "uuid": "5d4f6ea5-f572-52a0-9522-16d8c45f90d8"
     },
-    "62fd9a8e-fe73-53c6-acd5-b091c73a850f": {
+    "3718a59e-6ba6-5501-97c2-d8d6d4be6166": {
       "type": "method",
       "name": "MiddlewareDetector.extractAngularProviders",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 309,
+      "line": 596,
       "parameters": [
         "moduleContent"
       ],
       "exported": false,
       "async": false,
-      "uuid": "62fd9a8e-fe73-53c6-acd5-b091c73a850f"
+      "uuid": "3718a59e-6ba6-5501-97c2-d8d6d4be6166"
     },
-    "ad7296c8-70ec-5160-96b1-130e98cce356": {
+    "8799e3c6-906a-5e01-b8d2-9fc45ac7e306": {
       "type": "method",
       "name": "MiddlewareDetector.extractAngularImports",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 337,
+      "line": 624,
       "parameters": [
         "moduleContent"
       ],
       "exported": false,
       "async": false,
-      "uuid": "ad7296c8-70ec-5160-96b1-130e98cce356"
+      "uuid": "8799e3c6-906a-5e01-b8d2-9fc45ac7e306"
     },
-    "21200b54-0973-5d6c-990b-204cf0ac87f4": {
+    "d8f4afdb-ef23-57b5-9442-afd5cd8dc263": {
       "type": "method",
       "name": "MiddlewareDetector.extractAngularExports",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 360,
+      "line": 647,
       "parameters": [
         "moduleContent"
       ],
       "exported": false,
       "async": false,
-      "uuid": "21200b54-0973-5d6c-990b-204cf0ac87f4"
+      "uuid": "d8f4afdb-ef23-57b5-9442-afd5cd8dc263"
     },
-    "7cc3ce41-1462-5537-9cf6-17486012dab0": {
+    "a96590f8-d906-5c51-8931-bd8b8ccd9477": {
       "type": "method",
       "name": "MiddlewareDetector.detectFastAPI",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 381,
+      "line": 668,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "7cc3ce41-1462-5537-9cf6-17486012dab0"
+      "uuid": "a96590f8-d906-5c51-8931-bd8b8ccd9477"
     },
-    "7f6c5758-38c6-5e41-b18f-57e365263426": {
+    "e169d371-6799-5171-91a8-10cb5c422f1d": {
       "type": "method",
       "name": "MiddlewareDetector.detectMiddlewareChains",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 412,
+      "line": 699,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "7f6c5758-38c6-5e41-b18f-57e365263426"
+      "uuid": "e169d371-6799-5171-91a8-10cb5c422f1d"
     },
-    "b9640543-e94f-57e9-9ae7-088617e4b0a5": {
+    "5a058f43-7009-5532-a229-075222603a4f": {
       "type": "method",
       "name": "MiddlewareDetector.detectDIContainers",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 427,
+      "line": 714,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "b9640543-e94f-57e9-9ae7-088617e4b0a5"
+      "uuid": "5a058f43-7009-5532-a229-075222603a4f"
     },
-    "6e967df7-8978-5f82-8983-58ef71fc0d68": {
+    "ded1f8c6-9d0a-52ff-b6e5-3aaf015192cf": {
       "type": "method",
       "name": "MiddlewareDetector.calculateFrameworkBreakdown",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 442,
+      "line": 729,
       "parameters": [
         "chains",
-        "containers"
+        "containers",
+        "mappings"
       ],
       "exported": false,
       "async": false,
-      "uuid": "6e967df7-8978-5f82-8983-58ef71fc0d68"
+      "uuid": "ded1f8c6-9d0a-52ff-b6e5-3aaf015192cf"
     },
-    "6eccc8fe-50ab-5cc0-a186-a8071994107b": {
+    "a2cd2aff-c769-5722-81a2-9cada0f37604": {
       "type": "method",
       "name": "MiddlewareDetector.getLineNumber",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 462,
+      "line": 754,
       "parameters": [
         "index"
       ],
       "exported": false,
       "async": false,
-      "uuid": "6eccc8fe-50ab-5cc0-a186-a8071994107b"
+      "uuid": "a2cd2aff-c769-5722-81a2-9cada0f37604"
     },
-    "c5f0ca3c-c750-5bc2-93e3-724bbc2b13f1": {
+    "63d25c9f-71f1-5497-a325-317c616f5370": {
       "type": "function",
       "name": "analyzeMiddlewareAndDI",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 470,
+      "line": 762,
       "parameters": [
         "elements",
         "files"
       ],
       "exported": true,
       "async": false,
-      "uuid": "c5f0ca3c-c750-5bc2-93e3-724bbc2b13f1"
+      "uuid": "63d25c9f-71f1-5497-a325-317c616f5370"
     },
-    "0a640bc4-9d20-5df1-83fd-6f167169461a": {
+    "28e7be29-1914-577a-8016-192aa38bb125": {
       "type": "function",
       "name": "calculateTotalFrameworkBreakdown",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
-      "line": 499,
+      "line": 794,
       "parameters": [
         "chains",
-        "containers"
+        "containers",
+        "mappings"
       ],
       "exported": false,
       "async": false,
-      "uuid": "0a640bc4-9d20-5df1-83fd-6f167169461a"
+      "uuid": "28e7be29-1914-577a-8016-192aa38bb125"
     },
     "387010dd-5d1b-53f4-b171-7ef765dd1780": {
       "type": "interface",
@@ -4940,6 +4990,71 @@
       "exported": false,
       "async": true,
       "uuid": "f4519ff2-bb1c-5c8b-9379-e55abe20f0cb"
+    },
+    "8a36f601-3c05-5b4e-bb33-f61b31001309": {
+      "type": "interface",
+      "name": "ScanOptions",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts",
+      "line": 16,
+      "exported": false,
+      "uuid": "8a36f601-3c05-5b4e-bb33-f61b31001309"
+    },
+    "5b175eda-4e22-5f4c-a08d-510ee3c677e8": {
+      "type": "function",
+      "name": "printHelp",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts",
+      "line": 22,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "5b175eda-4e22-5f4c-a08d-510ee3c677e8"
+    },
+    "29705833-7fd6-5570-bb46-5f21c9461c44": {
+      "type": "function",
+      "name": "scanProject",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts",
+      "line": 40,
+      "parameters": [
+        "projectPath",
+        "options"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "29705833-7fd6-5570-bb46-5f21c9461c44"
+    },
+    "45e5c877-2c36-5e78-a73a-b5926caf60a0": {
+      "type": "function",
+      "name": "validateProjectPath",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts",
+      "line": 77,
+      "parameters": [
+        "projectPath"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "45e5c877-2c36-5e78-a73a-b5926caf60a0"
+    },
+    "34acfe9f-1357-5418-b2a7-bf3aa1d0ed2b": {
+      "type": "function",
+      "name": "parseLanguages",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts",
+      "line": 93,
+      "parameters": [
+        "langArg"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "34acfe9f-1357-5418-b2a7-bf3aa1d0ed2b"
+    },
+    "6f28cfd5-1e2e-51bc-895d-a213298859bf": {
+      "type": "function",
+      "name": "main",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts",
+      "line": 106,
+      "parameters": [],
+      "exported": false,
+      "async": true,
+      "uuid": "6f28cfd5-1e2e-51bc-895d-a213298859bf"
     },
     "b2137f3d-4e3c-5420-9ad1-928fe020c98e": {
       "type": "interface",
@@ -6226,50 +6341,77 @@
       "async": false,
       "uuid": "0abce402-c7de-57b5-a1f2-7775b18cc1ff"
     },
-    "49661229-9ba7-57c9-8956-cd1e57564bef": {
+    "e5e8006e-5124-5891-be28-f866d8a60698": {
       "type": "method",
       "name": "FuzzyResolver.calculateNameSimilarity",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 132,
+      "line": 133,
       "parameters": [
         "name1",
         "name2"
       ],
       "exported": false,
       "async": false,
-      "uuid": "49661229-9ba7-57c9-8956-cd1e57564bef"
+      "uuid": "e5e8006e-5124-5891-be28-f866d8a60698"
     },
-    "2ebd3755-7937-59af-9f8b-1c8de00b2940": {
+    "35942c91-8d2a-56bd-b978-1584fb33a288": {
+      "type": "method",
+      "name": "FuzzyResolver.calculateJaroDistance",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
+      "line": 150,
+      "parameters": [
+        "s1",
+        "s2"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "35942c91-8d2a-56bd-b978-1584fb33a288"
+    },
+    "c656372a-fe16-5213-91a1-3b74b710130b": {
+      "type": "method",
+      "name": "FuzzyResolver.commonPrefixLength",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
+      "line": 198,
+      "parameters": [
+        "s1",
+        "s2",
+        "maxLen"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "c656372a-fe16-5213-91a1-3b74b710130b"
+    },
+    "8fd65889-1165-503e-a845-c8900b8ba491": {
       "type": "method",
       "name": "FuzzyResolver.calculatePathSimilarity",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 146,
+      "line": 211,
       "parameters": [
         "path1",
         "path2"
       ],
       "exported": false,
       "async": false,
-      "uuid": "2ebd3755-7937-59af-9f8b-1c8de00b2940"
+      "uuid": "8fd65889-1165-503e-a845-c8900b8ba491"
     },
-    "d2666126-cc24-50a0-943c-41e1e0367d95": {
+    "1091ee75-6b54-56a9-846c-7a399c58779e": {
       "type": "method",
       "name": "FuzzyResolver.calculateSignatureSimilarity",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 167,
+      "line": 253,
       "parameters": [
         "sig1",
         "sig2"
       ],
       "exported": false,
       "async": false,
-      "uuid": "d2666126-cc24-50a0-943c-41e1e0367d95"
+      "uuid": "1091ee75-6b54-56a9-846c-7a399c58779e"
     },
-    "11b773ad-b740-5fa6-bd5a-288cf123e71c": {
+    "f894037b-ae33-5059-bd9f-96f18f8d1d75": {
       "type": "method",
       "name": "FuzzyResolver.calculateCombinedSimilarity",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 178,
+      "line": 301,
       "parameters": [
         "nameSim",
         "pathSim",
@@ -6277,26 +6419,26 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "11b773ad-b740-5fa6-bd5a-288cf123e71c"
+      "uuid": "f894037b-ae33-5059-bd9f-96f18f8d1d75"
     },
-    "fa36bb57-53c1-53cb-b696-b2d3d628c774": {
+    "5492bd84-bd11-5e49-b4ff-a3f1f571a394": {
       "type": "method",
       "name": "FuzzyResolver.findSimilarElements",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 197,
+      "line": 320,
       "parameters": [
         "elementId",
         "threshold"
       ],
       "exported": false,
       "async": false,
-      "uuid": "fa36bb57-53c1-53cb-b696-b2d3d628c774"
+      "uuid": "5492bd84-bd11-5e49-b4ff-a3f1f571a394"
     },
-    "134d1e41-cd5e-5fe4-94e7-87ec06f13df1": {
+    "db4f5a21-478d-5422-8656-3de0b0e6ed7e": {
       "type": "method",
       "name": "FuzzyResolver.generateMatchReason",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 234,
+      "line": 357,
       "parameters": [
         "source",
         "candidate",
@@ -6305,39 +6447,39 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "134d1e41-cd5e-5fe4-94e7-87ec06f13df1"
+      "uuid": "db4f5a21-478d-5422-8656-3de0b0e6ed7e"
     },
-    "1e529e7d-558c-58be-843c-96957186ffec": {
+    "5e12cb63-1039-57f6-ad58-b7be5cc55292": {
       "type": "method",
       "name": "FuzzyResolver.setSimilarityThreshold",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 252,
+      "line": 375,
       "parameters": [
         "threshold"
       ],
       "exported": false,
       "async": false,
-      "uuid": "1e529e7d-558c-58be-843c-96957186ffec"
+      "uuid": "5e12cb63-1039-57f6-ad58-b7be5cc55292"
     },
-    "02f6a045-a0ae-59f3-a361-b35cd3fac39c": {
+    "2d07a951-83c3-546a-92f3-031fe47dd305": {
       "type": "method",
       "name": "FuzzyResolver.clearCache",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 263,
+      "line": 386,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "02f6a045-a0ae-59f3-a361-b35cd3fac39c"
+      "uuid": "2d07a951-83c3-546a-92f3-031fe47dd305"
     },
-    "20a8b100-5873-59d0-8f75-5dee164c187a": {
+    "369f02b3-039f-5ddb-95b1-4a38da939a64": {
       "type": "method",
       "name": "FuzzyResolver.getCacheStats",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
-      "line": 270,
+      "line": 393,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "20a8b100-5873-59d0-8f75-5dee164c187a"
+      "uuid": "369f02b3-039f-5ddb-95b1-4a38da939a64"
     },
     "533cab23-82b5-5667-b9ec-29ad1fb07819": {
       "type": "interface",
@@ -16489,6 +16631,112 @@
       "async": false,
       "uuid": "b50b8885-8d35-56e6-a63c-dd0504c98990"
     },
+    "aa969dd3-9da5-5461-9985-7c66a9ba7886": {
+      "type": "interface",
+      "name": "FrameworkDetectionResult",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 16,
+      "exported": true,
+      "uuid": "aa969dd3-9da5-5461-9985-7c66a9ba7886"
+    },
+    "d30d36b3-cb6b-5773-8bc5-defccc9ea479": {
+      "type": "interface",
+      "name": "FrameworkDetector",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 26,
+      "exported": true,
+      "uuid": "d30d36b3-cb6b-5773-8bc5-defccc9ea479"
+    },
+    "a4e9075c-6b8c-5f4f-89a2-cfa83ff7a058": {
+      "type": "class",
+      "name": "FrameworkRegistry",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 38,
+      "exported": false,
+      "uuid": "a4e9075c-6b8c-5f4f-89a2-cfa83ff7a058"
+    },
+    "67766c77-b6b7-5f2c-8069-6665c45b973f": {
+      "type": "method",
+      "name": "FrameworkRegistry.register",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 44,
+      "parameters": [
+        "detector"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "67766c77-b6b7-5f2c-8069-6665c45b973f"
+    },
+    "6ff6fbf3-116d-5ecd-806b-63dcefb43dbc": {
+      "type": "method",
+      "name": "FrameworkRegistry.unregister",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 51,
+      "parameters": [
+        "name"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "6ff6fbf3-116d-5ecd-806b-63dcefb43dbc"
+    },
+    "a8f66572-c68c-59fd-86b1-ce00f8529a44": {
+      "type": "method",
+      "name": "FrameworkRegistry.detect",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 59,
+      "parameters": [
+        "file",
+        "content"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "a8f66572-c68c-59fd-86b1-ce00f8529a44"
+    },
+    "6418c690-4b05-5098-9be3-d55cc6161ca5": {
+      "type": "method",
+      "name": "FrameworkRegistry.detectAll",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 73,
+      "parameters": [
+        "file",
+        "content"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "6418c690-4b05-5098-9be3-d55cc6161ca5"
+    },
+    "bca8bf8f-d815-5e75-90db-169497dc27ac": {
+      "type": "method",
+      "name": "FrameworkRegistry.getRegisteredFrameworks",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 87,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "bca8bf8f-d815-5e75-90db-169497dc27ac"
+    },
+    "8942191b-4db0-5324-a4e6-e5c7ee05295a": {
+      "type": "method",
+      "name": "FrameworkRegistry.isFrameworkRegistered",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 94,
+      "parameters": [
+        "name"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "8942191b-4db0-5324-a4e6-e5c7ee05295a"
+    },
+    "a00b42a9-36cf-5901-aef5-ba300e652313": {
+      "type": "method",
+      "name": "FrameworkRegistry.clear",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "line": 101,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "a00b42a9-36cf-5901-aef5-ba300e652313"
+    },
     "3f6aab1a-c1e6-5f4b-83fe-614273c1664c": {
       "type": "function",
       "name": "scanFileForFrontendCalls",
@@ -16716,6 +16964,16 @@
       "async": false,
       "uuid": "1a7250e1-c4dc-519d-a5ad-45d9914049b1"
     },
+    "63a59b90-ffb2-5238-a166-d1e22b551c89": {
+      "type": "function",
+      "name": "registerDefaultFrameworks",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\register-frameworks.ts",
+      "line": 23,
+      "parameters": [],
+      "exported": true,
+      "async": false,
+      "uuid": "63a59b90-ffb2-5238-a166-d1e22b551c89"
+    },
     "92eb9424-c3cf-5865-8595-106ec85830ed": {
       "type": "interface",
       "name": "WorkerMessage",
@@ -16724,39 +16982,39 @@
       "exported": false,
       "uuid": "92eb9424-c3cf-5865-8595-106ec85830ed"
     },
-    "de79a833-84f3-537f-bebe-305d365f05a1": {
+    "92138c52-a2b4-5ceb-8d88-f9a463b719b0": {
       "type": "interface",
       "name": "PatternConfig",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 29,
+      "line": 31,
       "exported": true,
-      "uuid": "de79a833-84f3-537f-bebe-305d365f05a1"
+      "uuid": "92138c52-a2b4-5ceb-8d88-f9a463b719b0"
     },
-    "0366977e-ea06-5ace-9afe-0dfda85dca94": {
+    "2a4fb50e-3bf8-5e87-9a8d-f0d8c939d3fd": {
       "type": "class",
       "name": "Scanner",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 310,
+      "line": 312,
       "exported": false,
-      "uuid": "0366977e-ea06-5ace-9afe-0dfda85dca94"
+      "uuid": "2a4fb50e-3bf8-5e87-9a8d-f0d8c939d3fd"
     },
-    "746d866d-a804-5916-bea2-4b3f00d710e0": {
+    "78797ea5-94ab-5d15-984d-05380730a0d1": {
       "type": "method",
       "name": "Scanner.addElement",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 320,
+      "line": 322,
       "parameters": [
         "element"
       ],
       "exported": false,
       "async": false,
-      "uuid": "746d866d-a804-5916-bea2-4b3f00d710e0"
+      "uuid": "78797ea5-94ab-5d15-984d-05380730a0d1"
     },
-    "6e97a65b-92ad-556c-9cf8-da3cb3e83d24": {
+    "67158d4e-ab44-5abd-9ca3-65f2e090b4fb": {
       "type": "method",
       "name": "Scanner.processLine",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 324,
+      "line": 326,
       "parameters": [
         "line",
         "lineNumber",
@@ -16770,26 +17028,26 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "6e97a65b-92ad-556c-9cf8-da3cb3e83d24"
+      "uuid": "67158d4e-ab44-5abd-9ca3-65f2e090b4fb"
     },
-    "4b5e5b9c-9291-5902-bfe0-6f8a9b78a74f": {
+    "0544bb9d-b3d5-5d7a-9097-54ff91daee21": {
       "type": "method",
       "name": "Scanner.processNextJsRoute",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 380,
+      "line": 382,
       "parameters": [
         "file",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "4b5e5b9c-9291-5902-bfe0-6f8a9b78a74f"
+      "uuid": "0544bb9d-b3d5-5d7a-9097-54ff91daee21"
     },
-    "4316b71b-931d-5e5d-88da-7703456b2071": {
+    "8c6f7846-526c-5c9c-a049-aeba1ea3f284": {
       "type": "method",
       "name": "Scanner.processFile",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 418,
+      "line": 420,
       "parameters": [
         "file",
         "content",
@@ -16798,112 +17056,112 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "4316b71b-931d-5e5d-88da-7703456b2071"
+      "uuid": "8c6f7846-526c-5c9c-a049-aeba1ea3f284"
     },
-    "467b41dc-caa8-5ea9-973d-b05e2b85b6e5": {
+    "69700d9e-8064-54ab-938b-de27b5e286f1": {
       "type": "method",
       "name": "Scanner.processNextJsPagesRoute",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 449,
+      "line": 456,
       "parameters": [
         "file",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "467b41dc-caa8-5ea9-973d-b05e2b85b6e5"
+      "uuid": "69700d9e-8064-54ab-938b-de27b5e286f1"
     },
-    "18fdc9a0-f065-5e56-9b1c-bddafbd1a06e": {
+    "fb85f29f-52c9-5e46-912a-08390b372111": {
       "type": "method",
       "name": "Scanner.processSvelteKitRoute",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 470,
+      "line": 477,
       "parameters": [
         "file",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "18fdc9a0-f065-5e56-9b1c-bddafbd1a06e"
+      "uuid": "fb85f29f-52c9-5e46-912a-08390b372111"
     },
-    "d3b68955-4ea3-50f2-9db4-5524db744fa2": {
+    "d6727e6e-830f-5d33-9d58-1a2c9fea1436": {
       "type": "method",
       "name": "Scanner.processNuxtRoute",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 505,
+      "line": 512,
       "parameters": [
         "file",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "d3b68955-4ea3-50f2-9db4-5524db744fa2"
+      "uuid": "d6727e6e-830f-5d33-9d58-1a2c9fea1436"
     },
-    "16c175e6-238c-549d-a2f4-f28f0ff9ca5b": {
+    "feb8d5ad-d031-5990-8f36-e3981ce54bc0": {
       "type": "method",
       "name": "Scanner.processRemixRoute",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 526,
+      "line": 533,
       "parameters": [
         "file",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "16c175e6-238c-549d-a2f4-f28f0ff9ca5b"
+      "uuid": "feb8d5ad-d031-5990-8f36-e3981ce54bc0"
     },
-    "9f2720fe-f372-5e27-88f3-6ebd8738ad60": {
+    "b1b60a1f-f9ac-56de-a1c2-8595e6e70a3f": {
       "type": "method",
       "name": "Scanner.getElements",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 557,
+      "line": 564,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "9f2720fe-f372-5e27-88f3-6ebd8738ad60"
+      "uuid": "b1b60a1f-f9ac-56de-a1c2-8595e6e70a3f"
     },
-    "e1ab0b21-d333-5ca7-b5e5-9df1a625d097": {
+    "db6fe8e5-76b4-50d6-944f-36ef76603200": {
       "type": "function",
       "name": "sortPatternsByPriority",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 596,
+      "line": 603,
       "parameters": [
         "patterns"
       ],
       "exported": false,
       "async": false,
-      "uuid": "e1ab0b21-d333-5ca7-b5e5-9df1a625d097"
+      "uuid": "db6fe8e5-76b4-50d6-944f-36ef76603200"
     },
-    "c6594193-8f42-56cd-9a72-5eb38d391dad": {
+    "d4f8d210-727a-5fa4-ac0c-494effd9a9b6": {
       "type": "function",
       "name": "deduplicateElements",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 611,
+      "line": 618,
       "parameters": [
         "elements"
       ],
       "exported": false,
       "async": false,
-      "uuid": "c6594193-8f42-56cd-9a72-5eb38d391dad"
+      "uuid": "d4f8d210-727a-5fa4-ac0c-494effd9a9b6"
     },
-    "77429112-d60d-509f-bbde-caf834b69346": {
+    "64f440ff-5381-5920-af52-42f204887e15": {
       "type": "function",
       "name": "shouldExcludePath",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 642,
+      "line": 649,
       "parameters": [
         "filePath",
         "excludePatterns"
       ],
       "exported": false,
       "async": false,
-      "uuid": "77429112-d60d-509f-bbde-caf834b69346"
+      "uuid": "64f440ff-5381-5920-af52-42f204887e15"
     },
-    "fdfc67a4-732f-574b-90b3-6c9bacd0e994": {
+    "2eb4f41b-e805-54d2-90f1-ce66239a958e": {
       "type": "function",
       "name": "scanFilesInParallel",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 674,
+      "line": 681,
       "parameters": [
         "files",
         "lang",
@@ -16911,13 +17169,13 @@
       ],
       "exported": false,
       "async": true,
-      "uuid": "fdfc67a4-732f-574b-90b3-6c9bacd0e994"
+      "uuid": "2eb4f41b-e805-54d2-90f1-ce66239a958e"
     },
-    "055cd01b-40b7-515f-b8a6-b30132cb97f5": {
+    "7063bf0a-cb57-529d-b8f4-66adab16a345": {
       "type": "function",
       "name": "scanCurrentElements",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 775,
+      "line": 782,
       "parameters": [
         "dir",
         "lang",
@@ -16925,33 +17183,33 @@
       ],
       "exported": true,
       "async": true,
-      "uuid": "055cd01b-40b7-515f-b8a6-b30132cb97f5"
+      "uuid": "7063bf0a-cb57-529d-b8f4-66adab16a345"
     },
-    "10c84cbc-3ed8-57d4-b5e9-e2f9c54c9a94": {
+    "6a0a5e2b-bfd7-5d01-b5b6-c8e000d5ee1b": {
       "type": "function",
       "name": "clearScanCache",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 1296,
+      "line": 1303,
       "parameters": [],
       "exported": true,
       "async": false,
-      "uuid": "10c84cbc-3ed8-57d4-b5e9-e2f9c54c9a94"
+      "uuid": "6a0a5e2b-bfd7-5d01-b5b6-c8e000d5ee1b"
     },
-    "155d4f4d-b41d-5320-9b7e-bd7cc1a2d7f6": {
+    "8de5a27a-2c4a-5b8d-abab-893dcc5f6845": {
       "type": "function",
       "name": "getScanCacheStats",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 1305,
+      "line": 1312,
       "parameters": [],
       "exported": true,
       "async": false,
-      "uuid": "155d4f4d-b41d-5320-9b7e-bd7cc1a2d7f6"
+      "uuid": "8de5a27a-2c4a-5b8d-abab-893dcc5f6845"
     },
-    "c7fda8e0-1f82-5ce9-9126-06d6d3a9d40e": {
+    "9fd5e74f-1820-56c2-8ff6-5c30efaf90d1": {
       "type": "function",
       "name": "isLineCommented",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 1331,
+      "line": 1338,
       "parameters": [
         "line",
         "lineIndex",
@@ -16959,57 +17217,57 @@
       ],
       "exported": true,
       "async": false,
-      "uuid": "c7fda8e0-1f82-5ce9-9126-06d6d3a9d40e"
+      "uuid": "9fd5e74f-1820-56c2-8ff6-5c30efaf90d1"
     },
-    "bbab7ed4-1a84-5e3e-bdd4-c5bed6b66dce": {
+    "78490d32-5116-53bb-99d3-dd271669ff5e": {
       "type": "function",
       "name": "isInsideMultiLineComment",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 1377,
+      "line": 1384,
       "parameters": [
         "lineIndex",
         "allLines"
       ],
       "exported": false,
       "async": false,
-      "uuid": "bbab7ed4-1a84-5e3e-bdd4-c5bed6b66dce"
+      "uuid": "78490d32-5116-53bb-99d3-dd271669ff5e"
     },
-    "20e1660b-60be-5fec-8dae-de130bb6019d": {
+    "5b78a5db-6a7b-5a8f-86e5-f7402bf44d5c": {
       "type": "function",
       "name": "isInsideTemplateString",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 1416,
+      "line": 1423,
       "parameters": [
         "lineIndex",
         "allLines"
       ],
       "exported": false,
       "async": false,
-      "uuid": "20e1660b-60be-5fec-8dae-de130bb6019d"
+      "uuid": "5b78a5db-6a7b-5a8f-86e5-f7402bf44d5c"
     },
-    "d97eb068-241a-5331-b8b0-2b2751a27b8b": {
+    "279d845e-b3cd-5f84-8097-74dc9c6fa8f4": {
       "type": "function",
       "name": "containsCodeContext",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 1448,
+      "line": 1455,
       "parameters": [
         "trimmed"
       ],
       "exported": false,
       "async": false,
-      "uuid": "d97eb068-241a-5331-b8b0-2b2751a27b8b"
+      "uuid": "279d845e-b3cd-5f84-8097-74dc9c6fa8f4"
     },
-    "be81487e-a246-5ce2-90bb-91bc314f280f": {
+    "f0d02188-f66d-5225-97b8-8ac7e79710cf": {
       "type": "function",
       "name": "isEntirelyCommented",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
-      "line": 1474,
+      "line": 1481,
       "parameters": [
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "be81487e-a246-5ce2-90bb-91bc314f280f"
+      "uuid": "f0d02188-f66d-5225-97b8-8ac7e79710cf"
     },
     "ee863f29-907b-5ebe-b8ac-7dbb55b9b7ff": {
       "type": "type",
@@ -20098,6 +20356,297 @@
       "async": false,
       "uuid": "7cec9dea-07a2-5c97-8c31-dd012dae81bf"
     },
+    "2e217337-58d6-5258-8bf7-c6c09d110ed4": {
+      "type": "function",
+      "name": "readJson",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 16,
+      "parameters": [
+        "filename"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "2e217337-58d6-5258-8bf7-c6c09d110ed4"
+    },
+    "fcefc02e-6444-54de-b3c0-0c06bd5e310e": {
+      "type": "function",
+      "name": "uuidAnchor",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 24,
+      "parameters": [
+        "uuid"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "fcefc02e-6444-54de-b3c0-0c06bd5e310e"
+    },
+    "794fcde4-6bc2-59c3-8def-038d0c95d549": {
+      "type": "function",
+      "name": "formatDate",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 28,
+      "parameters": [
+        "isoDate"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "794fcde4-6bc2-59c3-8def-038d0c95d549"
+    },
+    "d98b8475-a3aa-5b86-b700-8930ac9f18cc": {
+      "type": "function",
+      "name": "complexityBadge",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 32,
+      "parameters": [
+        "score"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "d98b8475-a3aa-5b86-b700-8930ac9f18cc"
+    },
+    "c1d28119-98be-5701-a533-376768fb49bb": {
+      "type": "function",
+      "name": "enhanceAPIMd",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 39,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "c1d28119-98be-5701-a533-376768fb49bb"
+    },
+    "03e6e9e3-577e-58a2-a238-c61911d85ee3": {
+      "type": "function",
+      "name": "enhanceComponentsMd",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 86,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "03e6e9e3-577e-58a2-a238-c61911d85ee3"
+    },
+    "741e2d98-5761-5db4-9f84-546d132ddd90": {
+      "type": "function",
+      "name": "enhanceArchitectureMd",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 142,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "741e2d98-5761-5db4-9f84-546d132ddd90"
+    },
+    "b203a2f7-dfbc-5f28-9bb4-c8184c60ef11": {
+      "type": "function",
+      "name": "enhanceSchemamd",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 188,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "b203a2f7-dfbc-5f28-9bb4-c8184c60ef11"
+    },
+    "98e0d46b-48ad-5b21-85dd-22d06c175139": {
+      "type": "function",
+      "name": "main",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js",
+      "line": 244,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "98e0d46b-48ad-5b21-85dd-22d06c175139"
+    },
+    "69b4ecef-5b62-5bbd-94cd-20c0ffa0bdbd": {
+      "type": "function",
+      "name": "generateExportsMd",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\generate-exports-md.js",
+      "line": 17,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "69b4ecef-5b62-5bbd-94cd-20c0ffa0bdbd"
+    },
+    "a75ffcd3-6426-51c6-b7cb-0477aad588f1": {
+      "type": "function",
+      "name": "generateHotspotsMd",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\generate-hotspots-md.js",
+      "line": 18,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "a75ffcd3-6426-51c6-b7cb-0477aad588f1"
+    },
+    "21e5ffa2-ec23-51a9-b01c-1fe33200d73f": {
+      "type": "function",
+      "name": "generateIndexMd",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\generate-index-md.js",
+      "line": 19,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "21e5ffa2-ec23-51a9-b01c-1fe33200d73f"
+    },
+    "9b597811-39f9-5a1c-adbc-ed46af3682f7": {
+      "type": "function",
+      "name": "generateRelationshipsMd",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\generate-relationships-md.js",
+      "line": 17,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "9b597811-39f9-5a1c-adbc-ed46af3682f7"
+    },
+    "6569bb39-51e5-56ea-b1ea-c42d618689a6": {
+      "type": "function",
+      "name": "readCoderefFile",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 18,
+      "parameters": [
+        "filename"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "6569bb39-51e5-56ea-b1ea-c42d618689a6"
+    },
+    "a59363ea-31e2-5014-8161-d0cccd98fdb1": {
+      "type": "function",
+      "name": "ensureFoundationDocsDir",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 32,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "a59363ea-31e2-5014-8161-d0cccd98fdb1"
+    },
+    "b65ea9e3-92ba-5880-8111-849c5698f558": {
+      "type": "function",
+      "name": "writeFoundationDoc",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 43,
+      "parameters": [
+        "filename",
+        "content"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "b65ea9e3-92ba-5880-8111-849c5698f558"
+    },
+    "bf961e6a-0d8f-5032-b513-0b07eeaf0347": {
+      "type": "function",
+      "name": "formatDate",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 55,
+      "parameters": [
+        "isoDate"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "bf961e6a-0d8f-5032-b513-0b07eeaf0347"
+    },
+    "729f7989-a384-5c63-8495-6781314a5dc4": {
+      "type": "function",
+      "name": "uuidAnchor",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 65,
+      "parameters": [
+        "uuid"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "729f7989-a384-5c63-8495-6781314a5dc4"
+    },
+    "3d69bfa1-9e49-5181-9ca1-b60982140851": {
+      "type": "function",
+      "name": "complexityBadge",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 74,
+      "parameters": [
+        "score"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "3d69bfa1-9e49-5181-9ca1-b60982140851"
+    },
+    "16423f3b-7594-5d11-9c04-c8fe15f62fc7": {
+      "type": "function",
+      "name": "countByExtension",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 86,
+      "parameters": [
+        "elements"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "16423f3b-7594-5d11-9c04-c8fe15f62fc7"
+    },
+    "9893b12d-8ee6-5057-b1ac-681cfca383e6": {
+      "type": "function",
+      "name": "groupByType",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 100,
+      "parameters": [
+        "elements"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "9893b12d-8ee6-5057-b1ac-681cfca383e6"
+    },
+    "1a99f506-309f-5bc0-9c05-81e8ddcd9e8d": {
+      "type": "function",
+      "name": "getTopFilesByDensity",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 115,
+      "parameters": [
+        "elements"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "1a99f506-309f-5bc0-9c05-81e8ddcd9e8d"
+    },
+    "3c12f08a-5cfc-541e-8ace-34c2f5e2aeb7": {
+      "type": "function",
+      "name": "escapeMarkdown",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js",
+      "line": 131,
+      "parameters": [
+        "text"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "3c12f08a-5cfc-541e-8ace-34c2f5e2aeb7"
+    },
+    "d9dffa1c-789e-5ec7-b04f-27fbaed79c6e": {
+      "type": "function",
+      "name": "getFileMtime",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\validate-docs.js",
+      "line": 22,
+      "parameters": [
+        "filepath"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "d9dffa1c-789e-5ec7-b04f-27fbaed79c6e"
+    },
+    "d5a92f96-ac64-59c4-a885-9d6781025f82": {
+      "type": "function",
+      "name": "readJson",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\validate-docs.js",
+      "line": 30,
+      "parameters": [
+        "filepath"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "d5a92f96-ac64-59c4-a885-9d6781025f82"
+    },
+    "c5d1bfaf-e58b-5ccf-81ce-ec1f024d51f7": {
+      "type": "function",
+      "name": "validateDocs",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\validate-docs.js",
+      "line": 38,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "c5d1bfaf-e58b-5ccf-81ce-ec1f024d51f7"
+    },
     "159667c8-7238-543f-94f2-004851b7e071": {
       "type": "function",
       "name": "normalizeCoderefPath",
@@ -21304,32 +21853,37 @@
       "9f0c37ce-2425-5765-b426-db3831422907"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts": [
-      "96d93df5-682e-5815-884c-bf371ab3cd10",
-      "8f7dc045-bd16-57ca-b160-9bcbff55d573",
-      "029a5e3a-e64d-5e56-813c-6eb51d799584",
-      "7caff549-4544-5514-b1b8-acfd6e15c29b",
-      "93e5361b-b03a-57aa-bf5a-5f7868b24602",
-      "61e7f5bd-e9a2-5c96-8a4a-b259c1ba4074",
-      "f04a16bd-cd2b-59fd-8b26-7eef3118b5ff",
-      "e4832a4c-60f1-5abd-9b7e-26905a5d8871",
-      "d826dac3-d885-5422-a10d-8928793338d6",
-      "212d7c8a-1fa9-56df-b4e7-d33a66edcef7",
-      "7b39970d-573b-56b3-9d55-f97351f01120",
-      "a279c5c5-30fa-5d0d-a502-d09664039635",
-      "b9a538f2-0b4a-5b09-b853-a4d9e74f1d7d",
-      "3205a585-979c-50da-9645-a1e0750f8603",
-      "7e633f45-a42b-5fe9-9751-5858f6b17ba9",
-      "75a1ca12-80ce-527a-9a33-c628b601e16e",
-      "62fd9a8e-fe73-53c6-acd5-b091c73a850f",
-      "ad7296c8-70ec-5160-96b1-130e98cce356",
-      "21200b54-0973-5d6c-990b-204cf0ac87f4",
-      "7cc3ce41-1462-5537-9cf6-17486012dab0",
-      "7f6c5758-38c6-5e41-b18f-57e365263426",
-      "b9640543-e94f-57e9-9ae7-088617e4b0a5",
-      "6e967df7-8978-5f82-8983-58ef71fc0d68",
-      "6eccc8fe-50ab-5cc0-a186-a8071994107b",
-      "c5f0ca3c-c750-5bc2-93e3-724bbc2b13f1",
-      "0a640bc4-9d20-5df1-83fd-6f167169461a"
+      "5773ea11-a503-5956-bbdb-54abef4f6ef8",
+      "f1384d3e-503a-58b8-afe5-29e61a2d4a87",
+      "65d19c54-22e1-56fc-82f7-38f47103f4e5",
+      "4c6d1c82-ed0f-58a0-b99f-e7f73b0fad89",
+      "1778c5ea-4b02-5e57-a606-37f07375089b",
+      "5ed95d04-cc9e-5129-8896-28651d58a626",
+      "d0099589-90d1-533c-95a5-66fa6241d202",
+      "4c5f20ab-a0a8-5054-be81-ddcb5e0b6c80",
+      "1c9608b3-730e-5e18-bd36-cc68f01ced3a",
+      "9f86f914-cd32-5fad-b9d8-b277bac2d3ab",
+      "99ad18f8-deee-5860-b0cd-21ecc6cfa65a",
+      "864efbb1-8cd7-54a0-b362-8de7c8bb24b9",
+      "729979d2-390f-5fca-9f1f-8c37b038deed",
+      "89dbebf6-07cc-5e51-90ab-22cb065d0309",
+      "f5a0683a-e9e2-5028-9bd8-373e49f88833",
+      "eb711008-f53a-58fa-814a-14912d259dde",
+      "182602f6-1e48-563a-ae03-415e7ac4ca77",
+      "f940d21a-a0fd-5645-9de6-85866421aac6",
+      "b6c88794-d7d1-5438-8d84-79abaf4eace2",
+      "5542804c-8155-582d-b9bd-1f5ffd1cb3f4",
+      "5d4f6ea5-f572-52a0-9522-16d8c45f90d8",
+      "3718a59e-6ba6-5501-97c2-d8d6d4be6166",
+      "8799e3c6-906a-5e01-b8d2-9fc45ac7e306",
+      "d8f4afdb-ef23-57b5-9442-afd5cd8dc263",
+      "a96590f8-d906-5c51-8931-bd8b8ccd9477",
+      "e169d371-6799-5171-91a8-10cb5c422f1d",
+      "5a058f43-7009-5532-a229-075222603a4f",
+      "ded1f8c6-9d0a-52ff-b6e5-3aaf015192cf",
+      "a2cd2aff-c769-5722-81a2-9cada0f37604",
+      "63d25c9f-71f1-5497-a325-317c616f5370",
+      "28e7be29-1914-577a-8016-192aa38bb125"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\migration-route-analyzer.ts": [
       "387010dd-5d1b-53f4-b171-7ef765dd1780",
@@ -21442,6 +21996,14 @@
       "d30a7b77-3b96-5474-988d-16da512b15fa",
       "925e16b0-bb0d-543a-8aa2-1a03a47adfb9",
       "f4519ff2-bb1c-5c8b-9379-e55abe20f0cb"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts": [
+      "8a36f601-3c05-5b4e-bb33-f61b31001309",
+      "5b175eda-4e22-5f4c-a08d-510ee3c677e8",
+      "29705833-7fd6-5570-bb46-5f21c9461c44",
+      "45e5c877-2c36-5e78-a73a-b5926caf60a0",
+      "34acfe9f-1357-5418-b2a7-bf3aa1d0ed2b",
+      "6f28cfd5-1e2e-51bc-895d-a213298859bf"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\validate-routes.ts": [
       "b2137f3d-4e3c-5420-9ad1-928fe020c98e",
@@ -21588,15 +22150,17 @@
       "91351f91-01b4-5faa-9a6f-e582a948ea26",
       "12b001a4-027d-5c9a-aeb8-a81781801e84",
       "0abce402-c7de-57b5-a1f2-7775b18cc1ff",
-      "49661229-9ba7-57c9-8956-cd1e57564bef",
-      "2ebd3755-7937-59af-9f8b-1c8de00b2940",
-      "d2666126-cc24-50a0-943c-41e1e0367d95",
-      "11b773ad-b740-5fa6-bd5a-288cf123e71c",
-      "fa36bb57-53c1-53cb-b696-b2d3d628c774",
-      "134d1e41-cd5e-5fe4-94e7-87ec06f13df1",
-      "1e529e7d-558c-58be-843c-96957186ffec",
-      "02f6a045-a0ae-59f3-a361-b35cd3fac39c",
-      "20a8b100-5873-59d0-8f75-5dee164c187a"
+      "e5e8006e-5124-5891-be28-f866d8a60698",
+      "35942c91-8d2a-56bd-b978-1584fb33a288",
+      "c656372a-fe16-5213-91a1-3b74b710130b",
+      "8fd65889-1165-503e-a845-c8900b8ba491",
+      "1091ee75-6b54-56a9-846c-7a399c58779e",
+      "f894037b-ae33-5059-bd9f-96f18f8d1d75",
+      "5492bd84-bd11-5e49-b4ff-a3f1f571a394",
+      "db4f5a21-478d-5422-8656-3de0b0e6ed7e",
+      "5e12cb63-1039-57f6-ad58-b7be5cc55292",
+      "2d07a951-83c3-546a-92f3-031fe47dd305",
+      "369f02b3-039f-5ddb-95b1-4a38da939a64"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\impact-simulator.ts": [
       "533cab23-82b5-5667-b9ec-29ad1fb07819",
@@ -22676,6 +23240,18 @@
       "21de4ceb-3999-5057-a2d7-2097e86f4bb9",
       "b50b8885-8d35-56e6-a63c-dd0504c98990"
     ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts": [
+      "aa969dd3-9da5-5461-9985-7c66a9ba7886",
+      "d30d36b3-cb6b-5773-8bc5-defccc9ea479",
+      "a4e9075c-6b8c-5f4f-89a2-cfa83ff7a058",
+      "67766c77-b6b7-5f2c-8069-6665c45b973f",
+      "6ff6fbf3-116d-5ecd-806b-63dcefb43dbc",
+      "a8f66572-c68c-59fd-86b1-ce00f8529a44",
+      "6418c690-4b05-5098-9be3-d55cc6161ca5",
+      "bca8bf8f-d815-5e75-90db-169497dc27ac",
+      "8942191b-4db0-5324-a4e6-e5c7ee05295a",
+      "a00b42a9-36cf-5901-aef5-ba300e652313"
+    ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\frontend-scanner.ts": [
       "3f6aab1a-c1e6-5f4b-83fe-614273c1664c",
       "add09636-01ef-5cf3-a6e0-3a2e79d63f41",
@@ -22700,33 +23276,36 @@
       "c32e1f53-4195-5840-a8b9-1bcda674011c",
       "1a7250e1-c4dc-519d-a5ad-45d9914049b1"
     ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\register-frameworks.ts": [
+      "63a59b90-ffb2-5238-a166-d1e22b551c89"
+    ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner-worker.ts": [
       "92eb9424-c3cf-5865-8595-106ec85830ed"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts": [
-      "de79a833-84f3-537f-bebe-305d365f05a1",
-      "0366977e-ea06-5ace-9afe-0dfda85dca94",
-      "746d866d-a804-5916-bea2-4b3f00d710e0",
-      "6e97a65b-92ad-556c-9cf8-da3cb3e83d24",
-      "4b5e5b9c-9291-5902-bfe0-6f8a9b78a74f",
-      "4316b71b-931d-5e5d-88da-7703456b2071",
-      "467b41dc-caa8-5ea9-973d-b05e2b85b6e5",
-      "18fdc9a0-f065-5e56-9b1c-bddafbd1a06e",
-      "d3b68955-4ea3-50f2-9db4-5524db744fa2",
-      "16c175e6-238c-549d-a2f4-f28f0ff9ca5b",
-      "9f2720fe-f372-5e27-88f3-6ebd8738ad60",
-      "e1ab0b21-d333-5ca7-b5e5-9df1a625d097",
-      "c6594193-8f42-56cd-9a72-5eb38d391dad",
-      "77429112-d60d-509f-bbde-caf834b69346",
-      "fdfc67a4-732f-574b-90b3-6c9bacd0e994",
-      "055cd01b-40b7-515f-b8a6-b30132cb97f5",
-      "10c84cbc-3ed8-57d4-b5e9-e2f9c54c9a94",
-      "155d4f4d-b41d-5320-9b7e-bd7cc1a2d7f6",
-      "c7fda8e0-1f82-5ce9-9126-06d6d3a9d40e",
-      "bbab7ed4-1a84-5e3e-bdd4-c5bed6b66dce",
-      "20e1660b-60be-5fec-8dae-de130bb6019d",
-      "d97eb068-241a-5331-b8b0-2b2751a27b8b",
-      "be81487e-a246-5ce2-90bb-91bc314f280f"
+      "92138c52-a2b4-5ceb-8d88-f9a463b719b0",
+      "2a4fb50e-3bf8-5e87-9a8d-f0d8c939d3fd",
+      "78797ea5-94ab-5d15-984d-05380730a0d1",
+      "67158d4e-ab44-5abd-9ca3-65f2e090b4fb",
+      "0544bb9d-b3d5-5d7a-9097-54ff91daee21",
+      "8c6f7846-526c-5c9c-a049-aeba1ea3f284",
+      "69700d9e-8064-54ab-938b-de27b5e286f1",
+      "fb85f29f-52c9-5e46-912a-08390b372111",
+      "d6727e6e-830f-5d33-9d58-1a2c9fea1436",
+      "feb8d5ad-d031-5990-8f36-e3981ce54bc0",
+      "b1b60a1f-f9ac-56de-a1c2-8595e6e70a3f",
+      "db6fe8e5-76b4-50d6-944f-36ef76603200",
+      "d4f8d210-727a-5fa4-ac0c-494effd9a9b6",
+      "64f440ff-5381-5920-af52-42f204887e15",
+      "2eb4f41b-e805-54d2-90f1-ce66239a958e",
+      "7063bf0a-cb57-529d-b8f4-66adab16a345",
+      "6a0a5e2b-bfd7-5d01-b5b6-c8e000d5ee1b",
+      "8de5a27a-2c4a-5b8d-abab-893dcc5f6845",
+      "9fd5e74f-1820-56c2-8ff6-5c30efaf90d1",
+      "78490d32-5116-53bb-99d3-dd271669ff5e",
+      "5b78a5db-6a7b-5a8f-86e5-f7402bf44d5c",
+      "279d845e-b3cd-5f84-8097-74dc9c6fa8f4",
+      "f0d02188-f66d-5225-97b8-8ac7e79710cf"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\tree-sitter-scanner.ts": [
       "ee863f29-907b-5ebe-b8ac-7dbb55b9b7ff",
@@ -23052,6 +23631,46 @@
       "b38d2a3f-f730-5e64-89f3-954c01eb35ab",
       "7cec9dea-07a2-5c97-8c31-dd012dae81bf"
     ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\enhance-existing-docs.js": [
+      "2e217337-58d6-5258-8bf7-c6c09d110ed4",
+      "fcefc02e-6444-54de-b3c0-0c06bd5e310e",
+      "794fcde4-6bc2-59c3-8def-038d0c95d549",
+      "d98b8475-a3aa-5b86-b700-8930ac9f18cc",
+      "c1d28119-98be-5701-a533-376768fb49bb",
+      "03e6e9e3-577e-58a2-a238-c61911d85ee3",
+      "741e2d98-5761-5db4-9f84-546d132ddd90",
+      "b203a2f7-dfbc-5f28-9bb4-c8184c60ef11",
+      "98e0d46b-48ad-5b21-85dd-22d06c175139"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\generate-exports-md.js": [
+      "69b4ecef-5b62-5bbd-94cd-20c0ffa0bdbd"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\generate-hotspots-md.js": [
+      "a75ffcd3-6426-51c6-b7cb-0477aad588f1"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\generate-index-md.js": [
+      "21e5ffa2-ec23-51a9-b01c-1fe33200d73f"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\generate-relationships-md.js": [
+      "9b597811-39f9-5a1c-adbc-ed46af3682f7"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\utils.js": [
+      "6569bb39-51e5-56ea-b1ea-c42d618689a6",
+      "a59363ea-31e2-5014-8161-d0cccd98fdb1",
+      "b65ea9e3-92ba-5880-8111-849c5698f558",
+      "bf961e6a-0d8f-5032-b513-0b07eeaf0347",
+      "729f7989-a384-5c63-8495-6781314a5dc4",
+      "3d69bfa1-9e49-5181-9ca1-b60982140851",
+      "16423f3b-7594-5d11-9c04-c8fe15f62fc7",
+      "9893b12d-8ee6-5057-b1ac-681cfca383e6",
+      "1a99f506-309f-5bc0-9c05-81e8ddcd9e8d",
+      "3c12f08a-5cfc-541e-8ace-34c2f5e2aeb7"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\doc-gen\\validate-docs.js": [
+      "d9dffa1c-789e-5ec7-b04f-27fbaed79c6e",
+      "d5a92f96-ac64-59c4-a885-9d6781025f82",
+      "c5d1bfaf-e58b-5ccf-81ce-ec1f024d51f7"
+    ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\utils\\fs.js": [
       "159667c8-7238-543f-94f2-004851b7e071",
       "5f63714d-9c0e-5120-8aa0-35b34f542df8",
@@ -23179,15 +23798,15 @@
     ]
   },
   "stats": {
-    "totalEntities": 1885,
-    "distinctFiles": 187,
+    "totalEntities": 1935,
+    "distinctFiles": 197,
     "typeBreakdown": {
-      "function": 473,
+      "function": 505,
       "type": 36,
       "component": 2,
-      "interface": 313,
-      "class": 105,
-      "method": 955,
+      "interface": 317,
+      "class": 106,
+      "method": 968,
       "constant": 1
     }
   }

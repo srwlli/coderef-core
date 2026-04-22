@@ -1,0 +1,37 @@
+{
+  "feature_name": "rag-provider-agnostic-wiring",
+  "description": "Refactor RAG configuration and CLI to be provider-agnostic, removing hardcoded OpenAI/Anthropic dependencies and enabling future local model integration",
+  "goal": "Make RAG system accept any LLM provider through generic interface, preparing for Ollama and Claude CLI integration without hardcoded API-key dependencies",
+  "requirements": [
+    "Make RAGConfig provider field accept any string with runtime validation",
+    "Add getEmbeddingDimensions() method to LLMProvider interface",
+    "Refactor rag-config.ts to remove hardcoded 'openai' | 'anthropic' types",
+    "Update rag-index.ts CLI to support --provider flag with any value",
+    "Make vector store dimension configurable per-provider (1536/768/384)",
+    "Update CLI help text to indicate provider flexibility"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "backwards_compatible": "Existing OpenAI/Anthropic flows still work unchanged",
+    "cli_ready": "--provider flag accepts any string, validates at runtime",
+    "config_flexibility": "RAGConfig accepts any provider string with validator function",
+    "dimension_handling": "Embedding dimensions read from provider, not hardcoded"
+  },
+  "_metadata": {
+    "workorder_id": "WO-RAG-PROVIDER-AGNOSTIC-WIRING-001",
+    "workorder_assigned_at": "2026-04-22T04:29:13.280895+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-RAG-PROVIDER-AGNOSTIC-WIRING-001",
+    "feature_id": "rag-provider-agnostic-wiring",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-22"
+  }
+}

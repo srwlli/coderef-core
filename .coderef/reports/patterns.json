@@ -237,6 +237,236 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 198,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 230,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 276,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 349,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 398,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 466,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 206,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 291,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 407,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 538,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 566,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 568,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 576,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 193,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 329,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 427,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 520,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 611,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 613,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 615,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 616,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 99,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 112,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 122,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 125,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 200,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 236,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 252,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 475,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "line": 84,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "line": 86,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "line": 88,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "line": 92,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "line": 95,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "line": 112,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 174,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 280,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 378,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 461,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 498,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 556,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 559,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 560,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 588,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 591,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 594,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/analyzer/dynamic-import-detector.ts",
       "line": 73,
       "pattern": "try-catch"
@@ -244,6 +474,91 @@
     {
       "file": "src/analyzer/dynamic-import-detector.ts",
       "line": 353,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 33,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 57,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 63,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 296,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 327,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 376,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 389,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 390,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 401,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frameworks/express-detector.ts",
+      "line": 8,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frameworks/fastapi-detector.ts",
+      "line": 8,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frameworks/flask-detector.ts",
+      "line": 8,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frameworks/index.ts",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frameworks/nextjs-detector.ts",
+      "line": 8,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frameworks/nuxt-detector.ts",
+      "line": 8,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frameworks/remix-detector.ts",
+      "line": 8,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/frameworks/sveltekit-detector.ts",
+      "line": 8,
       "pattern": "try-catch"
     },
     {
@@ -282,6 +597,16 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/analyzer/index.ts",
+      "line": 36,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/index.ts",
+      "line": 37,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/analyzer/js-parser.ts",
       "line": 95,
       "pattern": "try-catch"
@@ -305,6 +630,36 @@
       "file": "src/analyzer/js-parser.ts",
       "line": 146,
       "pattern": "error-handling"
+    },
+    {
+      "file": "src/analyzer/migration-route-analyzer.ts",
+      "line": 554,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/project-classifier.ts",
+      "line": 22,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/project-classifier.ts",
+      "line": 169,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/project-classifier.ts",
+      "line": 222,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/project-classifier.ts",
+      "line": 298,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/project-classifier.ts",
+      "line": 575,
+      "pattern": "try-catch"
     },
     {
       "file": "src/cli/detect-languages.ts",
@@ -352,9 +707,129 @@
       "pattern": "error-handling"
     },
     {
+      "file": "src/cli/rag-index.ts",
+      "line": 215,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 224,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 227,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 232,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 235,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 368,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 261,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 266,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 273,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 276,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 284,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 287,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 293,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 296,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-status.ts",
+      "line": 168,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-status.ts",
+      "line": 177,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-status.ts",
+      "line": 180,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-status.ts",
+      "line": 196,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-status.ts",
+      "line": 205,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/cli/scan-frontend-calls.ts",
       "line": 133,
       "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/scan.ts",
+      "line": 49,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/scan.ts",
+      "line": 81,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/scan.ts",
+      "line": 86,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/scan.ts",
+      "line": 98,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/scan.ts",
+      "line": 128,
+      "pattern": "error-handling"
     },
     {
       "file": "src/cli/validate-routes.test.ts",
@@ -447,48 +922,28 @@
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 131,
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "line": 19,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 412,
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "line": 28,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 421,
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "line": 77,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 480,
+      "file": "src/context/breaking-change-detector/impact-assessor.ts",
+      "line": 38,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 850,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 908,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 922,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 963,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 993,
+      "file": "src/context/breaking-change-detector/index.ts",
+      "line": 105,
       "pattern": "try-catch"
     },
     {
@@ -509,11 +964,6 @@
     {
       "file": "src/context/context-generator.ts",
       "line": 224,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.d.ts",
-      "line": 14,
       "pattern": "try-catch"
     },
     {
@@ -652,8 +1102,8 @@
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/index.d.ts",
-      "line": 6,
+      "file": "src/context/fuzzy-resolver.ts",
+      "line": 257,
       "pattern": "try-catch"
     },
     {
@@ -688,18 +1138,23 @@
     },
     {
       "file": "src/export/graph-exporter.ts",
-      "line": 286,
+      "line": 498,
       "pattern": "try-catch"
     },
     {
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 99,
+      "line": 98,
       "pattern": "try-catch"
     },
     {
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 105,
+      "line": 102,
       "pattern": "error-handling"
+    },
+    {
+      "file": "src/fileGeneration/index-storage.ts",
+      "line": 217,
+      "pattern": "try-catch"
     },
     {
       "file": "src/fileGeneration/saveFrontendCalls.test.ts",
@@ -737,6 +1192,11 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/fileGeneration/__tests__/index-storage.test.ts",
+      "line": 88,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/fileGeneration/__tests__/saveIndex.test.ts",
       "line": 71,
       "pattern": "try-catch"
@@ -753,12 +1213,12 @@
     },
     {
       "file": "src/index.ts",
-      "line": 142,
+      "line": 166,
       "pattern": "try-catch"
     },
     {
       "file": "src/index.ts",
-      "line": 263,
+      "line": 287,
       "pattern": "try-catch"
     },
     {
@@ -1283,37 +1743,57 @@
     },
     {
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 22,
+      "line": 14,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 68,
+      "line": 185,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 99,
+      "line": 251,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 126,
+      "line": 278,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 253,
+      "line": 283,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 525,
+      "line": 405,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 539,
+      "line": 1148,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1584,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1914,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1916,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 2035,
       "pattern": "try-catch"
     },
     {
@@ -1337,23 +1817,33 @@
       "pattern": "try-catch"
     },
     {
-      "file": "src/pipeline/generators/index-generator.ts",
-      "line": 15,
+      "file": "src/pipeline/generators/health-generator.ts",
+      "line": 238,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/index-generator.ts",
-      "line": 66,
+      "line": 14,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/index-generator.ts",
+      "line": 65,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 95,
+      "line": 147,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 336,
+      "line": 388,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "line": 627,
       "pattern": "try-catch"
     },
     {
@@ -1432,6 +1922,36 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 17,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 89,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 121,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 170,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 217,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 275,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/pipeline/index.ts",
       "line": 7,
       "pattern": "try-catch"
@@ -1448,32 +1968,32 @@
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 95,
+      "line": 131,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 194,
+      "line": 245,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 201,
+      "line": 252,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 211,
+      "line": 262,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 216,
+      "line": 267,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 288,
+      "line": 339,
       "pattern": "try-catch"
     },
     {
@@ -1547,6 +2067,11 @@
       "pattern": "error-handling"
     },
     {
+      "file": "src/scanner/framework-registry.ts",
+      "line": 38,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/scanner/frontend-scanner.ts",
       "line": 19,
       "pattern": "try-catch"
@@ -1612,6 +2137,11 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/scanner/register-frameworks.ts",
+      "line": 9,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/scanner/scanner-worker.ts",
       "line": 39,
       "pattern": "try-catch"
@@ -1632,78 +2162,78 @@
       "pattern": "error-handling"
     },
     {
-      "file": "src/scanner/scanner.d.ts",
-      "line": 44,
-      "pattern": "try-catch"
-    },
-    {
       "file": "src/scanner/scanner.ts",
       "line": 10,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 776,
+      "line": 23,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 862,
+      "line": 761,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 879,
+      "line": 847,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 882,
+      "line": 864,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 909,
+      "line": 867,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 911,
+      "line": 894,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 918,
+      "line": 896,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 948,
+      "line": 903,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 965,
+      "line": 933,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 999,
+      "line": 950,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1057,
+      "line": 984,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1143,
+      "line": 1042,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1512,
+      "line": 1128,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 1497,
       "pattern": "try-catch"
     },
     {
@@ -1784,6 +2314,11 @@
     {
       "file": "src/search/search-engine.ts",
       "line": 706,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/validator/frontend-update-generator.ts",
+      "line": 417,
       "pattern": "try-catch"
     },
     {
@@ -1878,7 +2413,7 @@
     },
     {
       "file": "__tests__/indexer.test.ts",
-      "line": 768,
+      "line": 750,
       "pattern": "try-catch"
     },
     {
@@ -1982,368 +2517,63 @@
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/context-tracker.js",
-      "line": 28,
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
+      "line": 17,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/context-tracker.js",
-      "line": 47,
+      "file": "scripts/doc-gen/generate-hotspots-md.js",
+      "line": 27,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/context-tracker.js",
-      "line": 51,
+      "file": "scripts/doc-gen/generate-hotspots-md.js",
+      "line": 59,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/context-tracker.js",
-      "line": 60,
+      "file": "scripts/doc-gen/generate-hotspots-md.js",
+      "line": 92,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/context-tracker.js",
-      "line": 62,
+      "file": "scripts/doc-gen/generate-hotspots-md.js",
+      "line": 96,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/context-tracker.js",
-      "line": 66,
+      "file": "scripts/doc-gen/generate-hotspots-md.js",
+      "line": 97,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/context-tracker.js",
-      "line": 83,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 85,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 98,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 100,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 182,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 195,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 199,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 200,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 231,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 232,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.js",
-      "line": 243,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/export/graph-exporter.js",
-      "line": 201,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 65,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 66,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 141,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 144,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 150,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 202,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 211,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/llm-provider.js",
-      "line": 15,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 49,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 50,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 98,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 99,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 118,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 145,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 148,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 154,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 207,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 216,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/rag/answer-generation-service.js",
-      "line": 44,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/chunk-converter.js",
-      "line": 38,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/chunk-converter.js",
-      "line": 55,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/embedding-service.js",
-      "line": 43,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 26,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 54,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 220,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 235,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 281,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "line": 58,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "line": 181,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 52,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 75,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 107,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 169,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 190,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 216,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 221,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 268,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 49,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 82,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 105,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 138,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.js",
+      "file": "scripts/doc-gen/generate-hotspots-md.js",
       "line": 184,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 203,
+      "file": "scripts/doc-gen/generate-relationships-md.js",
+      "line": 82,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 222,
+      "file": "scripts/doc-gen/generate-relationships-md.js",
+      "line": 113,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 273,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/parser/parser.js",
-      "line": 39,
+      "file": "scripts/doc-gen/utils.js",
+      "line": 20,
       "pattern": "try-catch"
     },
     {
-      "file": "src/parser/parser.js",
-      "line": 127,
+      "file": "scripts/doc-gen/validate-docs.js",
+      "line": 23,
       "pattern": "try-catch"
     },
     {
-      "file": "src/parser/parser.js",
-      "line": 171,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.js",
-      "line": 198,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/parser/parser.js",
-      "line": 263,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.js",
-      "line": 272,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.js",
-      "line": 279,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.js",
-      "line": 348,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/query/query-executor.js",
-      "line": 58,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/query/query-executor.js",
-      "line": 245,
+      "file": "scripts/doc-gen/validate-docs.js",
+      "line": 31,
       "pattern": "try-catch"
     },
     {
@@ -2674,6 +2904,106 @@
       "line": 306
     },
     {
+      "name": "DependencyAnalyzer.analyze",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 78
+    },
+    {
+      "name": "DependencyAnalyzer.loadPackageJson",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 98
+    },
+    {
+      "name": "DependencyAnalyzer.runNpmAudit",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 111
+    },
+    {
+      "name": "DependencyAnalyzer.analyzeDependency",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 151
+    },
+    {
+      "name": "DependencyAnalyzer.checkIfOutdated",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 187
+    },
+    {
+      "name": "DependencyAnalyzer.getLatestVersion",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 199
+    },
+    {
+      "name": "DependencyAnalyzer.checkIfUsed",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 235
+    },
+    {
+      "name": "DependencyAnalyzer.getLicenseInfo",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 251
+    },
+    {
+      "name": "analyzeDependencyHealth",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 472
+    },
+    {
+      "name": "DocsAnalyzer.analyze",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 121
+    },
+    {
+      "name": "DocsAnalyzer.analyzeReadme",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 167
+    },
+    {
+      "name": "DocsAnalyzer.analyzeJSDocCoverage",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 275
+    },
+    {
+      "name": "DocsAnalyzer.analyzeChangelog",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 361
+    },
+    {
+      "name": "DocsAnalyzer.analyzeApiDocs",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 452
+    },
+    {
+      "name": "DocsAnalyzer.analyzeCommentDensity",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 493
+    },
+    {
+      "name": "DocsAnalyzer.findSourceFiles",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 552
+    },
+    {
+      "name": "DocsAnalyzer.findSourceFilesRecursive",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 584
+    },
+    {
+      "name": "analyzeDocs",
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 744
+    },
+    {
+      "name": "ProjectClassifier.classify",
+      "file": "src/analyzer/project-classifier.ts",
+      "line": 90
+    },
+    {
+      "name": "ProjectClassifier.loadPackageJson",
+      "file": "src/analyzer/project-classifier.ts",
+      "line": 574
+    },
+    {
       "name": "scanDirectory",
       "file": "src/cli/detect-languages.ts",
       "line": 77
@@ -2699,9 +3029,54 @@
       "line": 316
     },
     {
+      "name": "loadRAGDependencies",
+      "file": "src/cli/rag-index.ts",
+      "line": 23
+    },
+    {
+      "name": "createVectorStore",
+      "file": "src/cli/rag-index.ts",
+      "line": 198
+    },
+    {
+      "name": "main",
+      "file": "src/cli/rag-index.ts",
+      "line": 214
+    },
+    {
+      "name": "loadRAGDependencies",
+      "file": "src/cli/rag-search.ts",
+      "line": 21
+    },
+    {
+      "name": "createVectorStore",
+      "file": "src/cli/rag-search.ts",
+      "line": 216
+    },
+    {
+      "name": "main",
+      "file": "src/cli/rag-search.ts",
+      "line": 260
+    },
+    {
+      "name": "main",
+      "file": "src/cli/rag-status.ts",
+      "line": 167
+    },
+    {
       "name": "main",
       "file": "src/cli/scan-frontend-calls.ts",
       "line": 132
+    },
+    {
+      "name": "scanProject",
+      "file": "src/cli/scan.ts",
+      "line": 40
+    },
+    {
+      "name": "main",
+      "file": "src/cli/scan.ts",
+      "line": 106
     },
     {
       "name": "resolveFilePaths",
@@ -2714,29 +3089,29 @@
       "line": 243
     },
     {
+      "name": "findImpactedCallSites",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "line": 12
+    },
+    {
+      "name": "getChangedElements",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "line": 119
+    },
+    {
+      "name": "extractSignaturesFromRef",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "line": 131
+    },
+    {
+      "name": "extractSignaturesFromWorktree",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "line": 143
+    },
+    {
       "name": "BreakingChangeDetector.detectChanges",
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 123
-    },
-    {
-      "name": "BreakingChangeDetector.findImpactedCallSites",
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 406
-    },
-    {
-      "name": "BreakingChangeDetector.getChangedElements",
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 906
-    },
-    {
-      "name": "BreakingChangeDetector.extractSignaturesFromRef",
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 959
-    },
-    {
-      "name": "BreakingChangeDetector.extractSignaturesFromWorktree",
-      "file": "src/context/breaking-change-detector.ts",
-      "line": 990
+      "file": "src/context/breaking-change-detector/index.ts",
+      "line": 97
     },
     {
       "name": "ContextGenerator.generate",
@@ -2761,22 +3136,22 @@
     {
       "name": "detectDrift",
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 39
+      "line": 40
     },
     {
       "name": "loadPreviousScan",
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 96
+      "line": 97
     },
     {
       "name": "writeReport",
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 166
+      "line": 163
     },
     {
       "name": "detectPatterns",
       "file": "src/fileGeneration/detectPatterns.ts",
-      "line": 48
+      "line": 71
     },
     {
       "name": "generateContext",
@@ -2787,6 +3162,21 @@
       "name": "generateDiagrams",
       "file": "src/fileGeneration/generateDiagrams.ts",
       "line": 24
+    },
+    {
+      "name": "writeIndexVariants",
+      "file": "src/fileGeneration/index-storage.ts",
+      "line": 129
+    },
+    {
+      "name": "readJsonMaybeGz",
+      "file": "src/fileGeneration/index-storage.ts",
+      "line": 166
+    },
+    {
+      "name": "loadIndexFromCoderefDir",
+      "file": "src/fileGeneration/index-storage.ts",
+      "line": 208
     },
     {
       "name": "saveFrontendCalls",
@@ -3111,12 +3501,27 @@
     {
       "name": "ContextGenerator.generate",
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 52
+      "line": 169
+    },
+    {
+      "name": "ContextGenerator.buildContext",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 189
     },
     {
       "name": "ContextGenerator.loadComplexityData",
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 96
+      "line": 248
+    },
+    {
+      "name": "ContextGenerator.analyzeDependencyRisks",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1095
+    },
+    {
+      "name": "ContextGenerator.loadPackageJson",
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1147
     },
     {
       "name": "CoverageGenerator.generate",
@@ -3131,12 +3536,12 @@
     {
       "name": "DriftGenerator.generate",
       "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 37
+      "line": 38
     },
     {
       "name": "DriftGenerator.detectDrift",
       "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 51
+      "line": 52
     },
     {
       "name": "ExportGenerator.generate",
@@ -3169,6 +3574,21 @@
       "line": 26
     },
     {
+      "name": "HealthGenerator.generate",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "line": 35
+    },
+    {
+      "name": "HealthGenerator.analyzeDependencies",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "line": 55
+    },
+    {
+      "name": "generateHealthReport",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "line": 234
+    },
+    {
       "name": "IndexGenerator.generate",
       "file": "src/pipeline/generators/index-generator.ts",
       "line": 27
@@ -3176,17 +3596,22 @@
     {
       "name": "PatternGenerator.generate",
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 49
+      "line": 95
     },
     {
       "name": "PatternGenerator.detectTestGaps",
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 136
+      "line": 188
     },
     {
       "name": "PatternGenerator.loadComplexityData",
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 334
+      "line": 386
+    },
+    {
+      "name": "PatternGenerator.loadCoverageData",
+      "file": "src/pipeline/generators/pattern-generator.ts",
+      "line": 618
     },
     {
       "name": "RegistryGenerator.generate",
@@ -3219,24 +3644,54 @@
       "line": 37
     },
     {
+      "name": "IncrementalCache.load",
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 86
+    },
+    {
+      "name": "IncrementalCache.save",
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 118
+    },
+    {
+      "name": "IncrementalCache.checkFiles",
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 145
+    },
+    {
+      "name": "IncrementalCache.updateCache",
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 213
+    },
+    {
+      "name": "IncrementalCache.computeFileHash",
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 249
+    },
+    {
+      "name": "IncrementalCache.clear",
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 270
+    },
+    {
       "name": "PipelineOrchestrator.run",
       "file": "src/pipeline/orchestrator.ts",
-      "line": 56
+      "line": 57
     },
     {
       "name": "PipelineOrchestrator.discoverFiles",
       "file": "src/pipeline/orchestrator.ts",
-      "line": 161
+      "line": 212
     },
     {
       "name": "PipelineOrchestrator.scanDirectory",
       "file": "src/pipeline/orchestrator.ts",
-      "line": 186
+      "line": 237
     },
     {
       "name": "PipelineOrchestrator.processFile",
       "file": "src/pipeline/orchestrator.ts",
-      "line": 239
+      "line": 290
     },
     {
       "name": "QueryExecutor.execute",
@@ -3286,12 +3741,12 @@
     {
       "name": "scanFilesInParallel",
       "file": "src/scanner/scanner.ts",
-      "line": 698
+      "line": 681
     },
     {
       "name": "scanCurrentElements",
       "file": "src/scanner/scanner.ts",
-      "line": 797
+      "line": 782
     },
     {
       "name": "GrammarLoader.loadGrammar",
@@ -3302,6 +3757,11 @@
       "name": "TreeSitterScanner.scanFile",
       "file": "src/scanner/tree-sitter-scanner.ts",
       "line": 146
+    },
+    {
+      "name": "applyModifications",
+      "file": "src/validator/frontend-update-generator.ts",
+      "line": 398
     },
     {
       "name": "saveMarkdownReport",
@@ -3346,17 +3806,17 @@
     {
       "name": "cleanupEnvironment",
       "file": "__tests__/generators/helpers.ts",
-      "line": 201
+      "line": 212
     },
     {
       "name": "readJson",
       "file": "__tests__/generators/helpers.ts",
-      "line": 205
+      "line": 216
     },
     {
       "name": "readText",
       "file": "__tests__/generators/helpers.ts",
-      "line": 210
+      "line": 221
     },
     {
       "name": "createContextDiagnosticEnvironment",
@@ -3384,269 +3844,14 @@
       "line": 115
     },
     {
-      "name": "AnthropicProvider.complete",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 64
-    },
-    {
-      "name": "AnthropicProvider.embed",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 114
-    },
-    {
-      "name": "AnthropicProvider.withRetry",
-      "file": "src/integration/llm/anthropic-provider.js",
-      "line": 141
-    },
-    {
-      "name": "OpenAIProvider.complete",
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 48
-    },
-    {
-      "name": "OpenAIProvider.embed",
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 94
-    },
-    {
-      "name": "OpenAIProvider.withRetry",
-      "file": "src/integration/llm/openai-provider.js",
-      "line": 145
-    },
-    {
-      "name": "AnswerGenerationService.generateAnswer",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "line": 41
-    },
-    {
-      "name": "AnswerGenerationService.generateVariations",
-      "file": "src/integration/rag/answer-generation-service.js",
-      "line": 209
-    },
-    {
-      "name": "ChunkConverter.convertGraph",
-      "file": "src/integration/rag/chunk-converter.js",
-      "line": 21
-    },
-    {
-      "name": "ChunkConverter.convertNode",
-      "file": "src/integration/rag/chunk-converter.js",
-      "line": 77
-    },
-    {
-      "name": "ChunkConverter.readFile",
-      "file": "src/integration/rag/chunk-converter.js",
-      "line": 139
-    },
-    {
-      "name": "EmbeddingService.embedChunks",
-      "file": "src/integration/rag/embedding-service.js",
-      "line": 22
-    },
-    {
-      "name": "EmbeddingService.embedChunk",
-      "file": "src/integration/rag/embedding-service.js",
-      "line": 111
-    },
-    {
-      "name": "EmbeddingService.embedText",
-      "file": "src/integration/rag/embedding-service.js",
-      "line": 124
-    },
-    {
-      "name": "IncrementalIndexer.loadState",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 25
-    },
-    {
-      "name": "IncrementalIndexer.saveState",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 53
-    },
-    {
-      "name": "IncrementalIndexer.analyzeChanges",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 71
-    },
-    {
-      "name": "IncrementalIndexer.filterChangedChunks",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 146
-    },
-    {
-      "name": "IncrementalIndexer.updateState",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 177
-    },
-    {
-      "name": "IncrementalIndexer.hashFile",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 219
-    },
-    {
-      "name": "IncrementalIndexer.clearState",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 234
-    },
-    {
-      "name": "IncrementalIndexer.getStatistics",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 248
-    },
-    {
-      "name": "IncrementalIndexer.needsReindexing",
-      "file": "src/integration/rag/incremental-indexer.js",
-      "line": 272
-    },
-    {
-      "name": "IndexingOrchestrator.indexCodebase",
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "line": 44
-    },
-    {
-      "name": "IndexingOrchestrator.getIndexStats",
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "line": 190
-    },
-    {
-      "name": "IndexingOrchestrator.clearIndex",
-      "file": "src/integration/rag/indexing-orchestrator.js",
-      "line": 202
-    },
-    {
-      "name": "SemanticSearchService.search",
-      "file": "src/integration/rag/semantic-search.js",
-      "line": 26
-    },
-    {
-      "name": "SemanticSearchService.multiQuerySearch",
-      "file": "src/integration/rag/semantic-search.js",
-      "line": 88
-    },
-    {
-      "name": "SemanticSearchService.findSimilar",
-      "file": "src/integration/rag/semantic-search.js",
-      "line": 117
-    },
-    {
-      "name": "SemanticSearchService.searchByExample",
-      "file": "src/integration/rag/semantic-search.js",
-      "line": 125
-    },
-    {
-      "name": "SemanticSearchService.getRelated",
-      "file": "src/integration/rag/semantic-search.js",
-      "line": 153
-    },
-    {
-      "name": "SemanticSearchService.embedQuery",
-      "file": "src/integration/rag/semantic-search.js",
-      "line": 160
-    },
-    {
-      "name": "ChromaStore.initialize",
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 51
-    },
-    {
-      "name": "ChromaStore.upsert",
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 68
-    },
-    {
-      "name": "ChromaStore.query",
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 103
-    },
-    {
-      "name": "ChromaStore.delete",
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 162
-    },
-    {
-      "name": "ChromaStore.clear",
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 186
-    },
-    {
-      "name": "ChromaStore.stats",
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 212
-    },
-    {
-      "name": "createChromaStore",
-      "file": "src/integration/vector/chroma-store.js",
-      "line": 274
-    },
-    {
-      "name": "PineconeStore.initialize",
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 48
-    },
-    {
-      "name": "PineconeStore.waitForIndexReady",
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 79
-    },
-    {
-      "name": "PineconeStore.upsert",
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 98
-    },
-    {
-      "name": "PineconeStore.query",
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 134
-    },
-    {
-      "name": "PineconeStore.delete",
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 177
-    },
-    {
-      "name": "PineconeStore.clear",
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 199
-    },
-    {
-      "name": "PineconeStore.stats",
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 218
-    },
-    {
-      "name": "createPineconeStore",
-      "file": "src/integration/vector/pinecone-store.js",
-      "line": 279
-    },
-    {
-      "name": "QueryExecutor.execute",
-      "file": "src/query/query-executor.js",
-      "line": 44
-    },
-    {
-      "name": "QueryExecutor.executeQuery",
-      "file": "src/query/query-executor.js",
-      "line": 87
-    },
-    {
-      "name": "QueryExecutor.executeBatch",
-      "file": "src/query/query-executor.js",
-      "line": 221
-    },
-    {
-      "name": "QueryExecutor.queryWithFilter",
-      "file": "src/query/query-executor.js",
-      "line": 232
-    },
-    {
-      "name": "QueryExecutor.healthCheck",
-      "file": "src/query/query-executor.js",
-      "line": 244
-    },
-    {
       "name": "testASTAnalyzer",
       "file": "__tests__/test-ast-analyzer.js",
       "line": 13
+    },
+    {
+      "name": "create",
+      "file": "create_wo.py",
+      "line": 11
     }
   ],
   "testGaps": [
@@ -3676,6 +3881,11 @@
       "reason": "Medium complexity (10), Core pipeline function"
     },
     {
+      "name": "generateMigrationHints",
+      "file": "src/context/breaking-change-detector/hint-generator.ts",
+      "reason": "Medium complexity (9), Core pipeline function"
+    },
+    {
       "name": "analyzeCoverage",
       "file": "src/fileGeneration/analyzeCoverage.ts",
       "reason": "Medium complexity (6), Core pipeline function, Async function with edge cases"
@@ -3694,6 +3904,11 @@
       "name": "getConversionStats",
       "file": "src/adapter/graph-to-elements.ts",
       "reason": "Medium complexity (6), Core pipeline function"
+    },
+    {
+      "name": "analyzeMiddlewareAndDI",
+      "file": "src/analyzer/middleware-detector.ts",
+      "reason": "Core pipeline function"
     },
     {
       "name": "validateCliLanguages",
@@ -3721,6 +3936,16 @@
       "reason": "Core pipeline function"
     },
     {
+      "name": "analyzeDependencyHealth",
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "findImpactedCallSites",
+      "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+      "reason": "Medium complexity (10), Async function with edge cases"
+    },
+    {
       "name": "detectDrift",
       "file": "src/fileGeneration/detectDrift.ts",
       "reason": "Core pipeline function, Async function with edge cases"
@@ -3733,6 +3958,16 @@
     {
       "name": "saveFrontendCallsToFile",
       "file": "src/generator/generateFrontendCalls.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "generateHealthReport",
+      "file": "src/pipeline/generators/health-generator.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "analyzeDocs",
+      "file": "src/analyzer/docs-analyzer.ts",
       "reason": "Core pipeline function, Async function with edge cases"
     },
     {
@@ -3771,59 +4006,383 @@
       "reason": "Core pipeline function"
     },
     {
-      "name": "loadPreset",
-      "file": "src/config/presets.ts",
-      "reason": "Core pipeline function"
+      "name": "extractImportsFromAST",
+      "file": "src/analyzer/js-call-detector/module-analyzer.ts",
+      "reason": "High complexity (37)"
     },
     {
-      "name": "generateFrontendCalls",
-      "file": "src/generator/generateFrontendCalls.ts",
-      "reason": "Core pipeline function"
+      "name": "extractExportsFromAST",
+      "file": "src/analyzer/js-call-detector/module-analyzer.ts",
+      "reason": "High complexity (55)"
     },
     {
-      "name": "createIndexerService",
-      "file": "src/indexer/indexer-service.ts",
-      "reason": "Core pipeline function"
+      "name": "visitNode",
+      "file": "src/analyzer/js-call-detector/visitor.ts",
+      "reason": "High complexity (32)"
     },
     {
-      "name": "createQueryEngine",
-      "file": "src/indexer/query-engine.ts",
-      "reason": "Core pipeline function"
+      "name": "extractParametersFromAST",
+      "file": "src/analyzer/js-call-detector/visitor.ts",
+      "reason": "High complexity (24)"
     },
     {
-      "name": "createScanErrorWithContext",
-      "file": "src/scanner/error-reporter.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "normalizeCoderefPath",
-      "file": "utils/fs.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "saveJsonFile",
-      "file": "utils/fs.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "formatSupportedLanguages",
-      "file": "src/cli/detect-languages.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "applyPreset",
-      "file": "src/config/presets.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "formatCodeRef",
-      "file": "src/formatter/formatter.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "formatCodeRefs",
-      "file": "src/formatter/formatter.ts",
-      "reason": "Core pipeline function"
+      "name": "extractElementsFromAST",
+      "file": "src/analyzer/js-call-detector/visitor.ts",
+      "reason": "High complexity (51)"
     }
-  ]
+  ],
+  "middleware": [
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/middleware-detector.ts",
+      "line": 338,
+      "framework": "express",
+      "type": "middleware",
+      "path": "auth",
+      "method": "USE"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/middleware-detector.ts",
+      "line": 361,
+      "framework": "express",
+      "type": "middleware",
+      "path": "rateLimit",
+      "method": "USE"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 102,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 113,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users",
+      "method": "POST"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 124,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/{user_id}",
+      "method": "PUT"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 135,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/{user_id}",
+      "method": "DELETE"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 146,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/{user_id}",
+      "method": "PATCH"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 164,
+      "framework": "express",
+      "type": "handler",
+      "path": "/items",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 179,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 191,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users",
+      "method": "POST"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 203,
+      "framework": "express",
+      "type": "router",
+      "path": "/login",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 227,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/:id",
+      "method": "PUT"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 239,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/:id",
+      "method": "DELETE"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 251,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/:id",
+      "method": "PATCH"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 449,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.test.ts",
+      "line": 457,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.ts",
+      "line": 45,
+      "framework": "express",
+      "type": "handler",
+      "path": "/path",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.ts",
+      "line": 52,
+      "framework": "express",
+      "type": "handler",
+      "path": "/items/{item_id}",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.ts",
+      "line": 73,
+      "framework": "express",
+      "type": "handler",
+      "path": "/path",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.ts",
+      "line": 73,
+      "framework": "express",
+      "type": "router",
+      "path": "/path",
+      "method": "POST"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.ts",
+      "line": 81,
+      "framework": "express",
+      "type": "handler",
+      "path": "/api/users",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/analyzer/route-parsers.ts",
+      "line": 84,
+      "framework": "express",
+      "type": "router",
+      "path": "/login",
+      "method": "POST"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/scanner/scanner.ts",
+      "line": 198,
+      "framework": "express",
+      "type": "handler",
+      "path": "/path",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 117,
+      "framework": "express",
+      "type": "handler",
+      "path": "/items",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 121,
+      "framework": "express",
+      "type": "handler",
+      "path": "/items",
+      "method": "POST"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 125,
+      "framework": "express",
+      "type": "handler",
+      "path": "/items/{item_id}",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 129,
+      "framework": "express",
+      "type": "handler",
+      "path": "/items/{item_id}",
+      "method": "PUT"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 133,
+      "framework": "express",
+      "type": "handler",
+      "path": "/items/{item_id}",
+      "method": "DELETE"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 174,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 178,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users",
+      "method": "POST"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 182,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/:id",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 186,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/:id",
+      "method": "PUT"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 190,
+      "framework": "express",
+      "type": "handler",
+      "path": "/users/:id",
+      "method": "DELETE"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 222,
+      "framework": "express",
+      "type": "router",
+      "path": "/login",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 223,
+      "framework": "express",
+      "type": "router",
+      "path": "/signup",
+      "method": "POST"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 463,
+      "framework": "express",
+      "type": "handler",
+      "path": "/fastapi/items",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/tests/route-detection-integration.test.ts",
+      "line": 471,
+      "framework": "express",
+      "type": "handler",
+      "path": "/express/data",
+      "method": "GET"
+    },
+    {
+      "name": "anonymous",
+      "file": "src/validator/report-generator.test.ts",
+      "line": 331,
+      "framework": "express",
+      "type": "handler",
+      "path": "/api/users",
+      "method": "POST"
+    },
+    {
+      "name": "anonymous",
+      "file": "__tests__/orphan-detection.test.ts",
+      "line": 74,
+      "framework": "express",
+      "type": "router",
+      "path": "/",
+      "method": "GET"
+    }
+  ],
+  "dependencyInjection": []
 }

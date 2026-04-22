@@ -36,7 +36,7 @@ async function loadRAGDependencies() {
 
 interface CliArgs {
   projectDir: string;
-  provider: 'openai' | 'anthropic';
+  provider: string;  // Any provider name (openai, anthropic, ollama, etc.)
   store: 'sqlite' | 'pinecone' | 'chroma';
   reset: boolean;
   languages?: string[];
@@ -75,11 +75,7 @@ function parseArgs(argv: string[]): CliArgs {
 
       case '--provider':
         const provider = argv[++i];
-        if (['openai', 'anthropic'].includes(provider)) {
-          args.provider = provider as 'openai' | 'anthropic';
-        } else {
-          console.warn(`[rag-index] Unknown provider: ${provider}. Using openai.`);
-        }
+        args.provider = provider;
         break;
 
       case '--store':
@@ -132,7 +128,7 @@ USAGE:
 
 OPTIONS:
   -p, --project-dir <path>     Project directory to index (default: current directory)
-  --provider <provider>        LLM provider: openai, anthropic (default: openai)
+  --provider <provider>        LLM provider: openai, anthropic, or custom (default: openai)
   --store <store>              Vector store: sqlite, pinecone, chroma (default: sqlite)
   --reset                      Reset existing index before indexing
   -l, --lang <languages>       Comma-separated languages to index
@@ -146,12 +142,25 @@ ENVIRONMENT VARIABLES:
   PINECONE_API_KEY            Required for Pinecone store
   CODEREF_SQLITE_PATH         Optional: Custom SQLite storage path
 
+  Generic LLM Configuration (for custom/local providers):
+  CODEREF_LLM_PROVIDER        Provider name: openai, anthropic, ollama, etc.
+  CODEREF_LLM_BASE_URL        Base URL for provider API (e.g., http://localhost:11434 for Ollama)
+  CODEREF_LLM_API_KEY         API key (can be 'ollama' or any non-empty string for local)
+  CODEREF_LLM_MODEL           Model name (e.g., nomic-embed-text, llama3.2)
+
 EXAMPLES:
   # Index current directory
   rag-index
 
   # Index specific project with OpenAI
   rag-index --project-dir ./my-project --provider openai
+
+  # Index with local Ollama (when implemented)
+  export CODEREF_LLM_PROVIDER=ollama
+  export CODEREF_LLM_BASE_URL=http://localhost:11434
+  export CODEREF_LLM_MODEL=nomic-embed-text
+  export CODEREF_LLM_API_KEY=ollama
+  rag-index --project-dir ./my-project --provider ollama
 
   # Reset and re-index
   rag-index --project-dir ./my-project --reset
@@ -162,49 +171,64 @@ EXAMPLES:
 OUTPUT:
   Creates .coderef/rag-index.json with indexing metadata
   Vector embeddings stored in configured vector store
+  Dimensions determined from MODEL_REGISTRY (1536 for OpenAI, 768/384 for Ollama)
 `);
 }
 
 /**
  * Create LLM provider based on configuration
+ * Supports: openai, anthropic, and any future provider
  */
 function createLLMProvider(provider: string): any {
-  const apiKey = provider === 'openai'
-    ? process.env.OPENAI_API_KEY
-    : process.env.ANTHROPIC_API_KEY;
-
-  if (!apiKey) {
-    throw new Error(
-      `${provider === 'openai' ? 'OPENAI_API_KEY' : 'ANTHROPIC_API_KEY'} environment variable is required`
-    );
-  }
-
+  // Known providers with specific env var requirements
   if (provider === 'openai') {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is required');
+    }
     return new OpenAIProvider({
       apiKey,
       model: process.env.CODEREF_OPENAI_MODEL || 'gpt-4-turbo-preview',
     });
-  } else {
+  }
+
+  if (provider === 'anthropic') {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY environment variable is required');
+    }
     return new AnthropicProvider({
       apiKey,
       model: process.env.CODEREF_ANTHROPIC_MODEL || 'claude-3-sonnet-20240229',
     });
   }
+
+  // Generic provider support (for local/custom providers like Ollama)
+  // These will be implemented in separate provider files
+  throw new Error(
+    `Provider '${provider}' not yet implemented. Supported: openai, anthropic. ` +
+    `For local models, implement ${provider}-provider.ts and update this factory.`
+  );
 }
 
 /**
- * Create vector store based on configuration
+ * Create vector store based on configuration and provider dimensions
  */
 async function createVectorStore(
   store: string,
-  projectDir: string
+  projectDir: string,
+  llmProvider: any
 ): Promise<any> {
   const storagePath = process.env.CODEREF_SQLITE_PATH
     || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
 
+  // Get dimensions from provider (dimension is defined in MODEL_REGISTRY)
+  const dimension = llmProvider?.getEmbeddingDimensions?.() ??
+    (() => { throw new Error(`Provider does not support embeddings or getEmbeddingDimensions() not implemented`); })();
+
   return new SQLiteVectorStore({
     storagePath,
-    dimension: 1536,
+    dimension,
   });
 }
 
@@ -266,7 +290,7 @@ async function main(): Promise<void> {
 
     // Initialize components
     const llmProvider = createLLMProvider(args.provider);
-    const vectorStore = await createVectorStore(args.store, args.projectDir);
+    const vectorStore = await createVectorStore(args.store, args.projectDir, llmProvider);
 
     // Reset index if requested
     if (args.reset) {

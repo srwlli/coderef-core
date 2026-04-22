@@ -183,6 +183,37 @@ export interface LLMProvider {
    * @returns Model identifier (e.g., 'gpt-4-turbo-preview', 'claude-3-5-sonnet')
    */
   getModel(): string;
+
+  /**
+   * Get the embedding dimension for this provider
+   *
+   * Used to configure vector stores with correct dimensionality.
+   * Throws ProviderDoesNotSupportEmbeddings if provider does not support embeddings.
+   *
+   * @returns Number of dimensions in embedding vectors (e.g., 1536, 768, 384)
+   * @throws {ProviderDoesNotSupportEmbeddings} If provider does not support embeddings
+   *
+   * @example
+   * ```typescript
+   * const dims = provider.getEmbeddingDimensions();
+   * // dims = 1536 (OpenAI), 768 (Ollama nomic-embed-text), etc.
+   * ```
+   */
+  getEmbeddingDimensions(): number;
+
+  /**
+   * Check if this provider supports embedding operations
+   *
+   * @returns true if embed() and getEmbeddingDimensions() are supported
+   *
+   * @example
+   * ```typescript
+   * if (provider.supportsEmbeddings()) {
+   *   const dims = provider.getEmbeddingDimensions();
+   * }
+   * ```
+   */
+  supportsEmbeddings(): boolean;
 }
 
 /**
