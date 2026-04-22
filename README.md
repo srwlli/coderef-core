@@ -739,6 +739,24 @@ How @coderef/core compares to existing code intelligence tools:
 - Handle embeddings, retrieval, prompt chains
 - Comparison: LangChain is downstream orchestration; @coderef/core is upstream structured context/data source
 
+### CodeSee
+**Codebase mapping and visualization**
+- Visualizes dependencies, maps routes, impact analysis
+- Platform-based solution with web UI
+- Comparison: Similar codebase mapping goals; @coderef/core is programmatic library vs platform
+
+### Dependency-Cruiser
+**Dependency graph visualization**
+- Excellent for circular dependency detection
+- Enforces architectural rules via regex/JS
+- Comparison: Strong dependency analysis; @coderef/core adds AI-context generation and cross-language API route parsing
+
+### Sourcery
+**Code quality and AI-driven refactoring**
+- Focuses on code quality, refactoring suggestions
+- Handles intelligent context for code improvements
+- Comparison: Similar AI-context focus; @coderef/core emphasizes structural repo scanning vs individual code suggestions
+
 ### When to Choose @coderef/core
 - Need **API route validation** (frontend ↔ backend) - rare in other tools
 - Building **migration tooling** with automated validation
