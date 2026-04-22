@@ -5,7 +5,7 @@
   "feature_name": "plugin-system-custom-detectors",
   "created_at": "2026-04-22T16:30:00Z",
   "last_updated": "2026-04-22T16:30:00Z",
-  "status": "ready_for_execution",
+  "status": "implementing",
   "handoff": {
     "from": "PLANNING",
     "to": "EXECUTION",
