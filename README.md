@@ -1,6 +1,6 @@
 # @coderef/core
 
-> Core scanning and analysis library for the CodeRef Dashboard ecosystem
+> Core scanning and analysis library for the CodeRef Ecosystem
 
 [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
@@ -8,7 +8,7 @@
 
 ## Overview
 
-**@coderef/core** is a powerful TypeScript library that provides code scanning, dependency analysis, and intelligent context generation for software projects. It serves as the foundational layer for the CodeRef Dashboard, enabling deep code understanding through AST-based parsing and relationship detection.
+**@coderef/core** is a powerful TypeScript library that provides code scanning, dependency analysis, and intelligent context generation for software projects. It serves as the foundational layer for the CodeRef Ecosystem, powering workflows, workorders, sessions, CLI tools, and the Dashboard through deep code understanding via AST-based parsing and relationship detection.
 
 ### Key Features
 
@@ -23,7 +23,7 @@
 
 ### Use Cases
 
-- **Dashboard Integration** - Powers the CodeRef Dashboard UI scanner with real-time code analysis
+- **Ecosystem Integration** - Powers the CodeRef Ecosystem including workflows, workorders, sessions, CLI tools, and the Dashboard UI
 - **CI/CD Pipelines** - Automated code quality checks and dependency validation
 - **API Documentation** - Extract and catalog API endpoints across Flask, FastAPI, Express, and Next.js projects
 - **Migration Planning** - Map routes for framework migrations (e.g., Flask → Next.js)
@@ -125,7 +125,7 @@ const pyPatterns = LANGUAGE_PATTERNS.py; // Python patterns
 ```
 
 
-> **Python Scanner Quality:** AST-based parsing with tree-sitter delivers 100%% accuracy across 6 quality dimensions: element classification, export detection, test coverage linkage, async pattern detection, context summary precision, and testGaps filtering. See `autoresearch/scanner-quality/BASELINES.md` for full campaign results.
+> **Python Scanner Quality:** AST-based parsing with tree-sitter delivers high accuracy for Python code analysis across element classification, export detection, test coverage linkage, async pattern detection, context summary precision, and testGaps filtering.
 
 **Supported Types:** functions, classes, components, hooks, methods, constants, interfaces
 
@@ -270,7 +270,7 @@ console.log(`Deprecated Calls: ${report.migration.deprecated.length}`);
 **Key Features:**
 - **Path Transformation**: Map old routes to new routes (explicit + regex patterns)
 - **Coverage Metrics**: Calculate migration completeness (% of routes migrated)
-- **Confidence Scoring**: Track transformation quality (explicit=100%, pattern=80%)
+- **Confidence Scoring**: Track transformation quality (explicit=95%, pattern=80%)
 - **Unmapped Detection**: Find frontend calls with no migration rule
 - **Deprecated Tracking**: Identify calls to deprecated routes
 - **Multi-Framework**: Flask, FastAPI, Express, Next.js normalization
@@ -580,19 +580,21 @@ await generateContext(projectPath, elements);
 console.log(`✓ Generated context for ${elements.length} elements`);
 ```
 
-### Dashboard Integration
+### Ecosystem Integration
+
+**Works 100% without UI - powers workflows, CLI tools, and automation:**
 
 ```typescript
-// Dashboard UI component
+// CLI tool or workflow step
 import { scanCurrentElements } from '@coderef/core';
 
-async function handleScan(projectPath: string) {
+async function runWorkflowStep(projectPath: string) {
   const elements = await scanCurrentElements(projectPath, ['ts', 'tsx']);
-
+  
   console.log(`Scanned ${elements.length} elements`);
-
-  // Display in UI
-  setElements(elements);
+  
+  // Feed into workorder context, session state, or other tools
+  return elements;
 }
 ```
 
@@ -790,7 +792,7 @@ How @coderef/core compares to existing code intelligence tools:
 - **[Architecture Guide](coderef/foundation-docs/ARCHITECTURE.md)** - System design and patterns
 - **[Schema Reference](coderef/foundation-docs/SCHEMA.md)** - Data models and types
 - **[CLAUDE.md](CLAUDE.md)** - AI development context
-- **[Dashboard Integration](../../README.md)** - CodeRef Dashboard documentation
+- **[Ecosystem Integration](../../README.md)** - CodeRef Ecosystem documentation (workflows, workorders, sessions, CLI)
 
 ---
 

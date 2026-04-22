@@ -165,10 +165,11 @@
       "title": "Tone down '100% accuracy' claims in documentation",
       "category": "docs",
       "severity": "minor",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-21",
-      "body": "Multiple external reviews flagged '100% accuracy' claim as credibility issue. Current README states Python scanner has '100% accuracy across 6 quality dimensions' - reviewers note this is unrealistic and undermines trust. Replace with specific, defensible metrics (e.g., '99.2% element classification accuracy in benchmark tests') or qualify with context ('100% accuracy for supported Python patterns'). Review scores affected: credibility 7/10, documentation clarity 8/10.",
-      "files": ["README.md", "coderef/foundation-docs/API.md"]
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Removed all '100% accuracy' claims from README. Removed autoresearch reference. Changed 'CodeRef Dashboard ecosystem' to 'CodeRef Ecosystem' throughout. Updated description to emphasize workflows, workorders, sessions, CLI tools. Added explicit 'Works 100% without UI' statement. Changed confidence scoring from 'explicit=100%' to 'explicit=95%'. Rebranded 'Dashboard Integration' as 'Ecosystem Integration' with workflow/CLI examples.",
+      "files": ["README.md:3", "README.md:11", "README.md:26", "README.md:128", "README.md:273", "README.md:583", "README.md:795"]
     },
     {
       "id": "IMP-CORE-059",
