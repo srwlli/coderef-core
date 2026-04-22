@@ -1,0 +1,69 @@
+{
+  "$schema": "https://schemas.coderef.com/communication/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-RAG-DIMENSION-MISMATCH-DETECTION-001",
+  "feature_name": "rag-dimension-mismatch-detection",
+  "created_at": "2026-04-22T10:50:00Z",
+  "last_updated": "2026-04-22T10:50:00Z",
+
+  "handoff": {
+    "from": "PLANNING",
+    "to": "EXECUTION",
+    "status": "ready_for_execution"
+  },
+
+  "must_read_first": [
+    "context.json - Feature requirements and success criteria",
+    "analysis.json - Current state analysis and reference components",
+    "plan.json - Phase 1 implementation tasks (DIM-001, DIM-002)"
+  ],
+
+  "execution_context": {
+    "phase": "Phase 1 - Add dimension validation to SQLiteVectorStore",
+    "current_task": "DIM-001",
+    "total_phases": 1,
+    "total_tasks": 2
+  },
+
+  "allowed_operations": [
+    "READ src/integration/vector/sqlite-store.ts",
+    "EDIT src/integration/vector/sqlite-store.ts initialize() method",
+    "RUN manual test: OpenAI index -> Ollama switch",
+    "COMMIT changes",
+    "UPDATE IMP-CORE-064 in improvements.json"
+  ],
+
+  "forbidden_operations": [
+    "DO NOT modify vector-store.ts interface",
+    "DO NOT change CLI argument parsing",
+    "DO NOT modify model-registry.ts"
+  ],
+
+  "reference_materials": {
+    "error_code": "VectorStoreErrorCode.INVALID_DIMENSIONS",
+    "current_error_location": "sqlite-store.ts:224 (upsert method)",
+    "target_location": "sqlite-store.ts:166-175 (initialize method)"
+  },
+
+  "success_criteria": {
+    "functional": "Error thrown during initialize(), not upsert()",
+    "message": "Error includes both dimensions and --reset suggestion",
+    "test": "Manual OpenAI->Ollama switch produces expected error"
+  },
+
+  "contact": {
+    "workorder_path": "coderef/workorder/rag-dimension-mismatch-detection",
+    "related_improvement": "IMP-CORE-064"
+  },
+
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Agent Communication",
+    "workorder_id": "WO-RAG-DIMENSION-MISMATCH-DETECTION-001",
+    "feature_id": "rag-dimension-mismatch-detection",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "READY",
+    "next_review": "2026-04-22"
+  }
+}

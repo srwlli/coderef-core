@@ -1,0 +1,106 @@
+{
+  "$schema": "https://schemas.coderef.com/plan/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-RAG-DIMENSION-MISMATCH-DETECTION-001",
+  "feature_name": "rag-dimension-mismatch-detection",
+  "plan_version": "1.0.0",
+  "created_at": "2026-04-22T10:50:00Z",
+  "last_updated": "2026-04-22T10:50:00Z",
+  "status": "APPROVED",
+
+  "1_executive_summary": {
+    "objective": "Add early dimension mismatch detection to SQLiteVectorStore.initialize()",
+    "approach": "Compare expected dimension (from config) with stored dimension (from file) during initialization",
+    "success_criteria": "Clear error with remediation steps before expensive analysis work begins"
+  },
+
+  "2_risk_assessment": {
+    "overall_risk": "low",
+    "technical_risks": ["None - additive validation only"],
+    "mitigation_strategies": ["Manual testing with provider switch scenario"]
+  },
+
+  "3_current_state_analysis": {
+    "problem": "Dimension validation happens during upsert(), wasting compute on analysis/embedding before failing",
+    "root_cause": "SQLiteVectorStore.initialize() loads file without comparing stored dimension to expected dimension",
+    "evidence": "sqlite-store.ts:166-168 loads data without validation; error thrown at line 224"
+  },
+
+  "4_key_features": {
+    "dimension_validation": {
+      "description": "Early dimension check in initialize()",
+      "acceptance_criteria": ["Detect mismatch before upsert", "Clear error message", "Actionable remediation steps"]
+    }
+  },
+
+  "5_task_id_system": {
+    "prefix": "DIM",
+    "format": "DIM-NNN",
+    "examples": ["DIM-001", "DIM-002"]
+  },
+
+  "6_implementation_phases": [
+    {
+      "phase_id": "phase_1",
+      "name": "Add dimension validation to SQLiteVectorStore",
+      "tasks": [
+        {
+          "task_id": "DIM-001",
+          "title": "Add dimension check in initialize() method",
+          "description": "After loading existing data, compare this.data.dimension with this.config.dimension. If mismatch, throw VectorStoreError with clear message and remediation steps.",
+          "files": ["src/integration/vector/sqlite-store.ts:166-175"],
+          "est_hours": 0.5,
+          "status": "pending"
+        },
+        {
+          "task_id": "DIM-002",
+          "title": "Test dimension mismatch detection",
+          "description": "Manual test: create index with OpenAI (1536), switch to Ollama (768), verify early error with clear message and --reset suggestion.",
+          "files": [],
+          "est_hours": 0.5,
+          "status": "pending"
+        }
+      ],
+      "hard_stop_gate": {
+        "description": "Validation must work correctly before proceeding to commit",
+        "checklist": [
+          "Error thrown during initialize(), not upsert()",
+          "Error message includes both dimensions",
+          "Error message includes --reset suggestion",
+          "Manual test confirms expected behavior"
+        ]
+      }
+    }
+  ],
+
+  "7_testing_strategy": {
+    "unit_tests": "Not required - validation is simple comparison",
+    "integration_tests": "Manual test with OpenAI->Ollama provider switch",
+    "e2e_tests": "Test --reset flag clears dimension mismatch"
+  },
+
+  "8_success_criteria": {
+    "functional": "Early error detection before file analysis",
+    "quality": "Clear, actionable error messages",
+    "performance": "No performance impact - single comparison during init"
+  },
+
+  "9_implementation_checklist": [
+    "READ sqlite-store.ts initialize() method",
+    "EDIT add dimension comparison after loading file",
+    "TEST manual OpenAI->Ollama switch",
+    "COMMIT with descriptive message",
+    "UPDATE IMP-CORE-064 in improvements.json"
+  ],
+
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Implementation Plan",
+    "workorder_id": "WO-RAG-DIMENSION-MISMATCH-DETECTION-001",
+    "feature_id": "rag-dimension-mismatch-detection",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "APPROVED",
+    "next_review": "2026-04-22"
+  }
+}

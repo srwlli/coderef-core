@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schemas.coderef.com/analysis/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-RAG-DIMENSION-MISMATCH-DETECTION-001",
+  "feature_name": "rag-dimension-mismatch-detection",
+  "project_path": "c:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "analysis_completed_at": "2026-04-22T10:50:00Z",
+
+  "foundation_docs": {
+    "ARCHITECTURE.md": "coderef/foundation-docs/ARCHITECTURE.md",
+    "API.md": "coderef/foundation-docs/API.md",
+    "PROJECT_STANDARDS.md": "PROJECT_STANDARDS.md"
+  },
+
+  "reference_components": [
+    {
+      "path": "src/integration/vector/sqlite-store.ts",
+      "type": "VectorStore implementation",
+      "relevance": "Primary target - add dimension validation in initialize()"
+    },
+    {
+      "path": "src/integration/vector/vector-store.ts",
+      "type": "Interface definition",
+      "relevance": "Defines VectorStoreErrorCode.INVALID_DIMENSIONS"
+    },
+    {
+      "path": "src/cli/rag-index.ts",
+      "type": "CLI entry point",
+      "relevance": "Creates vector store with provider dimension"
+    }
+  ],
+
+  "coding_standards": {
+    "applies": ["typescript", "error-handling", "user-messages"],
+    "conformance_requirements": [
+      "Use VectorStoreError with INVALID_DIMENSIONS code",
+      "Error messages must be actionable and include remediation steps",
+      "Follow existing error formatting patterns in sqlite-store.ts"
+    ]
+  },
+
+  "risk_assessment": {
+    "breaking_changes": "None - adds validation, doesn't change behavior on success",
+    "test_gaps": "Manual test required for OpenAI->Ollama provider switch scenario",
+    "dependencies": ["src/integration/llm/model-registry.ts (for dimension specs)"]
+  },
+
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Project Analysis",
+    "workorder_id": "WO-RAG-DIMENSION-MISMATCH-DETECTION-001",
+    "feature_id": "rag-dimension-mismatch-detection",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "COMPLETE"
+  }
+}

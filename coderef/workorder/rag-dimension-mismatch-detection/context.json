@@ -1,0 +1,41 @@
+{
+  "feature_name": "rag-dimension-mismatch-detection",
+  "description": "Implement vector store dimension mismatch detection for RAG system. When switching LLM providers (e.g., OpenAI 1536-dim to Ollama 768-dim), the system fails late with cryptic error during embedding insertion. Need early detection during vector store initialization with clear user guidance.",
+  "goal": "Add dimension validation to SQLiteVectorStore.initialize() to detect mismatch between expected provider dimension and stored vector dimension, providing clear error message with remediation steps",
+  "requirements": [
+    "Add dimension check in SQLiteVectorStore.initialize() method",
+    "Compare this.config.dimension with loaded this.data.dimension",
+    "Throw clear error: 'Dimension mismatch: Vector store has X dimensions, but provider requires Y'",
+    "Include remediation steps in error: 'Run with --reset to recreate, or delete .coderef/rag-vectors.sqlite'",
+    "Link to improvement IMP-CORE-064",
+    "Validate fix with manual test: OpenAI index -> Ollama switch"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "metrics": {
+      "functional": "Early error detection before file analysis",
+      "ux": "Clear error message with actionable remediation"
+    },
+    "output_artefacts": [
+      "src/integration/vector/sqlite-store.ts modified",
+      "Tested with OpenAI->Ollama provider switch"
+    ]
+  },
+  "_metadata": {
+    "workorder_id": "WO-RAG-DIMENSION-MISMATCH-DETECTION-001",
+    "workorder_assigned_at": "2026-04-22T14:53:26.029665+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-RAG-DIMENSION-MISMATCH-DETECTION-001",
+    "feature_id": "rag-dimension-mismatch-detection",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-22"
+  }
+}
