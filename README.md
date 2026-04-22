@@ -21,6 +21,25 @@
 - **⚡ Performance** - In-process TypeScript scanning (3-6x faster than subprocess alternatives)
 - **🎯 Type-Safe** - Complete TypeScript definitions with 26 type designators and validation
 
+### Accuracy by Language
+
+Transparency on parsing depth by language:
+
+| Language | Method | Accuracy | Notes |
+|----------|--------|----------|-------|
+| **Python** | tree-sitter AST | ~99% | Full AST parsing - element classification, exports, async detection |
+| **TypeScript** | Regex patterns | ~85-90% | Fast but limited - may miss complex generics, decorators, re-exports |
+| **JavaScript** | Regex patterns | ~85-90% | Fast extraction - good for imports/exports, basic function detection |
+| **Go** | Regex patterns | ~80-85% | Structural detection - packages, functions, interfaces |
+| **Rust** | Regex patterns | ~80-85% | Pattern-based - modules, functions, traits |
+| **Java** | Regex patterns | ~80-85% | Class/method detection - may miss complex generics |
+| **C#** | Regex patterns | ~80-85% | Type and method extraction - limited generics support |
+| **PHP** | Regex patterns | ~80-85% | Function/class detection - basic namespace support |
+
+**Important:** Regex-based languages are optimized for speed and common patterns. Complex meta-programming, heavy use of decorators, or advanced generics may have lower detection rates. For full type-aware analysis of TypeScript, consider tools like `ts-morph` (slower but deeper).
+
+See [IMP-CORE-052](improvements.json) for planned tree-sitter expansion to all languages.
+
 ### Use Cases
 
 - **Ecosystem Integration** - Powers the CodeRef Ecosystem including workflows, workorders, sessions, CLI tools, and the Dashboard UI

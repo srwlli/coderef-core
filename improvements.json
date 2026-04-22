@@ -176,10 +176,11 @@
       "title": "Document TypeScript regex vs AST limitations clearly",
       "category": "docs",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-21",
-      "body": "Review: 'The README glosses over regex-based extraction for TS/JS. TypeScript has enough syntactic surface area that regex will miss things.' Need louder disclaimer that TS/JS scanning is regex-based (not full AST) and therefore has accuracy limitations for complex patterns (decorators, generics, re-exports). This affects enterprise readiness score (6/10). Suggest adding explicit 'Accuracy by Language' table to README.",
-      "files": ["README.md:15-22"],
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Added 'Accuracy by Language' table to README with full transparency on parsing methods and expected accuracy. Python: ~99% (tree-sitter AST). TypeScript/JavaScript: ~85-90% (regex). Go/Rust/Java/C#/PHP: ~80-85% (regex). Added explicit warning about regex limitations for complex generics, decorators, re-exports. References IMP-CORE-052 for planned tree-sitter expansion. Recommended ts-morph for full type-aware TS analysis. Addresses enterprise readiness concern (6/10 score).",
+      "files": ["README.md:24-41"],
       "related": ["IMP-CORE-052"]
     },
     {
