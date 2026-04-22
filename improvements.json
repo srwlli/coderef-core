@@ -4,7 +4,7 @@
   "project": "coderef-core",
   "scope": "scanner",
   "counter": 56,
-  "last_updated": "2026-04-22T04:00:00Z",
+  "last_updated": "2026-04-22",
   "last_pruned": "2026-04-22",
   "archived": [
     "IMP-CORE-003",
@@ -51,52 +51,6 @@
       "related": ["WO-API-ROUTE-DETECTION-001"]
     },
     {
-      "id": "IMP-CORE-038",
-      "title": "Extract scanner framework detection to configurable registry",
-      "category": "architecture",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-20",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Created framework-registry.ts with FrameworkRegistry class. Implemented 7 framework detectors: nextjs, sveltekit, nuxt, remix, express, flask, fastapi. Refactored scanner.ts to use frameworkRegistry.detectAll() instead of hardcoded methods. Old processXxxRoute methods deprecated but kept for backward compatibility.",
-      "files": ["src/scanner/framework-registry.ts", "src/scanner/register-frameworks.ts", "src/analyzer/frameworks/"],
-      "related": ["IMP-CORE-036"]
-    },
-    {
-      "id": "IMP-CORE-043",
-      "title": "Add middleware and dependency injection mapping",
-      "category": "code-quality",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-20",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Implemented MiddlewareMapping interface matching migration-config-schema.json structure. Added detection for Flask (@login_required, @require_auth, @limiter.limit, @cross_origin), Django (@login_required, @permission_required, @csrf_*), and Express (app.use(auth), rateLimit) middleware patterns. Each mapping includes target framework pattern, conversion notes, and autoConvertible flag. Migration guidance covers Flask→FastAPI, Django→FastAPI, Express→NestJS conversions.",
-      "files": ["src/analyzer/middleware-detector.ts"],
-      "related": ["WO-MIGRATION-VALIDATION-001", "IMP-CORE-010"]
-    },
-    {
-      "id": "IMP-CORE-050",
-      "title": "TODO comments in fuzzy-resolver need resolution",
-      "category": "code-quality",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Implemented Jaro-Winkler name similarity, weighted path similarity (filename 40%, directory overlap 35%, extension 15%, depth 10%), and metadata-based signature similarity (async, exported, parameters, type). All 3 TODOs removed. FuzzyResolver production-ready.",
-      "files": ["src/context/fuzzy-resolver.ts:133", "src/context/fuzzy-resolver.ts:147", "src/context/fuzzy-resolver.ts:168"]
-    },
-    {
-      "id": "IMP-CORE-051",
-      "title": "Registry has unresolved implementation notes",
-      "category": "code-quality",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "CLOSED (INVALID): No TODO/FIXME comments found in entity-registry.ts. Comments at lines 30, 32 are implementation notes explaining UUID v5 bit manipulation, not unresolved work items. Code review confirms proper deduplication (line 51-53) and no cache invalidation edge cases exist.",
-      "files": ["src/registry/entity-registry.ts"]
-    },
-    {
       "id": "IMP-CORE-052",
       "title": "Replace regex parsing with AST for all languages",
       "category": "accuracy",
@@ -129,27 +83,24 @@
       "related": ["IMP-CORE-038", "IMP-CORE-043"]
     },
     {
-      "id": "IMP-CORE-055",
-      "title": "Add prebuilt AI integrations (embeddings, semantic search)",
-      "category": "ai-readiness",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-22",
-      "body": "COMPLETED: Implemented provider-agnostic RAG system with Ollama support. Created model-registry.ts as single source of truth for provider specs (embedding dimensions, env vars). Implemented OllamaProvider with 768-dim nomic-embed-text support. Updated rag-index.ts and rag-search.ts CLI commands for dynamic provider loading. Verified e2e: 218 chunks indexed via Ollama in 6.5s. Fixed --reset bug to properly clear incremental indexer metadata. Environment variables standardized to CODEREF_LLM_* namespace.",
-      "files": ["src/integration/llm/model-registry.ts", "src/integration/llm/ollama-provider.ts", "src/cli/rag-index.ts", "src/cli/rag-search.ts"],
-      "related": ["WO-RAG-OLLAMA-001"]
-    },
-    {
       "id": "IMP-CORE-056",
-      "title": "Add minimal UI layer for graph exploration",
+      "title": "Add minimal UI layer for graph exploration to my-code tenant",
       "category": "developer-experience",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-21",
-      "body": "Review notes Sourcegraph comparison (polished platform vs backend engine). Even minimal graph explorer would add huge value - visualize dependency graphs, navigate element relationships, inspect API routes. Could be web-based or IDE extension. Current foundation-docs output is static markdown - interactive UI would differentiate.",
-      "files": ["coderef/foundation-docs/diagrams/"],
-      "related": ["WO-FOUNDATION-DOCS-001"]
+      "body": "Build interactive graph explorer for CodeRef data targeting Entity monorepo's my-code tenant (Entity/apps/web/app/my-code/). Consumes CODEREF-CORE .coderef/graph.json via API endpoint. Features: visualize dependency graphs, navigate element relationships, inspect API routes. Integration point: my-code/page.tsx currently shows ProjectViewPage - add graph visualization tab. Will differentiate from static foundation-docs markdown output.",
+      "files": [
+        "coderef/foundation-docs/diagrams/",
+        "Entity/apps/web/app/my-code/page.tsx"
+      ],
+      "related": [
+        "WO-FOUNDATION-DOCS-001",
+        "IMP-CORE-063"
+      ],
+      "target_tenant": "my-code",
+      "target_repo": "Entity",
+      "integration_path": "Entity/apps/web/app/my-code/"
     },
     {
       "id": "IMP-CORE-057",
@@ -163,108 +114,31 @@
       "related": ["IMP-CORE-052"]
     },
     {
-      "id": "IMP-CORE-058",
-      "title": "Tone down '100% accuracy' claims in documentation",
-      "category": "docs",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Removed all '100% accuracy' claims from README. Removed autoresearch reference. Changed 'CodeRef Dashboard ecosystem' to 'CodeRef Ecosystem' throughout. Updated description to emphasize workflows, workorders, sessions, CLI tools. Added explicit 'Works 100% without UI' statement. Changed confidence scoring from 'explicit=100%' to 'explicit=95%'. Rebranded 'Dashboard Integration' as 'Ecosystem Integration' with workflow/CLI examples.",
-      "files": ["README.md:3", "README.md:11", "README.md:26", "README.md:128", "README.md:273", "README.md:583", "README.md:795"]
-    },
-    {
-      "id": "IMP-CORE-059",
-      "title": "Document TypeScript regex vs AST limitations clearly",
-      "category": "docs",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Added 'Accuracy by Language' table to README with full transparency on parsing methods and expected accuracy. Python: ~99% (tree-sitter AST). TypeScript/JavaScript: ~85-90% (regex). Go/Rust/Java/C#/PHP: ~80-85% (regex). Added explicit warning about regex limitations for complex generics, decorators, re-exports. References IMP-CORE-052 for planned tree-sitter expansion. Recommended ts-morph for full type-aware TS analysis. Addresses enterprise readiness concern (6/10 score).",
-      "files": ["README.md:24-41"],
-      "related": ["IMP-CORE-052"]
-    },
-    {
-      "id": "IMP-CORE-060",
-      "title": "Remove benchmark claims pending large-scale validation",
-      "category": "performance",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Instead of adding large-scale benchmarks, removed all performance/benchmark claims from README per review feedback. Removed: '3-6x faster' claims, benchmarks section (541 elements, ~1185ms), performance tips section. Changed to neutral 'In-Process Scanning' description. Review noted claims were 'too strong or need tighter proof' - removing pending actual large-scale testing is more honest than unverified claims.",
-      "files": ["README.md:21", "README.md:514-530"],
-      "related": ["IMP-CORE-058", "IMP-CORE-061"]
-    },
-    {
-      "id": "IMP-CORE-061",
-      "title": "Fix documentation consistency issues",
-      "category": "docs",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Fixed triple (auto-enhanced) text duplication in API.md and ARCHITECTURE.md (was '(auto-enhanced) (auto-enhanced) (auto-enhanced)' → '(auto-enhanced)'). Fixed duplicate UUID anchors in API.md (scanCurrentElements and scanFilesWithAST had 2 UUIDs each → 1). Root cause: enhance-existing-docs.js appends rather than idempotently updates. Validation now passes clean. Addresses review concern: 'documentation consistency issues reduce trust' (8/10 → 9/10 target).",
-      "files": ["coderef/foundation-docs/API.md:5", "coderef/foundation-docs/ARCHITECTURE.md:5", "coderef/foundation-docs/API.md:34-35", "coderef/foundation-docs/API.md:71-72"]
-    },
-    {
-      "id": "IMP-CORE-062",
-      "title": "Clarify route validation scope and limitations",
-      "category": "docs",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-21",
-      "completed": "2026-04-21",
-      "body": "COMPLETED: Added 'Validation Scope & Limitations' section to README @ line 219-232. Explicitly documents what IS detected (URL path mismatches, HTTP method mismatches, missing path parameters) vs what is NOT detected (payload shapes, auth headers, response contracts, type-level mismatches). Added recommendation to combine with OpenAPI/Swagger or ts-morph for comprehensive contract validation. Addresses review concern: 'Route validation only catching 404/405-style mismatches is useful but shallow. Won't catch where most real bugs live.' Sets proper expectations to avoid user disappointment.",
-      "files": ["README.md:219-232"]
-    },
-    {
       "id": "IMP-CORE-063",
       "title": "Add minimal UI layer for graph exploration",
       "category": "developer-experience",
       "severity": "minor",
-      "status": "open",
+      "status": "duplicate",
       "logged": "2026-04-21",
-      "body": "Review notes Sourcegraph comparison (polished platform vs backend engine). Even minimal graph explorer would add huge value - visualize dependency graphs, navigate element relationships, inspect API routes. Could be web-based or IDE extension. Current foundation-docs output is static markdown - interactive UI would differentiate.",
-      "files": ["coderef/foundation-docs/diagrams/"],
-      "related": ["WO-FOUNDATION-DOCS-001"]
-    },
-    {
-      "id": "IMP-CORE-064",
-      "title": "Implement vector store dimension mismatch detection",
-      "category": "code-quality",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-22",
-      "completed": "2026-04-22",
-      "body": "COMPLETED: Added early dimension validation to SQLiteVectorStore.initialize(). Now detects mismatches between stored vector dimension and provider config dimension before expensive analysis work. Error thrown in initialize() instead of upsert(), with clear message: 'Dimension mismatch: Vector store has X dimensions, but provider requires Y. Run with --reset to recreate, or delete {path}'. Tested with OpenAI (1536) -> Ollama (768) provider switch scenario. Workorder: WO-RAG-DIMENSION-MISMATCH-DETECTION-001.",
-      "files": ["src/integration/vector/sqlite-store.ts:166-178"],
-      "related": ["WO-RAG-OLLAMA-001", "WO-RAG-DIMENSION-MISMATCH-DETECTION-001"]
+      "closed": "2026-04-22",
+      "close_reason": "Duplicate of IMP-CORE-056. Consolidated into 056 with updated my-code tenant scope.",
+      "body": "Duplicate entry - see IMP-CORE-056 for canonical tracking.",
+      "files": [],
+      "related": ["IMP-CORE-056"]
     },
     {
       "id": "IMP-CORE-065",
       "title": "Add Pinecone and Chroma vector store support",
       "category": "architecture",
       "severity": "major",
-      "status": "open",
-      "logged": "2026-04-22",
-      "body": "Current RAG system only supports SQLite vector store. Pinecone and Chroma providers are referenced in CLI help but not implemented. Need to complete: PineconeStore with namespace support, ChromaStore with collection management. Both should implement VectorStore interface with initialize(), add(), search(), clear(), stats() methods. Enables production deployments with scalable vector databases.",
-      "files": ["src/integration/vector/pinecone-store.ts", "src/integration/vector/chroma-store.ts"],
-      "related": ["IMP-CORE-055"]
-    },
-    {
-      "id": "IMP-CORE-066",
-      "title": "Implement rag-status CLI command",
-      "category": "developer-experience",
-      "severity": "minor",
       "status": "done",
       "logged": "2026-04-22",
-      "completed": "2026-04-22",
-      "body": "COMPLETED: rag-status.ts CLI already fully implemented and registered in package.json. Displays: health status, index files (metadata + vectors), index info (version, created, age, provider, store), languages, statistics (files, chunks, processing time), resource usage (tokens, cost, embedding time), chunks by type, vector store info, and helpful next steps. Verified working - shows 186 chunks indexed via Ollama.",
-      "files": ["src/cli/rag-status.ts", "package.json:14"],
-      "related": ["IMP-CORE-055"]
+      "closed": "2026-04-22",
+      "close_reason": "Completed: PineconeStore and ChromaStore implemented with full VectorStore interface. CLI wired with --store flag. Unit tests added. Dependencies installed.",
+      "body": "Current RAG system only supports SQLite vector store. Pinecone and Chroma providers are referenced in CLI help but not implemented. Need to complete: PineconeStore with namespace support, ChromaStore with collection management. Both should implement VectorStore interface with initialize(), add(), search(), clear(), stats() methods. Enables production deployments with scalable vector databases.",
+      "files": ["src/integration/vector/pinecone-store.ts", "src/integration/vector/chroma-store.ts", "src/cli/rag-index.ts", "src/cli/rag-search.ts", "__tests__/pinecone-store.test.ts", "__tests__/chroma-store.test.ts"],
+      "related": ["IMP-CORE-055", "WO-RAG-PINECONE-CHROMA-STORES-001"]
     }
   ],
-  "_note": "8 open items (036, 052-057, 063, 065) after RAG improvements. IMP-CORE-055, 064, 066 completed 2026-04-22. 058-062 completed 2026-04-21. 039, 042, 044 archived. Counter at 56. Last updated 2026-04-22."
+  "_note": "6 open items (036, 052-057), 1 duplicate (063), 1 completed (065). Pruned 12 completed entries: 038, 043, 050, 051, 055, 058-062, 064, 066. Counter at 56. Last updated 2026-04-22."
 }
