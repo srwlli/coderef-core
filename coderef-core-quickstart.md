@@ -1,16 +1,16 @@
 ---
-skill_name: -coderef-core-quickstart
-version: 1.0.0
+skill_name: coderef-core-quickstart
+version: 1.0.1
 category: WORKFLOW
-description: > Core scanning and analysis library for the CodeRef Dashboard ecosystem
+description: Core scanning and analysis library for the CodeRef Dashboard ecosystem
 project_type: node
-generated_at: 2026-04-20T08:54:31.095Z
-prerequisites: ["Node.js >= 18"]
+generated_at: 2026-04-21T00:13:00Z
+prerequisites: ["Node.js >= 18", "TypeScript 5.0+"]
 time_estimate: 5-10 minutes
-success_indicator: "All services respond on health endpoints"
+success_indicator: "All tests pass, CLI commands respond"
 ---
 
-# -coderef-core — Quick Start
+# @coderef/core — Quick Start
 
 > Core scanning and analysis library for the CodeRef Dashboard ecosystem
 
