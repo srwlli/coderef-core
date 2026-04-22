@@ -3,7 +3,7 @@
   "schema_version": "1.0",
   "project": "coderef-core",
   "scope": "scanner",
-  "counter": 52,
+  "counter": 56,
   "last_updated": "2026-04-22T04:00:00Z",
   "last_pruned": "2026-04-22",
   "archived": [
@@ -229,7 +229,40 @@
       "body": "Review notes Sourcegraph comparison (polished platform vs backend engine). Even minimal graph explorer would add huge value - visualize dependency graphs, navigate element relationships, inspect API routes. Could be web-based or IDE extension. Current foundation-docs output is static markdown - interactive UI would differentiate.",
       "files": ["coderef/foundation-docs/diagrams/"],
       "related": ["WO-FOUNDATION-DOCS-001"]
+    },
+    {
+      "id": "IMP-CORE-064",
+      "title": "Implement vector store dimension mismatch detection",
+      "category": "code-quality",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-22",
+      "body": "RAG system needs automatic detection of embedding dimension mismatches between existing vector store and provider configuration. Currently fails with cryptic 'Invalid vector dimension: expected X, got Y' error. Should store expected dimension in metadata, compare on startup, and provide clear error message with remediation steps (delete .coderef/rag-vectors.sqlite or use --reset).",
+      "files": ["src/integration/vector/sqlite-store.ts", "src/cli/rag-index.ts"],
+      "related": ["WO-RAG-OLLAMA-001"]
+    },
+    {
+      "id": "IMP-CORE-065",
+      "title": "Add Pinecone and Chroma vector store support",
+      "category": "architecture",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-22",
+      "body": "Current RAG system only supports SQLite vector store. Pinecone and Chroma providers are referenced in CLI help but not implemented. Need to complete: PineconeStore with namespace support, ChromaStore with collection management. Both should implement VectorStore interface with initialize(), add(), search(), clear(), stats() methods. Enables production deployments with scalable vector databases.",
+      "files": ["src/integration/vector/pinecone-store.ts", "src/integration/vector/chroma-store.ts"],
+      "related": ["IMP-CORE-055"]
+    },
+    {
+      "id": "IMP-CORE-066",
+      "title": "Implement rag-status CLI command",
+      "category": "developer-experience",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-22",
+      "body": "rag-index output suggests 'Check status: rag-status --project-dir .' but this command doesn't exist. Implement rag-status.ts CLI to display: indexed files count, chunks count, provider used, embedding dimensions, storage size, last indexed timestamp. Helps users verify index health and diagnose issues without manually inspecting SQLite files.",
+      "files": ["src/cli/rag-status.ts"],
+      "related": ["IMP-CORE-055"]
     }
   ],
-  "_note": "7 open items (036, 052-057, 063) after RAG Ollama integration. IMP-CORE-055 completed 2026-04-22. 058-062 completed 2026-04-21. 039, 042, 044 archived. Counter at 52. Last updated 2026-04-22."
+  "_note": "10 open items (036, 052-057, 063-066) after RAG improvements. IMP-CORE-055 completed 2026-04-22. 058-062 completed 2026-04-21. 039, 042, 044 archived. Counter at 56. Last updated 2026-04-22."
 }
