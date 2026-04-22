@@ -95,7 +95,60 @@
       "completed": "2026-04-21",
       "body": "CLOSED (INVALID): No TODO/FIXME comments found in entity-registry.ts. Comments at lines 30, 32 are implementation notes explaining UUID v5 bit manipulation, not unresolved work items. Code review confirms proper deduplication (line 51-53) and no cache invalidation edge cases exist.",
       "files": ["src/registry/entity-registry.ts"]
+    },
+    {
+      "id": "IMP-CORE-052",
+      "title": "Replace regex parsing with AST for all languages",
+      "category": "accuracy",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "External review identified regex-based parsing as primary accuracy limitation (score 6.5/10). Currently only Python uses tree-sitter AST (100% accuracy). TypeScript, JavaScript, Go, Rust, Java, C#, PHP all use regex patterns. Expanding tree-sitter coverage would boost accuracy rating +1.5 points and match CodeQL-level precision. See scanner-quality autoresearch baselines for comparison.",
+      "files": ["src/scanner/scanner.ts", "src/scanner/pattern-loader.ts"],
+      "related": ["IMP-CORE-036"]
+    },
+    {
+      "id": "IMP-CORE-053",
+      "title": "Add data-flow and type-flow analysis",
+      "category": "technical-depth",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "Current system lacks deep semantic analysis (type-flow, data-flow, symbolic execution). Review suggests this limits technical depth score to 7/10 vs CodeQL. Adding data-flow tracking would enable dead code detection, security vulnerability analysis, and more precise impact analysis. Would differentiate from Semgrep pattern-matching approach.",
+      "files": ["src/analyzer/dependency-analyzer.ts", "src/graph/graph-builder.ts"]
+    },
+    {
+      "id": "IMP-CORE-054",
+      "title": "Introduce plugin system for custom detectors",
+      "category": "ecosystem",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "DX score 7/10 due to lack of ecosystem maturity. Framework detection registry (IMP-CORE-038) provides foundation, but users need ability to define custom detectors and graph rules without modifying core. Plugin API would enable third-party extensions, custom pattern definitions, and domain-specific analysis (e.g., Django, Laravel, Spring Boot plugins).",
+      "files": ["src/scanner/framework-registry.ts", "src/analyzer/plugin-api.ts"],
+      "related": ["IMP-CORE-038", "IMP-CORE-043"]
+    },
+    {
+      "id": "IMP-CORE-055",
+      "title": "Add prebuilt AI integrations (embeddings, semantic search)",
+      "category": "ai-readiness",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "AI readiness score 9/10 already strong, but review suggests tighter integration would cement position. Prebuilt embeddings generation, semantic search over codebase, and prompt templates for common operations (refactoring, documentation, testing) would make system more turnkey for AI workflows. Already have RAG index (rag-index CLI) - extend with vector embeddings and similarity search.",
+      "files": ["src/cli/rag-index.ts", "src/context/ai-prompt-generator.ts"]
+    },
+    {
+      "id": "IMP-CORE-056",
+      "title": "Add minimal UI layer for graph exploration",
+      "category": "developer-experience",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "Review notes Sourcegraph comparison (polished platform vs backend engine). Even minimal graph explorer would add huge value - visualize dependency graphs, navigate element relationships, inspect API routes. Could be web-based or IDE extension. Current foundation-docs output is static markdown - interactive UI would differentiate.",
+      "files": ["coderef/foundation-docs/diagrams/"],
+      "related": ["WO-FOUNDATION-DOCS-001"]
     }
   ],
-  "_note": "1 open item after completing 038, 043, 050, 051. 039, 042, 044 also archived. Counter remains at 52. Last updated 2026-04-21."
+  "_note": "6 open items (036, 052-056) after external review. 039, 042, 044 archived. Counter at 52. Last updated 2026-04-21."
 }
