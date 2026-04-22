@@ -705,6 +705,48 @@ MIT © CodeRef Team
 
 ---
 
+## Comparables
+
+How @coderef/core compares to existing code intelligence tools:
+
+### CodeQL
+**Graph-based semantic analysis (GitHub)**
+- Builds deep code graphs with type-flow and data-flow
+- Used for security auditing and large-scale refactors
+- Comparison: CodeQL is deeper and more precise; @coderef/core is faster and more practical for AI workflows
+- Think: *"CodeQL Lite + AI layer"*
+
+### Semgrep
+**Pattern-based static analysis**
+- Fast, CI-friendly, multi-language rule engine
+- Mature ecosystem with registry of rules
+- Comparison: Semgrep has better rule engine; @coderef/core wins on relationship graphs + AI context generation
+
+### Sourcegraph
+**Code search and navigation platform**
+- Polished UI with Cody AI integration
+- Strong cross-repository search
+- Comparison: Sourcegraph is a UI platform; @coderef/core is a backend engine with deeper structural outputs
+
+### tree-sitter
+**Parser generator for ASTs**
+- Precise incremental parsing across languages
+- Used by GitHub, Neovim, and others
+- Comparison: @coderef/core uses tree-sitter for Python; expanding to all languages (see IMP-CORE-052)
+
+### LangChain / RAG Tools
+**AI orchestration frameworks**
+- Handle embeddings, retrieval, prompt chains
+- Comparison: LangChain is downstream orchestration; @coderef/core is upstream structured context/data source
+
+### When to Choose @coderef/core
+- Need **API route validation** (frontend ↔ backend) - rare in other tools
+- Building **migration tooling** with automated validation
+- Creating **AI-native developer workflows** with structured context
+- Want **fast, in-process analysis** without heavy infrastructure
+
+---
+
 ## Resources
 
 - **[API Documentation](coderef/foundation-docs/API.md)** - Complete API reference
