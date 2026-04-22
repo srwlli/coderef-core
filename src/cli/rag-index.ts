@@ -326,14 +326,6 @@ async function main(): Promise<void> {
     // Initialize vector store
     await vectorStore.initialize();
 
-    // Reset index if requested
-    if (args.reset) {
-      if (!args.json) {
-        console.log('🗑️  Clearing existing index...');
-      }
-      await vectorStore.clear();
-    }
-
     // Initialize analyzer
     const analyzerService = new AnalyzerService(args.projectDir);
 
@@ -344,6 +336,14 @@ async function main(): Promise<void> {
       vectorStore,
       args.projectDir
     );
+
+    // Reset index if requested (must be after orchestrator creation)
+    if (args.reset) {
+      if (!args.json) {
+        console.log('🗑️  Clearing existing index...');
+      }
+      await orchestrator.clearIndex();
+    }
 
     // Progress callback
     const onProgress = args.json
