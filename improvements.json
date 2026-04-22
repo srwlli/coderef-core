@@ -159,7 +159,58 @@
       "body": "External review (9/10 utility, 8/10 performance) suggests incremental scanning for enterprise monorepos. As projects grow, full re-scan becomes expensive. Implement file-watcher or cache based on file hashes (already generated) to only re-scan changed files. This would enable real-time IDE integration and make system viable for large codebases. Second review specifically noted this as priority for enterprise adoption.",
       "files": ["src/scanner/scanner.ts", "src/cache/file-hash-cache.ts"],
       "related": ["IMP-CORE-052"]
+    },
+    {
+      "id": "IMP-CORE-058",
+      "title": "Tone down '100% accuracy' claims in documentation",
+      "category": "docs",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "Multiple external reviews flagged '100% accuracy' claim as credibility issue. Current README states Python scanner has '100% accuracy across 6 quality dimensions' - reviewers note this is unrealistic and undermines trust. Replace with specific, defensible metrics (e.g., '99.2% element classification accuracy in benchmark tests') or qualify with context ('100% accuracy for supported Python patterns'). Review scores affected: credibility 7/10, documentation clarity 8/10.",
+      "files": ["README.md", "coderef/foundation-docs/API.md"]
+    },
+    {
+      "id": "IMP-CORE-059",
+      "title": "Document TypeScript regex vs AST limitations clearly",
+      "category": "docs",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "Review: 'The README glosses over regex-based extraction for TS/JS. TypeScript has enough syntactic surface area that regex will miss things.' Need louder disclaimer that TS/JS scanning is regex-based (not full AST) and therefore has accuracy limitations for complex patterns (decorators, generics, re-exports). This affects enterprise readiness score (6/10). Suggest adding explicit 'Accuracy by Language' table to README.",
+      "files": ["README.md:15-22"],
+      "related": ["IMP-CORE-052"]
+    },
+    {
+      "id": "IMP-CORE-060",
+      "title": "Add benchmarks for 10k+ element codebases",
+      "category": "performance",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "Review notes current benchmark (541 elements, ~1185ms) is small project. Performance claims of '3-6x faster' lack proof at scale. Need benchmarks on 10k+ element codebases before trusting performance story. In-memory maps and Promise.all scale well to a point then don't. Add large-scale benchmarks to validate enterprise viability.",
+      "files": ["scripts/bench-index-parse.mjs"]
+    },
+    {
+      "id": "IMP-CORE-061",
+      "title": "Fix documentation consistency issues",
+      "category": "docs",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "Review flagged documentation consistency issues: differing file counts in examples, timeline/date mismatches, duplicate section numbering (two section '5's). These reduce trust in documentation quality (score 8/10 → could be 9/10). Audit README and foundation-docs for consistency: file counts, version numbers, dates, section numbering.",
+      "files": ["README.md", "coderef/foundation-docs/"]
+    },
+    {
+      "id": "IMP-CORE-062",
+      "title": "Clarify route validation scope and limitations",
+      "category": "docs",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-21",
+      "body": "Review: 'Route validation only catching 404/405-style mismatches is useful but shallow. It won't catch payload shape mismatches, auth header expectations, or response contract drift — where most real frontend/backend bugs live.' Need clear documentation on validation boundaries: what is detected (path, method) vs what is NOT detected (payload shapes, auth, response contracts). Manage user expectations explicitly.",
+      "files": ["src/validator/validator.ts", "README.md"]
     }
   ],
-  "_note": "7 open items (036, 052-057) after second external review. 039, 042, 044 archived. Counter at 52. Last updated 2026-04-21."
+  "_note": "12 open items (036, 052-062) after comprehensive external reviews. 039, 042, 044 archived. Counter at 52. Last updated 2026-04-21."
 }

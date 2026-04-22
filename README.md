@@ -757,6 +757,25 @@ How @coderef/core compares to existing code intelligence tools:
 - Handles intelligent context for code improvements
 - Comparison: Similar AI-context focus; @coderef/core emphasizes structural repo scanning vs individual code suggestions
 
+### ts-morph
+**TypeScript AST manipulation library**
+- Full TypeScript compiler API access for refactoring and analysis
+- Accurate type information and symbol resolution
+- Comparison: ts-morph has deeper TypeScript AST access; @coderef/core uses regex for TS/JS (faster but less accurate for complex patterns)
+- See: IMP-CORE-052 for planned tree-sitter expansion to match ts-morph depth
+
+### madge
+**Dependency graph generator for JavaScript/TypeScript**
+- Circular dependency detection
+- AMD, CommonJS, ES6 module support
+- Comparison: Madge focuses on import graphs; @coderef/core adds cross-language support, route detection, and AI context generation
+
+### ESLint + OpenAPI Diff
+**Linting + API contract validation**
+- ESLint: static analysis for code quality
+- OpenAPI Diff: API contract change detection
+- Comparison: Fragmented toolchain (ESLint for code, OpenAPI for contracts); @coderef/core provides unified analysis with relationship mapping
+
 ### When to Choose @coderef/core
 - Need **API route validation** (frontend ↔ backend) - rare in other tools
 - Building **migration tooling** with automated validation
