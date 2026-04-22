@@ -235,11 +235,12 @@
       "title": "Implement vector store dimension mismatch detection",
       "category": "code-quality",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-22",
-      "body": "RAG system needs automatic detection of embedding dimension mismatches between existing vector store and provider configuration. Currently fails with cryptic 'Invalid vector dimension: expected X, got Y' error. Should store expected dimension in metadata, compare on startup, and provide clear error message with remediation steps (delete .coderef/rag-vectors.sqlite or use --reset).",
-      "files": ["src/integration/vector/sqlite-store.ts", "src/cli/rag-index.ts"],
-      "related": ["WO-RAG-OLLAMA-001"]
+      "completed": "2026-04-22",
+      "body": "COMPLETED: Added early dimension validation to SQLiteVectorStore.initialize(). Now detects mismatches between stored vector dimension and provider config dimension before expensive analysis work. Error thrown in initialize() instead of upsert(), with clear message: 'Dimension mismatch: Vector store has X dimensions, but provider requires Y. Run with --reset to recreate, or delete {path}'. Tested with OpenAI (1536) -> Ollama (768) provider switch scenario. Workorder: WO-RAG-DIMENSION-MISMATCH-DETECTION-001.",
+      "files": ["src/integration/vector/sqlite-store.ts:166-178"],
+      "related": ["WO-RAG-OLLAMA-001", "WO-RAG-DIMENSION-MISMATCH-DETECTION-001"]
     },
     {
       "id": "IMP-CORE-065",
@@ -265,5 +266,5 @@
       "related": ["IMP-CORE-055"]
     }
   ],
-  "_note": "9 open items (036, 052-057, 063-065) after RAG improvements. IMP-CORE-055, 066 completed 2026-04-22. 058-062 completed 2026-04-21. 039, 042, 044 archived. Counter at 56. Last updated 2026-04-22."
+  "_note": "8 open items (036, 052-057, 063, 065) after RAG improvements. IMP-CORE-055, 064, 066 completed 2026-04-22. 058-062 completed 2026-04-21. 039, 042, 044 archived. Counter at 56. Last updated 2026-04-22."
 }
