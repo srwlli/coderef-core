@@ -211,11 +211,23 @@
       "title": "Clarify route validation scope and limitations",
       "category": "docs",
       "severity": "minor",
+      "status": "done",
+      "logged": "2026-04-21",
+      "completed": "2026-04-21",
+      "body": "COMPLETED: Added 'Validation Scope & Limitations' section to README @ line 219-232. Explicitly documents what IS detected (URL path mismatches, HTTP method mismatches, missing path parameters) vs what is NOT detected (payload shapes, auth headers, response contracts, type-level mismatches). Added recommendation to combine with OpenAPI/Swagger or ts-morph for comprehensive contract validation. Addresses review concern: 'Route validation only catching 404/405-style mismatches is useful but shallow. Won't catch where most real bugs live.' Sets proper expectations to avoid user disappointment.",
+      "files": ["README.md:219-232"]
+    },
+    {
+      "id": "IMP-CORE-063",
+      "title": "Add minimal UI layer for graph exploration",
+      "category": "developer-experience",
+      "severity": "minor",
       "status": "open",
       "logged": "2026-04-21",
-      "body": "Review: 'Route validation only catching 404/405-style mismatches is useful but shallow. It won't catch payload shape mismatches, auth header expectations, or response contract drift — where most real frontend/backend bugs live.' Need clear documentation on validation boundaries: what is detected (path, method) vs what is NOT detected (payload shapes, auth, response contracts). Manage user expectations explicitly.",
-      "files": ["src/validator/validator.ts", "README.md"]
+      "body": "Review notes Sourcegraph comparison (polished platform vs backend engine). Even minimal graph explorer would add huge value - visualize dependency graphs, navigate element relationships, inspect API routes. Could be web-based or IDE extension. Current foundation-docs output is static markdown - interactive UI would differentiate.",
+      "files": ["coderef/foundation-docs/diagrams/"],
+      "related": ["WO-FOUNDATION-DOCS-001"]
     }
   ],
-  "_note": "12 open items (036, 052-062) after comprehensive external reviews. 039, 042, 044 archived. Counter at 52. Last updated 2026-04-21."
+  "_note": "8 open items (036, 052-057, 063) after comprehensive external reviews. 058-062 completed today. 039, 042, 044 archived. Counter at 51. Last updated 2026-04-21."
 }

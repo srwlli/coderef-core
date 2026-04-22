@@ -216,6 +216,21 @@ const markdown = generateMarkdownReport(report);
 - **Method Mismatches**: HTTP method conflicts (405 errors)
 - **Multi-Framework**: Works across Flask, FastAPI, Express, Next.js
 
+**Validation Scope & Limitations:**
+
+What IS detected:
+- ✅ URL path mismatches (`/api/users` vs `/api/user`)
+- ✅ HTTP method mismatches (GET vs POST)
+- ✅ Missing or extra path parameters
+
+What is NOT detected (out of scope):
+- ❌ Payload shape validation (request/response body schemas)
+- ❌ Authentication/authorization header requirements
+- ❌ Response contract drift (status codes, error formats)
+- ❌ Type-level mismatches (string vs integer params)
+
+For comprehensive API contract validation, combine with OpenAPI/Swagger or use alongside type-aware tools like `ts-morph`.
+
 **CLI Usage:**
 ```bash
 # Step 1: Scan frontend for API calls (generates .coderef/frontend-calls.json)
