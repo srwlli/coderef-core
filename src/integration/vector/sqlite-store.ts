@@ -165,7 +165,19 @@ export class SQLiteVectorStore implements VectorStore {
       // Load existing data if available
       if (fs.existsSync(this.storagePath)) {
         const content = fs.readFileSync(this.storagePath, 'utf-8');
-        this.data = JSON.parse(content);
+        const loaded = JSON.parse(content) as StorageData;
+
+        // Check for dimension mismatch between stored data and expected config
+        if (loaded.dimension !== this.config.dimension) {
+          throw new VectorStoreError(
+            `Dimension mismatch: Vector store has ${loaded.dimension} dimensions, ` +
+            `but provider requires ${this.config.dimension}.\n` +
+            `Run with --reset to recreate, or delete ${this.storagePath}`,
+            VectorStoreErrorCode.INVALID_DIMENSIONS
+          );
+        }
+
+        this.data = loaded;
       } else {
         // Create new storage file
         this.data = this.createEmptyStorage();
