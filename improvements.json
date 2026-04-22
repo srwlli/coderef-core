@@ -3,7 +3,7 @@
   "schema_version": "1.0",
   "project": "coderef-core",
   "scope": "scanner",
-  "counter": 56,
+  "counter": 59,
   "last_updated": "2026-04-22",
   "last_pruned": "2026-04-22",
   "archived": [
@@ -127,6 +127,38 @@
       "related": ["IMP-CORE-056"]
     },
     {
+      "id": "IMP-CORE-067",
+      "title": "Implement findSimilar() in semantic-search service",
+      "category": "architecture",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-22",
+      "body": "semantic-search.ts:findSimilar() throws 'Not yet implemented - requires vector store fetch by ID'. This method would enable 'find similar code to this function' feature. Requires adding vectorStore.fetchById() method to retrieve embeddings by coderef, then performing similarity search against that embedding.",
+      "files": ["src/integration/rag/semantic-search.ts:245"],
+      "related": ["IMP-CORE-068"]
+    },
+    {
+      "id": "IMP-CORE-068",
+      "title": "Implement getRelated() with graph integration",
+      "category": "architecture",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-22",
+      "body": "semantic-search.ts:getRelated() throws 'Not yet implemented - requires graph integration'. This method would combine semantic similarity with graph relationships (imports, calls, extends) to find related code elements. Requires integrating with graph-builder to traverse relationships and merge with vector similarity scores.",
+      "files": ["src/integration/rag/semantic-search.ts:293"],
+      "related": ["WO-CALL-GRAPH-025"]
+    },
+    {
+      "id": "IMP-CORE-069",
+      "title": "Replace console.log with Logger in conversation-manager",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-22",
+      "body": "conversation-manager.ts:409 uses console.log for session cleanup messages. Should use the proper Logger utility from src/utils/logger.ts for consistency with rest of codebase and to enable configurable log levels.",
+      "files": ["src/integration/rag/conversation-manager.ts:409"]
+    },
+    {
       "id": "IMP-CORE-065",
       "title": "Add Pinecone and Chroma vector store support",
       "category": "architecture",
@@ -140,5 +172,5 @@
       "related": ["IMP-CORE-055", "WO-RAG-PINECONE-CHROMA-STORES-001"]
     }
   ],
-  "_note": "6 open items (036, 052-057), 1 duplicate (063), 1 completed (065). Pruned 12 completed entries: 038, 043, 050, 051, 055, 058-062, 064, 066. Counter at 56. Last updated 2026-04-22."
+  "_note": "9 open items (036, 052-057, 067-069), 1 duplicate (063), 1 completed (065). Pruned 12 completed entries: 038, 043, 050, 051, 055, 058-062, 064, 066. Counter at 59. Last updated 2026-04-22."
 }
