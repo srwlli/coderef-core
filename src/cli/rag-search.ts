@@ -262,12 +262,17 @@ function createLLMProvider(provider: string): any {
 }
 
 /**
- * Create vector store based on configuration
+ * Create vector store based on configuration and provider dimensions
  */
 async function createVectorStore(
   store: string,
-  projectDir: string
+  projectDir: string,
+  llmProvider: any
 ): Promise<any> {
+  // Get dimensions from provider (dimension is defined in MODEL_REGISTRY)
+  const dimension = llmProvider?.getEmbeddingDimensions?.() ??
+    (() => { throw new Error(`Provider does not support embeddings or getEmbeddingDimensions() not implemented`); })();
+
   switch (store) {
     case 'pinecone': {
       const apiKey = process.env.PINECONE_API_KEY;
@@ -279,7 +284,7 @@ async function createVectorStore(
       return new PineconeStore({
         apiKey,
         indexName,
-        dimension: 1536,
+        dimension,
       });
     }
 
@@ -288,7 +293,7 @@ async function createVectorStore(
       return new ChromaStore({
         host,
         indexName: 'coderef-collection',
-        dimension: 1536,
+        dimension,
       });
     }
 
@@ -298,7 +303,7 @@ async function createVectorStore(
         || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
       return new SQLiteVectorStore({
         storagePath,
-        dimension: 1536,
+        dimension,
       });
     }
   }
@@ -308,7 +313,7 @@ async function createVectorStore(
     || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
   return new SQLiteVectorStore({
     storagePath,
-    dimension: 1536,
+    dimension,
   });
 }
 
@@ -393,7 +398,7 @@ async function main(): Promise<void> {
 
     // Initialize components
     const llmProvider = createLLMProvider(args.provider);
-    const vectorStore = await createVectorStore(args.store, args.projectDir);
+    const vectorStore = await createVectorStore(args.store, args.projectDir, llmProvider);
     await vectorStore.initialize();
     const searchService = new SemanticSearchService(llmProvider, vectorStore);
 
