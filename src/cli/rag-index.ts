@@ -21,15 +21,21 @@ let OllamaProvider: any;
 let SQLiteVectorStore: any;
 let IndexingOrchestrator: any;
 
-async function loadRAGDependencies() {
-  const llmModule = await import('../integration/llm/openai-provider.js');
-  OpenAIProvider = llmModule.OpenAIProvider;
-
-  const anthropicModule = await import('../integration/llm/anthropic-provider.js');
-  AnthropicProvider = anthropicModule.AnthropicProvider;
-
-  const ollamaModule = await import('../integration/llm/ollama-provider.js');
-  OllamaProvider = ollamaModule.OllamaProvider;
+async function loadRAGDependencies(providerName: string) {
+  // Only load the provider we need
+  if (providerName === 'openai') {
+    const llmModule = await import('../integration/llm/openai-provider.js');
+    OpenAIProvider = llmModule.OpenAIProvider;
+  } else if (providerName === 'anthropic') {
+    const anthropicModule = await import('../integration/llm/anthropic-provider.js');
+    AnthropicProvider = anthropicModule.AnthropicProvider;
+    // Anthropic needs OpenAI for embeddings
+    const llmModule = await import('../integration/llm/openai-provider.js');
+    OpenAIProvider = llmModule.OpenAIProvider;
+  } else if (providerName === 'ollama') {
+    const ollamaModule = await import('../integration/llm/ollama-provider.js');
+    OllamaProvider = ollamaModule.OllamaProvider;
+  }
 
   const vectorModule = await import('../integration/vector/sqlite-store.js');
   SQLiteVectorStore = vectorModule.SQLiteVectorStore;
@@ -66,7 +72,16 @@ function parseArgs(argv: string[]): CliArgs {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
 
-    switch (arg) {
+    // Handle --arg=value format by extracting value
+    let value: string | undefined;
+    let key = arg;
+    if (arg.startsWith('--') && arg.includes('=')) {
+      const parts = arg.split('=', 2);
+      key = parts[0];
+      value = parts[1];
+    }
+
+    switch (key) {
       case '--help':
       case '-h':
         args.help = true;
@@ -74,22 +89,22 @@ function parseArgs(argv: string[]): CliArgs {
 
       case '--project-dir':
       case '-p':
-        args.projectDir = argv[++i];
+        args.projectDir = value ?? argv[++i];
         break;
 
       case '--provider':
-        const provider = argv[++i];
-        args.provider = provider;
+        args.provider = value ?? argv[++i];
         break;
 
-      case '--store':
-        const store = argv[++i];
+      case '--store': {
+        const store = value ?? argv[++i];
         if (['sqlite', 'pinecone', 'chroma'].includes(store)) {
           args.store = store as 'sqlite' | 'pinecone' | 'chroma';
         } else {
           console.warn(`[rag-index] Unknown store: ${store}. Using sqlite.`);
         }
         break;
+      }
 
       case '--reset':
         args.reset = true;
@@ -97,7 +112,7 @@ function parseArgs(argv: string[]): CliArgs {
 
       case '--lang':
       case '-l':
-        args.languages = argv[++i].split(',');
+        args.languages = (value ?? argv[++i]).split(',');
         break;
 
       case '--verbose':
@@ -270,7 +285,7 @@ async function main(): Promise<void> {
 
     // Load optional RAG dependencies
     try {
-      await loadRAGDependencies();
+      await loadRAGDependencies(args.provider);
     } catch (error) {
       console.error('Error: Failed to load RAG dependencies.');
       console.error('Make sure the optional dependencies are installed:');
@@ -307,6 +322,9 @@ async function main(): Promise<void> {
     // Initialize components
     const llmProvider = createLLMProvider(args.provider);
     const vectorStore = await createVectorStore(args.store, args.projectDir, llmProvider);
+
+    // Initialize vector store
+    await vectorStore.initialize();
 
     // Reset index if requested
     if (args.reset) {

@@ -15,19 +15,29 @@ import * as path from 'path';
 // Dynamic imports for optional RAG dependencies
 let OpenAIProvider: any;
 let AnthropicProvider: any;
+let OllamaProvider: any;
 let SQLiteVectorStore: any;
 let SemanticSearchService: any;
 
-async function loadRAGDependencies() {
-  const llmModule = await import('../integration/llm/openai-provider.js');
-  OpenAIProvider = llmModule.OpenAIProvider;
-  
-  const anthropicModule = await import('../integration/llm/anthropic-provider.js');
-  AnthropicProvider = anthropicModule.AnthropicProvider;
-  
+async function loadRAGDependencies(providerName: string) {
+  // Only load the provider we need
+  if (providerName === 'openai') {
+    const llmModule = await import('../integration/llm/openai-provider.js');
+    OpenAIProvider = llmModule.OpenAIProvider;
+  } else if (providerName === 'anthropic') {
+    const anthropicModule = await import('../integration/llm/anthropic-provider.js');
+    AnthropicProvider = anthropicModule.AnthropicProvider;
+    // Anthropic needs OpenAI for embeddings
+    const llmModule = await import('../integration/llm/openai-provider.js');
+    OpenAIProvider = llmModule.OpenAIProvider;
+  } else if (providerName === 'ollama') {
+    const ollamaModule = await import('../integration/llm/ollama-provider.js');
+    OllamaProvider = ollamaModule.OllamaProvider;
+  }
+
   const vectorModule = await import('../integration/vector/sqlite-store.js');
   SQLiteVectorStore = vectorModule.SQLiteVectorStore;
-  
+
   const searchModule = await import('../integration/rag/semantic-search.js');
   SemanticSearchService = searchModule.SemanticSearchService;
 }
@@ -35,7 +45,7 @@ async function loadRAGDependencies() {
 interface CliArgs {
   projectDir: string;
   query: string;
-  provider: 'openai' | 'anthropic';
+  provider: string;
   store: 'sqlite' | 'pinecone' | 'chroma';
   topK: number;
   minScore?: number;
@@ -64,7 +74,16 @@ function parseArgs(argv: string[]): CliArgs {
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
 
-    switch (arg) {
+    // Handle --arg=value format by extracting value
+    let value: string | undefined;
+    let key = arg;
+    if (arg.startsWith('--') && arg.includes('=')) {
+      const parts = arg.split('=', 2);
+      key = parts[0];
+      value = parts[1];
+    }
+
+    switch (key) {
       case '--help':
       case '-h':
         args.help = true;
@@ -72,22 +91,20 @@ function parseArgs(argv: string[]): CliArgs {
 
       case '--project-dir':
       case '-p':
-        args.projectDir = argv[++i];
+        args.projectDir = value ?? argv[++i];
         break;
 
       case '--provider':
-        const provider = argv[++i];
-        if (['openai', 'anthropic'].includes(provider)) {
-          args.provider = provider as 'openai' | 'anthropic';
-        }
+        args.provider = value ?? argv[++i];
         break;
 
-      case '--store':
-        const store = argv[++i];
+      case '--store': {
+        const store = value ?? argv[++i];
         if (['sqlite', 'pinecone', 'chroma'].includes(store)) {
           args.store = store as 'sqlite' | 'pinecone' | 'chroma';
         }
         break;
+      }
 
       case '--top-k':
       case '-k':
@@ -144,7 +161,7 @@ USAGE:
 
 OPTIONS:
   -p, --project-dir <path>     Project directory to search (default: current directory)
-  --provider <provider>        LLM provider: openai, anthropic (default: openai)
+  --provider <provider>        LLM provider: openai, anthropic, ollama (default: openai)
   --store <store>              Vector store: sqlite, pinecone, chroma (default: sqlite)
   -k, --top-k <number>         Number of results to return (default: 10)
   --min-score <number>         Minimum relevance score 0-1 (default: none)
@@ -187,27 +204,45 @@ OUTPUT:
  * Create LLM provider based on configuration
  */
 function createLLMProvider(provider: string): any {
-  const apiKey = provider === 'openai'
-    ? process.env.OPENAI_API_KEY
-    : process.env.ANTHROPIC_API_KEY;
-
-  if (!apiKey) {
-    throw new Error(
-      `${provider === 'openai' ? 'OPENAI_API_KEY' : 'ANTHROPIC_API_KEY'} environment variable is required`
-    );
-  }
-
   if (provider === 'openai') {
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey) {
+      throw new Error('OPENAI_API_KEY environment variable is required');
+    }
     return new OpenAIProvider({
       apiKey,
       model: process.env.CODEREF_OPENAI_MODEL || 'gpt-4-turbo-preview',
     });
-  } else {
+  }
+
+  if (provider === 'anthropic') {
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      throw new Error('ANTHROPIC_API_KEY environment variable is required');
+    }
     return new AnthropicProvider({
       apiKey,
       model: process.env.CODEREF_ANTHROPIC_MODEL || 'claude-3-sonnet-20240229',
     });
   }
+
+  if (provider === 'ollama') {
+    // Ollama uses generic env vars (no API key required)
+    const baseUrl = process.env.CODEREF_LLM_BASE_URL ||
+                    'http://localhost:11434';
+    const apiKey = process.env.CODEREF_LLM_API_KEY || 'ollama';
+    const model = process.env.CODEREF_LLM_MODEL || 'qwen2.5:7b-instruct';
+    return new OllamaProvider({
+      apiKey,
+      baseUrl,
+      model,
+    });
+  }
+
+  // Unknown provider
+  throw new Error(
+    `Provider '${provider}' not supported. Supported: openai, anthropic, ollama.`
+  );
 }
 
 /**
@@ -291,7 +326,7 @@ async function main(): Promise<void> {
 
     // Load optional RAG dependencies
     try {
-      await loadRAGDependencies();
+      await loadRAGDependencies(args.provider);
     } catch (error) {
       console.error('Error: Failed to load RAG dependencies.');
       console.error('Make sure the optional dependencies are installed:');
@@ -308,6 +343,7 @@ async function main(): Promise<void> {
     // Initialize components
     const llmProvider = createLLMProvider(args.provider);
     const vectorStore = await createVectorStore(args.store, args.projectDir);
+    await vectorStore.initialize();
     const searchService = new SemanticSearchService(llmProvider, vectorStore);
 
     // Build search options
