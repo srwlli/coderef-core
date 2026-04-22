@@ -1,0 +1,96 @@
+{
+  "$schema": "https://schemas.coderef.com/communication/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+  "feature_name": "rag-pinecone-chroma-stores",
+  "created_at": "2026-04-22T12:25:00Z",
+  "last_updated": "2026-04-22T12:25:00Z",
+  "status": "complete",
+
+  "handoff": {
+    "from": "PLANNING",
+    "to": "EXECUTION",
+    "status": "ready_for_execution"
+  },
+
+  "must_read_first": [
+    "context.json - Feature requirements and success criteria",
+    "analysis.json - Current state analysis and reference components",
+    "plan.json - Implementation phases and task breakdown"
+  ],
+
+  "execution_context": {
+    "current_phase": "phase_5",
+    "current_task": "TRACK-001",
+    "tasks_completed": ["PC-001", "PC-002", "PC-003", "CH-001", "CH-002", "CH-003", "CLI-001", "CLI-002", "DEP-001", "DEP-002", "TEST-001", "TEST-002", "DOC-001", "DOC-002", "COMMIT-001", "COMMIT-002", "CLOSE-001", "TRACK-001"],
+    "tasks_remaining": 0
+  },
+
+  "completion_summary": {
+    "completed_at": "2026-04-22T15:25:00Z",
+    "phases_completed": 5,
+    "tasks_completed": 17,
+    "commits": [
+      "9da3ac2: feat(cli): wire Pinecone and Chroma stores to CLI commands",
+      "56c3a63: chore(deps): add Pinecone and Chroma SDK dependencies",
+      "798c09a: test(vector): add unit tests for PineconeStore and ChromaStore",
+      "ca64a82: docs(improvements): mark IMP-CORE-065 as done"
+    ],
+    "deliverables": [
+      "src/cli/rag-index.ts: --store flag support for pinecone/chroma",
+      "src/cli/rag-search.ts: --store flag support for pinecone/chroma",
+      "src/integration/vector/pinecone-store.ts: PineconeStore class (already existed)",
+      "src/integration/vector/chroma-store.ts: ChromaStore class (already existed)",
+      "__tests__/pinecone-store.test.ts: Unit tests for PineconeStore",
+      "__tests__/chroma-store.test.ts: Unit tests for ChromaStore",
+      "package.json: Added @pinecone-database/pinecone and chromadb dependencies"
+    ]
+  },
+
+  "allowed": [
+    "READ existing vector store implementations",
+    "WRITE new PineconeStore and ChromaStore files",
+    "EDIT CLI files to wire new stores",
+    "MODIFY package.json for dependencies",
+    "CREATE unit tests for both stores",
+    "TEST with Ollama provider",
+    "UPDATE improvements.json",
+    "COMMIT and PUSH changes",
+    "UPDATE workorder tracking"
+  ],
+
+  "forbidden": [
+    "MODIFY VectorStore interface in vector-store.ts",
+    "DELETE SQLiteVectorStore implementation",
+    "CHANGE existing CLI argument parsing",
+    "MODIFY embedding service or LLM providers",
+    "ARCHIVE workorder before all 17 tasks complete"
+  ],
+
+  "success_criteria": {
+    "functional": [
+      "PineconeStore implements all VectorStore methods",
+      "ChromaStore implements all VectorStore methods",
+      "CLI --store flag works with pinecone and chroma",
+      "Both stores tested with 768-dim Ollama embeddings",
+      "Error handling for missing API keys",
+      "Namespace/collection isolation working"
+    ]
+  },
+
+  "contact": {
+    "workorder_path": "coderef/workorder/rag-pinecone-chroma-stores",
+    "related_improvement": "IMP-CORE-065"
+  },
+
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Agent Communication",
+    "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+    "feature_id": "rag-pinecone-chroma-stores",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "READY",
+    "next_review": "2026-04-22"
+  }
+}
