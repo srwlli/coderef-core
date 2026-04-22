@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-04-21  
+**Generated:** 2026-04-22  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 1,921 |
-| **Total Files** | 296 |
-| **Total Lines** | 75,601 |
+| **Total Elements** | 1,971 |
+| **Total Files** | 274 |
+| **Total Lines** | 80,094 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,11 +22,11 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 508 | 26.4% |
-| method | 955 | 49.7% |
-| interface | 313 | 16.3% |
-| class | 105 | 5.5% |
-| type | 36 | 1.9% |
+| function | 540 | 27.4% |
+| method | 968 | 49.1% |
+| interface | 317 | 16.1% |
+| class | 106 | 5.4% |
+| type | 36 | 1.8% |
 | component | 2 | 0.1% |
 | constant | 2 | 0.1% |
 
@@ -39,14 +39,14 @@
 | 1 | `src/pipeline/generators/context-generator.ts` | 66 | 🔴 Very High |
 | 2 | `src/scanner/tree-sitter-scanner.ts` | 62 | 🔴 Very High |
 | 3 | `src/pipeline/extractors/element-extractor.ts` | 34 | 🟡 High |
-| 4 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
-| 5 | `src/search/search-engine.ts` | 31 | 🟡 High |
-| 6 | `src/analyzer/contract-detector.ts` | 30 | 🟡 High |
-| 7 | `src/indexer/index-store.ts` | 30 | 🟡 High |
-| 8 | `src/indexer/relationship-index.ts` | 30 | 🟡 High |
-| 9 | `src/analyzer/database-detector.ts` | 29 | 🟢 Medium |
-| 10 | `src/pipeline/generators/pattern-generator.ts` | 27 | 🟢 Medium |
-| 11 | `src/analyzer/middleware-detector.ts` | 26 | 🟢 Medium |
+| 4 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
+| 5 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
+| 6 | `src/search/search-engine.ts` | 31 | 🟡 High |
+| 7 | `src/analyzer/contract-detector.ts` | 30 | 🟡 High |
+| 8 | `src/indexer/index-store.ts` | 30 | 🟡 High |
+| 9 | `src/indexer/relationship-index.ts` | 30 | 🟡 High |
+| 10 | `src/analyzer/database-detector.ts` | 29 | 🟢 Medium |
+| 11 | `src/pipeline/generators/pattern-generator.ts` | 27 | 🟢 Medium |
 | 12 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
 | 13 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
 | 14 | `src/analyzer/design-pattern-detector.ts` | 23 | 🟢 Medium |
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 1,921 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 1,971 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 
