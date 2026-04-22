@@ -1,0 +1,16 @@
+{
+  "name": "@coderef/example-detector",
+  "version": "1.0.0",
+  "description": "Example plugin demonstrating CodeRef plugin API",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "keywords": ["coderef", "plugin", "example", "fastapi"],
+  "author": "CodeRef Team",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

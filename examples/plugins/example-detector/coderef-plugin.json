@@ -1,0 +1,25 @@
+{
+  "name": "@coderef/example-detector",
+  "version": "1.0.0",
+  "description": "Example plugin demonstrating CodeRef plugin API for FastAPI route detection",
+  "author": "CodeRef Team",
+  "main": "dist/index.js",
+  "coderefVersion": ">=0.5.0",
+  "detectors": [
+    {
+      "name": "fastapi-routes",
+      "description": "Detect FastAPI route definitions in Python files",
+      "patterns": ["**/*.py"],
+      "entry": "dist/detectors/fastapi.js"
+    }
+  ],
+  "hooks": [
+    {
+      "name": "add-route-relationships",
+      "type": "post-graph",
+      "description": "Add edges between FastAPI routes and their handler functions",
+      "entry": "dist/hooks/route-relationships.js"
+    }
+  ],
+  "dependencies": []
+}

@@ -76,11 +76,24 @@
       "title": "Introduce plugin system for custom detectors",
       "category": "ecosystem",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-21",
-      "body": "DX score 7/10 due to lack of ecosystem maturity. Framework detection registry (IMP-CORE-038) provides foundation, but users need ability to define custom detectors and graph rules without modifying core. Plugin API would enable third-party extensions, custom pattern definitions, and domain-specific analysis (e.g., Django, Laravel, Spring Boot plugins).",
-      "files": ["src/scanner/framework-registry.ts", "src/analyzer/plugin-api.ts"],
-      "related": ["IMP-CORE-038", "IMP-CORE-043"]
+      "done": "2026-04-22",
+      "body": "Plugin system implemented via WO-PLUGIN-SYSTEM-001. Provides: PluginRegistry for lifecycle management, npm/local/config loaders, CodeDetector interface extending FrameworkDetector, GraphHook for custom edges, coderef-plugin.json manifest, CLI --plugins flag, example plugin (@coderef/example-detector), and comprehensive API documentation. Enables third-party extensions without core modifications.",
+      "files": [
+        "src/plugins/types.ts",
+        "src/plugins/plugin-registry.ts",
+        "src/plugins/manifest-schema.ts",
+        "src/plugins/loaders/npm-loader.ts",
+        "src/plugins/loaders/local-loader.ts",
+        "src/plugins/loaders/config-loader.ts",
+        "src/plugins/plugin-scanner.ts",
+        "src/plugins/plugin-graph.ts",
+        "src/cli/scan.ts",
+        "examples/plugins/example-detector/",
+        "docs/plugins/API.md"
+      ],
+      "related": ["IMP-CORE-038", "IMP-CORE-043", "WO-PLUGIN-SYSTEM-001"]
     },
     {
       "id": "IMP-CORE-056",
