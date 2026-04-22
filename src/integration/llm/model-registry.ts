@@ -142,7 +142,7 @@ export const MODEL_REGISTRY: Record<string, ProviderSpec> = {
       envOverride: 'OLLAMA_EMBEDDING_MODEL'
     },
     generationModel: {
-      name: 'llama3.2',
+      name: 'gemma4-coderef:latest',
       envOverride: 'OLLAMA_MODEL'
     }
   }

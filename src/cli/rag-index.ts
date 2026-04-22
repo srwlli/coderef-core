@@ -17,19 +17,23 @@ import { detectProjectLanguages, validateCliLanguages } from './detect-languages
 // Dynamic imports for optional RAG dependencies
 let OpenAIProvider: any;
 let AnthropicProvider: any;
+let OllamaProvider: any;
 let SQLiteVectorStore: any;
 let IndexingOrchestrator: any;
 
 async function loadRAGDependencies() {
   const llmModule = await import('../integration/llm/openai-provider.js');
   OpenAIProvider = llmModule.OpenAIProvider;
-  
+
   const anthropicModule = await import('../integration/llm/anthropic-provider.js');
   AnthropicProvider = anthropicModule.AnthropicProvider;
-  
+
+  const ollamaModule = await import('../integration/llm/ollama-provider.js');
+  OllamaProvider = ollamaModule.OllamaProvider;
+
   const vectorModule = await import('../integration/vector/sqlite-store.js');
   SQLiteVectorStore = vectorModule.SQLiteVectorStore;
-  
+
   const ragModule = await import('../integration/rag/indexing-orchestrator.js');
   IndexingOrchestrator = ragModule.IndexingOrchestrator;
 }
@@ -203,11 +207,24 @@ function createLLMProvider(provider: string): any {
     });
   }
 
-  // Generic provider support (for local/custom providers like Ollama)
-  // These will be implemented in separate provider files
+  if (provider === 'ollama') {
+    // Ollama uses generic env vars (no API key required)
+    const baseUrl = process.env.CODEREF_LLM_BASE_URL ||
+                    process.env.OLLAMA_HOST ||
+                    'http://localhost:11434';
+    const apiKey = process.env.CODEREF_LLM_API_KEY || 'ollama';
+    const model = process.env.CODEREF_LLM_MODEL || 'gemma4-coderef:latest';
+
+    return new OllamaProvider({
+      apiKey,
+      baseUrl,
+      model,
+    });
+  }
+
+  // Unknown provider
   throw new Error(
-    `Provider '${provider}' not yet implemented. Supported: openai, anthropic. ` +
-    `For local models, implement ${provider}-provider.ts and update this factory.`
+    `Provider '${provider}' not supported. Supported: openai, anthropic, ollama.`
   );
 }
 
