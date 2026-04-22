@@ -18,7 +18,7 @@
 - **🧠 Intelligent Context** - Generate rich codebase context for AI-powered workflows and documentation
 - **📁 File Generation** - Automated creation of 17 analysis files (index, routes, context, diagrams, patterns, coverage, drift)
 - **🔗 Graph Queries** - Query codebase relationships (what-calls, what-imports, shortest-path, impact analysis)
-- **⚡ Performance** - In-process TypeScript scanning (3-6x faster than subprocess alternatives)
+- **⚡ In-Process Scanning** - TypeScript scanning without subprocess overhead
 - **🎯 Type-Safe** - Complete TypeScript definitions with 26 type designators and validation
 
 ### Accuracy by Language
@@ -36,7 +36,7 @@ Transparency on parsing depth by language:
 | **C#** | Regex patterns | ~80-85% | Type and method extraction - limited generics support |
 | **PHP** | Regex patterns | ~80-85% | Function/class detection - basic namespace support |
 
-**Important:** Regex-based languages are optimized for speed and common patterns. Complex meta-programming, heavy use of decorators, or advanced generics may have lower detection rates. For full type-aware analysis of TypeScript, consider tools like `ts-morph` (slower but deeper).
+**Important:** Regex-based languages are optimized for common patterns. Complex meta-programming, heavy use of decorators, or advanced generics may have lower detection rates. For full type-aware analysis of TypeScript, consider tools like `ts-morph` (deeper but heavier).
 
 See [IMP-CORE-052](improvements.json) for planned tree-sitter expansion to all languages.
 
@@ -513,27 +513,6 @@ interface GraphEdge {
 
 ---
 
-## Performance
-
-### Benchmarks (541 elements, TypeScript project)
-
-| Operation | Time | Notes |
-|-----------|------|-------|
-| Scan (Python AST + regex) | ~1185ms | Multi-file recursive scan |
-| File generation (16 files) | ~200ms | Parallel execution |
-| Dependency graph | ~150ms | AST parsing + relationship detection |
-| Query (element lookup) | <1ms | In-memory map lookup |
-
-**Performance Tips:**
-- ✅ Use `recursive: true` to scan entire directories efficiently
-- ✅ Exclude node_modules and dist with glob patterns
-- ✅ Leverage caching via `useCache: true` in AnalyzerService
-- ✅ Run file generation in parallel (Phase 2 uses Promise.all)
-
----
-
-## Testing
-
 ```bash
 # Run all tests
 npm test
@@ -548,11 +527,10 @@ npm run test:coverage
 npm run test:ui
 ```
 
-**Test Coverage:**
-- Scanner: 95%+ (Python AST, regex patterns, file traversal, multi-language)
-- Analyzer: 90%+ (graph building, circular deps, queries)
-- File Generation: 85%+ (all 8 functions covered)
-- Query Engine: 90%+ (search, filter, relationship queries)
+**Testing:**
+- Unit tests for core scanner, analyzer, and generator modules
+- Integration tests for CLI commands
+- Tested on Python, TypeScript, JavaScript, Go, and Rust codebases
 
 ---
 
@@ -734,7 +712,7 @@ How @coderef/core compares to existing code intelligence tools:
 **Graph-based semantic analysis (GitHub)**
 - Builds deep code graphs with type-flow and data-flow
 - Used for security auditing and large-scale refactors
-- Comparison: CodeQL is deeper and more precise; @coderef/core is faster and more practical for AI workflows
+- Comparison: CodeQL is deeper and more precise; @coderef/core is lighter and purpose-built for AI workflows
 - Think: *"CodeQL Lite + AI layer"*
 
 ### Semgrep
@@ -782,7 +760,7 @@ How @coderef/core compares to existing code intelligence tools:
 **TypeScript AST manipulation library**
 - Full TypeScript compiler API access for refactoring and analysis
 - Accurate type information and symbol resolution
-- Comparison: ts-morph has deeper TypeScript AST access; @coderef/core uses regex for TS/JS (faster but less accurate for complex patterns)
+- Comparison: ts-morph has deeper TypeScript AST access; @coderef/core uses regex for TS/JS (lighter but less accurate for complex patterns)
 - See: IMP-CORE-052 for planned tree-sitter expansion to match ts-morph depth
 
 ### madge
