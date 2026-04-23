@@ -26,15 +26,25 @@
     "tasks_remaining": 0
   },
 
+  "communication_log": [
+    {
+      "timestamp": "2026-04-22T23:10:00Z",
+      "agent": "Cascade",
+      "message": "Workorder closed via /close-workorder skill. All 17 tasks across 5 phases completed. Pinecone and Chroma vector stores fully wired to CLI with --store flag. 4 initial commits + 1 planning artifact commit. IMP-CORE-065 marked done in improvements.json."
+    }
+  ],
+
   "completion_summary": {
     "completed_at": "2026-04-22T15:25:00Z",
+    "closed_at": "2026-04-22T23:10:00Z",
     "phases_completed": 5,
     "tasks_completed": 17,
     "commits": [
       "9da3ac2: feat(cli): wire Pinecone and Chroma stores to CLI commands",
       "56c3a63: chore(deps): add Pinecone and Chroma SDK dependencies",
       "798c09a: test(vector): add unit tests for PineconeStore and ChromaStore",
-      "ca64a82: docs(improvements): mark IMP-CORE-065 as done"
+      "ca64a82: docs(improvements): mark IMP-CORE-065 as done",
+      "3121518: docs(workorder): add planning artifacts for WO-RAG-PINECONE-CHROMA-STORES-001"
     ],
     "deliverables": [
       "src/cli/rag-index.ts: --store flag support for pinecone/chroma",
