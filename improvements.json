@@ -141,13 +141,20 @@
     },
     {
       "id": "IMP-CORE-067",
-      "title": "Implement findSimilar() in semantic-search service",
+      "title": "Implement vectorStore.fetchById() for all providers",
       "category": "architecture",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-22",
-      "body": "semantic-search.ts:findSimilar() throws 'Not yet implemented - requires vector store fetch by ID'. This method would enable 'find similar code to this function' feature. Requires adding vectorStore.fetchById() method to retrieve embeddings by coderef, then performing similarity search against that embedding.",
-      "files": ["src/integration/rag/semantic-search.ts:245"],
+      "done": "2026-04-23",
+      "close_reason": "Implemented fetchById() method in VectorStore interface and all three providers: SQLite (direct record access), Pinecone (index.fetch()), and Chroma (collection.get()). Enables findSimilar() and getRelated() features in semantic-search service.",
+      "body": "Added fetchById(id: string, namespace?: string): Promise<VectorRecord | null> to VectorStore interface and implemented in SQLiteVectorStore, PineconeStore, and ChromaStore. This unblocks findSimilar() and getRelated() methods in semantic-search service.",
+      "files": [
+        "src/integration/vector/vector-store.ts:306",
+        "src/integration/vector/sqlite-store.ts:427",
+        "src/integration/vector/pinecone-store.ts:301",
+        "src/integration/vector/chroma-store.ts:303"
+      ],
       "related": ["IMP-CORE-068"]
     },
     {
@@ -155,11 +162,13 @@
       "title": "Implement getRelated() with graph integration",
       "category": "architecture",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-22",
+      "closed": "2026-04-23",
+      "close_reason": "Implemented getRelated() method with semantic/structural/both modes. Added DependencyGraph parameter to SemanticSearchService constructor. Implemented getGraphNeighbors() helper to fetch dependencies and dependents from graph. Combines vector similarity with graph relationships for comprehensive code discovery.",
       "body": "semantic-search.ts:getRelated() throws 'Not yet implemented - requires graph integration'. This method would combine semantic similarity with graph relationships (imports, calls, extends) to find related code elements. Requires integrating with graph-builder to traverse relationships and merge with vector similarity scores.",
-      "files": ["src/integration/rag/semantic-search.ts:293"],
-      "related": ["WO-CALL-GRAPH-025"]
+      "files": ["src/integration/rag/semantic-search.ts:290-379"],
+      "related": ["WO-CALL-GRAPH-025", "IMP-CORE-067"]
     },
     {
       "id": "IMP-CORE-059",

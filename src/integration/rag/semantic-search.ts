@@ -10,6 +10,7 @@
 
 import type { LLMProvider } from '../llm/llm-provider.js';
 import type { VectorStore, QueryOptions as VectorQueryOptions } from '../vector/vector-store.js';
+import type { DependencyGraph } from '../../analyzer/graph-builder.js';
 import {
   EmbeddingTextGenerator,
   type TextGenerationOptions
@@ -106,11 +107,13 @@ export class SemanticSearchService {
   private llmProvider: LLMProvider;
   private vectorStore: VectorStore;
   private textGenerator: EmbeddingTextGenerator;
+  private graph?: DependencyGraph;
 
-  constructor(llmProvider: LLMProvider, vectorStore: VectorStore) {
+  constructor(llmProvider: LLMProvider, vectorStore: VectorStore, graph?: DependencyGraph) {
     this.llmProvider = llmProvider;
     this.vectorStore = vectorStore;
     this.textGenerator = new EmbeddingTextGenerator();
+    this.graph = graph;
   }
 
   /**
@@ -289,8 +292,88 @@ export class SemanticSearchService {
     relationshipType: 'semantic' | 'structural' | 'both' = 'both',
     options?: SearchOptions
   ): Promise<SearchResponse> {
-    // This would combine semantic similarity with graph relationships
-    throw new Error('Not yet implemented - requires graph integration');
+    const startTime = Date.now();
+    const topK = options?.topK ?? 10;
+
+    let results: SearchResult[] = [];
+
+    if (relationshipType === 'semantic' || relationshipType === 'both') {
+      // Semantic similarity: find similar code using vector store
+      const semanticResults = await this.findSimilar(coderef, options);
+      results = results.concat(semanticResults.results);
+    }
+
+    if (relationshipType === 'structural' || relationshipType === 'both') {
+      // Structural: find graph neighbors (dependencies and dependents)
+      const structuralResults = await this.getGraphNeighbors(coderef, topK);
+      results = results.concat(structuralResults);
+    }
+
+    // Deduplicate by coderef
+    const uniqueResults = new Map<string, SearchResult>();
+    for (const result of results) {
+      if (!uniqueResults.has(result.coderef)) {
+        uniqueResults.set(result.coderef, result);
+      }
+    }
+
+    // Sort by score and limit to topK
+    const finalResults = Array.from(uniqueResults.values())
+      .sort((a, b) => b.score - a.score)
+      .slice(0, topK);
+
+    return {
+      query: `Related to: ${coderef}`,
+      results: finalResults,
+      totalResults: finalResults.length,
+      searchTimeMs: Date.now() - startTime,
+      filtered: false
+    };
+  }
+
+  /**
+   * Get graph neighbors (dependencies and dependents) for a coderef
+   */
+  private async getGraphNeighbors(coderef: string, limit: number): Promise<SearchResult[]> {
+    if (!this.graph) {
+      return [];
+    }
+
+    const neighbors: SearchResult[] = [];
+
+    // Get dependencies (what this code depends on)
+    const dependencyEdges = this.graph.edgesBySource.get(coderef) || [];
+    for (const edge of dependencyEdges) {
+      const node = this.graph.nodes.get(edge.target);
+      if (node) {
+        const vectorRecord = await this.vectorStore.fetchById(edge.target);
+        if (vectorRecord) {
+          neighbors.push({
+            coderef: edge.target,
+            score: 0.7, // Base score for structural relationship
+            metadata: vectorRecord.metadata as CodeChunkMetadata
+          });
+        }
+      }
+    }
+
+    // Get dependents (what depends on this code)
+    const dependentEdges = this.graph.edgesByTarget.get(coderef) || [];
+    for (const edge of dependentEdges) {
+      const node = this.graph.nodes.get(edge.source);
+      if (node) {
+        const vectorRecord = await this.vectorStore.fetchById(edge.source);
+        if (vectorRecord) {
+          neighbors.push({
+            coderef: edge.source,
+            score: 0.8, // Higher score for dependents (more important)
+            metadata: vectorRecord.metadata as CodeChunkMetadata
+          });
+        }
+      }
+    }
+
+    return neighbors.slice(0, limit);
   }
 
   /**
