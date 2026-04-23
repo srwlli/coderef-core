@@ -1,8 +1,8 @@
 {
   "summary": {
-    "totalFiles": 207,
-    "testedFiles": 71,
-    "coveragePercentage": 34
+    "totalFiles": 224,
+    "testedFiles": 72,
+    "coveragePercentage": 32
   },
   "files": [
     {
@@ -12,6 +12,19 @@
     {
       "file": "examples/nextjs-api-route.ts",
       "tested": false
+    },
+    {
+      "file": "examples/plugins/example-detector/src/detectors/fastapi.ts",
+      "tested": false
+    },
+    {
+      "file": "examples/plugins/example-detector/src/hooks/route-relationships.ts",
+      "tested": false
+    },
+    {
+      "file": "examples/plugins/example-detector/src/index.ts",
+      "tested": true,
+      "testFile": "src/fileGeneration/__tests__/index-storage.test.ts"
     },
     {
       "file": "index.ts",
@@ -186,6 +199,10 @@
       "file": "src/analyzer/route-parsers.ts",
       "tested": true,
       "testFile": "src/analyzer/route-parsers.test.ts"
+    },
+    {
+      "file": "src/cache/incremental-cache.ts",
+      "tested": false
     },
     {
       "file": "src/cli/detect-languages.ts",
@@ -672,6 +689,38 @@
       "tested": false
     },
     {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "tested": false
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "tested": false
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "tested": false
+    },
+    {
+      "file": "src/plugins/manifest-schema.ts",
+      "tested": false
+    },
+    {
+      "file": "src/plugins/plugin-graph.ts",
+      "tested": false
+    },
+    {
+      "file": "src/plugins/plugin-registry.ts",
+      "tested": false
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "tested": false
+    },
+    {
+      "file": "src/plugins/types.ts",
+      "tested": false
+    },
+    {
       "file": "src/query/query-executor.ts",
       "tested": false
     },
@@ -685,6 +734,10 @@
     },
     {
       "file": "src/scanner/error-reporter.ts",
+      "tested": false
+    },
+    {
+      "file": "src/scanner/file-watcher.ts",
       "tested": false
     },
     {
@@ -792,6 +845,22 @@
     },
     {
       "file": "vitest.config.ts",
+      "tested": false
+    },
+    {
+      "file": "apply-changes.js",
+      "tested": false
+    },
+    {
+      "file": "apply-incremental-cache-v2.js",
+      "tested": false
+    },
+    {
+      "file": "apply-incremental-cache.js",
+      "tested": false
+    },
+    {
+      "file": "rewrite-scanner.js",
       "tested": false
     },
     {
@@ -908,6 +977,8 @@
   "untested": [
     "demo-all-modules.ts",
     "examples/nextjs-api-route.ts",
+    "examples/plugins/example-detector/src/detectors/fastapi.ts",
+    "examples/plugins/example-detector/src/hooks/route-relationships.ts",
     "src/adapter/graph-to-elements.ts",
     "src/analyzer/analyzer-service.ts",
     "src/analyzer/config-analyzer.ts",
@@ -934,6 +1005,7 @@
     "src/analyzer/js-call-detector/visitor.ts",
     "src/analyzer/middleware-detector.ts",
     "src/analyzer/project-classifier.ts",
+    "src/cache/incremental-cache.ts",
     "src/cli/detect-languages.ts",
     "src/cli/rag-index.ts",
     "src/cli/rag-search.ts",
@@ -1000,10 +1072,19 @@
     "src/pipeline/incremental-cache.ts",
     "src/pipeline/orchestrator.ts",
     "src/pipeline/types.ts",
+    "src/plugins/loaders/config-loader.ts",
+    "src/plugins/loaders/local-loader.ts",
+    "src/plugins/loaders/npm-loader.ts",
+    "src/plugins/manifest-schema.ts",
+    "src/plugins/plugin-graph.ts",
+    "src/plugins/plugin-registry.ts",
+    "src/plugins/plugin-scanner.ts",
+    "src/plugins/types.ts",
     "src/query/query-executor.ts",
     "src/registry/entity-registry.ts",
     "src/registry/types.ts",
     "src/scanner/error-reporter.ts",
+    "src/scanner/file-watcher.ts",
     "src/scanner/framework-registry.ts",
     "src/scanner/frontend-scanner.ts",
     "src/scanner/register-frameworks.ts",
@@ -1017,6 +1098,10 @@
     "utils/fs.d.ts",
     "utils/fs.ts",
     "vitest.config.ts",
+    "apply-changes.js",
+    "apply-incremental-cache-v2.js",
+    "apply-incremental-cache.js",
+    "rewrite-scanner.js",
     "scripts/doc-gen/enhance-existing-docs.js",
     "scripts/doc-gen/generate-exports-md.js",
     "scripts/doc-gen/generate-hotspots-md.js",

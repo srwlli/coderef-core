@@ -12,11 +12,13 @@
 import path from 'path';
 import fs from 'fs';
 import { scanCurrentElements } from '../scanner/scanner.js';
+import { IncrementalCache } from '../cache/incremental-cache.js';
 
 interface ScanOptions {
   languages?: string[];
   plugins?: string[];
   disablePlugins?: boolean;
+  incremental?: boolean;
 }
 
 const SUPPORTED_LANGUAGES = ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'];
@@ -33,6 +35,7 @@ function printHelp(): void {
   console.log('  --languages     Comma-separated list of languages (default: all 10)');
   console.log('  --plugins       Comma-separated list of plugins to enable');
   console.log('  --no-plugins    Disable all plugins');
+  console.log('  --incremental   Use incremental scanning (skip unchanged files)');
   console.log('  --help, -h      Show this help message');
   console.log('');
   console.log('Examples:');
@@ -46,12 +49,25 @@ async function scanProject(projectPath: string, options: ScanOptions = {}): Prom
 
   console.log(`Scanning: ${projectPath}`);
   console.log(`Languages: ${languages.join(', ')}`);
+  if (options.incremental) {
+    console.log('Mode: Incremental (using cache)');
+  }
   console.log('');
 
   const startTime = Date.now();
 
   try {
-    const elements = await scanCurrentElements(projectPath, languages);
+    // IMP-CORE-057: Use IncrementalCache when --incremental flag is set
+    let cache: IncrementalCache | undefined;
+    if (options.incremental) {
+      cache = new IncrementalCache(projectPath, true);
+      await cache.load();
+    }
+
+    const elements = await scanCurrentElements(projectPath, languages, {
+      verbose: true,
+      cache
+    });
     const duration = Date.now() - startTime;
 
     // Count unique files
@@ -134,6 +150,12 @@ async function main(): Promise<void> {
   const pluginsIndex = args.indexOf('--plugins');
   if (pluginsIndex !== -1 && args[pluginsIndex + 1]) {
     options.plugins = args[pluginsIndex + 1].split(',').map(p => p.trim());
+  }
+
+  // Parse incremental flag
+  const incrementalIndex = args.indexOf('--incremental');
+  if (incrementalIndex !== -1) {
+    options.incremental = true;
   }
 
   await scanProject(projectPath, options);

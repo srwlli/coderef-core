@@ -23,7 +23,7 @@ import { ElementExtractor } from './extractors/element-extractor.js';
 import { RelationshipExtractor } from './extractors/relationship-extractor.js';
 import { loadIgnorePatterns, shouldIgnorePath } from './ignore-rules.js';
 import { globalRegistry } from '../registry/entity-registry.js';
-import { IncrementalCache } from './incremental-cache.js';
+import { IncrementalCache } from '../cache/incremental-cache.js';
 import type {
   PipelineOptions,
   PipelineState,

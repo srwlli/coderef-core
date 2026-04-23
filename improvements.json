@@ -3,7 +3,7 @@
   "schema_version": "1.0",
   "project": "coderef-core",
   "scope": "scanner",
-  "counter": 60,
+  "counter": 75,
   "last_updated": "2026-04-23",
   "last_pruned": "2026-04-23",
   "archived": [
@@ -101,7 +101,157 @@
       "body": "External review (9/10 utility, 8/10 performance) suggests incremental scanning for enterprise monorepos. As projects grow, full re-scan becomes expensive. Implement file-watcher or cache based on file hashes (already generated) to only re-scan changed files. This would enable real-time IDE integration and make system viable for large codebases. Second review specifically noted this as priority for enterprise adoption.",
       "files": ["src/scanner/scanner.ts", "src/cache/file-hash-cache.ts"],
       "related": ["IMP-CORE-052"]
+    },
+    {
+      "id": "IMP-CORE-061",
+      "title": "Remove duplicate JSCallDetector import in AST mode",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Lines 1149-1150 import JSCallDetector twice in the AST mode section - once for JS files (line 1143) and once for imports/calls detection (line 1149). The second import is redundant and adds unnecessary overhead. Remove duplicate import and reuse the detector instance.",
+      "files": ["src/scanner/scanner.ts:1149-1150"]
+    },
+    {
+      "id": "IMP-CORE-062",
+      "title": "Remove unused deprecated processNextJsPagesRoute method",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "processNextJsPagesRoute (line 456) is marked as @deprecated with comment 'Use frameworkRegistry instead' but is never called anywhere in the codebase. Framework registry handles Next.js Pages routes via registered detectors. Remove this dead code to reduce maintenance burden.",
+      "files": ["src/scanner/scanner.ts:456-471"]
+    },
+    {
+      "id": "IMP-CORE-063",
+      "title": "Make cache size limit configurable instead of hardcoded 50MB",
+      "category": "configuration",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Line 307 hardcodes 50MB cache limit. Different projects have different memory constraints and file sizes. Expose this as a configurable option in ScanOptions with sensible default. Small projects could use lower limits, large monorepos could use higher limits.",
+      "files": ["src/scanner/scanner.ts:307"]
+    },
+    {
+      "id": "IMP-CORE-064",
+      "title": "Add error handling for fs.statSync cache check",
+      "category": "robustness",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Line 986 calls fs.statSync without try-catch. If file is deleted between directory scan and file processing, this throws uncaught error. Wrap in try-catch and skip file if stat fails, with verbose logging.",
+      "files": ["src/scanner/scanner.ts:986"]
+    },
+    {
+      "id": "IMP-CORE-065",
+      "title": "Prevent global LANGUAGE_PATTERNS mutation for custom patterns",
+      "category": "thread-safety",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Lines 828-831 and 836-844 mutate global LANGUAGE_PATTERNS object for custom patterns and unsupported languages. This is not thread-safe for concurrent scans. Use local pattern map per scan or deep clone before mutation. Also mutates during validation (828-831) which is side effect.",
+      "files": ["src/scanner/scanner.ts:828-831,836-844"]
+    },
+    {
+      "id": "IMP-CORE-066",
+      "title": "Make Next.js API route path configurable",
+      "category": "configuration",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "processNextJsRoute (line 384) hardcodes '/app/api/' path check. Some projects use custom API directories or different Next.js configurations. Make this path configurable via ScanOptions with default '/app/api/'.",
+      "files": ["src/scanner/scanner.ts:384"]
+    },
+    {
+      "id": "IMP-CORE-067",
+      "title": "Add regex pattern validation for custom patterns",
+      "category": "robustness",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Custom patterns (lines 836-845) accept RegExp objects without validation. Invalid regex patterns will throw at runtime during scanning. Validate patterns during registration using pattern.test('') and reject invalid patterns with clear error message.",
+      "files": ["src/scanner/scanner.ts:836-845"]
+    },
+    {
+      "id": "IMP-CORE-068",
+      "title": "Fix sortPatternsByPriority type signature mismatch",
+      "category": "type-safety",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "sortPatternsByPriority (line 604) has wrong type signature. Input/return type excludes extractMetadata and extractFrontendCall fields that exist in PatternConfig. This causes type errors when called with full PatternConfig array. Update signature to match PatternConfig interface.",
+      "files": ["src/scanner/scanner.ts:603-611"]
+    },
+    {
+      "id": "IMP-CORE-069",
+      "title": "Add file read timeout to prevent hanging on large files",
+      "category": "performance",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Line 1022 uses fs.readFileSync without timeout. Large files (>100MB) or network-mounted filesystems can hang indefinitely. Add timeout using fs.promises with AbortSignal or implement file size check before reading (skip files > configurable limit).",
+      "files": ["src/scanner/scanner.ts:1022"]
+    },
+    {
+      "id": "IMP-CORE-070",
+      "title": "Add maxDepth tracking to prevent infinite recursion on circular symlinks",
+      "category": "robustness",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Recursive scan (line 881) doesn't track depth. Circular symlinks or deeply nested directory structures can cause stack overflow or infinite loops. Add maxDepth parameter to ScanOptions (default 20) and track current depth during recursion.",
+      "files": ["src/scanner/scanner.ts:881"]
+    },
+    {
+      "id": "IMP-CORE-071",
+      "title": "Replace console.error with logger for consistent error handling",
+      "category": "logging",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Lines 770 and 1285 use console.error for error logging. Rest of codebase uses logger from src/utils/logger.ts. Inconsistent logging makes debugging harder and breaks log aggregation. Replace with logger.error() calls.",
+      "files": ["src/scanner/scanner.ts:770,1285"]
+    },
+    {
+      "id": "IMP-CORE-072",
+      "title": "Remove or invoke dead route processing methods",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "processSvelteKitRoute (line 477), processNuxtRoute (line 512), processRemixRoute (line 533) are defined but never called. Framework registry should handle these, or they should be invoked in processFile. Dead code adds maintenance burden. Either integrate into framework registry or remove.",
+      "files": ["src/scanner/scanner.ts:477-527,533-562"]
+    },
+    {
+      "id": "IMP-CORE-073",
+      "title": "Make isEntirelyCommented threshold configurable",
+      "category": "configuration",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Line 1491 hardcodes 90% threshold for 'entirely commented' files. Some projects have different comment density patterns. Make this threshold configurable via ScanOptions with default 0.9. Allows tuning for codebases with heavy documentation.",
+      "files": ["src/scanner/scanner.ts:1491"]
+    },
+    {
+      "id": "IMP-CORE-074",
+      "title": "Improve worker file path validation in scanFilesInParallel",
+      "category": "robustness",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Lines 709-718 check multiple worker file paths but don't validate the file is actually a valid worker script. Could load wrong file if path collision exists. Add validation: check file exists, has .js extension, and contains expected worker message handler code before spawning.",
+      "files": ["src/scanner/scanner.ts:709-718"]
+    },
+    {
+      "id": "IMP-CORE-075",
+      "title": "Add input validation for scanCurrentElements parameters",
+      "category": "robustness",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "scanCurrentElements (line 782) doesn't validate input parameters. Invalid dir (non-existent), empty lang array, or malformed options cause confusing errors downstream. Add validation at function start: check dir exists, langs is non-empty array, options has valid structure. Throw clear errors for invalid inputs.",
+      "files": ["src/scanner/scanner.ts:782-799"]
     }
   ],
-  "_note": "5 open items (036, 052-053, 056-057). Pruned 7 completed/duplicate entries: 054, 059-060, 063, 065, 067-069. Counter at 60. Last updated 2026-04-23."
+  "_note": "20 open items (036, 052-053, 056-057, 061-075). Added 15 scanner.ts improvements (061-075): code-quality (061-062,068,072), configuration (063,066,073), robustness (064,067,070,074,075), thread-safety (065), performance (069), logging (071). Counter at 75. Last updated 2026-04-23."
 }

@@ -19,6 +19,12 @@ graph TD
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_nextjs_api_route_ts_mapErrorToResponse["mapErrorToResponse"]
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_nextjs_api_route_ts_calculateSummary["calculateSummary"]
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_nextjs_api_route_ts_GET["GET"]
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_plugins_example_detector_src_detectors_fastapi_ts_DetectionResult["DetectionResult"]
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_plugins_example_detector_src_detectors_fastapi_ts_CodeDetector["CodeDetector"]
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_plugins_example_detector_src_hooks_route_relationships_ts_CustomEdge["CustomEdge"]
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_plugins_example_detector_src_hooks_route_relationships_ts_CodeElement["CodeElement"]
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_plugins_example_detector_src_hooks_route_relationships_ts_GraphBuilderContext["GraphBuilderContext"]
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_plugins_example_detector_src_hooks_route_relationships_ts_GraphHook["GraphHook"]
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_scripts_scan_cli_test_scan_cli_test_ts_createTestProject["createTestProject"]
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_adapter_graph_to_elements_ts_ConversionOptions["ConversionOptions"]
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_adapter_graph_to_elements_ts_convertGraphToElements["convertGraphToElements"]
@@ -50,18 +56,14 @@ graph TD
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_ASTElementScanner_scanFiles["ASTElementScanner.scanFiles"]
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_ASTElementScanner_parseElements["ASTElementScanner.parseElements"]
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_ASTElementScanner_collectExportedNames["ASTElementScanner.collectExportedNames"]
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_visit["visit"]
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_ASTElementScanner_visitNode["ASTElementScanner.visitNode"]
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_ASTElementScanner_hasJsxInClass["ASTElementScanner.hasJsxInClass"]
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_visit["visit"]
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_ASTElementScanner_clearCache["ASTElementScanner.clearCache"]
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_ast_element_scanner_ts_ASTElementScanner_getCacheStats["ASTElementScanner.getCacheStats"]
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_demo_all_modules_ts --> __dist_index_js
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_demo_all_modules_ts --> fs
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_demo_all_modules_ts --> path
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_nextjs_api_route_ts --> next_server
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_nextjs_api_route_ts --> _coderef_core
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_nextjs_api_route_ts --> path
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_plugins_example_detector_src_index_ts --> __detectors_fastapi_js
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_examples_plugins_example_detector_src_index_ts --> __hooks_route_relationships_js
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_scripts_scan_cli_test_scan_cli_test_ts --> vitest
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_scripts_scan_cli_test_scan_cli_test_ts --> child_process
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_scripts_scan_cli_test_scan_cli_test_ts --> util
@@ -151,20 +153,18 @@ graph TD
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_route_parsers_test_ts --> vitest
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_route_parsers_test_ts --> __route_parsers_js
   C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_analyzer_route_parsers_ts --> ___types_types_js
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_cli_detect_languages_ts --> fs_promises
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_cli_detect_languages_ts --> path
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_cli_detect_languages_ts --> ___pipeline_ignore_rules_js
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_cli_populate_ts --> fs_promises
-  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_cli_populate_ts --> path
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_cache_incremental_cache_ts --> fs_promises
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_cache_incremental_cache_ts --> path
+  C__Users_willh_Desktop_CODEREF_CODEREF_CORE_src_cache_incremental_cache_ts --> crypto
 ```
 
 ## Statistics
 
-- **Nodes:** 2006
-- **Edges:** 10228
-- **Files:** 282
-- **Elements:** 2006
+- **Nodes:** 2101
+- **Edges:** 10634
+- **Files:** 298
+- **Elements:** 2101
 
 ## Generated
 
-2026-04-22T21:00:12.486Z
+2026-04-23T11:05:45.063Z

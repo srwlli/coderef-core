@@ -1,0 +1,271 @@
+{
+  "workorder_id": "WO-GETRELATED-GRAPH-INTEGRATION-001",
+  "feature_name": "getRelated-graph-integration",
+  "created": "2026-04-23T09:49:00.000Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single feature implementation with clear scope - getRelated() method in semantic-search.ts. No foundation docs or multi-phase work needed.",
+  "plan_type_decided_by": "create-workorder@2.0.0 (manual override due to drift)",
+  "status": "superseded",
+  "title": "Implement getRelated() with Graph Integration",
+  "description": "Combine semantic similarity with graph relationships (imports, calls, extends) to find related code elements. The method will use vectorStore.fetchById() to get embeddings, graph-analyzer to traverse relationships, and merge semantic + structural scores.",
+  "goal": "Enable semantic search to find related code elements by combining vector similarity with structural graph relationships",
+  "current_state": {
+    "blocking_issue": "IMP-CORE-068",
+    "dependencies_resolved": [
+      "IMP-CORE-067: vectorStore.fetchById() implemented in all providers"
+    ],
+    "implementation_status": "Not yet implemented - requires graph integration",
+    "file": "src/integration/rag/semantic-search.ts:287-294"
+  },
+  "key_features": [
+    {
+      "id": "KF-001",
+      "name": "Graph Relationship Traversal",
+      "description": "Use GraphAnalyzer to traverse callers, callees, dependents, and dependencies from graph.json",
+      "priority": "high"
+    },
+    {
+      "id": "KF-002",
+      "name": "Semantic Similarity Search",
+      "description": "Use vectorStore.fetchById() to retrieve embeddings and perform similarity search",
+      "priority": "high"
+    },
+    {
+      "id": "KF-003",
+      "name": "Score Merging Algorithm",
+      "description": "Combine semantic and structural scores with configurable weighting",
+      "priority": "high"
+    },
+    {
+      "id": "KF-004",
+      "name": "Relationship Type Filtering",
+      "description": "Support 'semantic', 'structural', or 'both' relationshipType parameter",
+      "priority": "medium"
+    }
+  ],
+  "implementation_phases": [
+    {
+      "id": "phase_1",
+      "name": "Implementation",
+      "description": "Implement getRelated() method with graph integration",
+      "tasks": [
+        {
+          "id": "IMPL-001",
+          "title": "Add graph loading infrastructure to SemanticSearchService",
+          "description": "Add method to load graph.json from .coderef/ directory and initialize GraphAnalyzer",
+          "status": "pending",
+          "priority": "high",
+          "estimated_effort": "30 minutes",
+          "steps": [
+            "READ src/integration/rag/semantic-search.ts to understand current structure",
+            "READ src/analyzer/graph-builder.ts to understand importGraphFromJSON",
+            "READ src/analyzer/graph-analyzer.ts to understand GraphAnalyzer API",
+            "EDIT SemanticSearchService constructor to accept optional graph path",
+            "ADD private method loadGraph() to load and parse graph.json",
+            "ADD private property graphAnalyzer: GraphAnalyzer | null",
+            "TEST graph loading with existing .coderef/graph.json"
+          ],
+          "acceptance_criteria": [
+            "Graph loads successfully from .coderef/graph.json",
+            "GraphAnalyzer is initialized and accessible",
+            "Graceful handling when graph.json is missing"
+          ],
+          "files_touched": [
+            "src/integration/rag/semantic-search.ts"
+          ]
+        },
+        {
+          "id": "IMPL-002",
+          "title": "Implement structural relationship extraction",
+          "description": "Use GraphAnalyzer to extract callers, callees, dependents, and dependencies for a given coderef",
+          "status": "pending",
+          "priority": "high",
+          "estimated_effort": "45 minutes",
+          "steps": [
+            "READ src/analyzer/graph-helpers.ts to understand helper functions",
+            "ADD private method getStructuralRelationships(coderef: string, maxDepth: number)",
+            "USE GraphAnalyzer.getCallers() to find incoming calls",
+            "USE GraphAnalyzer.getCallees() to find outgoing calls",
+            "USE GraphAnalyzer.getDependents() to find dependents",
+            "USE GraphAnalyzer.getDependencies() to find dependencies",
+            "CONVERT GraphNode[] to SearchResult[] with base scores",
+            "DEDUPLICATE results across relationship types",
+            "TEST with known coderef from graph.json"
+          ],
+          "acceptance_criteria": [
+            "All relationship types are extracted correctly",
+            "Results are deduplicated",
+            "Base structural scores are assigned (e.g., 0.8 for direct calls, 0.6 for indirect)"
+          ],
+          "files_touched": [
+            "src/integration/rag/semantic-search.ts"
+          ]
+        },
+        {
+          "id": "IMPL-003",
+          "title": "Implement semantic similarity extraction",
+          "description": "Use vectorStore.fetchById() to retrieve embedding and perform similarity search",
+          "status": "pending",
+          "priority": "high",
+          "estimated_effort": "30 minutes",
+          "steps": [
+            "READ src/integration/rag/semantic-search.ts to understand similaritySearch",
+            "ADD private method getSemanticSimilarity(coderef: string, options?: SearchOptions)",
+            "CALL vectorStore.fetchById(coderef) to get embedding",
+            "CALL this.similaritySearch(embedding, options) to get similar items",
+            "HANDLE null case when coderef not found in vector store",
+            "TEST with known coderef from vector store"
+          ],
+          "acceptance_criteria": [
+            "Embedding is retrieved successfully",
+            "Similarity search returns ranked results",
+            "Null handling works when coderef not found"
+          ],
+          "files_touched": [
+            "src/integration/rag/semantic-search.ts"
+          ]
+        },
+        {
+          "id": "IMPL-004",
+          "title": "Implement score merging algorithm",
+          "description": "Combine semantic and structural results with configurable weighting",
+          "status": "pending",
+          "priority": "high",
+          "estimated_effort": "45 minutes",
+          "steps": [
+            "ADD private method mergeResults(semantic: SearchResult[], structural: SearchResult[], relationshipType: 'semantic' | 'structural' | 'both')",
+            "IMPLEMENT 'semantic' mode: return only semantic results",
+            "IMPLEMENT 'structural' mode: return only structural results",
+            "IMPLEMENT 'both' mode: merge and re-rank",
+            "ADD score boosting: items in both lists get score boost (e.g., +0.2)",
+            "ADD deduplication by coderef",
+            "SORT by final score descending",
+            "TEST with all three relationshipType modes"
+          ],
+          "acceptance_criteria": [
+            "Each mode returns correct result set",
+            "Merged results are properly deduplicated",
+            "Score boosting works for overlapping items",
+            "Results are sorted by relevance"
+          ],
+          "files_touched": [
+            "src/integration/rag/semantic-search.ts"
+          ]
+        },
+        {
+          "id": "IMPL-005",
+          "title": "Implement getRelated() method",
+          "description": "Wire together all components into the main getRelated() method",
+          "status": "pending",
+          "priority": "high",
+          "estimated_effort": "30 minutes",
+          "steps": [
+            "READ current getRelated() stub at semantic-search.ts:287-294",
+            "REPLACE stub with full implementation",
+            "CALL getStructuralRelationships() if relationshipType !== 'semantic'",
+            "CALL getSemanticSimilarity() if relationshipType !== 'structural'",
+            "CALL mergeResults() to combine results",
+            "ADD error handling for missing graph or vector store",
+            "RETURN SearchResponse with merged results",
+            "TEST with all relationshipType values"
+          ],
+          "acceptance_criteria": [
+            "Method no longer throws 'Not yet implemented'",
+            "All relationshipType modes work correctly",
+            "Error handling is graceful",
+            "Results match expected format"
+          ],
+          "files_touched": [
+            "src/integration/rag/semantic-search.ts"
+          ]
+        },
+        {
+          "id": "IMPL-006",
+          "title": "Add unit tests for getRelated()",
+          "description": "Create comprehensive unit tests for the new functionality",
+          "status": "pending",
+          "priority": "medium",
+          "estimated_effort": "60 minutes",
+          "steps": [
+            "CREATE test file: __tests__/integration/rag/semantic-search.test.ts",
+            "ADD test for semantic-only mode",
+            "ADD test for structural-only mode",
+            "ADD test for both mode with score merging",
+            "ADD test for missing graph.json handling",
+            "ADD test for missing vector store handling",
+            "ADD test for unknown coderef handling",
+            "RUN tests and ensure all pass"
+          ],
+          "acceptance_criteria": [
+            "All tests pass",
+            "Coverage > 80% for new code",
+            "Edge cases are handled"
+          ],
+          "files_touched": [
+            "__tests__/integration/rag/semantic-search.test.ts"
+          ]
+        }
+      ]
+    }
+  ],
+  "testing_strategy": {
+    "unit_tests": "Test each private method independently",
+    "integration_tests": "Test full getRelated() flow with real graph.json and vector store",
+    "edge_cases": [
+      "Missing graph.json",
+      "Missing vector store",
+      "Unknown coderef",
+      "Empty results",
+      "Large graph performance"
+    ]
+  },
+  "success_criteria": {
+    "functional": [
+      "getRelated() returns combined semantic and structural results",
+      "Graph relationships are correctly traversed",
+      "Semantic similarity scores are calculated",
+      "Merged results are ranked by relevance"
+    ],
+    "performance": [
+      "Response time < 500ms for typical queries",
+      "Memory efficient for large graphs"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "description": "Graph.json may be large and slow to load",
+      "mitigation": "Load graph once at initialization, cache GraphAnalyzer instance",
+      "severity": "medium"
+    },
+    {
+      "id": "RISK-002",
+      "description": "Score merging algorithm may produce unexpected rankings",
+      "mitigation": "Make weighting configurable, provide clear documentation",
+      "severity": "low"
+    },
+    {
+      "id": "RISK-003",
+      "description": "Coderef format mismatch between graph and vector store",
+      "mitigation": "Normalize coderef format before lookup, handle mismatches gracefully",
+      "severity": "medium"
+    }
+  ],
+  "out_of_scope": [
+    "Modifying graph-builder or graph-analyzer",
+    "Changing vector store implementation",
+    "UI changes",
+    "CLI changes"
+  ],
+  "dependencies": [
+    "IMP-CORE-067: vectorStore.fetchById() (completed)"
+  ],
+  "related_issues": [
+    "IMP-CORE-068"
+  ],
+  "estimated_total_effort": "4 hours",
+  "hard_stops": [],
+  "superseded_at": "2026-04-23T10:03:00.000Z",
+  "superseded_by": "commit aa6a7a8",
+  "superseded_reason": "Feature already implemented in IMP-CORE-068 prior to workorder creation. getRelated() method fully functional with semantic/structural/both modes."
+}

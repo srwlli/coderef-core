@@ -101,6 +101,48 @@
       "line": 371
     },
     {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\examples\\plugins\\example-detector\\src\\detectors\\fastapi.ts:DetectionResult",
+      "@type": "coderef:interface",
+      "name": "DetectionResult",
+      "file": "examples/plugins/example-detector/src/detectors/fastapi.ts",
+      "line": 12
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\examples\\plugins\\example-detector\\src\\detectors\\fastapi.ts:CodeDetector",
+      "@type": "coderef:interface",
+      "name": "CodeDetector",
+      "file": "examples/plugins/example-detector/src/detectors/fastapi.ts",
+      "line": 24
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\examples\\plugins\\example-detector\\src\\hooks\\route-relationships.ts:CustomEdge",
+      "@type": "coderef:interface",
+      "name": "CustomEdge",
+      "file": "examples/plugins/example-detector/src/hooks/route-relationships.ts",
+      "line": 12
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\examples\\plugins\\example-detector\\src\\hooks\\route-relationships.ts:CodeElement",
+      "@type": "coderef:interface",
+      "name": "CodeElement",
+      "file": "examples/plugins/example-detector/src/hooks/route-relationships.ts",
+      "line": 19
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\examples\\plugins\\example-detector\\src\\hooks\\route-relationships.ts:GraphBuilderContext",
+      "@type": "coderef:interface",
+      "name": "GraphBuilderContext",
+      "file": "examples/plugins/example-detector/src/hooks/route-relationships.ts",
+      "line": 29
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\examples\\plugins\\example-detector\\src\\hooks\\route-relationships.ts:GraphHook",
+      "@type": "coderef:interface",
+      "name": "GraphHook",
+      "file": "examples/plugins/example-detector/src/hooks/route-relationships.ts",
+      "line": 36
+    },
+    {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\scan-cli\\test_scan_cli.test.ts:createTestProject",
       "@type": "coderef:function",
       "name": "createTestProject",
@@ -2943,6 +2985,97 @@
       "line": 461
     },
     {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:FileCacheEntry",
+      "@type": "coderef:interface",
+      "name": "FileCacheEntry",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 18
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:CacheState",
+      "@type": "coderef:interface",
+      "name": "CacheState",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 34
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:CacheCheckResult",
+      "@type": "coderef:interface",
+      "name": "CacheCheckResult",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 50
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache",
+      "@type": "coderef:class",
+      "name": "IncrementalCache",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 64
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.load",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.load",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 87
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.save",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.save",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 119
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.checkFiles",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.checkFiles",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 146
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.updateCache",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.updateCache",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 214
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.removeDeletedFiles",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.removeDeletedFiles",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 241
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.computeFileHash",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.computeFileHash",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 250
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.getStats",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.getStats",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 258
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.clear",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.clear",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 271
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cache\\incremental-cache.ts:IncrementalCache.isEnabled",
+      "@type": "coderef:method",
+      "name": "IncrementalCache.isEnabled",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 286
+    },
+    {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\detect-languages.ts:SupportedCliLanguage",
       "@type": "coderef:type",
       "name": "SupportedCliLanguage",
@@ -3248,35 +3381,35 @@
       "@type": "coderef:function",
       "name": "printHelp",
       "file": "src/cli/scan.ts",
-      "line": 22
+      "line": 24
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts:scanProject",
       "@type": "coderef:function",
       "name": "scanProject",
       "file": "src/cli/scan.ts",
-      "line": 40
+      "line": 44
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts:validateProjectPath",
       "@type": "coderef:function",
       "name": "validateProjectPath",
       "file": "src/cli/scan.ts",
-      "line": 77
+      "line": 81
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts:parseLanguages",
       "@type": "coderef:function",
       "name": "parseLanguages",
       "file": "src/cli/scan.ts",
-      "line": 93
+      "line": 97
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts:main",
       "@type": "coderef:function",
       "name": "main",
       "file": "src/cli/scan.ts",
-      "line": 106
+      "line": 110
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\validate-routes.ts:CliArgs",
@@ -6875,139 +7008,6 @@
       "name": "OllamaProvider.handleHttpError",
       "file": "src/integration/llm/ollama-provider.ts",
       "line": 340
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.handleError",
-      "@type": "coderef:method",
-      "name": "OllamaProvider.handleError",
-      "file": "src/integration/llm/ollama-provider.ts",
-      "line": 363
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:createOllamaProvider",
-      "@type": "coderef:function",
-      "name": "createOllamaProvider",
-      "file": "src/integration/llm/ollama-provider.ts",
-      "line": 413
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider",
-      "@type": "coderef:class",
-      "name": "OpenAIProvider",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 33
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.complete",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.complete",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 64
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.embed",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.embed",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 115
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.countTokens",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.countTokens",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 140
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.getProviderName",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.getProviderName",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 156
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.getModel",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.getModel",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 163
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.getEmbeddingDimensions",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.getEmbeddingDimensions",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 171
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.supportsEmbeddings",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.supportsEmbeddings",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 190
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.withRetry",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.withRetry",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 197
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.mapFinishReason",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.mapFinishReason",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 228
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.handleError",
-      "@type": "coderef:method",
-      "name": "OpenAIProvider.handleError",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 244
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:createOpenAIProvider",
-      "@type": "coderef:function",
-      "name": "createOpenAIProvider",
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 319
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerOptions",
-      "@type": "coderef:interface",
-      "name": "AnswerOptions",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 40
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:Answer",
-      "@type": "coderef:interface",
-      "name": "Answer",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 66
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService",
-      "@type": "coderef:class",
-      "name": "AnswerGenerationService",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 111
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService.setGraph",
-      "@type": "coderef:method",
-      "name": "AnswerGenerationService.setGraph",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 133
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService.generateAnswer",
-      "@type": "coderef:method",
-      "name": "AnswerGenerationService.generateAnswer",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 140
     }
   ],
   "edges": [
@@ -7040,6 +7040,16 @@
       "@type": "coderef:imports",
       "source": "examples/nextjs-api-route.ts",
       "target": "path"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "examples/plugins/example-detector/src/index.ts",
+      "target": "./detectors/fastapi.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "examples/plugins/example-detector/src/index.ts",
+      "target": "./hooks/route-relationships.js"
     },
     {
       "@type": "coderef:imports",
@@ -7485,6 +7495,21 @@
       "@type": "coderef:imports",
       "source": "src/analyzer/route-parsers.ts",
       "target": "../types/types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cache/incremental-cache.ts",
+      "target": "fs/promises"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cache/incremental-cache.ts",
+      "target": "path"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cache/incremental-cache.ts",
+      "target": "crypto"
     },
     {
       "@type": "coderef:imports",
@@ -8693,6 +8718,11 @@
     },
     {
       "@type": "coderef:imports",
+      "source": "src/integration/rag/conversation-manager.ts",
+      "target": "../../utils/logger.js"
+    },
+    {
+      "@type": "coderef:imports",
       "source": "src/integration/rag/embedding-service.ts",
       "target": "../llm/llm-provider.js"
     },
@@ -8815,6 +8845,11 @@
       "@type": "coderef:imports",
       "source": "src/integration/rag/semantic-search.ts",
       "target": "../vector/vector-store.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/integration/rag/semantic-search.ts",
+      "target": "../../analyzer/graph-builder.js"
     },
     {
       "@type": "coderef:imports",
@@ -9414,7 +9449,7 @@
     {
       "@type": "coderef:imports",
       "source": "src/pipeline/orchestrator.ts",
-      "target": "./incremental-cache.js"
+      "target": "../cache/incremental-cache.js"
     },
     {
       "@type": "coderef:imports",
@@ -9443,6 +9478,191 @@
     },
     {
       "@type": "coderef:imports",
+      "source": "src/plugins/loaders/config-loader.ts",
+      "target": "path"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/config-loader.ts",
+      "target": "../types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/config-loader.ts",
+      "target": "../manifest-schema.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/config-loader.ts",
+      "target": "./npm-loader.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/config-loader.ts",
+      "target": "./npm-loader.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/config-loader.ts",
+      "target": "./local-loader.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/config-loader.ts",
+      "target": "fs/promises"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/local-loader.ts",
+      "target": "fs"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/local-loader.ts",
+      "target": "path"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/local-loader.ts",
+      "target": "../types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/local-loader.ts",
+      "target": "../manifest-schema.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/local-loader.ts",
+      "target": "./npm-loader.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/local-loader.ts",
+      "target": "mainPath"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/local-loader.ts",
+      "target": "detectorPath"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/local-loader.ts",
+      "target": "hookPath"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/npm-loader.ts",
+      "target": "fs"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/npm-loader.ts",
+      "target": "path"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/npm-loader.ts",
+      "target": "../types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/npm-loader.ts",
+      "target": "../manifest-schema.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/npm-loader.ts",
+      "target": "../plugin-registry.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/npm-loader.ts",
+      "target": "mainPath"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/npm-loader.ts",
+      "target": "detectorPath"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/loaders/npm-loader.ts",
+      "target": "hookPath"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/manifest-schema.ts",
+      "target": "./types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-graph.ts",
+      "target": "../analyzer/graph-builder.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-graph.ts",
+      "target": "../types/types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-graph.ts",
+      "target": "./plugin-registry.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-graph.ts",
+      "target": "./types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-registry.ts",
+      "target": "./types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-scanner.ts",
+      "target": "minimatch"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-scanner.ts",
+      "target": "../types/types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-scanner.ts",
+      "target": "./plugin-registry.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-scanner.ts",
+      "target": "./types.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-scanner.ts",
+      "target": "./loaders/npm-loader.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/plugin-scanner.ts",
+      "target": "./loaders/local-loader.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/types.ts",
+      "target": "../scanner/framework-registry.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/plugins/types.ts",
+      "target": "../types/types.js"
+    },
+    {
+      "@type": "coderef:imports",
       "source": "src/query/query-executor.ts",
       "target": "../analyzer/analyzer-service.js"
     },
@@ -9460,6 +9680,31 @@
       "@type": "coderef:imports",
       "source": "src/registry/entity-registry.ts",
       "target": "./types"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/scanner/file-watcher.ts",
+      "target": "chokidar"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/scanner/file-watcher.ts",
+      "target": "path"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/scanner/file-watcher.ts",
+      "target": "../cache/incremental-cache.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/scanner/file-watcher.ts",
+      "target": "./scanner.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/scanner/file-watcher.ts",
+      "target": "../types/types.js"
     },
     {
       "@type": "coderef:imports",
@@ -9585,6 +9830,11 @@
       "@type": "coderef:imports",
       "source": "src/scanner/scanner.ts",
       "target": "./lru-cache.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/scanner/scanner.ts",
+      "target": "../cache/incremental-cache.js"
     },
     {
       "@type": "coderef:imports",
@@ -9820,6 +10070,11 @@
       "@type": "coderef:imports",
       "source": "src/types/types.ts",
       "target": "../analyzer/frontend-call-parsers.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/types/types.ts",
+      "target": "../cache/incremental-cache.js"
     },
     {
       "@type": "coderef:imports",
@@ -11013,21 +11268,6 @@
     },
     {
       "@type": "coderef:imports",
-      "source": "__tests__/test-ast-analyzer.js",
-      "target": "./packages/core/dist/index.js"
-    },
-    {
-      "@type": "coderef:imports",
-      "source": "__tests__/test-ast-analyzer.js",
-      "target": "path"
-    },
-    {
-      "@type": "coderef:imports",
-      "source": "__tests__/test-ast-analyzer.js",
-      "target": "url"
-    },
-    {
-      "@type": "coderef:imports",
       "source": "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
       "target": "sys"
     },
@@ -11770,246 +12010,6 @@
       "@type": "coderef:calls",
       "source": "main",
       "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "toISOString"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "writeFileSync"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "section"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "scoreElements"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "slice"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "reduce"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "toFixed"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "filter"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "addDependencies"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "addDependencies"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "addDependencies"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "generateTaskContext"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "slice"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "detectEdgeCases"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "slice"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "stringify"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "analyzeTestPatterns"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "slice"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "extractExamples"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "formatContext"
     }
   ]
 }

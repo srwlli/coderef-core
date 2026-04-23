@@ -8,6 +8,7 @@ import { glob } from 'glob';
 import { minimatch } from 'minimatch';
 import { ElementData, ScanOptions, RouteMetadata } from '../types/types.js';
 import { createScannerCache, type ScanCacheEntry } from './lru-cache.js';
+import { IncrementalCache } from '../cache/incremental-cache.js';
 import {
   extractRouteMetadata,
   parseExpressRoute,
@@ -787,6 +788,9 @@ export async function scanCurrentElements(
   const scanner = new Scanner();
   const langs = Array.isArray(lang) ? lang : [lang];
   
+  // IMP-CORE-057: Declare at function level for cache update access
+  let filesToScan: string[] = [];
+  
   // Default options
   const {
     include = undefined,
@@ -795,7 +799,8 @@ export async function scanCurrentElements(
     langs: optionLangs = [],
     customPatterns = [],
     includeComments = false,
-    verbose = false
+    verbose = false,
+    cache = undefined
   } = options;
 
   // Normalize exclude to always be an array
@@ -877,9 +882,10 @@ export async function scanCurrentElements(
           if (verbose) {
             console.log(`Recursively scanning directory: ${fullPath}`);
           }
-          // Recursively scan subdirectories
+          // IMP-CORE-057: Don't pass cache to recursive calls - cache is updated once at top level
+          const { cache: _, ...optionsWithoutCache } = options;
           const subDirElements = await scanCurrentElements(fullPath, allLangs, {
-            ...options,
+            ...optionsWithoutCache,
             recursive: true
           });
           for (const element of subDirElements) {
@@ -938,17 +944,39 @@ export async function scanCurrentElements(
       console.log(`Found ${files.length} files to process:`, files);
     }
 
-    // PHASE 2: Parallel Processing - Try parallel mode if enabled
+// IMP-CORE-057: Incremental scanning with IncrementalCache
+    // Check which files need to be re-scanned based on file hashes
+    filesToScan = files;
+    let filesSkipped = 0;
+    
+    if (cache && cache.isEnabled()) {
+      const cacheCheck = await cache.checkFiles(files);
+      filesToScan = cacheCheck.filesToScan;
+      filesSkipped = cacheCheck.filesUnchanged.length;
+      
+      if (verbose) {
+        console.log(`[IncrementalCache] ${filesToScan.length} files to scan, ${filesSkipped} files skipped (hit ratio: ${(cacheCheck.hitRatio * 100).toFixed(1)}%)`);
+      }
+      
+      // Remove deleted files from cache
+      if (cacheCheck.filesDeleted.length > 0) {
+        cache.removeDeletedFiles(cacheCheck.filesDeleted);
+        if (verbose) {
+          console.log(`[IncrementalCache] Removed ${cacheCheck.filesDeleted.length} deleted files from cache`);
+        }
+      }
+    }
+        // PHASE 2: Parallel Processing - Try parallel mode if enabled
     if (options.parallel && allLangs.length === 1) {
       // Only use parallel mode for single-language scans to simplify worker logic
       const currentLang = allLangs[0];
 
       if (verbose) {
-        console.log(`Attempting parallel processing for ${files.length} ${currentLang} files`);
+        console.log(`Attempting parallel processing for ${filesToScan.length} ${currentLang} files`);
       }
 
       try {
-        const parallelElements = await scanFilesInParallel(files, currentLang, options);
+        const parallelElements = await scanFilesInParallel(filesToScan, currentLang, options);
 
         if (parallelElements.length > 0) {
           // Parallel processing succeeded
@@ -976,11 +1004,11 @@ export async function scanCurrentElements(
 
     // PHASE 5: Initialize progress tracking
     let filesProcessed = 0;
-    const totalFiles = files.length;
+    const totalFiles = filesToScan.length;
     const onProgress = options.onProgress;
 
     // Process files (sequential mode or fallback from parallel)
-    for (const file of files) {
+    for (const file of filesToScan) {
       try {
         // Check cache first
         const stats = fs.statSync(file);
@@ -1279,6 +1307,19 @@ export async function scanCurrentElements(
             percentComplete
           });
         }
+      }
+    }
+
+    // IMP-CORE-057: Update IncrementalCache after scanning
+    if (cache && cache.isEnabled()) {
+      try {
+        await cache.updateCache(filesToScan);
+        await cache.save();
+        if (verbose) {
+          console.log(`[IncrementalCache] Updated cache with ${filesToScan.length} scanned files`);
+        }
+      } catch (error) {
+        console.error(`Error updating cache:`, error);
       }
     }
   } catch (error) {

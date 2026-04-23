@@ -1,8 +1,8 @@
 {
   "stats": {
-    "totalFiles": 282,
-    "totalElements": 2006,
-    "totalLines": 81803,
+    "totalFiles": 298,
+    "totalElements": 2101,
+    "totalLines": 85075,
     "languages": [
       "ts",
       "js",
@@ -12,11 +12,19 @@
   "entryPoints": [
     {
       "name": "index.ts",
-      "file": "index.ts",
+      "file": "examples/plugins/example-detector/src/index.ts",
       "type": "library",
       "description": "Library entry point",
       "exported": false,
       "isPrimary": true
+    },
+    {
+      "name": "index.ts",
+      "file": "index.ts",
+      "type": "library",
+      "description": "Library entry point",
+      "exported": false,
+      "isPrimary": false
     },
     {
       "name": "index.ts",
@@ -860,29 +868,29 @@
       "type": "method"
     },
     {
-      "name": "scanDirectory",
-      "file": "src/cli/detect-languages.ts",
-      "type": "function"
+      "name": "IncrementalCache.load",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method"
     },
     {
-      "name": "detectProjectLanguages",
-      "file": "src/cli/detect-languages.ts",
-      "type": "function"
+      "name": "IncrementalCache.save",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method"
     },
     {
-      "name": "runGenerator",
-      "file": "src/cli/populate.ts",
-      "type": "function"
+      "name": "IncrementalCache.checkFiles",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method"
     },
     {
-      "name": "run",
-      "file": "src/cli/populate.ts",
-      "type": "function"
+      "name": "IncrementalCache.updateCache",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method"
     },
     {
-      "name": "main",
-      "file": "src/cli/populate.ts",
-      "type": "function"
+      "name": "IncrementalCache.computeFileHash",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method"
     }
   ],
   "testGaps": [
@@ -967,6 +975,16 @@
       "complexity": 25
     },
     {
+      "name": "loadLocalPlugin",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "complexity": 35
+    },
+    {
+      "name": "loadNpmPlugin",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "complexity": 35
+    },
+    {
       "name": "SearchIndex.search",
       "file": "src/search/search-engine.ts",
       "complexity": 34
@@ -995,6 +1013,11 @@
       "name": "ContextBuilder.buildResultSection",
       "file": "src/integration/rag/context-builder.ts",
       "complexity": 22
+    },
+    {
+      "name": "validateManifest",
+      "file": "src/plugins/manifest-schema.ts",
+      "complexity": 32
     },
     {
       "name": "generateExportsMd",
@@ -1045,30 +1068,15 @@
       "name": "GraphReRanker.rerank",
       "file": "src/integration/rag/graph-reranker.ts",
       "complexity": 28
-    },
-    {
-      "name": "ChromaStore.query",
-      "file": "src/integration/vector/chroma-store.ts",
-      "complexity": 28
-    },
-    {
-      "name": "PatternGenerator.detectMiddleware",
-      "file": "src/pipeline/generators/pattern-generator.ts",
-      "complexity": 18
-    },
-    {
-      "name": "QueryExecutor.executeQuery",
-      "file": "src/query/query-executor.ts",
-      "complexity": 18
     }
   ],
   "moduleStructure": {
-    ".": 8,
-    "examples": 1,
+    ".": 12,
+    "examples": 4,
     "scripts": 10,
-    "src": 205,
+    "src": 215,
     "utils": 3,
-    "__tests__": 41,
+    "__tests__": 40,
     "autoresearch": 14
   },
   "executiveSummary": {
@@ -1143,14 +1151,6 @@
       "riskLevel": "critical"
     },
     {
-      "area": "query-executor",
-      "file": "src/query/query-executor.ts",
-      "complexity": 18,
-      "testCoverage": 0,
-      "riskScore": 100,
-      "riskLevel": "critical"
-    },
-    {
       "area": "docs-analyzer",
       "file": "src/analyzer/docs-analyzer.ts",
       "complexity": 25,
@@ -1199,6 +1199,22 @@
       "riskLevel": "critical"
     },
     {
+      "area": "local-loader",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "complexity": 35,
+      "testCoverage": 0,
+      "riskScore": 100,
+      "riskLevel": "critical"
+    },
+    {
+      "area": "npm-loader",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "complexity": 35,
+      "testCoverage": 0,
+      "riskScore": 100,
+      "riskLevel": "critical"
+    },
+    {
       "area": "search-engine",
       "file": "src/search/search-engine.ts",
       "complexity": 34,
@@ -1231,17 +1247,9 @@
       "riskLevel": "critical"
     },
     {
-      "area": "generate-exports-md",
-      "file": "scripts/doc-gen/generate-exports-md.js",
+      "area": "manifest-schema",
+      "file": "src/plugins/manifest-schema.ts",
       "complexity": 32,
-      "testCoverage": 0,
-      "riskScore": 100,
-      "riskLevel": "critical"
-    },
-    {
-      "area": "parser",
-      "file": "src/parser/parser.ts",
-      "complexity": 29,
       "testCoverage": 0,
       "riskScore": 100,
       "riskLevel": "critical"
@@ -1477,7 +1485,7 @@
     "indicators": [
       "CLI entry points: 25",
       "package.json bin field present",
-      "Library entry points: 19",
+      "Library entry points: 20",
       "Library exports configured",
       "TypeScript declarations present",
       "Hybrid: library + cli-tool"
@@ -1492,8 +1500,8 @@
     ]
   },
   "dependencyRisks": {
-    "totalDependencies": 24,
-    "directDependencies": 20,
+    "totalDependencies": 25,
+    "directDependencies": 21,
     "devDependencies": 4,
     "riskScore": 11,
     "riskLevel": "low",
@@ -1544,6 +1552,14 @@
         "severity": "low",
         "type": "unused",
         "description": "Dependency 'chromadb' is declared but may not be imported in source code",
+        "recommendation": "Verify if dependency is truly unused and can be removed"
+      },
+      {
+        "name": "chokidar",
+        "version": "^3.5.3",
+        "severity": "low",
+        "type": "unused",
+        "description": "Dependency 'chokidar' is declared but may not be imported in source code",
         "recommendation": "Verify if dependency is truly unused and can be removed"
       },
       {
@@ -1719,7 +1735,7 @@
       "outdatedCount": 8,
       "vulnerabilityCount": 0,
       "circularImportCount": 0,
-      "unusedCount": 19,
+      "unusedCount": 20,
       "highChurnCount": 0
     }
   },
@@ -1764,6 +1780,7 @@
         "@pinecone-database/pinecone",
         "acorn",
         "chromadb",
+        "chokidar",
         "glob",
         "minimatch",
         "openai",
@@ -3113,6 +3130,29 @@
         ]
       },
       {
+        "file": "examples\\plugins\\example-detector\\src\\detectors\\fastapi.ts",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "examples\\plugins\\example-detector\\src\\hooks\\route-relationships.ts",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "examples\\plugins\\example-detector\\src\\index.ts",
+        "totalExports": 3,
+        "documentedExports": 2,
+        "coverageRatio": 0.6666666666666666,
+        "undocumentedItems": [
+          "hooks"
+        ]
+      },
+      {
         "file": "index.ts",
         "totalExports": 10,
         "documentedExports": 0,
@@ -3570,6 +3610,13 @@
         "undocumentedItems": [
           "handler"
         ]
+      },
+      {
+        "file": "src\\cache\\incremental-cache.ts",
+        "totalExports": 4,
+        "documentedExports": 4,
+        "coverageRatio": 1,
+        "undocumentedItems": []
       },
       {
         "file": "src\\cli\\detect-languages.ts",
@@ -4548,6 +4595,64 @@
         "undocumentedItems": []
       },
       {
+        "file": "src\\plugins\\loaders\\config-loader.ts",
+        "totalExports": 3,
+        "documentedExports": 3,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "src\\plugins\\loaders\\local-loader.ts",
+        "totalExports": 4,
+        "documentedExports": 4,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "src\\plugins\\loaders\\npm-loader.ts",
+        "totalExports": 5,
+        "documentedExports": 5,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "src\\plugins\\manifest-schema.ts",
+        "totalExports": 6,
+        "documentedExports": 6,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "src\\plugins\\plugin-graph.ts",
+        "totalExports": 3,
+        "documentedExports": 3,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "src\\plugins\\plugin-registry.ts",
+        "totalExports": 3,
+        "documentedExports": 2,
+        "coverageRatio": 0.6666666666666666,
+        "undocumentedItems": [
+          "pluginRegistry"
+        ]
+      },
+      {
+        "file": "src\\plugins\\plugin-scanner.ts",
+        "totalExports": 4,
+        "documentedExports": 4,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "src\\plugins\\types.ts",
+        "totalExports": 11,
+        "documentedExports": 11,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
         "file": "src\\query\\query-executor.ts",
         "totalExports": 4,
         "documentedExports": 4,
@@ -4577,6 +4682,16 @@
         "documentedExports": 11,
         "coverageRatio": 1,
         "undocumentedItems": []
+      },
+      {
+        "file": "src\\scanner\\file-watcher.ts",
+        "totalExports": 3,
+        "documentedExports": 1,
+        "coverageRatio": 0.3333333333333333,
+        "undocumentedItems": [
+          "FileWatcherOptions",
+          "WatcherStats"
+        ]
       },
       {
         "file": "src\\scanner\\framework-registry.ts",
@@ -4805,6 +4920,30 @@
       "format": "markdown"
     },
     "commentDensity": [
+      {
+        "file": "apply-changes.js",
+        "totalLines": 61,
+        "commentLines": 7,
+        "codeLines": 43,
+        "blankLines": 11,
+        "densityRatio": 0.11475409836065574
+      },
+      {
+        "file": "apply-incremental-cache-v2.js",
+        "totalLines": 51,
+        "commentLines": 7,
+        "codeLines": 34,
+        "blankLines": 10,
+        "densityRatio": 0.13725490196078433
+      },
+      {
+        "file": "apply-incremental-cache.js",
+        "totalLines": 51,
+        "commentLines": 7,
+        "codeLines": 34,
+        "blankLines": 10,
+        "densityRatio": 0.13725490196078433
+      },
       {
         "file": "coverage\\block-navigation.js",
         "totalLines": 88,
@@ -7662,12 +7801,44 @@
         "densityRatio": 0.3875
       },
       {
+        "file": "examples\\plugins\\example-detector\\src\\detectors\\fastapi.ts",
+        "totalLines": 112,
+        "commentLines": 25,
+        "codeLines": 70,
+        "blankLines": 17,
+        "densityRatio": 0.22321428571428573
+      },
+      {
+        "file": "examples\\plugins\\example-detector\\src\\hooks\\route-relationships.ts",
+        "totalLines": 98,
+        "commentLines": 24,
+        "codeLines": 58,
+        "blankLines": 16,
+        "densityRatio": 0.24489795918367346
+      },
+      {
+        "file": "examples\\plugins\\example-detector\\src\\index.ts",
+        "totalLines": 41,
+        "commentLines": 15,
+        "codeLines": 20,
+        "blankLines": 6,
+        "densityRatio": 0.36585365853658536
+      },
+      {
         "file": "index.ts",
         "totalLines": 42,
         "commentLines": 13,
         "codeLines": 20,
         "blankLines": 9,
         "densityRatio": 0.30952380952380953
+      },
+      {
+        "file": "rewrite-scanner.js",
+        "totalLines": 123,
+        "commentLines": 10,
+        "codeLines": 97,
+        "blankLines": 16,
+        "densityRatio": 0.08130081300813008
       },
       {
         "file": "scanner.js",
@@ -8046,6 +8217,14 @@
         "densityRatio": 0.31467181467181465
       },
       {
+        "file": "src\\cache\\incremental-cache.ts",
+        "totalLines": 290,
+        "commentLines": 77,
+        "codeLines": 178,
+        "blankLines": 35,
+        "densityRatio": 0.2655172413793103
+      },
+      {
         "file": "src\\cli\\detect-languages.ts",
         "totalLines": 132,
         "commentLines": 0,
@@ -8063,11 +8242,11 @@
       },
       {
         "file": "src\\cli\\rag-index.ts",
-        "totalLines": 511,
+        "totalLines": 512,
         "commentLines": 50,
-        "codeLines": 395,
+        "codeLines": 396,
         "blankLines": 66,
-        "densityRatio": 0.09784735812133072
+        "densityRatio": 0.09765625
       },
       {
         "file": "src\\cli\\rag-search.ts",
@@ -8095,11 +8274,11 @@
       },
       {
         "file": "src\\cli\\scan.ts",
-        "totalLines": 131,
-        "commentLines": 12,
-        "codeLines": 93,
-        "blankLines": 26,
-        "densityRatio": 0.0916030534351145
+        "totalLines": 146,
+        "commentLines": 13,
+        "codeLines": 105,
+        "blankLines": 28,
+        "densityRatio": 0.08904109589041095
       },
       {
         "file": "src\\cli\\validate-routes.ts",
@@ -8631,11 +8810,11 @@
       },
       {
         "file": "src\\integration\\rag\\conversation-manager.ts",
-        "totalLines": 445,
+        "totalLines": 446,
         "commentLines": 107,
-        "codeLines": 265,
+        "codeLines": 266,
         "blankLines": 73,
-        "densityRatio": 0.24044943820224718
+        "densityRatio": 0.2399103139013453
       },
       {
         "file": "src\\integration\\rag\\embedding-service.ts",
@@ -8703,19 +8882,19 @@
       },
       {
         "file": "src\\integration\\rag\\semantic-search.ts",
-        "totalLines": 395,
-        "commentLines": 101,
-        "codeLines": 228,
-        "blankLines": 66,
-        "densityRatio": 0.25569620253164554
+        "totalLines": 478,
+        "commentLines": 109,
+        "codeLines": 292,
+        "blankLines": 77,
+        "densityRatio": 0.2280334728033473
       },
       {
         "file": "src\\integration\\vector\\chroma-store.ts",
-        "totalLines": 359,
-        "commentLines": 74,
-        "codeLines": 243,
-        "blankLines": 42,
-        "densityRatio": 0.20612813370473537
+        "totalLines": 403,
+        "commentLines": 81,
+        "codeLines": 274,
+        "blankLines": 48,
+        "densityRatio": 0.20099255583126552
       },
       {
         "file": "src\\integration\\vector\\index.ts",
@@ -8727,27 +8906,27 @@
       },
       {
         "file": "src\\integration\\vector\\pinecone-store.ts",
-        "totalLines": 376,
-        "commentLines": 70,
-        "codeLines": 260,
-        "blankLines": 46,
-        "densityRatio": 0.18617021276595744
+        "totalLines": 409,
+        "commentLines": 74,
+        "codeLines": 284,
+        "blankLines": 51,
+        "densityRatio": 0.18092909535452323
       },
       {
         "file": "src\\integration\\vector\\sqlite-store.ts",
-        "totalLines": 447,
-        "commentLines": 102,
-        "codeLines": 286,
-        "blankLines": 59,
-        "densityRatio": 0.22818791946308725
+        "totalLines": 479,
+        "commentLines": 106,
+        "codeLines": 309,
+        "blankLines": 64,
+        "densityRatio": 0.22129436325678498
       },
       {
         "file": "src\\integration\\vector\\vector-store.ts",
-        "totalLines": 327,
-        "commentLines": 185,
-        "codeLines": 85,
-        "blankLines": 57,
-        "densityRatio": 0.5657492354740061
+        "totalLines": 345,
+        "commentLines": 201,
+        "codeLines": 86,
+        "blankLines": 58,
+        "densityRatio": 0.5826086956521739
       },
       {
         "file": "src\\parser\\parser.ts",
@@ -8926,6 +9105,70 @@
         "densityRatio": 0.3987730061349693
       },
       {
+        "file": "src\\plugins\\loaders\\config-loader.ts",
+        "totalLines": 194,
+        "commentLines": 50,
+        "codeLines": 122,
+        "blankLines": 22,
+        "densityRatio": 0.25773195876288657
+      },
+      {
+        "file": "src\\plugins\\loaders\\local-loader.ts",
+        "totalLines": 248,
+        "commentLines": 35,
+        "codeLines": 182,
+        "blankLines": 31,
+        "densityRatio": 0.14112903225806453
+      },
+      {
+        "file": "src\\plugins\\loaders\\npm-loader.ts",
+        "totalLines": 267,
+        "commentLines": 47,
+        "codeLines": 188,
+        "blankLines": 32,
+        "densityRatio": 0.1760299625468165
+      },
+      {
+        "file": "src\\plugins\\manifest-schema.ts",
+        "totalLines": 285,
+        "commentLines": 36,
+        "codeLines": 225,
+        "blankLines": 24,
+        "densityRatio": 0.12631578947368421
+      },
+      {
+        "file": "src\\plugins\\plugin-graph.ts",
+        "totalLines": 234,
+        "commentLines": 41,
+        "codeLines": 159,
+        "blankLines": 34,
+        "densityRatio": 0.1752136752136752
+      },
+      {
+        "file": "src\\plugins\\plugin-registry.ts",
+        "totalLines": 353,
+        "commentLines": 93,
+        "codeLines": 210,
+        "blankLines": 50,
+        "densityRatio": 0.26345609065155806
+      },
+      {
+        "file": "src\\plugins\\plugin-scanner.ts",
+        "totalLines": 287,
+        "commentLines": 51,
+        "codeLines": 203,
+        "blankLines": 33,
+        "densityRatio": 0.17770034843205576
+      },
+      {
+        "file": "src\\plugins\\types.ts",
+        "totalLines": 186,
+        "commentLines": 101,
+        "codeLines": 72,
+        "blankLines": 13,
+        "densityRatio": 0.543010752688172
+      },
+      {
         "file": "src\\query\\query-executor.ts",
         "totalLines": 339,
         "commentLines": 73,
@@ -8956,6 +9199,14 @@
         "codeLines": 159,
         "blankLines": 50,
         "densityRatio": 0.37797619047619047
+      },
+      {
+        "file": "src\\scanner\\file-watcher.ts",
+        "totalLines": 225,
+        "commentLines": 49,
+        "codeLines": 145,
+        "blankLines": 31,
+        "densityRatio": 0.21777777777777776
       },
       {
         "file": "src\\scanner\\framework-registry.ts",
@@ -8999,11 +9250,11 @@
       },
       {
         "file": "src\\scanner\\scanner.ts",
-        "totalLines": 1538,
-        "commentLines": 343,
-        "codeLines": 1021,
-        "blankLines": 174,
-        "densityRatio": 0.22301690507152144
+        "totalLines": 1578,
+        "commentLines": 348,
+        "codeLines": 1051,
+        "blankLines": 179,
+        "densityRatio": 0.22053231939163498
       },
       {
         "file": "src\\scanner\\tree-sitter-scanner.ts",
@@ -9047,11 +9298,11 @@
       },
       {
         "file": "src\\types\\types.ts",
-        "totalLines": 632,
-        "commentLines": 230,
-        "codeLines": 372,
+        "totalLines": 638,
+        "commentLines": 235,
+        "codeLines": 373,
         "blankLines": 30,
-        "densityRatio": 0.3639240506329114
+        "densityRatio": 0.3683385579937304
       },
       {
         "file": "src\\utils\\logger.ts",
@@ -9182,14 +9433,6 @@
         "densityRatio": 0.004464285714285714
       },
       {
-        "file": "__tests__\\test-ast-analyzer.js",
-        "totalLines": 107,
-        "commentLines": 12,
-        "codeLines": 77,
-        "blankLines": 18,
-        "densityRatio": 0.11214953271028037
-      },
-      {
         "file": "__tests__\\__test-files-js-detector__\\commonjs-exports-pattern.js",
         "totalLines": 4,
         "commentLines": 0,
@@ -9198,11 +9441,11 @@
         "densityRatio": 0
       }
     ],
-    "averageCommentDensity": 0.368348148170791,
-    "totalFilesAnalyzed": 549,
+    "averageCommentDensity": 0.3641238252595319,
+    "totalFilesAnalyzed": 565,
     "recommendations": [
       "Add more sections to README (8/18 present). Priority: Installation, Usage, API Reference",
-      "Add JSDoc comments to 81 files with <50% documentation coverage",
+      "Add JSDoc comments to 82 files with <50% documentation coverage",
       "Create a CHANGELOG.md to track version history"
     ]
   }

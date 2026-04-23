@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schemas.coderef.com/context/v1",
+  "schema_version": "1.0",
+  "feature_name": "rag-similarity-features",
+  "description": "Implement findSimilar() and getRelated() methods in semantic-search service. findSimilar() enables 'find code similar to this function' by fetching a vector by ID and searching for similar embeddings. getRelated() combines semantic similarity with graph relationships (imports, calls, extends) to find structurally and semantically related code.",
+  "goal": "Enable code similarity search and relationship discovery in the RAG system",
+  "requirements": [
+    "Add fetchById() method to VectorStore interface to retrieve embeddings by coderef",
+    "Implement fetchById() in SQLiteVectorStore using SQL SELECT by id",
+    "Implement fetchById() in PineconeStore using namespace.fetch()",
+    "Implement fetchById() in ChromaStore using collection.get()",
+    "Implement findSimilar() in semantic-search.ts:245 (replace Not yet implemented error)",
+    "Implement getRelated() in semantic-search.ts:293 combining graph traversal + semantic search",
+    "Add unit tests for fetchById() in all 3 vector store implementations",
+    "Add CLI command --find-similar <coderef> to rag-search.ts",
+    "Update VectorStore interface documentation"
+  ],
+  "out_of_scope": [
+    "UI visualization of similarity results",
+    "Web API endpoints (only CLI for now)",
+    "Caching of similarity results",
+    "Similarity threshold tuning UI"
+  ],
+  "constraints": [
+    "Must maintain backward compatibility with existing VectorStore interface",
+    "Must work with all 3 vector store backends (SQLite, Pinecone, Chroma)",
+    "Must use existing graph-builder for relationship traversal"
+  ],
+  "success_criteria": {
+    "functional": [
+      "findSimilar(coderef) returns semantically similar code elements",
+      "getRelated(coderef, 'semantic') returns semantic neighbors",
+      "getRelated(coderef, 'structural') returns graph neighbors",
+      "getRelated(coderef, 'both') returns combined results",
+      "All 3 vector stores support fetchById() with test coverage",
+      "CLI can invoke find-similar command"
+    ],
+    "performance": [
+      "findSimilar completes in <500ms for 1000 vector store",
+      "getRelated completes in <1s including graph traversal"
+    ]
+  },
+  "related_improvements": ["IMP-CORE-067", "IMP-CORE-068"],
+  "_metadata": {
+    "workorder_id": "WO-RAG-SIMILARITY-FEATURES-001",
+    "created_by": "create-workorder-skill",
+    "created_at": "2026-04-23T06:20:00Z"
+  }
+}

@@ -11,7 +11,8 @@ import type {
   VectorQueryResult,
   VectorStoreStats,
   VectorStoreConfig,
-  VectorMatch
+  VectorMatch,
+  CodeChunkMetadata
 } from './vector-store.js';
 import { VectorStoreError, VectorStoreErrorCode } from './vector-store.js';
 
@@ -291,6 +292,49 @@ export class ChromaStore implements VectorStore {
         dimension: this.dimension,
         namespaces: namespaces.length > 0 ? namespaces : undefined,
         collectionName: this.collectionName
+      };
+    } catch (error: any) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Fetch a single vector record by ID
+   */
+  async fetchById(id: string, namespace?: string): Promise<VectorRecord | null> {
+    if (!this.collection) {
+      throw new VectorStoreError(
+        'Chroma store not initialized. Call initialize() first',
+        VectorStoreErrorCode.CONNECTION_ERROR
+      );
+    }
+
+    try {
+      // Build where filter if namespace specified
+      const whereFilter: any = namespace ? { _namespace: { $eq: namespace } } : undefined;
+
+      // Chroma get returns { ids, embeddings, metadatas, documents }
+      const response = await this.collection.get({
+        ids: [id],
+        where: whereFilter,
+        include: ['embeddings', 'metadatas']
+      });
+
+      // Check if record exists
+      if (!response.ids || response.ids.length === 0) {
+        return null;
+      }
+
+      // Get the first (and should be only) record
+      const index = response.ids.indexOf(id);
+      if (index === -1) {
+        return null;
+      }
+
+      return {
+        id: id,
+        values: response.embeddings?.[index] as number[],
+        metadata: response.metadatas?.[index] as CodeChunkMetadata
       };
     } catch (error: any) {
       throw this.handleError(error);

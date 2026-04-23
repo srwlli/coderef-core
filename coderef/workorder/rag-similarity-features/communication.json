@@ -1,0 +1,57 @@
+{
+  "$schema": "https://schemas.coderef.com/communication/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-RAG-SIMILARITY-FEATURES-001",
+  "feature_name": "rag-similarity-features",
+  "title": "Implement RAG Similarity Features: findSimilar() and getRelated()",
+  "created_at": "2026-04-23T06:25:00Z",
+  "status": "ready_for_execution",
+  "last_updated": "2026-04-23T06:25:00Z",
+  "handoff": {
+    "from": "PLANNING",
+    "to": "EXECUTION",
+    "status": "ready_for_execution"
+  },
+  "must_read_first": [
+    "context.json - Feature requirements and success criteria",
+    "analysis.json - Target files and technical details",
+    "plan.json - Implementation phases and task breakdown"
+  ],
+  "execution_context": {
+    "current_phase": "phase_1",
+    "current_task": "VS-001",
+    "tasks_completed": [],
+    "tasks_remaining": ["VS-001", "VS-002", "VS-003", "VS-004", "SS-001", "SS-002", "SS-003", "CLI-001", "DOC-001", "IMP-001", "COMMIT-001", "CLOSE-001"]
+  },
+  "communication_log": [
+    {
+      "timestamp": "2026-04-23T06:25:00Z",
+      "agent": "Cascade",
+      "message": "Workorder created via skill-based workflow (MCP-free). Implements IMP-CORE-067 (findSimilar) and IMP-CORE-068 (getRelated). Ready for execution."
+    }
+  ],
+  "flags": [],
+  "corrections": [],
+  "plan_adjustments_needed": [],
+  "hard_stops": [
+    {
+      "phase": "phase_1",
+      "gate": "All 3 vector stores implement fetchById() with tests passing",
+      "approved": false
+    },
+    {
+      "phase": "phase_2",
+      "gate": "findSimilar() and getRelated() fully implemented with tests",
+      "approved": false
+    }
+  ],
+  "contact": {
+    "workorder_path": "coderef/workorder/rag-similarity-features",
+    "related_improvements": ["IMP-CORE-067", "IMP-CORE-068"]
+  },
+  "_metadata": {
+    "document_type": "Workorder Communication",
+    "generated_by": "create-workorder-skill v2.0",
+    "ai_assistance": true
+  }
+}

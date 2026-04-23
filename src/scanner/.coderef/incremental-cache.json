@@ -1,0 +1,71 @@
+{
+  "version": 1,
+  "lastUpdated": "2026-04-23T19:26:59.405Z",
+  "files": {
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/error-reporter.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/error-reporter.ts",
+      "contentHash": "e986e5109eee2acd1cbcf7d35ade153a7a3fdd1656c09df6467ed0a7a844ac70",
+      "mtimeMs": 1768509066540.0466,
+      "size": 9220,
+      "cachedAt": "2026-04-23T19:23:40.698Z"
+    },
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/file-watcher.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/file-watcher.ts",
+      "contentHash": "74813bdcb0aad81d71df32741f4f6b1918965760ed6ef64a7e778629f9599b5c",
+      "mtimeMs": 1776938661060.486,
+      "size": 6179,
+      "cachedAt": "2026-04-23T19:23:40.699Z"
+    },
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/framework-registry.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/framework-registry.ts",
+      "contentHash": "ffec8d216f55ed1f6515e8c86a3c514d9f55d69817bd3cb86961a5f86b24d4af",
+      "mtimeMs": 1776808631030.4573,
+      "size": 2724,
+      "cachedAt": "2026-04-23T19:23:40.699Z"
+    },
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/frontend-scanner.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/frontend-scanner.ts",
+      "contentHash": "8233a4be1726ee52315573350b305002180271fefbfd8035d3e1a934cccdd4a9",
+      "mtimeMs": 1772406389659.3264,
+      "size": 7430,
+      "cachedAt": "2026-04-23T19:23:40.700Z"
+    },
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/lru-cache.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/lru-cache.ts",
+      "contentHash": "b1625dbffea3172397477cec89774f8bd2a9b2f038cb898fe8ff6c71aa9f2fda",
+      "mtimeMs": 1768548897372.1582,
+      "size": 5114,
+      "cachedAt": "2026-04-23T19:23:40.700Z"
+    },
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/register-frameworks.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/register-frameworks.ts",
+      "contentHash": "13b629655ecf37e904252a04b2f04240ac557ca73800312bb7f70da1802022ee",
+      "mtimeMs": 1776808551416.8198,
+      "size": 1021,
+      "cachedAt": "2026-04-23T19:23:40.700Z"
+    },
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/scanner-worker.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/scanner-worker.ts",
+      "contentHash": "d7389aded1507c56bddfdf809edc717c9976801c9f1dcc06f9990719c4090543",
+      "mtimeMs": 1768547714777.548,
+      "size": 3890,
+      "cachedAt": "2026-04-23T19:23:40.701Z"
+    },
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/scanner.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/scanner.ts",
+      "contentHash": "4e479801d1e2b9579c163b03047ea390906d13e03546dbe3d1f32929a078ba05",
+      "mtimeMs": 1776972295593.223,
+      "size": 57995,
+      "cachedAt": "2026-04-23T19:26:28.523Z"
+    },
+    "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/tree-sitter-scanner.ts": {
+      "filePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/scanner/tree-sitter-scanner.ts",
+      "contentHash": "34d2d6dd9408e77c3edce889edd719005a07fae25741891d3f8f417e3940c0f1",
+      "mtimeMs": 1776501554475.8186,
+      "size": 53791,
+      "cachedAt": "2026-04-23T19:23:40.701Z"
+    }
+  },
+  "totalFilesLastRun": 9,
+  "projectPath": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner"
+}

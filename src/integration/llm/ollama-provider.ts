@@ -118,18 +118,18 @@ export class OllamaProvider implements LLMProvider {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            'X-Lloyd-Gateway': 'coderef-core',
+            'X-Workorder-ID': process.env.WO_ID || 'unknown',
+            'X-Session-ID': process.env.SESSION_ID || 'unknown'
           },
           body: JSON.stringify({
             model: this.model,
             prompt,
             stream: false,
+            task_type: 'execution',
             options: {
               temperature: options?.temperature ?? 0.3,
               num_predict: options?.maxTokens ?? 1000,
-              top_p: options?.topP,
-              stop: options?.stop,
-              frequency_penalty: options?.frequencyPenalty,
-              presence_penalty: options?.presencePenalty,
             }
           }),
           signal: controller.signal

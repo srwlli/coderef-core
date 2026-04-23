@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schemas.coderef.com/communication/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-INCREMENTAL-SCAN-FILE-WATCHER-001",
+  "feature_name": "incremental-scan-file-watcher",
+  "title": "Implement Incremental Scanning with File-Watcher",
+  "created_at": "2026-04-23T09:43:00Z",
+  "status": "ready_for_execution",
+  "last_updated": "2026-04-23T09:43:00Z",
+  "handoff": {
+    "from": "PLANNING",
+    "to": "EXECUTION",
+    "status": "ready_for_execution"
+  },
+  "must_read_first": [
+    "context.json - Feature requirements and success criteria",
+    "analysis.json - Target files and technical details",
+    "plan.json - Implementation phases and task breakdown"
+  ],
+  "execution_context": {
+    "current_phase": "phase_1",
+    "current_task": "ARCH-001",
+    "tasks_completed": [],
+    "tasks_remaining": ["ARCH-001", "ARCH-002", "ARCH-003", "SCAN-001", "SCAN-002", "SCAN-003", "SCAN-004", "WATCH-001", "WATCH-002", "WATCH-003", "WATCH-004", "TEST-001", "TEST-002", "DOC-001", "DOC-002", "COMMIT-001", "IMP-001", "CLOSE-001"]
+  },
+  "communication_log": [
+    {
+      "timestamp": "2026-04-23T09:43:00Z",
+      "agent": "Cascade",
+      "message": "Workorder created via skill-based workflow (MCP-free). Implements IMP-CORE-057 (incremental scanning with file-watcher). Ready for execution."
+    }
+  ],
+  "flags": [],
+  "corrections": [],
+  "plan_adjustments_needed": [],
+  "hard_stops": [
+    {
+      "phase": "phase_1",
+      "gate": "Dependencies installed, cache location decided, file-watcher skeleton created",
+      "approved": false
+    },
+    {
+      "phase": "phase_2",
+      "gate": "Incremental scan working with --incremental flag, cache hit ratio >95%",
+      "approved": false
+    },
+    {
+      "phase": "phase_3",
+      "gate": "File-watcher working with --watch flag, real-time updates verified",
+      "approved": false
+    },
+    {
+      "phase": "phase_4",
+      "gate": "Tests passing, documentation updated",
+      "approved": false
+    },
+    {
+      "phase": "phase_5",
+      "gate": "All changes committed, improvements updated, workorder closed",
+      "approved": false
+    }
+  ],
+  "contact": {
+    "workorder_path": "coderef/workorder/incremental-scan-file-watcher",
+    "related_improvements": ["IMP-CORE-057"]
+  },
+  "_metadata": {
+    "document_type": "Workorder Communication",
+    "generated_by": "create-workorder-skill v2.0",
+    "ai_assistance": true
+  }
+}

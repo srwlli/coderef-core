@@ -286,6 +286,24 @@ export interface VectorStore {
    * @returns Provider identifier (e.g., 'pinecone', 'chroma')
    */
   getProviderName(): string;
+
+  /**
+   * Fetch a single vector record by ID
+   *
+   * @param id - The unique identifier (CodeRef tag)
+   * @param namespace - Optional namespace
+   * @returns Promise resolving to the vector record or null if not found
+   * @throws {VectorStoreError} If the operation fails
+   *
+   * @example
+   * ```typescript
+   * const record = await store.fetchById('@Fn/auth/login#authenticate:24');
+   * if (record) {
+   *   console.log(record.metadata.name, record.values.length);
+   * }
+   * ```
+   */
+  fetchById(id: string, namespace?: string): Promise<VectorRecord | null>;
 }
 
 /**

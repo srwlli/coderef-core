@@ -1,0 +1,112 @@
+{
+  "$schema": "https://schemas.coderef.com/analysis/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-INCREMENTAL-SCAN-FILE-WATCHER-001",
+  "generated_at": "2026-04-23T09:43:00Z",
+  "project_stats": {
+    "total_files": 125,
+    "languages": ["typescript", "javascript"],
+    "test_files": 18,
+    "has_coderef": true,
+    "existing_cache_implementation": true
+  },
+  "target_files": [
+    {
+      "path": "src/scanner/scanner.ts",
+      "lines": 1538,
+      "type": "main_module",
+      "description": "Core scanner that needs incremental support. scanCurrentElements() always does full scan.",
+      "current_issues": ["No cache integration", "Always full re-scan"]
+    },
+    {
+      "path": "src/pipeline/incremental-cache.ts",
+      "lines": 289,
+      "type": "reference_implementation",
+      "description": "Existing IncrementalCache class with full implementation. Should be reused or moved to shared location.",
+      "current_issues": ["Only used by pipeline, not scanner"]
+    },
+    {
+      "path": "src/cli/scan.ts",
+      "lines": 85,
+      "type": "cli_entry",
+      "description": "CLI scan command. Needs --watch flag added.",
+      "current_issues": ["No watch mode"]
+    },
+    {
+      "path": "src/scanner/file-watcher.ts",
+      "lines": 0,
+      "type": "new_module",
+      "description": "NEW FILE: File-watcher module using chokidar. Will handle watch events and trigger incremental scans.",
+      "current_issues": ["File does not exist"]
+    }
+  ],
+  "reference_components": [
+    {
+      "name": "IncrementalCache",
+      "location": "src/pipeline/incremental-cache.ts:63",
+      "patterns": ["computeFileHash", "checkFiles", "updateCache"],
+      "relevance": "Primary reference for cache implementation. Has all logic needed for scanner integration."
+    },
+    {
+      "name": "PipelineOrchestrator",
+      "location": "src/pipeline/orchestrator.ts:81-114",
+      "patterns": ["cache.load()", "cache.checkFiles()", "cache.updateCache()"],
+      "relevance": "Shows how to integrate IncrementalCache into a workflow. Scanner should follow similar pattern."
+    }
+  ],
+  "coding_standards": [
+    "Use async/await for all file operations",
+    "Use fs/promises, not sync fs methods",
+    "Log with console.log in scanner, Logger in CLI",
+    "Follow existing error handling patterns (try/catch with console.warn)",
+    "Maintain Windows path compatibility (already normalized in scanner)",
+    "Export functions with clear JSDoc comments"
+  ],
+  "dependencies": [
+    {
+      "name": "chokidar",
+      "version": "^3.5.3",
+      "reason": "Cross-platform file watching (Windows, macOS, Linux)",
+      "install_cmd": "npm install chokidar"
+    }
+  ],
+  "risks": [
+    {
+      "risk": "Circular dependency between scanner and pipeline if cache moved",
+      "severity": "medium",
+      "mitigation": "Either move cache to src/cache/ or scanner imports from pipeline/"
+    },
+    {
+      "risk": "File-watcher performance on Windows with large directories",
+      "severity": "medium",
+      "mitigation": "Test with 10k+ files, may need to use native Windows APIs if chokidar slow"
+    },
+    {
+      "risk": "Cache corruption if process killed mid-scan",
+      "severity": "low",
+      "mitigation": "Cache saves atomically, can rebuild from scratch if corrupted"
+    }
+  ],
+  "architecture_decisions": [
+    {
+      "decision": "Where to place IncrementalCache - keep in pipeline/ or move to cache/",
+      "status": "resolved",
+      "choice": "Option B: Move to src/cache/incremental-cache.ts",
+      "reason": "Cleaner architecture - cache should be shared utility, not owned by pipeline. Both scanner and pipeline can import from shared location.",
+      "changes": [
+        "Created src/cache/incremental-cache.ts (moved from pipeline/)",
+        "Updated src/pipeline/orchestrator.ts import to use ../cache/incremental-cache.js"
+      ]
+    },
+    {
+      "decision": "Should file-watcher be part of scanner.ts or separate module",
+      "status": "pending",
+      "recommendation": "Separate module (file-watcher.ts) that imports scanner incrementally"
+    }
+  ],
+  "_metadata": {
+    "document_type": "Workorder Analysis",
+    "ai_assistance": true,
+    "generated_at": "2026-04-23T09:43:00Z"
+  }
+}

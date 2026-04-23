@@ -392,6 +392,12 @@ export interface ScanOptions {
    */
   useAST?: boolean;
   /**
+   * IMP-CORE-057: Incremental scanning
+   * Optional IncrementalCache instance for incremental scanning
+   * When provided, only scans files that have changed since last run
+   */
+  cache?: import('../cache/incremental-cache.js').IncrementalCache;
+  /**
    * Phase 1: AST Integration
    * Fallback to regex patterns if AST parsing fails (default: true)
    * Ensures scan completes even with syntax errors

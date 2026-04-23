@@ -662,6 +662,36 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/cache/incremental-cache.ts",
+      "line": 18,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cache/incremental-cache.ts",
+      "line": 90,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cache/incremental-cache.ts",
+      "line": 122,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cache/incremental-cache.ts",
+      "line": 171,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cache/incremental-cache.ts",
+      "line": 218,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cache/incremental-cache.ts",
+      "line": 276,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/cli/detect-languages.ts",
       "line": 84,
       "pattern": "try-catch"
@@ -808,27 +838,27 @@
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 49,
+      "line": 53,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 81,
+      "line": 85,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 86,
+      "line": 90,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 98,
+      "line": 102,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 128,
+      "line": 143,
       "pattern": "error-handling"
     },
     {
@@ -1598,152 +1628,172 @@
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 71,
+      "line": 72,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 79,
+      "line": 80,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
+      "line": 100,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 122,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 138,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 195,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 215,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 226,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 242,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 255,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 271,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 277,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 296,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 312,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 339,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 354,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 386,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 72,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
       "line": 99,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 121,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 137,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 111,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 194,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 144,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 167,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 214,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 183,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 225,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 219,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 241,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 239,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 254,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 245,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 270,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 261,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 276,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 295,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 267,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/chroma-store.ts",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 283,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 294,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
       "line": 310,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 342,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 71,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 98,
+      "line": 326,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 110,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 143,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 166,
+      "line": 356,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 182,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 218,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 238,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 244,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 260,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 266,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 282,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 293,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 323,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 359,
+      "line": 392,
       "pattern": "error-handling"
     },
     {
@@ -1774,6 +1824,11 @@
     {
       "file": "src/integration/vector/sqlite-store.ts",
       "line": 380,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 430,
       "pattern": "try-catch"
     },
     {
@@ -2072,6 +2127,291 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 17,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 48,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 50,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 52,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 90,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 101,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 114,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 124,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 139,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 160,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 170,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 186,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 45,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 48,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 49,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 56,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 60,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 86,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 95,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 105,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 115,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 121,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 128,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 138,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 140,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 174,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 176,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 225,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 12,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 58,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 61,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 62,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 69,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 95,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 104,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 114,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 124,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 130,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 139,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 149,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 152,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 190,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 192,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 244,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/manifest-schema.ts",
+      "line": 67,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/manifest-schema.ts",
+      "line": 94,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/manifest-schema.ts",
+      "line": 230,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-graph.ts",
+      "line": 11,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-graph.ts",
+      "line": 55,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-registry.ts",
+      "line": 28,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 11,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 56,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 123,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 138,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 230,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 255,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/types.ts",
+      "line": 9,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/query/query-executor.ts",
       "line": 104,
       "pattern": "error-handling"
@@ -2140,6 +2480,16 @@
       "file": "src/scanner/error-reporter.ts",
       "line": 239,
       "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/file-watcher.ts",
+      "line": 115,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/file-watcher.ts",
+      "line": 150,
+      "pattern": "try-catch"
     },
     {
       "file": "src/scanner/framework-registry.ts",
@@ -2243,72 +2593,77 @@
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 23,
+      "line": 24,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 761,
+      "line": 762,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 847,
+      "line": 852,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 864,
+      "line": 869,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 867,
+      "line": 872,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 894,
+      "line": 899,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 896,
+      "line": 901,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 903,
+      "line": 908,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 933,
+      "line": 938,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 950,
+      "line": 977,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 984,
+      "line": 1011,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1042,
+      "line": 1069,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1128,
+      "line": 1155,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1497,
+      "line": 1314,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 1537,
       "pattern": "try-catch"
     },
     {
@@ -2547,6 +2902,61 @@
       "pattern": "error-handling"
     },
     {
+      "file": "apply-incremental-cache-v2.js",
+      "line": 9,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache-v2.js",
+      "line": 10,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache-v2.js",
+      "line": 33,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache-v2.js",
+      "line": 34,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache-v2.js",
+      "line": 46,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache.js",
+      "line": 9,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache.js",
+      "line": 10,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache.js",
+      "line": 33,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache.js",
+      "line": 34,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "apply-incremental-cache.js",
+      "line": 46,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "rewrite-scanner.js",
+      "line": 106,
+      "pattern": "try-catch"
+    },
+    {
       "file": "scanner.js",
       "line": 157,
       "pattern": "try-catch"
@@ -2659,16 +3069,6 @@
     {
       "file": "utils/fs.js",
       "line": 56,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "__tests__/test-ast-analyzer.js",
-      "line": 16,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "__tests__/test-ast-analyzer.js",
-      "line": 83,
       "pattern": "try-catch"
     },
     {
@@ -3079,6 +3479,36 @@
       "line": 574
     },
     {
+      "name": "IncrementalCache.load",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 87
+    },
+    {
+      "name": "IncrementalCache.save",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 119
+    },
+    {
+      "name": "IncrementalCache.checkFiles",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 146
+    },
+    {
+      "name": "IncrementalCache.updateCache",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 214
+    },
+    {
+      "name": "IncrementalCache.computeFileHash",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 250
+    },
+    {
+      "name": "IncrementalCache.clear",
+      "file": "src/cache/incremental-cache.ts",
+      "line": 271
+    },
+    {
       "name": "scanDirectory",
       "file": "src/cli/detect-languages.ts",
       "line": 77
@@ -3146,12 +3576,12 @@
     {
       "name": "scanProject",
       "file": "src/cli/scan.ts",
-      "line": 40
+      "line": 44
     },
     {
       "name": "main",
       "file": "src/cli/scan.ts",
-      "line": 106
+      "line": 110
     },
     {
       "name": "resolveFilePaths",
@@ -3456,107 +3886,122 @@
     {
       "name": "SemanticSearchService.search",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 119
+      "line": 122
     },
     {
       "name": "SemanticSearchService.multiQuerySearch",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 200
+      "line": 203
     },
     {
       "name": "SemanticSearchService.findSimilar",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 239
+      "line": 242
     },
     {
       "name": "SemanticSearchService.searchByExample",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 251
+      "line": 254
     },
     {
       "name": "SemanticSearchService.getRelated",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 287
+      "line": 290
+    },
+    {
+      "name": "SemanticSearchService.getGraphNeighbors",
+      "file": "src/integration/rag/semantic-search.ts",
+      "line": 337
     },
     {
       "name": "SemanticSearchService.embedQuery",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 299
+      "line": 382
     },
     {
       "name": "ChromaStore.initialize",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 70
+      "line": 71
     },
     {
       "name": "ChromaStore.upsert",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 87
+      "line": 88
     },
     {
       "name": "ChromaStore.query",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 129
+      "line": 130
     },
     {
       "name": "ChromaStore.delete",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 202
+      "line": 203
     },
     {
       "name": "ChromaStore.clear",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 233
+      "line": 234
     },
     {
       "name": "ChromaStore.stats",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 262
+      "line": 263
+    },
+    {
+      "name": "ChromaStore.fetchById",
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 304
     },
     {
       "name": "createChromaStore",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 352
+      "line": 396
     },
     {
       "name": "PineconeStore.initialize",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 70
+      "line": 71
     },
     {
       "name": "PineconeStore.waitForIndexReady",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 106
+      "line": 107
     },
     {
       "name": "PineconeStore.upsert",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 131
+      "line": 132
     },
     {
       "name": "PineconeStore.query",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 174
+      "line": 175
     },
     {
       "name": "PineconeStore.delete",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 226
+      "line": 227
     },
     {
       "name": "PineconeStore.clear",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 252
+      "line": 253
     },
     {
       "name": "PineconeStore.stats",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 274
+      "line": 275
+    },
+    {
+      "name": "PineconeStore.fetchById",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 302
     },
     {
       "name": "createPineconeStore",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 369
+      "line": 402
     },
     {
       "name": "SQLiteVectorStore.initialize",
@@ -3592,6 +4037,11 @@
       "name": "SQLiteVectorStore.stats",
       "file": "src/integration/vector/sqlite-store.ts",
       "line": 410
+    },
+    {
+      "name": "SQLiteVectorStore.fetchById",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 427
     },
     {
       "name": "ComplexityGenerator.generate",
@@ -3794,6 +4244,66 @@
       "line": 290
     },
     {
+      "name": "loadConfigPlugins",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 43
+    },
+    {
+      "name": "loadConfigPlugin",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 70
+    },
+    {
+      "name": "tryLoadNpmPackage",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 97
+    },
+    {
+      "name": "tryLoadLocalPath",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 147
+    },
+    {
+      "name": "pathExists",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 185
+    },
+    {
+      "name": "loadLocalPlugin",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 80
+    },
+    {
+      "name": "loadAllLocalPlugins",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 235
+    },
+    {
+      "name": "loadNpmPlugin",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 89
+    },
+    {
+      "name": "loadAllNpmPlugins",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 254
+    },
+    {
+      "name": "scanWithPlugins",
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 35
+    },
+    {
+      "name": "runDetector",
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 117
+    },
+    {
+      "name": "initializePluginScanning",
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 209
+    },
+    {
       "name": "QueryExecutor.execute",
       "file": "src/query/query-executor.ts",
       "line": 89
@@ -3819,6 +4329,26 @@
       "line": 328
     },
     {
+      "name": "FileWatcher.start",
+      "file": "src/scanner/file-watcher.ts",
+      "line": 71
+    },
+    {
+      "name": "FileWatcher.stop",
+      "file": "src/scanner/file-watcher.ts",
+      "line": 122
+    },
+    {
+      "name": "FileWatcher.handleFileChange",
+      "file": "src/scanner/file-watcher.ts",
+      "line": 142
+    },
+    {
+      "name": "FileWatcher.handleFileDelete",
+      "file": "src/scanner/file-watcher.ts",
+      "line": 184
+    },
+    {
       "name": "scanFileForFrontendCalls",
       "file": "src/scanner/frontend-scanner.ts",
       "line": 18
@@ -3841,12 +4371,12 @@
     {
       "name": "scanFilesInParallel",
       "file": "src/scanner/scanner.ts",
-      "line": 681
+      "line": 682
     },
     {
       "name": "scanCurrentElements",
       "file": "src/scanner/scanner.ts",
-      "line": 782
+      "line": 783
     },
     {
       "name": "GrammarLoader.loadGrammar",
@@ -3954,11 +4484,6 @@
       "line": 115
     },
     {
-      "name": "testASTAnalyzer",
-      "file": "__tests__/test-ast-analyzer.js",
-      "line": 13
-    },
-    {
       "name": "create",
       "file": "create_wo.py",
       "line": 11
@@ -3969,6 +4494,16 @@
       "name": "loadIgnorePatterns",
       "file": "src/pipeline/ignore-rules.ts",
       "reason": "High complexity (11), Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "loadLocalPlugin",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "reason": "High complexity (35), Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "loadNpmPlugin",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "reason": "High complexity (35), Core pipeline function, Async function with edge cases"
     },
     {
       "name": "validateReferences",
@@ -3984,6 +4519,16 @@
       "name": "detectPreset",
       "file": "src/config/presets.ts",
       "reason": "High complexity (24), Core pipeline function"
+    },
+    {
+      "name": "validateManifest",
+      "file": "src/plugins/manifest-schema.ts",
+      "reason": "High complexity (32), Core pipeline function"
+    },
+    {
+      "name": "applyPluginGraphHooks",
+      "file": "src/plugins/plugin-graph.ts",
+      "reason": "Medium complexity (10), Core pipeline function"
     },
     {
       "name": "createScanError",
@@ -4014,6 +4559,11 @@
       "name": "getConversionStats",
       "file": "src/adapter/graph-to-elements.ts",
       "reason": "Medium complexity (6), Core pipeline function"
+    },
+    {
+      "name": "loadConfigPlugins",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
     },
     {
       "name": "analyzeMiddlewareAndDI",
@@ -4081,6 +4631,26 @@
       "reason": "Core pipeline function, Async function with edge cases"
     },
     {
+      "name": "loadAllLocalPlugins",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "loadAllNpmPlugins",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "reason": "Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "scanWithPlugins",
+      "file": "src/plugins/plugin-scanner.ts",
+      "reason": "Medium complexity (10), Async function with edge cases"
+    },
+    {
+      "name": "initializePluginScanning",
+      "file": "src/plugins/plugin-scanner.ts",
+      "reason": "High complexity (21), Async function with edge cases"
+    },
+    {
       "name": "analyzeDocs",
       "file": "src/analyzer/docs-analyzer.ts",
       "reason": "Core pipeline function, Async function with edge cases"
@@ -4092,51 +4662,6 @@
     },
     {
       "name": "mergePresets",
-      "file": "src/config/presets.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "detectPatterns",
-      "file": "src/fileGeneration/detectPatterns.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "generateDiagrams",
-      "file": "src/fileGeneration/generateDiagrams.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "loadJsonFile",
-      "file": "utils/fs.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "extractImportsFromAST",
-      "file": "src/analyzer/js-call-detector/module-analyzer.ts",
-      "reason": "High complexity (37)"
-    },
-    {
-      "name": "extractExportsFromAST",
-      "file": "src/analyzer/js-call-detector/module-analyzer.ts",
-      "reason": "High complexity (55)"
-    },
-    {
-      "name": "visitNode",
-      "file": "src/analyzer/js-call-detector/visitor.ts",
-      "reason": "High complexity (32)"
-    },
-    {
-      "name": "extractParametersFromAST",
-      "file": "src/analyzer/js-call-detector/visitor.ts",
-      "reason": "High complexity (24)"
-    },
-    {
-      "name": "extractElementsFromAST",
-      "file": "src/analyzer/js-call-detector/visitor.ts",
-      "reason": "High complexity (51)"
-    },
-    {
-      "name": "loadPreset",
       "file": "src/config/presets.ts",
       "reason": "Core pipeline function"
     }
@@ -4343,7 +4868,7 @@
     {
       "name": "anonymous",
       "file": "src/scanner/scanner.ts",
-      "line": 198,
+      "line": 199,
       "framework": "express",
       "type": "handler",
       "path": "/path",

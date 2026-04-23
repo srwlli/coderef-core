@@ -1,0 +1,100 @@
+{
+  "$schema": "https://schemas.coderef.com/analysis/v1",
+  "schema_version": "1.0",
+  "feature_name": "rag-similarity-features",
+  "project_stats": {
+    "total_elements": 2006,
+    "elements_by_type": {
+      "function": 548,
+      "class": 111,
+      "method": 986,
+      "interface": 320,
+      "type": 37,
+      "component": 2,
+      "constant": 2
+    },
+    "generated_at": "2026-04-22T21:00:12.044Z"
+  },
+  "target_files": [
+    {
+      "path": "src/integration/vector/vector-store.ts",
+      "role": "Interface definition - add fetchById() method",
+      "lines_of_code": 327,
+      "current_methods": ["upsert", "query", "delete", "clear", "initialize", "stats"]
+    },
+    {
+      "path": "src/integration/vector/sqlite-store.ts",
+      "role": "Implementation - add fetchById() using SQL SELECT",
+      "lines_of_code": 450,
+      "storage": "SQLite with JSON serialization"
+    },
+    {
+      "path": "src/integration/vector/pinecone-store.ts",
+      "role": "Implementation - add fetchById() using namespace.fetch()",
+      "lines_of_code": 280,
+      "sdk": "@pinecone-database/pinecone"
+    },
+    {
+      "path": "src/integration/vector/chroma-store.ts",
+      "role": "Implementation - add fetchById() using collection.get()",
+      "lines_of_code": 260,
+      "sdk": "chromadb"
+    },
+    {
+      "path": "src/integration/rag/semantic-search.ts",
+      "role": "Primary target - implement findSimilar() and getRelated()",
+      "lines_of_code": 395,
+      "current_state": {
+        "findSimilar_line": 239,
+        "findSimilar_status": "Not yet implemented - requires vector store fetch by ID",
+        "getRelated_line": 287,
+        "getRelated_status": "Not yet implemented - requires graph integration"
+      }
+    },
+    {
+      "path": "src/graph/graph-builder.ts",
+      "role": "Dependency - for getRelated() graph traversal",
+      "relationship_types": ["imports", "calls", "extends", "implements"]
+    }
+  ],
+  "reference_components": [
+    {
+      "name": "searchByExample",
+      "file": "src/integration/rag/semantic-search.ts:251",
+      "pattern": "Embeds snippet → queries vectorStore → returns results",
+      "reusable_for": "findSimilar() implementation pattern"
+    },
+    {
+      "name": "VectorRecord",
+      "file": "src/integration/vector/vector-store.ts:45",
+      "pattern": "Interface with id, values, metadata",
+      "reusable_for": "fetchById() return type"
+    }
+  ],
+  "coding_standards": [
+    "All VectorStore methods must throw VectorStoreError on failure",
+    "Use async/await for all store operations",
+    "Include JSDoc with examples for public methods",
+    "Maintain backward compatibility - existing code must not break"
+  ],
+  "dependencies": [
+    "graph-builder for relationship traversal",
+    "vector-store interface for fetchById()",
+    "embedding-service for vector operations"
+  ],
+  "risks": [
+    {
+      "risk": "Pinecone/Chroma SDKs may not support direct ID fetch efficiently",
+      "mitigation": "Test fetchById() with large datasets; consider caching if needed"
+    },
+    {
+      "risk": "Graph traversal could be slow for deeply connected elements",
+      "mitigation": "Limit traversal depth to 3 levels; add timeout"
+    }
+  ],
+  "_metadata": {
+    "workorder_id": "WO-RAG-SIMILARITY-FEATURES-001",
+    "analyzed_by": "create-workorder-skill",
+    "analyzed_at": "2026-04-23T06:22:00Z"
+  }
+}

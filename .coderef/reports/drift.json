@@ -431,6 +431,41 @@
       ]
     },
     {
+      "element": "IncrementalCache.load",
+      "file": "src/cache/incremental-cache.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "IncrementalCache.save",
+      "file": "src/cache/incremental-cache.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "IncrementalCache.getStats",
+      "file": "src/cache/incremental-cache.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "IncrementalCache.clear",
+      "file": "src/cache/incremental-cache.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "IncrementalCache.isEnabled",
+      "file": "src/cache/incremental-cache.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
       "element": "formatSupportedLanguages",
       "file": "src/cli/detect-languages.ts",
       "changes": [
@@ -1495,6 +1530,76 @@
       ]
     },
     {
+      "element": "PluginRegistry.getAll",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "PluginRegistry.getActivePlugins",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "PluginRegistry.getAllDetectors",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "PluginRegistry.getAllHooks",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "PluginRegistry.clear",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "PluginRegistry.size",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "PluginRegistry.detectorCount",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "PluginRegistry.hookCount",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "PluginRegistry.getStats",
+      "file": "src/plugins/plugin-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "getPluginScannerStats",
+      "file": "src/plugins/plugin-scanner.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
       "element": "QueryExecutor.getPerformanceStats",
       "file": "src/query/query-executor.ts",
       "changes": [
@@ -1539,6 +1644,34 @@
     {
       "element": "initScanStats",
       "file": "src/scanner/error-reporter.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "FileWatcher.start",
+      "file": "src/scanner/file-watcher.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "FileWatcher.stop",
+      "file": "src/scanner/file-watcher.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "FileWatcher.getStats",
+      "file": "src/scanner/file-watcher.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "FileWatcher.isActive",
+      "file": "src/scanner/file-watcher.ts",
       "changes": [
         "parameters changed"
       ]
@@ -1910,13 +2043,6 @@
     {
       "element": "validateDocs",
       "file": "scripts/doc-gen/validate-docs.js",
-      "changes": [
-        "parameters changed"
-      ]
-    },
-    {
-      "element": "testASTAnalyzer",
-      "file": "__tests__/test-ast-analyzer.js",
       "changes": [
         "parameters changed"
       ]
@@ -2462,10 +2588,10 @@
     }
   ],
   "summary": {
-    "totalCurrent": 1970,
-    "totalPrevious": 1970,
+    "totalCurrent": 2065,
+    "totalPrevious": 2065,
     "added": 0,
     "deleted": 0,
-    "modified": 351
+    "modified": 369
   }
 }

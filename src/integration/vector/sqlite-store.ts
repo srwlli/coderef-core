@@ -422,6 +422,38 @@ export class SQLiteVectorStore implements VectorStore {
   }
 
   /**
+   * Fetch a single vector record by ID
+   */
+  async fetchById(id: string, namespace?: string): Promise<VectorRecord | null> {
+    this.ensureInitialized();
+
+    try {
+      const record = this.data.records[id];
+
+      if (!record) {
+        return null;
+      }
+
+      // Check namespace if specified
+      if (namespace && record.namespace !== namespace) {
+        return null;
+      }
+
+      return {
+        id: record.id,
+        values: record.values,
+        metadata: record.metadata
+      };
+    } catch (error) {
+      throw new VectorStoreError(
+        `Failed to fetch vector by ID: ${error}`,
+        VectorStoreErrorCode.UNKNOWN,
+        error as Error
+      );
+    }
+  }
+
+  /**
    * Get provider name
    */
   getProviderName(): string {

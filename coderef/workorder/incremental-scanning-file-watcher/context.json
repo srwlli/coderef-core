@@ -1,0 +1,36 @@
+{
+  "feature_name": "incremental-scanning-file-watcher",
+  "description": "Implement incremental scanning with file-watcher for large monorepos. Currently full re-scan is expensive. Use existing file hash infrastructure to only re-scan changed files. Enable real-time IDE integration. Target: IMP-CORE-057.",
+  "goal": "Reduce scan time for large codebases by only scanning changed files using hash-based caching",
+  "requirements": [
+    "Integrate with existing IncrementalIndexer class",
+    "Use file hash cache (SHA-256) to detect changes",
+    "Modify scanner.ts to accept incremental mode",
+    "Add CLI flag: --incremental or --watch",
+    "Target 10x speedup for unchanged projects"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "correctness": "Only changed files re-scanned",
+    "fallback": "Full scan still available",
+    "integration": "Works with existing CLI commands",
+    "performance": "10x faster for projects with no changes"
+  },
+  "_metadata": {
+    "workorder_id": "WO-INCREMENTAL-SCANNING-FILE-WATCHER-001",
+    "workorder_assigned_at": "2026-04-23T05:44:49.999900+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-INCREMENTAL-SCANNING-FILE-WATCHER-001",
+    "feature_id": "incremental-scanning-file-watcher",
+    "last_updated": "2026-04-23",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-23"
+  }
+}

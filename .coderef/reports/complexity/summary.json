@@ -1,9 +1,17 @@
 {
-  "totalElements": 1534,
+  "totalElements": 1597,
   "averageComplexity": 5.1,
-  "averageLOC": 31,
-  "highComplexityCount": 189,
+  "averageLOC": 31.1,
+  "highComplexityCount": 199,
   "elements": [
+    {
+      "element": "scanCurrentElements",
+      "file": "src/scanner/scanner.ts",
+      "type": "function",
+      "complexity": 110,
+      "loc": 560,
+      "parameters": 3
+    },
     {
       "element": "ContextGenerator.generateMarkdown",
       "file": "src/pipeline/generators/context-generator.ts",
@@ -11,14 +19,6 @@
       "complexity": 102,
       "loc": 545,
       "parameters": 2
-    },
-    {
-      "element": "scanCurrentElements",
-      "file": "src/scanner/scanner.ts",
-      "type": "function",
-      "complexity": 101,
-      "loc": 521,
-      "parameters": 3
     },
     {
       "element": "ASTElementScanner.visitNode",
@@ -85,6 +85,22 @@
       "parameters": 0
     },
     {
+      "element": "loadLocalPlugin",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "type": "function",
+      "complexity": 35,
+      "loc": 155,
+      "parameters": 2
+    },
+    {
+      "element": "loadNpmPlugin",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "type": "function",
+      "complexity": 35,
+      "loc": 165,
+      "parameters": 2
+    },
+    {
       "element": "SearchIndex.search",
       "file": "src/search/search-engine.ts",
       "type": "method",
@@ -115,6 +131,14 @@
       "complexity": 32,
       "loc": 89,
       "parameters": 3
+    },
+    {
+      "element": "validateManifest",
+      "file": "src/plugins/manifest-schema.ts",
+      "type": "function",
+      "complexity": 32,
+      "loc": 115,
+      "parameters": 1
     },
     {
       "element": "generateExportsMd",
@@ -309,28 +333,20 @@
       "parameters": 4
     },
     {
+      "element": "main",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 24,
+      "loc": 193,
+      "parameters": 0
+    },
+    {
       "element": "detectPreset",
       "file": "src/config/presets.ts",
       "type": "function",
       "complexity": 24,
       "loc": 86,
       "parameters": 1
-    },
-    {
-      "element": "OllamaProvider.complete",
-      "file": "src/integration/llm/ollama-provider.ts",
-      "type": "method",
-      "complexity": 24,
-      "loc": 69,
-      "parameters": 2
-    },
-    {
-      "element": "main",
-      "file": "src/cli/rag-index.ts",
-      "type": "function",
-      "complexity": 23,
-      "loc": 192,
-      "parameters": 0
     },
     {
       "element": "ChunkConverter.extractDocumentation",
@@ -370,6 +386,14 @@
       "type": "method",
       "complexity": 22,
       "loc": 48,
+      "parameters": 2
+    },
+    {
+      "element": "OllamaProvider.complete",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 22,
+      "loc": 69,
       "parameters": 2
     },
     {
@@ -429,6 +453,14 @@
       "parameters": 2
     },
     {
+      "element": "initializePluginScanning",
+      "file": "src/plugins/plugin-scanner.ts",
+      "type": "function",
+      "complexity": 21,
+      "loc": 79,
+      "parameters": 2
+    },
+    {
       "element": "CallDetector.visitNode",
       "file": "src/analyzer/call-detector.ts",
       "type": "method",
@@ -483,6 +515,14 @@
       "complexity": 19,
       "loc": 138,
       "parameters": 0
+    },
+    {
+      "element": "PluginRegistry.validatePlugin",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 19,
+      "loc": 68,
+      "parameters": 1
     },
     {
       "element": "createTestFile",
@@ -1181,6 +1221,14 @@
       "parameters": 2
     },
     {
+      "element": "IncrementalCache.checkFiles",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 12,
+      "loc": 68,
+      "parameters": 1
+    },
+    {
       "element": "extractCallContext",
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
       "type": "function",
@@ -1267,6 +1315,14 @@
       "complexity": 12,
       "loc": 68,
       "parameters": 1
+    },
+    {
+      "element": "addCustomEdge",
+      "file": "src/plugins/plugin-graph.ts",
+      "type": "function",
+      "complexity": 12,
+      "loc": 69,
+      "parameters": 4
     },
     {
       "element": "Scanner.processLine",
@@ -1398,6 +1454,14 @@
     },
     {
       "element": "main",
+      "file": "src/cli/scan.ts",
+      "type": "function",
+      "complexity": 11,
+      "loc": 37,
+      "parameters": 0
+    },
+    {
+      "element": "main",
       "file": "src/cli/validate-routes.ts",
       "type": "function",
       "complexity": 11,
@@ -1435,6 +1499,14 @@
       "complexity": 11,
       "loc": 61,
       "parameters": 1
+    },
+    {
+      "element": "SemanticSearchService.getRelated",
+      "file": "src/integration/rag/semantic-search.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 47,
+      "parameters": 3
     },
     {
       "element": "createMockSource",
@@ -1493,20 +1565,28 @@
       "parameters": 3
     },
     {
+      "element": "discoverLocalPlugins",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "type": "function",
+      "complexity": 11,
+      "loc": 48,
+      "parameters": 1
+    },
+    {
+      "element": "createGraphContext",
+      "file": "src/plugins/plugin-graph.ts",
+      "type": "function",
+      "complexity": 11,
+      "loc": 52,
+      "parameters": 2
+    },
+    {
       "element": "createSampleReferences",
       "file": "__tests__/indexer.test.ts",
       "type": "function",
       "complexity": 11,
       "loc": 819,
       "parameters": 1
-    },
-    {
-      "element": "testASTAnalyzer",
-      "file": "__tests__/test-ast-analyzer.js",
-      "type": "function",
-      "complexity": 11,
-      "loc": 95,
-      "parameters": 0
     },
     {
       "element": "main",
@@ -1629,6 +1709,22 @@
       "parameters": 1
     },
     {
+      "element": "SemanticSearchService.getGraphNeighbors",
+      "file": "src/integration/rag/semantic-search.ts",
+      "type": "method",
+      "complexity": 10,
+      "loc": 45,
+      "parameters": 2
+    },
+    {
+      "element": "ChromaStore.fetchById",
+      "file": "src/integration/vector/chroma-store.ts",
+      "type": "method",
+      "complexity": 10,
+      "loc": 43,
+      "parameters": 2
+    },
+    {
       "element": "RelationshipExtractor.extractJavaCalls",
       "file": "src/pipeline/extractors/relationship-extractor.ts",
       "type": "method",
@@ -1643,6 +1739,38 @@
       "complexity": 10,
       "loc": 45,
       "parameters": 1
+    },
+    {
+      "element": "discoverNpmPlugins",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "type": "function",
+      "complexity": 10,
+      "loc": 44,
+      "parameters": 1
+    },
+    {
+      "element": "applyPluginGraphHooks",
+      "file": "src/plugins/plugin-graph.ts",
+      "type": "function",
+      "complexity": 10,
+      "loc": 45,
+      "parameters": 3
+    },
+    {
+      "element": "scanWithPlugins",
+      "file": "src/plugins/plugin-scanner.ts",
+      "type": "function",
+      "complexity": 10,
+      "loc": 45,
+      "parameters": 3
+    },
+    {
+      "element": "detectionResultToElement",
+      "file": "src/plugins/plugin-scanner.ts",
+      "type": "function",
+      "complexity": 10,
+      "loc": 25,
+      "parameters": 3
     },
     {
       "element": "createScanError",
@@ -2005,6 +2133,14 @@
       "parameters": 5
     },
     {
+      "element": "getRelevantDetectors",
+      "file": "src/plugins/plugin-scanner.ts",
+      "type": "function",
+      "complexity": 9,
+      "loc": 37,
+      "parameters": 2
+    },
+    {
       "element": "LRUCache.estimateSize",
       "file": "src/scanner/lru-cache.ts",
       "type": "method",
@@ -2147,14 +2283,6 @@
       "complexity": 8,
       "loc": 37,
       "parameters": 2
-    },
-    {
-      "element": "main",
-      "file": "src/cli/scan.ts",
-      "type": "function",
-      "complexity": 8,
-      "loc": 26,
-      "parameters": 0
     },
     {
       "element": "compareParameters",
@@ -2525,6 +2653,14 @@
       "parameters": 2
     },
     {
+      "element": "IncrementalCache.load",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 32,
+      "parameters": 0
+    },
+    {
       "element": "formatRelativeTime",
       "file": "src/cli/rag-status.ts",
       "type": "function",
@@ -2659,6 +2795,14 @@
       "complexity": 7,
       "loc": 41,
       "parameters": 0
+    },
+    {
+      "element": "PineconeStore.fetchById",
+      "file": "src/integration/vector/pinecone-store.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 32,
+      "parameters": 2
     },
     {
       "element": "SQLiteVectorStore.delete",
@@ -3301,6 +3445,14 @@
       "parameters": 1
     },
     {
+      "element": "SQLiteVectorStore.fetchById",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 32,
+      "parameters": 2
+    },
+    {
       "element": "ElementExtractor.extractPythonParameters",
       "file": "src/pipeline/extractors/element-extractor.ts",
       "type": "method",
@@ -3371,6 +3523,30 @@
       "complexity": 6,
       "loc": 82,
       "parameters": 3
+    },
+    {
+      "element": "tryLoadNpmPackage",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "type": "function",
+      "complexity": 6,
+      "loc": 50,
+      "parameters": 2
+    },
+    {
+      "element": "getPluginGraphStats",
+      "file": "src/plugins/plugin-graph.ts",
+      "type": "function",
+      "complexity": 6,
+      "loc": 22,
+      "parameters": 1
+    },
+    {
+      "element": "runDetector",
+      "file": "src/plugins/plugin-scanner.ts",
+      "type": "function",
+      "complexity": 6,
+      "loc": 30,
+      "parameters": 4
     },
     {
       "element": "attachFrontendCalls",
@@ -4117,6 +4293,14 @@
       "parameters": 1
     },
     {
+      "element": "FileWatcher.start",
+      "file": "src/scanner/file-watcher.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 51,
+      "parameters": 0
+    },
+    {
       "element": "findClosestCall",
       "file": "src/scanner/frontend-scanner.ts",
       "type": "function",
@@ -4533,6 +4717,14 @@
       "parameters": 3
     },
     {
+      "element": "IncrementalCache.updateCache",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 27,
+      "parameters": 1
+    },
+    {
       "element": "isCompatibleCall",
       "file": "src/context/breaking-change-detector/impact-assessor.ts",
       "type": "function",
@@ -4946,6 +5138,54 @@
       "type": "method",
       "complexity": 4,
       "loc": 27,
+      "parameters": 1
+    },
+    {
+      "element": "loadConfigPlugins",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "type": "function",
+      "complexity": 4,
+      "loc": 27,
+      "parameters": 1
+    },
+    {
+      "element": "tryLoadLocalPath",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "type": "function",
+      "complexity": 4,
+      "loc": 38,
+      "parameters": 2
+    },
+    {
+      "element": "PluginRegistry.register",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 40,
+      "parameters": 2
+    },
+    {
+      "element": "PluginRegistry.unregister",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 28,
+      "parameters": 1
+    },
+    {
+      "element": "PluginRegistry.enable",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 26,
+      "parameters": 1
+    },
+    {
+      "element": "PluginRegistry.disable",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 4,
+      "loc": 25,
       "parameters": 1
     },
     {
@@ -5419,6 +5659,14 @@
       "complexity": 3,
       "loc": 35,
       "parameters": 2
+    },
+    {
+      "element": "IncrementalCache.save",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 27,
+      "parameters": 0
     },
     {
       "element": "formatDuration",
@@ -6133,12 +6381,60 @@
       "parameters": 3
     },
     {
+      "element": "loadConfigPlugin",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 27,
+      "parameters": 2
+    },
+    {
+      "element": "getRelevantHooks",
+      "file": "src/plugins/plugin-graph.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 14,
+      "parameters": 1
+    },
+    {
+      "element": "getDetectorPluginName",
+      "file": "src/plugins/plugin-scanner.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 11,
+      "parameters": 1
+    },
+    {
+      "element": "getPluginScannerStats",
+      "file": "src/plugins/plugin-scanner.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 26,
+      "parameters": 0
+    },
+    {
       "element": "QueryExecutor.getFromCache",
       "file": "src/query/query-executor.ts",
       "type": "method",
       "complexity": 3,
       "loc": 18,
       "parameters": 1
+    },
+    {
+      "element": "FileWatcher.stop",
+      "file": "src/scanner/file-watcher.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 20,
+      "parameters": 0
+    },
+    {
+      "element": "FileWatcher.handleFileChange",
+      "file": "src/scanner/file-watcher.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 42,
+      "parameters": 2
     },
     {
       "element": "FrameworkRegistry.detect",
@@ -6507,6 +6803,22 @@
       "complexity": 2,
       "loc": 32,
       "parameters": 2
+    },
+    {
+      "element": "IncrementalCache.removeDeletedFiles",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 9,
+      "parameters": 1
+    },
+    {
+      "element": "IncrementalCache.getStats",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 13,
+      "parameters": 0
     },
     {
       "element": "getCanonicalLanguage",
@@ -7165,14 +7477,6 @@
       "parameters": 2
     },
     {
-      "element": "SemanticSearchService.getRelated",
-      "file": "src/integration/rag/semantic-search.ts",
-      "type": "method",
-      "complexity": 2,
-      "loc": 12,
-      "parameters": 3
-    },
-    {
       "element": "ChromaStore.initialize",
       "file": "src/integration/vector/chroma-store.ts",
       "type": "method",
@@ -7533,6 +7837,46 @@
       "parameters": 1
     },
     {
+      "element": "loadAllLocalPlugins",
+      "file": "src/plugins/loaders/local-loader.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 14,
+      "parameters": 1
+    },
+    {
+      "element": "loadAllNpmPlugins",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 14,
+      "parameters": 1
+    },
+    {
+      "element": "PluginRegistry.getPluginDetectors",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 11,
+      "parameters": 1
+    },
+    {
+      "element": "PluginRegistry.getPluginHooks",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 12,
+      "parameters": 1
+    },
+    {
+      "element": "PluginRegistry.getStats",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 27,
+      "parameters": 0
+    },
+    {
       "element": "QueryExecutor.recordPerformance",
       "file": "src/query/query-executor.ts",
       "type": "method",
@@ -7571,6 +7915,22 @@
       "complexity": 2,
       "loc": 32,
       "parameters": 5
+    },
+    {
+      "element": "FileWatcher.handleFileDelete",
+      "file": "src/scanner/file-watcher.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 19,
+      "parameters": 1
+    },
+    {
+      "element": "FileWatcher.logStatus",
+      "file": "src/scanner/file-watcher.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 9,
+      "parameters": 1
     },
     {
       "element": "scanProjectForFrontendCalls",
@@ -8797,6 +9157,30 @@
       "parameters": 1
     },
     {
+      "element": "IncrementalCache.computeFileHash",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 1
+    },
+    {
+      "element": "IncrementalCache.clear",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 15,
+      "parameters": 0
+    },
+    {
+      "element": "IncrementalCache.isEnabled",
+      "file": "src/cache/incremental-cache.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 5,
+      "parameters": 0
+    },
+    {
       "element": "orderedLanguages",
       "file": "src/cli/detect-languages.ts",
       "type": "function",
@@ -8857,7 +9241,7 @@
       "file": "src/cli/scan.ts",
       "type": "function",
       "complexity": 1,
-      "loc": 18,
+      "loc": 20,
       "parameters": 0
     },
     {
@@ -10981,6 +11365,110 @@
       "parameters": 0
     },
     {
+      "element": "pathExists",
+      "file": "src/plugins/loaders/config-loader.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 10,
+      "parameters": 1
+    },
+    {
+      "element": "parseManifest",
+      "file": "src/plugins/manifest-schema.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 11,
+      "parameters": 1
+    },
+    {
+      "element": "getManifestPath",
+      "file": "src/plugins/manifest-schema.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 4,
+      "parameters": 1
+    },
+    {
+      "element": "PluginRegistry.get",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 1
+    },
+    {
+      "element": "PluginRegistry.has",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 1
+    },
+    {
+      "element": "PluginRegistry.getAll",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "PluginRegistry.getActivePlugins",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 9,
+      "parameters": 0
+    },
+    {
+      "element": "PluginRegistry.getAllDetectors",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 0
+    },
+    {
+      "element": "PluginRegistry.getAllHooks",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 0
+    },
+    {
+      "element": "PluginRegistry.clear",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 9,
+      "parameters": 0
+    },
+    {
+      "element": "PluginRegistry.size",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "PluginRegistry.detectorCount",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "PluginRegistry.hookCount",
+      "file": "src/plugins/plugin-registry.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 9,
+      "parameters": 0
+    },
+    {
       "element": "QueryExecutor.clearCache",
       "file": "src/query/query-executor.ts",
       "type": "method",
@@ -11067,6 +11555,22 @@
       "complexity": 1,
       "loc": 9,
       "parameters": 1
+    },
+    {
+      "element": "FileWatcher.getStats",
+      "file": "src/scanner/file-watcher.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "FileWatcher.isActive",
+      "file": "src/scanner/file-watcher.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
     },
     {
       "element": "FrameworkRegistry.register",

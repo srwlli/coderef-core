@@ -2,9 +2,9 @@
 
 ## Statistics
 
-- **Total Files:** 282
-- **Total Elements:** 2006
-- **Total Lines:** 81803
+- **Total Files:** 298
+- **Total Elements:** 2101
+- **Total Lines:** 85075
 - **Languages:** ts, js, py
 
 
@@ -18,7 +18,7 @@
 
 - CLI entry points: 25
 - package.json bin field present
-- Library entry points: 19
+- Library entry points: 20
 - Library exports configured
 - TypeScript declarations present
 - Hybrid: library + cli-tool
@@ -55,7 +55,7 @@
 
 - **Name:** @coderef/CODEREF-CORE@2.0.0
 - **Type:** unknown
-- **Dependencies:** 20 production, 4 dev
+- **Dependencies:** 21 production, 4 dev
 - **Workspaces:** No
 
 ### TypeScript Configuration
@@ -69,9 +69,12 @@
 
 ## Entry Points
 
-Found 75 application entry points. Primary entry point is marked with ⭐.
+Found 76 application entry points. Primary entry point is marked with ⭐.
 
 - **⭐ index.ts** [library]
+  - File: examples/plugins/example-detector/src/index.ts
+  - Library entry point
+- **index.ts** [library]
   - File: index.ts
   - Library entry point
 - **index.ts** [library]
@@ -343,8 +346,8 @@ Found 75 application entry points. Primary entry point is marked with ⭐.
 ## Dependency Risk Analysis
 
 - **Risk Level:** LOW (11/100)
-- **Total Dependencies:** 24 (20 direct, 4 dev)
-- **Issues Found:** 27 (8 outdated, 0 vulnerabilities, 0 circular imports, 19 potentially unused)
+- **Total Dependencies:** 25 (21 direct, 4 dev)
+- **Issues Found:** 28 (8 outdated, 0 vulnerabilities, 0 circular imports, 20 potentially unused)
 
 ### Risk Details
 
@@ -355,11 +358,11 @@ Found 75 application entry points. Primary entry point is marked with ⭐.
 - **@pinecone-database/pinecone** (unused): Dependency '@pinecone-database/pinecone' is declared but may not be imported in source code
 - **acorn** (unused): Dependency 'acorn' is declared but may not be imported in source code
 - **chromadb** (unused): Dependency 'chromadb' is declared but may not be imported in source code
+- **chokidar** (unused): Dependency 'chokidar' is declared but may not be imported in source code
 - **glob** (unused): Dependency 'glob' is declared but may not be imported in source code
 - **minimatch** (unused): Dependency 'minimatch' is declared but may not be imported in source code
 - **openai** (unused): Dependency 'openai' is declared but may not be imported in source code
-- **protobufjs** (unused): Dependency 'protobufjs' is declared but may not be imported in source code
-  - ... and 17 more low-severity items
+  - ... and 18 more low-severity items
 
 
 ## Async Patterns
@@ -416,16 +419,16 @@ Found 30 async functions/methods. Consider concurrency implications, error handl
   - File: src/analyzer/project-classifier.ts
 - **ProjectClassifier.loadPackageJson** (method)
   - File: src/analyzer/project-classifier.ts
-- **scanDirectory** (function)
-  - File: src/cli/detect-languages.ts
-- **detectProjectLanguages** (function)
-  - File: src/cli/detect-languages.ts
-- **runGenerator** (function)
-  - File: src/cli/populate.ts
-- **run** (function)
-  - File: src/cli/populate.ts
-- **main** (function)
-  - File: src/cli/populate.ts
+- **IncrementalCache.load** (method)
+  - File: src/cache/incremental-cache.ts
+- **IncrementalCache.save** (method)
+  - File: src/cache/incremental-cache.ts
+- **IncrementalCache.checkFiles** (method)
+  - File: src/cache/incremental-cache.ts
+- **IncrementalCache.updateCache** (method)
+  - File: src/cache/incremental-cache.ts
+- **IncrementalCache.computeFileHash** (method)
+  - File: src/cache/incremental-cache.ts
 
 ## High-Priority Test Gaps
 
@@ -463,6 +466,10 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
   - File: src/analyzer/docs-analyzer.ts
 - **PipelineOrchestrator.run** - Complexity: 25
   - File: src/pipeline/orchestrator.ts
+- **loadLocalPlugin** - Complexity: 35
+  - File: src/plugins/loaders/local-loader.ts
+- **loadNpmPlugin** - Complexity: 35
+  - File: src/plugins/loaders/npm-loader.ts
 - **SearchIndex.search** - Complexity: 34
   - File: src/search/search-engine.ts
 - **EmbeddingService.embedChunks** - Complexity: 23
@@ -475,6 +482,8 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
   - File: src/analyzer/js-call-detector/visitor.ts
 - **ContextBuilder.buildResultSection** - Complexity: 22
   - File: src/integration/rag/context-builder.ts
+- **validateManifest** - Complexity: 32
+  - File: src/plugins/manifest-schema.ts
 - **generateExportsMd** - Complexity: 32
   - File: scripts/doc-gen/generate-exports-md.js
 - **DatabaseDetector.detectPrisma** - Complexity: 31
@@ -495,22 +504,16 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
   - File: src/analyzer/migration-route-analyzer.ts
 - **GraphReRanker.rerank** - Complexity: 28
   - File: src/integration/rag/graph-reranker.ts
-- **ChromaStore.query** - Complexity: 28
-  - File: src/integration/vector/chroma-store.ts
-- **PatternGenerator.detectMiddleware** - Complexity: 18
-  - File: src/pipeline/generators/pattern-generator.ts
-- **QueryExecutor.executeQuery** - Complexity: 18
-  - File: src/query/query-executor.ts
 
 ## Module Structure
 
-- **src:** 205 files
-- **__tests__:** 41 files
+- **src:** 215 files
+- **__tests__:** 40 files
 - **autoresearch:** 14 files
+- **.:** 12 files
 - **scripts:** 10 files
-- **.:** 8 files
+- **examples:** 4 files
 - **utils:** 3 files
-- **examples:** 1 files
 
 ## Executive Summary
 
@@ -553,14 +556,14 @@ Top 20 high-risk areas by complexity × test coverage:
 - **database-detector** (CRITICAL) - Risk Score: 100
   - File: src/analyzer/database-detector.ts
   - Complexity: 31, Estimated Coverage: 0%
-- **query-executor** (CRITICAL) - Risk Score: 100
-  - File: src/query/query-executor.ts
-  - Complexity: 18, Estimated Coverage: 0%
 - **docs-analyzer** (CRITICAL) - Risk Score: 100
   - File: src/analyzer/docs-analyzer.ts
   - Complexity: 25, Estimated Coverage: 0%
 - **context-builder** (CRITICAL) - Risk Score: 100
   - File: src/integration/rag/context-builder.ts
+  - Complexity: 27, Estimated Coverage: 0%
+- **semantic-search** (CRITICAL) - Risk Score: 100
+  - File: src/integration/rag/semantic-search.ts
   - Complexity: 27, Estimated Coverage: 0%
 
 ## Recommended Work Order Priorities
@@ -599,8 +602,8 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 ## Documentation Quality
 
 - **Overall Score:** 53/100 (BASIC)
-- **Files Analyzed:** 549
-- **Average Comment Density:** 36.8%
+- **Files Analyzed:** 565
+- **Average Comment Density:** 36.4%
 
 ### README Analysis
 
@@ -619,8 +622,8 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 
 ### JSDoc/TSDoc Coverage
 
-- **Files:** 279
-- **Average Coverage:** 68.7%
+- **Files:** 292
+- **Average Coverage:** 69.6%
 
 **Low Coverage Files:**
 
@@ -648,7 +651,7 @@ false
 ### Documentation Recommendations
 
 - Add more sections to README (8/18 present). Priority: Installation, Usage, API Reference
-- Add JSDoc comments to 81 files with <50% documentation coverage
+- Add JSDoc comments to 82 files with <50% documentation coverage
 - Create a CHANGELOG.md to track version history
 
 ## Technology Stack
@@ -661,4 +664,4 @@ false
 
 ## Generated
 
-2026-04-22T21:00:13.640Z
+2026-04-23T11:05:45.594Z

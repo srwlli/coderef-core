@@ -1,0 +1,224 @@
+{
+  "$schema": "https://schemas.coderef.com/plan/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-RAG-SIMILARITY-FEATURES-001",
+  "feature_name": "rag-similarity-features",
+  "title": "Implement RAG Similarity Features: findSimilar() and getRelated()",
+  "description": "Add fetchById() to VectorStore interface and implement findSimilar()/getRelated() in semantic-search service",
+  "status": "ready_for_execution",
+  "created_at": "2026-04-23T06:25:00Z",
+  "total_phases": 3,
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "phase_name": "VectorStore Interface Extension",
+      "description": "Add fetchById() method to VectorStore interface and implement in all backends",
+      "status": "pending",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "task_id": "VS-001",
+          "description": "ADD fetchById() method to VectorStore interface in vector-store.ts",
+          "type": "implementation",
+          "estimated_duration": "30m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Method signature: fetchById(id: string, namespace?: string): Promise<VectorRecord | null>",
+            "JSDoc with example",
+            "Throws VectorStoreError on failure"
+          ],
+          "target_file": "src/integration/vector/vector-store.ts"
+        },
+        {
+          "task_id": "VS-002",
+          "description": "IMPLEMENT fetchById() in SQLiteVectorStore",
+          "type": "implementation",
+          "estimated_duration": "45m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "SQL SELECT query by id from storage",
+            "Parse JSON metadata from storage",
+            "Return null if not found",
+            "Unit test with mock SQLite store"
+          ],
+          "target_file": "src/integration/vector/sqlite-store.ts"
+        },
+        {
+          "task_id": "VS-003",
+          "description": "IMPLEMENT fetchById() in PineconeStore",
+          "type": "implementation",
+          "estimated_duration": "45m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Use namespace.fetch([id]) to retrieve vector",
+            "Handle missing vector (return null)",
+            "Parse metadata from Pinecone response",
+            "Unit test with mocked Pinecone client"
+          ],
+          "target_file": "src/integration/vector/pinecone-store.ts"
+        },
+        {
+          "task_id": "VS-004",
+          "description": "IMPLEMENT fetchById() in ChromaStore",
+          "type": "implementation",
+          "estimated_duration": "45m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Use collection.get({ ids: [id] }) to retrieve vector",
+            "Handle missing vector (return null)",
+            "Parse metadata from Chroma response",
+            "Unit test with mocked Chroma client"
+          ],
+          "target_file": "src/integration/vector/chroma-store.ts"
+        }
+      ],
+      "success_criteria": "All 3 vector stores implement fetchById() with tests passing"
+    },
+    {
+      "phase_id": "phase_2",
+      "phase_name": "Semantic Search Implementation",
+      "description": "Implement findSimilar() and getRelated() in semantic-search service",
+      "status": "pending",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "task_id": "SS-001",
+          "description": "IMPLEMENT findSimilar() in semantic-search.ts",
+          "type": "implementation",
+          "estimated_duration": "60m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Call vectorStore.fetchById(coderef) to get embedding",
+            "If found, query vectorStore with that embedding",
+            "Exclude the original coderef from results",
+            "Return SearchResponse with similar items",
+            "Replace 'Not yet implemented' error"
+          ],
+          "target_file": "src/integration/rag/semantic-search.ts:239"
+        },
+        {
+          "task_id": "SS-002",
+          "description": "IMPLEMENT getRelated() with graph integration",
+          "type": "implementation",
+          "estimated_duration": "90m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "For 'structural': traverse graph for related nodes",
+            "For 'semantic': call findSimilar()",
+            "For 'both': merge structural + semantic results",
+            "Deduplicate results by coderef",
+            "Replace 'Not yet implemented' error"
+          ],
+          "target_file": "src/integration/rag/semantic-search.ts:287"
+        },
+        {
+          "task_id": "SS-003",
+          "description": "ADD tests for findSimilar() and getRelated()",
+          "type": "testing",
+          "estimated_duration": "45m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Unit test findSimilar() with mocked vector store",
+            "Unit test getRelated() with mocked graph",
+            "Test edge case: coderef not found",
+            "Test all relationshipType options"
+          ],
+          "target_file": "__tests__/semantic-search.test.ts"
+        }
+      ],
+      "success_criteria": "findSimilar() and getRelated() fully implemented with tests"
+    },
+    {
+      "phase_id": "phase_3",
+      "phase_name": "CLI Integration and Close-out",
+      "description": "Add CLI command and finalize workorder",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "CLI-001",
+          "description": "ADD --find-similar flag to rag-search CLI",
+          "type": "implementation",
+          "estimated_duration": "30m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Add --find-similar <coderef> argument",
+            "Call semanticSearch.findSimilar(coderef)",
+            "Display results in formatted output",
+            "Works with all --store backends"
+          ],
+          "target_file": "src/cli/rag-search.ts"
+        },
+        {
+          "task_id": "DOC-001",
+          "description": "UPDATE VectorStore interface documentation",
+          "type": "documentation",
+          "estimated_duration": "15m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Document fetchById() method",
+            "Add usage example",
+            "Update interface method list"
+          ],
+          "target_file": "src/integration/vector/vector-store.ts"
+        },
+        {
+          "task_id": "IMP-001",
+          "description": "MARK IMP-CORE-067 and IMP-CORE-068 as done",
+          "type": "tracking",
+          "estimated_duration": "5m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Update improvements.json status to 'done'",
+            "Add closed date",
+            "Add resolution_notes"
+          ],
+          "target_file": "improvements.json"
+        },
+        {
+          "task_id": "COMMIT-001",
+          "description": "COMMIT all changes with conventional commits",
+          "type": "git",
+          "estimated_duration": "10m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Commit phase 1: feat(vector): add fetchById() to all stores",
+            "Commit phase 2: feat(rag): implement findSimilar() and getRelated()",
+            "Commit phase 3: feat(cli): add --find-similar flag",
+            "Commit docs: docs(vector): document fetchById()",
+            "Push to origin/main"
+          ]
+        },
+        {
+          "task_id": "CLOSE-001",
+          "description": "FINALIZE workorder close-out",
+          "type": "administrative",
+          "estimated_duration": "10m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Update communication.json with completion",
+            "Update TRACKING/workorders.json status",
+            "Create session log",
+            "Verify all tests pass"
+          ]
+        }
+      ],
+      "success_criteria": "CLI working, improvements marked done, workorder closed"
+    }
+  ],
+  "risk_mitigation": [
+    {
+      "risk": "Pinecone/Chroma fetchById() may have different semantics",
+      "mitigation": "Test with real instances; abstract differences in implementations"
+    },
+    {
+      "risk": "Graph traversal could be slow",
+      "mitigation": "Add depth limit and early termination"
+    }
+  ],
+  "_metadata": {
+    "plan_version": "1.0",
+    "planned_by": "create-workorder-skill",
+    "total_tasks": 10,
+    "estimated_total_duration": "6.5 hours"
+  }
+}

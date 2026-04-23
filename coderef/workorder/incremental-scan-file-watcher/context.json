@@ -1,0 +1,61 @@
+{
+  "$schema": "https://schemas.coderef.com/context/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-INCREMENTAL-SCAN-FILE-WATCHER-001",
+  "feature_name": "incremental-scan-file-watcher",
+  "title": "Implement Incremental Scanning with File-Watcher",
+  "created_at": "2026-04-23T09:43:00Z",
+  "status": "planning",
+  "description": "Add real-time file-watching and incremental scanning capabilities to the CodeRef scanner. Currently the scanner performs full re-scans on every run, which becomes prohibitively expensive for enterprise monorepos. This workorder implements file-watcher integration (using chokidar) and extends the existing IncrementalCache from the pipeline into the low-level scanner, enabling real-time IDE integration and making the system viable for large codebases.",
+  "goal": "Enable real-time code indexing that only re-scans changed files, reducing scan time from minutes to milliseconds for large projects and supporting live IDE integration.",
+  "requirements": [
+    "Integrate chokidar file-watcher into scanner architecture",
+    "Extend IncrementalCache from pipeline to scanner.ts level",
+    "Add optional cache parameter to scanCurrentElements() function",
+    "Implement file hash checking before scanning to skip unchanged files",
+    "Add --watch flag to CLI for continuous monitoring mode",
+    "Handle file creation, modification, and deletion events",
+    "Update cache after incremental scans to maintain consistency",
+    "Add progress/status output during watch mode",
+    "Ensure cross-platform compatibility (Windows, macOS, Linux)",
+    "Add fallback to full scan when cache is missing or corrupted"
+  ],
+  "constraints": [
+    "Must not break existing scan behavior (cache is opt-in)",
+    "Must handle symlinked files correctly",
+    "Must gracefully handle file permission errors",
+    "Watch mode must be cancellable (Ctrl+C)",
+    "Cache file (.coderef/incremental-cache.json) must remain compatible with pipeline cache"
+  ],
+  "success_criteria": {
+    "functional": [
+      "Second scan of unchanged project completes in <100ms (cache hit)",
+      "Modifying single file triggers re-scan of only that file",
+      "--watch mode continuously monitors and updates index",
+      "Cache hit ratio >95% for typical development workflow"
+    ],
+    "performance": [
+      "Incremental scan 100x faster than full scan on 1000+ file project",
+      "Memory overhead <50MB for cache of 10k files",
+      "File watcher CPU usage <1% when idle"
+    ],
+    "test_coverage": [
+      "Unit tests for IncrementalCache integration",
+      "Integration test for file-watcher events",
+      "Performance benchmark comparing full vs incremental scan"
+    ]
+  },
+  "out_of_scope": [
+    "Git integration (using git status for change detection)",
+    "Network file system support (NFS, SMB)",
+    "IDE-specific extensions (VS Code, IntelliJ plugins)",
+    "Multi-project workspace support"
+  ],
+  "related_improvements": ["IMP-CORE-057"],
+  "_metadata": {
+    "document_type": "Workorder Context",
+    "ai_assistance": true,
+    "template_version": "1.0",
+    "generated_at": "2026-04-23T09:43:00Z"
+  }
+}

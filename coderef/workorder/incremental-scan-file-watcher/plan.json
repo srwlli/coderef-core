@@ -1,0 +1,328 @@
+{
+  "$schema": "https://schemas.coderef.com/plan/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-INCREMENTAL-SCAN-FILE-WATCHER-001",
+  "feature_name": "incremental-scan-file-watcher",
+  "title": "Implement Incremental Scanning with File-Watcher",
+  "created_at": "2026-04-23T09:43:00Z",
+  "status": "ready_for_execution",
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "name": "Architecture and Dependencies",
+      "description": "Set up project structure, install dependencies, and make architectural decisions about cache placement.",
+      "tasks": [
+        {
+          "task_id": "ARCH-001",
+          "name": "Install chokidar dependency",
+          "description": "Add chokidar package to package.json for cross-platform file watching.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "chokidar added to package.json dependencies",
+            "npm install completes successfully",
+            "Version is ^3.5.3 or compatible"
+          ],
+          "estimated_time": "5 min"
+        },
+        {
+          "task_id": "ARCH-002",
+          "name": "Decide IncrementalCache location",
+          "description": "Choose whether to import IncrementalCache from pipeline/ or move to src/cache/. Document decision in analysis.json.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Decision documented in analysis.json architecture_decisions",
+            "If moving: src/cache/incremental-cache.ts created, pipeline imports updated",
+            "If importing: scanner imports from pipeline/ with comment explaining coupling"
+          ],
+          "estimated_time": "15 min"
+        },
+        {
+          "task_id": "ARCH-003",
+          "name": "Create file-watcher module structure",
+          "description": "Create src/scanner/file-watcher.ts with basic class structure and chokidar integration skeleton.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "src/scanner/file-watcher.ts created",
+            "FileWatcher class with constructor accepting project path",
+            "start() and stop() methods defined",
+            "Basic chokidar watch() call implemented"
+          ],
+          "estimated_time": "30 min"
+        }
+      ],
+      "hard_stop": {
+        "gate": "Dependencies installed, cache location decided, file-watcher skeleton created",
+        "approved": false
+      }
+    },
+    {
+      "phase_id": "phase_2",
+      "name": "Incremental Scanner Integration",
+      "description": "Integrate IncrementalCache into scanner.ts to enable cache-aware scanning.",
+      "tasks": [
+        {
+          "task_id": "SCAN-001",
+          "name": "Add cache parameter to scanCurrentElements()",
+          "description": "Modify scanCurrentElements() to accept optional IncrementalCache parameter. Add logic to check cache before scanning files.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "scanCurrentElements() accepts optional cache parameter",
+            "Before scanning file, checks cache if enabled",
+            "Skips files that are unchanged (hash match)",
+            "Scans files that are new or modified",
+            "Falls back to full scan if cache disabled or missing"
+          ],
+          "estimated_time": "1 hour"
+        },
+        {
+          "task_id": "SCAN-002",
+          "name": "Update cache after scanning",
+          "description": "After scanning files, update IncrementalCache with new hashes and metadata.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "After successful scan, calls cache.updateCache()",
+            "Cache stores file hashes, mtime, size",
+            "Cache.save() called to persist to disk",
+            "Handles errors gracefully (warn but continue)"
+          ],
+          "estimated_time": "30 min"
+        },
+        {
+          "task_id": "SCAN-003",
+          "name": "Add --incremental flag to CLI",
+          "description": "Add --incremental flag to src/cli/scan.ts to enable cache mode. Pass cache instance to scanner.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "--incremental flag added to CLI options",
+            "When enabled, creates IncrementalCache instance",
+            "Passes cache to scanCurrentElements()",
+            "Shows cache hit ratio in output"
+          ],
+          "estimated_time": "30 min"
+        },
+        {
+          "task_id": "SCAN-004",
+          "name": "Test incremental scan performance",
+          "description": "Run scan with --incremental on coderef-core project. Measure time for first run (cache miss) and second run (cache hit).",
+          "status": "pending",
+          "acceptance_criteria": [
+            "First scan completes (baseline)",
+            "Second scan completes in <100ms (cache hit)",
+            "Cache hit ratio >95% for unchanged project",
+            "Performance logged in console output"
+          ],
+          "estimated_time": "15 min"
+        }
+      ],
+      "hard_stop": {
+        "gate": "Incremental scan working with --incremental flag, cache hit ratio >95%",
+        "approved": false
+      }
+    },
+    {
+      "phase_id": "phase_3",
+      "name": "File-Watcher Implementation",
+      "description": "Implement file-watcher with chokidar to enable real-time monitoring and incremental updates.",
+      "tasks": [
+        {
+          "task_id": "WATCH-001",
+          "name": "Implement file change event handlers",
+          "description": "Add handlers for 'add', 'change', 'unlink' events in FileWatcher. Trigger incremental scans on changes.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "FileWatcher handles 'add' event (new file)",
+            "FileWatcher handles 'change' event (modified file)",
+            "FileWatcher handles 'unlink' event (deleted file)",
+            "Each event triggers appropriate cache update and scan"
+          ],
+          "estimated_time": "1 hour"
+        },
+        {
+          "task_id": "WATCH-002",
+          "name": "Add --watch flag to CLI",
+          "description": "Add --watch flag to src/cli/scan.ts to start file-watcher mode. Handle graceful shutdown on Ctrl+C.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "--watch flag added to CLI options",
+            "When enabled, starts FileWatcher",
+            "Shows real-time status updates in terminal",
+            "Handles SIGINT (Ctrl+C) to stop watcher cleanly"
+          ],
+          "estimated_time": "45 min"
+        },
+        {
+          "task_id": "WATCH-003",
+          "name": "Add watch mode progress output",
+          "description": "Add user-friendly output during watch mode showing file changes and scan results.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Shows 'Watching for changes...' message on start",
+            "Shows 'File changed: X' on each event",
+            "Shows 'Scanning...' and 'Done in Xms' for each incremental scan",
+            "Shows 'Stopped watching' on shutdown"
+          ],
+          "estimated_time": "30 min"
+        },
+        {
+          "task_id": "WATCH-004",
+          "name": "Test file-watcher end-to-end",
+          "description": "Start --watch mode, modify files, verify incremental scans trigger and index updates correctly.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Start watch mode successfully",
+            "Modify single file, see change detected",
+            "Verify only changed file re-scanned",
+            "Verify cache updated after change",
+            "Delete file, verify removed from cache",
+            "Stop watch mode cleanly"
+          ],
+          "estimated_time": "30 min"
+        }
+      ],
+      "hard_stop": {
+        "gate": "File-watcher working with --watch flag, real-time updates verified",
+        "approved": false
+      }
+    },
+    {
+      "phase_id": "phase_4",
+      "name": "Testing and Documentation",
+      "description": "Add unit tests, integration tests, and update documentation.",
+      "tasks": [
+        {
+          "task_id": "TEST-001",
+          "name": "Add unit tests for IncrementalCache integration",
+          "description": "Create tests for scanner cache integration in src/scanner/__tests__/incremental-scan.test.ts",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Test cache hit skips file",
+            "Test cache miss triggers scan",
+            "Test cache update after scan",
+            "Test cache corruption fallback",
+            "All tests pass"
+          ],
+          "estimated_time": "1 hour"
+        },
+        {
+          "task_id": "TEST-002",
+          "name": "Add integration test for file-watcher",
+          "description": "Create test for FileWatcher in src/scanner/__tests__/file-watcher.test.ts",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Test file add event",
+            "Test file change event",
+            "Test file delete event",
+            "Test graceful shutdown",
+            "All tests pass"
+          ],
+          "estimated_time": "1 hour"
+        },
+        {
+          "task_id": "DOC-001",
+          "name": "Update CLI help and README",
+          "description": "Document --incremental and --watch flags in CLI help and project README.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "--incremental flag documented in CLI --help",
+            "--watch flag documented in CLI --help",
+            "README.md section on incremental scanning",
+            "Examples of usage in documentation"
+          ],
+          "estimated_time": "30 min"
+        },
+        {
+          "task_id": "DOC-002",
+          "name": "Add JSDoc comments to new code",
+          "description": "Add comprehensive JSDoc comments to file-watcher.ts and modified scanner functions.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "FileWatcher class documented",
+            "All public methods have JSDoc",
+            "scanCurrentElements() cache parameter documented",
+            "Examples in comments where helpful"
+          ],
+          "estimated_time": "30 min"
+        }
+      ],
+      "hard_stop": {
+        "gate": "Tests passing, documentation updated",
+        "approved": false
+      }
+    },
+    {
+      "phase_id": "phase_5",
+      "name": "Close-out",
+      "description": "Commit changes, update improvements.json, and archive workorder.",
+      "tasks": [
+        {
+          "task_id": "COMMIT-001",
+          "name": "Commit and push changes",
+          "description": "Commit all changes with descriptive message and push to remote.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "git add all modified files",
+            "git commit with clear message referencing IMP-CORE-057",
+            "git push to remote",
+            "No uncommitted changes remain"
+          ],
+          "estimated_time": "10 min"
+        },
+        {
+          "task_id": "IMP-001",
+          "name": "Update improvements.json",
+          "description": "Mark IMP-CORE-057 as done with close_reason and completion date.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "IMP-CORE-057 status changed to 'done'",
+            "done date set to 2026-04-23",
+            "close_reason describes implementation",
+            "Files updated with all modified paths"
+          ],
+          "estimated_time": "5 min"
+        },
+        {
+          "task_id": "CLOSE-001",
+          "name": "Close workorder",
+          "description": "Update communication.json with completion summary and close workorder.",
+          "status": "pending",
+          "acceptance_criteria": [
+            "communication.json status set to 'complete'",
+            "completion_summary added with commits and results",
+            "closed_at timestamp added",
+            "Workorder ready for archival"
+          ],
+          "estimated_time": "5 min"
+        }
+      ],
+      "hard_stop": {
+        "gate": "All changes committed, improvements updated, workorder closed",
+        "approved": false
+      }
+    }
+  ],
+  "success_criteria": {
+    "functional": [
+      "Second scan of unchanged project completes in <100ms (cache hit)",
+      "Modifying single file triggers re-scan of only that file",
+      "--watch mode continuously monitors and updates index",
+      "Cache hit ratio >95% for typical development workflow"
+    ],
+    "performance": [
+      "Incremental scan 100x faster than full scan on 1000+ file project",
+      "Memory overhead <50MB for cache of 10k files",
+      "File watcher CPU usage <1% when idle"
+    ],
+    "test_coverage": [
+      "Unit tests for IncrementalCache integration",
+      "Integration test for file-watcher events",
+      "Performance benchmark comparing full vs incremental scan"
+    ]
+  },
+  "estimated_total_time": "8 hours",
+  "risk_level": "medium",
+  "_metadata": {
+    "document_type": "Workorder Plan",
+    "ai_assistance": true,
+    "generated_at": "2026-04-23T09:43:00Z"
+  }
+}

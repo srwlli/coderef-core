@@ -1,0 +1,103 @@
+{
+  "workorder_id": "WO-GETRELATED-GRAPH-INTEGRATION-001",
+  "feature_name": "getRelated-graph-integration",
+  "status": "ready",
+  "created": "2026-04-23T09:49:00.000Z",
+  "last_updated": "2026-04-23T09:49:00.000Z",
+  "execution_phase": "phase_1",
+  "handoff_protocol": {
+    "must_read_first": [
+      "context.json - Feature requirements and success criteria",
+      "plan.json - Implementation tasks and acceptance criteria"
+    ],
+    "allowed_files": [
+      "src/integration/rag/semantic-search.ts",
+      "src/analyzer/graph-builder.ts",
+      "src/analyzer/graph-analyzer.ts",
+      "src/analyzer/graph-helpers.ts",
+      "src/integration/vector/vector-store.ts",
+      "__tests__/integration/rag/semantic-search.test.ts"
+    ],
+    "forbidden_files": [
+      "src/analyzer/graph-builder.ts (read-only)",
+      "src/analyzer/graph-analyzer.ts (read-only)",
+      "src/integration/vector/*.ts (read-only)"
+    ],
+    "entry_point": "src/integration/rag/semantic-search.ts:287-294",
+    "success_criteria": [
+      "getRelated() returns combined semantic and structural results",
+      "Graph relationships are correctly traversed",
+      "Semantic similarity scores are calculated",
+      "Merged results are ranked by relevance",
+      "Response time < 500ms for typical queries"
+    ]
+  },
+  "agent_status": {
+    "current_agent": null,
+    "agent_assignments": {},
+    "phase_status": {
+      "phase_1": "ready"
+    }
+  },
+  "task_queue": [
+    {
+      "task_id": "IMPL-001",
+      "title": "Add graph loading infrastructure to SemanticSearchService",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "30 minutes"
+    },
+    {
+      "task_id": "IMPL-002",
+      "title": "Implement structural relationship extraction",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "45 minutes"
+    },
+    {
+      "task_id": "IMPL-003",
+      "title": "Implement semantic similarity extraction",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "30 minutes"
+    },
+    {
+      "task_id": "IMPL-004",
+      "title": "Implement score merging algorithm",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "45 minutes"
+    },
+    {
+      "task_id": "IMPL-005",
+      "title": "Implement getRelated() method",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "30 minutes"
+    },
+    {
+      "task_id": "IMPL-006",
+      "title": "Add unit tests for getRelated()",
+      "status": "pending",
+      "priority": "medium",
+      "estimated_effort": "60 minutes"
+    }
+  ],
+  "execution_notes": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single feature implementation with clear scope - getRelated() method in semantic-search.ts. No foundation docs or multi-phase work needed.",
+    "dependencies_resolved": [
+      "IMP-CORE-067: vectorStore.fetchById() implemented in all providers"
+    ],
+    "blocking_issue": "IMP-CORE-068",
+    "hard_stops": [],
+    "estimated_total_effort": "4 hours"
+  },
+  "history": [
+    {
+      "timestamp": "2026-04-23T09:49:00.000Z",
+      "action": "workorder_created",
+      "details": "Workorder created via create-workorder workflow with manual override due to .coderef drift"
+    }
+  ]
+}

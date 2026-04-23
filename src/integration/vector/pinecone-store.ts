@@ -11,7 +11,8 @@ import type {
   VectorQueryResult,
   VectorStoreStats,
   VectorStoreConfig,
-  VectorMatch
+  VectorMatch,
+  CodeChunkMetadata
 } from './vector-store.js';
 import { VectorStoreError, VectorStoreErrorCode } from './vector-store.js';
 
@@ -289,6 +290,38 @@ export class PineconeStore implements VectorStore {
         namespaces: Object.keys(stats.namespaces ?? {}),
         metric: description.metric,
         status: description.status
+      };
+    } catch (error: any) {
+      throw this.handleError(error);
+    }
+  }
+
+  /**
+   * Fetch a single vector record by ID
+   */
+  async fetchById(id: string, namespace?: string): Promise<VectorRecord | null> {
+    if (!this.index) {
+      throw new VectorStoreError(
+        'Pinecone store not initialized. Call initialize() first',
+        VectorStoreErrorCode.CONNECTION_ERROR
+      );
+    }
+
+    try {
+      const targetIndex = namespace ? this.index.namespace(namespace) : this.index;
+
+      // Pinecone fetch returns { records: { [id]: Record } }
+      const response = await targetIndex.fetch([id]);
+      const record = response.records?.[id];
+
+      if (!record) {
+        return null;
+      }
+
+      return {
+        id: record.id,
+        values: record.values as number[],
+        metadata: record.metadata as CodeChunkMetadata
       };
     } catch (error: any) {
       throw this.handleError(error);

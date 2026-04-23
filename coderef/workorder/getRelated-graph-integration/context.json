@@ -1,0 +1,43 @@
+{
+  "feature_name": "getRelated-graph-integration",
+  "description": "Implement getRelated() with graph integration - Combine semantic similarity with graph relationships (imports, calls, extends) to find related code elements. The method will use vectorStore.fetchById() to get embeddings, graph-analyzer to traverse relationships, and merge semantic + structural scores.",
+  "goal": "Enable semantic search to find related code elements by combining vector similarity with structural graph relationships",
+  "requirements": [
+    "Implement getRelated() method in semantic-search.ts",
+    "Integrate with graph-analyzer for structural relationships (callers, callees, dependents, dependencies)",
+    "Use vectorStore.fetchById() to retrieve embeddings for semantic similarity",
+    "Implement score merging algorithm for semantic + structural results",
+    "Support relationshipType parameter: 'semantic' | 'structural' | 'both'",
+    "Handle graph.json loading from .coderef/ directory"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "functional": [
+      "getRelated() returns combined semantic and structural results",
+      "Graph relationships are correctly traversed",
+      "Semantic similarity scores are calculated",
+      "Merged results are ranked by relevance"
+    ],
+    "performance": [
+      "Response time < 500ms for typical queries",
+      "Memory efficient for large graphs"
+    ]
+  },
+  "_metadata": {
+    "workorder_id": "WO-GETRELATED-GRAPH-INTEGRATION-001",
+    "workorder_assigned_at": "2026-04-23T09:44:12.571464+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-GETRELATED-GRAPH-INTEGRATION-001",
+    "feature_id": "getRelated-graph-integration",
+    "last_updated": "2026-04-23",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-23"
+  }
+}
