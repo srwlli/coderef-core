@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "archived_at": "2026-04-23T01:18:00Z",
+  "archived_by": "Cascade",
+  "workorders": [
+    {
+      "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+      "feature_name": "rag-pinecone-chroma-stores",
+      "path": "rag-pinecone-chroma-stores",
+      "status": "complete",
+      "completed_at": "2026-04-22T15:25:00Z",
+      "archived_at": "2026-04-23T01:18:00Z",
+      "commits": [
+        "9da3ac2",
+        "56c3a63",
+        "798c09a",
+        "ca64a82",
+        "3121518",
+        "932e41f",
+        "f5f0a61"
+      ],
+      "improvement_resolved": "IMP-CORE-065"
+    }
+  ],
+  "total_archived": 1
+}
