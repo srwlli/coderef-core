@@ -176,10 +176,12 @@
       "title": "rag-index exits 0 when all embeddings fail due to provider unreachable",
       "category": "code-quality",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-22",
+      "closed": "2026-04-22",
+      "close_reason": "Fixed exit logic to check both chunksFailed AND result.errors.length. Exit code now properly reflects failure when any errors occur, enabling CI to detect failed indexing runs.",
       "body": "With Ollama daemon down and --provider=ollama, rag-index reports Chunks indexed: 0 and exits with code 0. Same failure mode is non-deterministically classified as chunksSkipped vs chunksFailed across runs. The exit guard at rag-index.ts:492 only checks chunksFailed, so when transport errors land in chunksSkipped the CLI silently reports success. Any CI/orchestration layer trusting $? cannot distinguish a totally-failed run from a healthy index.",
-      "files": ["src/cli/rag-index.ts:492", "src/integration/rag/indexing-orchestrator.ts"],
+      "files": ["src/cli/rag-index.ts:492"],
       "related": ["WO-CODEREF-CORE-RAG-OLLAMA-001", "DISPATCH-2026-04-22-002"]
     },
     {

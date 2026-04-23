@@ -489,7 +489,8 @@ async function main(): Promise<void> {
       console.log();
     }
 
-    process.exit(result.chunksFailed > 0 ? 1 : 0);
+    const hasErrors = result.chunksFailed > 0 || result.errors.length > 0;
+    process.exit(hasErrors ? 1 : 0);
 
   } catch (error) {
     console.error('\n❌ Indexing failed:\n');
