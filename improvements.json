@@ -96,8 +96,10 @@
       "title": "Implement incremental scanning with file-watcher",
       "category": "performance",
       "severity": "major",
-      "status": "open",
+      "status": "completed",
       "logged": "2026-04-21",
+      "completed": "2026-04-23",
+      "commit": "354e6cc",
       "body": "External review (9/10 utility, 8/10 performance) suggests incremental scanning for enterprise monorepos. As projects grow, full re-scan becomes expensive. Implement file-watcher or cache based on file hashes (already generated) to only re-scan changed files. This would enable real-time IDE integration and make system viable for large codebases. Second review specifically noted this as priority for enterprise adoption.",
       "files": ["src/scanner/scanner.ts", "src/cache/file-hash-cache.ts"],
       "related": ["IMP-CORE-052"]
