@@ -253,7 +253,39 @@
       "logged": "2026-04-23",
       "body": "scanCurrentElements (line 782) doesn't validate input parameters. Invalid dir (non-existent), empty lang array, or malformed options cause confusing errors downstream. Add validation at function start: check dir exists, langs is non-empty array, options has valid structure. Throw clear errors for invalid inputs.",
       "files": ["src/scanner/scanner.ts:782-799"]
+    },
+    {
+      "id": "IMP-CORE-076",
+      "title": "Fix recursive incremental scans for nested files",
+      "category": "robustness",
+      "severity": "major",
+      "status": "completed",
+      "logged": "2026-04-23",
+      "completed": "2026-04-23",
+      "body": "Recursive incremental scans are broken for nested files. The recursive branch in scanner.ts (line 885) strips cache, while cache diff/update only runs against the top-level files list in scanner.ts (line 949) and scanner.ts (line 1316). In practice, real recursive project scans will keep rescanning subtrees and can leave deleted nested paths in the cache.",
+      "files": ["src/scanner/scanner.ts:885", "src/scanner/scanner.ts:949", "src/scanner/scanner.ts:1316"],
+      "solution": "Added collectFiles() helper to gather all files from full subtree before incremental filtering. Cache check/update now runs on complete file list."
+    },
+    {
+      "id": "IMP-CORE-077",
+      "title": "Fix parallel path to preserve normal scanner behavior",
+      "category": "robustness",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "The successful parallel path does not preserve normal scanner behavior. In scanner.ts (line 981), a non-empty worker result returns immediately, before the shared deduplication and bookkeeping path at the bottom of the function. That makes parallel: true semantically different from sequential mode and leaves progress/incremental state stale.",
+      "files": ["src/scanner/scanner.ts:981"]
+    },
+    {
+      "id": "IMP-CORE-078",
+      "title": "Fix parallel AST scans to match sequential AST accuracy",
+      "category": "accuracy",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-04-23",
+      "body": "Parallel AST scans for TypeScript are not equivalent to sequential AST scans. The worker implementation in scanner-worker.ts (line 58) uses JSCallDetector for TS, while the main path in scanner.ts (line 1164) uses ASTElementScanner and attaches imports/calls. If worker mode actually runs, callers asking for AST accuracy get a downgraded result set.",
+      "files": ["src/scanner/scanner-worker.ts:58", "src/scanner/scanner.ts:1164"]
     }
   ],
-  "_note": "20 open items (036, 052-053, 056-057, 061-075). Added 15 scanner.ts improvements (061-075): code-quality (061-062,068,072), configuration (063,066,073), robustness (064,067,070,074,075), thread-safety (065), performance (069), logging (071). Counter at 75. Last updated 2026-04-23."
+  "_note": "23 open items (036, 052-053, 056-057, 061-078). Added 18 total scanner.ts improvements (061-078): code-quality (061-062,068,072), configuration (063,066,073), robustness (064,067,070,074-076), thread-safety (065), performance (069), logging (071), accuracy (078). Counter at 78. Last updated 2026-04-23."
 }

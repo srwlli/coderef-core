@@ -1,0 +1,164 @@
+{
+  "workorder_id": "WO-FIX-INCREMENTAL-CACHE-FALSE-DRIFT-001",
+  "feature_name": "fix-incremental-cache-false-drift",
+  "title": "Fix False Drift Detection in IncrementalCache",
+  "created_at": "2026-04-23T20:08:04Z",
+  "status": "in_progress",
+  "plan_type": "multiphase",
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "name": "Investigation and Diagnosis",
+      "description": "Identify root cause of false drift detection",
+      "status": "in_progress",
+      "tasks": [
+        {
+          "task_id": "DIAG-001",
+          "name": "Add verbose drift logging",
+          "description": "Add detailed logging to checkFiles() to show why each file is marked as changed",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Log shows mtime comparison for each file",
+            "Log shows size comparison",
+            "Log shows hash comparison when mtime differs"
+          ],
+          "estimated_time": "30 min"
+        },
+        {
+          "task_id": "DIAG-002",
+          "name": "Reproduce false drift scenario",
+          "description": "Identify specific conditions that trigger false drift (git operations, IDE saves, etc.)",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Document exact steps to reproduce",
+            "Capture mtime/size/hash values before and after",
+            "Identify pattern in affected files"
+          ],
+          "estimated_time": "45 min"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_2",
+      "name": "Fix Implementation",
+      "description": "Implement fix for identified root cause",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "FIX-001",
+          "name": "Fix mtime precision issue",
+          "description": "Handle sub-millisecond precision differences in file timestamps",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Implement tolerance threshold for mtime comparison",
+            "Test with files that have microsecond precision differences"
+          ],
+          "estimated_time": "30 min"
+        },
+        {
+          "task_id": "FIX-002",
+          "name": "Fix path normalization issue",
+          "description": "Ensure consistent path format between cache and file system",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Normalize all paths to forward slashes",
+            "Convert to absolute paths consistently",
+            "Test with Windows backslash paths"
+          ],
+          "estimated_time": "30 min"
+        },
+        {
+          "task_id": "FIX-003",
+          "name": "Fix git checkout mtime issue",
+          "description": "Handle files where git changes mtime but not content",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Hash comparison always runs when mtime differs",
+            "Cache updates mtime after hash verification",
+            "No false drift on git operations"
+          ],
+          "estimated_time": "45 min"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_3",
+      "name": "Testing and Validation",
+      "description": "Verify fix works in various scenarios",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "TEST-001",
+          "name": "Test unchanged files",
+          "description": "Verify 100% hit ratio on truly unchanged files",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Run scan twice on same directory",
+            "Second scan shows 100% hit ratio",
+            "No files incorrectly marked as changed"
+          ],
+          "estimated_time": "15 min"
+        },
+        {
+          "task_id": "TEST-002",
+          "name": "Test git checkout scenario",
+          "description": "Verify no false drift after git operations",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Run scan, checkout different branch, checkout back",
+            "Final scan shows 100% hit ratio",
+            "Files only scanned if content actually changed"
+          ],
+          "estimated_time": "20 min"
+        },
+        {
+          "task_id": "TEST-003",
+          "name": "Test IDE save scenario",
+          "description": "Verify no false drift after IDE touch operations",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Save file in IDE without changing content",
+            "Run scan and verify file not re-scanned",
+            "Hash comparison properly handles touch-only changes"
+          ],
+          "estimated_time": "15 min"
+        }
+      ]
+    },
+    {
+      "phase_id": "phase_4",
+      "name": "Documentation and Closure",
+      "description": "Document fix and close workorder",
+      "status": "pending",
+      "tasks": [
+        {
+          "task_id": "DOC-001",
+          "name": "Update CHANGELOG",
+          "description": "Document the fix in CHANGELOG.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Added entry for false drift fix",
+            "Document root cause and solution"
+          ],
+          "estimated_time": "10 min"
+        },
+        {
+          "task_id": "CLOSE-001",
+          "name": "Close workorder",
+          "description": "Generate DELIVERABLES.md and close workorder",
+          "status": "pending",
+          "acceptance_criteria": [
+            "DELIVERABLES.md created with findings",
+            "improvements.json updated",
+            "All tests passing"
+          ],
+          "estimated_time": "15 min"
+        }
+      ]
+    }
+  ],
+  "success_criteria": {
+    "primary": "Unchanged files show 100% hit ratio on subsequent scans",
+    "secondary": "Diagnostic output shows clear reason when drift is detected"
+  }
+}

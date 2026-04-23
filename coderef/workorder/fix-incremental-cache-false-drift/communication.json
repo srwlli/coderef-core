@@ -1,0 +1,29 @@
+{
+  "workorder_id": "WO-FIX-INCREMENTAL-CACHE-FALSE-DRIFT-001",
+  "feature_name": "fix-incremental-cache-false-drift",
+  "agent_assignment": {
+    "agent_number": 1,
+    "assigned_at": "2026-04-23T20:08:04Z",
+    "status": "active"
+  },
+  "current_phase": "phase_1",
+  "must_read_first": [
+    "context.json",
+    "plan.json",
+    "src/cache/incremental-cache.ts"
+  ],
+  "allowed_files": [
+    "src/cache/incremental-cache.ts",
+    "src/scanner/scanner.ts",
+    "src/cli/scan.ts"
+  ],
+  "forbidden_files": [
+    "src/pipeline/orchestrator.ts",
+    "src/types/types.ts"
+  ],
+  "success_criteria": {
+    "primary": "Unchanged files show 100% hit ratio on subsequent scans",
+    "secondary": "Diagnostic output shows clear reason when drift is detected"
+  },
+  "notes": "Focus on DIAG-001 first: add verbose logging to identify why false drift occurs"
+}

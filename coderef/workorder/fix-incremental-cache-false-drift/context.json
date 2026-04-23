@@ -1,0 +1,33 @@
+{
+  "feature_name": "fix-incremental-cache-false-drift",
+  "description": "Investigate and fix false drift detection in IncrementalCache where unchanged files are incorrectly marked as changed",
+  "goal": "Identify root cause of false positive drift detection and implement fix",
+  "requirements": [
+    "Identify when/why false drift occurs",
+    "Add diagnostic logging to track drift decisions",
+    "Fix the root cause (likely path format or mtime precision issues)",
+    "Test fix with various scenarios"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "primary": "Unchanged files show 100% hit ratio on subsequent scans",
+    "secondary": "Diagnostic output shows clear reason when drift is detected"
+  },
+  "_metadata": {
+    "workorder_id": "WO-FIX-INCREMENTAL-CACHE-FALSE-DRIFT-001",
+    "workorder_assigned_at": "2026-04-23T20:08:04.922677+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-FIX-INCREMENTAL-CACHE-FALSE-DRIFT-001",
+    "feature_id": "fix-incremental-cache-false-drift",
+    "last_updated": "2026-04-23",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-23"
+  }
+}

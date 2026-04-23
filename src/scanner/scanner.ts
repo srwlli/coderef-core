@@ -774,6 +774,95 @@ async function scanFilesInParallel(
 }
 
 /**
+ * IMP-CORE-076: Collect all files recursively from a directory tree
+ * Helper function to gather all eligible files before incremental filtering
+ * @param dir Directory to scan
+ * @param allLangs Array of language extensions to include
+ * @param exclude Array of exclusion patterns
+ * @param recursive Whether to recurse into subdirectories
+ * @param verbose Enable verbose logging
+ * @returns Array of normalized file paths
+ */
+async function collectFiles(
+  dir: string,
+  allLangs: string[],
+  exclude: string[],
+  recursive: boolean,
+  verbose: boolean
+): Promise<string[]> {
+  const files: string[] = [];
+  const resolvedDir = path.resolve(dir);
+
+  try {
+    const allEntries = fs.readdirSync(resolvedDir, { withFileTypes: true });
+
+    for (const entry of allEntries) {
+      const fullPath = path.join(resolvedDir, entry.name);
+
+      if (entry.isDirectory()) {
+        // Check if directory should be excluded
+        if (shouldExcludePath(fullPath, exclude)) {
+          if (verbose) {
+            console.log(`Excluding directory: ${fullPath}`);
+          }
+          continue;
+        }
+
+        if (recursive) {
+          if (verbose) {
+            console.log(`Recursively collecting from directory: ${fullPath}`);
+          }
+          // Recursively collect files from subdirectory
+          const subFiles = await collectFiles(fullPath, allLangs, exclude, recursive, verbose);
+          files.push(...subFiles);
+        }
+        continue;
+      }
+
+      if (!entry.isFile()) {
+        continue;
+      }
+
+      const ext = path.extname(entry.name).substring(1);
+
+      // Handle special cases for TypeScript/JavaScript
+      let currentLang = ext;
+      if (ext === 'tsx' && allLangs.includes('ts')) {
+        currentLang = 'ts';
+      } else if (ext === 'jsx' && allLangs.includes('js')) {
+        currentLang = 'js';
+      }
+
+      const shouldInclude = allLangs.includes(currentLang);
+
+      if (shouldInclude) {
+        // Normalize to forward slashes for consistency
+        const normalizedPath = fullPath.replace(/\\/g, '/');
+
+        // Check if file should be excluded
+        if (shouldExcludePath(normalizedPath, exclude)) {
+          if (verbose) {
+            console.log(`Excluding file: ${normalizedPath}`);
+          }
+          continue;
+        }
+
+        files.push(normalizedPath);
+        if (verbose) {
+          console.log(`Including file: ${normalizedPath} (mapped to language: ${currentLang})`);
+        }
+      }
+    }
+  } catch (error) {
+    if (verbose) {
+      console.error(`Error collecting files from ${dir}:`, error);
+    }
+  }
+
+  return files;
+}
+
+/**
  * Scans the current codebase for code elements (functions, classes, components, hooks)
  * @param dir Directory to scan
  * @param lang File extension to scan (or array of extensions) - defaults to all 10 supported languages
@@ -850,101 +939,18 @@ export async function scanCurrentElements(
   }
   
   try {
-    let files = [];
-    
+    // IMP-CORE-076: Collect all files from the full subtree first
     if (verbose) {
-      console.log(`Scanning directory: ${resolvedDir}`);
+      console.log(`Collecting files from: ${resolvedDir} (recursive=${recursive})`);
     }
     
-    // Get all files in the directory with proper path handling
-    const allFiles = fs.readdirSync(resolvedDir, { withFileTypes: true });
-    
-    if (verbose) {
-      console.log(`Found ${allFiles.length} entries in directory`);
-      console.log('Directory entries:', allFiles.map(f => f.name));
-      console.log('Supported languages:', allLangs);
-    }
-    
-    // Process each entry
-    for (const entry of allFiles) {
-      const fullPath = path.join(resolvedDir, entry.name);
-
-      if (entry.isDirectory()) {
-        // Check if directory should be excluded
-        if (shouldExcludePath(fullPath, exclude)) {
-          if (verbose) {
-            console.log(`Excluding directory: ${fullPath}`);
-          }
-          continue;
-        }
-
-        if (recursive) {
-          if (verbose) {
-            console.log(`Recursively scanning directory: ${fullPath}`);
-          }
-          // IMP-CORE-057: Don't pass cache to recursive calls - cache is updated once at top level
-          const { cache: _, ...optionsWithoutCache } = options;
-          const subDirElements = await scanCurrentElements(fullPath, allLangs, {
-            ...optionsWithoutCache,
-            recursive: true
-          });
-          for (const element of subDirElements) {
-            scanner.addElement(element);
-          }
-        } else if (verbose) {
-          console.log(`Skipping directory (recursive=false): ${fullPath}`);
-        }
-        continue;
-      }
-      
-      if (!entry.isFile()) {
-        if (verbose) {
-          console.log(`Skipping non-file: ${entry.name}`);
-        }
-        continue;
-      }
-      
-      const ext = path.extname(entry.name).substring(1);
-      if (verbose) {
-        console.log(`Checking file: ${entry.name} with extension: ${ext}`);
-      }
-      
-      // Handle special cases for TypeScript/JavaScript
-      let currentLang = ext;
-      if (ext === 'tsx' && allLangs.includes('ts')) {
-        currentLang = 'ts';
-      } else if (ext === 'jsx' && allLangs.includes('js')) {
-        currentLang = 'js';
-      }
-      
-      const shouldInclude = allLangs.includes(currentLang);
-
-      if (shouldInclude) {
-        // Only normalize to forward slashes after fs operations
-        const normalizedPath = fullPath.replace(/\\/g, '/');
-
-        // Check if file should be excluded
-        if (shouldExcludePath(normalizedPath, exclude)) {
-          if (verbose) {
-            console.log(`Excluding file: ${normalizedPath}`);
-          }
-          continue;
-        }
-
-        files.push(normalizedPath);
-        if (verbose) {
-          console.log(`Including file: ${normalizedPath} (mapped to language: ${currentLang})`);
-        }
-      } else if (verbose) {
-        console.log(`Skipping file with unsupported extension: ${entry.name} (extension: ${ext}, mapped to: ${currentLang})`);
-      }
-    }
+    const files = await collectFiles(resolvedDir, allLangs, exclude, recursive, verbose);
     
     if (verbose) {
       console.log(`Found ${files.length} files to process:`, files);
     }
 
-// IMP-CORE-057: Incremental scanning with IncrementalCache
+    // IMP-CORE-076: Incremental scanning with IncrementalCache - now runs on full recursive file set
     // Check which files need to be re-scanned based on file hashes
     filesToScan = files;
     let filesSkipped = 0;
