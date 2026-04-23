@@ -1,0 +1,271 @@
+{
+  "$schema": "https://schemas.coderef.com/plan/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+  "feature_name": "rag-pinecone-chroma-stores",
+  "plan_type": "phased",
+  "created_at": "2026-04-22T12:25:00Z",
+  "last_updated": "2026-04-22T12:25:00Z",
+
+  "phases": [
+    {
+      "phase_id": "phase_1",
+      "name": "Pinecone Store Implementation",
+      "description": "Implement PineconeStore class with full VectorStore interface",
+      "tasks": [
+        {
+          "task_id": "PC-001",
+          "description": "READ Pinecone SDK documentation and understand index/namespace model",
+          "type": "research",
+          "estimated_duration": "15m",
+          "status": "pending"
+        },
+        {
+          "task_id": "PC-002",
+          "description": "CREATE src/integration/vector/pinecone-store.ts with PineconeStore class",
+          "type": "implementation",
+          "estimated_duration": "45m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Class implements VectorStore interface",
+            "Constructor accepts PineconeConfig with apiKey, indexName, namespace",
+            "initialize() connects to Pinecone index",
+            "add() upserts vectors in batches",
+            "search() queries with cosine similarity",
+            "clear() deletes all vectors in namespace",
+            "stats() returns record count and dimension"
+          ]
+        },
+        {
+          "task_id": "PC-003",
+          "description": "ADD error handling for missing PINECONE_API_KEY",
+          "type": "implementation",
+          "estimated_duration": "15m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Throw VectorStoreError with CONFIGURATION_ERROR if API key missing",
+            "Clear error message: 'PINECONE_API_KEY environment variable required'"
+          ]
+        }
+      ],
+      "hard_stop": true,
+      "success_criteria": "PineconeStore compiles and passes basic unit tests"
+    },
+    {
+      "phase_id": "phase_2",
+      "name": "Chroma Store Implementation",
+      "description": "Implement ChromaStore class with full VectorStore interface",
+      "tasks": [
+        {
+          "task_id": "CH-001",
+          "description": "READ Chroma client documentation and understand collection model",
+          "type": "research",
+          "estimated_duration": "15m",
+          "status": "pending"
+        },
+        {
+          "task_id": "CH-002",
+          "description": "CREATE src/integration/vector/chroma-store.ts with ChromaStore class",
+          "type": "implementation",
+          "estimated_duration": "45m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Class implements VectorStore interface",
+            "Constructor accepts ChromaConfig with url, collectionName",
+            "initialize() creates/gets collection",
+            "add() adds vectors with metadata",
+            "search() queries with cosine similarity",
+            "clear() deletes collection or all records",
+            "stats() returns record count and dimension"
+          ]
+        },
+        {
+          "task_id": "CH-003",
+          "description": "ADD fallback to localhost if CHROMA_URL not set",
+          "type": "implementation",
+          "estimated_duration": "10m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Default to http://localhost:8000 if no env var",
+            "Clear error if connection fails"
+          ]
+        }
+      ],
+      "hard_stop": true,
+      "success_criteria": "ChromaStore compiles and passes basic unit tests"
+    },
+    {
+      "phase_id": "phase_3",
+      "name": "CLI Integration",
+      "description": "Wire new stores to CLI commands",
+      "tasks": [
+        {
+          "task_id": "CLI-001",
+          "description": "MODIFY src/cli/rag-index.ts createVectorStore() to support pinecone/chroma",
+          "type": "implementation",
+          "estimated_duration": "30m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Switch statement or factory for store type",
+            "Import PineconeStore and ChromaStore",
+            "Pass config from environment variables",
+            "Fallback to SQLite if env vars missing with warning"
+          ]
+        },
+        {
+          "task_id": "CLI-002",
+          "description": "MODIFY src/cli/rag-search.ts createVectorStore() to support pinecone/chroma",
+          "type": "implementation",
+          "estimated_duration": "20m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Same pattern as rag-index.ts",
+            "Consistent store creation logic"
+          ]
+        }
+      ],
+      "hard_stop": false,
+      "success_criteria": "CLI --store=pinecone and --store=chroma work without errors"
+    },
+    {
+      "phase_id": "phase_4",
+      "name": "Dependencies and Testing",
+      "description": "Add package dependencies and test implementations",
+      "tasks": [
+        {
+          "task_id": "DEP-001",
+          "description": "ADD @pinecone-database/pinecone to package.json dependencies",
+          "type": "configuration",
+          "estimated_duration": "5m",
+          "status": "pending"
+        },
+        {
+          "task_id": "DEP-002",
+          "description": "ADD chromadb to package.json dependencies",
+          "type": "configuration",
+          "estimated_duration": "5m",
+          "status": "pending"
+        },
+        {
+          "task_id": "DEP-003",
+          "description": "RUN pnpm install to fetch dependencies",
+          "type": "command",
+          "estimated_duration": "2m",
+          "status": "pending"
+        },
+        {
+          "task_id": "TEST-001",
+          "description": "CREATE unit test for PineconeStore with mocked client",
+          "type": "test",
+          "estimated_duration": "30m",
+          "status": "pending"
+        },
+        {
+          "task_id": "TEST-002",
+          "description": "CREATE unit test for ChromaStore with mocked client",
+          "type": "test",
+          "estimated_duration": "30m",
+          "status": "pending"
+        },
+        {
+          "task_id": "TEST-003",
+          "description": "TEST integration with Ollama embeddings (768-dim)",
+          "type": "test",
+          "estimated_duration": "20m",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Index a test file with --store=pinecone --provider=ollama",
+            "Search returns results with --store=pinecone --provider=ollama",
+            "Repeat for chroma store"
+          ]
+        }
+      ],
+      "hard_stop": false,
+      "success_criteria": "All tests pass, integration verified"
+    },
+    {
+      "phase_id": "phase_5",
+      "name": "Documentation and Close-out",
+      "description": "Update improvements.json and finalize workorder",
+      "tasks": [
+        {
+          "task_id": "DOC-001",
+          "description": "UPDATE improvements.json: mark IMP-CORE-065 as done",
+          "type": "documentation",
+          "estimated_duration": "10m",
+          "status": "pending"
+        },
+        {
+          "task_id": "DOC-002",
+          "description": "UPDATE note in improvements.json (7 open items remaining)",
+          "type": "documentation",
+          "estimated_duration": "5m",
+          "status": "pending"
+        },
+        {
+          "task_id": "COMMIT-001",
+          "description": "COMMIT all changes with conventional commits",
+          "type": "commit",
+          "estimated_duration": "10m",
+          "status": "pending"
+        },
+        {
+          "task_id": "COMMIT-002",
+          "description": "PUSH to origin main",
+          "type": "command",
+          "estimated_duration": "2m",
+          "status": "pending"
+        },
+        {
+          "task_id": "CLOSE-001",
+          "description": "UPDATE workorder communication.json with completion status",
+          "type": "documentation",
+          "estimated_duration": "10m",
+          "status": "pending"
+        },
+        {
+          "task_id": "TRACK-001",
+          "description": "UPDATE TRACKING/workorders.json status to complete",
+          "type": "tracking",
+          "estimated_duration": "5m",
+          "status": "pending"
+        }
+      ],
+      "hard_stop": false,
+      "success_criteria": "IMP-CORE-065 marked done, all commits pushed, tracking updated"
+    }
+  ],
+
+  "total_tasks": 17,
+  "estimated_duration": "5-6 hours",
+
+  "hard_stops": [
+    {
+      "phase": "phase_1",
+      "gate": "PineconeStore compiles and passes basic unit tests"
+    },
+    {
+      "phase": "phase_2",
+      "gate": "ChromaStore compiles and passes basic unit tests"
+    }
+  ],
+
+  "quality_gates": [
+    "Both stores implement full VectorStore interface",
+    "Error handling for missing configuration",
+    "CLI --store flag works for both new stores",
+    "Integration tested with Ollama embeddings",
+    "Unit tests with mocked clients",
+    "All 4 required files exist in workorder directory"
+  ],
+
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Implementation Plan",
+    "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+    "feature_id": "rag-pinecone-chroma-stores",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "READY"
+  }
+}

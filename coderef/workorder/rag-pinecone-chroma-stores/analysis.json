@@ -1,0 +1,123 @@
+{
+  "$schema": "https://schemas.coderef.com/analysis/v1",
+  "schema_version": "1.0",
+  "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+  "feature_name": "rag-pinecone-chroma-stores",
+  "analysis_date": "2026-04-22",
+
+  "current_state": {
+    "summary": "RAG system has SQLiteVectorStore fully implemented. Pinecone and Chroma are referenced in CLI help text but have no implementations. VectorStore interface is well-defined in vector-store.ts.",
+    "existing_vector_stores": [
+      {
+        "name": "SQLiteVectorStore",
+        "path": "src/integration/vector/sqlite-store.ts",
+        "status": "complete",
+        "features": ["JSON file storage", "namespace support", "dimension validation", "cosine similarity"]
+      }
+    ],
+    "missing_implementations": [
+      {
+        "name": "PineconeStore",
+        "referenced_in": ["src/cli/rag-index.ts", "src/cli/rag-search.ts"],
+        "status": "not_implemented"
+      },
+      {
+        "name": "ChromaStore",
+        "referenced_in": ["src/cli/rag-index.ts", "src/cli/rag-search.ts"],
+        "status": "not_implemented"
+      }
+    ]
+  },
+
+  "reference_components": {
+    "vector_store_interface": {
+      "path": "src/integration/vector/vector-store.ts",
+      "description": "VectorStore interface with initialize(), add(), search(), clear(), stats() methods",
+      "key_types": ["VectorStore", "VectorStoreConfig", "VectorStoreStats", "VectorStoreError"]
+    },
+    "sqlite_implementation": {
+      "path": "src/integration/vector/sqlite-store.ts",
+      "description": "Reference implementation showing VectorStore interface implementation pattern",
+      "patterns": ["Constructor with config", "async initialize()", "async add() with batching", "async search() with similarity", "async clear()", "stats()"]
+    },
+    "cli_integration": {
+      "rag_index": {
+        "path": "src/cli/rag-index.ts",
+        "description": "Has --store flag with pinecone|chroma|sqlite options but only sqlite implemented"
+      },
+      "rag_search": {
+        "path": "src/cli/rag-search.ts",
+        "description": "Has --store flag with pinecone|chroma|sqlite options but only sqlite implemented"
+      }
+    }
+  },
+
+  "affected_surfaces": [
+    "src/integration/vector/pinecone-store.ts (NEW)",
+    "src/integration/vector/chroma-store.ts (NEW)",
+    "src/cli/rag-index.ts (MODIFY - add store creation logic)",
+    "src/cli/rag-search.ts (MODIFY - add store creation logic)",
+    "package.json (MODIFY - add dependencies)"
+  ],
+
+  "blast_radius": {
+    "direct": ["vector store layer", "CLI commands"],
+    "indirect": ["embedding service (uses vector store)", "indexing orchestrator"],
+    "risk_level": "medium"
+  },
+
+  "dependencies_required": [
+    {
+      "name": "@pinecone-database/pinecone",
+      "version": "^2.0.0",
+      "purpose": "Pinecone vector database client"
+    },
+    {
+      "name": "chromadb",
+      "version": "^1.8.0",
+      "purpose": "Chroma vector database client"
+    }
+  ],
+
+  "environment_variables": [
+    "PINECONE_API_KEY",
+    "PINECONE_INDEX_NAME",
+    "CHROMA_URL (optional, defaults to http://localhost:8000)"
+  ],
+
+  "risk_assessment": {
+    "technical_risks": [
+      "Pinecone requires cloud API access - integration testing needs API key",
+      "Chroma requires running server or embedded mode",
+      "Both stores need proper error handling for connection failures"
+    ],
+    "mitigation": [
+      "Implement fallback to SQLite if env vars not set",
+      "Add clear error messages for missing configuration",
+      "Create mock/stub implementations for unit testing"
+    ]
+  },
+
+  "complexity_estimate": {
+    "pinecone_store": "medium - requires understanding Pinecone index/namespace model",
+    "chroma_store": "medium - requires understanding Chroma collection model",
+    "cli_updates": "low - mostly wiring existing --store flag to new implementations",
+    "testing": "medium - requires both unit tests and integration tests with real services"
+  },
+
+  "coding_standards": {
+    "typescript": "Strict mode, explicit return types on public methods",
+    "error_handling": "Use VectorStoreError with appropriate error codes",
+    "interface_compliance": "Must implement all VectorStore interface methods",
+    "naming": "PineconeStore, ChromaStore (follow SQLiteVectorStore pattern)"
+  },
+
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Analysis",
+    "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+    "feature_id": "rag-pinecone-chroma-stores",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true
+  }
+}

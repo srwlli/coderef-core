@@ -1,0 +1,45 @@
+{
+  "feature_name": "rag-pinecone-chroma-stores",
+  "description": "Implement Pinecone and Chroma vector store support for RAG system. Current RAG only supports SQLite. CLI help mentions Pinecone/Chroma but implementations are missing. Need complete VectorStore interface implementations for both providers with namespace/collection support.",
+  "goal": "Add production-ready Pinecone and Chroma vector store backends to enable scalable RAG deployments",
+  "requirements": [
+    "Implement PineconeStore with VectorStore interface",
+    "Implement ChromaStore with VectorStore interface",
+    "Add namespace support for Pinecone",
+    "Add collection management for Chroma",
+    "Update rag-index.ts CLI for --store=pinecone/chroma",
+    "Update rag-search.ts CLI for --store=pinecone/chroma",
+    "Add @pinecone-database/pinecone dependency",
+    "Add chromadb dependency",
+    "Test both stores with Ollama embeddings",
+    "Update improvements.json marking IMP-CORE-065 done"
+  ],
+  "out_of_scope": [],
+  "constraints": [],
+  "decisions": {},
+  "success_criteria": {
+    "functional": [
+      "PineconeStore implements all VectorStore methods",
+      "ChromaStore implements all VectorStore methods",
+      "CLI --store flag works with pinecone and chroma",
+      "Both stores tested with 768-dim Ollama embeddings",
+      "Error handling for missing API keys",
+      "Namespace/collection isolation working"
+    ]
+  },
+  "_metadata": {
+    "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+    "workorder_assigned_at": "2026-04-22T16:26:26.965083+00:00",
+    "workorder_assigned_by": "gather_context"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-RAG-PINECONE-CHROMA-STORES-001",
+    "feature_id": "rag-pinecone-chroma-stores",
+    "last_updated": "2026-04-22",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-22"
+  }
+}
