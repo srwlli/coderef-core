@@ -452,13 +452,6 @@
       ]
     },
     {
-      "element": "loadRAGDependencies",
-      "file": "src/cli/rag-index.ts",
-      "changes": [
-        "parameters changed"
-      ]
-    },
-    {
       "element": "printHelp",
       "file": "src/cli/rag-index.ts",
       "changes": [
@@ -468,13 +461,6 @@
     {
       "element": "main",
       "file": "src/cli/rag-index.ts",
-      "changes": [
-        "parameters changed"
-      ]
-    },
-    {
-      "element": "loadRAGDependencies",
-      "file": "src/cli/rag-search.ts",
       "changes": [
         "parameters changed"
       ]
@@ -1117,6 +1103,55 @@
       ]
     },
     {
+      "element": "AnthropicProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "AnthropicProvider.supportsEmbeddings",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "validateRegistry",
+      "file": "src/integration/llm/model-registry.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "OllamaProvider.getProviderName",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "OllamaProvider.getModel",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "OllamaProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "OllamaProvider.supportsEmbeddings",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
       "element": "OpenAIProvider.getProviderName",
       "file": "src/integration/llm/openai-provider.ts",
       "changes": [
@@ -1125,6 +1160,20 @@
     },
     {
       "element": "OpenAIProvider.getModel",
+      "file": "src/integration/llm/openai-provider.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "OpenAIProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/openai-provider.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "OpenAIProvider.supportsEmbeddings",
       "file": "src/integration/llm/openai-provider.ts",
       "changes": [
         "parameters changed"
@@ -2396,13 +2445,27 @@
       "changes": [
         "parameters changed"
       ]
+    },
+    {
+      "element": "main",
+      "file": "__tests__/.test-venv-fixtures/src/app.py",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "Application.run",
+      "file": "__tests__/.test-venv-fixtures/src/app.py",
+      "changes": [
+        "parameters changed"
+      ]
     }
   ],
   "summary": {
-    "totalCurrent": 1935,
-    "totalPrevious": 1935,
+    "totalCurrent": 1970,
+    "totalPrevious": 1970,
     "added": 0,
     "deleted": 0,
-    "modified": 342
+    "modified": 351
   }
 }

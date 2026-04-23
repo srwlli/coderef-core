@@ -1,8 +1,8 @@
 {
   "stats": {
-    "totalFiles": 274,
-    "totalElements": 1971,
-    "totalLines": 80094,
+    "totalFiles": 282,
+    "totalElements": 2006,
+    "totalLines": 81803,
     "languages": [
       "ts",
       "js",
@@ -349,6 +349,14 @@
     {
       "name": "main",
       "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "type": "cli",
+      "description": "CLI command handler (main)",
+      "exported": true,
+      "isPrimary": false
+    },
+    {
+      "name": "main",
+      "file": "__tests__/.test-venv-fixtures/src/app.py",
       "type": "cli",
       "description": "CLI command handler (main)",
       "exported": true,
@@ -1058,9 +1066,9 @@
     ".": 8,
     "examples": 1,
     "scripts": 10,
-    "src": 202,
+    "src": 205,
     "utils": 3,
-    "__tests__": 36,
+    "__tests__": 41,
     "autoresearch": 14
   },
   "executiveSummary": {
@@ -1467,7 +1475,7 @@
     "confidence": 0.95,
     "purpose": "@coderef/CODEREF-CORE is a reusable library/SDK for other developers to import and use with cli-tool capabilities",
     "indicators": [
-      "CLI entry points: 24",
+      "CLI entry points: 25",
       "package.json bin field present",
       "Library entry points: 19",
       "Library exports configured",
@@ -1484,8 +1492,8 @@
     ]
   },
   "dependencyRisks": {
-    "totalDependencies": 22,
-    "directDependencies": 18,
+    "totalDependencies": 24,
+    "directDependencies": 20,
     "devDependencies": 4,
     "riskScore": 11,
     "riskLevel": "low",
@@ -1515,11 +1523,27 @@
         "recommendation": "Verify if dependency is truly unused and can be removed"
       },
       {
+        "name": "@pinecone-database/pinecone",
+        "version": "^2.0.0",
+        "severity": "low",
+        "type": "unused",
+        "description": "Dependency '@pinecone-database/pinecone' is declared but may not be imported in source code",
+        "recommendation": "Verify if dependency is truly unused and can be removed"
+      },
+      {
         "name": "acorn",
         "version": "^8.15.0",
         "severity": "low",
         "type": "unused",
         "description": "Dependency 'acorn' is declared but may not be imported in source code",
+        "recommendation": "Verify if dependency is truly unused and can be removed"
+      },
+      {
+        "name": "chromadb",
+        "version": "^1.8.0",
+        "severity": "low",
+        "type": "unused",
+        "description": "Dependency 'chromadb' is declared but may not be imported in source code",
         "recommendation": "Verify if dependency is truly unused and can be removed"
       },
       {
@@ -1695,7 +1719,7 @@
       "outdatedCount": 8,
       "vulnerabilityCount": 0,
       "circularImportCount": 0,
-      "unusedCount": 17,
+      "unusedCount": 19,
       "highChurnCount": 0
     }
   },
@@ -1706,7 +1730,7 @@
         "confidence": 0.6,
         "evidence": [
           "Found 0 service directories",
-          "Found 8 service class implementations",
+          "Found 10 service class implementations",
           "Multiple entry points detected (potential service boundaries)"
         ],
         "locations": []
@@ -1737,7 +1761,9 @@
         "@babel/parser",
         "@babel/traverse",
         "@babel/types",
+        "@pinecone-database/pinecone",
         "acorn",
+        "chromadb",
         "glob",
         "minimatch",
         "openai",
@@ -1929,6 +1955,13 @@
         ]
       },
       {
+        "file": "dist\\sqlite-store.js",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
         "file": "dist\\src\\adapter\\graph-to-elements.d.ts",
         "totalExports": 1,
         "documentedExports": 0,
@@ -2087,6 +2120,24 @@
         "undocumentedItems": []
       },
       {
+        "file": "dist\\src\\analyzer\\frameworks\\index.d.ts",
+        "totalExports": 10,
+        "documentedExports": 0,
+        "coverageRatio": 0,
+        "undocumentedItems": [
+          " nextjsDetector ",
+          " sveltekitDetector ",
+          " nuxtDetector ",
+          " remixDetector ",
+          " expressDetector ",
+          " flaskDetector ",
+          " fastapiDetector ",
+          "frameworkRegistry",
+          "type FrameworkDetector",
+          "type FrameworkDetectionResult"
+        ]
+      },
+      {
         "file": "dist\\src\\analyzer\\graph-analyzer.d.ts",
         "totalExports": 2,
         "documentedExports": 2,
@@ -2210,9 +2261,9 @@
       },
       {
         "file": "dist\\src\\analyzer\\middleware-detector.d.ts",
-        "totalExports": 6,
-        "documentedExports": 0,
-        "coverageRatio": 0,
+        "totalExports": 7,
+        "documentedExports": 1,
+        "coverageRatio": 0.14285714285714285,
         "undocumentedItems": [
           "MiddlewareChain",
           "MiddlewareHandler",
@@ -2695,6 +2746,13 @@
         "undocumentedItems": []
       },
       {
+        "file": "dist\\src\\integration\\llm\\model-registry.d.ts",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
         "file": "dist\\src\\integration\\rag\\answer-generation-service.d.ts",
         "totalExports": 2,
         "documentedExports": 2,
@@ -2773,8 +2831,8 @@
       },
       {
         "file": "dist\\src\\integration\\rag\\rag-config.d.ts",
-        "totalExports": 1,
-        "documentedExports": 1,
+        "totalExports": 2,
+        "documentedExports": 2,
         "coverageRatio": 1,
         "undocumentedItems": []
       },
@@ -2786,9 +2844,23 @@
         "undocumentedItems": []
       },
       {
+        "file": "dist\\src\\integration\\vector\\sqlite-store.js",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
         "file": "dist\\src\\integration\\vector\\vector-store.d.ts",
         "totalExports": 9,
         "documentedExports": 9,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\src\\integration\\vector\\vector-store.js",
+        "totalExports": 2,
+        "documentedExports": 2,
         "coverageRatio": 1,
         "undocumentedItems": []
       },
@@ -2883,6 +2955,13 @@
         "file": "dist\\src\\scanner\\error-reporter.d.ts",
         "totalExports": 5,
         "documentedExports": 5,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\src\\scanner\\framework-registry.d.ts",
+        "totalExports": 2,
+        "documentedExports": 2,
         "coverageRatio": 1,
         "undocumentedItems": []
       },
@@ -3009,6 +3088,20 @@
           "ValidationResult",
           "ValidatorOptions"
         ]
+      },
+      {
+        "file": "dist\\vector-store.d.ts",
+        "totalExports": 9,
+        "documentedExports": 9,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\vector-store.js",
+        "totalExports": 2,
+        "documentedExports": 2,
+        "coverageRatio": 1,
+        "undocumentedItems": []
       },
       {
         "file": "examples\\nextjs-api-route.ts",
@@ -4114,6 +4207,20 @@
         "undocumentedItems": []
       },
       {
+        "file": "src\\integration\\llm\\model-registry.ts",
+        "totalExports": 7,
+        "documentedExports": 7,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "src\\integration\\llm\\ollama-provider.ts",
+        "totalExports": 2,
+        "documentedExports": 2,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
         "file": "src\\integration\\llm\\openai-provider.ts",
         "totalExports": 2,
         "documentedExports": 2,
@@ -4206,8 +4313,8 @@
       },
       {
         "file": "src\\integration\\rag\\rag-config.ts",
-        "totalExports": 5,
-        "documentedExports": 5,
+        "totalExports": 6,
+        "documentedExports": 6,
         "coverageRatio": 1,
         "undocumentedItems": []
       },
@@ -4747,6 +4854,22 @@
         "densityRatio": 0.21666666666666667
       },
       {
+        "file": "dist\\sqlite-store.d.ts",
+        "totalLines": 94,
+        "commentLines": 72,
+        "codeLines": 21,
+        "blankLines": 1,
+        "densityRatio": 0.7659574468085106
+      },
+      {
+        "file": "dist\\sqlite-store.js",
+        "totalLines": 323,
+        "commentLines": 99,
+        "codeLines": 223,
+        "blankLines": 1,
+        "densityRatio": 0.3065015479876161
+      },
+      {
         "file": "dist\\src\\adapter\\graph-to-elements.d.ts",
         "totalLines": 45,
         "commentLines": 28,
@@ -4937,6 +5060,134 @@
         "codeLines": 275,
         "blankLines": 1,
         "densityRatio": 0.2
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\express-detector.d.ts",
+        "totalLines": 10,
+        "commentLines": 6,
+        "codeLines": 3,
+        "blankLines": 1,
+        "densityRatio": 0.6
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\express-detector.js",
+        "totalLines": 42,
+        "commentLines": 10,
+        "codeLines": 31,
+        "blankLines": 1,
+        "densityRatio": 0.23809523809523808
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\fastapi-detector.d.ts",
+        "totalLines": 10,
+        "commentLines": 6,
+        "codeLines": 3,
+        "blankLines": 1,
+        "densityRatio": 0.6
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\fastapi-detector.js",
+        "totalLines": 44,
+        "commentLines": 9,
+        "codeLines": 34,
+        "blankLines": 1,
+        "densityRatio": 0.20454545454545456
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\flask-detector.d.ts",
+        "totalLines": 10,
+        "commentLines": 6,
+        "codeLines": 3,
+        "blankLines": 1,
+        "densityRatio": 0.6
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\flask-detector.js",
+        "totalLines": 43,
+        "commentLines": 9,
+        "codeLines": 33,
+        "blankLines": 1,
+        "densityRatio": 0.20930232558139536
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\index.d.ts",
+        "totalLines": 13,
+        "commentLines": 4,
+        "codeLines": 8,
+        "blankLines": 1,
+        "densityRatio": 0.3076923076923077
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\index.js",
+        "totalLines": 25,
+        "commentLines": 5,
+        "codeLines": 19,
+        "blankLines": 1,
+        "densityRatio": 0.2
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\nextjs-detector.d.ts",
+        "totalLines": 10,
+        "commentLines": 6,
+        "codeLines": 3,
+        "blankLines": 1,
+        "densityRatio": 0.6
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\nextjs-detector.js",
+        "totalLines": 50,
+        "commentLines": 8,
+        "codeLines": 41,
+        "blankLines": 1,
+        "densityRatio": 0.16
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\nuxt-detector.d.ts",
+        "totalLines": 10,
+        "commentLines": 6,
+        "codeLines": 3,
+        "blankLines": 1,
+        "densityRatio": 0.6
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\nuxt-detector.js",
+        "totalLines": 27,
+        "commentLines": 6,
+        "codeLines": 20,
+        "blankLines": 1,
+        "densityRatio": 0.2222222222222222
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\remix-detector.d.ts",
+        "totalLines": 10,
+        "commentLines": 6,
+        "codeLines": 3,
+        "blankLines": 1,
+        "densityRatio": 0.6
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\remix-detector.js",
+        "totalLines": 43,
+        "commentLines": 8,
+        "codeLines": 34,
+        "blankLines": 1,
+        "densityRatio": 0.18604651162790697
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\sveltekit-detector.d.ts",
+        "totalLines": 10,
+        "commentLines": 6,
+        "codeLines": 3,
+        "blankLines": 1,
+        "densityRatio": 0.6
+      },
+      {
+        "file": "dist\\src\\analyzer\\frameworks\\sveltekit-detector.js",
+        "totalLines": 43,
+        "commentLines": 8,
+        "codeLines": 34,
+        "blankLines": 1,
+        "densityRatio": 0.18604651162790697
       },
       {
         "file": "dist\\src\\analyzer\\frontend-call-parsers.d.ts",
@@ -5180,19 +5431,19 @@
       },
       {
         "file": "dist\\src\\analyzer\\middleware-detector.d.ts",
-        "totalLines": 134,
-        "commentLines": 65,
-        "codeLines": 68,
+        "totalLines": 178,
+        "commentLines": 83,
+        "codeLines": 94,
         "blankLines": 1,
-        "densityRatio": 0.48507462686567165
+        "densityRatio": 0.46629213483146065
       },
       {
         "file": "dist\\src\\analyzer\\middleware-detector.js",
-        "totalLines": 372,
-        "commentLines": 74,
-        "codeLines": 297,
+        "totalLines": 620,
+        "commentLines": 98,
+        "codeLines": 521,
         "blankLines": 1,
-        "densityRatio": 0.1989247311827957
+        "densityRatio": 0.15806451612903225
       },
       {
         "file": "dist\\src\\analyzer\\migration-route-analyzer.d.ts",
@@ -5284,11 +5535,11 @@
       },
       {
         "file": "dist\\src\\cli\\rag-index.js",
-        "totalLines": 376,
-        "commentLines": 38,
-        "codeLines": 329,
-        "blankLines": 9,
-        "densityRatio": 0.10106382978723404
+        "totalLines": 429,
+        "commentLines": 47,
+        "codeLines": 371,
+        "blankLines": 11,
+        "densityRatio": 0.10955710955710955
       },
       {
         "file": "dist\\src\\cli\\rag-search.d.ts",
@@ -5300,11 +5551,11 @@
       },
       {
         "file": "dist\\src\\cli\\rag-search.js",
-        "totalLines": 371,
-        "commentLines": 36,
-        "codeLines": 326,
+        "totalLines": 407,
+        "commentLines": 41,
+        "codeLines": 357,
         "blankLines": 9,
-        "densityRatio": 0.09703504043126684
+        "densityRatio": 0.10073710073710074
       },
       {
         "file": "dist\\src\\cli\\rag-status.d.ts",
@@ -5612,19 +5863,19 @@
       },
       {
         "file": "dist\\src\\context\\fuzzy-resolver.d.ts",
-        "totalLines": 87,
-        "commentLines": 45,
-        "codeLines": 41,
+        "totalLines": 98,
+        "commentLines": 54,
+        "codeLines": 43,
         "blankLines": 1,
-        "densityRatio": 0.5172413793103449
+        "densityRatio": 0.5510204081632653
       },
       {
         "file": "dist\\src\\context\\fuzzy-resolver.js",
-        "totalLines": 208,
-        "commentLines": 54,
-        "codeLines": 153,
+        "totalLines": 315,
+        "commentLines": 71,
+        "codeLines": 243,
         "blankLines": 1,
-        "densityRatio": 0.25961538461538464
+        "densityRatio": 0.2253968253968254
       },
       {
         "file": "dist\\src\\context\\impact-simulator.d.ts",
@@ -6236,43 +6487,43 @@
       },
       {
         "file": "dist\\src\\integration\\llm\\anthropic-provider.d.ts",
-        "totalLines": 76,
-        "commentLines": 57,
-        "codeLines": 18,
+        "totalLines": 85,
+        "commentLines": 64,
+        "codeLines": 20,
         "blankLines": 1,
-        "densityRatio": 0.75
+        "densityRatio": 0.7529411764705882
       },
       {
         "file": "dist\\src\\integration\\llm\\anthropic-provider.js",
-        "totalLines": 223,
-        "commentLines": 66,
-        "codeLines": 156,
+        "totalLines": 237,
+        "commentLines": 73,
+        "codeLines": 163,
         "blankLines": 1,
-        "densityRatio": 0.29596412556053814
+        "densityRatio": 0.3080168776371308
       },
       {
         "file": "dist\\src\\integration\\llm\\index.d.ts",
-        "totalLines": 6,
+        "totalLines": 7,
         "commentLines": 4,
-        "codeLines": 1,
+        "codeLines": 2,
         "blankLines": 1,
-        "densityRatio": 0.6666666666666666
+        "densityRatio": 0.5714285714285714
       },
       {
         "file": "dist\\src\\integration\\llm\\index.js",
-        "totalLines": 24,
+        "totalLines": 25,
         "commentLines": 6,
-        "codeLines": 17,
+        "codeLines": 18,
         "blankLines": 1,
-        "densityRatio": 0.25
+        "densityRatio": 0.24
       },
       {
         "file": "dist\\src\\integration\\llm\\llm-provider.d.ts",
-        "totalLines": 170,
-        "commentLines": 117,
-        "codeLines": 52,
+        "totalLines": 199,
+        "commentLines": 144,
+        "codeLines": 54,
         "blankLines": 1,
-        "densityRatio": 0.6882352941176471
+        "densityRatio": 0.7236180904522613
       },
       {
         "file": "dist\\src\\integration\\llm\\llm-provider.js",
@@ -6283,20 +6534,52 @@
         "densityRatio": 0.44
       },
       {
-        "file": "dist\\src\\integration\\llm\\openai-provider.d.ts",
-        "totalLines": 66,
-        "commentLines": 47,
-        "codeLines": 18,
+        "file": "dist\\src\\integration\\llm\\model-registry.d.ts",
+        "totalLines": 89,
+        "commentLines": 61,
+        "codeLines": 27,
         "blankLines": 1,
-        "densityRatio": 0.7121212121212122
+        "densityRatio": 0.6853932584269663
+      },
+      {
+        "file": "dist\\src\\integration\\llm\\model-registry.js",
+        "totalLines": 177,
+        "commentLines": 63,
+        "codeLines": 113,
+        "blankLines": 1,
+        "densityRatio": 0.3559322033898305
+      },
+      {
+        "file": "dist\\src\\integration\\llm\\ollama-provider.d.ts",
+        "totalLines": 101,
+        "commentLines": 79,
+        "codeLines": 21,
+        "blankLines": 1,
+        "densityRatio": 0.7821782178217822
+      },
+      {
+        "file": "dist\\src\\integration\\llm\\ollama-provider.js",
+        "totalLines": 302,
+        "commentLines": 98,
+        "codeLines": 203,
+        "blankLines": 1,
+        "densityRatio": 0.32450331125827814
+      },
+      {
+        "file": "dist\\src\\integration\\llm\\openai-provider.d.ts",
+        "totalLines": 75,
+        "commentLines": 54,
+        "codeLines": 20,
+        "blankLines": 1,
+        "densityRatio": 0.72
       },
       {
         "file": "dist\\src\\integration\\llm\\openai-provider.js",
-        "totalLines": 229,
-        "commentLines": 56,
-        "codeLines": 172,
+        "totalLines": 252,
+        "commentLines": 64,
+        "codeLines": 187,
         "blankLines": 1,
-        "densityRatio": 0.2445414847161572
+        "densityRatio": 0.25396825396825395
       },
       {
         "file": "dist\\src\\integration\\rag\\answer-generation-service.d.ts",
@@ -6508,19 +6791,19 @@
       },
       {
         "file": "dist\\src\\integration\\rag\\rag-config.d.ts",
-        "totalLines": 133,
-        "commentLines": 62,
-        "codeLines": 70,
+        "totalLines": 140,
+        "commentLines": 65,
+        "codeLines": 74,
         "blankLines": 1,
-        "densityRatio": 0.46616541353383456
+        "densityRatio": 0.4642857142857143
       },
       {
         "file": "dist\\src\\integration\\rag\\rag-config.js",
-        "totalLines": 342,
-        "commentLines": 68,
-        "codeLines": 265,
+        "totalLines": 369,
+        "commentLines": 76,
+        "codeLines": 284,
         "blankLines": 9,
-        "densityRatio": 0.19883040935672514
+        "densityRatio": 0.20596205962059622
       },
       {
         "file": "dist\\src\\integration\\rag\\semantic-search.d.ts",
@@ -6596,11 +6879,11 @@
       },
       {
         "file": "dist\\src\\integration\\vector\\sqlite-store.js",
-        "totalLines": 353,
-        "commentLines": 98,
-        "codeLines": 254,
+        "totalLines": 323,
+        "commentLines": 99,
+        "codeLines": 223,
         "blankLines": 1,
-        "densityRatio": 0.2776203966005666
+        "densityRatio": 0.3065015479876161
       },
       {
         "file": "dist\\src\\integration\\vector\\vector-store.d.ts",
@@ -6612,11 +6895,11 @@
       },
       {
         "file": "dist\\src\\integration\\vector\\vector-store.js",
-        "totalLines": 44,
+        "totalLines": 40,
         "commentLines": 19,
-        "codeLines": 24,
+        "codeLines": 20,
         "blankLines": 1,
-        "densityRatio": 0.4318181818181818
+        "densityRatio": 0.475
       },
       {
         "file": "dist\\src\\parser\\parser.d.ts",
@@ -7035,6 +7318,22 @@
         "densityRatio": 0.4186046511627907
       },
       {
+        "file": "dist\\src\\scanner\\framework-registry.d.ts",
+        "totalLines": 69,
+        "commentLines": 45,
+        "codeLines": 23,
+        "blankLines": 1,
+        "densityRatio": 0.6521739130434783
+      },
+      {
+        "file": "dist\\src\\scanner\\framework-registry.js",
+        "totalLines": 82,
+        "commentLines": 37,
+        "codeLines": 44,
+        "blankLines": 1,
+        "densityRatio": 0.45121951219512196
+      },
+      {
         "file": "dist\\src\\scanner\\frontend-scanner.d.ts",
         "totalLines": 39,
         "commentLines": 33,
@@ -7067,6 +7366,22 @@
         "densityRatio": 0.34545454545454546
       },
       {
+        "file": "dist\\src\\scanner\\register-frameworks.d.ts",
+        "totalLines": 13,
+        "commentLines": 10,
+        "codeLines": 2,
+        "blankLines": 1,
+        "densityRatio": 0.7692307692307693
+      },
+      {
+        "file": "dist\\src\\scanner\\register-frameworks.js",
+        "totalLines": 28,
+        "commentLines": 11,
+        "codeLines": 16,
+        "blankLines": 1,
+        "densityRatio": 0.39285714285714285
+      },
+      {
         "file": "dist\\src\\scanner\\scanner-worker.d.ts",
         "totalLines": 9,
         "commentLines": 7,
@@ -7085,18 +7400,18 @@
       {
         "file": "dist\\src\\scanner\\scanner.d.ts",
         "totalLines": 125,
-        "commentLines": 81,
-        "codeLines": 43,
+        "commentLines": 80,
+        "codeLines": 44,
         "blankLines": 1,
-        "densityRatio": 0.648
+        "densityRatio": 0.64
       },
       {
         "file": "dist\\src\\scanner\\scanner.js",
-        "totalLines": 1345,
-        "commentLines": 336,
-        "codeLines": 1008,
+        "totalLines": 1353,
+        "commentLines": 335,
+        "codeLines": 1017,
         "blankLines": 1,
-        "densityRatio": 0.24981412639405204
+        "densityRatio": 0.24759793052475979
       },
       {
         "file": "dist\\src\\scanner\\tree-sitter-scanner.d.ts",
@@ -7321,6 +7636,22 @@
         "codeLines": 94,
         "blankLines": 1,
         "densityRatio": 0.24
+      },
+      {
+        "file": "dist\\vector-store.d.ts",
+        "totalLines": 263,
+        "commentLines": 185,
+        "codeLines": 77,
+        "blankLines": 1,
+        "densityRatio": 0.7034220532319392
+      },
+      {
+        "file": "dist\\vector-store.js",
+        "totalLines": 40,
+        "commentLines": 19,
+        "codeLines": 20,
+        "blankLines": 1,
+        "densityRatio": 0.475
       },
       {
         "file": "examples\\nextjs-api-route.ts",
@@ -7732,19 +8063,19 @@
       },
       {
         "file": "src\\cli\\rag-index.ts",
-        "totalLines": 402,
-        "commentLines": 38,
-        "codeLines": 306,
-        "blankLines": 58,
-        "densityRatio": 0.0945273631840796
+        "totalLines": 511,
+        "commentLines": 50,
+        "codeLines": 395,
+        "blankLines": 66,
+        "densityRatio": 0.09784735812133072
       },
       {
         "file": "src\\cli\\rag-search.ts",
-        "totalLines": 397,
-        "commentLines": 36,
-        "codeLines": 302,
-        "blankLines": 59,
-        "densityRatio": 0.0906801007556675
+        "totalLines": 489,
+        "commentLines": 45,
+        "codeLines": 381,
+        "blankLines": 63,
+        "densityRatio": 0.09202453987730061
       },
       {
         "file": "src\\cli\\rag-status.ts",
@@ -8212,35 +8543,51 @@
       },
       {
         "file": "src\\integration\\llm\\anthropic-provider.ts",
-        "totalLines": 301,
-        "commentLines": 66,
-        "codeLines": 209,
-        "blankLines": 26,
-        "densityRatio": 0.21926910299003322
+        "totalLines": 317,
+        "commentLines": 73,
+        "codeLines": 216,
+        "blankLines": 28,
+        "densityRatio": 0.2302839116719243
       },
       {
         "file": "src\\integration\\llm\\index.ts",
-        "totalLines": 9,
+        "totalLines": 10,
         "commentLines": 6,
-        "codeLines": 1,
+        "codeLines": 2,
         "blankLines": 2,
-        "densityRatio": 0.6666666666666666
+        "densityRatio": 0.6
       },
       {
         "file": "src\\integration\\llm\\llm-provider.ts",
-        "totalLines": 215,
-        "commentLines": 118,
-        "codeLines": 60,
-        "blankLines": 37,
-        "densityRatio": 0.5488372093023256
+        "totalLines": 246,
+        "commentLines": 145,
+        "codeLines": 62,
+        "blankLines": 39,
+        "densityRatio": 0.5894308943089431
+      },
+      {
+        "file": "src\\integration\\llm\\model-registry.ts",
+        "totalLines": 225,
+        "commentLines": 78,
+        "codeLines": 125,
+        "blankLines": 22,
+        "densityRatio": 0.3466666666666667
+      },
+      {
+        "file": "src\\integration\\llm\\ollama-provider.ts",
+        "totalLines": 416,
+        "commentLines": 104,
+        "codeLines": 260,
+        "blankLines": 52,
+        "densityRatio": 0.25
       },
       {
         "file": "src\\integration\\llm\\openai-provider.ts",
-        "totalLines": 294,
-        "commentLines": 56,
-        "codeLines": 212,
-        "blankLines": 26,
-        "densityRatio": 0.19047619047619047
+        "totalLines": 322,
+        "commentLines": 64,
+        "codeLines": 230,
+        "blankLines": 28,
+        "densityRatio": 0.19875776397515527
       },
       {
         "file": "src\\integration\\rag\\answer-generation-service.ts",
@@ -8348,11 +8695,11 @@
       },
       {
         "file": "src\\integration\\rag\\rag-config.ts",
-        "totalLines": 443,
-        "commentLines": 76,
-        "codeLines": 309,
-        "blankLines": 58,
-        "densityRatio": 0.17155756207674944
+        "totalLines": 482,
+        "commentLines": 87,
+        "codeLines": 332,
+        "blankLines": 63,
+        "densityRatio": 0.18049792531120332
       },
       {
         "file": "src\\integration\\rag\\semantic-search.ts",
@@ -8388,11 +8735,11 @@
       },
       {
         "file": "src\\integration\\vector\\sqlite-store.ts",
-        "totalLines": 435,
-        "commentLines": 101,
-        "codeLines": 277,
-        "blankLines": 57,
-        "densityRatio": 0.23218390804597702
+        "totalLines": 447,
+        "commentLines": 102,
+        "codeLines": 286,
+        "blankLines": 59,
+        "densityRatio": 0.22818791946308725
       },
       {
         "file": "src\\integration\\vector\\vector-store.ts",
@@ -8851,11 +9198,11 @@
         "densityRatio": 0
       }
     ],
-    "averageCommentDensity": 0.3638991493412533,
-    "totalFilesAnalyzed": 519,
+    "averageCommentDensity": 0.368348148170791,
+    "totalFilesAnalyzed": 549,
     "recommendations": [
       "Add more sections to README (8/18 present). Priority: Installation, Usage, API Reference",
-      "Add JSDoc comments to 80 files with <50% documentation coverage",
+      "Add JSDoc comments to 81 files with <50% documentation coverage",
       "Create a CHANGELOG.md to track version history"
     ]
   }

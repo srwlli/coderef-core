@@ -1,0 +1,154 @@
+{
+  "version": "2.0.0",
+  "generatedAt": "2026-04-22T17:21:02.181Z",
+  "projectPath": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project",
+  "nodes": [
+    {
+      "id": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "type": "file",
+      "label": "auth.ts",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts"
+    },
+    {
+      "id": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "type": "file",
+      "label": "user.ts",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts"
+    },
+    {
+      "id": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts:AuthService",
+      "type": "element",
+      "label": "AuthService",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "elementType": "class",
+      "metadata": {
+        "line": 9,
+        "exported": true
+      }
+    },
+    {
+      "id": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts:authenticateUser",
+      "type": "element",
+      "label": "authenticateUser",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "elementType": "function",
+      "metadata": {
+        "line": 1,
+        "exported": true
+      }
+    },
+    {
+      "id": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts:validateCredentials",
+      "type": "element",
+      "label": "validateCredentials",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "elementType": "function",
+      "metadata": {
+        "line": 5,
+        "exported": false
+      }
+    },
+    {
+      "id": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts:login",
+      "type": "element",
+      "label": "login",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "elementType": "method",
+      "metadata": {
+        "line": 10,
+        "exported": false
+      }
+    },
+    {
+      "id": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts:DEFAULT_USER",
+      "type": "element",
+      "label": "DEFAULT_USER",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "elementType": "constant",
+      "metadata": {
+        "line": 9,
+        "exported": true
+      }
+    },
+    {
+      "id": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts:UserService",
+      "type": "element",
+      "label": "UserService",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "elementType": "class",
+      "metadata": {
+        "line": 1,
+        "exported": true
+      }
+    },
+    {
+      "id": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts:constructor",
+      "type": "element",
+      "label": "constructor",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "elementType": "method",
+      "metadata": {
+        "line": 2,
+        "exported": false
+      }
+    },
+    {
+      "id": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts:findUser",
+      "type": "element",
+      "label": "findUser",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "elementType": "method",
+      "metadata": {
+        "line": 4,
+        "exported": false
+      }
+    }
+  ],
+  "edges": [
+    {
+      "source": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "target": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts:AuthService",
+      "type": "imports"
+    },
+    {
+      "source": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "target": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts:authenticateUser",
+      "type": "imports"
+    },
+    {
+      "source": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "target": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts:validateCredentials",
+      "type": "imports"
+    },
+    {
+      "source": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts",
+      "target": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/auth.ts:login",
+      "type": "imports"
+    },
+    {
+      "source": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "target": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts:DEFAULT_USER",
+      "type": "imports"
+    },
+    {
+      "source": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "target": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts:UserService",
+      "type": "imports"
+    },
+    {
+      "source": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "target": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts:constructor",
+      "type": "imports"
+    },
+    {
+      "source": "file:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts",
+      "target": "element:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/__tests__/.test-integration-project/src/user.ts:findUser",
+      "type": "imports"
+    }
+  ],
+  "statistics": {
+    "totalNodes": 10,
+    "totalEdges": 8,
+    "filesWithDependencies": 2
+  }
+}

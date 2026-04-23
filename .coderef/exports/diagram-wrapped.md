@@ -160,11 +160,11 @@ graph TD
 
 ## Statistics
 
-- **Nodes:** 1971
-- **Edges:** 10132
-- **Files:** 274
-- **Elements:** 1971
+- **Nodes:** 2006
+- **Edges:** 10228
+- **Files:** 282
+- **Elements:** 2006
 
 ## Generated
 
-2026-04-22T04:24:35.712Z
+2026-04-22T21:00:12.486Z

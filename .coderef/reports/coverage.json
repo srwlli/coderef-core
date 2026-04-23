@@ -1,8 +1,8 @@
 {
   "summary": {
-    "totalFiles": 205,
-    "testedFiles": 68,
-    "coveragePercentage": 33
+    "totalFiles": 207,
+    "testedFiles": 71,
+    "coveragePercentage": 34
   },
   "files": [
     {
@@ -468,6 +468,15 @@
       "tested": false
     },
     {
+      "file": "src/integration/llm/model-registry.ts",
+      "tested": false
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "tested": true,
+      "testFile": "src/integration/llm/__tests__/ollama-provider-unreachable.test.ts"
+    },
+    {
       "file": "src/integration/llm/openai-provider.ts",
       "tested": false
     },
@@ -538,7 +547,8 @@
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "tested": false
+      "tested": true,
+      "testFile": "__tests__/chroma-store.test.ts"
     },
     {
       "file": "src/integration/vector/index.ts",
@@ -547,7 +557,8 @@
     },
     {
       "file": "src/integration/vector/pinecone-store.ts",
-      "tested": false
+      "tested": true,
+      "testFile": "__tests__/pinecone-store.test.ts"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
@@ -968,6 +979,7 @@
     "src/integration/ai-prompt-generator.ts",
     "src/integration/llm/anthropic-provider.ts",
     "src/integration/llm/llm-provider.ts",
+    "src/integration/llm/model-registry.ts",
     "src/integration/llm/openai-provider.ts",
     "src/integration/rag/answer-generation-service.ts",
     "src/integration/rag/code-chunk.ts",
@@ -979,8 +991,6 @@
     "src/integration/rag/prompt-templates.ts",
     "src/integration/rag/rag-config.ts",
     "src/integration/rag/semantic-search.ts",
-    "src/integration/vector/chroma-store.ts",
-    "src/integration/vector/pinecone-store.ts",
     "src/integration/vector/sqlite-store.ts",
     "src/integration/vector/vector-store.ts",
     "src/pipeline/generators/graph-output.ts",

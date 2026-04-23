@@ -1,0 +1,14 @@
+{
+  "byCallType": {
+    "fetch": [
+      {
+        "path": "/api/missing",
+        "method": "GET",
+        "file": "app.tsx",
+        "line": 10,
+        "callType": "fetch",
+        "confidence": 100
+      }
+    ]
+  }
+}

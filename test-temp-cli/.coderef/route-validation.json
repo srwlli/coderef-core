@@ -1,0 +1,26 @@
+{
+  "totalFrontendCalls": 1,
+  "totalServerRoutes": 0,
+  "matchedRoutes": 0,
+  "issues": [
+    {
+      "type": "missing_route",
+      "severity": "critical",
+      "frontendCall": {
+        "path": "/api/missing",
+        "method": "GET",
+        "file": "app.tsx",
+        "line": 10,
+        "callType": "fetch",
+        "confidence": 100
+      },
+      "message": "No server route found for GET /api/missing",
+      "suggestion": "Add a server route handler for GET /api/missing or verify the frontend call is correct (app.tsx:10)"
+    }
+  ],
+  "summary": {
+    "critical": 1,
+    "warnings": 0,
+    "info": 0
+  }
+}

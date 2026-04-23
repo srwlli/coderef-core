@@ -4704,168 +4704,176 @@
       "async": true,
       "uuid": "11c8d997-036c-585a-a087-cda98464d23c"
     },
-    "beafd008-14c0-501e-8aba-9373a3ab43a5": {
+    "e9376ede-8cc4-56d3-ab3b-7ba335231cc6": {
       "type": "function",
       "name": "loadRAGDependencies",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts",
-      "line": 23,
-      "parameters": [],
+      "line": 26,
+      "parameters": [
+        "providerName",
+        "storeName"
+      ],
       "exported": false,
       "async": true,
-      "uuid": "beafd008-14c0-501e-8aba-9373a3ab43a5"
+      "uuid": "e9376ede-8cc4-56d3-ab3b-7ba335231cc6"
     },
-    "4db96933-7694-569b-9522-73a9b38cd5ed": {
+    "908438d3-c869-536a-bafd-4219e78c3b65": {
       "type": "interface",
       "name": "CliArgs",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts",
-      "line": 37,
+      "line": 63,
       "exported": false,
-      "uuid": "4db96933-7694-569b-9522-73a9b38cd5ed"
+      "uuid": "908438d3-c869-536a-bafd-4219e78c3b65"
     },
-    "2dba9b59-7e24-550e-93a2-a168d5efc63b": {
+    "c29eeede-3d0c-5adc-8889-45ea8ffcfb08": {
       "type": "function",
       "name": "parseArgs",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts",
-      "line": 51,
+      "line": 77,
       "parameters": [
         "argv"
       ],
       "exported": false,
       "async": false,
-      "uuid": "2dba9b59-7e24-550e-93a2-a168d5efc63b"
+      "uuid": "c29eeede-3d0c-5adc-8889-45ea8ffcfb08"
     },
-    "37f4a4b7-b1fb-581f-83fe-35a36d6cc24b": {
+    "a8036339-ef48-5bb5-9962-828d3b73e1bc": {
       "type": "function",
       "name": "printHelp",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts",
-      "line": 126,
+      "line": 157,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "37f4a4b7-b1fb-581f-83fe-35a36d6cc24b"
+      "uuid": "a8036339-ef48-5bb5-9962-828d3b73e1bc"
     },
-    "fe04db66-316e-5ef9-9acb-fe7ed9885f9d": {
+    "6c0f8044-5d46-5152-9b05-a2786192f05e": {
       "type": "function",
       "name": "createLLMProvider",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts",
-      "line": 171,
+      "line": 217,
       "parameters": [
         "provider"
       ],
       "exported": false,
       "async": false,
-      "uuid": "fe04db66-316e-5ef9-9acb-fe7ed9885f9d"
+      "uuid": "6c0f8044-5d46-5152-9b05-a2786192f05e"
     },
-    "2c2ccd76-12a8-5dc0-a9c4-bc4c2a67a7af": {
+    "f249a981-11c6-5d44-9133-2e85360e8e51": {
       "type": "function",
       "name": "createVectorStore",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts",
-      "line": 198,
+      "line": 264,
       "parameters": [
         "store",
-        "projectDir"
+        "projectDir",
+        "llmProvider"
       ],
       "exported": false,
       "async": true,
-      "uuid": "2c2ccd76-12a8-5dc0-a9c4-bc4c2a67a7af"
+      "uuid": "f249a981-11c6-5d44-9133-2e85360e8e51"
     },
-    "1aa3e53a-1404-5bc0-955b-e23f6af0edbd": {
+    "be4d1656-a687-5422-b1c7-8d245b28a39a": {
       "type": "function",
       "name": "main",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts",
-      "line": 214,
+      "line": 320,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "1aa3e53a-1404-5bc0-955b-e23f6af0edbd"
+      "uuid": "be4d1656-a687-5422-b1c7-8d245b28a39a"
     },
-    "ce6b5499-8fd1-5764-9264-a23cf74701b7": {
+    "7097f829-3f16-511d-8eb8-9db4c678312f": {
       "type": "function",
       "name": "loadRAGDependencies",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
-      "line": 21,
-      "parameters": [],
+      "line": 24,
+      "parameters": [
+        "providerName",
+        "storeName"
+      ],
       "exported": false,
       "async": true,
-      "uuid": "ce6b5499-8fd1-5764-9264-a23cf74701b7"
+      "uuid": "7097f829-3f16-511d-8eb8-9db4c678312f"
     },
-    "a7e08dae-10e5-55ea-aad6-3340e95a45b2": {
+    "534d33b7-8c42-5723-bb37-b3604604fc53": {
       "type": "interface",
       "name": "CliArgs",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
-      "line": 35,
+      "line": 61,
       "exported": false,
-      "uuid": "a7e08dae-10e5-55ea-aad6-3340e95a45b2"
+      "uuid": "534d33b7-8c42-5723-bb37-b3604604fc53"
     },
-    "efe7aa71-86cf-5938-9c8a-66c4243a6957": {
+    "a4542e0f-4111-5dac-97b5-4bee3ef834a4": {
       "type": "function",
       "name": "parseArgs",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
-      "line": 53,
+      "line": 79,
       "parameters": [
         "argv"
       ],
       "exported": false,
       "async": false,
-      "uuid": "efe7aa71-86cf-5938-9c8a-66c4243a6957"
+      "uuid": "a4542e0f-4111-5dac-97b5-4bee3ef834a4"
     },
-    "09e4e230-7d4f-5eb1-9c5c-cf80040a4dc3": {
+    "3f011ffa-667f-5883-a4ee-b2bc8f06d8ac": {
       "type": "function",
       "name": "printHelp",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
-      "line": 138,
+      "line": 171,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "09e4e230-7d4f-5eb1-9c5c-cf80040a4dc3"
+      "uuid": "3f011ffa-667f-5883-a4ee-b2bc8f06d8ac"
     },
-    "2407eff2-045f-54fa-be82-3a095d4ae0f8": {
+    "e5dfa2c4-6fb3-5e8e-830f-008cd7b2cc21": {
       "type": "function",
       "name": "createLLMProvider",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
-      "line": 189,
+      "line": 222,
       "parameters": [
         "provider"
       ],
       "exported": false,
       "async": false,
-      "uuid": "2407eff2-045f-54fa-be82-3a095d4ae0f8"
+      "uuid": "e5dfa2c4-6fb3-5e8e-830f-008cd7b2cc21"
     },
-    "9771ab63-a20a-5a66-ba03-370a550df51e": {
+    "e2a5096c-7095-5a9b-a14a-d2e1ed4d9c95": {
       "type": "function",
       "name": "createVectorStore",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
-      "line": 216,
+      "line": 267,
       "parameters": [
         "store",
-        "projectDir"
+        "projectDir",
+        "llmProvider"
       ],
       "exported": false,
       "async": true,
-      "uuid": "9771ab63-a20a-5a66-ba03-370a550df51e"
+      "uuid": "e2a5096c-7095-5a9b-a14a-d2e1ed4d9c95"
     },
-    "aa31e7b3-8bda-5a5e-bca1-3b0013c64b0d": {
+    "7f6da9a6-79fa-58a3-81f4-85c052095a2d": {
       "type": "function",
       "name": "formatResult",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
-      "line": 232,
+      "line": 323,
       "parameters": [
         "result",
         "index"
       ],
       "exported": false,
       "async": false,
-      "uuid": "aa31e7b3-8bda-5a5e-bca1-3b0013c64b0d"
+      "uuid": "7f6da9a6-79fa-58a3-81f4-85c052095a2d"
     },
-    "a31096c0-ae6a-548d-8e97-4b6959fa3928": {
+    "e45b9248-b096-539d-8a8b-27679159b7b8": {
       "type": "function",
       "name": "main",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
-      "line": 260,
+      "line": 351,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "a31096c0-ae6a-548d-8e97-4b6959fa3928"
+      "uuid": "e45b9248-b096-539d-8a8b-27679159b7b8"
     },
     "d4153032-dbec-539f-93f8-53333a9b1fc2": {
       "type": "interface",
@@ -10263,119 +10271,139 @@
       "async": false,
       "uuid": "c6b86ea6-fe3f-5476-b0ae-90dac00f853b"
     },
-    "3ca02dda-0a2c-5c73-a47a-b52b6229b513": {
+    "1434181b-e940-5702-b63a-e02024407792": {
       "type": "class",
       "name": "AnthropicProvider",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 37,
+      "line": 38,
       "exported": true,
-      "uuid": "3ca02dda-0a2c-5c73-a47a-b52b6229b513"
+      "uuid": "1434181b-e940-5702-b63a-e02024407792"
     },
-    "8936a356-6f09-5ab6-9a8f-4303d964ccbe": {
+    "1d6a037c-7e87-5a47-ba87-af4a26ea8570": {
       "type": "method",
       "name": "AnthropicProvider.complete",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 85,
+      "line": 86,
       "parameters": [
         "prompt",
         "options"
       ],
       "exported": false,
       "async": true,
-      "uuid": "8936a356-6f09-5ab6-9a8f-4303d964ccbe"
+      "uuid": "1d6a037c-7e87-5a47-ba87-af4a26ea8570"
     },
-    "8ec3f967-646c-558a-8eb1-7626169d6da4": {
+    "51f4e760-ac11-51bf-8ec6-7e5906e237bb": {
       "type": "method",
       "name": "AnthropicProvider.embed",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 141,
+      "line": 142,
       "parameters": [
         "texts"
       ],
       "exported": false,
       "async": true,
-      "uuid": "8ec3f967-646c-558a-8eb1-7626169d6da4"
+      "uuid": "51f4e760-ac11-51bf-8ec6-7e5906e237bb"
     },
-    "ba6f5694-7441-5ef2-ade4-5b65900f7118": {
+    "c25a8a51-079f-5665-96f8-41e8e8b991e3": {
       "type": "method",
       "name": "AnthropicProvider.countTokens",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 151,
+      "line": 152,
       "parameters": [
         "text"
       ],
       "exported": false,
       "async": false,
-      "uuid": "ba6f5694-7441-5ef2-ade4-5b65900f7118"
+      "uuid": "c25a8a51-079f-5665-96f8-41e8e8b991e3"
     },
-    "cfb90b3c-537b-5d7a-bb9c-a2bba214b689": {
+    "37bc9cbe-8ffa-538d-aef3-36eacb2032fd": {
       "type": "method",
       "name": "AnthropicProvider.getProviderName",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 158,
+      "line": 159,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "cfb90b3c-537b-5d7a-bb9c-a2bba214b689"
+      "uuid": "37bc9cbe-8ffa-538d-aef3-36eacb2032fd"
     },
-    "f9037abc-c868-5416-bd99-74fc95a91d79": {
+    "ff7dce7e-246c-53bd-934b-fe920a76b92a": {
       "type": "method",
       "name": "AnthropicProvider.getModel",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 165,
+      "line": 166,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "f9037abc-c868-5416-bd99-74fc95a91d79"
+      "uuid": "ff7dce7e-246c-53bd-934b-fe920a76b92a"
     },
-    "45e3985b-2cc3-5e85-aadd-553dabc72dab": {
+    "0934dc27-6458-505e-b575-9b55b1534c92": {
+      "type": "method",
+      "name": "AnthropicProvider.getEmbeddingDimensions",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
+      "line": 174,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "0934dc27-6458-505e-b575-9b55b1534c92"
+    },
+    "c96774bc-ffb5-55bc-a9e4-57c98674f49a": {
+      "type": "method",
+      "name": "AnthropicProvider.supportsEmbeddings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
+      "line": 181,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "c96774bc-ffb5-55bc-a9e4-57c98674f49a"
+    },
+    "8e3b2cf2-d97c-5555-bd18-e2604e4b4b1f": {
       "type": "method",
       "name": "AnthropicProvider.withRetry",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 172,
+      "line": 188,
       "parameters": [
         "fn"
       ],
       "exported": false,
       "async": true,
-      "uuid": "45e3985b-2cc3-5e85-aadd-553dabc72dab"
+      "uuid": "8e3b2cf2-d97c-5555-bd18-e2604e4b4b1f"
     },
-    "b233be4f-077c-54a7-85cc-bcfbb6b862c7": {
+    "b983526d-bca6-5238-92f1-e607307cd59e": {
       "type": "method",
       "name": "AnthropicProvider.mapStopReason",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 203,
+      "line": 219,
       "parameters": [
         "reason"
       ],
       "exported": false,
       "async": false,
-      "uuid": "b233be4f-077c-54a7-85cc-bcfbb6b862c7"
+      "uuid": "b983526d-bca6-5238-92f1-e607307cd59e"
     },
-    "8cbbd079-981a-52e2-a43b-8a3f36f6d068": {
+    "c75e7b7a-3bdd-5771-b877-900b26210702": {
       "type": "method",
       "name": "AnthropicProvider.handleError",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 220,
+      "line": 236,
       "parameters": [
         "error"
       ],
       "exported": false,
       "async": false,
-      "uuid": "8cbbd079-981a-52e2-a43b-8a3f36f6d068"
+      "uuid": "c75e7b7a-3bdd-5771-b877-900b26210702"
     },
-    "27b16a1e-1196-5c16-8d43-9443c20c28c1": {
+    "e4c15b85-9bd5-583b-927d-0a6bc74dd229": {
       "type": "function",
       "name": "createAnthropicProvider",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
-      "line": 295,
+      "line": 311,
       "parameters": [
         "config",
         "openAIConfig"
       ],
       "exported": true,
       "async": false,
-      "uuid": "27b16a1e-1196-5c16-8d43-9443c20c28c1"
+      "uuid": "e4c15b85-9bd5-583b-927d-0a6bc74dd229"
     },
     "c338cafb-affd-5d82-b426-15b9707c7e11": {
       "type": "interface",
@@ -10409,134 +10437,378 @@
       "exported": true,
       "uuid": "f7f3f865-6a01-57f8-b468-514a32cc9f07"
     },
-    "34943be9-31be-5aa2-89cb-839d73384134": {
+    "583e8b45-bf41-56ad-820d-c361a1e88e66": {
       "type": "type",
       "name": "LLMProviderFactory",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts",
-      "line": 191,
+      "line": 222,
       "exported": true,
-      "uuid": "34943be9-31be-5aa2-89cb-839d73384134"
+      "uuid": "583e8b45-bf41-56ad-820d-c361a1e88e66"
     },
-    "abec0cc4-1312-5b3f-8523-28c37e8dea09": {
+    "b6e17eb3-eaac-52df-a988-cdba849a7d83": {
       "type": "interface",
       "name": "LLMProviderConfig",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts",
-      "line": 196,
+      "line": 227,
       "exported": true,
-      "uuid": "abec0cc4-1312-5b3f-8523-28c37e8dea09"
+      "uuid": "b6e17eb3-eaac-52df-a988-cdba849a7d83"
     },
-    "6d103658-581a-5399-b814-4de65c3b6949": {
+    "ce7bc1cc-8d2d-5798-80af-3946c7dee816": {
+      "type": "interface",
+      "name": "ProviderSpec",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts",
+      "line": 18,
+      "exported": true,
+      "uuid": "ce7bc1cc-8d2d-5798-80af-3946c7dee816"
+    },
+    "9c2594da-8c09-5941-be42-9422a7245eb6": {
+      "type": "function",
+      "name": "getProviderSpec",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts",
+      "line": 157,
+      "parameters": [
+        "providerName"
+      ],
+      "exported": true,
+      "async": false,
+      "uuid": "9c2594da-8c09-5941-be42-9422a7245eb6"
+    },
+    "75975e1a-3c0a-5e63-8365-fe9be4460772": {
+      "type": "function",
+      "name": "getEmbeddingDimensions",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts",
+      "line": 168,
+      "parameters": [
+        "providerName"
+      ],
+      "exported": true,
+      "async": false,
+      "uuid": "75975e1a-3c0a-5e63-8365-fe9be4460772"
+    },
+    "0c4b949e-20f7-5a48-a5bd-f1751b3f17cf": {
+      "type": "function",
+      "name": "supportsEmbeddings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts",
+      "line": 185,
+      "parameters": [
+        "providerName"
+      ],
+      "exported": true,
+      "async": false,
+      "uuid": "0c4b949e-20f7-5a48-a5bd-f1751b3f17cf"
+    },
+    "f3511265-0108-5fe7-90a7-6497427631b9": {
       "type": "class",
-      "name": "OpenAIProvider",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 32,
+      "name": "ProviderDoesNotSupportEmbeddings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts",
+      "line": 193,
       "exported": true,
-      "uuid": "6d103658-581a-5399-b814-4de65c3b6949"
+      "uuid": "f3511265-0108-5fe7-90a7-6497427631b9"
     },
-    "844d6079-b51c-5195-981f-76d287366859": {
+    "8566700c-4f2b-5ad0-bf94-a5fe914524b1": {
+      "type": "function",
+      "name": "validateRegistry",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts",
+      "line": 207,
+      "parameters": [],
+      "exported": true,
+      "async": false,
+      "uuid": "8566700c-4f2b-5ad0-bf94-a5fe914524b1"
+    },
+    "807809d3-2657-5215-9e3b-01e32af1e835": {
+      "type": "interface",
+      "name": "OllamaEmbedResponse",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 36,
+      "exported": false,
+      "uuid": "807809d3-2657-5215-9e3b-01e32af1e835"
+    },
+    "a5db5f3b-15f1-5e01-aa0a-fa954769f865": {
+      "type": "interface",
+      "name": "OllamaGenerateResponse",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 43,
+      "exported": false,
+      "uuid": "a5db5f3b-15f1-5e01-aa0a-fa954769f865"
+    },
+    "aa893756-e2bb-5d1e-a474-282f171339b5": {
+      "type": "class",
+      "name": "OllamaProvider",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 71,
+      "exported": true,
+      "uuid": "aa893756-e2bb-5d1e-a474-282f171339b5"
+    },
+    "f3eeb2aa-8435-5695-828f-2c86b28a4dfa": {
       "type": "method",
-      "name": "OpenAIProvider.complete",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 63,
+      "name": "OllamaProvider.complete",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 111,
       "parameters": [
         "prompt",
         "options"
       ],
       "exported": false,
       "async": true,
-      "uuid": "844d6079-b51c-5195-981f-76d287366859"
+      "uuid": "f3eeb2aa-8435-5695-828f-2c86b28a4dfa"
     },
-    "1cf90f7d-f326-522c-9dc1-5217833dfaa8": {
+    "3f4d8788-62c9-5196-8e40-cedae9b0024e": {
       "type": "method",
-      "name": "OpenAIProvider.embed",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 114,
+      "name": "OllamaProvider.embed",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 180,
       "parameters": [
         "texts"
       ],
       "exported": false,
       "async": true,
-      "uuid": "1cf90f7d-f326-522c-9dc1-5217833dfaa8"
+      "uuid": "3f4d8788-62c9-5196-8e40-cedae9b0024e"
     },
-    "2ff2e485-e86b-5f91-aa0b-5921c0b32c7e": {
+    "f6d74fe4-ce2d-509e-9908-e4c4797efd92": {
       "type": "method",
-      "name": "OpenAIProvider.countTokens",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 139,
+      "name": "OllamaProvider.embedSingle",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 206,
+      "parameters": [
+        "text",
+        "expectedDim"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "f6d74fe4-ce2d-509e-9908-e4c4797efd92"
+    },
+    "3b05d60c-340d-5f1f-901c-ff70a9957f95": {
+      "type": "method",
+      "name": "OllamaProvider.countTokens",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 262,
       "parameters": [
         "text"
       ],
       "exported": false,
       "async": false,
-      "uuid": "2ff2e485-e86b-5f91-aa0b-5921c0b32c7e"
+      "uuid": "3b05d60c-340d-5f1f-901c-ff70a9957f95"
     },
-    "ccf8c11c-1648-5a91-bdfd-edb71ec5e85d": {
+    "d104e0be-5650-5ce6-816b-bb6879a2f275": {
       "type": "method",
-      "name": "OpenAIProvider.getProviderName",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 155,
+      "name": "OllamaProvider.getProviderName",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 271,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "ccf8c11c-1648-5a91-bdfd-edb71ec5e85d"
+      "uuid": "d104e0be-5650-5ce6-816b-bb6879a2f275"
     },
-    "670f74ab-1da5-555c-a64d-01ea6854dbfb": {
+    "9ed3f208-3adf-5346-98fe-42c99fa0990a": {
       "type": "method",
-      "name": "OpenAIProvider.getModel",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 162,
+      "name": "OllamaProvider.getModel",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 278,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "670f74ab-1da5-555c-a64d-01ea6854dbfb"
+      "uuid": "9ed3f208-3adf-5346-98fe-42c99fa0990a"
     },
-    "1cf34b9d-eda2-5913-a2e5-d3bdfa4ae107": {
+    "b95160bd-a1d4-54b0-b3a8-820cb233229e": {
       "type": "method",
-      "name": "OpenAIProvider.withRetry",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 169,
+      "name": "OllamaProvider.getEmbeddingDimensions",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 286,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "b95160bd-a1d4-54b0-b3a8-820cb233229e"
+    },
+    "47e88b28-380d-5884-9a51-26a8988dc042": {
+      "type": "method",
+      "name": "OllamaProvider.supportsEmbeddings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 297,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "47e88b28-380d-5884-9a51-26a8988dc042"
+    },
+    "481befe7-6540-54cf-ab43-ad70cc17a482": {
+      "type": "method",
+      "name": "OllamaProvider.withRetry",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 304,
       "parameters": [
         "fn"
       ],
       "exported": false,
       "async": true,
-      "uuid": "1cf34b9d-eda2-5913-a2e5-d3bdfa4ae107"
+      "uuid": "481befe7-6540-54cf-ab43-ad70cc17a482"
     },
-    "a31df2a6-441d-568f-8792-60d5e078323f": {
+    "ada83649-8271-51bb-a1bd-e3bb2eac217c": {
       "type": "method",
-      "name": "OpenAIProvider.mapFinishReason",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 200,
+      "name": "OllamaProvider.handleHttpError",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 340,
       "parameters": [
-        "reason"
+        "response"
       ],
       "exported": false,
-      "async": false,
-      "uuid": "a31df2a6-441d-568f-8792-60d5e078323f"
+      "async": true,
+      "uuid": "ada83649-8271-51bb-a1bd-e3bb2eac217c"
     },
-    "34f9aa82-5fcc-5317-b17f-5a16e32139c8": {
+    "c1fbad69-efb1-5fe3-bce2-03524f834a59": {
       "type": "method",
-      "name": "OpenAIProvider.handleError",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 216,
+      "name": "OllamaProvider.handleError",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 363,
       "parameters": [
         "error"
       ],
       "exported": false,
       "async": false,
-      "uuid": "34f9aa82-5fcc-5317-b17f-5a16e32139c8"
+      "uuid": "c1fbad69-efb1-5fe3-bce2-03524f834a59"
     },
-    "ed16bc39-0e21-5e8d-9ee4-1c203ef41f49": {
+    "9540e868-18da-53de-912a-b751328a05cd": {
       "type": "function",
-      "name": "createOpenAIProvider",
-      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
-      "line": 291,
+      "name": "createOllamaProvider",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "line": 413,
       "parameters": [
         "config"
       ],
       "exported": true,
       "async": false,
-      "uuid": "ed16bc39-0e21-5e8d-9ee4-1c203ef41f49"
+      "uuid": "9540e868-18da-53de-912a-b751328a05cd"
+    },
+    "49ba3731-d045-5ff3-9415-ad0e0d1d59cd": {
+      "type": "class",
+      "name": "OpenAIProvider",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 33,
+      "exported": true,
+      "uuid": "49ba3731-d045-5ff3-9415-ad0e0d1d59cd"
+    },
+    "b639eab3-813d-55fa-8443-d8983c764ee1": {
+      "type": "method",
+      "name": "OpenAIProvider.complete",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 64,
+      "parameters": [
+        "prompt",
+        "options"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "b639eab3-813d-55fa-8443-d8983c764ee1"
+    },
+    "3016ee89-86bc-50d8-95da-33a8b03c344c": {
+      "type": "method",
+      "name": "OpenAIProvider.embed",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 115,
+      "parameters": [
+        "texts"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "3016ee89-86bc-50d8-95da-33a8b03c344c"
+    },
+    "ec1cfa11-8abb-519b-96f8-66d0d126d940": {
+      "type": "method",
+      "name": "OpenAIProvider.countTokens",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 140,
+      "parameters": [
+        "text"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "ec1cfa11-8abb-519b-96f8-66d0d126d940"
+    },
+    "478541cd-daed-5ae4-8ead-4200cd7787e3": {
+      "type": "method",
+      "name": "OpenAIProvider.getProviderName",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 156,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "478541cd-daed-5ae4-8ead-4200cd7787e3"
+    },
+    "52de4e16-f9fa-5221-ba4d-efeab6ccf992": {
+      "type": "method",
+      "name": "OpenAIProvider.getModel",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 163,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "52de4e16-f9fa-5221-ba4d-efeab6ccf992"
+    },
+    "568912ca-e38b-518d-b21e-7080b28e6fea": {
+      "type": "method",
+      "name": "OpenAIProvider.getEmbeddingDimensions",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 171,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "568912ca-e38b-518d-b21e-7080b28e6fea"
+    },
+    "0d28ff5a-99f8-56b9-99a3-559e10329bc9": {
+      "type": "method",
+      "name": "OpenAIProvider.supportsEmbeddings",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 190,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "0d28ff5a-99f8-56b9-99a3-559e10329bc9"
+    },
+    "88e8e9f5-0cc5-5572-9185-3873cad75e42": {
+      "type": "method",
+      "name": "OpenAIProvider.withRetry",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 197,
+      "parameters": [
+        "fn"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "88e8e9f5-0cc5-5572-9185-3873cad75e42"
+    },
+    "c3ef034e-52bb-547b-af01-cb4a61eb1058": {
+      "type": "method",
+      "name": "OpenAIProvider.mapFinishReason",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 228,
+      "parameters": [
+        "reason"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "c3ef034e-52bb-547b-af01-cb4a61eb1058"
+    },
+    "121abe03-6676-5f95-a912-1688eb627651": {
+      "type": "method",
+      "name": "OpenAIProvider.handleError",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 244,
+      "parameters": [
+        "error"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "121abe03-6676-5f95-a912-1688eb627651"
+    },
+    "af5f7f70-88d4-5f4d-951c-4305d83f511a": {
+      "type": "function",
+      "name": "createOpenAIProvider",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "line": 319,
+      "parameters": [
+        "config"
+      ],
+      "exported": true,
+      "async": false,
+      "uuid": "af5f7f70-88d4-5f4d-951c-4305d83f511a"
     },
     "2b2efd17-f009-5ee4-9e67-b072161e31f3": {
       "type": "interface",
@@ -12377,147 +12649,155 @@
       "async": false,
       "uuid": "d1cc6b86-31bb-5ff9-97a4-23bedabef68c"
     },
-    "65b30c9f-c70e-54db-a577-09275835fcc3": {
-      "type": "interface",
-      "name": "RAGConfig",
+    "645c0b82-15e9-54ad-ae1d-cc9bb2bdbed3": {
+      "type": "type",
+      "name": "LLMProviderName",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
       "line": 17,
       "exported": true,
-      "uuid": "65b30c9f-c70e-54db-a577-09275835fcc3"
+      "uuid": "645c0b82-15e9-54ad-ae1d-cc9bb2bdbed3"
     },
-    "4ec161c7-c571-5e59-b1f0-c3ac8ba8166b": {
+    "49a829a8-1a64-59ec-be67-63abee43d796": {
+      "type": "interface",
+      "name": "RAGConfig",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
+      "line": 22,
+      "exported": true,
+      "uuid": "49a829a8-1a64-59ec-be67-63abee43d796"
+    },
+    "ea9acb23-d85c-59c9-9315-f5a6b5d2f154": {
       "type": "class",
       "name": "ConfigError",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 110,
+      "line": 119,
       "exported": true,
-      "uuid": "4ec161c7-c571-5e59-b1f0-c3ac8ba8166b"
+      "uuid": "ea9acb23-d85c-59c9-9315-f5a6b5d2f154"
     },
-    "a442e53c-15ef-5287-a116-b333c2afc8aa": {
+    "a87525ed-b6fe-5d65-be50-83eaeb06e135": {
       "type": "class",
       "name": "RAGConfigLoader",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 120,
+      "line": 129,
       "exported": true,
-      "uuid": "a442e53c-15ef-5287-a116-b333c2afc8aa"
+      "uuid": "a87525ed-b6fe-5d65-be50-83eaeb06e135"
     },
-    "3a907563-b7d5-578b-ae10-deb2bebc940e": {
+    "d7b3368d-e334-5cd5-a0a6-74c92e4df004": {
       "type": "method",
       "name": "RAGConfigLoader.loadConfig",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 124,
+      "line": 133,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "3a907563-b7d5-578b-ae10-deb2bebc940e"
+      "uuid": "d7b3368d-e334-5cd5-a0a6-74c92e4df004"
     },
-    "4f8d9324-1609-558b-a7cc-449a01ae4ece": {
+    "9fbb7adf-bdd8-5c51-af8c-fb5f38ac4dbd": {
       "type": "method",
       "name": "RAGConfigLoader.getLLMProvider",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 156,
+      "line": 165,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "4f8d9324-1609-558b-a7cc-449a01ae4ece"
+      "uuid": "9fbb7adf-bdd8-5c51-af8c-fb5f38ac4dbd"
     },
-    "565bcb11-70a1-58df-9f76-6d00a8781720": {
+    "5aa26022-f3a7-5aed-9c47-2c727c318487": {
       "type": "method",
       "name": "RAGConfigLoader.getLLMConfig",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 181,
+      "line": 191,
       "parameters": [
         "provider"
       ],
       "exported": false,
       "async": false,
-      "uuid": "565bcb11-70a1-58df-9f76-6d00a8781720"
+      "uuid": "5aa26022-f3a7-5aed-9c47-2c727c318487"
     },
-    "394a139d-cdc6-5800-9285-e7e606bf5ee6": {
+    "bc8bf3fe-7300-56eb-9df1-3c1dd898e943": {
       "type": "method",
       "name": "RAGConfigLoader.getVectorStoreProvider",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 217,
+      "line": 252,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "394a139d-cdc6-5800-9285-e7e606bf5ee6"
+      "uuid": "bc8bf3fe-7300-56eb-9df1-3c1dd898e943"
     },
-    "a110e744-395d-5097-acbe-ee978cd9fcd7": {
+    "73bb10d0-b62f-5178-89ca-3f37decf68ea": {
       "type": "method",
       "name": "RAGConfigLoader.getVectorStoreConfig",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 236,
+      "line": 271,
       "parameters": [
         "provider"
       ],
       "exported": false,
       "async": false,
-      "uuid": "a110e744-395d-5097-acbe-ee978cd9fcd7"
+      "uuid": "73bb10d0-b62f-5178-89ca-3f37decf68ea"
     },
-    "f2a75de6-6ccf-5f2e-a701-8777f6a67fb8": {
+    "857ea1b0-e358-5560-bdef-c4252b1896af": {
       "type": "method",
       "name": "RAGConfigLoader.getIndexingSettings",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 286,
+      "line": 321,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "f2a75de6-6ccf-5f2e-a701-8777f6a67fb8"
+      "uuid": "857ea1b0-e358-5560-bdef-c4252b1896af"
     },
-    "57babab9-f19b-54c9-bb3d-3e46fd7d02a6": {
+    "feeb92d5-9f3f-545c-92ce-b53ea2056338": {
       "type": "method",
       "name": "RAGConfigLoader.getSearchSettings",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 304,
+      "line": 339,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "57babab9-f19b-54c9-bb3d-3e46fd7d02a6"
+      "uuid": "feeb92d5-9f3f-545c-92ce-b53ea2056338"
     },
-    "7b01de74-4793-50f1-bf61-41b8a4e98f1a": {
+    "edd85aaa-3ab3-5459-a925-1e1adbc6c871": {
       "type": "method",
       "name": "RAGConfigLoader.getGenerationSettings",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 320,
+      "line": 355,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "7b01de74-4793-50f1-bf61-41b8a4e98f1a"
+      "uuid": "edd85aaa-3ab3-5459-a925-1e1adbc6c871"
     },
-    "6d531fee-0bf9-5542-87fc-50453d9ddad7": {
+    "8d8e0a28-77df-53ee-8ea2-a959c7d8fe76": {
       "type": "method",
       "name": "RAGConfigLoader.validateConfig",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 338,
+      "line": 373,
       "parameters": [
         "config"
       ],
       "exported": false,
       "async": false,
-      "uuid": "6d531fee-0bf9-5542-87fc-50453d9ddad7"
+      "uuid": "8d8e0a28-77df-53ee-8ea2-a959c7d8fe76"
     },
-    "e5db8a2a-c4ab-54f9-a711-70b22f6cd121": {
+    "bde828ab-d252-5cc4-b554-74c9fd9ea661": {
       "type": "method",
       "name": "RAGConfigLoader.printConfigSummary",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 380,
+      "line": 419,
       "parameters": [
         "config"
       ],
       "exported": false,
       "async": false,
-      "uuid": "e5db8a2a-c4ab-54f9-a711-70b22f6cd121"
+      "uuid": "bde828ab-d252-5cc4-b554-74c9fd9ea661"
     },
-    "7408b9d5-01d8-578f-b8fd-2830daae35ec": {
+    "fd0693ed-e36e-57f6-b87c-1c3ec20e46a2": {
       "type": "method",
       "name": "RAGConfigLoader.generateEnvTemplate",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
-      "line": 401,
+      "line": 440,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "7408b9d5-01d8-578f-b8fd-2830daae35ec"
+      "uuid": "fd0693ed-e36e-57f6-b87c-1c3ec20e46a2"
     },
     "8caa0025-cdbf-55c9-bfd7-104294e16275": {
       "type": "interface",
@@ -13110,116 +13390,116 @@
       "async": true,
       "uuid": "725a6144-a4ae-57e0-a165-18e4e876fdcc"
     },
-    "c67c740a-a034-5b7e-9165-1c7d4f90ebdd": {
+    "da69fc25-9549-5f07-a1dc-bb15e59c0e5f": {
       "type": "method",
       "name": "SQLiteVectorStore.save",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 188,
+      "line": 200,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "c67c740a-a034-5b7e-9165-1c7d4f90ebdd"
+      "uuid": "da69fc25-9549-5f07-a1dc-bb15e59c0e5f"
     },
-    "753c74ce-c2d4-524b-9a75-0c9cf30d4423": {
+    "a97ec10f-9dc5-5887-ad63-b28a55e5e9ee": {
       "type": "method",
       "name": "SQLiteVectorStore.ensureInitialized",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 204,
+      "line": 216,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "753c74ce-c2d4-524b-9a75-0c9cf30d4423"
+      "uuid": "a97ec10f-9dc5-5887-ad63-b28a55e5e9ee"
     },
-    "84529744-f94a-58ec-b790-f8106339f03e": {
+    "326c834d-8272-54f9-9a1f-bb253c807800": {
       "type": "method",
       "name": "SQLiteVectorStore.upsert",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 216,
+      "line": 228,
       "parameters": [
         "records",
         "namespace"
       ],
       "exported": false,
       "async": true,
-      "uuid": "84529744-f94a-58ec-b790-f8106339f03e"
+      "uuid": "326c834d-8272-54f9-9a1f-bb253c807800"
     },
-    "39048eac-85c8-56e7-9cb7-914b58f25283": {
+    "2f68b506-f342-56ab-ad01-3c802de84724": {
       "type": "method",
       "name": "SQLiteVectorStore.query",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 257,
+      "line": 269,
       "parameters": [
         "vector",
         "options"
       ],
       "exported": false,
       "async": true,
-      "uuid": "39048eac-85c8-56e7-9cb7-914b58f25283"
+      "uuid": "2f68b506-f342-56ab-ad01-3c802de84724"
     },
-    "a1de6cdf-b9b5-5727-bf30-7d353c52badf": {
+    "1bd766b4-c211-5cfb-9ec8-d34e4c1aab28": {
       "type": "method",
       "name": "SQLiteVectorStore.delete",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 337,
+      "line": 349,
       "parameters": [
         "ids",
         "namespace"
       ],
       "exported": false,
       "async": true,
-      "uuid": "a1de6cdf-b9b5-5727-bf30-7d353c52badf"
+      "uuid": "1bd766b4-c211-5cfb-9ec8-d34e4c1aab28"
     },
-    "2272e131-1fa3-5834-b6b7-50ce40e4f9ce": {
+    "4d7d62f8-3612-5cbc-8676-61e0d4c2f5c2": {
       "type": "method",
       "name": "SQLiteVectorStore.clear",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 365,
+      "line": 377,
       "parameters": [
         "namespace"
       ],
       "exported": false,
       "async": true,
-      "uuid": "2272e131-1fa3-5834-b6b7-50ce40e4f9ce"
+      "uuid": "4d7d62f8-3612-5cbc-8676-61e0d4c2f5c2"
     },
-    "e477647e-b41a-5eb7-8ac1-8b165360f8fa": {
+    "69a55852-c3db-5711-9bc6-8e7d6ad1a4af": {
       "type": "method",
       "name": "SQLiteVectorStore.stats",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 398,
+      "line": 410,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "e477647e-b41a-5eb7-8ac1-8b165360f8fa"
+      "uuid": "69a55852-c3db-5711-9bc6-8e7d6ad1a4af"
     },
-    "4890ece2-e9ec-54af-81b8-f7c92516d031": {
+    "681b0e0a-8687-5e1c-8f8a-f35d0420eb6f": {
       "type": "method",
       "name": "SQLiteVectorStore.getProviderName",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 415,
+      "line": 427,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "4890ece2-e9ec-54af-81b8-f7c92516d031"
+      "uuid": "681b0e0a-8687-5e1c-8f8a-f35d0420eb6f"
     },
-    "77aa663f-9753-585b-9415-ca2501f730b6": {
+    "93af592a-9e5d-528b-89da-ef05dd71b1ca": {
       "type": "method",
       "name": "SQLiteVectorStore.exists",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 422,
+      "line": 434,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "77aa663f-9753-585b-9415-ca2501f730b6"
+      "uuid": "93af592a-9e5d-528b-89da-ef05dd71b1ca"
     },
-    "975ac161-b504-5785-ac07-d1a1e5914c59": {
+    "f15cec19-ee3f-53ac-9d2c-c3e33c9932d9": {
       "type": "method",
       "name": "SQLiteVectorStore.getStoragePath",
       "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
-      "line": 429,
+      "line": 441,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "975ac161-b504-5785-ac07-d1a1e5914c59"
+      "uuid": "f15cec19-ee3f-53ac-9d2c-c3e33c9932d9"
     },
     "b3e68520-1963-5e77-ae4f-510afbfe8a23": {
       "type": "interface",
@@ -19836,6 +20116,73 @@
       "async": false,
       "uuid": "b8250a55-9a8a-5f41-ad81-afb33f657b05"
     },
+    "9eb4e2a7-0131-5c4b-951e-5bd02d39a9da": {
+      "type": "function",
+      "name": "authenticateUser",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project\\src\\auth.ts",
+      "line": 1,
+      "parameters": [
+        "username",
+        "password"
+      ],
+      "exported": true,
+      "async": false,
+      "uuid": "9eb4e2a7-0131-5c4b-951e-5bd02d39a9da"
+    },
+    "6b2bcee7-7f11-564c-9970-5d0491042b55": {
+      "type": "function",
+      "name": "validateCredentials",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project\\src\\auth.ts",
+      "line": 5,
+      "parameters": [
+        "username",
+        "password"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "6b2bcee7-7f11-564c-9970-5d0491042b55"
+    },
+    "4e728460-ce7f-5435-bb91-3665b796c7d2": {
+      "type": "class",
+      "name": "AuthService",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project\\src\\auth.ts",
+      "line": 9,
+      "exported": true,
+      "uuid": "4e728460-ce7f-5435-bb91-3665b796c7d2"
+    },
+    "2625d2dc-dae1-5030-900a-9c815989b3d0": {
+      "type": "method",
+      "name": "AuthService.login",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project\\src\\auth.ts",
+      "line": 10,
+      "parameters": [
+        "username",
+        "password"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "2625d2dc-dae1-5030-900a-9c815989b3d0"
+    },
+    "435b7810-f445-500f-898f-7eb8c3a707c1": {
+      "type": "class",
+      "name": "UserService",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project\\src\\user.ts",
+      "line": 1,
+      "exported": true,
+      "uuid": "435b7810-f445-500f-898f-7eb8c3a707c1"
+    },
+    "6f8e911d-4d58-5b61-9b05-bd245d8eca0a": {
+      "type": "method",
+      "name": "UserService.findUser",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project\\src\\user.ts",
+      "line": 4,
+      "parameters": [
+        "id"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "6f8e911d-4d58-5b61-9b05-bd245d8eca0a"
+    },
     "a13dbe09-a3c4-53b0-99a1-4b0630dfe3c6": {
       "type": "function",
       "name": "createTestFile",
@@ -21464,6 +21811,32 @@
       "parameters": [],
       "exported": false,
       "uuid": "b515851d-1cd4-5e8a-8acb-dcdd266bfc6a"
+    },
+    "c9df549b-f517-51e8-9727-ef02bb523eba": {
+      "type": "function",
+      "name": "main",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-venv-fixtures\\src\\app.py",
+      "line": 2,
+      "parameters": [],
+      "exported": true,
+      "uuid": "c9df549b-f517-51e8-9727-ef02bb523eba"
+    },
+    "88d1c50f-0eaa-5139-9258-ca396036c1cf": {
+      "type": "class",
+      "name": "Application",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-venv-fixtures\\src\\app.py",
+      "line": 5,
+      "exported": true,
+      "uuid": "88d1c50f-0eaa-5139-9258-ca396036c1cf"
+    },
+    "b8adc47f-b3f1-591e-b01d-5c46d4c4add0": {
+      "type": "method",
+      "name": "Application.run",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-venv-fixtures\\src\\app.py",
+      "line": 6,
+      "parameters": [],
+      "exported": false,
+      "uuid": "b8adc47f-b3f1-591e-b01d-5c46d4c4add0"
     }
   },
   "fileMap": {
@@ -21963,23 +22336,23 @@
       "11c8d997-036c-585a-a087-cda98464d23c"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts": [
-      "beafd008-14c0-501e-8aba-9373a3ab43a5",
-      "4db96933-7694-569b-9522-73a9b38cd5ed",
-      "2dba9b59-7e24-550e-93a2-a168d5efc63b",
-      "37f4a4b7-b1fb-581f-83fe-35a36d6cc24b",
-      "fe04db66-316e-5ef9-9acb-fe7ed9885f9d",
-      "2c2ccd76-12a8-5dc0-a9c4-bc4c2a67a7af",
-      "1aa3e53a-1404-5bc0-955b-e23f6af0edbd"
+      "e9376ede-8cc4-56d3-ab3b-7ba335231cc6",
+      "908438d3-c869-536a-bafd-4219e78c3b65",
+      "c29eeede-3d0c-5adc-8889-45ea8ffcfb08",
+      "a8036339-ef48-5bb5-9962-828d3b73e1bc",
+      "6c0f8044-5d46-5152-9b05-a2786192f05e",
+      "f249a981-11c6-5d44-9133-2e85360e8e51",
+      "be4d1656-a687-5422-b1c7-8d245b28a39a"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts": [
-      "ce6b5499-8fd1-5764-9264-a23cf74701b7",
-      "a7e08dae-10e5-55ea-aad6-3340e95a45b2",
-      "efe7aa71-86cf-5938-9c8a-66c4243a6957",
-      "09e4e230-7d4f-5eb1-9c5c-cf80040a4dc3",
-      "2407eff2-045f-54fa-be82-3a095d4ae0f8",
-      "9771ab63-a20a-5a66-ba03-370a550df51e",
-      "aa31e7b3-8bda-5a5e-bca1-3b0013c64b0d",
-      "a31096c0-ae6a-548d-8e97-4b6959fa3928"
+      "7097f829-3f16-511d-8eb8-9db4c678312f",
+      "534d33b7-8c42-5723-bb37-b3604604fc53",
+      "a4542e0f-4111-5dac-97b5-4bee3ef834a4",
+      "3f011ffa-667f-5883-a4ee-b2bc8f06d8ac",
+      "e5dfa2c4-6fb3-5e8e-830f-008cd7b2cc21",
+      "e2a5096c-7095-5a9b-a14a-d2e1ed4d9c95",
+      "7f6da9a6-79fa-58a3-81f4-85c052095a2d",
+      "e45b9248-b096-539d-8a8b-27679159b7b8"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-status.ts": [
       "d4153032-dbec-539f-93f8-53333a9b1fc2",
@@ -22578,36 +22951,65 @@
       "c6b86ea6-fe3f-5476-b0ae-90dac00f853b"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts": [
-      "3ca02dda-0a2c-5c73-a47a-b52b6229b513",
-      "8936a356-6f09-5ab6-9a8f-4303d964ccbe",
-      "8ec3f967-646c-558a-8eb1-7626169d6da4",
-      "ba6f5694-7441-5ef2-ade4-5b65900f7118",
-      "cfb90b3c-537b-5d7a-bb9c-a2bba214b689",
-      "f9037abc-c868-5416-bd99-74fc95a91d79",
-      "45e3985b-2cc3-5e85-aadd-553dabc72dab",
-      "b233be4f-077c-54a7-85cc-bcfbb6b862c7",
-      "8cbbd079-981a-52e2-a43b-8a3f36f6d068",
-      "27b16a1e-1196-5c16-8d43-9443c20c28c1"
+      "1434181b-e940-5702-b63a-e02024407792",
+      "1d6a037c-7e87-5a47-ba87-af4a26ea8570",
+      "51f4e760-ac11-51bf-8ec6-7e5906e237bb",
+      "c25a8a51-079f-5665-96f8-41e8e8b991e3",
+      "37bc9cbe-8ffa-538d-aef3-36eacb2032fd",
+      "ff7dce7e-246c-53bd-934b-fe920a76b92a",
+      "0934dc27-6458-505e-b575-9b55b1534c92",
+      "c96774bc-ffb5-55bc-a9e4-57c98674f49a",
+      "8e3b2cf2-d97c-5555-bd18-e2604e4b4b1f",
+      "b983526d-bca6-5238-92f1-e607307cd59e",
+      "c75e7b7a-3bdd-5771-b877-900b26210702",
+      "e4c15b85-9bd5-583b-927d-0a6bc74dd229"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts": [
       "c338cafb-affd-5d82-b426-15b9707c7e11",
       "3b421eef-7287-54f8-b363-c2a7ef13a49f",
       "29aa5b2f-4963-5ef8-bc98-a365633f59c6",
       "f7f3f865-6a01-57f8-b468-514a32cc9f07",
-      "34943be9-31be-5aa2-89cb-839d73384134",
-      "abec0cc4-1312-5b3f-8523-28c37e8dea09"
+      "583e8b45-bf41-56ad-820d-c361a1e88e66",
+      "b6e17eb3-eaac-52df-a988-cdba849a7d83"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts": [
+      "ce7bc1cc-8d2d-5798-80af-3946c7dee816",
+      "9c2594da-8c09-5941-be42-9422a7245eb6",
+      "75975e1a-3c0a-5e63-8365-fe9be4460772",
+      "0c4b949e-20f7-5a48-a5bd-f1751b3f17cf",
+      "f3511265-0108-5fe7-90a7-6497427631b9",
+      "8566700c-4f2b-5ad0-bf94-a5fe914524b1"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts": [
+      "807809d3-2657-5215-9e3b-01e32af1e835",
+      "a5db5f3b-15f1-5e01-aa0a-fa954769f865",
+      "aa893756-e2bb-5d1e-a474-282f171339b5",
+      "f3eeb2aa-8435-5695-828f-2c86b28a4dfa",
+      "3f4d8788-62c9-5196-8e40-cedae9b0024e",
+      "f6d74fe4-ce2d-509e-9908-e4c4797efd92",
+      "3b05d60c-340d-5f1f-901c-ff70a9957f95",
+      "d104e0be-5650-5ce6-816b-bb6879a2f275",
+      "9ed3f208-3adf-5346-98fe-42c99fa0990a",
+      "b95160bd-a1d4-54b0-b3a8-820cb233229e",
+      "47e88b28-380d-5884-9a51-26a8988dc042",
+      "481befe7-6540-54cf-ab43-ad70cc17a482",
+      "ada83649-8271-51bb-a1bd-e3bb2eac217c",
+      "c1fbad69-efb1-5fe3-bce2-03524f834a59",
+      "9540e868-18da-53de-912a-b751328a05cd"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts": [
-      "6d103658-581a-5399-b814-4de65c3b6949",
-      "844d6079-b51c-5195-981f-76d287366859",
-      "1cf90f7d-f326-522c-9dc1-5217833dfaa8",
-      "2ff2e485-e86b-5f91-aa0b-5921c0b32c7e",
-      "ccf8c11c-1648-5a91-bdfd-edb71ec5e85d",
-      "670f74ab-1da5-555c-a64d-01ea6854dbfb",
-      "1cf34b9d-eda2-5913-a2e5-d3bdfa4ae107",
-      "a31df2a6-441d-568f-8792-60d5e078323f",
-      "34f9aa82-5fcc-5317-b17f-5a16e32139c8",
-      "ed16bc39-0e21-5e8d-9ee4-1c203ef41f49"
+      "49ba3731-d045-5ff3-9415-ad0e0d1d59cd",
+      "b639eab3-813d-55fa-8443-d8983c764ee1",
+      "3016ee89-86bc-50d8-95da-33a8b03c344c",
+      "ec1cfa11-8abb-519b-96f8-66d0d126d940",
+      "478541cd-daed-5ae4-8ead-4200cd7787e3",
+      "52de4e16-f9fa-5221-ba4d-efeab6ccf992",
+      "568912ca-e38b-518d-b21e-7080b28e6fea",
+      "0d28ff5a-99f8-56b9-99a3-559e10329bc9",
+      "88e8e9f5-0cc5-5572-9185-3873cad75e42",
+      "c3ef034e-52bb-547b-af01-cb4a61eb1058",
+      "121abe03-6676-5f95-a912-1688eb627651",
+      "af5f7f70-88d4-5f4d-951c-4305d83f511a"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts": [
       "2b2efd17-f009-5ee4-9e67-b072161e31f3",
@@ -22801,20 +23203,21 @@
       "d1cc6b86-31bb-5ff9-97a4-23bedabef68c"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts": [
-      "65b30c9f-c70e-54db-a577-09275835fcc3",
-      "4ec161c7-c571-5e59-b1f0-c3ac8ba8166b",
-      "a442e53c-15ef-5287-a116-b333c2afc8aa",
-      "3a907563-b7d5-578b-ae10-deb2bebc940e",
-      "4f8d9324-1609-558b-a7cc-449a01ae4ece",
-      "565bcb11-70a1-58df-9f76-6d00a8781720",
-      "394a139d-cdc6-5800-9285-e7e606bf5ee6",
-      "a110e744-395d-5097-acbe-ee978cd9fcd7",
-      "f2a75de6-6ccf-5f2e-a701-8777f6a67fb8",
-      "57babab9-f19b-54c9-bb3d-3e46fd7d02a6",
-      "7b01de74-4793-50f1-bf61-41b8a4e98f1a",
-      "6d531fee-0bf9-5542-87fc-50453d9ddad7",
-      "e5db8a2a-c4ab-54f9-a711-70b22f6cd121",
-      "7408b9d5-01d8-578f-b8fd-2830daae35ec"
+      "645c0b82-15e9-54ad-ae1d-cc9bb2bdbed3",
+      "49a829a8-1a64-59ec-be67-63abee43d796",
+      "ea9acb23-d85c-59c9-9315-f5a6b5d2f154",
+      "a87525ed-b6fe-5d65-be50-83eaeb06e135",
+      "d7b3368d-e334-5cd5-a0a6-74c92e4df004",
+      "9fbb7adf-bdd8-5c51-af8c-fb5f38ac4dbd",
+      "5aa26022-f3a7-5aed-9c47-2c727c318487",
+      "bc8bf3fe-7300-56eb-9df1-3c1dd898e943",
+      "73bb10d0-b62f-5178-89ca-3f37decf68ea",
+      "857ea1b0-e358-5560-bdef-c4252b1896af",
+      "feeb92d5-9f3f-545c-92ce-b53ea2056338",
+      "edd85aaa-3ab3-5459-a925-1e1adbc6c871",
+      "8d8e0a28-77df-53ee-8ea2-a959c7d8fe76",
+      "bde828ab-d252-5cc4-b554-74c9fd9ea661",
+      "fd0693ed-e36e-57f6-b87c-1c3ec20e46a2"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\semantic-search.ts": [
       "8caa0025-cdbf-55c9-bfd7-104294e16275",
@@ -22883,16 +23286,16 @@
       "3f632b95-7eb3-5ef3-a5b9-fb7a7364a849",
       "d51c786e-134c-55fe-a5cd-024e938f79f5",
       "725a6144-a4ae-57e0-a165-18e4e876fdcc",
-      "c67c740a-a034-5b7e-9165-1c7d4f90ebdd",
-      "753c74ce-c2d4-524b-9a75-0c9cf30d4423",
-      "84529744-f94a-58ec-b790-f8106339f03e",
-      "39048eac-85c8-56e7-9cb7-914b58f25283",
-      "a1de6cdf-b9b5-5727-bf30-7d353c52badf",
-      "2272e131-1fa3-5834-b6b7-50ce40e4f9ce",
-      "e477647e-b41a-5eb7-8ac1-8b165360f8fa",
-      "4890ece2-e9ec-54af-81b8-f7c92516d031",
-      "77aa663f-9753-585b-9415-ca2501f730b6",
-      "975ac161-b504-5785-ac07-d1a1e5914c59"
+      "da69fc25-9549-5f07-a1dc-bb15e59c0e5f",
+      "a97ec10f-9dc5-5887-ad63-b28a55e5e9ee",
+      "326c834d-8272-54f9-9a1f-bb253c807800",
+      "2f68b506-f342-56ab-ad01-3c802de84724",
+      "1bd766b4-c211-5cfb-9ec8-d34e4c1aab28",
+      "4d7d62f8-3612-5cbc-8676-61e0d4c2f5c2",
+      "69a55852-c3db-5711-9bc6-8e7d6ad1a4af",
+      "681b0e0a-8687-5e1c-8f8a-f35d0420eb6f",
+      "93af592a-9e5d-528b-89da-ef05dd71b1ca",
+      "f15cec19-ee3f-53ac-9d2c-c3e33c9932d9"
     ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\vector-store.ts": [
       "b3e68520-1963-5e77-ae4f-510afbfe8a23",
@@ -23562,6 +23965,16 @@
       "0f488471-1ae0-5a18-a2f6-93d34a8cdcba",
       "b8250a55-9a8a-5f41-ad81-afb33f657b05"
     ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project\\src\\auth.ts": [
+      "9eb4e2a7-0131-5c4b-951e-5bd02d39a9da",
+      "6b2bcee7-7f11-564c-9970-5d0491042b55",
+      "4e728460-ce7f-5435-bb91-3665b796c7d2",
+      "2625d2dc-dae1-5030-900a-9c815989b3d0"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-integration-project\\src\\user.ts": [
+      "435b7810-f445-500f-898f-7eb8c3a707c1",
+      "6f8e911d-4d58-5b61-9b05-bd245d8eca0a"
+    ],
     "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\accuracy-validation.test.ts": [
       "a13dbe09-a3c4-53b0-99a1-4b0630dfe3c6"
     ],
@@ -23795,18 +24208,23 @@
       "7b235b95-0113-5eee-9c87-0f59fea4008b",
       "e08bc493-fede-5490-bf83-e3be4fde7234",
       "b515851d-1cd4-5e8a-8acb-dcdd266bfc6a"
+    ],
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\.test-venv-fixtures\\src\\app.py": [
+      "c9df549b-f517-51e8-9727-ef02bb523eba",
+      "88d1c50f-0eaa-5139-9258-ca396036c1cf",
+      "b8adc47f-b3f1-591e-b01d-5c46d4c4add0"
     ]
   },
   "stats": {
-    "totalEntities": 1935,
-    "distinctFiles": 197,
+    "totalEntities": 1970,
+    "distinctFiles": 202,
     "typeBreakdown": {
-      "function": 505,
-      "type": 36,
+      "function": 513,
+      "type": 37,
       "component": 2,
-      "interface": 317,
-      "class": 106,
-      "method": 968,
+      "interface": 320,
+      "class": 111,
+      "method": 986,
       "constant": 1
     }
   }

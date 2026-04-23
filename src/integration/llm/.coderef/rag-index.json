@@ -1,0 +1,22 @@
+{
+  "version": "1.0",
+  "createdAt": "2026-04-22T21:56:52.596Z",
+  "projectDir": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/integration/llm",
+  "languages": [
+    "ts"
+  ],
+  "provider": "ollama",
+  "store": "sqlite",
+  "stats": {
+    "tokensUsed": 0,
+    "estimatedCost": 0,
+    "avgEmbeddingTimeMs": null,
+    "byType": {},
+    "byLanguage": {}
+  },
+  "chunksIndexed": 0,
+  "chunksSkipped": 6,
+  "chunksFailed": 0,
+  "filesProcessed": 6,
+  "processingTimeMs": 82
+}

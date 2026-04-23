@@ -3052,105 +3052,105 @@
       "@type": "coderef:function",
       "name": "loadRAGDependencies",
       "file": "src/cli/rag-index.ts",
-      "line": 23
+      "line": 26
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts:CliArgs",
       "@type": "coderef:interface",
       "name": "CliArgs",
       "file": "src/cli/rag-index.ts",
-      "line": 37
+      "line": 63
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts:parseArgs",
       "@type": "coderef:function",
       "name": "parseArgs",
       "file": "src/cli/rag-index.ts",
-      "line": 51
+      "line": 77
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts:printHelp",
       "@type": "coderef:function",
       "name": "printHelp",
       "file": "src/cli/rag-index.ts",
-      "line": 126
+      "line": 157
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts:createLLMProvider",
       "@type": "coderef:function",
       "name": "createLLMProvider",
       "file": "src/cli/rag-index.ts",
-      "line": 171
+      "line": 217
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts:createVectorStore",
       "@type": "coderef:function",
       "name": "createVectorStore",
       "file": "src/cli/rag-index.ts",
-      "line": 198
+      "line": 264
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts:main",
       "@type": "coderef:function",
       "name": "main",
       "file": "src/cli/rag-index.ts",
-      "line": 214
+      "line": 320
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts:loadRAGDependencies",
       "@type": "coderef:function",
       "name": "loadRAGDependencies",
       "file": "src/cli/rag-search.ts",
-      "line": 21
+      "line": 24
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts:CliArgs",
       "@type": "coderef:interface",
       "name": "CliArgs",
       "file": "src/cli/rag-search.ts",
-      "line": 35
+      "line": 61
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts:parseArgs",
       "@type": "coderef:function",
       "name": "parseArgs",
       "file": "src/cli/rag-search.ts",
-      "line": 53
+      "line": 79
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts:printHelp",
       "@type": "coderef:function",
       "name": "printHelp",
       "file": "src/cli/rag-search.ts",
-      "line": 138
+      "line": 171
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts:createLLMProvider",
       "@type": "coderef:function",
       "name": "createLLMProvider",
       "file": "src/cli/rag-search.ts",
-      "line": 189
+      "line": 222
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts:createVectorStore",
       "@type": "coderef:function",
       "name": "createVectorStore",
       "file": "src/cli/rag-search.ts",
-      "line": 216
+      "line": 267
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts:formatResult",
       "@type": "coderef:function",
       "name": "formatResult",
       "file": "src/cli/rag-search.ts",
-      "line": 232
+      "line": 323
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts:main",
       "@type": "coderef:function",
       "name": "main",
       "file": "src/cli/rag-search.ts",
-      "line": 260
+      "line": 351
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-status.ts:CliArgs",
@@ -6622,70 +6622,84 @@
       "@type": "coderef:class",
       "name": "AnthropicProvider",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 37
+      "line": 38
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.complete",
       "@type": "coderef:method",
       "name": "AnthropicProvider.complete",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 85
+      "line": 86
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.embed",
       "@type": "coderef:method",
       "name": "AnthropicProvider.embed",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 141
+      "line": 142
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.countTokens",
       "@type": "coderef:method",
       "name": "AnthropicProvider.countTokens",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 151
+      "line": 152
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.getProviderName",
       "@type": "coderef:method",
       "name": "AnthropicProvider.getProviderName",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 158
+      "line": 159
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.getModel",
       "@type": "coderef:method",
       "name": "AnthropicProvider.getModel",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 165
+      "line": 166
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.getEmbeddingDimensions",
+      "@type": "coderef:method",
+      "name": "AnthropicProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 174
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.supportsEmbeddings",
+      "@type": "coderef:method",
+      "name": "AnthropicProvider.supportsEmbeddings",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 181
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.withRetry",
       "@type": "coderef:method",
       "name": "AnthropicProvider.withRetry",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 172
+      "line": 188
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.mapStopReason",
       "@type": "coderef:method",
       "name": "AnthropicProvider.mapStopReason",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 203
+      "line": 219
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:AnthropicProvider.handleError",
       "@type": "coderef:method",
       "name": "AnthropicProvider.handleError",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 220
+      "line": 236
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts:createAnthropicProvider",
       "@type": "coderef:function",
       "name": "createAnthropicProvider",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 295
+      "line": 311
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts:CompletionOptions",
@@ -6720,84 +6734,245 @@
       "@type": "coderef:type",
       "name": "LLMProviderFactory",
       "file": "src/integration/llm/llm-provider.ts",
-      "line": 191
+      "line": 222
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts:LLMProviderConfig",
       "@type": "coderef:interface",
       "name": "LLMProviderConfig",
       "file": "src/integration/llm/llm-provider.ts",
-      "line": 196
+      "line": 227
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts:ProviderSpec",
+      "@type": "coderef:interface",
+      "name": "ProviderSpec",
+      "file": "src/integration/llm/model-registry.ts",
+      "line": 18
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts:getProviderSpec",
+      "@type": "coderef:function",
+      "name": "getProviderSpec",
+      "file": "src/integration/llm/model-registry.ts",
+      "line": 157
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts:getEmbeddingDimensions",
+      "@type": "coderef:function",
+      "name": "getEmbeddingDimensions",
+      "file": "src/integration/llm/model-registry.ts",
+      "line": 168
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts:supportsEmbeddings",
+      "@type": "coderef:function",
+      "name": "supportsEmbeddings",
+      "file": "src/integration/llm/model-registry.ts",
+      "line": 185
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts:ProviderDoesNotSupportEmbeddings",
+      "@type": "coderef:class",
+      "name": "ProviderDoesNotSupportEmbeddings",
+      "file": "src/integration/llm/model-registry.ts",
+      "line": 193
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts:validateRegistry",
+      "@type": "coderef:function",
+      "name": "validateRegistry",
+      "file": "src/integration/llm/model-registry.ts",
+      "line": 207
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaEmbedResponse",
+      "@type": "coderef:interface",
+      "name": "OllamaEmbedResponse",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 36
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaGenerateResponse",
+      "@type": "coderef:interface",
+      "name": "OllamaGenerateResponse",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 43
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider",
+      "@type": "coderef:class",
+      "name": "OllamaProvider",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 71
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.complete",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.complete",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 111
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.embed",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.embed",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 180
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.embedSingle",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.embedSingle",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 206
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.countTokens",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.countTokens",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 262
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.getProviderName",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.getProviderName",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 271
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.getModel",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.getModel",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 278
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.getEmbeddingDimensions",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 286
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.supportsEmbeddings",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.supportsEmbeddings",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 297
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.withRetry",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.withRetry",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 304
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.handleHttpError",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.handleHttpError",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 340
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:OllamaProvider.handleError",
+      "@type": "coderef:method",
+      "name": "OllamaProvider.handleError",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 363
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts:createOllamaProvider",
+      "@type": "coderef:function",
+      "name": "createOllamaProvider",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 413
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider",
       "@type": "coderef:class",
       "name": "OpenAIProvider",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 32
+      "line": 33
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.complete",
       "@type": "coderef:method",
       "name": "OpenAIProvider.complete",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 63
+      "line": 64
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.embed",
       "@type": "coderef:method",
       "name": "OpenAIProvider.embed",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 114
+      "line": 115
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.countTokens",
       "@type": "coderef:method",
       "name": "OpenAIProvider.countTokens",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 139
+      "line": 140
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.getProviderName",
       "@type": "coderef:method",
       "name": "OpenAIProvider.getProviderName",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 155
+      "line": 156
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.getModel",
       "@type": "coderef:method",
       "name": "OpenAIProvider.getModel",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 162
+      "line": 163
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.getEmbeddingDimensions",
+      "@type": "coderef:method",
+      "name": "OpenAIProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 171
+    },
+    {
+      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.supportsEmbeddings",
+      "@type": "coderef:method",
+      "name": "OpenAIProvider.supportsEmbeddings",
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 190
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.withRetry",
       "@type": "coderef:method",
       "name": "OpenAIProvider.withRetry",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 169
+      "line": 197
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.mapFinishReason",
       "@type": "coderef:method",
       "name": "OpenAIProvider.mapFinishReason",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 200
+      "line": 228
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:OpenAIProvider.handleError",
       "@type": "coderef:method",
       "name": "OpenAIProvider.handleError",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 216
+      "line": 244
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts:createOpenAIProvider",
       "@type": "coderef:function",
       "name": "createOpenAIProvider",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 291
+      "line": 319
     },
     {
       "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerOptions",
@@ -6833,181 +7008,6 @@
       "name": "AnswerGenerationService.generateAnswer",
       "file": "src/integration/rag/answer-generation-service.ts",
       "line": 140
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService.generateNoResultsAnswer",
-      "@type": "coderef:method",
-      "name": "AnswerGenerationService.generateNoResultsAnswer",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 238
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService.calculateConfidence",
-      "@type": "coderef:method",
-      "name": "AnswerGenerationService.calculateConfidence",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 271
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService.extractRelatedQuestions",
-      "@type": "coderef:method",
-      "name": "AnswerGenerationService.extractRelatedQuestions",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 336
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService.generateVariations",
-      "@type": "coderef:method",
-      "name": "AnswerGenerationService.generateVariations",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 360
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService.validateAnswer",
-      "@type": "coderef:method",
-      "name": "AnswerGenerationService.validateAnswer",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 383
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts:AnswerGenerationService.analyzeAnswer",
-      "@type": "coderef:method",
-      "name": "AnswerGenerationService.analyzeAnswer",
-      "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 421
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter",
-      "@type": "coderef:class",
-      "name": "ChunkConverter",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 23
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.convertGraph",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.convertGraph",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 33
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.convertNode",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.convertNode",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 110
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.groupNodesByFile",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.groupNodesByFile",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 183
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.readFile",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.readFile",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 198
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.fileExists",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.fileExists",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 209
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.extractElementName",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.extractElementName",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 226
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.detectLanguage",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.detectLanguage",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 234
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.extractSourceCode",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.extractSourceCode",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 259
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.extractDocumentation",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.extractDocumentation",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 291
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.extractDependencies",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.extractDependencies",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 375
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.extractDependents",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.extractDependents",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 385
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.extractRelatedElements",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.extractRelatedElements",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 395
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts:ChunkConverter.calculateStatistics",
-      "@type": "coderef:method",
-      "name": "ChunkConverter.calculateStatistics",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 414
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\code-chunk.ts:CodeChunk",
-      "@type": "coderef:interface",
-      "name": "CodeChunk",
-      "file": "src/integration/rag/code-chunk.ts",
-      "line": 17
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\code-chunk.ts:ChunkOptions",
-      "@type": "coderef:interface",
-      "name": "ChunkOptions",
-      "file": "src/integration/rag/code-chunk.ts",
-      "line": 131
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\code-chunk.ts:ChunkGenerationResult",
-      "@type": "coderef:interface",
-      "name": "ChunkGenerationResult",
-      "file": "src/integration/rag/code-chunk.ts",
-      "line": 166
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\code-chunk.ts:ChunkGenerationError",
-      "@type": "coderef:interface",
-      "name": "ChunkGenerationError",
-      "file": "src/integration/rag/code-chunk.ts",
-      "line": 186
-    },
-    {
-      "@id": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\code-chunk.ts:ChunkStatistics",
-      "@type": "coderef:interface",
-      "name": "ChunkStatistics",
-      "file": "src/integration/rag/code-chunk.ts",
-      "line": 206
     }
   ],
   "edges": [
@@ -7614,6 +7614,31 @@
     {
       "@type": "coderef:imports",
       "source": "src/cli/rag-index.ts",
+      "target": "../integration/llm/openai-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-index.ts",
+      "target": "../integration/llm/ollama-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-index.ts",
+      "target": "../integration/vector/sqlite-store.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-index.ts",
+      "target": "../integration/vector/pinecone-store.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-index.ts",
+      "target": "../integration/vector/chroma-store.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-index.ts",
       "target": "../integration/vector/sqlite-store.js"
     },
     {
@@ -7640,6 +7665,31 @@
       "@type": "coderef:imports",
       "source": "src/cli/rag-search.ts",
       "target": "../integration/llm/anthropic-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-search.ts",
+      "target": "../integration/llm/openai-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-search.ts",
+      "target": "../integration/llm/ollama-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-search.ts",
+      "target": "../integration/vector/sqlite-store.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-search.ts",
+      "target": "../integration/vector/pinecone-store.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/cli/rag-search.ts",
+      "target": "../integration/vector/chroma-store.js"
     },
     {
       "@type": "coderef:imports",
@@ -8499,7 +8549,27 @@
     {
       "@type": "coderef:imports",
       "source": "src/integration/llm/anthropic-provider.ts",
+      "target": "./model-registry.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/integration/llm/anthropic-provider.ts",
       "target": "./openai-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/integration/llm/ollama-provider.ts",
+      "target": "./llm-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/integration/llm/ollama-provider.ts",
+      "target": "./llm-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/integration/llm/ollama-provider.ts",
+      "target": "./model-registry.js"
     },
     {
       "@type": "coderef:imports",
@@ -8520,6 +8590,21 @@
       "@type": "coderef:imports",
       "source": "src/integration/llm/openai-provider.ts",
       "target": "./llm-provider.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/integration/llm/openai-provider.ts",
+      "target": "./model-registry.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/integration/llm/__tests__/ollama-provider-unreachable.test.ts",
+      "target": "vitest"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "src/integration/llm/__tests__/ollama-provider-unreachable.test.ts",
+      "target": "../ollama-provider.js"
     },
     {
       "@type": "coderef:imports",
@@ -10028,6 +10113,21 @@
     },
     {
       "@type": "coderef:imports",
+      "source": "__tests__/chroma-store.test.ts",
+      "target": "vitest"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "__tests__/chroma-store.test.ts",
+      "target": "../src/integration/vector/chroma-store.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "__tests__/chroma-store.test.ts",
+      "target": "../src/integration/vector/vector-store.js"
+    },
+    {
+      "@type": "coderef:imports",
       "source": "__tests__/dynamic-imports.test.ts",
       "target": "vitest"
     },
@@ -10615,6 +10715,21 @@
       "@type": "coderef:imports",
       "source": "__tests__/phase5-integration.test.ts",
       "target": "../src/analyzer/graph-builder"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "__tests__/pinecone-store.test.ts",
+      "target": "vitest"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "__tests__/pinecone-store.test.ts",
+      "target": "../src/integration/vector/pinecone-store.js"
+    },
+    {
+      "@type": "coderef:imports",
+      "source": "__tests__/pinecone-store.test.ts",
+      "target": "../src/integration/vector/vector-store.js"
     },
     {
       "@type": "coderef:imports",
@@ -11895,121 +12010,6 @@
       "@type": "coderef:calls",
       "source": "main",
       "target": "formatContext"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "toFixed"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "writeFileSync"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "formatAsJSON"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "section"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "info"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "section"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "success"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "section"
-    },
-    {
-      "@type": "coderef:calls",
-      "source": "main",
-      "target": "log"
     }
   ]
 }

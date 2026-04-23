@@ -1,8 +1,8 @@
 {
-  "totalElements": 1508,
-  "averageComplexity": 5,
-  "averageLOC": 31.1,
-  "highComplexityCount": 183,
+  "totalElements": 1534,
+  "averageComplexity": 5.1,
+  "averageLOC": 31,
+  "highComplexityCount": 189,
   "elements": [
     {
       "element": "ContextGenerator.generateMarkdown",
@@ -133,6 +133,14 @@
       "parameters": 0
     },
     {
+      "element": "parseArgs",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 31,
+      "loc": 92,
+      "parameters": 1
+    },
+    {
       "element": "ProjectClassifier.detectApiSubtype",
       "file": "src/analyzer/project-classifier.ts",
       "type": "method",
@@ -203,6 +211,14 @@
       "complexity": 27,
       "loc": 57,
       "parameters": 2
+    },
+    {
+      "element": "parseArgs",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 27,
+      "loc": 80,
+      "parameters": 1
     },
     {
       "element": "ContextBuilder.buildContext",
@@ -293,14 +309,6 @@
       "parameters": 4
     },
     {
-      "element": "parseArgs",
-      "file": "src/cli/rag-search.ts",
-      "type": "function",
-      "complexity": 24,
-      "loc": 85,
-      "parameters": 1
-    },
-    {
       "element": "detectPreset",
       "file": "src/config/presets.ts",
       "type": "function",
@@ -309,11 +317,19 @@
       "parameters": 1
     },
     {
+      "element": "OllamaProvider.complete",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 24,
+      "loc": 69,
+      "parameters": 2
+    },
+    {
       "element": "main",
       "file": "src/cli/rag-index.ts",
       "type": "function",
       "complexity": 23,
-      "loc": 189,
+      "loc": 192,
       "parameters": 0
     },
     {
@@ -517,14 +533,6 @@
       "parameters": 3
     },
     {
-      "element": "parseArgs",
-      "file": "src/cli/rag-index.ts",
-      "type": "function",
-      "complexity": 18,
-      "loc": 75,
-      "parameters": 1
-    },
-    {
       "element": "formatResult",
       "file": "src/cli/rag-search.ts",
       "type": "function",
@@ -537,7 +545,7 @@
       "file": "src/cli/rag-search.ts",
       "type": "function",
       "complexity": 18,
-      "loc": 138,
+      "loc": 139,
       "parameters": 0
     },
     {
@@ -637,6 +645,14 @@
       "parameters": 2
     },
     {
+      "element": "RAGConfigLoader.validateConfig",
+      "file": "src/integration/rag/rag-config.ts",
+      "type": "method",
+      "complexity": 16,
+      "loc": 46,
+      "parameters": 1
+    },
+    {
       "element": "RelationshipExtractor.extractTypeScriptImports",
       "file": "src/pipeline/extractors/relationship-extractor.ts",
       "type": "method",
@@ -731,14 +747,6 @@
       "complexity": 15,
       "loc": 86,
       "parameters": 2
-    },
-    {
-      "element": "RAGConfigLoader.validateConfig",
-      "file": "src/integration/rag/rag-config.ts",
-      "type": "method",
-      "complexity": 15,
-      "loc": 42,
-      "parameters": 1
     },
     {
       "element": "ElementExtractor.extract",
@@ -923,6 +931,22 @@
       "complexity": 13,
       "loc": 62,
       "parameters": 2
+    },
+    {
+      "element": "createVectorStore",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 13,
+      "loc": 56,
+      "parameters": 3
+    },
+    {
+      "element": "createVectorStore",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 13,
+      "loc": 56,
+      "parameters": 3
     },
     {
       "element": "FuzzyResolver.calculateJaroDistance",
@@ -1349,6 +1373,22 @@
       "parameters": 3
     },
     {
+      "element": "createLLMProvider",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 11,
+      "loc": 47,
+      "parameters": 1
+    },
+    {
+      "element": "createLLMProvider",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 11,
+      "loc": 45,
+      "parameters": 1
+    },
+    {
       "element": "parseArgs",
       "file": "src/cli/scan-frontend-calls.ts",
       "type": "function",
@@ -1387,6 +1427,14 @@
       "complexity": 11,
       "loc": 26,
       "parameters": 2
+    },
+    {
+      "element": "RAGConfigLoader.getLLMConfig",
+      "file": "src/integration/rag/rag-config.ts",
+      "type": "method",
+      "complexity": 11,
+      "loc": 61,
+      "parameters": 1
     },
     {
       "element": "createMockSource",
@@ -2085,6 +2133,22 @@
       "parameters": 4
     },
     {
+      "element": "loadRAGDependencies",
+      "file": "src/cli/rag-index.ts",
+      "type": "function",
+      "complexity": 8,
+      "loc": 37,
+      "parameters": 2
+    },
+    {
+      "element": "loadRAGDependencies",
+      "file": "src/cli/rag-search.ts",
+      "type": "function",
+      "complexity": 8,
+      "loc": 37,
+      "parameters": 2
+    },
+    {
       "element": "main",
       "file": "src/cli/scan.ts",
       "type": "function",
@@ -2138,6 +2202,22 @@
       "type": "method",
       "complexity": 8,
       "loc": 28,
+      "parameters": 1
+    },
+    {
+      "element": "OllamaProvider.withRetry",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 8,
+      "loc": 36,
+      "parameters": 1
+    },
+    {
+      "element": "OllamaProvider.handleError",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 8,
+      "loc": 50,
       "parameters": 1
     },
     {
@@ -2445,22 +2525,6 @@
       "parameters": 2
     },
     {
-      "element": "createLLMProvider",
-      "file": "src/cli/rag-index.ts",
-      "type": "function",
-      "complexity": 7,
-      "loc": 27,
-      "parameters": 1
-    },
-    {
-      "element": "createLLMProvider",
-      "file": "src/cli/rag-search.ts",
-      "type": "function",
-      "complexity": 7,
-      "loc": 27,
-      "parameters": 1
-    },
-    {
       "element": "formatRelativeTime",
       "file": "src/cli/rag-status.ts",
       "type": "function",
@@ -2547,6 +2611,14 @@
       "complexity": 7,
       "loc": 54,
       "parameters": 4
+    },
+    {
+      "element": "OpenAIProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/openai-provider.ts",
+      "type": "method",
+      "complexity": 7,
+      "loc": 19,
+      "parameters": 0
     },
     {
       "element": "AnswerGenerationService.analyzeAnswer",
@@ -3069,6 +3141,14 @@
       "parameters": 1
     },
     {
+      "element": "OllamaProvider.embedSingle",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 6,
+      "loc": 56,
+      "parameters": 2
+    },
+    {
       "element": "OpenAIProvider.withRetry",
       "file": "src/integration/llm/openai-provider.ts",
       "type": "method",
@@ -3155,22 +3235,6 @@
       "complexity": 6,
       "loc": 35,
       "parameters": 0
-    },
-    {
-      "element": "RAGConfigLoader.getLLMProvider",
-      "file": "src/integration/rag/rag-config.ts",
-      "type": "method",
-      "complexity": 6,
-      "loc": 25,
-      "parameters": 0
-    },
-    {
-      "element": "RAGConfigLoader.getLLMConfig",
-      "file": "src/integration/rag/rag-config.ts",
-      "type": "method",
-      "complexity": 6,
-      "loc": 36,
-      "parameters": 1
     },
     {
       "element": "RAGConfigLoader.getVectorStoreProvider",
@@ -3725,6 +3789,14 @@
       "parameters": 2
     },
     {
+      "element": "OllamaProvider.embed",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 26,
+      "parameters": 1
+    },
+    {
       "element": "ConfidenceScorer.scoreRetrievalQuality",
       "file": "src/integration/rag/confidence-scorer.ts",
       "type": "method",
@@ -3813,6 +3885,14 @@
       "parameters": 1
     },
     {
+      "element": "RAGConfigLoader.getLLMProvider",
+      "file": "src/integration/rag/rag-config.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 26,
+      "parameters": 0
+    },
+    {
       "element": "SemanticSearchService.suggestQueryImprovements",
       "file": "src/integration/rag/semantic-search.ts",
       "type": "method",
@@ -3867,6 +3947,14 @@
       "complexity": 5,
       "loc": 28,
       "parameters": 2
+    },
+    {
+      "element": "SQLiteVectorStore.initialize",
+      "file": "src/integration/vector/sqlite-store.ts",
+      "type": "method",
+      "complexity": 5,
+      "loc": 43,
+      "parameters": 0
     },
     {
       "element": "ElementExtractor.createFunctionElement",
@@ -4685,6 +4773,22 @@
       "parameters": 1
     },
     {
+      "element": "supportsEmbeddings",
+      "file": "src/integration/llm/model-registry.ts",
+      "type": "function",
+      "complexity": 4,
+      "loc": 8,
+      "parameters": 1
+    },
+    {
+      "element": "validateRegistry",
+      "file": "src/integration/llm/model-registry.ts",
+      "type": "function",
+      "complexity": 4,
+      "loc": 19,
+      "parameters": 0
+    },
+    {
       "element": "OpenAIProvider.mapFinishReason",
       "file": "src/integration/llm/openai-provider.ts",
       "type": "method",
@@ -4747,14 +4851,6 @@
       "complexity": 4,
       "loc": 15,
       "parameters": 1
-    },
-    {
-      "element": "SQLiteVectorStore.initialize",
-      "file": "src/integration/vector/sqlite-store.ts",
-      "type": "method",
-      "complexity": 4,
-      "loc": 31,
-      "parameters": 0
     },
     {
       "element": "ElementExtractor.extractCppFunctionName",
@@ -5757,6 +5853,22 @@
       "parameters": 1
     },
     {
+      "element": "getEmbeddingDimensions",
+      "file": "src/integration/llm/model-registry.ts",
+      "type": "function",
+      "complexity": 3,
+      "loc": 17,
+      "parameters": 1
+    },
+    {
+      "element": "OllamaProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 3,
+      "loc": 11,
+      "parameters": 0
+    },
+    {
       "element": "OpenAIProvider.embed",
       "file": "src/integration/llm/openai-provider.ts",
       "type": "method",
@@ -6413,28 +6525,12 @@
       "parameters": 0
     },
     {
-      "element": "createVectorStore",
-      "file": "src/cli/rag-index.ts",
-      "type": "function",
-      "complexity": 2,
-      "loc": 16,
-      "parameters": 2
-    },
-    {
       "element": "printHelp",
       "file": "src/cli/rag-search.ts",
       "type": "function",
       "complexity": 2,
       "loc": 51,
       "parameters": 0
-    },
-    {
-      "element": "createVectorStore",
-      "file": "src/cli/rag-search.ts",
-      "type": "function",
-      "complexity": 2,
-      "loc": 16,
-      "parameters": 2
     },
     {
       "element": "formatBytes",
@@ -6843,6 +6939,14 @@
       "complexity": 2,
       "loc": 7,
       "parameters": 2
+    },
+    {
+      "element": "OllamaProvider.handleHttpError",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 2,
+      "loc": 23,
+      "parameters": 1
     },
     {
       "element": "OpenAIProvider.countTokens",
@@ -7893,6 +7997,14 @@
       "parameters": 2
     },
     {
+      "element": "validateCredentials",
+      "file": "__tests__/.test-integration-project/src/auth.ts",
+      "type": "function",
+      "complexity": 2,
+      "loc": 4,
+      "parameters": 2
+    },
+    {
       "element": "isWindowsAbsolutePath",
       "file": "__tests__/generators/root-cause-alignment.test.ts",
       "type": "function",
@@ -8717,27 +8829,11 @@
       "parameters": 0
     },
     {
-      "element": "loadRAGDependencies",
-      "file": "src/cli/rag-index.ts",
-      "type": "function",
-      "complexity": 1,
-      "loc": 14,
-      "parameters": 0
-    },
-    {
       "element": "printHelp",
       "file": "src/cli/rag-index.ts",
       "type": "function",
       "complexity": 1,
-      "loc": 45,
-      "parameters": 0
-    },
-    {
-      "element": "loadRAGDependencies",
-      "file": "src/cli/rag-search.ts",
-      "type": "function",
-      "complexity": 1,
-      "loc": 14,
+      "loc": 60,
       "parameters": 0
     },
     {
@@ -9937,8 +10033,72 @@
       "file": "src/integration/llm/anthropic-provider.ts",
       "type": "method",
       "complexity": 1,
+      "loc": 8,
+      "parameters": 0
+    },
+    {
+      "element": "AnthropicProvider.getEmbeddingDimensions",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "type": "method",
+      "complexity": 1,
       "loc": 7,
       "parameters": 0
+    },
+    {
+      "element": "AnthropicProvider.supportsEmbeddings",
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "getProviderSpec",
+      "file": "src/integration/llm/model-registry.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 11,
+      "parameters": 1
+    },
+    {
+      "element": "OllamaProvider.countTokens",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 9,
+      "parameters": 1
+    },
+    {
+      "element": "OllamaProvider.getProviderName",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "OllamaProvider.getModel",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 0
+    },
+    {
+      "element": "OllamaProvider.supportsEmbeddings",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 7,
+      "parameters": 0
+    },
+    {
+      "element": "createOllamaProvider",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 4,
+      "parameters": 1
     },
     {
       "element": "OpenAIProvider.getProviderName",
@@ -9950,6 +10110,14 @@
     },
     {
       "element": "OpenAIProvider.getModel",
+      "file": "src/integration/llm/openai-provider.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 8,
+      "parameters": 0
+    },
+    {
+      "element": "OpenAIProvider.supportsEmbeddings",
       "file": "src/integration/llm/openai-provider.ts",
       "type": "method",
       "complexity": 1,
@@ -11389,6 +11557,30 @@
       "parameters": 1
     },
     {
+      "element": "authenticateUser",
+      "file": "__tests__/.test-integration-project/src/auth.ts",
+      "type": "function",
+      "complexity": 1,
+      "loc": 4,
+      "parameters": 2
+    },
+    {
+      "element": "AuthService.login",
+      "file": "__tests__/.test-integration-project/src/auth.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 4,
+      "parameters": 2
+    },
+    {
+      "element": "UserService.findUser",
+      "file": "__tests__/.test-integration-project/src/user.ts",
+      "type": "method",
+      "complexity": 1,
+      "loc": 6,
+      "parameters": 1
+    },
+    {
       "element": "cleanupEnvironment",
       "file": "__tests__/generators/helpers.ts",
       "type": "function",
@@ -12066,6 +12258,22 @@
       "type": "method",
       "complexity": 1,
       "loc": 23,
+      "parameters": 0
+    },
+    {
+      "element": "main",
+      "file": "__tests__/.test-venv-fixtures/src/app.py",
+      "type": "function",
+      "complexity": 1,
+      "loc": 3,
+      "parameters": 0
+    },
+    {
+      "element": "Application.run",
+      "file": "__tests__/.test-venv-fixtures/src/app.py",
+      "type": "method",
+      "complexity": 1,
+      "loc": 2,
       "parameters": 0
     }
   ]

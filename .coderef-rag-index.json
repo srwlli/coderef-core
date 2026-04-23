@@ -1,0 +1,1681 @@
+{
+  "version": "1.0",
+  "lastIndexed": 1776845370803,
+  "basePath": ".",
+  "files": [
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\index.ts",
+      "hash": "eb22b712d18a45482396bef671a760e978bb4726c25e82ccd1110531e4875f03",
+      "timestamp": 1776845370739,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "utils\\fs.js",
+      "hash": "86d1fb91ae364c01eff02448c9642d04266b461e997932b7a2d3bb3e06125bf0",
+      "timestamp": 1776845370739,
+      "chunks": [
+        "file:utils\\fs.js"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\search-client.ts",
+      "hash": "883461b28ccb4fbb5b74d2191571ab41e6d7d6cd47dbd8f2e14f651df6cb8550",
+      "timestamp": 1776845370740,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\search-client.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "src\\search\\search-engine.ts",
+      "hash": "566dd7105e070a8b12823a551661ce2097bc0b236528cfd5c314d3feb2bfc7ad",
+      "timestamp": 1776845370740,
+      "chunks": [
+        "file:src\\search\\search-engine.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\index.ts",
+      "hash": "3e14343a0e618df0cfe1392179894aeeb7d57bc09d32326d5ee94222a49c573b",
+      "timestamp": 1776845370740,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\validator.ts",
+      "hash": "c50d566219255fdc7d57ed7da78d8220847e6e506371170958dfeb9e46e9b753",
+      "timestamp": 1776845370741,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\validator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-validator.ts",
+      "hash": "6245fcddcb992b04d6a5212a4f784436a353f5180189c4c0ca4fdf4d92fbc770",
+      "timestamp": 1776845370741,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-validator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\migration-mapper.ts",
+      "hash": "392f3a0a224253cbdc192400b4e941ea12c92dd08c67b6c95a275b41d5d75436",
+      "timestamp": 1776845370742,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\migration-mapper.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\migration-mapper.test.ts",
+      "hash": "caa533dbcba8fdbf07c57220fee3374271bd91833285c9ee3020b9fa62e4103c",
+      "timestamp": 1776845370742,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\migration-mapper.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\frontend-update-generator.ts",
+      "hash": "119105ee76803ef89fe4bf0605a0e4dd1489da0d279348920193209d8c06eb1a",
+      "timestamp": 1776845370743,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\frontend-update-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\types\\types.ts",
+      "hash": "74fdecbdc9f6a81ca58033efa7e69395582b46dcfe59c89261ec852dce974478",
+      "timestamp": 1776845370743,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\types\\types.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\tests\\route-detection-integration.test.ts",
+      "hash": "c8d3614dc7da2b4e37aa254a3a14e8f5560d44fa9215bc87c7c1e8f814b571dc",
+      "timestamp": 1776845370744,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\tests\\route-detection-integration.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\tree-sitter-scanner.ts",
+      "hash": "34d2d6dd9408e77c3edce889edd719005a07fae25741891d3f8f417e3940c0f1",
+      "timestamp": 1776845370744,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\tree-sitter-scanner.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts",
+      "hash": "19174ba4f9473bd9c3154f48a53c5c4c78dbc100be297ce46e2835cc56f2c21e",
+      "timestamp": 1776845370745,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner-worker.ts",
+      "hash": "d7389aded1507c56bddfdf809edc717c9976801c9f1dcc06f9990719c4090543",
+      "timestamp": 1776845370746,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\scanner-worker.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\register-frameworks.ts",
+      "hash": "13b629655ecf37e904252a04b2f04240ac557ca73800312bb7f70da1802022ee",
+      "timestamp": 1776845370746,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\register-frameworks.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\lru-cache.ts",
+      "hash": "b1625dbffea3172397477cec89774f8bd2a9b2f038cb898fe8ff6c71aa9f2fda",
+      "timestamp": 1776845370746,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\lru-cache.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\frontend-scanner.ts",
+      "hash": "8233a4be1726ee52315573350b305002180271fefbfd8035d3e1a934cccdd4a9",
+      "timestamp": 1776845370747,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\frontend-scanner.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts",
+      "hash": "ffec8d216f55ed1f6515e8c86a3c514d9f55d69817bd3cb86961a5f86b24d4af",
+      "timestamp": 1776845370747,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\framework-registry.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\registry\\entity-registry.ts",
+      "hash": "cb06ad739e3860a1f6515be2616f78483da85bce7f51bce13eb10f36eeef6b8b",
+      "timestamp": 1776845370747,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\registry\\entity-registry.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "src\\registry\\types.ts",
+      "hash": "f23623218cfb3ca8b7d06052f07a7a86009dfdac6b2db017ee2dd9779637086e",
+      "timestamp": 1776845370747,
+      "chunks": [
+        "file:src\\registry\\types.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\query\\query-executor.ts",
+      "hash": "de36801d4c04a0d82d9385b088153d533d60eda9b334bb9d5b8a81950a4bb04b",
+      "timestamp": 1776845370748,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\query\\query-executor.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts",
+      "hash": "f2561e30cc269ae2871440e49f5874ed27249ec05cdeb35de5d20f2bc052df81",
+      "timestamp": 1776845370748,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\index.ts",
+      "hash": "2322aac6b8e672f43847c9d5f8c58167ac9fdc6513d010d51564bd9e7686d586",
+      "timestamp": 1776845370748,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\registry-generator.ts",
+      "hash": "717478292cfdd60e8981a564351e257321d2b61485db4b55548d1576a0ec66d7",
+      "timestamp": 1776845370748,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\registry-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\index-generator.ts",
+      "hash": "f5cf48f3eeafcf6ca2a8a6b9642f002664d8d2edc47c1a446868535fed7071d7",
+      "timestamp": 1776845370749,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\index-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\graph-output.ts",
+      "hash": "851f4671708177416786cfd0965fb71cd2c1647afe8b02415f34721d5c7cbe7b",
+      "timestamp": 1776845370749,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\graph-output.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\graph-generator.ts",
+      "hash": "e9082b61423b1c914b05380cbf637bcf730d013330bfdcbdaddfd50499d120c4",
+      "timestamp": 1776845370749,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\graph-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\export-generator.ts",
+      "hash": "f3e31b7caf339c8801a8a95a78f330555a15c263fa31ba6ba3dcc8f04435323e",
+      "timestamp": 1776845370750,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\export-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\drift-generator.ts",
+      "hash": "7034352d173fb5b8132b8d20cd3ba16c5a9ca50454ec57f8db90ae78b4c09eb6",
+      "timestamp": 1776845370750,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\drift-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\context-generator.ts",
+      "hash": "06ac317aa8d40f8fae97344981cb8c7ad8ca6749a1fbed20b73cff24f0eeebfc",
+      "timestamp": 1776845370751,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\context-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\index.ts",
+      "hash": "4c7a66c6ccb34ae0786330273c2dc3efed9c760a0d88c9fca3c9c6ee4b8d9fda",
+      "timestamp": 1776845370751,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\ai-prompt-generator.ts",
+      "hash": "c1d4940b7a6efbd0fd8247acd8f348f2062390ef750e354cdeaae428e4166396",
+      "timestamp": 1776845370752,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\ai-prompt-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\pinecone-store.ts",
+      "hash": "f5550927b1af8dd8934460a5cbf18706e0595a6e1f48a1723e225e27a8b19095",
+      "timestamp": 1776845370752,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\pinecone-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\index.ts",
+      "hash": "5d1228df5a055635e5a9a876aac8536efe254c324f378e14a5c56c54c0d79bd8",
+      "timestamp": 1776845370752,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\chroma-store.ts",
+      "hash": "7bfde48d2fd1e22669fab32c78bf55e35d54ef9927445ee3428e75e64356bb16",
+      "timestamp": 1776845370753,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\chroma-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\indexing-orchestrator.ts",
+      "hash": "bc6304a4d4a1bd0386634dbb16cc69e4220c2a52f3ea40d2280ac6923be67cac",
+      "timestamp": 1776845370753,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\indexing-orchestrator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\index.ts",
+      "hash": "0dd16603b4d7274c10bff5f012b97b7b877ad5f4e84ec49cf94ab0622fdbc494",
+      "timestamp": 1776845370753,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "hash": "1269b00f80b9e34070bc6acabb26a3aaa9145c26f8ee5682a3aa2daf31a760c6",
+      "timestamp": 1776845370754,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "hash": "abce5b5c48efeee56ee2a3e84f007a9cda3c2f5dcf0c06495a24e78e8623076d",
+      "timestamp": 1776845370754,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\index.ts",
+      "hash": "585658cc7ec20b25b3767282d4f3d4cfaa2cdf5ea7e50ef63d968a0709cbaa75",
+      "timestamp": 1776845370755,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
+      "hash": "1b87e208b28bb421472d19f458b138cd5b3d2461e668c702499a999cbfaf1510",
+      "timestamp": 1776845370755,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\relationship-index.ts",
+      "hash": "6a0653b59889341a2e5ce388a1f35adb4901b3d4d3feba07ec09d32acfe2f591",
+      "timestamp": 1776845370755,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\relationship-index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\query-engine.ts",
+      "hash": "fc936a4d53915d58995db268e2fab697dc50cd3c2600b912c21fca6c22e4acbb",
+      "timestamp": 1776845370756,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\query-engine.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\metadata-index.ts",
+      "hash": "4c0d6ffc3964f9f11d6163792c42dc9049e20d92be473d575183574eff357499",
+      "timestamp": 1776845370756,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\metadata-index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\indexer-service.ts",
+      "hash": "dada5465500a0a3a386f80bd5a8cde46cbf56ea974fae23c744b3f31f9de5439",
+      "timestamp": 1776845370756,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\indexer-service.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\index-store.ts",
+      "hash": "d54626727dc926cae08869be2fdb4d903a7586704c34efdc12804af8bddcddcd",
+      "timestamp": 1776845370756,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\indexer\\index-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\generator\\generateRoutes.ts",
+      "hash": "40705bf0aa137c19aecf4f9c6aee115260acec13dfb2a485f0820d18b5632d20",
+      "timestamp": 1776845370757,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\generator\\generateRoutes.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\generator\\generateFrontendCalls.ts",
+      "hash": "b9e5c4a2df342e40ac0e89a9e469472e2750bb9a664ba462c52f5130e87a65e4",
+      "timestamp": 1776845370757,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\generator\\generateFrontendCalls.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\formatter\\formatter.ts",
+      "hash": "7359d5c01df7b527b401de4d6e673ef3b335f4d0180c9c5ce3dad39073b82127",
+      "timestamp": 1776845370757,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\formatter\\formatter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\saveIndex.ts",
+      "hash": "b2317a66badd8f58ba60dd4c002fb8e37fa67baf88ba6888f1ecb05f1ec9fbe9",
+      "timestamp": 1776845370758,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\saveIndex.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\saveFrontendCalls.ts",
+      "hash": "c314acd2a32ceb5145f785af580c36c2f74cbef7b7e37ccec21f4fea40bd9156",
+      "timestamp": 1776845370758,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\saveFrontendCalls.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\detectPatterns.ts",
+      "hash": "188916a2d3869c569b47e35564e3f497f0ff3803bba86a78626dedf2aab23b27",
+      "timestamp": 1776845370758,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\detectPatterns.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\detectDrift.ts",
+      "hash": "99be06a144b36afdd5800050367b29d6e1f74b42dfa5af89fe6b32fea3c05cf7",
+      "timestamp": 1776845370759,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\detectDrift.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\export\\index.ts",
+      "hash": "d39a562315b4668e3a2f931a2b451b840ab50361cbcc2332bea70429937837d9",
+      "timestamp": 1776845370759,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\export\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\export\\graph-exporter.ts",
+      "hash": "332ac9e9226dd1014777181c0965ff057b15e21f485748128204be58820a735a",
+      "timestamp": 1776845370759,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\export\\graph-exporter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\ValidationError.ts",
+      "hash": "35d3404f0540c8e305f1b6661b53cb1fd14e80cb3adf5f32f70100236723afe0",
+      "timestamp": 1776845370760,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\ValidationError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\ScanError.ts",
+      "hash": "1e04fe279fdca9f5f0ca02cc45325e905dca079154b14cbeb496001b4a0730ae",
+      "timestamp": 1776845370760,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\ScanError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\ParseError.ts",
+      "hash": "4ed785b09a94498691f09e05f384765e5a2ab22c29a4804a31893c092f731c47",
+      "timestamp": 1776845370760,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\ParseError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\IndexError.ts",
+      "hash": "1f2ef88585e3bc0b186800b39b66a18ca5a1c92a2902ef881d64681933ed0eb6",
+      "timestamp": 1776845370760,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\IndexError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\index.ts",
+      "hash": "f031cf1dd8778d9966a97ea11cfaada574b466b03d54d5f786b3a8bd18828336",
+      "timestamp": 1776845370761,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\FileNotFoundError.ts",
+      "hash": "85d4b3a8670d608e786a5906e312110a8d0c577aa5757cf507d72ddc72096c77",
+      "timestamp": 1776845370761,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\FileNotFoundError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\task-context-generator.ts",
+      "hash": "5bb1fce0600ebb26e52b9958bb961c42b67e130d706e2b4bb57c9ea5754ff1b5",
+      "timestamp": 1776845370761,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\task-context-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\multi-hop-traversal.ts",
+      "hash": "18f75d04adbf76801c255164a8f5ecb4fc229bca468199978a5c97691dfb293d",
+      "timestamp": 1776845370762,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\multi-hop-traversal.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\index.ts",
+      "hash": "25d83058d3636c097c43f0a873209027d1811be666713da4f41d645634e9c1ea",
+      "timestamp": 1776845370762,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\impact-simulator.ts",
+      "hash": "1c6735ba216fbf7da228db4bdb7f153513844b74bb1cbad7e865ebb3715682bd",
+      "timestamp": 1776845370763,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\impact-simulator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts",
+      "hash": "616c272e879bf9a4af933283dc8cbe288e27f85f2eb5238bfcc9f8ab9f22b988",
+      "timestamp": 1776845370763,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\fuzzy-resolver.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\context-generator.ts",
+      "hash": "ed5741164d5350ed5f16ff4e1591443e74656a51b2d9d88bb2e21e66ea052207",
+      "timestamp": 1776845370763,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\context-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector.ts",
+      "hash": "86ce6026aa00beb3bacd0371ad27f31dc36f1e227a36a2f5867ce37c700ef06b",
+      "timestamp": 1776845370764,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\signature-comparator.ts",
+      "hash": "cfbc294aaf55dd51ba4e51574bb0bc21562c63646315c5176c351b0070f31ea9",
+      "timestamp": 1776845370764,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\signature-comparator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\index.ts",
+      "hash": "dbd7149e533d32b0a03635bdc4cd57580f4a9dc9fef138b2e203e707a38f62ae",
+      "timestamp": 1776845370764,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\impact-assessor.ts",
+      "hash": "88fdc11d5a1eb00902cb0f1c6b6d7a1ba3eb817f3ef2422394d734d14c5cc944",
+      "timestamp": 1776845370765,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\impact-assessor.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\hint-generator.ts",
+      "hash": "e4f697066a0f8b927b07a6eff513749e8a2e16e36a02c1d542e065f5520827ad",
+      "timestamp": 1776845370765,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\hint-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\diff-analyzer.ts",
+      "hash": "74e1757ec7159fcb581f5808fb534b06417f52adad5c1397e243776888faa758",
+      "timestamp": 1776845370765,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\breaking-change-detector\\diff-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\validate-routes.ts",
+      "hash": "7cddd01dad4b117cdb323e6f890c15758d25e10069ab626e0166c5097f4ab3e1",
+      "timestamp": 1776845370765,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\validate-routes.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts",
+      "hash": "82a232b18796384de9e7224d3b28d78a4f943c8516d4961cc0a59c82c4805529",
+      "timestamp": 1776845370766,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan-frontend-calls.ts",
+      "hash": "a0a16c8b9ecaac4d0aca80928ef96991ce0d58912e2d9715dbd60195ea4f2815",
+      "timestamp": 1776845370766,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\scan-frontend-calls.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts",
+      "hash": "a5bdf87daf20908cd80f420e7654cc97b321c07fb07a7a8a26805646f2fec765",
+      "timestamp": 1776845370767,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-search.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts",
+      "hash": "3f8286815049ce2d080ebf9976b4bd52a529b9feee14ec9f0d3d282f65183791",
+      "timestamp": 1776845370767,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\populate.ts",
+      "hash": "c420aa1dbeee64b303298a428b264977d62937ccce1631abb762e0bcb55d5357",
+      "timestamp": 1776845370768,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\populate.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\detect-languages.ts",
+      "hash": "0f10167c680684f93d73d5f3209cd3bce401a2b1e4737c268cc203e3b2297d2d",
+      "timestamp": 1776845370768,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\detect-languages.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\route-parsers.ts",
+      "hash": "64d2c9bcac3e78b9bf760dc07ca4d4672d69e6acc12277ac57ddfc484984018a",
+      "timestamp": 1776845370768,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\route-parsers.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\migration-route-analyzer.ts",
+      "hash": "faa52b5a879e6574fb034b0f175514f385725cc4a5576a26a2f6ca174b8359ba",
+      "timestamp": 1776845370769,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\migration-route-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\migration-route-analyzer.test.ts",
+      "hash": "84ea30eb081ed60c5d46182562ab9d42250ab3acad94682752fcfd78a74ac26c",
+      "timestamp": 1776845370769,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\migration-route-analyzer.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector.ts",
+      "hash": "0a3c0ede9e6dbaf1f1962d1c2221800b1733e2a9210c11b8866ba34301c54bc6",
+      "timestamp": 1776845370769,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\index.ts",
+      "hash": "3fe30fd663ee068546920e026b02ce17928fa19520002676aeb2121ce39a15d1",
+      "timestamp": 1776845370770,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-helpers.ts",
+      "hash": "2ea1ec938949e2da139a4ff13fe8be94df6e51be80169c961fb5fae38ddb054e",
+      "timestamp": 1776845370770,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-helpers.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-builder.ts",
+      "hash": "ac3c31f87d333380148f8bd268c6c588c11c4c1d7b728f35f16ef757906c0213",
+      "timestamp": 1776845370770,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-builder.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-analyzer.ts",
+      "hash": "ce5e330ca8df122b95eb03ee01d0da20ec4b9bf7dd4b09deb60a707896382902",
+      "timestamp": 1776845370771,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\dynamic-import-detector.ts",
+      "hash": "e5b2f7c1a0c6879acb3baed26373256b3c2098f8314842ecb654ddde72c49739",
+      "timestamp": 1776845370771,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\dynamic-import-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\ast-element-scanner.ts",
+      "hash": "bbddf273b302fc34cb4c6aa026ccadf6fc741dcb793a7209452249bf991e74b8",
+      "timestamp": 1776845370771,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\ast-element-scanner.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\analyzer-service.ts",
+      "hash": "4939f049aaceec8b3cbc0b8713b6bc71605c67254adef1a3afb0a6158fdae470",
+      "timestamp": 1776845370772,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\analyzer-service.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\visitor.ts",
+      "hash": "f03229063cc77297416517fef6376706a312410a6bf925be12a65e67272ae6d1",
+      "timestamp": 1776845370772,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\visitor.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\parser.ts",
+      "hash": "9e33497248f774e70d7abb5e7a2bb1e4e3c9cab8308199fe2cb151c2bbebba78",
+      "timestamp": 1776845370772,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\parser.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\module-analyzer.ts",
+      "hash": "8e9ad47a4ecc3be0a5dd5448fae603a013fb1bee973177b3006b50510c8d616a",
+      "timestamp": 1776845370772,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\module-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\index.ts",
+      "hash": "9a5098522acee1ff505192f8a07b81aa4b1311543414880afb9d2dc51f3c7a0e",
+      "timestamp": 1776845370773,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\analyzer.ts",
+      "hash": "457e10eccf6411acb8777d9d7d6e2d25ce928d1727fe186fc8af09319f0d4124",
+      "timestamp": 1776845370773,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-call-detector\\analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\sveltekit-detector.ts",
+      "hash": "32e91797de042accc053285ac0123d32682b302a231576d8c179c128987a0bb8",
+      "timestamp": 1776845370773,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\sveltekit-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\remix-detector.ts",
+      "hash": "14b0daf3f4f93ef792d4c847b46311e91ea20a0cd44263964114ed55db53cdb3",
+      "timestamp": 1776845370774,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\remix-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\nuxt-detector.ts",
+      "hash": "4edf8d11bfe5edab52639f656799f3cb0deb25784e8f528d62eb45dfbef35c4a",
+      "timestamp": 1776845370774,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\nuxt-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\nextjs-detector.ts",
+      "hash": "678f59cdd4b3116acca5bbda85f484ac12964133bcdc603ff53d47b2e762478e",
+      "timestamp": 1776845370774,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\nextjs-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\index.ts",
+      "hash": "5575ba8ba4dc53fbed4edd70dcb175c43e50415472842bcb77aacbda821a7c4c",
+      "timestamp": 1776845370774,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\flask-detector.ts",
+      "hash": "59dc029c97dba36a3573fa8231485b241f5bd3b2f17a3cbe1b96e48ef9ff6dfd",
+      "timestamp": 1776845370775,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\flask-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\fastapi-detector.ts",
+      "hash": "63eee0d2ef13b378ad4769fcba379b2d5df21983b732b8a828d7d8561efbc78e",
+      "timestamp": 1776845370775,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\fastapi-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\express-detector.ts",
+      "hash": "4378f9ab24e30a838ae92fc7fb8a09f226e27c5958e1690ba97da395c0d09e97",
+      "timestamp": 1776845370775,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frameworks\\express-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\adapter\\graph-to-elements.ts",
+      "hash": "cba94477764eb6eb88ba8470177aef8c4ba555218cbb17ca74f0e8cfe0ae0a72",
+      "timestamp": 1776845370776,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\adapter\\graph-to-elements.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\examples\\nextjs-api-route.ts",
+      "hash": "577e8abb14722ac8e3b2e3750a1d4d5ab9b7e4163ffe0e485a22d781f7be757a",
+      "timestamp": 1776845370776,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\examples\\nextjs-api-route.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\vitest.config.ts",
+      "hash": "669ac694bec33c4410194085849f1cc9c1fe6a323fd041932425672a340a59f0",
+      "timestamp": 1776845370776,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\vitest.config.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\demo-all-modules.ts",
+      "hash": "e030bed40f5c72fbb10bb76b062664747c4f4df59ef9b5c06bc2209bf6005dd3",
+      "timestamp": 1776845370777,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\demo-all-modules.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\utils\\fs.ts",
+      "hash": "456237274b2235b4e77856d0180c8a8919b1810c3189cee3d9fc15c12aa04172",
+      "timestamp": 1776845370777,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\utils\\fs.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-validator.test.ts",
+      "hash": "0f1648eeefcac12d5a757e5ff3950e2bb80056a61953fb16c572aba0ad25dc1c",
+      "timestamp": 1776845370777,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-validator.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-normalizer.ts",
+      "hash": "e78895ead089901cfc872876ae22596ed335fa5f81523e1d71962cbf307fc1f3",
+      "timestamp": 1776845370778,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-normalizer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-normalizer.test.ts",
+      "hash": "f6e53619b9542491d55ad2b1a4c88495e84ae038badbeac32e85f3b3338c2577",
+      "timestamp": 1776845370778,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-normalizer.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-matcher.ts",
+      "hash": "faf232881023e95291b0721f3f9e2052084a480b777c9816dff4f64e564e1f86",
+      "timestamp": 1776845370778,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-matcher.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-matcher.test.ts",
+      "hash": "0f692e2e492d74252745b614e5546b2a887f34946be1dbfeb9e0e6810b858750",
+      "timestamp": 1776845370779,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\route-matcher.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\report-generator.ts",
+      "hash": "466489557052a50c838fea3638c65ad8be973bc8142e69401314b8344d07830f",
+      "timestamp": 1776845370779,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\report-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\report-generator.test.ts",
+      "hash": "23342dbe0f65582ab112b48c4956c3e0e0bdbbe7397c3e4aafe6ea7870776d3d",
+      "timestamp": 1776845370779,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\report-generator.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\frontend-update-generator.test.ts",
+      "hash": "dedb9bc24b4e13cf6bc1b6ed23c6d1b53db658dfe67db4504f74c711d7003580",
+      "timestamp": 1776845370780,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\validator\\frontend-update-generator.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\utils\\logger.ts",
+      "hash": "4749efedf80079f5f71d15ba96a4cc207ab5a4c8aac978c0e23516423d7d12e4",
+      "timestamp": 1776845370780,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\utils\\logger.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\search\\search-engine.ts",
+      "hash": "566dd7105e070a8b12823a551661ce2097bc0b236528cfd5c314d3feb2bfc7ad",
+      "timestamp": 1776845370780,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\search\\search-engine.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\error-reporter.ts",
+      "hash": "e986e5109eee2acd1cbcf7d35ade153a7a3fdd1656c09df6467ed0a7a844ac70",
+      "timestamp": 1776845370780,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\scanner\\error-reporter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\incremental-cache.ts",
+      "hash": "6f5e57bba472494871f9315df587160a3db82d3c1af539e3aad307d699659cda",
+      "timestamp": 1776845370781,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\incremental-cache.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\ignore-rules.ts",
+      "hash": "fe18c7f1040baed1012c93719a0307726cd21fc0f76b29dc79eb82ade334bd30",
+      "timestamp": 1776845370781,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\ignore-rules.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\grammar-registry.ts",
+      "hash": "dfb264c64d11f4286cd0d231e9de33442187dcd8aac0a98f3323d1e6b508f25f",
+      "timestamp": 1776845370781,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\grammar-registry.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\validation-generator.ts",
+      "hash": "12941d409bfe3e8765dc3aeb434f6ef507a5ab2a4c29aef2fb98762cb3a8061f",
+      "timestamp": 1776845370782,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\validation-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\pattern-generator.ts",
+      "hash": "55b07b7a2a32ad4702556c58adb2d4651c4a3761bd6100825b5e1c9ba352bba9",
+      "timestamp": 1776845370782,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\pattern-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\health-generator.ts",
+      "hash": "cd2fdd6e158bd6413c9f60bbba670ac2458a19acf870feb7adb282b08324b531",
+      "timestamp": 1776845370782,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\health-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\diagram-generator.ts",
+      "hash": "f4ceee189e1157e6aa42b50aea6dda45ad725351bb099cea0add428bbd9bde0e",
+      "timestamp": 1776845370783,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\diagram-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\coverage-generator.ts",
+      "hash": "67b9244850c7025efa20c5808a9d6b72b863767621a23f56206a9e932e0e7f60",
+      "timestamp": 1776845370783,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\coverage-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\complexity-generator.ts",
+      "hash": "877d0bb32d41b04644607aebb5d275919deb6bceb103bda040e344c33919ba05",
+      "timestamp": 1776845370784,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\complexity-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\extractors\\relationship-extractor.ts",
+      "hash": "384631b198d0e3b33f1eb9c9202529ed47d7dd59bc0e76e6c513c27ba5f1da18",
+      "timestamp": 1776845370784,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\extractors\\relationship-extractor.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\extractors\\element-extractor.ts",
+      "hash": "a46162991af624c071ecb4e8ab93c1ce1c4f2fc5295c663eeda05013546300a2",
+      "timestamp": 1776845370784,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\extractors\\element-extractor.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\parser\\parser.ts",
+      "hash": "80b145eafd8142e94c7841ce2904dbc5c33ee0491e07a3749e3ed9b2bf4ec2a3",
+      "timestamp": 1776845370785,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\parser\\parser.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\vector-store.ts",
+      "hash": "1f656906583d4b0659d3d9730e8a5c7e67982e7e1c6a46dd40af0ef9aba34f53",
+      "timestamp": 1776845370785,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\vector-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts",
+      "hash": "018dbf07678d363f88f811f8e83ddcb2676f932e0365be3f353874d603ddfad7",
+      "timestamp": 1776845370786,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\vector\\sqlite-store.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\semantic-search.ts",
+      "hash": "9a694c17dc53ca47c6d8d40b60eea061f4df1182af31ba8224b8fcd90512f55e",
+      "timestamp": 1776845370786,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\semantic-search.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts",
+      "hash": "7f8752fbe6d7d2280627a4a244c4e8c1eacb9fe1b2b1e0a6654488e8a04d40c8",
+      "timestamp": 1776845370786,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\rag-config.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\prompt-templates.ts",
+      "hash": "a798b14268409eb5c25a67ac8f2353320df556f1dd5effdb8096e80246ae72e5",
+      "timestamp": 1776845370787,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\prompt-templates.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\incremental-indexer.ts",
+      "hash": "a4fdfe43ccffcc7914040dbf4e98e6763075f132d4bb238f8d109bd8fa946d23",
+      "timestamp": 1776845370787,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\incremental-indexer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\graph-reranker.ts",
+      "hash": "2519469f80d8d79ea957c31b7e04545ef9dd564582f20cd49e2fb003b924a380",
+      "timestamp": 1776845370787,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\graph-reranker.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\embedding-text-generator.ts",
+      "hash": "5e2fed9954e05b16dedd95b4681bec2ed84616e6031178a848bc88aad7c09a37",
+      "timestamp": 1776845370788,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\embedding-text-generator.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\embedding-service.ts",
+      "hash": "0debd9be69b6c1e7646ee420f28acc872cc26fc76b80ff052a99c29c3481d6b0",
+      "timestamp": 1776845370788,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\embedding-service.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\conversation-manager.ts",
+      "hash": "7a0df06696f9e24e5604cd402a644a4de5ad929ee6dd331579769567f3ff79f5",
+      "timestamp": 1776845370788,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\conversation-manager.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\context-builder.ts",
+      "hash": "dd6ecb44730e0e10f99314130ee1a422567fda046dcb97c7d9f0748e26c1f2e4",
+      "timestamp": 1776845370789,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\context-builder.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\confidence-scorer.ts",
+      "hash": "bef106ab54d0eec728ace6823a74f6dfd1ca476bbbba3d575d9658ac2d578cb0",
+      "timestamp": 1776845370789,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\confidence-scorer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts",
+      "hash": "6a1e6a85295f76876e18a76e7a233d3d981398ec9ce2a445ef89b8e3c935c831",
+      "timestamp": 1776845370789,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\chunk-converter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts",
+      "hash": "a7734e3624ae9f80b1357e97001c4cb758d49445ea0e0c3cecfe4613e526879d",
+      "timestamp": 1776845370789,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\rag\\answer-generation-service.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts",
+      "hash": "a17af5b13512674784eb3c3acfa468cc573adb897d147fa7565b84835e3223b1",
+      "timestamp": 1776845370790,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts",
+      "hash": "fc8741f763ddb2e9ff820d1ce397ecc62c425e290cc52ea3051e738345a0a026",
+      "timestamp": 1776845370790,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\generator\\generateRoutes.test.ts",
+      "hash": "d722c8c530a8fa644a368237229a9e7331d4f4ed03fd8b1612bab7eff9fa98bc",
+      "timestamp": 1776845370790,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\generator\\generateRoutes.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\validateReferences.ts",
+      "hash": "c5c26f55da91db2cbb7c1c41ce6bd27355d712de9c3355082e72e7342ee6c319",
+      "timestamp": 1776845370791,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\validateReferences.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\saveFrontendCalls.test.ts",
+      "hash": "ec719207867e763904e71e6cdaabd7a292b83bb9e3c43faa35e0735eb8dbaf17",
+      "timestamp": 1776845370791,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\saveFrontendCalls.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\index-storage.ts",
+      "hash": "0433f7a85ca0439bd54a63ca28b5ec7797b7c65dd62ad8be4dcb20263b7fda68",
+      "timestamp": 1776845370791,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\index-storage.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\generateDiagrams.ts",
+      "hash": "fae65541e51284cb66097efed44dd2239734b0ef10514ec700b3739c2c61812d",
+      "timestamp": 1776845370792,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\generateDiagrams.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\generateContext.ts",
+      "hash": "83313a392cffbdeb59d8cf3d208f9ba09a2bc0233d57e32ab871de32c0558812",
+      "timestamp": 1776845370792,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\generateContext.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\buildDependencyGraph.ts",
+      "hash": "4bbee76fefaa89287f1d4a3408db8ab4811f7fe2eee6a3ec1e815ae99f53eccd",
+      "timestamp": 1776845370792,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\buildDependencyGraph.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\analyzeCoverage.ts",
+      "hash": "0b27a273f607712bc177f2fd7376f059e0a9cdaaeca8965a6593e3d53c366b14",
+      "timestamp": 1776845370793,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\fileGeneration\\analyzeCoverage.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\CodeRefError.ts",
+      "hash": "45499f969da4eaf0c80d28eacdbc2134bebaa48bfc1540985657c5088fdb5e32",
+      "timestamp": 1776845370793,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\errors\\CodeRefError.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\test-pattern-analyzer.ts",
+      "hash": "dbd357e519dc50eea31c6aa18fb9c9daeab2b735173b95c0a1c88258c47c7722",
+      "timestamp": 1776845370793,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\test-pattern-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\markdown-formatter.ts",
+      "hash": "188dc1f24223705caf07b6d69dbad568752a506ea7a35a22de5ac2f7b8e95785",
+      "timestamp": 1776845370794,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\markdown-formatter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\example-extractor.ts",
+      "hash": "20eb2c894acf65441367239ccd396be9161279e90d69b764d6e98b509fe81af9",
+      "timestamp": 1776845370794,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\example-extractor.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\entry-point-detector.ts",
+      "hash": "fb92afa56ee986111920bccd259df1663b46b190d500a743645bebdd958e937b",
+      "timestamp": 1776845370794,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\entry-point-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\edge-case-detector.ts",
+      "hash": "b69c8f5547753fc396b778e25c0184d550af37ae8620d0286ad879f5318c0fa3",
+      "timestamp": 1776845370795,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\edge-case-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\context-tracker.ts",
+      "hash": "004ebfea5b5a4c2d1dec01f089074e4f9c750d1a83df26cc2849e7e5991317f1",
+      "timestamp": 1776845370795,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\context-tracker.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\complexity-scorer.ts",
+      "hash": "b85df1475d2ca99edf686f1fb436ede7dc67325a6c9df7d1c7867ced07b1a9df",
+      "timestamp": 1776845370795,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\complexity-scorer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\agentic-formatter.ts",
+      "hash": "d9eed4be4eb5bcdd2153b746cac265c3c02d05415acb7059fd5cd11d3baa3db1",
+      "timestamp": 1776845370796,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\context\\agentic-formatter.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\config\\presets.ts",
+      "hash": "bbbf7aa2adec0572942acbd1f02af6abbcf7af9146fc6f2210c4167dabd245df",
+      "timestamp": 1776845370796,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\config\\presets.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\validate-routes.test.ts",
+      "hash": "a0d6b9b6f63a02c3677dd46a2196187b03219086ee56e9cf7762e2d920d22d2b",
+      "timestamp": 1776845370796,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\validate-routes.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-status.ts",
+      "hash": "9055f3d45cc960960be40c88e3779b5bca67de1118b9158145b48c2a24086b68",
+      "timestamp": 1776845370797,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\rag-status.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\route-parsers.test.ts",
+      "hash": "00a4a0a80d2d7eb57543f79bf2c30bebb9140e3e3beaf99be77441f95fda3217",
+      "timestamp": 1776845370797,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\route-parsers.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\project-classifier.ts",
+      "hash": "3603132c7031244253e7f419ab9a457c4cab090dcdff003c12e08dafe3825a4b",
+      "timestamp": 1776845370798,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\project-classifier.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts",
+      "hash": "c57a99a1e8787fcb2a198e232d9310b0e55460d4b8ececb621946b3427572b12",
+      "timestamp": 1776845370798,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\middleware-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-parser.ts",
+      "hash": "9d3da5d75acc0cf625cd4a778531155db1d9addc9ed4f1902d43bb73ece8954f",
+      "timestamp": 1776845370798,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\js-parser.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\import-parser.ts",
+      "hash": "001e0e07c34b9d90c7006934023a79bc041133383eee67c712c91d4a6f4b2a20",
+      "timestamp": 1776845370799,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\import-parser.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-error.ts",
+      "hash": "f06500f4b1fe2a0be3af133e98c29360836450e14b31247f728cef561a551c4c",
+      "timestamp": 1776845370799,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-error.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frontend-call-parsers.ts",
+      "hash": "ecd773973f65c1437008cc77502f1d86f4727e0f4d13ff75c5d1aca7313a6da8",
+      "timestamp": 1776845370799,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frontend-call-parsers.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frontend-call-parsers.test.ts",
+      "hash": "71e09a4b50394dcfa9552af73133634a89811ee8990fea5ea54efe41074f521e",
+      "timestamp": 1776845370799,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\frontend-call-parsers.test.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\entry-detector.ts",
+      "hash": "a694c1e47e676c0cecab45ae12e6d026038b857933420b6003e664a0e378bb14",
+      "timestamp": 1776845370800,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\entry-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\docs-analyzer.ts",
+      "hash": "3abe65003e448e4bc41475541ff4c13d06c60a3b9f78f171fcc437efa49527a9",
+      "timestamp": 1776845370800,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\docs-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\design-pattern-detector.ts",
+      "hash": "d37ec307b95169175de84e76a987c570872e0be753e7a439e67e0cee6bf558ba",
+      "timestamp": 1776845370800,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\design-pattern-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\dependency-analyzer.ts",
+      "hash": "e4bdf0e12caf5235f6945d7f08ebbc9ba624acf0eddd1b10086a577d5e9a6243",
+      "timestamp": 1776845370801,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\dependency-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\database-detector.ts",
+      "hash": "395a3dca3df2c1d6818a018dc21a5d67f3e8968d7585d463798f2d6039d64dd0",
+      "timestamp": 1776845370801,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\database-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\contract-detector.ts",
+      "hash": "64982e30e475e356e141693892bb29496a58275849132b72e86ad6cd9f6ced95",
+      "timestamp": 1776845370801,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\contract-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\config-analyzer.ts",
+      "hash": "1bcd166e2fb35a1b616ab0bc5c002632102ea9a798086419b500f6b9d7f84661",
+      "timestamp": 1776845370802,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\config-analyzer.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\call-detector.ts",
+      "hash": "6cc8256f39ae6b045267b4f104ab08ea26ef724156dfbad05993f9878ecd2b8e",
+      "timestamp": 1776845370802,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\call-detector.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\scan-cli\\test_scan_cli.test.ts",
+      "hash": "b9c98d3bfb3bc9969c65529d0344d9f1ea0775717e6deeb16905c892f44c13a5",
+      "timestamp": 1776845370803,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scripts\\scan-cli\\test_scan_cli.test.ts"
+      ],
+      "chunkCount": 1
+    }
+  ]
+}

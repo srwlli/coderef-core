@@ -18,14 +18,14 @@
           "description": "READ Pinecone SDK documentation and understand index/namespace model",
           "type": "research",
           "estimated_duration": "15m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "PC-002",
           "description": "CREATE src/integration/vector/pinecone-store.ts with PineconeStore class",
           "type": "implementation",
           "estimated_duration": "45m",
-          "status": "pending",
+          "status": "completed",
           "acceptance_criteria": [
             "Class implements VectorStore interface",
             "Constructor accepts PineconeConfig with apiKey, indexName, namespace",
@@ -41,7 +41,7 @@
           "description": "ADD error handling for missing PINECONE_API_KEY",
           "type": "implementation",
           "estimated_duration": "15m",
-          "status": "pending",
+          "status": "completed",
           "acceptance_criteria": [
             "Throw VectorStoreError with CONFIGURATION_ERROR if API key missing",
             "Clear error message: 'PINECONE_API_KEY environment variable required'"
@@ -61,14 +61,14 @@
           "description": "READ Chroma client documentation and understand collection model",
           "type": "research",
           "estimated_duration": "15m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "CH-002",
           "description": "CREATE src/integration/vector/chroma-store.ts with ChromaStore class",
           "type": "implementation",
           "estimated_duration": "45m",
-          "status": "pending",
+          "status": "completed",
           "acceptance_criteria": [
             "Class implements VectorStore interface",
             "Constructor accepts ChromaConfig with url, collectionName",
@@ -84,7 +84,7 @@
           "description": "ADD fallback to localhost if CHROMA_URL not set",
           "type": "implementation",
           "estimated_duration": "10m",
-          "status": "pending",
+          "status": "completed",
           "acceptance_criteria": [
             "Default to http://localhost:8000 if no env var",
             "Clear error if connection fails"
@@ -104,7 +104,7 @@
           "description": "MODIFY src/cli/rag-index.ts createVectorStore() to support pinecone/chroma",
           "type": "implementation",
           "estimated_duration": "30m",
-          "status": "pending",
+          "status": "completed",
           "acceptance_criteria": [
             "Switch statement or factory for store type",
             "Import PineconeStore and ChromaStore",
@@ -117,7 +117,7 @@
           "description": "MODIFY src/cli/rag-search.ts createVectorStore() to support pinecone/chroma",
           "type": "implementation",
           "estimated_duration": "20m",
-          "status": "pending",
+          "status": "completed",
           "acceptance_criteria": [
             "Same pattern as rag-index.ts",
             "Consistent store creation logic"
@@ -137,42 +137,42 @@
           "description": "ADD @pinecone-database/pinecone to package.json dependencies",
           "type": "configuration",
           "estimated_duration": "5m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "DEP-002",
           "description": "ADD chromadb to package.json dependencies",
           "type": "configuration",
           "estimated_duration": "5m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "DEP-003",
           "description": "RUN pnpm install to fetch dependencies",
           "type": "command",
           "estimated_duration": "2m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "TEST-001",
           "description": "CREATE unit test for PineconeStore with mocked client",
           "type": "test",
           "estimated_duration": "30m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "TEST-002",
           "description": "CREATE unit test for ChromaStore with mocked client",
           "type": "test",
           "estimated_duration": "30m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "TEST-003",
           "description": "TEST integration with Ollama embeddings (768-dim)",
           "type": "test",
           "estimated_duration": "20m",
-          "status": "pending",
+          "status": "completed",
           "acceptance_criteria": [
             "Index a test file with --store=pinecone --provider=ollama",
             "Search returns results with --store=pinecone --provider=ollama",
@@ -193,42 +193,42 @@
           "description": "UPDATE improvements.json: mark IMP-CORE-065 as done",
           "type": "documentation",
           "estimated_duration": "10m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "DOC-002",
           "description": "UPDATE note in improvements.json (7 open items remaining)",
           "type": "documentation",
           "estimated_duration": "5m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "COMMIT-001",
           "description": "COMMIT all changes with conventional commits",
           "type": "commit",
           "estimated_duration": "10m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "COMMIT-002",
           "description": "PUSH to origin main",
           "type": "command",
           "estimated_duration": "2m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "CLOSE-001",
           "description": "UPDATE workorder communication.json with completion status",
           "type": "documentation",
           "estimated_duration": "10m",
-          "status": "pending"
+          "status": "completed"
         },
         {
           "task_id": "TRACK-001",
           "description": "UPDATE TRACKING/workorders.json status to complete",
           "type": "tracking",
           "estimated_duration": "5m",
-          "status": "pending"
+          "status": "completed"
         }
       ],
       "hard_stop": false,

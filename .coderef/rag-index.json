@@ -1,0 +1,27 @@
+{
+  "version": "1.0",
+  "createdAt": "2026-04-22T08:09:30.805Z",
+  "projectDir": ".",
+  "languages": [
+    "ts"
+  ],
+  "provider": "ollama",
+  "store": "sqlite",
+  "stats": {
+    "tokensUsed": 28329,
+    "estimatedCost": 0.00056658,
+    "avgEmbeddingTimeMs": 2357.5,
+    "byType": {
+      "file": 186
+    },
+    "byLanguage": {
+      "typescript": 185,
+      "javascript": 1
+    }
+  },
+  "chunksIndexed": 186,
+  "chunksSkipped": 0,
+  "chunksFailed": 0,
+  "filesProcessed": 186,
+  "processingTimeMs": 5598
+}

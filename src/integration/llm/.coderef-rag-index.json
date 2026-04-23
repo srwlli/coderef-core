@@ -1,0 +1,61 @@
+{
+  "version": "1.0",
+  "lastIndexed": 1776895012595,
+  "basePath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/src/integration/llm",
+  "files": [
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts",
+      "hash": "1269b00f80b9e34070bc6acabb26a3aaa9145c26f8ee5682a3aa2daf31a760c6",
+      "timestamp": 1776894952263,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\openai-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts",
+      "hash": "abce5b5c48efeee56ee2a3e84f007a9cda3c2f5dcf0c06495a24e78e8623076d",
+      "timestamp": 1776894952263,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\ollama-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\index.ts",
+      "hash": "585658cc7ec20b25b3767282d4f3d4cfaa2cdf5ea7e50ef63d968a0709cbaa75",
+      "timestamp": 1776894952263,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\index.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts",
+      "hash": "1b87e208b28bb421472d19f458b138cd5b3d2461e668c702499a999cbfaf1510",
+      "timestamp": 1776894952263,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\anthropic-provider.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts",
+      "hash": "a17af5b13512674784eb3c3acfa468cc573adb897d147fa7565b84835e3223b1",
+      "timestamp": 1776894952264,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\model-registry.ts"
+      ],
+      "chunkCount": 1
+    },
+    {
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts",
+      "hash": "fc8741f763ddb2e9ff820d1ce397ecc62c425e290cc52ea3051e738345a0a026",
+      "timestamp": 1776894952264,
+      "chunks": [
+        "file:C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\integration\\llm\\llm-provider.ts"
+      ],
+      "chunkCount": 1
+    }
+  ]
+}

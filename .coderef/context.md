@@ -2,9 +2,9 @@
 
 ## Statistics
 
-- **Total Files:** 274
-- **Total Elements:** 1971
-- **Total Lines:** 80094
+- **Total Files:** 282
+- **Total Elements:** 2006
+- **Total Lines:** 81803
 - **Languages:** ts, js, py
 
 
@@ -16,7 +16,7 @@
 
 ### Detection Indicators
 
-- CLI entry points: 24
+- CLI entry points: 25
 - package.json bin field present
 - Library entry points: 19
 - Library exports configured
@@ -45,7 +45,7 @@
 
 - **MICROSERVICES** (60% confidence)
   - Found 0 service directories
-  - Found 8 service class implementations
+  - Found 10 service class implementations
   - Multiple entry points detected (potential service boundaries)
 
 
@@ -55,7 +55,7 @@
 
 - **Name:** @coderef/CODEREF-CORE@2.0.0
 - **Type:** unknown
-- **Dependencies:** 18 production, 4 dev
+- **Dependencies:** 20 production, 4 dev
 - **Workspaces:** No
 
 ### TypeScript Configuration
@@ -69,7 +69,7 @@
 
 ## Entry Points
 
-Found 74 application entry points. Primary entry point is marked with ⭐.
+Found 75 application entry points. Primary entry point is marked with ⭐.
 
 - **⭐ index.ts** [library]
   - File: index.ts
@@ -199,6 +199,9 @@ Found 74 application entry points. Primary entry point is marked with ⭐.
   - CLI command handler (main)
 - **main** [cli] (exported)
   - File: autoresearch/scanner-quality/scripts/verify_test_linkage.py
+  - CLI command handler (main)
+- **main** [cli] (exported)
+  - File: __tests__/.test-venv-fixtures/src/app.py
   - CLI command handler (main)
 - **DynamicImportDetector.getArrowFunctionName** [serverless]
   - File: src/analyzer/dynamic-import-detector.ts
@@ -340,8 +343,8 @@ Found 74 application entry points. Primary entry point is marked with ⭐.
 ## Dependency Risk Analysis
 
 - **Risk Level:** LOW (11/100)
-- **Total Dependencies:** 22 (18 direct, 4 dev)
-- **Issues Found:** 25 (8 outdated, 0 vulnerabilities, 0 circular imports, 17 potentially unused)
+- **Total Dependencies:** 24 (20 direct, 4 dev)
+- **Issues Found:** 27 (8 outdated, 0 vulnerabilities, 0 circular imports, 19 potentially unused)
 
 ### Risk Details
 
@@ -349,14 +352,14 @@ Found 74 application entry points. Primary entry point is marked with ⭐.
 - **@babel/parser** (unused): Dependency '@babel/parser' is declared but may not be imported in source code
 - **@babel/traverse** (unused): Dependency '@babel/traverse' is declared but may not be imported in source code
 - **@babel/types** (unused): Dependency '@babel/types' is declared but may not be imported in source code
+- **@pinecone-database/pinecone** (unused): Dependency '@pinecone-database/pinecone' is declared but may not be imported in source code
 - **acorn** (unused): Dependency 'acorn' is declared but may not be imported in source code
+- **chromadb** (unused): Dependency 'chromadb' is declared but may not be imported in source code
 - **glob** (unused): Dependency 'glob' is declared but may not be imported in source code
 - **minimatch** (unused): Dependency 'minimatch' is declared but may not be imported in source code
 - **openai** (unused): Dependency 'openai' is declared but may not be imported in source code
 - **protobufjs** (unused): Dependency 'protobufjs' is declared but may not be imported in source code
-- **tiktoken** (unused): Dependency 'tiktoken' is declared but may not be imported in source code
-- **tree-sitter** (unused): Dependency 'tree-sitter' is declared but may not be imported in source code
-  - ... and 15 more low-severity items
+  - ... and 17 more low-severity items
 
 
 ## Async Patterns
@@ -501,8 +504,8 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
 
 ## Module Structure
 
-- **src:** 202 files
-- **__tests__:** 36 files
+- **src:** 205 files
+- **__tests__:** 41 files
 - **autoresearch:** 14 files
 - **scripts:** 10 files
 - **.:** 8 files
@@ -596,8 +599,8 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 ## Documentation Quality
 
 - **Overall Score:** 53/100 (BASIC)
-- **Files Analyzed:** 519
-- **Average Comment Density:** 36.4%
+- **Files Analyzed:** 549
+- **Average Comment Density:** 36.8%
 
 ### README Analysis
 
@@ -616,8 +619,8 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 
 ### JSDoc/TSDoc Coverage
 
-- **Files:** 269
-- **Average Coverage:** 67.9%
+- **Files:** 279
+- **Average Coverage:** 68.7%
 
 **Low Coverage Files:**
 
@@ -645,7 +648,7 @@ false
 ### Documentation Recommendations
 
 - Add more sections to README (8/18 present). Priority: Installation, Usage, API Reference
-- Add JSDoc comments to 80 files with <50% documentation coverage
+- Add JSDoc comments to 81 files with <50% documentation coverage
 - Create a CHANGELOG.md to track version history
 
 ## Technology Stack
@@ -658,4 +661,4 @@ false
 
 ## Generated
 
-2026-04-22T04:24:36.199Z
+2026-04-22T21:00:13.640Z

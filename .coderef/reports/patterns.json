@@ -708,72 +708,72 @@
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 215,
+      "line": 321,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 224,
+      "line": 330,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 227,
+      "line": 333,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 232,
+      "line": 338,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 235,
+      "line": 341,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 368,
+      "line": 477,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 261,
+      "line": 352,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 266,
+      "line": 357,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 273,
+      "line": 364,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 276,
+      "line": 367,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 284,
+      "line": 375,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 287,
+      "line": 378,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 293,
+      "line": 384,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 296,
+      "line": 387,
       "pattern": "error-handling"
     },
     {
@@ -1293,7 +1293,7 @@
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 86,
+      "line": 14,
       "pattern": "try-catch"
     },
     {
@@ -1303,47 +1303,117 @@
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 130,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 172,
+      "line": 88,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 176,
+      "line": 131,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 188,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 178,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 182,
+      "line": 192,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 220,
+      "line": 194,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 264,
+      "line": 198,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 236,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 284,
+      "line": 280,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 300,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/model-registry.ts",
+      "line": 207,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 112,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 116,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 167,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 207,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 211,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 249,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 304,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 308,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 310,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 314,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 363,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 402,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 64,
+      "line": 15,
       "pattern": "try-catch"
     },
     {
@@ -1353,13 +1423,13 @@
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 105,
-      "pattern": "error-handling"
+      "line": 66,
+      "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 119,
-      "pattern": "try-catch"
+      "line": 106,
+      "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
@@ -1368,52 +1438,57 @@
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 130,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 140,
+      "line": 121,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 146,
+      "line": 131,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 169,
+      "line": 141,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 173,
+      "line": 147,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 197,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 175,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 179,
+      "line": 201,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 216,
+      "line": 203,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 260,
+      "line": 207,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 244,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 280,
+      "line": 288,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 308,
       "pattern": "error-handling"
     },
     {
@@ -1678,27 +1753,27 @@
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 189,
+      "line": 201,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 219,
+      "line": 231,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 260,
+      "line": 272,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 340,
+      "line": 352,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 368,
+      "line": 380,
       "pattern": "try-catch"
     },
     {
@@ -3031,32 +3106,32 @@
     {
       "name": "loadRAGDependencies",
       "file": "src/cli/rag-index.ts",
-      "line": 23
+      "line": 26
     },
     {
       "name": "createVectorStore",
       "file": "src/cli/rag-index.ts",
-      "line": 198
+      "line": 264
     },
     {
       "name": "main",
       "file": "src/cli/rag-index.ts",
-      "line": 214
+      "line": 320
     },
     {
       "name": "loadRAGDependencies",
       "file": "src/cli/rag-search.ts",
-      "line": 21
+      "line": 24
     },
     {
       "name": "createVectorStore",
       "file": "src/cli/rag-search.ts",
-      "line": 216
+      "line": 267
     },
     {
       "name": "main",
       "file": "src/cli/rag-search.ts",
-      "line": 260
+      "line": 351
     },
     {
       "name": "main",
@@ -3221,32 +3296,57 @@
     {
       "name": "AnthropicProvider.complete",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 85
+      "line": 86
     },
     {
       "name": "AnthropicProvider.embed",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 141
+      "line": 142
     },
     {
       "name": "AnthropicProvider.withRetry",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 172
+      "line": 188
+    },
+    {
+      "name": "OllamaProvider.complete",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 111
+    },
+    {
+      "name": "OllamaProvider.embed",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 180
+    },
+    {
+      "name": "OllamaProvider.embedSingle",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 206
+    },
+    {
+      "name": "OllamaProvider.withRetry",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 304
+    },
+    {
+      "name": "OllamaProvider.handleHttpError",
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 340
     },
     {
       "name": "OpenAIProvider.complete",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 63
+      "line": 64
     },
     {
       "name": "OpenAIProvider.embed",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 114
+      "line": 115
     },
     {
       "name": "OpenAIProvider.withRetry",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 169
+      "line": 197
     },
     {
       "name": "AnswerGenerationService.generateAnswer",
@@ -3466,32 +3566,32 @@
     {
       "name": "SQLiteVectorStore.save",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 188
+      "line": 200
     },
     {
       "name": "SQLiteVectorStore.upsert",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 216
+      "line": 228
     },
     {
       "name": "SQLiteVectorStore.query",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 257
+      "line": 269
     },
     {
       "name": "SQLiteVectorStore.delete",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 337
+      "line": 349
     },
     {
       "name": "SQLiteVectorStore.clear",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 365
+      "line": 377
     },
     {
       "name": "SQLiteVectorStore.stats",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 398
+      "line": 410
     },
     {
       "name": "ComplexityGenerator.generate",
@@ -3799,6 +3899,16 @@
       "line": 369
     },
     {
+      "name": "AuthService.login",
+      "file": "__tests__/.test-integration-project/src/auth.ts",
+      "line": 10
+    },
+    {
+      "name": "UserService.findUser",
+      "file": "__tests__/.test-integration-project/src/user.ts",
+      "line": 4
+    },
+    {
       "name": "createMockEnvironment",
       "file": "__tests__/generators/helpers.ts",
       "line": 19
@@ -3961,6 +4071,11 @@
       "reason": "Core pipeline function, Async function with edge cases"
     },
     {
+      "name": "validateRegistry",
+      "file": "src/integration/llm/model-registry.ts",
+      "reason": "Core pipeline function"
+    },
+    {
       "name": "generateHealthReport",
       "file": "src/pipeline/generators/health-generator.ts",
       "reason": "Core pipeline function, Async function with edge cases"
@@ -3988,16 +4103,6 @@
     {
       "name": "generateDiagrams",
       "file": "src/fileGeneration/generateDiagrams.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "createChromaStore",
-      "file": "src/integration/vector/chroma-store.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "createPineconeStore",
-      "file": "src/integration/vector/pinecone-store.ts",
       "reason": "Core pipeline function, Async function with edge cases"
     },
     {
@@ -4029,6 +4134,11 @@
       "name": "extractElementsFromAST",
       "file": "src/analyzer/js-call-detector/visitor.ts",
       "reason": "High complexity (51)"
+    },
+    {
+      "name": "loadPreset",
+      "file": "src/config/presets.ts",
+      "reason": "Core pipeline function"
     }
   ],
   "middleware": [
