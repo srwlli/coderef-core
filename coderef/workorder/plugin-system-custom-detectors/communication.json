@@ -7,9 +7,11 @@
   "last_updated": "2026-04-22T22:20:00Z",
   "status": "completed",
   "handoff": {
-    "from": "EXECUTION",
-    "to": "CLOSING",
-    "status": "complete"
+    "from": "CLOSING",
+    "to": "CLOSED",
+    "status": "closed",
+    "closed_at": "2026-04-22T23:00:00Z",
+    "close_reason": "All 14 tasks completed successfully. Plugin system delivered."
   },
   "must_read_first": [
     "coderef/workorder/plugin-system-custom-detectors/plan.json",
