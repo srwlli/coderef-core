@@ -4,8 +4,8 @@
   "project": "coderef-core",
   "scope": "scanner",
   "counter": 60,
-  "last_updated": "2026-04-22",
-  "last_pruned": "2026-04-22",
+  "last_updated": "2026-04-23",
+  "last_pruned": "2026-04-23",
   "archived": [
     "IMP-CORE-003",
     "IMP-CORE-004",
@@ -72,30 +72,6 @@
       "files": ["src/analyzer/dependency-analyzer.ts", "src/graph/graph-builder.ts"]
     },
     {
-      "id": "IMP-CORE-054",
-      "title": "Introduce plugin system for custom detectors",
-      "category": "ecosystem",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "done": "2026-04-22",
-      "body": "Plugin system implemented via WO-PLUGIN-SYSTEM-001. Provides: PluginRegistry for lifecycle management, npm/local/config loaders, CodeDetector interface extending FrameworkDetector, GraphHook for custom edges, coderef-plugin.json manifest, CLI --plugins flag, example plugin (@coderef/example-detector), and comprehensive API documentation. Enables third-party extensions without core modifications.",
-      "files": [
-        "src/plugins/types.ts",
-        "src/plugins/plugin-registry.ts",
-        "src/plugins/manifest-schema.ts",
-        "src/plugins/loaders/npm-loader.ts",
-        "src/plugins/loaders/local-loader.ts",
-        "src/plugins/loaders/config-loader.ts",
-        "src/plugins/plugin-scanner.ts",
-        "src/plugins/plugin-graph.ts",
-        "src/cli/scan.ts",
-        "examples/plugins/example-detector/",
-        "docs/plugins/API.md"
-      ],
-      "related": ["IMP-CORE-038", "IMP-CORE-043", "WO-PLUGIN-SYSTEM-001"]
-    },
-    {
       "id": "IMP-CORE-056",
       "title": "Add minimal UI layer for graph exploration to my-code tenant",
       "category": "developer-experience",
@@ -125,102 +101,7 @@
       "body": "External review (9/10 utility, 8/10 performance) suggests incremental scanning for enterprise monorepos. As projects grow, full re-scan becomes expensive. Implement file-watcher or cache based on file hashes (already generated) to only re-scan changed files. This would enable real-time IDE integration and make system viable for large codebases. Second review specifically noted this as priority for enterprise adoption.",
       "files": ["src/scanner/scanner.ts", "src/cache/file-hash-cache.ts"],
       "related": ["IMP-CORE-052"]
-    },
-    {
-      "id": "IMP-CORE-063",
-      "title": "Add minimal UI layer for graph exploration",
-      "category": "developer-experience",
-      "severity": "minor",
-      "status": "duplicate",
-      "logged": "2026-04-21",
-      "closed": "2026-04-22",
-      "close_reason": "Duplicate of IMP-CORE-056. Consolidated into 056 with updated my-code tenant scope.",
-      "body": "Duplicate entry - see IMP-CORE-056 for canonical tracking.",
-      "files": [],
-      "related": ["IMP-CORE-056"]
-    },
-    {
-      "id": "IMP-CORE-067",
-      "title": "Implement vectorStore.fetchById() for all providers",
-      "category": "architecture",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-22",
-      "done": "2026-04-23",
-      "close_reason": "Implemented fetchById() method in VectorStore interface and all three providers: SQLite (direct record access), Pinecone (index.fetch()), and Chroma (collection.get()). Enables findSimilar() and getRelated() features in semantic-search service.",
-      "body": "Added fetchById(id: string, namespace?: string): Promise<VectorRecord | null> to VectorStore interface and implemented in SQLiteVectorStore, PineconeStore, and ChromaStore. This unblocks findSimilar() and getRelated() methods in semantic-search service.",
-      "files": [
-        "src/integration/vector/vector-store.ts:306",
-        "src/integration/vector/sqlite-store.ts:427",
-        "src/integration/vector/pinecone-store.ts:301",
-        "src/integration/vector/chroma-store.ts:303"
-      ],
-      "related": ["IMP-CORE-068"]
-    },
-    {
-      "id": "IMP-CORE-068",
-      "title": "Implement getRelated() with graph integration",
-      "category": "architecture",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-22",
-      "closed": "2026-04-23",
-      "close_reason": "Implemented getRelated() method with semantic/structural/both modes. Added DependencyGraph parameter to SemanticSearchService constructor. Implemented getGraphNeighbors() helper to fetch dependencies and dependents from graph. Combines vector similarity with graph relationships for comprehensive code discovery.",
-      "body": "semantic-search.ts:getRelated() throws 'Not yet implemented - requires graph integration'. This method would combine semantic similarity with graph relationships (imports, calls, extends) to find related code elements. Requires integrating with graph-builder to traverse relationships and merge with vector similarity scores.",
-      "files": ["src/integration/rag/semantic-search.ts:290-379"],
-      "related": ["WO-CALL-GRAPH-025", "IMP-CORE-067"]
-    },
-    {
-      "id": "IMP-CORE-059",
-      "title": "Replace console.log with Logger",
-      "category": "code-quality",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-22",
-      "closed": "2026-04-23",
-      "close_reason": "Replaced console.log with logger.info() and added proper Logger import in conversation-manager.ts",
-      "body": "Replace console.log with Logger",
-      "files": ["src/integration/rag/conversation-manager.ts:410"]
-    },
-    {
-      "id": "IMP-CORE-069",
-      "title": "Replace console.log with Logger in conversation-manager",
-      "category": "code-quality",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-22",
-      "closed": "2026-04-23",
-      "close_reason": "Duplicate of IMP-CORE-059 - resolved by same fix. All console.log calls replaced with logger.info()",
-      "body": "conversation-manager.ts:409 uses console.log for session cleanup messages. Should use the proper Logger utility from src/utils/logger.ts for consistency with rest of codebase and to enable configurable log levels.",
-      "files": ["src/integration/rag/conversation-manager.ts:410"],
-      "related": ["IMP-CORE-059"]
-    },
-    {
-      "id": "IMP-CORE-060",
-      "title": "rag-index exits 0 when all embeddings fail due to provider unreachable",
-      "category": "code-quality",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-22",
-      "closed": "2026-04-22",
-      "close_reason": "Fixed exit logic to check both chunksFailed AND result.errors.length. Exit code now properly reflects failure when any errors occur, enabling CI to detect failed indexing runs.",
-      "body": "With Ollama daemon down and --provider=ollama, rag-index reports Chunks indexed: 0 and exits with code 0. Same failure mode is non-deterministically classified as chunksSkipped vs chunksFailed across runs. The exit guard at rag-index.ts:492 only checks chunksFailed, so when transport errors land in chunksSkipped the CLI silently reports success. Any CI/orchestration layer trusting $? cannot distinguish a totally-failed run from a healthy index.",
-      "files": ["src/cli/rag-index.ts:492"],
-      "related": ["WO-CODEREF-CORE-RAG-OLLAMA-001", "DISPATCH-2026-04-22-002"]
-    },
-    {
-      "id": "IMP-CORE-065",
-      "title": "Add Pinecone and Chroma vector store support",
-      "category": "architecture",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-22",
-      "closed": "2026-04-22",
-      "close_reason": "Completed: PineconeStore and ChromaStore implemented with full VectorStore interface. CLI wired with --store flag. Unit tests added. Dependencies installed.",
-      "body": "Current RAG system only supports SQLite vector store. Pinecone and Chroma providers are referenced in CLI help but not implemented. Need to complete: PineconeStore with namespace support, ChromaStore with collection management. Both should implement VectorStore interface with initialize(), add(), search(), clear(), stats() methods. Enables production deployments with scalable vector databases.",
-      "files": ["src/integration/vector/pinecone-store.ts", "src/integration/vector/chroma-store.ts", "src/cli/rag-index.ts", "src/cli/rag-search.ts", "__tests__/pinecone-store.test.ts", "__tests__/chroma-store.test.ts"],
-      "related": ["IMP-CORE-055", "WO-RAG-PINECONE-CHROMA-STORES-001"]
     }
   ],
-  "_note": "9 open items (036, 052-057, 067-069), 1 duplicate (063), 1 completed (065). Pruned 12 completed entries: 038, 043, 050, 051, 055, 058-062, 064, 066. Counter at 59. Last updated 2026-04-22."
+  "_note": "5 open items (036, 052-053, 056-057). Pruned 7 completed/duplicate entries: 054, 059-060, 063, 065, 067-069. Counter at 60. Last updated 2026-04-23."
 }
