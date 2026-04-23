@@ -1,0 +1,28 @@
+{
+  "workorder_id": "WO-SCANNER-MODULAR-REFACTOR-001",
+  "feature_name": "scanner-modular-refactor",
+  "agent_assignment": {
+    "agent_number": 1,
+    "assigned_at": "2026-04-23T22:51:00Z",
+    "status": "ready"
+  },
+  "current_phase": "phase_0",
+  "must_read_first": [
+    "context.json",
+    "plan.json",
+    "src/scanner/scanner.ts"
+  ],
+  "allowed_files": [
+    "src/scanner/*.ts",
+    "src/scanner/__tests__/*.ts"
+  ],
+  "forbidden_files": [
+    "src/types/types.ts",
+    "src/cli/scan.ts"
+  ],
+  "success_criteria": {
+    "primary": "scanCurrentElements() contract unchanged, all tests pass",
+    "secondary": "Modules under 300 lines each, clear separation of concerns"
+  },
+  "notes": "Phase 0 first: Create characterization tests before any refactoring. Follow the 4-PR split recommended in plan."
+}

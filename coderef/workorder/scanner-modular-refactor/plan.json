@@ -1,0 +1,210 @@
+{
+  "workorder_id": "WO-SCANNER-MODULAR-REFACTOR-001",
+  "feature_name": "scanner-modular-refactor",
+  "title": "Refactor scanner.ts into smaller modules",
+  "description": "Decompose monolithic scanner.ts (1600+ lines) into focused modules while preserving exact public API behavior of scanCurrentElements()",
+  "status": "ready",
+  "phases": [
+    {
+      "id": "phase_0",
+      "title": "Characterization Tests",
+      "description": "Record current behavior with comprehensive regression tests",
+      "tasks": [
+        {
+          "id": "TEST-001",
+          "title": "Create recursive vs non-recursive file discovery tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify file discovery depth", "Tests verify nested file inclusion/exclusion"]
+        },
+        {
+          "id": "TEST-002",
+          "title": "Create exclude pattern handling tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify glob patterns", "Tests verify directory exclusion", "Tests verify file exclusion"]
+        },
+        {
+          "id": "TEST-003",
+          "title": "Create custom pattern tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify custom regex patterns", "Tests verify pattern priority"]
+        },
+        {
+          "id": "TEST-004",
+          "title": "Create deduplication behavior tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify type priority dedup", "Tests verify same-line element handling"]
+        },
+        {
+          "id": "TEST-005",
+          "title": "Create progress callback tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify progress events", "Tests verify percentComplete accuracy"]
+        },
+        {
+          "id": "TEST-006",
+          "title": "Create incremental cache behavior tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify cache hit/miss", "Tests verify file deletion handling", "Tests verify mtime comparison"]
+        },
+        {
+          "id": "TEST-007",
+          "title": "Create AST fallback behavior tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify AST parsing success", "Tests verify regex fallback"]
+        },
+        {
+          "id": "TEST-008",
+          "title": "Create tree-sitter fallback tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify tree-sitter success", "Tests verify fallback to AST/regex"]
+        },
+        {
+          "id": "TEST-009",
+          "title": "Create parallel vs sequential parity tests",
+          "status": "pending",
+          "acceptance_criteria": ["Tests verify identical element results", "Tests verify identical cache behavior"]
+        }
+      ]
+    },
+    {
+      "id": "phase_1",
+      "title": "Extract Pure Utility Modules",
+      "description": "Extract stateless utility functions with no behavior change",
+      "tasks": [
+        {
+          "id": "EXTRACT-001",
+          "title": "Create scanner-patterns.ts",
+          "status": "pending",
+          "acceptance_criteria": ["LANGUAGE_PATTERNS moved", "DEFAULT_SUPPORTED_LANGS moved", "DEFAULT_EXCLUDE_PATTERNS moved", "TYPE_PRIORITY moved", "sortPatternsByPriority() moved", "All exports stable through scanner.ts"]
+        },
+        {
+          "id": "EXTRACT-002",
+          "title": "Create scanner-dedupe.ts",
+          "status": "pending",
+          "acceptance_criteria": ["deduplicateElements() moved", "TYPE_PRIORITY re-export if needed", "All exports stable through scanner.ts"]
+        },
+        {
+          "id": "EXTRACT-003",
+          "title": "Create scanner-comments.ts",
+          "status": "pending",
+          "acceptance_criteria": ["isLineCommented() moved", "isInsideMultiLineComment() moved", "isInsideTemplateString() moved", "containsCodeContext() moved", "isEntirelyCommented() moved", "All exports stable through scanner.ts"]
+        }
+      ]
+    },
+    {
+      "id": "phase_2",
+      "title": "Extract File Discovery",
+      "description": "Extract file discovery into focused module",
+      "tasks": [
+        {
+          "id": "EXTRACT-004",
+          "title": "Create scanner-file-discovery.ts",
+          "status": "pending",
+          "acceptance_criteria": ["shouldExcludePath() moved", "collectFiles() moved", "Path normalization preserved", "Lang mapping preserved (tsx->ts, jsx->js)", "Exclude matching preserved", "Recursive traversal preserved"]
+        }
+      ]
+    },
+    {
+      "id": "phase_3",
+      "title": "Extract Per-File Runner",
+      "description": "Create unified per-file execution module",
+      "tasks": [
+        {
+          "id": "EXTRACT-005",
+          "title": "Create scanner-file-runner.ts with scanSingleFile()",
+          "status": "pending",
+          "acceptance_criteria": ["Single entry point scanSingleFile()", "Returns {elements, cacheEntry, status, currentFile}", "Unified SCAN_CACHE hit path", "Unified tree-sitter path", "Unified AST path", "Unified regex path", "Unified error path"]
+        }
+      ]
+    },
+    {
+      "id": "phase_4",
+      "title": "Extract Runtime Helpers",
+      "description": "Extract shared progress/cache bookkeeping",
+      "tasks": [
+        {
+          "id": "EXTRACT-006",
+          "title": "Create scanner-runtime.ts",
+          "status": "pending",
+          "acceptance_criteria": ["reportProgress() helper", "storeFileCacheEntry() helper", "resolveScanLanguages() helper", "buildResolvedPatternMap() helper", "Remove duplicated progress logic", "Remove duplicated cache logic"]
+        }
+      ]
+    },
+    {
+      "id": "phase_5",
+      "title": "Slim Down Orchestrator",
+      "description": "Reduce scanCurrentElements() to pure orchestration",
+      "tasks": [
+        {
+          "id": "SLIM-001",
+          "title": "Refactor scanCurrentElements() orchestrator",
+          "status": "pending",
+          "acceptance_criteria": ["Normalize options only", "Resolve languages/patterns", "Delegate file collection", "Delegate incremental diff", "Choose parallel/sequential executor", "Delegate cache persistence", "Delegate dedup", "Return results", "Keep signature unchanged"]
+        }
+      ]
+    },
+    {
+      "id": "phase_6",
+      "title": "Remove Global Mutation",
+      "description": "Eliminate global state mutation during scans",
+      "tasks": [
+        {
+          "id": "MUTATION-001",
+          "title": "Stop mutating LANGUAGE_PATTERNS",
+          "status": "pending",
+          "acceptance_criteria": ["Build per-call resolved patterns", "Combine built-ins + registry + custom", "No mutation to shared defaults", "ScannerRegistry still functional"]
+        }
+      ]
+    },
+    {
+      "id": "phase_7",
+      "title": "Revisit Scanner Class",
+      "description": "Simplify or replace Scanner class",
+      "tasks": [
+        {
+          "id": "CLASS-001",
+          "title": "Audit and simplify Scanner class",
+          "status": "pending",
+          "acceptance_criteria": ["Remove unused currentFile field", "Remove unused currentLine field", "Remove unused currentPattern field", "Remove stale private route helpers", "Either shrink to ElementCollector or replace with plain helpers"]
+        }
+      ]
+    },
+    {
+      "id": "phase_8",
+      "title": "Align Worker and Main Thread",
+      "description": "Ensure parallel uses same per-file contract",
+      "tasks": [
+        {
+          "id": "PARITY-001",
+          "title": "Fix parallel/sequential parity",
+          "status": "pending",
+          "acceptance_criteria": ["Worker uses scanSingleFile() contract", "Parallel mode supports dedup", "Parallel mode supports progress", "Parallel mode supports incremental cache", "Parallel mode supports AST richness"]
+        }
+      ]
+    },
+    {
+      "id": "phase_9",
+      "title": "Cleanup and Documentation",
+      "description": "Final cleanup pass",
+      "tasks": [
+        {
+          "id": "CLEANUP-001",
+          "title": "Remove dead code and update docs",
+          "status": "pending",
+          "acceptance_criteria": ["Remove dead imports", "Remove unreachable code", "Update docs/examples", "Run all scanner tests", "Document any contract gaps"]
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "created_at": "2026-04-23T22:51:00Z",
+    "author": "assistant",
+    "estimated_hours": 40,
+    "recommended_split": [
+      "PR-1: Tests + pure utility extraction",
+      "PR-2: File discovery + orchestration slimming",
+      "PR-3: Per-file runner + progress/cache unification",
+      "PR-4: Parallel parity + cleanup"
+    ]
+  }
+}

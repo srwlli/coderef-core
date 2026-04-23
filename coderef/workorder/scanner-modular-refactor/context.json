@@ -1,0 +1,53 @@
+{
+  "feature_name": "scanner-modular-refactor",
+  "description": "Refactor src/scanner/scanner.ts (1600+ lines) into smaller, focused modules while preserving the exact public API contract of scanCurrentElements()",
+  "goal": "Decompose monolithic scanner into maintainable modules: patterns, dedupe, comments, file-discovery, file-runner, runtime helpers, and a slim orchestrator",
+  "requirements": [
+    "Extract pure utility modules with no behavior change",
+    "Create scanner-patterns.ts, scanner-dedupe.ts, scanner-comments.ts",
+    "Create scanner-file-discovery.ts with shouldExcludePath and collectFiles",
+    "Create scanner-file-runner.ts with unified scanSingleFile() entry",
+    "Create scanner-runtime.ts with progress/cache helpers",
+    "Slim scanCurrentElements() to pure orchestration only",
+    "Remove global mutation of LANGUAGE_PATTERNS during scans",
+    "Align parallel and sequential execution parity",
+    "Maintain 100% backward compatibility of public API"
+  ],
+  "constraints": [
+    "scanCurrentElements() signature must remain unchanged",
+    "All existing tests must pass without modification",
+    "No performance degradation",
+    "Worker threads must use same per-file contract as main thread"
+  ],
+  "success_criteria": {
+    "functional": [
+      "scanCurrentElements() contract unchanged",
+      "All existing scanner tests pass",
+      "New characterization tests cover all behaviors"
+    ],
+    "quality": [
+      "Modules under 300 lines each",
+      "Clear separation of concerns",
+      "No circular dependencies"
+    ]
+  },
+  "files_to_modify": [
+    "src/scanner/scanner.ts",
+    "src/scanner/scanner-worker.ts"
+  ],
+  "files_to_create": [
+    "src/scanner/scanner-patterns.ts",
+    "src/scanner/scanner-dedupe.ts",
+    "src/scanner/scanner-comments.ts",
+    "src/scanner/scanner-file-discovery.ts",
+    "src/scanner/scanner-file-runner.ts",
+    "src/scanner/scanner-runtime.ts"
+  ],
+  "metadata": {
+    "workorder_id": "WO-SCANNER-MODULAR-REFACTOR-001",
+    "created_at": "2026-04-23T22:51:00Z",
+    "priority": "major",
+    "category": "refactoring",
+    "estimated_hours": 40
+  }
+}
