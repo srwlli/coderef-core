@@ -10,6 +10,7 @@
  */
 
 import type { Answer } from './answer-generation-service.js';
+import { logger } from '../../utils/logger.js';
 
 /**
  * A single message in a conversation
@@ -406,7 +407,7 @@ export class ConversationManager {
     setInterval(() => {
       const cleared = this.clearExpiredSessions();
       if (cleared > 0) {
-        console.log(`Cleared ${cleared} expired conversation sessions`);
+        logger.info(`Cleared ${cleared} expired conversation sessions`);
       }
     }, 300000);
   }

@@ -162,14 +162,29 @@
       "related": ["WO-CALL-GRAPH-025"]
     },
     {
+      "id": "IMP-CORE-059",
+      "title": "Replace console.log with Logger",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "done",
+      "logged": "2026-04-22",
+      "closed": "2026-04-23",
+      "close_reason": "Replaced console.log with logger.info() and added proper Logger import in conversation-manager.ts",
+      "body": "Replace console.log with Logger",
+      "files": ["src/integration/rag/conversation-manager.ts:410"]
+    },
+    {
       "id": "IMP-CORE-069",
       "title": "Replace console.log with Logger in conversation-manager",
       "category": "code-quality",
       "severity": "minor",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-22",
+      "closed": "2026-04-23",
+      "close_reason": "Duplicate of IMP-CORE-059 - resolved by same fix. All console.log calls replaced with logger.info()",
       "body": "conversation-manager.ts:409 uses console.log for session cleanup messages. Should use the proper Logger utility from src/utils/logger.ts for consistency with rest of codebase and to enable configurable log levels.",
-      "files": ["src/integration/rag/conversation-manager.ts:409"]
+      "files": ["src/integration/rag/conversation-manager.ts:410"],
+      "related": ["IMP-CORE-059"]
     },
     {
       "id": "IMP-CORE-060",
