@@ -53,12 +53,22 @@
     "test": "Manual OpenAI->Ollama switch produces expected error"
   },
 
+  "communication_log": [
+    {
+      "timestamp": "2026-04-22T23:15:00Z",
+      "agent": "Cascade",
+      "message": "Workorder closed via /close-workorder skill. Phase 1 completed with 2 tasks. Dimension mismatch detection added to SQLiteVectorStore.initialize(). 2 commits with manual test validation. IMP-CORE-064 marked done."
+    }
+  ],
+
   "contact": {
     "workorder_path": "coderef/workorder/rag-dimension-mismatch-detection",
     "related_improvement": "IMP-CORE-064"
   },
 
   "completion_summary": {
+    "completed_at": "2026-04-22T11:15:00Z",
+    "closed_at": "2026-04-22T23:15:00Z",
     "phases_completed": ["phase_1"],
     "tasks_completed": ["DIM-001", "DIM-002"],
     "commits": [
