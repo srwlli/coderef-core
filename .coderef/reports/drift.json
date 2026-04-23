@@ -1747,6 +1747,20 @@
       ]
     },
     {
+      "element": "cleanupTestDir",
+      "file": "src/scanner/__tests__/incremental-cache-recursive.test.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
+      "element": "cleanupTestDir",
+      "file": "src/scanner/__tests__/parallel-path-behavior.test.ts",
+      "changes": [
+        "parameters changed"
+      ]
+    },
+    {
       "element": "SearchIndex.getAllDocuments",
       "file": "src/search/search-engine.ts",
       "changes": [
@@ -2588,10 +2602,10 @@
     }
   ],
   "summary": {
-    "totalCurrent": 2065,
-    "totalPrevious": 2065,
+    "totalCurrent": 2070,
+    "totalPrevious": 2070,
     "added": 0,
     "deleted": 0,
-    "modified": 369
+    "modified": 371
   }
 }

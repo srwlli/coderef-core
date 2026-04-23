@@ -1,8 +1,8 @@
 {
   "stats": {
-    "totalFiles": 298,
-    "totalElements": 2101,
-    "totalLines": 85075,
+    "totalFiles": 296,
+    "totalElements": 2106,
+    "totalLines": 85247,
     "languages": [
       "ts",
       "js",
@@ -628,7 +628,7 @@
     },
     {
       "name": "scanCurrentElements",
-      "file": "src/scanner/scanner.ts",
+      "file": "scanner.js",
       "complexity": 40,
       "dependents": 1
     },
@@ -1071,10 +1071,10 @@
     }
   ],
   "moduleStructure": {
-    ".": 12,
+    ".": 8,
     "examples": 4,
     "scripts": 10,
-    "src": 215,
+    "src": 217,
     "utils": 3,
     "__tests__": 40,
     "autoresearch": 14
@@ -1104,9 +1104,9 @@
     },
     {
       "area": "scanner",
-      "file": "src/scanner/scanner.ts",
+      "file": "scanner.js",
       "complexity": 40,
-      "testCoverage": 0,
+      "testCoverage": 20,
       "riskScore": 100,
       "riskLevel": "critical"
     },
@@ -1154,6 +1154,14 @@
       "area": "docs-analyzer",
       "file": "src/analyzer/docs-analyzer.ts",
       "complexity": 25,
+      "testCoverage": 0,
+      "riskScore": 100,
+      "riskLevel": "critical"
+    },
+    {
+      "area": "scanner",
+      "file": "src/scanner/scanner.ts",
+      "complexity": 40,
       "testCoverage": 0,
       "riskScore": 100,
       "riskLevel": "critical"
@@ -1245,14 +1253,6 @@
       "testCoverage": 0,
       "riskScore": 100,
       "riskLevel": "critical"
-    },
-    {
-      "area": "manifest-schema",
-      "file": "src/plugins/manifest-schema.ts",
-      "complexity": 32,
-      "testCoverage": 0,
-      "riskScore": 100,
-      "riskLevel": "critical"
     }
   ],
   "workOrderPriorities": [
@@ -1268,7 +1268,7 @@
       "priority": 2,
       "type": "testing",
       "target": "scanCurrentElements",
-      "file": "src/scanner/scanner.ts",
+      "file": "scanner.js",
       "rationale": "Critical function (complexity 40, 1 dependents) lacks test coverage",
       "estimatedEffort": "large"
     },
@@ -1342,9 +1342,9 @@
         "dependents": 0
       },
       {
-        "id": "src/scanner/scanner.ts:scanCurrentElements",
+        "id": "scanner.js:scanCurrentElements",
         "name": "scanCurrentElements",
-        "file": "src/scanner/scanner.ts",
+        "file": "scanner.js",
         "complexity": 40,
         "dependents": 1
       },
@@ -4921,30 +4921,6 @@
     },
     "commentDensity": [
       {
-        "file": "apply-changes.js",
-        "totalLines": 61,
-        "commentLines": 7,
-        "codeLines": 43,
-        "blankLines": 11,
-        "densityRatio": 0.11475409836065574
-      },
-      {
-        "file": "apply-incremental-cache-v2.js",
-        "totalLines": 51,
-        "commentLines": 7,
-        "codeLines": 34,
-        "blankLines": 10,
-        "densityRatio": 0.13725490196078433
-      },
-      {
-        "file": "apply-incremental-cache.js",
-        "totalLines": 51,
-        "commentLines": 7,
-        "codeLines": 34,
-        "blankLines": 10,
-        "densityRatio": 0.13725490196078433
-      },
-      {
         "file": "coverage\\block-navigation.js",
         "totalLines": 88,
         "commentLines": 7,
@@ -7833,14 +7809,6 @@
         "densityRatio": 0.30952380952380953
       },
       {
-        "file": "rewrite-scanner.js",
-        "totalLines": 123,
-        "commentLines": 10,
-        "codeLines": 97,
-        "blankLines": 16,
-        "densityRatio": 0.08130081300813008
-      },
-      {
         "file": "scanner.js",
         "totalLines": 322,
         "commentLines": 65,
@@ -8274,11 +8242,11 @@
       },
       {
         "file": "src\\cli\\scan.ts",
-        "totalLines": 146,
-        "commentLines": 13,
-        "codeLines": 105,
-        "blankLines": 28,
-        "densityRatio": 0.08904109589041095
+        "totalLines": 168,
+        "commentLines": 15,
+        "codeLines": 123,
+        "blankLines": 30,
+        "densityRatio": 0.08928571428571429
       },
       {
         "file": "src\\cli\\validate-routes.ts",
@@ -9250,11 +9218,11 @@
       },
       {
         "file": "src\\scanner\\scanner.ts",
-        "totalLines": 1578,
-        "commentLines": 348,
-        "codeLines": 1051,
-        "blankLines": 179,
-        "densityRatio": 0.22053231939163498
+        "totalLines": 1619,
+        "commentLines": 361,
+        "codeLines": 1075,
+        "blankLines": 183,
+        "densityRatio": 0.22297714638665844
       },
       {
         "file": "src\\scanner\\tree-sitter-scanner.ts",
@@ -9441,8 +9409,8 @@
         "densityRatio": 0
       }
     ],
-    "averageCommentDensity": 0.3641238252595319,
-    "totalFilesAnalyzed": 565,
+    "averageCommentDensity": 0.3658860713043414,
+    "totalFilesAnalyzed": 561,
     "recommendations": [
       "Add more sections to README (8/18 present). Priority: Installation, Usage, API Reference",
       "Add JSDoc comments to 82 files with <50% documentation coverage",

@@ -838,27 +838,27 @@
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 53,
+      "line": 59,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 85,
+      "line": 101,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 90,
+      "line": 106,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 102,
+      "line": 118,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 143,
+      "line": 165,
       "pattern": "error-handling"
     },
     {
@@ -2603,67 +2603,62 @@
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 852,
+      "line": 796,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 869,
+      "line": 799,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 872,
+      "line": 802,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 899,
+      "line": 822,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 901,
+      "line": 941,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 908,
+      "line": 999,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 938,
+      "line": 1017,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 977,
+      "line": 1051,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1011,
+      "line": 1109,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1069,
+      "line": 1195,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1155,
+      "line": 1355,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1314,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/scanner/scanner.ts",
-      "line": 1537,
+      "line": 1578,
       "pattern": "try-catch"
     },
     {
@@ -2900,61 +2895,6 @@
       "file": "__tests__/scanner-standalone.test.ts",
       "line": 317,
       "pattern": "error-handling"
-    },
-    {
-      "file": "apply-incremental-cache-v2.js",
-      "line": 9,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache-v2.js",
-      "line": 10,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache-v2.js",
-      "line": 33,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache-v2.js",
-      "line": 34,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache-v2.js",
-      "line": 46,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache.js",
-      "line": 9,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache.js",
-      "line": 10,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache.js",
-      "line": 33,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache.js",
-      "line": 34,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "apply-incremental-cache.js",
-      "line": 46,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "rewrite-scanner.js",
-      "line": 106,
-      "pattern": "try-catch"
     },
     {
       "file": "scanner.js",
@@ -3576,12 +3516,12 @@
     {
       "name": "scanProject",
       "file": "src/cli/scan.ts",
-      "line": 44
+      "line": 47
     },
     {
       "name": "main",
       "file": "src/cli/scan.ts",
-      "line": 110
+      "line": 126
     },
     {
       "name": "resolveFilePaths",
@@ -4374,9 +4314,14 @@
       "line": 682
     },
     {
+      "name": "collectFiles",
+      "file": "src/scanner/scanner.ts",
+      "line": 786
+    },
+    {
       "name": "scanCurrentElements",
       "file": "src/scanner/scanner.ts",
-      "line": 783
+      "line": 872
     },
     {
       "name": "GrammarLoader.loadGrammar",

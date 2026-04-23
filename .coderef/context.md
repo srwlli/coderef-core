@@ -2,9 +2,9 @@
 
 ## Statistics
 
-- **Total Files:** 298
-- **Total Elements:** 2101
-- **Total Lines:** 85075
+- **Total Files:** 296
+- **Total Elements:** 2106
+- **Total Lines:** 85247
 - **Languages:** ts, js, py
 
 
@@ -305,7 +305,7 @@ Found 76 application entry points. Primary entry point is marked with ⭐.
 - **ContextGenerator.generateMarkdown** - Complexity: 102, Dependents: 0
   - File: src/pipeline/generators/context-generator.ts
 - **scanCurrentElements** - Complexity: 40, Dependents: 1
-  - File: src/scanner/scanner.ts
+  - File: scanner.js
 - **EmbeddingTextGenerator.generate** - Complexity: 30, Dependents: 0
   - File: src/integration/rag/embedding-text-generator.ts
 - **ASTElementScanner.visitNode** - Complexity: 63, Dependents: 0
@@ -507,11 +507,11 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
 
 ## Module Structure
 
-- **src:** 215 files
+- **src:** 217 files
 - **__tests__:** 40 files
 - **autoresearch:** 14 files
-- **.:** 12 files
 - **scripts:** 10 files
+- **.:** 8 files
 - **examples:** 4 files
 - **utils:** 3 files
 
@@ -539,8 +539,8 @@ Top 20 high-risk areas by complexity × test coverage:
   - File: src/pipeline/generators/context-generator.ts
   - Complexity: 102, Estimated Coverage: 0%
 - **scanner** (CRITICAL) - Risk Score: 100
-  - File: src/scanner/scanner.ts
-  - Complexity: 40, Estimated Coverage: 0%
+  - File: scanner.js
+  - Complexity: 40, Estimated Coverage: 20%
 - **embedding-text-generator** (CRITICAL) - Risk Score: 100
   - File: src/integration/rag/embedding-text-generator.ts
   - Complexity: 30, Estimated Coverage: 0%
@@ -559,11 +559,11 @@ Top 20 high-risk areas by complexity × test coverage:
 - **docs-analyzer** (CRITICAL) - Risk Score: 100
   - File: src/analyzer/docs-analyzer.ts
   - Complexity: 25, Estimated Coverage: 0%
+- **scanner** (CRITICAL) - Risk Score: 100
+  - File: src/scanner/scanner.ts
+  - Complexity: 40, Estimated Coverage: 0%
 - **context-builder** (CRITICAL) - Risk Score: 100
   - File: src/integration/rag/context-builder.ts
-  - Complexity: 27, Estimated Coverage: 0%
-- **semantic-search** (CRITICAL) - Risk Score: 100
-  - File: src/integration/rag/semantic-search.ts
   - Complexity: 27, Estimated Coverage: 0%
 
 ## Recommended Work Order Priorities
@@ -575,7 +575,7 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
    - Effort: large, Rationale: Critical function (complexity 102, 0 dependents) lacks test coverage
 
 2. **[TESTING]** scanCurrentElements
-   - File: src/scanner/scanner.ts
+   - File: scanner.js
    - Effort: large, Rationale: Critical function (complexity 40, 1 dependents) lacks test coverage
 
 3. **[TESTING]** EmbeddingTextGenerator.generate
@@ -602,8 +602,8 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 ## Documentation Quality
 
 - **Overall Score:** 53/100 (BASIC)
-- **Files Analyzed:** 565
-- **Average Comment Density:** 36.4%
+- **Files Analyzed:** 561
+- **Average Comment Density:** 36.6%
 
 ### README Analysis
 
@@ -664,4 +664,4 @@ false
 
 ## Generated
 
-2026-04-23T11:05:45.594Z
+2026-04-23T22:48:21.035Z

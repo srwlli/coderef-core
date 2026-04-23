@@ -271,10 +271,12 @@
       "title": "Fix parallel path to preserve normal scanner behavior",
       "category": "robustness",
       "severity": "major",
-      "status": "open",
+      "status": "completed",
       "logged": "2026-04-23",
+      "completed": "2026-04-23",
       "body": "The successful parallel path does not preserve normal scanner behavior. In scanner.ts (line 981), a non-empty worker result returns immediately, before the shared deduplication and bookkeeping path at the bottom of the function. That makes parallel: true semantically different from sequential mode and leaves progress/incremental state stale.",
-      "files": ["src/scanner/scanner.ts:981"]
+      "files": ["src/scanner/scanner.ts:981"],
+      "solution": "Added parallelSucceeded flag. Parallel path now sets flag and continues to shared deduplication/cache update instead of returning early."
     },
     {
       "id": "IMP-CORE-078",

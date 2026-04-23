@@ -1,8 +1,8 @@
 {
   "summary": {
-    "totalFiles": 224,
-    "testedFiles": 72,
-    "coveragePercentage": 32
+    "totalFiles": 220,
+    "testedFiles": 74,
+    "coveragePercentage": 34
   },
   "files": [
     {
@@ -202,7 +202,8 @@
     },
     {
       "file": "src/cache/incremental-cache.ts",
-      "tested": false
+      "tested": true,
+      "testFile": "src/scanner/__tests__/incremental-cache-recursive.test.ts"
     },
     {
       "file": "src/cli/detect-languages.ts",
@@ -673,7 +674,8 @@
     },
     {
       "file": "src/pipeline/incremental-cache.ts",
-      "tested": false
+      "tested": true,
+      "testFile": "src/scanner/__tests__/incremental-cache-recursive.test.ts"
     },
     {
       "file": "src/pipeline/index.ts",
@@ -848,22 +850,6 @@
       "tested": false
     },
     {
-      "file": "apply-changes.js",
-      "tested": false
-    },
-    {
-      "file": "apply-incremental-cache-v2.js",
-      "tested": false
-    },
-    {
-      "file": "apply-incremental-cache.js",
-      "tested": false
-    },
-    {
-      "file": "rewrite-scanner.js",
-      "tested": false
-    },
-    {
       "file": "scanner.js",
       "tested": true,
       "testFile": "src/scanner/__tests__/ast-mode.test.ts"
@@ -1005,7 +991,6 @@
     "src/analyzer/js-call-detector/visitor.ts",
     "src/analyzer/middleware-detector.ts",
     "src/analyzer/project-classifier.ts",
-    "src/cache/incremental-cache.ts",
     "src/cli/detect-languages.ts",
     "src/cli/rag-index.ts",
     "src/cli/rag-search.ts",
@@ -1069,7 +1054,6 @@
     "src/pipeline/generators/health-generator.ts",
     "src/pipeline/generators/registry-generator.ts",
     "src/pipeline/ignore-rules.ts",
-    "src/pipeline/incremental-cache.ts",
     "src/pipeline/orchestrator.ts",
     "src/pipeline/types.ts",
     "src/plugins/loaders/config-loader.ts",
@@ -1098,10 +1082,6 @@
     "utils/fs.d.ts",
     "utils/fs.ts",
     "vitest.config.ts",
-    "apply-changes.js",
-    "apply-incremental-cache-v2.js",
-    "apply-incremental-cache.js",
-    "rewrite-scanner.js",
     "scripts/doc-gen/enhance-existing-docs.js",
     "scripts/doc-gen/generate-exports-md.js",
     "scripts/doc-gen/generate-hotspots-md.js",
