@@ -9,7 +9,7 @@ from handlers.planning_handlers import handle_gather_context, handle_analyze_pro
 from mcp.types import TextContent
 
 async def create():
-    project_path = r"C:\Users\willh\Desktop\CODEREF\DASHBOARD\packages\coderef-core"
+    project_path = r"C:\Users\willh\Desktop\CODEREF\CODEREF-CORE"
     feature_name = "coderef-core-test-alignment"
 
     try:

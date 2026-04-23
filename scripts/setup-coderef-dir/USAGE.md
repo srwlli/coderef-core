@@ -13,17 +13,17 @@ cd C:\path\to\your\project
 
 **2. Run the script (use current directory):**
 ```bash
-py C:\Users\willh\Desktop\CODEREF\DASHBOARD\packages\coderef-core\scripts\setup-coderef-dir\setup_coderef_dirs.py .
+py C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\scripts\setup-coderef-dir\setup_coderef_dirs.py .
 ```
 
 **Or specify full path:**
 ```bash
-py C:\Users\willh\Desktop\CODEREF\DASHBOARD\packages\coderef-core\scripts\setup-coderef-dir\setup_coderef_dirs.py "C:\path\to\your\project"
+py C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\scripts\setup-coderef-dir\setup_coderef_dirs.py "C:\path\to\your\project"
 ```
 
 **Preview first (dry run):**
 ```bash
-py C:\Users\willh\Desktop\CODEREF\DASHBOARD\packages\coderef-core\scripts\setup-coderef-dir\setup_coderef_dirs.py . --dry-run
+py C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\scripts\setup-coderef-dir\setup_coderef_dirs.py . --dry-run
 ```
 
 ---

@@ -30,7 +30,7 @@ This guide is for getting -coderef-core running locally for development or testi
 
 ### Step 1: Install Dependencies
 
-**Input:** Project root (`C:\Users\willh\Desktop\CODEREF\DASHBOARD\packages\coderef-core`)
+**Input:** Project root (`C:\Users\willh\Desktop\CODEREF\CODEREF-CORE`)
 **Action:** npm install
 **Output:** Dependencies installed
 **Verify:** `npm list`
