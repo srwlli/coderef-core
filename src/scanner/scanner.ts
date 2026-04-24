@@ -27,6 +27,7 @@ import {
   TYPE_PRIORITY,
   sortPatternsByPriority,
 } from './scanner-patterns.js';
+import { deduplicateElements } from './scanner-dedupe.js';
 
 // Re-export patterns module so existing callers (e.g. scanner-worker,
 // __tests__/venv-exclusion, dashboard packages) keep working through scanner.ts.
@@ -305,36 +306,6 @@ class Scanner {
 }
 
 // Export the Scanner class
-
-/**
- * Deduplicates elements by keeping only the highest priority type for each unique (name, line, file) tuple
- * @param elements Array of elements to deduplicate
- * @returns Deduplicated array with single entry per unique element
- */
-function deduplicateElements(elements: ElementData[]): ElementData[] {
-  const elementMap = new Map<string, ElementData>();
-
-  for (const element of elements) {
-    // Create unique key from name, line, and file
-    const key = `${element.file}:${element.line}:${element.name}`;
-    const existing = elementMap.get(key);
-
-    if (!existing) {
-      // First time seeing this element
-      elementMap.set(key, element);
-    } else {
-      // Element already exists - keep the one with higher priority
-      const existingPriority = TYPE_PRIORITY[existing.type] || 0;
-      const newPriority = TYPE_PRIORITY[element.type] || 0;
-
-      if (newPriority > existingPriority) {
-        elementMap.set(key, element);
-      }
-    }
-  }
-
-  return Array.from(elementMap.values());
-}
 
 /**
  * Checks if a path should be excluded based on glob patterns
