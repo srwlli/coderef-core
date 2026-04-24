@@ -4,8 +4,6 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import * as os from 'os';
 import { Worker } from 'worker_threads';
-import { glob } from 'glob';
-import { minimatch } from 'minimatch';
 import { ElementData, ScanOptions, RouteMetadata } from '../types/types.js';
 import { createScannerCache, type ScanCacheEntry } from './lru-cache.js';
 import { IncrementalCache } from '../cache/incremental-cache.js';
@@ -32,6 +30,10 @@ import {
   isLineCommented,
   isEntirelyCommented,
 } from './scanner-comments.js';
+import {
+  shouldExcludePath,
+  collectFiles,
+} from './scanner-file-discovery.js';
 
 // Keep isLineCommented exported on scanner.ts for callers that imported it
 // from here historically.
@@ -315,35 +317,6 @@ class Scanner {
 
 // Export the Scanner class
 
-/**
- * Checks if a path should be excluded based on glob patterns
- * @param filePath The path to check (normalized with forward slashes)
- * @param excludePatterns Array of glob patterns
- * @returns true if path should be excluded
- */
-function shouldExcludePath(filePath: string, excludePatterns: string[]): boolean {
-  // Normalize path to forward slashes for consistent matching
-  const normalizedPath = filePath.replace(/\\/g, '/');
-
-  for (const pattern of excludePatterns) {
-    // Match against the full path and also the relative portions
-    if (minimatch(normalizedPath, pattern, { dot: true })) {
-      return true;
-    }
-
-    // Also check if any part of the path matches the pattern
-    // This handles cases like '**/node_modules/**' matching any node_modules directory
-    const pathParts = normalizedPath.split('/');
-    for (let i = 0; i < pathParts.length; i++) {
-      const partialPath = pathParts.slice(i).join('/');
-      if (minimatch(partialPath, pattern, { dot: true })) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
 
 /**
  * PHASE 2: Parallel Processing
@@ -447,94 +420,6 @@ async function scanFilesInParallel(
   }
 }
 
-/**
- * IMP-CORE-076: Collect all files recursively from a directory tree
- * Helper function to gather all eligible files before incremental filtering
- * @param dir Directory to scan
- * @param allLangs Array of language extensions to include
- * @param exclude Array of exclusion patterns
- * @param recursive Whether to recurse into subdirectories
- * @param verbose Enable verbose logging
- * @returns Array of normalized file paths
- */
-async function collectFiles(
-  dir: string,
-  allLangs: string[],
-  exclude: string[],
-  recursive: boolean,
-  verbose: boolean
-): Promise<string[]> {
-  const files: string[] = [];
-  const resolvedDir = path.resolve(dir);
-
-  try {
-    const allEntries = fs.readdirSync(resolvedDir, { withFileTypes: true });
-
-    for (const entry of allEntries) {
-      const fullPath = path.join(resolvedDir, entry.name);
-
-      if (entry.isDirectory()) {
-        // Check if directory should be excluded
-        if (shouldExcludePath(fullPath, exclude)) {
-          if (verbose) {
-            console.log(`Excluding directory: ${fullPath}`);
-          }
-          continue;
-        }
-
-        if (recursive) {
-          if (verbose) {
-            console.log(`Recursively collecting from directory: ${fullPath}`);
-          }
-          // Recursively collect files from subdirectory
-          const subFiles = await collectFiles(fullPath, allLangs, exclude, recursive, verbose);
-          files.push(...subFiles);
-        }
-        continue;
-      }
-
-      if (!entry.isFile()) {
-        continue;
-      }
-
-      const ext = path.extname(entry.name).substring(1);
-
-      // Handle special cases for TypeScript/JavaScript
-      let currentLang = ext;
-      if (ext === 'tsx' && allLangs.includes('ts')) {
-        currentLang = 'ts';
-      } else if (ext === 'jsx' && allLangs.includes('js')) {
-        currentLang = 'js';
-      }
-
-      const shouldInclude = allLangs.includes(currentLang);
-
-      if (shouldInclude) {
-        // Normalize to forward slashes for consistency
-        const normalizedPath = fullPath.replace(/\\/g, '/');
-
-        // Check if file should be excluded
-        if (shouldExcludePath(normalizedPath, exclude)) {
-          if (verbose) {
-            console.log(`Excluding file: ${normalizedPath}`);
-          }
-          continue;
-        }
-
-        files.push(normalizedPath);
-        if (verbose) {
-          console.log(`Including file: ${normalizedPath} (mapped to language: ${currentLang})`);
-        }
-      }
-    }
-  } catch (error) {
-    if (verbose) {
-      console.error(`Error collecting files from ${dir}:`, error);
-    }
-  }
-
-  return files;
-}
 
 /**
  * Scans the current codebase for code elements (functions, classes, components, hooks)
