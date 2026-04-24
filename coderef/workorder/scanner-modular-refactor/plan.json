@@ -3,7 +3,10 @@
   "feature_name": "scanner-modular-refactor",
   "title": "Refactor scanner.ts into smaller modules",
   "description": "Decompose monolithic scanner.ts (1600+ lines) into focused modules while preserving exact public API behavior of scanCurrentElements()",
-  "status": "ready",
+  "status": "superseded",
+  "superseded_by": "WO-SCANNER-MODULE-EXTRACTION-001",
+  "superseded_at": "2026-04-23T23:55:00Z",
+  "superseded_reason": "Replaced by WO-SCANNER-MODULE-EXTRACTION-001 which conforms to create-workorder v2.0.0 schema (approved_verbs, touches, hard_stops, analysis.json, foundation_docs_gate). Same refactor scope and phase structure.",
   "phases": [
     {
       "id": "phase_0",
