@@ -71,6 +71,11 @@ export const ENV_VARS = {
   LLM_BASE_URL: 'CODEREF_LLM_BASE_URL',
   LLM_API_KEY: 'CODEREF_LLM_API_KEY',
   LLM_MODEL: 'CODEREF_LLM_MODEL',
+  // Local-only mode: when truthy, refuses any cloud LLM provider. Set by
+  // the unified coderef-pipeline CLI. Users running rag-index directly
+  // can leave it unset to retain multi-provider (incl. OpenAI/Anthropic)
+  // behavior.
+  RAG_LOCAL_ONLY: 'CODEREF_RAG_LOCAL_ONLY',
 
   // Vector Store
   VECTOR_STORE_PROVIDER: 'CODEREF_VECTOR_STORE',
@@ -124,6 +129,17 @@ export class ConfigError extends Error {
 }
 
 /**
+ * Returns true when RAG local-only mode is active (CODEREF_RAG_LOCAL_ONLY
+ * set to any truthy value other than "0"/"false"/"").
+ */
+export function isLocalOnly(): boolean {
+  const raw = process.env[ENV_VARS.RAG_LOCAL_ONLY];
+  if (!raw) return false;
+  const v = raw.toLowerCase();
+  return v !== '0' && v !== 'false' && v !== 'no';
+}
+
+/**
  * RAG configuration loader and validator
  */
 export class RAGConfigLoader {
@@ -160,17 +176,44 @@ export class RAGConfigLoader {
   }
 
   /**
-   * Get LLM provider from environment
+   * Get LLM provider from environment.
+   *
+   * Local-only mode (CODEREF_RAG_LOCAL_ONLY=1): refuses any cloud provider.
+   * Explicit provider must be 'ollama' (or a generic name paired with a
+   * CODEREF_LLM_BASE_URL that points at localhost). Cloud auto-selection
+   * via OPENAI_API_KEY or ANTHROPIC_API_KEY is disabled.
    */
   private getLLMProvider(): LLMProviderName {
+    const localOnly = isLocalOnly();
     const provider = process.env[ENV_VARS.LLM_PROVIDER]?.toLowerCase();
 
-    // Accept any provider string - validation happens at provider creation time
+    if (localOnly) {
+      if (provider === 'openai' || provider === 'anthropic') {
+        throw new ConfigError(
+          `RAG local-only mode is enabled (${ENV_VARS.RAG_LOCAL_ONLY}=1) but ` +
+          `${ENV_VARS.LLM_PROVIDER}='${provider}' selects a cloud provider. ` +
+          `Set ${ENV_VARS.LLM_PROVIDER}=ollama and ${ENV_VARS.LLM_BASE_URL} ` +
+          `(e.g. http://localhost:11434).`
+        );
+      }
+      if (provider) {
+        // Accept 'ollama' or any generic/local provider string. Validation of
+        // reachability happens at provider creation time.
+        return provider;
+      }
+      throw new ConfigError(
+        `RAG local-only mode is enabled (${ENV_VARS.RAG_LOCAL_ONLY}=1) but ` +
+        `${ENV_VARS.LLM_PROVIDER} is not set. Set it to 'ollama' (or another ` +
+        `local provider) and configure ${ENV_VARS.LLM_BASE_URL}. ` +
+        `Cloud auto-selection is disabled in local-only mode.`
+      );
+    }
+
+    // Permissive (non-local-only) mode: original behavior.
     if (provider) {
       return provider;
     }
 
-    // Default to OpenAI if not specified but API key is available
     if (process.env[ENV_VARS.OPENAI_API_KEY]) {
       return 'openai';
     }
@@ -189,6 +232,16 @@ export class RAGConfigLoader {
    * Get LLM provider configuration
    */
   private getLLMConfig(provider: LLMProviderName): LLMProviderConfig {
+    // Defense in depth: if local-only mode is on, refuse cloud providers
+    // here as well. getLLMProvider() already guards this, but config
+    // loaders that bypass the provider selector should still fail closed.
+    if (isLocalOnly() && (provider === 'openai' || provider === 'anthropic')) {
+      throw new ConfigError(
+        `RAG local-only mode is enabled but getLLMConfig was called with ` +
+        `cloud provider '${provider}'. Refusing to return cloud credentials.`
+      );
+    }
+
     // OpenAI provider
     if (provider === 'openai') {
       const apiKey = process.env[ENV_VARS.OPENAI_API_KEY];
