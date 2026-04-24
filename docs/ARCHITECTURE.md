@@ -1,7 +1,7 @@
 # Coderef Core Architecture
 
-**Date:** 2025-09-17
-**Version:** 2.0.0
+**Date:** 2026-04-24
+**Version:** 2.1.0
 
 ## System Design Overview
 
