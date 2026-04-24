@@ -1,31 +1,22 @@
 // coderef-core/scanner.ts
 import * as fs from 'fs';
 import * as path from 'path';
-import * as crypto from 'crypto';
 import * as os from 'os';
 import { Worker } from 'worker_threads';
 import { ElementData, ScanOptions, RouteMetadata } from '../types/types.js';
-import { createScannerCache, type ScanCacheEntry } from './lru-cache.js';
+import { createScannerCache } from './lru-cache.js';
 import { IncrementalCache } from '../cache/incremental-cache.js';
-import { frameworkRegistry, type FrameworkDetectionResult } from './framework-registry.js';
+import { frameworkRegistry } from './framework-registry.js';
 import './register-frameworks.js'; // Auto-register default frameworks
 import {
   PatternConfig,
   LANGUAGE_PATTERNS,
   DEFAULT_SUPPORTED_LANGS,
   DEFAULT_EXCLUDE_PATTERNS,
-  TYPE_PRIORITY,
-  sortPatternsByPriority,
 } from './scanner-patterns.js';
 import { deduplicateElements } from './scanner-dedupe.js';
-import {
-  isLineCommented,
-  isEntirelyCommented,
-} from './scanner-comments.js';
-import {
-  shouldExcludePath,
-  collectFiles,
-} from './scanner-file-discovery.js';
+import { isLineCommented } from './scanner-comments.js';
+import { collectFiles } from './scanner-file-discovery.js';
 import { scanSingleFile } from './scanner-file-runner.js';
 import {
   reportProgress,
