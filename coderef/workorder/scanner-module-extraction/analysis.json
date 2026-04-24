@@ -1,0 +1,61 @@
+{
+  "workorder_id": "WO-SCANNER-MODULE-EXTRACTION-001",
+  "feature_name": "scanner-module-extraction",
+  "summary": "The scanner is still a monolith with shared mutable globals, mixed discovery/execution concerns, and multiple fallback paths in one file. The refactor should isolate pure utilities first, then move discovery, file execution, runtime bookkeeping, and finally orchestration.",
+  "discovery_ref": "scanner-module-extraction-discovery-2026-04-23",
+  "affected_surfaces": [
+    {
+      "file": "src/scanner/scanner.ts",
+      "impact": "Primary orchestration and legacy export surface"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "impact": "Current home of pattern definitions, dedupe, comment helpers, discovery, file execution, and progress/cache logic"
+    },
+    {
+      "file": "__tests__/scanner-standalone.test.ts",
+      "impact": "Baseline scanner behavior"
+    },
+    {
+      "file": "__tests__/parallel-processing.test.ts",
+      "impact": "Parallel versus sequential parity"
+    },
+    {
+      "file": "__tests__/progress-reporting.test.ts",
+      "impact": "Progress callback contract"
+    },
+    {
+      "file": "__tests__/ast-mode.test.ts",
+      "impact": "AST fallback and richness"
+    },
+    {
+      "file": "__tests__/comment-filtering.test.ts",
+      "impact": "Comment handling behavior"
+    },
+    {
+      "file": "__tests__/venv-exclusion.test.ts",
+      "impact": "Exclude and recursive discovery behavior"
+    }
+  ],
+  "blast_radius": [
+    "Public exports from scanner.ts must remain stable",
+    "Custom pattern registration still needs to work through ScannerRegistry",
+    "Incremental cache updates must not regress unchanged-file hit behavior",
+    "Tree-sitter and AST paths must continue to fall back to regex in the same cases",
+    "Parallel and sequential execution must emit the same elements and cache updates"
+  ],
+  "risks": [
+    "Hidden behavior drift from moving shared globals into per-call resolved state",
+    "Deduplication order changes if pattern priority is not preserved exactly",
+    "File discovery drift if path normalization or tsx/jsx remapping changes",
+    "Progress callback drift if cache hits, failures, and parallel mode do not report identically",
+    "ScannerRegistry compatibility drift if callers relied on mutation of shared defaults"
+  ],
+  "test_strategy": [
+    "Add characterization tests before any extraction work",
+    "Lock recursive versus non-recursive discovery semantics",
+    "Lock exclude matching and custom pattern behavior",
+    "Lock incremental cache, AST fallback, tree-sitter fallback, and progress behavior",
+    "Compare sequential and parallel runs against the same fixture set"
+  ]
+}

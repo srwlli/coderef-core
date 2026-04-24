@@ -1,0 +1,132 @@
+{
+  "workorder_id": "WO-SCANNER-MODULE-EXTRACTION-001",
+  "feature_name": "scanner-module-extraction",
+  "status": "plan_created",
+  "created": "2026-04-23T18:50:26.1633207-04:00",
+  "last_updated": "2026-04-23T18:50:26.1633207-04:00",
+  "execution_phase": "phase_0",
+  "handoff_protocol": {
+    "must_read_first": [
+      "context.json - scope, constraints, and success criteria",
+      "analysis.json - affected surfaces, risks, and blast radius",
+      "plan.json - phased implementation tasks"
+    ],
+    "allowed_files": [
+      "src/scanner/scanner.ts",
+      "src/scanner/scanner-patterns.ts",
+      "src/scanner/scanner-dedupe.ts",
+      "src/scanner/scanner-comments.ts",
+      "src/scanner/scanner-file-discovery.ts",
+      "src/scanner/scanner-file-runner.ts",
+      "src/scanner/scanner-runtime.ts",
+      "__tests__/scanner-*.test.ts",
+      "__tests__/parallel-processing.test.ts",
+      "__tests__/progress-reporting.test.ts"
+    ],
+    "forbidden_files": [
+      "src/scanner/scanner.ts (do not change the public contract)",
+      "src/cache/incremental-cache.ts (unless the scanner contract forces a follow-up fix)",
+      "src/types/types.ts (unless a regression requires a type-only follow-up)"
+    ],
+    "entry_point": "src/scanner/scanner.ts",
+    "success_criteria": [
+      "scanCurrentElements() signature remains unchanged",
+      "Characterization tests lock existing behavior before extraction",
+      "Parallel and sequential paths stay in parity",
+      "No hidden global mutation remains during a scan"
+    ]
+  },
+  "agent_status": {
+    "current_agent": null,
+    "agent_assignments": {},
+    "phase_status": {
+      "phase_0": "ready"
+    }
+  },
+  "task_queue": [
+    {
+      "task_id": "P0-001",
+      "title": "Characterize current scanner behavior",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "45 minutes"
+    },
+    {
+      "task_id": "P1-001",
+      "title": "Extract scanner pattern, dedupe, and comment utilities",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "60 minutes"
+    },
+    {
+      "task_id": "P2-001",
+      "title": "Extract file discovery logic",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "45 minutes"
+    },
+    {
+      "task_id": "P3-001",
+      "title": "Extract per-file runner and unify fallback paths",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "90 minutes"
+    },
+    {
+      "task_id": "P4-001",
+      "title": "Move progress and cache bookkeeping into runtime helpers",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "45 minutes"
+    },
+    {
+      "task_id": "P5-001",
+      "title": "Slim scanCurrentElements() orchestration",
+      "status": "pending",
+      "priority": "medium",
+      "estimated_effort": "45 minutes"
+    },
+    {
+      "task_id": "P6-001",
+      "title": "Remove scan-time global mutation",
+      "status": "pending",
+      "priority": "medium",
+      "estimated_effort": "45 minutes"
+    },
+    {
+      "task_id": "P8-001",
+      "title": "Verify parallel and sequential parity",
+      "status": "pending",
+      "priority": "high",
+      "estimated_effort": "60 minutes"
+    },
+    {
+      "task_id": "P9-001",
+      "title": "Cleanup and regression sweep",
+      "status": "pending",
+      "priority": "medium",
+      "estimated_effort": "45 minutes"
+    }
+  ],
+  "execution_notes": {
+    "plan_type": "phased",
+    "plan_type_rationale": "User explicitly requested phased plan mode for the scanner modularization refactor.",
+    "hard_stops": [
+      "Phase 9 final parity and cleanup checkpoint"
+    ],
+    "estimated_total_effort": "7-10 hours"
+  },
+  "history": [
+    {
+      "timestamp": "2026-04-23T18:50:26.1633207-04:00",
+      "action": "workorder_created",
+      "details": "Workorder created in phased mode after user override from strict to phased."
+    },
+    {
+      "timestamp": "2026-04-23T18:50:26.1633207-04:00",
+      "event": "plan_type_overridden",
+      "from": "strict",
+      "to": "phased"
+    }
+  ]
+}

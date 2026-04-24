@@ -1,0 +1,263 @@
+{
+  "workorder_id": "WO-SCANNER-MODULE-EXTRACTION-001",
+  "feature_name": "scanner-module-extraction",
+  "created": "2026-04-23T18:50:26.1633207-04:00",
+  "plan_type": "phased",
+  "plan_type_rationale": "User explicitly requested phased plan mode for a multi-stage scanner refactor with sequential gates and characterization coverage.",
+  "plan_type_decided_by": "create-workorder@2.0.0",
+  "goal": "Split the scanner into focused modules without changing the public scanCurrentElements() contract.",
+  "discovery_ref": "scanner-module-extraction-discovery-2026-04-23",
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "plan_adjustments_needed": [
+    {
+      "id": "PA-001",
+      "description": "Keep scanner.ts as the stable export surface while moving implementation details into new modules.",
+      "applied": true
+    },
+    {
+      "id": "PA-002",
+      "description": "Sequence the work as characterization first, extraction second, orchestration last, with a final parity checkpoint.",
+      "applied": true
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 9,
+      "approved": false,
+      "reason": "Final regression and parity checkpoint before the refactor is considered complete."
+    }
+  ],
+  "phases": [
+    {
+      "phase": 0,
+      "name": "Characterization",
+      "description": "Lock current scanner behavior before moving code.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P0-001",
+          "verb": "READ",
+          "description": "Review scanner.ts and the existing scanner-focused tests to map the current behavior surface."
+        },
+        {
+          "id": "P0-002",
+          "verb": "WRITE",
+          "description": "Add characterization tests for recursive versus non-recursive discovery, exclude handling, custom patterns, and deduplication."
+        },
+        {
+          "id": "P0-003",
+          "verb": "WRITE",
+          "description": "Add characterization tests for progress callbacks, incremental cache behavior, AST fallback, tree-sitter fallback, and sequential versus parallel parity."
+        }
+      ]
+    },
+    {
+      "phase": 1,
+      "name": "Pure Utilities",
+      "description": "Extract pattern, dedupe, and comment helpers without changing behavior.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P1-001",
+          "verb": "WRITE",
+          "description": "Create src/scanner/scanner-patterns.ts and move LANGUAGE_PATTERNS, DEFAULT_SUPPORTED_LANGS, DEFAULT_EXCLUDE_PATTERNS, TYPE_PRIORITY, and sortPatternsByPriority().",
+          "touches": [
+            "src/scanner/scanner-patterns.ts",
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P1-002",
+          "verb": "WRITE",
+          "description": "Create src/scanner/scanner-dedupe.ts and move deduplicateElements().",
+          "touches": [
+            "src/scanner/scanner-dedupe.ts",
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P1-003",
+          "verb": "WRITE",
+          "description": "Create src/scanner/scanner-comments.ts and move isLineCommented() plus its helper functions.",
+          "touches": [
+            "src/scanner/scanner-comments.ts",
+            "src/scanner/scanner.ts"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "File Discovery",
+      "description": "Extract recursive discovery and exclusion logic.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P2-001",
+          "verb": "WRITE",
+          "description": "Create src/scanner/scanner-file-discovery.ts with shouldExcludePath() and collectFiles().",
+          "touches": [
+            "src/scanner/scanner-file-discovery.ts",
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P2-002",
+          "verb": "EDIT",
+          "description": "Keep path normalization and tsx/jsx language remapping identical while routing scanner.ts through the new discovery module."
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "File Runner",
+      "description": "Extract per-file execution into a structured result contract.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P3-001",
+          "verb": "WRITE",
+          "description": "Create src/scanner/scanner-file-runner.ts with scanSingleFile() returning elements, cacheEntry, status, and currentFile.",
+          "touches": [
+            "src/scanner/scanner-file-runner.ts",
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P3-002",
+          "verb": "EDIT",
+          "description": "Unify the scan cache hit path, tree-sitter path, AST path, regex path, and error path inside the file runner."
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Runtime Bookkeeping",
+      "description": "Move shared progress and cache helpers out of the main loop.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P4-001",
+          "verb": "WRITE",
+          "description": "Create src/scanner/scanner-runtime.ts with reportProgress(), storeFileCacheEntry(), resolveScanLanguages(), and buildResolvedPatternMap().",
+          "touches": [
+            "src/scanner/scanner-runtime.ts",
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P4-002",
+          "verb": "EDIT",
+          "description": "Remove duplicated progress and cache update logic from scanCurrentElements() and route it through the runtime helpers."
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Orchestration Slimming",
+      "description": "Reduce scanCurrentElements() to orchestration only.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P5-001",
+          "verb": "EDIT",
+          "description": "Normalize options, resolve languages and patterns, collect files, run the incremental diff, choose parallel or sequential execution, persist cache, dedupe, and return from scanCurrentElements()."
+        },
+        {
+          "id": "P5-002",
+          "verb": "CHECK",
+          "description": "Verify the public scanCurrentElements() signature, default options, and returned element shape remain unchanged."
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "No Global Mutation",
+      "description": "Remove scan-time mutation of shared defaults.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P6-001",
+          "verb": "EDIT",
+          "description": "Stop mutating LANGUAGE_PATTERNS inside scanCurrentElements() and build per-call resolved patterns from built-ins, registry patterns, and custom patterns."
+        },
+        {
+          "id": "P6-002",
+          "verb": "CHECK",
+          "description": "Keep ScannerRegistry working by reading from resolved state instead of relying on shared mutable defaults."
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Scanner Simplification",
+      "description": "Revisit the Scanner class and remove stale internal state.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P7-001",
+          "verb": "EDIT",
+          "description": "Shrink Scanner to a simple aggregation helper or replace it with plain collection helpers."
+        },
+        {
+          "id": "P7-002",
+          "verb": "DELETE",
+          "description": "Remove unused Scanner fields such as currentFile, currentLine, and currentPattern, plus any stale private route helpers that are fully superseded."
+        }
+      ]
+    },
+    {
+      "phase": 8,
+      "name": "Parity",
+      "description": "Align worker and main-thread execution paths.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P8-001",
+          "verb": "TEST",
+          "description": "Verify parallel and sequential execution produce the same elements, dedupe results, progress events, cache updates, and AST richness."
+        },
+        {
+          "id": "P8-002",
+          "verb": "EDIT",
+          "description": "Fix any parity gaps found between worker and main-thread execution."
+        }
+      ]
+    },
+    {
+      "phase": 9,
+      "name": "Cleanup",
+      "description": "Remove dead code, update references, and run the scanner-focused regression suite.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "P9-001",
+          "verb": "DELETE",
+          "description": "Remove dead imports, unreachable code, and obsolete helper paths after the extraction is complete."
+        },
+        {
+          "id": "P9-002",
+          "verb": "EDIT",
+          "description": "Update docs and examples that reference scanner internals so they match the new module layout."
+        },
+        {
+          "id": "P9-003",
+          "verb": "RUN",
+          "description": "Run the scanner-focused regression tests and record any remaining contract gaps before closing the workorder."
+        }
+      ]
+    }
+  ]
+}

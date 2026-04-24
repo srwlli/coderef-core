@@ -1,0 +1,46 @@
+{
+  "feature_name": "scanner-module-extraction",
+  "description": "Refactor src/scanner/scanner.ts into smaller modules while preserving the public scanCurrentElements() contract.",
+  "goal": "Split the scanner into focused modules without changing scanCurrentElements() behavior or signature.",
+  "requirements": [
+    "Record current scanner behavior with characterization tests before refactoring",
+    "Extract pure utility modules for patterns, deduplication, and comment handling",
+    "Extract file discovery into a separate module without changing path or exclude semantics",
+    "Extract per-file execution into a structured runner that covers cache, tree-sitter, AST, regex, and error paths",
+    "Extract shared progress and cache bookkeeping into runtime helpers",
+    "Remove global mutation during scans and build resolved patterns per call",
+    "Simplify the Scanner class while preserving export compatibility",
+    "Keep parallel and sequential execution paths behaviorally aligned"
+  ],
+  "out_of_scope": [
+    "Changing the public scanCurrentElements() signature",
+    "Changing scan output schema",
+    "Changing the supported language set or exclude defaults",
+    "Introducing new scanner features unrelated to modularization"
+  ],
+  "constraints": [
+    "Use phased plan mode rather than strict mode",
+    "Keep exports stable through scanner.ts during extraction",
+    "Preserve existing cache, fallback, and progress semantics",
+    "Avoid hidden global mutation during a scan"
+  ],
+  "success_criteria": {
+    "primary": "scanCurrentElements() continues to return the same contract while the scanner logic is split into smaller modules",
+    "secondary": "Characterization coverage exists for discovery, excludes, patterns, dedupe, progress, cache, AST fallback, tree-sitter fallback, and parallel versus sequential parity"
+  },
+  "_metadata": {
+    "workorder_id": "WO-SCANNER-MODULE-EXTRACTION-001",
+    "workorder_assigned_at": "2026-04-23T18:50:26.1633207-04:00",
+    "workorder_assigned_by": "codex"
+  },
+  "_uds": {
+    "generated_by": "coderef-workflow v2.0.0",
+    "document_type": "Feature Context",
+    "workorder_id": "WO-SCANNER-MODULE-EXTRACTION-001",
+    "feature_id": "scanner-module-extraction",
+    "last_updated": "2026-04-23",
+    "ai_assistance": true,
+    "status": "DRAFT",
+    "next_review": "2026-05-23"
+  }
+}
