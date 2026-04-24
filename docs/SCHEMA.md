@@ -235,7 +235,6 @@ interface ScanOptions {
   parallel?: boolean | {         // Enable parallel file processing
     workers?: number;            // Number of worker threads (default: CPU cores - 1)
   };
-  workerPoolSize?: number;       // Deprecated: use parallel.workers instead
 
   // Phase 5: Progress Reporting
   onProgress?: (progress: {      // Callback for progress updates during scanning
