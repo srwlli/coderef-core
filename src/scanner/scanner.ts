@@ -34,6 +34,7 @@ import {
   shouldExcludePath,
   collectFiles,
 } from './scanner-file-discovery.js';
+import { scanSingleFile } from './scanner-file-runner.js';
 
 // Keep isLineCommented exported on scanner.ts for callers that imported it
 // from here historically.
@@ -603,311 +604,41 @@ export async function scanCurrentElements(
     const totalFiles = filesToScan.length;
     const onProgress = options.onProgress;
 
+    function reportProgress(currentFile: string) {
+      filesProcessed++;
+      if (onProgress) {
+        const elementsFound = scanner.getElements().length;
+        const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
+        onProgress({ currentFile, filesProcessed, totalFiles, elementsFound, percentComplete });
+      }
+    }
+
     // IMP-CORE-077: Process files (sequential mode or fallback from parallel)
     // Skip sequential processing if parallel mode succeeded
     if (!parallelSucceeded) {
+      const makeScanner = () => new Scanner();
       for (const file of filesToScan) {
-        try {
-          // Check cache first
-          const stats = fs.statSync(file);
-          const currentMtime = stats.mtimeMs;
-          const cached = SCAN_CACHE.get(file);
+        const result = await scanSingleFile(file, options, {
+          dir: resolvedDir,
+          scanCache: SCAN_CACHE,
+          makeScanner,
+          verbose,
+          includeComments,
+        });
 
-          if (cached && cached.mtime === currentMtime) {
-            // File hasn't changed, use cached results
-            if (verbose) {
-              console.log(`Using cached results for: ${file}`);
-            }
-            for (const element of cached.elements) {
-              scanner.addElement(element);
-            }
-
-            // PHASE 5: Report progress for cached files
-            filesProcessed++;
-            if (onProgress) {
-              const elementsFound = scanner.getElements().length;
-              const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
-              onProgress({
-                currentFile: file,
-                filesProcessed,
-                totalFiles,
-                elementsFound,
-                percentComplete
-              });
-            }
-            continue;
-          }
-
-          // File is new or has been modified, scan it
-          if (verbose && cached) {
-            console.log(`Cache miss (file modified): ${file}`);
-          } else if (verbose) {
-            console.log(`Cache miss (new file): ${file}`);
-          }
-
-          const content = fs.readFileSync(file, 'utf-8');
-          let currentLang = path.extname(file).substring(1);
-
-          // Map .tsx to .ts patterns
-          if (currentLang === 'tsx') {
-            currentLang = 'ts';
-          }
-
-          if (verbose) {
-            console.log(`Processing file: ${file} with language: ${currentLang}`);
-          }
-
-          // Track elements before processing this file
-          const elementsBefore = scanner.getElements().length;
-
-          // WO-TREE-SITTER-SCANNER-001: Tree-sitter Integration
-          const useTreeSitterMode = options.useTreeSitter;
-          const fallbackEnabled = options.fallbackToRegex !== false; // Default true
-
-          if (useTreeSitterMode) {
-            try {
-              if (verbose) {
-                console.log(`Using tree-sitter mode for: ${file}`);
-              }
-
-              // Import TreeSitterScanner
-              const { TreeSitterScanner } = await import('./tree-sitter-scanner.js');
-              const treeSitterScanner = new TreeSitterScanner();
-
-              // Scan file with tree-sitter
-              const treeSitterElements = await treeSitterScanner.scanFile(file);
-
-              // Add tree-sitter elements to scanner
-              for (const element of treeSitterElements) {
-                scanner.addElement(element);
-              }
-
-              if (verbose) {
-                console.log(`Tree-sitter mode detected ${treeSitterElements.length} elements in: ${file}`);
-              }
-
-              // If tree-sitter succeeded and we only want tree-sitter results, skip regex
-              if (!fallbackEnabled) {
-                // Get elements added for this file
-                const allElements = scanner.getElements();
-                const fileElements = allElements.slice(elementsBefore);
-
-                // Store in cache
-                SCAN_CACHE.set(file, {
-                  mtime: currentMtime,
-                  elements: fileElements
-                });
-
-                if (verbose) {
-                  console.log(`Cached ${fileElements.length} tree-sitter elements for: ${file}`);
-                }
-
-                // PHASE 5: Report progress
-                filesProcessed++;
-                if (onProgress) {
-                  const elementsFound = scanner.getElements().length;
-                  const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
-                  onProgress({
-                    currentFile: file,
-                    filesProcessed,
-                    totalFiles,
-                    elementsFound,
-                    percentComplete
-                  });
-                }
-                continue;
-              }
-            } catch (treeSitterError) {
-              if (verbose) {
-                console.warn(`Tree-sitter parsing failed for ${file}, falling back to regex:`, treeSitterError);
-              }
-
-              if (!fallbackEnabled) {
-                // Tree-sitter failed and no fallback - skip file
-                if (verbose) {
-                  console.error(`Skipping file ${file} - tree-sitter failed and fallback disabled`);
-                }
-
-                // PHASE 5: Report progress even on error
-                filesProcessed++;
-                if (onProgress) {
-                  const elementsFound = scanner.getElements().length;
-                  const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
-                  onProgress({
-                    currentFile: file,
-                    filesProcessed,
-                    totalFiles,
-                    elementsFound,
-                    percentComplete
-                  });
-                }
-                continue;
-              }
-              // Otherwise continue to AST or regex processing below
-            }
-          }
-
-          // PHASE 1: AST Integration - Use AST mode for TypeScript/JavaScript if enabled
-          const useASTMode = options.useAST && (currentLang === 'ts' || currentLang === 'js');
-
-          if (useASTMode) {
-            try {
-              if (verbose) {
-                console.log(`Using AST mode for: ${file}`);
-              }
-
-              // FIX-AST: Use TypeScript parser for .ts/.tsx files, Acorn for .js files
-              let astElements: any[];
-
-              if (currentLang === 'ts') {
-                // Use ASTElementScanner (TypeScript compiler API) for TypeScript files
-                const { ASTElementScanner } = await import('../analyzer/ast-element-scanner.js');
-                const astScanner = new ASTElementScanner(dir);
-                astElements = astScanner.scanFile(file);
-              } else {
-                // Use JSCallDetector (Acorn parser) for JavaScript files
-                const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
-                const detector = new JSCallDetector();
-                astElements = detector.detectElements(file);
-              }
-
-              // Import JSCallDetector for imports/calls detection (works for both TS and JS)
-              const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
-              const detector = new JSCallDetector();
-
-              // PHASE 4: Extract imports and calls from file
-              const fileImports = detector.detectImports(file);
-              const fileCalls = detector.detectCalls(file);
-
-              // Add AST-detected elements to scanner with imports and calls
-              for (const element of astElements) {
-                // Find calls made by this element
-                const elementCalls = fileCalls
-                  .filter(call => call.callerFunction === element.name || call.callerClass === element.name)
-                  .map(call => call.calleeFunction);
-
-                scanner.addElement({
-                  type: element.type as ElementData['type'],
-                  name: element.name,
-                  file: element.file,
-                  line: element.line,
-                  exported: element.exported,
-                  // PHASE 4: Add imports to element
-                  imports: fileImports.length > 0 ? fileImports.map(imp => ({
-                    source: imp.source,
-                    specifiers: imp.specifiers.filter(s => s !== 'default'),
-                    default: imp.isDefault ? imp.specifiers[0] : undefined,
-                    dynamic: imp.dynamic || false, // PHASE 5: Use dynamic flag from ModuleImport
-                    line: imp.line
-                  })) : undefined,
-                  // PHASE 4: Add calls made by this element
-                  calls: elementCalls.length > 0 ? elementCalls : undefined
-                });
-              }
-
-              if (verbose) {
-                console.log(`AST mode detected ${astElements.length} elements, ${fileImports.length} imports, and ${fileCalls.length} calls in: ${file}`);
-              }
-
-              // If AST succeeded and we only want AST results, skip regex
-              if (!fallbackEnabled) {
-                // Get elements added for this file
-                const allElements = scanner.getElements();
-                const fileElements = allElements.slice(elementsBefore);
-
-                // Store in cache
-                SCAN_CACHE.set(file, {
-                  mtime: currentMtime,
-                  elements: fileElements
-                });
-
-                if (verbose) {
-                  console.log(`Cached ${fileElements.length} AST elements for: ${file}`);
-                }
-                continue;
-              }
-            } catch (astError) {
-              if (verbose) {
-                console.warn(`AST parsing failed for ${file}, falling back to regex:`, astError);
-              }
-
-              if (!fallbackEnabled) {
-                // AST failed and no fallback - skip file
-                if (verbose) {
-                  console.error(`Skipping file ${file} - AST failed and fallback disabled`);
-                }
-                continue;
-              }
-              // Otherwise continue to regex processing below
-            }
-          }
-
-          // Regex-based processing (always runs if AST disabled, or as fallback)
-          const patterns = sortPatternsByPriority(LANGUAGE_PATTERNS[currentLang] || []);
-
-          if (patterns.length === 0) {
-            if (verbose) {
-              console.log(`No patterns found for language: ${currentLang}`);
-            }
-            continue;
-          }
-
-          if (!includeComments && isEntirelyCommented(content)) {
-            if (verbose) {
-              console.log(`Skipping entirely commented file: ${file}`);
-            }
-            continue;
-          }
-
-          scanner.processFile(file, content, patterns, includeComments);
-
-          // Get elements added for this file
-          const allElements = scanner.getElements();
-          const fileElements = allElements.slice(elementsBefore);
-
-          // Store in cache
-          SCAN_CACHE.set(file, {
-            mtime: currentMtime,
-            elements: fileElements
-          });
-
-          if (verbose) {
-            console.log(`Cached ${fileElements.length} elements for: ${file}`);
-          }
-
-          // PHASE 5: Report progress after successful file processing
-          filesProcessed++;
-          if (onProgress) {
-            const elementsFound = scanner.getElements().length;
-            const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
-            onProgress({
-              currentFile: file,
-              filesProcessed,
-              totalFiles,
-              elementsFound,
-              percentComplete
-            });
-          }
-        } catch (error) {
-          if (verbose) {
-            console.error(`Error processing file ${file}:`, error);
-          }
-          // PHASE 5: Report progress even on error
-          filesProcessed++;
-          if (onProgress) {
-            const elementsFound = scanner.getElements().length;
-            const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
-            onProgress({
-              currentFile: file,
-              filesProcessed,
-              totalFiles,
-              elementsFound,
-              percentComplete
-            });
-          }
+        // Fold per-file elements into the shared scanner
+        for (const el of result.elements) {
+          scanner.addElement(el);
         }
+
+        // Update SCAN_CACHE when the runner produced a cache entry
+        if (result.cacheEntry) {
+          SCAN_CACHE.set(file, result.cacheEntry);
+        }
+
+        reportProgress(file);
       }
-    } // IMP-CORE-077: Close if (!parallelSucceeded) block
+    }
 
     // IMP-CORE-057: Update IncrementalCache after scanning
     if (cache && cache.isEnabled()) {
