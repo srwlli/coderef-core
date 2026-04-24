@@ -1,0 +1,572 @@
+# CodeRef CLI Reference
+
+Complete reference for the CodeRef command-line interface.
+
+---
+
+## Installation
+
+```bash
+# Via npm (when published)
+npm install -g @coderef/core
+
+# Via npx (no install)
+npx @coderef/core <command>
+
+# Local development
+npm run build:cli
+node dist/src/cli/index.js <command>
+```
+
+---
+
+## Command Overview
+
+| Command | Purpose | Key Flags |
+|---------|---------|-----------|
+| [`coderef-scan`](#coderef-scan) | Scan code for elements | `--dir`, `--lang`, `--recursive`, `--useAST` |
+| [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts | `--dir`, `--clean`, `--skip-drift` |
+| [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search | `--dir`, `--chroma-url`, `--ollama-url` |
+| [`coderef-rag-search`](#coderef-rag-search) | Search indexed code | `--query`, `--type`, `--max-results` |
+| [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--dir`, `--chroma-url` |
+| [`scan-frontend-calls`](#scan-frontend-calls) | Detect frontend API calls | `--dir`, `--pattern`, `--output` |
+| [`validate-routes`](#validate-routes) | Validate API route definitions | `--dir`, `--strict`, `--fix` |
+| [`detect-languages`](#detect-languages) | Detect project languages | `--dir`, `--json` |
+
+---
+
+## coderef-scan
+
+Scan a codebase for code elements (functions, classes, components, hooks).
+
+### Usage
+
+```bash
+npx coderef-scan --dir ./src --lang ts,tsx --recursive
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-d, --dir <path>` | Directory to scan | Current directory |
+| `-l, --lang <langs>` | Comma-separated languages | `ts,tsx,js,jsx,py,go,rs,java,cpp,c` |
+| `-r, --recursive` | Scan recursively | `true` |
+| `--useAST` | Use AST parsing for TS/JS | `false` |
+| `--useTreeSitter` | Use tree-sitter parsing | `false` |
+| `--fallbackToRegex` | Fallback to regex on AST failure | `true` |
+| `--parallel` | Use parallel processing | `false` |
+| `--includeComments` | Include commented code | `false` |
+| `--exclude <patterns>` | Exclude patterns (comma-separated) | See default excludes |
+| `-v, --verbose` | Verbose output | `false` |
+| `--cache` | Use incremental cache | `true` |
+| `--output <path>` | Output file (JSON) | stdout |
+
+### Examples
+
+```bash
+# Basic scan
+npx coderef-scan --dir ./src
+
+# Scan with AST parsing
+npx coderef-scan --dir ./src --lang ts --useAST
+
+# Scan single language with parallel mode
+npx coderef-scan --dir ./src --lang ts --parallel
+
+# Exclude patterns
+npx coderef-scan --dir ./src --exclude "**/*.test.ts,**/node_modules/**"
+
+# Output to file
+npx coderef-scan --dir ./src --output ./scan-results.json
+```
+
+### Output Format
+
+```json
+{
+  "elements": [
+    {
+      "type": "function",
+      "name": "calculateTotal",
+      "file": "src/utils/math.ts",
+      "line": 15,
+      "exported": true,
+      "imports": [...],
+      "calls": [...]
+    }
+  ],
+  "stats": {
+    "filesScanned": 42,
+    "elementsFound": 156,
+    "duration": 1234
+  }
+}
+```
+
+---
+
+## coderef-populate
+
+Generate .coderef/ directory artifacts including index.json, graph.json, and reports.
+
+### Usage
+
+```bash
+npx coderef-populate --dir ./src --clean
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-d, --dir <path>` | Project directory | Current directory |
+| `--clean` | Clean .coderef/ before populating | `false` |
+| `--skip-drift` | Skip drift detection | `false` |
+| `--skip-graph` | Skip graph generation | `false` |
+| `--skip-reports` | Skip report generation | `false` |
+| `-v, --verbose` | Verbose output | `false` |
+
+### Examples
+
+```bash
+# Populate .coderef/ with defaults
+npx coderef-populate --dir ./src
+
+# Clean and repopulate
+npx coderef-populate --dir ./src --clean
+
+# Quick populate (skip expensive operations)
+npx coderef-populate --dir ./src --skip-graph --skip-reports
+```
+
+### Generated Artifacts
+
+```
+.coderef/
+├── index.json          # Element catalog
+├── graph.json          # Dependency graph
+├── context.md          # Project context
+├── reports/
+│   ├── drift.json      # Code drift analysis
+│   ├── quality.json    # Quality metrics
+│   └── complexity.json # Complexity analysis
+└── exports/
+    └── diagram.md      # Mermaid diagram
+```
+
+---
+
+## coderef-rag-index
+
+Index codebase into a vector database for semantic search.
+
+### Usage
+
+```bash
+npx coderef-rag-index --dir ./src --chroma-url http://localhost:8000
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-d, --dir <path>` | Directory to index | Current directory |
+| `--chroma-url <url>` | ChromaDB server URL | `http://localhost:8000` |
+| `--ollama-url <url>` | Ollama server URL | `http://localhost:11434` |
+| `--model <name>` | Embedding model | `nomic-embed-text` |
+| `--batch-size <n>` | Batch size for indexing | `100` |
+| `--skip-existing` | Skip already-indexed files | `false` |
+| `-v, --verbose` | Verbose output | `false` |
+
+### Examples
+
+```bash
+# Index with local ChromaDB
+npx coderef-rag-index --dir ./src
+
+# Index with remote ChromaDB
+npx coderef-rag-index --dir ./src --chroma-url https://chroma.example.com
+
+# Use specific embedding model
+npx coderef-rag-index --dir ./src --model all-minilm
+
+# Incremental indexing
+npx coderef-rag-index --dir ./src --skip-existing
+```
+
+### Prerequisites
+
+- ChromaDB server running (local or remote)
+- Ollama server running (for embeddings)
+
+---
+
+## coderef-rag-search
+
+Search indexed codebase using natural language queries.
+
+### Usage
+
+```bash
+npx coderef-rag-search --query "authentication middleware" --type function
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-q, --query <text>` | Search query (required) | - |
+| `-t, --type <type>` | Filter by element type | All types |
+| `--max-results <n>` | Maximum results | `10` |
+| `--threshold <score>` | Minimum similarity score | `0.7` |
+| `--chroma-url <url>` | ChromaDB server URL | `http://localhost:8000` |
+| `--ollama-url <url>` | Ollama server URL | `http://localhost:11434` |
+| `--model <name>` | Embedding model | `nomic-embed-text` |
+| `--json` | Output as JSON | `false` |
+
+### Examples
+
+```bash
+# Basic search
+npx coderef-rag-search --query "user login function"
+
+# Filter by type
+npx coderef-rag-search --query "database connection" --type class
+
+# Higher threshold for precision
+npx coderef-rag-search --query "error handling" --threshold 0.85
+
+# JSON output for piping
+npx coderef-rag-search --query "API routes" --json | jq '.results[]'
+```
+
+### Output Format
+
+```json
+{
+  "query": "authentication middleware",
+  "results": [
+    {
+      "element": {
+        "type": "function",
+        "name": "authMiddleware",
+        "file": "src/middleware/auth.ts",
+        "line": 23
+      },
+      "score": 0.89,
+      "context": "..."
+    }
+  ]
+}
+```
+
+---
+
+## coderef-rag-status
+
+Check the status of the RAG index.
+
+### Usage
+
+```bash
+npx coderef-rag-status --dir ./src
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-d, --dir <path>` | Project directory | Current directory |
+| `--chroma-url <url>` | ChromaDB server URL | `http://localhost:8000` |
+| `--json` | Output as JSON | `false` |
+
+### Examples
+
+```bash
+# Check status
+npx coderef-rag-status --dir ./src
+
+# JSON output
+npx coderef-rag-status --dir ./src --json
+```
+
+### Output
+
+```
+RAG Index Status
+================
+Collection: coderef_src_abc123
+Documents: 1,247
+Last Updated: 2026-04-23T18:30:00Z
+Status: ✓ Connected
+```
+
+---
+
+## scan-frontend-calls
+
+Detect and analyze frontend API calls.
+
+### Usage
+
+```bash
+npx scan-frontend-calls --dir ./src --pattern "fetch|axios"
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-d, --dir <path>` | Directory to scan | Current directory |
+| `-p, --pattern <regex>` | Call pattern to match | `fetch\|axios\|http` |
+| `--output <path>` | Output file | stdout |
+| `--group-by <field>` | Group results by file/route | `file` |
+| `-v, --verbose` | Verbose output | `false` |
+
+### Examples
+
+```bash
+# Scan for all API calls
+npx scan-frontend-calls --dir ./src
+
+# Custom pattern
+npx scan-frontend-calls --dir ./src --pattern "api\.get|api\.post"
+
+# Output to file
+npx scan-frontend-calls --dir ./src --output ./api-calls.json
+
+# Group by API route
+npx scan-frontend-calls --dir ./src --group-by route
+```
+
+### Output Format
+
+```json
+{
+  "calls": [
+    {
+      "file": "src/services/user.ts",
+      "line": 45,
+      "pattern": "fetch",
+      "target": "/api/users",
+      "method": "GET",
+      "context": "fetch('/api/users')"
+    }
+  ],
+  "summary": {
+    "totalCalls": 23,
+    "uniqueEndpoints": 8
+  }
+}
+```
+
+---
+
+## validate-routes
+
+Validate API route definitions for consistency and correctness.
+
+### Usage
+
+```bash
+npx validate-routes --dir ./src --strict
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-d, --dir <path>` | Directory to scan | Current directory |
+| `--strict` | Strict validation mode | `false` |
+| `--fix` | Auto-fix issues where possible | `false` |
+| `--include <patterns>` | Include patterns | All files |
+| `--exclude <patterns>` | Exclude patterns | `node_modules,tests` |
+| `--output <path>` | Report output | stdout |
+
+### Examples
+
+```bash
+# Basic validation
+npx validate-routes --dir ./src
+
+# Strict mode
+npx validate-routes --dir ./src --strict
+
+# Auto-fix issues
+npx validate-routes --dir ./src --fix
+
+# Output report
+npx validate-routes --dir ./src --output ./route-report.json
+```
+
+### Validation Rules
+
+- Route path format consistency
+- HTTP method validation
+- Parameter naming conventions
+- Duplicate route detection
+- Missing handler detection
+
+### Output
+
+```
+Route Validation Report
+======================
+✓ Valid routes: 42
+⚠ Warnings: 3
+✗ Errors: 1
+
+Errors:
+  - src/routes/user.ts:23: Duplicate route '/api/users/:id'
+```
+
+---
+
+## detect-languages
+
+Detect programming languages used in a project.
+
+### Usage
+
+```bash
+npx detect-languages --dir ./src --json
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-d, --dir <path>` | Directory to scan | Current directory |
+| `--json` | Output as JSON | `false` |
+| `--threshold <percent>` | Minimum percentage to include | `1` |
+| `--exclude <patterns>` | Exclude patterns | `node_modules,dist` |
+
+### Examples
+
+```bash
+# Basic detection
+npx detect-languages --dir ./src
+
+# JSON output
+npx detect-languages --dir ./src --json
+
+# Higher threshold
+npx detect-languages --dir ./src --threshold 5
+```
+
+### Output
+
+```
+Language Detection Results
+===========================
+TypeScript: 68.5% (342 files)
+JavaScript: 15.2% (76 files)
+Python: 8.3% (42 files)
+CSS: 5.4% (27 files)
+JSON: 2.6% (13 files)
+```
+
+JSON format:
+```json
+{
+  "languages": [
+    { "name": "TypeScript", "percentage": 68.5, "files": 342 },
+    { "name": "JavaScript", "percentage": 15.2, "files": 76 }
+  ],
+  "totalFiles": 500
+}
+```
+
+---
+
+## Environment Variables
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `CODEREF_CACHE_DIR` | Cache directory location | `.coderef/cache` |
+| `CHROMA_URL` | ChromaDB server URL | `http://localhost:8000` |
+| `OLLAMA_URL` | Ollama server URL | `http://localhost:11434` |
+| `CODEREF_VERBOSE` | Enable verbose logging | `false` |
+| `CODEREF_PARALLEL` | Enable parallel processing | `false` |
+
+---
+
+## Exit Codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | General error |
+| `2` | Invalid arguments |
+| `3` | File not found |
+| `4` | Network error (RAG commands) |
+| `5` | Validation failed |
+
+---
+
+## Troubleshooting
+
+### Command not found
+
+```bash
+# Ensure CLI is built
+npm run build:cli
+
+# Or use npx
+npx @coderef/core <command>
+```
+
+### ChromaDB connection failed
+
+```bash
+# Start ChromaDB locally
+docker run -p 8000:8000 chromadb/chroma:latest
+
+# Or specify remote URL
+export CHROMA_URL=https://chroma.example.com
+```
+
+### Ollama connection failed
+
+```bash
+# Start Ollama locally
+ollama serve
+
+# Pull embedding model
+ollama pull nomic-embed-text
+```
+
+### Performance issues
+
+```bash
+# Use parallel mode for large codebases
+npx coderef-scan --dir ./src --parallel
+
+# Skip expensive operations
+npx coderef-populate --skip-graph --skip-reports
+
+# Use incremental cache
+npx coderef-scan --cache
+```
+
+---
+
+## Contributing
+
+To add a new CLI command:
+
+1. Create `src/cli/<command-name>.ts`
+2. Implement command using `Command` from `commander`
+3. Export command factory function
+4. Register in `src/cli/index.ts`
+5. Add tests in `__tests__/<command-name>.test.ts`
+6. Document in this file
+
+---
+
+## See Also
+
+- [Scanner Implementation](../coderef/reference/SCANNER-IMPLEMENTATION-REFERENCE.md)
+- [RAG System](../coderef/resource/RAG-SYSTEM.md)
+- [API Reference](./API.md)
