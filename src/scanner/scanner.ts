@@ -28,6 +28,14 @@ import {
   sortPatternsByPriority,
 } from './scanner-patterns.js';
 import { deduplicateElements } from './scanner-dedupe.js';
+import {
+  isLineCommented,
+  isEntirelyCommented,
+} from './scanner-comments.js';
+
+// Keep isLineCommented exported on scanner.ts for callers that imported it
+// from here historically.
+export { isLineCommented };
 
 // Re-export patterns module so existing callers (e.g. scanner-worker,
 // __tests__/venv-exclusion, dashboard packages) keep working through scanner.ts.
@@ -1073,170 +1081,6 @@ export function getScanCacheStats(): {
   };
 }
 
-/**
- * Context-aware comment detection
- * P1.2: Improved to handle JSDoc, template strings, and regex literals
- *
- * @param line - The line to check
- * @param lineIndex - The line number (0-indexed)
- * @param allLines - All lines in the file (for multi-line comment detection)
- * @returns true if the line is a comment and should be skipped
- */
-export function isLineCommented(line: string, lineIndex?: number, allLines?: string[]): boolean {
-  // Remove leading whitespace
-  const trimmed = line.trim();
-
-  // Empty lines are not comments
-  if (trimmed.length === 0) {
-    return false;
-  }
-
-  // Check if we're inside a template string first (before checking comment syntax)
-  if (lineIndex !== undefined && allLines !== undefined) {
-    if (isInsideTemplateString(lineIndex, allLines)) {
-      return false; // Inside template string - not a comment
-    }
-  }
-
-  // Single-line comments
-  if (trimmed.startsWith('//')) {
-    return true;
-  }
-
-  // JSDoc and multi-line comments
-  if (trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('*/')) {
-    // If we have context, check if we're inside a multi-line comment block
-    if (lineIndex !== undefined && allLines !== undefined) {
-      return isInsideMultiLineComment(lineIndex, allLines);
-    }
-    // Without context, assume it's a comment
-    return true;
-  }
-
-  // Check for code that looks like it might be in a template string or regex
-  // Template strings: `...${code}...`
-  // Regex literals: /pattern/flags
-  // These should NOT be filtered even if they contain comment-like syntax
-  if (containsCodeContext(trimmed)) {
-    return false;
-  }
-
-  return false;
-}
-
-/**
- * Checks if a line is inside a multi-line comment block
- * Handles multi-line and JSDoc comment blocks
- */
-function isInsideMultiLineComment(lineIndex: number, allLines: string[]): boolean {
-  let inComment = false;
-
-  for (let i = 0; i <= lineIndex; i++) {
-    const line = allLines[i];
-
-    // Check for comment start
-    if (line.includes('/*')) {
-      inComment = true;
-    }
-
-    // Check for comment end on the same line or after
-    if (inComment && line.includes('*/')) {
-      // If comment starts and ends on same line, check if current line is after the end
-      const startIdx = line.indexOf('/*');
-      const endIdx = line.indexOf('*/');
-
-      if (i === lineIndex) {
-        // Current line - check if we're between /* and */
-        const trimmed = line.trim();
-        if (trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('*/')) {
-          return true;
-        }
-      }
-
-      // Comment ends on this line
-      if (i < lineIndex || (i === lineIndex && endIdx < startIdx)) {
-        inComment = false;
-      }
-    }
-  }
-
-  return inComment;
-}
-
-/**
- * Checks if a line is inside a multi-line template string
- * Handles template strings that span multiple lines: `...${code}...`
- */
-function isInsideTemplateString(lineIndex: number, allLines: string[]): boolean {
-  let inTemplate = false;
-  let templateChar = '';
-
-  for (let i = 0; i <= lineIndex; i++) {
-    const line = allLines[i];
-
-    // Count backticks (template strings)
-    for (let j = 0; j < line.length; j++) {
-      const char = line[j];
-      const prevChar = j > 0 ? line[j - 1] : '';
-
-      // Check for unescaped backtick
-      if (char === '`' && prevChar !== '\\') {
-        if (!inTemplate) {
-          inTemplate = true;
-          templateChar = '`';
-        } else if (templateChar === '`') {
-          inTemplate = false;
-          templateChar = '';
-        }
-      }
-    }
-  }
-
-  return inTemplate;
-}
-
-/**
- * Checks if the line contains code context (template strings, regex literals)
- * These should NOT be filtered as comments even if they contain //, /*, etc.
- */
-function containsCodeContext(trimmed: string): boolean {
-  // Template string detection: contains backticks or ${
-  if (trimmed.includes('`') || trimmed.includes('${')) {
-    return true;
-  }
-
-  // Regex literal detection: /pattern/flags format
-  // Must have balanced slashes and be a valid regex context
-  const regexPattern = /\/[^\/\n]+\/[gimsuvy]*/;
-  if (regexPattern.test(trimmed)) {
-    // Make sure it's not a division operator (e.g., "a / b")
-    // Regex literals typically appear after =, (, [, {, :, or at start of expression
-    const beforeSlash = trimmed.substring(0, trimmed.indexOf('/'));
-    if (beforeSlash.trim().length === 0 ||
-        /[=(\[{:,]$/.test(beforeSlash.trim()) ||
-        /^(const|let|var|return|if|while)\s/.test(trimmed)) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/**
- * Checks if a file appears to be entirely comments or typings
- */
-function isEntirelyCommented(content: string): boolean {
-  // Check for .d.ts-like files
-  if (content.includes('declare module') || content.includes('declare namespace')) {
-    return true;
-  }
-  
-  const nonEmptyLines = content.split('\n').filter(line => line.trim().length > 0);
-  const commentedLines = nonEmptyLines.filter(isLineCommented);
-  
-  // Consider a file all comments if >90% of non-empty lines are comments
-  return commentedLines.length > nonEmptyLines.length * 0.9;
-}
 
 /**
  * Registry to register custom element pattern recognizers
