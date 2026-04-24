@@ -11,11 +11,14 @@ const {
   writeFoundationDoc,
   formatDate,
   uuidAnchor,
-  escapeMarkdown
+  escapeMarkdown,
+  resolveProjectRoot
 } = require('./utils');
 
+const PROJECT_ROOT = resolveProjectRoot();
+
 function generateExportsMd() {
-  const indexData = readCoderefFile('index.json');
+  const indexData = readCoderefFile('index.json', PROJECT_ROOT);
   
   if (!indexData) {
     console.error('Failed to read index.json');
@@ -199,7 +202,7 @@ See IMP-CORE-041 for planned breaking change tracking.
 *This document is auto-generated from .coderef/index.json. Do not edit manually.*
 `;
 
-  writeFoundationDoc('EXPORTS.md', md);
+  writeFoundationDoc('EXPORTS.md', md, PROJECT_ROOT);
   console.log(`\nGenerated EXPORTS.md with ${totalExported.toLocaleString()} exported APIs`);
 }
 

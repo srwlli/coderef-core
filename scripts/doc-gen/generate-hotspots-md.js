@@ -12,12 +12,15 @@ const {
   formatDate,
   uuidAnchor,
   complexityBadge,
-  escapeMarkdown
+  escapeMarkdown,
+  resolveProjectRoot
 } = require('./utils');
 
+const PROJECT_ROOT = resolveProjectRoot();
+
 function generateHotspotsMd() {
-  const contextData = readCoderefFile('context.json');
-  const indexData = readCoderefFile('index.json');
+  const contextData = readCoderefFile('context.json', PROJECT_ROOT);
+  const indexData = readCoderefFile('index.json', PROJECT_ROOT);
   
   if (!contextData) {
     console.error('Failed to read context.json');
@@ -180,7 +183,7 @@ Watch for:
 *This document is auto-generated from .coderef/context.json. Do not edit manually.*
 `;
 
-  writeFoundationDoc('HOTSPOTS.md', md);
+  writeFoundationDoc('HOTSPOTS.md', md, PROJECT_ROOT);
   console.log(`\nGenerated HOTSPOTS.md with ${sortedCritical.length} critical functions and ${entryPoints.length} entry points`);
 }
 

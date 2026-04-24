@@ -13,12 +13,15 @@ const {
   uuidAnchor,
   groupByType,
   getTopFilesByDensity,
-  escapeMarkdown
+  escapeMarkdown,
+  resolveProjectRoot
 } = require('./utils');
 
+const PROJECT_ROOT = resolveProjectRoot();
+
 function generateIndexMd() {
-  const indexData = readCoderefFile('index.json');
-  const contextData = readCoderefFile('context.json');
+  const indexData = readCoderefFile('index.json', PROJECT_ROOT);
+  const contextData = readCoderefFile('context.json', PROJECT_ROOT);
   
   if (!indexData) {
     console.error('Failed to read index.json');
@@ -133,7 +136,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 *This document is auto-generated from .coderef/index.json. Do not edit manually.*
 `;
 
-  writeFoundationDoc('INDEX.md', md);
+  writeFoundationDoc('INDEX.md', md, PROJECT_ROOT);
   console.log(`\nGenerated INDEX.md with ${totalElements.toLocaleString()} elements`);
 }
 

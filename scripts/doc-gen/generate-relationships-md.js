@@ -11,12 +11,15 @@ const {
   writeFoundationDoc,
   formatDate,
   uuidAnchor,
-  escapeMarkdown
+  escapeMarkdown,
+  resolveProjectRoot
 } = require('./utils');
 
+const PROJECT_ROOT = resolveProjectRoot();
+
 function generateRelationshipsMd() {
-  const graphData = readCoderefFile('graph.json');
-  const indexData = readCoderefFile('index.json');
+  const graphData = readCoderefFile('graph.json', PROJECT_ROOT);
+  const indexData = readCoderefFile('index.json', PROJECT_ROOT);
   
   if (!graphData) {
     console.error('Failed to read graph.json');
@@ -208,7 +211,7 @@ Current status: No cycles detected in core modules.
 *This document is auto-generated from .coderef/graph.json. Do not edit manually.*
 `;
 
-  writeFoundationDoc('RELATIONSHIPS.md', md);
+  writeFoundationDoc('RELATIONSHIPS.md', md, PROJECT_ROOT);
   console.log(`\nGenerated RELATIONSHIPS.md with ${nodes.length.toLocaleString()} nodes and ${edges.length.toLocaleString()} edges`);
 }
 

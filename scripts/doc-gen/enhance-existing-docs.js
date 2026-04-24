@@ -8,8 +8,9 @@
 
 const fs = require('fs');
 const path = require('path');
+const { resolveProjectRoot } = require('./utils');
 
-const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
+const PROJECT_ROOT = resolveProjectRoot();
 const FOUNDATION_DOCS_DIR = path.join(PROJECT_ROOT, 'coderef', 'foundation-docs');
 const CODREF_DIR = path.join(PROJECT_ROOT, '.coderef');
 

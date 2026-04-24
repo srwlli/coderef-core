@@ -6,17 +6,55 @@
 const fs = require('fs');
 const path = require('path');
 
+// Legacy: pinned to the coderef-core repo root (parents of scripts/doc-gen/).
+// New callers should resolve paths via resolveProjectRoot(argv) instead.
 const PROJECT_ROOT = path.resolve(__dirname, '..', '..');
 const CODREF_DIR = path.join(PROJECT_ROOT, '.coderef');
 const FOUNDATION_DOCS_DIR = path.join(PROJECT_ROOT, 'coderef', 'foundation-docs');
 
 /**
- * Read and parse a .coderef JSON file
+ * Resolve the effective project root from CLI argv.
+ * Precedence: --project-dir <path> | --project-dir=<path>  →  process.cwd()  →  legacy PROJECT_ROOT.
+ * @param {string[]} [argv] - argv slice to inspect (default: process.argv)
+ * @returns {string} absolute project root
+ */
+function resolveProjectRoot(argv) {
+  const args = argv || process.argv;
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i];
+    if (a === '--project-dir' && i + 1 < args.length) {
+      return path.resolve(args[i + 1]);
+    }
+    if (a.startsWith('--project-dir=')) {
+      return path.resolve(a.slice('--project-dir='.length));
+    }
+  }
+  return process.cwd();
+}
+
+/**
+ * Build the .coderef dir under a given project root.
+ */
+function coderefDir(projectRoot) {
+  return path.join(projectRoot, '.coderef');
+}
+
+/**
+ * Build the foundation-docs dir under a given project root.
+ */
+function foundationDocsDir(projectRoot) {
+  return path.join(projectRoot, 'coderef', 'foundation-docs');
+}
+
+/**
+ * Read and parse a .coderef JSON file.
  * @param {string} filename - Name of the JSON file (e.g., 'index.json')
+ * @param {string} [projectRoot] - Optional project root; defaults to legacy PROJECT_ROOT for back-compat.
  * @returns {Object|null} Parsed JSON or null if error
  */
-function readCoderefFile(filename) {
-  const filepath = path.join(CODREF_DIR, filename);
+function readCoderefFile(filename, projectRoot) {
+  const dir = projectRoot ? coderefDir(projectRoot) : CODREF_DIR;
+  const filepath = path.join(dir, filename);
   try {
     const content = fs.readFileSync(filepath, 'utf8');
     return JSON.parse(content);
@@ -27,24 +65,28 @@ function readCoderefFile(filename) {
 }
 
 /**
- * Ensure foundation docs directory exists
+ * Ensure foundation docs directory exists (under the given project root).
+ * @param {string} [projectRoot]
  */
-function ensureFoundationDocsDir() {
-  if (!fs.existsSync(FOUNDATION_DOCS_DIR)) {
-    fs.mkdirSync(FOUNDATION_DOCS_DIR, { recursive: true });
+function ensureFoundationDocsDir(projectRoot) {
+  const dir = projectRoot ? foundationDocsDir(projectRoot) : FOUNDATION_DOCS_DIR;
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
   }
 }
 
 /**
- * Write a markdown file to foundation docs
+ * Write a markdown file to foundation docs.
  * @param {string} filename - Name of the .md file
  * @param {string} content - Markdown content
+ * @param {string} [projectRoot]
  */
-function writeFoundationDoc(filename, content) {
-  ensureFoundationDocsDir();
-  const filepath = path.join(FOUNDATION_DOCS_DIR, filename);
+function writeFoundationDoc(filename, content, projectRoot) {
+  ensureFoundationDocsDir(projectRoot);
+  const dir = projectRoot ? foundationDocsDir(projectRoot) : FOUNDATION_DOCS_DIR;
+  const filepath = path.join(dir, filename);
   fs.writeFileSync(filepath, content, 'utf8');
-  console.log(`✓ Generated ${filename}`);
+  console.log(`✓ Generated ${filename} (root: ${projectRoot || PROJECT_ROOT})`);
 }
 
 /**
@@ -137,6 +179,9 @@ module.exports = {
   PROJECT_ROOT,
   CODREF_DIR,
   FOUNDATION_DOCS_DIR,
+  resolveProjectRoot,
+  coderefDir,
+  foundationDocsDir,
   readCoderefFile,
   ensureFoundationDocsDir,
   writeFoundationDoc,
