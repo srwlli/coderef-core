@@ -1,0 +1,68 @@
+{
+  "workorder_id": "WO-UNIFIED-CODEREF-PIPELINE-001",
+  "feature_name": "unified-coderef-pipeline",
+  "created": "2026-04-24T12:30:00Z",
+  "affected_surfaces": [
+    {
+      "surface": "CLI bin entries (package.json)",
+      "change_type": "additive",
+      "note": "New 'coderef-pipeline' bin entry; existing entries untouched."
+    },
+    {
+      "surface": "scripts/doc-gen/",
+      "change_type": "signature-extending",
+      "note": "All generate-*.js scripts gain --project-dir flag. Default behavior (no flag) preserved via process.cwd() fallback."
+    },
+    {
+      "surface": ".coderef/reports/drift.json",
+      "change_type": "algorithm-change",
+      "note": "Same output schema (driftPercentage/added/deleted/modified). New computation uses index.generatedAt vs source mtime instead of stored baseline snapshot."
+    },
+    {
+      "surface": "src/rag/ embedding provider",
+      "change_type": "narrowing",
+      "note": "Removes cloud/OpenAI fallback branches. Only Ollama endpoints are accepted. Hard-fails if Ollama unreachable rather than silently degrading."
+    },
+    {
+      "surface": "docs/CLI.md",
+      "change_type": "additive",
+      "note": "New section documenting coderef-pipeline usage, flags, and local-only RAG constraint."
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "severity": "medium",
+      "description": "Drift algorithm change may produce different numbers for the same repo state, breaking any downstream consumer that normalized against the old baseline-snapshot algorithm.",
+      "mitigation": "Output schema preserved; only the computation is replaced. Phase 3 task P3-003 explicitly tests sanity (0 immediately post-populate, nonzero after a source edit)."
+    },
+    {
+      "id": "RISK-002",
+      "severity": "medium",
+      "description": "Removing the OpenAI fallback could break any workflow silently depending on the cloud path when Ollama is misconfigured.",
+      "mitigation": "P4-003 tests the explicit failure path with clear error messaging. Documented in docs/CLI.md (P7-001). Local-only is a stated user constraint, not a regression."
+    },
+    {
+      "id": "RISK-003",
+      "severity": "low",
+      "description": "--project-dir flag propagation across 6 doc-gen scripts could miss a write path, causing pollution.",
+      "mitigation": "P2-003 writes to a temp scratch project and asserts zero files land outside it. P6-002 verifies on a real external project (LLOYD)."
+    },
+    {
+      "id": "RISK-004",
+      "severity": "low",
+      "description": "Unified CLI leg-order (scan -> populate -> foundation-docs -> RAG) is opinionated; some users may want to skip legs.",
+      "mitigation": "Design P5-001 to accept a --only=<leg,leg> or --skip=<leg,leg> flag. Default behavior runs all four."
+    }
+  ],
+  "test_strategy": [
+    "Phase 2: temp-project pollution test (P2-003).",
+    "Phase 3: drift sanity test immediately post-populate and after forced source edit (P3-003).",
+    "Phase 4: local-only RAG failure-mode test with OPENAI_API_KEY set but Ollama unreachable (P4-003).",
+    "Phase 5: end-to-end scratch-clone pipeline test (P5-004).",
+    "Phase 6: LLOYD external-project verification (P6-001..004)."
+  ],
+  "commit_strategy": "One commit per phase (7 total). Close commit optional per /close-workorder canonical flow.",
+  "parent_session": "SES-2026-04-24-SCANNER-MODULE-EXTRACTION",
+  "source_stubs": ["STUB-A", "STUB-B", "STUB-C"]
+}

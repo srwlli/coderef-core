@@ -1,0 +1,46 @@
+{
+  "workorder_id": "WO-UNIFIED-CODEREF-PIPELINE-001",
+  "feature_name": "unified-coderef-pipeline",
+  "project_id": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "status": "plan_created",
+  "execution_phase": "phase_0",
+  "created": "2026-04-24T12:30:00Z",
+  "updated": "2026-04-24T12:30:00Z",
+  "skills_touched": [],
+  "hard_stops": {
+    "phase_6": {
+      "approved": false,
+      "reason": "External-project verification gate before closeout."
+    }
+  },
+  "phase_status": {
+    "phase_1": "pending",
+    "phase_2": "pending",
+    "phase_3": "pending",
+    "phase_4": "pending",
+    "phase_5": "pending",
+    "phase_6": "pending",
+    "phase_7": "pending"
+  },
+  "history": [
+    {
+      "event": "plan_created",
+      "at": "2026-04-24T12:30:00Z",
+      "by": "create-workorder@2.1.0",
+      "note": "Phased plan authored bundling STUB-A + STUB-B + STUB-C from WO-SCANNER-MODULE-EXTRACTION-001 follow-ups. Local-only Ollama RAG constraint baked in. Drift fail-fast bypassed at creation (driftPercentage=18); Phase 3 fixes the underlying bug."
+    },
+    {
+      "event": "plan_type_classified",
+      "at": "2026-04-24T12:30:00Z",
+      "by": "create-workorder@2.1.0",
+      "plan_type": "phased",
+      "rationale": "Multi-phase + multiple distinct deliverables + public CLI surface touched."
+    }
+  ],
+  "handoff": {
+    "next_skill": "/execute-workorder",
+    "entry_phase": "phase_1",
+    "note": "Begin with Phase 1 baseline inventory before any code change. Phase 6 is a hard stop; Phase 7 is optional closeout."
+  }
+}

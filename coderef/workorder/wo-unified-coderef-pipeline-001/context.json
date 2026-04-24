@@ -1,0 +1,83 @@
+{
+  "workorder_id": "WO-UNIFIED-CODEREF-PIPELINE-001",
+  "feature_name": "unified-coderef-pipeline",
+  "project_id": "coderef-core",
+  "created": "2026-04-24T12:30:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Multi-phase work touching public CLI surface, doc-gen scripts, and RAG wiring. Three logically distinct deliverables (A: unified CLI, B: drift detector, C: doc-gen --project-dir). Not atomic (light) and not policy-heavy (strict).",
+  "plan_type_decided_by": "create-workorder@2.1.0",
+  "discovery_ref": null,
+  "discovery": {
+    "candidates": [
+      "src/cli/scan.js",
+      "src/cli/populate.js",
+      "src/cli/rag-index.js",
+      "src/cli/rag-search.js",
+      "src/cli/rag-status.js",
+      "scripts/doc-gen/utils.js",
+      "scripts/doc-gen/generate-exports-md.js",
+      "scripts/doc-gen/generate-hotspots-md.js",
+      "scripts/doc-gen/generate-index-md.js",
+      "scripts/doc-gen/generate-relationships-md.js",
+      "scripts/doc-gen/enhance-existing-docs.js",
+      "scripts/doc-gen/validate-docs.js",
+      "src/pipeline/generators/",
+      "src/rag/",
+      "package.json",
+      "tsconfig.cli.json",
+      "docs/CLI.md"
+    ],
+    "blast_radius": [
+      "CLI bin surface (adds coderef-pipeline)",
+      "scripts/doc-gen/ (--project-dir flag propagation)",
+      "src/rag/ (remove cloud fallback; Ollama-only)",
+      ".coderef/reports/drift.json algorithm change",
+      "docs/CLI.md additions"
+    ],
+    "public_api_hits": [
+      "package.json bin entry coderef-pipeline (new)",
+      "CLI flag --project-dir (new, doc-gen scripts)",
+      "drift.json schema (contract preserved: driftPercentage / added / deleted / modified)"
+    ],
+    "hotspot_hits": [
+      "scripts/doc-gen/utils.js hardcoded PROJECT_ROOT (STUB-C root cause)",
+      "drift generator baseline-snapshot comparison (STUB-B root cause)",
+      "RAG embedding provider fallback paths (local-models-only constraint)"
+    ],
+    "foundation_anchors": [],
+    "warnings": [
+      "coderef-core has no docs/foundation/ tree; foundation-docs validate-only fast path skipped at WO creation.",
+      "Drift fail-fast bypassed: .coderef/reports/drift.json reports driftPercentage=18 immediately after a fresh populate-coderef run. This is the bug Phase 3 fixes."
+    ],
+    "summary_ref": null
+  },
+  "pre_existing_drift": true,
+  "pre_existing_drift_note": "driftPercentage=18 reported by .coderef/reports/drift.json on a freshly-populated repo. The drift detector itself is the subject of Phase 3 (STUB-B). Gate bypassed to allow the fix to ship.",
+  "goal": "Unified coderef-pipeline CLI + drift detector rework + doc-gen --project-dir flag; local-only Ollama RAG, no cloud fallback.",
+  "scope": {
+    "in_scope": [
+      "New coderef-pipeline bin in src/cli/",
+      "scripts/doc-gen/ --project-dir flag + utils.js rework",
+      "drift generator mtime-based algorithm",
+      "Ollama-only guard in src/rag/ embedding provider",
+      "docs/CLI.md addition for coderef-pipeline"
+    ],
+    "out_of_scope": [
+      "Refactor of underlying populate-coderef generators",
+      "RAG search UX changes beyond the local-only guard",
+      "Scanner engine changes (complete under WO-SCANNER-MODULE-EXTRACTION-001)",
+      "Foundation-docs template/content rework"
+    ],
+    "constraints": [
+      "RAG embeddings MUST use local Ollama-served models only; no OPENAI_API_KEY fallback, no silent cloud call.",
+      "scripts/doc-gen/ must never write outside the resolved project root.",
+      "Drift detector contract (added/deleted/modified/driftPercentage) must be preserved for backward compatibility."
+    ]
+  },
+  "source_followups": [
+    "STUB-A: coderef-core surface unified CLI",
+    "STUB-B: drift detector mtime rework",
+    "STUB-C: doc-gen --project-dir flag"
+  ],
+  "parent_session": "SES-2026-04-24-SCANNER-MODULE-EXTRACTION"
+}

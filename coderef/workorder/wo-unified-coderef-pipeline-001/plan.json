@@ -1,0 +1,118 @@
+{
+  "workorder_id": "WO-UNIFIED-CODEREF-PIPELINE-001",
+  "feature_name": "unified-coderef-pipeline",
+  "created": "2026-04-24T12:30:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Multi-phase work touching public CLI surface, doc-gen scripts, and RAG wiring. Three logically distinct deliverables (A: unified CLI orchestration, B: drift-detector rework, C: doc-gen --project-dir flag) that compose but can ship behind phase boundaries. Not a single atomic change (light) and not a policy-heavy strict WO.",
+  "plan_type_decided_by": "create-workorder@2.1.0",
+  "goal": "Deliver three coordinated coderef-core improvements: (A) a unified CLI that chains scan -> populate -> foundation-docs -> RAG index into one reproducible command; (B) a drift detector that compares .coderef/index.json generatedAt against source file mtimes rather than against a silently stored baseline snapshot; (C) a --project-dir flag on all scripts/doc-gen/ generators so foundation docs can target arbitrary projects rather than the hardcoded PROJECT_ROOT. RAG indexing within the unified pipeline MUST use local-only embeddings (Ollama) and MUST NOT fall back to any cloud provider.",
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "discovery_ref": null,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "RUN", "TEST", "COMMIT", "CHECK", "STOP", "DELETE"],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1 - Baseline and surface inventory",
+      "hard_stop": false,
+      "description": "Capture pre-change baselines for all three surfaces and enumerate the exact touch set.",
+      "tasks": [
+        {"id": "P1-001", "verb": "READ", "description": "READ src/cli/ to inventory existing bin entrypoints (scan, populate, rag-index, rag-search, rag-status, validate-routes, scan-frontend-calls) and confirm shared argv/config conventions.", "touches": ["src/cli/"]},
+        {"id": "P1-002", "verb": "READ", "description": "READ scripts/doc-gen/utils.js and every generate-*.js to locate the hardcoded PROJECT_ROOT pattern and enumerate downstream call sites.", "touches": ["scripts/doc-gen/"]},
+        {"id": "P1-003", "verb": "READ", "description": "READ current drift detector source (report generator for .coderef/reports/drift.json) to document its baseline-comparison algorithm and the bug that keeps driftPercentage at 18 across fresh populate runs.", "touches": [".coderef/reports/drift.json", "src/pipeline/generators/"]},
+        {"id": "P1-004", "verb": "READ", "description": "READ RAG wiring (rag-index, rag-search, rag-status CLIs + embedding-provider modules) to confirm the Ollama integration point and identify any OpenAI/cloud fallback paths that must be removed or guarded.", "touches": ["src/cli/rag-index.js", "src/cli/rag-search.js", "src/rag/"]},
+        {"id": "P1-005", "verb": "WRITE", "description": "WRITE coderef/workorder/unified-coderef-pipeline/P1-BASELINE.md summarizing CLI inventory, doc-gen PROJECT_ROOT usages, drift-detector algorithm, and RAG provider wiring.", "touches": ["coderef/workorder/wo-unified-coderef-pipeline-001/P1-BASELINE.md"]},
+        {"id": "P1-006", "verb": "COMMIT", "description": "COMMIT P1 baseline doc.", "touches": []}
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2 - STUB-C: doc-gen --project-dir flag",
+      "hard_stop": false,
+      "description": "Parameterize scripts/doc-gen/ generators so they accept --project-dir and write outputs under that project's tree, unblocking external-project foundation-doc generation. This is the first deliverable because it unblocks LLOYD-style external verification for later phases.",
+      "tasks": [
+        {"id": "P2-001", "verb": "EDIT", "description": "EDIT scripts/doc-gen/utils.js: replace hardcoded PROJECT_ROOT (derived from __dirname) with a resolveProjectRoot(argv) helper that honors --project-dir and falls back to process.cwd() when the flag is absent.", "touches": ["scripts/doc-gen/utils.js"]},
+        {"id": "P2-002", "verb": "EDIT", "description": "EDIT every scripts/doc-gen/generate-*.js (exports, hotspots, index, relationships, enhance-existing-docs, validate-docs) to accept and forward --project-dir through utils.resolveProjectRoot. Writes must land under {projectRoot}/docs/foundation/ and {projectRoot}/.coderef/ only.", "touches": ["scripts/doc-gen/generate-exports-md.js", "scripts/doc-gen/generate-hotspots-md.js", "scripts/doc-gen/generate-index-md.js", "scripts/doc-gen/generate-relationships-md.js", "scripts/doc-gen/enhance-existing-docs.js", "scripts/doc-gen/validate-docs.js"]},
+        {"id": "P2-003", "verb": "TEST", "description": "TEST end-to-end: run generate-index-md.js --project-dir=<temp-test-project> and confirm zero files are written outside that test project tree.", "touches": []},
+        {"id": "P2-004", "verb": "COMMIT", "description": "COMMIT P2 doc-gen --project-dir support.", "touches": []}
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Phase 3 - STUB-B: drift detector algorithm rework",
+      "hard_stop": false,
+      "description": "Replace the broken baseline-snapshot drift comparison with a mtime-based check that compares .coderef/index.json.generatedAt to current source file mtimes in the index. The buggy detector was the reason create-workorder was forced to bypass its drift>10% fail-fast for this very WO.",
+      "tasks": [
+        {"id": "P3-001", "verb": "READ", "description": "READ the drift generator source to locate the baseline-snapshot comparison path.", "touches": ["src/pipeline/generators/"]},
+        {"id": "P3-002", "verb": "EDIT", "description": "EDIT the drift generator: compute driftPercentage as (files-with-mtime > index.generatedAt) / total-indexed-files. Keep the existing added/deleted/modified output contract; recompute modified using mtime rather than a stored snapshot diff.", "touches": ["src/pipeline/generators/"]},
+        {"id": "P3-003", "verb": "TEST", "description": "TEST: run populate-coderef on current repo, confirm driftPercentage is 0 or near-0 immediately post-scan, then touch one source file and confirm driftPercentage moves proportionally.", "touches": []},
+        {"id": "P3-004", "verb": "EDIT", "description": "EDIT create-workorder bypass note in context.json for this WO so the 'pre_existing_drift: true' flag can be cleared on next WO created after P3 lands.", "touches": ["coderef/workorder/wo-unified-coderef-pipeline-001/context.json"]},
+        {"id": "P3-005", "verb": "COMMIT", "description": "COMMIT P3 drift detector rework.", "touches": []}
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Phase 4 - STUB-A groundwork: local-only RAG embedding guard",
+      "hard_stop": false,
+      "description": "Before wiring RAG into the unified pipeline, harden the embedding provider so local-only (Ollama) is the only supported path. This is a prerequisite for Phase 5.",
+      "tasks": [
+        {"id": "P4-001", "verb": "READ", "description": "READ the embedding provider module(s) to locate any OpenAI/cloud fallback branches or OPENAI_API_KEY reads.", "touches": ["src/rag/"]},
+        {"id": "P4-002", "verb": "EDIT", "description": "EDIT the embedding provider: remove or explicitly throw on any non-Ollama code path. No OPENAI_API_KEY fallback, no silent cloud call. Document the Ollama endpoint expectation (host/port/model) in the provider file header.", "touches": ["src/rag/"]},
+        {"id": "P4-003", "verb": "TEST", "description": "TEST: with OPENAI_API_KEY set and Ollama unreachable, rag-index must fail fast with a clear 'Ollama not reachable' error (no silent cloud substitution).", "touches": []},
+        {"id": "P4-004", "verb": "COMMIT", "description": "COMMIT P4 local-only RAG guard.", "touches": []}
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Phase 5 - STUB-A: unified coderef-pipeline CLI",
+      "hard_stop": false,
+      "description": "Ship a new bin entry that chains scan -> populate -> foundation-docs -> RAG index as one reproducible command. Honors --project-dir (from P2) for the doc-gen leg and uses the local-only Ollama path (from P4) for the RAG leg.",
+      "tasks": [
+        {"id": "P5-001", "verb": "WRITE", "description": "WRITE src/cli/coderef-pipeline.ts implementing a thin orchestrator that invokes scan -> populate -> generate-foundation-docs -> rag-index in order, with per-leg timing, per-leg failure propagation, and a --dry-run flag.", "touches": ["src/cli/coderef-pipeline.ts"]},
+        {"id": "P5-002", "verb": "EDIT", "description": "EDIT package.json to register 'coderef-pipeline' as a new bin entry pointing at dist/src/cli/coderef-pipeline.js, consistent with the existing bin layout.", "touches": ["package.json"]},
+        {"id": "P5-003", "verb": "EDIT", "description": "EDIT tsconfig.cli.json if needed so the new CLI is included in the bin build.", "touches": ["tsconfig.cli.json"]},
+        {"id": "P5-004", "verb": "TEST", "description": "TEST end-to-end: on a fresh scratch clone, run coderef-pipeline --project-dir=<scratch> and confirm (a) .coderef/ populated, (b) docs/foundation/ populated, (c) RAG index built via Ollama only, (d) single-command exit code reflects any sub-leg failure.", "touches": []},
+        {"id": "P5-005", "verb": "COMMIT", "description": "COMMIT P5 unified coderef-pipeline CLI.", "touches": []}
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Phase 6 - Cross-cut verification on external project",
+      "hard_stop": true,
+      "description": "External-project verification gate. Run the full unified pipeline against LLOYD (or another external project) to confirm (a) P2 --project-dir writes nothing into coderef-core, (b) P3 drift detector reports sane values, (c) P4 RAG is Ollama-only, (d) P5 orchestrator chains successfully end-to-end.",
+      "tasks": [
+        {"id": "P6-001", "verb": "RUN", "description": "RUN coderef-pipeline --project-dir=<LLOYD path> end-to-end from a clean .coderef/ state.", "touches": []},
+        {"id": "P6-002", "verb": "CHECK", "description": "CHECK git status in coderef-core after the LLOYD run shows zero untracked or modified files (no pollution).", "touches": []},
+        {"id": "P6-003", "verb": "CHECK", "description": "CHECK LLOYD's .coderef/reports/drift.json reports a plausible driftPercentage (0 immediately after populate, nonzero after an artificial source edit).", "touches": []},
+        {"id": "P6-004", "verb": "CHECK", "description": "CHECK LLOYD's RAG index was built and rag-search returns results without any cloud API calls (with OPENAI_API_KEY unset, still succeeds).", "touches": []},
+        {"id": "P6-005", "verb": "WRITE", "description": "WRITE coderef/workorder/unified-coderef-pipeline/P6-VERIFICATION.md capturing the end-to-end verification output.", "touches": ["coderef/workorder/wo-unified-coderef-pipeline-001/P6-VERIFICATION.md"]},
+        {"id": "P6-006", "verb": "STOP", "description": "STOP at the hard stop for user approval before the final closeout commit.", "touches": []}
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Phase 7 - Docs + closeout",
+      "hard_stop": false,
+      "description": "Update docs/CLI.md with the new unified pipeline entry, final regression pass, close commit.",
+      "tasks": [
+        {"id": "P7-001", "verb": "EDIT", "description": "EDIT docs/CLI.md: add 'coderef-pipeline' section documenting flags, leg order, local-only RAG constraint, and --project-dir behavior.", "touches": ["docs/CLI.md"]},
+        {"id": "P7-002", "verb": "TEST", "description": "TEST: run the repo's full test suite and confirm no regression relative to the P1 baseline.", "touches": []},
+        {"id": "P7-003", "verb": "COMMIT", "description": "COMMIT P7 docs + final regression.", "touches": []}
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 6,
+      "approved": false,
+      "reason": "External-project verification gate. Ship-blocking: confirms no pollution, correct drift math, Ollama-only RAG, and end-to-end orchestration before final closeout."
+    }
+  ],
+  "plan_adjustments_needed": [
+    {
+      "id": "ADJ-001",
+      "description": "Drift fail-fast was bypassed at WO creation (driftPercentage=18 on a freshly-populated repo). Root cause is STUB-B; Phase 3 fixes it. After P3 lands, future /create-workorder invocations should pass drift gate without override.",
+      "applied": false
+    }
+  ]
+}
