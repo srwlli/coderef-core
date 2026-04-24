@@ -35,6 +35,11 @@ import {
   collectFiles,
 } from './scanner-file-discovery.js';
 import { scanSingleFile } from './scanner-file-runner.js';
+import {
+  reportProgress,
+  storeFileCacheEntry,
+  resolveScanLanguages,
+} from './scanner-runtime.js';
 
 // Keep isLineCommented exported on scanner.ts for callers that imported it
 // from here historically.
@@ -435,12 +440,10 @@ export async function scanCurrentElements(
   options: ScanOptions = {}
 ): Promise<ElementData[]> {
   const scanner = new Scanner();
-  const langs = Array.isArray(lang) ? lang : [lang];
-  
+
   // IMP-CORE-057: Declare at function level for cache update access
   let filesToScan: string[] = [];
-  
-  // Default options
+
   const {
     include = undefined,
     exclude: excludeOption = DEFAULT_EXCLUDE_PATTERNS as readonly string[] as string[],
@@ -452,11 +455,8 @@ export async function scanCurrentElements(
     cache = undefined
   } = options;
 
-  // Normalize exclude to always be an array
   const exclude = Array.isArray(excludeOption) ? excludeOption : [excludeOption];
-  
-  // Combine langs from args and options
-  const allLangs = [...new Set([...langs, ...optionLangs])];
+  const allLangs = resolveScanLanguages(lang, optionLangs);
   
   if (verbose) {
     console.log('Scanner config:', {
@@ -604,15 +604,6 @@ export async function scanCurrentElements(
     const totalFiles = filesToScan.length;
     const onProgress = options.onProgress;
 
-    function reportProgress(currentFile: string) {
-      filesProcessed++;
-      if (onProgress) {
-        const elementsFound = scanner.getElements().length;
-        const percentComplete = totalFiles > 0 ? Math.round((filesProcessed / totalFiles) * 100) : 0;
-        onProgress({ currentFile, filesProcessed, totalFiles, elementsFound, percentComplete });
-      }
-    }
-
     // IMP-CORE-077: Process files (sequential mode or fallback from parallel)
     // Skip sequential processing if parallel mode succeeded
     if (!parallelSucceeded) {
@@ -626,17 +617,21 @@ export async function scanCurrentElements(
           includeComments,
         });
 
-        // Fold per-file elements into the shared scanner
         for (const el of result.elements) {
           scanner.addElement(el);
         }
 
-        // Update SCAN_CACHE when the runner produced a cache entry
         if (result.cacheEntry) {
-          SCAN_CACHE.set(file, result.cacheEntry);
+          storeFileCacheEntry(SCAN_CACHE, file, result.cacheEntry);
         }
 
-        reportProgress(file);
+        filesProcessed = reportProgress({
+          currentFile: file,
+          filesProcessed,
+          totalFiles,
+          elementsFound: scanner.getElements().length,
+          onProgress,
+        });
       }
     }
 
