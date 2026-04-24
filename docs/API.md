@@ -247,6 +247,120 @@ interface ScanOptions {
 }
 ```
 
+---
+
+## IncrementalCache
+
+Persistent cache for incremental scanning operations. Maintains element metadata across scan sessions using file modification timestamps.
+
+### Usage
+
+```typescript
+import { IncrementalCache } from '@coderef/core';
+
+const cache = new IncrementalCache({
+  projectRoot: '/my/project',
+  cacheDir: '.coderef/cache'
+});
+
+// Initialize
+await cache.initialize();
+
+// Check which files need scanning
+const { filesToScan, filesSkipped } = await cache.checkFiles([
+  'src/file1.ts',
+  'src/file2.ts'
+]);
+
+// After scanning, save results
+await cache.saveFileResult('src/file1.ts', [
+  { name: 'myFunction', type: 'function', line: 10 }
+]);
+
+// Persist to disk
+await cache.saveCacheToDisk();
+```
+
+### Constructor
+
+```typescript
+new IncrementalCache(options: IncrementalCacheOptions)
+```
+
+**Options:**
+- `projectRoot: string` - Absolute path to project root
+- `cacheDir?: string` - Cache directory relative to project (default: `.coderef/cache`)
+
+### Methods
+
+#### `initialize(): Promise<void>`
+
+Initialize cache, loading existing data from disk if present.
+
+#### `checkFiles(files: string[]): Promise<CheckFilesResult>`
+
+Determine which files need to be scanned based on mtime comparison.
+
+**Returns:**
+```typescript
+{
+  filesToScan: string[];    // Files that need scanning
+  filesSkipped: number;     // Count of unchanged files
+}
+```
+
+#### `saveFileResult(filePath: string, elements: CodeElement[]): Promise<void>`
+
+Save scan results for a file to cache.
+
+#### `loadFileResult(filePath: string): Promise<CodeElement[] | null>`
+
+Load cached elements for a file if available and valid.
+
+#### `saveCacheToDisk(): Promise<void>`
+
+Persist all cache data to disk.
+
+#### `clear(): Promise<void>`
+
+Clear all cached data (memory and disk).
+
+#### `getStatistics(): Promise<CacheStatistics>`
+
+Get cache statistics including size and hit rate.
+
+---
+
+## SCAN_CACHE (In-Memory LRU)
+
+Global in-memory LRU cache for rapid repeated scans. Used internally by `scanCurrentElements()` to avoid re-parsing unchanged files within the same process.
+
+### Characteristics
+
+- **Capacity:** 100 entries
+- **Key:** Normalized absolute file path
+- **Value:** `{ mtimeMs: number, elements: CodeElement[] }`
+- **Eviction:** LRU (Least Recently Used)
+
+### Usage
+
+```typescript
+import { SCAN_CACHE } from '@coderef/core';
+
+// Check if file is in cache
+const cached = SCAN_CACHE.get('/project/src/file.ts');
+if (cached && cached.mtimeMs === currentMtime) {
+  return cached.elements; // Use cached result
+}
+
+// Store in cache after scanning
+SCAN_CACHE.set(filePath, { mtimeMs, elements });
+```
+
+### Note
+
+`SCAN_CACHE` is primarily for internal use. For persistent caching across sessions, use `IncrementalCache`.
+
 **ElementData Interface** (Extended with Phase 4 fields):
 ```typescript
 interface ElementData {
