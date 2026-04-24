@@ -186,10 +186,10 @@ describe('P0-002 Characterization: Discovery & Patterns', () => {
     });
 
     it('detects elements matched by a user-supplied custom regex', async () => {
-      writeFile('app.ts', `
-        // @api-route /users
-        export function fetchUsers() {}
-      `);
+      writeFile(
+        'app.ts',
+        `export const ROUTE_MARKER = "@api-route /users";\nexport function fetchUsers() {}\n`
+      );
 
       const elements = await scanCurrentElements(tempDir, ['ts'], {
         recursive: false,

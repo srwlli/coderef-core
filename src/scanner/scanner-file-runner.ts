@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { ElementData, ScanOptions } from '../types/types.js';
 import type { ScanCacheEntry } from './lru-cache.js';
-import { PatternConfig, LANGUAGE_PATTERNS, sortPatternsByPriority } from './scanner-patterns.js';
+import { PatternConfig, sortPatternsByPriority } from './scanner-patterns.js';
 import { isEntirelyCommented } from './scanner-comments.js';
 
 /**
@@ -64,6 +64,11 @@ export interface FileRunnerContext {
   };
   verbose: boolean;
   includeComments: boolean;
+  /**
+   * Per-call resolved pattern map. P6: orchestrator builds this once via
+   * buildResolvedPatternMap() so no scan mutates shared defaults.
+   */
+  resolvedPatterns: Record<string, PatternConfig[]>;
 }
 
 /**
@@ -96,7 +101,10 @@ export async function scanSingleFile(
 
     const content = fs.readFileSync(file, 'utf-8');
     let currentLang = path.extname(file).substring(1);
+    // Remap extensions to their canonical language key — discovery already
+    // does this for gating, the runner does it for pattern lookup.
     if (currentLang === 'tsx') currentLang = 'ts';
+    else if (currentLang === 'jsx') currentLang = 'js';
 
     const fallbackEnabled = options.fallbackToRegex !== false;
     const scanner = ctx.makeScanner();
@@ -222,7 +230,7 @@ export async function scanSingleFile(
     }
 
     // ── Regex (default / fallback) ──────────────────────────────────────────
-    const patterns = sortPatternsByPriority(LANGUAGE_PATTERNS[currentLang] || []);
+    const patterns = sortPatternsByPriority(ctx.resolvedPatterns[currentLang] || []);
 
     if (patterns.length === 0) {
       if (ctx.verbose) console.log(`No patterns found for language: ${currentLang}`);

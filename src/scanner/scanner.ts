@@ -39,6 +39,7 @@ import {
   reportProgress,
   storeFileCacheEntry,
   resolveScanLanguages,
+  buildResolvedPatternMap,
 } from './scanner-runtime.js';
 
 // Keep isLineCommented exported on scanner.ts for callers that imported it
@@ -475,28 +476,13 @@ export async function scanCurrentElements(
     console.log(`Resolved directory: ${resolvedDir}`);
   }
   
-  // Validate languages
+  // P6: build a per-call resolved pattern map without mutating shared defaults
   for (const currentLang of allLangs) {
     if (!LANGUAGE_PATTERNS[currentLang] && !DEFAULT_SUPPORTED_LANGS.includes(currentLang)) {
       console.warn(`Warning: Language '${currentLang}' is not officially supported. Using generic patterns.`);
-      LANGUAGE_PATTERNS[currentLang] = [
-        { type: 'function', pattern: /function\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
-        { type: 'class', pattern: /class\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 }
-      ];
     }
   }
-  
-  // Add custom patterns
-  for (const customPattern of customPatterns) {
-    if (!LANGUAGE_PATTERNS[customPattern.lang]) {
-      LANGUAGE_PATTERNS[customPattern.lang] = [];
-    }
-    LANGUAGE_PATTERNS[customPattern.lang].push({
-      type: customPattern.type,
-      pattern: customPattern.pattern,
-      nameGroup: customPattern.nameGroup
-    });
-  }
+  const resolvedPatterns = buildResolvedPatternMap(allLangs, customPatterns);
   
   try {
     // IMP-CORE-076: Collect all files from the full subtree first
@@ -615,6 +601,7 @@ export async function scanCurrentElements(
           makeScanner,
           verbose,
           includeComments,
+          resolvedPatterns,
         });
 
         for (const el of result.elements) {
