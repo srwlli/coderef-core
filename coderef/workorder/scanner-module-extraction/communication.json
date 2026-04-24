@@ -3,8 +3,16 @@
   "feature_name": "scanner-module-extraction",
   "status": "plan_created",
   "created": "2026-04-23T18:50:26.1633207-04:00",
-  "last_updated": "2026-04-23T18:50:26.1633207-04:00",
+  "last_updated": "2026-04-23T23:58:00Z",
   "execution_phase": "phase_0",
+  "vcs": {
+    "base_branch": "main",
+    "working_branch": "wo/scanner-module-extraction",
+    "worktree_path": "C:/Users/willh/Desktop/CODEREF/coderef-core-scanner-refactor",
+    "merge_strategy": "merge to main at P9 hard stop after review",
+    "commit_cadence": "one commit per phase, subject prefixed with phase id (e.g., 'P0: characterization tests')",
+    "cleanup": "git worktree remove ../coderef-core-scanner-refactor after merge"
+  },
   "handoff_protocol": {
     "must_read_first": [
       "context.json - scope, constraints, and success criteria",
@@ -127,6 +135,11 @@
       "event": "plan_type_overridden",
       "from": "strict",
       "to": "phased"
+    },
+    {
+      "timestamp": "2026-04-23T23:58:00Z",
+      "action": "vcs_configured",
+      "details": "Created working branch wo/scanner-module-extraction and worktree at ../coderef-core-scanner-refactor. All phase work will commit to the branch; merge to main after P9 hard stop review."
     }
   ]
 }
