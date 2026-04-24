@@ -11,294 +11,31 @@ import { createScannerCache, type ScanCacheEntry } from './lru-cache.js';
 import { IncrementalCache } from '../cache/incremental-cache.js';
 import {
   extractRouteMetadata,
-  parseExpressRoute,
   parseNextJsRoute,
   parseNextJsPagesRoute,
   parseSvelteKitRoute,
   parseNuxtRoute,
   parseRemixRoute,
-  parseFlaskRoute,
-  parseFastAPIRoute
 } from '../analyzer/route-parsers.js';
-import { parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls } from '../analyzer/frontend-call-parsers.js';
 import { frameworkRegistry, type FrameworkDetectionResult } from './framework-registry.js';
 import './register-frameworks.js'; // Auto-register default frameworks
+import {
+  PatternConfig,
+  LANGUAGE_PATTERNS,
+  DEFAULT_SUPPORTED_LANGS,
+  DEFAULT_EXCLUDE_PATTERNS,
+  TYPE_PRIORITY,
+  sortPatternsByPriority,
+} from './scanner-patterns.js';
 
-/**
- * Pattern configuration with optional route metadata extraction
- * WO-API-ROUTE-DETECTION-001: Added extractMetadata callback
- * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Added extractFrontendCall callback
- */
-export interface PatternConfig {
-  type: ElementData['type'];
-  pattern: RegExp;
-  nameGroup: number;
-  /** Optional callback to extract route metadata from matched code */
-  extractMetadata?: (match: RegExpExecArray, content: string, line: number, file: string, fileContent: string) => RouteMetadata | null;
-  /** Optional callback to extract frontend API call metadata from matched code */
-  extractFrontendCall?: (match: RegExpExecArray, content: string, line: number, file: string, fileContent: string) => import('../analyzer/frontend-call-parsers.js').FrontendCall | null;
-}
-
-/**
- * IMP-CORE-002: Base patterns for TypeScript/JavaScript variants
- * Shared pattern definitions for ts, js, tsx, jsx to prevent code duplication
- * and ensure pattern consistency across all JS-family languages.
- */
-const BASE_JS_PATTERNS: PatternConfig[] = [
-  // Function declarations
-  { type: 'function', pattern: /(?:export\s+)?(?:async\s+)?function\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
-  // Arrow functions (const/let/var)
-  { type: 'function', pattern: /(?:export\s+)?(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[a-zA-Z0-9_$]+)\s*=>/g, nameGroup: 1 },
-  // Class declarations
-  { type: 'class', pattern: /(?:export\s+)?class\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
-  // Constants (ALL_CAPS identifiers) - MUST come before component pattern
-  { type: 'constant', pattern: /(?:export\s+)?(?:const|let|var)\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 },
-  // React components (function style)
-  { type: 'component', pattern: /(?:export\s+)?(?:function|const)\s+([A-Z][a-zA-Z0-9_$]*)\s*(?:=|\()/g, nameGroup: 1 },
-  // React hooks
-  { type: 'hook', pattern: /(?:export\s+)?(?:function|const)\s+(use[A-Z][a-zA-Z0-9_$]*)/g, nameGroup: 1 },
-  // Class methods
-  { type: 'method', pattern: /(?:public|private|protected|async)?\s*([a-zA-Z0-9_$]+)\s*\([^)]*\)\s*{/g, nameGroup: 1 },
-  // WO-API-ROUTE-DETECTION-001: Express route patterns
-  {
-    type: 'function',
-    pattern: /(\w+)\.(get|post|put|delete|patch)\(['"]([^'"]+)['"]/g,
-    nameGroup: 1,
-    extractMetadata: (match, content, line, file, fileContent) => {
-      return parseExpressRoute(content, line, fileContent);
-    }
-  },
-  // WO-ROUTE-VALIDATION-ENHANCEMENT-001: Frontend API call patterns
-  // fetch() API calls
-  {
-    type: 'function',
-    pattern: /fetch\s*\(/g,
-    nameGroup: 0,
-    extractFrontendCall: (match, content, line, file, fileContent) => {
-      const calls = parseFetchCalls(fileContent, file);
-      return calls.find(c => c.line === line) || null;
-    }
-  },
-  // axios API calls
-  {
-    type: 'function',
-    pattern: /axios\.(get|post|put|delete|patch)\s*\(/g,
-    nameGroup: 1,
-    extractFrontendCall: (match, content, line, file, fileContent) => {
-      const calls = parseAxiosCalls(fileContent, file);
-      return calls.find(c => c.line === line) || null;
-    }
-  },
-  // React Query hooks
-  {
-    type: 'hook',
-    pattern: /(useQuery|useMutation)\s*\(/g,
-    nameGroup: 1,
-    extractFrontendCall: (match, content, line, file, fileContent) => {
-      const calls = parseReactQueryCalls(fileContent, file);
-      return calls.find(c => c.line === line) || null;
-    }
-  },
-  // Custom API clients (api.*, apiClient.*, client.*, httpClient.*)
-  {
-    type: 'function',
-    pattern: /(api|apiClient|client|httpClient)\.(get|post|put|delete|patch)\s*\(/g,
-    nameGroup: 1,
-    extractFrontendCall: (match, content, line, file, fileContent) => {
-      const calls = parseCustomApiCalls(fileContent, file);
-      return calls.find(c => c.line === line) || null;
-    }
-  }
-];
-
-/**
- * Pattern configurations by language
- * IMP-CORE-002: TS/JS/TSX/JSX now reference BASE_JS_PATTERNS to eliminate duplication
- */
-export const LANGUAGE_PATTERNS: Record<string, Array<PatternConfig>> = {
-  // TypeScript/JavaScript patterns (shared base)
-  ts: BASE_JS_PATTERNS,
-  js: BASE_JS_PATTERNS,
-  tsx: BASE_JS_PATTERNS,
-  jsx: BASE_JS_PATTERNS,
-  // IMP-CORE-006: Svelte patterns (.svelte files)
-  svelte: [
-    // Svelte component script exports
-    { type: 'component', pattern: /export\s+(?:default\s+)?(?:function|const|let|var)?\s*([A-Z][a-zA-Z0-9_$]*)/g, nameGroup: 1 },
-    // Svelte reactive declarations ($:)
-    { type: 'function', pattern: /\$:\s*(\w+)\s*=/g, nameGroup: 1 },
-    // Svelte lifecycle functions (onMount, beforeUpdate, afterUpdate, onDestroy)
-    { type: 'function', pattern: /onMount\s*\(|beforeUpdate\s*\(|afterUpdate\s*\(|onDestroy\s*\(/g, nameGroup: 0 },
-    // Svelte reactive statements with function calls
-    { type: 'function', pattern: /\$:\s*\{[^}]*\}/g, nameGroup: 0 },
-    // Svelte store subscriptions ($store)
-    { type: 'function', pattern: /\$([a-zA-Z_][a-zA-Z0-9_$]*)\s*[:=]/g, nameGroup: 1 },
-    // Svelte props (export let propName)
-    { type: 'function', pattern: /export\s+let\s+([a-zA-Z_][a-zA-Z0-9_$]*)/g, nameGroup: 1 },
-    // Svelte action functions (use:action)
-    { type: 'function', pattern: /function\s+([a-zA-Z_][a-zA-Z0-9_$]*)\s*\([^)]*\)\s*\{[^}]*(?:update|destroy)/g, nameGroup: 1 },
-    // Svelte transition functions
-    { type: 'function', pattern: /(?:transition|in|out):\s*([a-zA-Z_][a-zA-Z0-9_$]*)/g, nameGroup: 1 },
-  ],
-  // IMP-CORE-006: Vue patterns (.vue files - script section)
-  vue: [
-    // Vue 3 Composition API - setup function
-    { type: 'function', pattern: /setup\s*\([^)]*\)\s*\{/g, nameGroup: 0 },
-    // Vue composables (useXxx functions)
-    { type: 'hook', pattern: /(?:const|let|var)\s+(use[A-Z][a-zA-Z0-9_$]*)\s*=/g, nameGroup: 1 },
-    // Vue ref/reactive declarations
-    { type: 'function', pattern: /(?:const|let|var)\s+([a-zA-Z_][a-zA-Z0-9_$]*)\s*=\s*(?:ref|reactive|computed)\s*\(/g, nameGroup: 1 },
-    // Vue methods/computed in Options API
-    { type: 'method', pattern: /(?:methods|computed):\s*\{[^}]*(?:[a-zA-Z_][a-zA-Z0-9_$]*):/g, nameGroup: 0 },
-    // Vue lifecycle hooks (onMounted, onUpdated, etc.)
-    { type: 'hook', pattern: /(onMounted|onUpdated|onUnmounted|onBeforeMount|onBeforeUpdate|onErrorCaptured|onRenderTracked|onRenderTriggered)\s*\(/g, nameGroup: 1 },
-    // Vue component imports (import Xxx from './Xxx.vue')
-    { type: 'component', pattern: /import\s+([A-Z][a-zA-Z0-9_$]*)\s+from\s+['"][^'"]*\.vue['"]/g, nameGroup: 1 },
-    // Vue defineProps/defineEmits (Vue 3)
-    { type: 'function', pattern: /(defineProps|defineEmits|defineExpose|defineOptions|defineSlots)\s*\(/g, nameGroup: 1 },
-    // Vue provide/inject
-    { type: 'function', pattern: /(provide|inject)\s*\(/g, nameGroup: 1 },
-    // Vue watch/watchEffect
-    { type: 'function', pattern: /(watch|watchEffect)\s*\(/g, nameGroup: 1 },
-  ],
-  // Python patterns (expanded for +30% coverage)
-  py: [
-    // Regular functions
-    { type: 'function', pattern: /def\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
-    // Async functions
-    { type: 'function', pattern: /async\s+def\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
-    // Classes
-    { type: 'class', pattern: /class\s+([a-zA-Z0-9_]+)\s*(?:\(|:)/g, nameGroup: 1 },
-    // Instance methods
-    { type: 'method', pattern: /\s+def\s+([a-zA-Z0-9_]+)\s*\(self/g, nameGroup: 1 },
-    // Class methods
-    { type: 'method', pattern: /@classmethod\s+def\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Static methods
-    { type: 'method', pattern: /@staticmethod\s+def\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Properties
-    { type: 'method', pattern: /@property\s+def\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Decorators (NEW)
-    { type: 'function', pattern: /@([a-zA-Z0-9_]+)(?:\(|$)/gm, nameGroup: 1 },
-    // Type hints - function signatures (NEW)
-    { type: 'function', pattern: /def\s+([a-zA-Z0-9_]+)\s*\([^)]*\)\s*->\s*[a-zA-Z0-9_\[\]]+:/g, nameGroup: 1 },
-    // Async context managers (NEW)
-    { type: 'method', pattern: /async\s+def\s+__(aenter|aexit)__/g, nameGroup: 1 },
-
-    // WO-API-ROUTE-DETECTION-001: Flask route patterns
-    // Flask: @app.route('/path', methods=['GET']) or @bp.route('/path')
-    {
-      type: 'function',
-      pattern: /@(\w+)\.route\(/g,
-      nameGroup: 1,
-      extractMetadata: (match, content, line, file) => {
-        return parseFlaskRoute(content, line);
-      }
-    },
-
-    // WO-API-ROUTE-DETECTION-001: FastAPI route patterns
-    // FastAPI: @app.get('/path'), @app.post('/path'), etc.
-    {
-      type: 'function',
-      pattern: /@app\.(get|post|put|delete|patch)\(/g,
-      nameGroup: 1,
-      extractMetadata: (match, content, line, file) => {
-        return parseFastAPIRoute(content, line);
-      }
-    }
-  ],
-  // Go patterns
-  go: [
-    // Function declarations: func FunctionName(...) {...}
-    { type: 'function', pattern: /func\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
-    // Method declarations: func (receiver) MethodName(...) {...}
-    { type: 'method', pattern: /func\s+\([^)]+\)\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
-    // Struct declarations: type StructName struct {...}
-    { type: 'class', pattern: /type\s+([a-zA-Z0-9_]+)\s+struct\s*{/g, nameGroup: 1 },
-    // Interface declarations: type InterfaceName interface {...}
-    { type: 'class', pattern: /type\s+([a-zA-Z0-9_]+)\s+interface\s*{/g, nameGroup: 1 },
-    // Constants: const ConstName = ...
-    { type: 'constant', pattern: /const\s+([A-Z][a-zA-Z0-9_]*)\s*=/g, nameGroup: 1 }
-  ],
-  // Rust patterns
-  rs: [
-    // Function declarations: fn function_name(...) {...} or pub fn function_name(...)
-    { type: 'function', pattern: /(?:pub\s+)?fn\s+([a-zA-Z0-9_]+)\s*(?:<[^>]*>)?\s*\(/g, nameGroup: 1 },
-    // Struct declarations: struct StructName {...} or pub struct StructName
-    { type: 'class', pattern: /(?:pub\s+)?struct\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Enum declarations: enum EnumName {...} or pub enum EnumName
-    { type: 'class', pattern: /(?:pub\s+)?enum\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Trait declarations: trait TraitName {...} or pub trait TraitName
-    { type: 'class', pattern: /(?:pub\s+)?trait\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Impl blocks: impl StructName {...}
-    { type: 'method', pattern: /impl\s+(?:[a-zA-Z0-9_]+\s+for\s+)?([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Constants: const CONST_NAME: Type = ...
-    { type: 'constant', pattern: /const\s+([A-Z][A-Z0-9_]*)\s*:/g, nameGroup: 1 }
-  ],
-  // Java patterns
-  java: [
-    // Class declarations: public class ClassName, class ClassName
-    { type: 'class', pattern: /(?:public\s+|private\s+|protected\s+)?class\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Interface declarations
-    { type: 'class', pattern: /(?:public\s+)?interface\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Enum declarations
-    { type: 'class', pattern: /(?:public\s+)?enum\s+([a-zA-Z0-9_]+)/g, nameGroup: 1 },
-    // Method declarations (simplified - catches most methods)
-    { type: 'method', pattern: /(?:public|private|protected)\s+(?:static\s+)?(?:\w+)\s+([a-zA-Z0-9_]+)\s*\(/g, nameGroup: 1 },
-    // Constants: public static final TYPE CONSTANT_NAME
-    { type: 'constant', pattern: /(?:public\s+)?static\s+final\s+\w+\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 }
-  ],
-  // C++ patterns
-  cpp: [
-    // Class declarations: class ClassName
-    { type: 'class', pattern: /class\s+([a-zA-Z0-9_]+)\s*(?:[:{]|$)/g, nameGroup: 1 },
-    // Struct declarations: struct StructName
-    { type: 'class', pattern: /struct\s+([a-zA-Z0-9_]+)\s*(?:[:{]|$)/g, nameGroup: 1 },
-    // Function declarations: ReturnType functionName(...)
-    { type: 'function', pattern: /(?:^|\s)(?:inline\s+|static\s+|virtual\s+)*\w+\s+([a-zA-Z0-9_]+)\s*\([^)]*\)\s*(?:const\s*)?[{;]/g, nameGroup: 1 },
-    // Method declarations (within class - simplified)
-    { type: 'method', pattern: /^\s+(?:virtual\s+|static\s+|inline\s+)*\w+\s+([a-zA-Z0-9_]+)\s*\([^)]*\)/gm, nameGroup: 1 },
-    // Constants: const Type CONSTANT_NAME or #define CONSTANT_NAME
-    { type: 'constant', pattern: /#define\s+([A-Z][A-Z0-9_]*)/g, nameGroup: 1 },
-    { type: 'constant', pattern: /const\s+\w+\s+([A-Z][A-Z0-9_]*)\s*=/g, nameGroup: 1 }
-  ],
-  // C patterns (similar to C++)
-  c: [
-    // Struct declarations
-    { type: 'class', pattern: /struct\s+([a-zA-Z0-9_]+)\s*(?:[{]|$)/g, nameGroup: 1 },
-    // Function declarations
-    { type: 'function', pattern: /(?:^|\s)(?:static\s+|inline\s+)*\w+\s+([a-zA-Z0-9_]+)\s*\([^)]*\)\s*[{;]/g, nameGroup: 1 },
-    // Constants: #define CONSTANT_NAME
-    { type: 'constant', pattern: /#define\s+([A-Z][A-Z0-9_]*)/g, nameGroup: 1 }
-  ]
+// Re-export patterns module so existing callers (e.g. scanner-worker,
+// __tests__/venv-exclusion, dashboard packages) keep working through scanner.ts.
+export {
+  PatternConfig,
+  LANGUAGE_PATTERNS,
+  DEFAULT_EXCLUDE_PATTERNS,
 };
 
-// Default supported languages
-// IMP-CORE-006: Added svelte, vue for component framework detection
-const DEFAULT_SUPPORTED_LANGS = ['ts', 'js', 'tsx', 'jsx', 'svelte', 'vue', 'py', 'go', 'rs', 'java', 'cpp', 'c'];
-
-/**
- * Default exclusion patterns to prevent scanning:
- * - Dependencies: node_modules
- * - Build outputs: dist, build, .next, .nuxt
- * - Python virtual environments: .venv, venv, env, __pycache__
- * - Version control: .git
- */
-export const DEFAULT_EXCLUDE_PATTERNS = [
-  '**/node_modules/**',
-  '**/dist/**',
-  '**/build/**',
-  '**/.venv/**',
-  '**/venv/**',
-  '**/env/**',
-  '**/__pycache__/**',
-  '**/.git/**',
-  '**/.next/**',
-  '**/.nuxt/**',
-  '**/archived/**',
-  '**/tmp/**',
-  '**/temp/**',
-  '**/backup/**'
-] as const;
 
 /**
  * PHASE 3: LRU Cache with Memory Cap
@@ -568,48 +305,6 @@ class Scanner {
 }
 
 // Export the Scanner class
-export { Scanner };
-
-/**
- * Type priority for deduplication (higher priority = more specific type)
- * When the same element is detected with multiple types, keep the highest priority
- *
- * PERFORMANCE NOTE: Patterns are automatically sorted by this priority to enable
- * short-circuit matching. Most specific patterns execute first, reducing redundant
- * regex operations by ~15% on average.
- *
- * PHASE 1: AST Integration - Added priorities for interface, type, decorator, property
- */
-const TYPE_PRIORITY: Record<ElementData['type'], number> = {
-  'decorator': 8,   // Most specific - Decorators (@Component, @Injectable)
-  'interface': 7,   // TypeScript interfaces
-  'type': 7,        // TypeScript type aliases (same priority as interface)
-  'constant': 6,    // ALL_CAPS constants
-  'property': 5,    // Class properties (same priority as component)
-  'component': 5,   // React components (PascalCase functions)
-  'hook': 4,        // React hooks (use* functions)
-  'class': 3,       // Class declarations
-  'function': 2,    // Generic functions (higher than method to preserve AST accuracy)
-  'method': 1,      // Class methods (lower priority - regex pattern is too broad)
-  'unknown': 0      // Fallback
-};
-
-/**
- * Sorts patterns by TYPE_PRIORITY (highest to lowest) for optimal performance.
- * Most specific patterns execute first, enabling better short-circuit behavior.
- *
- * @param patterns Array of pattern configurations
- * @returns Sorted array with highest priority patterns first
- */
-function sortPatternsByPriority(
-  patterns: Array<{ type: ElementData['type'], pattern: RegExp, nameGroup: number }>
-): Array<{ type: ElementData['type'], pattern: RegExp, nameGroup: number }> {
-  return [...patterns].sort((a, b) => {
-    const priorityA = TYPE_PRIORITY[a.type] || 0;
-    const priorityB = TYPE_PRIORITY[b.type] || 0;
-    return priorityB - priorityA; // Descending order (highest priority first)
-  });
-}
 
 /**
  * Deduplicates elements by keeping only the highest priority type for each unique (name, line, file) tuple
