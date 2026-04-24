@@ -1,0 +1,71 @@
+{
+  "feature_name": "docs-cleanup",
+  "description": "Clean up stale documentation in docs/ directory. Fix outdated CLI command references, remove deprecated schema fields, consolidate duplicated content, and update all package references from @coderef/core to local/dashboard paths. Address all issues identified in AUDIT-REPORT.md.",
+  "goal": "Refresh all documentation to reflect current codebase state, eliminate stale content, and ensure accurate CLI/API references",
+  "requirements": [
+    "Fix CLI command references: npx coderef scan → npx coderef-scan",
+    "Remove deprecated workerPoolSize from SCHEMA.md",
+    "Update README.md with all 8 CLI commands",
+    "Remove @coderef/core package references (use local build instead)",
+    "Consolidate 3 MIGRATION*.md files into single MIGRATION.md",
+    "Merge ROUTE-VALIDATION.md and ROUTE-DETECTION.md into ROUTE.md",
+    "Update ARCHITECTURE.md version/date",
+    "Update API.md with missing exports (IncrementalCache, ScannerRegistry)",
+    "Verify all code examples compile and work",
+    "Remove completed workorder references from user-facing docs"
+  ],
+  "constraints": [
+    "No references to @coderef/core npm package (not yet published)",
+    "Use local build paths: npm run build:cli && node dist/src/cli/index.js",
+    "Keep ARCHITECTURE.md as source of truth for diagrams",
+    "Preserve all valid technical content during consolidation"
+  ],
+  "success_criteria": {
+    "functional": [
+      "All CLI commands use correct syntax (coderef-scan, not 'coderef scan')",
+      "No deprecated fields in SCHEMA.md",
+      "No @coderef/core references in docs",
+      "README.md lists all 8 CLI commands with examples",
+      "Consolidated docs maintain all original content"
+    ],
+    "quality": [
+      "All markdown lint warnings resolved",
+      "All code examples tested and working",
+      "Cross-references between docs are valid"
+    ]
+  },
+  "files_to_modify": [
+    "docs/README.md",
+    "docs/SCHEMA.md",
+    "docs/API.md",
+    "docs/ARCHITECTURE.md",
+    "docs/ROUTE-VALIDATION.md",
+    "docs/ROUTE-DETECTION.md",
+    "docs/MIGRATION-VALIDATION.md",
+    "docs/MIGRATION-VALIDATION-SPEC.md",
+    "docs/MIGRATION-VALIDATION-QUICKREF.md",
+    "docs/AGENT-WORKFLOW-GUIDE.md",
+    "docs/FRONTEND-CALL-DETECTION.md"
+  ],
+  "files_to_create": [
+    "docs/ROUTE.md",
+    "docs/MIGRATION.md",
+    "docs/SCANNER.md",
+    "docs/CACHE.md"
+  ],
+  "files_to_delete": [
+    "docs/ROUTE-VALIDATION.md (after merging to ROUTE.md)",
+    "docs/ROUTE-DETECTION.md (after merging to ROUTE.md)",
+    "docs/MIGRATION-VALIDATION.md (after merging to MIGRATION.md)",
+    "docs/MIGRATION-VALIDATION-SPEC.md (after merging to MIGRATION.md)",
+    "docs/MIGRATION-VALIDATION-QUICKREF.md (after merging to MIGRATION.md)"
+  ],
+  "metadata": {
+    "workorder_id": "WO-DOCS-CLEANUP-001",
+    "created_at": "2026-04-24T02:00:00Z",
+    "priority": "high",
+    "category": "documentation",
+    "estimated_hours": 12,
+    "status": "ready"
+  }
+}

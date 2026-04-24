@@ -1,0 +1,28 @@
+{
+  "workorder_id": "WO-DOCS-CLEANUP-001",
+  "feature_name": "docs-cleanup",
+  "agent_assignment": {
+    "agent_number": 1,
+    "assigned_at": "2026-04-24T02:00:00Z",
+    "status": "ready"
+  },
+  "current_phase": "phase_0",
+  "must_read_first": [
+    "context.json",
+    "plan.json",
+    "docs/AUDIT-REPORT.md"
+  ],
+  "allowed_files": [
+    "docs/*.md"
+  ],
+  "forbidden_files": [
+    "src/**/*.ts",
+    "package.json",
+    "tsconfig.json"
+  ],
+  "success_criteria": {
+    "primary": "All CLI references use correct syntax, no @coderef/core references remain",
+    "secondary": "Consolidated docs maintain all content, new docs created"
+  },
+  "notes": "Phase 0 is critical: Fix README.md CLI section first as it's the entry point. Use local build paths (npm run build:cli) not npm package. Test all CLI examples actually work."
+}

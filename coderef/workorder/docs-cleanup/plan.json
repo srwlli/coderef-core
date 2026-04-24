@@ -1,0 +1,216 @@
+{
+  "workorder_id": "WO-DOCS-CLEANUP-001",
+  "feature_name": "docs-cleanup",
+  "title": "Clean up stale documentation and fix CLI references",
+  "description": "Refresh all documentation to reflect current codebase state. Fix outdated CLI commands, remove deprecated schema fields, consolidate duplicated content, eliminate @coderef/core package references.",
+  "status": "ready",
+  "phases": [
+    {
+      "id": "phase_0",
+      "title": "Fix Critical References",
+      "description": "Update README.md and fix CLI command references across all docs",
+      "tasks": [
+        {
+          "id": "DOC-001",
+          "title": "Update README.md CLI section",
+          "status": "pending",
+          "acceptance_criteria": [
+            "List all 8 CLI commands (coderef-scan, coderef-populate, coderef-rag-index, etc.)",
+            "Use correct command syntax (npx coderef-scan, not 'npx coderef scan')",
+            "Replace @coderef/core with local build instructions",
+            "Add installation via git clone + npm install + npm run build:cli",
+            "Test all examples work"
+          ]
+        },
+        {
+          "id": "DOC-002",
+          "title": "Fix CLI references in ROUTE-VALIDATION.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Replace 'npx coderef scan' with 'npx coderef-scan'",
+            "Replace 'npx validate-routes --project-dir' with correct syntax",
+            "Remove completed workorder ID from header",
+            "Verify all bash examples are correct"
+          ]
+        },
+        {
+          "id": "DOC-003",
+          "title": "Fix CLI references in ROUTE-DETECTION.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Fix all CLI command references",
+            "Remove @coderef/core references",
+            "Update to local build paths"
+          ]
+        },
+        {
+          "id": "DOC-004",
+          "title": "Fix CLI references in FRONTEND-CALL-DETECTION.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Fix scan-frontend-calls command examples",
+            "Remove @coderef/core references"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase_1",
+      "title": "Remove Deprecated Content",
+      "description": "Clean up deprecated schema fields and outdated architecture references",
+      "tasks": [
+        {
+          "id": "DOC-005",
+          "title": "Remove workerPoolSize from SCHEMA.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Remove workerPoolSize field from ScanOptions schema",
+            "Verify no other deprecated fields remain",
+            "Check all schema examples are current"
+          ]
+        },
+        {
+          "id": "DOC-006",
+          "title": "Update ARCHITECTURE.md version and date",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Update version to current (check package.json)",
+            "Update date to 2026-04-24",
+            "Verify architecture diagram still accurate"
+          ]
+        },
+        {
+          "id": "DOC-007",
+          "title": "Update API.md with missing exports",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Add IncrementalCache class documentation",
+            "Add ScannerRegistry class documentation",
+            "Add updated scanCurrentElements signature",
+            "Verify all exports in src/index.ts are documented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase_2",
+      "title": "Consolidate Duplicated Content",
+      "description": "Merge related docs to eliminate duplication",
+      "tasks": [
+        {
+          "id": "DOC-008",
+          "title": "Create consolidated ROUTE.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Merge ROUTE-VALIDATION.md content",
+            "Merge ROUTE-DETECTION.md content",
+            "Organize into sections: Detection, Validation, Examples",
+            "Preserve all technical details",
+            "Update internal cross-references"
+          ]
+        },
+        {
+          "id": "DOC-009",
+          "title": "Create consolidated MIGRATION.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Merge MIGRATION-VALIDATION.md content",
+            "Merge MIGRATION-VALIDATION-SPEC.md content",
+            "Merge MIGRATION-VALIDATION-QUICKREF.md content",
+            "Organize into: Overview, Spec, Quick Reference sections",
+            "Preserve all technical content"
+          ]
+        },
+        {
+          "id": "DOC-010",
+          "title": "Update AGENT-WORKFLOW-GUIDE.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Remove duplicate installation instructions",
+            "Link to CLI.md instead of duplicating",
+            "Update for any agent-runtime changes",
+            "Fix @coderef/core references"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase_3",
+      "title": "Create Missing Documentation",
+      "description": "Add docs for major systems lacking coverage",
+      "tasks": [
+        {
+          "id": "DOC-011",
+          "title": "Create SCANNER.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Document scanner architecture",
+            "Explain scanCurrentElements() API",
+            "Document IncrementalCache usage",
+            "Explain parallel vs sequential modes",
+            "Link to CLI.md for command usage"
+          ]
+        },
+        {
+          "id": "DOC-012",
+          "title": "Create CACHE.md",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Document IncrementalCache class",
+            "Explain cache file format",
+            "Document SCAN_CACHE (in-memory LRU)",
+            "Explain mtime comparison logic",
+            "Provide cache troubleshooting guide"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "phase_4",
+      "title": "Cleanup and Verify",
+      "description": "Delete old files and verify all links work",
+      "tasks": [
+        {
+          "id": "DOC-013",
+          "title": "Delete superseded files",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Delete ROUTE-VALIDATION.md",
+            "Delete ROUTE-DETECTION.md",
+            "Delete MIGRATION-VALIDATION.md",
+            "Delete MIGRATION-VALIDATION-SPEC.md",
+            "Delete MIGRATION-VALIDATION-QUICKREF.md"
+          ]
+        },
+        {
+          "id": "DOC-014",
+          "title": "Verify all cross-references",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Check all internal doc links are valid",
+            "Verify no broken #section references",
+            "Ensure CLI.md is linked from README.md"
+          ]
+        },
+        {
+          "id": "DOC-015",
+          "title": "Final review and commit",
+          "status": "pending",
+          "acceptance_criteria": [
+            "Run markdown lint on all docs",
+            "Test all CLI examples",
+            "Commit with descriptive message",
+            "Update AUDIT-REPORT.md status"
+          ]
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "created_at": "2026-04-24T02:00:00Z",
+    "author": "assistant",
+    "estimated_hours": 12,
+    "source": "AUDIT-REPORT.md findings",
+    "approved_verbs": ["update", "fix", "remove", "consolidate", "create", "delete"]
+  }
+}
