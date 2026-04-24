@@ -37,6 +37,11 @@ export {
   DEFAULT_EXCLUDE_PATTERNS,
 };
 
+// Scanner class is part of the public surface — scanner-worker.ts and other
+// callers import it from here. Export at the top so all re-exports are visible
+// before the class declaration below.
+export { Scanner };
+
 
 /**
  * PHASE 3: LRU Cache with Memory Cap

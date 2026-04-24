@@ -1,10 +1,13 @@
 {
   "workorder_id": "WO-SCANNER-MODULE-EXTRACTION-001",
   "feature_name": "scanner-module-extraction",
-  "status": "implementing",
+  "status": "complete",
+  "completed_at": "2026-04-24T12:00:00Z",
+  "updated": "2026-04-24T12:00:00Z",
+  "skills_touched": ["execute-workorder", "close-workorder"],
   "created": "2026-04-23T18:50:26.1633207-04:00",
-  "last_updated": "2026-04-23T23:58:00Z",
-  "execution_phase": "phase_0",
+  "last_updated": "2026-04-24T12:00:00Z",
+  "execution_phase": "phase_9_complete",
   "vcs": {
     "base_branch": "main",
     "working_branch": "wo/scanner-module-extraction",
@@ -48,7 +51,16 @@
     "current_agent": null,
     "agent_assignments": {},
     "phase_status": {
-      "phase_0": "ready"
+      "phase_0": "completed",
+      "phase_1": "completed",
+      "phase_2": "completed",
+      "phase_3": "completed",
+      "phase_4": "completed",
+      "phase_5": "completed",
+      "phase_6": "completed",
+      "phase_7": "completed",
+      "phase_8": "completed_subsumed_into_phase_9",
+      "phase_9": "completed"
     }
   },
   "task_queue": [
@@ -120,7 +132,12 @@
     "plan_type": "phased",
     "plan_type_rationale": "User explicitly requested phased plan mode for the scanner modularization refactor.",
     "hard_stops": [
-      "Phase 9 final parity and cleanup checkpoint"
+      {
+        "phase": 9,
+        "description": "Phase 9 final parity and cleanup checkpoint",
+        "approved": true,
+        "approval_basis": "User verified CLI end-to-end on LLOYD (94 elements, 8 classes, 26 methods, 60 functions). P0/P8 spec-lock guards green. Baseline 132 pass / 5 fail matches pre-refactor."
+      }
     ],
     "estimated_total_effort": "7-10 hours"
   },
@@ -140,6 +157,26 @@
       "timestamp": "2026-04-23T23:58:00Z",
       "action": "vcs_configured",
       "details": "Created working branch wo/scanner-module-extraction and worktree at ../coderef-core-scanner-refactor. All phase work will commit to the branch; merge to main after P9 hard stop review."
+    },
+    {
+      "timestamp": "2026-04-24T00:30:00Z",
+      "action": "phases_executed",
+      "details": "Phases P0-P9 executed across 11 commits (ecbd872..f853246). scanner.ts reduced 1618->535 LoC (66%) across 7 focused modules: scanner-patterns, scanner-dedupe, scanner-comments, scanner-file-discovery, scanner-file-runner, scanner-runtime, plus the orchestrator. Two P0 spec-lock guards (customPatterns no-leak, parallel==sequential dedupe parity) turned green after P6 as intended. P8 parity verification subsumed into P9 regression commit. Test baseline 132 pass / 5 fail matches pre-refactor baseline documented in P0-BASELINE.md."
+    },
+    {
+      "timestamp": "2026-04-24T01:00:00Z",
+      "action": "cli_verified_on_lloyd",
+      "details": "After P9 commit, ran coderef-scan CLI against LLOYD codebase: detected 94 elements (8 classes, 26 methods, 60 functions). Confirms public scanCurrentElements() contract and worker-thread Scanner import path remain intact end-to-end."
+    },
+    {
+      "timestamp": "2026-04-24T01:30:00Z",
+      "action": "post_p9_fixes",
+      "details": "Two post-P9 fixes caught only by LLOYD CLI verification: (1) scanner.ts missing export { Scanner } re-export line, broke scanner-worker.ts import chain in parallel mode; (2) plugins/types.ts JSDoc example contained literal */ sequence inside comment, broke TSC parse. Both fixed; committed in close commit."
+    },
+    {
+      "timestamp": "2026-04-24T12:00:00Z",
+      "action": "workorder_closed",
+      "details": "Closed via /close-workorder skill. All 10 phases complete, hard stop P9 approved, CLI verified on external project. Branch wo/scanner-module-extraction left ready-to-merge on origin; user will merge to main in separate step."
     }
   ]
 }

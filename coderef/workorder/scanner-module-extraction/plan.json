@@ -35,10 +35,28 @@
   "hard_stops": [
     {
       "phase": 9,
-      "approved": false,
-      "reason": "Final regression and parity checkpoint before the refactor is considered complete."
+      "approved": true,
+      "reason": "Final regression and parity checkpoint before the refactor is considered complete.",
+      "approval_basis": "User verified CLI end-to-end on LLOYD (94 elements detected). Baseline 132 pass / 5 fail matches pre-refactor."
     }
   ],
+  "completion": {
+    "all_phases_completed": true,
+    "p8_note": "Phase 8 parity verification subsumed into P9 regression commit (f853246) rather than a standalone commit. Both P0 spec-lock guards (customPatterns no-leak, parallel==sequential dedupe parity) green after P6.",
+    "commits": [
+      "ecbd872 P0-001 baseline",
+      "3f3bdc9 P0 characterization tests",
+      "eba501f P1-001 scanner-patterns",
+      "3f8f7a2 P1-002 scanner-dedupe",
+      "f56e003 P1-003 scanner-comments",
+      "38538f1 P2 scanner-file-discovery",
+      "02c154b P3 scanner-file-runner",
+      "5b324b1 P4 scanner-runtime",
+      "ae3b64a P5+P6 slim orchestration + kill global mutation",
+      "153d6ee P7 shrink Scanner class",
+      "f853246 P9 cleanup + final regression (also covers P8 parity)"
+    ]
+  },
   "phases": [
     {
       "phase": 0,
