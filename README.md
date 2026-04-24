@@ -53,13 +53,36 @@ See [IMP-CORE-052](improvements.json) for planned tree-sitter expansion to all l
 
 ## Installation
 
+### From Source (Current)
+
 ```bash
-npm install @coderef/core
+# Clone the repository
+git clone https://github.com/srwlli/coderef-core.git
+cd coderef-core
+
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Build CLI
+npm run build:cli
 ```
 
-**Requirements:**
+### Requirements
 - Node.js 16+
 - TypeScript 5.0+ (for TypeScript projects)
+
+### Usage
+
+```bash
+# Via npx (after build)
+npx coderef-scan --dir ./src
+
+# Or directly
+node dist/src/cli/index.js scan --dir ./src
+```
 
 ---
 
