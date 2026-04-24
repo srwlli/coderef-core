@@ -11,7 +11,8 @@
     "coderef-scan": "./dist/src/cli/scan.js",
     "rag-index": "./dist/src/cli/rag-index.js",
     "rag-search": "./dist/src/cli/rag-search.js",
-    "rag-status": "./dist/src/cli/rag-status.js"
+    "rag-status": "./dist/src/cli/rag-status.js",
+    "coderef-pipeline": "./dist/src/cli/coderef-pipeline.js"
   },
   "exports": {
     ".": {
