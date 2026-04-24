@@ -7,14 +7,6 @@ import { Worker } from 'worker_threads';
 import { ElementData, ScanOptions, RouteMetadata } from '../types/types.js';
 import { createScannerCache, type ScanCacheEntry } from './lru-cache.js';
 import { IncrementalCache } from '../cache/incremental-cache.js';
-import {
-  extractRouteMetadata,
-  parseNextJsRoute,
-  parseNextJsPagesRoute,
-  parseSvelteKitRoute,
-  parseNuxtRoute,
-  parseRemixRoute,
-} from '../analyzer/route-parsers.js';
 import { frameworkRegistry, type FrameworkDetectionResult } from './framework-registry.js';
 import './register-frameworks.js'; // Auto-register default frameworks
 import {
@@ -63,17 +55,14 @@ export {
 const SCAN_CACHE = createScannerCache(50 * 1024 * 1024);
 
 /**
- * Scanner class to manage state and context
+ * Scanner — element aggregator for a single scan pass.
+ * P7: shrunk to its essential role. Stale route helpers (processNextJsRoute,
+ * processNextJsPagesRoute, processSvelteKitRoute, processNuxtRoute,
+ * processRemixRoute) were superseded by frameworkRegistry.detectAll().
+ * Unused state fields (currentFile, currentLine, currentPattern) removed.
  */
 class Scanner {
   private elements: ElementData[] = [];
-  private currentFile: string | null = null;
-  private currentLine: number | null = null;
-  private currentPattern: RegExp | null = null;
-
-  constructor() {
-    // Initialize empty scanner
-  }
 
   public addElement(element: ElementData): void {
     this.elements.push(element);
@@ -90,230 +79,68 @@ class Scanner {
     extractMetadata?: (match: RegExpExecArray, content: string, line: number, file: string, fileContent: string) => RouteMetadata | null,
     extractFrontendCall?: (match: RegExpExecArray, content: string, line: number, file: string, fileContent: string) => import('../analyzer/frontend-call-parsers.js').FrontendCall | null
   ): void {
-    this.currentLine = lineNumber;
-    this.currentPattern = pattern;
-
     pattern.lastIndex = 0;
     let match;
     while ((match = pattern.exec(line)) !== null) {
       const name = match[nameGroup];
-      if (name) {
-        // Detect if the element is exported
-        const exported = /(?:^|\s)export\s+/.test(match[0]) || /(?:^|\s)export\s+default\s+/.test(line);
+      if (!name) continue;
 
-        // WO-API-ROUTE-DETECTION-001: Extract route metadata if callback provided
-        const element: ElementData = {
-          type,
-          name,
-          file,
-          line: lineNumber,
-          exported
-        };
+      const exported =
+        /(?:^|\s)export\s+/.test(match[0]) || /(?:^|\s)export\s+default\s+/.test(line);
 
-        // Call extractMetadata if provided
-        if (extractMetadata) {
-          const routeMetadata = extractMetadata(match, line, lineNumber, file, fileContent);
-          if (routeMetadata) {
-            element.route = routeMetadata;
-          }
-        }
+      const element: ElementData = { type, name, file, line: lineNumber, exported };
 
-        // WO-ROUTE-VALIDATION-ENHANCEMENT-001: Extract frontend call metadata if callback provided
-        if (extractFrontendCall) {
-          const frontendCallMetadata = extractFrontendCall(match, line, lineNumber, file, fileContent);
-          if (frontendCallMetadata) {
-            element.frontendCall = frontendCallMetadata;
-          }
-        }
-
-        this.addElement(element);
+      if (extractMetadata) {
+        const routeMetadata = extractMetadata(match, line, lineNumber, file, fileContent);
+        if (routeMetadata) element.route = routeMetadata;
       }
+
+      if (extractFrontendCall) {
+        const frontendCallMetadata = extractFrontendCall(match, line, lineNumber, file, fileContent);
+        if (frontendCallMetadata) element.frontendCall = frontendCallMetadata;
+      }
+
+      this.addElement(element);
     }
   }
 
-  /**
-   * WO-API-ROUTE-DETECTION-001: Detect Next.js API routes (file-based routing)
-   * Checks if file is a Next.js route file and extracts HTTP method exports
-   */
-  private processNextJsRoute(file: string, content: string): void {
-    // Check if file matches Next.js route pattern: app/api/*/route.(ts|js|tsx|jsx)
-    if (!file.includes('/app/api/') || !file.match(/\/route\.(ts|js|tsx|jsx)$/)) {
-      return;
-    }
-
-    // Extract exported HTTP method functions (GET, POST, PUT, DELETE, PATCH)
-    const httpMethods = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'];
-    const exports: string[] = [];
-
-    for (const method of httpMethods) {
-      // Match: export async function GET or export function POST or export const PUT
-      const exportPattern = new RegExp(`export\\s+(?:async\\s+)?(?:function|const)\\s+${method}\\b`, 'g');
-      if (exportPattern.test(content)) {
-        exports.push(method);
-      }
-    }
-
-    // If we found HTTP method exports, parse as Next.js route
-    if (exports.length > 0) {
-      const routeMetadata = parseNextJsRoute(file, exports);
-
-      if (routeMetadata) {
-        // Create element for the route file
-        const element: ElementData = {
-          type: 'function',
-          name: `route`, // Next.js route files are conventionally named 'route'
-          file,
-          line: 1, // Route definition is file-level
-          exported: true,
-          route: routeMetadata
-        };
-
-        this.addElement(element);
-      }
-    }
-  }
-
-  public processFile(file: string, content: string, patterns: PatternConfig[], includeComments: boolean): void {
-    this.currentFile = file;
+  public processFile(
+    file: string,
+    content: string,
+    patterns: PatternConfig[],
+    includeComments: boolean
+  ): void {
     const lines = content.split('\n');
 
     for (const { type, pattern, nameGroup, extractMetadata, extractFrontendCall } of patterns) {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        // P1.2: Pass line index and all lines for context-aware comment detection
-        if (!includeComments && isLineCommented(line, i, lines)) {
-          continue;
-        }
-        // WO-API-ROUTE-DETECTION-001: Pass extractMetadata callback and full file content
-        // WO-ROUTE-VALIDATION-ENHANCEMENT-001: Pass extractFrontendCall callback
-        this.processLine(line, i + 1, file, pattern, type, nameGroup, content, extractMetadata, extractFrontendCall);
+        if (!includeComments && isLineCommented(line, i, lines)) continue;
+        this.processLine(
+          line,
+          i + 1,
+          file,
+          pattern,
+          type,
+          nameGroup,
+          content,
+          extractMetadata,
+          extractFrontendCall
+        );
       }
     }
 
     // IMP-CORE-038: Framework detection via registry pattern
-    // Use framework registry for all framework route detection
     const frameworkResults = frameworkRegistry.detectAll(file, content);
     for (const result of frameworkResults) {
-      const element: ElementData = {
+      this.addElement({
         type: result.elementType as ElementData['type'],
         name: result.elementName,
         file,
         line: 1,
         exported: true,
-        route: result.route
-      };
-      this.addElement(element);
-    }
-  }
-
-  /**
-   * @deprecated Use frameworkRegistry instead. Kept for backward compatibility.
-   */
-  private processNextJsPagesRoute(file: string, content: string): void {
-    const routeMetadata = parseNextJsPagesRoute(file, content);
-
-    if (routeMetadata) {
-      const element: ElementData = {
-        type: 'function',
-        name: 'handler',
-        file,
-        line: 1,
-        exported: true,
-        route: routeMetadata
-      };
-
-      this.addElement(element);
-    }
-  }
-
-  /**
-   * IMP-CORE-004: Detect SvelteKit server routes (file-based routing)
-   * Checks for +server.ts or +page.server.ts files
-   */
-  private processSvelteKitRoute(file: string, content: string): void {
-    // Extract exports from content
-    const exports: string[] = [];
-    const exportPatterns = [
-      /export\s+(?:async\s+)?function\s+(GET|POST|PUT|DELETE|PATCH|load|actions)\b/g,
-      /export\s+const\s+(GET|POST|PUT|DELETE|PATCH|load|actions)\b/g
-    ];
-
-    for (const pattern of exportPatterns) {
-      let match;
-      while ((match = pattern.exec(content)) !== null) {
-        exports.push(match[1]);
-      }
-    }
-
-    const routeMetadata = parseSvelteKitRoute(file, exports);
-
-    if (routeMetadata) {
-      const element: ElementData = {
-        type: 'function',
-        name: routeMetadata.path.includes('/api/') ? 'API' : 'load',
-        file,
-        line: 1,
-        exported: true,
-        route: routeMetadata
-      };
-
-      this.addElement(element);
-    }
-  }
-
-  /**
-   * IMP-CORE-004: Detect Nuxt server API routes (file-based routing)
-   * Checks for server/api/*.ts files with .get.ts, .post.ts suffixes
-   */
-  private processNuxtRoute(file: string, content: string): void {
-    const routeMetadata = parseNuxtRoute(file, content);
-
-    if (routeMetadata) {
-      const element: ElementData = {
-        type: 'function',
-        name: 'handler',
-        file,
-        line: 1,
-        exported: true,
-        route: routeMetadata
-      };
-
-      this.addElement(element);
-    }
-  }
-
-  /**
-   * IMP-CORE-004: Detect Remix routes (file-based routing)
-   * Checks for app/routes/*.tsx files with loader/action exports
-   */
-  private processRemixRoute(file: string, content: string): void {
-    // Extract exports from content
-    const exports: string[] = [];
-    const exportPatterns = [
-      /export\s+(?:async\s+)?function\s+(loader|action)\b/g,
-      /export\s+const\s+(loader|action)\b/g
-    ];
-
-    for (const pattern of exportPatterns) {
-      let match;
-      while ((match = pattern.exec(content)) !== null) {
-        exports.push(match[1]);
-      }
-    }
-
-    const routeMetadata = parseRemixRoute(file, exports);
-
-    if (routeMetadata) {
-      const element: ElementData = {
-        type: 'function',
-        name: 'route',
-        file,
-        line: 1,
-        exported: true,
-        route: routeMetadata
-      };
-
-      this.addElement(element);
+        route: result.route,
+      });
     }
   }
 
