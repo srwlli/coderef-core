@@ -41,7 +41,7 @@ export interface DetectorDefinition {
   name: string;
   /** Human-readable description */
   description?: string;
-  /** File patterns this detector handles (e.g., "**/*.routes.ts") */
+  /** File glob patterns this detector handles (for example, all .routes.ts files). */
   patterns: string[];
   /** Entry point for this detector - exports the detector implementation */
   entry?: string;

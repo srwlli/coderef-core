@@ -1,10 +1,24 @@
 /**
- * DriftGenerator - Detect drift between current and previous scans
- *
- * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-006
+ * DriftGenerator - Detect drift between source files and the indexed snapshot.
  *
  * Produces: .coderef/reports/drift.json
- * Analysis: Added, deleted, modified elements; drift percentage
+ *
+ * Algorithm (mtime-based):
+ *   1. Read the prior .coderef/index.json.generatedAt timestamp, if present.
+ *      Compare every file referenced by the current scan against its on-disk
+ *      mtime. A file whose mtime > index.generatedAt is "stale".
+ *   2. driftPercentage = round((staleFiles / totalFiles) * 100).
+ *   3. Emit the same { added, deleted, modified, summary, driftPercentage }
+ *      contract consumers expect. `modified` holds one entry per stale file
+ *      with changes=["file modified since last scan"]. `added`/`deleted`
+ *      remain element-level (derived from element-id presence in the stored
+ *      vs. current snapshot); these are cheap and disambiguate file churn
+ *      from schema churn.
+ *
+ * Rationale: the prior element-by-element JSON.stringify diff reported 18%
+ * drift on a freshly-populated repo because the stored index and the current
+ * run used different parameter serializations. Mtime-based drift is immune
+ * to that schema-version skew.
  */
 
 import * as fs from 'fs/promises';
@@ -28,12 +42,12 @@ interface DriftReport {
     added: number;
     deleted: number;
     modified: number;
+    staleFiles: number;
+    totalFiles: number;
+    indexGeneratedAt: string | null;
   };
 }
 
-/**
- * DriftGenerator - Detect changes since last scan
- */
 export class DriftGenerator {
   async generate(state: PipelineState, outputDir: string): Promise<void> {
     const reportsDir = path.join(outputDir, 'reports');
@@ -45,20 +59,26 @@ export class DriftGenerator {
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf-8');
 
     if (state.options.verbose) {
-      console.log(`[DriftGenerator] Drift: ${report.driftPercentage}% (${report.summary.added} added, ${report.summary.deleted} deleted)`);
+      console.log(
+        `[DriftGenerator] Drift: ${report.driftPercentage}% ` +
+        `(${report.summary.staleFiles}/${report.summary.totalFiles} files stale, ` +
+        `${report.summary.added} added, ${report.summary.deleted} deleted)`
+      );
     }
   }
 
   private async detectDrift(state: PipelineState, outputDir: string): Promise<DriftReport> {
-    const currentElements = state.elements.map(element => this.normalizeElement(element, state.projectPath));
+    const currentElements = state.elements.map(e => this.normalizeElement(e, state.projectPath));
 
-    // Try to load previous index
+    // Try to load the prior index snapshot.
     let previousElements: ElementData[] = [];
+    let indexGeneratedAt: string | null = null;
     try {
       const loaded = await loadIndexFromCoderefDir(outputDir);
       previousElements = loaded.elements;
+      indexGeneratedAt = (loaded as { generatedAt?: string }).generatedAt ?? null;
     } catch {
-      // No previous index, all elements are "added"
+      // No previous index: everything is "added", drift = 100%.
       return {
         driftPercentage: 100,
         added: currentElements,
@@ -70,49 +90,60 @@ export class DriftGenerator {
           added: currentElements.length,
           deleted: 0,
           modified: 0,
+          staleFiles: 0,
+          totalFiles: 0,
+          indexGeneratedAt: null,
         },
       };
     }
 
-    const normalizedPreviousElements = previousElements.map(element => this.normalizeElement(element, state.projectPath));
+    const normalizedPrevious = previousElements.map(e => this.normalizeElement(e, state.projectPath));
 
-    // Build element maps by ID
-    const currentMap = new Map(currentElements.map(e => [this.getElementId(e), e]));
-    const previousMap = new Map(normalizedPreviousElements.map(e => [this.getElementId(e), e]));
+    // Element-level added/deleted (cheap; independent of mtime logic).
+    const currentIds = new Set(currentElements.map(e => this.getElementId(e)));
+    const previousIds = new Set(normalizedPrevious.map(e => this.getElementId(e)));
+    const added: ElementData[] = currentElements.filter(e => !previousIds.has(this.getElementId(e)));
+    const deleted: ElementData[] = normalizedPrevious.filter(e => !currentIds.has(this.getElementId(e)));
 
-    // Detect changes
-    const added: ElementData[] = [];
-    const deleted: ElementData[] = [];
+    // File-level "modified" via mtime comparison against indexGeneratedAt.
+    const uniqueFiles = new Set<string>();
+    for (const e of currentElements) uniqueFiles.add(e.file);
+    const indexMs = indexGeneratedAt ? Date.parse(indexGeneratedAt) : NaN;
     const modified: DriftReport['modified'] = [];
+    let staleFiles = 0;
 
-    // Find added and modified
-    for (const [id, currentElem] of currentMap.entries()) {
-      const previousElem = previousMap.get(id);
-
-      if (!previousElem) {
-        added.push(currentElem);
-      } else {
-        const changes = this.compareElements(currentElem, previousElem);
-        if (changes.length > 0) {
+    if (!Number.isNaN(indexMs)) {
+      for (const relFile of uniqueFiles) {
+        const abs = path.isAbsolute(relFile) ? relFile : path.join(state.projectPath, relFile);
+        try {
+          const st = await fs.stat(abs);
+          if (st.mtimeMs > indexMs) {
+            staleFiles++;
+            modified.push({
+              element: '*',
+              file: relFile,
+              changes: ['file modified since last scan'],
+            });
+          }
+        } catch {
+          // File in index no longer exists on disk. Treat as stale.
+          staleFiles++;
           modified.push({
-            element: currentElem.name,
-            file: currentElem.file,
-            changes,
+            element: '*',
+            file: relFile,
+            changes: ['file missing (counted as stale)'],
           });
         }
       }
     }
+    // If indexGeneratedAt is unparseable, staleFiles stays 0 (no false positives).
 
-    // Find deleted
-    for (const [id, previousElem] of previousMap.entries()) {
-      if (!currentMap.has(id)) {
-        deleted.push(previousElem);
-      }
-    }
-
-    const totalChanges = added.length + deleted.length + modified.length;
-    const totalElements = Math.max(currentMap.size, previousMap.size);
-    const driftPercentage = totalElements > 0 ? Math.round((totalChanges / totalElements) * 100) : 0;
+    const totalFiles = uniqueFiles.size;
+    const totalChangedUnits = staleFiles + added.length + deleted.length;
+    const totalUnits = Math.max(totalFiles, 1);
+    const driftPercentage = totalFiles > 0
+      ? Math.min(100, Math.round((totalChangedUnits / totalUnits) * 100))
+      : 0;
 
     return {
       driftPercentage,
@@ -120,11 +151,14 @@ export class DriftGenerator {
       deleted,
       modified,
       summary: {
-        totalCurrent: currentMap.size,
-        totalPrevious: previousMap.size,
+        totalCurrent: currentElements.length,
+        totalPrevious: normalizedPrevious.length,
         added: added.length,
         deleted: deleted.length,
         modified: modified.length,
+        staleFiles,
+        totalFiles,
+        indexGeneratedAt,
       },
     };
   }
@@ -134,36 +168,11 @@ export class DriftGenerator {
   }
 
   private normalizeElement(elem: ElementData, projectPath: string): ElementData {
-    return {
-      ...elem,
-      file: this.normalizeFilePath(elem.file, projectPath),
-    };
+    return { ...elem, file: this.normalizeFilePath(elem.file, projectPath) };
   }
 
   private normalizeFilePath(filePath: string, projectPath: string): string {
     const absolutePath = path.isAbsolute(filePath) ? filePath : path.resolve(projectPath, filePath);
     return path.relative(projectPath, absolutePath).replace(/\\/g, '/');
-  }
-
-  private compareElements(current: ElementData, previous: ElementData): string[] {
-    const changes: string[] = [];
-
-    if (current.type !== previous.type) {
-      changes.push(`type: ${previous.type} → ${current.type}`);
-    }
-
-    if (current.exported !== previous.exported) {
-      changes.push(`exported: ${previous.exported} → ${current.exported}`);
-    }
-
-    if (JSON.stringify(current.parameters) !== JSON.stringify(previous.parameters)) {
-      changes.push('parameters changed');
-    }
-
-    if (current.returnType !== previous.returnType) {
-      changes.push(`returnType: ${previous.returnType} → ${current.returnType}`);
-    }
-
-    return changes;
   }
 }
