@@ -82,9 +82,42 @@
   "hard_stops": [
     {
       "phase": 5,
-      "approved": false,
+      "approved": true,
+      "approved_at": "2026-04-25T03:25:00Z",
       "reason": "End-to-end verification gate. The whole point of this WO is that the unified pipeline now works end-to-end on an external project; the gate confirms that promise."
     }
   ],
-  "plan_adjustments_needed": []
+  "plan_adjustments_needed": [
+    {
+      "id": "ADJ-001",
+      "description": "P4 reframed during P1 reproduction: FOLLOW-UP-3 from predecessor's P6-VERIFICATION.md mis-attributed LLOYD 0-chunks to a Python chunker gap. Actual root cause was IncrementalIndexer state file (.coderef-rag-index.json) surviving --reset. P4 task list rewritten: 'investigate Python chunker' replaced with '--reset clears incremental state before initialize'.",
+      "applied": true,
+      "applied_at": "2026-04-25T01:30:00Z"
+    },
+    {
+      "id": "ADJ-002",
+      "description": "B3 (chunk-converter isFile defense) added during P1. Folded into P4. Accounts for 2 of 21 errors; remaining 19 were ADJ-001.",
+      "applied": true,
+      "applied_at": "2026-04-25T01:35:00Z"
+    },
+    {
+      "id": "ADJ-003",
+      "description": "P5 follow-on: rag-search.ts had same provider-resolution + storagePath bugs as rag-index.ts. Folded into P5 commit.",
+      "applied": true,
+      "applied_at": "2026-04-25T03:15:00Z"
+    }
+  ],
+  "completion": {
+    "all_phases_completed": true,
+    "phases_executed": 5,
+    "commits": [
+      {"phase": 1, "hash": "26a2806", "subject": "phase 1 - reproduce + baseline"},
+      {"phase": 2, "hash": "4ac8aef", "subject": "phase 2 - B1 vector store path fix"},
+      {"phase": 3, "hash": "91b90fa", "subject": "phase 3 - exit-code semantics"},
+      {"phase": 4, "hash": "caaf684", "subject": "phase 4 - B2/B3 fixes"},
+      {"phase": 5, "hash": "358b22b", "subject": "phase 5 - external verification (HARD STOP)"}
+    ],
+    "branch": "wo/rag-index-chunk-converter-impl",
+    "remote": "origin/wo/rag-index-chunk-converter-impl (HEAD 358b22b)"
+  }
 }
