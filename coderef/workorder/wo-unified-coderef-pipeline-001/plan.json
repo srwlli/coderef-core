@@ -104,7 +104,8 @@
   "hard_stops": [
     {
       "phase": 6,
-      "approved": false,
+      "approved": true,
+      "approved_at": "2026-04-24T20:30:00Z",
       "reason": "External-project verification gate. Ship-blocking: confirms no pollution, correct drift math, Ollama-only RAG, and end-to-end orchestration before final closeout."
     }
   ],
@@ -112,7 +113,42 @@
     {
       "id": "ADJ-001",
       "description": "Drift fail-fast was bypassed at WO creation (driftPercentage=18 on a freshly-populated repo). Root cause is STUB-B; Phase 3 fixes it. After P3 lands, future /create-workorder invocations should pass drift gate without override.",
-      "applied": false
+      "applied": true,
+      "applied_at": "2026-04-24T20:30:00Z",
+      "applied_note": "Phase 3 (commit 5e184f7) replaced the JSON.stringify element-diff with mtime-based drift; verified 0% on fresh populate (vs prior 18%) on both coderef-core and LLOYD."
+    },
+    {
+      "id": "ADJ-002",
+      "description": "Phase 3 root cause reframed during P1 baseline: 18% false positive came from parameter-serialization schema skew between runs, not stale mtime. Mtime-based algorithm still right design; recorded the actual cause for posterity.",
+      "applied": true,
+      "applied_at": "2026-04-24T13:10:00Z"
+    },
+    {
+      "id": "ADJ-003",
+      "description": "Phase 4 narrowed from 'remove OpenAI fallback' to 'add CODEREF_RAG_LOCAL_ONLY flag with hard-fail; orchestrator sets unconditionally'. Preserves multi-provider surface for direct rag-index callers while guaranteeing the unified pipeline stays local.",
+      "applied": true,
+      "applied_at": "2026-04-24T13:30:00Z"
+    },
+    {
+      "id": "ADJ-004",
+      "description": "Phase 4 follow-on: rag-index CLI has its own parseArgs path that bypassed RAGConfigLoader's local-only guard. Local-only enforcement injected directly into rag-index.ts during Phase 6; defaults provider to env CODEREF_LLM_PROVIDER. Committed in 4a06a01 alongside Phase 6 verification.",
+      "applied": true,
+      "applied_at": "2026-04-24T20:25:00Z"
     }
-  ]
+  ],
+  "completion": {
+    "all_phases_completed": true,
+    "phases_executed": 7,
+    "commits": [
+      {"phase": 1, "hash": "eaa541b", "subject": "phase 1 - baseline and surface inventory"},
+      {"phase": 2, "hash": "443a254", "subject": "phase 2 - STUB-C doc-gen --project-dir flag"},
+      {"phase": 3, "hash": "5e184f7", "subject": "phase 3 - STUB-B drift detector mtime rework"},
+      {"phase": 4, "hash": "fa1696f", "subject": "phase 4 - STUB-A RAG local-only guard"},
+      {"phase": 5, "hash": "a1bc7cc", "subject": "phase 5 - STUB-A unified coderef-pipeline CLI"},
+      {"phase": 6, "hash": "4a06a01", "subject": "phase 6 - external verification on LLOYD"},
+      {"phase": 7, "hash": "ffe971c", "subject": "phase 7 - docs + closeout"}
+    ],
+    "branch": "wo/unified-coderef-pipeline",
+    "remote": "origin/wo/unified-coderef-pipeline (HEAD ffe971c)"
+  }
 }
