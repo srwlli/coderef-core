@@ -1,0 +1,52 @@
+{
+  "workorder_id": "WO-RAG-INDEX-CHUNK-CONVERTER-001",
+  "feature_name": "rag-index-chunk-converter",
+  "created": "2026-04-24T20:50:00Z",
+  "affected_surfaces": [
+    {
+      "surface": "src/integration/vector/sqlite-store.ts",
+      "change_type": "behavior-fix",
+      "note": "On-disk path changes from directory to file; existing users need one-time --reset. Error-message path string corrected."
+    },
+    {
+      "surface": "src/cli/rag-index.ts (exit codes)",
+      "change_type": "semantics-narrowing",
+      "note": "Exit 1 reserved for genuine failures (provider unreachable, store init failed, etc.). Skipped-files-with-zero-chunks is exit 0 with a warning."
+    },
+    {
+      "surface": "src/integration/rag/chunk-converter.ts",
+      "change_type": "bug-fix + coverage-extension",
+      "note": "Filters dirs before read; Python chunker confirmed/extended to emit chunks for typical class/function patterns."
+    }
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "severity": "medium",
+      "description": "Phase 2's storage-path change could orphan existing user vector stores at .coderef/rag-vectors.sqlite/ (the directory).",
+      "mitigation": "Detect the legacy directory layout and clean it on --reset. Document in closeout commit message."
+    },
+    {
+      "id": "RISK-002",
+      "severity": "medium",
+      "description": "Phase 3's exit-code change could break CI consumers that gate on rag-index exit code.",
+      "mitigation": "Document in docs/CLI.md. The change is semver-meaningful but the right semantics; previous behavior was effectively 'always assume failure' for many legitimate runs."
+    },
+    {
+      "id": "RISK-003",
+      "severity": "low",
+      "description": "Phase 4's chunker fix may produce a much larger index for projects that were partially-skipped before. Disk + indexing time increases.",
+      "mitigation": "Document expected indexing-time uplift in P4-LLOYD-RESULT.md after re-indexing LLOYD."
+    }
+  ],
+  "test_strategy": [
+    "Phase 1: reproduce all 3 bugs against a controlled fixture + LLOYD.",
+    "Phase 2: write/reset/re-write cycle with dimension change.",
+    "Phase 3: 4-scenario exit-code matrix (provider unreachable / no files / all-skipped / partial-success).",
+    "Phase 4: chunks_indexed > 0 on LLOYD .py files; per-file skip reasons logged.",
+    "Phase 5: full coderef-pipeline 4/4 legs OK on LLOYD."
+  ],
+  "commit_strategy": "One commit per phase (5 total). Close commit optional per /close-workorder canonical flow.",
+  "parent_session": "SES-2026-04-24-UNIFIED-CODEREF-PIPELINE",
+  "source_stubs": []
+}

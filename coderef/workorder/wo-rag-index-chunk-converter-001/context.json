@@ -1,0 +1,64 @@
+{
+  "workorder_id": "WO-RAG-INDEX-CHUNK-CONVERTER-001",
+  "feature_name": "rag-index-chunk-converter",
+  "project_id": "coderef-core",
+  "created": "2026-04-24T20:50:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Three sequenced bug fixes in the rag-index code path, each with its own test scenario. Multi-phase but no policy gates -> phased.",
+  "plan_type_decided_by": "create-workorder@2.1.0",
+  "discovery_ref": null,
+  "discovery": {
+    "candidates": [
+      "src/cli/rag-index.ts",
+      "src/integration/rag/chunk-converter.ts",
+      "src/integration/rag/code-chunk.ts",
+      "src/integration/vector/sqlite-store.ts",
+      "src/integration/rag/incremental-indexer.ts",
+      "src/integration/rag/indexing-orchestrator.ts"
+    ],
+    "blast_radius": [
+      "rag-index CLI exit-code semantics (consumed by coderef-pipeline orchestrator)",
+      "SQLite vector store on-disk layout (potentially user data)",
+      "chunk-converter file iteration + Python chunking"
+    ],
+    "public_api_hits": [
+      "rag-index CLI exit codes (semver-meaningful for CI consumers)",
+      "potentially: SQLite store path (.coderef/rag-vectors.sqlite is now a file vs the directory it currently is)"
+    ],
+    "hotspot_hits": [
+      "chunk-converter EISDIR errors on LLOYD (Windows path handling)",
+      "Python AST chunker possibly gapped"
+    ],
+    "foundation_anchors": [],
+    "warnings": [
+      "Phase 2 changes the on-disk layout of .coderef/rag-vectors.sqlite. Existing users will need a one-time --reset or manual rm. Documented in plan + closeout."
+    ],
+    "summary_ref": null
+  },
+  "pre_existing_drift": false,
+  "goal": "Fix three rag-index defects (vector store --reset bug, exit-code conflation, Python chunk-conversion failure) caught during WO-UNIFIED-CODEREF-PIPELINE-001 P6 LLOYD verification.",
+  "scope": {
+    "in_scope": [
+      "src/integration/vector/sqlite-store.ts: --reset reliability + path layout",
+      "src/cli/rag-index.ts: exit-code semantics for empty/skipped/failed indexing",
+      "src/integration/rag/chunk-converter.ts: EISDIR fix + Python chunker coverage"
+    ],
+    "out_of_scope": [
+      "RAG search ranking, query handling, or other rag-search.ts behavior",
+      "RAG provider/LLM wiring (covered by WO-UNIFIED-CODEREF-PIPELINE-001 Phase 4)",
+      "Foundation-doc generation (covered by Phase 2 of the predecessor WO)",
+      "Adding new vector store backends"
+    ],
+    "constraints": [
+      "Must not regress the local-only RAG enforcement shipped in WO-UNIFIED-CODEREF-PIPELINE-001 Phase 4 + Phase 6 (CODEREF_RAG_LOCAL_ONLY guard).",
+      "rag-index direct CLI usage (without the orchestrator) must remain back-compat for users not setting CODEREF_RAG_LOCAL_ONLY."
+    ]
+  },
+  "source_followups": [
+    "FOLLOW-UP-1 from WO-UNIFIED-CODEREF-PIPELINE-001 P6-VERIFICATION.md (SQLite --reset)",
+    "FOLLOW-UP-2 from WO-UNIFIED-CODEREF-PIPELINE-001 P6-VERIFICATION.md (exit-code semantics)",
+    "FOLLOW-UP-3 from WO-UNIFIED-CODEREF-PIPELINE-001 P6-VERIFICATION.md (Python chunk skip)"
+  ],
+  "parent_session": "SES-2026-04-24-UNIFIED-CODEREF-PIPELINE",
+  "predecessor_workorder": "WO-UNIFIED-CODEREF-PIPELINE-001"
+}

@@ -1,0 +1,90 @@
+{
+  "workorder_id": "WO-RAG-INDEX-CHUNK-CONVERTER-001",
+  "feature_name": "rag-index-chunk-converter",
+  "created": "2026-04-24T20:50:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Three logically distinct bug classes (vector-store --reset path bug; CLI exit-code semantics; Python chunk-conversion failure) caught during WO-UNIFIED-CODEREF-PIPELINE-001 P6 LLOYD verification. They share the rag-index code path and cleanly fall into 3 sequenced phases. Multi-phase + touches a public CLI surface, but no policy gates, so phased not strict.",
+  "plan_type_decided_by": "create-workorder@2.1.0",
+  "goal": "Fix three rag-index defects exposed during WO-UNIFIED-CODEREF-PIPELINE-001 Phase 6 verification on LLOYD: (1) --reset writes a directory to .coderef/rag-vectors.sqlite/ instead of resetting the SQLite DB, and the error path references an invalid joined path; (2) rag-index exits 1 when 0 chunks index even though embedding succeeded, conflating 'provider unreachable' with 'all files legitimately skipped'; (3) every .py file in LLOYD was skipped during chunk conversion (21 files, 0 chunks indexed), suggesting either the Python AST chunker is gapped or a Windows path-handling regression is silently dropping files.",
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "discovery_ref": null,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "RUN", "TEST", "COMMIT", "CHECK", "STOP", "DELETE"],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1 - Reproduce + baseline",
+      "hard_stop": false,
+      "description": "Reproduce all three failure modes in isolation against LLOYD and a small Python fixture; capture exact stderr/exit-code traces and the offending stack frames so each phase below has a known-good red test.",
+      "tasks": [
+        {"id": "P1-001", "verb": "READ", "description": "READ src/integration/vector/sqlite-store.ts to locate the path-joining logic that produces 'rag-vectors.sqlite/.coderef/coderef-vectors.json'.", "touches": ["src/integration/vector/sqlite-store.ts"]},
+        {"id": "P1-002", "verb": "READ", "description": "READ src/cli/rag-index.ts main() exit logic to identify where a non-zero exit is set when chunks_indexed=0 with no provider error.", "touches": ["src/cli/rag-index.ts"]},
+        {"id": "P1-003", "verb": "READ", "description": "READ chunk-converter source (likely src/integration/rag/chunk-converter.ts and code-chunk.ts) to understand the EISDIR path-traversal bug and the Python-file skip logic.", "touches": ["src/integration/rag/chunk-converter.ts", "src/integration/rag/code-chunk.ts"]},
+        {"id": "P1-004", "verb": "RUN", "description": "RUN: rm -rf scratch project; mkdir; write 3 small .py files with classes/functions; run rag-index with Ollama. Capture: chunks_indexed count, exit code, stderr.", "touches": []},
+        {"id": "P1-005", "verb": "WRITE", "description": "WRITE coderef/workorder/wo-rag-index-chunk-converter-001/P1-REPRO.md with reproduction commands + observed traces + identified offending code locations for all 3 bugs.", "touches": ["coderef/workorder/wo-rag-index-chunk-converter-001/P1-REPRO.md"]},
+        {"id": "P1-006", "verb": "COMMIT", "description": "COMMIT P1 reproduction baseline.", "touches": []}
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2 - Fix #1: SQLite vector store --reset",
+      "hard_stop": false,
+      "description": "Resolve FOLLOW-UP-1 from WO-UNIFIED-CODEREF-PIPELINE-001 P6-VERIFICATION.md. Vector store is created as a directory (.coderef/rag-vectors.sqlite/) instead of a file, and --reset doesn't recover from the dimension-mismatch state.",
+      "tasks": [
+        {"id": "P2-001", "verb": "EDIT", "description": "EDIT SQLiteVectorStore.initialize: ensure storagePath resolves to a single .sqlite FILE, not a dir. If the legacy directory layout exists (left over from a prior version), delete it cleanly when --reset is passed.", "touches": ["src/integration/vector/sqlite-store.ts"]},
+        {"id": "P2-002", "verb": "EDIT", "description": "EDIT the dimension-mismatch error message to reference the actual file path on disk, not a synthesized non-existent path.", "touches": ["src/integration/vector/sqlite-store.ts"]},
+        {"id": "P2-003", "verb": "TEST", "description": "TEST: write store with model A (dim=1536), then re-init with model B (dim=768) + --reset; assert clean recreation, no manual rm needed.", "touches": []},
+        {"id": "P2-004", "verb": "COMMIT", "description": "COMMIT P2 vector store --reset fix.", "touches": []}
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Phase 3 - Fix #2: rag-index exit-code semantics",
+      "hard_stop": false,
+      "description": "Resolve FOLLOW-UP-2. rag-index conflates 'provider unreachable' (real failure) with 'all files skipped for legit reasons' (legit empty index). Both currently exit 1, breaking the orchestrator's first-failure short-circuit semantics in WO-UNIFIED-CODEREF-PIPELINE-001 coderef-pipeline.",
+      "tasks": [
+        {"id": "P3-001", "verb": "EDIT", "description": "EDIT rag-index main(): track per-error-class counts. Distinguish: provider_error (exit 1), no_files_processed (exit 1, separate message), files_processed_zero_chunks (exit 0 with warning), partial_success (exit 0).", "touches": ["src/cli/rag-index.ts"]},
+        {"id": "P3-002", "verb": "EDIT", "description": "EDIT the printed summary so the user can see which class triggered the outcome ('Indexing complete' vs 'Indexing failed' vs 'Indexed with skipped files').", "touches": ["src/cli/rag-index.ts"]},
+        {"id": "P3-003", "verb": "TEST", "description": "TEST four scenarios: (a) Ollama unreachable -> exit 1 + provider_error; (b) reachable but 0 files match languages -> exit 0 warning; (c) files match but converter skips all -> exit 0 warning; (d) some chunks indexed -> exit 0 success.", "touches": []},
+        {"id": "P3-004", "verb": "COMMIT", "description": "COMMIT P3 exit-code semantics fix.", "touches": []}
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Phase 4 - Fix #3: Python chunk conversion (LLOYD repro)",
+      "hard_stop": false,
+      "description": "Resolve FOLLOW-UP-3. Every .py file in LLOYD was skipped (21 files, 0 chunks). Could be a path-handling regression on Windows (most likely given the EISDIR errors observed) or a missing Python AST chunker leg.",
+      "tasks": [
+        {"id": "P4-001", "verb": "READ", "description": "READ chunk-converter's file-iteration loop to find where directories slip into the file-read path (causes EISDIR).", "touches": ["src/integration/rag/chunk-converter.ts"]},
+        {"id": "P4-002", "verb": "EDIT", "description": "EDIT the iteration to filter dirs explicitly via fs.statSync().isFile() before passing to the read step. Skip with a clear log line rather than throwing.", "touches": ["src/integration/rag/chunk-converter.ts"]},
+        {"id": "P4-003", "verb": "READ", "description": "READ the Python chunking branch to confirm it actually emits chunks for class/function/method elements, not just type declarations.", "touches": ["src/integration/rag/chunk-converter.ts"]},
+        {"id": "P4-004", "verb": "EDIT", "description": "EDIT (if needed) the Python chunker so .py source produces non-empty chunks for typical FastAPI/Pydantic patterns (LLOYD's stack).", "touches": ["src/integration/rag/chunk-converter.ts"]},
+        {"id": "P4-005", "verb": "TEST", "description": "TEST: re-run rag-index on LLOYD post-fix; assert chunks_indexed > 0 and skipped < total. Document the new ratio in P4-LLOYD-RESULT.md.", "touches": []},
+        {"id": "P4-006", "verb": "COMMIT", "description": "COMMIT P4 Python chunk conversion fix.", "touches": []}
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Phase 5 - Cross-cut verification + closeout",
+      "hard_stop": true,
+      "description": "Final hard stop: re-run the full coderef-pipeline (from WO-UNIFIED-CODEREF-PIPELINE-001) end-to-end on LLOYD with all three fixes in place. All 4 legs must pass.",
+      "tasks": [
+        {"id": "P5-001", "verb": "RUN", "description": "RUN coderef-pipeline --project-dir <LLOYD path> --rag-reset, with Ollama running. Expect: scan/populate/docs/rag all OK.", "touches": []},
+        {"id": "P5-002", "verb": "CHECK", "description": "CHECK rag-search returns plausible results against the LLOYD-indexed store for a known function name.", "touches": []},
+        {"id": "P5-003", "verb": "CHECK", "description": "CHECK no LLOYD-data pollution in coderef-core via git status diff.", "touches": []},
+        {"id": "P5-004", "verb": "WRITE", "description": "WRITE P5-VERIFICATION.md with the new 4/4 leg pass + rag-search transcript.", "touches": ["coderef/workorder/wo-rag-index-chunk-converter-001/P5-VERIFICATION.md"]},
+        {"id": "P5-005", "verb": "EDIT", "description": "EDIT docs/CLI.md to remove any caveats around rag leg added in WO-UNIFIED-CODEREF-PIPELINE-001 P7.", "touches": ["docs/CLI.md"]},
+        {"id": "P5-006", "verb": "COMMIT", "description": "COMMIT P5 verification + docs.", "touches": []},
+        {"id": "P5-007", "verb": "STOP", "description": "STOP at the terminal hard stop for user approval before /close-workorder.", "touches": []}
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 5,
+      "approved": false,
+      "reason": "End-to-end verification gate. The whole point of this WO is that the unified pipeline now works end-to-end on an external project; the gate confirms that promise."
+    }
+  ],
+  "plan_adjustments_needed": []
+}
