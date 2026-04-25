@@ -1,0 +1,44 @@
+{
+  "workorder_id": "WO-RAG-INDEX-CHUNK-CONVERTER-001",
+  "feature_name": "rag-index-chunk-converter",
+  "project_id": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "status": "plan_created",
+  "execution_phase": "phase_0",
+  "created": "2026-04-24T20:50:00Z",
+  "updated": "2026-04-24T20:50:00Z",
+  "skills_touched": [],
+  "hard_stops": {
+    "phase_5": {
+      "approved": false,
+      "reason": "End-to-end LLOYD verification gate. Confirms the predecessor WO's promise (unified pipeline works end-to-end on external project) is fulfilled."
+    }
+  },
+  "phase_status": {
+    "phase_1": "pending",
+    "phase_2": "pending",
+    "phase_3": "pending",
+    "phase_4": "pending",
+    "phase_5": "pending"
+  },
+  "history": [
+    {
+      "event": "plan_created",
+      "at": "2026-04-24T20:50:00Z",
+      "by": "create-workorder@2.1.0",
+      "note": "Successor to WO-UNIFIED-CODEREF-PIPELINE-001. Bundles the 3 follow-ups recorded in P6-VERIFICATION.md (SQLite --reset bug, rag-index exit-code semantics, Python chunk-conversion skip). Plan-type phased; 5 phases including 1 hard stop at end."
+    },
+    {
+      "event": "plan_type_classified",
+      "at": "2026-04-24T20:50:00Z",
+      "by": "create-workorder@2.1.0",
+      "plan_type": "phased",
+      "rationale": "Multi-phase, three distinct deliverables, public CLI surface touched, no policy gates."
+    }
+  ],
+  "handoff": {
+    "next_skill": "/execute-workorder",
+    "entry_phase": "phase_1",
+    "note": "Begin with Phase 1 reproduction baseline. Phase 5 is the hard stop."
+  }
+}
