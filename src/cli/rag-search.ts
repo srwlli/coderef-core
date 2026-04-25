@@ -77,10 +77,13 @@ interface CliArgs {
  * Parse command line arguments
  */
 function parseArgs(argv: string[]): CliArgs {
+  // Honor CODEREF_LLM_PROVIDER env when --provider is omitted; falls back
+  // to 'openai' for back-compat with users who never set the env var.
+  const envProvider = process.env.CODEREF_LLM_PROVIDER?.toLowerCase();
   const args: CliArgs = {
     projectDir: process.cwd(),
     query: '',
-    provider: 'openai',
+    provider: envProvider || 'openai',
     store: 'sqlite',
     topK: 10,
     json: false,
@@ -299,8 +302,9 @@ async function createVectorStore(
 
     case 'sqlite':
     default: {
+      // See rag-index.ts: store is JSON despite the legacy "sqlite" name.
       const storagePath = process.env.CODEREF_SQLITE_PATH
-        || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
+        || path.join(projectDir, '.coderef', 'coderef-vectors.json');
       return new SQLiteVectorStore({
         storagePath,
         dimension,
@@ -308,9 +312,9 @@ async function createVectorStore(
     }
   }
 
-  // Fallback to SQLite
+  // Fallback to SQLite (JSON-backed despite the name).
   const storagePath = process.env.CODEREF_SQLITE_PATH
-    || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
+    || path.join(projectDir, '.coderef', 'coderef-vectors.json');
   return new SQLiteVectorStore({
     storagePath,
     dimension,
@@ -365,6 +369,19 @@ async function main(): Promise<void> {
       await fs.access(args.projectDir);
     } catch {
       console.error(`Error: Project directory not found: ${args.projectDir}`);
+      process.exit(2);
+    }
+
+    // RAG local-only enforcement (mirrors rag-index.ts).
+    const localOnlyRaw = process.env.CODEREF_RAG_LOCAL_ONLY;
+    const localOnly = localOnlyRaw && localOnlyRaw.toLowerCase() !== '0' &&
+      localOnlyRaw.toLowerCase() !== 'false' && localOnlyRaw.toLowerCase() !== 'no';
+    if (localOnly && (args.provider === 'openai' || args.provider === 'anthropic')) {
+      console.error(
+        `Error: RAG local-only mode is enabled (CODEREF_RAG_LOCAL_ONLY=${localOnlyRaw}) ` +
+        `but provider '${args.provider}' is a cloud provider. ` +
+        `Set CODEREF_LLM_PROVIDER=ollama (or pass --provider ollama).`
+      );
       process.exit(2);
     }
 

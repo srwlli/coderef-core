@@ -82,7 +82,7 @@ npx coderef-pipeline --project-dir /path/to/project --dry-run
 1. **scan** — `coderef-scan <project-dir>`
 2. **populate** — `populate-coderef <project-dir>` (writes `.coderef/`).
 3. **docs** — `node scripts/doc-gen/generate-{index,exports,hotspots,relationships}-md.js --project-dir=<path>` (writes `coderef/foundation-docs/`).
-4. **rag** — `rag-index --project-dir <path>` (writes `.coderef/rag-vectors.sqlite`).
+4. **rag** — `rag-index --project-dir <path>` (writes `.coderef/coderef-vectors.json` for the vector store and `.coderef-rag-index.json` for incremental indexing state).
 
 ### Local-only RAG constraint
 
