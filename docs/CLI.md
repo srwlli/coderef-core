@@ -29,9 +29,88 @@ node dist/src/cli/index.js <command>
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search | `--dir`, `--chroma-url`, `--ollama-url` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code | `--query`, `--type`, `--max-results` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--dir`, `--chroma-url` |
+| [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
 | [`scan-frontend-calls`](#scan-frontend-calls) | Detect frontend API calls | `--dir`, `--pattern`, `--output` |
 | [`validate-routes`](#validate-routes) | Validate API route definitions | `--dir`, `--strict`, `--fix` |
 | [`detect-languages`](#detect-languages) | Detect project languages | `--dir`, `--json` |
+
+---
+
+## coderef-pipeline
+
+Unified orchestrator that chains the four standard CodeRef legs in order
+against a single target project: **scan → populate → foundation-docs → RAG**.
+
+### Usage
+
+```bash
+# Run the full pipeline against the current directory
+npx coderef-pipeline
+
+# Target an external project
+npx coderef-pipeline --project-dir /path/to/project
+
+# Skip the rag leg
+npx coderef-pipeline --project-dir /path/to/project --skip rag
+
+# Only run docs and rag
+npx coderef-pipeline --project-dir /path/to/project --only docs,rag
+
+# Reset the RAG vector store (use when changing embedding model dimensions)
+npx coderef-pipeline --project-dir /path/to/project --rag-reset
+
+# Plan-only (no side effects)
+npx coderef-pipeline --project-dir /path/to/project --dry-run
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--project-dir <path>` | Target project root. Propagated to populate, doc-gen, and rag-index. | `process.cwd()` |
+| `--only <legs>` | Comma-separated subset to run (`scan`, `populate`, `docs`, `rag`). | All legs |
+| `--skip <legs>` | Comma-separated legs to skip. | None |
+| `--ollama-base-url <url>` | Ollama endpoint used by the rag leg. | `http://localhost:11434` or `CODEREF_LLM_BASE_URL` |
+| `--ollama-model <name>` | Ollama embedding model. | `nomic-embed-text` or `CODEREF_LLM_MODEL` |
+| `--rag-reset` | Reset the RAG vector store before indexing. | `false` |
+| `--dry-run` | Print the plan; do not execute. | `false` |
+| `-v, --verbose` | Forward `--verbose` to sub-commands. | `false` |
+| `-h, --help` | Show help. | — |
+
+### Leg order
+
+1. **scan** — `coderef-scan <project-dir>`
+2. **populate** — `populate-coderef <project-dir>` (writes `.coderef/`).
+3. **docs** — `node scripts/doc-gen/generate-{index,exports,hotspots,relationships}-md.js --project-dir=<path>` (writes `coderef/foundation-docs/`).
+4. **rag** — `rag-index --project-dir <path>` (writes `.coderef/rag-vectors.sqlite`).
+
+### Local-only RAG constraint
+
+The `rag` leg is invoked with `CODEREF_RAG_LOCAL_ONLY=1` and
+`CODEREF_LLM_PROVIDER=ollama` set on the child process unconditionally.
+**Cloud LLM providers (OpenAI, Anthropic) are not reachable through this
+surface.** Both the `RAGConfigLoader` and the `rag-index` CLI's parseArgs
+honor the local-only flag and reject cloud-provider selection with a
+`ConfigError` when it is set.
+
+If you need cloud RAG, invoke `rag-index` directly without the
+`CODEREF_RAG_LOCAL_ONLY` flag.
+
+### Failure semantics
+
+- Each leg is a child process. The orchestrator short-circuits on the
+  first non-zero exit code; subsequent legs report `skip` in the summary.
+- The summary table prints leg / status / duration regardless of outcome.
+- Leg-level stderr tails (last 20 lines) are surfaced when a leg fails.
+
+### Environment variables
+
+| Variable | Purpose |
+|----------|---------|
+| `CODEREF_RAG_LOCAL_ONLY` | Set to `1` to forbid cloud LLM providers. The orchestrator sets this for the rag leg automatically. |
+| `CODEREF_LLM_PROVIDER` | Provider name (`ollama` for local-only). |
+| `CODEREF_LLM_BASE_URL` | Ollama (or other local) endpoint. |
+| `CODEREF_LLM_MODEL` | Ollama embedding model. |
 
 ---
 
