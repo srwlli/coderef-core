@@ -128,10 +128,26 @@ export class SQLiteVectorStore implements VectorStore {
       ...config
     };
 
-    // Determine storage path
-    const basePath = config.storagePath || process.cwd();
+    // Determine storage path.
+    //
+    // The `storagePath` config field has historically been overloaded: callers
+    // sometimes pass a project root (basePath), sometimes pass a directory
+    // path that already contains `.coderef/`, and rag-index passes the full
+    // intended file path including a misleading `.sqlite` suffix. We accept
+    // any of these and resolve to a single .json file:
+    //
+    //   - if storagePath ends in `.json` → use it as-is
+    //   - if storagePath looks like a basePath (no extension) → join
+    //     `.coderef/{indexName}.json` onto it
+    //   - default (no storagePath) → cwd + `.coderef/{indexName}.json`
     const indexName = config.indexName || 'coderef-vectors';
-    this.storagePath = path.join(basePath, '.coderef', `${indexName}.json`);
+    const raw = config.storagePath;
+    if (raw && raw.endsWith('.json')) {
+      this.storagePath = raw;
+    } else {
+      const basePath = raw || process.cwd();
+      this.storagePath = path.join(basePath, '.coderef', `${indexName}.json`);
+    }
 
     // Initialize empty data structure
     this.data = this.createEmptyStorage();
@@ -162,6 +178,16 @@ export class SQLiteVectorStore implements VectorStore {
         fs.mkdirSync(dir, { recursive: true });
       }
 
+      // Legacy cleanup: prior versions sometimes created a directory at the
+      // intended file path (path-join bug from rag-index/sqlite-store before
+      // 2026-04-25). If we see a directory where a file should be, remove it
+      // so we can write the file fresh. No data lost — the actual store
+      // contents lived nested inside as `<dir>/.coderef/coderef-vectors.json`,
+      // and that nested file is unreachable through any current code path.
+      if (fs.existsSync(this.storagePath) && fs.statSync(this.storagePath).isDirectory()) {
+        fs.rmSync(this.storagePath, { recursive: true, force: true });
+      }
+
       // Load existing data if available
       if (fs.existsSync(this.storagePath)) {
         const content = fs.readFileSync(this.storagePath, 'utf-8');
@@ -170,9 +196,10 @@ export class SQLiteVectorStore implements VectorStore {
         // Check for dimension mismatch between stored data and expected config
         if (loaded.dimension !== this.config.dimension) {
           throw new VectorStoreError(
-            `Dimension mismatch: Vector store has ${loaded.dimension} dimensions, ` +
-            `but provider requires ${this.config.dimension}.\n` +
-            `Run with --reset to recreate, or delete ${this.storagePath}`,
+            `Dimension mismatch: vector store at ${this.storagePath} has ` +
+            `${loaded.dimension} dimensions but the active provider requires ` +
+            `${this.config.dimension}. Run rag-index with --reset to recreate, ` +
+            `or delete this file by hand: ${this.storagePath}`,
             VectorStoreErrorCode.INVALID_DIMENSIONS
           );
         }

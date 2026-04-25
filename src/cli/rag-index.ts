@@ -299,8 +299,11 @@ async function createVectorStore(
 
     case 'sqlite':
     default: {
+      // Storage is a JSON file (the "sqlite" name is legacy/misleading).
+      // Use a .json extension so SQLiteVectorStore treats it as the literal
+      // file path and doesn't double-join `.coderef/coderef-vectors.json`.
       const storagePath = process.env.CODEREF_SQLITE_PATH
-        || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
+        || path.join(projectDir, '.coderef', 'coderef-vectors.json');
       return new SQLiteVectorStore({
         storagePath,
         dimension,
@@ -308,9 +311,10 @@ async function createVectorStore(
     }
   }
 
-  // Fallback to SQLite for unknown stores or missing config
+  // Fallback to SQLite for unknown stores or missing config.
+  // See note above about the .json extension and SQLiteVectorStore.
   const storagePath = process.env.CODEREF_SQLITE_PATH
-    || path.join(projectDir, '.coderef', 'rag-vectors.sqlite');
+    || path.join(projectDir, '.coderef', 'coderef-vectors.json');
   return new SQLiteVectorStore({
     storagePath,
     dimension,
@@ -489,7 +493,7 @@ async function main(): Promise<void> {
       console.log();
       console.log('📁 Output:');
       console.log(`  Metadata: ${indexPath}`);
-      console.log(`  Vectors: ${process.env.CODEREF_SQLITE_PATH || path.join(coderefDir, 'rag-vectors.sqlite')}`);
+      console.log(`  Vectors: ${process.env.CODEREF_SQLITE_PATH || path.join(coderefDir, 'coderef-vectors.json')}`);
       console.log();
 
       if (result.errors.length > 0) {
