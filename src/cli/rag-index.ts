@@ -398,7 +398,39 @@ async function main(): Promise<void> {
     const llmProvider = createLLMProvider(args.provider);
     const vectorStore = await createVectorStore(args.store, args.projectDir, llmProvider);
 
-    // Initialize vector store
+    // If --reset was requested, clear on-disk state BEFORE initialize().
+    // Initialize() reads the stored vector data and would fail with a
+    // dimension-mismatch error when switching embedding models (e.g.
+    // OpenAI 1536 -> Ollama 768) — exactly the scenario --reset is for.
+    if (args.reset) {
+      if (!args.json) {
+        console.log('🗑️  Clearing existing index (vector store + incremental state)...');
+      }
+      // Vector store: best-effort delete via filesystem (vectorStore.clear()
+      // requires initialize()). The legacy-dir cleanup in
+      // SQLiteVectorStore.initialize() handles the directory case too.
+      const { unlink, rm, stat } = await import('fs/promises');
+      const vectorJsonPath = process.env.CODEREF_SQLITE_PATH
+        || path.join(args.projectDir, '.coderef', 'coderef-vectors.json');
+      try {
+        const st = await stat(vectorJsonPath);
+        if (st.isDirectory()) {
+          await rm(vectorJsonPath, { recursive: true, force: true });
+        } else {
+          await unlink(vectorJsonPath);
+        }
+      } catch {
+        // missing is fine
+      }
+      // Incremental state file (top-level, hyphen).
+      try {
+        await unlink(path.join(args.projectDir, '.coderef-rag-index.json'));
+      } catch {
+        // missing is fine
+      }
+    }
+
+    // Initialize vector store (now safe — any incompatible state was cleared above)
     await vectorStore.initialize();
 
     // Initialize analyzer
@@ -411,14 +443,6 @@ async function main(): Promise<void> {
       vectorStore,
       args.projectDir
     );
-
-    // Reset index if requested (must be after orchestrator creation)
-    if (args.reset) {
-      if (!args.json) {
-        console.log('🗑️  Clearing existing index...');
-      }
-      await orchestrator.clearIndex();
-    }
 
     // Progress callback
     const onProgress = args.json

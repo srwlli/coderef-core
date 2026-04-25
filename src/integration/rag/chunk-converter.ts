@@ -204,7 +204,12 @@ export class ChunkConverter {
   }
 
   /**
-   * Check if file exists
+   * Check if a path resolves to a readable file.
+   *
+   * Uses `stat().isFile()` so directory-typed graph nodes (rare upstream
+   * bug; observed on LLOYD) are filtered here cheaply rather than
+   * throwing EISDIR in `readFile()` downstream and counting as a hard
+   * error in the indexing summary.
    */
   private async fileExists(filePath: string): Promise<boolean> {
     const fullPath = path.isAbsolute(filePath)
@@ -212,8 +217,8 @@ export class ChunkConverter {
       : path.join(this.basePath, filePath);
 
     try {
-      await fs.access(fullPath);
-      return true;
+      const st = await fs.stat(fullPath);
+      return st.isFile();
     } catch {
       return false;
     }
