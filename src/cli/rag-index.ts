@@ -75,9 +75,12 @@ interface CliArgs {
  * Parse command line arguments
  */
 function parseArgs(argv: string[]): CliArgs {
+  // Honor CODEREF_LLM_PROVIDER as the default provider when --provider isn't
+  // passed. Falls back to 'openai' for back-compat.
+  const envProvider = process.env.CODEREF_LLM_PROVIDER?.toLowerCase();
   const args: CliArgs = {
     projectDir: process.cwd(),
-    provider: 'openai',
+    provider: envProvider || 'openai',
     store: 'sqlite',
     reset: false,
     verbose: false,
@@ -324,6 +327,23 @@ async function main(): Promise<void> {
     if (args.help) {
       printHelp();
       process.exit(0);
+    }
+
+    // RAG local-only enforcement. When CODEREF_RAG_LOCAL_ONLY is set
+    // (truthy), reject cloud providers regardless of how they were
+    // selected. This mirrors RAGConfigLoader.getLLMProvider() but covers
+    // the rag-index CLI's parallel provider-resolution path.
+    const localOnlyRaw = process.env.CODEREF_RAG_LOCAL_ONLY;
+    const localOnly = localOnlyRaw && localOnlyRaw.toLowerCase() !== '0' &&
+      localOnlyRaw.toLowerCase() !== 'false' && localOnlyRaw.toLowerCase() !== 'no';
+    if (localOnly && (args.provider === 'openai' || args.provider === 'anthropic')) {
+      console.error(
+        `Error: RAG local-only mode is enabled (CODEREF_RAG_LOCAL_ONLY=${localOnlyRaw}) ` +
+        `but provider '${args.provider}' is a cloud provider. ` +
+        `Set CODEREF_LLM_PROVIDER=ollama (or pass --provider ollama) and ` +
+        `configure CODEREF_LLM_BASE_URL.`
+      );
+      process.exit(2);
     }
 
     // Validate project directory

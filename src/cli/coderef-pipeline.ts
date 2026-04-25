@@ -35,6 +35,7 @@ interface CliArgs {
   verbose: boolean;
   ollamaBaseUrl: string;
   ollamaModel: string;
+  ragReset: boolean;
 }
 
 const LEG_NAMES = ['scan', 'populate', 'docs', 'rag'] as const;
@@ -56,6 +57,8 @@ OPTIONS:
                              or env CODEREF_LLM_BASE_URL).
   --ollama-model <name>      Ollama embedding model (default:
                              nomic-embed-text or env CODEREF_LLM_MODEL).
+  --rag-reset                Reset the RAG vector store before indexing
+                             (use when changing embedding dimensions).
   -v, --verbose              Forward verbose flag to sub-commands.
   -h, --help                 Show this help.
 
@@ -79,6 +82,7 @@ function parseArgs(argv: string[]): CliArgs {
     verbose: false,
     ollamaBaseUrl: process.env.CODEREF_LLM_BASE_URL || 'http://localhost:11434',
     ollamaModel: process.env.CODEREF_LLM_MODEL || 'nomic-embed-text',
+    ragReset: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -105,6 +109,9 @@ function parseArgs(argv: string[]): CliArgs {
         break;
       case '--ollama-model':
         args.ollamaModel = argv[++i];
+        break;
+      case '--rag-reset':
+        args.ragReset = true;
         break;
       case '-v':
       case '--verbose':
@@ -243,7 +250,9 @@ async function runLeg(leg: Leg, args: CliArgs): Promise<LegResult> {
         CODEREF_LLM_BASE_URL: args.ollamaBaseUrl,
         CODEREF_LLM_MODEL: args.ollamaModel,
       };
-      const r = runNode(bin, ['--project-dir', args.projectDir], { env, verbose: args.verbose });
+      const ragArgs = ['--project-dir', args.projectDir];
+      if (args.ragReset) ragArgs.push('--reset');
+      const r = runNode(bin, ragArgs, { env, verbose: args.verbose });
       return {
         leg,
         status: r.code === 0 ? 'ok' : 'fail',
