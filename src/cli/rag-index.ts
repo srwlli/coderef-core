@@ -537,8 +537,24 @@ async function main(): Promise<void> {
       console.log();
     }
 
-    const hasErrors = result.chunksFailed > 0 || result.errors.length > 0;
-    process.exit(hasErrors ? 1 : 0);
+    // Exit-code semantics:
+    //   - chunksIndexed > 0 → exit 0 (partial success counts as success;
+    //     any errors are surfaced as warnings above).
+    //   - chunksIndexed === 0 AND we hit hard errors → exit 1 (genuine
+    //     failure: provider unreachable, store unwritable, all conversions
+    //     failed, etc.).
+    //   - chunksIndexed === 0 AND no errors → exit 0 with a hint (legitimate
+    //     empty index — nothing to index, e.g. project has no source files
+    //     in the requested language). Caller's --only switching can produce
+    //     this state intentionally.
+    const indexed = result.chunksIndexed > 0;
+    const hardFailure = !indexed && (result.chunksFailed > 0 || result.errors.length > 0);
+    if (!indexed && !hardFailure && !args.json) {
+      console.log('ℹ️  No chunks were indexed (no source files matched, or all were skipped).');
+      console.log('   This is exit 0; check --lang and --reset if this is unexpected.');
+      console.log();
+    }
+    process.exit(hardFailure ? 1 : 0);
 
   } catch (error) {
     console.error('\n❌ Indexing failed:\n');
