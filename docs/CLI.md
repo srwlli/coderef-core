@@ -30,6 +30,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code | `--query`, `--type`, `--max-results` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--dir`, `--chroma-url` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
+| [`coderef-watch`](#coderef-watch) | Workspace file-watcher daemon for foundation-docs freshness | `--project-dir`, `--debounce-ms`, `--once`, `--no-pipeline`, `--json` |
 | [`scan-frontend-calls`](#scan-frontend-calls) | Detect frontend API calls | `--dir`, `--pattern`, `--output` |
 | [`validate-routes`](#validate-routes) | Validate API route definitions | `--dir`, `--strict`, `--fix` |
 | [`detect-languages`](#detect-languages) | Detect project languages | `--dir`, `--json` |
@@ -111,6 +112,100 @@ If you need cloud RAG, invoke `rag-index` directly without the
 | `CODEREF_LLM_PROVIDER` | Provider name (`ollama` for local-only). |
 | `CODEREF_LLM_BASE_URL` | Ollama (or other local) endpoint. |
 | `CODEREF_LLM_MODEL` | Ollama embedding model. |
+
+---
+
+## coderef-watch
+
+Workspace file-watcher daemon for foundation-docs freshness. Watches the project via chokidar, debounces edits (default 30s), and on each flush spawns `coderef-pipeline --only scan,populate,docs`. After every flush attempt, writes `{project-dir}/.coderef/last-scan.json` atomically (temp + rename) so LLOYD can compute `doc_age_seconds = now − last_scan_at` cheaply on every pre-prompt assembly.
+
+WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001.
+
+### Operational expectation
+
+**`coderef-watch` runs in the CONSUMER WORKSPACE, NOT in the LLOYD process.** Each consumer machine runs one daemon per active workspace. Per-OS service-unit instructions (systemd / launchd / Windows Service / pm2 / manual): see [DEPLOY-CODEREF-WATCH.md](DEPLOY-CODEREF-WATCH.md).
+
+### Usage
+
+```bash
+# Daemon mode against the current workspace
+npx coderef-watch --project-dir "$(pwd)"
+
+# Custom debounce window
+npx coderef-watch --project-dir /abs/path --debounce-ms 60000
+
+# One-shot run (no daemon, no watch loop) - useful for cron / health checks
+npx coderef-watch --project-dir /abs/path --once
+
+# Debug: log change events but do NOT spawn the pipeline
+npx coderef-watch --project-dir /abs/path --no-pipeline --json
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-p, --project-dir <path>` | Workspace root to watch | `process.cwd()` |
+| `--debounce-ms <n>` | Debounce window in milliseconds | `30000` (per LLOYD D2 spec) |
+| `-l, --languages <csv>` | File extensions to watch | `ts,tsx,js,jsx,py,go,rs,java,cpp,c` |
+| `--exclude <csv>` | Additional glob patterns to exclude | `(none — defaults already exclude node_modules, dist, .git, .coderef, foundation-docs)` |
+| `--include-rag` | Also run the RAG leg on each flush | off (RAG re-index is too expensive for debounce; out of scope per WO) |
+| `--once` | Run pipeline once against the workspace and exit | off (daemon mode) |
+| `--no-pipeline` | Log change events only; do NOT spawn pipeline | off (debug) |
+| `-j, --json` | Heartbeat-only structured stdout (one JSON line per flush) | off |
+| `-v, --verbose` | Verbose logging (forwarded to coderef-pipeline) | off |
+| `-h, --help` | Show help | — |
+
+### Heartbeat schema
+
+Path: `{project-dir}/.coderef/last-scan.json`. Schema: [`src/cli/coderef-watch-heartbeat.schema.json`](../src/cli/coderef-watch-heartbeat.schema.json) (v1).
+
+```json
+{
+  "schema_version": 1,
+  "last_scan_at": "2026-04-26T01:30:00Z",
+  "paths_changed": ["src/cli/foo.ts", "src/scanner/bar.ts"],
+  "status": "pass",
+  "exit_reason": "pipeline_ok",
+  "exit_code": 0,
+  "duration_ms": 4823,
+  "pid": 18432,
+  "alive_at": "2026-04-26T01:30:00Z",
+  "trigger": { "kind": "debounce", "cwd": "/abs/path/to/project" }
+}
+```
+
+LLOYD-side read pattern (Python): see [LLOYD-INTEGRATION.md](LLOYD-INTEGRATION.md).
+
+### Events
+
+| Sink | Path | When |
+|---|---|---|
+| Local audit | `{project-dir}/.coderef/watch-events.jsonl` | Every flush, always |
+| Session events | `LOGS/SESSIONS/{sid}/{domain}/events.jsonl` | Every flush, only when `CODEREF_SESSION_ID` is set in env (best-effort, non-blocking) |
+
+Session events conform to WO-SESSIONS-EVENT-EMISSION-PROTOCOL-001 with `type=coderef_watch_flush`, `source=coderef-watch`.
+
+### Environment variables
+
+| Variable | Purpose |
+|----------|---------|
+| `CODEREF_SESSION_ID` | If set, every flush forwards a session event to `LOGS/SESSIONS/{id}/{domain}/events.jsonl` |
+| `CODEREF_AGENT_DOMAIN` | Agent domain to record on forwarded session events (default `CODEREF-CORE`) |
+| `CODEREF_LOG_SESSION_EVENT_SCRIPT` | Override path to `scripts/log-session-event.mjs` (default: ASSISTANT repo location) |
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success — `--once` mode finished, OR `--no-pipeline` flush was skipped intentionally, OR daemon shut down on SIGINT/SIGTERM |
+| `1` | Pipeline failed (`status: fail`); see `exit_reason` in heartbeat |
+| `2` | Invalid arguments or `--project-dir` not found |
+
+### See also
+
+- [DEPLOY-CODEREF-WATCH.md](DEPLOY-CODEREF-WATCH.md) — per-OS service-unit instructions
+- [LLOYD-INTEGRATION.md](LLOYD-INTEGRATION.md) — LLOYD read pattern + per-task-type policy
 
 ---
 
