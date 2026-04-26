@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://coderef.dev/schemas/coderef-watch-heartbeat.v1.json",
+  "title": "coderef-watch heartbeat",
+  "description": "Heartbeat written atomically by `coderef-watch` to {project-dir}/.coderef/last-scan.json on every flush attempt. LLOYD reads this on every pre-prompt assembly to compute `doc_age_seconds = now - last_scan_at`. WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "last_scan_at",
+    "paths_changed",
+    "status",
+    "exit_reason",
+    "exit_code",
+    "duration_ms",
+    "pid",
+    "alive_at",
+    "trigger"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Heartbeat schema version. Bump on breaking changes; LLOYD pins on read."
+    },
+    "last_scan_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of the most recent flush attempt (success or failure)."
+    },
+    "paths_changed": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Workspace-relative paths in the debounce window that triggered this flush. Empty on --once or --no-pipeline modes."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["pass", "fail", "skipped"],
+      "description": "pass = pipeline exited 0; fail = pipeline non-zero or spawn error; skipped = --no-pipeline flag set."
+    },
+    "exit_reason": {
+      "type": "string",
+      "description": "Human-readable reason. Examples: 'pipeline_ok', 'pipeline_exit_2', 'spawn_error: ...', 'no_pipeline_flag'."
+    },
+    "exit_code": {
+      "type": ["integer", "null"],
+      "description": "Pipeline exit code, or null when no pipeline was spawned."
+    },
+    "duration_ms": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Wall-clock duration of the pipeline subprocess in milliseconds."
+    },
+    "pid": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "OS PID of the coderef-watch daemon. LLOYD may probe to detect stale-but-fresh-looking heartbeats from a crashed daemon."
+    },
+    "alive_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp confirming the daemon was running when this heartbeat was written. Equal to last_scan_at on a fresh write; LLOYD may treat alive_at older than N minutes as 'daemon dead' regardless of last_scan_at."
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "cwd"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["debounce", "once"],
+          "description": "debounce = flush triggered by chokidar event after debounce window. once = --once mode."
+        },
+        "cwd": {
+          "type": "string",
+          "description": "Absolute path of the workspace this daemon is watching."
+        }
+      }
+    }
+  }
+}

@@ -360,7 +360,8 @@ async function runOnce(args: CliArgs): Promise<number> {
     summary: `coderef-watch --once: ${hb.status}`,
     payload: { ...hb, project_dir: args.projectDir },
   });
-  return hb.status === 'pass' ? 0 : 1;
+  // skipped (--no-pipeline) is intentional, not a failure.
+  return hb.status === 'fail' ? 1 : 0;
 }
 
 async function runDaemon(args: CliArgs): Promise<number> {
