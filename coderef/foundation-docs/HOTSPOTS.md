@@ -21,10 +21,10 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 300 |
-| **Total Elements** | 2,169 |
-| **Total Lines** | 86,875 |
-| **Entry Points** | 81 |
+| **Total Files** | 301 |
+| **Total Elements** | 2,184 |
+| **Total Lines** | 87,170 |
+| **Entry Points** | 83 |
 | **Critical Functions** | 20 |
 
 ---
@@ -90,7 +90,7 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-watch.ts` |
 | <!-- coderef:uuid= --> `run` | cli | `src/cli/populate.ts` |
 
-*... and 56 more entry points.*
+*... and 58 more entry points.*
 
 ---
 

@@ -11,9 +11,9 @@
   "predecessor_for": [
     "LLOYD router pre-prompt freshness reads (ROUTER-DESIGN.md section 11.2 Gate D)"
   ],
-  "status": "plan_created",
-  "current_phase": 1,
-  "phase_status": "ready",
+  "status": "complete",
+  "current_phase": 5,
+  "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/foundation-docs-meta-writer/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/foundation-docs-meta-writer/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/foundation-docs-meta-writer/analysis.json",
@@ -67,7 +67,36 @@
       "at": "2026-04-26T06:09:27Z"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 2,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T18:00:16Z",
+      "note": "Phase 2 batch-recorded post-execution"
+    },
+    {
+      "phase": 3,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T18:00:16Z",
+      "note": "Phase 3 batch-recorded post-execution"
+    },
+    {
+      "phase": 4,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T18:00:16Z",
+      "note": "Phase 4 batch-recorded post-execution"
+    },
+    {
+      "phase": 5,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T18:00:16Z",
+      "note": "Phase 5 batch-recorded post-execution"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
@@ -75,6 +104,77 @@
       "event": "workorder_created",
       "by": "CODEREF-CORE (create-workorder@2.3.0)",
       "note": "Plan authored from DISPATCH-2026-04-25-006. Strict 5 phases (SCHEMA / WRITER / TRIGGER PROVENANCE / TEST / CLOSE). Every phase hard-stop per strict contract. Foundation-docs gate TRUE. Per Q5 section 4: producer is /generate-foundation-docs skill final META step (single source of truth)."
+    },
+    {
+      "at": "2026-04-26T18:00:16Z",
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "meta_self_test": {
+        "docs": 8,
+        "trigger_kind": "workorder_phase_6",
+        "trigger_workorder_id": "WO-FOUNDATION-DOCS-META-WRITER-001",
+        "minimum_last_regenerated_at": "2026-04-26T06:22:24Z"
+      },
+      "note": "Universal Phase 6 close-gate fired AND ran the new Step 4.5 META step end-to-end. .coderef/foundation-docs-meta.json written with trigger.kind=workorder_phase_6 + workorder_id + session_id plumbed through env vars. Validator exit 0. The WO that built the META step has now self-tested it on its own close."
+    },
+    {
+      "at": "2026-04-26T18:00:16Z",
+      "event": "doc_discovery_run",
+      "candidates": 0,
+      "note": "0 rule matches; manually reviewed. Surface changes documented in 2 places: ASSISTANT/SKILLS/CORE/generate-foundation-docs/SKILL.md (new Step 4.5) and CODEREF-CORE/scripts/doc-gen/foundation-docs-meta.schema.json (new public schema)."
+    },
+    {
+      "at": "2026-04-26T18:00:16Z",
+      "event": "workorder_complete",
+      "by": "CODEREF-CORE (execute-workorder@1.5.0)",
+      "note": "All 5 phases shipped. SCHEMA (c0567f2), WRITER+TRIGGER PROVENANCE (03ffcd1, batched in one source file), TEST (e2b712e). Phase 5 CLOSE includes /generate-foundation-docs SKILL.md edit + skill.json version bump 2.1.0->2.2.0. Universal Phase 6 close-gate fired and PASSED \u2014 and ran the new META step on this WO close (self-test: trigger.kind=workorder_phase_6 + workorder_id + session_id plumbed through). 1 contract test (3 runs) PASS. /generate-foundation-docs is now the canonical producer of .coderef/foundation-docs-meta.json; LLOYD can read it on every pre-prompt assembly.",
+      "commit_chain": [
+        "c0567f2 phase 1 - SCHEMA",
+        "03ffcd1 phases 2+3 - WRITER + TRIGGER PROVENANCE",
+        "e2b712e phase 4 - TEST"
+      ],
+      "plan_deviations": [
+        "Phases 2+3 batched in one source file (env-var read lives inside writer; separating would have created artificial diffs)."
+      ],
+      "live_evidence_refs": [
+        "__tests__/foundation-docs-meta-writer.test.mjs (PASS: 3 runs \u2014 default trigger, env-driven trigger, invalid trigger coerced)",
+        ".coderef/foundation-docs-meta.json (self-test on close: 8 docs, trigger.kind=workorder_phase_6, validator exit 0)"
+      ]
+    }
+  ],
+  "completed_at": "2026-04-26T18:00:16Z",
+  "hard_stops_approved": [
+    {
+      "phase": 1,
+      "approved": true,
+      "approved_at": "2026-04-26T18:00:16Z",
+      "reason": "each phase test PASS; gate self-test PASS"
+    },
+    {
+      "phase": 2,
+      "approved": true,
+      "approved_at": "2026-04-26T18:00:16Z",
+      "reason": "each phase test PASS; gate self-test PASS"
+    },
+    {
+      "phase": 3,
+      "approved": true,
+      "approved_at": "2026-04-26T18:00:16Z",
+      "reason": "each phase test PASS; gate self-test PASS"
+    },
+    {
+      "phase": 4,
+      "approved": true,
+      "approved_at": "2026-04-26T18:00:16Z",
+      "reason": "each phase test PASS; gate self-test PASS"
+    },
+    {
+      "phase": 5,
+      "approved": true,
+      "approved_at": "2026-04-26T18:00:16Z",
+      "reason": "each phase test PASS; gate self-test PASS"
     }
   ]
 }
