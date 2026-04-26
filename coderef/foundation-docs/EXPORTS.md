@@ -18,12 +18,12 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **392** | 214 | 606 |
+| function | **392** | 230 | 622 |
 | class | **110** | 5 | 115 |
-| interface | **304** | 49 | 353 |
+| interface | **304** | 53 | 357 |
 | type | **32** | 7 | 39 |
 | component | **2** | 0 | 2 |
-| constant | **3** | 2 | 5 |
+| constant | **3** | 8 | 11 |
 
 ---
 

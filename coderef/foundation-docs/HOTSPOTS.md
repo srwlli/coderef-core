@@ -21,10 +21,10 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 299 |
-| **Total Elements** | 2,143 |
-| **Total Lines** | 86,394 |
-| **Entry Points** | 79 |
+| **Total Files** | 300 |
+| **Total Elements** | 2,169 |
+| **Total Lines** | 86,875 |
+| **Entry Points** | 81 |
 | **Critical Functions** | 20 |
 
 ---
@@ -86,11 +86,11 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `index.ts` | library | `src/search/index.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `demo-all-modules.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-pipeline.ts` |
+| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-rag-server.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-watch.ts` |
 | <!-- coderef:uuid= --> `run` | cli | `src/cli/populate.ts` |
-| <!-- coderef:uuid= --> `main` | cli | `src/cli/populate.ts` |
 
-*... and 54 more entry points.*
+*... and 56 more entry points.*
 
 ---
 

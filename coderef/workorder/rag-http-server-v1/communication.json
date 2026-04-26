@@ -14,9 +14,9 @@
   "predecessor_for": [
     "WO-ROUTER-V1-001 Phase 5"
   ],
-  "status": "plan_created",
-  "current_phase": 1,
-  "phase_status": "ready",
+  "status": "complete",
+  "current_phase": 7,
+  "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-http-server-v1/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-http-server-v1/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-http-server-v1/analysis.json",
@@ -66,7 +66,50 @@
       "at": "2026-04-26T05:16:37Z"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 2,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T05:40:54Z",
+      "note": "Phase 2 batch-recorded post-execution"
+    },
+    {
+      "phase": 3,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T05:40:54Z",
+      "note": "Phase 3 batch-recorded post-execution"
+    },
+    {
+      "phase": 4,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T05:40:54Z",
+      "note": "Phase 4 batch-recorded post-execution"
+    },
+    {
+      "phase": 5,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T05:40:54Z",
+      "note": "Phase 5 batch-recorded post-execution"
+    },
+    {
+      "phase": 6,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T05:40:54Z",
+      "note": "Phase 6 batch-recorded post-execution"
+    },
+    {
+      "phase": 7,
+      "from_status": "ready",
+      "to_status": "complete",
+      "at": "2026-04-26T05:40:54Z",
+      "note": "Phase 7 batch-recorded post-execution"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
@@ -74,6 +117,42 @@
       "event": "workorder_created",
       "by": "CODEREF-CORE (create-workorder@2.3.0)",
       "note": "Plan authored from DISPATCH-2026-04-25-007. 7 phases (SCAFFOLD/HEALTH+STATUS/QUERY+INDEX/DEGRADED-PATH/CONTRACT-DOCS/FAST-START+DEPLOY/CLOSE). Phase 7 hard stop. Foundation-docs gate TRUE. Supersedes DISPATCH-005 (same WO). No blockers; immediate execution."
+    },
+    {
+      "at": "2026-04-26T05:40:54Z",
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "note": "Universal Phase 6 close-gate fired (5 generators + enhancer + validator all exit 0). foundation-docs regenerated against fresh .coderef/index.json (re-scanned just before gate)."
+    },
+    {
+      "at": "2026-04-26T05:40:54Z",
+      "event": "doc_discovery_run",
+      "candidates": 0,
+      "changed_files_seen": 57,
+      "note": "0 rule matches; manual review per skill 5.1 fallback. New surface (coderef-rag-server CLI + 4 endpoints) is documented in 3 dedicated docs already (rag-http-api.md, DEPLOY-CODEREF-RAG-SERVER.md, CLI.md row). No SKILLS/CORE wrapper for coderef-rag-server authored \u2014 same deferred-sweep policy as chokidar wrapper."
+    },
+    {
+      "at": "2026-04-26T05:40:54Z",
+      "event": "workorder_complete",
+      "by": "CODEREF-CORE (execute-workorder@1.5.0)",
+      "note": "All 7 phases shipped. SCAFFOLD (3430f1d), HEALTH+STATUS (a379b38), QUERY+INDEX+DEGRADED (5519f44 - phases 3+4 batched), CONTRACT-DOCS (a6c6eb8), DEPLOYMENT STORY (f2d6081). Phase 6 universal gate fired and passed (validator_exit=0). 2 contract tests pass (health + status; query/index degraded path). Pre-existing TS errors in src/context/, src/plugins/ unrelated. Server contract: GET /api/health, GET /api/rag/status (always 200, even Ollama-down), POST /api/rag/query (503 envelope when Ollama down), POST /api/rag/index (subprocess + per-project mutex). 8-9 files added/modified. Tracking validator: my entries schema-clean; pre-existing FAILs in workorders.json/sessions.json/skills.json unrelated.",
+      "commit_chain": [
+        "3430f1d phase 1 - SCAFFOLD coderef-rag-server",
+        "a379b38 phase 2 - HEALTH+STATUS verified",
+        "5519f44 phases 3+4 - QUERY+INDEX endpoints + DEGRADED-PATH",
+        "a6c6eb8 phase 5 - CONTRACT-DOCS rag-http-api.md",
+        "f2d6081 phase 6 - DEPLOYMENT STORY"
+      ],
+      "plan_deviations": [
+        "Batched phases 1-4 routing into one source file (coderef-rag-server.ts is single-file by stdlib http convention); phase 3 + 4 commits combined (single test file exercises both endpoints degraded path)."
+      ],
+      "live_evidence_refs": [
+        "__tests__/coderef-rag-server-health.test.mjs (PASS: /api/health + /api/rag/status both 200; server stays up Ollama-down)",
+        "__tests__/coderef-rag-server-query-degraded.test.mjs (PASS: degraded query/index 503 + envelope; input validation 400/404; server alive)"
+      ]
     }
-  ]
+  ],
+  "completed_at": "2026-04-26T05:40:54Z"
 }
