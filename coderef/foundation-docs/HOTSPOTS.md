@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-04-22  
+**Generated:** 2026-04-26  
 <!-- coderef:uuid=hotspots-root -->
 
 ---
@@ -21,10 +21,10 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 274 |
-| **Total Elements** | 1,971 |
-| **Total Lines** | 80,094 |
-| **Entry Points** | 74 |
+| **Total Files** | 299 |
+| **Total Elements** | 2,143 |
+| **Total Lines** | 86,394 |
+| **Entry Points** | 79 |
 | **Critical Functions** | 20 |
 
 ---
@@ -39,7 +39,7 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | 2 | <!-- coderef:uuid= --> `ASTElementScanner.visitNode` | 🔴 63 (Critical) | `src/analyzer/ast-element-scanner.ts` | 0 dependents |
 | 3 | <!-- coderef:uuid= --> `extractExportsFromAST` | 🔴 55 (Critical) | `src/analyzer/js-call-detector/module-analyzer.ts` | 3 dependents |
 | 4 | <!-- coderef:uuid= --> `extractElementsFromAST` | 🔴 51 (Critical) | `src/analyzer/js-call-detector/visitor.ts` | 3 dependents |
-| 5 | <!-- coderef:uuid= --> `scanCurrentElements` | 🟡 40 (High) | `src/scanner/scanner.ts` | 1 dependents |
+| 5 | <!-- coderef:uuid= --> `scanCurrentElements` | 🟡 40 (High) | `scanner.js` | 1 dependents |
 | 6 | <!-- coderef:uuid= --> `EmbeddingTextGenerator.generate` | 🟡 30 (High) | `src/integration/rag/embedding-text-generator.ts` | 0 dependents |
 | 7 | <!-- coderef:uuid= --> `DatabaseDetector.detect` | ⚪ 9 (Low) | `src/analyzer/database-detector.ts` | 0 dependents |
 | 8 | <!-- coderef:uuid= --> `buildDependencyGraph` | ⚪ 8 (Low) | `src/fileGeneration/buildDependencyGraph.ts` | 0 dependents |
@@ -64,6 +64,7 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Entry Point | Type | File |
 |-------------|------|------|
+| <!-- coderef:uuid= --> `index.ts` | library | `examples/plugins/example-detector/src/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/analyzer/frameworks/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/analyzer/index.ts` |
@@ -84,13 +85,12 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `index.ts` | library | `src/pipeline/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/search/index.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `demo-all-modules.ts` |
+| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-pipeline.ts` |
+| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-watch.ts` |
 | <!-- coderef:uuid= --> `run` | cli | `src/cli/populate.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/populate.ts` |
-| <!-- coderef:uuid= --> `main` | cli | `src/cli/rag-index.ts` |
-| <!-- coderef:uuid= --> `main` | cli | `src/cli/rag-search.ts` |
-| <!-- coderef:uuid= --> `main` | cli | `src/cli/rag-status.ts` |
 
-*... and 49 more entry points.*
+*... and 54 more entry points.*
 
 ---
 

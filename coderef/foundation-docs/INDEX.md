@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-04-22  
+**Generated:** 2026-04-26  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 1,971 |
-| **Total Files** | 274 |
-| **Total Lines** | 80,094 |
+| **Total Elements** | 2,143 |
+| **Total Files** | 299 |
+| **Total Lines** | 86,394 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,13 +22,13 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 540 | 27.4% |
-| method | 968 | 49.1% |
-| interface | 317 | 16.1% |
-| class | 106 | 5.4% |
-| type | 36 | 1.8% |
+| function | 606 | 28.3% |
+| method | 1,023 | 47.7% |
+| interface | 353 | 16.5% |
+| class | 115 | 5.4% |
+| type | 39 | 1.8% |
 | component | 2 | 0.1% |
-| constant | 2 | 0.1% |
+| constant | 5 | 0.2% |
 
 ---
 
@@ -49,10 +49,10 @@
 | 11 | `src/pipeline/generators/pattern-generator.ts` | 27 | 🟢 Medium |
 | 12 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
 | 13 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
-| 14 | `src/analyzer/design-pattern-detector.ts` | 23 | 🟢 Medium |
-| 15 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
-| 16 | `src/export/graph-exporter.ts` | 23 | 🟢 Medium |
-| 17 | `src/scanner/scanner.ts` | 23 | 🟢 Medium |
+| 14 | `src/scanner/scanner.ts` | 24 | 🟢 Medium |
+| 15 | `src/analyzer/design-pattern-detector.ts` | 23 | 🟢 Medium |
+| 16 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
+| 17 | `src/export/graph-exporter.ts` | 23 | 🟢 Medium |
 | 18 | `src/analyzer/dependency-analyzer.ts` | 22 | 🟢 Medium |
 | 19 | `src/indexer/metadata-index.ts` | 22 | 🟢 Medium |
 | 20 | `src/integration/rag/conversation-manager.ts` | 22 | 🟢 Medium |
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 1,971 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,143 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 
