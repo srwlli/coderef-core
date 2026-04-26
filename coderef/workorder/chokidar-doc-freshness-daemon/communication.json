@@ -1,0 +1,99 @@
+{
+  "workorder_id": "WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001",
+  "feature_name": "chokidar-doc-freshness-daemon",
+  "created": "2026-04-26T01:00:17Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "project_id": "coderef-core",
+  "originating_dispatches": [
+    "DISPATCH-2026-04-25-003"
+  ],
+  "predecessor_for": null,
+  "prerequisite_workorders": [
+    "WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001"
+  ],
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/chokidar-doc-freshness-daemon/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/chokidar-doc-freshness-daemon/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/chokidar-doc-freshness-daemon/analysis.json",
+  "handoff": {
+    "from": "CODEREF-CORE (create-workorder)",
+    "to": "CODEREF-CORE (execute-workorder, after prerequisite ships)",
+    "reason": "Plan authored; awaiting prerequisite WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001 ship before execution"
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "hard_stops_required": true,
+    "hard_stop_phases": [
+      6
+    ],
+    "foundation_docs_gate": true,
+    "discovery_required": true,
+    "approved_verbs": [
+      "READ",
+      "WRITE",
+      "EDIT",
+      "RUN",
+      "TEST",
+      "COMMIT",
+      "CHECK",
+      "STOP",
+      "DELETE"
+    ]
+  },
+  "hard_constraints": [
+    "Wait for prerequisite WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001 to ship before this WO executes",
+    "Phase-based, no ETAs",
+    "Local-only - no cloud LLM dependencies",
+    "TRACKING is the only registry",
+    "chokidar runs in CONSUMER WORKSPACE not LLOYD process (LLOYD constraint #1) - document explicitly in Phase 5",
+    "Atomic writes for heartbeat (LLOYD reads on every request; partial writes corrupt pre-prompt assembly)",
+    "Foundation-docs gate: TRUE for this WO close (smoke-test the universal gate from prerequisite WO)"
+  ],
+  "blockers": [
+    {
+      "id": "B1",
+      "kind": "prerequisite_workorder",
+      "description": "WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001 must ship before this WO executes (per DISPATCH-2026-04-25-003 + SKILLS PHASE-6-CLOSE-GATE-AUDIT.md section 5)",
+      "expected_resolver": "SKILLS",
+      "status": "resolved",
+      "resolved_at": "2026-04-26T01:58:50Z",
+      "resolution": "WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001 shipped per ORCHESTRATOR (TRACKING/workorders.json: status=complete). Greenlight to /execute-workorder received."
+    }
+  ],
+  "decisions_log": [
+    {
+      "event": "plan_type_overridden",
+      "from": "light",
+      "to": "phased",
+      "reason": "ORCHESTRATOR DISPATCH-2026-04-25-003 + SKILLS PHASE-6-CLOSE-GATE-AUDIT.md section 5 explicitly specify phased plan_type with 6 phases (multi-concern, multi-runtime, prereq dependency on WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001).",
+      "at": "2026-04-26T01:00:17Z"
+    }
+  ],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "from_status": "ready",
+      "to_status": "in_progress",
+      "at": "2026-04-26T01:58:50Z",
+      "note": "Phase 1 WIRE start"
+    }
+  ],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-04-26T01:00:17Z",
+      "event": "workorder_created",
+      "by": "CODEREF-CORE (create-workorder@2.3.0)",
+      "note": "Plan authored from DISPATCH-2026-04-25-003. 6 phases (WIRE/DEBOUNCE/HEARTBEAT/LLOYD INTEGRATE/DEPLOYMENT STORY/CLOSE). Phase 6 hard stop. Foundation-docs gate TRUE. Blocked on prerequisite WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001."
+    },
+    {
+      "at": "2026-04-26T01:58:50Z",
+      "event": "blocker_resolved",
+      "by": "CODEREF-CORE (execute-workorder@1.5.0)",
+      "note": "B1 prerequisite cleared: WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001 status=complete in TRACKING/workorders.json. ORCHESTRATOR greenlight received. Status set to implementing. Beginning Phase 1."
+    }
+  ]
+}

@@ -1,0 +1,277 @@
+{
+  "plan_type": "phased",
+  "goal": "Wire the existing src/scanner/file-watcher.ts (chokidar-based) into a new coderef-watch CLI binary that runs in each consumer workspace, debounces file changes over a 30s window, executes incremental scan + foundation-docs regeneration, emits a heartbeat to .coderef/last-scan.json, and integrates with LLOYD pre-prompt freshness reads. Closes the residual 30-40% staleness gap left by the workorder-Phase-6-only path.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "WIRE",
+      "hard_stop": false,
+      "description": "WIRE: convert src/scanner/file-watcher.ts into a coderef-watch CLI bin entry, register in package.json bin map, build dist/src/cli/coderef-watch.js. Verify --help works after npm run build:cli.",
+      "tasks": [
+        {
+          "id": "WIRE-T1",
+          "verb": "READ",
+          "description": "Load src/scanner/file-watcher.ts and confirm chokidar API surface",
+          "touches": [
+            "src/scanner/file-watcher.ts"
+          ]
+        },
+        {
+          "id": "WIRE-T2",
+          "verb": "WRITE",
+          "description": "Author src/cli/coderef-watch.ts wrapping FileWatcher with --project-dir and --paths flags",
+          "touches": [
+            "src/cli/coderef-watch.ts"
+          ]
+        },
+        {
+          "id": "WIRE-T3",
+          "verb": "EDIT",
+          "description": "Register coderef-watch in package.json bin map",
+          "touches": [
+            "package.json"
+          ]
+        },
+        {
+          "id": "WIRE-T4",
+          "verb": "RUN",
+          "description": "Build via npm run build:cli and verify dist/src/cli/coderef-watch.js exists",
+          "touches": [
+            "dist/src/cli/coderef-watch.js"
+          ]
+        },
+        {
+          "id": "WIRE-T5",
+          "verb": "TEST",
+          "description": "Smoke test: coderef-watch --help prints usage and exits 0",
+          "touches": []
+        },
+        {
+          "id": "WIRE-T6",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1: WIRE coderef-watch CLI scaffold",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "DEBOUNCE",
+      "hard_stop": false,
+      "description": "DEBOUNCE: add 30s debounce window per LLOYD D2 spec. On debounce flush, run incremental coderef-scan + populate-coderef + generate-foundation-docs against changed paths only (not full rebuild).",
+      "tasks": [
+        {
+          "id": "DEB-T1",
+          "verb": "READ",
+          "description": "Confirm LLOYD D2 30s debounce spec from LLOYD-FEEDBACK.md",
+          "touches": []
+        },
+        {
+          "id": "DEB-T2",
+          "verb": "EDIT",
+          "description": "Add 30s debounce window to FileWatcher event handler in src/cli/coderef-watch.ts",
+          "touches": [
+            "src/cli/coderef-watch.ts"
+          ]
+        },
+        {
+          "id": "DEB-T3",
+          "verb": "EDIT",
+          "description": "On debounce flush invoke incremental coderef-scan + populate-coderef + generate-foundation-docs against changed-paths set",
+          "touches": [
+            "src/cli/coderef-watch.ts"
+          ]
+        },
+        {
+          "id": "DEB-T4",
+          "verb": "TEST",
+          "description": "Synthetic test: edit src/index.ts then wait 31s; verify single regen run, not 2",
+          "touches": []
+        },
+        {
+          "id": "DEB-T5",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2: DEBOUNCE window + incremental regen on flush",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "HEARTBEAT",
+      "hard_stop": false,
+      "description": "HEARTBEAT: emit .coderef/last-scan.json with {last_scan_at, paths_changed, status, exit_reason}. Atomic temp+rename writes. Schema versioned. Validate JSON against bundled schema before write.",
+      "tasks": [
+        {
+          "id": "HB-T1",
+          "verb": "WRITE",
+          "description": "Define heartbeat schema {last_scan_at, paths_changed, status, exit_reason, schema_version} as JSON Schema",
+          "touches": [
+            "src/cli/coderef-watch-heartbeat.schema.json"
+          ]
+        },
+        {
+          "id": "HB-T2",
+          "verb": "EDIT",
+          "description": "On debounce flush write .coderef/last-scan.json via temp+rename atomic pattern",
+          "touches": [
+            "src/cli/coderef-watch.ts"
+          ]
+        },
+        {
+          "id": "HB-T3",
+          "verb": "TEST",
+          "description": "Verify heartbeat is valid JSON after every flush; corrupted-state recovery test",
+          "touches": []
+        },
+        {
+          "id": "HB-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 3: HEARTBEAT atomic writes",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "LLOYD INTEGRATE",
+      "hard_stop": false,
+      "description": "LLOYD INTEGRATE: document the cheap per-request read pattern (LLOYD computes doc_age_seconds from heartbeat). Emit per-debounce events to LOGS/SESSIONS/{sid}/{domain}/events.jsonl per WO-SESSIONS-EVENT-EMISSION-PROTOCOL-001. Smoke-test from a Python read.",
+      "tasks": [
+        {
+          "id": "LLOYD-T1",
+          "verb": "WRITE",
+          "description": "Author docs/LLOYD-INTEGRATION.md describing the LLOYD read pattern (now - last_scan_at = doc_age_seconds)",
+          "touches": [
+            "docs/LLOYD-INTEGRATION.md"
+          ]
+        },
+        {
+          "id": "LLOYD-T2",
+          "verb": "EDIT",
+          "description": "On debounce flush emit a session event to LOGS/SESSIONS/{sid}/{domain}/events.jsonl per WO-SESSIONS-EVENT-EMISSION-PROTOCOL-001",
+          "touches": [
+            "src/cli/coderef-watch.ts"
+          ]
+        },
+        {
+          "id": "LLOYD-T3",
+          "verb": "TEST",
+          "description": "Smoke-test from a Python read: load .coderef/last-scan.json, compute age, assert < 60s after a fresh edit",
+          "touches": []
+        },
+        {
+          "id": "LLOYD-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 4: LLOYD INTEGRATE + event emission",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "DEPLOYMENT STORY",
+      "hard_stop": false,
+      "description": "DEPLOYMENT STORY: author docs/DEPLOY-CODEREF-WATCH.md with per-OS service unit instructions (systemd unit for Linux, launchd plist for macOS, Windows Service via nssm or sc.exe, pm2 ecosystem.config.js for Node-managed envs, manual-start fallback). Document explicitly that chokidar runs in CONSUMER WORKSPACE, not LLOYD process, per LLOYD constraint #1.",
+      "tasks": [
+        {
+          "id": "DEP-T1",
+          "verb": "WRITE",
+          "description": "Author docs/DEPLOY-CODEREF-WATCH.md with per-OS service-unit sections",
+          "touches": [
+            "docs/DEPLOY-CODEREF-WATCH.md"
+          ]
+        },
+        {
+          "id": "DEP-T2",
+          "verb": "EDIT",
+          "description": "docs/CLI.md entry for coderef-watch (flags, env, exit codes, where deployment doc lives)",
+          "touches": [
+            "docs/CLI.md"
+          ]
+        },
+        {
+          "id": "DEP-T3",
+          "verb": "CHECK",
+          "description": "Confirm explicit statement that chokidar runs in CONSUMER WORKSPACE not LLOYD process",
+          "touches": [
+            "docs/DEPLOY-CODEREF-WATCH.md"
+          ]
+        },
+        {
+          "id": "DEP-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 5: DEPLOYMENT STORY",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "CLOSE",
+      "hard_stop": true,
+      "description": "CLOSE: standard 5-step close (Phase 6 universal gate from prerequisite WO will fire on this WO close - useful smoke test of WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001).",
+      "tasks": [
+        {
+          "id": "CLOSE-T1",
+          "verb": "RUN",
+          "description": "Run /close-workorder against this WO (manual close path)",
+          "touches": []
+        },
+        {
+          "id": "CLOSE-T2",
+          "verb": "CHECK",
+          "description": "Verify Phase 6 universal gate (from WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001) fired and regenerated foundation-docs + .coderef/foundation-docs-meta.json",
+          "touches": [
+            ".coderef/foundation-docs-meta.json"
+          ]
+        },
+        {
+          "id": "CLOSE-T3",
+          "verb": "RUN",
+          "description": "Run validate-docs.js to confirm freshness gate exits 0",
+          "touches": []
+        },
+        {
+          "id": "CLOSE-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 6: WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001 close",
+          "touches": []
+        },
+        {
+          "id": "CLOSE-T5",
+          "verb": "STOP",
+          "description": "Hard stop: final approval before TRACKING marks completed",
+          "touches": []
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 6,
+      "approved": false,
+      "reason": "phased gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260426T005527Z",
+  "plan_type_decided_by": "create-workorder@2.3.0",
+  "workorder_id": "WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001",
+  "feature_name": "chokidar-doc-freshness-daemon",
+  "created": "2026-04-26T01:00:17Z",
+  "plan_type_rationale": "Multi-phase, multi-concern: WIRE existing scanner/file-watcher.ts into new CLI bin + ADD debounce + EMIT heartbeat + INTEGRATE with LLOYD pre-prompt + author cross-OS DEPLOYMENT STORY + CLOSE. Prerequisite WO must ship first. Cross-runtime (Node daemon writes file, LLOYD Python reads) + cross-repo (each consumer workspace runs its own daemon) concerns require explicit phase separation."
+}

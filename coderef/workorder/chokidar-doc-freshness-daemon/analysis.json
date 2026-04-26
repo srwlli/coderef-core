@@ -1,0 +1,214 @@
+{
+  "workorder_id": "WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001",
+  "feature_name": "chokidar-doc-freshness-daemon",
+  "analysis_authored_at": "2026-04-26T01:00:17Z",
+  "blast_radius": {
+    "files_modified": [
+      "package.json (bin map entry)",
+      "src/scanner/file-watcher.ts (refactor for CLI use)",
+      "docs/CLI.md (new section)"
+    ],
+    "files_created": [
+      "src/cli/coderef-watch.ts",
+      "src/cli/coderef-watch-heartbeat.schema.json",
+      "dist/src/cli/coderef-watch.js (build output)",
+      "docs/DEPLOY-CODEREF-WATCH.md",
+      "docs/LLOYD-INTEGRATION.md"
+    ],
+    "downstream_consumers": [
+      "LLOYD (Python, reads .coderef/last-scan.json on every pre-prompt assembly)",
+      "ORCHESTRATOR (consumes per-debounce events from events.jsonl for sessions tab)",
+      "Each consumer workspace operator (must run the daemon per LLOYD constraint #1)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Debounce window thrash on bulk file ops (rebase, npm install, branch switch)",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Cap regen run at 1 per 30s window even if events keep arriving; add upper-bound flush rate; document expected behavior on bulk events"
+    },
+    {
+      "id": "R2",
+      "title": "Heartbeat partial-write corrupting LLOYD pre-prompt reads",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Atomic temp+rename pattern (Phase 3 explicit). LLOYD-side: try/except around JSON parse; degrade to no-freshness if corrupt"
+    },
+    {
+      "id": "R3",
+      "title": "Daemon process crash leaves stale heartbeat that LLOYD treats as fresh",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Heartbeat carries process_pid + alive_at. LLOYD checks alive_at age; if > N min, treat as stale despite last_scan_at value"
+    },
+    {
+      "id": "R4",
+      "title": "chokidar event loss on Windows FS-watcher recursive depth",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Document known chokidar Windows quirks in deployment doc; recommend usePolling fallback flag for paths > N depth"
+    },
+    {
+      "id": "R5",
+      "title": "Prerequisite WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001 has not shipped, daemon double-fires regen with Phase 6 close",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "execute-workorder for this WO must verify prerequisite WO is closed before Phase 1 runs; communication.json blockers field tracks this"
+    },
+    {
+      "id": "R6",
+      "title": "Per-OS service unit not maintained for new OSes (e.g., FreeBSD, Alpine)",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Document the supported list explicitly; manual-start fallback covers everything else"
+    }
+  ],
+  "candidates": [
+    "__tests__/accuracy-validation.test.ts",
+    "__tests__/dynamic-imports.test.ts",
+    "__tests__/generators/helpers.ts",
+    "__tests__/generators/root-cause-alignment.test.ts",
+    "__tests__/integration.test.ts",
+    "__tests__/js-call-detector.test.ts",
+    "__tests__/orphan-detection.test.ts",
+    "__tests__/scanner-standalone.test.ts",
+    "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
+    "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+    "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+    "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+    "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+    "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+    "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+    "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+    "dist/src/cli/",
+    "docs/CLI.md",
+    "examples/nextjs-api-route.ts",
+    "package.json",
+    "scanner.js",
+    "scripts/doc-gen/enhance-existing-docs.js",
+    "scripts/doc-gen/utils.js",
+    "scripts/doc-gen/validate-docs.js",
+    "scripts/setup-coderef-dir/setup_coderef_dirs.py",
+    "scripts/setup-coderef-dir/test_setup_coderef_dirs.py",
+    "src/analyzer/analyzer-service.ts",
+    "src/analyzer/ast-element-scanner.ts",
+    "src/analyzer/config-analyzer.ts",
+    "src/analyzer/contract-detector.ts",
+    "src/analyzer/dependency-analyzer.ts",
+    "src/analyzer/design-pattern-detector.ts",
+    "src/analyzer/docs-analyzer.ts",
+    "src/analyzer/entry-detector.ts",
+    "src/analyzer/graph-builder.ts",
+    "src/analyzer/graph-helpers.ts",
+    "src/analyzer/js-call-detector/index.ts",
+    "src/analyzer/js-parser.ts",
+    "src/analyzer/migration-route-analyzer.ts",
+    "src/analyzer/project-classifier.ts",
+    "src/cache/incremental-cache.ts",
+    "src/cli/",
+    "src/cli/coderef-pipeline.ts",
+    "src/cli/detect-languages.ts",
+    "src/cli/scan.ts",
+    "src/cli/validate-routes.ts",
+    "src/config/presets.ts",
+    "src/context/agentic-formatter.ts",
+    "src/context/breaking-change-detector/index.ts",
+    "src/context/context-generator.ts",
+    "src/context/context-tracker.ts",
+    "src/context/entry-point-detector.ts",
+    "src/context/markdown-formatter.ts",
+    "src/context/test-pattern-analyzer.ts",
+    "src/context/types.ts",
+    "src/errors/CodeRefError.ts",
+    "src/errors/FileNotFoundError.ts",
+    "src/errors/ScanError.ts",
+    "src/export/graph-exporter.ts",
+    "src/fileGeneration/analyzeCoverage.ts",
+    "src/fileGeneration/detectDrift.ts",
+    "src/fileGeneration/generateContext.ts",
+    "src/fileGeneration/generateDiagrams.ts",
+    "src/fileGeneration/index-storage.ts",
+    "src/formatter/formatter.ts",
+    "src/generator/generateFrontendCalls.ts",
+    "src/generator/generateRoutes.ts",
+    "src/integration/llm/anthropic-provider.ts",
+    "src/integration/llm/ollama-provider.ts",
+    "src/integration/llm/openai-provider.ts",
+    "src/integration/rag/__tests__/confidence-scorer.test.ts",
+    "src/integration/rag/chunk-converter.ts",
+    "src/integration/rag/context-builder.ts",
+    "src/integration/rag/incremental-indexer.ts",
+    "src/parser/parser.ts",
+    "src/pipeline/generators/context-generator.ts",
+    "src/pipeline/generators/coverage-generator.ts",
+    "src/pipeline/generators/drift-generator.ts",
+    "src/pipeline/generators/export-generator.ts",
+    "src/pipeline/generators/health-generator.ts",
+    "src/pipeline/generators/pattern-generator.ts",
+    "src/pipeline/incremental-cache.ts",
+    "src/pipeline/orchestrator.ts",
+    "src/plugins/loaders/local-loader.ts",
+    "src/plugins/loaders/npm-loader.ts",
+    "src/plugins/manifest-schema.ts",
+    "src/plugins/plugin-scanner.ts",
+    "src/query/query-executor.ts",
+    "src/registry/entity-registry.ts",
+    "src/scanner/__tests__/incremental-cache-recursive.test.ts",
+    "src/scanner/__tests__/parallel-path-behavior.test.ts",
+    "src/scanner/__tests__/parallel-processing.test.ts",
+    "src/scanner/error-reporter.ts",
+    "src/scanner/file-watcher.ts",
+    "src/scanner/frontend-scanner.ts",
+    "src/scanner/lru-cache.ts",
+    "src/scanner/scanner.ts",
+    "src/scanner/tree-sitter-scanner.ts",
+    "src/types/types.ts",
+    "src/validator/frontend-update-generator.ts",
+    "src/validator/migration-mapper.ts",
+    "src/validator/validator.ts",
+    "types.d.ts",
+    "utils/fs.js",
+    "utils/fs.ts"
+  ],
+  "dependencies": [
+    "@coderef/CODEREF-CORE (chokidar, FileWatcher)",
+    "scripts/log-session-event.mjs (event emission per WO-SESSIONS-EVENT-EMISSION-PROTOCOL-001)",
+    "/generate-foundation-docs skill (regen step on debounce flush)",
+    "/coderef-scan + /populate-coderef skills (incremental scan steps)",
+    "Prerequisite: WO-PHASE-6-CLOSE-GATE-UNIVERSAL-001 (SKILLS-owned)"
+  ],
+  "public_api_hits": [
+    "package.json bin map adds coderef-watch entry (publicly visible CLI)",
+    ".coderef/last-scan.json (new artifact LLOYD now reads)",
+    "docs/CLI.md (public CLI reference)"
+  ],
+  "decision_records": [
+    {
+      "id": "D1",
+      "choice": "Heartbeat lives at .coderef/last-scan.json (sibling of .coderef/index.json)",
+      "rationale": "Co-located with other LLOYD-readable .coderef/ machine artifacts; matches LLOYD existing access pattern"
+    },
+    {
+      "id": "D2",
+      "choice": "30-second debounce window (not configurable in v1)",
+      "rationale": "LLOYD D2 spec specifies 30s; reduces churn under bulk file ops; can add --debounce-ms flag in v1.1 if needed"
+    },
+    {
+      "id": "D3",
+      "choice": "Atomic write via temp+rename (not in-place fs.writeFile)",
+      "rationale": "LLOYD reads heartbeat on every request; partial writes would corrupt pre-prompt assembly"
+    },
+    {
+      "id": "D4",
+      "choice": "No RAG re-index on debounce (out of scope)",
+      "rationale": "RAG re-index is expensive (30-120s); separate workflow. Daemon focuses on scan + docs only"
+    },
+    {
+      "id": "D5",
+      "choice": "Per-OS deployment doc co-located in docs/, not embedded in CLI --help",
+      "rationale": "Service unit installation is per-machine setup; CLI --help should stay terse"
+    }
+  ]
+}
