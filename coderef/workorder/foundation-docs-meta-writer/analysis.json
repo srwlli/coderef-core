@@ -1,0 +1,159 @@
+{
+  "workorder_id": "WO-FOUNDATION-DOCS-META-WRITER-001",
+  "feature_name": "foundation-docs-meta-writer",
+  "analysis_authored_at": "2026-04-26T06:09:27Z",
+  "blast_radius": {
+    "files_modified": [
+      "ASSISTANT/SKILLS/CORE/generate-foundation-docs/SKILL.md (insert Step 4.5; bump 2.1.0 -> 2.2.0)",
+      "ASSISTANT/SKILLS/CORE/generate-foundation-docs/skill.json (version bump)"
+    ],
+    "files_created": [
+      "scripts/doc-gen/foundation-docs-meta.schema.json",
+      "scripts/doc-gen/generate-meta-json.js",
+      "__tests__/foundation-docs-meta-writer.test.mjs"
+    ],
+    "downstream_consumers": [
+      "LLOYD (Python; reads .coderef/foundation-docs-meta.json on every pre-prompt assembly to compute doc_age_seconds per Q5 section 5)",
+      "Future ROUTER pre-prompt assembly (per ROUTER-DESIGN.md section 11.2 Gate D)",
+      "ORCHESTRATOR (consumes trigger.kind for staleness-cause attribution)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Existing foundation-docs may have inconsistent mtimes (regenerated in batches over seconds)",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "Schema accepts up to ~1 minute spread between min/max; LLOYD takes max for the most-aggressive freshness check."
+    },
+    {
+      "id": "R2",
+      "title": "Atomic write race if two close-out paths fire simultaneously",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Temp+rename atomic on POSIX same-FS; on Windows fs.renameSync is atomic same-volume. LLOYD's read is also resilient (try/except returns None on parse fail)."
+    },
+    {
+      "id": "R3",
+      "title": "sha256 content_hash adds non-trivial cost on large docs",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Foundation-docs are <50KB total; hashing is sub-ms. Single full-pipeline run already takes >30s."
+    },
+    {
+      "id": "R4",
+      "title": "Schema URL points to coderef.dev which doesn't host schemas yet",
+      "likelihood": "certain",
+      "impact": "low",
+      "mitigation": "Use $schema URI as forward-compatible identifier only; LLOYD reads schema_version field as the version pin (per Q5 section 6 open Q2)."
+    },
+    {
+      "id": "R5",
+      "title": "Step 4.5 META insertion may collide with parallel SKILL.md edits in another WO",
+      "likelihood": "very low",
+      "impact": "low",
+      "mitigation": "This is the only WO touching that skill today; merge conflicts unlikely."
+    }
+  ],
+  "candidates": [
+    ".coderef/",
+    "__tests__/generators/helpers.ts",
+    "__tests__/generators/root-cause-alignment.test.ts",
+    "__tests__/integration.test.ts",
+    "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
+    "coderef/foundation-docs/",
+    "scripts/doc-gen/",
+    "scripts/doc-gen/enhance-existing-docs.js",
+    "scripts/doc-gen/utils.js",
+    "scripts/doc-gen/validate-docs.js",
+    "scripts/setup-coderef-dir/test_setup_coderef_dirs.py",
+    "src/analyzer/analyzer-service.ts",
+    "src/analyzer/ast-element-scanner.ts",
+    "src/analyzer/config-analyzer.ts",
+    "src/analyzer/contract-detector.ts",
+    "src/analyzer/dependency-analyzer.ts",
+    "src/analyzer/design-pattern-detector.ts",
+    "src/analyzer/entry-detector.ts",
+    "src/analyzer/graph-builder.ts",
+    "src/analyzer/migration-route-analyzer.ts",
+    "src/analyzer/project-classifier.ts",
+    "src/analyzer/route-parsers.ts",
+    "src/cli/coderef-pipeline.ts",
+    "src/cli/coderef-rag-server.ts",
+    "src/cli/coderef-watch.ts",
+    "src/cli/rag-status.ts",
+    "src/context/agentic-formatter.ts",
+    "src/context/context-tracker.ts",
+    "src/errors/CodeRefError.ts",
+    "src/export/graph-exporter.ts",
+    "src/fileGeneration/index-storage.ts",
+    "src/formatter/formatter.ts",
+    "src/generator/generateFrontendCalls.ts",
+    "src/generator/generateRoutes.ts",
+    "src/indexer/indexer-service.ts",
+    "src/indexer/metadata-index.ts",
+    "src/indexer/query-engine.ts",
+    "src/integration/llm/anthropic-provider.ts",
+    "src/integration/llm/ollama-provider.ts",
+    "src/integration/llm/openai-provider.ts",
+    "src/integration/rag/__tests__/confidence-scorer.test.ts",
+    "src/integration/rag/context-builder.ts",
+    "src/integration/vector/vector-store.ts",
+    "src/parser/parser.ts",
+    "src/pipeline/generators/context-generator.ts",
+    "src/pipeline/generators/export-generator.ts",
+    "src/pipeline/generators/graph-output.ts",
+    "src/plugins/plugin-scanner.ts",
+    "src/query/query-executor.ts",
+    "src/scanner/error-reporter.ts",
+    "src/types/types.ts",
+    "src/utils/logger.ts",
+    "src/validator/validator.ts",
+    "types.d.ts",
+    "utils/fs.js",
+    "utils/fs.ts"
+  ],
+  "dependencies": [
+    "Q5 deliverable (DOC-AGE-EXPOSURE-Q5.md) for schema and write-point spec",
+    "Existing doc-gen pipeline (must run AFTER enhance-existing-docs.js so doc mtimes are stable)",
+    "node:crypto.createHash('sha256') for content_hash",
+    "ASSISTANT/SKILLS/CORE/generate-foundation-docs/SKILL.md for Step 4.5 wiring"
+  ],
+  "public_api_hits": [
+    ".coderef/foundation-docs-meta.json (NEW canonical artifact LLOYD reads)",
+    "/generate-foundation-docs SKILL.md (public skill contract; bumped to 2.2.0)",
+    "scripts/doc-gen/foundation-docs-meta.schema.json (publicly versioned schema)"
+  ],
+  "decision_records": [
+    {
+      "id": "D1",
+      "choice": "Sibling location: .coderef/foundation-docs-meta.json (not coderef/foundation-docs/...)",
+      "rationale": "Per Q5 section 4 \u2014 co-located with other LLOYD-readable .coderef/ machine artifacts; matches LLOYD existing access pattern."
+    },
+    {
+      "id": "D2",
+      "choice": "Store last_regenerated_at (absolute UTC), NOT doc_age_days",
+      "rationale": "Per Q5 section 1.2 \u2014 relative values written at gen time freeze wrong from the moment they land. Computed-on-read by LLOYD."
+    },
+    {
+      "id": "D3",
+      "choice": "Producer is /generate-foundation-docs skill final META step",
+      "rationale": "Per Q5 section 4 \u2014 only place with global view + trigger context. Individual doc-gen scripts only see one doc."
+    },
+    {
+      "id": "D4",
+      "choice": "Trigger context via env vars (CODEREF_META_TRIGGER_KIND etc), default 'manual'",
+      "rationale": "Caller (close-workorder, chokidar daemon when shipped) sets env to attribute regen cause; allows zero-arg manual invocation."
+    },
+    {
+      "id": "D5",
+      "choice": "Self-validate against bundled schema before write",
+      "rationale": "Schema drift detected at write time, not at first LLOYD read; cheaper diagnostic."
+    },
+    {
+      "id": "D6",
+      "choice": "Atomic temp+rename",
+      "rationale": "Per Q5 section 4 - LLOYD reads on every request; partial writes corrupt pre-prompt assembly."
+    }
+  ]
+}

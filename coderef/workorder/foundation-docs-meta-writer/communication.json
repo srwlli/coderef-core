@@ -1,0 +1,80 @@
+{
+  "workorder_id": "WO-FOUNDATION-DOCS-META-WRITER-001",
+  "feature_name": "foundation-docs-meta-writer",
+  "created": "2026-04-26T06:09:27Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "project_id": "coderef-core",
+  "originating_dispatches": [
+    "DISPATCH-2026-04-25-006"
+  ],
+  "predecessor_for": [
+    "LLOYD router pre-prompt freshness reads (ROUTER-DESIGN.md section 11.2 Gate D)"
+  ],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/foundation-docs-meta-writer/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/foundation-docs-meta-writer/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/foundation-docs-meta-writer/analysis.json",
+  "handoff": {
+    "from": "CODEREF-CORE (create-workorder)",
+    "to": "CODEREF-CORE (execute-workorder, immediate)",
+    "reason": "Plan authored; no pre-req blockers; immediate execution per dispatch -006."
+  },
+  "execution_rules": {
+    "plan_type": "strict",
+    "hard_stops_required": true,
+    "hard_stop_phases": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "foundation_docs_gate": true,
+    "discovery_required": true,
+    "approved_verbs": [
+      "READ",
+      "WRITE",
+      "EDIT",
+      "RUN",
+      "TEST",
+      "COMMIT",
+      "CHECK",
+      "STOP",
+      "DELETE"
+    ]
+  },
+  "hard_constraints": [
+    "Phase-based, no ETAs",
+    "TRACKING is the only registry",
+    "Local-only",
+    "Sibling location is .coderef/foundation-docs-meta.json, NOT coderef/foundation-docs/foundation-docs-meta.json",
+    "One source of truth: only the META step writes this file",
+    "Store last_regenerated_at (absolute UTC), NOT doc_age_days (frozen-wrong)",
+    "Atomic write: temp + rename (LLOYD reads on every request; partial writes corrupt pre-prompt assembly)",
+    "Reuse existing /generate-foundation-docs canonical wrapper (do not duplicate the META step in execute-workorder Step 5.0 inline list \u2014 that's a separate cleanup WO)"
+  ],
+  "blockers": [],
+  "skills_touched": [
+    "generate-foundation-docs"
+  ],
+  "decisions_log": [
+    {
+      "event": "plan_type_set_strict",
+      "reason": "ORCHESTRATOR DISPATCH-2026-04-25-006 explicitly specifies plan_type=strict (touches a public skill contract \u2014 /generate-foundation-docs SKILL.md, edits the canonical doc-gen pipeline, ships a new machine-readable artifact LLOYD now reads on every pre-prompt assembly). Strict requires hard stop per phase per the planner contract.",
+      "at": "2026-04-26T06:09:27Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-04-26T06:09:27Z",
+      "event": "workorder_created",
+      "by": "CODEREF-CORE (create-workorder@2.3.0)",
+      "note": "Plan authored from DISPATCH-2026-04-25-006. Strict 5 phases (SCHEMA / WRITER / TRIGGER PROVENANCE / TEST / CLOSE). Every phase hard-stop per strict contract. Foundation-docs gate TRUE. Per Q5 section 4: producer is /generate-foundation-docs skill final META step (single source of truth)."
+    }
+  ]
+}

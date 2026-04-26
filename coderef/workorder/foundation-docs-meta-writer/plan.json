@@ -1,0 +1,231 @@
+{
+  "plan_type": "strict",
+  "goal": "Add META step to /generate-foundation-docs (canonical at ASSISTANT/SKILLS/CORE/generate-foundation-docs/) that emits .coderef/foundation-docs-meta.json after every successful generate+enhance run. Per the Q5 DOC-AGE-EXPOSURE decision: sibling JSON in .coderef/, absolute UTC last_regenerated_at per doc, computed-on-read by LLOYD (~50us warm cache). Producer is the orchestrating skill (only place with global view + trigger context). Implements per-Q5 \u00a73 schema (per-doc + aggregate fields).",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "SCHEMA",
+      "hard_stop": true,
+      "description": "SCHEMA: define scripts/doc-gen/foundation-docs-meta.schema.json (Draft 2020-12) per Q5 section 3 \u2014 required schema_version, project_id, generated_at, minimum/maximum_last_regenerated_at, docs map (per-doc fields: last_regenerated_at, generator, source_artifacts, byte_size, content_hash, kind, human_authored), trigger sub-object (kind enum + workorder_id + session_id).",
+      "tasks": [
+        {
+          "id": "SCH-T1",
+          "verb": "WRITE",
+          "description": "Author scripts/doc-gen/foundation-docs-meta.schema.json (Draft 2020-12) with all required fields per Q5 section 3.",
+          "touches": [
+            "scripts/doc-gen/foundation-docs-meta.schema.json"
+          ]
+        },
+        {
+          "id": "SCH-T2",
+          "verb": "CHECK",
+          "description": "Verify schema is parseable JSON and uses the canonical $schema URI.",
+          "touches": []
+        },
+        {
+          "id": "SCH-T3",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1: SCHEMA.",
+          "touches": []
+        },
+        {
+          "id": "SCH-T4",
+          "verb": "STOP",
+          "description": "Hard stop: schema reviewed before WRITER starts.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "WRITER",
+      "hard_stop": true,
+      "description": "WRITER: scripts/doc-gen/generate-meta-json.js. Reads coderef/foundation-docs/*.md mtimes + sizes + sha256 hashes; loads project_id from package.json or .coderef/context.json fallback; assembles per-doc + aggregate object; atomic temp+rename write to .coderef/foundation-docs-meta.json. Self-validates against the schema before write.",
+      "tasks": [
+        {
+          "id": "WR-T1",
+          "verb": "WRITE",
+          "description": "Author scripts/doc-gen/generate-meta-json.js: reads 8 foundation-docs, sha256 content_hash, mtime->ISO 8601 UTC, package.json project name, atomic temp+rename, schema self-validation before write.",
+          "touches": [
+            "scripts/doc-gen/generate-meta-json.js"
+          ]
+        },
+        {
+          "id": "WR-T2",
+          "verb": "RUN",
+          "description": "Smoke test: run generate-meta-json.js against current CODEREF-CORE; verify .coderef/foundation-docs-meta.json appears with all 8 docs and aggregate minimum/maximum.",
+          "touches": [
+            "scripts/doc-gen/generate-meta-json.js"
+          ]
+        },
+        {
+          "id": "WR-T3",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2: WRITER.",
+          "touches": []
+        },
+        {
+          "id": "WR-T4",
+          "verb": "STOP",
+          "description": "Hard stop: writer output reviewed before trigger-provenance wiring.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "TRIGGER PROVENANCE",
+      "hard_stop": true,
+      "description": "TRIGGER PROVENANCE: writer reads CODEREF_META_TRIGGER_KIND, CODEREF_META_WORKORDER_ID, CODEREF_META_SESSION_ID env vars; defaults trigger.kind to 'manual' when unset. Documents env-var contract in script header.",
+      "tasks": [
+        {
+          "id": "TP-T1",
+          "verb": "EDIT",
+          "description": "Add env-var read in scripts/doc-gen/generate-meta-json.js: CODEREF_META_TRIGGER_KIND (default 'manual'), CODEREF_META_WORKORDER_ID (optional), CODEREF_META_SESSION_ID (optional) -> trigger sub-object.",
+          "touches": [
+            "scripts/doc-gen/generate-meta-json.js"
+          ]
+        },
+        {
+          "id": "TP-T2",
+          "verb": "RUN",
+          "description": "Smoke test: CODEREF_META_TRIGGER_KIND=workorder_phase_6 CODEREF_META_WORKORDER_ID=WO-TEST-001 node scripts/doc-gen/generate-meta-json.js; verify trigger.kind=workorder_phase_6 + trigger.workorder_id=WO-TEST-001 in output.",
+          "touches": []
+        },
+        {
+          "id": "TP-T3",
+          "verb": "COMMIT",
+          "description": "Commit Phase 3: TRIGGER PROVENANCE.",
+          "touches": []
+        },
+        {
+          "id": "TP-T4",
+          "verb": "STOP",
+          "description": "Hard stop: trigger plumbing reviewed before TEST.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "TEST",
+      "hard_stop": true,
+      "description": "TEST: __tests__/foundation-docs-meta-writer.test.mjs \u2014 runs the writer in a fixture project, validates output JSON against schema, asserts per-doc last_regenerated_at matches mtime, content_hash is 64-char hex, aggregate minimum_at <= maximum_at, trigger.kind plumbed through from env, no .tmp residue, LLOYD-style Python-equivalent read computes age cheaply.",
+      "tasks": [
+        {
+          "id": "TS-T1",
+          "verb": "WRITE",
+          "description": "Author __tests__/foundation-docs-meta-writer.test.mjs: builds fixture project (8 minimal foundation-docs), runs writer with trigger env vars, validates output against schema, asserts per-doc + aggregate fields.",
+          "touches": [
+            "__tests__/foundation-docs-meta-writer.test.mjs"
+          ]
+        },
+        {
+          "id": "TS-T2",
+          "verb": "TEST",
+          "description": "Run the test; expect PASS.",
+          "touches": []
+        },
+        {
+          "id": "TS-T3",
+          "verb": "COMMIT",
+          "description": "Commit Phase 4: TEST.",
+          "touches": []
+        },
+        {
+          "id": "TS-T4",
+          "verb": "STOP",
+          "description": "Hard stop: test verified before SKILL.md edit.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "CLOSE",
+      "hard_stop": true,
+      "description": "CLOSE: edit ASSISTANT/SKILLS/CORE/generate-foundation-docs/SKILL.md to insert Step 4.5 META between Step 4 (enhance) and Step 5 (validate); bump skill version 2.1.0 -> 2.2.0; standard close-out (universal Phase 6 gate self-tests the META step on close).",
+      "tasks": [
+        {
+          "id": "CL-T1",
+          "verb": "EDIT",
+          "description": "ASSISTANT/SKILLS/CORE/generate-foundation-docs/SKILL.md: insert Step 4.5 META between Step 4 (enhance) and Step 5 (validate); bump version 2.1.0 -> 2.2.0; reference the new helper script.",
+          "touches": []
+        },
+        {
+          "id": "CL-T2",
+          "verb": "RUN",
+          "description": "Run /close-workorder against this WO (manual close path); universal Phase 6 gate self-tests the META step.",
+          "touches": []
+        },
+        {
+          "id": "CL-T3",
+          "verb": "CHECK",
+          "description": "Verify .coderef/foundation-docs-meta.json was written by the gate; trigger.kind reflects close context.",
+          "touches": [
+            ".coderef/foundation-docs-meta.json"
+          ]
+        },
+        {
+          "id": "CL-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 5: CLOSE + skill edit.",
+          "touches": []
+        },
+        {
+          "id": "CL-T5",
+          "verb": "STOP",
+          "description": "Hard stop: final approval.",
+          "touches": []
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 3,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 4,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 5,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260426T060728Z",
+  "plan_type_decided_by": "create-workorder@2.3.0",
+  "workorder_id": "WO-FOUNDATION-DOCS-META-WRITER-001",
+  "feature_name": "foundation-docs-meta-writer",
+  "created": "2026-04-26T06:09:27Z",
+  "plan_type_rationale": "Public-contract change (/generate-foundation-docs SKILL.md gains a new step + bumps version) + new canonical artifact (.coderef/foundation-docs-meta.json \u2014 LLOYD reads on every request) + cross-cutting schema. Strict plan_type per dispatch-006 explicit specification."
+}

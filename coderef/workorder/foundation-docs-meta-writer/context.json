@@ -1,0 +1,118 @@
+{
+  "workorder_id": "WO-FOUNDATION-DOCS-META-WRITER-001",
+  "feature_name": "foundation-docs-meta-writer",
+  "created": "2026-04-26T06:09:27Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "project_id": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-04-25-006",
+  "decision_basis": "C:/Users/willh/Desktop/CODEREF/ASSISTANT/LOGS/SESSIONS/daily-agent-session-2026-04-25/CODEREF-CORE/DOC-AGE-EXPOSURE-Q5.md",
+  "intake": {
+    "trigger": "orchestrator_dispatch",
+    "user_request": "Commission WO-FOUNDATION-DOCS-META-WRITER-001 per Q5 sibling-JSON-with-absolute-UTC decision; one source of truth at .coderef/foundation-docs-meta.json; producer is /generate-foundation-docs final META step; LLOYD computes doc_age on read."
+  },
+  "classification": {
+    "plan_type": "strict",
+    "plan_type_rationale": "Public-contract change (/generate-foundation-docs SKILL.md gains a new step + bumps version) + new canonical artifact (.coderef/foundation-docs-meta.json \u2014 LLOYD reads on every request) + cross-cutting schema. Strict plan_type per dispatch-006 explicit specification.",
+    "plan_type_decided_by": "create-workorder@2.3.0",
+    "discovery_ref": "planning-discovery-20260426T060728Z",
+    "discovery": {
+      "candidates": [
+        ".coderef/",
+        "__tests__/generators/helpers.ts",
+        "__tests__/generators/root-cause-alignment.test.ts",
+        "__tests__/integration.test.ts",
+        "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
+        "coderef/foundation-docs/",
+        "scripts/doc-gen/",
+        "scripts/doc-gen/enhance-existing-docs.js",
+        "scripts/doc-gen/utils.js",
+        "scripts/doc-gen/validate-docs.js",
+        "scripts/setup-coderef-dir/test_setup_coderef_dirs.py",
+        "src/analyzer/analyzer-service.ts",
+        "src/analyzer/ast-element-scanner.ts",
+        "src/analyzer/config-analyzer.ts",
+        "src/analyzer/contract-detector.ts",
+        "src/analyzer/dependency-analyzer.ts",
+        "src/analyzer/design-pattern-detector.ts",
+        "src/analyzer/entry-detector.ts",
+        "src/analyzer/graph-builder.ts",
+        "src/analyzer/migration-route-analyzer.ts",
+        "src/analyzer/project-classifier.ts",
+        "src/analyzer/route-parsers.ts",
+        "src/cli/coderef-pipeline.ts",
+        "src/cli/coderef-rag-server.ts",
+        "src/cli/coderef-watch.ts",
+        "src/cli/rag-status.ts",
+        "src/context/agentic-formatter.ts",
+        "src/context/context-tracker.ts",
+        "src/errors/CodeRefError.ts",
+        "src/export/graph-exporter.ts",
+        "src/fileGeneration/index-storage.ts",
+        "src/formatter/formatter.ts",
+        "src/generator/generateFrontendCalls.ts",
+        "src/generator/generateRoutes.ts",
+        "src/indexer/indexer-service.ts",
+        "src/indexer/metadata-index.ts",
+        "src/indexer/query-engine.ts",
+        "src/integration/llm/anthropic-provider.ts",
+        "src/integration/llm/ollama-provider.ts",
+        "src/integration/llm/openai-provider.ts",
+        "src/integration/rag/__tests__/confidence-scorer.test.ts",
+        "src/integration/rag/context-builder.ts",
+        "src/integration/vector/vector-store.ts",
+        "src/parser/parser.ts",
+        "src/pipeline/generators/context-generator.ts",
+        "src/pipeline/generators/export-generator.ts",
+        "src/pipeline/generators/graph-output.ts",
+        "src/plugins/plugin-scanner.ts",
+        "src/query/query-executor.ts",
+        "src/scanner/error-reporter.ts",
+        "src/types/types.ts",
+        "src/utils/logger.ts",
+        "src/validator/validator.ts",
+        "types.d.ts",
+        "utils/fs.js",
+        "utils/fs.ts"
+      ],
+      "blast_radius": [],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "warnings": [
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260426T060728Z"
+    },
+    "classifier_override": {
+      "classifier_choice": "auto",
+      "override_to": "strict",
+      "override_reason": "ORCHESTRATOR DISPATCH-2026-04-25-006 explicitly specifies plan_type=strict (touches a public skill contract \u2014 /generate-foundation-docs SKILL.md, edits the canonical doc-gen pipeline, ships a new machine-readable artifact LLOYD now reads on every pre-prompt assembly). Strict requires hard stop per phase per the planner contract."
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "scripts/doc-gen/foundation-docs-meta.schema.json (JSON Schema 2020-12)",
+      "scripts/doc-gen/generate-meta-json.js (atomic writer; sha256 content_hash; per-doc + aggregate fields; trigger.kind via env)",
+      "ASSISTANT/SKILLS/CORE/generate-foundation-docs/SKILL.md (Step 4.5 META insert; bump 2.1.0 -> 2.2.0)",
+      "__tests__/foundation-docs-meta-writer.test.mjs (validate schema + LLOYD-style read pattern)"
+    ],
+    "out_of_scope": [
+      "Refactoring execute-workorder Step 5.0 inline doc-gen list to a single skill invocation (separate cleanup WO)",
+      "LLOYD-side caching policy (LLOYD owns its cache TTL; CORE just publishes timestamps)",
+      "doc_age_days storage in the file (per Q5 \u00a71.2: would freeze a wrong value)",
+      "Frontmatter alternative (Q5 rejected option a)",
+      "Both-locations alternative (Q5 rejected option c)"
+    ]
+  },
+  "constraints": [
+    "Phase-based, no ETAs",
+    "TRACKING is the only registry",
+    "Local-only",
+    "Sibling location is .coderef/foundation-docs-meta.json, NOT coderef/foundation-docs/foundation-docs-meta.json",
+    "One source of truth: only the META step writes this file",
+    "Store last_regenerated_at (absolute UTC), NOT doc_age_days (frozen-wrong)",
+    "Atomic write: temp + rename (LLOYD reads on every request; partial writes corrupt pre-prompt assembly)",
+    "Reuse existing /generate-foundation-docs canonical wrapper (do not duplicate the META step in execute-workorder Step 5.0 inline list \u2014 that's a separate cleanup WO)"
+  ]
+}

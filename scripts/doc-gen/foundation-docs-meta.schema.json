@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://coderef.dev/schemas/foundation-docs-meta.v1.json",
+  "title": "Foundation Docs Meta",
+  "description": "Sibling JSON written by /generate-foundation-docs at .coderef/foundation-docs-meta.json after every successful generate+enhance run. Stores absolute UTC last_regenerated_at per doc + aggregate fields. LLOYD reads on every pre-prompt assembly to compute doc_age_seconds = now - last_regenerated_at (per Q5 DOC-AGE-EXPOSURE deliverable). WO-FOUNDATION-DOCS-META-WRITER-001.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "project_id",
+    "generated_by",
+    "generated_at",
+    "minimum_last_regenerated_at",
+    "maximum_last_regenerated_at",
+    "docs",
+    "trigger"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1,
+      "description": "Meta-schema version. Bump on breaking changes; LLOYD pins on read."
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Project identifier (matches TRACKING/projects.json id; falls back to package.json name)."
+    },
+    "generated_by": {
+      "type": "string",
+      "description": "Tool + version that wrote the file (e.g., 'generate-meta-json.js@1.0.0')."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 UTC timestamp of when this meta-file was written."
+    },
+    "minimum_last_regenerated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Oldest last_regenerated_at across all 8 docs in this batch. LLOYD's cheap 'is anything stale?' gate."
+    },
+    "maximum_last_regenerated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Newest last_regenerated_at across all 8 docs in this batch."
+    },
+    "docs": {
+      "type": "object",
+      "description": "Per-doc metadata, keyed by filename (basename, e.g. 'INDEX.md').",
+      "minProperties": 1,
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "last_regenerated_at",
+          "generator",
+          "source_artifacts",
+          "byte_size",
+          "content_hash",
+          "kind"
+        ],
+        "properties": {
+          "last_regenerated_at": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Per-doc absolute ISO 8601 UTC timestamp. LLOYD computes doc_age_seconds = now - this value on every read. Never stored as a relative duration."
+          },
+          "generator": {
+            "type": "string",
+            "description": "Which doc-gen script produced or enhanced this doc (e.g., 'generate-index-md.js', 'enhance-existing-docs.js')."
+          },
+          "source_artifacts": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Which .coderef/* files were inputs (cross-source freshness join)."
+          },
+          "byte_size": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Size of the doc in bytes."
+          },
+          "content_hash": {
+            "type": "string",
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "description": "sha256 of the doc content; LLOYD may use this for cache-busting in its own slice cache."
+          },
+          "kind": {
+            "type": "string",
+            "enum": ["auto", "enhanced"],
+            "description": "auto = generated end-to-end from .coderef/ data (e.g., INDEX.md). enhanced = hand-authored doc with auto-injected anchors (e.g., API.md)."
+          },
+          "human_authored": {
+            "type": "boolean",
+            "description": "True for the 4 enhanced docs (API.md, ARCHITECTURE.md, COMPONENTS.md, SCHEMA.md). LLOYD may weight enhanced docs higher in trust scoring."
+          }
+        }
+      }
+    },
+    "trigger": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["workorder_phase_6", "chokidar", "manual", "pipeline", "unknown"],
+          "description": "What caused this regen. Set via CODEREF_META_TRIGGER_KIND env var; defaults to 'manual' when unset."
+        },
+        "workorder_id": {
+          "type": ["string", "null"],
+          "description": "Originating workorder id when kind=workorder_phase_6 (via CODEREF_META_WORKORDER_ID env var)."
+        },
+        "session_id": {
+          "type": ["string", "null"],
+          "description": "Daily-agent-session id (via CODEREF_META_SESSION_ID env var) for telemetry attribution."
+        }
+      }
+    }
+  }
+}
