@@ -1,0 +1,248 @@
+{
+  "workorder_id": "WO-RAG-HTTP-SERVER-V1-001",
+  "feature_name": "rag-http-server-v1",
+  "analysis_authored_at": "2026-04-26T05:16:37Z",
+  "blast_radius": {
+    "files_modified": [
+      "package.json (bin map: + coderef-rag-server)",
+      "docs/CLI.md (overview row + see-also)",
+      "CODEREF-FAST-START.md or coderef-core-quickstart.md (service slot)"
+    ],
+    "files_created": [
+      "src/cli/coderef-rag-server.ts",
+      "dist/src/cli/coderef-rag-server.js (build output)",
+      "docs/rag-http-api.md",
+      "docs/DEPLOY-CODEREF-RAG-SERVER.md",
+      "__tests__/coderef-rag-server-health.test.mjs",
+      "__tests__/coderef-rag-server-query.test.mjs",
+      "__tests__/coderef-rag-server-degraded.test.mjs"
+    ],
+    "downstream_consumers": [
+      "LLOYD router (Python; HTTP client via requests; pre-prompt assembly path)",
+      "ASSISTANT skills (Node; future HTTP client)",
+      "Entity surfaces (future)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Port 52849 collision on developer machine",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Detect EADDRINUSE and exit 2 with clear message; expose --port flag for override; document in DEPLOY doc."
+    },
+    {
+      "id": "R2",
+      "title": "Ollama unreachable mid-stream while server is up",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Pre-query 2s health probe with 5s cache; 503 envelope with degraded:true; server stays up. Phase 4 explicit."
+    },
+    {
+      "id": "R3",
+      "title": "SemanticSearchService not exported from main package index",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "Per Q1 audit: deep-import from src/integration/rag/semantic-search.js. Server lives in same repo so deep-import is in-tree, not consumer-fragile."
+    },
+    {
+      "id": "R4",
+      "title": "Long-running search blocks Node event loop",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "All search calls are async; no sync blocking work. Per-request timeout (default 30s) returns 504 if exceeded."
+    },
+    {
+      "id": "R5",
+      "title": "Multiple concurrent index requests against same project_dir",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "In-memory mutex per project_dir for /api/rag/index; concurrent index requests against same project return 409 Conflict (other index in progress)."
+    },
+    {
+      "id": "R6",
+      "title": "JSON body size attack (huge query)",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Cap request body at 1 MB; return 413 if exceeded."
+    },
+    {
+      "id": "R7",
+      "title": "Server exits if Ollama not running at startup",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Server starts regardless of Ollama state; Ollama probe is per-request lazy. Phase 4 explicit."
+    },
+    {
+      "id": "R8",
+      "title": "WO-ROUTER-V1-001 Phase 5 INTEGRATION blocked on this WO",
+      "likelihood": "certain",
+      "impact": "high",
+      "mitigation": "This WO is the ship-target. Surface contract early (Phase 5 docs land before Phase 6 deploy) so router can review JSON shape before integrating."
+    }
+  ],
+  "candidates": [
+    "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
+    "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+    "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+    "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+    "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+    "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+    "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+    "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+    "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+    "dist/src/cli/",
+    "docs/",
+    "examples/plugins/example-detector/src/hooks/route-relationships.ts",
+    "package.json",
+    "scripts/doc-gen/generate-exports-md.js",
+    "src/analyzer/analyzer-service.ts",
+    "src/analyzer/ast-element-scanner.ts",
+    "src/analyzer/call-detector.ts",
+    "src/analyzer/config-analyzer.ts",
+    "src/analyzer/dependency-analyzer.ts",
+    "src/analyzer/design-pattern-detector.ts",
+    "src/analyzer/docs-analyzer.ts",
+    "src/analyzer/dynamic-import-detector.ts",
+    "src/analyzer/entry-detector.ts",
+    "src/analyzer/frontend-call-parsers.ts",
+    "src/analyzer/graph-analyzer.ts",
+    "src/analyzer/graph-builder.ts",
+    "src/analyzer/graph-helpers.ts",
+    "src/analyzer/import-parser.ts",
+    "src/analyzer/js-call-detector/analyzer.ts",
+    "src/analyzer/js-call-detector/index.ts",
+    "src/analyzer/js-call-detector/module-analyzer.ts",
+    "src/analyzer/js-call-detector/types.ts",
+    "src/analyzer/js-call-detector/visitor.ts",
+    "src/analyzer/middleware-detector.ts",
+    "src/analyzer/migration-route-analyzer.ts",
+    "src/analyzer/project-classifier.ts",
+    "src/cli/",
+    "src/cli/coderef-pipeline.ts",
+    "src/cli/detect-languages.ts",
+    "src/cli/rag-index.ts",
+    "src/cli/rag-search.ts",
+    "src/context/__tests__/breaking-change-detector.test.ts",
+    "src/context/breaking-change-detector/impact-assessor.ts",
+    "src/context/breaking-change-detector/types.ts",
+    "src/context/complexity-scorer.ts",
+    "src/context/context-generator.ts",
+    "src/context/context-tracker.ts",
+    "src/context/impact-simulator.ts",
+    "src/context/types.ts",
+    "src/export/graph-exporter.ts",
+    "src/fileGeneration/analyzeCoverage.ts",
+    "src/fileGeneration/buildDependencyGraph.ts",
+    "src/fileGeneration/detectDrift.ts",
+    "src/fileGeneration/detectPatterns.ts",
+    "src/fileGeneration/generateDiagrams.ts",
+    "src/fileGeneration/validateReferences.ts",
+    "src/indexer/index-store.ts",
+    "src/indexer/indexer-service.ts",
+    "src/indexer/metadata-index.ts",
+    "src/indexer/query-engine.ts",
+    "src/indexer/relationship-index.ts",
+    "src/integration/ai-prompt-generator.ts",
+    "src/integration/llm/",
+    "src/integration/llm/anthropic-provider.ts",
+    "src/integration/llm/model-registry.ts",
+    "src/integration/llm/ollama-provider.ts",
+    "src/integration/llm/openai-provider.ts",
+    "src/integration/rag/",
+    "src/integration/rag/__tests__/confidence-scorer.test.ts",
+    "src/integration/rag/chunk-converter.ts",
+    "src/integration/rag/confidence-scorer.ts",
+    "src/integration/rag/context-builder.ts",
+    "src/integration/rag/conversation-manager.ts",
+    "src/integration/rag/embedding-service.ts",
+    "src/integration/rag/embedding-text-generator.ts",
+    "src/integration/rag/graph-reranker.ts",
+    "src/integration/rag/indexing-orchestrator.ts",
+    "src/integration/rag/prompt-templates.ts",
+    "src/integration/rag/rag-config.ts",
+    "src/integration/rag/semantic-search.ts",
+    "src/integration/vector/",
+    "src/integration/vector/chroma-store.ts",
+    "src/integration/vector/pinecone-store.ts",
+    "src/integration/vector/sqlite-store.ts",
+    "src/integration/vector/vector-store.ts",
+    "src/pipeline/extractors/element-extractor.ts",
+    "src/pipeline/extractors/relationship-extractor.ts",
+    "src/pipeline/generators/context-generator.ts",
+    "src/pipeline/generators/coverage-generator.ts",
+    "src/pipeline/generators/diagram-generator.ts",
+    "src/pipeline/generators/drift-generator.ts",
+    "src/pipeline/generators/export-generator.ts",
+    "src/pipeline/generators/graph-output.ts",
+    "src/pipeline/generators/health-generator.ts",
+    "src/pipeline/generators/pattern-generator.ts",
+    "src/pipeline/generators/validation-generator.ts",
+    "src/pipeline/grammar-registry.ts",
+    "src/pipeline/ignore-rules.ts",
+    "src/pipeline/orchestrator.ts",
+    "src/pipeline/types.ts",
+    "src/plugins/loaders/config-loader.ts",
+    "src/plugins/types.ts",
+    "src/query/query-executor.ts",
+    "src/scanner/tree-sitter-scanner.ts",
+    "src/search/search-engine.ts",
+    "src/types/types.ts",
+    "src/validator/frontend-update-generator.ts",
+    "src/validator/report-generator.ts",
+    "src/validator/route-matcher.ts",
+    "src/validator/route-validator.ts",
+    "types.d.ts"
+  ],
+  "dependencies": [
+    "@coderef/CODEREF-CORE existing RAG layer (SemanticSearchService, OllamaProvider, SQLiteVectorStore - per Q1 audit, internal, not in main package export but importable in-tree)",
+    "Node stdlib http (no new package dep)",
+    "Existing rag-index CLI (subprocess for /api/rag/index endpoint)",
+    "Ollama (external system service, default http://localhost:11434, model nomic-embed-text)"
+  ],
+  "public_api_hits": [
+    "package.json bin map adds coderef-rag-server entry (publicly visible CLI bin)",
+    "Port 52849 (reserved per ROUTER-DESIGN.md)",
+    "docs/rag-http-api.md (publicly versioned JSON contract)"
+  ],
+  "decision_records": [
+    {
+      "id": "D1",
+      "choice": "Use Node stdlib http (no Express dep)",
+      "rationale": "localhost-only JSON API with 4 endpoints; stdlib is sufficient and adds zero deps. System-service posture benefits from minimal moving parts."
+    },
+    {
+      "id": "D2",
+      "choice": "Port 52849 (per ROUTER-DESIGN.md integration-points)",
+      "rationale": "Reserved by router design doc; matches LLOYD's HTTP-first integration pattern (LLOYD lives on 52847; OllamaBridge talks to 11434; this slot is 52849)."
+    },
+    {
+      "id": "D3",
+      "choice": "Pre-request Ollama health probe with 5s cache (degraded-path)",
+      "rationale": "Per LLOYD D3 spec: Ollama-down should not crash the server; should return 503 with degraded:true. Cache prevents probe-on-every-request overhead."
+    },
+    {
+      "id": "D4",
+      "choice": "Reuse SemanticSearchService via in-tree deep import",
+      "rationale": "Per Q1 audit: not in main package export, but server lives in same repo so deep-import is acceptable (no consumer-fragility risk)."
+    },
+    {
+      "id": "D5",
+      "choice": "POST /api/rag/index spawns rag-index CLI as subprocess",
+      "rationale": "Reuses existing CLI logic (idempotent + incremental + --rag-reset support). Avoids re-implementing the indexing orchestrator inside the server."
+    },
+    {
+      "id": "D6",
+      "choice": "In-memory per-project mutex for index requests",
+      "rationale": "R5 mitigation. Two index runs against same project_dir would race writes to .coderef/coderef-vectors.json. Cheap mutex prevents corruption."
+    },
+    {
+      "id": "D7",
+      "choice": "X-Coderef-RAG-API header for versioning",
+      "rationale": "Per LLOYD D1 spec: versioned JSON contract. Future breaking changes bump the header value; LLOYD pins on read."
+    }
+  ],
+  "supersedes": [
+    "DISPATCH-2026-04-25-005 (same WO; -007 supersedes with explicit deliverables)"
+  ]
+}

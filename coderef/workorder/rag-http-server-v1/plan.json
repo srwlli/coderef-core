@@ -1,0 +1,295 @@
+{
+  "plan_type": "phased",
+  "goal": "Build always-on HTTP RAG server on port 52849 (Node stdlib http) wrapping CODEREF-CORE vector RAG (SemanticSearchService + OllamaProvider + SQLiteVectorStore) so cross-runtime callers (Python LLOYD, Node ASSISTANT, future surfaces) can query CORE RAG via HTTP without package import or per-request subprocess spawn. Local-only Ollama embeddings (per /feedback_coderef_core_rag_local). System-service posture: starts at boot/fast-start, lives independently, Phase 5 of WO-ROUTER-V1-001 depends on this.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "SCAFFOLD",
+      "hard_stop": false,
+      "description": "SCAFFOLD: src/cli/coderef-rag-server.ts using Node stdlib http on port 52849 (configurable via --port). --help prints usage. Graceful shutdown on SIGINT/SIGTERM. Bin registered in package.json. build:cli emits dist file.",
+      "tasks": [
+        {
+          "id": "SCAFFOLD-T1",
+          "verb": "WRITE",
+          "description": "Author src/cli/coderef-rag-server.ts: stdlib http server on port 52849, --port and --help flags, request router stub, graceful SIGINT/SIGTERM shutdown.",
+          "touches": [
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "SCAFFOLD-T2",
+          "verb": "EDIT",
+          "description": "Register coderef-rag-server in package.json bin map.",
+          "touches": [
+            "package.json"
+          ]
+        },
+        {
+          "id": "SCAFFOLD-T3",
+          "verb": "RUN",
+          "description": "Build via npm run build:cli; verify dist/src/cli/coderef-rag-server.js exists.",
+          "touches": [
+            "dist/src/cli/coderef-rag-server.js"
+          ]
+        },
+        {
+          "id": "SCAFFOLD-T4",
+          "verb": "TEST",
+          "description": "Smoke test: coderef-rag-server --help prints usage, exits 0.",
+          "touches": []
+        },
+        {
+          "id": "SCAFFOLD-T5",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1: SCAFFOLD HTTP server skeleton.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "HEALTH+STATUS",
+      "hard_stop": false,
+      "description": "HEALTH+STATUS: GET /api/health returns 200 {status:'healthy', version, uptime_s}. GET /api/rag/status returns Ollama-reachable bool, model name, embedding dimensions, sqlite-store info. Status endpoint MUST work even if Ollama is unreachable.",
+      "tasks": [
+        {
+          "id": "HS-T1",
+          "verb": "EDIT",
+          "description": "Implement GET /api/health -> 200 {status:'healthy', version, uptime_s, pid}.",
+          "touches": [
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "HS-T2",
+          "verb": "EDIT",
+          "description": "Implement GET /api/rag/status -> probes Ollama (try fetch http://localhost:11434/api/tags within 2s timeout), reports ollama_reachable bool, model, dim, sqlite-store path. Always 200, never crashes on Ollama-down.",
+          "touches": [
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "HS-T3",
+          "verb": "TEST",
+          "description": "Spawn server in test mode (random port), curl /api/health and /api/rag/status, assert both 200.",
+          "touches": [
+            "__tests__/coderef-rag-server-health.test.mjs"
+          ]
+        },
+        {
+          "id": "HS-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2: health + status endpoints.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "QUERY+INDEX",
+      "hard_stop": false,
+      "description": "QUERY+INDEX: POST /api/rag/query body {project_dir, query, top_k, lang?, type?} returns {results:[{path,score,chunk,metadata}], elapsed_ms, model}. POST /api/rag/index body {project_dir} runs idempotent re-index by spawning rag-index CLI as subprocess. Reuses SemanticSearchService.",
+      "tasks": [
+        {
+          "id": "QI-T1",
+          "verb": "EDIT",
+          "description": "Implement POST /api/rag/query: parse JSON body {project_dir, query, top_k, lang?, type?}; instantiate SemanticSearchService(OllamaProvider, SQLiteVectorStore[project_dir]); call .search(); return {results, elapsed_ms, model}. Versioned response header X-Coderef-RAG-API: 1.",
+          "touches": [
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "QI-T2",
+          "verb": "EDIT",
+          "description": "Implement POST /api/rag/index: spawn rag-index CLI as subprocess against {project_dir}; idempotent (uses incremental-indexer); return {status, duration_ms, indexed_files, exit_code}.",
+          "touches": [
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "QI-T3",
+          "verb": "TEST",
+          "description": "Contract test: spawn server, POST /api/rag/query against current project, assert results array shape (each has path, score, metadata).",
+          "touches": [
+            "__tests__/coderef-rag-server-query.test.mjs"
+          ]
+        },
+        {
+          "id": "QI-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 3: query + index endpoints.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "DEGRADED-PATH",
+      "hard_stop": false,
+      "description": "DEGRADED-PATH: When Ollama is unreachable, /api/rag/query returns 503 {degraded:true, reason:'ollama_unreachable', detail}. Server does NOT crash. /api/health stays 200. /api/rag/status returns ollama_reachable:false. Add explicit health-probe before each query.",
+      "tasks": [
+        {
+          "id": "DEG-T1",
+          "verb": "EDIT",
+          "description": "Pre-query Ollama health probe (cached 5s); on unreachable, return 503 {degraded:true, reason:'ollama_unreachable', detail, cached_at}. Server log warns, does NOT crash.",
+          "touches": [
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "DEG-T2",
+          "verb": "EDIT",
+          "description": "Same envelope for /api/rag/index when Ollama unreachable. /api/health and /api/rag/status remain 200.",
+          "touches": [
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "DEG-T3",
+          "verb": "TEST",
+          "description": "Contract test for degraded path: point CODEREF_LLM_BASE_URL at unreachable port (e.g., http://127.0.0.1:65531), POST query, assert 503 + degraded:true + reason.",
+          "touches": [
+            "__tests__/coderef-rag-server-degraded.test.mjs"
+          ]
+        },
+        {
+          "id": "DEG-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 4: degraded-path semantics.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "CONTRACT-DOCS",
+      "hard_stop": false,
+      "description": "CONTRACT-DOCS: docs/rag-http-api.md with curl examples for every endpoint, request/response JSON schemas, error envelope, degraded-mode contract. Versioned (X-Coderef-RAG-API: 1).",
+      "tasks": [
+        {
+          "id": "CD-T1",
+          "verb": "WRITE",
+          "description": "Author docs/rag-http-api.md: overview, endpoint table, per-endpoint request/response JSON contract + curl example, error envelope, degraded-mode contract, version header policy, port assignment.",
+          "touches": [
+            "docs/rag-http-api.md"
+          ]
+        },
+        {
+          "id": "CD-T2",
+          "verb": "EDIT",
+          "description": "Add rag-http-api.md to docs/CLI.md See Also section + a one-line overview row in the command table.",
+          "touches": [
+            "docs/CLI.md"
+          ]
+        },
+        {
+          "id": "CD-T3",
+          "verb": "COMMIT",
+          "description": "Commit Phase 5: contract docs.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "FAST-START+DEPLOY",
+      "hard_stop": false,
+      "description": "FAST-START+DEPLOY: Add coderef-rag-server slot to CODEREF-FAST-START.md (service start/stop/probe). docs/DEPLOY-CODEREF-RAG-SERVER.md with per-OS service-unit notes (systemd/launchd/Windows Service/pm2/manual) - reuses chokidar daemon's DEPLOY pattern.",
+      "tasks": [
+        {
+          "id": "FS-T1",
+          "verb": "WRITE",
+          "description": "Author docs/DEPLOY-CODEREF-RAG-SERVER.md: 5 service-unit patterns (systemd / launchd / Windows Service via NSSM / pm2 / manual). Reuse the structure of docs/DEPLOY-CODEREF-WATCH.md so the docs feel consistent.",
+          "touches": [
+            "docs/DEPLOY-CODEREF-RAG-SERVER.md"
+          ]
+        },
+        {
+          "id": "FS-T2",
+          "verb": "EDIT",
+          "description": "Add coderef-rag-server slot to CODEREF-FAST-START.md (or coderef-core-quickstart.md if FAST-START doesn't yet exist) - start command, expected port, health probe.",
+          "touches": []
+        },
+        {
+          "id": "FS-T3",
+          "verb": "CHECK",
+          "description": "Verify always-on posture and consumer-callable contract are explicitly stated in DEPLOY doc.",
+          "touches": [
+            "docs/DEPLOY-CODEREF-RAG-SERVER.md"
+          ]
+        },
+        {
+          "id": "FS-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 6: fast-start + deployment story.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "CLOSE",
+      "hard_stop": true,
+      "description": "CLOSE: standard 5-step close (Phase 6 universal gate fires; smoke-test from curl; final commits + push).",
+      "tasks": [
+        {
+          "id": "CLOSE-T1",
+          "verb": "RUN",
+          "description": "Run /close-workorder against this WO (manual close path).",
+          "touches": []
+        },
+        {
+          "id": "CLOSE-T2",
+          "verb": "CHECK",
+          "description": "Verify Phase 6 universal gate fired and regenerated foundation-docs.",
+          "touches": []
+        },
+        {
+          "id": "CLOSE-T3",
+          "verb": "RUN",
+          "description": "Run validate-docs.js to confirm freshness gate exits 0.",
+          "touches": []
+        },
+        {
+          "id": "CLOSE-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 7: WO-RAG-HTTP-SERVER-V1-001 close.",
+          "touches": []
+        },
+        {
+          "id": "CLOSE-T5",
+          "verb": "STOP",
+          "description": "Hard stop: final approval before TRACKING marks completed.",
+          "touches": []
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 7,
+      "approved": false,
+      "reason": "phased gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260426T051419Z",
+  "plan_type_decided_by": "create-workorder@2.3.0",
+  "workorder_id": "WO-RAG-HTTP-SERVER-V1-001",
+  "feature_name": "rag-http-server-v1",
+  "created": "2026-04-26T05:16:37Z",
+  "plan_type_rationale": "Multi-phase, multi-concern server build: SCAFFOLD (HTTP entrypoint + bin) -> HEALTH+STATUS endpoints -> QUERY+INDEX endpoints (RAG integration) -> DEGRADED-PATH (Ollama-down semantics) -> CONTRACT-DOCS (rag-http-api.md) -> FAST-START+DEPLOY (CODEREF-FAST-START.md slot + per-OS notes) -> CLOSE. Each phase has its own gate (build, smoke, contract test, doc check). Multi-runtime concern (Python LLOYD will consume HTTP from Node server) requires explicit contract phase. Phase 5 of WO-ROUTER-V1-001 depends on this WO shipping; phased separation lets ORCHESTRATOR observe gate boundaries cleanly."
+}

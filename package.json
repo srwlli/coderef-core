@@ -13,7 +13,8 @@
     "rag-search": "./dist/src/cli/rag-search.js",
     "rag-status": "./dist/src/cli/rag-status.js",
     "coderef-pipeline": "./dist/src/cli/coderef-pipeline.js",
-    "coderef-watch": "./dist/src/cli/coderef-watch.js"
+    "coderef-watch": "./dist/src/cli/coderef-watch.js",
+    "coderef-rag-server": "./dist/src/cli/coderef-rag-server.js"
   },
   "exports": {
     ".": {

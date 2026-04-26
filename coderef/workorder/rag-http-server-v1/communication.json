@@ -1,0 +1,79 @@
+{
+  "workorder_id": "WO-RAG-HTTP-SERVER-V1-001",
+  "feature_name": "rag-http-server-v1",
+  "created": "2026-04-26T05:16:37Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "project_id": "coderef-core",
+  "originating_dispatches": [
+    "DISPATCH-2026-04-25-007"
+  ],
+  "supersedes_dispatches": [
+    "DISPATCH-2026-04-25-005"
+  ],
+  "predecessor_for": [
+    "WO-ROUTER-V1-001 Phase 5"
+  ],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-http-server-v1/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-http-server-v1/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-http-server-v1/analysis.json",
+  "handoff": {
+    "from": "CODEREF-CORE (create-workorder)",
+    "to": "CODEREF-CORE (execute-workorder, immediate)",
+    "reason": "Plan authored; ORCHESTRATOR dispatch -007 says 'commission and ship'; no pre-req blockers; immediate execution."
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "hard_stops_required": true,
+    "hard_stop_phases": [
+      7
+    ],
+    "foundation_docs_gate": true,
+    "discovery_required": true,
+    "approved_verbs": [
+      "READ",
+      "WRITE",
+      "EDIT",
+      "RUN",
+      "TEST",
+      "COMMIT",
+      "CHECK",
+      "STOP",
+      "DELETE"
+    ]
+  },
+  "hard_constraints": [
+    "Local-only Ollama embeddings - no cloud LLM providers (per /feedback_coderef_core_rag_local)",
+    "Always-on lifecycle: server.js entrypoint, graceful shutdown, no per-request spawn",
+    "Reuse existing CORE RAG layer (SemanticSearchService + OllamaProvider + SQLiteVectorStore) - do not fork",
+    "Backward-compatible with existing CORE callers (CLI bins keep working)",
+    "Phase-based, no ETAs",
+    "Port 52849 (per ROUTER-DESIGN.md integration-points)",
+    "v1 is localhost-only (no auth, no TLS, no streaming)",
+    "503 with {degraded:true, reason} on Ollama unreachable - server does NOT crash",
+    "TRACKING is the only registry"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_overridden",
+      "from": "light",
+      "to": "phased",
+      "reason": "ORCHESTRATOR DISPATCH-2026-04-25-007 explicitly specifies a substantial multi-phase server build (7 deliverables across HTTP scaffolding, 4 endpoints, RAG integration, degraded-path handling, contract docs, fast-start integration, contract tests). Phased plan is the correct shape; light would not capture the gate boundaries.",
+      "at": "2026-04-26T05:16:37Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-04-26T05:16:37Z",
+      "event": "workorder_created",
+      "by": "CODEREF-CORE (create-workorder@2.3.0)",
+      "note": "Plan authored from DISPATCH-2026-04-25-007. 7 phases (SCAFFOLD/HEALTH+STATUS/QUERY+INDEX/DEGRADED-PATH/CONTRACT-DOCS/FAST-START+DEPLOY/CLOSE). Phase 7 hard stop. Foundation-docs gate TRUE. Supersedes DISPATCH-005 (same WO). No blockers; immediate execution."
+    }
+  ]
+}
