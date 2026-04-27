@@ -3,8 +3,8 @@
   "schema_version": "1.0",
   "project": "coderef-core",
   "scope": "scanner",
-  "counter": 75,
-  "last_updated": "2026-04-23",
+  "counter": 81,
+  "last_updated": "2026-04-27",
   "last_pruned": "2026-04-23",
   "archived": [
     "IMP-CORE-003",
@@ -287,7 +287,42 @@
       "logged": "2026-04-23",
       "body": "Parallel AST scans for TypeScript are not equivalent to sequential AST scans. The worker implementation in scanner-worker.ts (line 58) uses JSCallDetector for TS, while the main path in scanner.ts (line 1164) uses ASTElementScanner and attaches imports/calls. If worker mode actually runs, callers asking for AST accuracy get a downgraded result set.",
       "files": ["src/scanner/scanner-worker.ts:58", "src/scanner/scanner.ts:1164"]
+    },
+    {
+      "id": "IMP-CORE-079",
+      "title": "Fix counter drift: counter=75 but highest active ID is 078",
+      "category": "code-quality",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-04-26",
+      "body": "improvements.json header counter was 75 while the highest existing IMP-CORE-NNN id in items[] was 078. Following the file's own derivation rule, the next appended entry would have rolled to IMP-CORE-076 and collided with an id already in the local archived[] array (or with the 061-078 active range). This invocation advances counter to 81 (post-append) to restore the monotonic-high-water-mark invariant, but the underlying drift was likely introduced when prior pruning passes recalculated counter from a live count rather than preserving the historical max. Add a guard at write-time so counter never decreases.",
+      "files": ["improvements.json:6"]
+    },
+    {
+      "id": "IMP-CORE-080",
+      "title": "Schema fields, enums, and id pattern diverge from canonical TRACKING schema",
+      "category": "architecture",
+      "severity": "major",
+      "status": "done",
+      "logged": "2026-04-26",
+      "closed": "2026-04-27",
+      "resolution": "ORCHESTRATOR Decision 1 (Option C): canonical TRACKING/schemas/improvements.schema.json relaxed to accept both IMP-NNN and IMP-PROJECT-NNN id patterns (^IMP(-[A-Z][A-Z0-9-]*)?-\\d+$), 'completed' added as deprecated alias for 'done' on status enum, category enum loosened to advisory (minLength:1) so per-project labels like 'thread-safety'/'logging' validate. CORE's 26-record improvements.json now passes canonical validation without data migration. Verified by TRACKING/tests/test_improvements_schema_imp080.py (8/8 pass). The non-resolving $schema URL on the CORE envelope is preserved as-is; only the canonical schema's $id is authoritative for validation.",
+      "body": "improvements.json uses an id pattern (IMP-CORE-NNN) that does not match canonical TRACKING/schemas/improvements.schema.json (^IMP-\\d+$); a status value 'completed' that is not in the canonical enum (open|in-progress|done|wont-fix); and category labels (accuracy, technical-depth, developer-experience, configuration, robustness, thread-safety, type-safety, logging) outside the canonical 7-category set (code-quality, architecture, performance, testing, security, ux, docs). It also carries non-canonical envelope fields (archived[], last_pruned, _note) and per-item fields (solution, commit, target_tenant, target_repo, integration_path). The $schema URL also points to https://schemas.coderef.com/improvements/v1, which does not resolve; canonical $id is https://coderef.io/schemas/tracking/improvements.schema.json. Validating this file with the canonical schema would fail on every active entry. Either (a) migrate this file to the canonical schema, or (b) document that CORE intentionally maintains a divergent local schema and skip canonical validation for this path.",
+      "files": ["improvements.json:1-8"],
+      "related": ["IMP-CORE-079"]
+    },
+    {
+      "id": "IMP-CORE-081",
+      "title": "coderef-core not registered in TRACKING/improvement-index.json",
+      "category": "architecture",
+      "severity": "major",
+      "status": "done",
+      "logged": "2026-04-26",
+      "closed": "2026-04-27",
+      "resolution": "ORCHESTRATOR Decision 2 (Option A): coderef-core entry already added on disk to TRACKING/improvement-index.json on 2026-04-26 19:50Z; commit landed 2026-04-27 by TRACKING. Item count synced to 26. Architectural follow-up (auto-write hook in register-project-tracking) deferred to a separate dispatch per ORCHESTRATOR Decision 3 — sequenced AFTER the writer-adapter-migration follow-up queued by DISPATCH-2026-04-26-002.",
+      "body": "The central improvement-index registry at ASSISTANT/TRACKING/improvement-index.json lists 21 project entries (assistant, assistant-skills, assistant-standards, assistant-project-context, assistant-tracking, entity + 14 stl-agent subentries, coderef-context-mcp) but has NO entry for project_id=coderef-core. This means TRACKING-driven sweeps, registry-sweep tooling, and any cross-project improvement reporting silently skip CORE's 22-item improvement log. This invocation creates the missing entry as part of Step 7 sync; the underlying registration drift should be prevented by wiring CORE into register-project-tracking on first improvements-skill invocation.",
+      "files": ["improvements.json", "../ASSISTANT/TRACKING/improvement-index.json"]
     }
   ],
-  "_note": "23 open items (036, 052-053, 056-057, 061-078). Added 18 total scanner.ts improvements (061-078): code-quality (061-062,068,072), configuration (063,066,073), robustness (064,067,070,074-076), thread-safety (065), performance (069), logging (071), accuracy (078). Counter at 78. Last updated 2026-04-23."
+  "_note": "24 open items + 3 done (057, 076, 077, 080, 081) retained per local archival convention. 080 + 081 closed 2026-04-27 by TRACKING per ORCHESTRATOR decisions on canonical schema relaxation (Option C) and improvement-index commit (Option A). Counter unchanged at 81. Last updated 2026-04-27."
 }
