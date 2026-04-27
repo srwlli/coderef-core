@@ -94,6 +94,7 @@ OPTIONS:
   -h, --help         Show this help.
 
 ENDPOINTS (see docs/rag-http-api.md for full contract):
+  GET  /readyz              - readiness probe (returns 200 OK)
   GET  /api/health          - liveness + uptime
   GET  /api/rag/status      - Ollama reachability + model + dim + store info
   POST /api/rag/query       - body {project_dir, query, top_k?, lang?, type?}
@@ -220,6 +221,11 @@ async function handleHealth(_req: http.IncomingMessage, res: http.ServerResponse
     pid: process.pid,
     started_at: new Date(SERVER_STARTED_AT).toISOString(),
   });
+}
+
+async function handleReadyz(_req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
+  res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('OK');
 }
 
 async function handleStatus(_req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
@@ -426,6 +432,7 @@ async function route(req: http.IncomingMessage, res: http.ServerResponse): Promi
   const method = (req.method || 'GET').toUpperCase();
 
   try {
+    if (method === 'GET' && url.pathname === '/readyz')          return await handleReadyz(req, res);
     if (method === 'GET' && url.pathname === '/api/health')      return await handleHealth(req, res);
     if (method === 'GET' && url.pathname === '/api/rag/status')  return await handleStatus(req, res);
     if (method === 'POST' && url.pathname === '/api/rag/query')  return await handleQuery(req, res);
