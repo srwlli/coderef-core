@@ -358,6 +358,35 @@ export interface ElementData {
     /** Maximum nesting depth of control flow structures */
     nestingDepth: number;
   };
+
+  // WO-CODEREF-SEMANTIC-INTEGRATION-001: Phase 1 Semantic Fields
+  /** Modules/functions/classes exported by this file */
+  exports?: Array<{
+    name: string;          // Export name (e.g., 'useState', 'UserService')
+    type?: 'default' | 'named'; // Export type
+    target?: string;       // Optional: what it points to (e.g., 'src/hooks/useState.ts')
+  }>;
+
+  /** Files that import/depend on this file (reverse imports) */
+  usedBy?: Array<{
+    file: string;         // File that imports this
+    imports?: string[];   // Specific names imported (if available)
+    line?: number;        // Line number of import statement
+  }>;
+
+  /** Semantically related files (no direct import relationship) */
+  related?: Array<{
+    file: string;         // Related file path
+    reason?: string;      // Why related (e.g., 'same service', 'same domain')
+    confidence?: number;  // Confidence score 0-1 (from Lloyd semantic search)
+  }>;
+
+  /** Constraints/patterns this file must enforce */
+  rules?: Array<{
+    rule: string;         // Rule name (e.g., 'must-export-as-default', 'no-circular-deps')
+    description?: string; // Human-readable description
+    severity?: 'error' | 'warning' | 'info'; // Rule severity (default: 'error')
+  }>;
 }
 
 /**

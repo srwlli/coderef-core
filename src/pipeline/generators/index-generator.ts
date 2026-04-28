@@ -13,6 +13,7 @@ import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import { globalRegistry } from '../../registry/entity-registry.js';
 import { writeIndexVariants } from '../../fileGeneration/index-storage.js';
+import { buildSemanticRelationships, deduplicateUsedBy } from '../../scanner/semantic-analyzer.js';
 
 /**
  * IndexGenerator - Produce index.json from extracted elements
@@ -26,7 +27,17 @@ export class IndexGenerator {
    */
   async generate(state: PipelineState, outputDir: string): Promise<void> {
     // Transform elements to output format
-    const outputElements = this.transformElements(state.elements, state.projectPath);
+    let outputElements = this.transformElements(state.elements, state.projectPath);
+
+    // WO-CODEREF-SEMANTIC-INTEGRATION-001: Phase 1
+    // Build semantic relationships (exports, used_by) from scanned elements
+    outputElements = buildSemanticRelationships(outputElements as ElementData[], state.projectPath) as any[];
+
+    // Deduplicate used_by entries
+    outputElements = outputElements.map(el => ({
+      ...el,
+      usedBy: deduplicateUsedBy(el.usedBy)
+    }));
 
     // Sort elements for consistent output (by file, then line)
     outputElements.sort((a, b) => {
@@ -42,7 +53,7 @@ export class IndexGenerator {
     await writeIndexVariants(outputDir, outputElements as ElementData[], { projectPath: state.projectPath });
 
     if (state.options.verbose) {
-      console.log(`[IndexGenerator] Generated index.json with ${outputElements.length} elements`);
+      console.log(`[IndexGenerator] Generated index.json with ${outputElements.length} elements (semantic fields enabled)`);
     }
   }
 
@@ -66,9 +77,18 @@ export class IndexGenerator {
         file: relativePath,
       };
 
-      // Remove undefined/null fields for cleaner JSON
+      // WO-CODEREF-SEMANTIC-INTEGRATION-001: Ensure semantic fields always present
+      // Initialize empty arrays if not present (ensures schema consistency)
+      if (!output.exports) output.exports = [];
+      if (!output.usedBy) output.usedBy = [];
+      if (!output.related) output.related = [];
+      if (!output.rules) output.rules = [];
+
+      // Remove undefined/null fields for cleaner JSON (but keep semantic fields)
       Object.keys(output).forEach(key => {
         const value = output[key];
+        // Skip semantic field cleanup - always include them even if empty
+        if (['exports', 'usedBy', 'related', 'rules'].includes(key)) return;
         if (value === undefined || value === null) {
           delete output[key];
         }

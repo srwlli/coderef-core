@@ -38,6 +38,20 @@ import { ElementData } from '../types/types.js';
 export type EnrichedElementData = ElementData;
 
 /**
+ * WO-CODEREF-SEMANTIC-INTEGRATION-001: Ensure all elements have required semantic fields
+ * Helper to initialize semantic fields with empty arrays for consistency
+ */
+function normalizeElement(elem: Partial<ElementData>): ElementData {
+  return {
+    exports: [],
+    usedBy: [],
+    related: [],
+    rules: [],
+    ...elem
+  } as ElementData;
+}
+
+/**
  * Grammar loader cache
  * Lazy-loads tree-sitter grammars on first use per language
  */
@@ -1022,7 +1036,7 @@ export class TreeSitterScanner {
           const name = nameNode.text;
           const line = nameNode.startPosition.row + 1;
 
-          elements.push({
+          elements.push(normalizeElement({
             type: 'method',
             name,
             file: filePath,
@@ -1033,7 +1047,7 @@ export class TreeSitterScanner {
             docstring: this.extractJavaDocstring(node, content),
             parentScope,
             complexity: this.estimateComplexity(node)
-          });
+          }));
         }
       }
 

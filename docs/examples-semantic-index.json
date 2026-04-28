@@ -1,0 +1,300 @@
+{
+  "version": "1.0.0",
+  "description": "CodeRef Semantic Schema Examples - Phase 1",
+  "examples": [
+    {
+      "title": "API Route with All Semantic Fields",
+      "element": {
+        "type": "function",
+        "name": "POST /api/users",
+        "file": "src/api/routes/users.ts",
+        "line": 42,
+        "exported": true,
+        "async": true,
+        "returnType": "Promise<Response>",
+        "docstring": "Create new user with validation and auth",
+        "route": {
+          "method": "POST",
+          "path": "/api/users",
+          "framework": "express"
+        },
+        "exports": [
+          {
+            "name": "POST /api/users",
+            "type": "named"
+          },
+          {
+            "name": "validateUserInput",
+            "type": "named"
+          },
+          {
+            "name": "UserController",
+            "type": "default"
+          }
+        ],
+        "usedBy": [
+          {
+            "file": "src/tests/api/users.test.ts",
+            "imports": ["POST /api/users"],
+            "line": 15
+          },
+          {
+            "file": "src/middleware/routes.ts",
+            "imports": ["UserController"],
+            "line": 8
+          }
+        ],
+        "related": [
+          {
+            "file": "src/models/user.ts",
+            "reason": "defines User model structure",
+            "confidence": 0.98
+          },
+          {
+            "file": "src/validators/user-validator.ts",
+            "reason": "validates user input schema",
+            "confidence": 0.96
+          },
+          {
+            "file": "src/middleware/auth.ts",
+            "reason": "handles authentication for protected routes",
+            "confidence": 0.92
+          }
+        ],
+        "rules": [
+          {
+            "rule": "must-validate-input",
+            "description": "All user input must be validated before DB operations",
+            "severity": "error"
+          },
+          {
+            "rule": "must-check-auth",
+            "description": "POST /api/users requires authentication",
+            "severity": "error"
+          },
+          {
+            "rule": "must-handle-errors",
+            "description": "Must catch and log database errors",
+            "severity": "error"
+          },
+          {
+            "rule": "must-return-json",
+            "description": "API routes must return JSON responses",
+            "severity": "warning"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Utility Module with Exports",
+      "element": {
+        "type": "function",
+        "name": "formatDate",
+        "file": "src/utils/date.ts",
+        "line": 8,
+        "exported": true,
+        "parameters": ["date", "format"],
+        "returnType": "string",
+        "exports": [
+          {
+            "name": "formatDate",
+            "type": "named"
+          },
+          {
+            "name": "parseDate",
+            "type": "named"
+          },
+          {
+            "name": "isValidDate",
+            "type": "named"
+          },
+          {
+            "name": "DateFormatter",
+            "type": "default"
+          }
+        ],
+        "usedBy": [
+          {
+            "file": "src/components/DateDisplay.tsx",
+            "imports": ["formatDate"],
+            "line": 5
+          },
+          {
+            "file": "src/api/responses.ts",
+            "imports": ["formatDate"],
+            "line": 12
+          },
+          {
+            "file": "src/services/report.ts",
+            "imports": ["DateFormatter"],
+            "line": 3
+          }
+        ],
+        "related": [
+          {
+            "file": "src/utils/time.ts",
+            "reason": "handles time zone conversions",
+            "confidence": 0.85
+          }
+        ]
+      }
+    },
+    {
+      "title": "Database Model with Constraints",
+      "element": {
+        "type": "class",
+        "name": "User",
+        "file": "src/models/user.ts",
+        "line": 1,
+        "exported": true,
+        "docstring": "User domain model with validation constraints",
+        "exports": [
+          {
+            "name": "User",
+            "type": "default"
+          },
+          {
+            "name": "UserRole",
+            "type": "named"
+          },
+          {
+            "name": "UserStatus",
+            "type": "named"
+          }
+        ],
+        "usedBy": [
+          {
+            "file": "src/api/routes/users.ts",
+            "imports": ["User"],
+            "line": 5
+          },
+          {
+            "file": "src/services/user-service.ts",
+            "imports": ["User"],
+            "line": 3
+          },
+          {
+            "file": "src/database/migrations.ts",
+            "imports": ["User"],
+            "line": 15
+          }
+        ],
+        "related": [
+          {
+            "file": "src/validators/user-validator.ts",
+            "reason": "validates User model instances",
+            "confidence": 0.99
+          },
+          {
+            "file": "src/services/user-service.ts",
+            "reason": "orchestrates User operations",
+            "confidence": 0.97
+          }
+        ],
+        "rules": [
+          {
+            "rule": "immutable-after-creation",
+            "description": "User ID and creation date must not be modified",
+            "severity": "error"
+          },
+          {
+            "rule": "email-must-be-unique",
+            "description": "User email field must be unique in database",
+            "severity": "error"
+          },
+          {
+            "rule": "password-must-be-hashed",
+            "description": "Password field must never store plaintext",
+            "severity": "error"
+          },
+          {
+            "rule": "no-direct-instantiation",
+            "description": "Users should be created via UserService.create()",
+            "severity": "warning"
+          }
+        ]
+      }
+    },
+    {
+      "title": "React Hook with Dependencies",
+      "element": {
+        "type": "hook",
+        "name": "useAuth",
+        "file": "src/hooks/useAuth.ts",
+        "line": 12,
+        "exported": true,
+        "async": false,
+        "returnType": "UseAuthReturn",
+        "docstring": "React hook for authentication state and methods",
+        "exports": [
+          {
+            "name": "useAuth",
+            "type": "named"
+          },
+          {
+            "name": "AuthProvider",
+            "type": "named"
+          }
+        ],
+        "usedBy": [
+          {
+            "file": "src/components/AuthGuard.tsx",
+            "imports": ["useAuth"],
+            "line": 4
+          },
+          {
+            "file": "src/pages/login.tsx",
+            "imports": ["useAuth"],
+            "line": 3
+          },
+          {
+            "file": "src/components/UserMenu.tsx",
+            "imports": ["useAuth"],
+            "line": 5
+          }
+        ],
+        "related": [
+          {
+            "file": "src/context/auth-context.ts",
+            "reason": "uses auth context provider",
+            "confidence": 0.99
+          },
+          {
+            "file": "src/api/auth.ts",
+            "reason": "calls authentication API",
+            "confidence": 0.95
+          },
+          {
+            "file": "src/store/auth.ts",
+            "reason": "manages auth state",
+            "confidence": 0.94
+          }
+        ],
+        "rules": [
+          {
+            "rule": "must-be-inside-provider",
+            "description": "Hook must only be used within AuthProvider",
+            "severity": "error"
+          },
+          {
+            "rule": "no-circular-deps",
+            "description": "Cannot import from components using this hook",
+            "severity": "warning"
+          }
+        ]
+      }
+    },
+    {
+      "title": "Minimal Example - No Semantic Fields",
+      "element": {
+        "type": "function",
+        "name": "add",
+        "file": "src/utils/math.ts",
+        "line": 1,
+        "exported": true,
+        "parameters": ["a", "b"],
+        "returnType": "number"
+      }
+    }
+  ]
+}
