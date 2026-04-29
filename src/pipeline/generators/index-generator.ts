@@ -84,6 +84,13 @@ export class IndexGenerator {
       if (!output.related) output.related = [];
       if (!output.rules) output.rules = [];
 
+      // DISPATCH-2026-04-29-006: Normalize schema for file-annotations
+      // Transform related[] field: file → path, confidence → confidence_score
+      output.related = this.normalizeRelatedField(output.related);
+
+      // DISPATCH-2026-04-29-006: Normalize rules field to accept both string and structured formats
+      output.rules = this.normalizeRulesField(output.rules);
+
       // Remove undefined/null fields for cleaner JSON (but keep semantic fields)
       Object.keys(output).forEach(key => {
         const value = output[key];
@@ -95,6 +102,94 @@ export class IndexGenerator {
       });
 
       return output;
+    });
+  }
+
+  /**
+   * Normalize related[] field for file-annotation compatibility
+   * Transform: {file: "...", confidence: N} → {path: "...", confidence_score: N}
+   * Maintains backward compatibility by accepting both old and new formats
+   *
+   * @param related Related field from ElementData
+   * @returns Normalized related array with path and confidence_score fields
+   */
+  private normalizeRelatedField(related: any[]): any[] {
+    if (!related || !Array.isArray(related)) return [];
+
+    return related.map(item => {
+      if (typeof item === 'string') {
+        // Handle legacy string format: convert to object with path
+        return { path: item, confidence_score: 1.0 };
+      }
+
+      if (typeof item === 'object' && item !== null) {
+        // Transform field names: file → path, confidence → confidence_score
+        const normalized: any = {};
+
+        // Use 'path' if present, otherwise use 'file' for backward compat
+        if (item.path) {
+          normalized.path = item.path;
+        } else if (item.file) {
+          normalized.path = item.file;
+        }
+
+        // Use confidence_score if present, otherwise use confidence
+        if (item.confidence_score !== undefined) {
+          normalized.confidence_score = item.confidence_score;
+        } else if (item.confidence !== undefined) {
+          normalized.confidence_score = item.confidence;
+        } else {
+          normalized.confidence_score = 1.0; // Default if missing
+        }
+
+        // Preserve optional fields
+        if (item.reason) normalized.reason = item.reason;
+
+        return normalized;
+      }
+
+      return item;
+    });
+  }
+
+  /**
+   * Normalize rules[] field for backward compatibility
+   * Accept both string format ("rule: description") and structured format ({rule, description, severity})
+   *
+   * @param rules Rules field from ElementData
+   * @returns Normalized rules array that accepts both formats
+   */
+  private normalizeRulesField(rules: any[]): any[] {
+    if (!rules || !Array.isArray(rules)) return [];
+
+    return rules.map(item => {
+      // If already structured object format, return as-is
+      if (typeof item === 'object' && item !== null && item.rule) {
+        return {
+          rule: item.rule,
+          description: item.description || undefined,
+          severity: item.severity || 'error'
+        };
+      }
+
+      // If string format "rule: description", parse and structure
+      if (typeof item === 'string') {
+        const colonIndex = item.indexOf(':');
+        if (colonIndex > 0) {
+          return {
+            rule: item.substring(0, colonIndex).trim(),
+            description: item.substring(colonIndex + 1).trim(),
+            severity: 'error'
+          };
+        }
+        // If no colon, treat whole string as rule name
+        return {
+          rule: item.trim(),
+          severity: 'error'
+        };
+      }
+
+      return item;
     });
   }
 }
