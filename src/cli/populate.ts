@@ -24,6 +24,7 @@ import {
   formatSupportedLanguages,
   validateCliLanguages,
 } from './detect-languages.js';
+import { runSemanticIntegration, validateIdempotency } from './semantic-integration.js';
 
 interface CliArgs {
   projectDir: string;
@@ -303,6 +304,32 @@ async function run(args: CliArgs): Promise<void> {
     } else {
       for (const gen of activeGenerators) {
         await runGenerator(gen, state, outputDir, generatorTimings, failures, args.verbose, args.json);
+      }
+    }
+
+    // Run semantic integration if requested
+    if (args.semantic) {
+      const semanticRegistryPath = path.join(outputDir, 'semantic-registry.json');
+      const semanticResult = await runSemanticIntegration({
+        projectDir: args.projectDir,
+        outputDir: args.projectDir,
+        registryPath: semanticRegistryPath,
+        dryRun: true,
+        generateHeaders: true,
+        enrichLLM: args.llmEnrich,
+        syncRegistry: false,
+      });
+
+      if (!semanticResult.success) {
+        failures.push({ name: 'semantic', message: semanticResult.error || 'Unknown error' });
+        if (!args.json) {
+          console.error(`[populate-coderef] Semantic integration failed: ${semanticResult.error}`);
+        }
+      } else if (args.verbose && !args.json) {
+        console.log(`[populate-coderef] Semantic integration: ${semanticResult.result?.filesProcessed} files processed`);
+        if (semanticResult.writeSummary) {
+          console.log(`  - Would generate headers for ${semanticResult.writeSummary.totalFiles} files`);
+        }
       }
     }
 
