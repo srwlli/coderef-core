@@ -1,0 +1,197 @@
+{
+  "$schema": "http://json-schema.org/draft-2020-12/schema#",
+  "workorder_id": "WO-CODEREF-SEMANTICS-POPULATE-001",
+  "feature_name": "coderef-semantics-populate-tool-extension",
+  "created": "2026-04-29T19:35:30Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Multi-phase feature touching semantic enrichment layer + scanner integration + public API sync. Requires discovery + validation gates.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "AST Extraction Foundation",
+      "description": "Implement AST-based extraction of exports and used_by relationships from source code.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-1.1",
+          "name": "Create AST extractor module",
+          "description": "Implement src/semantic/ast-extractor.ts with support for JS/TS exports and imports",
+          "verb": "WRITE",
+          "acceptance_criteria": [
+            "Module exports astExtractor() function",
+            "Handles CommonJS and ES6 module formats",
+            "Unit tests cover 5+ scenarios",
+            "Performance: <100ms per file"
+          ]
+        },
+        {
+          "id": "TASK-1.2",
+          "name": "Add CLI flag for semantic generation",
+          "description": "Extend src/cli.ts with --semantic and --llm-enrich flags",
+          "verb": "EDIT",
+          "acceptance_criteria": [
+            "Flags parse correctly",
+            "Help text documents new flags",
+            "Backward compatible with existing invocations"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Semantic Header Generation",
+      "description": "Implement semantic header generation and integration with populate tool.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-2.1",
+          "name": "Implement header generator",
+          "description": "Create src/semantic/header-generator.ts to generate CodeRef-Semantics comments",
+          "verb": "WRITE",
+          "acceptance_criteria": [
+            "Generates exports: [...] comments",
+            "Generates used_by: [...] comments",
+            "Preserves existing comments",
+            "Integration tests with 3 sample projects"
+          ]
+        },
+        {
+          "id": "TASK-2.2",
+          "name": "Integrate with populate flow",
+          "description": "Wire header generation into src/populate.ts main flow",
+          "verb": "EDIT",
+          "acceptance_criteria": [
+            "Populate tool invokes header generation when --semantic flag set",
+            "Written headers appear in source files",
+            "No regression in existing populate functionality"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "LLM Enrichment (Optional)",
+      "description": "Implement optional LLM-enriched rules/related field generation.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "TASK-3.1",
+          "name": "Create LLM enricher module",
+          "description": "Implement src/semantic/llm-enricher.ts for rules and related field generation",
+          "verb": "WRITE",
+          "acceptance_criteria": [
+            "Calls Anthropic API for enrichment",
+            "Implements exponential backoff for rate limits",
+            "Makes LLM calls optional (graceful fallback)",
+            "Unit tests cover fallback scenarios"
+          ]
+        },
+        {
+          "id": "TASK-3.2",
+          "name": "Wire LLM enrichment to populate",
+          "description": "Integrate llm-enricher into populate flow when --llm-enrich flag set",
+          "verb": "EDIT",
+          "acceptance_criteria": [
+            "Enrichment invoked on --llm-enrich flag",
+            "Results merged into semantic headers",
+            "Fallback works when LLM unavailable"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Registry Sync and Refresh",
+      "description": "Implement unified-registry.json synchronization and refresh command.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-4.1",
+          "name": "Implement registry sync",
+          "description": "Create sync function to update unified-registry.json with extracted semantic data",
+          "verb": "WRITE",
+          "acceptance_criteria": [
+            "Reads semantic headers from source files",
+            "Updates unified-registry.json entries",
+            "Validates against registry schema before writes",
+            "Logs conflicts and skipped entries"
+          ]
+        },
+        {
+          "id": "TASK-4.2",
+          "name": "Implement refresh command",
+          "description": "Add refresh subcommand to CLI for ongoing syncs",
+          "verb": "EDIT",
+          "acceptance_criteria": [
+            "CLI subcommand: populate refresh",
+            "Runs incremental sync from cache",
+            "Outputs summary of changes",
+            "Exit codes follow convention"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Integration Testing and Validation",
+      "description": "End-to-end testing and integration with coderef-scan pipeline.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-5.1",
+          "name": "Write integration tests",
+          "description": "Create test suite covering full semantic workflow",
+          "verb": "WRITE",
+          "acceptance_criteria": [
+            "E2E test: populate --semantic on sample project",
+            "E2E test: populate --semantic --llm-enrich",
+            "Test: registry sync validates schema",
+            "Test: refresh incremental sync works",
+            "All tests pass"
+          ]
+        },
+        {
+          "id": "TASK-5.2",
+          "name": "Validate scanner integration",
+          "description": "Verify coderef-scan reads and uses semantic headers correctly",
+          "verb": "TEST",
+          "acceptance_criteria": [
+            "coderef-scan outputs semantic fields when present",
+            "No regression in existing scanner functionality",
+            "Documentation updated with examples"
+          ]
+        },
+        {
+          "id": "TASK-5.3",
+          "name": "Commit and close workorder",
+          "description": "Final commit and workorder completion",
+          "verb": "COMMIT",
+          "acceptance_criteria": [
+            "All changes committed to branch",
+            "Commit message references workorder ID",
+            "Phase 5 gate validation complete"
+          ]
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "gate": "AST extractor module tests pass and performance baseline met"
+    },
+    {
+      "phase": 2,
+      "gate": "Populate integration verified; no regression in existing functionality"
+    },
+    {
+      "phase": 4,
+      "gate": "Registry sync validates schema; refresh command functional"
+    },
+    {
+      "phase": 5,
+      "gate": "Integration tests pass; scanner integration validated"
+    }
+  ]
+}

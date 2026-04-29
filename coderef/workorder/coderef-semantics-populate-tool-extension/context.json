@@ -1,0 +1,50 @@
+{
+  "workorder_id": "WO-CODEREF-SEMANTICS-POPULATE-001",
+  "feature_name": "coderef-semantics-populate-tool-extension",
+  "created": "2026-04-29T19:35:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-04-29-001",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Extend populate tool to generate CodeRef-Semantics headers in source files and sync with unified-registry.json. Implement AST-based exports/used_by extraction, LLM-enriched rules/related generation, and refresh command for ongoing syncs."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Multi-phase feature touching semantic enrichment layer + scanner integration + public API sync. Requires discovery + validation gates.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": "discovery-populate-semantics-001",
+    "discovery": {
+      "candidates": ["src/populate.ts", "src/cli.ts", "src/registry/unified-registry.json", "src/semantic/header-generator.ts"],
+      "blast_radius": {
+        "files_modified": 4,
+        "files_created": 2,
+        "downstream_consumers": ["scanner", "report-generator"]
+      },
+      "public_api_hits": ["populate", "semantic-enrichment", "registry-sync"],
+      "hotspot_hits": [],
+      "foundation_anchors": ["semantic-headers", "ast-extraction", "enrichment-rules"],
+      "warnings": [],
+      "summary": "Phased integration affecting 4 core modules and 2 consumers"
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "CodeRef-Semantics header generation in source files",
+      "AST-based exports/used_by extraction",
+      "LLM-enriched rules/related field generation",
+      "unified-registry.json synchronization",
+      "Refresh command for ongoing syncs"
+    ],
+    "out_of_scope": [
+      "LLM model retraining",
+      "Real-time streaming updates",
+      "Cross-project semantic linking"
+    ]
+  },
+  "constraints": [
+    "Must integrate with existing populate-coderef CLI",
+    "Unified-registry.json schema compliance required",
+    "AST parsing must use existing babel/typescript parsers"
+  ]
+}

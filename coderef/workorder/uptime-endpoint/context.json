@@ -1,0 +1,32 @@
+{
+  "workorder_id": "WO-UPTIME-ENDPOINT-001",
+  "feature_name": "uptime-endpoint",
+  "created": "2026-04-27T00:00:00Z",
+  "owner_domain": "development",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "intake": {
+    "trigger": "user_request",
+    "user_request": "add a /uptime endpoint that returns process uptime seconds"
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Simple endpoint addition with minimal dependencies. No complex architecture changes or multi-phase coordination needed.",
+    "plan_type_decided_by": "create-workorder@2.5.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "Endpoint should be GET /uptime",
+      "Return JSON response with uptime_seconds field",
+      "Should track process start time on initialization",
+      "Return value in seconds as integer"
+    ],
+    "out_of_scope": [
+      "Authentication/authorization",
+      "Rate limiting",
+      "Detailed memory/CPU metrics"
+    ]
+  },
+  "constraints": []
+}

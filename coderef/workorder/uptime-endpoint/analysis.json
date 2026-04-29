@@ -1,0 +1,34 @@
+{
+  "workorder_id": "WO-UPTIME-ENDPOINT-001",
+  "feature_name": "uptime-endpoint",
+  "analysis_authored_at": "2026-04-27T00:00:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/server.ts",
+      "src/index.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Server restart dependency",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Process uptime resets on restart (expected behavior)"
+    }
+  ],
+  "candidates": [
+    "src/server.ts",
+    "src/index.ts"
+  ],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "decision": "Simple endpoint without authentication",
+      "rationale": "Uptime is non-sensitive monitoring data"
+    }
+  ]
+}

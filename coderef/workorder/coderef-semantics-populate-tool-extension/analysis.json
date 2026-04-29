@@ -1,0 +1,69 @@
+{
+  "workorder_id": "WO-CODEREF-SEMANTICS-POPULATE-001",
+  "feature_name": "coderef-semantics-populate-tool-extension",
+  "analysis_authored_at": "2026-04-29T19:35:15Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/populate.ts",
+      "src/cli.ts",
+      "src/registry/unified-registry.json",
+      "src/semantic/header-generator.ts"
+    ],
+    "files_created": [
+      "src/semantic/llm-enricher.ts",
+      "src/semantic/ast-extractor.ts"
+    ],
+    "downstream_consumers": [
+      "coderef-scan (reads semantic headers)",
+      "report-generator (uses enriched fields)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "AST parsing performance on large codebases",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Implement caching and incremental parsing; profile early in Phase 2"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Unified-registry.json schema drift",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Validate against schema before writes; add integration test"
+    },
+    {
+      "id": "RISK-003",
+      "title": "LLM API rate limits during enrichment",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Implement batching and exponential backoff; make LLM optional"
+    }
+  ],
+  "candidates": [
+    "src/populate.ts - main entry point for semantic generation",
+    "src/cli.ts - CLI flags and argument handling",
+    "src/semantic/header-generator.ts - template and generation logic",
+    "src/registry/unified-registry.json - target schema"
+  ],
+  "dependencies": [
+    "@babel/parser (AST parsing)",
+    "typescript compiler API",
+    "Anthropic SDK (for LLM enrichment)",
+    "jsonschema (for validation)"
+  ],
+  "public_api_hits": [
+    "populate() - main generation function",
+    "refreshSemanticIndex() - sync function",
+    "enrichMetadata() - LLM enrichment entry point"
+  ],
+  "decision_records": [
+    {
+      "decision": "Make LLM enrichment optional",
+      "rationale": "Allows offline operation and reduces dependencies on external services",
+      "alternative": "Require LLM for all enrichment",
+      "impact": "Slightly reduced intelligence without LLM, but more resilient"
+    }
+  ]
+}

@@ -2,9 +2,9 @@
 
 ## Statistics
 
-- **Total Files:** 296
-- **Total Elements:** 2106
-- **Total Lines:** 85247
+- **Total Files:** 302
+- **Total Elements:** 2191
+- **Total Lines:** 87419
 - **Languages:** ts, js, py
 
 
@@ -16,7 +16,8 @@
 
 ### Detection Indicators
 
-- CLI entry points: 25
+- Server entry points: 1
+- CLI entry points: 29
 - package.json bin field present
 - Library entry points: 20
 - Library exports configured
@@ -69,7 +70,7 @@
 
 ## Entry Points
 
-Found 76 application entry points. Primary entry point is marked with ⭐.
+Found 84 application entry points. Primary entry point is marked with ⭐.
 
 - **⭐ index.ts** [library]
   - File: examples/plugins/example-detector/src/index.ts
@@ -134,6 +135,15 @@ Found 76 application entry points. Primary entry point is marked with ⭐.
 - **main** [cli]
   - File: demo-all-modules.ts
   - CLI command handler (main)
+- **main** [cli]
+  - File: src/cli/coderef-pipeline.ts
+  - CLI command handler (main)
+- **main** [cli]
+  - File: src/cli/coderef-rag-server.ts
+  - CLI command handler (main)
+- **main** [cli]
+  - File: src/cli/coderef-watch.ts
+  - CLI command handler (main)
 - **run** [cli]
   - File: src/cli/populate.ts
   - CLI command handler (run)
@@ -160,6 +170,9 @@ Found 76 application entry points. Primary entry point is marked with ⭐.
   - CLI command handler (main)
 - **main** [cli]
   - File: scripts/doc-gen/enhance-existing-docs.js
+  - CLI command handler (main)
+- **main** [cli]
+  - File: scripts/doc-gen/generate-meta-json.js
   - CLI command handler (main)
 - **main** [cli] (exported)
   - File: autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py
@@ -206,6 +219,9 @@ Found 76 application entry points. Primary entry point is marked with ⭐.
 - **main** [cli] (exported)
   - File: __tests__/.test-venv-fixtures/src/app.py
   - CLI command handler (main)
+- **coderef-rag-server.ts** [server]
+  - File: src/cli/coderef-rag-server.ts
+  - Server bootstrap entry
 - **DynamicImportDetector.getArrowFunctionName** [serverless]
   - File: src/analyzer/dynamic-import-detector.ts
   - Serverless function handler (DynamicImportDetector.getArrowFunctionName)
@@ -218,6 +234,9 @@ Found 76 application entry points. Primary entry point is marked with ⭐.
 - **MiddlewareDetector.detectExpressHandlers** [serverless]
   - File: src/analyzer/middleware-detector.ts
   - Serverless function handler (MiddlewareDetector.detectExpressHandlers)
+- **handleReadyz** [serverless]
+  - File: src/cli/coderef-rag-server.ts
+  - Serverless function handler (handleReadyz)
 - **MarkdownFormatter.formatCriticalFunctions** [serverless]
   - File: src/context/markdown-formatter.ts
   - Serverless function handler (MarkdownFormatter.formatCriticalFunctions)
@@ -248,6 +267,9 @@ Found 76 application entry points. Primary entry point is marked with ⭐.
 - **TreeSitterScanner.createFunctionElement** [serverless]
   - File: src/scanner/tree-sitter-scanner.ts
   - Serverless function handler (TreeSitterScanner.createFunctionElement)
+- **computeTrigger** [serverless]
+  - File: scripts/doc-gen/generate-meta-json.js
+  - Serverless function handler (computeTrigger)
 - **count_async_functions** [serverless] (exported)
   - File: autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py
   - Serverless function handler (count_async_functions)
@@ -269,6 +291,9 @@ Found 76 application entry points. Primary entry point is marked with ⭐.
 - **EntryPointDetector.isJobHandler** [job]
   - File: src/analyzer/entry-detector.ts
   - Job/task handler (EntryPointDetector.isJobHandler)
+- **scheduleFlush** [job]
+  - File: src/cli/coderef-watch.ts
+  - Job/task handler (scheduleFlush)
 - **TaskContextGenerator** [job] (exported)
   - File: src/context/task-context-generator.ts
   - Job/task handler (TaskContextGenerator)
@@ -507,10 +532,10 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
 
 ## Module Structure
 
-- **src:** 217 files
-- **__tests__:** 40 files
+- **src:** 221 files
+- **__tests__:** 41 files
 - **autoresearch:** 14 files
-- **scripts:** 10 files
+- **scripts:** 11 files
 - **.:** 8 files
 - **examples:** 4 files
 - **utils:** 3 files
@@ -601,14 +626,14 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 
 ## Documentation Quality
 
-- **Overall Score:** 53/100 (BASIC)
-- **Files Analyzed:** 561
-- **Average Comment Density:** 36.6%
+- **Overall Score:** 63/100 (GOOD)
+- **Files Analyzed:** 619
+- **Average Comment Density:** 37.2%
 
 ### README Analysis
 
 - **Exists:** Yes
-- **Completeness:** 44% (8/18 sections)
+- **Completeness:** 50% (9/18 sections)
 - **Quality:** BASIC
 
 **Key Sections Present:**
@@ -622,25 +647,25 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 
 ### JSDoc/TSDoc Coverage
 
-- **Files:** 292
-- **Average Coverage:** 69.6%
+- **Files:** 309
+- **Average Coverage:** 70.2%
 
 **Low Coverage Files:**
 
+- dist\analyzer\import-parser.js: 0% (0/2)
 - dist\index.d.ts: 0% (0/10)
 - dist\src\adapter\graph-to-elements.d.ts: 0% (0/1)
 - dist\src\analyzer\ast-element-scanner.js: 0% (0/2)
 - dist\src\analyzer\config-analyzer.d.ts: 9% (1/11)
-- dist\src\analyzer\contract-detector.d.ts: 7% (1/14)
 
 ### Changelog
 
-- **Exists:** No
-false
-false
-false
-false
-false
+- **Exists:** Yes
+- **Format:** keepachangelog
+- **Total Entries:** 12
+- **Last Updated:** 223 days ago
+- **Recency Score:** 39/100
+- **Has Unreleased Section:** Yes
 
 ### API Documentation
 
@@ -650,9 +675,8 @@ false
 
 ### Documentation Recommendations
 
-- Add more sections to README (8/18 present). Priority: Installation, Usage, API Reference
-- Add JSDoc comments to 82 files with <50% documentation coverage
-- Create a CHANGELOG.md to track version history
+- Add JSDoc comments to 85 files with <50% documentation coverage
+- Update CHANGELOG (last updated 223 days ago)
 
 ## Technology Stack
 
@@ -664,4 +688,4 @@ false
 
 ## Generated
 
-2026-04-23T22:48:21.035Z
+2026-04-28T22:40:56.381Z

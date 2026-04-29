@@ -36,6 +36,8 @@ interface CliArgs {
   help: boolean;
   mode: 'full' | 'minimal' | 'context';
   select?: string[];
+  semantic: boolean;
+  llmEnrich: boolean;
 }
 
 interface GeneratorRunner {
@@ -61,6 +63,8 @@ function parseArgs(argv: string[]): CliArgs {
     parallel: false,
     help: false,
     mode: 'full',
+    semantic: false,
+    llmEnrich: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -116,6 +120,14 @@ function parseArgs(argv: string[]): CliArgs {
         args.select = argv[++i].split(',');
         break;
 
+      case '--semantic':
+        args.semantic = true;
+        break;
+
+      case '--llm-enrich':
+        args.llmEnrich = true;
+        break;
+
       default:
         if (!arg.startsWith('-')) {
           args.projectDir = arg;
@@ -145,6 +157,8 @@ OPTIONS:
   -s, --skip <generators>      Skip specific generators
   -j, --json                   Output progress as JSON
   -p, --parallel               Enable parallel generator execution
+  --semantic                   Generate CodeRef-Semantics headers in source files
+  --llm-enrich                 Enable LLM-enriched semantic generation (requires --semantic)
   -h, --help                   Show this help message
 
 MODES:

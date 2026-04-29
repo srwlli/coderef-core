@@ -692,6 +692,131 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/cli/coderef-pipeline.ts",
+      "line": 187,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 153,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 185,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 268,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 270,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 274,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 278,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 322,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 329,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 349,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 350,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 351,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 353,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 371,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 424,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 434,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 440,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 442,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 454,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 459,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-watch.ts",
+      "line": 230,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-watch.ts",
+      "line": 405,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-watch.ts",
+      "line": 437,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-watch.ts",
+      "line": 447,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-watch.ts",
+      "line": 463,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/cli/detect-languages.ts",
       "line": 84,
       "pattern": "try-catch"
@@ -738,72 +863,92 @@
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 321,
+      "line": 328,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 330,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/cli/rag-index.ts",
-      "line": 333,
+      "line": 345,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 338,
+      "line": 354,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 341,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/cli/rag-index.ts",
-      "line": 477,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/cli/rag-search.ts",
-      "line": 352,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/cli/rag-search.ts",
       "line": 357,
       "pattern": "error-handling"
     },
     {
-      "file": "src/cli/rag-search.ts",
-      "line": 364,
+      "file": "src/cli/rag-index.ts",
+      "line": 362,
       "pattern": "try-catch"
     },
     {
-      "file": "src/cli/rag-search.ts",
-      "line": 367,
+      "file": "src/cli/rag-index.ts",
+      "line": 365,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 415,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 426,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 525,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 375,
+      "line": 356,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 378,
+      "line": 361,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 384,
+      "line": 368,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 387,
+      "line": 371,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 381,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 392,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 395,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 401,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 404,
       "pattern": "error-handling"
     },
     {
@@ -838,27 +983,27 @@
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 59,
+      "line": 62,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 101,
+      "line": 105,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 106,
+      "line": 110,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 118,
+      "line": 122,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 165,
+      "line": 175,
       "pattern": "error-handling"
     },
     {
@@ -1553,7 +1698,7 @@
     },
     {
       "file": "src/integration/rag/chunk-converter.ts",
-      "line": 214,
+      "line": 219,
       "pattern": "try-catch"
     },
     {
@@ -1798,37 +1943,37 @@
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 158,
+      "line": 174,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 201,
+      "line": 228,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 231,
+      "line": 258,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 272,
+      "line": 299,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 352,
+      "line": 379,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 380,
+      "line": 407,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 430,
+      "line": 457,
       "pattern": "try-catch"
     },
     {
@@ -1928,7 +2073,12 @@
     },
     {
       "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 57,
+      "line": 76,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/drift-generator.ts",
+      "line": 118,
       "pattern": "try-catch"
     },
     {
@@ -1958,7 +2108,7 @@
     },
     {
       "file": "src/pipeline/generators/index-generator.ts",
-      "line": 65,
+      "line": 76,
       "pattern": "try-catch"
     },
     {
@@ -2662,8 +2812,18 @@
       "pattern": "try-catch"
     },
     {
+      "file": "src/scanner/semantic-analyzer.ts",
+      "line": 160,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/semantic-analyzer.ts",
+      "line": 161,
+      "pattern": "try-catch"
+    },
+    {
       "file": "src/scanner/tree-sitter-scanner.ts",
-      "line": 83,
+      "line": 97,
       "pattern": "try-catch"
     },
     {
@@ -2943,62 +3103,72 @@
     },
     {
       "file": "scripts/doc-gen/enhance-existing-docs.js",
-      "line": 17,
+      "line": 18,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/generate-hotspots-md.js",
-      "line": 27,
+      "line": 30,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/generate-hotspots-md.js",
-      "line": 59,
+      "line": 62,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/generate-hotspots-md.js",
-      "line": 92,
+      "line": 95,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/generate-hotspots-md.js",
-      "line": 96,
+      "line": 99,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/generate-hotspots-md.js",
-      "line": 97,
+      "line": 100,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/generate-hotspots-md.js",
-      "line": 184,
+      "line": 187,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/doc-gen/generate-meta-json.js",
+      "line": 112,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scripts/doc-gen/generate-meta-json.js",
+      "line": 284,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/generate-relationships-md.js",
-      "line": 82,
+      "line": 85,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/generate-relationships-md.js",
-      "line": 113,
+      "line": 116,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/utils.js",
-      "line": 20,
+      "line": 58,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/validate-docs.js",
-      "line": 23,
+      "line": 24,
       "pattern": "try-catch"
     },
     {
       "file": "scripts/doc-gen/validate-docs.js",
-      "line": 31,
+      "line": 32,
       "pattern": "try-catch"
     },
     {
@@ -3449,6 +3619,91 @@
       "line": 271
     },
     {
+      "name": "runLeg",
+      "file": "src/cli/coderef-pipeline.ts",
+      "line": 181
+    },
+    {
+      "name": "main",
+      "file": "src/cli/coderef-pipeline.ts",
+      "line": 276
+    },
+    {
+      "name": "loadRagModules",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 49
+    },
+    {
+      "name": "readBody",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 137
+    },
+    {
+      "name": "probeOllama",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 173
+    },
+    {
+      "name": "handleHealth",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 215
+    },
+    {
+      "name": "handleReadyz",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 226
+    },
+    {
+      "name": "handleStatus",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 231
+    },
+    {
+      "name": "handleQuery",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 266
+    },
+    {
+      "name": "handleIndex",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 347
+    },
+    {
+      "name": "route",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 430
+    },
+    {
+      "name": "main",
+      "file": "src/cli/coderef-rag-server.ts",
+      "line": 448
+    },
+    {
+      "name": "runOnce",
+      "file": "src/cli/coderef-watch.ts",
+      "line": 344
+    },
+    {
+      "name": "runDaemon",
+      "file": "src/cli/coderef-watch.ts",
+      "line": 367
+    },
+    {
+      "name": "flush",
+      "file": "src/cli/coderef-watch.ts",
+      "line": 396
+    },
+    {
+      "name": "shutdown",
+      "file": "src/cli/coderef-watch.ts",
+      "line": 442
+    },
+    {
+      "name": "main",
+      "file": "src/cli/coderef-watch.ts",
+      "line": 457
+    },
+    {
       "name": "scanDirectory",
       "file": "src/cli/detect-languages.ts",
       "line": 77
@@ -3481,12 +3736,12 @@
     {
       "name": "createVectorStore",
       "file": "src/cli/rag-index.ts",
-      "line": 264
+      "line": 267
     },
     {
       "name": "main",
       "file": "src/cli/rag-index.ts",
-      "line": 320
+      "line": 327
     },
     {
       "name": "loadRAGDependencies",
@@ -3496,12 +3751,12 @@
     {
       "name": "createVectorStore",
       "file": "src/cli/rag-search.ts",
-      "line": 267
+      "line": 270
     },
     {
       "name": "main",
       "file": "src/cli/rag-search.ts",
-      "line": 351
+      "line": 355
     },
     {
       "name": "main",
@@ -3516,12 +3771,12 @@
     {
       "name": "scanProject",
       "file": "src/cli/scan.ts",
-      "line": 47
+      "line": 50
     },
     {
       "name": "main",
       "file": "src/cli/scan.ts",
-      "line": 126
+      "line": 130
     },
     {
       "name": "resolveFilePaths",
@@ -3746,7 +4001,7 @@
     {
       "name": "ChunkConverter.fileExists",
       "file": "src/integration/rag/chunk-converter.ts",
-      "line": 209
+      "line": 214
     },
     {
       "name": "EmbeddingService.embedChunks",
@@ -3946,42 +4201,42 @@
     {
       "name": "SQLiteVectorStore.initialize",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 157
+      "line": 173
     },
     {
       "name": "SQLiteVectorStore.save",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 200
+      "line": 227
     },
     {
       "name": "SQLiteVectorStore.upsert",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 228
+      "line": 255
     },
     {
       "name": "SQLiteVectorStore.query",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 269
+      "line": 296
     },
     {
       "name": "SQLiteVectorStore.delete",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 349
+      "line": 376
     },
     {
       "name": "SQLiteVectorStore.clear",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 377
+      "line": 404
     },
     {
       "name": "SQLiteVectorStore.stats",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 410
+      "line": 437
     },
     {
       "name": "SQLiteVectorStore.fetchById",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 427
+      "line": 454
     },
     {
       "name": "ComplexityGenerator.generate",
@@ -4026,12 +4281,12 @@
     {
       "name": "DriftGenerator.generate",
       "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 38
+      "line": 52
     },
     {
       "name": "DriftGenerator.detectDrift",
       "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 52
+      "line": 70
     },
     {
       "name": "ExportGenerator.generate",
@@ -4081,7 +4336,7 @@
     {
       "name": "IndexGenerator.generate",
       "file": "src/pipeline/generators/index-generator.ts",
-      "line": 27
+      "line": 28
     },
     {
       "name": "PatternGenerator.generate",
@@ -4326,12 +4581,12 @@
     {
       "name": "GrammarLoader.loadGrammar",
       "file": "src/scanner/tree-sitter-scanner.ts",
-      "line": 71
+      "line": 85
     },
     {
       "name": "TreeSitterScanner.scanFile",
       "file": "src/scanner/tree-sitter-scanner.ts",
-      "line": 146
+      "line": 160
     },
     {
       "name": "applyModifications",
@@ -4481,6 +4736,11 @@
       "reason": "Medium complexity (10), Core pipeline function"
     },
     {
+      "name": "buildSemanticRelationships",
+      "file": "src/scanner/semantic-analyzer.ts",
+      "reason": "High complexity (14), Core pipeline function"
+    },
+    {
       "name": "generateMigrationHints",
       "file": "src/context/breaking-change-detector/hint-generator.ts",
       "reason": "Medium complexity (9), Core pipeline function"
@@ -4604,11 +4864,6 @@
       "name": "detectProjectLanguages",
       "file": "src/cli/detect-languages.ts",
       "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "mergePresets",
-      "file": "src/config/presets.ts",
-      "reason": "Core pipeline function"
     }
   ],
   "middleware": [

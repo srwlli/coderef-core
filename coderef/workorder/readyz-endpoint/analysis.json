@@ -1,0 +1,33 @@
+{
+  "workorder_id": "WO-READYZ-ENDPOINT-001",
+  "feature_name": "readyz-endpoint",
+  "analysis_authored_at": "2026-04-27T00:00:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/cli/coderef-rag-server.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Request handler routing collision",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Use exact path match for /readyz; verify no path prefix conflicts with existing /api routes"
+    }
+  ],
+  "candidates": [
+    "src/cli/coderef-rag-server.ts"
+  ],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "title": "Endpoint path selection",
+      "decision": "Use /readyz (no /api prefix)",
+      "rationale": "Standard k8s readiness probe path; differentiates from /api/health which is liveness"
+    }
+  ]
+}

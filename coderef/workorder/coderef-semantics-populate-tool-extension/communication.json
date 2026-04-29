@@ -1,0 +1,61 @@
+{
+  "workorder_id": "WO-CODEREF-SEMANTICS-POPULATE-001",
+  "feature_name": "coderef-semantics-populate-tool-extension",
+  "created": "2026-04-29T19:35:45Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [
+    "DISPATCH-2026-04-29-001"
+  ],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\Users\willh\desktop\coderef\coderef-core\coderef\workorder\coderef-semantics-populate-tool-extension\plan.json",
+  "context_file": "C:\Users\willh\desktop\coderef\coderef-core\coderef\workorder\coderef-semantics-populate-tool-extension\context.json",
+  "analysis_file": "C:\Users\willh\desktop\coderef\coderef-core\coderef\workorder\coderef-semantics-populate-tool-extension\analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR (via dispatcher)",
+    "to": "CODEREF-CORE",
+    "reason": "Semantic layer extension requires core repository access and populate tool ownership"
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_enforcement": "strict",
+    "hard_stops_enforced": true,
+    "inter_phase_review": "mandatory",
+    "phase_transitions_logged": true
+  },
+  "hard_constraints": [
+    "All phases must follow strict task vocabulary (READ, WRITE, EDIT, RUN, TEST, COMMIT, CHECK)",
+    "Hard stops are non-negotiable gates; no phase skip allowed",
+    "Registry schema validation mandatory before writes"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "workorder_created",
+      "timestamp": "2026-04-29T19:35:45Z",
+      "decision": "Phased plan selected for semantic feature",
+      "rationale": "Multi-phase feature with discovery + validation gates"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "created",
+      "timestamp": "2026-04-29T19:35:45Z",
+      "domain": "CODEREF-CORE",
+      "message": "Workorder created from DISPATCH-2026-04-29-001",
+      "status": "plan_created"
+    },
+    {
+      "event": "execution_started",
+      "timestamp": "2026-04-29T19:40:00Z",
+      "domain": "CODEREF-CORE",
+      "message": "Phase 1 execution begins - AST Extraction Foundation",
+      "status": "implementing"
+    }
+  ]
+}

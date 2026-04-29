@@ -1,8 +1,8 @@
 {
   "summary": {
-    "totalFiles": 220,
-    "testedFiles": 74,
-    "coveragePercentage": 34
+    "totalFiles": 225,
+    "testedFiles": 75,
+    "coveragePercentage": 33
   },
   "files": [
     {
@@ -204,6 +204,19 @@
       "file": "src/cache/incremental-cache.ts",
       "tested": true,
       "testFile": "src/scanner/__tests__/incremental-cache-recursive.test.ts"
+    },
+    {
+      "file": "src/cli/coderef-pipeline.ts",
+      "tested": false
+    },
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "tested": false
+    },
+    {
+      "file": "src/cli/coderef-watch.ts",
+      "tested": true,
+      "testFile": "__tests__/coderef-watch-lloyd-read.test.py"
     },
     {
       "file": "src/cli/detect-languages.ts",
@@ -769,6 +782,10 @@
       "testFile": "src/scanner/__tests__/ast-mode.test.ts"
     },
     {
+      "file": "src/scanner/semantic-analyzer.ts",
+      "tested": false
+    },
+    {
       "file": "src/scanner/tree-sitter-scanner.ts",
       "tested": true,
       "testFile": "__tests__/tree-sitter-scanner.test.ts"
@@ -868,6 +885,10 @@
     },
     {
       "file": "scripts/doc-gen/generate-index-md.js",
+      "tested": false
+    },
+    {
+      "file": "scripts/doc-gen/generate-meta-json.js",
       "tested": false
     },
     {
@@ -991,6 +1012,8 @@
     "src/analyzer/js-call-detector/visitor.ts",
     "src/analyzer/middleware-detector.ts",
     "src/analyzer/project-classifier.ts",
+    "src/cli/coderef-pipeline.ts",
+    "src/cli/coderef-rag-server.ts",
     "src/cli/detect-languages.ts",
     "src/cli/rag-index.ts",
     "src/cli/rag-search.ts",
@@ -1073,6 +1096,7 @@
     "src/scanner/frontend-scanner.ts",
     "src/scanner/register-frameworks.ts",
     "src/scanner/scanner-worker.ts",
+    "src/scanner/semantic-analyzer.ts",
     "src/search/search-engine.ts",
     "src/search-client.ts",
     "src/types/external-modules.d.ts",
@@ -1086,6 +1110,7 @@
     "scripts/doc-gen/generate-exports-md.js",
     "scripts/doc-gen/generate-hotspots-md.js",
     "scripts/doc-gen/generate-index-md.js",
+    "scripts/doc-gen/generate-meta-json.js",
     "scripts/doc-gen/generate-relationships-md.js",
     "scripts/doc-gen/utils.js",
     "scripts/doc-gen/validate-docs.js",

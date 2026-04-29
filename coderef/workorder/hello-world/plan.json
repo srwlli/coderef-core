@@ -1,0 +1,58 @@
+{
+  "workorder_id": "WO-HELLO-WORLD-001",
+  "feature_name": "hello-world",
+  "created": "2026-04-27T00:00:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single endpoint addition with no cross-cutting changes; localized to route handler + test",
+  "plan_type_decided_by": "create-workorder@2.5.0",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Implement /hello endpoint",
+      "description": "Add new route handler that returns 200 OK",
+      "gate": "Route responds with 200 OK status",
+      "tasks": [
+        {
+          "id": "IMPL-001",
+          "title": "Create hello route handler",
+          "description": "Add GET /hello endpoint that returns { status: 'OK' } with 200 status",
+          "verb": "WRITE",
+          "file": "src/routes/hello.ts",
+          "success_criteria": "Route file exists and exports handler function",
+          "acceptance_tests": "curl http://localhost:3000/hello returns 200 with OK status"
+        },
+        {
+          "id": "IMPL-002",
+          "title": "Register route in main app",
+          "description": "Mount /hello route in main application router",
+          "verb": "EDIT",
+          "file": "src/index.ts",
+          "success_criteria": "hello route is imported and registered",
+          "acceptance_tests": "Route is accessible at /hello"
+        },
+        {
+          "id": "TEST-001",
+          "title": "Write route test",
+          "description": "Add unit test for /hello endpoint",
+          "verb": "WRITE",
+          "file": "tests/routes/hello.test.ts",
+          "success_criteria": "Test file exists and covers success case",
+          "acceptance_tests": "npm test passes for hello.test.ts"
+        }
+      ]
+    }
+  ],
+  "hard_stops": [],
+  "success_criteria": [
+    "GET /hello returns 200 OK",
+    "Response body contains status: OK",
+    "Unit test passes",
+    "No existing tests fail"
+  ],
+  "rollback_plan": "Remove hello route handler and route registration; revert to previous commit",
+  "constraints": {
+    "scope": "Single endpoint only",
+    "no_breaking_changes": true,
+    "backwards_compatible": true
+  }
+}

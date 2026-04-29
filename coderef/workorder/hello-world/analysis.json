@@ -1,0 +1,38 @@
+{
+  "workorder_id": "WO-HELLO-WORLD-001",
+  "feature_name": "hello-world",
+  "analysis_authored_at": "2026-04-27T00:00:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/index.ts",
+      "src/routes/index.ts"
+    ],
+    "files_created": [
+      "tests/routes/hello.test.ts"
+    ],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Route naming conflict",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Verify no existing /hello route; check route registry before adding"
+    }
+  ],
+  "candidates": [
+    "src/routes/hello.ts",
+    "src/index.ts"
+  ],
+  "dependencies": [
+    "express (or routing framework in use)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "decision": "Use light plan-type",
+      "rationale": "Single endpoint, no cross-cutting impact, no architectural changes"
+    }
+  ]
+}

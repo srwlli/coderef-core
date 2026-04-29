@@ -4713,6 +4713,627 @@
       "async": false,
       "uuid": "c84f8b3f-7b78-505f-954f-eab1f565bca3"
     },
+    "75317345-4332-5311-9f81-3c121cfc46fa": {
+      "type": "interface",
+      "name": "CliArgs",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 30,
+      "exported": false,
+      "uuid": "75317345-4332-5311-9f81-3c121cfc46fa"
+    },
+    "563041b0-cd81-5b20-8531-1b520f2d3eac": {
+      "type": "type",
+      "name": "Leg",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 42,
+      "exported": false,
+      "uuid": "563041b0-cd81-5b20-8531-1b520f2d3eac"
+    },
+    "bf76816e-bb3a-57a4-be46-c841a66ae053": {
+      "type": "function",
+      "name": "printHelp",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 44,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "bf76816e-bb3a-57a4-be46-c841a66ae053"
+    },
+    "d0ef1618-305b-5f8a-8667-92556738c1b4": {
+      "type": "function",
+      "name": "parseArgs",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 78,
+      "parameters": [
+        "argv"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "d0ef1618-305b-5f8a-8667-92556738c1b4"
+    },
+    "db984345-670f-5b7f-a643-aa988825aa05": {
+      "type": "function",
+      "name": "resolveLegs",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 138,
+      "parameters": [
+        "args"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "db984345-670f-5b7f-a643-aa988825aa05"
+    },
+    "8dda5aeb-4397-54a4-b26c-aa179b27531c": {
+      "type": "interface",
+      "name": "LegResult",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 145,
+      "exported": false,
+      "uuid": "8dda5aeb-4397-54a4-b26c-aa179b27531c"
+    },
+    "14f849a0-ab82-5ab6-afdb-c4b1a6c5bdb2": {
+      "type": "function",
+      "name": "coderefBin",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 157,
+      "parameters": [
+        "name"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "14f849a0-ab82-5ab6-afdb-c4b1a6c5bdb2"
+    },
+    "7ab9d95d-8679-51b6-a54e-87115bc12819": {
+      "type": "function",
+      "name": "docGenDir",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 165,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "7ab9d95d-8679-51b6-a54e-87115bc12819"
+    },
+    "decf07f3-972c-5b6f-af26-2b1eaf9142db": {
+      "type": "function",
+      "name": "runNode",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 170,
+      "parameters": [
+        "script",
+        "args",
+        "opts"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "decf07f3-972c-5b6f-af26-2b1eaf9142db"
+    },
+    "760c6ce4-4829-58bb-a222-027ee77c6177": {
+      "type": "function",
+      "name": "runLeg",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 181,
+      "parameters": [
+        "leg",
+        "args"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "760c6ce4-4829-58bb-a222-027ee77c6177"
+    },
+    "25aba123-744f-5882-bac3-8ecf2e607476": {
+      "type": "function",
+      "name": "main",
+      "file": "src\\cli\\coderef-pipeline.ts",
+      "line": 276,
+      "parameters": [],
+      "exported": false,
+      "async": true,
+      "uuid": "25aba123-744f-5882-bac3-8ecf2e607476"
+    },
+    "8e63ef17-f573-5af0-aa1e-df162c971c7a": {
+      "type": "constant",
+      "name": "RAG_API_VERSION",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 34,
+      "exported": false,
+      "uuid": "8e63ef17-f573-5af0-aa1e-df162c971c7a"
+    },
+    "828fc3d3-0b78-5097-9d95-959db0ebfb6a": {
+      "type": "constant",
+      "name": "MAX_BODY_BYTES",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 36,
+      "exported": false,
+      "uuid": "828fc3d3-0b78-5097-9d95-959db0ebfb6a"
+    },
+    "615bc662-dcb6-57fe-8877-5e86971d96ae": {
+      "type": "constant",
+      "name": "QUERY_TIMEOUT_MS",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 37,
+      "exported": false,
+      "uuid": "615bc662-dcb6-57fe-8877-5e86971d96ae"
+    },
+    "312f4a6a-3343-5c25-84c7-6422a790288a": {
+      "type": "constant",
+      "name": "OLLAMA_PROBE_TIMEOUT_MS",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 38,
+      "exported": false,
+      "uuid": "312f4a6a-3343-5c25-84c7-6422a790288a"
+    },
+    "ff69ed87-00ce-503b-b79a-874340ed072e": {
+      "type": "constant",
+      "name": "OLLAMA_PROBE_CACHE_MS",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 39,
+      "exported": false,
+      "uuid": "ff69ed87-00ce-503b-b79a-874340ed072e"
+    },
+    "350e5cee-81ed-53f6-b3ea-497ca258a219": {
+      "type": "constant",
+      "name": "SERVER_VERSION",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 40,
+      "exported": false,
+      "uuid": "350e5cee-81ed-53f6-b3ea-497ca258a219"
+    },
+    "1e2b0317-f72f-59ba-9fc1-72e51ac834a3": {
+      "type": "function",
+      "name": "loadRagModules",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 49,
+      "parameters": [],
+      "exported": false,
+      "async": true,
+      "uuid": "1e2b0317-f72f-59ba-9fc1-72e51ac834a3"
+    },
+    "f30828a3-7b02-56f8-b359-7f0a958d410b": {
+      "type": "interface",
+      "name": "CliArgs",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 61,
+      "exported": false,
+      "uuid": "f30828a3-7b02-56f8-b359-7f0a958d410b"
+    },
+    "869b99cd-7322-5820-b24f-576d845a90e2": {
+      "type": "function",
+      "name": "parseArgs",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 63,
+      "parameters": [
+        "argv"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "869b99cd-7322-5820-b24f-576d845a90e2"
+    },
+    "384ce39b-e231-5667-b68c-1efcddb52fd8": {
+      "type": "function",
+      "name": "next",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 74,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "384ce39b-e231-5667-b68c-1efcddb52fd8"
+    },
+    "994ec78b-0396-59ec-9879-c7d21f993a0d": {
+      "type": "function",
+      "name": "printHelp",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 86,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "994ec78b-0396-59ec-9879-c7d21f993a0d"
+    },
+    "4ded68e3-26b9-505e-8202-861722a233ce": {
+      "type": "function",
+      "name": "isoNow",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 119,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "4ded68e3-26b9-505e-8202-861722a233ce"
+    },
+    "62c8776f-9f66-5472-859c-4f4dbdf4b9c5": {
+      "type": "function",
+      "name": "jsonHead",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 123,
+      "parameters": [
+        "headers"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "62c8776f-9f66-5472-859c-4f4dbdf4b9c5"
+    },
+    "f98645e1-4b49-5448-ba28-8537d703e011": {
+      "type": "function",
+      "name": "send",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 131,
+      "parameters": [
+        "res",
+        "code",
+        "body"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "f98645e1-4b49-5448-ba28-8537d703e011"
+    },
+    "e2bbaa56-6e53-57be-9c2d-67d7f43d3f6d": {
+      "type": "function",
+      "name": "readBody",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 137,
+      "parameters": [
+        "req"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "e2bbaa56-6e53-57be-9c2d-67d7f43d3f6d"
+    },
+    "af206153-69dd-538f-857c-a7a2b4123ce6": {
+      "type": "interface",
+      "name": "ProbeResult",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 162,
+      "exported": false,
+      "uuid": "af206153-69dd-538f-857c-a7a2b4123ce6"
+    },
+    "904e50d9-bd75-5e8a-a077-4103df39946e": {
+      "type": "function",
+      "name": "probeOllama",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 173,
+      "parameters": [
+        "force"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "904e50d9-bd75-5e8a-a077-4103df39946e"
+    },
+    "68b9377e-ba8e-5aae-aa97-015d3bc53907": {
+      "type": "function",
+      "name": "handleHealth",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 215,
+      "parameters": [
+        "_req",
+        "res"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "68b9377e-ba8e-5aae-aa97-015d3bc53907"
+    },
+    "2961ab07-d7ee-598f-94ac-3be74c7c8324": {
+      "type": "function",
+      "name": "handleReadyz",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 226,
+      "parameters": [
+        "_req",
+        "res"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "2961ab07-d7ee-598f-94ac-3be74c7c8324"
+    },
+    "4bb9963d-de69-5738-8a42-6121f797b48d": {
+      "type": "function",
+      "name": "handleStatus",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 231,
+      "parameters": [
+        "_req",
+        "res"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "4bb9963d-de69-5738-8a42-6121f797b48d"
+    },
+    "fe8f3b68-c826-5796-ae85-2d0401c7bb92": {
+      "type": "interface",
+      "name": "QueryBody",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 256,
+      "exported": false,
+      "uuid": "fe8f3b68-c826-5796-ae85-2d0401c7bb92"
+    },
+    "257fe4f2-30fd-5c9b-9bbe-d80d075bf8e2": {
+      "type": "function",
+      "name": "handleQuery",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 266,
+      "parameters": [
+        "req",
+        "res"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "257fe4f2-30fd-5c9b-9bbe-d80d075bf8e2"
+    },
+    "259531ce-9798-5563-b459-de8c730ff62c": {
+      "type": "interface",
+      "name": "IndexBody",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 345,
+      "exported": false,
+      "uuid": "259531ce-9798-5563-b459-de8c730ff62c"
+    },
+    "8eea82da-3c4a-5479-921c-098551027ff2": {
+      "type": "function",
+      "name": "handleIndex",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 347,
+      "parameters": [
+        "req",
+        "res"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "8eea82da-3c4a-5479-921c-098551027ff2"
+    },
+    "e1a4a2b2-06fc-52cf-bb7b-a58c0a665631": {
+      "type": "function",
+      "name": "route",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 430,
+      "parameters": [
+        "req",
+        "res"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "e1a4a2b2-06fc-52cf-bb7b-a58c0a665631"
+    },
+    "0b28de73-4128-5308-926f-4342478278d5": {
+      "type": "function",
+      "name": "main",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 448,
+      "parameters": [],
+      "exported": false,
+      "async": true,
+      "uuid": "0b28de73-4128-5308-926f-4342478278d5"
+    },
+    "3fedcd6a-02ec-5380-8265-34c780d7d8f9": {
+      "type": "function",
+      "name": "shutdown",
+      "file": "src\\cli\\coderef-rag-server.ts",
+      "line": 469,
+      "parameters": [
+        "sig"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "3fedcd6a-02ec-5380-8265-34c780d7d8f9"
+    },
+    "abb61b5d-c5f4-5017-b568-644292f6e5cc": {
+      "type": "constant",
+      "name": "HEARTBEAT_SCHEMA_VERSION",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 29,
+      "exported": false,
+      "uuid": "abb61b5d-c5f4-5017-b568-644292f6e5cc"
+    },
+    "ecedbf88-8fe3-5d99-b8ef-a4884bc82863": {
+      "type": "constant",
+      "name": "DEFAULT_DEBOUNCE_MS",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 31,
+      "exported": false,
+      "uuid": "ecedbf88-8fe3-5d99-b8ef-a4884bc82863"
+    },
+    "fb34647f-c19b-5ed9-a752-ce6af1a3324f": {
+      "type": "interface",
+      "name": "CliArgs",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 47,
+      "exported": false,
+      "uuid": "fb34647f-c19b-5ed9-a752-ce6af1a3324f"
+    },
+    "c03065a1-5e00-56c4-9556-333f5a518993": {
+      "type": "function",
+      "name": "printHelp",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 60,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "c03065a1-5e00-56c4-9556-333f5a518993"
+    },
+    "f50daeb9-3ab4-59a9-bf38-6c9a510abce8": {
+      "type": "function",
+      "name": "parseArgs",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 96,
+      "parameters": [
+        "argv"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "f50daeb9-3ab4-59a9-bf38-6c9a510abce8"
+    },
+    "9a46ac62-60cd-575b-8a4d-598d7c0c38f2": {
+      "type": "function",
+      "name": "next",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 119,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "9a46ac62-60cd-575b-8a4d-598d7c0c38f2"
+    },
+    "be0dda4b-110f-5da1-a8ce-e54801f7872f": {
+      "type": "interface",
+      "name": "FlushResult",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 166,
+      "exported": false,
+      "uuid": "be0dda4b-110f-5da1-a8ce-e54801f7872f"
+    },
+    "698e3047-0864-5314-9583-087f2c9f60b6": {
+      "type": "interface",
+      "name": "Heartbeat",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 174,
+      "exported": false,
+      "uuid": "698e3047-0864-5314-9583-087f2c9f60b6"
+    },
+    "217f1072-cde0-52a4-8aa3-54367d979aee": {
+      "type": "function",
+      "name": "nowIso",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 187,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "217f1072-cde0-52a4-8aa3-54367d979aee"
+    },
+    "dad53a98-d6bd-5a62-a6af-35ef0137bf63": {
+      "type": "function",
+      "name": "ensureCoderefDir",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 191,
+      "parameters": [
+        "projectDir"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "dad53a98-d6bd-5a62-a6af-35ef0137bf63"
+    },
+    "ff3c5348-60ac-5108-8bd6-5da7e406242b": {
+      "type": "function",
+      "name": "writeJsonAtomic",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 202,
+      "parameters": [
+        "targetPath",
+        "payload"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "ff3c5348-60ac-5108-8bd6-5da7e406242b"
+    },
+    "c7c56ee9-12e6-5249-9858-7076f570e843": {
+      "type": "function",
+      "name": "appendJsonl",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 209,
+      "parameters": [
+        "targetPath",
+        "payload"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "c7c56ee9-12e6-5249-9858-7076f570e843"
+    },
+    "39b54752-229f-53d8-ab98-ac302fce834c": {
+      "type": "function",
+      "name": "forwardSessionEvent",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 219,
+      "parameters": [
+        "args"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "39b54752-229f-53d8-ab98-ac302fce834c"
+    },
+    "520a9ae4-2c59-5fdc-9501-656b08a3e0ff": {
+      "type": "function",
+      "name": "runPipeline",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 245,
+      "parameters": [
+        "opts"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "520a9ae4-2c59-5fdc-9501-656b08a3e0ff"
+    },
+    "db04f9b2-1432-5a03-911a-b6bbe21496a2": {
+      "type": "function",
+      "name": "writeHeartbeat",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 307,
+      "parameters": [
+        "opts"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "db04f9b2-1432-5a03-911a-b6bbe21496a2"
+    },
+    "1fd72eb1-4372-5f6d-bc0e-86f5ef9406d4": {
+      "type": "function",
+      "name": "runOnce",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 344,
+      "parameters": [
+        "args"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "1fd72eb1-4372-5f6d-bc0e-86f5ef9406d4"
+    },
+    "4a4238ca-1ee3-5852-9ce9-ca9623d49704": {
+      "type": "function",
+      "name": "runDaemon",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 367,
+      "parameters": [
+        "args"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "4a4238ca-1ee3-5852-9ce9-ca9623d49704"
+    },
+    "dfaffe94-32d2-55f2-a31a-87702424e5fd": {
+      "type": "function",
+      "name": "scheduleFlush",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 391,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "dfaffe94-32d2-55f2-a31a-87702424e5fd"
+    },
+    "a63687d9-08e6-52ba-8f7a-6ac03e4eb1ca": {
+      "type": "function",
+      "name": "flush",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 396,
+      "parameters": [],
+      "exported": false,
+      "async": true,
+      "uuid": "a63687d9-08e6-52ba-8f7a-6ac03e4eb1ca"
+    },
+    "9ec54833-bfcf-5805-a6d7-17fe1c2e9ce1": {
+      "type": "function",
+      "name": "shutdown",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 442,
+      "parameters": [
+        "signal"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "9ec54833-bfcf-5805-a6d7-17fe1c2e9ce1"
+    },
+    "f422fe61-f536-52c8-a3a4-222696f67047": {
+      "type": "function",
+      "name": "main",
+      "file": "src\\cli\\coderef-watch.ts",
+      "line": 457,
+      "parameters": [],
+      "exported": false,
+      "async": true,
+      "uuid": "f422fe61-f536-52c8-a3a4-222696f67047"
+    },
     "e2d589f5-c6b5-56d0-bee4-3639d7577a83": {
       "type": "type",
       "name": "SupportedCliLanguage",
@@ -4915,33 +5536,33 @@
       "async": false,
       "uuid": "f7d8b655-2540-5f48-8810-c523e009449a"
     },
-    "1ec387ed-91af-5363-8b3d-0bef08090d00": {
+    "14277bd3-137a-5854-aff8-eeee204e82f7": {
       "type": "function",
       "name": "printHelp",
       "file": "src\\cli\\rag-index.ts",
-      "line": 157,
+      "line": 160,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "1ec387ed-91af-5363-8b3d-0bef08090d00"
+      "uuid": "14277bd3-137a-5854-aff8-eeee204e82f7"
     },
-    "361bef3a-06d8-5bda-8332-fa36f1ddd020": {
+    "b82d1d4c-b461-59e5-b9ed-99d8669a1db1": {
       "type": "function",
       "name": "createLLMProvider",
       "file": "src\\cli\\rag-index.ts",
-      "line": 217,
+      "line": 220,
       "parameters": [
         "provider"
       ],
       "exported": false,
       "async": false,
-      "uuid": "361bef3a-06d8-5bda-8332-fa36f1ddd020"
+      "uuid": "b82d1d4c-b461-59e5-b9ed-99d8669a1db1"
     },
-    "e1319310-b2c0-56f0-b8ec-0f8a07c24141": {
+    "5d76746d-2adc-542d-8b1c-d326c147d6cc": {
       "type": "function",
       "name": "createVectorStore",
       "file": "src\\cli\\rag-index.ts",
-      "line": 264,
+      "line": 267,
       "parameters": [
         "store",
         "projectDir",
@@ -4949,17 +5570,17 @@
       ],
       "exported": false,
       "async": true,
-      "uuid": "e1319310-b2c0-56f0-b8ec-0f8a07c24141"
+      "uuid": "5d76746d-2adc-542d-8b1c-d326c147d6cc"
     },
-    "46ad60dd-1dae-5c15-8dff-0c999afb9916": {
+    "0ebe4f2f-b35d-587f-9327-80561897bd31": {
       "type": "function",
       "name": "main",
       "file": "src\\cli\\rag-index.ts",
-      "line": 320,
+      "line": 327,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "46ad60dd-1dae-5c15-8dff-0c999afb9916"
+      "uuid": "0ebe4f2f-b35d-587f-9327-80561897bd31"
     },
     "6503e3c7-8e72-5315-8a47-ad379a0855a3": {
       "type": "function",
@@ -4994,33 +5615,33 @@
       "async": false,
       "uuid": "13f5bb0e-8200-5ee1-8bd7-28398040f6dc"
     },
-    "43525ef7-f223-56fa-a634-750826b8b430": {
+    "46e3f431-3a09-5191-b8ef-79a7f4e97e6c": {
       "type": "function",
       "name": "printHelp",
       "file": "src\\cli\\rag-search.ts",
-      "line": 171,
+      "line": 174,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "43525ef7-f223-56fa-a634-750826b8b430"
+      "uuid": "46e3f431-3a09-5191-b8ef-79a7f4e97e6c"
     },
-    "045f01fc-b35c-5119-88c2-5910f2fd9f14": {
+    "4aeba68c-5f32-5e9b-a504-c46df4b7ff36": {
       "type": "function",
       "name": "createLLMProvider",
       "file": "src\\cli\\rag-search.ts",
-      "line": 222,
+      "line": 225,
       "parameters": [
         "provider"
       ],
       "exported": false,
       "async": false,
-      "uuid": "045f01fc-b35c-5119-88c2-5910f2fd9f14"
+      "uuid": "4aeba68c-5f32-5e9b-a504-c46df4b7ff36"
     },
-    "718842c7-b37e-5b88-95ba-178edd49fafc": {
+    "c39929b2-7e98-555a-9825-bbacdf62e0ee": {
       "type": "function",
       "name": "createVectorStore",
       "file": "src\\cli\\rag-search.ts",
-      "line": 267,
+      "line": 270,
       "parameters": [
         "store",
         "projectDir",
@@ -5028,30 +5649,30 @@
       ],
       "exported": false,
       "async": true,
-      "uuid": "718842c7-b37e-5b88-95ba-178edd49fafc"
+      "uuid": "c39929b2-7e98-555a-9825-bbacdf62e0ee"
     },
-    "6cf777f5-3f98-5ef7-9c15-f45c467a6af1": {
+    "507dfc96-8bdb-51a7-9a07-a4b99cd80166": {
       "type": "function",
       "name": "formatResult",
       "file": "src\\cli\\rag-search.ts",
-      "line": 323,
+      "line": 327,
       "parameters": [
         "result",
         "index"
       ],
       "exported": false,
       "async": false,
-      "uuid": "6cf777f5-3f98-5ef7-9c15-f45c467a6af1"
+      "uuid": "507dfc96-8bdb-51a7-9a07-a4b99cd80166"
     },
-    "3b09e0e0-a4a6-55dd-9c56-a557d7590200": {
+    "f8d2e2ab-1700-5a20-903c-5d3361692fd7": {
       "type": "function",
       "name": "main",
       "file": "src\\cli\\rag-search.ts",
-      "line": 351,
+      "line": 355,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "3b09e0e0-a4a6-55dd-9c56-a557d7590200"
+      "uuid": "f8d2e2ab-1700-5a20-903c-5d3361692fd7"
     },
     "c5ea2bf0-38ba-5f2b-95a3-98ebc8dc474d": {
       "type": "interface",
@@ -5185,62 +5806,62 @@
       "exported": false,
       "uuid": "984726b7-9e4f-54ac-a134-3c74f914b04f"
     },
-    "08927454-566f-58e3-a175-e798bd4fe4ec": {
+    "7289735d-70de-5489-af46-6c6c74e16c73": {
       "type": "function",
       "name": "printHelp",
       "file": "src\\cli\\scan.ts",
-      "line": 26,
+      "line": 27,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "08927454-566f-58e3-a175-e798bd4fe4ec"
+      "uuid": "7289735d-70de-5489-af46-6c6c74e16c73"
     },
-    "25ee43ee-1cd7-5650-9199-ef0e97343bde": {
+    "8d8b4297-71d7-5130-8a1a-f39994d2b755": {
       "type": "function",
       "name": "scanProject",
       "file": "src\\cli\\scan.ts",
-      "line": 47,
+      "line": 50,
       "parameters": [
         "projectPath",
         "options"
       ],
       "exported": false,
       "async": true,
-      "uuid": "25ee43ee-1cd7-5650-9199-ef0e97343bde"
+      "uuid": "8d8b4297-71d7-5130-8a1a-f39994d2b755"
     },
-    "13a62c5f-8fd7-581d-80a9-e8c372784245": {
+    "a87a6a54-d1a8-579d-8998-2b0f8853d7c1": {
       "type": "function",
       "name": "validateProjectPath",
       "file": "src\\cli\\scan.ts",
-      "line": 97,
+      "line": 101,
       "parameters": [
         "projectPath"
       ],
       "exported": false,
       "async": false,
-      "uuid": "13a62c5f-8fd7-581d-80a9-e8c372784245"
+      "uuid": "a87a6a54-d1a8-579d-8998-2b0f8853d7c1"
     },
-    "23575b03-3e71-5183-a7d1-c7cb2e424999": {
+    "3540bedf-7b7d-5df6-b3bb-b150486b6c66": {
       "type": "function",
       "name": "parseLanguages",
       "file": "src\\cli\\scan.ts",
-      "line": 113,
+      "line": 117,
       "parameters": [
         "langArg"
       ],
       "exported": false,
       "async": false,
-      "uuid": "23575b03-3e71-5183-a7d1-c7cb2e424999"
+      "uuid": "3540bedf-7b7d-5df6-b3bb-b150486b6c66"
     },
-    "691ec329-4a19-54df-a807-a4fd237bbf80": {
+    "9fedfc8b-6ba7-5ead-bb84-56f90406a9d4": {
       "type": "function",
       "name": "main",
       "file": "src\\cli\\scan.ts",
-      "line": 126,
+      "line": 130,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "691ec329-4a19-54df-a807-a4fd237bbf80"
+      "uuid": "9fedfc8b-6ba7-5ead-bb84-56f90406a9d4"
     },
     "0933e898-6118-5b60-ad84-e958109a2a95": {
       "type": "interface",
@@ -11174,47 +11795,47 @@
       "async": true,
       "uuid": "92b13110-6629-5a4f-a010-0ea58b7769bb"
     },
-    "faa5242b-b6d4-5773-8cef-46c3babf69df": {
+    "b869ffbd-ba63-57ef-be6e-06e65f1da15f": {
       "type": "method",
       "name": "ChunkConverter.fileExists",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 209,
+      "line": 214,
       "parameters": [
         "filePath"
       ],
       "exported": false,
       "async": true,
-      "uuid": "faa5242b-b6d4-5773-8cef-46c3babf69df"
+      "uuid": "b869ffbd-ba63-57ef-be6e-06e65f1da15f"
     },
-    "200d5ba0-09d2-5084-a480-1d3979986e7e": {
+    "6198ba6e-d09c-5165-903a-2bca749be885": {
       "type": "method",
       "name": "ChunkConverter.extractElementName",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 226,
+      "line": 231,
       "parameters": [
         "nodeId"
       ],
       "exported": false,
       "async": false,
-      "uuid": "200d5ba0-09d2-5084-a480-1d3979986e7e"
+      "uuid": "6198ba6e-d09c-5165-903a-2bca749be885"
     },
-    "1e64b024-ab9b-5c65-8c54-b1bd5dd6c02f": {
+    "797974f5-67be-5e51-8db0-b2ce3b438ab6": {
       "type": "method",
       "name": "ChunkConverter.detectLanguage",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 234,
+      "line": 239,
       "parameters": [
         "filePath"
       ],
       "exported": false,
       "async": false,
-      "uuid": "1e64b024-ab9b-5c65-8c54-b1bd5dd6c02f"
+      "uuid": "797974f5-67be-5e51-8db0-b2ce3b438ab6"
     },
-    "a9c6bb61-029d-5cb9-a177-095161b09a57": {
+    "de843d97-5d90-5427-8e64-dfafde7cabb4": {
       "type": "method",
       "name": "ChunkConverter.extractSourceCode",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 259,
+      "line": 264,
       "parameters": [
         "fileContent",
         "lineNumber",
@@ -11222,13 +11843,13 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "a9c6bb61-029d-5cb9-a177-095161b09a57"
+      "uuid": "de843d97-5d90-5427-8e64-dfafde7cabb4"
     },
-    "63819692-9ea4-560f-982d-323471e047f6": {
+    "b0ff065b-9085-5a5d-9028-edf1ad28967e": {
       "type": "method",
       "name": "ChunkConverter.extractDocumentation",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 291,
+      "line": 296,
       "parameters": [
         "fileContent",
         "lineNumber",
@@ -11236,39 +11857,39 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "63819692-9ea4-560f-982d-323471e047f6"
+      "uuid": "b0ff065b-9085-5a5d-9028-edf1ad28967e"
     },
-    "91439c59-5c37-535b-9d56-3969fe714e34": {
+    "1036b570-1659-5dfb-a3c1-176c582eb418": {
       "type": "method",
       "name": "ChunkConverter.extractDependencies",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 375,
+      "line": 380,
       "parameters": [
         "nodeId",
         "graph"
       ],
       "exported": false,
       "async": false,
-      "uuid": "91439c59-5c37-535b-9d56-3969fe714e34"
+      "uuid": "1036b570-1659-5dfb-a3c1-176c582eb418"
     },
-    "ec05f6d9-64d4-53f9-a3c5-74a5fd4b1037": {
+    "cc519f66-04b4-580a-be81-576c427e2ce5": {
       "type": "method",
       "name": "ChunkConverter.extractDependents",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 385,
+      "line": 390,
       "parameters": [
         "nodeId",
         "graph"
       ],
       "exported": false,
       "async": false,
-      "uuid": "ec05f6d9-64d4-53f9-a3c5-74a5fd4b1037"
+      "uuid": "cc519f66-04b4-580a-be81-576c427e2ce5"
     },
-    "4b3cd516-7855-5ad3-98fb-db7fd1d90105": {
+    "ec1ac5f2-efc2-5a05-878b-5d4113619a63": {
       "type": "method",
       "name": "ChunkConverter.extractRelatedElements",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 395,
+      "line": 400,
       "parameters": [
         "filePath",
         "excludeNodeId",
@@ -11276,19 +11897,19 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "4b3cd516-7855-5ad3-98fb-db7fd1d90105"
+      "uuid": "ec1ac5f2-efc2-5a05-878b-5d4113619a63"
     },
-    "969b3afe-5c70-5746-9c26-b1860b38ba06": {
+    "6d64aa14-a6d5-5c1c-9468-04a04b5d8d24": {
       "type": "method",
       "name": "ChunkConverter.calculateStatistics",
       "file": "src\\integration\\rag\\chunk-converter.ts",
-      "line": 414,
+      "line": 419,
       "parameters": [
         "chunks"
       ],
       "exported": false,
       "async": false,
-      "uuid": "969b3afe-5c70-5746-9c26-b1860b38ba06"
+      "uuid": "6d64aa14-a6d5-5c1c-9468-04a04b5d8d24"
     },
     "2c5c3582-45e0-5de1-8361-2cea9ed2e185": {
       "type": "interface",
@@ -12843,139 +13464,149 @@
       "exported": true,
       "uuid": "b4403285-fce0-59e8-860d-4dd56d4dd13e"
     },
-    "1437e92f-c67c-557a-95dc-b4625c986276": {
+    "107792bb-625a-538b-9fe0-bd62568f535b": {
       "type": "class",
       "name": "ConfigError",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 119,
+      "line": 124,
       "exported": true,
-      "uuid": "1437e92f-c67c-557a-95dc-b4625c986276"
+      "uuid": "107792bb-625a-538b-9fe0-bd62568f535b"
     },
-    "190dea55-e93d-5cd6-b3ce-4fd61732fa11": {
+    "d729beac-49f2-5aa4-935c-08814bac6aa0": {
+      "type": "function",
+      "name": "isLocalOnly",
+      "file": "src\\integration\\rag\\rag-config.ts",
+      "line": 135,
+      "parameters": [],
+      "exported": true,
+      "async": false,
+      "uuid": "d729beac-49f2-5aa4-935c-08814bac6aa0"
+    },
+    "83e9f16a-ab07-5dd7-83b2-316fa0484922": {
       "type": "class",
       "name": "RAGConfigLoader",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 129,
+      "line": 145,
       "exported": true,
-      "uuid": "190dea55-e93d-5cd6-b3ce-4fd61732fa11"
+      "uuid": "83e9f16a-ab07-5dd7-83b2-316fa0484922"
     },
-    "bde3e16f-e339-5c4c-a062-eca864a0e079": {
+    "37875ee5-a9cc-55a0-a26d-fe8a40730e07": {
       "type": "method",
       "name": "RAGConfigLoader.loadConfig",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 133,
+      "line": 149,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "bde3e16f-e339-5c4c-a062-eca864a0e079"
+      "uuid": "37875ee5-a9cc-55a0-a26d-fe8a40730e07"
     },
-    "1a8340e2-a6fe-5c4c-9246-4a9347f31a9f": {
+    "64262fac-4a8d-591c-80d1-f1e1eb599d66": {
       "type": "method",
       "name": "RAGConfigLoader.getLLMProvider",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 165,
+      "line": 186,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "1a8340e2-a6fe-5c4c-9246-4a9347f31a9f"
+      "uuid": "64262fac-4a8d-591c-80d1-f1e1eb599d66"
     },
-    "1a1b78b1-1317-5e1e-ba8a-2164c0871bdb": {
+    "c0ddb41d-79fa-5f99-8f38-5bc9e6513dc4": {
       "type": "method",
       "name": "RAGConfigLoader.getLLMConfig",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 191,
+      "line": 234,
       "parameters": [
         "provider"
       ],
       "exported": false,
       "async": false,
-      "uuid": "1a1b78b1-1317-5e1e-ba8a-2164c0871bdb"
+      "uuid": "c0ddb41d-79fa-5f99-8f38-5bc9e6513dc4"
     },
-    "1eab0531-d198-5151-a096-e5ad4f9ed5fd": {
+    "24ec60a7-f7f7-5fa1-b754-fe4071bada3c": {
       "type": "method",
       "name": "RAGConfigLoader.getVectorStoreProvider",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 252,
+      "line": 305,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "1eab0531-d198-5151-a096-e5ad4f9ed5fd"
+      "uuid": "24ec60a7-f7f7-5fa1-b754-fe4071bada3c"
     },
-    "2c39871a-5cf6-5bee-8d5f-8832abfab2de": {
+    "7700574a-8bc2-558e-9286-bb917d09a6d6": {
       "type": "method",
       "name": "RAGConfigLoader.getVectorStoreConfig",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 271,
+      "line": 324,
       "parameters": [
         "provider"
       ],
       "exported": false,
       "async": false,
-      "uuid": "2c39871a-5cf6-5bee-8d5f-8832abfab2de"
+      "uuid": "7700574a-8bc2-558e-9286-bb917d09a6d6"
     },
-    "7e0458c2-1e04-5499-9057-4c386536ab38": {
+    "9347af71-0ef0-5fb4-8e8b-b6d8d70be404": {
       "type": "method",
       "name": "RAGConfigLoader.getIndexingSettings",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 321,
+      "line": 374,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "7e0458c2-1e04-5499-9057-4c386536ab38"
+      "uuid": "9347af71-0ef0-5fb4-8e8b-b6d8d70be404"
     },
-    "4cf6192b-bf1e-5c0f-9746-6d5cafe9b2ae": {
+    "be42acc9-6b4f-517f-88e7-28692e35a30b": {
       "type": "method",
       "name": "RAGConfigLoader.getSearchSettings",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 339,
+      "line": 392,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "4cf6192b-bf1e-5c0f-9746-6d5cafe9b2ae"
+      "uuid": "be42acc9-6b4f-517f-88e7-28692e35a30b"
     },
-    "d1b031c0-8b5e-52ac-bf7c-dd737f50088c": {
+    "ed8ce887-4fa8-5f1d-8eec-5b2bd388812b": {
       "type": "method",
       "name": "RAGConfigLoader.getGenerationSettings",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 355,
+      "line": 408,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "d1b031c0-8b5e-52ac-bf7c-dd737f50088c"
+      "uuid": "ed8ce887-4fa8-5f1d-8eec-5b2bd388812b"
     },
-    "302c6e69-25c8-5031-8cc2-7af356d3cb35": {
+    "9b3bff84-1186-5235-995f-a2b458f0c6b8": {
       "type": "method",
       "name": "RAGConfigLoader.validateConfig",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 373,
+      "line": 426,
       "parameters": [
         "config"
       ],
       "exported": false,
       "async": false,
-      "uuid": "302c6e69-25c8-5031-8cc2-7af356d3cb35"
+      "uuid": "9b3bff84-1186-5235-995f-a2b458f0c6b8"
     },
-    "eb1632b0-9b66-5dd0-9ec3-930ae01d3226": {
+    "5ecaa2ea-302d-54b7-8672-587604d60c93": {
       "type": "method",
       "name": "RAGConfigLoader.printConfigSummary",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 419,
+      "line": 472,
       "parameters": [
         "config"
       ],
       "exported": false,
       "async": false,
-      "uuid": "eb1632b0-9b66-5dd0-9ec3-930ae01d3226"
+      "uuid": "5ecaa2ea-302d-54b7-8672-587604d60c93"
     },
-    "4eb2a41b-9bf3-51fe-8cb8-148e8e6b4978": {
+    "92429a6a-3eb1-59e7-a745-480ee2e33806": {
       "type": "method",
       "name": "RAGConfigLoader.generateEnvTemplate",
       "file": "src\\integration\\rag\\rag-config.ts",
-      "line": 440,
+      "line": 493,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "4eb2a41b-9bf3-51fe-8cb8-148e8e6b4978"
+      "uuid": "92429a6a-3eb1-59e7-a745-480ee2e33806"
     },
     "49d0e104-aec6-5ffd-ae44-19b35e4d99fe": {
       "type": "interface",
@@ -13587,149 +14218,149 @@
       "exported": true,
       "uuid": "1f7f748a-3e8c-59fd-ab82-d563398643eb"
     },
-    "12946705-5d15-5d2a-8faf-3748942df4a2": {
+    "ea678079-36fc-5d84-bae6-b8b32d235ff4": {
       "type": "method",
       "name": "SQLiteVectorStore.createEmptyStorage",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 143,
+      "line": 159,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "12946705-5d15-5d2a-8faf-3748942df4a2"
+      "uuid": "ea678079-36fc-5d84-bae6-b8b32d235ff4"
     },
-    "064aaffb-b440-52db-aa5e-9fb9f1817c33": {
+    "83627d3c-ca76-5efc-9cf5-43fb3f443221": {
       "type": "method",
       "name": "SQLiteVectorStore.initialize",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 157,
+      "line": 173,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "064aaffb-b440-52db-aa5e-9fb9f1817c33"
+      "uuid": "83627d3c-ca76-5efc-9cf5-43fb3f443221"
     },
-    "52d76c7c-448a-517f-8cc1-b07aedefc5d9": {
+    "2bec112f-8d22-5adf-822f-a29a9d132b43": {
       "type": "method",
       "name": "SQLiteVectorStore.save",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 200,
+      "line": 227,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "52d76c7c-448a-517f-8cc1-b07aedefc5d9"
+      "uuid": "2bec112f-8d22-5adf-822f-a29a9d132b43"
     },
-    "2ebb6112-0de9-5d8f-99bf-f8cfb2c9a37d": {
+    "9039cc16-996e-5e57-a2e3-bdf6477eab6a": {
       "type": "method",
       "name": "SQLiteVectorStore.ensureInitialized",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 216,
+      "line": 243,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "2ebb6112-0de9-5d8f-99bf-f8cfb2c9a37d"
+      "uuid": "9039cc16-996e-5e57-a2e3-bdf6477eab6a"
     },
-    "aa23aef8-27ce-53ac-b076-a0f496b53045": {
+    "054d45ef-5544-52a8-9ae6-b833b10ba479": {
       "type": "method",
       "name": "SQLiteVectorStore.upsert",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 228,
+      "line": 255,
       "parameters": [
         "records",
         "namespace"
       ],
       "exported": false,
       "async": true,
-      "uuid": "aa23aef8-27ce-53ac-b076-a0f496b53045"
+      "uuid": "054d45ef-5544-52a8-9ae6-b833b10ba479"
     },
-    "04c37ff9-9a81-5923-8482-f96c8d68cf5c": {
+    "d51593f4-5935-5452-b0fa-4e4efc42d06e": {
       "type": "method",
       "name": "SQLiteVectorStore.query",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 269,
+      "line": 296,
       "parameters": [
         "vector",
         "options"
       ],
       "exported": false,
       "async": true,
-      "uuid": "04c37ff9-9a81-5923-8482-f96c8d68cf5c"
+      "uuid": "d51593f4-5935-5452-b0fa-4e4efc42d06e"
     },
-    "e23e0560-3e73-5ce6-9e7b-cf0d14ad51bd": {
+    "ffba9289-8613-50ef-bc6c-5254ef65e689": {
       "type": "method",
       "name": "SQLiteVectorStore.delete",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 349,
+      "line": 376,
       "parameters": [
         "ids",
         "namespace"
       ],
       "exported": false,
       "async": true,
-      "uuid": "e23e0560-3e73-5ce6-9e7b-cf0d14ad51bd"
+      "uuid": "ffba9289-8613-50ef-bc6c-5254ef65e689"
     },
-    "4343638e-09cf-573d-8bf0-ba3b387ba971": {
+    "27df5d79-0fde-5588-8204-7b7a07cc502b": {
       "type": "method",
       "name": "SQLiteVectorStore.clear",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 377,
+      "line": 404,
       "parameters": [
         "namespace"
       ],
       "exported": false,
       "async": true,
-      "uuid": "4343638e-09cf-573d-8bf0-ba3b387ba971"
+      "uuid": "27df5d79-0fde-5588-8204-7b7a07cc502b"
     },
-    "dad776ac-0d3e-5291-97d1-233b396941b0": {
+    "092b348d-a472-52a9-a055-2a36aed5bb46": {
       "type": "method",
       "name": "SQLiteVectorStore.stats",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 410,
+      "line": 437,
       "parameters": [],
       "exported": false,
       "async": true,
-      "uuid": "dad776ac-0d3e-5291-97d1-233b396941b0"
+      "uuid": "092b348d-a472-52a9-a055-2a36aed5bb46"
     },
-    "99fe023e-75f2-5742-b63d-841a8eba3d88": {
+    "8ea8ca60-816e-5cc3-a7d5-9ecb5d8319b8": {
       "type": "method",
       "name": "SQLiteVectorStore.fetchById",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 427,
+      "line": 454,
       "parameters": [
         "id",
         "namespace"
       ],
       "exported": false,
       "async": true,
-      "uuid": "99fe023e-75f2-5742-b63d-841a8eba3d88"
+      "uuid": "8ea8ca60-816e-5cc3-a7d5-9ecb5d8319b8"
     },
-    "611b702a-582e-55dd-8167-4ce991f8176b": {
+    "4f88091f-f2ce-5384-abe4-38b7222ca258": {
       "type": "method",
       "name": "SQLiteVectorStore.getProviderName",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 459,
+      "line": 486,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "611b702a-582e-55dd-8167-4ce991f8176b"
+      "uuid": "4f88091f-f2ce-5384-abe4-38b7222ca258"
     },
-    "321abc88-c135-59cf-a74b-c8033bb6ef40": {
+    "e29ba3ac-80fd-54ab-bf16-75ba897d36fb": {
       "type": "method",
       "name": "SQLiteVectorStore.exists",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 466,
+      "line": 493,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "321abc88-c135-59cf-a74b-c8033bb6ef40"
+      "uuid": "e29ba3ac-80fd-54ab-bf16-75ba897d36fb"
     },
-    "71884c20-1c01-54fa-bf81-e277d88a02b6": {
+    "3075651b-0791-502c-b515-33057ba1fad1": {
       "type": "method",
       "name": "SQLiteVectorStore.getStoragePath",
       "file": "src\\integration\\vector\\sqlite-store.ts",
-      "line": 473,
+      "line": 500,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "71884c20-1c01-54fa-bf81-e277d88a02b6"
+      "uuid": "3075651b-0791-502c-b515-33057ba1fad1"
     },
     "0b20c365-e533-51f0-8c47-9480a613c8bf": {
       "type": "interface",
@@ -15510,38 +16141,25 @@
       "async": false,
       "uuid": "49724b1f-c732-589e-ab4e-bd26c014e2e7"
     },
-    "b428e9b4-57da-5ff5-97fd-f5445ccd3a24": {
+    "d916d0cf-3801-5e69-aea8-04053e881fdf": {
       "type": "interface",
       "name": "DriftReport",
       "file": "src\\pipeline\\generators\\drift-generator.ts",
-      "line": 16,
+      "line": 30,
       "exported": false,
-      "uuid": "b428e9b4-57da-5ff5-97fd-f5445ccd3a24"
+      "uuid": "d916d0cf-3801-5e69-aea8-04053e881fdf"
     },
-    "52dc75b3-9375-5d37-a2df-57ae3a13a0d1": {
+    "87b58033-7bb5-5440-84a8-7170f17927e1": {
       "type": "class",
       "name": "DriftGenerator",
       "file": "src\\pipeline\\generators\\drift-generator.ts",
-      "line": 37,
+      "line": 51,
       "exported": true,
-      "uuid": "52dc75b3-9375-5d37-a2df-57ae3a13a0d1"
+      "uuid": "87b58033-7bb5-5440-84a8-7170f17927e1"
     },
-    "fb0c0f9d-917b-5748-b8e7-ce14efcd42a1": {
+    "2a0087d7-7dbf-5e33-b4f4-f42f125541c7": {
       "type": "method",
       "name": "DriftGenerator.generate",
-      "file": "src\\pipeline\\generators\\drift-generator.ts",
-      "line": 38,
-      "parameters": [
-        "state",
-        "outputDir"
-      ],
-      "exported": false,
-      "async": true,
-      "uuid": "fb0c0f9d-917b-5748-b8e7-ce14efcd42a1"
-    },
-    "80cfd8e6-a616-577a-be9f-745e81ae7e18": {
-      "type": "method",
-      "name": "DriftGenerator.detectDrift",
       "file": "src\\pipeline\\generators\\drift-generator.ts",
       "line": 52,
       "parameters": [
@@ -15550,58 +16168,58 @@
       ],
       "exported": false,
       "async": true,
-      "uuid": "80cfd8e6-a616-577a-be9f-745e81ae7e18"
+      "uuid": "2a0087d7-7dbf-5e33-b4f4-f42f125541c7"
     },
-    "e8006e26-797d-596c-98b1-91da075f6d85": {
+    "899e0625-5b3e-54bf-82b2-b7adfefda70b": {
+      "type": "method",
+      "name": "DriftGenerator.detectDrift",
+      "file": "src\\pipeline\\generators\\drift-generator.ts",
+      "line": 70,
+      "parameters": [
+        "state",
+        "outputDir"
+      ],
+      "exported": false,
+      "async": true,
+      "uuid": "899e0625-5b3e-54bf-82b2-b7adfefda70b"
+    },
+    "03586203-376b-5252-95b6-5614a97c6435": {
       "type": "method",
       "name": "DriftGenerator.getElementId",
       "file": "src\\pipeline\\generators\\drift-generator.ts",
-      "line": 132,
+      "line": 166,
       "parameters": [
         "elem"
       ],
       "exported": false,
       "async": false,
-      "uuid": "e8006e26-797d-596c-98b1-91da075f6d85"
+      "uuid": "03586203-376b-5252-95b6-5614a97c6435"
     },
-    "1d54b2ef-f1a9-5dc7-b6d1-45a1e8a5fc05": {
+    "a88d34c7-224b-5ed6-90cd-23c74f78cfc3": {
       "type": "method",
       "name": "DriftGenerator.normalizeElement",
       "file": "src\\pipeline\\generators\\drift-generator.ts",
-      "line": 136,
+      "line": 170,
       "parameters": [
         "elem",
         "projectPath"
       ],
       "exported": false,
       "async": false,
-      "uuid": "1d54b2ef-f1a9-5dc7-b6d1-45a1e8a5fc05"
+      "uuid": "a88d34c7-224b-5ed6-90cd-23c74f78cfc3"
     },
-    "22192625-99e6-58b3-8476-2da860566597": {
+    "e533f2d4-a593-5de7-b8c6-c16bf14b695c": {
       "type": "method",
       "name": "DriftGenerator.normalizeFilePath",
       "file": "src\\pipeline\\generators\\drift-generator.ts",
-      "line": 143,
+      "line": 174,
       "parameters": [
         "filePath",
         "projectPath"
       ],
       "exported": false,
       "async": false,
-      "uuid": "22192625-99e6-58b3-8476-2da860566597"
-    },
-    "08793911-8812-5398-a3f5-42c4a0d13c02": {
-      "type": "method",
-      "name": "DriftGenerator.compareElements",
-      "file": "src\\pipeline\\generators\\drift-generator.ts",
-      "line": 148,
-      "parameters": [
-        "current",
-        "previous"
-      ],
-      "exported": false,
-      "async": false,
-      "uuid": "08793911-8812-5398-a3f5-42c4a0d13c02"
+      "uuid": "e533f2d4-a593-5de7-b8c6-c16bf14b695c"
     },
     "3a6afba3-ee49-50ef-a644-92dc082f12e2": {
       "type": "class",
@@ -15911,39 +16529,39 @@
       "async": true,
       "uuid": "7c965541-f69b-5a59-84d1-6c90f6015c47"
     },
-    "e72ce6c9-1e83-594e-9f83-cc7d63c13de1": {
+    "877c5cbb-63f6-5552-9cbc-c9d98ea52870": {
       "type": "class",
       "name": "IndexGenerator",
       "file": "src\\pipeline\\generators\\index-generator.ts",
-      "line": 20,
+      "line": 21,
       "exported": true,
-      "uuid": "e72ce6c9-1e83-594e-9f83-cc7d63c13de1"
+      "uuid": "877c5cbb-63f6-5552-9cbc-c9d98ea52870"
     },
-    "0e57c0ed-2eac-54f2-8fad-595e5d812fd5": {
+    "43a61dd6-f68f-5b9f-a123-9a3556aece13": {
       "type": "method",
       "name": "IndexGenerator.generate",
       "file": "src\\pipeline\\generators\\index-generator.ts",
-      "line": 27,
+      "line": 28,
       "parameters": [
         "state",
         "outputDir"
       ],
       "exported": false,
       "async": true,
-      "uuid": "0e57c0ed-2eac-54f2-8fad-595e5d812fd5"
+      "uuid": "43a61dd6-f68f-5b9f-a123-9a3556aece13"
     },
-    "0fca30a5-344d-5425-a908-3fd6aaa8002b": {
+    "d33a1562-97a5-5445-8ce7-79d93de10f65": {
       "type": "method",
       "name": "IndexGenerator.transformElements",
       "file": "src\\pipeline\\generators\\index-generator.ts",
-      "line": 57,
+      "line": 68,
       "parameters": [
         "elements",
         "projectPath"
       ],
       "exported": false,
       "async": false,
-      "uuid": "0fca30a5-344d-5425-a908-3fd6aaa8002b"
+      "uuid": "d33a1562-97a5-5445-8ce7-79d93de10f65"
     },
     "3406a392-118e-550b-a282-55044ca49949": {
       "type": "interface",
@@ -17352,6 +17970,22 @@
       "exported": true,
       "uuid": "7bebda68-e617-599b-9779-90e3f723e2d2"
     },
+    "d31d4a25-ceff-5ce3-b173-a5dff034eb7e": {
+      "type": "interface",
+      "name": "HookDefinition",
+      "file": "src\\plugins\\types.ts",
+      "line": 53,
+      "exported": true,
+      "uuid": "d31d4a25-ceff-5ce3-b173-a5dff034eb7e"
+    },
+    "92d1887c-f949-5434-80d8-4a8bc0ef5571": {
+      "type": "interface",
+      "name": "CodeDetector",
+      "file": "src\\plugins\\types.ts",
+      "line": 68,
+      "exported": true,
+      "uuid": "92d1887c-f949-5434-80d8-4a8bc0ef5571"
+    },
     "608d5353-d154-53d0-b30e-a5b2bfafbb68": {
       "type": "interface",
       "name": "DetectionResult",
@@ -18577,6 +19211,70 @@
       "async": false,
       "uuid": "3c790d48-9135-5d79-8212-74d9fffba69a"
     },
+    "f3ead94d-1258-5fbb-8a8a-62fb8529a7f2": {
+      "type": "function",
+      "name": "buildSemanticRelationships",
+      "file": "src\\scanner\\semantic-analyzer.ts",
+      "line": 20,
+      "parameters": [
+        "elements",
+        "projectPath"
+      ],
+      "exported": true,
+      "async": false,
+      "uuid": "f3ead94d-1258-5fbb-8a8a-62fb8529a7f2"
+    },
+    "6cdced03-1f4d-5e66-ada8-17622914102f": {
+      "type": "function",
+      "name": "buildExportsForFile",
+      "file": "src\\scanner\\semantic-analyzer.ts",
+      "line": 86,
+      "parameters": [
+        "file",
+        "allElements"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "6cdced03-1f4d-5e66-ada8-17622914102f"
+    },
+    "268b5e86-1fce-52cb-b1f4-a4bc8ec98fbc": {
+      "type": "function",
+      "name": "determineExportType",
+      "file": "src\\scanner\\semantic-analyzer.ts",
+      "line": 101,
+      "parameters": [
+        "el"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "268b5e86-1fce-52cb-b1f4-a4bc8ec98fbc"
+    },
+    "6da6aa9c-013d-51cf-aa33-63b286a22675": {
+      "type": "function",
+      "name": "resolveImportPath",
+      "file": "src\\scanner\\semantic-analyzer.ts",
+      "line": 117,
+      "parameters": [
+        "source",
+        "fromFile",
+        "projectPath"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "6da6aa9c-013d-51cf-aa33-63b286a22675"
+    },
+    "381cb2fd-a26a-502d-b10f-0efb6d1ce74b": {
+      "type": "function",
+      "name": "deduplicateUsedBy",
+      "file": "src\\scanner\\semantic-analyzer.ts",
+      "line": 154,
+      "parameters": [
+        "usedBy"
+      ],
+      "exported": true,
+      "async": false,
+      "uuid": "381cb2fd-a26a-502d-b10f-0efb6d1ce74b"
+    },
     "e226ebbc-4cc2-5cee-9251-6e26ab1bd294": {
       "type": "type",
       "name": "EnrichedElementData",
@@ -18585,85 +19283,97 @@
       "exported": true,
       "uuid": "e226ebbc-4cc2-5cee-9251-6e26ab1bd294"
     },
-    "3b8cd976-1d3c-5e32-9abf-9223e6853c64": {
+    "62833cb5-9738-5243-ba23-5954745ba31f": {
+      "type": "function",
+      "name": "normalizeElement",
+      "file": "src\\scanner\\tree-sitter-scanner.ts",
+      "line": 44,
+      "parameters": [
+        "elem"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "62833cb5-9738-5243-ba23-5954745ba31f"
+    },
+    "d6793e8c-ee3d-5d05-a386-a087f7f35d6f": {
       "type": "class",
       "name": "GrammarLoader",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 44,
+      "line": 58,
       "exported": false,
-      "uuid": "3b8cd976-1d3c-5e32-9abf-9223e6853c64"
+      "uuid": "d6793e8c-ee3d-5d05-a386-a087f7f35d6f"
     },
-    "e5f5db9a-9d5e-51d2-9933-9c05409325a7": {
+    "f6d1c164-24ce-58e3-a753-cb4edf6f0a18": {
       "type": "method",
       "name": "GrammarLoader.loadGrammar",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 71,
+      "line": 85,
       "parameters": [
         "lang"
       ],
       "exported": false,
       "async": true,
-      "uuid": "e5f5db9a-9d5e-51d2-9933-9c05409325a7"
+      "uuid": "f6d1c164-24ce-58e3-a753-cb4edf6f0a18"
     },
-    "9ac01deb-1be3-570f-9ffe-5c284d2b08a7": {
+    "4821893f-04cf-55dd-a1c4-21c8f92938c2": {
       "type": "method",
       "name": "GrammarLoader.isSupported",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 111,
+      "line": 125,
       "parameters": [
         "lang"
       ],
       "exported": false,
       "async": false,
-      "uuid": "9ac01deb-1be3-570f-9ffe-5c284d2b08a7"
+      "uuid": "4821893f-04cf-55dd-a1c4-21c8f92938c2"
     },
-    "32089dab-19a4-5a36-851e-d5cfd0136980": {
+    "c36554ae-51eb-5449-83c7-6373d003b3e3": {
       "type": "method",
       "name": "GrammarLoader.clearCache",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 118,
+      "line": 132,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "32089dab-19a4-5a36-851e-d5cfd0136980"
+      "uuid": "c36554ae-51eb-5449-83c7-6373d003b3e3"
     },
-    "1c113b47-4da7-5798-9353-c08b426680f3": {
+    "0ce9ce52-33f1-5607-898c-dd4ab2625f1d": {
       "type": "class",
       "name": "TreeSitterScanner",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 132,
+      "line": 146,
       "exported": true,
-      "uuid": "1c113b47-4da7-5798-9353-c08b426680f3"
+      "uuid": "0ce9ce52-33f1-5607-898c-dd4ab2625f1d"
     },
-    "12bff4bf-2f1d-5b8e-b2ca-ce915e444a63": {
+    "4cf768d2-49b7-5224-8515-5dae5f2a4b5d": {
       "type": "method",
       "name": "TreeSitterScanner.scanFile",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 146,
+      "line": 160,
       "parameters": [
         "filePath"
       ],
       "exported": false,
       "async": true,
-      "uuid": "12bff4bf-2f1d-5b8e-b2ca-ce915e444a63"
+      "uuid": "4cf768d2-49b7-5224-8515-5dae5f2a4b5d"
     },
-    "b0fb87d4-6b28-5382-970e-e7a7bdfe23a5": {
+    "01ad662a-9efc-595c-8603-12a7469604a8": {
       "type": "method",
       "name": "TreeSitterScanner.normalizeLanguage",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 181,
+      "line": 195,
       "parameters": [
         "ext"
       ],
       "exported": false,
       "async": false,
-      "uuid": "b0fb87d4-6b28-5382-970e-e7a7bdfe23a5"
+      "uuid": "01ad662a-9efc-595c-8603-12a7469604a8"
     },
-    "e1f58d8e-81d3-5547-bbe4-aba34baea604": {
+    "19ec2371-38fd-5210-8580-6e74ee5a1441": {
       "type": "method",
       "name": "TreeSitterScanner.extractElements",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 192,
+      "line": 206,
       "parameters": [
         "rootNode",
         "filePath",
@@ -18672,13 +19382,13 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "e1f58d8e-81d3-5547-bbe4-aba34baea604"
+      "uuid": "19ec2371-38fd-5210-8580-6e74ee5a1441"
     },
-    "8472ca80-8638-598a-9d8d-ceb3e1ad5543": {
+    "59992f71-c174-52a6-b813-84370e9c7954": {
       "type": "method",
       "name": "TreeSitterScanner.extractTypeScriptElements",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 234,
+      "line": 248,
       "parameters": [
         "rootNode",
         "filePath",
@@ -18687,26 +19397,26 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "8472ca80-8638-598a-9d8d-ceb3e1ad5543"
+      "uuid": "59992f71-c174-52a6-b813-84370e9c7954"
     },
-    "9f9bd9ad-7031-578c-bb78-90d3a39bb7ee": {
+    "7627ce54-9582-5046-bddc-dd37add45923": {
       "type": "function",
       "name": "traverse",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 241,
+      "line": 255,
       "parameters": [
         "node",
         "parentScope"
       ],
       "exported": true,
       "async": false,
-      "uuid": "9f9bd9ad-7031-578c-bb78-90d3a39bb7ee"
+      "uuid": "7627ce54-9582-5046-bddc-dd37add45923"
     },
-    "d4760e3e-6218-5fa6-ac91-eb9119de59d9": {
+    "2d3fc340-c623-5a6b-8bca-659c2a9ccd35": {
       "type": "method",
       "name": "TreeSitterScanner.extractPythonElements",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 333,
+      "line": 347,
       "parameters": [
         "rootNode",
         "filePath",
@@ -18715,90 +19425,90 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "d4760e3e-6218-5fa6-ac91-eb9119de59d9"
+      "uuid": "2d3fc340-c623-5a6b-8bca-659c2a9ccd35"
     },
-    "e4637651-d358-57ce-9cad-1ef1ece4bb65": {
+    "4a23424c-af20-59f3-9ae6-e93f1f811e8d": {
       "type": "function",
       "name": "traverse",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 340,
+      "line": 354,
       "parameters": [
         "node",
         "parentScope"
       ],
       "exported": true,
       "async": false,
-      "uuid": "e4637651-d358-57ce-9cad-1ef1ece4bb65"
+      "uuid": "4a23424c-af20-59f3-9ae6-e93f1f811e8d"
     },
-    "d0c74695-f6bf-51ac-a525-d93123434153": {
+    "707459f6-9bf9-517d-99fd-ce3555490ef2": {
       "type": "method",
       "name": "TreeSitterScanner.isPythonAsync",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 409,
+      "line": 423,
       "parameters": [
         "node"
       ],
       "exported": false,
       "async": false,
-      "uuid": "d0c74695-f6bf-51ac-a525-d93123434153"
+      "uuid": "707459f6-9bf9-517d-99fd-ce3555490ef2"
     },
-    "a0a85710-fca6-5fe0-b3f5-953b3eca8297": {
+    "b314875a-ed5e-5364-98c7-b5c1b29254d1": {
       "type": "method",
       "name": "TreeSitterScanner.extractPythonParameters",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 419,
+      "line": 433,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "a0a85710-fca6-5fe0-b3f5-953b3eca8297"
+      "uuid": "b314875a-ed5e-5364-98c7-b5c1b29254d1"
     },
-    "aff4d097-7d25-507f-835e-7791ab575f46": {
+    "c7a405fe-9baf-5273-b6f3-06ab38b18770": {
       "type": "method",
       "name": "TreeSitterScanner.extractPythonReturnType",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 454,
+      "line": 468,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "aff4d097-7d25-507f-835e-7791ab575f46"
+      "uuid": "c7a405fe-9baf-5273-b6f3-06ab38b18770"
     },
-    "a53f2ba6-c2ff-59be-8984-b176b98eb117": {
+    "f8db6589-c826-5b1e-a22b-6f6f9ba9e3c3": {
       "type": "method",
       "name": "TreeSitterScanner.extractPythonDecorators",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 463,
+      "line": 477,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "a53f2ba6-c2ff-59be-8984-b176b98eb117"
+      "uuid": "f8db6589-c826-5b1e-a22b-6f6f9ba9e3c3"
     },
-    "e28bcb4e-ab6f-5b56-8b70-2a68b078cc59": {
+    "cf2b7263-072f-584e-9330-600205a75b51": {
       "type": "method",
       "name": "TreeSitterScanner.extractPythonDocstring",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 490,
+      "line": 504,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "e28bcb4e-ab6f-5b56-8b70-2a68b078cc59"
+      "uuid": "cf2b7263-072f-584e-9330-600205a75b51"
     },
-    "6bd77b25-bc54-5179-96de-e334c3e84bde": {
+    "26a0a95d-2547-5158-b4bc-3acdc62acf4a": {
       "type": "method",
       "name": "TreeSitterScanner.extractGoElements",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 522,
+      "line": 536,
       "parameters": [
         "rootNode",
         "filePath",
@@ -18807,77 +19517,77 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "6bd77b25-bc54-5179-96de-e334c3e84bde"
+      "uuid": "26a0a95d-2547-5158-b4bc-3acdc62acf4a"
     },
-    "5cabe235-7bcf-5cfd-96f0-f8b06df6e509": {
+    "c2d0e247-f5fb-57e4-8b6b-7ab42902cb89": {
       "type": "function",
       "name": "traverse",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 529,
+      "line": 543,
       "parameters": [
         "node",
         "parentScope"
       ],
       "exported": true,
       "async": false,
-      "uuid": "5cabe235-7bcf-5cfd-96f0-f8b06df6e509"
+      "uuid": "c2d0e247-f5fb-57e4-8b6b-7ab42902cb89"
     },
-    "889d41e7-f3e0-5abc-b8f4-e27bbf3c04de": {
+    "de0de66b-0f5f-5f4f-8b10-1b77c76c5c1f": {
       "type": "method",
       "name": "TreeSitterScanner.isGoExported",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 624,
+      "line": 638,
       "parameters": [
         "name"
       ],
       "exported": false,
       "async": false,
-      "uuid": "889d41e7-f3e0-5abc-b8f4-e27bbf3c04de"
+      "uuid": "de0de66b-0f5f-5f4f-8b10-1b77c76c5c1f"
     },
-    "01424525-847f-5da5-9ce0-066434de1b20": {
+    "78d8189d-c4aa-5872-b1d7-cd2cd8e8e236": {
       "type": "method",
       "name": "TreeSitterScanner.extractGoParameters",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 632,
+      "line": 646,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "01424525-847f-5da5-9ce0-066434de1b20"
+      "uuid": "78d8189d-c4aa-5872-b1d7-cd2cd8e8e236"
     },
-    "43a0a297-d3b5-57d3-b4f6-6f929ab6ab9c": {
+    "5f607879-4a75-53d2-9422-b069faab0b5a": {
       "type": "method",
       "name": "TreeSitterScanner.extractGoReturnType",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 662,
+      "line": 676,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "43a0a297-d3b5-57d3-b4f6-6f929ab6ab9c"
+      "uuid": "5f607879-4a75-53d2-9422-b069faab0b5a"
     },
-    "4ec4a827-b61b-50ce-ac89-8dae6147da3f": {
+    "37cf9183-ee8d-5f1d-9f90-2738e9a7a4b1": {
       "type": "method",
       "name": "TreeSitterScanner.extractGoDocstring",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 686,
+      "line": 700,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "4ec4a827-b61b-50ce-ac89-8dae6147da3f"
+      "uuid": "37cf9183-ee8d-5f1d-9f90-2738e9a7a4b1"
     },
-    "db9caa5b-d1fe-5f04-b90d-80d3319b665c": {
+    "4f7165ff-aaeb-553f-b076-41ef45ccc1dc": {
       "type": "method",
       "name": "TreeSitterScanner.extractRustElements",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 705,
+      "line": 719,
       "parameters": [
         "rootNode",
         "filePath",
@@ -18886,89 +19596,89 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "db9caa5b-d1fe-5f04-b90d-80d3319b665c"
+      "uuid": "4f7165ff-aaeb-553f-b076-41ef45ccc1dc"
     },
-    "6f62ca1b-692a-5ba5-9403-44f54384e566": {
+    "cc99e03b-20b7-5778-b70a-13a4c38083c8": {
       "type": "function",
       "name": "traverse",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 712,
+      "line": 726,
       "parameters": [
         "node",
         "parentScope"
       ],
       "exported": true,
       "async": false,
-      "uuid": "6f62ca1b-692a-5ba5-9403-44f54384e566"
+      "uuid": "cc99e03b-20b7-5778-b70a-13a4c38083c8"
     },
-    "d24778b7-4f51-553d-9722-963dbb06f315": {
+    "4497e4cd-4419-53ba-a1bd-00b3d2ce7d7f": {
       "type": "method",
       "name": "TreeSitterScanner.isRustPublic",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 819,
+      "line": 833,
       "parameters": [
         "node"
       ],
       "exported": false,
       "async": false,
-      "uuid": "d24778b7-4f51-553d-9722-963dbb06f315"
+      "uuid": "4497e4cd-4419-53ba-a1bd-00b3d2ce7d7f"
     },
-    "24482265-fccd-533c-9935-aadbf44aedb2": {
+    "b5646fa5-9464-5eee-b174-b53b559ac25b": {
       "type": "method",
       "name": "TreeSitterScanner.isRustAsync",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 828,
+      "line": 842,
       "parameters": [
         "node"
       ],
       "exported": false,
       "async": false,
-      "uuid": "24482265-fccd-533c-9935-aadbf44aedb2"
+      "uuid": "b5646fa5-9464-5eee-b174-b53b559ac25b"
     },
-    "3d919b29-f69d-5efa-b8bf-61bda903bf2d": {
+    "c9e1312d-5d52-53ce-918d-f30abd9e3013": {
       "type": "method",
       "name": "TreeSitterScanner.extractRustParameters",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 837,
+      "line": 851,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "3d919b29-f69d-5efa-b8bf-61bda903bf2d"
+      "uuid": "c9e1312d-5d52-53ce-918d-f30abd9e3013"
     },
-    "5af2f33a-6ef3-502b-9f71-0e90193fd35d": {
+    "764bd802-ee25-5019-9dc4-53980a8553f0": {
       "type": "method",
       "name": "TreeSitterScanner.extractRustReturnType",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 880,
+      "line": 894,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "5af2f33a-6ef3-502b-9f71-0e90193fd35d"
+      "uuid": "764bd802-ee25-5019-9dc4-53980a8553f0"
     },
-    "9974a502-9acc-5544-b3f3-7416e98f7750": {
+    "e5e0b0a3-711e-5a71-bd0a-764a4b7871e6": {
       "type": "method",
       "name": "TreeSitterScanner.extractRustDocstring",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 889,
+      "line": 903,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "9974a502-9acc-5544-b3f3-7416e98f7750"
+      "uuid": "e5e0b0a3-711e-5a71-bd0a-764a4b7871e6"
     },
-    "6f0251c2-971e-5a07-a88b-66c62452b980": {
+    "daa43f55-b64e-51fe-81a3-aafda8380967": {
       "type": "method",
       "name": "TreeSitterScanner.extractJavaElements",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 918,
+      "line": 932,
       "parameters": [
         "rootNode",
         "filePath",
@@ -18977,90 +19687,90 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "6f0251c2-971e-5a07-a88b-66c62452b980"
+      "uuid": "daa43f55-b64e-51fe-81a3-aafda8380967"
     },
-    "2a62495a-0f63-5647-b509-2661bdc2f874": {
+    "e31a9c76-1484-555a-8cd4-b9a731e68c8b": {
       "type": "function",
       "name": "traverse",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 925,
+      "line": 939,
       "parameters": [
         "node",
         "parentScope"
       ],
       "exported": true,
       "async": false,
-      "uuid": "2a62495a-0f63-5647-b509-2661bdc2f874"
+      "uuid": "e31a9c76-1484-555a-8cd4-b9a731e68c8b"
     },
-    "c4bd6ea1-19de-531d-9934-e641a5c87b97": {
+    "18ab1cc6-eb45-5ff1-bf59-98771cadac3c": {
       "type": "method",
       "name": "TreeSitterScanner.isJavaPublic",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1054,
+      "line": 1068,
       "parameters": [
         "node"
       ],
       "exported": false,
       "async": false,
-      "uuid": "c4bd6ea1-19de-531d-9934-e641a5c87b97"
+      "uuid": "18ab1cc6-eb45-5ff1-bf59-98771cadac3c"
     },
-    "b23fc2d7-ad5f-540f-85a0-d9636b4d854c": {
+    "44c6200a-6435-5ed4-a44d-5cfa9b7230d1": {
       "type": "method",
       "name": "TreeSitterScanner.extractJavaParameters",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1069,
+      "line": 1083,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "b23fc2d7-ad5f-540f-85a0-d9636b4d854c"
+      "uuid": "44c6200a-6435-5ed4-a44d-5cfa9b7230d1"
     },
-    "50c64771-6e8a-5e41-9904-0001d0149feb": {
+    "583517db-0dbb-515d-8749-46edfb688ae1": {
       "type": "method",
       "name": "TreeSitterScanner.extractJavaReturnType",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1098,
+      "line": 1112,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "50c64771-6e8a-5e41-9904-0001d0149feb"
+      "uuid": "583517db-0dbb-515d-8749-46edfb688ae1"
     },
-    "cf9766fb-16f6-5fba-936c-23fbcde26222": {
+    "2f12df98-810a-5b00-8770-f066b859e553": {
       "type": "method",
       "name": "TreeSitterScanner.extractJavaAnnotations",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1107,
+      "line": 1121,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "cf9766fb-16f6-5fba-936c-23fbcde26222"
+      "uuid": "2f12df98-810a-5b00-8770-f066b859e553"
     },
-    "d5656314-517e-5f4b-9bd9-4c5185e75d9e": {
+    "f7c38ad9-ce56-5122-8571-7b63ee45711b": {
       "type": "method",
       "name": "TreeSitterScanner.extractJavaDocstring",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1126,
+      "line": 1140,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "d5656314-517e-5f4b-9bd9-4c5185e75d9e"
+      "uuid": "f7c38ad9-ce56-5122-8571-7b63ee45711b"
     },
-    "923bfdfd-49be-5c1a-bbc5-273cb28b4907": {
+    "993db0aa-0393-5b6f-a6f3-af128d1fd5cc": {
       "type": "method",
       "name": "TreeSitterScanner.extractCppElements",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1154,
+      "line": 1168,
       "parameters": [
         "rootNode",
         "filePath",
@@ -19069,89 +19779,89 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "923bfdfd-49be-5c1a-bbc5-273cb28b4907"
+      "uuid": "993db0aa-0393-5b6f-a6f3-af128d1fd5cc"
     },
-    "8241fec5-2653-5352-b4a2-9cb9458c8701": {
+    "9ea1361e-f308-5f13-9853-b871e96873be": {
       "type": "function",
       "name": "traverse",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1161,
+      "line": 1175,
       "parameters": [
         "node",
         "parentScope"
       ],
       "exported": true,
       "async": false,
-      "uuid": "8241fec5-2653-5352-b4a2-9cb9458c8701"
+      "uuid": "9ea1361e-f308-5f13-9853-b871e96873be"
     },
-    "8ff88370-f73b-528e-8121-e113355c9365": {
+    "eb573fd7-92cf-54c8-804a-546f61a6b521": {
       "type": "method",
       "name": "TreeSitterScanner.extractCppFunctionName",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1250,
+      "line": 1264,
       "parameters": [
         "declarator"
       ],
       "exported": false,
       "async": false,
-      "uuid": "8ff88370-f73b-528e-8121-e113355c9365"
+      "uuid": "eb573fd7-92cf-54c8-804a-546f61a6b521"
     },
-    "c6f9967f-233f-5942-92c7-1e55d379faf4": {
+    "368d721a-d3c7-55e5-907c-109b491e4bcb": {
       "type": "method",
       "name": "TreeSitterScanner.extractCppParameters",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1299,
+      "line": 1313,
       "parameters": [
         "declarator",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "c6f9967f-233f-5942-92c7-1e55d379faf4"
+      "uuid": "368d721a-d3c7-55e5-907c-109b491e4bcb"
     },
-    "f3c03d03-dd50-5305-abe3-7fdc7b2a0646": {
+    "cb81b6dc-65e1-5545-abe4-95348c461228": {
       "type": "method",
       "name": "TreeSitterScanner.extractCppIdentifier",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1347,
+      "line": 1361,
       "parameters": [
         "declarator"
       ],
       "exported": false,
       "async": false,
-      "uuid": "f3c03d03-dd50-5305-abe3-7fdc7b2a0646"
+      "uuid": "cb81b6dc-65e1-5545-abe4-95348c461228"
     },
-    "10fc0571-a05b-5dfe-acf7-9fcec5d6ac5f": {
+    "d157b04f-cd43-5e36-80e8-024fab69b14e": {
       "type": "method",
       "name": "TreeSitterScanner.extractCppReturnType",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1366,
+      "line": 1380,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "10fc0571-a05b-5dfe-acf7-9fcec5d6ac5f"
+      "uuid": "d157b04f-cd43-5e36-80e8-024fab69b14e"
     },
-    "a6a2bf6b-629c-55e9-9056-41b7db9bc1b2": {
+    "fddb54e3-d526-5fd6-a9ab-ae2338beb797": {
       "type": "method",
       "name": "TreeSitterScanner.extractCppDocstring",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1375,
+      "line": 1389,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "a6a2bf6b-629c-55e9-9056-41b7db9bc1b2"
+      "uuid": "fddb54e3-d526-5fd6-a9ab-ae2338beb797"
     },
-    "110c0309-8e10-52d7-b748-52fb3e38b7df": {
+    "a1bcf126-d2c4-5a62-a2f0-896665fd793c": {
       "type": "method",
       "name": "TreeSitterScanner.createFunctionElement",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1412,
+      "line": 1426,
       "parameters": [
         "funcNode",
         "nameNode",
@@ -19162,13 +19872,13 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "110c0309-8e10-52d7-b748-52fb3e38b7df"
+      "uuid": "a1bcf126-d2c4-5a62-a2f0-896665fd793c"
     },
-    "bbe6023b-6d3a-58fc-aeaf-8cf5b633f48d": {
+    "cbf348c1-d6df-546e-9ee2-f08807fb39d8": {
       "type": "method",
       "name": "TreeSitterScanner.createMethodElement",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1442,
+      "line": 1456,
       "parameters": [
         "methodNode",
         "nameNode",
@@ -19178,108 +19888,108 @@
       ],
       "exported": false,
       "async": false,
-      "uuid": "bbe6023b-6d3a-58fc-aeaf-8cf5b633f48d"
+      "uuid": "cbf348c1-d6df-546e-9ee2-f08807fb39d8"
     },
-    "e82c4a11-030e-5f7d-99e8-5eec88f86e79": {
+    "101e434c-7532-5109-879f-7ac73dbc2404": {
       "type": "method",
       "name": "TreeSitterScanner.isExported",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1471,
+      "line": 1485,
       "parameters": [
         "node"
       ],
       "exported": false,
       "async": false,
-      "uuid": "e82c4a11-030e-5f7d-99e8-5eec88f86e79"
+      "uuid": "101e434c-7532-5109-879f-7ac73dbc2404"
     },
-    "2017c862-ed53-5b8d-b5b7-9ea05e6ee9f0": {
+    "21546230-3579-5e96-bafc-7aec0cd07460": {
       "type": "method",
       "name": "TreeSitterScanner.isAsync",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1486,
+      "line": 1500,
       "parameters": [
         "node"
       ],
       "exported": false,
       "async": false,
-      "uuid": "2017c862-ed53-5b8d-b5b7-9ea05e6ee9f0"
+      "uuid": "21546230-3579-5e96-bafc-7aec0cd07460"
     },
-    "e77b405a-f292-55c3-a61c-5a61d13fc5a0": {
+    "4e5a859b-815e-5aa6-8388-01bf9e95f166": {
       "type": "method",
       "name": "TreeSitterScanner.extractParameters",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1497,
+      "line": 1511,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "e77b405a-f292-55c3-a61c-5a61d13fc5a0"
+      "uuid": "4e5a859b-815e-5aa6-8388-01bf9e95f166"
     },
-    "f75fee65-185e-581d-854e-cbc0275c5095": {
+    "a2cdde32-5f4d-5994-9fb1-47942ce6720c": {
       "type": "method",
       "name": "TreeSitterScanner.extractReturnType",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1531,
+      "line": 1545,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "f75fee65-185e-581d-854e-cbc0275c5095"
+      "uuid": "a2cdde32-5f4d-5994-9fb1-47942ce6720c"
     },
-    "5781022f-cd11-5929-9291-1f9ec6d60386": {
+    "4629c0a6-e62a-57cf-86f1-286d2dfe87db": {
       "type": "method",
       "name": "TreeSitterScanner.extractDecorators",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1542,
+      "line": 1556,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "5781022f-cd11-5929-9291-1f9ec6d60386"
+      "uuid": "4629c0a6-e62a-57cf-86f1-286d2dfe87db"
     },
-    "f8f336fd-c3fc-55c9-b68b-39ea1cd8626f": {
+    "3a0bb1f6-4ad7-52c9-978c-28de72cd1722": {
       "type": "method",
       "name": "TreeSitterScanner.extractDocstring",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1561,
+      "line": 1575,
       "parameters": [
         "node",
         "content"
       ],
       "exported": false,
       "async": false,
-      "uuid": "f8f336fd-c3fc-55c9-b68b-39ea1cd8626f"
+      "uuid": "3a0bb1f6-4ad7-52c9-978c-28de72cd1722"
     },
-    "03bacfce-db3a-5d84-bfc9-9f6184eeb112": {
+    "9d9f55e3-ebcc-576d-95bb-4459c84ce81a": {
       "type": "method",
       "name": "TreeSitterScanner.estimateComplexity",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1589,
+      "line": 1603,
       "parameters": [
         "node"
       ],
       "exported": false,
       "async": false,
-      "uuid": "03bacfce-db3a-5d84-bfc9-9f6184eeb112"
+      "uuid": "9d9f55e3-ebcc-576d-95bb-4459c84ce81a"
     },
-    "1773d72d-9439-5b00-9ed2-52bb6447db53": {
+    "e480a0da-ce8c-5ced-b461-25bd20655e36": {
       "type": "function",
       "name": "traverse",
       "file": "src\\scanner\\tree-sitter-scanner.ts",
-      "line": 1594,
+      "line": 1608,
       "parameters": [
         "n",
         "depth"
       ],
       "exported": true,
       "async": false,
-      "uuid": "1773d72d-9439-5b00-9ed2-52bb6447db53"
+      "uuid": "e480a0da-ce8c-5ced-b461-25bd20655e36"
     },
     "27fcd929-d356-5d89-a869-68463850eb81": {
       "type": "function",
@@ -19842,93 +20552,93 @@
       "exported": true,
       "uuid": "9796ac3b-a436-5bff-a1d2-aa43624ebaa7"
     },
-    "102580d5-5745-52c9-b71d-6ce4cc8a01f4": {
+    "5d556adc-95cf-5300-aa53-f8bd75bd42e1": {
       "type": "interface",
       "name": "ScanOptions",
       "file": "src\\types\\types.ts",
-      "line": 368,
+      "line": 397,
       "exported": true,
-      "uuid": "102580d5-5745-52c9-b71d-6ce4cc8a01f4"
+      "uuid": "5d556adc-95cf-5300-aa53-f8bd75bd42e1"
     },
-    "e21c2091-a111-51b5-914d-29bb6494d638": {
+    "da27bbf3-514c-5216-8043-a8ec2f2e85e8": {
       "type": "interface",
       "name": "ScanProgress",
       "file": "src\\types\\types.ts",
-      "line": 454,
+      "line": 483,
       "exported": true,
-      "uuid": "e21c2091-a111-51b5-914d-29bb6494d638"
+      "uuid": "da27bbf3-514c-5216-8043-a8ec2f2e85e8"
     },
-    "58065987-7405-5376-a964-10320b6ae727": {
+    "a4a6e879-bf9c-5af9-bafd-c6132176da03": {
       "type": "interface",
       "name": "SchemaFieldMapping",
       "file": "src\\types\\types.ts",
-      "line": 470,
+      "line": 499,
       "exported": true,
-      "uuid": "58065987-7405-5376-a964-10320b6ae727"
+      "uuid": "a4a6e879-bf9c-5af9-bafd-c6132176da03"
     },
-    "4a118392-d5ff-5bbc-b4bc-601cf72f8a94": {
+    "520d4831-bbe3-5dfe-9a68-31e089d92248": {
       "type": "interface",
       "name": "RequestBodyMapping",
       "file": "src\\types\\types.ts",
-      "line": 486,
+      "line": 515,
       "exported": true,
-      "uuid": "4a118392-d5ff-5bbc-b4bc-601cf72f8a94"
+      "uuid": "520d4831-bbe3-5dfe-9a68-31e089d92248"
     },
-    "fd073a59-d544-5b2b-8134-934bad32cde8": {
+    "1a08628c-0f71-5cd4-80f1-eb8ae3234f98": {
       "type": "interface",
       "name": "ResponseMapping",
       "file": "src\\types\\types.ts",
-      "line": 500,
+      "line": 529,
       "exported": true,
-      "uuid": "fd073a59-d544-5b2b-8134-934bad32cde8"
+      "uuid": "1a08628c-0f71-5cd4-80f1-eb8ae3234f98"
     },
-    "334eaced-f5c5-537c-9c05-0d6e834fad2c": {
+    "1e8fde49-cc0e-5fc3-b557-0a2637957f46": {
       "type": "interface",
       "name": "SchemaExamples",
       "file": "src\\types\\types.ts",
-      "line": 516,
+      "line": 545,
       "exported": true,
-      "uuid": "334eaced-f5c5-537c-9c05-0d6e834fad2c"
+      "uuid": "1e8fde49-cc0e-5fc3-b557-0a2637957f46"
     },
-    "3f7f59f9-ace5-5887-82c4-dc2da3911102": {
+    "cbad30df-da38-5ffd-9174-0db9aa74b0cc": {
       "type": "interface",
       "name": "SchemaMapping",
       "file": "src\\types\\types.ts",
-      "line": 532,
+      "line": 561,
       "exported": true,
-      "uuid": "3f7f59f9-ace5-5887-82c4-dc2da3911102"
+      "uuid": "cbad30df-da38-5ffd-9174-0db9aa74b0cc"
     },
-    "5cd5e9ba-9d96-5d67-909c-7f136ad24c26": {
+    "e136d896-f65d-5a48-8937-3ef7a1f3df58": {
       "type": "interface",
       "name": "MigrationMapping",
       "file": "src\\types\\types.ts",
-      "line": 547,
+      "line": 576,
       "exported": true,
-      "uuid": "5cd5e9ba-9d96-5d67-909c-7f136ad24c26"
+      "uuid": "e136d896-f65d-5a48-8937-3ef7a1f3df58"
     },
-    "b280c023-a697-5bb7-a595-eeb257625d41": {
+    "a4c45ede-8544-554a-9fea-0b85238a3bbe": {
       "type": "interface",
       "name": "TransformedCall",
       "file": "src\\types\\types.ts",
-      "line": 592,
+      "line": 621,
       "exported": true,
-      "uuid": "b280c023-a697-5bb7-a595-eeb257625d41"
+      "uuid": "a4c45ede-8544-554a-9fea-0b85238a3bbe"
     },
-    "af3dacce-e3f0-5bd7-b51e-1458a34c82d2": {
+    "a867ba05-b973-50f6-a810-2db656b4f2f2": {
       "type": "interface",
       "name": "MigrationCoverage",
       "file": "src\\types\\types.ts",
-      "line": 607,
+      "line": 636,
       "exported": true,
-      "uuid": "af3dacce-e3f0-5bd7-b51e-1458a34c82d2"
+      "uuid": "a867ba05-b973-50f6-a810-2db656b4f2f2"
     },
-    "e4aeb6e1-56e3-535d-a4a2-5ce58a3444f0": {
+    "db3128e5-111f-568d-82b0-6544d980ea6f": {
       "type": "interface",
       "name": "MigrationReport",
       "file": "src\\types\\types.ts",
-      "line": 625,
+      "line": 654,
       "exported": true,
-      "uuid": "e4aeb6e1-56e3-535d-a4a2-5ce58a3444f0"
+      "uuid": "db3128e5-111f-568d-82b0-6544d980ea6f"
     },
     "93701d95-f097-52c6-9718-d578d5aa9902": {
       "type": "type",
@@ -21777,296 +22487,508 @@
       "async": false,
       "uuid": "cc61ec82-b8a1-5145-8d33-2430b29d7848"
     },
-    "b487973e-02a7-5b1a-b068-bf04ec65842c": {
+    "7028a823-1822-5ce1-9a12-bbb01a47c450": {
       "type": "function",
       "name": "readJson",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 16,
+      "line": 17,
       "parameters": [
         "filename"
       ],
       "exported": false,
       "async": false,
-      "uuid": "b487973e-02a7-5b1a-b068-bf04ec65842c"
+      "uuid": "7028a823-1822-5ce1-9a12-bbb01a47c450"
     },
-    "2e0fb935-8848-56c5-acdb-ad703429927b": {
+    "1da9223a-fedd-54ab-97d5-6cc779a202fb": {
       "type": "function",
       "name": "uuidAnchor",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 24,
+      "line": 25,
       "parameters": [
         "uuid"
       ],
       "exported": false,
       "async": false,
-      "uuid": "2e0fb935-8848-56c5-acdb-ad703429927b"
+      "uuid": "1da9223a-fedd-54ab-97d5-6cc779a202fb"
     },
-    "5eb324eb-888b-5d6c-94b1-0e3a334d1e1e": {
+    "5e9cb7a3-06e2-5077-9c8d-d8647ac8c243": {
       "type": "function",
       "name": "formatDate",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 28,
+      "line": 29,
       "parameters": [
         "isoDate"
       ],
       "exported": false,
       "async": false,
-      "uuid": "5eb324eb-888b-5d6c-94b1-0e3a334d1e1e"
+      "uuid": "5e9cb7a3-06e2-5077-9c8d-d8647ac8c243"
     },
-    "f155a044-766e-55ca-8eb0-4acc23526b79": {
+    "394e5152-fcc4-5a20-bd91-0329ddcfc726": {
       "type": "function",
       "name": "complexityBadge",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 32,
+      "line": 33,
       "parameters": [
         "score"
       ],
       "exported": false,
       "async": false,
-      "uuid": "f155a044-766e-55ca-8eb0-4acc23526b79"
+      "uuid": "394e5152-fcc4-5a20-bd91-0329ddcfc726"
     },
-    "3d9e8ddf-3652-51d3-81cf-878fda901f07": {
+    "634038a4-8370-5a39-8960-069aaadb3e4b": {
       "type": "function",
       "name": "enhanceAPIMd",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 39,
+      "line": 40,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "3d9e8ddf-3652-51d3-81cf-878fda901f07"
+      "uuid": "634038a4-8370-5a39-8960-069aaadb3e4b"
     },
-    "e9579a15-15e7-51c4-92b5-33c59587ec9f": {
+    "86a7a0b4-0dfd-5c48-93e4-4b8372e4b06f": {
       "type": "function",
       "name": "enhanceComponentsMd",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 86,
+      "line": 87,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "e9579a15-15e7-51c4-92b5-33c59587ec9f"
+      "uuid": "86a7a0b4-0dfd-5c48-93e4-4b8372e4b06f"
     },
-    "8600ace2-9eef-5f53-8046-ede2dbf8b109": {
+    "4cb8608e-56c6-5ed9-be1f-e585ab2c5cd4": {
       "type": "function",
       "name": "enhanceArchitectureMd",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 142,
+      "line": 143,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "8600ace2-9eef-5f53-8046-ede2dbf8b109"
+      "uuid": "4cb8608e-56c6-5ed9-be1f-e585ab2c5cd4"
     },
-    "273bbf00-02c7-5513-b2cf-f6328c408f3b": {
+    "41e8e54a-8778-5700-9180-67709aee82f6": {
       "type": "function",
       "name": "enhanceSchemamd",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 188,
+      "line": 189,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "273bbf00-02c7-5513-b2cf-f6328c408f3b"
+      "uuid": "41e8e54a-8778-5700-9180-67709aee82f6"
     },
-    "14dd7810-aab3-59e5-8799-feea0d79c2e2": {
+    "c5e0a19f-da34-5f65-a5d1-57ed89ba27ce": {
       "type": "function",
       "name": "main",
       "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-      "line": 244,
+      "line": 245,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "14dd7810-aab3-59e5-8799-feea0d79c2e2"
+      "uuid": "c5e0a19f-da34-5f65-a5d1-57ed89ba27ce"
     },
-    "9e8c17b3-7db4-510e-bdbc-ae05d28b59b9": {
+    "847b30ad-4dbf-5892-a7ae-693ede6c2d6d": {
       "type": "function",
       "name": "generateExportsMd",
       "file": "scripts\\doc-gen\\generate-exports-md.js",
-      "line": 17,
+      "line": 20,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "9e8c17b3-7db4-510e-bdbc-ae05d28b59b9"
+      "uuid": "847b30ad-4dbf-5892-a7ae-693ede6c2d6d"
     },
-    "f2119e12-1979-5852-b696-0f4479bae516": {
+    "2aaccda8-c8cb-55a4-8054-a234ab7ae6e8": {
       "type": "function",
       "name": "generateHotspotsMd",
       "file": "scripts\\doc-gen\\generate-hotspots-md.js",
-      "line": 18,
+      "line": 21,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "f2119e12-1979-5852-b696-0f4479bae516"
+      "uuid": "2aaccda8-c8cb-55a4-8054-a234ab7ae6e8"
     },
-    "638eb3ca-8cc0-5f7f-a1b1-848360991484": {
+    "0a701cdb-1b5f-5552-a4b4-a8ba9d24a131": {
       "type": "function",
       "name": "generateIndexMd",
       "file": "scripts\\doc-gen\\generate-index-md.js",
-      "line": 19,
+      "line": 22,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "638eb3ca-8cc0-5f7f-a1b1-848360991484"
+      "uuid": "0a701cdb-1b5f-5552-a4b4-a8ba9d24a131"
     },
-    "9dbfff0b-6266-576b-9936-4a65e654a2a8": {
+    "66e1e1df-677f-5cd2-902f-96c32b6f7b2a": {
+      "type": "constant",
+      "name": "SCRIPT_VERSION",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 36,
+      "exported": false,
+      "uuid": "66e1e1df-677f-5cd2-902f-96c32b6f7b2a"
+    },
+    "794adfe6-c389-5bc1-86b0-a8833c0d4d3f": {
+      "type": "function",
+      "name": "parseArgs",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 44,
+      "parameters": [
+        "argv"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "794adfe6-c389-5bc1-86b0-a8833c0d4d3f"
+    },
+    "e6882cad-b277-53ca-863a-9085628422f0": {
+      "type": "function",
+      "name": "next",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 54,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "e6882cad-b277-53ca-863a-9085628422f0"
+    },
+    "01a771d9-d399-58cf-8c84-218f132b7a46": {
+      "type": "function",
+      "name": "printHelp",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 63,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "01a771d9-d399-58cf-8c84-218f132b7a46"
+    },
+    "3ee5f68f-6594-502c-ae54-866dcbb91205": {
+      "type": "function",
+      "name": "isoNow",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 90,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "3ee5f68f-6594-502c-ae54-866dcbb91205"
+    },
+    "fd61a8fd-3ef2-5fa1-8944-3ec9d5e4774d": {
+      "type": "function",
+      "name": "isoFromMtime",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 94,
+      "parameters": [
+        "mtimeMs"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "fd61a8fd-3ef2-5fa1-8944-3ec9d5e4774d"
+    },
+    "f927e517-a005-5d7c-800d-d3c23b6633a9": {
+      "type": "function",
+      "name": "sha256File",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 98,
+      "parameters": [
+        "filePath"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "f927e517-a005-5d7c-800d-d3c23b6633a9"
+    },
+    "8bf49ed8-3471-570b-90f4-69ba66612f2d": {
+      "type": "function",
+      "name": "writeJsonAtomic",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 104,
+      "parameters": [
+        "targetPath",
+        "payload"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "8bf49ed8-3471-570b-90f4-69ba66612f2d"
+    },
+    "62463f67-bfd4-59c9-9f8b-6b5f81b4488e": {
+      "type": "function",
+      "name": "loadProjectId",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 110,
+      "parameters": [
+        "projectDir"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "62463f67-bfd4-59c9-9f8b-6b5f81b4488e"
+    },
+    "fa239fb2-e164-5c34-b359-48367f5eaa67": {
+      "type": "function",
+      "name": "computeTrigger",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 123,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "fa239fb2-e164-5c34-b359-48367f5eaa67"
+    },
+    "b6520cef-8816-5413-a308-1c0b261ebef0": {
+      "type": "function",
+      "name": "loadSchema",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 149,
+      "parameters": [
+        "projectDir"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "b6520cef-8816-5413-a308-1c0b261ebef0"
+    },
+    "334c396f-6d3f-5303-85ad-ee9bf5aa3964": {
+      "type": "function",
+      "name": "validateAgainstSchema",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 158,
+      "parameters": [
+        "payload",
+        "schema"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "334c396f-6d3f-5303-85ad-ee9bf5aa3964"
+    },
+    "a356897a-bf1b-5150-8a99-92b8d5e5f37d": {
+      "type": "function",
+      "name": "checkObj",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 164,
+      "parameters": [
+        "obj",
+        "schema",
+        "pathPrefix"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "a356897a-bf1b-5150-8a99-92b8d5e5f37d"
+    },
+    "30848318-be7f-54a4-9ccf-ee8e93280d29": {
+      "type": "function",
+      "name": "checkValue",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 189,
+      "parameters": [
+        "v",
+        "def",
+        "p"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "30848318-be7f-54a4-9ccf-ee8e93280d29"
+    },
+    "c0a351cb-17c0-51ee-aa58-98ce024b5df8": {
+      "type": "function",
+      "name": "main",
+      "file": "scripts\\doc-gen\\generate-meta-json.js",
+      "line": 214,
+      "parameters": [],
+      "exported": false,
+      "async": false,
+      "uuid": "c0a351cb-17c0-51ee-aa58-98ce024b5df8"
+    },
+    "e000db3a-9dc5-54da-a41b-3557c11a7ef8": {
       "type": "function",
       "name": "generateRelationshipsMd",
       "file": "scripts\\doc-gen\\generate-relationships-md.js",
-      "line": 17,
+      "line": 20,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "9dbfff0b-6266-576b-9936-4a65e654a2a8"
+      "uuid": "e000db3a-9dc5-54da-a41b-3557c11a7ef8"
     },
-    "ee69b532-ed62-56ac-8296-b5542290d3b9": {
+    "843e4425-b9e3-5b20-8775-213ab677dfa2": {
+      "type": "function",
+      "name": "resolveProjectRoot",
+      "file": "scripts\\doc-gen\\utils.js",
+      "line": 21,
+      "parameters": [
+        "argv"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "843e4425-b9e3-5b20-8775-213ab677dfa2"
+    },
+    "d667d7c7-2297-5222-8e70-97a64b1f4447": {
+      "type": "function",
+      "name": "coderefDir",
+      "file": "scripts\\doc-gen\\utils.js",
+      "line": 38,
+      "parameters": [
+        "projectRoot"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "d667d7c7-2297-5222-8e70-97a64b1f4447"
+    },
+    "085cdaa1-2bbc-5a6b-b015-5679283f008e": {
+      "type": "function",
+      "name": "foundationDocsDir",
+      "file": "scripts\\doc-gen\\utils.js",
+      "line": 45,
+      "parameters": [
+        "projectRoot"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "085cdaa1-2bbc-5a6b-b015-5679283f008e"
+    },
+    "b2d6bdcb-4e5a-5f9f-971d-1e4317e511ab": {
       "type": "function",
       "name": "readCoderefFile",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 18,
+      "line": 55,
       "parameters": [
-        "filename"
+        "filename",
+        "projectRoot"
       ],
       "exported": false,
       "async": false,
-      "uuid": "ee69b532-ed62-56ac-8296-b5542290d3b9"
+      "uuid": "b2d6bdcb-4e5a-5f9f-971d-1e4317e511ab"
     },
-    "120dca6a-6d92-52c6-87e0-743c3516f366": {
+    "20a4fd4c-a8ea-5c09-8c2c-92510f74ca02": {
       "type": "function",
       "name": "ensureFoundationDocsDir",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 32,
-      "parameters": [],
-      "exported": false,
-      "async": false,
-      "uuid": "120dca6a-6d92-52c6-87e0-743c3516f366"
-    },
-    "c0cdcc87-d247-566d-9ea9-8bdf5e68715c": {
-      "type": "function",
-      "name": "writeFoundationDoc",
-      "file": "scripts\\doc-gen\\utils.js",
-      "line": 43,
+      "line": 71,
       "parameters": [
-        "filename",
-        "content"
+        "projectRoot"
       ],
       "exported": false,
       "async": false,
-      "uuid": "c0cdcc87-d247-566d-9ea9-8bdf5e68715c"
+      "uuid": "20a4fd4c-a8ea-5c09-8c2c-92510f74ca02"
     },
-    "682ed227-df5a-5f46-8baa-6b20e81ce340": {
+    "67e1502a-5056-5f9a-ab24-dd7ab7ba8d44": {
+      "type": "function",
+      "name": "writeFoundationDoc",
+      "file": "scripts\\doc-gen\\utils.js",
+      "line": 84,
+      "parameters": [
+        "filename",
+        "content",
+        "projectRoot"
+      ],
+      "exported": false,
+      "async": false,
+      "uuid": "67e1502a-5056-5f9a-ab24-dd7ab7ba8d44"
+    },
+    "9d275691-fb51-50ba-9724-5ce2846b9bc8": {
       "type": "function",
       "name": "formatDate",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 55,
+      "line": 97,
       "parameters": [
         "isoDate"
       ],
       "exported": false,
       "async": false,
-      "uuid": "682ed227-df5a-5f46-8baa-6b20e81ce340"
+      "uuid": "9d275691-fb51-50ba-9724-5ce2846b9bc8"
     },
-    "0ef52b75-fe5e-57e5-8d46-b0d71dace3cd": {
+    "968a1e72-de1e-5bea-9362-160102952dc1": {
       "type": "function",
       "name": "uuidAnchor",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 65,
+      "line": 107,
       "parameters": [
         "uuid"
       ],
       "exported": false,
       "async": false,
-      "uuid": "0ef52b75-fe5e-57e5-8d46-b0d71dace3cd"
+      "uuid": "968a1e72-de1e-5bea-9362-160102952dc1"
     },
-    "984254ed-be85-521e-9829-fef64ac67a32": {
+    "f591cbac-14c8-5400-9a02-9342715c8bd7": {
       "type": "function",
       "name": "complexityBadge",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 74,
+      "line": 116,
       "parameters": [
         "score"
       ],
       "exported": false,
       "async": false,
-      "uuid": "984254ed-be85-521e-9829-fef64ac67a32"
+      "uuid": "f591cbac-14c8-5400-9a02-9342715c8bd7"
     },
-    "fe23bf6a-ded2-52d5-94bc-90370e5ff67c": {
+    "a68ea6cf-361f-5059-907f-a9376ad2b405": {
       "type": "function",
       "name": "countByExtension",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 86,
+      "line": 128,
       "parameters": [
         "elements"
       ],
       "exported": false,
       "async": false,
-      "uuid": "fe23bf6a-ded2-52d5-94bc-90370e5ff67c"
+      "uuid": "a68ea6cf-361f-5059-907f-a9376ad2b405"
     },
-    "91c93df3-6e23-5fb5-aed0-827dcce0dd8d": {
+    "58b7ab3e-c1e0-505e-83fb-b7d52dbc8b20": {
       "type": "function",
       "name": "groupByType",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 100,
+      "line": 142,
       "parameters": [
         "elements"
       ],
       "exported": false,
       "async": false,
-      "uuid": "91c93df3-6e23-5fb5-aed0-827dcce0dd8d"
+      "uuid": "58b7ab3e-c1e0-505e-83fb-b7d52dbc8b20"
     },
-    "4a62948e-ee10-5f93-ba40-ad28e7589416": {
+    "96949b15-4626-52f3-a1cd-83cbd4bbd9ba": {
       "type": "function",
       "name": "getTopFilesByDensity",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 115,
+      "line": 157,
       "parameters": [
         "elements"
       ],
       "exported": false,
       "async": false,
-      "uuid": "4a62948e-ee10-5f93-ba40-ad28e7589416"
+      "uuid": "96949b15-4626-52f3-a1cd-83cbd4bbd9ba"
     },
-    "9435a1b8-9939-52cb-9576-75221a552405": {
+    "cc94279a-7ff6-530d-b1b6-d718054ae795": {
       "type": "function",
       "name": "escapeMarkdown",
       "file": "scripts\\doc-gen\\utils.js",
-      "line": 131,
+      "line": 173,
       "parameters": [
         "text"
       ],
       "exported": false,
       "async": false,
-      "uuid": "9435a1b8-9939-52cb-9576-75221a552405"
+      "uuid": "cc94279a-7ff6-530d-b1b6-d718054ae795"
     },
-    "d8538b7f-341b-5fef-9603-d4bd608dafd7": {
+    "f587491c-558b-53e6-8aef-8ebf690c508f": {
       "type": "function",
       "name": "getFileMtime",
       "file": "scripts\\doc-gen\\validate-docs.js",
-      "line": 22,
+      "line": 23,
       "parameters": [
         "filepath"
       ],
       "exported": false,
       "async": false,
-      "uuid": "d8538b7f-341b-5fef-9603-d4bd608dafd7"
+      "uuid": "f587491c-558b-53e6-8aef-8ebf690c508f"
     },
-    "21581f00-10c1-53d0-aa5f-4230dd79aaaa": {
+    "edaccae0-8f4e-50b6-ad6a-d6c201712649": {
       "type": "function",
       "name": "readJson",
       "file": "scripts\\doc-gen\\validate-docs.js",
-      "line": 30,
+      "line": 31,
       "parameters": [
         "filepath"
       ],
       "exported": false,
       "async": false,
-      "uuid": "21581f00-10c1-53d0-aa5f-4230dd79aaaa"
+      "uuid": "edaccae0-8f4e-50b6-ad6a-d6c201712649"
     },
-    "d61e5550-a62d-5e7e-8de1-3980d597b1d7": {
+    "bace9801-e6b1-554d-a40f-5016a5d5a1bb": {
       "type": "function",
       "name": "validateDocs",
       "file": "scripts\\doc-gen\\validate-docs.js",
-      "line": 38,
+      "line": 39,
       "parameters": [],
       "exported": false,
       "async": false,
-      "uuid": "d61e5550-a62d-5e7e-8de1-3980d597b1d7"
+      "uuid": "bace9801-e6b1-554d-a40f-5016a5d5a1bb"
     },
     "c08b5a16-9d8e-505c-91fa-4630a370a626": {
       "type": "function",
@@ -23405,6 +24327,71 @@
       "23e1cd2f-fef4-52f1-bdfc-ca6d0918d1a5",
       "c84f8b3f-7b78-505f-954f-eab1f565bca3"
     ],
+    "src\\cli\\coderef-pipeline.ts": [
+      "75317345-4332-5311-9f81-3c121cfc46fa",
+      "563041b0-cd81-5b20-8531-1b520f2d3eac",
+      "bf76816e-bb3a-57a4-be46-c841a66ae053",
+      "d0ef1618-305b-5f8a-8667-92556738c1b4",
+      "db984345-670f-5b7f-a643-aa988825aa05",
+      "8dda5aeb-4397-54a4-b26c-aa179b27531c",
+      "14f849a0-ab82-5ab6-afdb-c4b1a6c5bdb2",
+      "7ab9d95d-8679-51b6-a54e-87115bc12819",
+      "decf07f3-972c-5b6f-af26-2b1eaf9142db",
+      "760c6ce4-4829-58bb-a222-027ee77c6177",
+      "25aba123-744f-5882-bac3-8ecf2e607476"
+    ],
+    "src\\cli\\coderef-rag-server.ts": [
+      "8e63ef17-f573-5af0-aa1e-df162c971c7a",
+      "828fc3d3-0b78-5097-9d95-959db0ebfb6a",
+      "615bc662-dcb6-57fe-8877-5e86971d96ae",
+      "312f4a6a-3343-5c25-84c7-6422a790288a",
+      "ff69ed87-00ce-503b-b79a-874340ed072e",
+      "350e5cee-81ed-53f6-b3ea-497ca258a219",
+      "1e2b0317-f72f-59ba-9fc1-72e51ac834a3",
+      "f30828a3-7b02-56f8-b359-7f0a958d410b",
+      "869b99cd-7322-5820-b24f-576d845a90e2",
+      "384ce39b-e231-5667-b68c-1efcddb52fd8",
+      "994ec78b-0396-59ec-9879-c7d21f993a0d",
+      "4ded68e3-26b9-505e-8202-861722a233ce",
+      "62c8776f-9f66-5472-859c-4f4dbdf4b9c5",
+      "f98645e1-4b49-5448-ba28-8537d703e011",
+      "e2bbaa56-6e53-57be-9c2d-67d7f43d3f6d",
+      "af206153-69dd-538f-857c-a7a2b4123ce6",
+      "904e50d9-bd75-5e8a-a077-4103df39946e",
+      "68b9377e-ba8e-5aae-aa97-015d3bc53907",
+      "2961ab07-d7ee-598f-94ac-3be74c7c8324",
+      "4bb9963d-de69-5738-8a42-6121f797b48d",
+      "fe8f3b68-c826-5796-ae85-2d0401c7bb92",
+      "257fe4f2-30fd-5c9b-9bbe-d80d075bf8e2",
+      "259531ce-9798-5563-b459-de8c730ff62c",
+      "8eea82da-3c4a-5479-921c-098551027ff2",
+      "e1a4a2b2-06fc-52cf-bb7b-a58c0a665631",
+      "0b28de73-4128-5308-926f-4342478278d5",
+      "3fedcd6a-02ec-5380-8265-34c780d7d8f9"
+    ],
+    "src\\cli\\coderef-watch.ts": [
+      "abb61b5d-c5f4-5017-b568-644292f6e5cc",
+      "ecedbf88-8fe3-5d99-b8ef-a4884bc82863",
+      "fb34647f-c19b-5ed9-a752-ce6af1a3324f",
+      "c03065a1-5e00-56c4-9556-333f5a518993",
+      "f50daeb9-3ab4-59a9-bf38-6c9a510abce8",
+      "9a46ac62-60cd-575b-8a4d-598d7c0c38f2",
+      "be0dda4b-110f-5da1-a8ce-e54801f7872f",
+      "698e3047-0864-5314-9583-087f2c9f60b6",
+      "217f1072-cde0-52a4-8aa3-54367d979aee",
+      "dad53a98-d6bd-5a62-a6af-35ef0137bf63",
+      "ff3c5348-60ac-5108-8bd6-5da7e406242b",
+      "c7c56ee9-12e6-5249-9858-7076f570e843",
+      "39b54752-229f-53d8-ab98-ac302fce834c",
+      "520a9ae4-2c59-5fdc-9501-656b08a3e0ff",
+      "db04f9b2-1432-5a03-911a-b6bbe21496a2",
+      "1fd72eb1-4372-5f6d-bc0e-86f5ef9406d4",
+      "4a4238ca-1ee3-5852-9ce9-ca9623d49704",
+      "dfaffe94-32d2-55f2-a31a-87702424e5fd",
+      "a63687d9-08e6-52ba-8f7a-6ac03e4eb1ca",
+      "9ec54833-bfcf-5805-a6d7-17fe1c2e9ce1",
+      "f422fe61-f536-52c8-a3a4-222696f67047"
+    ],
     "src\\cli\\detect-languages.ts": [
       "e2d589f5-c6b5-56d0-bee4-3639d7577a83",
       "a2473a61-b1ab-53c8-b3d2-19053e1b74af",
@@ -23428,20 +24415,20 @@
       "aa51b52c-cab4-5358-9378-9066948d5aa1",
       "c2d5dc2b-69bf-5251-a34b-9276462f2f45",
       "f7d8b655-2540-5f48-8810-c523e009449a",
-      "1ec387ed-91af-5363-8b3d-0bef08090d00",
-      "361bef3a-06d8-5bda-8332-fa36f1ddd020",
-      "e1319310-b2c0-56f0-b8ec-0f8a07c24141",
-      "46ad60dd-1dae-5c15-8dff-0c999afb9916"
+      "14277bd3-137a-5854-aff8-eeee204e82f7",
+      "b82d1d4c-b461-59e5-b9ed-99d8669a1db1",
+      "5d76746d-2adc-542d-8b1c-d326c147d6cc",
+      "0ebe4f2f-b35d-587f-9327-80561897bd31"
     ],
     "src\\cli\\rag-search.ts": [
       "6503e3c7-8e72-5315-8a47-ad379a0855a3",
       "1b43becb-8af7-5828-855a-2f01f15ef49f",
       "13f5bb0e-8200-5ee1-8bd7-28398040f6dc",
-      "43525ef7-f223-56fa-a634-750826b8b430",
-      "045f01fc-b35c-5119-88c2-5910f2fd9f14",
-      "718842c7-b37e-5b88-95ba-178edd49fafc",
-      "6cf777f5-3f98-5ef7-9c15-f45c467a6af1",
-      "3b09e0e0-a4a6-55dd-9c56-a557d7590200"
+      "46e3f431-3a09-5191-b8ef-79a7f4e97e6c",
+      "4aeba68c-5f32-5e9b-a504-c46df4b7ff36",
+      "c39929b2-7e98-555a-9825-bbacdf62e0ee",
+      "507dfc96-8bdb-51a7-9a07-a4b99cd80166",
+      "f8d2e2ab-1700-5a20-903c-5d3361692fd7"
     ],
     "src\\cli\\rag-status.ts": [
       "c5ea2bf0-38ba-5f2b-95a3-98ebc8dc474d",
@@ -23461,11 +24448,11 @@
     ],
     "src\\cli\\scan.ts": [
       "984726b7-9e4f-54ac-a134-3c74f914b04f",
-      "08927454-566f-58e3-a175-e798bd4fe4ec",
-      "25ee43ee-1cd7-5650-9199-ef0e97343bde",
-      "13a62c5f-8fd7-581d-80a9-e8c372784245",
-      "23575b03-3e71-5183-a7d1-c7cb2e424999",
-      "691ec329-4a19-54df-a807-a4fd237bbf80"
+      "7289735d-70de-5489-af46-6c6c74e16c73",
+      "8d8b4297-71d7-5130-8a1a-f39994d2b755",
+      "a87a6a54-d1a8-579d-8998-2b0f8853d7c1",
+      "3540bedf-7b7d-5df6-b3bb-b150486b6c66",
+      "9fedfc8b-6ba7-5ead-bb84-56f90406a9d4"
     ],
     "src\\cli\\validate-routes.ts": [
       "0933e898-6118-5b60-ad84-e958109a2a95",
@@ -24119,15 +25106,15 @@
       "8a3677ac-5adc-5181-bde1-0160df27a5b3",
       "d3520439-bc73-5e63-b2fa-bc4ea251534f",
       "92b13110-6629-5a4f-a010-0ea58b7769bb",
-      "faa5242b-b6d4-5773-8cef-46c3babf69df",
-      "200d5ba0-09d2-5084-a480-1d3979986e7e",
-      "1e64b024-ab9b-5c65-8c54-b1bd5dd6c02f",
-      "a9c6bb61-029d-5cb9-a177-095161b09a57",
-      "63819692-9ea4-560f-982d-323471e047f6",
-      "91439c59-5c37-535b-9d56-3969fe714e34",
-      "ec05f6d9-64d4-53f9-a3c5-74a5fd4b1037",
-      "4b3cd516-7855-5ad3-98fb-db7fd1d90105",
-      "969b3afe-5c70-5746-9c26-b1860b38ba06"
+      "b869ffbd-ba63-57ef-be6e-06e65f1da15f",
+      "6198ba6e-d09c-5165-903a-2bca749be885",
+      "797974f5-67be-5e51-8db0-b2ce3b438ab6",
+      "de843d97-5d90-5427-8e64-dfafde7cabb4",
+      "b0ff065b-9085-5a5d-9028-edf1ad28967e",
+      "1036b570-1659-5dfb-a3c1-176c582eb418",
+      "cc519f66-04b4-580a-be81-576c427e2ce5",
+      "ec1ac5f2-efc2-5a05-878b-5d4113619a63",
+      "6d64aa14-a6d5-5c1c-9468-04a04b5d8d24"
     ],
     "src\\integration\\rag\\code-chunk.ts": [
       "2c5c3582-45e0-5de1-8361-2cea9ed2e185",
@@ -24294,19 +25281,20 @@
     "src\\integration\\rag\\rag-config.ts": [
       "14de5e71-3af0-5df3-b1c1-92e56436d012",
       "b4403285-fce0-59e8-860d-4dd56d4dd13e",
-      "1437e92f-c67c-557a-95dc-b4625c986276",
-      "190dea55-e93d-5cd6-b3ce-4fd61732fa11",
-      "bde3e16f-e339-5c4c-a062-eca864a0e079",
-      "1a8340e2-a6fe-5c4c-9246-4a9347f31a9f",
-      "1a1b78b1-1317-5e1e-ba8a-2164c0871bdb",
-      "1eab0531-d198-5151-a096-e5ad4f9ed5fd",
-      "2c39871a-5cf6-5bee-8d5f-8832abfab2de",
-      "7e0458c2-1e04-5499-9057-4c386536ab38",
-      "4cf6192b-bf1e-5c0f-9746-6d5cafe9b2ae",
-      "d1b031c0-8b5e-52ac-bf7c-dd737f50088c",
-      "302c6e69-25c8-5031-8cc2-7af356d3cb35",
-      "eb1632b0-9b66-5dd0-9ec3-930ae01d3226",
-      "4eb2a41b-9bf3-51fe-8cb8-148e8e6b4978"
+      "107792bb-625a-538b-9fe0-bd62568f535b",
+      "d729beac-49f2-5aa4-935c-08814bac6aa0",
+      "83e9f16a-ab07-5dd7-83b2-316fa0484922",
+      "37875ee5-a9cc-55a0-a26d-fe8a40730e07",
+      "64262fac-4a8d-591c-80d1-f1e1eb599d66",
+      "c0ddb41d-79fa-5f99-8f38-5bc9e6513dc4",
+      "24ec60a7-f7f7-5fa1-b754-fe4071bada3c",
+      "7700574a-8bc2-558e-9286-bb917d09a6d6",
+      "9347af71-0ef0-5fb4-8e8b-b6d8d70be404",
+      "be42acc9-6b4f-517f-88e7-28692e35a30b",
+      "ed8ce887-4fa8-5f1d-8eec-5b2bd388812b",
+      "9b3bff84-1186-5235-995f-a2b458f0c6b8",
+      "5ecaa2ea-302d-54b7-8672-587604d60c93",
+      "92429a6a-3eb1-59e7-a745-480ee2e33806"
     ],
     "src\\integration\\rag\\semantic-search.ts": [
       "49d0e104-aec6-5ffd-ae44-19b35e4d99fe",
@@ -24376,19 +25364,19 @@
       "e37a3be0-cac8-5467-b3cc-6e4e6c36f5cf",
       "661689d5-6aa0-5b5f-ad07-a8d28d6f4cde",
       "1f7f748a-3e8c-59fd-ab82-d563398643eb",
-      "12946705-5d15-5d2a-8faf-3748942df4a2",
-      "064aaffb-b440-52db-aa5e-9fb9f1817c33",
-      "52d76c7c-448a-517f-8cc1-b07aedefc5d9",
-      "2ebb6112-0de9-5d8f-99bf-f8cfb2c9a37d",
-      "aa23aef8-27ce-53ac-b076-a0f496b53045",
-      "04c37ff9-9a81-5923-8482-f96c8d68cf5c",
-      "e23e0560-3e73-5ce6-9e7b-cf0d14ad51bd",
-      "4343638e-09cf-573d-8bf0-ba3b387ba971",
-      "dad776ac-0d3e-5291-97d1-233b396941b0",
-      "99fe023e-75f2-5742-b63d-841a8eba3d88",
-      "611b702a-582e-55dd-8167-4ce991f8176b",
-      "321abc88-c135-59cf-a74b-c8033bb6ef40",
-      "71884c20-1c01-54fa-bf81-e277d88a02b6"
+      "ea678079-36fc-5d84-bae6-b8b32d235ff4",
+      "83627d3c-ca76-5efc-9cf5-43fb3f443221",
+      "2bec112f-8d22-5adf-822f-a29a9d132b43",
+      "9039cc16-996e-5e57-a2e3-bdf6477eab6a",
+      "054d45ef-5544-52a8-9ae6-b833b10ba479",
+      "d51593f4-5935-5452-b0fa-4e4efc42d06e",
+      "ffba9289-8613-50ef-bc6c-5254ef65e689",
+      "27df5d79-0fde-5588-8204-7b7a07cc502b",
+      "092b348d-a472-52a9-a055-2a36aed5bb46",
+      "8ea8ca60-816e-5cc3-a7d5-9ecb5d8319b8",
+      "4f88091f-f2ce-5384-abe4-38b7222ca258",
+      "e29ba3ac-80fd-54ab-bf16-75ba897d36fb",
+      "3075651b-0791-502c-b515-33057ba1fad1"
     ],
     "src\\integration\\vector\\vector-store.ts": [
       "0b20c365-e533-51f0-8c47-9480a613c8bf",
@@ -24555,14 +25543,13 @@
       "49724b1f-c732-589e-ab4e-bd26c014e2e7"
     ],
     "src\\pipeline\\generators\\drift-generator.ts": [
-      "b428e9b4-57da-5ff5-97fd-f5445ccd3a24",
-      "52dc75b3-9375-5d37-a2df-57ae3a13a0d1",
-      "fb0c0f9d-917b-5748-b8e7-ce14efcd42a1",
-      "80cfd8e6-a616-577a-be9f-745e81ae7e18",
-      "e8006e26-797d-596c-98b1-91da075f6d85",
-      "1d54b2ef-f1a9-5dc7-b6d1-45a1e8a5fc05",
-      "22192625-99e6-58b3-8476-2da860566597",
-      "08793911-8812-5398-a3f5-42c4a0d13c02"
+      "d916d0cf-3801-5e69-aea8-04053e881fdf",
+      "87b58033-7bb5-5440-84a8-7170f17927e1",
+      "2a0087d7-7dbf-5e33-b4f4-f42f125541c7",
+      "899e0625-5b3e-54bf-82b2-b7adfefda70b",
+      "03586203-376b-5252-95b6-5614a97c6435",
+      "a88d34c7-224b-5ed6-90cd-23c74f78cfc3",
+      "e533f2d4-a593-5de7-b8c6-c16bf14b695c"
     ],
     "src\\pipeline\\generators\\export-generator.ts": [
       "3a6afba3-ee49-50ef-a644-92dc082f12e2",
@@ -24599,9 +25586,9 @@
       "7c965541-f69b-5a59-84d1-6c90f6015c47"
     ],
     "src\\pipeline\\generators\\index-generator.ts": [
-      "e72ce6c9-1e83-594e-9f83-cc7d63c13de1",
-      "0e57c0ed-2eac-54f2-8fad-595e5d812fd5",
-      "0fca30a5-344d-5425-a908-3fd6aaa8002b"
+      "877c5cbb-63f6-5552-9cbc-c9d98ea52870",
+      "43a61dd6-f68f-5b9f-a123-9a3556aece13",
+      "d33a1562-97a5-5445-8ce7-79d93de10f65"
     ],
     "src\\pipeline\\generators\\pattern-generator.ts": [
       "3406a392-118e-550b-a282-55044ca49949",
@@ -24760,6 +25747,8 @@
     "src\\plugins\\types.ts": [
       "cf46e7ca-f271-5774-af72-9d454dc2f41c",
       "7bebda68-e617-599b-9779-90e3f723e2d2",
+      "d31d4a25-ceff-5ce3-b173-a5dff034eb7e",
+      "92d1887c-f949-5434-80d8-4a8bc0ef5571",
       "608d5353-d154-53d0-b30e-a5b2bfafbb68",
       "825fb9e3-fba7-58a0-a7b0-61f2a8b47162",
       "11c498ff-129d-5e00-9f8c-fe5c9cf3952b",
@@ -24895,62 +25884,70 @@
       "28947a36-1944-56fc-bf40-81a7ed63ffd1",
       "3c790d48-9135-5d79-8212-74d9fffba69a"
     ],
+    "src\\scanner\\semantic-analyzer.ts": [
+      "f3ead94d-1258-5fbb-8a8a-62fb8529a7f2",
+      "6cdced03-1f4d-5e66-ada8-17622914102f",
+      "268b5e86-1fce-52cb-b1f4-a4bc8ec98fbc",
+      "6da6aa9c-013d-51cf-aa33-63b286a22675",
+      "381cb2fd-a26a-502d-b10f-0efb6d1ce74b"
+    ],
     "src\\scanner\\tree-sitter-scanner.ts": [
       "e226ebbc-4cc2-5cee-9251-6e26ab1bd294",
-      "3b8cd976-1d3c-5e32-9abf-9223e6853c64",
-      "e5f5db9a-9d5e-51d2-9933-9c05409325a7",
-      "9ac01deb-1be3-570f-9ffe-5c284d2b08a7",
-      "32089dab-19a4-5a36-851e-d5cfd0136980",
-      "1c113b47-4da7-5798-9353-c08b426680f3",
-      "12bff4bf-2f1d-5b8e-b2ca-ce915e444a63",
-      "b0fb87d4-6b28-5382-970e-e7a7bdfe23a5",
-      "e1f58d8e-81d3-5547-bbe4-aba34baea604",
-      "8472ca80-8638-598a-9d8d-ceb3e1ad5543",
-      "9f9bd9ad-7031-578c-bb78-90d3a39bb7ee",
-      "d4760e3e-6218-5fa6-ac91-eb9119de59d9",
-      "e4637651-d358-57ce-9cad-1ef1ece4bb65",
-      "d0c74695-f6bf-51ac-a525-d93123434153",
-      "a0a85710-fca6-5fe0-b3f5-953b3eca8297",
-      "aff4d097-7d25-507f-835e-7791ab575f46",
-      "a53f2ba6-c2ff-59be-8984-b176b98eb117",
-      "e28bcb4e-ab6f-5b56-8b70-2a68b078cc59",
-      "6bd77b25-bc54-5179-96de-e334c3e84bde",
-      "5cabe235-7bcf-5cfd-96f0-f8b06df6e509",
-      "889d41e7-f3e0-5abc-b8f4-e27bbf3c04de",
-      "01424525-847f-5da5-9ce0-066434de1b20",
-      "43a0a297-d3b5-57d3-b4f6-6f929ab6ab9c",
-      "4ec4a827-b61b-50ce-ac89-8dae6147da3f",
-      "db9caa5b-d1fe-5f04-b90d-80d3319b665c",
-      "6f62ca1b-692a-5ba5-9403-44f54384e566",
-      "d24778b7-4f51-553d-9722-963dbb06f315",
-      "24482265-fccd-533c-9935-aadbf44aedb2",
-      "3d919b29-f69d-5efa-b8bf-61bda903bf2d",
-      "5af2f33a-6ef3-502b-9f71-0e90193fd35d",
-      "9974a502-9acc-5544-b3f3-7416e98f7750",
-      "6f0251c2-971e-5a07-a88b-66c62452b980",
-      "2a62495a-0f63-5647-b509-2661bdc2f874",
-      "c4bd6ea1-19de-531d-9934-e641a5c87b97",
-      "b23fc2d7-ad5f-540f-85a0-d9636b4d854c",
-      "50c64771-6e8a-5e41-9904-0001d0149feb",
-      "cf9766fb-16f6-5fba-936c-23fbcde26222",
-      "d5656314-517e-5f4b-9bd9-4c5185e75d9e",
-      "923bfdfd-49be-5c1a-bbc5-273cb28b4907",
-      "8241fec5-2653-5352-b4a2-9cb9458c8701",
-      "8ff88370-f73b-528e-8121-e113355c9365",
-      "c6f9967f-233f-5942-92c7-1e55d379faf4",
-      "f3c03d03-dd50-5305-abe3-7fdc7b2a0646",
-      "10fc0571-a05b-5dfe-acf7-9fcec5d6ac5f",
-      "a6a2bf6b-629c-55e9-9056-41b7db9bc1b2",
-      "110c0309-8e10-52d7-b748-52fb3e38b7df",
-      "bbe6023b-6d3a-58fc-aeaf-8cf5b633f48d",
-      "e82c4a11-030e-5f7d-99e8-5eec88f86e79",
-      "2017c862-ed53-5b8d-b5b7-9ea05e6ee9f0",
-      "e77b405a-f292-55c3-a61c-5a61d13fc5a0",
-      "f75fee65-185e-581d-854e-cbc0275c5095",
-      "5781022f-cd11-5929-9291-1f9ec6d60386",
-      "f8f336fd-c3fc-55c9-b68b-39ea1cd8626f",
-      "03bacfce-db3a-5d84-bfc9-9f6184eeb112",
-      "1773d72d-9439-5b00-9ed2-52bb6447db53"
+      "62833cb5-9738-5243-ba23-5954745ba31f",
+      "d6793e8c-ee3d-5d05-a386-a087f7f35d6f",
+      "f6d1c164-24ce-58e3-a753-cb4edf6f0a18",
+      "4821893f-04cf-55dd-a1c4-21c8f92938c2",
+      "c36554ae-51eb-5449-83c7-6373d003b3e3",
+      "0ce9ce52-33f1-5607-898c-dd4ab2625f1d",
+      "4cf768d2-49b7-5224-8515-5dae5f2a4b5d",
+      "01ad662a-9efc-595c-8603-12a7469604a8",
+      "19ec2371-38fd-5210-8580-6e74ee5a1441",
+      "59992f71-c174-52a6-b813-84370e9c7954",
+      "7627ce54-9582-5046-bddc-dd37add45923",
+      "2d3fc340-c623-5a6b-8bca-659c2a9ccd35",
+      "4a23424c-af20-59f3-9ae6-e93f1f811e8d",
+      "707459f6-9bf9-517d-99fd-ce3555490ef2",
+      "b314875a-ed5e-5364-98c7-b5c1b29254d1",
+      "c7a405fe-9baf-5273-b6f3-06ab38b18770",
+      "f8db6589-c826-5b1e-a22b-6f6f9ba9e3c3",
+      "cf2b7263-072f-584e-9330-600205a75b51",
+      "26a0a95d-2547-5158-b4bc-3acdc62acf4a",
+      "c2d0e247-f5fb-57e4-8b6b-7ab42902cb89",
+      "de0de66b-0f5f-5f4f-8b10-1b77c76c5c1f",
+      "78d8189d-c4aa-5872-b1d7-cd2cd8e8e236",
+      "5f607879-4a75-53d2-9422-b069faab0b5a",
+      "37cf9183-ee8d-5f1d-9f90-2738e9a7a4b1",
+      "4f7165ff-aaeb-553f-b076-41ef45ccc1dc",
+      "cc99e03b-20b7-5778-b70a-13a4c38083c8",
+      "4497e4cd-4419-53ba-a1bd-00b3d2ce7d7f",
+      "b5646fa5-9464-5eee-b174-b53b559ac25b",
+      "c9e1312d-5d52-53ce-918d-f30abd9e3013",
+      "764bd802-ee25-5019-9dc4-53980a8553f0",
+      "e5e0b0a3-711e-5a71-bd0a-764a4b7871e6",
+      "daa43f55-b64e-51fe-81a3-aafda8380967",
+      "e31a9c76-1484-555a-8cd4-b9a731e68c8b",
+      "18ab1cc6-eb45-5ff1-bf59-98771cadac3c",
+      "44c6200a-6435-5ed4-a44d-5cfa9b7230d1",
+      "583517db-0dbb-515d-8749-46edfb688ae1",
+      "2f12df98-810a-5b00-8770-f066b859e553",
+      "f7c38ad9-ce56-5122-8571-7b63ee45711b",
+      "993db0aa-0393-5b6f-a6f3-af128d1fd5cc",
+      "9ea1361e-f308-5f13-9853-b871e96873be",
+      "eb573fd7-92cf-54c8-804a-546f61a6b521",
+      "368d721a-d3c7-55e5-907c-109b491e4bcb",
+      "cb81b6dc-65e1-5545-abe4-95348c461228",
+      "d157b04f-cd43-5e36-80e8-024fab69b14e",
+      "fddb54e3-d526-5fd6-a9ab-ae2338beb797",
+      "a1bcf126-d2c4-5a62-a2f0-896665fd793c",
+      "cbf348c1-d6df-546e-9ee2-f08807fb39d8",
+      "101e434c-7532-5109-879f-7ac73dbc2404",
+      "21546230-3579-5e96-bafc-7aec0cd07460",
+      "4e5a859b-815e-5aa6-8388-01bf9e95f166",
+      "a2cdde32-5f4d-5994-9fb1-47942ce6720c",
+      "4629c0a6-e62a-57cf-86f1-286d2dfe87db",
+      "3a0bb1f6-4ad7-52c9-978c-28de72cd1722",
+      "9d9f55e3-ebcc-576d-95bb-4459c84ce81a",
+      "e480a0da-ce8c-5ced-b461-25bd20655e36"
     ],
     "src\\scanner\\__tests__\\incremental-cache-recursive.test.ts": [
       "27fcd929-d356-5d89-a869-68463850eb81",
@@ -25018,17 +26015,17 @@
       "c19c6e38-a154-5f22-a9e7-ef8a9a7d77dc",
       "15fee762-a0a1-5fb4-bb55-88418fe8026b",
       "9796ac3b-a436-5bff-a1d2-aa43624ebaa7",
-      "102580d5-5745-52c9-b71d-6ce4cc8a01f4",
-      "e21c2091-a111-51b5-914d-29bb6494d638",
-      "58065987-7405-5376-a964-10320b6ae727",
-      "4a118392-d5ff-5bbc-b4bc-601cf72f8a94",
-      "fd073a59-d544-5b2b-8134-934bad32cde8",
-      "334eaced-f5c5-537c-9c05-0d6e834fad2c",
-      "3f7f59f9-ace5-5887-82c4-dc2da3911102",
-      "5cd5e9ba-9d96-5d67-909c-7f136ad24c26",
-      "b280c023-a697-5bb7-a595-eeb257625d41",
-      "af3dacce-e3f0-5bd7-b51e-1458a34c82d2",
-      "e4aeb6e1-56e3-535d-a4a2-5ce58a3444f0"
+      "5d556adc-95cf-5300-aa53-f8bd75bd42e1",
+      "da27bbf3-514c-5216-8043-a8ec2f2e85e8",
+      "a4a6e879-bf9c-5af9-bafd-c6132176da03",
+      "520d4831-bbe3-5dfe-9a68-31e089d92248",
+      "1a08628c-0f71-5cd4-80f1-eb8ae3234f98",
+      "1e8fde49-cc0e-5fc3-b557-0a2637957f46",
+      "cbad30df-da38-5ffd-9174-0db9aa74b0cc",
+      "e136d896-f65d-5a48-8937-3ef7a1f3df58",
+      "a4c45ede-8544-554a-9fea-0b85238a3bbe",
+      "a867ba05-b973-50f6-a810-2db656b4f2f2",
+      "db3128e5-111f-568d-82b0-6544d980ea6f"
     ],
     "src\\utils\\logger.ts": [
       "93701d95-f097-52c6-9718-d578d5aa9902",
@@ -25238,44 +26235,64 @@
       "cc61ec82-b8a1-5145-8d33-2430b29d7848"
     ],
     "scripts\\doc-gen\\enhance-existing-docs.js": [
-      "b487973e-02a7-5b1a-b068-bf04ec65842c",
-      "2e0fb935-8848-56c5-acdb-ad703429927b",
-      "5eb324eb-888b-5d6c-94b1-0e3a334d1e1e",
-      "f155a044-766e-55ca-8eb0-4acc23526b79",
-      "3d9e8ddf-3652-51d3-81cf-878fda901f07",
-      "e9579a15-15e7-51c4-92b5-33c59587ec9f",
-      "8600ace2-9eef-5f53-8046-ede2dbf8b109",
-      "273bbf00-02c7-5513-b2cf-f6328c408f3b",
-      "14dd7810-aab3-59e5-8799-feea0d79c2e2"
+      "7028a823-1822-5ce1-9a12-bbb01a47c450",
+      "1da9223a-fedd-54ab-97d5-6cc779a202fb",
+      "5e9cb7a3-06e2-5077-9c8d-d8647ac8c243",
+      "394e5152-fcc4-5a20-bd91-0329ddcfc726",
+      "634038a4-8370-5a39-8960-069aaadb3e4b",
+      "86a7a0b4-0dfd-5c48-93e4-4b8372e4b06f",
+      "4cb8608e-56c6-5ed9-be1f-e585ab2c5cd4",
+      "41e8e54a-8778-5700-9180-67709aee82f6",
+      "c5e0a19f-da34-5f65-a5d1-57ed89ba27ce"
     ],
     "scripts\\doc-gen\\generate-exports-md.js": [
-      "9e8c17b3-7db4-510e-bdbc-ae05d28b59b9"
+      "847b30ad-4dbf-5892-a7ae-693ede6c2d6d"
     ],
     "scripts\\doc-gen\\generate-hotspots-md.js": [
-      "f2119e12-1979-5852-b696-0f4479bae516"
+      "2aaccda8-c8cb-55a4-8054-a234ab7ae6e8"
     ],
     "scripts\\doc-gen\\generate-index-md.js": [
-      "638eb3ca-8cc0-5f7f-a1b1-848360991484"
+      "0a701cdb-1b5f-5552-a4b4-a8ba9d24a131"
+    ],
+    "scripts\\doc-gen\\generate-meta-json.js": [
+      "66e1e1df-677f-5cd2-902f-96c32b6f7b2a",
+      "794adfe6-c389-5bc1-86b0-a8833c0d4d3f",
+      "e6882cad-b277-53ca-863a-9085628422f0",
+      "01a771d9-d399-58cf-8c84-218f132b7a46",
+      "3ee5f68f-6594-502c-ae54-866dcbb91205",
+      "fd61a8fd-3ef2-5fa1-8944-3ec9d5e4774d",
+      "f927e517-a005-5d7c-800d-d3c23b6633a9",
+      "8bf49ed8-3471-570b-90f4-69ba66612f2d",
+      "62463f67-bfd4-59c9-9f8b-6b5f81b4488e",
+      "fa239fb2-e164-5c34-b359-48367f5eaa67",
+      "b6520cef-8816-5413-a308-1c0b261ebef0",
+      "334c396f-6d3f-5303-85ad-ee9bf5aa3964",
+      "a356897a-bf1b-5150-8a99-92b8d5e5f37d",
+      "30848318-be7f-54a4-9ccf-ee8e93280d29",
+      "c0a351cb-17c0-51ee-aa58-98ce024b5df8"
     ],
     "scripts\\doc-gen\\generate-relationships-md.js": [
-      "9dbfff0b-6266-576b-9936-4a65e654a2a8"
+      "e000db3a-9dc5-54da-a41b-3557c11a7ef8"
     ],
     "scripts\\doc-gen\\utils.js": [
-      "ee69b532-ed62-56ac-8296-b5542290d3b9",
-      "120dca6a-6d92-52c6-87e0-743c3516f366",
-      "c0cdcc87-d247-566d-9ea9-8bdf5e68715c",
-      "682ed227-df5a-5f46-8baa-6b20e81ce340",
-      "0ef52b75-fe5e-57e5-8d46-b0d71dace3cd",
-      "984254ed-be85-521e-9829-fef64ac67a32",
-      "fe23bf6a-ded2-52d5-94bc-90370e5ff67c",
-      "91c93df3-6e23-5fb5-aed0-827dcce0dd8d",
-      "4a62948e-ee10-5f93-ba40-ad28e7589416",
-      "9435a1b8-9939-52cb-9576-75221a552405"
+      "843e4425-b9e3-5b20-8775-213ab677dfa2",
+      "d667d7c7-2297-5222-8e70-97a64b1f4447",
+      "085cdaa1-2bbc-5a6b-b015-5679283f008e",
+      "b2d6bdcb-4e5a-5f9f-971d-1e4317e511ab",
+      "20a4fd4c-a8ea-5c09-8c2c-92510f74ca02",
+      "67e1502a-5056-5f9a-ab24-dd7ab7ba8d44",
+      "9d275691-fb51-50ba-9724-5ce2846b9bc8",
+      "968a1e72-de1e-5bea-9362-160102952dc1",
+      "f591cbac-14c8-5400-9a02-9342715c8bd7",
+      "a68ea6cf-361f-5059-907f-a9376ad2b405",
+      "58b7ab3e-c1e0-505e-83fb-b7d52dbc8b20",
+      "96949b15-4626-52f3-a1cd-83cbd4bbd9ba",
+      "cc94279a-7ff6-530d-b1b6-d718054ae795"
     ],
     "scripts\\doc-gen\\validate-docs.js": [
-      "d8538b7f-341b-5fef-9603-d4bd608dafd7",
-      "21581f00-10c1-53d0-aa5f-4230dd79aaaa",
-      "d61e5550-a62d-5e7e-8de1-3980d597b1d7"
+      "f587491c-558b-53e6-8aef-8ebf690c508f",
+      "edaccae0-8f4e-50b6-ad6a-d6c201712649",
+      "bace9801-e6b1-554d-a40f-5016a5d5a1bb"
     ],
     "utils\\fs.js": [
       "c08b5a16-9d8e-505c-91fa-4630a370a626",
@@ -25406,16 +26423,16 @@
     ]
   },
   "stats": {
-    "totalEntities": 2070,
-    "distinctFiles": 215,
+    "totalEntities": 2155,
+    "distinctFiles": 220,
     "typeBreakdown": {
-      "function": 543,
-      "type": 38,
+      "function": 608,
+      "type": 39,
       "component": 2,
-      "interface": 346,
+      "interface": 357,
       "class": 115,
-      "method": 1024,
-      "constant": 2
+      "method": 1023,
+      "constant": 11
     }
   }
 }

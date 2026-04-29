@@ -1,0 +1,50 @@
+{
+  "workorder_id": "WO-HELLO-WORLD-001",
+  "feature_name": "hello-world",
+  "created": "2026-04-27T00:00:00Z",
+  "owner_domain": "claude-code",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/hello-world/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/hello-world/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/hello-world/analysis.json",
+  "handoff": {
+    "from": "create-workorder@2.5.0",
+    "to": "execute-workorder",
+    "reason": "Light plan created; ready for execution"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "hard_stops": [],
+    "gates_enforced": false,
+    "phase_transitions_required": false
+  },
+  "hard_constraints": [
+    "No breaking changes",
+    "Backwards compatible",
+    "Single endpoint scope"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_determined",
+      "timestamp": "2026-04-27T00:00:00Z",
+      "decision": "light",
+      "rationale": "Single endpoint, no cross-cutting impact"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-04-27T00:00:00Z",
+      "event": "workorder_created",
+      "source": "create-workorder@2.5.0",
+      "summary": "WO-HELLO-WORLD-001 created (light, 1 phase)"
+    }
+  ]
+}

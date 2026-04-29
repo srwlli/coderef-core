@@ -1,27 +1,30 @@
 {
   "version": "1.0",
-  "createdAt": "2026-04-22T08:09:30.805Z",
-  "projectDir": ".",
+  "createdAt": "2026-04-28T20:07:36.298Z",
+  "projectDir": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE",
   "languages": [
-    "ts"
+    "ts",
+    "js",
+    "py"
   ],
-  "provider": "ollama",
+  "provider": "openai",
   "store": "sqlite",
   "stats": {
-    "tokensUsed": 28329,
-    "estimatedCost": 0.00056658,
-    "avgEmbeddingTimeMs": 2357.5,
+    "tokensUsed": 12509,
+    "estimatedCost": 0.00025017999999999997,
+    "avgEmbeddingTimeMs": 435,
     "byType": {
-      "file": 186
+      "file": 65
     },
     "byLanguage": {
-      "typescript": 185,
-      "javascript": 1
+      "typescript": 32,
+      "javascript": 16,
+      "python": 17
     }
   },
-  "chunksIndexed": 186,
-  "chunksSkipped": 0,
-  "chunksFailed": 0,
-  "filesProcessed": 186,
-  "processingTimeMs": 5598
+  "chunksIndexed": 0,
+  "chunksSkipped": 170,
+  "chunksFailed": 65,
+  "filesProcessed": 235,
+  "processingTimeMs": 1388
 }

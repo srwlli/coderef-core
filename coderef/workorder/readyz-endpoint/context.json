@@ -1,0 +1,27 @@
+{
+  "workorder_id": "WO-READYZ-ENDPOINT-001",
+  "feature_name": "readyz-endpoint",
+  "created": "2026-04-27T00:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "intake": {
+    "trigger": "create-workorder",
+    "user_request": "add a /readyz endpoint that returns 200 with body OK"
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single endpoint addition, no complex discovery or multi-phase coordination needed. Changes limited to one file (coderef-rag-server.ts).",
+    "plan_type_decided_by": "create-workorder@2.5.0"
+  },
+  "scope": {
+    "in_scope": [
+      "Add /readyz endpoint to coderef-rag-server.ts",
+      "Endpoint returns HTTP 200 with body 'OK'"
+    ],
+    "out_of_scope": [
+      "Adding readiness probes elsewhere",
+      "Kubernetes liveness/readiness configuration",
+      "Monitoring integration"
+    ]
+  }
+}

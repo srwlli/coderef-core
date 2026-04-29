@@ -1,8 +1,8 @@
 {
   "stats": {
-    "totalFiles": 296,
-    "totalElements": 2106,
-    "totalLines": 85247,
+    "totalFiles": 302,
+    "totalElements": 2191,
+    "totalLines": 87419,
     "languages": [
       "ts",
       "js",
@@ -179,6 +179,30 @@
       "isPrimary": false
     },
     {
+      "name": "main",
+      "file": "src/cli/coderef-pipeline.ts",
+      "type": "cli",
+      "description": "CLI command handler (main)",
+      "exported": false,
+      "isPrimary": false
+    },
+    {
+      "name": "main",
+      "file": "src/cli/coderef-rag-server.ts",
+      "type": "cli",
+      "description": "CLI command handler (main)",
+      "exported": false,
+      "isPrimary": false
+    },
+    {
+      "name": "main",
+      "file": "src/cli/coderef-watch.ts",
+      "type": "cli",
+      "description": "CLI command handler (main)",
+      "exported": false,
+      "isPrimary": false
+    },
+    {
       "name": "run",
       "file": "src/cli/populate.ts",
       "type": "cli",
@@ -245,6 +269,14 @@
     {
       "name": "main",
       "file": "scripts/doc-gen/enhance-existing-docs.js",
+      "type": "cli",
+      "description": "CLI command handler (main)",
+      "exported": false,
+      "isPrimary": false
+    },
+    {
+      "name": "main",
+      "file": "scripts/doc-gen/generate-meta-json.js",
       "type": "cli",
       "description": "CLI command handler (main)",
       "exported": false,
@@ -371,6 +403,14 @@
       "isPrimary": false
     },
     {
+      "name": "coderef-rag-server.ts",
+      "file": "src/cli/coderef-rag-server.ts",
+      "type": "server",
+      "description": "Server bootstrap entry",
+      "exported": false,
+      "isPrimary": false
+    },
+    {
       "name": "DynamicImportDetector.getArrowFunctionName",
       "file": "src/analyzer/dynamic-import-detector.ts",
       "type": "serverless",
@@ -399,6 +439,14 @@
       "file": "src/analyzer/middleware-detector.ts",
       "type": "serverless",
       "description": "Serverless function handler (MiddlewareDetector.detectExpressHandlers)",
+      "exported": false,
+      "isPrimary": false
+    },
+    {
+      "name": "handleReadyz",
+      "file": "src/cli/coderef-rag-server.ts",
+      "type": "serverless",
+      "description": "Serverless function handler (handleReadyz)",
       "exported": false,
       "isPrimary": false
     },
@@ -483,6 +531,14 @@
       "isPrimary": false
     },
     {
+      "name": "computeTrigger",
+      "file": "scripts/doc-gen/generate-meta-json.js",
+      "type": "serverless",
+      "description": "Serverless function handler (computeTrigger)",
+      "exported": false,
+      "isPrimary": false
+    },
+    {
       "name": "count_async_functions",
       "file": "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
       "type": "serverless",
@@ -535,6 +591,14 @@
       "file": "src/analyzer/entry-detector.ts",
       "type": "job",
       "description": "Job/task handler (EntryPointDetector.isJobHandler)",
+      "exported": false,
+      "isPrimary": false
+    },
+    {
+      "name": "scheduleFlush",
+      "file": "src/cli/coderef-watch.ts",
+      "type": "job",
+      "description": "Job/task handler (scheduleFlush)",
       "exported": false,
       "isPrimary": false
     },
@@ -1073,10 +1137,10 @@
   "moduleStructure": {
     ".": 8,
     "examples": 4,
-    "scripts": 10,
-    "src": 217,
+    "scripts": 11,
+    "src": 221,
     "utils": 3,
-    "__tests__": 40,
+    "__tests__": 41,
     "autoresearch": 14
   },
   "executiveSummary": {
@@ -1483,7 +1547,8 @@
     "confidence": 0.95,
     "purpose": "@coderef/CODEREF-CORE is a reusable library/SDK for other developers to import and use with cli-tool capabilities",
     "indicators": [
-      "CLI entry points: 25",
+      "Server entry points: 1",
+      "CLI entry points: 29",
       "package.json bin field present",
       "Library entry points: 20",
       "Library exports configured",
@@ -1861,14 +1926,14 @@
     ]
   },
   "documentation": {
-    "overallScore": 53,
-    "qualityLevel": "basic",
+    "overallScore": 63,
+    "qualityLevel": "good",
     "readme": {
       "file": "README.md",
       "exists": true,
       "totalSections": 18,
-      "presentSections": 8,
-      "completenessScore": 44,
+      "presentSections": 9,
+      "completenessScore": 50,
       "sections": [
         {
           "name": "installation",
@@ -1876,7 +1941,7 @@
         },
         {
           "name": "usage",
-          "present": false
+          "present": true
         },
         {
           "name": "api",
@@ -1954,6 +2019,40 @@
     },
     "jsdocCoverage": [
       {
+        "file": "dist\\analyzer\\call-detector.d.ts",
+        "totalExports": 2,
+        "documentedExports": 2,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\analyzer\\graph-builder.d.ts",
+        "totalExports": 3,
+        "documentedExports": 3,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\analyzer\\import-parser.d.ts",
+        "totalExports": 4,
+        "documentedExports": 2,
+        "coverageRatio": 0.5,
+        "undocumentedItems": [
+          " x ",
+          " x "
+        ]
+      },
+      {
+        "file": "dist\\analyzer\\import-parser.js",
+        "totalExports": 2,
+        "documentedExports": 0,
+        "coverageRatio": 0,
+        "undocumentedItems": [
+          " x ",
+          " x "
+        ]
+      },
+      {
         "file": "dist\\index.d.ts",
         "totalExports": 10,
         "documentedExports": 0,
@@ -1970,6 +2069,48 @@
           " detectDrift ",
           " generateDiagrams "
         ]
+      },
+      {
+        "file": "dist\\integration\\llm\\llm-provider.d.ts",
+        "totalExports": 5,
+        "documentedExports": 5,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\integration\\llm\\model-registry.d.ts",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\integration\\rag\\code-chunk.d.ts",
+        "totalExports": 5,
+        "documentedExports": 5,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\integration\\rag\\embedding-text-generator.d.ts",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\integration\\rag\\semantic-search.d.ts",
+        "totalExports": 4,
+        "documentedExports": 4,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\integration\\vector\\vector-store.d.ts",
+        "totalExports": 9,
+        "documentedExports": 9,
+        "coverageRatio": 1,
+        "undocumentedItems": []
       },
       {
         "file": "dist\\sqlite-store.js",
@@ -2321,6 +2462,13 @@
         "undocumentedItems": [
           "handler"
         ]
+      },
+      {
+        "file": "dist\\src\\cache\\incremental-cache.d.ts",
+        "totalExports": 3,
+        "documentedExports": 3,
+        "coverageRatio": 1,
+        "undocumentedItems": []
       },
       {
         "file": "dist\\src\\cli\\detect-languages.d.ts",
@@ -2861,23 +3009,9 @@
         "undocumentedItems": []
       },
       {
-        "file": "dist\\src\\integration\\vector\\sqlite-store.js",
-        "totalExports": 1,
-        "documentedExports": 1,
-        "coverageRatio": 1,
-        "undocumentedItems": []
-      },
-      {
         "file": "dist\\src\\integration\\vector\\vector-store.d.ts",
         "totalExports": 9,
         "documentedExports": 9,
-        "coverageRatio": 1,
-        "undocumentedItems": []
-      },
-      {
-        "file": "dist\\src\\integration\\vector\\vector-store.js",
-        "totalExports": 2,
-        "documentedExports": 2,
         "coverageRatio": 1,
         "undocumentedItems": []
       },
@@ -2955,6 +3089,48 @@
         "undocumentedItems": []
       },
       {
+        "file": "dist\\src\\plugins\\loaders\\config-loader.d.ts",
+        "totalExports": 2,
+        "documentedExports": 2,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\src\\plugins\\loaders\\local-loader.d.ts",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\src\\plugins\\loaders\\npm-loader.d.ts",
+        "totalExports": 2,
+        "documentedExports": 2,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\src\\plugins\\plugin-graph.d.ts",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\src\\plugins\\plugin-scanner.d.ts",
+        "totalExports": 1,
+        "documentedExports": 1,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
+        "file": "dist\\src\\plugins\\types.d.ts",
+        "totalExports": 11,
+        "documentedExports": 11,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
         "file": "dist\\src\\query\\query-executor.d.ts",
         "totalExports": 3,
         "documentedExports": 3,
@@ -2974,6 +3150,16 @@
         "documentedExports": 5,
         "coverageRatio": 1,
         "undocumentedItems": []
+      },
+      {
+        "file": "dist\\src\\scanner\\file-watcher.d.ts",
+        "totalExports": 2,
+        "documentedExports": 0,
+        "coverageRatio": 0,
+        "undocumentedItems": [
+          "FileWatcherOptions",
+          "WatcherStats"
+        ]
       },
       {
         "file": "dist\\src\\scanner\\framework-registry.d.ts",
@@ -4360,8 +4546,8 @@
       },
       {
         "file": "src\\integration\\rag\\rag-config.ts",
-        "totalExports": 6,
-        "documentedExports": 6,
+        "totalExports": 7,
+        "documentedExports": 7,
         "coverageRatio": 1,
         "undocumentedItems": []
       },
@@ -4468,9 +4654,11 @@
       {
         "file": "src\\pipeline\\generators\\drift-generator.ts",
         "totalExports": 1,
-        "documentedExports": 1,
-        "coverageRatio": 1,
-        "undocumentedItems": []
+        "documentedExports": 0,
+        "coverageRatio": 0,
+        "undocumentedItems": [
+          "DriftGenerator"
+        ]
       },
       {
         "file": "src\\pipeline\\generators\\export-generator.ts",
@@ -4737,6 +4925,13 @@
         ]
       },
       {
+        "file": "src\\scanner\\semantic-analyzer.ts",
+        "totalExports": 2,
+        "documentedExports": 2,
+        "coverageRatio": 1,
+        "undocumentedItems": []
+      },
+      {
         "file": "src\\scanner\\tree-sitter-scanner.ts",
         "totalExports": 3,
         "documentedExports": 2,
@@ -4907,12 +5102,13 @@
     ],
     "changelog": {
       "file": "CHANGELOG.md",
-      "exists": false,
-      "format": "unknown",
-      "daysSinceUpdate": null,
-      "totalEntries": 0,
-      "hasUnreleasedSection": false,
-      "recencyScore": 0
+      "exists": true,
+      "format": "keepachangelog",
+      "lastUpdateDate": "2025-09-17T00:00:00.000Z",
+      "daysSinceUpdate": 223,
+      "totalEntries": 12,
+      "hasUnreleasedSection": true,
+      "recencyScore": 39
     },
     "apiDocs": {
       "hasApiDocs": true,
@@ -4953,6 +5149,86 @@
         "densityRatio": 0.1266490765171504
       },
       {
+        "file": "dist\\analyzer\\call-detector.d.ts",
+        "totalLines": 88,
+        "commentLines": 46,
+        "codeLines": 41,
+        "blankLines": 1,
+        "densityRatio": 0.5227272727272727
+      },
+      {
+        "file": "dist\\analyzer\\call-detector.js",
+        "totalLines": 285,
+        "commentLines": 62,
+        "codeLines": 222,
+        "blankLines": 1,
+        "densityRatio": 0.21754385964912282
+      },
+      {
+        "file": "dist\\analyzer\\graph-builder.d.ts",
+        "totalLines": 119,
+        "commentLines": 58,
+        "codeLines": 60,
+        "blankLines": 1,
+        "densityRatio": 0.48739495798319327
+      },
+      {
+        "file": "dist\\analyzer\\graph-builder.js",
+        "totalLines": 311,
+        "commentLines": 66,
+        "codeLines": 244,
+        "blankLines": 1,
+        "densityRatio": 0.21221864951768488
+      },
+      {
+        "file": "dist\\analyzer\\graph-error.d.ts",
+        "totalLines": 20,
+        "commentLines": 4,
+        "codeLines": 15,
+        "blankLines": 1,
+        "densityRatio": 0.2
+      },
+      {
+        "file": "dist\\analyzer\\graph-error.js",
+        "totalLines": 29,
+        "commentLines": 4,
+        "codeLines": 24,
+        "blankLines": 1,
+        "densityRatio": 0.13793103448275862
+      },
+      {
+        "file": "dist\\analyzer\\import-parser.d.ts",
+        "totalLines": 85,
+        "commentLines": 55,
+        "codeLines": 29,
+        "blankLines": 1,
+        "densityRatio": 0.6470588235294118
+      },
+      {
+        "file": "dist\\analyzer\\import-parser.js",
+        "totalLines": 275,
+        "commentLines": 67,
+        "codeLines": 207,
+        "blankLines": 1,
+        "densityRatio": 0.24363636363636362
+      },
+      {
+        "file": "dist\\cli\\coderef-rag-server.d.ts",
+        "totalLines": 27,
+        "commentLines": 24,
+        "codeLines": 2,
+        "blankLines": 1,
+        "densityRatio": 0.8888888888888888
+      },
+      {
+        "file": "dist\\cli\\coderef-rag-server.js",
+        "totalLines": 451,
+        "commentLines": 38,
+        "codeLines": 407,
+        "blankLines": 6,
+        "densityRatio": 0.08425720620842572
+      },
+      {
         "file": "dist\\index.d.ts",
         "totalLines": 25,
         "commentLines": 4,
@@ -4967,6 +5243,134 @@
         "codeLines": 46,
         "blankLines": 1,
         "densityRatio": 0.21666666666666667
+      },
+      {
+        "file": "dist\\integration\\llm\\llm-provider.d.ts",
+        "totalLines": 199,
+        "commentLines": 144,
+        "codeLines": 54,
+        "blankLines": 1,
+        "densityRatio": 0.7236180904522613
+      },
+      {
+        "file": "dist\\integration\\llm\\llm-provider.js",
+        "totalLines": 50,
+        "commentLines": 22,
+        "codeLines": 27,
+        "blankLines": 1,
+        "densityRatio": 0.44
+      },
+      {
+        "file": "dist\\integration\\llm\\model-registry.d.ts",
+        "totalLines": 89,
+        "commentLines": 61,
+        "codeLines": 27,
+        "blankLines": 1,
+        "densityRatio": 0.6853932584269663
+      },
+      {
+        "file": "dist\\integration\\llm\\model-registry.js",
+        "totalLines": 177,
+        "commentLines": 63,
+        "codeLines": 113,
+        "blankLines": 1,
+        "densityRatio": 0.3559322033898305
+      },
+      {
+        "file": "dist\\integration\\llm\\ollama-provider.d.ts",
+        "totalLines": 101,
+        "commentLines": 79,
+        "codeLines": 21,
+        "blankLines": 1,
+        "densityRatio": 0.7821782178217822
+      },
+      {
+        "file": "dist\\integration\\llm\\ollama-provider.js",
+        "totalLines": 302,
+        "commentLines": 98,
+        "codeLines": 203,
+        "blankLines": 1,
+        "densityRatio": 0.32450331125827814
+      },
+      {
+        "file": "dist\\integration\\rag\\code-chunk.d.ts",
+        "totalLines": 208,
+        "commentLines": 161,
+        "codeLines": 46,
+        "blankLines": 1,
+        "densityRatio": 0.7740384615384616
+      },
+      {
+        "file": "dist\\integration\\rag\\code-chunk.js",
+        "totalLines": 11,
+        "commentLines": 8,
+        "codeLines": 2,
+        "blankLines": 1,
+        "densityRatio": 0.7272727272727273
+      },
+      {
+        "file": "dist\\integration\\rag\\embedding-text-generator.d.ts",
+        "totalLines": 105,
+        "commentLines": 74,
+        "codeLines": 30,
+        "blankLines": 1,
+        "densityRatio": 0.7047619047619048
+      },
+      {
+        "file": "dist\\integration\\rag\\embedding-text-generator.js",
+        "totalLines": 272,
+        "commentLines": 68,
+        "codeLines": 203,
+        "blankLines": 1,
+        "densityRatio": 0.25
+      },
+      {
+        "file": "dist\\integration\\rag\\semantic-search.d.ts",
+        "totalLines": 142,
+        "commentLines": 83,
+        "codeLines": 58,
+        "blankLines": 1,
+        "densityRatio": 0.5845070422535211
+      },
+      {
+        "file": "dist\\integration\\rag\\semantic-search.js",
+        "totalLines": 308,
+        "commentLines": 76,
+        "codeLines": 231,
+        "blankLines": 1,
+        "densityRatio": 0.24675324675324675
+      },
+      {
+        "file": "dist\\integration\\vector\\sqlite-store.d.ts",
+        "totalLines": 98,
+        "commentLines": 75,
+        "codeLines": 22,
+        "blankLines": 1,
+        "densityRatio": 0.7653061224489796
+      },
+      {
+        "file": "dist\\integration\\vector\\sqlite-store.js",
+        "totalLines": 378,
+        "commentLines": 120,
+        "codeLines": 257,
+        "blankLines": 1,
+        "densityRatio": 0.31746031746031744
+      },
+      {
+        "file": "dist\\integration\\vector\\vector-store.d.ts",
+        "totalLines": 280,
+        "commentLines": 201,
+        "codeLines": 78,
+        "blankLines": 1,
+        "densityRatio": 0.7178571428571429
+      },
+      {
+        "file": "dist\\integration\\vector\\vector-store.js",
+        "totalLines": 44,
+        "commentLines": 19,
+        "codeLines": 24,
+        "blankLines": 1,
+        "densityRatio": 0.4318181818181818
       },
       {
         "file": "dist\\sqlite-store.d.ts",
@@ -5609,6 +6013,62 @@
         "densityRatio": 0.3468085106382979
       },
       {
+        "file": "dist\\src\\cache\\incremental-cache.d.ts",
+        "totalLines": 104,
+        "commentLines": 62,
+        "codeLines": 41,
+        "blankLines": 1,
+        "densityRatio": 0.5961538461538461
+      },
+      {
+        "file": "dist\\src\\cache\\incremental-cache.js",
+        "totalLines": 258,
+        "commentLines": 54,
+        "codeLines": 203,
+        "blankLines": 1,
+        "densityRatio": 0.20930232558139536
+      },
+      {
+        "file": "dist\\src\\cli\\coderef-pipeline.d.ts",
+        "totalLines": 26,
+        "commentLines": 23,
+        "codeLines": 2,
+        "blankLines": 1,
+        "densityRatio": 0.8846153846153846
+      },
+      {
+        "file": "dist\\src\\cli\\coderef-pipeline.js",
+        "totalLines": 325,
+        "commentLines": 32,
+        "codeLines": 288,
+        "blankLines": 5,
+        "densityRatio": 0.09846153846153846
+      },
+      {
+        "file": "dist\\src\\cli\\coderef-rag-server.js",
+        "totalLines": 484,
+        "commentLines": 38,
+        "codeLines": 440,
+        "blankLines": 6,
+        "densityRatio": 0.07851239669421488
+      },
+      {
+        "file": "dist\\src\\cli\\coderef-watch.d.ts",
+        "totalLines": 24,
+        "commentLines": 21,
+        "codeLines": 2,
+        "blankLines": 1,
+        "densityRatio": 0.875
+      },
+      {
+        "file": "dist\\src\\cli\\coderef-watch.js",
+        "totalLines": 443,
+        "commentLines": 40,
+        "codeLines": 397,
+        "blankLines": 6,
+        "densityRatio": 0.09029345372460497
+      },
+      {
         "file": "dist\\src\\cli\\detect-languages.d.ts",
         "totalLines": 6,
         "commentLines": 0,
@@ -5650,11 +6110,11 @@
       },
       {
         "file": "dist\\src\\cli\\rag-index.js",
-        "totalLines": 429,
-        "commentLines": 47,
-        "codeLines": 371,
+        "totalLines": 545,
+        "commentLines": 79,
+        "codeLines": 455,
         "blankLines": 11,
-        "densityRatio": 0.10955710955710955
+        "densityRatio": 0.14495412844036698
       },
       {
         "file": "dist\\src\\cli\\rag-search.d.ts",
@@ -5666,11 +6126,11 @@
       },
       {
         "file": "dist\\src\\cli\\rag-search.js",
-        "totalLines": 407,
-        "commentLines": 41,
-        "codeLines": 357,
+        "totalLines": 475,
+        "commentLines": 49,
+        "codeLines": 417,
         "blankLines": 9,
-        "densityRatio": 0.10073710073710074
+        "densityRatio": 0.1031578947368421
       },
       {
         "file": "dist\\src\\cli\\rag-status.d.ts",
@@ -5714,11 +6174,11 @@
       },
       {
         "file": "dist\\src\\cli\\scan.js",
-        "totalLines": 109,
-        "commentLines": 12,
-        "codeLines": 96,
+        "totalLines": 147,
+        "commentLines": 16,
+        "codeLines": 130,
         "blankLines": 1,
-        "densityRatio": 0.11009174311926606
+        "densityRatio": 0.10884353741496598
       },
       {
         "file": "dist\\src\\cli\\validate-routes.d.ts",
@@ -6714,19 +7174,19 @@
       },
       {
         "file": "dist\\src\\integration\\rag\\chunk-converter.d.ts",
-        "totalLines": 70,
-        "commentLines": 50,
+        "totalLines": 75,
+        "commentLines": 55,
         "codeLines": 19,
         "blankLines": 1,
-        "densityRatio": 0.7142857142857143
+        "densityRatio": 0.7333333333333333
       },
       {
         "file": "dist\\src\\integration\\rag\\chunk-converter.js",
-        "totalLines": 389,
-        "commentLines": 76,
+        "totalLines": 394,
+        "commentLines": 81,
         "codeLines": 312,
         "blankLines": 1,
-        "densityRatio": 0.1953727506426735
+        "densityRatio": 0.20558375634517767
       },
       {
         "file": "dist\\src\\integration\\rag\\code-chunk.d.ts",
@@ -6786,11 +7246,11 @@
       },
       {
         "file": "dist\\src\\integration\\rag\\conversation-manager.js",
-        "totalLines": 287,
+        "totalLines": 288,
         "commentLines": 76,
-        "codeLines": 210,
+        "codeLines": 211,
         "blankLines": 1,
-        "densityRatio": 0.26480836236933797
+        "densityRatio": 0.2638888888888889
       },
       {
         "file": "dist\\src\\integration\\rag\\embedding-service.d.ts",
@@ -6906,51 +7366,51 @@
       },
       {
         "file": "dist\\src\\integration\\rag\\rag-config.d.ts",
-        "totalLines": 140,
-        "commentLines": 65,
-        "codeLines": 74,
+        "totalLines": 151,
+        "commentLines": 74,
+        "codeLines": 76,
         "blankLines": 1,
-        "densityRatio": 0.4642857142857143
+        "densityRatio": 0.4900662251655629
       },
       {
         "file": "dist\\src\\integration\\rag\\rag-config.js",
-        "totalLines": 369,
-        "commentLines": 76,
-        "codeLines": 284,
+        "totalLines": 415,
+        "commentLines": 93,
+        "codeLines": 313,
         "blankLines": 9,
-        "densityRatio": 0.20596205962059622
+        "densityRatio": 0.22409638554216868
       },
       {
         "file": "dist\\src\\integration\\rag\\semantic-search.d.ts",
-        "totalLines": 136,
-        "commentLines": 80,
-        "codeLines": 55,
+        "totalLines": 142,
+        "commentLines": 83,
+        "codeLines": 58,
         "blankLines": 1,
-        "densityRatio": 0.5882352941176471
+        "densityRatio": 0.5845070422535211
       },
       {
         "file": "dist\\src\\integration\\rag\\semantic-search.js",
-        "totalLines": 238,
-        "commentLines": 68,
-        "codeLines": 169,
+        "totalLines": 308,
+        "commentLines": 76,
+        "codeLines": 231,
         "blankLines": 1,
-        "densityRatio": 0.2857142857142857
+        "densityRatio": 0.24675324675324675
       },
       {
         "file": "dist\\src\\integration\\vector\\chroma-store.d.ts",
-        "totalLines": 73,
-        "commentLines": 55,
-        "codeLines": 17,
+        "totalLines": 77,
+        "commentLines": 58,
+        "codeLines": 18,
         "blankLines": 1,
-        "densityRatio": 0.7534246575342466
+        "densityRatio": 0.7532467532467533
       },
       {
         "file": "dist\\src\\integration\\vector\\chroma-store.js",
-        "totalLines": 280,
-        "commentLines": 74,
-        "codeLines": 205,
+        "totalLines": 315,
+        "commentLines": 81,
+        "codeLines": 233,
         "blankLines": 1,
-        "densityRatio": 0.2642857142857143
+        "densityRatio": 0.2571428571428571
       },
       {
         "file": "dist\\src\\integration\\vector\\index.d.ts",
@@ -6970,51 +7430,51 @@
       },
       {
         "file": "dist\\src\\integration\\vector\\pinecone-store.d.ts",
-        "totalLines": 77,
-        "commentLines": 57,
-        "codeLines": 19,
+        "totalLines": 81,
+        "commentLines": 60,
+        "codeLines": 20,
         "blankLines": 1,
-        "densityRatio": 0.7402597402597403
+        "densityRatio": 0.7407407407407407
       },
       {
         "file": "dist\\src\\integration\\vector\\pinecone-store.js",
-        "totalLines": 285,
-        "commentLines": 70,
-        "codeLines": 214,
+        "totalLines": 310,
+        "commentLines": 74,
+        "codeLines": 235,
         "blankLines": 1,
-        "densityRatio": 0.24561403508771928
+        "densityRatio": 0.23870967741935484
       },
       {
         "file": "dist\\src\\integration\\vector\\sqlite-store.d.ts",
-        "totalLines": 94,
-        "commentLines": 72,
-        "codeLines": 21,
+        "totalLines": 98,
+        "commentLines": 75,
+        "codeLines": 22,
         "blankLines": 1,
-        "densityRatio": 0.7659574468085106
+        "densityRatio": 0.7653061224489796
       },
       {
         "file": "dist\\src\\integration\\vector\\sqlite-store.js",
-        "totalLines": 323,
-        "commentLines": 99,
-        "codeLines": 223,
+        "totalLines": 411,
+        "commentLines": 120,
+        "codeLines": 290,
         "blankLines": 1,
-        "densityRatio": 0.3065015479876161
+        "densityRatio": 0.291970802919708
       },
       {
         "file": "dist\\src\\integration\\vector\\vector-store.d.ts",
-        "totalLines": 263,
-        "commentLines": 185,
-        "codeLines": 77,
+        "totalLines": 280,
+        "commentLines": 201,
+        "codeLines": 78,
         "blankLines": 1,
-        "densityRatio": 0.7034220532319392
+        "densityRatio": 0.7178571428571429
       },
       {
         "file": "dist\\src\\integration\\vector\\vector-store.js",
-        "totalLines": 40,
+        "totalLines": 44,
         "commentLines": 19,
-        "codeLines": 20,
+        "codeLines": 24,
         "blankLines": 1,
-        "densityRatio": 0.475
+        "densityRatio": 0.4318181818181818
       },
       {
         "file": "dist\\src\\parser\\parser.d.ts",
@@ -7130,19 +7590,19 @@
       },
       {
         "file": "dist\\src\\pipeline\\generators\\drift-generator.d.ts",
-        "totalLines": 21,
-        "commentLines": 11,
-        "codeLines": 9,
+        "totalLines": 31,
+        "commentLines": 22,
+        "codeLines": 8,
         "blankLines": 1,
-        "densityRatio": 0.5238095238095238
+        "densityRatio": 0.7096774193548387
       },
       {
         "file": "dist\\src\\pipeline\\generators\\drift-generator.js",
-        "totalLines": 165,
-        "commentLines": 17,
-        "codeLines": 147,
+        "totalLines": 178,
+        "commentLines": 28,
+        "codeLines": 149,
         "blankLines": 1,
-        "densityRatio": 0.10303030303030303
+        "densityRatio": 0.15730337078651685
       },
       {
         "file": "dist\\src\\pipeline\\generators\\export-generator.d.ts",
@@ -7218,11 +7678,11 @@
       },
       {
         "file": "dist\\src\\pipeline\\generators\\index-generator.js",
-        "totalLines": 107,
-        "commentLines": 34,
-        "codeLines": 72,
+        "totalLines": 129,
+        "commentLines": 40,
+        "codeLines": 88,
         "blankLines": 1,
-        "densityRatio": 0.3177570093457944
+        "densityRatio": 0.31007751937984496
       },
       {
         "file": "dist\\src\\pipeline\\generators\\pattern-generator.d.ts",
@@ -7369,6 +7829,134 @@
         "densityRatio": 0.32608695652173914
       },
       {
+        "file": "dist\\src\\plugins\\loaders\\config-loader.d.ts",
+        "totalLines": 37,
+        "commentLines": 24,
+        "codeLines": 12,
+        "blankLines": 1,
+        "densityRatio": 0.6486486486486487
+      },
+      {
+        "file": "dist\\src\\plugins\\loaders\\config-loader.js",
+        "totalLines": 176,
+        "commentLines": 38,
+        "codeLines": 137,
+        "blankLines": 1,
+        "densityRatio": 0.2159090909090909
+      },
+      {
+        "file": "dist\\src\\plugins\\loaders\\local-loader.d.ts",
+        "totalLines": 39,
+        "commentLines": 29,
+        "codeLines": 9,
+        "blankLines": 1,
+        "densityRatio": 0.7435897435897436
+      },
+      {
+        "file": "dist\\src\\plugins\\loaders\\local-loader.js",
+        "totalLines": 246,
+        "commentLines": 29,
+        "codeLines": 216,
+        "blankLines": 1,
+        "densityRatio": 0.11788617886178862
+      },
+      {
+        "file": "dist\\src\\plugins\\loaders\\npm-loader.d.ts",
+        "totalLines": 51,
+        "commentLines": 35,
+        "codeLines": 15,
+        "blankLines": 1,
+        "densityRatio": 0.6862745098039216
+      },
+      {
+        "file": "dist\\src\\plugins\\loaders\\npm-loader.js",
+        "totalLines": 250,
+        "commentLines": 34,
+        "codeLines": 215,
+        "blankLines": 1,
+        "densityRatio": 0.136
+      },
+      {
+        "file": "dist\\src\\plugins\\manifest-schema.d.ts",
+        "totalLines": 139,
+        "commentLines": 32,
+        "codeLines": 106,
+        "blankLines": 1,
+        "densityRatio": 0.2302158273381295
+      },
+      {
+        "file": "dist\\src\\plugins\\manifest-schema.js",
+        "totalLines": 274,
+        "commentLines": 36,
+        "codeLines": 237,
+        "blankLines": 1,
+        "densityRatio": 0.13138686131386862
+      },
+      {
+        "file": "dist\\src\\plugins\\plugin-graph.d.ts",
+        "totalLines": 37,
+        "commentLines": 23,
+        "codeLines": 13,
+        "blankLines": 1,
+        "densityRatio": 0.6216216216216216
+      },
+      {
+        "file": "dist\\src\\plugins\\plugin-graph.js",
+        "totalLines": 174,
+        "commentLines": 35,
+        "codeLines": 138,
+        "blankLines": 1,
+        "densityRatio": 0.20114942528735633
+      },
+      {
+        "file": "dist\\src\\plugins\\plugin-registry.d.ts",
+        "totalLines": 116,
+        "commentLines": 79,
+        "codeLines": 36,
+        "blankLines": 1,
+        "densityRatio": 0.6810344827586207
+      },
+      {
+        "file": "dist\\src\\plugins\\plugin-registry.js",
+        "totalLines": 299,
+        "commentLines": 93,
+        "codeLines": 205,
+        "blankLines": 1,
+        "densityRatio": 0.3110367892976589
+      },
+      {
+        "file": "dist\\src\\plugins\\plugin-scanner.d.ts",
+        "totalLines": 53,
+        "commentLines": 29,
+        "codeLines": 23,
+        "blankLines": 1,
+        "densityRatio": 0.5471698113207547
+      },
+      {
+        "file": "dist\\src\\plugins\\plugin-scanner.js",
+        "totalLines": 252,
+        "commentLines": 44,
+        "codeLines": 207,
+        "blankLines": 1,
+        "densityRatio": 0.1746031746031746
+      },
+      {
+        "file": "dist\\src\\plugins\\types.d.ts",
+        "totalLines": 174,
+        "commentLines": 101,
+        "codeLines": 72,
+        "blankLines": 1,
+        "densityRatio": 0.5804597701149425
+      },
+      {
+        "file": "dist\\src\\plugins\\types.js",
+        "totalLines": 10,
+        "commentLines": 7,
+        "codeLines": 2,
+        "blankLines": 1,
+        "densityRatio": 0.7
+      },
+      {
         "file": "dist\\src\\query\\query-executor.d.ts",
         "totalLines": 105,
         "commentLines": 61,
@@ -7431,6 +8019,22 @@
         "codeLines": 124,
         "blankLines": 1,
         "densityRatio": 0.4186046511627907
+      },
+      {
+        "file": "dist\\src\\scanner\\file-watcher.d.ts",
+        "totalLines": 75,
+        "commentLines": 41,
+        "codeLines": 33,
+        "blankLines": 1,
+        "densityRatio": 0.5466666666666666
+      },
+      {
+        "file": "dist\\src\\scanner\\file-watcher.js",
+        "totalLines": 206,
+        "commentLines": 40,
+        "codeLines": 165,
+        "blankLines": 1,
+        "densityRatio": 0.1941747572815534
       },
       {
         "file": "dist\\src\\scanner\\framework-registry.d.ts",
@@ -7522,11 +8126,27 @@
       },
       {
         "file": "dist\\src\\scanner\\scanner.js",
-        "totalLines": 1353,
-        "commentLines": 335,
-        "codeLines": 1017,
+        "totalLines": 1418,
+        "commentLines": 353,
+        "codeLines": 1064,
         "blankLines": 1,
-        "densityRatio": 0.24759793052475979
+        "densityRatio": 0.24894217207334274
+      },
+      {
+        "file": "dist\\src\\scanner\\semantic-analyzer.d.ts",
+        "totalLines": 30,
+        "commentLines": 18,
+        "codeLines": 11,
+        "blankLines": 1,
+        "densityRatio": 0.6
+      },
+      {
+        "file": "dist\\src\\scanner\\semantic-analyzer.js",
+        "totalLines": 176,
+        "commentLines": 51,
+        "codeLines": 124,
+        "blankLines": 1,
+        "densityRatio": 0.2897727272727273
       },
       {
         "file": "dist\\src\\scanner\\tree-sitter-scanner.d.ts",
@@ -7538,11 +8158,11 @@
       },
       {
         "file": "dist\\src\\scanner\\tree-sitter-scanner.js",
-        "totalLines": 1414,
-        "commentLines": 339,
-        "codeLines": 1074,
+        "totalLines": 1427,
+        "commentLines": 343,
+        "codeLines": 1083,
         "blankLines": 1,
-        "densityRatio": 0.23974540311173975
+        "densityRatio": 0.24036440084092503
       },
       {
         "file": "dist\\src\\search\\index.d.ts",
@@ -7594,11 +8214,11 @@
       },
       {
         "file": "dist\\src\\types\\types.d.ts",
-        "totalLines": 454,
-        "commentLines": 226,
-        "codeLines": 227,
+        "totalLines": 484,
+        "commentLines": 235,
+        "codeLines": 248,
         "blankLines": 1,
-        "densityRatio": 0.4977973568281938
+        "densityRatio": 0.4855371900826446
       },
       {
         "file": "dist\\src\\types\\types.js",
@@ -7818,59 +8438,67 @@
       },
       {
         "file": "scripts\\doc-gen\\enhance-existing-docs.js",
-        "totalLines": 260,
+        "totalLines": 261,
         "commentLines": 21,
-        "codeLines": 177,
+        "codeLines": 178,
         "blankLines": 62,
-        "densityRatio": 0.08076923076923077
+        "densityRatio": 0.08045977011494253
       },
       {
         "file": "scripts\\doc-gen\\generate-exports-md.js",
-        "totalLines": 211,
+        "totalLines": 214,
         "commentLines": 14,
-        "codeLines": 147,
-        "blankLines": 50,
-        "densityRatio": 0.06635071090047394
+        "codeLines": 149,
+        "blankLines": 51,
+        "densityRatio": 0.06542056074766354
       },
       {
         "file": "scripts\\doc-gen\\generate-hotspots-md.js",
-        "totalLines": 192,
+        "totalLines": 195,
         "commentLines": 10,
-        "codeLines": 129,
-        "blankLines": 53,
-        "densityRatio": 0.052083333333333336
+        "codeLines": 131,
+        "blankLines": 54,
+        "densityRatio": 0.05128205128205128
       },
       {
         "file": "scripts\\doc-gen\\generate-index-md.js",
-        "totalLines": 145,
+        "totalLines": 148,
         "commentLines": 13,
-        "codeLines": 96,
-        "blankLines": 36,
-        "densityRatio": 0.0896551724137931
+        "codeLines": 98,
+        "blankLines": 37,
+        "densityRatio": 0.08783783783783784
+      },
+      {
+        "file": "scripts\\doc-gen\\generate-meta-json.js",
+        "totalLines": 295,
+        "commentLines": 42,
+        "codeLines": 214,
+        "blankLines": 39,
+        "densityRatio": 0.1423728813559322
       },
       {
         "file": "scripts\\doc-gen\\generate-relationships-md.js",
-        "totalLines": 220,
+        "totalLines": 223,
         "commentLines": 13,
-        "codeLines": 149,
-        "blankLines": 58,
-        "densityRatio": 0.05909090909090909
+        "codeLines": 151,
+        "blankLines": 59,
+        "densityRatio": 0.05829596412556054
       },
       {
         "file": "scripts\\doc-gen\\utils.js",
-        "totalLines": 151,
-        "commentLines": 53,
-        "codeLines": 84,
-        "blankLines": 14,
-        "densityRatio": 0.3509933774834437
+        "totalLines": 196,
+        "commentLines": 70,
+        "codeLines": 109,
+        "blankLines": 17,
+        "densityRatio": 0.35714285714285715
       },
       {
         "file": "scripts\\doc-gen\\validate-docs.js",
-        "totalLines": 181,
+        "totalLines": 182,
         "commentLines": 15,
-        "codeLines": 136,
+        "codeLines": 137,
         "blankLines": 30,
-        "densityRatio": 0.08287292817679558
+        "densityRatio": 0.08241758241758242
       },
       {
         "file": "src\\adapter\\graph-to-elements.ts",
@@ -8193,6 +8821,30 @@
         "densityRatio": 0.2655172413793103
       },
       {
+        "file": "src\\cli\\coderef-pipeline.ts",
+        "totalLines": 326,
+        "commentLines": 32,
+        "codeLines": 263,
+        "blankLines": 31,
+        "densityRatio": 0.09815950920245399
+      },
+      {
+        "file": "src\\cli\\coderef-rag-server.ts",
+        "totalLines": 488,
+        "commentLines": 40,
+        "codeLines": 389,
+        "blankLines": 59,
+        "densityRatio": 0.08196721311475409
+      },
+      {
+        "file": "src\\cli\\coderef-watch.ts",
+        "totalLines": 478,
+        "commentLines": 40,
+        "codeLines": 395,
+        "blankLines": 43,
+        "densityRatio": 0.08368200836820083
+      },
+      {
         "file": "src\\cli\\detect-languages.ts",
         "totalLines": 132,
         "commentLines": 0,
@@ -8210,19 +8862,19 @@
       },
       {
         "file": "src\\cli\\rag-index.ts",
-        "totalLines": 512,
-        "commentLines": 50,
-        "codeLines": 396,
-        "blankLines": 66,
-        "densityRatio": 0.09765625
+        "totalLines": 576,
+        "commentLines": 79,
+        "codeLines": 430,
+        "blankLines": 67,
+        "densityRatio": 0.1371527777777778
       },
       {
         "file": "src\\cli\\rag-search.ts",
-        "totalLines": 489,
-        "commentLines": 45,
-        "codeLines": 381,
-        "blankLines": 63,
-        "densityRatio": 0.09202453987730061
+        "totalLines": 506,
+        "commentLines": 49,
+        "codeLines": 393,
+        "blankLines": 64,
+        "densityRatio": 0.09683794466403162
       },
       {
         "file": "src\\cli\\rag-status.ts",
@@ -8242,11 +8894,11 @@
       },
       {
         "file": "src\\cli\\scan.ts",
-        "totalLines": 168,
-        "commentLines": 15,
-        "codeLines": 123,
-        "blankLines": 30,
-        "densityRatio": 0.08928571428571429
+        "totalLines": 178,
+        "commentLines": 16,
+        "codeLines": 131,
+        "blankLines": 31,
+        "densityRatio": 0.0898876404494382
       },
       {
         "file": "src\\cli\\validate-routes.ts",
@@ -8746,11 +9398,11 @@
       },
       {
         "file": "src\\integration\\rag\\chunk-converter.ts",
-        "totalLines": 455,
-        "commentLines": 76,
+        "totalLines": 460,
+        "commentLines": 81,
         "codeLines": 312,
         "blankLines": 67,
-        "densityRatio": 0.16703296703296702
+        "densityRatio": 0.17608695652173914
       },
       {
         "file": "src\\integration\\rag\\code-chunk.ts",
@@ -8842,11 +9494,11 @@
       },
       {
         "file": "src\\integration\\rag\\rag-config.ts",
-        "totalLines": 482,
-        "commentLines": 87,
-        "codeLines": 332,
-        "blankLines": 63,
-        "densityRatio": 0.18049792531120332
+        "totalLines": 535,
+        "commentLines": 104,
+        "codeLines": 365,
+        "blankLines": 66,
+        "densityRatio": 0.19439252336448598
       },
       {
         "file": "src\\integration\\rag\\semantic-search.ts",
@@ -8882,11 +9534,11 @@
       },
       {
         "file": "src\\integration\\vector\\sqlite-store.ts",
-        "totalLines": 479,
-        "commentLines": 106,
-        "codeLines": 309,
-        "blankLines": 64,
-        "densityRatio": 0.22129436325678498
+        "totalLines": 506,
+        "commentLines": 123,
+        "codeLines": 318,
+        "blankLines": 65,
+        "densityRatio": 0.24308300395256918
       },
       {
         "file": "src\\integration\\vector\\vector-store.ts",
@@ -8954,11 +9606,11 @@
       },
       {
         "file": "src\\pipeline\\generators\\drift-generator.ts",
-        "totalLines": 170,
-        "commentLines": 17,
-        "codeLines": 127,
-        "blankLines": 26,
-        "densityRatio": 0.1
+        "totalLines": 179,
+        "commentLines": 28,
+        "codeLines": 133,
+        "blankLines": 18,
+        "densityRatio": 0.1564245810055866
       },
       {
         "file": "src\\pipeline\\generators\\export-generator.ts",
@@ -8994,11 +9646,11 @@
       },
       {
         "file": "src\\pipeline\\generators\\index-generator.ts",
-        "totalLines": 81,
-        "commentLines": 34,
-        "codeLines": 37,
-        "blankLines": 10,
-        "densityRatio": 0.41975308641975306
+        "totalLines": 101,
+        "commentLines": 40,
+        "codeLines": 48,
+        "blankLines": 13,
+        "densityRatio": 0.39603960396039606
       },
       {
         "file": "src\\pipeline\\generators\\pattern-generator.ts",
@@ -9225,12 +9877,20 @@
         "densityRatio": 0.22297714638665844
       },
       {
+        "file": "src\\scanner\\semantic-analyzer.ts",
+        "totalLines": 169,
+        "commentLines": 51,
+        "codeLines": 97,
+        "blankLines": 21,
+        "densityRatio": 0.30177514792899407
+      },
+      {
         "file": "src\\scanner\\tree-sitter-scanner.ts",
-        "totalLines": 1627,
-        "commentLines": 355,
-        "codeLines": 1064,
-        "blankLines": 208,
-        "densityRatio": 0.21819299323909036
+        "totalLines": 1641,
+        "commentLines": 359,
+        "codeLines": 1073,
+        "blankLines": 209,
+        "densityRatio": 0.21876904326630103
       },
       {
         "file": "src\\search\\index.ts",
@@ -9266,11 +9926,11 @@
       },
       {
         "file": "src\\types\\types.ts",
-        "totalLines": 638,
-        "commentLines": 235,
-        "codeLines": 373,
-        "blankLines": 30,
-        "densityRatio": 0.3683385579937304
+        "totalLines": 667,
+        "commentLines": 240,
+        "codeLines": 393,
+        "blankLines": 34,
+        "densityRatio": 0.3598200899550225
       },
       {
         "file": "src\\utils\\logger.ts",
@@ -9409,12 +10069,11 @@
         "densityRatio": 0
       }
     ],
-    "averageCommentDensity": 0.3658860713043414,
-    "totalFilesAnalyzed": 561,
+    "averageCommentDensity": 0.3715333178375699,
+    "totalFilesAnalyzed": 619,
     "recommendations": [
-      "Add more sections to README (8/18 present). Priority: Installation, Usage, API Reference",
-      "Add JSDoc comments to 82 files with <50% documentation coverage",
-      "Create a CHANGELOG.md to track version history"
+      "Add JSDoc comments to 85 files with <50% documentation coverage",
+      "Update CHANGELOG (last updated 223 days ago)"
     ]
   }
 }

@@ -1,0 +1,44 @@
+=============================================================
+WORKORDER: WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001  |  chokidar-doc-freshness-daemon  |  COMPLETE
+Session: SES-2026-04-26-CHOKIDAR-DOC-FRESHNESS-DAEMON  |  Phases: 6  |  Commits: 6  |  Pushes: 2
+Parent stub: (none — originated from DISPATCH-2026-04-25-003)
+
+FILES CREATED:
+  + src/cli/coderef-watch.ts                                    (5e6954f)
+  + src/cli/coderef-watch-heartbeat.schema.json                 (5615243)
+  + __tests__/coderef-watch-debounce.test.mjs                   (06d8efb)
+  + __tests__/coderef-watch-heartbeat-schema.test.mjs           (5615243)
+  + __tests__/coderef-watch-lloyd-read.test.py                  (8d55526)
+  + docs/LLOYD-INTEGRATION.md                                   (8d55526)
+  + docs/DEPLOY-CODEREF-WATCH.md                                (5e02651)
+  + coderef/workorder/chokidar-doc-freshness-daemon/{4 files}   (5e6954f)
+  + .coderef/sessions/SES-2026-04-26-CHOKIDAR-...yaml           (uncommitted; .coderef/ gitignored)
+
+FILES MODIFIED:
+  ~ package.json                                                (5e6954f)
+  ~ docs/CLI.md                                                 (5e02651)
+  ~ coderef/workorder/chokidar-doc-freshness-daemon/communication.json  (6fb04f7)
+  ~ coderef/foundation-docs/{INDEX,EXPORTS,HOTSPOTS,RELATIONSHIPS,API,ARCHITECTURE,COMPONENTS,SCHEMA}.md  (6fb04f7)
+  ~ TRACKING/workorders.json                                    (assistant: f2fb257)
+  ~ TRACKING/sessions.json                                      (assistant: f2fb257)
+
+PHASE CHECKLIST:
+  [x] Phase 1: WIRE              (5e6954f)  coderef-watch CLI scaffold; build:cli OK; --help exits 0
+  [x] Phase 2: DEBOUNCE          (06d8efb)  30s window; synthetic test PASS (5 burst edits → 1 flush)
+  [x] Phase 3: HEARTBEAT         (5615243)  JSON Schema v1; atomic temp+rename; .tmp residue test PASS
+  [x] Phase 4: LLOYD INTEGRATE   (8d55526)  docs/LLOYD-INTEGRATION.md; Python smoke read PASS (age=0.65s)
+  [x] Phase 5: DEPLOYMENT STORY  (5e02651)  docs/DEPLOY-CODEREF-WATCH.md (5 patterns); CONSUMER WORKSPACE explicit in 4 places
+  [x] Phase 6: CLOSE             (6fb04f7)  Universal Phase 6 close-gate fired and PASSED (validator_exit=0)
+
+Session: updated  |  Registry: synced  |  Validator: PASS-with-pre-existing-drift
+  (validator: 12/15 PASS; 3 pre-existing FAIL in workorders.json/sessions.json/skills.json
+   from unrelated entries — my entries schema-clean per Step 5.8 acceptable-state)
+
+Foundation-docs gate: PASS (validator_exit=0; all 8 docs regenerated against fresh .coderef/index.json)
+Tests: 4/4 PASS (debounce, heartbeat schema, Python LLOYD-read, --help smoke)
+Repos pushed: coderef-core (8d71232..6fb04f7), assistant (6486f06..f2fb257)
+Plan deviations: 0 (zero ADJ-NN entries)
+Pre-existing TS errors in src/context/breaking-change-detector/, src/plugins/: out of scope (pre-existing repo drift; my new file compiled cleanly)
+
+APPROVE -> /close-workorder WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001
+=============================================================

@@ -1,0 +1,38 @@
+{
+  "workorder_id": "WO-READYZ-ENDPOINT-001",
+  "feature_name": "readyz-endpoint",
+  "created": "2026-04-27T00:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/readyz-endpoint/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/readyz-endpoint/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/readyz-endpoint/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan created; ready for execution"
+  },
+  "execution_rules": {
+    "parallel_tasks": false,
+    "skip_phases": [],
+    "required_checks": []
+  },
+  "hard_constraints": [],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-04-27T00:00:00Z",
+      "event": "plan_created",
+      "actor": "create-workorder",
+      "message": "Workorder created: light plan, 2 phases, 5 tasks"
+    }
+  ]
+}

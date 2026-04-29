@@ -1,0 +1,63 @@
+{
+  "workorder_id": "WO-READYZ-ENDPOINT-001",
+  "feature_name": "readyz-endpoint",
+  "created": "2026-04-27T00:00:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single endpoint addition with minimal scope and no complex dependencies.",
+  "plan_type_decided_by": "create-workorder@2.5.0",
+  "phases": [
+    {
+      "id": 1,
+      "name": "Implementation",
+      "goal": "Add /readyz endpoint to coderef-rag-server.ts",
+      "tasks": [
+        {
+          "id": "IMPL-001",
+          "description": "Add handleReadyz handler function",
+          "verb": "WRITE",
+          "file": "src/cli/coderef-rag-server.ts",
+          "details": "Create async function that sends 200 OK with body 'OK'. Place after handleHealth handler.",
+          "success_criteria": "Function exists and returns proper response structure"
+        },
+        {
+          "id": "IMPL-002",
+          "description": "Register /readyz route in request router",
+          "verb": "EDIT",
+          "file": "src/cli/coderef-rag-server.ts",
+          "details": "Add condition in main request handler: if (pathname === '/readyz') call handleReadyz(req, res)",
+          "success_criteria": "Route is wired to handler before /api routes check"
+        },
+        {
+          "id": "IMPL-003",
+          "description": "Update help text to document /readyz",
+          "verb": "EDIT",
+          "file": "src/cli/coderef-rag-server.ts",
+          "details": "Add GET /readyz to ENDPOINTS section in printHelp()",
+          "success_criteria": "Help text includes /readyz with brief description"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Testing",
+      "goal": "Verify /readyz endpoint works correctly",
+      "tasks": [
+        {
+          "id": "TEST-001",
+          "description": "Build project",
+          "verb": "RUN",
+          "command": "npm run build",
+          "success_criteria": "Build completes without errors"
+        },
+        {
+          "id": "TEST-002",
+          "description": "Start server and test endpoint",
+          "verb": "TEST",
+          "details": "Start coderef-rag-server, curl http://localhost:52849/readyz, verify 200 response with body 'OK'",
+          "success_criteria": "HTTP 200 response, body contains 'OK'"
+        }
+      ]
+    }
+  ],
+  "hard_stops": []
+}

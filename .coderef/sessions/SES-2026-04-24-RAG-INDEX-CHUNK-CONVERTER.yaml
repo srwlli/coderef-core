@@ -1,0 +1,130 @@
+---
+session_metadata:
+  session_id: SES-2026-04-24-RAG-INDEX-CHUNK-CONVERTER
+  date: "2026-04-24"
+  agent: Claude
+  agent_domain: CODEREF-CORE
+  workorder_id: WO-RAG-INDEX-CHUNK-CONVERTER-001
+  focus: 5-phase rag-index defect fixes (B1 vector store path, B2 incremental --reset, B3 chunk-converter isFile, plus exit-code semantics + rag-search parity follow-on)
+  start: "2026-04-24T20:50:00Z"
+  end: "2026-04-25T03:30:00Z"
+
+closure_verification:
+  doc_discovery_ran: false
+  doc_discovery_skip_reason: "docs/CLI.md updated manually in P5 with the rag-leg path correction; doc-discovery helper would not surface anything beyond what was already done."
+  registries_validated: true
+  validation_note: "tracking-validator continues to report 3 pre-existing FAIL files (workorders.json, sessions.json, skills.json) carried over from prior sessions. My edits do not introduce regressions."
+  active_work_cleaned: true
+  final_push_complete: true
+
+tools_used:
+  - /create-workorder
+  - /execute-workorder
+  - /close-workorder
+  - /log-session
+  - /log-skill
+  - /update-session-status
+  - Read
+  - Edit
+  - Write
+  - Bash (git, node, tsc, populate-coderef, coderef-pipeline, rag-index, rag-search, curl)
+  - TaskCreate / TaskUpdate
+
+files_modified:
+  created:
+    - coderef/workorder/wo-rag-index-chunk-converter-001/P1-REPRO.md
+    - coderef/workorder/wo-rag-index-chunk-converter-001/P4-LLOYD-RESULT.md
+    - coderef/workorder/wo-rag-index-chunk-converter-001/P5-VERIFICATION.md
+    - .coderef/sessions/SES-2026-04-24-RAG-INDEX-CHUNK-CONVERTER.yaml
+  modified:
+    - src/cli/rag-index.ts (P2 path fix, P3 exit-code, P4 --reset reorder)
+    - src/cli/rag-search.ts (P5 follow-on: env-based provider, local-only guard, path fix)
+    - src/integration/vector/sqlite-store.ts (P2 path detection + legacy-dir cleanup + error msg)
+    - src/integration/rag/chunk-converter.ts (P4 isFile defense)
+    - docs/CLI.md (P5 rag-leg path update)
+    - coderef/workorder/wo-rag-index-chunk-converter-001/plan.json (close-time: ADJ-001..003 applied; completion block)
+    - coderef/workorder/wo-rag-index-chunk-converter-001/communication.json (close-time: status complete; phase_status all completed; hard_stops[5].approved=true; history events)
+  deleted: []
+
+documents_generated:
+  - id: P1-REPRO
+    path: coderef/workorder/wo-rag-index-chunk-converter-001/P1-REPRO.md
+    description: "Reproduction baseline. Identified 3 actual bug surfaces (B1 path, B2 incremental state, B3 isFile) and re-framed FOLLOW-UP-3 from 'Python chunker gap' to 'incremental state survives --reset'."
+    source: manual_authoring
+  - id: P4-LLOYD-RESULT
+    path: coderef/workorder/wo-rag-index-chunk-converter-001/P4-LLOYD-RESULT.md
+    description: "LLOYD before/after: 0/21 chunks indexed -> 21/21; 2 EISDIR errors -> 0; exit 1 -> 0."
+    source: manual_authoring
+  - id: P5-VERIFICATION
+    path: coderef/workorder/wo-rag-index-chunk-converter-001/P5-VERIFICATION.md
+    description: "End-to-end coderef-pipeline 4/4 legs OK on LLOYD + rag-search transcript with 10 hits; zero pollution diff."
+    source: manual_authoring
+
+decisions:
+  - id: DEC-001
+    decision: "Forked impl branch wo/rag-index-chunk-converter-impl from current main (post unified-pipeline merge), not from the plan-only wo/rag-index-chunk-converter branch"
+    rationale: "Plan-only branch's purpose was satisfied at create-workorder time (TRACKING entries + plan files). Implementation gets its own branch for clean PR history."
+  - id: DEC-002
+    decision: "Re-framed FOLLOW-UP-3 mid-execution (Python chunker -> incremental state)"
+    rationale: "P1 reproduction on a fresh fixture (/tmp/rag-repro) showed the chunker works fine. LLOYD's 21-files-skipped was IncrementalIndexer reading a stale .coderef-rag-index.json that survived --reset. ADJ-001 captures the reframing."
+  - id: DEC-003
+    decision: "Folded rag-search.ts parity fixes into Phase 5 instead of opening a Phase 6"
+    rationale: "rag-search had identical bugs to rag-index (parseArgs default 'openai'; missing CODEREF_LLM_PROVIDER env honor; missing local-only guard; storagePath legacy path). Caught during P5-002 verification. Same fix shape; cohesive commit. ADJ-003."
+  - id: DEC-004
+    decision: "B3 chunk-converter isFile() defense added (originally not in plan)"
+    rationale: "P1 root-cause analysis surfaced a real bug at the chunk-converter layer where dir-typed graph nodes throw EISDIR downstream. Cheap defense, fits Phase 4's iteration code path. ADJ-002."
+  - id: DEC-005
+    decision: "Did NOT investigate why graph builder produces dir-typed node.file entries (the upstream cause of B3)"
+    rationale: "Out of scope for this WO. The chunk-converter defense is the correct local fix; the upstream graph-builder issue is a separate cleanup. Filed observationally in P1-REPRO.md."
+
+outcomes:
+  - "LLOYD chunks_indexed: 0/21 -> 21/21"
+  - "rag-search returns 10 results from LLOYD .py files via Ollama-only embedding"
+  - ".coderef/coderef-vectors.json is now a real JSON file (was a directory containing nested junk)"
+  - "--reset actually resets even when stored state is incompatible (was: throw at initialize before reset ran)"
+  - "rag-index exit code distinguishes hard failure (chunks=0 + errors > 0 -> exit 1) from partial success (exit 0)"
+  - "rag-search parity: same env-based provider default, local-only guard, and path semantics as rag-index"
+  - "5 phase commits + close commit on branch wo/rag-index-chunk-converter-impl, all pushed to origin"
+
+issues_encountered:
+  - id: ISSUE-001
+    symptom: "LLOYD pipeline run during P5-002 returned 'Invalid OpenAI API key' from rag-search"
+    cause: "rag-search.ts parseArgs hardcoded provider: 'openai' default; no CODEREF_LLM_PROVIDER env honor; no local-only guard. Same bug class as rag-index pre-WO."
+    resolution: "Patched rag-search.ts in same shape as the predecessor's Phase 6 rag-index fix. ADJ-003."
+  - id: ISSUE-002
+    symptom: "First run of S1 exit-code test reported exit 0 when expected 1"
+    cause: "Bash $? was capturing the tail pipe's exit code, not node's. Re-ran without the pipe to verify exit propagation."
+    resolution: "Test methodology fix (no code change). Confirmed S1 exit 1 on isolated invocation."
+  - id: ISSUE-003
+    symptom: "P5-005 docs edit failed first attempt with 'File has been modified since read'"
+    cause: "Linter touched docs/CLI.md after my Read tool call."
+    resolution: "Re-read the affected lines, re-applied the edit, committed."
+
+tracking:
+  - file: TRACKING/workorders.json
+    change: "WO-RAG-INDEX-CHUNK-CONVERTER-001 status plan_created -> complete; added completed: 2026-04-25"
+  - file: TRACKING/sessions.json
+    change: "SES-rag-index-chunk-converter status plan_created -> complete; completed timestamp added"
+  - file: TRACKING/active-work.json
+    change: "No entry to remove — this WO never had an active-work entry (ran end-to-end without orchestrator handoff)."
+  - file: TRACKING/stubs.json
+    change: "No change. The 3 source 'follow-ups' from the predecessor's P6-VERIFICATION.md were tracked at the predecessor close, not as stubs."
+
+commits:
+  - hash: 26a2806
+    subject: "feat(rag-index-chunk-converter): phase 1 - reproduce + baseline (6 tasks)"
+  - hash: 4ac8aef
+    subject: "feat(rag-index-chunk-converter): phase 2 - B1 vector store path fix (4 tasks)"
+  - hash: 91b90fa
+    subject: "feat(rag-index-chunk-converter): phase 3 - exit-code semantics (4 tasks)"
+  - hash: caaf684
+    subject: "feat(rag-index-chunk-converter): phase 4 - B2/B3 fixes (6 tasks)"
+  - hash: 358b22b
+    subject: "feat(rag-index-chunk-converter): phase 5 - external verification (HARD STOP, 7 tasks)"
+
+followup:
+  - id: OBS-001
+    description: "Upstream graph-builder produces dir-typed node.file entries on at least 2 LLOYD paths. Chunk-converter now defends against this; the graph-builder bug remains. Not blocking; observational."
+  - id: OBS-002
+    description: "Chunker emits 1 chunk per file (file-level granularity). Per-element splitting (function/class/method) would improve search quality. Out of scope; file an improvement if needed."
+  - next_step: "User-initiated merge: git checkout main && git merge wo/rag-index-chunk-converter-impl && git push"

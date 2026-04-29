@@ -1,0 +1,55 @@
+{
+  "workorder_id": "WO-UPTIME-ENDPOINT-001",
+  "feature_name": "uptime-endpoint",
+  "created": "2026-04-27T00:00:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Simple endpoint addition with minimal dependencies. No complex architecture changes or multi-phase coordination needed.",
+  "plan_type_decided_by": "create-workorder@2.5.0",
+  "goal": "add a /uptime endpoint that returns process uptime seconds",
+  "description": "Create a simple HTTP endpoint that returns the process uptime in seconds",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Implementation",
+      "description": "Add /uptime endpoint to the server",
+      "is_hard_stop": false,
+      "tasks": [
+        {
+          "id": "IMPL-001",
+          "verb": "EDIT",
+          "description": "Add process start time tracking to server initialization",
+          "target": "src/server.ts or src/index.ts",
+          "acceptance_criteria": "Server tracks process.uptime() value on startup"
+        },
+        {
+          "id": "IMPL-002",
+          "verb": "WRITE",
+          "description": "Implement /uptime GET endpoint handler",
+          "target": "src/server.ts",
+          "acceptance_criteria": "Endpoint returns {uptime_seconds: <number>} as JSON"
+        },
+        {
+          "id": "IMPL-003",
+          "verb": "TEST",
+          "description": "Test endpoint with curl or HTTP client",
+          "target": "Manual or test file",
+          "acceptance_criteria": "Endpoint responds with correct uptime value on multiple requests"
+        },
+        {
+          "id": "IMPL-004",
+          "verb": "COMMIT",
+          "description": "Commit changes with WO-UPTIME-ENDPOINT-001 reference",
+          "target": "git",
+          "acceptance_criteria": "Changes committed with descriptive message"
+        }
+      ]
+    }
+  ],
+  "success_criteria": [
+    "GET /uptime endpoint exists and is accessible",
+    "Returns valid JSON with uptime_seconds field",
+    "Uptime value is a positive integer representing seconds",
+    "Endpoint works after server restart (resets to 0 or small value)"
+  ],
+  "hard_stops": []
+}

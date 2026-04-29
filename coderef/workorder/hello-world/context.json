@@ -1,0 +1,32 @@
+{
+  "workorder_id": "WO-HELLO-WORLD-001",
+  "feature_name": "hello-world",
+  "created": "2026-04-27T00:00:00Z",
+  "owner_domain": "claude-code",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "originating_dispatch": null,
+  "intake": {
+    "trigger": "cli",
+    "user_request": "add a /hello endpoint that returns OK"
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single endpoint addition with no cross-cutting changes; localized to route handler + test",
+    "plan_type_decided_by": "create-workorder@2.5.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "Create /hello route handler",
+      "Return 200 OK status",
+      "Add test coverage"
+    ],
+    "out_of_scope": [
+      "Modify authentication",
+      "Change existing endpoints",
+      "Add database integration"
+    ]
+  },
+  "constraints": []
+}

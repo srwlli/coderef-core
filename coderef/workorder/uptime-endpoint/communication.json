@@ -1,0 +1,46 @@
+{
+  "workorder_id": "WO-UPTIME-ENDPOINT-001",
+  "feature_name": "uptime-endpoint",
+  "created": "2026-04-27T00:00:00Z",
+  "owner_domain": "development",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/uptime-endpoint/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/uptime-endpoint/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/uptime-endpoint/analysis.json",
+  "handoff": {
+    "from": "create-workorder@2.5.0",
+    "to": "execution",
+    "reason": "Workorder plan created and ready for implementation"
+  },
+  "execution_rules": [
+    "Follow phase-based workflow: Phase 1 is non-blocking",
+    "Tasks are sequential; commit must come after all tests pass"
+  ],
+  "hard_constraints": [
+    "Must not introduce breaking changes to existing endpoints",
+    "Endpoint must return JSON format"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "timestamp": "2026-04-27T00:00:00Z",
+      "event": "workorder_created",
+      "details": "Light plan created for simple uptime endpoint"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-04-27T00:00:00Z",
+      "actor": "create-workorder",
+      "action": "plan_created",
+      "message": "Workorder WO-UPTIME-ENDPOINT-001 created with light plan type"
+    }
+  ]
+}
