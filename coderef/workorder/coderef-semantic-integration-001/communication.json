@@ -1,0 +1,67 @@
+{
+  "workorder_id": "WO-CODEREF-SEMANTIC-INTEGRATION-001",
+  "feature_name": "coderef-semantic-integration-001",
+  "created": "2026-04-29T20:45:55Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [
+    "DISPATCH-2026-04-29-011"
+  ],
+  "predecessor_for": null,
+  "status": "in_execution",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:\Users\willh\desktop\coderef\coderef-core\coderef\workorder\coderef-semantic-integration-001\plan.json",
+  "context_file": "C:\Users\willh\desktop\coderef\coderef-core\coderef\workorder\coderef-semantic-integration-001\context.json",
+  "analysis_file": "C:\Users\willh\desktop\coderef\coderef-core\coderef\workorder\coderef-semantic-integration-001\analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR (via dispatch)",
+    "to": "CODEREF-CORE",
+    "reason": "Semantic CLI integration requires core repository access"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "phase_enforcement": "standard",
+    "hard_stops_enforced": false,
+    "inter_phase_review": "none"
+  },
+  "hard_constraints": [
+    "DRY-RUN mode must prevent all file writes",
+    "No modifications to production code without explicit approval"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "workorder_created",
+      "timestamp": "2026-04-29T20:45:55Z",
+      "decision": "Light plan for integration testing",
+      "rationale": "Single-phase dry-run validation with no discovery needed"
+    }
+  ],
+  "phase_transitions": [
+    {
+      "from": 0,
+      "to": 1,
+      "timestamp": "2026-04-29T21:15:00Z",
+      "commit": "daa4d99",
+      "reason": "Phase 1 complete: SemanticOrchestrator wired into populate CLI with dry-run validation"
+    }
+  ],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "created",
+      "timestamp": "2026-04-29T20:45:55Z",
+      "domain": "CODEREF-CORE",
+      "message": "Workorder created from DISPATCH-2026-04-29-011",
+      "status": "plan_created"
+    },
+    {
+      "event": "phase_1_complete",
+      "timestamp": "2026-04-29T21:15:00Z",
+      "domain": "CODEREF-CORE",
+      "message": "Phase 1 execution complete: Created semantic-integration wrapper with dry-run mode, integrated into populate CLI, validated with test script",
+      "status": "in_execution"
+    }
+  ]
+}
