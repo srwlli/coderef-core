@@ -7,3 +7,12 @@ export type { ExportInfo, ImportInfo, SemanticExtractionResult, ASTExtractorOpti
 
 export { HeaderGenerator, generateHeaders } from './header-generator.js';
 export type { SemanticHeader, HeaderGenerationOptions } from './header-generator.js';
+
+export { LLMEnricher, enrichMetadata, enrichBatch } from './llm-enricher.js';
+export type { EnrichmentRequest, EnrichedMetadata, LLMEnricherOptions } from './llm-enricher.js';
+
+export { RegistrySyncer, syncEntry, refreshSync } from './registry-sync.js';
+export type { RegistryEntry, RegistrySyncOptions, SyncResult } from './registry-sync.js';
+
+export { SemanticOrchestrator, runSemanticPipeline } from './orchestrator.js';
+export type { SemanticPipelineOptions, PipelineResult } from './orchestrator.js';
