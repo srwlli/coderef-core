@@ -1,0 +1,319 @@
+================================================================================
+CODEREF SEMANTICS: WORKINGS AND USAGE
+A Developer Guide to Semantic Layer Integration
+================================================================================
+Document Version: 1.0
+Date: 2026-04-29
+Target Audience: Developers, agents, technical leads
+Authority: WO-CODEREF-SEMANTIC-INTEGRATION-001, coderef-semantic-schema.md
+--------------------------------------------------------------------------------
+PAGE 1: WHAT SEMANTICS ARE
+--------------------------------------------------------------------------------
+
+1. OVERVIEW: What Semantics Do
+-------------------------------------------
+CodeRef Semantics is an optional metadata layer that describes what code does and
+how it connects. Instead of parsing source files every time, semantics provide
+pre-extracted answers to common questions:
+
+  What does this file export?
+  Which files use this file?
+  What rules or patterns does it enforce?
+  Which files are related (semantically, not just by imports)?
+
+Semantics live in three places:
+  1. FILE HEADERS — Comment blocks at the top of source files (exports, imports)
+  2. INDEX.JSON — Central registry with full metadata per file
+  3. ACTIVITY LOG — Tracking when semantics were generated/updated
+
+Why this matters:
+  - Agents can reason about code without parsing ASTs every time
+  - Humans can scan a file and see its purpose and dependencies instantly
+  - Impact analysis becomes deterministic (change X affects Y, Z explicitly)
+  - RAG systems have structured context for code understanding
+
+2. THE SEMANTIC HEADER: File-Level Metadata
+-------------------------------------------
+At the top of every source file with exports, a semantic header is embedded:
+
+EXAMPLE:
+/**
+ * exports: [formatDate, VERSION, Config]
+ * imports: 3 module(s)
+ * @coderef-semantic 1.0.0
+ * @generated 2026-04-29T21:28:58.129Z
+ */
+
+FIELDS:
+  exports: [list]      — All named and default exports from this file
+  imports: N module(s) — Count of modules this file imports (dependency surface)
+  @coderef-semantic    — Version marker for the semantic format (1.0.0)
+  @generated           — ISO timestamp when the header was created
+
+WHAT IT IS NOT:
+  ✗ Not a description of what the file does (that's in the actual code)
+  ✗ Not a docstring (doesn't replace JSDoc comments)
+  ✗ Not a substitute for reading the code (it's a quick reference)
+
+WHAT IT IS:
+  ✓ Machine-readable export list (agents parse exports without AST)
+  ✓ Dependency indicator (import count hints at coupling)
+  ✓ Traceability marker (timestamp shows when metadata was fresh)
+
+Who creates it: SemanticOrchestrator + HeaderGenerator
+Who reads it: Agents, RAG indexers, humans scanning the codebase
+Frequency: Generated once per file, updated when exports change
+
+================================================================================
+PAGE 2: HOW SEMANTICS ARE GENERATED AND INTEGRATED
+================================================================================
+
+3. THE PIPELINE: From Code to Semantics
+-------------------------------------------
+Step 1. SCAN
+  ASTExtractor traverses the codebase, identifying all TypeScript/JavaScript files.
+  It extracts exports (function, class, const, type, interface) and imports.
+
+Step 2. EXTRACT
+  For each file, semantics are computed:
+    - exports: List of all names that are exported
+    - usedBy: Reverse dependency map (which files import from this file)
+    - related: Files semantically connected (same domain, shared patterns)
+    - rules: Constraints derived from structure (e.g., "no direct DOM access")
+
+Step 3. GENERATE HEADERS (Optional, Dry-Run Safe)
+  HeaderGenerator creates a comment block for each file.
+  In DRY-RUN mode: Headers are captured in memory, files are not modified.
+  In LIVE mode: Headers are written to the top of each file.
+
+Step 4. SYNC REGISTRY
+  All semantic metadata is written to .coderef/semantic-registry.json
+  This is the central truth for dependency graphs and impact analysis.
+
+Step 5. INDEX UPDATE
+  index.json is enriched with semantic fields (exports, usedBy, related, rules).
+  These fields remain optional for backward compatibility.
+
+4. INVOCATION: How to Use Semantics
+-------------------------------------------
+FROM THE POPULATE CLI:
+  npm run populate -- --semantic
+  npm run populate -- --semantic --llm-enrich
+  npm run populate -- --semantic --mode full
+
+FLAGS:
+  --semantic           Enable semantic header generation (dry-run by default)
+  --llm-enrich         Use LLM to generate higher-quality semantic descriptions
+  --mode full          Run all generators (default); use with --semantic
+
+EXAMPLES:
+
+DRY-RUN (no files modified):
+  populate --semantic --mode full
+  → Scans codebase, extracts semantics, shows what WOULD be written
+  → Safe to test before committing changes
+
+LIVE RUN (files modified):
+  populate --semantic --mode full [commit after if satisfied]
+  → Actually writes headers to source files
+  → Revert with: git restore .
+
+SINGLE FILE (for testing):
+  semantic-integration processFile src/lib/utils.ts --dry-run
+  → Test semantic extraction on one file before full run
+
+5. SEMANTIC REGISTRY: The Central Source of Truth
+-------------------------------------------
+Location: .coderef/semantic-registry.json
+
+SCHEMA:
+{
+  "version": "1.0.0",
+  "generated": "2026-04-29T21:28:58Z",
+  "entries": {
+    "src/lib/auth.ts": {
+      "exports": [
+        { "name": "validateToken", "type": "function" },
+        { "name": "refreshToken", "type": "function" }
+      ],
+      "usedBy": [
+        { "file": "src/middleware.ts", "imports": ["validateToken"] },
+        { "file": "src/routes/admin.ts", "imports": ["validateToken"] }
+      ],
+      "related": [
+        { "file": "src/lib/jwt.ts", "reason": "token manipulation" }
+      ]
+    }
+  }
+}
+
+WHAT AGENTS USE IT FOR:
+  - Dependency tracing ("if I change validateToken, what breaks?")
+  - RAG context ("which files would help understand authentication?")
+  - Impact analysis ("is this change backward compatible?")
+  - Graph visualization ("show me the import graph for this module")
+
+================================================================================
+PAGE 3: DRY-RUN VS. LIVE, SAFETY, AND ROLLBACK
+================================================================================
+
+6. DRY-RUN MODE: Safe Testing
+-------------------------------------------
+DryRunSemanticOrchestrator intercepts file writes WITHOUT modifying source.
+
+HOW IT WORKS:
+  1. Intercepts fs.writeFileSync and fs.promises.writeFile
+  2. Captures intended writes in a Map<filePath, content>
+  3. Returns success without writing to disk
+  4. Provides summary: file count, total bytes, list of files
+
+WHEN TO USE:
+  - Testing semantic extraction on a new codebase
+  - Validating idempotency (running twice gives same results)
+  - Previewing changes before committing
+  - Debugging extraction logic
+
+OUTPUT:
+  [✓ Dry-run captured 209 header writes]
+  [Memory footprint: 18.4 KB]
+  [Top 5 files would be modified: ...]
+
+ROLLBACK GUARANTEE:
+  If dry-run is followed by LIVE run and results are unsatisfactory:
+    git restore .
+  All changes are reverted instantly (clean working tree).
+
+7. IDEMPOTENCY VALIDATION
+-------------------------------------------
+Problem: If you run semantics twice, do you get the same output?
+  Risk: Non-deterministic extraction could cause issues on re-runs.
+  Solution: validateIdempotency() runs the pipeline twice and compares.
+
+HOW IT WORKS:
+  Run 1: Extract semantics in dry-run mode → capture results
+  Run 2: Extract semantics in dry-run mode → capture results
+  Compare: filesProcessed, headersGenerated, entriesEnriched must match
+
+EXPECTED OUTPUT (PASS):
+  ✓ Run 1: 200 files, 180 headers, 45 entries enriched
+  ✓ Run 2: 200 files, 180 headers, 45 entries enriched
+  ✓ Idempotency PASSED
+
+EXPECTED OUTPUT (FAIL):
+  Run 1: 200 files, 180 headers, 45 entries enriched
+  Run 2: 200 files, 175 headers, 40 entries enriched
+  → ERROR: Non-deterministic extraction detected
+  → Do not run live mode until root cause is fixed
+
+8. SAFETY GATES AND ERROR HANDLING
+-------------------------------------------
+REQUIRED FILES:
+  src/semantic/orchestrator.ts    — Main coordinator
+  src/semantic/header-generator.ts — Creates comment blocks
+  src/semantic/ast-extractor.ts    — Parses code structure
+  src/cli/semantic-integration.ts  — Dry-run wrapper
+  src/cli/populate.ts              — CLI entry point
+
+ERROR SCENARIOS:
+  Scenario: AST parsing fails on a file
+    Behavior: Error is logged, file is skipped, pipeline continues
+    Recovery: Check file syntax, re-run
+
+  Scenario: Write fails (permissions, disk full)
+    Behavior: In dry-run, no issue. In live, error is reported.
+    Recovery: Fix permissions/disk, re-run
+
+  Scenario: Registry sync fails
+    Behavior: Semantic headers may be written, registry may be incomplete
+    Recovery: Re-run with --semantic to resync
+
+VALIDATION:
+  After any run (dry or live), check:
+    1. .coderef/semantic-registry.json exists and is valid JSON
+    2. No source files have corrupted headers
+    3. git status shows only expected changes
+    4. No .bak or .tmp files left behind
+
+================================================================================
+PAGE 4: WORKFLOW AND QUALITY CHECKLIST
+================================================================================
+
+9. TYPICAL WORKFLOW
+-------------------------------------------
+Step 1. Prepare
+  git checkout main
+  git pull origin main
+  git status  → ensure clean working tree
+
+Step 2. Dry-Run Test (Recommended)
+  npm run populate -- --semantic --mode full
+  Review output: which files would be modified?
+  Check memory footprint and top 5 files
+
+Step 3. Validate Idempotency (For Critical Branches)
+  [in semantic-integration.ts, call validateIdempotency()]
+  Confirm second run matches first run
+
+Step 4. Live Run (If Satisfied)
+  npm run populate -- --semantic --mode full
+  git status  → review changes
+  git add .coderef
+  git commit -m "chore(semantics): Generate semantic headers"
+
+Step 5. Verify
+  git log --oneline -1
+  git diff HEAD~1  → inspect changes
+  npm run populate -- --mode minimal  → re-index without --semantic
+
+Step 6. Push (If No Issues)
+  git push origin main
+
+10. COMMON TASKS AND COMMANDS
+-------------------------------------------
+GENERATE SEMANTICS ON ENTIRE CODEBASE:
+  npm run populate -- --semantic --mode full --verbose
+
+GENERATE ON SINGLE FILE (FOR TESTING):
+  [create test script or manual invocation]
+  const orchestrator = new SemanticOrchestrator(options);
+  await orchestrator.processFile('src/lib/utils.ts');
+
+PREVIEW CHANGES (DRY-RUN):
+  npm run populate -- --semantic --mode full
+  [no files modified, only console output]
+
+REVERT ALL SEMANTIC HEADERS:
+  git restore .
+
+INSPECT SEMANTIC REGISTRY:
+  cat .coderef/semantic-registry.json | jq '.entries | keys | length'
+  → shows count of files with semantic metadata
+
+11. QUALITY CHECKLIST
+-------------------------------------------
+Before considering semantic integration complete:
+
+[ ] Dry-run tested on target codebase
+[ ] No build errors introduced by semantic headers
+[ ] Idempotency validated (two runs produce same results)
+[ ] Semantic registry is valid JSON and parseable
+[ ] Top 5 files manually reviewed for correct exports/imports
+[ ] File headers follow standard format (no description field)
+[ ] Git diff is clean (only semantic headers, no corrupted files)
+[ ] Working tree is clean after integration (git status clean)
+[ ] Documentation updated (if needed)
+[ ] Rollback tested (git restore works, files revert cleanly)
+
+12. OPEN QUESTIONS
+-------------------------------------------
+VERIFY: LLM enrichment feature (--llm-enrich flag) — validate output quality
+VERIFY: Performance on codebases with 1000+ files
+VERIFY: Re-run behavior (how often should semantics be refreshed?)
+VERIFY: Backward compatibility with existing index.json without semantic fields
+
+================================================================================
+END OF DOCUMENT
+================================================================================
+For questions or improvements, contact: CodeRef team
+Last updated: 2026-04-29
+
