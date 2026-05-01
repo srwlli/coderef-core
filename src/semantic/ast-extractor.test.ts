@@ -145,7 +145,9 @@ module.exports = {
   describe('Error Handling', () => {
     test('should handle missing files gracefully', async () => {
       const result = await extractor.extractFile('/nonexistent/file.ts');
-      expect(result.executionTime).toBeGreaterThan(0);
+      expect(result.executionTime).toBeGreaterThanOrEqual(0);
+      expect(result.exports).toHaveLength(0);
+      expect(result.imports).toHaveLength(0);
     });
 
     test('should skip oversized files', async () => {

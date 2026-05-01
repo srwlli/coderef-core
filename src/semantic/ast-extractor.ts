@@ -94,7 +94,7 @@ export class ASTExtractor {
       });
 
       // Traverse AST to extract exports and imports
-      traverse.default(ast, {
+      traverse(ast, {
         ExportNamedDeclaration: (astPath) => {
           const node = astPath.node;
           if (node.declaration) {
@@ -199,6 +199,18 @@ export class ASTExtractor {
         type: 'named',
         line: declaration.loc?.start.line || 0,
         declaration: declaration.type,
+      });
+    } else if (declaration.type === 'VariableDeclaration' && Array.isArray(declaration.declarations)) {
+      // VariableDeclaration has no top-level id; iterate declarators
+      declaration.declarations.forEach((decl: any) => {
+        if (decl.id && decl.id.name) {
+          exports.push({
+            name: decl.id.name,
+            type: 'named',
+            line: decl.loc?.start.line || declaration.loc?.start.line || 0,
+            declaration: 'variable',
+          });
+        }
       });
     } else if (declaration.type === 'ObjectPattern') {
       // Handle destructured exports

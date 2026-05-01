@@ -7,7 +7,7 @@
  * (3) Backward compatibility: both old and new formats accepted
  */
 
-import { describe, it, expect } from '@jest/globals';
+import { describe, it, expect } from 'vitest';
 import { IndexGenerator } from '../index-generator.js';
 
 describe('IndexGenerator - Schema Alignment (DISPATCH-2026-04-29-006)', () => {
