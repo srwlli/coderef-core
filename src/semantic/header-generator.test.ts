@@ -33,10 +33,10 @@ describe('HeaderGenerator', () => {
       ];
 
       const headers = generator.generateHeaders(exports, [], [], []);
-      expect(headers).toHaveLength(1);
-      expect(headers[0].type).toBe('exports');
-      expect(headers[0].content[0]).toContain('MyComponent');
-      expect(headers[0].content[0]).toContain('MyFunction');
+      const exportsHeader = headers.find(header => header.type === 'exports');
+      expect(exportsHeader).toBeDefined();
+      expect(exportsHeader?.content[0]).toContain('MyComponent');
+      expect(exportsHeader?.content[0]).toContain('MyFunction');
     });
 
     test('should generate used_by header for internal dependencies', () => {
@@ -87,6 +87,24 @@ describe('HeaderGenerator', () => {
       expect(comments.some((c) => c.includes('@semantic'))).toBe(true);
     });
 
+    test('should merge block comments into one semantic header block', () => {
+      const headers = generator.generateHeadersFromElements([
+        {
+          type: 'function',
+          name: 'one',
+          file: 'src/provider.ts',
+          line: 1,
+          exports: [{ name: 'one', type: 'named' }],
+          usedBy: [{ file: 'src/consumer.ts', line: 1 }],
+        },
+      ]);
+      const comments = generator.formatAsComments(headers);
+
+      expect(comments.filter(comment => comment.includes('@semantic'))).toHaveLength(1);
+      expect(comments.join('\n')).toContain('exports: [one]');
+      expect(comments.join('\n')).toContain('used_by: [src/consumer.ts]');
+    });
+
     test('should format headers as line comments when specified', () => {
       const lineGenerator = new HeaderGenerator({ commentStyle: 'line' });
       const exports: ExportInfo[] = [{ name: 'MyFunc', type: 'named', line: 1 }];
@@ -128,6 +146,19 @@ export function myFunc() {}`;
       expect(content).toBe(originalContent); // Unchanged
     });
 
+    test('should not skip files that only mention @semantic in code', async () => {
+      const file = path.join(tempDir, 'literal.ts');
+      fs.writeFileSync(file, "const marker = '@semantic';\nexport function myFunc() {}");
+
+      const exports: ExportInfo[] = [{ name: 'myFunc', type: 'named', line: 1 }];
+      await generateHeaders(file, exports, []);
+
+      const content = fs.readFileSync(file, 'utf-8');
+      expect(content.startsWith('/**')).toBe(true);
+      expect((content.match(/\* @semantic/g) || []).length).toBe(1);
+      expect(content).toContain("const marker = '@semantic';");
+    });
+
     test('should skip files with shebang correctly', async () => {
       const file = path.join(tempDir, 'script.ts');
       fs.writeFileSync(file, '#!/usr/bin/env node\nexport function myFunc() {}');
@@ -138,6 +169,44 @@ export function myFunc() {}`;
       const content = fs.readFileSync(file, 'utf-8');
       expect(content.startsWith('#!/usr/bin/env node')).toBe(true);
       expect(content).toContain('@semantic');
+    });
+
+    test('should insert cleanly after CRLF block comments', async () => {
+      const file = path.join(tempDir, 'crlf.ts');
+      fs.writeFileSync(file, '/* License */\r\nexport function myFunc() {}\r\n');
+
+      const exports: ExportInfo[] = [{ name: 'myFunc', type: 'named', line: 1 }];
+      await generateHeaders(file, exports, []);
+
+      const content = fs.readFileSync(file, 'utf-8');
+      expect(content).toContain('/* License */\r\n\r\n/**');
+      expect(content).not.toContain('*//**');
+    });
+
+    test('should generate one deduplicated header set for multiple elements in a file', () => {
+      const headers = generator.generateHeadersFromElements([
+        {
+          type: 'function',
+          name: 'one',
+          file: 'src/provider.ts',
+          line: 1,
+          exports: [{ name: 'one', type: 'named' }],
+          usedBy: [{ file: 'src/consumer.ts', line: 1 }],
+        },
+        {
+          type: 'function',
+          name: 'two',
+          file: 'src/provider.ts',
+          line: 2,
+          exports: [{ name: 'two', type: 'named' }],
+          usedBy: [{ file: 'src/consumer.ts', line: 1 }],
+        },
+      ]);
+
+      expect(headers.filter(header => header.type === 'exports')).toHaveLength(1);
+      expect(headers.filter(header => header.type === 'used_by')).toHaveLength(1);
+      expect(headers.find(header => header.type === 'exports')?.content[0]).toContain('one, two');
+      expect(headers.find(header => header.type === 'used_by')?.content[0]).toContain('src/consumer.ts');
     });
   });
 

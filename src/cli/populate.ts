@@ -24,9 +24,8 @@ import {
   formatSupportedLanguages,
   validateCliLanguages,
 } from './detect-languages.js';
-import { buildSemanticRelationships, deduplicateUsedBy } from '../scanner/semantic-analyzer.js';
-import { createCodeRefId, normalizeProjectPath } from '../utils/coderef-id.js';
 import { HeaderGenerator } from '../semantic/header-generator.js';
+import { buildSemanticElementsFromState } from '../pipeline/semantic-elements.js';
 
 interface CliArgs {
   projectDir: string;
@@ -328,20 +327,19 @@ async function run(args: CliArgs): Promise<void> {
 
     if (args.sourceHeaders) {
       const headerGenerator = new HeaderGenerator();
-      const semanticElements = buildSemanticRelationships(
-        state.elements.map(element => ({
-          ...element,
-          file: normalizeProjectPath(state.projectPath, element.file),
-          codeRefId: createCodeRefId(element, state.projectPath, { includeLine: true }),
-          codeRefIdNoLine: createCodeRefId(element, state.projectPath, { includeLine: false }),
-        })),
-        state.projectPath,
-      ).map(element => ({ ...element, usedBy: deduplicateUsedBy(element.usedBy || []) }));
+      const semanticElements = buildSemanticElementsFromState(state);
+      const elementsByFile = new Map<string, typeof semanticElements>();
 
       for (const element of semanticElements) {
-        const headers = headerGenerator.generateHeadersFromElement(element);
+        const existing = elementsByFile.get(element.file) || [];
+        existing.push(element);
+        elementsByFile.set(element.file, existing);
+      }
+
+      for (const [file, elements] of elementsByFile) {
+        const headers = headerGenerator.generateHeadersFromElements(elements);
         if (headers.length === 0) continue;
-        await headerGenerator.insertHeaders(path.join(args.projectDir, element.file), headers);
+        await headerGenerator.insertHeaders(path.join(args.projectDir, file), headers);
       }
     }
 

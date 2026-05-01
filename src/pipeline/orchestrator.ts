@@ -183,6 +183,8 @@ export class PipelineOrchestrator {
       projectPath,
       files,
       elements: allElements,
+      imports: allImports,
+      calls: allCalls,
       graph,
       sources,
       options,

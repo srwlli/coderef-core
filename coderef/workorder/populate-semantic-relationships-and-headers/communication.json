@@ -1,0 +1,106 @@
+{
+  "workorder_id": "WO-POPULATE-SEMANTIC-RELATIONSHIPS-HEADERS-001",
+  "feature_name": "populate-semantic-relationships-and-headers",
+  "created": "2026-05-01T15:55:35Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": "WO-UNIFY-CODEREF-SEMANTIC-SYSTEMS-001",
+  "status": "complete",
+  "current_phase": 5,
+  "phase_status": "complete",
+  "completed_at": "2026-05-01T17:44:00Z",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\populate-semantic-relationships-and-headers\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\populate-semantic-relationships-and-headers\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\populate-semantic-relationships-and-headers\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Validated populate output shows CodeRef IDs and semantic registry projection work, but relationship fields and source-header projection need a targeted follow-up implementation."
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_gate": "Complete each phase, run its validation, then update communication.json before advancing.",
+    "hard_stop_policy": "Hard stops are recorded at every phase boundary because the previous workorder's focused tests missed real populate output gaps."
+  },
+  "hard_constraints": [
+    ".coderef/index.json remains canonical machine truth.",
+    "semantic-registry.json remains a projection from canonical ElementData.",
+    "Source headers remain optional and off by default.",
+    "Default populate must not modify source files.",
+    "Path outputs and CodeRef IDs remain relative POSIX-style paths."
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "timestamp": "2026-05-01T15:55:35Z",
+      "decision": "Create a follow-up phased workorder after validating the root cause instead of patching ad hoc.",
+      "reason": "The issue spans public output contracts and needs explicit verification gates."
+    }
+  ],
+  "phase_transitions": [
+    {
+      "timestamp": "2026-05-01T16:10:00Z",
+      "from_phase": 1,
+      "to_phase": 2,
+      "summary": "Root cause reconfirmed: extracted imports existed for graph construction but were absent from generator-visible PipelineState/ElementData."
+    },
+    {
+      "timestamp": "2026-05-01T16:25:00Z",
+      "from_phase": 2,
+      "to_phase": 3,
+      "summary": "PipelineState now exposes imports/calls and semantic ElementData enrichment attaches normalized file-level imports."
+    },
+    {
+      "timestamp": "2026-05-01T16:40:00Z",
+      "from_phase": 3,
+      "to_phase": 4,
+      "summary": "Index and semantic-registry generation now share buildSemanticElementsFromState()."
+    },
+    {
+      "timestamp": "2026-05-01T17:05:00Z",
+      "from_phase": 4,
+      "to_phase": 5,
+      "summary": "Source headers now write one deduplicated semantic block per file, preserve blank spacing after leading comments, and avoid CRLF malformed adjacency."
+    }
+  ],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-01T15:55:35Z",
+      "event": "workorder_created",
+      "summary": "Created phased workorder to fix populate semantic relationship propagation and optional source-header projection after root cause validation."
+    },
+    {
+      "timestamp": "2026-05-01T15:55:35Z",
+      "event": "tracking_registered",
+      "summary": "Registered workorder, session, and active-work entries in ASSISTANT/TRACKING. Canonical register-active-work.js failed because it uses require() under ESM; direct view-file registration was used."
+    },
+    {
+      "timestamp": "2026-05-01T16:05:00Z",
+      "event": "semantic_validation_gate",
+      "summary": "Pre-execution semantic validation passed: critical=0, warning=1, info=0, rag_status=success."
+    },
+    {
+      "timestamp": "2026-05-01T17:44:00Z",
+      "event": "workorder_complete",
+      "summary": "Implemented semantic relationship propagation and file-level source-header repair. Build passed, focused tests passed 26/26, and final clean clone C:\\tmp\\coderef-core-populate-semantic-verify-20260501-134310 produced 2053 elements with imports and 1486 with usedBy; semantic-registry mirrored index with zero relationship mismatches."
+    },
+    {
+      "timestamp": "2026-05-01T17:46:00Z",
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "summary": "Ran foundation-docs generators and validate-docs.js. Validator exited 0 with warnings for 3 pre-existing invalid UUID anchors."
+    },
+    {
+      "timestamp": "2026-05-01T17:47:00Z",
+      "event": "doc_discovery",
+      "summary": "doc-discovery.mjs returned no candidates; manual review found docs/CLI.md and README.md already describe semantic-registry projection and opt-in source headers."
+    },
+    {
+      "timestamp": "2026-05-01T17:49:00Z",
+      "event": "session_log",
+      "summary": "Wrote .coderef/sessions/SES-2026-05-01-POPULATE-SEMANTIC-RELATIONSHIPS-HEADERS.yaml. Repo-local migrate script was absent; canonical ASSISTANT migrate script ran successfully but does not include CODEREF-CORE as a source."
+    }
+  ]
+}

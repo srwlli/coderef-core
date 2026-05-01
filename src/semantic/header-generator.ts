@@ -53,7 +53,7 @@ export class HeaderGenerator {
         file: '',
         line: 1,
         type: 'exports',
-        content: [`exports: [${exportNames}]`],
+        content: [`[${exportNames}]`],
       });
     }
 
@@ -64,7 +64,7 @@ export class HeaderGenerator {
         file: '',
         line: 1,
         type: 'used_by',
-        content: [`used_by: [${depList}]`],
+        content: [`[${depList}]`],
       });
     }
 
@@ -75,7 +75,7 @@ export class HeaderGenerator {
         file: '',
         line: 1,
         type: 'rules',
-        content: [`rules: ${JSON.stringify(rules)}`],
+        content: [JSON.stringify(rules)],
       });
     }
 
@@ -86,7 +86,7 @@ export class HeaderGenerator {
         file: '',
         line: 1,
         type: 'related',
-        content: [`related: [${related.join(', ')}]`],
+        content: [`[${related.join(', ')}]`],
       });
     }
 
@@ -99,41 +99,53 @@ export class HeaderGenerator {
    * This is projection-only: callers decide whether to write the headers.
    */
   generateHeadersFromElement(element: ElementData): SemanticHeader[] {
-    const headers: SemanticHeader[] = [];
+    return this.generateHeadersFromElements([element]);
+  }
 
-    if (element.exports && element.exports.length > 0) {
+  /**
+   * Generate one deduplicated semantic header set for a file's elements.
+   */
+  generateHeadersFromElements(elements: ElementData[]): SemanticHeader[] {
+    const headers: SemanticHeader[] = [];
+    const file = elements[0]?.file || '';
+    const exports = uniqueStrings(elements.flatMap(element => element.exports?.map(exp => exp.name) || []));
+    const usedBy = uniqueStrings(elements.flatMap(element => element.usedBy?.map(entry => entry.file) || []));
+    const rules = uniqueObjects(elements.flatMap(element => element.rules || []), rule => `${rule.rule}:${rule.description || ''}:${rule.severity || ''}`);
+    const related = uniqueObjects(elements.flatMap(element => element.related || []), entry => `${getRelatedPath(entry)}:${entry.reason || ''}:${entry.confidence ?? (entry as any).confidence_score ?? ''}`);
+
+    if (exports.length > 0) {
       headers.push({
-        file: element.file,
+        file,
         line: 1,
         type: 'exports',
-        content: [`exports: [${element.exports.map(exp => exp.name).join(', ')}]`],
+        content: [`[${exports.join(', ')}]`],
       });
     }
 
-    if (element.usedBy && element.usedBy.length > 0) {
+    if (usedBy.length > 0) {
       headers.push({
-        file: element.file,
+        file,
         line: 1,
         type: 'used_by',
-        content: [`used_by: [${element.usedBy.map(entry => entry.file).join(', ')}]`],
+        content: [`[${usedBy.join(', ')}]`],
       });
     }
 
-    if (element.rules && element.rules.length > 0) {
+    if (rules.length > 0) {
       headers.push({
-        file: element.file,
+        file,
         line: 1,
         type: 'rules',
-        content: [`rules: ${JSON.stringify(element.rules)}`],
+        content: [JSON.stringify(rules)],
       });
     }
 
-    if (element.related && element.related.length > 0) {
+    if (related.length > 0) {
       headers.push({
-        file: element.file,
+        file,
         line: 1,
         type: 'related',
-        content: [`related: [${element.related.map(entry => entry.file).join(', ')}]`],
+        content: [`[${related.map(entry => getRelatedPath(entry)).filter(Boolean).join(', ')}]`],
       });
     }
 
@@ -146,15 +158,20 @@ export class HeaderGenerator {
   formatAsComments(headers: SemanticHeader[]): string[] {
     const comments: string[] = [];
 
-    for (const header of headers) {
-      if (this.options.commentStyle === 'block') {
-        comments.push(`/**`);
-        comments.push(` * @semantic`);
+    if (this.options.commentStyle === 'block') {
+      if (headers.length === 0) return comments;
+
+      comments.push(`/**`);
+      comments.push(` * @semantic`);
+      for (const header of headers) {
         comments.push(` * ${header.type}: ${header.content.join(', ')}`);
-        comments.push(` */`);
-      } else {
-        comments.push(`// @semantic ${header.type}: ${header.content.join(', ')}`);
       }
+      comments.push(` */`);
+      return comments;
+    }
+
+    for (const header of headers) {
+      comments.push(`// @semantic ${header.type}: ${header.content.join(', ')}`);
     }
 
     return comments;
@@ -168,7 +185,7 @@ export class HeaderGenerator {
       let content = fs.readFileSync(filePath, 'utf-8');
 
       // Skip if file already has semantic headers (unless overwrite enabled)
-      if (this.options.preserveExisting && content.includes('@semantic')) {
+      if (this.options.preserveExisting && this.hasSemanticHeader(content)) {
         console.warn(`[header-generator] ${filePath} already has semantic headers, skipping`);
         return;
       }
@@ -186,17 +203,26 @@ export class HeaderGenerator {
       // Skip license headers and leading comments
       while (insertPoint < content.length && content[insertPoint] === '/') {
         if (content.substr(insertPoint, 2) === '//') {
-          insertPoint = content.indexOf('\n', insertPoint) + 1;
+          const lineEnd = content.indexOf('\n', insertPoint);
+          insertPoint = lineEnd === -1 ? content.length : lineEnd + 1;
         } else if (content.substr(insertPoint, 2) === '/*') {
-          insertPoint = content.indexOf('*/', insertPoint) + 2;
-          if (content[insertPoint] === '\n') insertPoint++;
+          const commentEnd = content.indexOf('*/', insertPoint);
+          if (commentEnd === -1) break;
+          insertPoint = commentEnd + 2;
+          insertPoint = this.skipSingleNewline(content, insertPoint);
         } else {
           break;
         }
       }
 
       // Insert header block
-      const newContent = content.slice(0, insertPoint) + headerBlock + '\n\n' + content.slice(insertPoint);
+      const prefix = content.slice(0, insertPoint);
+      const suffix = content.slice(insertPoint).replace(/^\r?\n/, '');
+      const lineEnding = content.includes('\r\n') ? '\r\n' : '\n';
+      const separator = prefix.length > 0
+        ? (prefix.endsWith('\n') ? lineEnding : lineEnding + lineEnding)
+        : '';
+      const newContent = prefix + separator + headerBlock.replace(/\n/g, lineEnding) + lineEnding + lineEnding + suffix;
       fs.writeFileSync(filePath, newContent, 'utf-8');
     } catch (error) {
       console.error(`Error inserting headers into ${filePath}:`, error instanceof Error ? error.message : error);
@@ -268,6 +294,40 @@ export class HeaderGenerator {
       .replace(/\/index$/, '')
       .replace(/\.(ts|tsx|js|jsx)$/, '');
   }
+
+  private skipSingleNewline(content: string, index: number): number {
+    if (content.slice(index, index + 2) === '\r\n') {
+      return index + 2;
+    }
+    if (content[index] === '\n') {
+      return index + 1;
+    }
+    return index;
+  }
+
+  private hasSemanticHeader(content: string): boolean {
+    return /(^|\r?\n)\/\*\*\r?\n(?: \*.*\r?\n)* \* @semantic\r?\n(?: \*.*\r?\n)* \*\//.test(content)
+      || /^\/\/\s*@semantic/m.test(content);
+  }
+}
+
+function uniqueStrings(values: string[]): string[] {
+  return Array.from(new Set(values.filter(Boolean)));
+}
+
+function uniqueObjects<T>(values: T[], getKey: (value: T) => string): T[] {
+  const unique = new Map<string, T>();
+  for (const value of values) {
+    const key = getKey(value);
+    if (!unique.has(key)) {
+      unique.set(key, value);
+    }
+  }
+  return Array.from(unique.values());
+}
+
+function getRelatedPath(entry: any): string {
+  return entry?.file || entry?.path || '';
 }
 
 /**

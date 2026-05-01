@@ -8,8 +8,77 @@
  */
 
 import type { ElementData } from '../types/types.js';
+import type { ImportRelationship } from '../pipeline/types.js';
 import * as path from 'path';
 import { normalizeProjectPath } from '../utils/coderef-id.js';
+
+/**
+ * Attach pipeline-level file imports to each element in the importing file.
+ *
+ * The relationship extractor works at file scope, while semantic projections are
+ * emitted per ElementData. This adapter preserves the canonical file-level import
+ * facts without changing extractor behavior.
+ */
+export function attachFileImportsToElements(
+  elements: ElementData[],
+  imports: ImportRelationship[],
+  projectPath: string,
+): ElementData[] {
+  if (!imports || imports.length === 0) return elements;
+
+  const importsByFile = new Map<string, ElementData['imports']>();
+
+  for (const imp of imports) {
+    const sourceFile = normalizeProjectPath(projectPath, imp.sourceFile);
+    const normalizedImport = {
+      source: imp.target.replace(/\\/g, '/'),
+      specifiers: imp.specifiers,
+      default: imp.default,
+      namespace: imp.namespace,
+      dynamic: imp.dynamic,
+      line: imp.line,
+    };
+
+    const existing = importsByFile.get(sourceFile);
+    if (existing) {
+      existing.push(normalizedImport);
+    } else {
+      importsByFile.set(sourceFile, [normalizedImport]);
+    }
+  }
+
+  return elements.map(element => {
+    const file = normalizeProjectPath(projectPath, element.file);
+    const fileImports = importsByFile.get(file);
+    if (!fileImports || fileImports.length === 0) return element;
+
+    return {
+      ...element,
+      imports: deduplicateImports([...(element.imports || []), ...fileImports]),
+    };
+  });
+}
+
+function deduplicateImports(imports: NonNullable<ElementData['imports']>): NonNullable<ElementData['imports']> {
+  const unique = new Map<string, NonNullable<ElementData['imports']>[number]>();
+
+  for (const imp of imports) {
+    const key = [
+      imp.source,
+      imp.line,
+      (imp.specifiers || []).join(','),
+      imp.default || '',
+      imp.namespace || '',
+      imp.dynamic ? 'dynamic' : 'static',
+    ].join('\u0000');
+
+    if (!unique.has(key)) {
+      unique.set(key, imp);
+    }
+  }
+
+  return Array.from(unique.values());
+}
 
 /**
  * Build semantic relationships from scanned elements

@@ -108,9 +108,19 @@ describe('populate-coderef CLI', () => {
 
     const index = JSON.parse(await fs.readFile(path.join(outputDir, 'index.json'), 'utf-8'));
     expect(index.elements[0].codeRefId).toMatch(/^@/);
+    const alpha = index.elements.find((element: any) => element.name === 'alpha');
+    const beta = index.elements.find((element: any) => element.name === 'beta');
+    expect(alpha.imports).toEqual([
+      expect.objectContaining({ source: './untested', line: 1 }),
+    ]);
+    expect(beta.usedBy).toEqual([
+      expect.objectContaining({ file: 'src/example.ts', line: 1 }),
+    ]);
 
     const semanticRegistry = JSON.parse(await fs.readFile(path.join(outputDir, 'semantic-registry.json'), 'utf-8'));
     expect(semanticRegistry.generated_from).toBe('.coderef/index.json');
+    const betaEntry = semanticRegistry.entries.find((entry: any) => entry.name === 'beta');
+    expect(betaEntry.usedBy).toEqual(beta.usedBy);
   });
 
   it('auto-detects python repos when --lang is omitted', async () => {
@@ -169,5 +179,48 @@ describe('populate-coderef CLI', () => {
     ).rejects.toMatchObject({
       stderr: expect.stringContaining('No supported source files were detected'),
     });
+  });
+
+  it('writes source headers once per file with deduplicated semantic fields', async () => {
+    const projectDir = await fs.mkdtemp(path.join(os.tmpdir(), 'coderef-populate-cli-headers-'));
+    created.push(projectDir);
+
+    const srcDir = path.join(projectDir, 'src');
+    await fs.mkdir(srcDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(srcDir, 'consumer.ts'),
+      [
+        "import { one, two } from './provider';",
+        'export function consumer() {',
+        '  return one() + two();',
+        '}',
+      ].join('\n'),
+      'utf-8'
+    );
+
+    await fs.writeFile(
+      path.join(srcDir, 'provider.ts'),
+      [
+        '/* License header */',
+        'export function one() { return 1; }',
+        'export function two() { return 2; }',
+      ].join('\r\n'),
+      'utf-8'
+    );
+
+    await execAsync(
+      `node dist/src/cli/populate.js "${projectDir}" --mode minimal --source-headers --json`,
+      { cwd: packageRoot }
+    );
+
+    const providerContent = await fs.readFile(path.join(srcDir, 'provider.ts'), 'utf-8');
+    const semanticCount = (providerContent.match(/@semantic/g) || []).length;
+    expect(semanticCount).toBe(1);
+    expect(providerContent).toContain('exports: [one, two]');
+    expect(providerContent).toContain('used_by: [src/consumer.ts]');
+    expect(providerContent).not.toContain('exports: exports:');
+    expect(providerContent).not.toContain('*//**');
+    expect(providerContent).toContain('*/\r\n\r\n/**');
   });
 });

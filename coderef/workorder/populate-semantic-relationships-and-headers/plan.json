@@ -1,0 +1,198 @@
+{
+  "$schema": "https://coderef/assistant/skills/workflow/_shared/planner/plan.schema.json",
+  "workorder_id": "WO-POPULATE-SEMANTIC-RELATIONSHIPS-HEADERS-001",
+  "feature_name": "populate-semantic-relationships-and-headers",
+  "created": "2026-05-01T15:55:35Z",
+  "plan_type": "phased",
+  "goal": "Fix populate semantic relationship output so actual .coderef/index.json and semantic-registry.json include imports and reverse usedBy from the canonical pipeline, and make optional source-header projection file-level, deduplicated, and CRLF-safe.",
+  "plan_type_rationale": "Relationship propagation must land before projections and header behavior can be corrected safely.",
+  "plan_type_decided_by": "create-workorder@2.5.0",
+  "discovery_ref": "validated-root-cause-20260501T155535Z",
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP"
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1 - Root Cause Confirmation and Contract Design",
+      "description": "Confirm the relationship propagation failure and define the additive PipelineState and ElementData projection contract.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-1.1",
+          "verb": "READ",
+          "description": "Inspect PipelineOrchestrator, PipelineState, IndexGenerator, RegistryGenerator, semantic analyzer, populate CLI, and header generator to confirm relationship data flow.",
+          "touches": [
+            "src/pipeline/orchestrator.ts",
+            "src/pipeline/types.ts",
+            "src/pipeline/generators/index-generator.ts",
+            "src/pipeline/generators/registry-generator.ts",
+            "src/scanner/semantic-analyzer.ts",
+            "src/cli/populate.ts",
+            "src/semantic/header-generator.ts"
+          ]
+        },
+        {
+          "id": "TASK-1.2",
+          "verb": "WRITE",
+          "description": "Record the validated root cause and output contract in analysis/communication artifacts before implementation."
+        },
+        {
+          "id": "TASK-1.3",
+          "verb": "CHECK",
+          "description": "Gate implementation on the confirmed fact that imports are extracted but absent from generator-visible ElementData."
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2 - Pipeline Relationship Propagation",
+      "description": "Expose extracted imports and calls through PipelineState and enrich ElementData with normalized file-level imports before semantic projection.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-2.1",
+          "verb": "EDIT",
+          "description": "Add imports and calls arrays to PipelineState and return allImports/allCalls from PipelineOrchestrator.run().",
+          "touches": [
+            "src/pipeline/types.ts",
+            "src/pipeline/orchestrator.ts"
+          ]
+        },
+        {
+          "id": "TASK-2.2",
+          "verb": "EDIT",
+          "description": "Create or reuse a helper that attaches normalized file-level imports to ElementData before buildSemanticRelationships().",
+          "touches": [
+            "src/scanner/semantic-analyzer.ts",
+            "src/pipeline/generators/index-generator.ts",
+            "src/pipeline/generators/registry-generator.ts"
+          ]
+        },
+        {
+          "id": "TASK-2.3",
+          "verb": "TEST",
+          "description": "Add focused tests proving actual generated index and semantic registry output contain imports and reverse usedBy for a small fixture."
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Phase 3 - Projection Output Alignment",
+      "description": "Ensure index.json and semantic-registry.json use the same enriched canonical ElementData and preserve relative POSIX paths and CodeRef IDs.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-3.1",
+          "verb": "EDIT",
+          "description": "Refactor index and registry generators to share the same semantic enrichment path instead of rebuilding from raw state.elements independently."
+        },
+        {
+          "id": "TASK-3.2",
+          "verb": "CHECK",
+          "description": "Verify semantic-registry entries mirror canonical ElementData relationship fields and generated_from remains .coderef/index.json."
+        },
+        {
+          "id": "TASK-3.3",
+          "verb": "TEST",
+          "description": "Run focused tests for CodeRef IDs, imports, usedBy, path normalization, and semantic registry projection."
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Phase 4 - Source Header Projection Repair",
+      "description": "Make optional source-header mode write one deduplicated header block per file and insert cleanly around existing comments and CRLF files.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-4.1",
+          "verb": "EDIT",
+          "description": "Group semantic elements by file in populate --source-headers and generate one merged header projection per file.",
+          "touches": [
+            "src/cli/populate.ts",
+            "src/semantic/header-generator.ts"
+          ]
+        },
+        {
+          "id": "TASK-4.2",
+          "verb": "EDIT",
+          "description": "Fix HeaderGenerator insertion to handle CRLF and maintain clean spacing after leading comments."
+        },
+        {
+          "id": "TASK-4.3",
+          "verb": "TEST",
+          "description": "Add tests for existing JSDoc/license comments, CRLF files, and repeated element headers in the same file."
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Phase 5 - Fresh Clone Verification and Documentation",
+      "description": "Validate real populate output on a cloned repo and update docs/workorder notes with exact behavior and command usage.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "id": "TASK-5.1",
+          "verb": "RUN",
+          "description": "Build the package and run populate-coderef --mode full against a fresh clone or isolated fixture."
+        },
+        {
+          "id": "TASK-5.2",
+          "verb": "CHECK",
+          "description": "Confirm actual output has nonzero imports and usedBy, semantic-registry mirrors index, default populate does not modify source, and source-header mode writes clean headers."
+        },
+        {
+          "id": "TASK-5.3",
+          "verb": "EDIT",
+          "description": "Update README/docs/CLI if user-visible behavior or source-header cautions changed."
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": true,
+      "reason": "Root cause confirmation must be explicit before editing pipeline relationship contracts."
+    },
+    {
+      "phase": 2,
+      "approved": true,
+      "reason": "PipelineState relationship propagation must pass focused tests before projection output changes are trusted."
+    },
+    {
+      "phase": 3,
+      "approved": true,
+      "reason": "Index and semantic-registry projection alignment must be verified before header writes are repaired."
+    },
+    {
+      "phase": 4,
+      "approved": true,
+      "reason": "Source-header mode must be proven clean before real source mutation is advertised."
+    },
+    {
+      "phase": 5,
+      "approved": true,
+      "reason": "Fresh clone verification is required before closure because the prior focused tests missed real output gaps."
+    }
+  ],
+  "acceptance_criteria": [
+    ".coderef/index.json from actual populate contains nonzero imports on relevant elements.",
+    ".coderef/index.json from actual populate contains nonzero reverse usedBy entries for internal imports.",
+    ".coderef/semantic-registry.json mirrors canonical relationship fields and reports generated_from as .coderef/index.json.",
+    "Default populate does not modify source files.",
+    "--source-headers writes one clean deduplicated block per file and handles CRLF/existing comments without malformed adjacency.",
+    "Focused tests and build pass; fresh-clone or isolated-fixture populate verification is recorded."
+  ],
+  "plan_adjustments_needed": []
+}

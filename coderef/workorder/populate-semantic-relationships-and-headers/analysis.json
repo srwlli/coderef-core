@@ -1,0 +1,134 @@
+{
+  "workorder_id": "WO-POPULATE-SEMANTIC-RELATIONSHIPS-HEADERS-001",
+  "feature_name": "populate-semantic-relationships-and-headers",
+  "analysis_authored_at": "2026-05-01T15:55:35Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/types.ts",
+      "src/pipeline/orchestrator.ts",
+      "src/pipeline/semantic-elements.ts",
+      "src/pipeline/generators/index-generator.ts",
+      "src/pipeline/generators/registry-generator.ts",
+      "src/scanner/semantic-analyzer.ts",
+      "src/cli/populate.ts",
+      "src/semantic/header-generator.ts",
+      "__tests__/semantic-canonical.test.ts",
+      "__tests__/populate-cli.test.ts",
+      "src/semantic/header-generator.test.ts"
+    ],
+    "files_created": [
+      "src/pipeline/semantic-elements.ts"
+    ],
+    "downstream_consumers": [
+      ".coderef/index.json readers",
+      ".coderef/semantic-registry.json readers",
+      "populate-coderef users",
+      "RAG chunk conversion",
+      "optional source-header users"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Attaching file-level imports to every element may inflate index size or duplicate data.",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Deduplicate imports per file, keep field shape stable, and validate output size impact in a fresh clone."
+    },
+    {
+      "id": "RISK-002",
+      "title": "usedBy could point to files rather than exact elements, creating misleading element-level semantics.",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Document file-level reverse dependency semantics and keep entries normalized as file/import/line until element-resolution is separately designed."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Source-header opt-in mode may still modify too many files or produce noisy headers.",
+      "likelihood": "high",
+      "impact": "medium",
+      "mitigation": "Group by file, merge headers once, deduplicate content, and add CRLF/existing-comment regression tests."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Changing PipelineState can affect generator or plugin type contracts.",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Make imports/calls additive fields, keep existing state fields unchanged, and run build plus focused generator tests."
+    }
+  ],
+  "candidates": [
+    "src/pipeline/orchestrator.ts",
+    "src/pipeline/types.ts",
+    "src/pipeline/generators/index-generator.ts",
+    "src/pipeline/generators/registry-generator.ts",
+    "src/cli/populate.ts",
+    "src/semantic/header-generator.ts",
+    "src/scanner/semantic-analyzer.ts"
+  ],
+  "dependencies": [
+    "RelationshipExtractor output types in src/pipeline/types.ts",
+    "ElementData.imports and ElementData.usedBy in src/types/types.ts",
+    "writeIndexVariants output behavior",
+    "HeaderGenerator insertHeaders behavior",
+    "populate-coderef CLI"
+  ],
+  "public_api_hits": [
+    "PipelineState",
+    "ElementData",
+    "populate-coderef --source-headers",
+    "populate-coderef --semantic-registry"
+  ],
+  "decision_records": [
+    {
+      "id": "DECISION-001",
+      "decision": "Fix relationship propagation by exposing extracted relationships on PipelineState and enriching ElementData before projections.",
+      "rationale": "This preserves the existing single-pass extractor and avoids a duplicate scanner."
+    },
+    {
+      "id": "DECISION-002",
+      "decision": "Treat imports and usedBy as file-level semantic fields for this workorder.",
+      "rationale": "The current extractor produces file-level import relationships; exact symbol-level resolution is a separate larger problem."
+    },
+    {
+      "id": "DECISION-003",
+      "decision": "Keep source headers opt-in and make them one merged projection per file.",
+      "rationale": "Default populate must remain non-mutating, while header mode should avoid repeated writes and malformed comments."
+    }
+  ],
+  "verification_results": [
+    {
+      "id": "VERIFY-001",
+      "command": "npm run build",
+      "location": "working tree",
+      "result": "PASS"
+    },
+    {
+      "id": "VERIFY-002",
+      "command": "npx vitest run __tests__/semantic-canonical.test.ts src/semantic/header-generator.test.ts __tests__/populate-cli.test.ts",
+      "location": "working tree",
+      "result": "PASS",
+      "tests": "26/26"
+    },
+    {
+      "id": "VERIFY-003",
+      "command": "fresh clone build + populate verification",
+      "location": "C:\\tmp\\coderef-core-populate-semantic-verify-20260501-134310",
+      "result": "PASS",
+      "evidence": {
+        "elements": 2283,
+        "registry_entries": 2283,
+        "elements_with_imports": 2053,
+        "elements_with_usedBy": 1486,
+        "registry_entries_with_imports": 2053,
+        "registry_entries_with_usedBy": 1486,
+        "generated_from": ".coderef/index.json",
+        "relationship_mismatches": 0,
+        "files_with_semantic_header": 188,
+        "files_with_multiple_actual_headers": 0,
+        "malformed_semantic_files": 0,
+        "duplicate_type_label_files": 0
+      }
+    }
+  ]
+}

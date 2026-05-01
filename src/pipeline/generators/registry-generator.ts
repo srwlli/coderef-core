@@ -10,10 +10,8 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
-import type { ElementData } from '../../types/types.js';
 import { globalRegistry } from '../../registry/entity-registry.js';
-import { buildSemanticRelationships, deduplicateUsedBy } from '../../scanner/semantic-analyzer.js';
-import { createCodeRefId, normalizeProjectPath } from '../../utils/coderef-id.js';
+import { buildSemanticElementsFromState } from '../semantic-elements.js';
 import { createSemanticRegistryProjection } from '../../semantic/projections.js';
 
 /**
@@ -41,16 +39,7 @@ export class RegistryGenerator {
     const content = JSON.stringify(registryState, null, 2);
     await fs.writeFile(registryPath, content, 'utf-8');
 
-    let semanticElements: ElementData[] = state.elements.map(element => ({
-      ...element,
-      file: normalizeProjectPath(state.projectPath, element.file),
-      codeRefId: createCodeRefId(element, state.projectPath, { includeLine: true }),
-      codeRefIdNoLine: createCodeRefId(element, state.projectPath, { includeLine: false }),
-    }));
-    semanticElements = buildSemanticRelationships(semanticElements, state.projectPath).map(element => ({
-      ...element,
-      usedBy: deduplicateUsedBy(element.usedBy || []),
-    }));
+    const semanticElements = buildSemanticElementsFromState(state);
 
     await fs.writeFile(
       semanticRegistryPath,

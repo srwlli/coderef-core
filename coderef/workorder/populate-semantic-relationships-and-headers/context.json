@@ -1,0 +1,101 @@
+{
+  "workorder_id": "WO-POPULATE-SEMANTIC-RELATIONSHIPS-HEADERS-001",
+  "feature_name": "populate-semantic-relationships-and-headers",
+  "created": "2026-05-01T15:55:35Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": null,
+  "intake": {
+    "trigger": "user_request",
+    "user_request": "Create a workorder to fix populate semantic relationship output and source-header projection after validating that imports are extracted but not attached to ElementData, usedBy stays empty, semantic-registry repeats that flaw, source headers write per element, and CRLF insertion can create malformed adjacent comment blocks."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "The issue crosses pipeline state, index/registry projection, populate CLI behavior, header insertion, and regression validation, so it needs ordered implementation phases.",
+    "plan_type_decided_by": "create-workorder@2.5.0",
+    "discovery_ref": "validated-root-cause-20260501T155535Z",
+    "discovery": {
+      "candidates": [
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/types.ts",
+        "src/pipeline/generators/index-generator.ts",
+        "src/pipeline/generators/registry-generator.ts",
+        "src/scanner/semantic-analyzer.ts",
+        "src/cli/populate.ts",
+        "src/semantic/header-generator.ts",
+        "__tests__/semantic-canonical.test.ts",
+        "__tests__/populate-cli.test.ts"
+      ],
+      "blast_radius": [
+        ".coderef/index.json",
+        ".coderef/semantic-registry.json",
+        "populate-coderef --source-headers",
+        "RAG and graph consumers reading semantic fields"
+      ],
+      "public_api_hits": [
+        "PipelineState",
+        "populate-coderef CLI options",
+        "ElementData.imports",
+        "ElementData.usedBy"
+      ],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "warnings": [
+        "Root cause was validated by code inspection and fresh-clone populate output: imports are available to graph construction but absent from ElementData passed to semantic generators."
+      ],
+      "summary_ref": "validated-root-cause-20260501T155535Z"
+    }
+  },
+  "root_cause_validation": {
+    "validated_at": "2026-05-01T15:55:35Z",
+    "summary": "The canonical pipeline extracts import relationships into allImports and graph edges, but PipelineState exposes only elements and graph. Index and registry generators rebuild semantic projections from state.elements, so buildSemanticRelationships sees no element.imports and produces empty usedBy.",
+    "evidence": [
+      "src/pipeline/orchestrator.ts collects allImports and passes them to buildGraph, but PipelineState returned from run() omits imports and calls.",
+      "src/pipeline/types.ts PipelineState has elements, graph, sources, options, and metadata, but no imports or calls arrays.",
+      "src/scanner/semantic-analyzer.ts buildSemanticRelationships skips elements where el.imports is missing or empty.",
+      "src/pipeline/generators/index-generator.ts and registry-generator.ts call buildSemanticRelationships using state.elements-derived data.",
+      "src/cli/populate.ts --source-headers loops over every semantic element and writes headers per element instead of per file.",
+      "src/semantic/header-generator.ts only checks LF after leading block comments, so CRLF files can produce adjacent malformed comment boundaries."
+    ],
+    "fresh_clone_observation": {
+      "path": "C:\\tmp\\coderef-core-semantic-test-20260501-112910",
+      "index_elements": 2271,
+      "elements_with_codeRefId": 2271,
+      "elements_with_imports": 0,
+      "elements_with_usedBy": 0,
+      "semantic_registry_entries": 2271,
+      "source_header_mode_modified_files": 186
+    }
+  },
+  "semantic_scan": {
+    "extracted_at": "2026-05-01T15:55:35Z",
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Expose extracted import and call relationships on PipelineState.",
+      "Attach file-level imports to ElementData before semantic relationship projection.",
+      "Populate real imports and reverse usedBy in .coderef/index.json and semantic-registry.json.",
+      "Make source-header generation file-level and deduplicated.",
+      "Fix CRLF-safe semantic header insertion.",
+      "Add clone-style or fixture tests proving actual populate output contains imports and usedBy."
+    ],
+    "out_of_scope": [
+      "Changing CodeRef ID format.",
+      "Making source headers default-on.",
+      "Replacing tree-sitter relationship extraction.",
+      "Fixing broad unrelated vitest suite drift."
+    ]
+  },
+  "constraints": [
+    ".coderef/index.json remains canonical machine truth.",
+    "semantic-registry.json remains a projection from canonical ElementData.",
+    "Source headers remain opt-in and off by default.",
+    "Default populate must not modify source files.",
+    "Path outputs and CodeRef IDs remain relative POSIX-style paths."
+  ]
+}

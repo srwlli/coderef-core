@@ -50,6 +50,10 @@ export interface PipelineState {
   files: Map<string, string[]>;
   /** All extracted code elements (functions, classes, components, etc) */
   elements: ElementData[];
+  /** All extracted import relationships from the single-pass scan */
+  imports: ImportRelationship[];
+  /** All extracted call relationships from the single-pass scan */
+  calls: CallRelationship[];
   /** Dependency graph with nodes and edges */
   graph: ExportedGraph;
   /** Source code content indexed by file path */
