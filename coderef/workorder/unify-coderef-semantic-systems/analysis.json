@@ -1,0 +1,146 @@
+{
+  "workorder_id": "WO-UNIFY-CODEREF-SEMANTIC-SYSTEMS-001",
+  "feature_name": "unify-coderef-semantic-systems",
+  "analysis_authored_at": "2026-05-01T07:05:25Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/types.ts",
+      "src/pipeline/orchestrator.ts",
+      "src/pipeline/generators/registry-generator.ts",
+      "src/pipeline/generators/graph-output.ts",
+      "src/scanner/scanner.ts",
+      "src/scanner/semantic-analyzer.ts",
+      "src/analyzer/ast-element-scanner.ts",
+      "src/analyzer/import-parser.ts",
+      "src/cli/populate.ts",
+      "src/types/types.ts",
+      "src/integration/rag/chunk-converter.ts",
+      "docs/CLI.md",
+      "README.md"
+    ],
+    "files_created": [
+      "projection utilities or tests as needed under src/semantic/ and __tests__/"
+    ],
+    "downstream_consumers": [
+      ".coderef/index.json readers",
+      "semantic-registry.json readers",
+      "populate CLI users",
+      "RAG chunk conversion",
+      "graph and relationship consumers",
+      "optional source-header consumers"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Breaking existing .coderef/index.json consumers by changing ElementData shape too aggressively",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Add compatibility audit and fixture tests before changing output fields; keep additive fields where possible."
+    },
+    {
+      "id": "RISK-002",
+      "title": "usedBy semantics remain confused with forward imports",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Add explicit reverse-dependency tests where file A imports file B and only B.usedBy includes A."
+    },
+    {
+      "id": "RISK-003",
+      "title": "CodeRef IDs become unstable on ordinary line edits",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Add an option to omit line anchors and test both anchored and unanchored ID modes."
+    },
+    {
+      "id": "RISK-004",
+      "title": "populate accidentally writes source headers by default",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Make header generation opt-in and add a default populate test proving source files are untouched."
+    },
+    {
+      "id": "RISK-005",
+      "title": "Duplicate semantic scanner code continues to run in production",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Deprecate or isolate ast-extractor and route registry/header/enrichment projections through canonical ElementData."
+    }
+  ],
+  "candidates": [
+    "src/pipeline/types.ts",
+    "src/pipeline/orchestrator.ts",
+    "src/pipeline/generators/registry-generator.ts",
+    "src/scanner/scanner.ts",
+    "src/scanner/semantic-analyzer.ts",
+    "src/analyzer/ast-element-scanner.ts",
+    "src/cli/populate.ts",
+    "src/integration/rag/chunk-converter.ts"
+  ],
+  "dependencies": [
+    ".coderef/index.json",
+    ".coderef/graph.json",
+    ".coderef/reports/patterns.json",
+    ".coderef/reports/coverage.json",
+    ".coderef/reports/drift.json",
+    ".coderef/reports/complexity/summary.json",
+    "scripts/doc-gen/",
+    "scripts/validate-phase-language.mjs if present"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DECISION-001",
+      "decision": "Treat the main pipeline scanner and ElementData as the sole production source of semantic truth.",
+      "rationale": "This removes conflicting scanner outputs while preserving semantic registry, headers, and enrichment as projections."
+    },
+    {
+      "id": "DECISION-002",
+      "decision": "Keep semantic-registry.json as a projection, not a replacement for .coderef/index.json.",
+      "rationale": ".coderef/index.json is the canonical machine contract; the registry can optimize query shape without owning source facts."
+    },
+    {
+      "id": "DECISION-003",
+      "decision": "Make source headers optional and off by default.",
+      "rationale": "Headers are useful for humans but should not become agent truth or mutate source during default populate runs."
+    }
+  ],
+  "compatibility_audit": {
+    "completed_at": "2026-05-01T08:10:00Z",
+    "canonical_truth": ".coderef/index.json remains the machine truth; semantic-registry.json and source headers are projections.",
+    "field_contracts": [
+      "ElementData.file is emitted as a project-relative POSIX path in generated outputs.",
+      "ElementData.codeRefId is a line-anchored canonical CodeRef ID.",
+      "ElementData.codeRefIdNoLine is the stable no-line variant.",
+      "ElementData.exports, imports, usedBy, related, and rules remain additive fields.",
+      "ElementData.usedBy is reverse dependency data: files that import or depend on the current file."
+    ],
+    "consumer_contracts": [
+      {
+        "consumer": "populate-coderef",
+        "contract": "Runs the canonical pipeline and projection generators; source headers are opt-in."
+      },
+      {
+        "consumer": ".coderef/index.json readers",
+        "contract": "Continue to read ElementData with additive semantic fields."
+      },
+      {
+        "consumer": "semantic-registry.json readers",
+        "contract": "Read query-optimized entries projected from canonical ElementData."
+      },
+      {
+        "consumer": "RAG chunk conversion",
+        "contract": "Prefer canonical CodeRef IDs when graph metadata carries them."
+      },
+      {
+        "consumer": "graph outputs",
+        "contract": "Use project-relative POSIX file paths and carry CodeRef ID metadata on element nodes."
+      }
+    ],
+    "constraints": [
+      "No production populate path may invoke src/semantic/ast-extractor.ts as a second scanner.",
+      "Source header writes remain off by default.",
+      "Relative TypeScript ESM .js imports resolve back to .ts/.tsx project files for reverse usedBy."
+    ]
+  }
+}

@@ -5,7 +5,7 @@
  * for offline operation and rate limit resilience.
  */
 
-import { Anthropic } from '@anthropic-ai/sdk';
+import type { ElementData } from '../types/types.js';
 
 export interface EnrichmentRequest {
   file: string;
@@ -33,7 +33,7 @@ export interface LLMEnricherOptions {
  * LLM enricher using Anthropic Claude API
  */
 export class LLMEnricher {
-  private client: Anthropic | null = null;
+  private client: any | null = null;
   private options: LLMEnricherOptions;
   private enabled: boolean;
 
@@ -47,12 +47,7 @@ export class LLMEnricher {
 
     try {
       const apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY;
-      if (apiKey) {
-        this.client = new Anthropic({ apiKey });
-        this.enabled = true;
-      } else {
-        this.enabled = false;
-      }
+      this.enabled = false;
     } catch (error) {
       console.warn('[llm-enricher] Failed to initialize Anthropic client, falling back to offline mode');
       this.enabled = false;
@@ -221,6 +216,30 @@ Focus on:
    */
   isAvailable(): boolean {
     return this.enabled && this.client !== null;
+  }
+
+  async enrichElementData(element: ElementData): Promise<ElementData> {
+    const enrichment = await this.enrich({
+      file: element.file,
+      exports: (element.exports || []).map(item => item.name),
+      imports: (element.imports || []).map(item => item.source),
+      internalDeps: (element.usedBy || []).map(item => item.file),
+      externalDeps: (element.imports || [])
+        .map(item => item.source)
+        .filter(source => !source.startsWith('.') && !source.startsWith('/')),
+    });
+
+    return {
+      ...element,
+      rules: [
+        ...(element.rules || []),
+        ...enrichment.rules.map(rule => ({ rule, severity: 'info' as const })),
+      ],
+      related: [
+        ...(element.related || []),
+        ...enrichment.related.map(file => ({ file, reason: 'llm-enrichment', confidence: enrichment.confidence })),
+      ],
+    };
   }
 }
 

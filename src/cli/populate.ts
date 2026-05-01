@@ -24,7 +24,9 @@ import {
   formatSupportedLanguages,
   validateCliLanguages,
 } from './detect-languages.js';
-import { runSemanticIntegration, validateIdempotency } from './semantic-integration.js';
+import { buildSemanticRelationships, deduplicateUsedBy } from '../scanner/semantic-analyzer.js';
+import { createCodeRefId, normalizeProjectPath } from '../utils/coderef-id.js';
+import { HeaderGenerator } from '../semantic/header-generator.js';
 
 interface CliArgs {
   projectDir: string;
@@ -37,7 +39,8 @@ interface CliArgs {
   help: boolean;
   mode: 'full' | 'minimal' | 'context';
   select?: string[];
-  semantic: boolean;
+  semanticRegistry: boolean;
+  sourceHeaders: boolean;
   llmEnrich: boolean;
 }
 
@@ -64,7 +67,8 @@ function parseArgs(argv: string[]): CliArgs {
     parallel: false,
     help: false,
     mode: 'full',
-    semantic: false,
+    semanticRegistry: true,
+    sourceHeaders: false,
     llmEnrich: false,
   };
 
@@ -122,7 +126,16 @@ function parseArgs(argv: string[]): CliArgs {
         break;
 
       case '--semantic':
-        args.semantic = true;
+      case '--semantic-registry':
+        args.semanticRegistry = true;
+        break;
+
+      case '--no-semantic-registry':
+        args.semanticRegistry = false;
+        break;
+
+      case '--source-headers':
+        args.sourceHeaders = true;
         break;
 
       case '--llm-enrich':
@@ -158,8 +171,10 @@ OPTIONS:
   -s, --skip <generators>      Skip specific generators
   -j, --json                   Output progress as JSON
   -p, --parallel               Enable parallel generator execution
-  --semantic                   Generate CodeRef-Semantics headers in source files
-  --llm-enrich                 Enable LLM-enriched semantic generation (requires --semantic)
+  --semantic-registry          Generate semantic-registry.json projection (default: on)
+  --no-semantic-registry       Skip semantic-registry.json projection
+  --source-headers             Write optional CodeRef-Semantics headers into source files (default: off)
+  --llm-enrich                 Reserved for opt-in projection enrichment; never runs by default
   -h, --help                   Show this help message
 
 MODES:
@@ -307,29 +322,26 @@ async function run(args: CliArgs): Promise<void> {
       }
     }
 
-    // Run semantic integration if requested
-    if (args.semantic) {
-      const semanticRegistryPath = path.join(outputDir, 'semantic-registry.json');
-      const semanticResult = await runSemanticIntegration({
-        projectDir: args.projectDir,
-        outputDir: args.projectDir,
-        registryPath: semanticRegistryPath,
-        dryRun: true,
-        generateHeaders: true,
-        enrichLLM: args.llmEnrich,
-        syncRegistry: false,
-      });
+    if (!args.semanticRegistry) {
+      await fs.rm(path.join(outputDir, 'semantic-registry.json'), { force: true });
+    }
 
-      if (!semanticResult.success) {
-        failures.push({ name: 'semantic', message: semanticResult.error || 'Unknown error' });
-        if (!args.json) {
-          console.error(`[populate-coderef] Semantic integration failed: ${semanticResult.error}`);
-        }
-      } else if (args.verbose && !args.json) {
-        console.log(`[populate-coderef] Semantic integration: ${semanticResult.result?.filesProcessed} files processed`);
-        if (semanticResult.writeSummary) {
-          console.log(`  - Would generate headers for ${semanticResult.writeSummary.totalFiles} files`);
-        }
+    if (args.sourceHeaders) {
+      const headerGenerator = new HeaderGenerator();
+      const semanticElements = buildSemanticRelationships(
+        state.elements.map(element => ({
+          ...element,
+          file: normalizeProjectPath(state.projectPath, element.file),
+          codeRefId: createCodeRefId(element, state.projectPath, { includeLine: true }),
+          codeRefIdNoLine: createCodeRefId(element, state.projectPath, { includeLine: false }),
+        })),
+        state.projectPath,
+      ).map(element => ({ ...element, usedBy: deduplicateUsedBy(element.usedBy || []) }));
+
+      for (const element of semanticElements) {
+        const headers = headerGenerator.generateHeadersFromElement(element);
+        if (headers.length === 0) continue;
+        await headerGenerator.insertHeaders(path.join(args.projectDir, element.file), headers);
       }
     }
 

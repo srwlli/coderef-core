@@ -1,0 +1,83 @@
+{
+  "workorder_id": "WO-UNIFY-CODEREF-SEMANTIC-SYSTEMS-001",
+  "feature_name": "unify-coderef-semantic-systems",
+  "created": "2026-05-01T07:05:25Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": null,
+  "intake": {
+    "trigger": "user_request",
+    "user_request": "Create a phased CODEREF-CORE workorder to consolidate split semantic systems. The main pipeline/scanner becomes the only production source of truth; semantic registry, source headers, and enrichment become projections from canonical ElementData."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Rule 4: goal mentions sequential gate keyword ('phase')",
+    "plan_type_decided_by": "create-workorder@2.5.0",
+    "discovery_ref": "planning-discovery-20260501T070541Z",
+    "discovery": {
+      "candidates": [
+        "src/analyzer/ast-element-scanner.ts",
+        "src/analyzer/graph-builder.ts",
+        "src/analyzer/import-parser.ts",
+        "src/cli/populate.ts",
+        "src/cli/scan.ts",
+        "src/pipeline/generators/graph-output.ts",
+        "src/pipeline/generators/registry-generator.ts",
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/types.ts",
+        "src/scanner/scanner.ts",
+        "src/scanner/semantic-analyzer.ts",
+        "src/types/types.ts",
+        "src/integration/rag/chunk-converter.ts",
+        "src/integration/rag/semantic-search.ts",
+        "__tests__/integration.test.ts"
+      ],
+      "blast_radius": [],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "warnings": [
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped",
+        "Discovery candidates were narrowed from the broad keyword result to semantic scanner, populate, pipeline, scanner, type, and RAG surfaces that are directly relevant to this workorder."
+      ],
+      "summary_ref": "planning-discovery-20260501T070541Z"
+    }
+  },
+  "semantic_scan": {
+    "extracted_at": "2026-05-01T07:05:50.249Z",
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {
+      "decorators": 0,
+      "errorHandling": 690,
+      "functionExports": 0,
+      "imports": 0
+    },
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Make the canonical pipeline scanner the only production source of truth for semantic data.",
+      "Add CodeRef IDs to ElementData with configurable line-number anchoring.",
+      "Normalize paths to relative POSIX-style paths in .coderef outputs and CodeRef IDs.",
+      "Strengthen exports, imports, true reverse usedBy, related, and rules on enriched ElementData.",
+      "Generate semantic-registry.json as a projection from canonical ElementData.",
+      "Keep source headers optional, off by default, and projection-only.",
+      "Update populate CLI behavior, tests, and docs for the unified semantic flow."
+    ],
+    "out_of_scope": [
+      "Graphify integration.",
+      "Replacing the full scanner architecture with a new scanner.",
+      "Making source headers the authoritative machine truth.",
+      "Running LLM enrichment by default."
+    ]
+  },
+  "constraints": [
+    ".coderef/index.json remains canonical machine truth.",
+    "semantic-registry.json is a query-optimized projection.",
+    "Source headers are optional human-facing projection output.",
+    "Production populate must not use src/semantic/ast-extractor.ts as a second scanner.",
+    "Existing RAG and graph consumers must continue to resolve CodeRef IDs."
+  ]
+}

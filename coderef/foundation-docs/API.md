@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-04-26 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-05-01 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -32,6 +32,7 @@
 ## Scanner API
 
 <!-- coderef:uuid=23d01bc8-2217-52d2-a80a-fd5574eb3b75 -->
+<!-- coderef:uuid=39693cc3-b2c1-5b99-a14d-ead77728400e -->
 ### `scanCurrentElements()`
 
 Scan code elements from a directory using regex patterns.
@@ -69,6 +70,7 @@ interface ScanOptions {
 ---
 
 <!-- coderef:uuid=5e396d0c-4eec-5e7b-a73f-7a9d08af021c -->
+<!-- coderef:uuid=483d35de-3418-5427-9349-8cbe2d195d57 -->
 ### `scanFilesWithAST()`
 
 Scan files using AST-based analysis for accurate element detection.

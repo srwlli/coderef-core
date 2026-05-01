@@ -149,9 +149,26 @@ function detectionResultToElement(
   filePath: string,
   detectorName: string
 ): ElementData {
+  const allowedTypes = new Set<ElementData['type']>([
+    'function',
+    'class',
+    'component',
+    'hook',
+    'method',
+    'constant',
+    'interface',
+    'type',
+    'decorator',
+    'property',
+    'unknown',
+  ]);
+  const detectedType = result.type || result.elementType || 'function';
+
   return {
-    type: result.type || 'function',
-    name: result.name,
+    type: allowedTypes.has(detectedType as ElementData['type'])
+      ? detectedType as ElementData['type']
+      : 'unknown',
+    name: result.name || result.elementName || 'unknown',
     file: filePath,
     line: result.line || 1,
     exported: result.exported ?? false,

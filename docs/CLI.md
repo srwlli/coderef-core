@@ -283,44 +283,50 @@ npx coderef-scan --dir ./src --output ./scan-results.json
 
 ## coderef-populate
 
-Generate .coderef/ directory artifacts including index.json, graph.json, and reports.
+Generate `.coderef/` directory artifacts from the canonical scanner pipeline. `.coderef/index.json` is the machine truth. `semantic-registry.json` is generated as a projection from the enriched `ElementData` in `index.json`; source headers are optional and are not written by default.
 
 ### Usage
 
 ```bash
-npx coderef-populate --dir ./src --clean
+npx populate-coderef ./my-project --mode full
 ```
 
 ### Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-d, --dir <path>` | Project directory | Current directory |
-| `--clean` | Clean .coderef/ before populating | `false` |
-| `--skip-drift` | Skip drift detection | `false` |
-| `--skip-graph` | Skip graph generation | `false` |
-| `--skip-reports` | Skip report generation | `false` |
+| `PROJECT_DIR` | Project directory positional argument | Current directory |
+| `-l, --lang <languages>` | Comma-separated language extensions | Auto-detect |
+| `-o, --output <path>` | Output directory | `{PROJECT_DIR}/.coderef` |
+| `-m, --mode <mode>` | `full`, `minimal`, or `context` | `full` |
+| `--select <generators>` | Run only specific generators | Mode default |
+| `-s, --skip <generators>` | Skip specific generators | None |
+| `--semantic-registry` | Generate `semantic-registry.json` projection | `true` |
+| `--no-semantic-registry` | Remove/skip `semantic-registry.json` projection | `false` |
+| `--source-headers` | Write optional CodeRef-Semantics headers into source files | `false` |
+| `-j, --json` | Output JSON summary | `false` |
 | `-v, --verbose` | Verbose output | `false` |
 
 ### Examples
 
 ```bash
 # Populate .coderef/ with defaults
-npx coderef-populate --dir ./src
+npx populate-coderef ./my-project
 
-# Clean and repopulate
-npx coderef-populate --dir ./src --clean
+# Minimal machine-truth outputs only
+npx populate-coderef ./my-project --mode minimal
 
-# Quick populate (skip expensive operations)
-npx coderef-populate --dir ./src --skip-graph --skip-reports
+# Generate optional human-facing source headers
+npx populate-coderef ./my-project --source-headers
 ```
 
 ### Generated Artifacts
 
 ```
 .coderef/
-├── index.json          # Element catalog
-├── graph.json          # Dependency graph
+├── index.json          # Canonical ElementData machine truth
+├── semantic-registry.json # Query-optimized projection from index.json
+├── graph.json          # Dependency graph with normalized paths
 ├── context.md          # Project context
 ├── reports/
 │   ├── drift.json      # Code drift analysis

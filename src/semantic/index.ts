@@ -16,3 +16,6 @@ export type { RegistryEntry, RegistrySyncOptions, SyncResult } from './registry-
 
 export { SemanticOrchestrator, runSemanticPipeline } from './orchestrator.js';
 export type { SemanticPipelineOptions, PipelineResult } from './orchestrator.js';
+
+export { createSemanticRegistryProjection } from './projections.js';
+export type { SemanticRegistryProjection, SemanticRegistryProjectionEntry } from './projections.js';

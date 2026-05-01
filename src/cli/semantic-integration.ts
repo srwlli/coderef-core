@@ -39,8 +39,12 @@ export class DryRunSemanticOrchestrator {
   private interceptFileWrites(): void {
     const originalWrite = fs.writeFileSync;
     const originalWriteFile = fs.promises.writeFile;
+    const mutableFs = fs as unknown as {
+      writeFileSync: typeof fs.writeFileSync;
+      promises: { writeFile: typeof fs.promises.writeFile };
+    };
 
-    fs.writeFileSync = ((path: string, data: string | Buffer, ...args: any[]) => {
+    mutableFs.writeFileSync = ((path: string, data: string | Buffer, ...args: any[]) => {
       if (this.shouldCapture(path)) {
         this.capturedWrites.set(path, typeof data === 'string' ? data : data.toString());
         return undefined as any;
@@ -48,7 +52,7 @@ export class DryRunSemanticOrchestrator {
       return originalWrite.call(fs, path, data, ...args);
     }) as any;
 
-    fs.promises.writeFile = (async (path: string, data: string | Buffer, ...args: any[]) => {
+    mutableFs.promises.writeFile = (async (path: string, data: string | Buffer, ...args: any[]) => {
       if (this.shouldCapture(path)) {
         this.capturedWrites.set(path, typeof data === 'string' ? data : data.toString());
         return;

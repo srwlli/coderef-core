@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-04-26  
+**Generated:** 2026-04-28  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,184 |
-| **Total Files** | 301 |
-| **Total Lines** | 87,170 |
+| **Total Elements** | 2,191 |
+| **Total Files** | 302 |
+| **Total Lines** | 87,419 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,10 +22,10 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 636 | 29.1% |
-| method | 1,023 | 46.8% |
+| function | 643 | 29.3% |
+| method | 1,023 | 46.7% |
 | interface | 357 | 16.3% |
-| class | 115 | 5.3% |
+| class | 115 | 5.2% |
 | type | 39 | 1.8% |
 | component | 2 | 0.1% |
 | constant | 12 | 0.5% |
@@ -37,7 +37,7 @@
 | Rank | File | Elements | Density |
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 66 | 🔴 Very High |
-| 2 | `src/scanner/tree-sitter-scanner.ts` | 62 | 🔴 Very High |
+| 2 | `src/scanner/tree-sitter-scanner.ts` | 63 | 🔴 Very High |
 | 3 | `src/pipeline/extractors/element-extractor.ts` | 34 | 🟡 High |
 | 4 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
 | 5 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
@@ -46,8 +46,8 @@
 | 8 | `src/indexer/index-store.ts` | 30 | 🟡 High |
 | 9 | `src/indexer/relationship-index.ts` | 30 | 🟡 High |
 | 10 | `src/analyzer/database-detector.ts` | 29 | 🟢 Medium |
-| 11 | `src/pipeline/generators/pattern-generator.ts` | 27 | 🟢 Medium |
-| 12 | `src/cli/coderef-rag-server.ts` | 26 | 🟢 Medium |
+| 11 | `src/cli/coderef-rag-server.ts` | 27 | 🟢 Medium |
+| 12 | `src/pipeline/generators/pattern-generator.ts` | 27 | 🟢 Medium |
 | 13 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
 | 14 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
 | 15 | `src/scanner/scanner.ts` | 24 | 🟢 Medium |
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,184 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,191 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

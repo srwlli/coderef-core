@@ -1,0 +1,29 @@
+WORKORDER TERMINAL POST-EXEC
+
+Workorder: WO-UNIFY-CODEREF-SEMANTIC-SYSTEMS-001
+Feature: unify-coderef-semantic-systems
+Domain: CODEREF-CORE
+Session: daily-agent-session-2026-05-01
+Parent stub: none (context.json has no parent_stub)
+Status: implementation complete
+Phases completed: 6
+
+Implementation summary:
+- Canonicalized semantic truth under ElementData and .coderef/index.json.
+- Added CodeRef IDs with configurable line-number anchoring and relative POSIX path normalization.
+- Reworked usedBy as true reverse dependency data.
+- Generated semantic-registry.json as a projection from canonical ElementData.
+- Kept source headers optional, off by default, and projection-only.
+- Updated populate CLI behavior, RAG chunk CodeRef preference, docs, and focused regression tests.
+
+Verification:
+- PASS: npm run build
+- PASS: npx vitest run __tests__/semantic-canonical.test.ts
+- PASS: npx vitest run __tests__/populate-cli.test.ts
+- PASS: foundation docs generation and validation gate, exit 0
+- FAIL: npx vitest run full suite, 26 failed files / 72 failed tests / 1248 passed. Failures are broad stale/non-scope suite drift including missing @jest/globals, fixtures collected as tests, outdated breaking-change detector expectations, vector-store mock constructor drift, and scanner/route expectation drift.
+
+Notes:
+- The workorder-owned focused gates pass.
+- Pre-existing unrelated dirty/untracked files were left untouched.
+- Required execute-workorder skill invocation was logged to the active daily session activity log.

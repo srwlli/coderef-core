@@ -517,16 +517,23 @@ See **[SCHEMA.md](coderef/foundation-docs/SCHEMA.md)** for complete data schemas
 **ElementData** - Represents a code element:
 ```typescript
 interface ElementData {
-  id: string;           // Unique identifier
   name: string;         // Element name
   type: string;         // Type (function, class, component, etc)
-  file: string;         // Source file path
+  file: string;         // Project-relative POSIX source file path
   line: number;         // Line number
-  hash: string;         // Content hash (SHA256)
+  codeRefId?: string;   // Canonical line-anchored ID, e.g. @Fn/src/a.ts#alpha:12
+  codeRefIdNoLine?: string; // Stable ID without line anchor
   dependencies?: string[]; // Import/call dependencies
+  exports?: Array<{ name: string; type?: 'default' | 'named'; target?: string }>;
+  imports?: Array<{ source: string; specifiers?: string[]; line: number }>;
+  usedBy?: Array<{ file: string; imports?: string[]; line?: number }>; // Reverse dependencies
+  related?: Array<{ file: string; reason?: string; confidence?: number }>;
+  rules?: Array<{ rule: string; description?: string; severity?: 'error' | 'warning' | 'info' }>;
   metadata?: Record<string, any>; // Additional metadata
 }
 ```
+
+`.coderef/index.json` is the canonical machine truth for these fields. `semantic-registry.json` and CodeRef-Semantics source headers are projections from this data; source headers are opt-in and are not written by default.
 
 **DependencyGraph** - Graph structure:
 ```typescript

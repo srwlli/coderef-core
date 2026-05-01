@@ -8,6 +8,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { ExportInfo, ImportInfo } from './ast-extractor.js';
+import type { ElementData } from '../types/types.js';
 
 export interface SemanticHeader {
   file: string;
@@ -86,6 +87,53 @@ export class HeaderGenerator {
         line: 1,
         type: 'related',
         content: [`related: [${related.join(', ')}]`],
+      });
+    }
+
+    return headers;
+  }
+
+  /**
+   * Generate semantic headers from canonical ElementData.
+   *
+   * This is projection-only: callers decide whether to write the headers.
+   */
+  generateHeadersFromElement(element: ElementData): SemanticHeader[] {
+    const headers: SemanticHeader[] = [];
+
+    if (element.exports && element.exports.length > 0) {
+      headers.push({
+        file: element.file,
+        line: 1,
+        type: 'exports',
+        content: [`exports: [${element.exports.map(exp => exp.name).join(', ')}]`],
+      });
+    }
+
+    if (element.usedBy && element.usedBy.length > 0) {
+      headers.push({
+        file: element.file,
+        line: 1,
+        type: 'used_by',
+        content: [`used_by: [${element.usedBy.map(entry => entry.file).join(', ')}]`],
+      });
+    }
+
+    if (element.rules && element.rules.length > 0) {
+      headers.push({
+        file: element.file,
+        line: 1,
+        type: 'rules',
+        content: [`rules: ${JSON.stringify(element.rules)}`],
+      });
+    }
+
+    if (element.related && element.related.length > 0) {
+      headers.push({
+        file: element.file,
+        line: 1,
+        type: 'related',
+        content: [`related: [${element.related.map(entry => entry.file).join(', ')}]`],
       });
     }
 

@@ -36,6 +36,8 @@ export interface PipelineOptions {
   maxDepth?: number;
   /** Enable incremental scanning (only re-scan changed files) */
   incremental?: boolean;
+  /** Include line numbers in canonical CodeRef IDs (default: true) */
+  codeRefIncludeLine?: boolean;
 }
 
 /**

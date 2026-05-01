@@ -14,7 +14,7 @@ import { SignatureChange, ImpactedCallSite, BlastRadius } from './types.js';
 export function calculateSeverity(
   change: SignatureChange,
   callSiteCount: number,
-  impactSimulator?: { calculateBlastRadius(elementName: string, depth: number): BlastRadius }
+  impactSimulator?: { calculateBlastRadius(elementName: string, depth: number): { directImpacts: unknown[]; transitiveImpacts: unknown[]; riskScore: number } }
 ): 'low' | 'medium' | 'high' | 'critical' {
   // Base severity from change type
   let severity: 'low' | 'medium' | 'high' | 'critical' = change.severity;

@@ -125,7 +125,7 @@ export class SemanticOrchestrator {
           registryEntries.push({
             file: extraction.file,
             exports: extraction.exports,
-            imports: extraction.imports,
+            imports: extraction.imports.map((item) => item.name || item.from),
             enrichment,
           });
         } catch (error) {
@@ -142,7 +142,10 @@ export class SemanticOrchestrator {
         result.registryUpdated = syncResult.entriesCreated + syncResult.entriesUpdated;
 
         if (syncResult.errors.length > 0) {
-          result.errors.push(...syncResult.errors);
+          result.errors.push(...syncResult.errors.map(item => ({
+            file: item.entry,
+            error: item.error,
+          })));
         }
       }
 
@@ -197,7 +200,12 @@ export class SemanticOrchestrator {
           });
         }
 
-        await this.registrySyncer.syncEntry(filePath, extraction.exports, extraction.imports, enrichment);
+        await this.registrySyncer.syncEntry(
+          filePath,
+          extraction.exports,
+          extraction.imports.map((item) => item.name || item.from),
+          enrichment,
+        );
       }
     } catch (error) {
       console.error(`Error processing ${filePath}:`, error instanceof Error ? error.message : error);

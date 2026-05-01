@@ -1,0 +1,46 @@
+import * as path from 'path';
+import type { ElementData } from '../types/types.js';
+
+const TYPE_DESIGNATORS: Record<ElementData['type'], string> = {
+  function: 'Fn',
+  class: 'Cl',
+  component: 'C',
+  hook: 'H',
+  method: 'M',
+  constant: 'V',
+  interface: 'I',
+  type: 'I',
+  decorator: 'AST',
+  property: 'V',
+  unknown: 'AST',
+};
+
+export interface CodeRefIdOptions {
+  includeLine?: boolean;
+}
+
+export function normalizeProjectPath(projectPath: string, value: string): string {
+  const normalized = path.isAbsolute(value)
+    ? path.relative(projectPath, value)
+    : value;
+
+  return normalized.replace(/\\/g, '/').replace(/^\.\//, '');
+}
+
+export function codeRefDesignatorForType(type: ElementData['type']): string {
+  return TYPE_DESIGNATORS[type] ?? TYPE_DESIGNATORS.unknown;
+}
+
+export function createCodeRefId(
+  element: Pick<ElementData, 'type' | 'name' | 'file' | 'line'>,
+  projectPath: string,
+  options: CodeRefIdOptions = {},
+): string {
+  const includeLine = options.includeLine ?? true;
+  const designator = codeRefDesignatorForType(element.type);
+  const file = normalizeProjectPath(projectPath, element.file);
+  const anchor = `${designator}/${file}#${element.name}`;
+
+  return includeLine ? `@${anchor}:${element.line}` : `@${anchor}`;
+}
+

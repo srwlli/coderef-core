@@ -6,7 +6,7 @@
  * custom pattern definitions, and domain-specific analysis without modifying core code.
  */
 
-import { FrameworkDetectionResult, FrameworkDetector } from '../scanner/framework-registry.js';
+import { FrameworkDetectionResult } from '../scanner/framework-registry.js';
 import { CodeElement } from '../types/types.js';
 
 /**
@@ -65,7 +65,9 @@ export interface HookDefinition {
  * Extended detector interface for general code detection
  * Builds on FrameworkDetector from IMP-CORE-038
  */
-export interface CodeDetector extends FrameworkDetector {
+export interface CodeDetector {
+  /** Detector name */
+  name: string;
   /** Detector version */
   version?: string;
   /** File glob patterns this detector applies to */
@@ -79,7 +81,7 @@ export interface CodeDetector extends FrameworkDetector {
    * @param ast - Optional AST if parser available
    * @returns Detection results or null
    */
-  detect(file: string, content: string, ast?: any): DetectionResult[] | DetectionResult | null;
+  detect(file: string, content: string, ast?: any): DetectionResult[] | DetectionResult | FrameworkDetectionResult | null;
 }
 
 /**

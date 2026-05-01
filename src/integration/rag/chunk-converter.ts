@@ -152,7 +152,7 @@ export class ChunkConverter {
 
     // Build CodeChunk
     const chunk: CodeChunk = {
-      coderef: node.id,
+      coderef: typeof node.metadata?.codeRefId === 'string' ? node.metadata.codeRefId : node.id,
       type: node.type,
       name,
       file: node.file,

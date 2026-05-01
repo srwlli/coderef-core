@@ -9,6 +9,7 @@
 
 import type { ElementData } from '../types/types.js';
 import * as path from 'path';
+import { normalizeProjectPath } from '../utils/coderef-id.js';
 
 /**
  * Build semantic relationships from scanned elements
@@ -21,17 +22,20 @@ export function buildSemanticRelationships(
   elements: ElementData[],
   projectPath: string
 ): ElementData[] {
+  const knownFiles = new Set(elements.map(el => normalizeProjectPath(projectPath, el.file)));
+
   // Index elements by file for quick lookup
   const elementsByFile = new Map<string, ElementData[]>();
   elements.forEach(el => {
-    if (!elementsByFile.has(el.file)) {
-      elementsByFile.set(el.file, []);
+    const file = normalizeProjectPath(projectPath, el.file);
+    if (!elementsByFile.has(file)) {
+      elementsByFile.set(file, []);
     }
-    elementsByFile.get(el.file)!.push(el);
+    elementsByFile.get(file)!.push(el);
   });
 
   // Build used_by map: file -> list of files that import from it
-  const usedByMap = new Map<string, Set<{
+  const usedByMap = new Map<string, Map<string, {
     file: string;
     imports?: string[];
     line?: number;
@@ -40,19 +44,22 @@ export function buildSemanticRelationships(
   // Track all imports across the project
   elements.forEach(el => {
     if (!el.imports || el.imports.length === 0) return;
+    const sourceFile = normalizeProjectPath(projectPath, el.file);
 
     el.imports.forEach(imp => {
       // Resolve imported module to project file
-      const resolvedFile = resolveImportPath(imp.source, el.file, projectPath);
+      const resolvedFile = resolveImportPath(imp.source, sourceFile, projectPath, knownFiles);
       if (!resolvedFile) return; // External dependency, skip
 
       if (!usedByMap.has(resolvedFile)) {
-        usedByMap.set(resolvedFile, new Set());
+        usedByMap.set(resolvedFile, new Map());
       }
 
-      usedByMap.get(resolvedFile)!.add({
-        file: el.file,
-        imports: imp.specifiers || (imp.default ? [imp.default] : undefined),
+      const importedNames = imp.specifiers || (imp.default ? [imp.default] : undefined);
+      const key = `${sourceFile}:${imp.line}:${(importedNames || []).join(',')}`;
+      usedByMap.get(resolvedFile)!.set(key, {
+        file: sourceFile,
+        imports: importedNames,
         line: imp.line
       });
     });
@@ -61,11 +68,12 @@ export function buildSemanticRelationships(
   // Populate exports and used_by on elements
   const result = elements.map(el => ({
     ...el,
+    file: normalizeProjectPath(projectPath, el.file),
     // Exports: all exported elements in this file (empty array if none)
-    exports: buildExportsForFile(el.file, elements) || [],
+    exports: buildExportsForFile(normalizeProjectPath(projectPath, el.file), elements, projectPath) || [],
     // Used by: files that import from this file (empty array if none)
-    usedBy: usedByMap.get(el.file)
-      ? Array.from(usedByMap.get(el.file)!).map(u => ({
+    usedBy: usedByMap.get(normalizeProjectPath(projectPath, el.file))
+      ? Array.from(usedByMap.get(normalizeProjectPath(projectPath, el.file))!.values()).map(u => ({
           file: u.file,
           imports: u.imports,
           line: u.line
@@ -83,8 +91,8 @@ export function buildSemanticRelationships(
 /**
  * Build exports list for a file
  */
-function buildExportsForFile(file: string, allElements: ElementData[]): any[] {
-  const fileElements = allElements.filter(el => el.file === file && el.exported);
+function buildExportsForFile(file: string, allElements: ElementData[], projectPath: string): any[] {
+  const fileElements = allElements.filter(el => normalizeProjectPath(projectPath, el.file) === file && el.exported);
 
   return fileElements.map(el => ({
     name: el.name,
@@ -117,35 +125,31 @@ function determineExportType(el: ElementData): 'default' | 'named' {
 function resolveImportPath(
   source: string,
   fromFile: string,
-  projectPath: string
+  projectPath: string,
+  knownFiles: Set<string>
 ): string | null {
   // Skip external dependencies
   if (!source.startsWith('.') && !source.startsWith('/')) {
     return null; // External package
   }
 
-  // Resolve relative path
   const fromDir = path.dirname(fromFile);
-  let resolved = path.resolve(fromDir, source);
+  const relativeResolved = normalizeProjectPath(projectPath, path.normalize(path.join(fromDir, source)));
+  const candidates = [relativeResolved];
 
   // Handle missing extensions
   const extensions = ['.ts', '.tsx', '.js', '.jsx', '.py', '.go', '.rs', '.java'];
-  for (const ext of extensions) {
-    if (resolved.endsWith(ext)) {
-      return resolved;
-    }
+  if (!extensions.some(ext => relativeResolved.endsWith(ext))) {
+    candidates.push(...extensions.map(ext => `${relativeResolved}${ext}`));
+    candidates.push(...extensions.map(ext => `${relativeResolved}/index${ext}`));
+  } else if (relativeResolved.endsWith('.js')) {
+    candidates.push(relativeResolved.replace(/\.js$/, '.ts'));
+    candidates.push(relativeResolved.replace(/\.js$/, '.tsx'));
+  } else if (relativeResolved.endsWith('.jsx')) {
+    candidates.push(relativeResolved.replace(/\.jsx$/, '.tsx'));
   }
 
-  for (const ext of extensions) {
-    const withExt = resolved + ext;
-    // In a real implementation, check if file exists
-    // For now, return the most likely candidate
-    if (ext === '.ts' || ext === '.tsx' || ext === '.js') {
-      return withExt;
-    }
-  }
-
-  return resolved;
+  return candidates.find(candidate => knownFiles.has(candidate)) || null;
 }
 
 /**

@@ -306,6 +306,10 @@ export interface ElementData {
   name: string;
   file: string;
   line: number;
+  /** Canonical CodeRef ID, usually line-anchored: @Fn/src/file.ts#name:12 */
+  codeRefId?: string;
+  /** Stable CodeRef ID without line anchoring: @Fn/src/file.ts#name */
+  codeRefIdNoLine?: string;
   /** Optional: Whether the element is exported */
   exported?: boolean;
   /**
@@ -358,6 +362,8 @@ export interface ElementData {
     /** Maximum nesting depth of control flow structures */
     nestingDepth: number;
   };
+  /** Optional: Additional metadata from scanners, plugins, or graph projection. */
+  metadata?: Record<string, any>;
 
   // WO-CODEREF-SEMANTIC-INTEGRATION-001: Phase 1 Semantic Fields
   /** Modules/functions/classes exported by this file */
@@ -387,6 +393,12 @@ export interface ElementData {
     description?: string; // Human-readable description
     severity?: 'error' | 'warning' | 'info'; // Rule severity (default: 'error')
   }>;
+}
+
+export interface CodeElement extends ElementData {
+  id?: string;
+  uuid?: string;
+  metadata?: Record<string, any>;
 }
 
 /**

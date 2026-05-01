@@ -32,6 +32,7 @@ import type {
 } from './types.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
+import { createCodeRefId } from '../utils/coderef-id.js';
 
 /**
  * PipelineOrchestrator - Coordinate the entire analysis pipeline
@@ -154,7 +155,7 @@ export class PipelineOrchestrator {
 
     // Step 4: Build dependency graph
     if (verbose) console.log('[PipelineOrchestrator] Building dependency graph...');
-    const graph = this.buildGraph(allElements, allImports, allCalls);
+    const graph = this.buildGraph(allElements, allImports, allCalls, projectPath);
 
     const endTime = Date.now();
 
@@ -331,16 +332,21 @@ export class PipelineOrchestrator {
   private buildGraph(
     elements: ElementData[],
     imports: ImportRelationship[],
-    calls: CallRelationship[]
+    calls: CallRelationship[],
+    projectPath: string
   ): ExportedGraph {
     const elementIndexes = this.buildElementIndexes(elements);
     const nodes = elements.map(elem => ({
-      id: this.getElementId(elem),
+      id: this.getElementId(elem, projectPath),
       uuid: globalRegistry.lookup({ name: elem.name, file: elem.file, line: elem.line }),
       type: elem.type,
       name: elem.name,
       file: elem.file,
       line: elem.line,
+      metadata: {
+        codeRefId: createCodeRefId(elem, projectPath, { includeLine: true }),
+        codeRefIdNoLine: createCodeRefId(elem, projectPath, { includeLine: false }),
+      },
     }));
 
     const edges: ExportedGraph['edges'] = [];
@@ -363,8 +369,8 @@ export class PipelineOrchestrator {
 
     // Add call edges
     for (const call of calls) {
-      const sourceElementId = this.resolveElementId(call.source, call.file, elementIndexes);
-      const targetElementId = this.resolveElementId(call.target, call.file, elementIndexes);
+      const sourceElementId = this.resolveElementId(call.source, call.file, elementIndexes, projectPath);
+      const targetElementId = this.resolveElementId(call.target, call.file, elementIndexes, projectPath);
 
       edges.push({
         source: call.source,
@@ -410,11 +416,12 @@ export class PipelineOrchestrator {
    * @param elem Code element
    * @returns Unique identifier (file:name or file:parentScope#name)
    */
-  private getElementId(elem: ElementData): string {
-    if (elem.parentScope) {
-      return `${elem.file}:${elem.parentScope}#${elem.name}`;
+  private getElementId(elem: ElementData, projectPath: string): string {
+    if (elem.codeRefId) {
+      return elem.codeRefId;
     }
-    return `${elem.file}:${elem.name}`;
+
+    return createCodeRefId(elem, projectPath, { includeLine: true });
   }
 
   private buildElementIndexes(elements: ElementData[]): {
@@ -450,16 +457,17 @@ export class PipelineOrchestrator {
     indexes: {
       byFileAndName: Map<string, ElementData[]>;
       byName: Map<string, ElementData[]>;
-    }
+    },
+    projectPath: string
   ): string | undefined {
     const fileMatches = indexes.byFileAndName.get(this.getFileAndNameKey(filePath, name));
     if (fileMatches?.length === 1) {
-      return this.getElementId(fileMatches[0]);
+      return this.getElementId(fileMatches[0], projectPath);
     }
 
     const nameMatches = indexes.byName.get(name);
     if (nameMatches?.length === 1) {
-      return this.getElementId(nameMatches[0]);
+      return this.getElementId(nameMatches[0], projectPath);
     }
 
     return undefined;

@@ -8,12 +8,12 @@
  * Schema: Backward-compatible with existing index.json, additive-only changes
  */
 
-import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import { globalRegistry } from '../../registry/entity-registry.js';
 import { writeIndexVariants } from '../../fileGeneration/index-storage.js';
 import { buildSemanticRelationships, deduplicateUsedBy } from '../../scanner/semantic-analyzer.js';
+import { createCodeRefId, normalizeProjectPath } from '../../utils/coderef-id.js';
 
 /**
  * IndexGenerator - Produce index.json from extracted elements
@@ -68,14 +68,20 @@ export class IndexGenerator {
   private transformElements(elements: ElementData[], projectPath: string): any[] {
     return elements.map(elem => {
       // Convert absolute path to relative path
-      const relativePath = path.relative(projectPath, elem.file).replace(/\\/g, '/');
+      const relativePath = normalizeProjectPath(projectPath, elem.file);
 
       // Create output element with relative path and UUID (WO-CODEREF-CORE-REGISTRY-001)
       const output: any = {
         ...elem,
         uuid: globalRegistry.lookup({ name: elem.name, file: elem.file, line: elem.line }),
         file: relativePath,
+        codeRefId: createCodeRefId(elem, projectPath, { includeLine: true }),
+        codeRefIdNoLine: createCodeRefId(elem, projectPath, { includeLine: false }),
       };
+
+      output.imports = this.normalizeImportsField(output.imports);
+      output.dependencies = this.normalizePathArray(output.dependencies);
+      output.calledBy = this.normalizePathArray(output.calledBy);
 
       // WO-CODEREF-SEMANTIC-INTEGRATION-001: Ensure semantic fields always present
       // Initialize empty arrays if not present (ensures schema consistency)
@@ -150,6 +156,23 @@ export class IndexGenerator {
 
       return item;
     });
+  }
+
+  private normalizeImportsField(imports: any[] | undefined): any[] | undefined {
+    if (!Array.isArray(imports)) return imports;
+
+    return imports.map(item => {
+      if (!item || typeof item !== 'object') return item;
+      return {
+        ...item,
+        source: typeof item.source === 'string' ? item.source.replace(/\\/g, '/') : item.source,
+      };
+    });
+  }
+
+  private normalizePathArray(values: unknown): unknown {
+    if (!Array.isArray(values)) return values;
+    return values.map(value => typeof value === 'string' ? value.replace(/\\/g, '/') : value);
   }
 
   /**

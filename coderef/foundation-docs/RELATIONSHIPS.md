@@ -2,9 +2,9 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-04-26  
-**Nodes:** 2,184 elements  
-**Edges:** 11,170 dependencies  
+**Generated:** 2026-05-01  
+**Nodes:** 2,191 elements  
+**Edges:** 11,215 dependencies  
 <!-- coderef:uuid=relationships-root -->
 
 ---
@@ -24,11 +24,11 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,184 |
-| **Total Dependencies** | 11,170 |
+| **Total Elements** | 2,191 |
+| **Total Dependencies** | 11,215 |
 | **Avg Dependencies/Element** | (edges.length / nodes.length).toFixed(2) |
 | **Entry Points** | 0 |
-| **Most Referenced** | 1160 refs |
+| **Most Referenced** | 1161 refs |
 
 ---
 

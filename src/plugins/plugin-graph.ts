@@ -129,8 +129,8 @@ function createGraphContext(
 
     hasEdge(from: string, to: string, type?: string): boolean {
       return graph.edges.some(e => {
-        const fromMatch = e.from === from;
-        const toMatch = e.to === to;
+        const fromMatch = e.source === from;
+        const toMatch = e.target === to;
         const typeMatch = !type || e.type === type;
         return fromMatch && toMatch && typeMatch;
       });
@@ -149,7 +149,7 @@ function addCustomEdge(
 ): void {
   // Check if edge already exists
   const exists = graph.edges.some(e =>
-    e.from === edge.from && e.to === edge.to && e.type === edge.type
+    e.source === edge.from && e.target === edge.to && e.type === edge.type
   );
 
   if (exists) {
@@ -186,9 +186,9 @@ function addCustomEdge(
 
   // Add the edge
   const graphEdge: GraphEdge = {
-    from: edge.from,
-    to: edge.to,
-    type: edge.type,
+    source: edge.from,
+    target: edge.to,
+    type: edge.type as GraphEdge['type'],
     metadata: {
       ...edge.metadata,
       pluginSource: sourceHook
@@ -222,7 +222,7 @@ export function getPluginGraphStats(graph: DependencyGraph): {
   };
 
   for (const edge of graph.edges) {
-    const source = edge.metadata?.pluginSource || 'core';
+    const source = String(edge.metadata?.pluginSource || 'core');
     if (source !== 'core') {
       stats.pluginEdges++;
     }

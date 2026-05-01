@@ -12,13 +12,13 @@ import { calculateConfidence, isCompatibleCall } from './impact-assessor.js';
 export async function findImpactedCallSites(
   element: any,
   change: SignatureChange,
-  analyzerService: { getDependents(elementName: string): Promise<Array<{ name: string; file: string; line: number }>> }
+  analyzerService: { getDependents(elementName: string): Promise<Array<{ name: string; file: string; line?: number }>> | Array<{ name: string; file: string; line?: number }> }
 ): Promise<ImpactedCallSite[]> {
   const impactedSites: ImpactedCallSite[] = [];
 
   try {
     // Get all callers from dependency graph
-    const callers = await analyzerService.getDependents(element.name);
+    const callers = await Promise.resolve(analyzerService.getDependents(element.name));
 
     if (!callers || callers.length === 0) {
       return impactedSites;
@@ -27,7 +27,7 @@ export async function findImpactedCallSites(
     for (const caller of callers) {
       try {
         // Extract call context at caller location
-        const callContext = extractCallContext(caller.file, caller.line);
+        const callContext = extractCallContext(caller.file, caller.line || 1);
         if (!callContext) continue;
 
         // Check if this call will be affected by the change
@@ -44,7 +44,7 @@ export async function findImpactedCallSites(
 
         impactedSites.push({
           file: caller.file,
-          line: caller.line,
+          line: caller.line || 1,
           callerElement: caller.name || 'unknown',
           callContext: callContext.context || '',
           confidence,

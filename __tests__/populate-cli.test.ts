@@ -12,8 +12,7 @@ describe('populate-coderef CLI', () => {
   const created: string[] = [];
   const testFile = fileURLToPath(import.meta.url);
   const packageRoot = path.resolve(path.dirname(testFile), '..');
-  const workspaceRoot = path.resolve(packageRoot, '..', '..');
-  const tscEntrypoint = path.join(workspaceRoot, 'node_modules', 'typescript', 'bin', 'tsc');
+  const tscEntrypoint = path.join(packageRoot, 'node_modules', 'typescript', 'bin', 'tsc');
 
   beforeAll(async () => {
     await execAsync(`"${process.execPath}" "${tscEntrypoint}" -p tsconfig.json`, {
@@ -82,6 +81,7 @@ describe('populate-coderef CLI', () => {
 
     const expectedFiles = [
       'index.json',
+      'semantic-registry.json',
       'graph.json',
       'context.json',
       'context.md',
@@ -102,6 +102,15 @@ describe('populate-coderef CLI', () => {
     for (const relativePath of expectedFiles) {
       await expect(fs.access(path.join(outputDir, relativePath))).resolves.toBeUndefined();
     }
+
+    const sourceContent = await fs.readFile(path.join(srcDir, 'example.ts'), 'utf-8');
+    expect(sourceContent).not.toContain('@semantic');
+
+    const index = JSON.parse(await fs.readFile(path.join(outputDir, 'index.json'), 'utf-8'));
+    expect(index.elements[0].codeRefId).toMatch(/^@/);
+
+    const semanticRegistry = JSON.parse(await fs.readFile(path.join(outputDir, 'semantic-registry.json'), 'utf-8'));
+    expect(semanticRegistry.generated_from).toBe('.coderef/index.json');
   });
 
   it('auto-detects python repos when --lang is omitted', async () => {
