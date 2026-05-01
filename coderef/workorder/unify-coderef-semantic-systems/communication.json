@@ -6,10 +6,22 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "checkpoint_ready",
   "completed_at": "2026-05-01T08:27:06Z",
   "current_phase": 6,
-  "phase_status": "complete",
+  "phase_status": "checkpoint_ready",
+  "close_attempted_at": "2026-05-01T15:21:13Z",
+  "review_status": "FAIL",
+  "close_blocker": {
+    "source": "validate-coderef-culture",
+    "verdict": "FAIL",
+    "summary": "2 fail-severity cultural checks are not green.",
+    "details": [
+      "closure_obligation_met: 27 pre-existing closed workorders are missing closed_via marker.",
+      "review_before_close: 30 pre-existing closed workorders are missing review_result."
+    ],
+    "report_path": "C:\\Users\\willh\\Desktop\\CODEREF\\ASSISTANT\\LOGS\\SESSIONS\\daily-agent-session-2026-05-01\\CODEREF-CORE\\validation-report.json"
+  },
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unify-coderef-semantic-systems\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unify-coderef-semantic-systems\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unify-coderef-semantic-systems\\analysis.json",
@@ -90,6 +102,12 @@
       "timestamp": "2026-05-01T08:27:06Z",
       "event": "terminal_post_exec",
       "summary": "Recorded terminal post-execution artifact. Focused build and workorder tests passed; broad suite failure remains documented as stale/non-scope suite drift."
+    },
+    {
+      "timestamp": "2026-05-01T15:21:13Z",
+      "event": "close_checkpoint",
+      "agent": "close-workorder v2.0.0",
+      "summary": "Close-workorder halted before archive because validate-coderef-culture returned FAIL on global pre-existing closure/review marker checks."
     }
   ]
 }

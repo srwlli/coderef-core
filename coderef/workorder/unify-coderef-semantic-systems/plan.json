@@ -38,7 +38,8 @@
             "src/cli/populate.ts",
             "src/integration/rag/chunk-converter.ts",
             "src/scanner/semantic-analyzer.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-1.2",
@@ -46,14 +47,17 @@
           "description": "Record compatibility constraints and existing output contracts so later phases preserve or explicitly migrate consumers.",
           "touches": [
             "coderef/workorder/unify-coderef-semantic-systems/analysis.json"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-1.3",
           "verb": "CHECK",
-          "description": "Gate Phase 1 on an explicit list of fields, consumers, and compatibility constraints for scanner, populate, RAG, and graph surfaces."
+          "description": "Gate Phase 1 on an explicit list of fields, consumers, and compatibility constraints for scanner, populate, RAG, and graph surfaces.",
+          "status": "completed"
         }
-      ]
+      ],
+      "status": "completed"
     },
     {
       "phase": 2,
@@ -68,7 +72,8 @@
           "touches": [
             "src/pipeline/types.ts",
             "src/types/types.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-2.2",
@@ -78,14 +83,17 @@
             "src/pipeline/orchestrator.ts",
             "src/pipeline/generators/registry-generator.ts",
             "src/pipeline/generators/graph-output.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-2.3",
           "verb": "TEST",
-          "description": "Add tests for CodeRef IDs with and without line numbers and for Windows path normalization."
+          "description": "Add tests for CodeRef IDs with and without line numbers and for Windows path normalization.",
+          "status": "completed"
         }
-      ]
+      ],
+      "status": "completed"
     },
     {
       "phase": 3,
@@ -101,7 +109,8 @@
             "src/scanner/semantic-analyzer.ts",
             "src/analyzer/import-parser.ts",
             "src/pipeline/orchestrator.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-3.2",
@@ -110,14 +119,17 @@
           "touches": [
             "src/pipeline/types.ts",
             "src/pipeline/generators/registry-generator.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-3.3",
           "verb": "TEST",
-          "description": "Add fixture tests proving reverse usedBy across files and preserving exports, imports, related, and rules."
+          "description": "Add fixture tests proving reverse usedBy across files and preserving exports, imports, related, and rules.",
+          "status": "completed"
         }
-      ]
+      ],
+      "status": "completed"
     },
     {
       "phase": 4,
@@ -132,7 +144,8 @@
           "touches": [
             "src/pipeline/generators/registry-generator.ts",
             "src/semantic/registry-sync.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-4.2",
@@ -140,7 +153,8 @@
           "description": "Refactor optional header generation to consume enriched ElementData and remove misleading used_by behavior based on forward imports.",
           "touches": [
             "src/semantic/header-generator.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-4.3",
@@ -148,14 +162,17 @@
           "description": "Refactor LLM enrichment utilities to enrich ElementData projections rather than rescan source files.",
           "touches": [
             "src/semantic/llm-enricher.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-4.4",
           "verb": "TEST",
-          "description": "Add tests proving semantic-registry.json and optional headers match canonical ElementData."
+          "description": "Add tests proving semantic-registry.json and optional headers match canonical ElementData.",
+          "status": "completed"
         }
-      ]
+      ],
+      "status": "completed"
     },
     {
       "phase": 5,
@@ -169,7 +186,8 @@
           "description": "Replace the separate semantic integration call in populate with canonical projection generation from pipeline data.",
           "touches": [
             "src/cli/populate.ts"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-5.2",
@@ -178,14 +196,17 @@
           "touches": [
             "src/cli/populate.ts",
             "docs/CLI.md"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-5.3",
           "verb": "TEST",
-          "description": "Add populate fixture tests proving minimal mode writes .coderef/index.json with semantic fields and does not write source headers by default."
+          "description": "Add populate fixture tests proving minimal mode writes .coderef/index.json with semantic fields and does not write source headers by default.",
+          "status": "completed"
         }
-      ]
+      ],
+      "status": "completed"
     },
     {
       "phase": 6,
@@ -196,7 +217,8 @@
         {
           "id": "TASK-6.1",
           "verb": "TEST",
-          "description": "Run focused tests for populate, usedBy, path normalization, CodeRef ID modes, semantic registry projection, optional headers, RAG, and graph consumers."
+          "description": "Run focused tests for populate, usedBy, path normalization, CodeRef ID modes, semantic registry projection, optional headers, RAG, and graph consumers.",
+          "status": "completed"
         },
         {
           "id": "TASK-6.2",
@@ -205,14 +227,17 @@
           "touches": [
             "README.md",
             "docs/CLI.md"
-          ]
+          ],
+          "status": "completed"
         },
         {
           "id": "TASK-6.3",
           "verb": "CHECK",
-          "description": "Confirm existing RAG and graph consumers continue to resolve CodeRef IDs and no production path uses the duplicate semantic scanner."
+          "description": "Confirm existing RAG and graph consumers continue to resolve CodeRef IDs and no production path uses the duplicate semantic scanner.",
+          "status": "completed"
         }
-      ]
+      ],
+      "status": "completed"
     }
   ],
   "hard_stops": [
