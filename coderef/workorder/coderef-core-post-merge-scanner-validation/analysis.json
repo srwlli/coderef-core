@@ -1,0 +1,94 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001",
+  "feature_name": "coderef-core-post-merge-scanner-validation",
+  "analysis_authored_at": "2026-05-01T18:00:00Z",
+  "blast_radius": {
+    "files_modified": 0,
+    "files_created": 0,
+    "files_potentially_regenerated": "any committed __snapshots__/*.snap that pin index.json or semantic-registry.json contents (count unknown until grep)",
+    "downstream_consumers": [
+      "Local RAG vector index (.coderef/coderef-vectors.json or wherever rag-index writes)",
+      "RAG server running on port 52849 (started during fast-start session; may have died — verify before reindex)",
+      "analyze-coderef-semantics skill (header-driven)",
+      "coderef-analyze skill (top-level wrapper)",
+      "data-source-report-use-case-analyzer skill (semantic-registry consumer)"
+    ],
+    "validation_targets": [
+      "Full vitest suite: 1274 pass / 66 fail expected (no new regressions vs pre-validation baseline)",
+      "RAG vector store freshness: file timestamp post-merge (post 2026-05-01T17:00 UTC)",
+      "Three analysis skills: each produces a report without throwing"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-1",
+      "title": "Test suite reveals a regression that was masked in the focused 26-test run",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "If full suite shows MORE failures than the post-merge baseline (66), halt validation and author a fix workorder. Do not snapshot-regen against a regression."
+    },
+    {
+      "id": "RISK-2",
+      "title": "RAG server is dead from the cascade failure earlier in the session",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "Check /coderef-rag-server status first. If server is down, restart it via /coderef-rag-server start before attempting reindex. The session received task failure notifications for the watcher, monitoring API, and Lloyd routers — RAG server status not confirmed."
+    },
+    {
+      "id": "RISK-3",
+      "title": "Analysis skills throw on the new richer relationship data",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Spot-check is exactly the test for this. Read-only invocation; if a skill throws, capture the error and stop. Do not patch inline; surface as a follow-up workorder."
+    },
+    {
+      "id": "RISK-4",
+      "title": "Snapshot regen masks real regressions",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Snapshot regen runs ONLY after the user explicitly confirms the diffs are intentional. Do not auto-update snapshots as part of the test run; review each diff first."
+    },
+    {
+      "id": "RISK-5",
+      "title": "RAG re-index takes a long time and stalls the workorder",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Run reindex in background mode with logging. The workorder hard-stops after reindex completes; user can intervene if it hangs."
+    }
+  ],
+  "candidates": [
+    {"path": "package.json", "kind": "file", "action": "READ test script definition (no edit)"},
+    {"path": ".coderef/index.json", "kind": "file", "action": "READ to sample rich-relationship element"},
+    {"path": ".coderef/semantic-registry.json", "kind": "file", "action": "READ to confirm post-merge content"},
+    {"path": ".coderef/coderef-vectors.json", "kind": "file", "action": "REGENERATE via rag-index"},
+    {"path": "__tests__/__snapshots__/", "kind": "directory", "action": "GREP for index/registry snapshots; regenerate selectively"},
+    {"path": "<analysis skill outputs>", "kind": "varies", "action": "INSPECT for thrown errors"}
+  ],
+  "dependencies": [
+    "/coderef-rag-server skill (status, start, index)",
+    "/coderef-analyze skill",
+    "/analyze-coderef-semantics skill",
+    "/data-source-report-use-case-analyzer skill",
+    "vitest CLI",
+    "Python for the index-sample probe"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "decision": "Read-only validation; no code changes inside this workorder",
+      "rationale": "Goal is verification of consumer behavior post-merge. Mixing fixes into a validation pass muddies success criteria. If regressions surface, separate fix workorder."
+    },
+    {
+      "decision": "Hard stops after RAG reindex and at final review",
+      "rationale": "Reindex is the only data-changing step (vector store rewrite). User confirms before snapshot regen, which is the only file-modifying step in the suite. Final hard stop is for closure approval."
+    },
+    {
+      "decision": "Three specific analysis skills, in named order: analyze-coderef-semantics → coderef-analyze → data-source-report-use-case-analyzer",
+      "rationale": "Order chosen by deep-dive: first is most directly affected by header writing being real, second exercises aggregate behavior across skills, third is the heaviest semantic-registry consumer. Sequential execution surfaces problems early."
+    },
+    {
+      "decision": "OPENCLAW → automation rename explicitly out of scope",
+      "rationale": "User instruction: address only coderef-core in this workorder; circle back to OPENCLAW after dispatch."
+    }
+  ]
+}

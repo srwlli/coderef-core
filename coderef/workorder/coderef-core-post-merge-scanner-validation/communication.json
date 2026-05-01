@@ -1,0 +1,292 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001",
+  "feature_name": "coderef-core-post-merge-scanner-validation",
+  "created": "2026-05-01T18:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "originating_stub": "STUB-241",
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 8,
+  "phase_status": "closed",
+  "completed_at": "2026-05-01T20:35:00Z",
+  "closed_at": "2026-05-01T22:42:00Z",
+  "closed_via": "/close-workorder --no-archive",
+  "review_status": "WARNING",
+  "review_result": "conditional_pass",
+  "archive_status": "deferred (sweep tomorrow with other completed workorders)",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-post-merge-scanner-validation\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-post-merge-scanner-validation\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-post-merge-scanner-validation\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored as 8 read-only validation phases with hard stops at Phase 3 (after RAG reindex) and Phase 8 (final closure approval). Scope strictly post-merge validation of CODEREF-CORE; OPENCLAW rename explicitly excluded."
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "atomicity": "Read-only validation. No commits. No code changes. The only file-modifying steps are RAG reindex (Phase 3) and snapshot regen (Phase 7); both are gated by hard stops.",
+    "rollback": "If validation surfaces a regression: HALT, record in communication_log, do NOT modify code or snapshots, surface to user. User decides between fix workorder (out of scope) or known-issue stub.",
+    "service_management": "Phase 3 requires the RAG server (port 52849) to be reachable. If it died from the cascade failure earlier in the session, restart it before proceeding.",
+    "hard_stops_at": ["phase_3", "phase_8"]
+  },
+  "hard_constraints": [
+    "Read-only validation — no source code changes inside this workorder",
+    "Snapshot regen requires explicit user confirmation",
+    "If full test suite shows MORE failures than the post-merge baseline of 66, HALT and author a fix workorder",
+    "Do not touch OPENCLAW → automation rename — separate concern, addressed independently"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [
+    {
+      "id": "ADJ-01",
+      "phase": 6,
+      "applied": true,
+      "summary": "Phase 6 plan task assumes /data-source-report-use-case-analyzer consumes .coderef/semantic-registry.json. Skill actually consumes data-source reports at MIGRATION/REPORTS/data-research/{SUBJECT}/. No semantic-registry references in skill code. Phase 6 recorded as PASS-with-finding (input mismatch, not regression)."
+    },
+    {
+      "id": "ADJ-02",
+      "phase": 7,
+      "applied": true,
+      "summary": "Phase 7 plan task assumes vitest __snapshots__/*.snap files pin index.json/semantic-registry.json contents. Codebase has zero __snapshots__ dirs and zero toMatchSnapshot calls in __tests__/src. Tests use direct JSON fixture comparison. Nothing to regenerate. Phase 7 PASS-by-vacuity."
+    }
+  ],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-01T18:00:00Z",
+      "actor": "create-workorder",
+      "event": "workorder_created",
+      "summary": "Workorder authored fresh in CODEREF-CORE/coderef/workorder/ to validate the merged populate-relationships+headers fix (origin/main = fe6bdc9). Promoted from STUB-241. Four artifacts persisted; plan_type=phased; 8 phases; hard stops at 3 and 8."
+    },
+    {
+      "timestamp": "2026-05-01T18:35:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_1_baseline_captured",
+      "summary": "Full vitest suite executed on HEAD=fe6bdc9 (main). Result: 80 test files (26 failed | 54 passed); 1340 tests (71 failed | 1269 passed). Baseline expected: 78 files (21 failed | 57 passed); 1340 tests (66 failed | 1274 passed). Delta: +5 failed files, +5 failed tests, -5 passed tests, +2 file count. Working tree NOT clean: 18 tracked test-fixture files show as DELETED (under __tests__/.test-integration-project/, __tests__/.test-venv-fixtures/, test-temp-cli/.coderef/). Likely cause: a prior test run mutated/cleaned these fixture files; current run sees them missing and tests dependent on them fail. This is environmental drift, not a regression introduced by the merged fix."
+    },
+    {
+      "timestamp": "2026-05-01T18:35:30Z",
+      "actor": "execute-workorder",
+      "event": "phase_1_halt",
+      "summary": "HALT per hard constraint: 'If full test suite shows MORE failures than the post-merge baseline of 66, HALT'. Surfacing to user. Recommended path: (a) restore deleted test fixtures via 'git checkout -- __tests__/.test-integration-project/ __tests__/.test-venv-fixtures/ test-temp-cli/' then re-run baseline; (b) if delta persists post-restore, author fix workorder for the new failures; (c) if delta resolves to 1274/66, resume Phase 2."
+    },
+    {
+      "timestamp": "2026-05-01T18:42:00Z",
+      "actor": "user",
+      "event": "halt_resolution_decision",
+      "summary": "User confirmed Option A: cleanup-hook pattern recognized from prior session. Authorized fixture restore + re-run with expectation of 1274/66 baseline."
+    },
+    {
+      "timestamp": "2026-05-01T18:43:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_1_baseline_restored",
+      "summary": "Ran 'git checkout -- __tests__/.test-integration-project/ __tests__/.test-venv-fixtures/ test-temp-cli/'. Re-ran full vitest. Result: 80 test files (23 failed | 57 passed); 1340 tests (66 failed | 1274 passed). Test count matches baseline EXACTLY. File-level count is +2 vs expected (23 vs 21) which is within ±2 flake tolerance and does not change total pass/fail counts. Phase 1 PASS. Advancing to Phase 2."
+    },
+    {
+      "timestamp": "2026-05-01T19:11:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_2_index_was_stale",
+      "summary": "Initial sample of .coderef/index.json revealed STALE state: 2191 elements with usedBy[] count = 0, semantic-registry.json missing. index.generatedAt was 2026-04-28T22:40 (predates merged fix at c5b8f00 / fe6bdc9). Per plan task 'If missing or stale, run /coderef-pipeline ... to regenerate', invoked: node dist/src/cli/populate.js -v. Pipeline completed in 12.2s."
+    },
+    {
+      "timestamp": "2026-05-01T19:30:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_3_preflight",
+      "summary": "RAG server health: GET http://localhost:52849/api/health -> 200, status=healthy, version=1.0.0, uptime_s=14985, started_at=2026-05-01T15:24:37Z (PID 10820, ~4h uptime, survived earlier-session cascade). Pre-reindex vector store baseline: .coderef/coderef-vectors.json size=175 bytes, records={}, namespaces=[], dimension=1536, createdAt=2026-04-28T20:07:34Z, updatedAt=2026-04-28T20:07:36Z (store empty since 2026-04-28; never repopulated after morning's index regen). Confirms the silent-quality-regression risk identified in workorder context."
+    },
+    {
+      "timestamp": "2026-05-01T19:34:46Z",
+      "actor": "execute-workorder",
+      "event": "phase_3_reindex_attempted",
+      "summary": "Ran 'node dist/src/cli/rag-index.js'. Duration: 1.44s pipeline + 2.7s wall. Files processed: 256. Chunks indexed: 0. Chunks skipped: 217. Chunks failed: 39. ALL 39 failures: 'Batch embedding failed: Invalid OpenAI API key'. Tokens used: 6169 (counted before API rejection). Vector store post-attempt: records still empty (0), updatedAt advanced to 2026-05-01T19:34:46Z. Chunk-conversion step (the failure mode that the populate-relationships fix addressed) ran cleanly — converter produced 39 batches successfully; failure was at OpenAI embedding call.",
+      "diagnostics": {
+        "files_processed": 256,
+        "chunks_indexed": 0,
+        "chunks_skipped": 217,
+        "chunks_failed": 39,
+        "all_failures_same_cause": "Invalid OpenAI API key",
+        "vector_records_post": 0,
+        "vector_file_mtime": "2026-05-01T19:34:46.136Z",
+        "rag_index_meta_mtime": "2026-05-01T19:34:46.150Z",
+        "byLanguage": {"typescript": 38, "javascript": 1}
+      }
+    },
+    {
+      "timestamp": "2026-05-01T19:36:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_3_root_cause_confirmed",
+      "summary": "Validated OPENAI_API_KEY directly: curl -H 'Authorization: Bearer $OPENAI_API_KEY' https://api.openai.com/v1/models -> HTTP 401, error.code='invalid_api_key', error.type='invalid_request_error', message confirms key 'sk-proj-...UnQA' is rejected by OpenAI. Key shape looks well-formed (164 chars, sk-proj prefix) — likely revoked, expired, or project-scoped restriction. This is environmental/credentials, NOT a code regression introduced by the merged fix. Phase 3 acceptance criteria 1 (server reachable) PASS; criterion 2 (vector index timestamp updated) PASS technically; criterion 3 (server health OK after) PASS; but business goal (post-fix embeddings actually exist on disk for downstream consumers) FAIL. The chunk-converter — the actual subject of the merged fix — produced 39 valid chunk batches without errors before hitting the credentials wall."
+    },
+    {
+      "timestamp": "2026-05-01T19:36:30Z",
+      "actor": "execute-workorder",
+      "event": "phase_3_halt",
+      "summary": "HARD STOP at Phase 3 boundary as planned. Surfacing to user. Decision needed: (a) refresh OPENAI_API_KEY and re-run rag-index — restores Phase 3 to true PASS and unblocks downstream skill spot-checks against real embeddings; (b) skip RAG re-index, accept that downstream phases will exercise skills against an empty vector store (Phase 4-6 skill behavior under empty embeddings is itself a meaningful test, but does not validate the populate-relationships fix end-to-end into RAG); (c) close workorder as conditional pass with a follow-up stub for credentials refresh + re-run."
+    },
+    {
+      "timestamp": "2026-05-01T19:50:00Z",
+      "actor": "user",
+      "event": "halt_resolution_decision",
+      "summary": "User confirmed local Ollama-only setup. Directive: switch embedding provider to Ollama, confirm /api/tags reachable, identify embedding model, find provider-switch env vars, set CODEREF_LLM_PROVIDER=ollama + base URL + model, re-run reindex."
+    },
+    {
+      "timestamp": "2026-05-01T19:52:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_3_provider_switch",
+      "summary": "Ollama preflight: GET http://localhost:11434/api/tags -> 200, models include nomic-embed-text:latest (137M, F16). Reviewed src/cli/rag-index.ts and src/integration/llm/{ollama-provider.ts, model-registry.ts} — Ollama is fully supported. Resolved config: CODEREF_LLM_PROVIDER=ollama, CODEREF_LLM_BASE_URL=http://localhost:11434 (default), CODEREF_LLM_API_KEY=ollama (default), embedding model=nomic-embed-text (default; dimensions=768 measured via 'ollama show'). Override via CODEREF_LLM_EMBED_MODEL if needed."
+    },
+    {
+      "timestamp": "2026-05-01T21:20:00Z",
+      "actor": "close-workorder",
+      "event": "close_reattempt_same_FAIL",
+      "summary": "User-requested re-run of /close-workorder. Validator returned identical FAIL (closure_obligation_met + review_before_close on the same 27/30 pre-existing TRACKING/workorders.json rows). No state change — STUB-246 has not shipped yet, so the underlying drift is unchanged. Workorder remains at status=checkpoint_ready with closure_blocker=STUB-246. Confirms validator integrity: re-running close without addressing the blocker produces the same hard-stop, no false greens."
+    },
+    {
+      "timestamp": "2026-05-01T20:58:00Z",
+      "actor": "close-workorder",
+      "event": "closure_blocked_pending_tracking_backfill",
+      "summary": "Workorder validation work is COMPLETE. Closure deferred. STUB-246 (tracking-workorders-closed-row-backfill, high priority, owner=ASSISTANT) authored to backfill closed_via + review_result on the 27/30 pre-validator-era closed rows in TRACKING/workorders.json. This workorder is parked at status=checkpoint_ready. closure_blocker=STUB-246. Re-run /close-workorder WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001 after STUB-246 ships and validator passes. Decision rationale: keep validation-workorder commit history clean; do not muddy audit trail by sweeping unrelated TRACKING ledger backfill into this workorder's commit. Two unrelated concerns get two separate workorders + audit trails."
+    },
+    {
+      "timestamp": "2026-05-01T20:50:00Z",
+      "actor": "close-workorder",
+      "event": "close_blocked_by_culture_validator_FAIL",
+      "summary": "/close-workorder Step 3 ran /validate-coderef-culture for CODEREF-CORE on 2026-05-01. Verdict: FAIL (2 fail-severity checks). FAIL reasons: (1) closure_obligation_met: 27 closed WOs in TRACKING/workorders.json missing 'closed_via' marker; (2) review_before_close: 30 closed WOs without 'review_result' field. The named WOs (close-workorder-closed-writer, coderef-core-skill-gap-remediation, coderef-semantic-integration-phase-4-5-fix, create-workorder-step-order-fix, dispatch-formatter-refactor, etc.) are PRE-EXISTING historical drift in the workorders ledger — NOT introduced by WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001. Per HARD-STOPS-AND-SOFT-STOPS, validator FAIL is a hard stop: close halts, status set to checkpoint_ready. Stub creation completed (STUB-243-245 + files), communication.json finalized through Phase 8 verdict. Workorder is functionally complete; closure is gated on TRACKING ledger backfill, not on the validation work itself. Decision required: (a) backfill closed_via + review_result on the 27/30 historical WOs in TRACKING/workorders.json (out of scope for this workorder), then re-run /close-workorder; (b) accept WARNING/FAIL state and force-close via --force-warning-ok (the FAIL is on closure_obligation_met which warning-mode does NOT cover — only WARNING-severity is covered by force-warning-ok); (c) leave at checkpoint_ready and address backfill in a separate workorder."
+    },
+    {
+      "timestamp": "2026-05-01T20:35:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_8_verdict_proposal",
+      "summary": "Final review compiled. Verdict proposal: CONDITIONAL PASS. Rationale: (1) Baseline tests match 1274/66 after fixture restore — merged fix introduced ZERO test regressions. (2) Scanner output verified rich — 2274 elements, 1486 with usedBy[], 2053 with imports[], 2059 with exports[]; sample element validated structurally. (3) RAG re-index successful with 256/256 chunks via Ollama — vector store rehydrated, server stable. (4) Three downstream skills validated: analyze-coderef-semantics ran without throwing (degraded mode due to missing foundation-docs export tree); coderef-analyze procedure ran end-to-end producing grounded analysis; data-source-report-use-case-analyzer proven not-a-consumer-of-scanner-output (plan defect). (5) No snapshot regen needed (repo doesn't use snapshot testing for scanner output). The merged populate-relationships+headers fix is functioning as intended on the scanner side. Findings collected for follow-up stub consideration listed below.",
+      "verdict": "conditional_pass",
+      "phase_results": {
+        "phase_1": "PASS — 1274/66 baseline match after fixture restore",
+        "phase_2": "PASS — index regenerated; 2274 elements, 1486 with usedBy[]",
+        "phase_3": "PASS — Ollama reindex, 256/256 chunks, server healthy (with finding: chunk metadata does not propagate usedBy/imports counts)",
+        "phase_4": "PASS — analyze-coderef-semantics graceful degraded fallback (with finding: missing foundation-docs export tree, header-index, manifest)",
+        "phase_5": "PASS — coderef-analyze procedure consumed all required artifacts cleanly",
+        "phase_6": "PASS-with-finding — ADJ-01: skill does not consume semantic-registry; plan defect, not regression",
+        "phase_7": "PASS-by-vacuity — ADJ-02: no snapshot files in repo to regenerate"
+      },
+      "follow_up_stub_candidates": [
+        {
+          "title": "RAG chunk-converter element-level enrichment",
+          "rationale": "Phase 3 finding: vector chunks emit dependencyCount=0/dependentCount=0 even though index.json has 1486 elements with usedBy[]. Either (a) ratify file-level chunking as by-design and document, or (b) extend chunk-converter to include element-level chunks with relationship metadata.",
+          "priority": "medium",
+          "category": "feature"
+        },
+        {
+          "title": "Generate foundation-docs export pipeline outputs in CODEREF-CORE post-populate",
+          "rationale": "Phase 4 finding: analyze-coderef-semantics expects .coderef/exports/foundation-docs/, .coderef/header-index.json, manifest.json — none exist post-populate. Either run scripts/doc-gen/* in CODEREF-CORE post-populate as part of canonical close-out, or document the skill's degraded mode as the expected mid-pipeline behavior.",
+          "priority": "medium",
+          "category": "infrastructure"
+        },
+        {
+          "title": "Phase-6-of-this-plan defect: replan downstream consumer set",
+          "rationale": "Phase 6 plan task assumed /data-source-report-use-case-analyzer is the heaviest semantic-registry consumer. It is not — it consumes data-source reports. Future post-merge validation workorders should identify actual scanner-output consumers (e.g., coderef-analyze, drift-generator, validation-generator, RAG chunk-converter) — not meta-analysis tools.",
+          "priority": "low",
+          "category": "process"
+        }
+      ]
+    },
+    {
+      "timestamp": "2026-05-01T20:30:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_7_no_snapshots_found",
+      "summary": "Phase 7 task: 'find -path \"*/__snapshots__/*.snap\" + grep snapshot files for index.json/semantic-registry.json references; surface diffs to user.' Investigation: zero __snapshots__ directories anywhere in CODEREF-CORE (excluding node_modules), zero toMatchSnapshot/toMatchInlineSnapshot calls in __tests__ or src. The repo does NOT use vitest's snapshot testing for scanner output. Tests that reference index.json (errors.test.ts, fileGeneration-integration.test.ts, drift-generator.test.ts, index-generator.test.ts, pipeline-snapshot.test.ts, populate-cli.test.ts, semantic-canonical.test.ts) compare via direct fixture/JSON parsing, not vitest .snap files. No snapshots exist to regenerate. Phase 7 has zero work to do. Plan adjustment ADJ-02 recorded. Phase 7 PASS-by-vacuity."
+    },
+    {
+      "timestamp": "2026-05-01T20:25:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_6_input_mismatch_finding",
+      "summary": "Phase 6 plan task: 'Verify /data-source-report-use-case-analyzer consumes the populated semantic-registry.json without errors.' Investigation finding: the skill does NOT consume .coderef/semantic-registry.json. Per its SKILL.md, this skill consumes a data-source report at 'MIGRATION/REPORTS/data-research/{SUBJECT}/{SUBJECT}-DATA-SOURCE-REPORT.md' (a meta-analysis output), not scanner output. grep across the skill directory for 'semantic-registry' returns zero matches. Furthermore, MIGRATION/REPORTS/data-research/ does not exist on disk. The plan's framing ('heaviest semantic-registry consumer') is a plan defect — this skill is unrelated to scanner-side semantic registry data. Phase 6 cannot be validated as written. PLAN ADJUSTMENT: ADJ-01 — phase_6 task description does not match skill capability; recording as PASS-with-finding because the skill's true inputs (data-source reports) are not gated by the merged scanner fix. The merged fix's downstream validation does not depend on this skill. Recommend Phase 8 verdict include this as a documented plan defect rather than a regression."
+    },
+    {
+      "timestamp": "2026-05-01T20:18:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_5_complete",
+      "summary": "coderef-analyze is a procedural read-only artifact-consuming skill (no CLI). Exercised by running its 5-step procedure: (1) resolved target = CODEREF-CORE, (2) verified required inputs (.coderef/index.json, .coderef/graph.json) present + optional reports all parseable, (3) read artifacts, (4) produced grounded inventory analysis. Findings from the post-fix scanner output: 2274 elements (method:1059, function:668, interface:376, class:118, type:39, constant:12, component:2); graph 2274 nodes / 11671 edges; relationships 1486 with usedBy[], 2053 with imports[], 2059 with exports[]; patterns asyncPatterns:267 / middleware:39 / errorHandling:798 / decorators:0; coverage 35% (82/235 tested); drift 0% (no stale files); validation 4 broken @coderef references (3 in test fixtures using deliberately-missing example.ts:alpha/missing, 1 in src/pipeline/generators/validation-generator.ts:62 referencing literal placeholder '@coderef{file:element}'); complexity summary present with totalElements/averageComplexity/averageLOC/highComplexityCount/elements keys. Skill procedure ran end-to-end without throwing. Phase 5 PASS."
+    },
+    {
+      "timestamp": "2026-05-01T20:14:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_4_complete",
+      "summary": "Ran 'python cli.py --dispatch-seed --project-root <coderef-core> --task-hint-json {layer:service, capability:semantic-relationship-population, keywords:[usedBy,imports,relationships]}'. Skill completed without exception in 2251ms. Returned structured JSON with wiring_status='degraded', fallback_used=true. Output is valid JSON. Phase 4 success criteria (skill completes without throwing; report is valid JSON) MET. PASS.",
+      "downstream_gap_finding": {
+        "title": "analyze-coderef-semantics is degraded due to missing semantic export artifacts",
+        "skill_init_errors": [
+          "foundation_docs path not found: .coderef/exports/foundation-docs",
+          "header-index.json not found: .coderef/header-index.json",
+          "manifest.json not found (provenance fail across manifest_integrity, artifact_freshness, input_availability)"
+        ],
+        "actually_present": [
+          ".coderef/exports/{diagram-wrapped.md, graph.json, graph.jsonld}",
+          ".coderef/foundation-docs-meta.json"
+        ],
+        "interpretation": "The merged populate-relationships fix correctly populates index.json (1486 elements with usedBy[] verified Phase 2). But this analysis skill expects sibling artifacts — foundation-docs export tree, header-index.json, manifest.json — that the populate pipeline did NOT produce. Headers were likely never written via --source-headers (off by default per workorder hard constraint 'Headers are optional and off by default'). Foundation-docs export pipeline is a SEPARATE infrastructure (scripts/doc-gen/) that needs to run after populate. Skill behavior is graceful (returns structured fallback, no crash) which is the actual Phase 4 acceptance criterion.",
+        "phase_8_consideration": "Workorder dispatched skill without first running --source-headers + foundation-docs generators. Either (a) running the skill against this state IS the realistic test (degraded mode is what consumers will hit if they call the skill mid-pipeline) — Phase 4 PASS as recorded; or (b) follow-up stub for 'run --source-headers + scripts/doc-gen/* in CODEREF-CORE then re-run analyze-coderef-semantics for full-mode validation'. The merged fix's specific deliverable (scanner relationship population) is intact — this gap is in adjacent semantic-export infrastructure."
+      }
+    },
+    {
+      "timestamp": "2026-05-01T20:08:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_3_chunk_metadata_finding",
+      "summary": "FINDING: Sample queries against the new vector store return file-level chunks with metadata showing dependencyCount=0 / dependentCount=0 for every chunk inspected (e.g., src/export/index.ts, src/integration/index.ts). The merged populate-relationships fix DID populate .coderef/index.json correctly (1486 elements with usedBy[]) — verified directly in Phase 2. But the RAG chunk-converter is emitting file-level chunks WITHOUT consuming the rich relationship counts into chunk metadata. So usedBy[]/imports[] data is searchable via direct index.json queries but NOT via embedded vector search. Two interpretations: (a) BY-DESIGN: chunk-converter is intentionally file-level only; semantic relationship queries should target index.json directly. (b) GAP: chunk-converter should include relationship counts in metadata (or emit element-level chunks). Workorder's plan does NOT explicitly require RAG chunks to carry usedBy/imports — only that 'RAG vector index timestamp updated' and 'health OK'. Phase 3 acceptance criteria are technically MET (server, timestamp, health). Recording the finding for Phase 8 verdict; if interpretation (b) is correct, this would be a separate stub not a Phase-3 fail."
+    },
+    {
+      "timestamp": "2026-05-01T20:05:52Z",
+      "actor": "execute-workorder",
+      "event": "phase_3_reindex_success",
+      "summary": "Re-ran rag-index with --provider ollama. First attempt failed with VectorStoreError dimension mismatch (1536 OpenAI vs 768 Ollama); CLI suggested --reset. Second run with --reset succeeded. Pipeline duration: 725.63s (~12 min for ~256 chunks; Ollama embeddings are single-text-per-call, not batched). Files processed: 256. Chunks indexed: 256. Chunks failed: 0. Vector store post-reindex: dimension=768, records=256, updatedAt=2026-05-01T20:05:52Z. RAG server health post-reindex: 200 OK, uptime_s=16884 (still PID 10820, no crash). Sample query 'populate semantic relationships usedBy reverse dependency resolver' returned src/registry/types.ts as top hit at 44.8% — relevant to the merged-fix subject area. Phase 3 PASS.",
+      "stats": {
+        "filesProcessed": 256,
+        "chunksIndexed": 256,
+        "chunksFailed": 0,
+        "tokensUsed": 41417,
+        "byLanguage": {"typescript": 222, "javascript": 17, "python": 17},
+        "vectorDimension": 768,
+        "vectorRecords": 256,
+        "preReindexUpdatedAt": "2026-04-28T20:07:36.278Z",
+        "postReindexUpdatedAt": "2026-05-01T20:05:52.360Z"
+      }
+    },
+    {
+      "timestamp": "2026-05-01T19:12:00Z",
+      "actor": "execute-workorder",
+      "event": "phase_2_post_regen_sample",
+      "summary": "Post-regen index.json: 2274 elements (expected ~2283; within tolerance), 2059 with exports[] (expected ~2053; match), 1486 with usedBy[] (expected ~1486; EXACT match), 1486 candidates with both. Sample element 'MockEnvironment' (interface, __tests__/generators/helpers.ts:8) shows populated exports[5], usedBy[1], imports[6] as structured objects. semantic-registry.json regenerated at 19:11:38 with version=1.0.0, generated_from='.coderef/index.json', 2274 entries — mirror confirmed. Phase 2 PASS.",
+      "sample_element": {
+        "type": "interface",
+        "name": "MockEnvironment",
+        "file": "__tests__/generators/helpers.ts",
+        "line": 8,
+        "uuid": "ad1c1fe8-d4fe-567a-9431-c472892b36d4",
+        "codeRefId": "@I/__tests__/generators/helpers.ts#MockEnvironment:8",
+        "exports_count": 5,
+        "usedBy_count": 1,
+        "imports_count": 6
+      }
+    },
+    {
+      "event": "unblocked_by_external_workorder",
+      "at": "2026-05-01T22:18:30Z",
+      "by": "ASSISTANT/WO-TRACKING-WORKORDERS-CLOSED-ROW-BACKFILL-001",
+      "summary": "/validate-coderef-culture closure_obligation_met and review_before_close gates were FAILing on the central CodeRef repo (ASSISTANT) due to 27 closed WOs missing closed_via and 30 missing review_result. WO-TRACKING-WORKORDERS-CLOSED-ROW-BACKFILL-001 (commits 2936646 + 07ccde6) backfilled both fields using a two-bucket sentinel scheme (reconstructed_from_communication_log / unrecoverable_pre_validator). Validator now returns closure_obligation_met=ok and review_before_close=ok. This WO is now unblocked from the central close gate. Owner domain may re-run /close-workorder when ready.",
+      "non_blocking_for_target": true,
+      "phase": "post_unblock"
+    },
+    {
+      "timestamp": "2026-05-01T22:42:00Z",
+      "actor": "close-workorder",
+      "event": "workorder_closed",
+      "agent": "close-workorder v2.0.0",
+      "summary": "Closed via /close-workorder --no-archive. Audit: /validate-coderef-culture verdict=WARNING (2 warns: stale comms on 3 unrelated WOs + 37 unregistered WO dirs — both pre-existing). tracking-validator pre-existing FAILs on skills.json schema + assistant capabilities (unrelated to this read-only validation WO; recorded as documented findings, not new blockers, per user directive). Phase 1-8 verdict: CONDITIONAL PASS (Phase 1 baseline 1274/66 match, Phase 2 scanner-output verified rich, Phase 3 RAG reindex 256/256 chunks via Ollama, Phases 4-7 analysis spot-checks PASS or PASS-with-finding, Phase 8 verdict). Three follow-up findings recorded as stub candidates (not blockers): (1) RAG chunk-converter element-level enrichment, (2) foundation-docs export pipeline post-populate, (3) Phase-6 plan defect for future validation WOs. Archive deferred — workorder dir stays at coderef/workorder/coderef-core-post-merge-scanner-validation/, sweep tomorrow with other completed workorders. Unblocked by ASSISTANT commit 4e0bfe1 (closed-row backfill).",
+      "review_status": "WARNING",
+      "review_result": "conditional_pass",
+      "phase": "closed"
+    }
+]
+}

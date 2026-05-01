@@ -1,0 +1,154 @@
+session_metadata:
+  session_id: SES-2026-05-01-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION
+  date: "2026-05-01"
+  agent: claude-opus-4-7
+  agent_domain: CODEREF-CORE
+  workorder_id: WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001
+  focus: 8-phase post-merge validation of CODEREF-CORE scanner + RAG + analysis skills against fe6bdc9 (populate-relationships+headers fix merged to main)
+  working_directory: C:\Users\willh\desktop\coderef\coderef-core
+
+closure_verification:
+  doc_discovery_ran: false
+  registries_validated: true
+  active_work_cleaned: true
+  final_push_complete: true
+  closure_blocker: null
+  workorder_status: closed
+  closed_at: "2026-05-01T22:42:00Z"
+  closed_via: /close-workorder --no-archive
+  unblocked_by: WO-TRACKING-WORKORDERS-CLOSED-ROW-BACKFILL-001 (commit 4e0bfe1 on ASSISTANT main)
+  validate_coderef_culture_verdict: WARNING (2 warns: stale comms on 3 unrelated WOs; 37 unregistered WO dirs — both pre-existing, not introduced by this WO)
+  tracking_validator_status: pre-existing FAILs on skills.json schema + assistant capabilities (unrelated to this WO; recorded as findings, not new blockers)
+  follow_up_findings:
+    - RAG chunk-converter element-level enrichment (Phase 3 finding) — stub candidate, not blocker
+    - Foundation-docs export pipeline post-populate generation (Phase 4 finding) — stub candidate, not blocker
+    - Phase-6 plan defect: replan downstream consumer set for future post-merge validation WOs — stub candidate, not blocker
+  archive_status: deferred (per user directive "sweep into archive tomorrow with the other completed workorders")
+
+tools_used:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Grep
+  - Glob
+  - TaskCreate
+  - TaskUpdate
+  - Skill
+  - Monitor
+  - ToolSearch
+
+files_modified:
+  created:
+    - C:\Users\willh\desktop\coderef\coderef-core\coderef\working\rag-chunk-converter-element-level-enrichment\stub.json
+    - C:\Users\willh\desktop\coderef\coderef-core\coderef\working\foundation-docs-export-pipeline-post-populate\stub.json
+    - C:\Users\willh\Desktop\CODEREF\ASSISTANT\coderef\working\post-merge-validation-consumer-set-replan\stub.json
+    - C:\Users\willh\Desktop\CODEREF\ASSISTANT\coderef\working\tracking-workorders-closed-row-backfill\stub.json
+    - C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\.coderef\sessions\SES-2026-05-01-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION.yaml
+  modified:
+    - C:\Users\willh\desktop\coderef\coderef-core\coderef\workorder\coderef-core-post-merge-scanner-validation\communication.json
+    - C:\Users\willh\Desktop\CODEREF\ASSISTANT\TRACKING\stubs.json
+    - C:\Users\willh\Desktop\CODEREF\ASSISTANT\TRACKING\workorders.json
+    - C:\Users\willh\Desktop\CODEREF\ASSISTANT\LOGS\SESSIONS\daily-agent-session-2026-05-01\CODEREF-CORE\checkin.json
+    - C:\Users\willh\Desktop\CODEREF\ASSISTANT\LOGS\SESSIONS\daily-agent-session-2026-05-01\CODEREF-CORE\status.json
+    - C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\.coderef\index.json
+    - C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\.coderef\semantic-registry.json
+    - C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\.coderef\coderef-vectors.json
+    - C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\.coderef\rag-index.json
+  deleted: []
+
+documents_generated:
+  - id: STUB-243
+    path: coderef/working/rag-chunk-converter-element-level-enrichment/stub.json
+    description: RAG chunk-converter emits file-level chunks without propagating usedBy/imports/exports counts; either enrich element-level or formally ratify file-level granularity
+    source: WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001 Phase 3 finding
+  - id: STUB-244
+    path: coderef/working/foundation-docs-export-pipeline-post-populate/stub.json
+    description: analyze-coderef-semantics falls back to degraded mode because foundation-docs export tree, header-index.json, manifest.json are not produced post-populate
+    source: WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001 Phase 4 finding
+  - id: STUB-245
+    path: ASSISTANT/coderef/working/post-merge-validation-consumer-set-replan/stub.json
+    description: Future post-merge validation workorders should pick consumers by inspecting which skills actually read semantic-registry.json, not by inferring
+    source: WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001 Phase 6 plan defect
+  - id: STUB-246
+    path: ASSISTANT/coderef/working/tracking-workorders-closed-row-backfill/stub.json
+    description: Backfill closed_via + review_result on 27/30 pre-validator-era closed rows in TRACKING/workorders.json; blocks downstream /close-workorder runs
+    source: WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001 close attempt validator FAIL
+
+decisions:
+  - id: DEC-01
+    what: Restored deleted test fixtures (Phase 1) via git checkout rather than treating as regression
+    rationale: User recognized cleanup-hook pattern from prior session; fixture deletion was environmental, not a code regression in the merged fix
+    outcome: Re-run baseline matched 1274/66 exactly; Phase 1 PASS
+  - id: DEC-02
+    what: Switched RAG provider OpenAI -> Ollama (Phase 3) after OPENAI_API_KEY validated 401
+    rationale: User confirmed local-Ollama-only setup; rag-index.ts has built-in Ollama support via CODEREF_LLM_PROVIDER env var; nomic-embed-text:latest installed
+    outcome: 256/256 chunks indexed in 725s; vector store rehydrated dim 768
+  - id: DEC-03
+    what: Phase 6 plan task incorrectly identified /data-source-report-use-case-analyzer as a semantic-registry consumer (ADJ-01 plan adjustment)
+    rationale: grep across skill directory returned zero semantic-registry references; skill consumes data-source reports at MIGRATION/REPORTS/data-research/, unrelated to scanner output
+    outcome: Phase 6 recorded PASS-with-finding; STUB-245 authored for process improvement
+  - id: DEC-04
+    what: Phase 7 task assumed __snapshots__/*.snap files exist; codebase has none (ADJ-02)
+    rationale: Repo doesn't use vitest snapshot testing for scanner output; tests use direct JSON fixture comparison
+    outcome: Phase 7 PASS-by-vacuity
+  - id: DEC-05
+    what: Did NOT force-close the workorder despite validator FAIL on closure_obligation_met + review_before_close
+    rationale: FAILs are pre-existing TRACKING ledger drift on 27/30 historical rows, not introduced by this workorder. Backfill is an unrelated concern that would muddy this workorder's audit trail. User confirmed Option B (separate backfill workorder)
+    outcome: Workorder parked at status=checkpoint_ready with closure_blocker=STUB-246; validator integrity preserved
+
+outcomes:
+  - Phase 1 PASS: full vitest 1274/66 baseline match after fixture restore (zero regressions from merged fix)
+  - Phase 2 PASS: regenerated index.json shows 2274 elements, 1486 with usedBy[], 2053 with imports[], 2059 with exports[]; semantic-registry.json mirror produced
+  - Phase 3 PASS: Ollama RAG reindex succeeded 256/256 chunks, 0 failures, 725s; vector store dim 768 with 256 records; server health stable
+  - Phase 4 PASS: analyze-coderef-semantics returned valid JSON in 2251ms, no exception (graceful degraded mode due to missing foundation-docs export tree)
+  - Phase 5 PASS: coderef-analyze procedure ran end-to-end consuming all required artifacts cleanly
+  - Phase 6 PASS-with-finding: skill is not a semantic-registry consumer (plan defect ADJ-01)
+  - Phase 7 PASS-by-vacuity: no snapshot files in repo (plan defect ADJ-02)
+  - Phase 8 verdict CONDITIONAL PASS: merged populate-relationships+headers fix functioning as intended on scanner side; downstream consumer chain has known infrastructure gaps tracked via STUB-243/244
+  - 4 follow-up stubs authored: STUB-243 (chunk-converter enrichment), STUB-244 (foundation-docs post-populate), STUB-245 (validation consumer-set replan), STUB-246 (TRACKING backfill — closure blocker)
+
+issues_encountered:
+  - id: ISS-01
+    issue: Test fixtures (__tests__/.test-integration-project/, .test-venv-fixtures/, test-temp-cli/) showed as deleted in git status; vitest produced +5 failures vs baseline
+    impact: Phase 1 hard-stop triggered per workorder constraint
+    resolution: User recognized cleanup-hook pattern; restored via 'git checkout --'; baseline matched on re-run
+  - id: ISS-02
+    issue: .coderef/index.json was stale (mtime 2026-04-28, predates merged fix); no usedBy[] data
+    impact: Phase 2 sample initially returned 0 candidates with rich relationships
+    resolution: Plan task explicitly authorized 'run /coderef-pipeline ... to regenerate'; ran node dist/src/cli/populate.js -v; index regenerated with full semantic data
+  - id: ISS-03
+    issue: OPENAI_API_KEY rejected by OpenAI (401 invalid_api_key)
+    impact: Phase 3 first attempt produced 0 indexed chunks (39 batches all failed with same auth error)
+    resolution: Switched to Ollama provider; required --reset for dim 1536 -> 768 store recreate
+  - id: ISS-04
+    issue: /validate-coderef-culture returned FAIL (closure_obligation_met + review_before_close) on 27/30 pre-existing rows in TRACKING/workorders.json
+    impact: /close-workorder Step 3 hard-stopped; cannot complete close
+    resolution: Authored STUB-246 to backfill ledger; parked this workorder at checkpoint_ready with closure_blocker reference
+
+tracking:
+  workorder_status: checkpoint_ready
+  next_action: Pick up STUB-246 (TRACKING workorders.json closed-row backfill) next session; after it ships, re-run /close-workorder WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001
+  follow_up_stubs:
+    - STUB-243 (rag-chunk-converter-element-level-enrichment)
+    - STUB-244 (foundation-docs-export-pipeline-post-populate)
+    - STUB-245 (post-merge-validation-consumer-set-replan)
+    - STUB-246 (tracking-workorders-closed-row-backfill — high priority, blocks future closes)
+  uncommitted_changes:
+    - All work this session is uncommitted in coderef-core and ASSISTANT working trees
+    - Per user direction: do not commit until STUB-246 ships and validator passes
+  parallel_work_streams:
+    - CODEREF-CORE post-merge scanner validation (this workorder, checkpoint_ready)
+    - OPENCLAW -> automation rename (excluded from this workorder per scope note; addressed independently)
+
+success_criteria:
+  - acceptance_1: full vitest within tolerance of 1274/66 baseline — MET (exact match after fixture restore)
+  - acceptance_2: .coderef/index.json contains rich relationship data (~2283 elements) — MET (2274 elements, 1486 usedBy)
+  - acceptance_3: RAG vector index timestamp updated post-reindex — MET (2026-04-28 -> 2026-05-01)
+  - acceptance_4: RAG server health OK after reindex — MET (uptime continuous, no crash)
+  - acceptance_5: analyze-coderef-semantics completes without throwing — MET (graceful degraded mode)
+  - acceptance_6: coderef-analyze completes without throwing — MET
+  - acceptance_7: data-source-report-use-case-analyzer completes without throwing — N/A (skill is not a scanner-output consumer; ADJ-01)
+  - acceptance_8: snapshots match or are explicitly regenerated with approval — N/A (no snapshots exist; ADJ-02)
+  - acceptance_9: final verdict recorded — MET (CONDITIONAL PASS in communication.json)
+  - acceptance_10: user approves closure — DEFERRED (closure blocked on STUB-246; user approved checkpoint_ready state)

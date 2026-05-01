@@ -1,0 +1,153 @@
+{
+  "$schema": "../../../../ASSISTANT/SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json",
+  "META_DOCUMENTATION": {
+    "workorder_id": "WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001",
+    "feature_name": "coderef-core-post-merge-scanner-validation",
+    "created": "2026-05-01T18:00:00Z",
+    "plan_type": "phased",
+    "plan_type_rationale": "Multi-task post-merge validation across test suite, RAG embeddings, and analysis-skill spot-checks. Hard stops after data-changing operations and at final review. Predominantly read-only.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "owner_domain": "CODEREF-CORE",
+    "target_project": "coderef-core",
+    "objective": "Verify that the merged populate-relationships+headers fix (origin/main = fe6bdc9) does not regress downstream consumers: full test suite, RAG embeddings, three analysis skills, and committed snapshots.",
+    "approved_verbs_used": ["READ", "WRITE", "EDIT", "RUN", "TEST", "COMMIT", "CHECK", "STOP"]
+  },
+  "phases": {
+    "phase_1": {
+      "phase_number": 1,
+      "title": "Baseline test re-run on origin/main",
+      "hard_stop": false,
+      "purpose": "Confirm the post-merge state of CODEREF-CORE matches what we observed during the merge sequence: 1274 pass / 66 fail. Establish the validation baseline.",
+      "tasks": [
+        {"verb": "RUN", "task": "cd C:/Users/willh/Desktop/CODEREF/CODEREF-CORE && git status — confirm working tree state. Expected: clean wrt source files; coderef/working/ and coderef/archived/ untracked is OK."},
+        {"verb": "CHECK", "task": "git log -1 --oneline — confirm HEAD is fe6bdc9 (post-merge state) on main."},
+        {"verb": "RUN", "task": "cd C:/Users/willh/Desktop/CODEREF/CODEREF-CORE && npm test 2>&1 | tail -30 — full suite, not focused. Capture the final summary line."},
+        {"verb": "CHECK", "task": "Compare against expected baseline: Test Files = 21 failed | 57 passed (78); Tests = 66 failed | 1274 passed (1340). If the actuals match within tolerance (±2 tests for flake), proceed. If actuals show MORE failures than baseline, halt and surface what regressed."},
+        {"verb": "WRITE", "task": "Append baseline numbers to communication.json.communication_log so the validation has a recorded ground truth."}
+      ],
+      "success_criteria": ["Full vitest suite executed", "Pass/fail counts match post-merge baseline within tolerance", "Baseline recorded in communication_log"]
+    },
+    "phase_2": {
+      "phase_number": 2,
+      "title": "Sample post-fix scanner output",
+      "hard_stop": false,
+      "purpose": "Confirm the merged fix is producing real relationship data in .coderef/index.json (not just passing tests on test fixtures).",
+      "tasks": [
+        {"verb": "READ", "task": "Confirm .coderef/index.json exists in CODEREF-CORE and is post-merge (mtime > 2026-05-01T17:00 UTC). If missing or stale, run: cd CODEREF-CORE && /coderef-pipeline coderef-core --stages=populate to regenerate."},
+        {"verb": "RUN", "task": "Sample one element with rich relationships: cd CODEREF-CORE && python -c \"import json; d=json.load(open('.coderef/index.json')); cands=[x for x in d['elements'] if x.get('imports') and x.get('usedBy')]; print('total elements:', len(d['elements']), 'with imports:', sum(1 for x in d['elements'] if x.get('imports')), 'with usedBy:', sum(1 for x in d['elements'] if x.get('usedBy'))); print('sample:'); print(json.dumps(cands[0], indent=2) if cands else '<<no candidate>>')\""},
+        {"verb": "CHECK", "task": "Expected from the merged fix's verification: ~2283 elements, ~2053 with imports, ~1486 with usedBy. The sampled element should have non-empty imports[] and usedBy[] arrays with structured objects (not strings)."},
+        {"verb": "READ", "task": "Confirm .coderef/semantic-registry.json exists, mtime matches index.json, and reports generated_from = '.coderef/index.json' in its metadata."},
+        {"verb": "WRITE", "task": "Append the sampled element JSON to communication.json.communication_log as evidence."}
+      ],
+      "success_criteria": ["index.json contains rich relationship data on the expected scale", "semantic-registry.json mirrors index.json", "Sample element has populated imports[] and usedBy[] arrays"]
+    },
+    "phase_3": {
+      "phase_number": 3,
+      "title": "RAG re-index against post-fix scanner output",
+      "hard_stop": true,
+      "purpose": "Refresh RAG vector embeddings so they reflect the new richer scanner output. Closes the silent-quality-regression risk identified in the issue investigator deep-dive.",
+      "tasks": [
+        {"verb": "RUN", "task": "/coderef-rag-server status — verify the RAG server on port 52849 is reachable. Earlier in the session, several services failed (Lloyd routers, OPENCLAW Monitoring API, watcher); RAG server status not directly confirmed."},
+        {"verb": "RUN", "task": "If RAG server is down: /coderef-rag-server start. Wait for health endpoint OK before proceeding."},
+        {"verb": "READ", "task": "Capture pre-reindex vector index timestamp. Path candidates: .coderef/coderef-vectors.json, .coderef/rag-index.json. ls -l <path> and record the mtime."},
+        {"verb": "RUN", "task": "/coderef-rag-server index coderef-core OR cd CODEREF-CORE && node dist/src/cli/rag-index.js — invoke the canonical reindex path. May take several minutes."},
+        {"verb": "CHECK", "task": "Verify post-reindex vector index timestamp is later than the pre-reindex timestamp. If unchanged, the reindex did not actually run; halt and investigate."},
+        {"verb": "RUN", "task": "/coderef-rag-server status — confirm server is still healthy after reindex (memory pressure during reindex sometimes crashes the server)."},
+        {"verb": "WRITE", "task": "Append pre/post timestamps and reindex duration to communication_log."}
+      ],
+      "success_criteria": ["RAG server reachable", "Vector index file timestamp updated post-reindex", "RAG server health endpoint OK after reindex"],
+      "hard_stop_reason": "Reindex is the only file-modifying step in this workorder (writes new vector data). Operator confirms it completed cleanly before proceeding to skill spot-checks."
+    },
+    "phase_4": {
+      "phase_number": 4,
+      "title": "Spot-check analyze-coderef-semantics",
+      "hard_stop": false,
+      "purpose": "First analysis skill exercise. Most directly affected by --source-headers writing real headers for the first time post-merge.",
+      "tasks": [
+        {"verb": "RUN", "task": "Invoke /analyze-coderef-semantics against the project. Capture stdout/stderr and final report."},
+        {"verb": "CHECK", "task": "Verify the skill completes without throwing an unhandled exception. A graceful 'no headers found' or 'partial coverage' result is acceptable; a stack trace is not."},
+        {"verb": "CHECK", "task": "If the skill produces a report file (e.g., .coderef/reports/semantic-headers.json or similar), verify it parses as JSON and contains element entries."},
+        {"verb": "WRITE", "task": "Append skill outcome (passed / failed / report-path) to communication_log."}
+      ],
+      "success_criteria": ["Skill completes without throwing", "Report (if any) is valid JSON or markdown"]
+    },
+    "phase_5": {
+      "phase_number": 5,
+      "title": "Spot-check coderef-analyze",
+      "hard_stop": false,
+      "purpose": "Top-level wrapper. Surfaces aggregate behavior change quickly across multiple sub-checks.",
+      "tasks": [
+        {"verb": "RUN", "task": "Invoke /coderef-analyze against the project. Capture stdout/stderr and final report."},
+        {"verb": "CHECK", "task": "Verify the skill completes without throwing. Allow individual sub-checks to report findings; reject only if the wrapper itself crashes."},
+        {"verb": "WRITE", "task": "Append skill outcome to communication_log."}
+      ],
+      "success_criteria": ["Wrapper completes; individual sub-check findings recorded but do not block phase pass"]
+    },
+    "phase_6": {
+      "phase_number": 6,
+      "title": "Spot-check data-source-report-use-case-analyzer",
+      "hard_stop": false,
+      "purpose": "Heaviest semantic-registry consumer. If anything is going to mis-handle the new richer relationship data, this is most likely to surface it.",
+      "tasks": [
+        {"verb": "RUN", "task": "Invoke /data-source-report-use-case-analyzer against the project. Capture stdout/stderr and final report."},
+        {"verb": "CHECK", "task": "Verify the skill consumes the populated semantic-registry.json without errors."},
+        {"verb": "WRITE", "task": "Append skill outcome to communication_log."}
+      ],
+      "success_criteria": ["Skill processes semantic-registry.json without errors"]
+    },
+    "phase_7": {
+      "phase_number": 7,
+      "title": "Snapshot review + selective regen",
+      "hard_stop": false,
+      "purpose": "If any committed __snapshots__ pin index.json or semantic-registry.json contents, they will diff post-merge. Regenerate ONLY if user confirms diffs are intentional.",
+      "tasks": [
+        {"verb": "RUN", "task": "find CODEREF-CORE -path '*/__snapshots__/*.snap' 2>&1 | head -20 — list snapshot files."},
+        {"verb": "RUN", "task": "grep -l 'index.json\\|semantic-registry.json' <each snapshot file> — identify which snapshots reference scanner output."},
+        {"verb": "READ", "task": "For each affected snapshot, sample the diff against current scanner output. Determine if differences are entirely additions of relationship data (expected) or include changes to existing fields (unexpected)."},
+        {"verb": "STOP", "task": "Surface diff to user for confirmation. Do NOT auto-regenerate. If user confirms intentional, proceed; otherwise halt and re-investigate."},
+        {"verb": "RUN", "task": "If approved: cd CODEREF-CORE && npx vitest run --update-snapshot <scoped-test-paths> — regenerate only the affected snapshots."},
+        {"verb": "RUN", "task": "Re-run the full vitest suite to confirm snapshot regen didn't introduce failures elsewhere."},
+        {"verb": "WRITE", "task": "Append snapshot regen outcome (paths, line-count delta, post-regen test result) to communication_log."}
+      ],
+      "success_criteria": ["Snapshots reviewed", "Regen happens only after user confirmation", "Post-regen test suite still at baseline"]
+    },
+    "phase_8": {
+      "phase_number": 8,
+      "title": "Final review + closure",
+      "hard_stop": true,
+      "purpose": "Aggregate validation findings into a closure summary. Decide: clean pass, conditional pass with follow-up stubs, or fail-and-rollback.",
+      "tasks": [
+        {"verb": "READ", "task": "Re-read communication.json.communication_log: confirm baseline test counts, RAG reindex timestamps, three skill outcomes, and snapshot regen status are all recorded."},
+        {"verb": "CHECK", "task": "Tally results. Clean pass = baseline tests match + RAG reindexed + three skills clean + snapshots either unchanged or regen-confirmed. Conditional pass = clean tests + skills work + 1 known issue surfaced and stubbed. Fail = test regressions OR skill crash OR snapshot diff that's not just additions."},
+        {"verb": "WRITE", "task": "Author final summary in communication_log with verdict and any follow-up stub IDs needed."},
+        {"verb": "STOP", "task": "Surface verdict to user for closure approval before /close-workorder runs."}
+      ],
+      "success_criteria": ["All phase outcomes recorded in communication_log", "Verdict assigned (pass / conditional pass / fail)", "User approves closure or rollback"],
+      "hard_stop_reason": "Final approval before /close-workorder. Validation results may inform whether STUB-241's stated regressions need follow-up workorders before closure."
+    }
+  },
+  "hard_stops": ["phase_3", "phase_8"],
+  "execution_rules": {
+    "atomicity": "Read-only validation. No commits. No code changes. The only file-modifying steps are RAG reindex (Phase 3) and snapshot regen (Phase 7); both are gated by hard stops.",
+    "rollback": "If any validation step surfaces a regression: HALT, record in communication_log, do NOT modify code or snapshots, surface to user. User decides between authoring a fix workorder (out of scope) or accepting the regression as a known issue (with separate stub).",
+    "service_management": "Phase 3 requires the RAG server (port 52849) to be reachable. If it died from the cascade failure earlier in the session, restart it before proceeding."
+  },
+  "hard_constraints": [
+    "Read-only validation — no source code changes inside this workorder",
+    "Snapshot regen requires explicit user confirmation",
+    "If full test suite shows MORE failures than the post-merge baseline of 66, HALT and author a fix workorder",
+    "Do not touch OPENCLAW → automation rename — that work is tracked separately and out of scope here"
+  ],
+  "acceptance_criteria": [
+    "Full vitest suite executed; pass/fail count within tolerance of post-merge baseline (1274 pass / 66 fail)",
+    ".coderef/index.json contains rich relationship data on the expected scale (~2283 elements, ~2053 with imports, ~1486 with usedBy)",
+    "RAG vector index file timestamp updated post-reindex",
+    "RAG server health OK after reindex",
+    "analyze-coderef-semantics skill completes without throwing",
+    "coderef-analyze skill completes without throwing",
+    "data-source-report-use-case-analyzer skill completes without throwing",
+    "Any committed scanner-output snapshots either match current output or are explicitly regenerated with user approval",
+    "Final verdict (pass / conditional pass / fail) recorded in communication_log",
+    "User approves closure"
+  ]
+}

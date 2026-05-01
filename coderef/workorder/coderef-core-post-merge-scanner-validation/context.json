@@ -1,0 +1,54 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001",
+  "feature_name": "coderef-core-post-merge-scanner-validation",
+  "created": "2026-05-01T18:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_stub": "STUB-241",
+  "intake": {
+    "trigger": "user_request",
+    "user_request": "Validate downstream consumers (RAG embeddings, analysis skills, snapshot tests) against the post-fix scanner output now that wo/rag-index-chunk-converter-impl has merged to main (origin/main = fe6bdc9). Closes the consumer-side validation gap left by WO-POPULATE-SEMANTIC-RELATIONSHIPS-HEADERS-001 which scoped acceptance to scanner output correctness only."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Multi-task post-merge validation: full test suite re-run, RAG re-index against new output, three analysis-skill spot-checks, snapshot regen. Hard stop after RAG re-index (data-changing operation) and after final review. Not 'strict' (every-phase hard stop is unnecessary overhead for read-only validation tasks). Not 'light' (multiple distinct tasks across different surfaces). 'Phased' fits.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": {
+      "summary_text": "Discovery completed inline during the prior issue-investigator deep-dive on the scanner/output/analysis chain. Key findings: 26 vitests covered producer-side correctness only; consumer-side tests (drift-generator, RAG indexing pipeline, coverage-generator) were not specifically named in the focused run; RAG embeddings on disk pre-date the populate fix and are now stale relative to scanner output; analysis-tool source code did not change on the merged branch (only data files); type contract for ElementData.imports/usedBy is unchanged.",
+      "candidates_count": 6,
+      "blast_radius_files": 0,
+      "public_api_hits": 0
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "Run full vitest suite on origin/main (commit fe6bdc9): npm test (not focused, not --grep)",
+      "Capture pre-validation pass/fail baseline; expect 1274 pass / 66 fail (matches post-merge state)",
+      "Re-index RAG vectors against the post-fix scanner output via /coderef-rag-server index <project> or rag-index CLI",
+      "Confirm new vector index file timestamp post-merge",
+      "Spot-check analyze-coderef-semantics: run the skill against the project, verify it parses the newly-written semantic headers without throwing",
+      "Spot-check coderef-analyze: run the top-level wrapper, verify it produces an aggregate report",
+      "Spot-check data-source-report-use-case-analyzer: run against the new semantic-registry.json, verify it consumes the populated relationship fields",
+      "Identify any committed snapshot files (e.g., __tests__/__snapshots__/*.snap) that pin index.json or semantic-registry.json contents; regenerate via vitest --update-snapshot if drift is intentional",
+      "Sample one element with rich relationships from .coderef/index.json to confirm the merged fix is producing real data: python -c 'import json; d=json.load(open(\".coderef/index.json\")); e=[x for x in d[\"elements\"] if x.get(\"imports\") and x.get(\"usedBy\")][0]; print(json.dumps(e, indent=2))'"
+    ],
+    "out_of_scope": [
+      "3 pre-existing invalid UUID anchors in foundation-docs gate (warnings only, predate this work — separate stub if pursued)",
+      "ASSISTANT tracking-validator pre-existing schema-drift FAIL (predates this work, separate concern)",
+      "The 66 pre-existing test failures inherited from main (not regressions from this merge — separate triage)",
+      "Any code changes to scanner, generators, or analysis tools (read-only validation only; bug-fix workorders authored separately if regressions surface)",
+      "OPENCLAW → automation rename workorder in ASSISTANT (separate concern, addressed independently)"
+    ]
+  },
+  "constraints": [
+    "Read-only validation: this workorder verifies behavior, does not change source code in coderef-core, scanner, or analysis tools",
+    "If a regression IS surfaced during validation, halt and author a separate fix workorder rather than patching inline",
+    "Snapshot regen is the only file-modifying step; perform it ONLY after the user confirms the diffs are intentional",
+    "Do not touch RAG vector data on disk before confirming the running RAG server (port 52849) status; if it died during this session, restart it before re-indexing"
+  ],
+  "session": {
+    "session_id": "daily-agent-session-2026-04-30",
+    "agent_domain": "CODEREF-CORE"
+  }
+}
