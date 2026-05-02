@@ -3,10 +3,21 @@
   "feature_name": "pipeline-graph-ground-truth-tests",
   "created": "2026-05-02T00:56:53.3578146-04:00",
   "project_id": "coderef-core",
-  "status": "checkpoint_ready",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
-  "review_status": "FAIL",
+  "completed_at": "2026-05-02T17:36:00Z",
+  "closed_at": "2026-05-02T19:55:00Z",
+  "updated": "2026-05-02T19:55:00Z",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/pipeline-graph-ground-truth-tests/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (validate-coderef-culture WARNING; tracking-validator 15/15 PASS)",
+    "warnings": [
+      "cultural-validator WARNING (2 warn-severity checks; pre-existing repo drift)",
+      "force-warning-ok flag supplied per dispatch-007"
+    ]
+  },
   "objective": "Create failing Phase 0 tests that expose current dependency graph reliability failures before implementation begins.",
   "artifact_paths": {
     "context": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-graph-ground-truth-tests\\context.json",
@@ -52,6 +63,11 @@
       "timestamp": "2026-05-02T17:48:00Z",
       "actor": "close-workorder v2.0.0",
       "message": "Close/archive halted at Phase A tracking-validator hard stop. Cultural validator remediated from FAIL to WARNING, but tracking-validator still fails on pre-existing ASSISTANT TRACKING/stubs.json and TRACKING/projects.json schema issues. Workorder remains checkpoint_ready and unarchived."
+    },
+    {
+      "timestamp": "2026-05-02T19:55:00Z",
+      "actor": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder --force-warning-ok per DISPATCH-2026-05-02-007. Phase A audit WARNING (cultural-validator 2 warn-severity, tracking-validator 15/15 PASS, semantic/quality/route gates skip — no artifacts). Phase 0 deliverable in commit 1d1d830."
     }
   ]
 }

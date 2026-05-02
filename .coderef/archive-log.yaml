@@ -1,0 +1,5 @@
+- workorder_id: WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001
+  feature_name: pipeline-graph-ground-truth-tests
+  archived_at: 2026-05-02T19:55:00Z
+  archive_path: coderef/ARCHIVED/pipeline-graph-ground-truth-tests/
+  status: WARNING
