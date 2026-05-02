@@ -110,6 +110,24 @@ interface ElementData {
   /** Line number (1-based) */
   line: number;
 
+  /** Canonical line-anchored CodeRef ID */
+  codeRefId?: string;
+
+  /** Canonical CodeRef ID without line anchor */
+  codeRefIdNoLine?: string;
+
+  /** Optional canonical layer from ASSISTANT/STANDARDS/layers.json */
+  layer?: string;
+
+  /** Optional kebab-case capability taxonomy */
+  capability?: string;
+
+  /** Optional kebab-case constraint tags */
+  constraints?: string[];
+
+  /** Semantic header parser status; defaults to "missing" */
+  headerStatus?: 'defined' | 'stale' | 'missing' | 'partial';
+
   /** Whether the element is exported (optional) */
   exported?: boolean;
 
@@ -120,6 +138,8 @@ interface ElementData {
   calls?: string[];
 }
 ```
+
+The consolidated scanner does not guarantee return types, decorators, docstrings, or cyclomatic complexity. Treat those as optional legacy/future metadata when they appear from specialized producers.
 
 ---
 

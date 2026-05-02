@@ -1,0 +1,196 @@
+{
+  "$schema": "https://coderef/assistant/skills/workflow/_shared/planner/plan.schema.json",
+  "workorder_id": "WO-PIPELINE-SCANNER-IDENTITY-TAXONOMY-001",
+  "feature_name": "pipeline-scanner-identity-taxonomy",
+  "created": "2026-05-02T18:30:00Z",
+  "project_id": "coderef-core",
+  "plan_type": "phased",
+  "goal": "Ratify the canonical CodeRef ID, add file-grain taxonomy fields (layer, capability, constraints, headerStatus) to ElementData, validate layer against STANDARDS/layers.json, collapse the parallel scanner in src/semantic/orchestrator.ts, and remove or downgrade overclaimed scanner features.",
+  "plan_type_rationale": "This is one phase of a sequential nine-phase pipeline refactor. Internal task ordering matters and Phase 2 must not start until Phase 1's exit criteria are met.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Stop after Phase 1 exit criteria are met. Do not begin Phase 2 (relationship extraction split) or Phase 2.5 (semantic header parser) in this workorder."
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1 - Scanner Identity & Taxonomy Ratification",
+      "hard_stop": true,
+      "description": "Ratify createCodeRefId as the single canonical ID, add taxonomy fields to ElementData, collapse the parallel scanner, and remove overclaimed feature claims. Stop before Phase 2.",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read current ElementData definitions and all producers/consumers: types/types.ts, pipeline/types.ts, pipeline/semantic-elements.ts, scanner/semantic-analyzer.ts, semantic/*, registry/entity-registry.ts, cli/populate.ts. Confirm current shape before editing.",
+          "touches": [
+            "src/types/types.ts",
+            "src/pipeline/types.ts",
+            "src/pipeline/semantic-elements.ts",
+            "src/scanner/semantic-analyzer.ts",
+            "src/semantic/orchestrator.ts",
+            "src/semantic/ast-extractor.ts",
+            "src/semantic/projections.ts",
+            "src/registry/entity-registry.ts",
+            "src/cli/populate.ts"
+          ]
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read STANDARDS/layers.json (lives in ASSISTANT/STANDARDS) and the canonical header grammar BNF in ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md. Capture the 13-value layer enum verbatim. Do not transcribe it into TypeScript; the loader will read the file at runtime.",
+          "touches": [
+            "C:\\Users\\willh\\Desktop\\CODEREF\\ASSISTANT\\STANDARDS\\layers.json",
+            "C:\\Users\\willh\\Desktop\\CODEREF\\ASSISTANT\\SKILLS\\ANALYSIS\\analyze-coderef-semantics\\SKILL.md"
+          ]
+        },
+        {
+          "id": "1.3",
+          "verb": "WRITE",
+          "description": "Create src/pipeline/element-taxonomy.ts. Export: a typed loader that reads STANDARDS/layers.json at runtime and returns the layer enum; a validator function isValidLayer(value) -> boolean; a kebab-case validator isKebabCase(value) -> boolean; constants for the headerStatus enum ('defined' | 'stale' | 'missing' | 'partial').",
+          "touches": [
+            "src/pipeline/element-taxonomy.ts"
+          ]
+        },
+        {
+          "id": "1.4",
+          "verb": "EDIT",
+          "description": "Add optional fields to ElementData in src/types/types.ts and src/pipeline/types.ts: layer?: LayerEnum; capability?: string (kebab-case); constraints?: string[] (kebab-case items); headerStatus: 'defined' | 'stale' | 'missing' | 'partial' (REQUIRED, default 'missing'). Update the union or interface so Phase 2.5 can populate these without further schema work.",
+          "touches": [
+            "src/types/types.ts",
+            "src/pipeline/types.ts"
+          ]
+        },
+        {
+          "id": "1.5",
+          "verb": "EDIT",
+          "description": "Update src/pipeline/semantic-elements.ts: every emitted ElementData receives headerStatus='missing' explicitly. Do NOT attempt to populate layer / capability / constraints in this phase (the parser ships in Phase 2.5).",
+          "touches": [
+            "src/pipeline/semantic-elements.ts"
+          ]
+        },
+        {
+          "id": "1.6",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/element-taxonomy.test.ts. Cover: loader returns the 13 canonical layers from STANDARDS/layers.json; isValidLayer accepts each canonical value and rejects unknown values; isKebabCase accepts 'pipeline-orchestration' and rejects 'pipelineOrchestration', 'Pipeline-Orchestration', and ''; the loaded enum matches the BNF in analyze-coderef-semantics/SKILL.md (read both files and assert set equality).",
+          "touches": [
+            "__tests__/pipeline/element-taxonomy.test.ts"
+          ]
+        },
+        {
+          "id": "1.7",
+          "verb": "EDIT",
+          "description": "Forbid alternate ID generators. Grep src/ for any function that returns the form 'name + file + line' as a string identity OR constructs an ID outside createCodeRefId. Refactor each call site to call createCodeRefId. If a call site needs the no-line variant, pass {includeLine: false}. Document in coderef-id.ts that this is the only canonical generator.",
+          "touches": [
+            "src/utils/coderef-id.ts",
+            "src/registry/entity-registry.ts"
+          ]
+        },
+        {
+          "id": "1.8",
+          "verb": "EDIT",
+          "description": "Collapse the parallel scanner. Refactor src/semantic/orchestrator.ts:processProject() to consume PipelineState rather than calling astExtractor.extractDirectory(). The semantic projection seam (projections.ts) is the only path that builds semantic-registry.json. Keep public exports stable.",
+          "touches": [
+            "src/semantic/orchestrator.ts",
+            "src/pipeline/orchestrator.ts"
+          ]
+        },
+        {
+          "id": "1.9",
+          "verb": "EDIT",
+          "description": "Convert src/semantic/ast-extractor.ts to a header-comment parser stub OR delete it entirely if no consumer remains after task 1.8. If retained, narrow its surface so it is not used as an alternative AST scanner. Header parsing logic itself ships in Phase 2.5; this task only removes the parallel scan path.",
+          "touches": [
+            "src/semantic/ast-extractor.ts",
+            "src/semantic/index.ts"
+          ]
+        },
+        {
+          "id": "1.10",
+          "verb": "EDIT",
+          "description": "Update src/cli/populate.ts so populate-coderef --semantic routes through the main pipeline only. CLI surface (flag names, default values, exit behavior) must not change. Internally, --semantic now requests the projection from PipelineState.",
+          "touches": [
+            "src/cli/populate.ts"
+          ]
+        },
+        {
+          "id": "1.11",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/single-scanner.test.ts. Inject a file-walk counter into the function used by both scanners (or spy via the shared fs read path). Assert: exactly one project-wide AST walk per populate-coderef --semantic invocation.",
+          "touches": [
+            "__tests__/pipeline/single-scanner.test.ts"
+          ]
+        },
+        {
+          "id": "1.12",
+          "verb": "EDIT",
+          "description": "Remove or downgrade overclaimed scanner features in scanner docs and types: decorators, docstrings, return types, complexity. For each: grep for consumers; if a consumer reads the field, mark the field optional and document 'not implemented (Phase 1 downgrade)'. If no consumer reads it, delete the field and the misleading docs.",
+          "touches": [
+            "src/scanner/scanner.ts",
+            "src/scanner/CONSOLIDATED-SCANNER-RESOURCE-SHEET.md",
+            "docs/CLI.md",
+            "README.md"
+          ]
+        },
+        {
+          "id": "1.13",
+          "verb": "EDIT",
+          "description": "Update scanner schema documentation: state that ElementData carries codeRefId, codeRefIdNoLine, layer (optional, file-grain), capability (optional, file-grain), constraints (optional, file-grain), headerStatus (required, default 'missing'). Document the file-grain vs element-grain rule explicitly.",
+          "touches": [
+            "docs/CLI.md",
+            "README.md"
+          ]
+        },
+        {
+          "id": "1.14",
+          "verb": "TEST",
+          "description": "Run all of: existing pipeline test suite; element-taxonomy.test.ts; single-scanner.test.ts; the Phase 0 ground-truth suite from WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001 (these MUST still fail for the original reasons; new failures = regressions). Report counts.",
+          "touches": [
+            "__tests__"
+          ]
+        },
+        {
+          "id": "1.15",
+          "verb": "RUN",
+          "description": "Run /coderef-pipeline coderef-core --stages=scan,populate,validate against the project. Confirm: .coderef/index.json contains headerStatus on every element; semantic-registry.json projection still produces (compare byte-equivalence or explicitly accept the diff in execution notes); validation report contains no new errors.",
+          "touches": [
+            ".coderef/index.json",
+            ".coderef/semantic-registry.json",
+            ".coderef/reports/validation.json"
+          ]
+        },
+        {
+          "id": "1.16",
+          "verb": "CHECK",
+          "description": "Verify exit criteria: same-name functions in different files have distinct codeRefId; nested functions have distinct codeRefId; class methods have stable qualified identities; every element has headerStatus; only one AST walk per --semantic populate run; scanner schema docs no longer claim decorators/docstrings/return types/complexity unless implemented. Document each check's result in the workorder execution notes.",
+          "touches": [
+            "coderef/workorder/pipeline-scanner-identity-taxonomy"
+          ]
+        },
+        {
+          "id": "1.17",
+          "verb": "STOP",
+          "description": "Stop. Do not start Phase 2 (relationship-extraction raw-fact split), Phase 2.5 (semantic header parser), or any later phase in this workorder.",
+          "touches": [
+            "coderef/workorder/pipeline-scanner-identity-taxonomy"
+          ]
+        }
+      ]
+    }
+  ],
+  "plan_adjustments_needed": []
+}

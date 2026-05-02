@@ -1,0 +1,102 @@
+{
+  "workorder_id": "WO-PIPELINE-SCANNER-IDENTITY-TAXONOMY-001",
+  "feature_name": "pipeline-scanner-identity-taxonomy",
+  "created": "2026-05-02T18:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS (Phase 2, not yet created)",
+  "status": "phase_1_executed",
+  "current_phase": 1,
+  "phase_status": "complete_with_guard_note",
+  "objective": "Phase 1 of CODEREF-CORE pipeline refactor. Ratify canonical IDs, add file-grain taxonomy fields, collapse the parallel scanner, and remove overclaimed feature claims.",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\analysis.json",
+  "artifact_paths": {
+    "context": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\context.json",
+    "analysis": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\analysis.json",
+    "plan": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\plan.json",
+    "communication": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\communication.json"
+  },
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "Phase 1 implementation belongs to the project agent. Orchestrator authored the plan; CODEREF-CORE executes."
+  },
+  "execution_rules": [
+    "Phase 1 hard-stops before Phase 2. Do not begin relationship-fact split or header parser implementation in this workorder.",
+    "STANDARDS/layers.json is the only source of truth for the layer enum. Do not duplicate the enum as a TypeScript literal union.",
+    "Every emitted ElementData must carry headerStatus (default 'missing' until the parser ships in Phase 2.5).",
+    "Phase 0 ground-truth tests must continue to fail for the same reasons. Any new failure or any unexpected pass is a regression and must be reported.",
+    "Only one project-wide AST walk per populate-coderef --semantic invocation. The single-scanner test enforces this.",
+    "Do not break populate-coderef CLI surface. Flag names, defaults, and exit behavior remain unchanged.",
+    "Do not invent a second canonical ID format. createCodeRefId is the single generator."
+  ],
+  "hard_constraints": [
+    "No header parser implementation in this phase.",
+    "No import resolution.",
+    "No call resolution.",
+    "No graph construction or validation changes.",
+    "No RAG facet additions."
+  ],
+  "acceptance_criteria": [
+    "ElementData has optional layer, capability, constraints fields and required headerStatus field.",
+    "src/pipeline/element-taxonomy.ts loads the layer enum from STANDARDS/layers.json at runtime.",
+    "element-taxonomy.test.ts proves loader correctness, isValidLayer correctness, isKebabCase correctness, and BNF/STANDARDS enum equality.",
+    "src/semantic/orchestrator.ts no longer calls astExtractor.extractDirectory(); it consumes PipelineState.",
+    "single-scanner.test.ts proves exactly one project-wide AST walk per populate-coderef --semantic run.",
+    "populate-coderef --semantic still produces a valid semantic-registry.json (byte-equivalent or with explicitly accepted diff).",
+    "Scanner schema docs no longer claim decorators/docstrings/return types/complexity unless those features are actually implemented.",
+    "Phase 0 ground-truth tests continue to fail for their original reasons.",
+    "All exit-criteria checks (task 1.16) documented in execution notes."
+  ],
+  "blockers": [
+    {
+      "timestamp": "2026-05-02T13:13:43.0691780-04:00",
+      "scope": "Phase 0 guard verification",
+      "message": "Predecessor workorder artifacts exist, but no matching Phase 0 ground-truth test files were found under __tests__; guard could not be executed from this checkout."
+    }
+  ],
+  "decisions_log": [
+    {
+      "decision": "plan_type=phased",
+      "rationale": "Roadmap Phase 1 is one of nine sequential gated phases.",
+      "decided_by": "create-workorder@2.4.0",
+      "at": "2026-05-02T18:30:00Z"
+    },
+    {
+      "decision": "layer / capability / constraints are optional; headerStatus is required (default 'missing').",
+      "rationale": "Phase 1 ships before the header parser. A required layer field would mark every element invalid until Phase 2.5.",
+      "at": "2026-05-02T18:30:00Z"
+    },
+    {
+      "decision": "Collapse the orchestrator seam, not the projection seam.",
+      "rationale": "WO-UNIFY-CODEREF-SEMANTIC-SYSTEMS-001 already unified projections. The remaining duplication is in src/semantic/orchestrator.ts.",
+      "at": "2026-05-02T18:30:00Z"
+    }
+  ],
+  "phase_transitions": [
+    {
+      "timestamp": "2026-05-02T13:13:43.0691780-04:00",
+      "phase": 1,
+      "from": "ready",
+      "to": "complete_with_guard_note",
+      "reason": "Phase 1 implementation and targeted verification completed; hard stop before Phase 2 observed."
+    }
+  ],
+  "plan_adjustments": [],
+  "next_action": "Review Phase 1 execution notes and decide whether to close or separately execute the Phase 0 predecessor tests.",
+  "communication_log": [
+    {
+      "timestamp": "2026-05-02T18:30:00Z",
+      "actor": "create-workorder",
+      "message": "Workorder created for roadmap Phase 1 (Scanner Identity & Taxonomy Ratification). Phased plan, 17 tasks, hard-stop before Phase 2."
+    },
+    {
+      "timestamp": "2026-05-02T13:13:43.0691780-04:00",
+      "actor": "CODEREF-CORE",
+      "message": "Phase 1 implementation completed and documented in execution-notes.md. Verification passed for tsc, build, targeted vitest, and populate minimal. Phase 0 guard was not runnable because no predecessor test files were present under __tests__."
+    }
+  ]
+}

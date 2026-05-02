@@ -523,6 +523,10 @@ interface ElementData {
   line: number;         // Line number
   codeRefId?: string;   // Canonical line-anchored ID, e.g. @Fn/src/a.ts#alpha:12
   codeRefIdNoLine?: string; // Stable ID without line anchor
+  layer?: string;       // Optional canonical layer from ASSISTANT/STANDARDS/layers.json
+  capability?: string;  // Optional kebab-case capability taxonomy
+  constraints?: string[]; // Optional kebab-case constraint tags
+  headerStatus?: 'defined' | 'stale' | 'missing' | 'partial'; // Defaults to "missing"
   dependencies?: string[]; // Import/call dependencies
   exports?: Array<{ name: string; type?: 'default' | 'named'; target?: string }>;
   imports?: Array<{ source: string; specifiers?: string[]; line: number }>;
@@ -534,6 +538,8 @@ interface ElementData {
 ```
 
 `.coderef/index.json` is the canonical machine truth for these fields. `semantic-registry.json` and CodeRef-Semantics source headers are projections from this data; source headers are opt-in and are not written by default.
+
+The scanner does not currently guarantee return types, decorators, docstrings, or cyclomatic complexity on `ElementData`. Those fields remain optional legacy/future metadata and should not be treated as scanner truth.
 
 **DependencyGraph** - Graph structure:
 ```typescript

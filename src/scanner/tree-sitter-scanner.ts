@@ -6,7 +6,8 @@
  *
  * Features:
  * - AST-based parsing for 10 languages (ts, tsx, js, jsx, py, go, rs, java, cpp, c)
- * - Enriched metadata extraction (parameters, return types, decorators, docstrings, async, complexity)
+ * - Metadata extraction is best-effort. Phase 1 scanner truth does not guarantee
+ *   return types, decorators, docstrings, or complexity.
  * - Lazy grammar loading (grammars loaded on first use per language)
  * - Automatic fallback to regex scanner on parse errors
  * - Backward-compatible ElementData output format
@@ -21,19 +22,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import Parser from 'tree-sitter';
 import { ElementData } from '../types/types.js';
+import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 
 /**
  * Type alias for ElementData with tree-sitter enriched fields
  * Uses the extended ElementData interface from types.ts (WO-TREE-SITTER-SCANNER-001)
  *
- * Enriched fields populated by tree-sitter:
- * - parameters: Array<{name, type}> with type annotations
- * - returnType: Return type annotation (TypeScript, Python, Rust, Go)
- * - async: True if function/method is async
- * - decorators: Array of decorator names
- * - docstring: JSDoc or docstring comment text
- * - parentScope: Parent class name for methods
- * - complexity: {cyclomatic, nestingDepth} metrics
+ * Enriched fields are optional best-effort metadata. Only ElementData base
+ * fields, CodeRef identity fields, and taxonomy/headerStatus defaults are
+ * scanner contract fields in Phase 1.
  */
 export type EnrichedElementData = ElementData;
 
@@ -47,7 +44,8 @@ function normalizeElement(elem: Partial<ElementData>): ElementData {
     usedBy: [],
     related: [],
     rules: [],
-    ...elem
+    ...elem,
+    headerStatus: elem.headerStatus || DEFAULT_HEADER_STATUS,
   } as ElementData;
 }
 

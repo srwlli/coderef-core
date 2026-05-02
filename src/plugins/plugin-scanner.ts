@@ -10,6 +10,7 @@ import { minimatch } from 'minimatch';
 import { ElementData, ScanOptions } from '../types/types.js';
 import { pluginRegistry } from './plugin-registry.js';
 import { CodeDetector, DetectionResult } from './types.js';
+import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 
 /**
  * Options for plugin scanning
@@ -171,6 +172,7 @@ function detectionResultToElement(
     name: result.name || result.elementName || 'unknown',
     file: filePath,
     line: result.line || 1,
+    headerStatus: DEFAULT_HEADER_STATUS,
     exported: result.exported ?? false,
     async: result.async ?? false,
     parameters: result.parameters || [],

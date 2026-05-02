@@ -7,10 +7,12 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { ASTExtractor, extractBatch } from './ast-extractor.js';
 import { HeaderGenerator } from './header-generator.js';
 import { LLMEnricher } from './llm-enricher.js';
 import { RegistrySyncer } from './registry-sync.js';
+import { PipelineOrchestrator } from '../pipeline/orchestrator.js';
+import { buildSemanticElementsFromState } from '../pipeline/semantic-elements.js';
+import type { PipelineState } from '../pipeline/types.js';
 import type { ExportInfo, ImportInfo, SemanticExtractionResult } from './ast-extractor.js';
 
 export interface SemanticPipelineOptions {
@@ -21,6 +23,7 @@ export interface SemanticPipelineOptions {
   enrichLLM?: boolean;
   syncRegistry?: boolean;
   validateOnly?: boolean;
+  pipelineState?: PipelineState;
 }
 
 export interface PipelineResult {
@@ -37,7 +40,6 @@ export interface PipelineResult {
  */
 export class SemanticOrchestrator {
   private options: SemanticPipelineOptions;
-  private astExtractor: ASTExtractor;
   private headerGenerator: HeaderGenerator;
   private llmEnricher: LLMEnricher;
   private registrySyncer: RegistrySyncer;
@@ -51,7 +53,6 @@ export class SemanticOrchestrator {
       ...options,
     };
 
-    this.astExtractor = new ASTExtractor();
     this.headerGenerator = new HeaderGenerator();
     this.llmEnricher = new LLMEnricher();
     this.registrySyncer = new RegistrySyncer({
@@ -75,14 +76,13 @@ export class SemanticOrchestrator {
     };
 
     try {
-      // Find all TypeScript/JavaScript files
-      const files = this.findSourceFiles(this.options.projectDir);
-      result.filesProcessed = files.length;
-
-      // Extract semantic information from all files
-      const extractions = await this.astExtractor.extractDirectory(
+      const state = this.options.pipelineState || await new PipelineOrchestrator().run(
         this.options.projectDir,
+        { outputDir: this.options.outputDir },
       );
+      result.filesProcessed = state.metadata.filesScanned;
+
+      const extractions = this.createExtractionsFromState(state);
 
       const registryEntries = [];
 
@@ -174,7 +174,16 @@ export class SemanticOrchestrator {
    */
   async processFile(filePath: string): Promise<void> {
     try {
-      const extraction = await this.astExtractor.extractFile(filePath);
+      const state = this.options.pipelineState || await new PipelineOrchestrator().run(
+        this.options.projectDir,
+        { outputDir: this.options.outputDir },
+      );
+      const extraction = this.createExtractionsFromState(state)
+        .find(item => path.resolve(item.file) === path.resolve(filePath));
+
+      if (!extraction) {
+        throw new Error(`No pipeline extraction found for ${filePath}`);
+      }
 
       if (this.options.generateHeaders) {
         await this.headerGenerator.insertHeaders(
@@ -238,6 +247,67 @@ export class SemanticOrchestrator {
 
     traverse(dir);
     return files;
+  }
+
+  private createExtractionsFromState(state: PipelineState): SemanticExtractionResult[] {
+    const semanticElements = buildSemanticElementsFromState(state);
+    const byFile = new Map<string, typeof semanticElements>();
+
+    for (const element of semanticElements) {
+      const existing = byFile.get(element.file) || [];
+      existing.push(element);
+      byFile.set(element.file, existing);
+    }
+
+    return Array.from(byFile.entries()).map(([file, elements]) => {
+      const exports: ExportInfo[] = elements
+        .filter(element => element.exported)
+        .map(element => ({
+          name: element.name,
+          type: 'named',
+          line: element.line,
+          declaration: element.type,
+        }));
+
+      const imports: ImportInfo[] = [];
+      const internalDependencies = new Set<string>();
+      const externalDependencies = new Set<string>();
+
+      for (const element of elements) {
+        for (const item of element.imports || []) {
+          const source = item.source;
+          if (!source) continue;
+          if (source.startsWith('.')) {
+            internalDependencies.add(source);
+          } else {
+            externalDependencies.add(source);
+          }
+          for (const specifier of item.specifiers || []) {
+            imports.push({
+              name: specifier,
+              from: source,
+              type: 'named',
+              line: item.line,
+            });
+          }
+          if (item.default) {
+            imports.push({ name: item.default, from: source, type: 'default', line: item.line });
+          }
+          if (item.namespace) {
+            imports.push({ name: item.namespace, from: source, type: 'namespace', line: item.line });
+          }
+        }
+      }
+
+      return {
+        file,
+        exports,
+        imports,
+        internalDependencies: Array.from(internalDependencies),
+        externalDependencies: Array.from(externalDependencies),
+        executionTime: 0,
+      };
+    });
   }
 }
 

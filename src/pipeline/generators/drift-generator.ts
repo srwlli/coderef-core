@@ -26,6 +26,7 @@ import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import { loadIndexFromCoderefDir } from '../../fileGeneration/index-storage.js';
+import { createCodeRefId } from '../../utils/coderef-id.js';
 
 interface DriftReport {
   driftPercentage: number;
@@ -100,10 +101,10 @@ export class DriftGenerator {
     const normalizedPrevious = previousElements.map(e => this.normalizeElement(e, state.projectPath));
 
     // Element-level added/deleted (cheap; independent of mtime logic).
-    const currentIds = new Set(currentElements.map(e => this.getElementId(e)));
-    const previousIds = new Set(normalizedPrevious.map(e => this.getElementId(e)));
-    const added: ElementData[] = currentElements.filter(e => !previousIds.has(this.getElementId(e)));
-    const deleted: ElementData[] = normalizedPrevious.filter(e => !currentIds.has(this.getElementId(e)));
+    const currentIds = new Set(currentElements.map(e => this.getElementId(e, state.projectPath)));
+    const previousIds = new Set(normalizedPrevious.map(e => this.getElementId(e, state.projectPath)));
+    const added: ElementData[] = currentElements.filter(e => !previousIds.has(this.getElementId(e, state.projectPath)));
+    const deleted: ElementData[] = normalizedPrevious.filter(e => !currentIds.has(this.getElementId(e, state.projectPath)));
 
     // File-level "modified" via mtime comparison against indexGeneratedAt.
     const uniqueFiles = new Set<string>();
@@ -163,8 +164,8 @@ export class DriftGenerator {
     };
   }
 
-  private getElementId(elem: ElementData): string {
-    return `${elem.file}:${elem.name}:${elem.line}`;
+  private getElementId(elem: ElementData, projectPath: string): string {
+    return elem.codeRefId || createCodeRefId(elem, projectPath, { includeLine: true });
   }
 
   private normalizeElement(elem: ElementData, projectPath: string): ElementData {

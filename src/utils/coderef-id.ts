@@ -19,6 +19,12 @@ export interface CodeRefIdOptions {
   includeLine?: boolean;
 }
 
+/**
+ * Single canonical CodeRef element ID generator.
+ *
+ * All scanner, graph, and projection call sites must route through
+ * createCodeRefId so line-anchored and no-line identities stay coherent.
+ */
 export function normalizeProjectPath(projectPath: string, value: string): string {
   const normalized = path.isAbsolute(value)
     ? path.relative(projectPath, value)

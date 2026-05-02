@@ -1,0 +1,121 @@
+{
+  "workorder_id": "WO-PIPELINE-SCANNER-IDENTITY-TAXONOMY-001",
+  "feature_name": "pipeline-scanner-identity-taxonomy",
+  "analysis_authored_at": "2026-05-02T18:30:00Z",
+  "project_id": "coderef-core",
+  "objective": "Ratify the existing canonical ID contract, add the missing taxonomy fields (layer, capability, constraints, headerStatus) to ElementData, and collapse the parallel scanner in src/semantic/orchestrator.ts so the pipeline has exactly one file walk and exactly one source of truth for element identity.",
+  "blast_radius": {
+    "files_modified": [
+      "src/types/types.ts",
+      "src/pipeline/types.ts",
+      "src/pipeline/orchestrator.ts",
+      "src/pipeline/semantic-elements.ts",
+      "src/scanner/semantic-analyzer.ts",
+      "src/semantic/orchestrator.ts",
+      "src/semantic/ast-extractor.ts",
+      "src/semantic/projections.ts",
+      "src/cli/populate.ts",
+      "docs/CLI.md",
+      "README.md"
+    ],
+    "files_created": [
+      "src/pipeline/element-taxonomy.ts (new — layer enum loader + validators)",
+      "__tests__/pipeline/element-taxonomy.test.ts",
+      "__tests__/pipeline/single-scanner.test.ts"
+    ],
+    "downstream_consumers": [
+      "semantic-registry.json projection (must keep working)",
+      "RAG indexer (will read new taxonomy fields in later phase, must not break on their presence)",
+      "graph generator (must accept new ElementData shape)",
+      "populate-coderef CLI"
+    ]
+  },
+  "candidates": [
+    "src/utils/coderef-id.ts",
+    "src/pipeline/semantic-elements.ts",
+    "src/pipeline/types.ts",
+    "src/types/types.ts",
+    "src/scanner/semantic-analyzer.ts",
+    "src/semantic/orchestrator.ts",
+    "src/semantic/ast-extractor.ts",
+    "src/semantic/projections.ts",
+    "src/registry/entity-registry.ts",
+    "src/cli/populate.ts"
+  ],
+  "dependencies": [
+    "STANDARDS/layers.json (layer enum source of truth, lives in ASSISTANT/STANDARDS)",
+    "ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md (canonical header grammar reference)",
+    "Phase 0 ground-truth tests from WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001 (must continue to fail for the same reasons after Phase 1; new failures = new regressions)"
+  ],
+  "public_api_hits": [
+    "ElementData (consumed by pipeline, scanner, semantic, projections, RAG, graph)",
+    "createCodeRefId (consumed by semantic-elements and projections)",
+    "populate-coderef CLI flags"
+  ],
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Adding required fields to ElementData breaks existing consumers",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Make layer / capability / constraints optional on ElementData; only headerStatus is required (default 'missing'). Fail loudly only when a downstream consumer explicitly requests a layer-typed query."
+    },
+    {
+      "id": "R2",
+      "title": "Collapsing src/semantic/orchestrator.ts breaks populate-coderef --semantic",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Keep populate-coderef CLI surface unchanged. Re-route internally: --semantic produces the same semantic-registry.json projection, just sourced from PipelineState instead of an independent AST scan. Add a regression test that proves the projection bytes are equivalent (or explicitly diffed) before and after."
+    },
+    {
+      "id": "R3",
+      "title": "Layer enum drifts between STANDARDS/layers.json and code",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Load the enum at runtime from STANDARDS/layers.json. Do NOT duplicate the enum as a TypeScript literal union. Add a test that asserts the loaded enum matches the BNF in analyze-coderef-semantics/SKILL.md."
+    },
+    {
+      "id": "R4",
+      "title": "headerStatus is populated speculatively before Phase 2.5 ships",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "In Phase 1, every element gets headerStatus='missing'. The field exists; the parser doesn't. Document this explicitly in the scanner schema so Phase 2.5 has a clear handoff."
+    },
+    {
+      "id": "R5",
+      "title": "Removing overclaimed features (decorators/docstrings/return types/complexity) breaks consumers that already read those fields",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Grep for consumers before removal. If a consumer exists, downgrade the field to optional and document it as 'not implemented' rather than deleting the type."
+    },
+    {
+      "id": "R6",
+      "title": "Single-scanner test could pass while two scanners still run if the test only counts file walks via a fragile mock",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Test by injecting a counter into the file-walk function used by both scanners. Assert exactly one invocation per pipeline run with --semantic."
+    }
+  ],
+  "decision_records": [
+    {
+      "decision": "Taxonomy fields (layer / capability / constraints) are file-grain, not element-grain.",
+      "rationale": "Architectural facets describe the file's role; per-element headers would multiply by every function/class/method and become unreadable. Element-grain stays for IDs and exports/imports."
+    },
+    {
+      "decision": "headerStatus is the only required new field on ElementData; layer / capability / constraints stay optional.",
+      "rationale": "Phase 1 ships before the header parser. Requiring layer would force every element to be marked invalid until Phase 2.5. headerStatus='missing' is the explicit, queryable default."
+    },
+    {
+      "decision": "Collapse the orchestrator seam, not the projection seam.",
+      "rationale": "WO-UNIFY-CODEREF-SEMANTIC-SYSTEMS-001 already unified projections. The remaining duplication is src/semantic/orchestrator.ts initiating its own AST walk. Closing that is the high-leverage change."
+    },
+    {
+      "decision": "Load the layer enum from STANDARDS/layers.json at runtime rather than duplicating it in TypeScript.",
+      "rationale": "STANDARDS is the only source of truth named in the roadmap. A duplicated enum will drift the moment STANDARDS adds a layer."
+    }
+  ],
+  "test_strategy": {
+    "mode": "regression + characterization",
+    "expected_result": "Phase 0 ground-truth tests still fail (same reasons). New Phase 1 tests pass. semantic-registry.json projection bytes are unchanged or diff is explicitly accepted."
+  }
+}

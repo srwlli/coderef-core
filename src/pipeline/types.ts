@@ -7,6 +7,9 @@
 
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
+import type { HeaderStatus, LayerEnum } from './element-taxonomy.js';
+
+export type { HeaderStatus, LayerEnum };
 
 /**
  * Pipeline options for configuring scan behavior

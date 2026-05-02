@@ -3,6 +3,7 @@ import type { PipelineState } from './types.js';
 import { globalRegistry } from '../registry/entity-registry.js';
 import { attachFileImportsToElements, buildSemanticRelationships, deduplicateUsedBy } from '../scanner/semantic-analyzer.js';
 import { createCodeRefId, normalizeProjectPath } from '../utils/coderef-id.js';
+import { DEFAULT_HEADER_STATUS } from './element-taxonomy.js';
 
 /**
  * Build the canonical semantic ElementData projection from PipelineState.
@@ -42,6 +43,7 @@ function normalizeElementForOutput(element: ElementData, projectPath: string): E
     file,
     codeRefId: createCodeRefId(element, projectPath, { includeLine: true }),
     codeRefIdNoLine: createCodeRefId(element, projectPath, { includeLine: false }),
+    headerStatus: element.headerStatus || DEFAULT_HEADER_STATUS,
     exports: element.exports || [],
     usedBy: element.usedBy || [],
     related: element.related || [],

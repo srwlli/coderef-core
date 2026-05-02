@@ -117,6 +117,7 @@ describe('canonical semantic model', () => {
         line: 1,
         codeRefId: '@Fn/src/alpha.ts#alpha:1',
         codeRefIdNoLine: '@Fn/src/alpha.ts#alpha',
+        headerStatus: 'missing',
         exports: [{ name: 'alpha', type: 'named', target: 'src/alpha.ts' }],
         usedBy: [],
         related: [],
@@ -129,6 +130,7 @@ describe('canonical semantic model', () => {
       id: '@Fn/src/alpha.ts#alpha:1',
       codeRefId: '@Fn/src/alpha.ts#alpha:1',
       codeRefIdNoLine: '@Fn/src/alpha.ts#alpha',
+      headerStatus: 'missing',
     });
   });
 });

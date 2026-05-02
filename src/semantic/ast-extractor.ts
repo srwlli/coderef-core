@@ -1,8 +1,9 @@
 /**
- * AST-based semantic extraction for CodeRef-Semantics
+ * Legacy AST-based extraction helper for CodeRef-Semantics.
  *
- * Extracts exports and used_by relationships from TypeScript/JavaScript source files
- * using Babel/TypeScript parser AST traversal. Supports both CommonJS and ES6 modules.
+ * The canonical scanner path is PipelineOrchestrator -> PipelineState. This
+ * helper remains exported for compatibility and focused import/export extraction;
+ * it is not an alternate source of ElementData or graph truth.
  */
 
 import * as fs from 'fs';
@@ -40,7 +41,7 @@ export interface ASTExtractorOptions {
 }
 
 /**
- * Main AST extractor for semantic analysis
+ * Compatibility extractor for semantic import/export analysis.
  */
 export class ASTExtractor {
   private options: ASTExtractorOptions;

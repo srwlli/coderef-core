@@ -43,7 +43,7 @@ export class RegistryGenerator {
 
     await fs.writeFile(
       semanticRegistryPath,
-      JSON.stringify(createSemanticRegistryProjection(semanticElements), null, 2),
+      JSON.stringify(createSemanticRegistryProjection(semanticElements, state.projectPath), null, 2),
       'utf-8',
     );
 

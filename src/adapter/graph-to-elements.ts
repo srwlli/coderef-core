@@ -7,6 +7,7 @@
 
 import { DependencyGraph } from '../analyzer/graph-builder.js';
 import { ElementData } from '../types/types.js';
+import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 // import { ConversionOptions } from './types.js';
 
 // Temporary: Define ConversionOptions inline until types.js is created
@@ -102,6 +103,7 @@ export function convertGraphToElements(
       name: elementName,
       file: node.file,
       line: node.line || 1,
+      headerStatus: DEFAULT_HEADER_STATUS,
     };
 
     // Add enhanced properties from AST analysis (stored in metadata)

@@ -1,0 +1,76 @@
+{
+  "workorder_id": "WO-PIPELINE-SCANNER-IDENTITY-TAXONOMY-001",
+  "feature_name": "pipeline-scanner-identity-taxonomy",
+  "created": "2026-05-02T18:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "project_path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE",
+  "status": "plan_created",
+  "intake": {
+    "trigger": "user_request",
+    "user_request": "Create the Phase 1 workorder from the updated CODEREF-CORE roadmap.md (Scanner / Element Extraction — Identity + Taxonomy Ratification)."
+  },
+  "originating_dispatch": null,
+  "predecessor_workorder": "WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001",
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Roadmap Phase 1 is one of nine sequential, gated phases. The work has internal task ordering (ratify ID -> add taxonomy fields -> collapse parallel scanner -> remove overclaimed features) and a hard stop before Phase 2.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": "manual_roadmap_phase_1"
+  },
+  "prerequisites": {
+    "coderef_index": ".coderef/index.json",
+    "coderef_graph": ".coderef/graph.json",
+    "patterns_report": ".coderef/reports/patterns.json",
+    "coverage_report": ".coderef/reports/coverage.json",
+    "drift_report": ".coderef/reports/drift.json",
+    "complexity_summary": ".coderef/reports/complexity/summary.json",
+    "drift_percentage": 0,
+    "foundation_docs_gate": {
+      "scripts_doc_gen_exists": true,
+      "docs_foundation_exists": false,
+      "required": false,
+      "status": "skipped"
+    },
+    "rag_discovery": {
+      "enabled": false,
+      "reason": "CODEREF_LLOYD_DISCOVERY_RAG is not set"
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "ratify createCodeRefId in src/utils/coderef-id.ts as the single canonical ID generator",
+      "add layer (enum), capability (kebab-case string), constraints (string array), and headerStatus (enum) to ElementData",
+      "validate layer against STANDARDS/layers.json enum at scanner output time",
+      "document file-grain vs element-grain rule for taxonomy fields in scanner schema",
+      "ensure nested/local functions and class methods get distinct qualified names",
+      "collapse the parallel scanner so src/semantic/orchestrator.ts consumes PipelineState instead of running its own AST scan",
+      "route populate-coderef --semantic through the main pipeline only",
+      "remove or downgrade overclaimed scanner features (decorators, docstrings, return types, complexity)",
+      "update scanner schema docs to match real output"
+    ],
+    "out_of_scope": [
+      "implementing the semantic header parser (that is roadmap Phase 2.5)",
+      "import resolution (Phase 3)",
+      "call resolution (Phase 4)",
+      "graph construction or graph validation (Phases 5 and 6)",
+      "indexing/RAG facets (Phase 7)",
+      "modifying the canonical header grammar BNF in analyze-coderef-semantics/SKILL.md",
+      "changing relationship extraction shape (Phase 2)"
+    ]
+  },
+  "constraints": [
+    "STANDARDS/layers.json is the only source of truth for the layer enum.",
+    "Do not invent a second canonical ID format.",
+    "Header parsing is NOT in scope for this phase; headerStatus is populated only by the marker that the parser will exist (default missing).",
+    "Only one file walk per pipeline run after this phase exits.",
+    "Do not break existing semantic-registry.json projection consumers; the projection seam remains unified."
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

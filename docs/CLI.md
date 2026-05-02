@@ -285,6 +285,8 @@ npx coderef-scan --dir ./src --output ./scan-results.json
 
 Generate `.coderef/` directory artifacts from the canonical scanner pipeline. `.coderef/index.json` is the machine truth. `semantic-registry.json` is generated as a projection from the enriched `ElementData` in `index.json`; source headers are optional and are not written by default.
 
+`ElementData` emitted by the pipeline includes canonical CodeRef IDs plus the Phase 1 identity taxonomy fields: `layer`, `capability`, `constraints`, and `headerStatus`. The scanner defaults `headerStatus` to `missing`; it does not parse or validate source headers in this phase.
+
 ### Usage
 
 ```bash
@@ -302,6 +304,7 @@ npx populate-coderef ./my-project --mode full
 | `--select <generators>` | Run only specific generators | Mode default |
 | `-s, --skip <generators>` | Skip specific generators | None |
 | `--semantic-registry` | Generate `semantic-registry.json` projection | `true` |
+| `--semantic` | Legacy alias for `--semantic-registry` | `true` |
 | `--no-semantic-registry` | Remove/skip `semantic-registry.json` projection | `false` |
 | `--source-headers` | Write optional CodeRef-Semantics headers into source files | `false` |
 | `-j, --json` | Output JSON summary | `false` |

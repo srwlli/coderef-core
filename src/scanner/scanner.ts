@@ -9,6 +9,7 @@ import { minimatch } from 'minimatch';
 import { ElementData, ScanOptions, RouteMetadata } from '../types/types.js';
 import { createScannerCache, type ScanCacheEntry } from './lru-cache.js';
 import { IncrementalCache } from '../cache/incremental-cache.js';
+import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 import {
   extractRouteMetadata,
   parseExpressRoute,
@@ -1374,7 +1375,10 @@ export async function scanCurrentElements(
     console.log(`Deduplication: ${elements.length} elements → ${deduplicated.length} unique elements`);
   }
 
-  return deduplicated;
+  return deduplicated.map(element => ({
+    ...element,
+    headerStatus: element.headerStatus || DEFAULT_HEADER_STATUS,
+  }));
 }
 
 /**

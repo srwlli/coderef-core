@@ -18,6 +18,7 @@
 
 import type Parser from 'tree-sitter';
 import type { ElementData } from '../../types/types.js';
+import { DEFAULT_HEADER_STATUS } from '../element-taxonomy.js';
 
 /**
  * ElementExtractor - Extracts code elements from tree-sitter AST
@@ -72,7 +73,10 @@ export class ElementExtractor {
         console.warn(`[ElementExtractor] No extractor for language: ${language}`);
     }
 
-    return elements;
+    return elements.map(element => ({
+      ...element,
+      headerStatus: element.headerStatus || DEFAULT_HEADER_STATUS,
+    }));
   }
 
   /**

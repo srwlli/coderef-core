@@ -310,6 +310,14 @@ export interface ElementData {
   codeRefId?: string;
   /** Stable CodeRef ID without line anchoring: @Fn/src/file.ts#name */
   codeRefIdNoLine?: string;
+  /** Optional file-grain semantic layer from ASSISTANT/STANDARDS/layers.json. */
+  layer?: import('../pipeline/element-taxonomy.js').LayerEnum;
+  /** Optional file-grain semantic capability. Must be kebab-case when present. */
+  capability?: string;
+  /** Optional file-grain semantic constraints. Items must be kebab-case when present. */
+  constraints?: string[];
+  /** Semantic header parser status. Normalized scanner output always defaults this to "missing". */
+  headerStatus?: import('../pipeline/element-taxonomy.js').HeaderStatus;
   /** Optional: Whether the element is exported */
   exported?: boolean;
   /**
@@ -345,17 +353,17 @@ export interface ElementData {
   frontendCall?: import('../analyzer/frontend-call-parsers.js').FrontendCall;
 
   // WO-TREE-SITTER-SCANNER-001: Tree-sitter enriched metadata
-  /** Optional: Return type annotation (TypeScript, Python, Rust, Go) */
+  /** Optional: Return type annotation. Not implemented by the Phase 1 scanner downgrade. */
   returnType?: string;
   /** Optional: True if function/method is async */
   async?: boolean;
-  /** Optional: Array of decorator names (Python @decorator, TypeScript @Decorator, Java @Annotation) */
+  /** Optional: Array of decorator names. Not implemented by the Phase 1 scanner downgrade. */
   decorators?: string[];
-  /** Optional: Docstring or JSDoc comment text */
+  /** Optional: Docstring or JSDoc comment text. Not implemented by the Phase 1 scanner downgrade. */
   docstring?: string;
   /** Optional: Parent class/scope name (for distinguishing methods from top-level functions) */
   parentScope?: string;
-  /** Optional: Complexity metrics from AST analysis */
+  /** Optional: Complexity metrics. Not implemented by the Phase 1 scanner downgrade. */
   complexity?: {
     /** Cyclomatic complexity (number of decision points + 1) */
     cyclomatic: number;
