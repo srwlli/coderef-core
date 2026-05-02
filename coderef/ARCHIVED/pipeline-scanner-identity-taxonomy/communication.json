@@ -6,9 +6,21 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS (Phase 2, not yet created)",
-  "status": "phase_1_executed",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete_with_guard_note",
+  "completed_at": "2026-05-02T13:13:43Z",
+  "closed_at": "2026-05-02T19:58:00Z",
+  "updated": "2026-05-02T19:58:00Z",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/pipeline-scanner-identity-taxonomy/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (validate-coderef-culture WARNING; tracking-validator 15/15 PASS)",
+    "warnings": [
+      "cultural-validator WARNING (2 warn-severity checks; pre-existing repo drift)",
+      "force-warning-ok flag supplied per dispatch-007"
+    ]
+  },
   "objective": "Phase 1 of CODEREF-CORE pipeline refactor. Ratify canonical IDs, add file-grain taxonomy fields, collapse the parallel scanner, and remove overclaimed feature claims.",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-scanner-identity-taxonomy\\context.json",
@@ -97,6 +109,11 @@
       "timestamp": "2026-05-02T13:13:43.0691780-04:00",
       "actor": "CODEREF-CORE",
       "message": "Phase 1 implementation completed and documented in execution-notes.md. Verification passed for tsc, build, targeted vitest, and populate minimal. Phase 0 guard was not runnable because no predecessor test files were present under __tests__."
+    },
+    {
+      "timestamp": "2026-05-02T19:58:00Z",
+      "actor": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder --force-warning-ok per DISPATCH-2026-05-02-007. Phase A audit WARNING (cultural-validator 2 warn-severity, tracking-validator 15/15 PASS). Phase 1 deliverable in commit 382e9bb. Phase 0 ground-truth tests now exist (commit 1d1d830) and continue to fail for original reasons — guard re-runnable by future agent."
     }
   ]
 }
