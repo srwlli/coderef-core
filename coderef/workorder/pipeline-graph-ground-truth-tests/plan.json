@@ -1,0 +1,89 @@
+{
+  "workorder_id": "WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001",
+  "feature_name": "pipeline-graph-ground-truth-tests",
+  "created": "2026-05-02T00:56:53.3578146-04:00",
+  "project_id": "coderef-core",
+  "plan_type": "phased",
+  "goal": "Establish failing Phase 0 ground-truth tests for current dependency graph integrity, identity, import resolution, call resolution, and graph validation failures before any refactor implementation.",
+  "plan_type_rationale": "This is a single gated phase in a larger ordered refactor. The work must stop after failing tests exist.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "discovery_required": true,
+  "foundation_docs_gate": false,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "RUN",
+    "TEST",
+    "CHECK",
+    "STOP"
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Stop after failing tests are confirmed; do not implement Phase 1 scanner or graph fixes in this workorder."
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 0 - Establish Ground Truth",
+      "hard_stop": true,
+      "description": "Add or confirm failing tests that expose current graph integrity, identity, relationship, and validation failures without changing production code.",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read current test patterns, graph pipeline code, and existing graph artifacts needed to design targeted Phase 0 characterization tests.",
+          "touches": [
+            "__tests__",
+            ".coderef/graph.json",
+            "src/pipeline",
+            "src/fileGeneration"
+          ]
+        },
+        {
+          "id": "1.2",
+          "verb": "WRITE",
+          "description": "Add or update tests that expose graph edges whose endpoints are not node IDs, duplicate identities, unresolved imports, unresolved calls, alias imports, duplicate function names, nested functions, and class/object method calls.",
+          "touches": [
+            "__tests__"
+          ]
+        },
+        {
+          "id": "1.3",
+          "verb": "WRITE",
+          "description": "Add a graph validation test requiring every resolved edge endpoint to exist in nodes, every unresolved edge to include resolutionStatus, and every ambiguous edge to include candidate IDs.",
+          "touches": [
+            "__tests__"
+          ]
+        },
+        {
+          "id": "1.4",
+          "verb": "TEST",
+          "description": "Run the targeted tests and confirm they fail against the current implementation for the expected graph integrity and resolution reasons.",
+          "touches": [
+            "__tests__"
+          ]
+        },
+        {
+          "id": "1.5",
+          "verb": "CHECK",
+          "description": "Document the exact failing assertions in the workorder execution notes so Phase 1 cannot proceed without visible ground truth.",
+          "touches": [
+            "coderef/workorder/pipeline-graph-ground-truth-tests"
+          ]
+        },
+        {
+          "id": "1.6",
+          "verb": "STOP",
+          "description": "Stop execution after failing tests exist. Do not modify scanner, relationship extraction, import resolution, call resolution, graph construction, indexing, or documentation behavior.",
+          "touches": [
+            "coderef/workorder/pipeline-graph-ground-truth-tests"
+          ]
+        }
+      ]
+    }
+  ]
+}

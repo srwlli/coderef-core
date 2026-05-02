@@ -1,0 +1,77 @@
+{
+  "workorder_id": "WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001",
+  "feature_name": "pipeline-graph-ground-truth-tests",
+  "created": "2026-05-02T00:56:53.3578146-04:00",
+  "project_id": "coderef-core",
+  "analysis_type": "phase_0_ground_truth",
+  "objective": "Establish failing tests that prove the current graph pipeline cannot yet emit a reliable validated dependency graph.",
+  "blast_radius": {
+    "expected_modified_areas": [
+      "__tests__",
+      "test fixtures or inline fixture builders used only by tests"
+    ],
+    "production_code_changes_allowed": false,
+    "docs_changes_allowed": false
+  },
+  "required_failure_coverage": [
+    {
+      "case": "graph_edges_not_node_ids",
+      "expected_failure": "A resolved graph edge endpoint does not exist in nodes."
+    },
+    {
+      "case": "duplicate_identities",
+      "expected_failure": "Two distinct elements collide under the current identity model or one element appears under multiple incompatible identities."
+    },
+    {
+      "case": "unresolved_imports",
+      "expected_failure": "An import cannot be traced to a concrete file or exported element and is not explicitly marked unresolved."
+    },
+    {
+      "case": "unresolved_calls",
+      "expected_failure": "A call cannot be traced to a unique element and is not explicitly marked unresolved or ambiguous."
+    },
+    {
+      "case": "alias_imports",
+      "expected_failure": "An aliased import does not bind the local alias to the exported source symbol."
+    },
+    {
+      "case": "duplicate_function_names",
+      "expected_failure": "Calls or identities degrade to name-only matching when two functions share a name."
+    },
+    {
+      "case": "nested_functions",
+      "expected_failure": "Nested/local functions are not distinguishable by qualified scope."
+    },
+    {
+      "case": "class_object_method_calls",
+      "expected_failure": "Method calls lose receiver or class context and become name-only relationships."
+    },
+    {
+      "case": "graph_validation_contract",
+      "expected_failure": "Resolved edges, unresolved edges, or ambiguous edges fail the required validation schema."
+    }
+  ],
+  "test_strategy": {
+    "mode": "characterization",
+    "expected_result": "Targeted tests fail against the current implementation.",
+    "failure_acceptance": "Failures must be caused by the listed Phase 0 graph integrity gaps, not by test setup errors."
+  },
+  "risks": [
+    {
+      "risk": "Tests accidentally encode future implementation choices instead of the Phase 0 contract.",
+      "mitigation": "Assertions should target graph integrity and explicit uncertainty requirements only."
+    },
+    {
+      "risk": "Existing fixtures are too broad to isolate identity and resolution defects.",
+      "mitigation": "Use minimal adversarial fixtures inside the tests."
+    },
+    {
+      "risk": "A passing test could mask current failures by checking only extraction presence.",
+      "mitigation": "Every test must assert endpoint validity, canonical identity uniqueness, or explicit resolution status."
+    }
+  ],
+  "hard_stop": {
+    "after": "failing_tests_confirmed",
+    "reason": "The user requested Phase 0 only and explicitly required not continuing until failing tests exist."
+  }
+}

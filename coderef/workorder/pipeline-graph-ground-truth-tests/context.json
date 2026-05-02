@@ -1,0 +1,81 @@
+{
+  "workorder_id": "WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001",
+  "feature_name": "pipeline-graph-ground-truth-tests",
+  "created": "2026-05-02T00:56:53.3578146-04:00",
+  "project_id": "coderef-core",
+  "project_path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE",
+  "owner_domain": "CODEREF-CORE",
+  "status": "plan_created",
+  "source": {
+    "trigger": "user_request",
+    "requested_skill": "create-workorder",
+    "request_summary": "Create a Phase 0 workorder for establishing failing ground-truth tests before refactoring the CodeRef dependency graph pipeline."
+  },
+  "prerequisites": {
+    "coderef_index": ".coderef/index.json",
+    "coderef_graph": ".coderef/graph.json",
+    "patterns_report": ".coderef/reports/patterns.json",
+    "coverage_report": ".coderef/reports/coverage.json",
+    "drift_report": ".coderef/reports/drift.json",
+    "complexity_summary": ".coderef/reports/complexity/summary.json",
+    "drift_percentage": 0,
+    "foundation_docs_gate": {
+      "scripts_doc_gen_exists": true,
+      "docs_foundation_exists": false,
+      "required": false,
+      "status": "skipped"
+    },
+    "rag_discovery": {
+      "enabled": false,
+      "reason": "CODEREF_LLOYD_DISCOVERY_RAG is not set"
+    }
+  },
+  "classification": {
+    "plan_type": "phased",
+    "rationale": "The requested work is Phase 0 only: add or confirm failing characterization tests and stop before any implementation refactor."
+  },
+  "scope": {
+    "in_scope": [
+      "tests exposing graph edges whose endpoints are not node IDs",
+      "tests exposing duplicate element identities",
+      "tests exposing unresolved imports",
+      "tests exposing unresolved calls",
+      "tests exposing alias import behavior",
+      "tests exposing duplicate function names",
+      "tests exposing nested function identities",
+      "tests exposing class and object method call behavior",
+      "graph validation tests for resolved, unresolved, and ambiguous edge contracts"
+    ],
+    "out_of_scope": [
+      "production code fixes",
+      "scanner contract implementation",
+      "relationship resolver implementation",
+      "graph builder replacement",
+      "documentation updates beyond test intent comments"
+    ]
+  },
+  "evidence_from_prior_diagnostics": {
+    "current_graph_nodes": 2274,
+    "current_graph_edges": 11671,
+    "edges_with_both_endpoints_matching_node_ids": 0,
+    "call_relationships_fully_resolved": 1046,
+    "call_relationships_total": 10639,
+    "import_relationships_with_target_node_endpoint": 0,
+    "import_relationships_total": 1032,
+    "duplicate_name_groups_observed": 112
+  },
+  "candidate_files_to_read": [
+    "src/pipeline/orchestrator.ts",
+    "src/pipeline/extractors/element-extractor.ts",
+    "src/pipeline/extractors/relationship-extractor.ts",
+    "src/pipeline/generators/graph-generator.ts",
+    "src/fileGeneration/buildDependencyGraph.ts",
+    "__tests__"
+  ],
+  "constraints": [
+    "Do not fix production code in this workorder.",
+    "Do not proceed to Phase 1 scanner refactor.",
+    "The workorder is complete only when failing tests exist and failure reasons are visible.",
+    "Every graph-validation assertion must distinguish resolved, unresolved, and ambiguous edges."
+  ]
+}

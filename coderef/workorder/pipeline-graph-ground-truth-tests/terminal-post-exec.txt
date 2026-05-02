@@ -1,0 +1,41 @@
+================================================================================
+WORKORDER EXECUTION COMPLETE
+
+WORKORDER ID: WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001
+PHASES COMPLETED: Phase 1 complete with expected failing tests; terminal hard stop observed
+
+DELIVERABLES:
+  - Added __tests__/pipeline/graph-ground-truth.test.ts
+  - Added coderef/workorder/pipeline-graph-ground-truth-tests/execution-notes.md
+  - Updated coderef/workorder/pipeline-graph-ground-truth-tests/communication.json to checkpoint_ready
+  - Confirmed no production code changes were made for this Phase 0 workorder
+
+COMMITS:
+  - None: repository already contained unrelated dirty/untracked state; no safe commit boundary was created
+
+TEST RESULTS:
+  - TypeScript compile: pnpm exec tsc --noEmit passed
+  - Phase 0 graph ground truth: 0/6 passed, 6/6 failed as expected
+
+ACCEPTANCE CRITERIA:
+  [PASS] Tests exist for graph edges whose endpoints are not node IDs
+  [PASS] Tests exist for duplicate identities / ambiguous duplicate function-name calls
+  [PASS] Tests exist for unresolved imports
+  [PASS] Tests exist for unresolved calls
+  [PASS] Tests exist for alias imports
+  [PASS] Tests exist for duplicate function names
+  [PASS] Tests exist for nested functions
+  [PASS] Tests exist for class/object method calls
+  [PASS] Graph validation test asserts resolved endpoints exist in nodes
+  [PASS] Graph validation test asserts unresolved edges include resolutionStatus
+  [PASS] Graph validation test asserts ambiguous edges include candidate IDs
+  [PASS] Targeted tests fail against the current implementation for expected reasons
+  [PASS] No production refactor implementation was performed
+
+================================================================================
+WORKORDER CLOSE
+
+Phase 0 ground-truth tests are established and failing for expected graph-contract reasons. Ready for workorder closure.
+/close-workorder WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001
+
+================================================================================

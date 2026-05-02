@@ -1,0 +1,57 @@
+{
+  "workorder_id": "WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001",
+  "feature_name": "pipeline-graph-ground-truth-tests",
+  "created": "2026-05-02T00:56:53.3578146-04:00",
+  "project_id": "coderef-core",
+  "status": "checkpoint_ready",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "review_status": "FAIL",
+  "objective": "Create failing Phase 0 tests that expose current dependency graph reliability failures before implementation begins.",
+  "artifact_paths": {
+    "context": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-graph-ground-truth-tests\\context.json",
+    "analysis": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-graph-ground-truth-tests\\analysis.json",
+    "plan": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-graph-ground-truth-tests\\plan.json",
+    "communication": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-graph-ground-truth-tests\\communication.json"
+  },
+  "execution_rules": [
+    "Production code must not be fixed in this workorder.",
+    "The expected outcome is failing tests, not a passing suite.",
+    "Failure reasons must map to graph endpoints, identity ambiguity, unresolved imports, unresolved calls, alias handling, nested scopes, method context, or graph validation contract gaps.",
+    "Stop before Phase 1 scanner or element extraction refactor work."
+  ],
+  "acceptance_criteria": [
+    "Tests exist for graph edges whose endpoints are not node IDs.",
+    "Tests exist for duplicate identities.",
+    "Tests exist for unresolved imports.",
+    "Tests exist for unresolved calls.",
+    "Tests exist for alias imports.",
+    "Tests exist for duplicate function names.",
+    "Tests exist for nested functions.",
+    "Tests exist for class/object method calls.",
+    "Graph validation test asserts resolved endpoints exist in nodes.",
+    "Graph validation test asserts unresolved edges include resolutionStatus.",
+    "Graph validation test asserts ambiguous edges include candidate IDs.",
+    "Targeted tests fail against the current implementation for expected reasons.",
+    "No production refactor implementation is performed."
+  ],
+  "completed_at": "2026-05-02T17:36:00Z",
+  "next_action": "/close-workorder WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001",
+  "communication_log": [
+    {
+      "timestamp": "2026-05-02T00:56:53.3578146-04:00",
+      "actor": "create-workorder",
+      "message": "Workorder created for Phase 0 ground-truth test establishment only."
+    },
+    {
+      "timestamp": "2026-05-02T17:36:00Z",
+      "actor": "CODEREF-CORE",
+      "message": "Phase 0 ground-truth test suite added at __tests__/pipeline/graph-ground-truth.test.ts. Targeted suite fails 6/6 for expected graph-contract reasons. Hard stop observed before any production fix."
+    },
+    {
+      "timestamp": "2026-05-02T17:48:00Z",
+      "actor": "close-workorder v2.0.0",
+      "message": "Close/archive halted at Phase A tracking-validator hard stop. Cultural validator remediated from FAIL to WARNING, but tracking-validator still fails on pre-existing ASSISTANT TRACKING/stubs.json and TRACKING/projects.json schema issues. Workorder remains checkpoint_ready and unarchived."
+    }
+  ]
+}
