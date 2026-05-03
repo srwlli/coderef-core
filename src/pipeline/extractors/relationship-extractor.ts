@@ -31,6 +31,12 @@ import type {
   RawExportFact,
   RawHeaderImportFact,
 } from '../types.js';
+import type {
+  HeaderFact,
+  HeaderImportFact,
+} from '../header-fact.js';
+import type { HeaderStatus } from '../element-taxonomy.js';
+import { parseHeader } from '../semantic-header-parser.js';
 
 /**
  * RelationshipExtractor - Extract import and call relationships from AST
@@ -212,10 +218,15 @@ export class RelationshipExtractor {
   }
 
   /**
-   * Extract RawHeaderImportFact[] from a file's leading comment block.
-   * Phase 2 emits PLACEHOLDERS only — each `module:symbol` literal in an
-   * `@imports [...]` array becomes one fact with `parseStatus='placeholder'`.
-   * Phase 2.5 will replace this with structured BNF parsing.
+   * Extract RawHeaderImportFact[] for a file.
+   *
+   * @deprecated Phase 2.5 (WO-PIPELINE-SEMANTIC-HEADER-PARSER-001) replaces
+   *   placeholders with structured HeaderImportFact records via parseHeader.
+   *   Use {@link extractHeaderFact} (also returns a HeaderFact + HeaderStatus)
+   *   instead of this method. Will be removed in Phase 3.
+   *
+   * Implementation now delegates to parseHeader so behavior matches the
+   * structured path; the legacy shape is preserved for backwards-compat.
    */
   extractRawHeaderImports(
     _rootNode: Parser.SyntaxNode,
@@ -224,6 +235,23 @@ export class RelationshipExtractor {
     _language: string
   ): RawHeaderImportFact[] {
     return collectHeaderImportPlaceholders(filePath, content);
+  }
+
+  /**
+   * Phase 2.5 structured header extraction. Returns the parsed
+   * {@link HeaderFact}, the parser-side {@link HeaderStatus} (which the
+   * orchestrator may demote to `'stale'` after AST cross-check), and the
+   * structured {@link HeaderImportFact}[] that supersedes
+   * {@link RawHeaderImportFact}. Pure delegation to parseHeader; AST is not
+   * inspected here.
+   */
+  extractHeaderFact(
+    _rootNode: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    _language: string
+  ): { headerFact: HeaderFact; headerStatus: HeaderStatus; importFacts: HeaderImportFact[] } {
+    return parseHeader(content, filePath);
   }
 
   // ========================================================================
@@ -1221,33 +1249,35 @@ export class RelationshipExtractor {
   }
 }
 
+let deprecationWarned = false;
+
 /**
- * Scan a file's leading comment block for `@imports [...]` arrays and emit
- * one placeholder fact per literal `module:symbol` string. Pure regex —
- * Phase 2.5 lands real BNF parsing.
+ * @deprecated Replaced by {@link parseHeader} in Phase 2.5
+ * (WO-PIPELINE-SEMANTIC-HEADER-PARSER-001). Returns RawHeaderImportFact
+ * placeholders for one phase of backwards-compat; Phase 3 removes this
+ * function. Migrate consumers to `state.headerImportFacts`.
+ *
+ * Now delegates to parseHeader (so behavior matches the structured path)
+ * and shapes the structured {module, symbol} records back into the legacy
+ * {rawString} placeholder shape. Emits a one-shot console.warn the first
+ * time it is invoked in the process.
  */
 export function collectHeaderImportPlaceholders(
   filePath: string,
   content: string
 ): RawHeaderImportFact[] {
-  const facts: RawHeaderImportFact[] = [];
-  // Limit scan to the leading comment block to avoid `@imports` appearing
-  // mid-file. We accept either a single `/** ... */` block or contiguous
-  // line comments at the top of the file.
-  const headerMatch = content.match(/^(?:\s*\/\*[\s\S]*?\*\/|\s*(?:\/\/.*\n)+)/);
-  if (!headerMatch) return facts;
-  const header = headerMatch[0];
-  // `@imports [ "...", "..." ]` — capture array body (single or multi-line).
-  const re = /@imports\s*\[([\s\S]*?)\]/g;
-  let match: RegExpExecArray | null;
-  while ((match = re.exec(header)) !== null) {
-    const body = match[1];
-    const strings = body.match(/"([^"]*)"|'([^']*)'/g);
-    if (!strings) continue;
-    for (const literal of strings) {
-      const inner = literal.slice(1, -1);
-      facts.push({ sourceFile: filePath, rawString: inner, parseStatus: 'placeholder' });
-    }
+  if (!deprecationWarned) {
+    deprecationWarned = true;
+    console.warn(
+      '[relationship-extractor] collectHeaderImportPlaceholders is deprecated; ' +
+        'use parseHeader / state.headerImportFacts instead. Removal scheduled for Phase 3.',
+    );
   }
-  return facts;
+  const { importFacts } = parseHeader(content, filePath);
+  return importFacts.map(f => ({
+    sourceFile: f.sourceFile,
+    rawString: `${f.module}:${f.symbol}`,
+    parseStatus: 'placeholder' as const,
+  }));
 }
+
