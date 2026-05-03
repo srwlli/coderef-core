@@ -1,0 +1,122 @@
+{
+  "workorder_id": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001",
+  "feature_name": "pipeline-relationship-raw-facts",
+  "created": "2026-05-03T00:55:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": "WO-PIPELINE-SEMANTIC-HEADER-PARSER (Phase 2.5, not yet created); WO-PIPELINE-IMPORT-RESOLUTION (Phase 3, not yet created)",
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "objective": "Phase 2 of CODEREF-CORE pipeline refactor. Split relationship extraction into typed raw-fact records (import, call, export, header-import placeholder) without resolution. Hard-stop before Phase 2.5/3/4.",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts\\analysis.json",
+  "artifact_paths": {
+    "context": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts\\context.json",
+    "analysis": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts\\analysis.json",
+    "plan": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts\\plan.json",
+    "communication": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts\\communication.json"
+  },
+  "prep_artifacts": {
+    "produced_by": "Gemini Flash via Lloyd AgentSpawner PID 24176",
+    "context": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts-prep\\context.json",
+    "analysis": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts-prep\\analysis.json",
+    "prep_brief": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-relationship-raw-facts-prep\\PREP-BRIEF.md"
+  },
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "ORCHESTRATOR authored plan from Gemini Flash prep deliverables; CODEREF-CORE executes Phase 2 implementation. Same handoff pattern as Phase 0 + Phase 1."
+  },
+  "execution_rules": [
+    "Phase 2 hard-stops before Phase 2.5 / Phase 3 / Phase 4. Do not begin resolver work in this WO.",
+    "No raw fact may carry a field that names a graph node ID as endpoint. Enforced by no-graph-edge-claim.test.ts.",
+    "Method calls MUST preserve receiver text (obj.save() never reduces to bare 'save').",
+    "Scope path MUST be populated for every call.",
+    "Header-import facts are PLACEHOLDERS only. No BNF parsing, no validation, no @-tag extraction beyond detecting @imports presence.",
+    "Phase 0 ground-truth tests MUST CONTINUE TO FAIL for their original reasons. If any flips to PASS, halt and report — that is a regression in Phase 2's discipline.",
+    "populate-coderef CLI surface unchanged.",
+    "Single bundled scope: all six modified files + five new test files + four fixture dirs land together. No partial commits."
+  ],
+  "hard_constraints": [
+    "No semantic-header parsing (Phase 2.5).",
+    "No import resolution (Phase 3).",
+    "No call resolution (Phase 4).",
+    "No graph-node-ID writes on raw facts.",
+    "No projection-field renames or removals — additive only."
+  ],
+  "acceptance_criteria": [
+    "RawImportFact, RawCallFact, RawExportFact, RawHeaderImportFact types defined in src/pipeline/types.ts.",
+    "src/pipeline/extractors/relationship-extractor.ts emits four typed arrays via PipelineState.",
+    "Method-call receiver text preserved on every RawCallFact (proven by raw-call-facts.test.ts).",
+    "Scope path populated on every RawCallFact (proven by raw-call-facts.test.ts).",
+    "Alias bindings captured in RawImportFact.specifiers (proven by raw-import-facts.test.ts).",
+    "Dynamic + type-only flags captured (proven by raw-import-facts.test.ts).",
+    "Header-import placeholders emitted with rawString preserved (proven by raw-header-import-placeholders.test.ts).",
+    "no-graph-edge-claim.test.ts passes (no raw fact field names a graph node ID).",
+    "All Phase 1 tests still pass (element-taxonomy, single-scanner, semantic-canonical).",
+    "Phase 0 ground-truth tests STILL FAIL for original reasons (NOT pass).",
+    "populate-coderef end-to-end produces valid output with element/file counts in same order of magnitude as Phase 1 baseline.",
+    "All exit criteria documented in execution-notes.md (task 1.17)."
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "decision": "plan_type=phased",
+      "rationale": "Roadmap Phase 2 is one of nine sequential gated phases.",
+      "decided_by": "create-workorder@2.4.0 (manual via ORCHESTRATOR)",
+      "at": "2026-05-03T00:55:00Z"
+    },
+    {
+      "decision": "Header-import facts are PLACEHOLDERS in Phase 2; actual @imports parsing in Phase 2.5.",
+      "rationale": "Roadmap line 152 explicitly defers parsing to Phase 2.5. Phase 3 needs the placeholders to know what to resolve.",
+      "at": "2026-05-03T00:55:00Z"
+    },
+    {
+      "decision": "Projection seam edit is ADDITIVE — rawFacts is optional on registry items, existing fields unchanged.",
+      "rationale": "Phase 1 unified projections cleanly. ENTITY dashboard and other consumers must not break on absence of rawFacts in older data.",
+      "at": "2026-05-03T00:55:00Z"
+    },
+    {
+      "decision": "Phase 0 ground-truth tests STILL FAIL is an acceptance criterion, not a defect.",
+      "rationale": "Per roadmap, tests pass starting Phase 3/4. Gemini Flash prep adjudication confirmed against roadmap line 143-184. Original prep brief framing was wrong; Gemini caught it.",
+      "at": "2026-05-03T00:55:00Z"
+    },
+    {
+      "decision": "Phase 2 prep used Gemini Flash via Lloyd AgentSpawner.",
+      "rationale": "Independent eyes (different model than plan author Claude Opus). Flash sufficient for code-reading + structured-output prep; Pro was quota-blocked.",
+      "at": "2026-05-03T00:55:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "next_action": "/execute-workorder WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001",
+  "communication_log": [
+    {
+      "timestamp": "2026-05-03T00:55:00Z",
+      "actor": "ORCHESTRATOR",
+      "message": "Workorder created for Phase 2 (Relationship Extraction — Raw Facts). Plan authored from Gemini Flash prep deliverables (PID 24176). 18 tasks, hard-stop before Phase 2.5. Phase 0 ground-truth tests deliberately remain failing per roadmap."
+    },
+    {
+      "timestamp": "2026-05-02T23:15:00Z",
+      "actor": "close-workorder@2.0.0",
+      "message": "Closed via DISPATCH-2026-05-02-008 (cross-project close from SKILLS, working dir CODEREF-CORE per DISPATCH-010). Cultural validator scope 11/11 PASS, tracking-validator scope+full 15/15 PASS each. Implementation chain ef7c5b7..2a2787a already on origin/main (12 commits). Phase 0 ground-truth tests still FAIL per Phase 2 discipline. Hand-off to Phase 2.5 awaits /plan-tests-for-workorder skill availability."
+    }
+  ],
+  "completed_at": "2026-05-02T23:15:00Z",
+  "closed_at": "2026-05-02T23:15:00Z",
+  "reviewed_at": "2026-05-02T23:15:00Z",
+  "review_result": "PASS",
+  "closed_via": "/close-workorder",
+  "updated": "2026-05-02T23:15:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/archived/pipeline-relationship-raw-facts/ARCHIVED",
+    "review_verdict_source": "Step 3 audit",
+    "warnings": [
+      "--force-warning-ok pre-authorized by DISPATCH-2026-05-02-008; no soft-stops actually surfaced under scope-mode validators"
+    ]
+  }
+}
