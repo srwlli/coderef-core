@@ -2,19 +2,35 @@
  * RelationshipExtractor - AST-based import and call relationship extraction
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 2, Task IMPL-003
+ * WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001 - Phase 2 (raw-fact split)
  *
- * Features:
- * - Import extraction: Static imports, dynamic imports, namespace imports
- * - Call extraction: Function calls, method calls, constructor calls
- * - Support for all 10 languages: ts, tsx, js, jsx, py, go, rs, java, cpp, c
+ * Public surface:
+ * - Legacy: extractImports / extractCalls produce ImportRelationship[] /
+ *   CallRelationship[] (kept during transition; consumers migrate phase-by-phase).
+ * - Raw facts (Phase 2): extractRawImports / extractRawCalls /
+ *   extractRawExports / extractRawHeaderImports produce typed RawXxxFact[]
+ *   that carry every detail downstream resolvers (Phase 3 / Phase 4) need.
  *
- * Performance:
- * - Single AST traversal per file (same tree used by ElementExtractor)
- * - No regex parsing - pure tree-sitter node matching
+ * Phase 2 invariants (enforced by tests):
+ * - No raw fact carries a graph node ID as endpoint.
+ * - Method calls preserve receiver text — `obj.save()` is
+ *   `{ receiverText: 'obj', calleeName: 'save' }`, never bare `'save'`.
+ * - Every RawCallFact has a populated scopePath (may be empty array at
+ *   module top level).
+ * - RawHeaderImportFact entries are PLACEHOLDERS only; Phase 2.5 owns
+ *   real `@imports` BNF parsing.
  */
 
 import type Parser from 'tree-sitter';
-import type { ImportRelationship, CallRelationship } from '../types.js';
+import type {
+  ImportRelationship,
+  CallRelationship,
+  RawImportFact,
+  RawImportSpecifier,
+  RawCallFact,
+  RawExportFact,
+  RawHeaderImportFact,
+} from '../types.js';
 
 /**
  * RelationshipExtractor - Extract import and call relationships from AST
@@ -120,7 +136,510 @@ export class RelationshipExtractor {
     return calls;
   }
 
-  // ========== TypeScript/JavaScript Import Extraction ==========
+  // ========================================================================
+  // Phase 2 raw-fact public API
+  // ========================================================================
+
+  /** Extract RawImportFact[] for the file. */
+  extractRawImports(
+    rootNode: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    language: string
+  ): RawImportFact[] {
+    const facts: RawImportFact[] = [];
+    switch (language) {
+      case 'ts':
+      case 'tsx':
+      case 'js':
+      case 'jsx':
+        this.walkRawTsImports(rootNode, filePath, content, facts);
+        break;
+      case 'py':
+        this.walkRawPyImports(rootNode, filePath, content, facts);
+        break;
+      // Other languages: Phase 2 ships TS/JS/PY raw facts; legacy extractors
+      // keep covering go/rs/java/cpp until later phases promote them.
+      default:
+        break;
+    }
+    return facts;
+  }
+
+  /** Extract RawCallFact[] for the file. */
+  extractRawCalls(
+    rootNode: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    language: string
+  ): RawCallFact[] {
+    const facts: RawCallFact[] = [];
+    switch (language) {
+      case 'ts':
+      case 'tsx':
+      case 'js':
+      case 'jsx':
+        this.walkRawTsCalls(rootNode, filePath, content, language, [], facts);
+        break;
+      case 'py':
+        this.walkRawPyCalls(rootNode, filePath, content, language, [], facts);
+        break;
+      default:
+        break;
+    }
+    return facts;
+  }
+
+  /** Extract RawExportFact[] for the file. */
+  extractRawExports(
+    rootNode: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    language: string
+  ): RawExportFact[] {
+    const facts: RawExportFact[] = [];
+    switch (language) {
+      case 'ts':
+      case 'tsx':
+      case 'js':
+      case 'jsx':
+        this.walkRawTsExports(rootNode, filePath, content, facts);
+        break;
+      default:
+        break;
+    }
+    return facts;
+  }
+
+  /**
+   * Extract RawHeaderImportFact[] from a file's leading comment block.
+   * Phase 2 emits PLACEHOLDERS only — each `module:symbol` literal in an
+   * `@imports [...]` array becomes one fact with `parseStatus='placeholder'`.
+   * Phase 2.5 will replace this with structured BNF parsing.
+   */
+  extractRawHeaderImports(
+    _rootNode: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    _language: string
+  ): RawHeaderImportFact[] {
+    return collectHeaderImportPlaceholders(filePath, content);
+  }
+
+  // ========================================================================
+  // TypeScript/JavaScript raw imports
+  // ========================================================================
+
+  private walkRawTsImports(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    facts: RawImportFact[]
+  ): void {
+    if (node.type === 'import_statement') {
+      const sourceNode = node.childForFieldName('source');
+      if (sourceNode) {
+        const moduleSpecifier = this.extractStringLiteral(sourceNode, content);
+        const line = node.startPosition.row + 1;
+        const importClause = node.childForFieldName('import_clause');
+
+        const specifiers: RawImportSpecifier[] = [];
+        let defaultImport: string | null = null;
+        let namespaceImport: string | null = null;
+
+        // `import type { ... } from ...` is detected by leading `type` keyword.
+        const typeOnly = /^\s*import\s+type\b/.test(
+          content.slice(node.startIndex, node.endIndex)
+        );
+
+        if (importClause) {
+          // Default binding: `import Foo from '...'` — appears as `identifier` child.
+          for (const child of importClause.namedChildren) {
+            if (child.type === 'identifier') {
+              defaultImport = content.slice(child.startIndex, child.endIndex);
+              break;
+            }
+          }
+
+          // Named imports: `import { a, b as c }`.
+          for (const spec of importClause.descendantsOfType('import_specifier')) {
+            const nameNode = spec.childForFieldName('name');
+            const aliasNode = spec.childForFieldName('alias');
+            if (!nameNode) continue;
+            const imported = content.slice(nameNode.startIndex, nameNode.endIndex);
+            const local = aliasNode
+              ? content.slice(aliasNode.startIndex, aliasNode.endIndex)
+              : imported;
+            specifiers.push({ imported, local });
+          }
+
+          // Namespace import: `import * as ns`.
+          const ns = importClause.descendantsOfType('namespace_import')[0];
+          if (ns) {
+            const nameNode = ns.childForFieldName('name')
+              ?? ns.namedChildren.find(c => c.type === 'identifier');
+            if (nameNode) {
+              namespaceImport = content.slice(nameNode.startIndex, nameNode.endIndex);
+            }
+          }
+        }
+
+        facts.push({
+          sourceElementId: null,
+          sourceFile: filePath,
+          moduleSpecifier,
+          specifiers,
+          defaultImport,
+          namespaceImport,
+          typeOnly,
+          dynamic: false,
+          line,
+        });
+      }
+    } else if (node.type === 'call_expression') {
+      // Dynamic import: `import('module')` parses as a call_expression whose
+      // function is the keyword `import`.
+      const fn = node.childForFieldName('function');
+      if (fn && content.slice(fn.startIndex, fn.endIndex) === 'import') {
+        const args = node.childForFieldName('arguments');
+        if (args && args.namedChildCount > 0) {
+          const firstArg = args.namedChild(0);
+          if (firstArg) {
+            facts.push({
+              sourceElementId: null,
+              sourceFile: filePath,
+              moduleSpecifier: this.extractStringLiteral(firstArg, content),
+              specifiers: [],
+              defaultImport: null,
+              namespaceImport: null,
+              typeOnly: false,
+              dynamic: true,
+              line: node.startPosition.row + 1,
+            });
+          }
+        }
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.walkRawTsImports(child, filePath, content, facts);
+    }
+  }
+
+  // ========================================================================
+  // TypeScript/JavaScript raw calls
+  // ========================================================================
+
+  private walkRawTsCalls(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    language: string,
+    scopePath: string[],
+    facts: RawCallFact[]
+  ): void {
+    if (node.type === 'call_expression') {
+      const fn = node.childForFieldName('function');
+      if (fn) {
+        const callExpressionText = content.slice(node.startIndex, node.endIndex);
+        let calleeName = '';
+        let receiverText: string | null = null;
+
+        if (fn.type === 'member_expression') {
+          // `obj.method()` — preserve receiver text.
+          const objectNode = fn.childForFieldName('object');
+          const propertyNode = fn.childForFieldName('property');
+          if (propertyNode) {
+            calleeName = content.slice(propertyNode.startIndex, propertyNode.endIndex);
+          }
+          if (objectNode) {
+            receiverText = content.slice(objectNode.startIndex, objectNode.endIndex);
+          }
+        } else if (fn.type === 'identifier') {
+          calleeName = content.slice(fn.startIndex, fn.endIndex);
+        } else {
+          // Fall back to the full function text (e.g. parenthesised expressions).
+          calleeName = content.slice(fn.startIndex, fn.endIndex);
+        }
+
+        // Skip the dynamic-import keyword — that is captured by raw imports.
+        const skip =
+          fn.type === 'identifier' &&
+          calleeName === 'import' &&
+          node.parent?.type !== 'arguments';
+
+        if (calleeName && !skip) {
+          facts.push({
+            sourceElementCandidate: null,
+            sourceFile: filePath,
+            callExpressionText,
+            calleeName,
+            receiverText,
+            scopePath: [...scopePath],
+            line: node.startPosition.row + 1,
+            language,
+          });
+        }
+      }
+    }
+
+    // Update scopePath for descendants when entering function/method/class.
+    let pushed = false;
+    if (
+      node.type === 'function_declaration' ||
+      node.type === 'method_definition'
+    ) {
+      const nameNode = node.childForFieldName('name');
+      if (nameNode) {
+        scopePath.push(content.slice(nameNode.startIndex, nameNode.endIndex));
+        pushed = true;
+      }
+    } else if (node.type === 'class_declaration') {
+      const nameNode = node.childForFieldName('name');
+      if (nameNode) {
+        scopePath.push(content.slice(nameNode.startIndex, nameNode.endIndex));
+        pushed = true;
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.walkRawTsCalls(child, filePath, content, language, scopePath, facts);
+    }
+
+    if (pushed) scopePath.pop();
+  }
+
+  // ========================================================================
+  // TypeScript/JavaScript raw exports
+  // ========================================================================
+
+  private walkRawTsExports(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    facts: RawExportFact[]
+  ): void {
+    if (node.type === 'export_statement') {
+      const line = node.startPosition.row + 1;
+      const text = content.slice(node.startIndex, node.endIndex);
+      const sourceNode = node.childForFieldName('source');
+
+      // `export * as ns from './x'` — namespace re-export.
+      const namespaceExport = node.descendantsOfType('namespace_export')[0];
+      if (namespaceExport && sourceNode) {
+        const nameNode = namespaceExport.childForFieldName('name')
+          ?? namespaceExport.namedChildren.find(c => c.type === 'identifier');
+        const local = nameNode
+          ? content.slice(nameNode.startIndex, nameNode.endIndex)
+          : '*';
+        facts.push({
+          sourceFile: filePath,
+          exportedName: local,
+          localName: local,
+          kind: 'namespace',
+          line,
+        });
+        // Recurse into children below — there might be more.
+      }
+
+      // `export { x, y as z } from './m'` (reexport) or `export { x, y as z }` (named).
+      const exportClause = node.descendantsOfType('export_clause')[0];
+      if (exportClause) {
+        for (const spec of exportClause.descendantsOfType('export_specifier')) {
+          const nameNode = spec.childForFieldName('name');
+          const aliasNode = spec.childForFieldName('alias');
+          if (!nameNode) continue;
+          const localName = content.slice(nameNode.startIndex, nameNode.endIndex);
+          const exportedName = aliasNode
+            ? content.slice(aliasNode.startIndex, aliasNode.endIndex)
+            : localName;
+          facts.push({
+            sourceFile: filePath,
+            exportedName,
+            localName,
+            kind: sourceNode ? 'reexport' : 'named',
+            line,
+          });
+        }
+      }
+
+      // `export default ...`
+      if (/\bexport\s+default\b/.test(text)) {
+        // Attempt to capture the local name when it's a named declaration
+        // (`export default function foo(){}` / `export default class Bar {}`).
+        let localName = 'default';
+        for (const child of node.namedChildren) {
+          if (
+            child.type === 'function_declaration' ||
+            child.type === 'class_declaration'
+          ) {
+            const nameNode = child.childForFieldName('name');
+            if (nameNode) {
+              localName = content.slice(nameNode.startIndex, nameNode.endIndex);
+              break;
+            }
+          }
+          if (child.type === 'identifier') {
+            localName = content.slice(child.startIndex, child.endIndex);
+            break;
+          }
+        }
+        facts.push({
+          sourceFile: filePath,
+          exportedName: 'default',
+          localName,
+          kind: 'default',
+          line,
+        });
+      }
+
+      // `export const x = ...`, `export function foo(){}`, `export class Bar {}`
+      for (const child of node.namedChildren) {
+        if (child.type === 'function_declaration' || child.type === 'class_declaration') {
+          const nameNode = child.childForFieldName('name');
+          if (nameNode) {
+            // Skip if this was the default-export branch (already pushed above).
+            if (/\bexport\s+default\b/.test(text)) continue;
+            const name = content.slice(nameNode.startIndex, nameNode.endIndex);
+            facts.push({
+              sourceFile: filePath,
+              exportedName: name,
+              localName: name,
+              kind: 'named',
+              line,
+            });
+          }
+        } else if (child.type === 'lexical_declaration' || child.type === 'variable_declaration') {
+          for (const decl of child.descendantsOfType('variable_declarator')) {
+            const nameNode = decl.childForFieldName('name');
+            if (nameNode && nameNode.type === 'identifier') {
+              const name = content.slice(nameNode.startIndex, nameNode.endIndex);
+              facts.push({
+                sourceFile: filePath,
+                exportedName: name,
+                localName: name,
+                kind: 'named',
+                line,
+              });
+            }
+          }
+        }
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.walkRawTsExports(child, filePath, content, facts);
+    }
+  }
+
+  // ========================================================================
+  // Python raw imports / calls (lightweight — receiver/scope preserved)
+  // ========================================================================
+
+  private walkRawPyImports(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    facts: RawImportFact[]
+  ): void {
+    if (node.type === 'import_statement') {
+      const line = node.startPosition.row + 1;
+      for (const dotted of node.descendantsOfType('dotted_name')) {
+        facts.push({
+          sourceElementId: null,
+          sourceFile: filePath,
+          moduleSpecifier: content.slice(dotted.startIndex, dotted.endIndex),
+          specifiers: [],
+          defaultImport: null,
+          namespaceImport: null,
+          typeOnly: false,
+          dynamic: false,
+          line,
+        });
+      }
+    } else if (node.type === 'import_from_statement') {
+      const line = node.startPosition.row + 1;
+      const moduleNode = node.childForFieldName('module_name');
+      if (moduleNode) {
+        const moduleSpecifier = content.slice(moduleNode.startIndex, moduleNode.endIndex);
+        const specifiers: RawImportSpecifier[] = [];
+        for (const dotted of node.descendantsOfType('dotted_name').slice(1)) {
+          const name = content.slice(dotted.startIndex, dotted.endIndex);
+          specifiers.push({ imported: name, local: name });
+        }
+        facts.push({
+          sourceElementId: null,
+          sourceFile: filePath,
+          moduleSpecifier,
+          specifiers,
+          defaultImport: null,
+          namespaceImport: null,
+          typeOnly: false,
+          dynamic: false,
+          line,
+        });
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.walkRawPyImports(child, filePath, content, facts);
+    }
+  }
+
+  private walkRawPyCalls(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    language: string,
+    scopePath: string[],
+    facts: RawCallFact[]
+  ): void {
+    if (node.type === 'call') {
+      const fn = node.childForFieldName('function');
+      if (fn) {
+        const callExpressionText = content.slice(node.startIndex, node.endIndex);
+        let calleeName = '';
+        let receiverText: string | null = null;
+        if (fn.type === 'attribute') {
+          const objectNode = fn.childForFieldName('object');
+          const attrNode = fn.childForFieldName('attribute');
+          if (attrNode) calleeName = content.slice(attrNode.startIndex, attrNode.endIndex);
+          if (objectNode) receiverText = content.slice(objectNode.startIndex, objectNode.endIndex);
+        } else {
+          calleeName = content.slice(fn.startIndex, fn.endIndex);
+        }
+        if (calleeName) {
+          facts.push({
+            sourceElementCandidate: null,
+            sourceFile: filePath,
+            callExpressionText,
+            calleeName,
+            receiverText,
+            scopePath: [...scopePath],
+            line: node.startPosition.row + 1,
+            language,
+          });
+        }
+      }
+    }
+
+    let pushed = false;
+    if (node.type === 'function_definition' || node.type === 'class_definition') {
+      const nameNode = node.childForFieldName('name');
+      if (nameNode) {
+        scopePath.push(content.slice(nameNode.startIndex, nameNode.endIndex));
+        pushed = true;
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.walkRawPyCalls(child, filePath, content, language, scopePath, facts);
+    }
+
+    if (pushed) scopePath.pop();
+  }
+
+  // ========== TypeScript/JavaScript Import Extraction (legacy) ==========
 
   private extractTypeScriptImports(
     node: Parser.SyntaxNode,
@@ -196,7 +715,7 @@ export class RelationshipExtractor {
     }
   }
 
-  // ========== TypeScript/JavaScript Call Extraction ==========
+  // ========== TypeScript/JavaScript Call Extraction (legacy) ==========
 
   private extractTypeScriptCalls(
     node: Parser.SyntaxNode,
@@ -696,4 +1215,35 @@ export class RelationshipExtractor {
     // Remove quotes
     return text.replace(/^["']|["']$/g, '');
   }
+}
+
+/**
+ * Scan a file's leading comment block for `@imports [...]` arrays and emit
+ * one placeholder fact per literal `module:symbol` string. Pure regex —
+ * Phase 2.5 lands real BNF parsing.
+ */
+export function collectHeaderImportPlaceholders(
+  filePath: string,
+  content: string
+): RawHeaderImportFact[] {
+  const facts: RawHeaderImportFact[] = [];
+  // Limit scan to the leading comment block to avoid `@imports` appearing
+  // mid-file. We accept either a single `/** ... */` block or contiguous
+  // line comments at the top of the file.
+  const headerMatch = content.match(/^(?:\s*\/\*[\s\S]*?\*\/|\s*(?:\/\/.*\n)+)/);
+  if (!headerMatch) return facts;
+  const header = headerMatch[0];
+  // `@imports [ "...", "..." ]` — capture array body (single or multi-line).
+  const re = /@imports\s*\[([\s\S]*?)\]/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(header)) !== null) {
+    const body = match[1];
+    const strings = body.match(/"([^"]*)"|'([^']*)'/g);
+    if (!strings) continue;
+    for (const literal of strings) {
+      const inner = literal.slice(1, -1);
+      facts.push({ sourceFile: filePath, rawString: inner, parseStatus: 'placeholder' });
+    }
+  }
+  return facts;
 }

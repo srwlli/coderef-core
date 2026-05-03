@@ -29,6 +29,10 @@ import type {
   PipelineState,
   ImportRelationship,
   CallRelationship,
+  RawImportFact,
+  RawCallFact,
+  RawExportFact,
+  RawHeaderImportFact,
 } from './types.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
@@ -123,6 +127,10 @@ export class PipelineOrchestrator {
     const allElements: ElementData[] = [];
     const allImports: ImportRelationship[] = [];
     const allCalls: CallRelationship[] = [];
+    const allRawImports: RawImportFact[] = [];
+    const allRawCalls: RawCallFact[] = [];
+    const allRawExports: RawExportFact[] = [];
+    const allRawHeaderImports: RawHeaderImportFact[] = [];
     const sources = new Map<string, string>();
 
     let filesScanned = 0;
@@ -131,7 +139,7 @@ export class PipelineOrchestrator {
       for (const filePath of filePaths) {
         try {
           const result = await this.processFile(filePath, language, verbose);
-          
+
           // Register all elements with the global registry (WO-CODEREF-CORE-REGISTRY-001)
           for (const elem of result.elements) {
             globalRegistry.register(elem);
@@ -140,6 +148,10 @@ export class PipelineOrchestrator {
           allElements.push(...result.elements);
           allImports.push(...result.imports);
           allCalls.push(...result.calls);
+          allRawImports.push(...result.rawImports);
+          allRawCalls.push(...result.rawCalls);
+          allRawExports.push(...result.rawExports);
+          allRawHeaderImports.push(...result.rawHeaderImports);
           sources.set(filePath, result.content);
           filesScanned++;
 
@@ -185,6 +197,10 @@ export class PipelineOrchestrator {
       elements: allElements,
       imports: allImports,
       calls: allCalls,
+      rawImports: allRawImports,
+      rawCalls: allRawCalls,
+      rawExports: allRawExports,
+      rawHeaderImports: allRawHeaderImports,
       graph,
       sources,
       options,
@@ -298,6 +314,10 @@ export class PipelineOrchestrator {
     elements: ElementData[];
     imports: ImportRelationship[];
     calls: CallRelationship[];
+    rawImports: RawImportFact[];
+    rawCalls: RawCallFact[];
+    rawExports: RawExportFact[];
+    rawHeaderImports: RawHeaderImportFact[];
     content: string;
   }> {
     // Read file content
@@ -309,7 +329,16 @@ export class PipelineOrchestrator {
       if (verbose) {
         console.warn(`[PipelineOrchestrator] No parser available for ${language}`);
       }
-      return { elements: [], imports: [], calls: [], content };
+      return {
+        elements: [],
+        imports: [],
+        calls: [],
+        rawImports: [],
+        rawCalls: [],
+        rawExports: [],
+        rawHeaderImports: [],
+        content,
+      };
     }
 
     // Parse file once
@@ -319,8 +348,12 @@ export class PipelineOrchestrator {
     const elements = this.elementExtractor.extract(tree.rootNode, filePath, content, language);
     const imports = this.relationshipExtractor.extractImports(tree.rootNode, filePath, content, language);
     const calls = this.relationshipExtractor.extractCalls(tree.rootNode, filePath, content, language);
+    const rawImports = this.relationshipExtractor.extractRawImports(tree.rootNode, filePath, content, language);
+    const rawCalls = this.relationshipExtractor.extractRawCalls(tree.rootNode, filePath, content, language);
+    const rawExports = this.relationshipExtractor.extractRawExports(tree.rootNode, filePath, content, language);
+    const rawHeaderImports = this.relationshipExtractor.extractRawHeaderImports(tree.rootNode, filePath, content, language);
 
-    return { elements, imports, calls, content };
+    return { elements, imports, calls, rawImports, rawCalls, rawExports, rawHeaderImports, content };
   }
 
   /**
