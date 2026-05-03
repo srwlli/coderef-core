@@ -1,0 +1,9 @@
+Archived: 2026-05-02T23:18:00Z
+Reviewed by: close-workorder v2.0.0
+Status: PASS
+Original location: coderef/workorder/pipeline-relationship-raw-facts/
+Implementation commits: ef7c5b7..2a2787a (12 commits, on origin/main)
+Close commits: d1e701e (close metadata), f70fd08 (planning artifacts pre-archive)
+Closing domain: SKILLS (cross-project close per DISPATCH-2026-05-02-008 + 010)
+Force-warning-ok: pre-authorized by dispatch
+Archive timestamp: 2026-05-02T23:18:00Z

@@ -8,3 +8,17 @@
   archived_at: 2026-05-02T19:58:00Z
   archive_path: coderef/ARCHIVED/pipeline-scanner-identity-taxonomy/
   status: WARNING
+- workorder_id: WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001
+  feature_name: pipeline-relationship-raw-facts
+  archived_at: 2026-05-02T23:18:00Z
+  archive_path: coderef/archived/pipeline-relationship-raw-facts/
+  status: PASS
+  closing_domain: SKILLS
+  cross_project: true
+- workorder_id: WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001
+  feature_name: pipeline-relationship-raw-facts
+  archived_at: 2026-05-02T23:18:00Z
+  archive_path: coderef/archived/pipeline-relationship-raw-facts/
+  status: PASS
+  closing_domain: SKILLS
+  cross_project: true
