@@ -236,11 +236,122 @@ export function resolveCalls(state: PipelineState): CallResolution[] {
  * instruments addEntry/lookupSymbol call ordering).
  */
 export function buildSymbolTable(state: PipelineState): SymbolTable {
-  // Implementation lands in task 1.6 (after structural_foundation_review).
-  // Skeleton present so types compile and orchestrator wiring (task 1.5)
-  // can land before the checkpoint halt.
-  void state;
-  return new Map();
+  const table: SymbolTable = new Map();
+  const projectPath = state.projectPath;
+
+  const addEntry = (name: string, entry: SymbolTableEntry): void => {
+    const list = table.get(name);
+    if (list) list.push(entry);
+    else table.set(name, [entry]);
+  };
+
+  for (const elem of state.elements) {
+    const codeRefId = elem.codeRefId
+      ?? createCodeRefId(elem, projectPath, { includeLine: true });
+
+    if (elem.type === 'method') {
+      // Method names are stored as 'ClassName.methodName' by the extractor.
+      const dotIdx = elem.name.indexOf('.');
+      if (dotIdx > 0) {
+        const className = elem.name.slice(0, dotIdx);
+        const methodName = elem.name.slice(dotIdx + 1);
+        // Bare method name keyed for `this.method()` / `obj.method()` lookup.
+        addEntry(methodName, {
+          codeRefId,
+          name: methodName,
+          sourceFile: elem.file,
+          scope: 'method',
+          qualifierPath: [className],
+        });
+        // Qualified name keyed for direct ClassName.method lookup.
+        addEntry(elem.name, {
+          codeRefId,
+          name: elem.name,
+          sourceFile: elem.file,
+          scope: 'method',
+          qualifierPath: [className],
+        });
+      } else {
+        addEntry(elem.name, {
+          codeRefId,
+          name: elem.name,
+          sourceFile: elem.file,
+          scope: 'method',
+        });
+      }
+      continue;
+    }
+
+    if (elem.type === 'class') {
+      addEntry(elem.name, {
+        codeRefId,
+        name: elem.name,
+        sourceFile: elem.file,
+        scope: 'class',
+      });
+      continue;
+    }
+
+    if (elem.type === 'function' || elem.type === 'component' || elem.type === 'hook') {
+      // Nested-function detection: if elem.name contains '.', the AST
+      // scanner emitted a qualified name like 'outer.inner'. Bare lookup
+      // by inner name + qualified lookup keyed for scope-priority disambiguation.
+      const dotIdx = elem.name.indexOf('.');
+      if (dotIdx > 0) {
+        const innerName = elem.name.slice(elem.name.lastIndexOf('.') + 1);
+        const qualifier = elem.name.slice(0, elem.name.lastIndexOf('.'));
+        addEntry(innerName, {
+          codeRefId,
+          name: innerName,
+          sourceFile: elem.file,
+          scope: 'function',
+          qualifierPath: qualifier.split('.'),
+        });
+        addEntry(elem.name, {
+          codeRefId,
+          name: elem.name,
+          sourceFile: elem.file,
+          scope: 'function',
+          qualifierPath: qualifier.split('.'),
+        });
+      } else {
+        addEntry(elem.name, {
+          codeRefId,
+          name: elem.name,
+          sourceFile: elem.file,
+          scope: 'file',
+        });
+      }
+      continue;
+    }
+
+    // constants / interfaces / types / decorators / properties / unknown:
+    // index by name so receiverText lookups can detect them when relevant.
+    if (elem.type === 'constant' || elem.type === 'interface' || elem.type === 'type') {
+      addEntry(elem.name, {
+        codeRefId,
+        name: elem.name,
+        sourceFile: elem.file,
+        scope: 'file',
+      });
+    }
+  }
+
+  // Index every resolved Phase 3 ImportResolution.localName as an
+  // 'imported' scope entry. This is the cross-phase seam for AC-07.
+  for (const ir of state.importResolutions) {
+    if (ir.kind !== 'resolved' || !ir.resolvedTargetCodeRefId || !ir.localName) {
+      continue;
+    }
+    addEntry(ir.localName, {
+      codeRefId: ir.resolvedTargetCodeRefId,
+      name: ir.localName,
+      sourceFile: ir.sourceFile,
+      scope: 'imported',
+    });
+  }
+
+  return table;
 }
 
 /**
@@ -253,10 +364,72 @@ export function resolveCallsAgainstTable(
   state: PipelineState,
   symbolTable: SymbolTable,
 ): CallResolution[] {
-  // Implementation lands in task 1.7 (after structural_foundation_review).
-  void state;
-  void symbolTable;
-  return [];
+  const elementsByFile = indexElementsByFile(state.elements);
+  const projectPath = state.projectPath;
+  // Per-scope `const X = new Y()` map (option 1 + guardrails 1+2): one
+  // fresh map per enclosing element. Outer key = callerCodeRefId; inner
+  // key = local variable name; value = class name. Built lazily per file
+  // and shared across calls inside the same enclosing element.
+  const newInitMap = buildNewInitializerMap(state, elementsByFile, projectPath);
+  const resolutions: CallResolution[] = [];
+
+  for (const fact of state.rawCalls) {
+    const callerCodeRefId = deriveCallerCodeRefId(fact, elementsByFile, projectPath);
+
+    // Branch 1: builtin receiver allowlist (DR-PHASE-4-A).
+    if (isBuiltinReceiver(fact.receiverText)) {
+      resolutions.push({
+        sourceFile: fact.sourceFile,
+        callerCodeRefId,
+        calleeName: fact.calleeName,
+        receiverText: fact.receiverText,
+        scopePath: [...fact.scopePath],
+        line: fact.line,
+        kind: 'builtin',
+        reason: 'in_allowlist',
+      });
+      continue;
+    }
+
+    // Branch 2: member-access calls (this/super/imported/local-typed/unknown).
+    if (fact.receiverText !== null) {
+      const result = classifyMethodCall(
+        fact,
+        symbolTable,
+        state.importResolutions,
+        callerCodeRefId,
+        newInitMap,
+      );
+      resolutions.push({
+        sourceFile: fact.sourceFile,
+        callerCodeRefId,
+        calleeName: fact.calleeName,
+        receiverText: fact.receiverText,
+        scopePath: [...fact.scopePath],
+        line: fact.line,
+        ...result,
+      });
+      continue;
+    }
+
+    // Branch 3: bare calls — calleeName lookup by scope priority.
+    const result = classifyBareCall(
+      fact,
+      symbolTable,
+      state.importResolutions,
+    );
+    resolutions.push({
+      sourceFile: fact.sourceFile,
+      callerCodeRefId,
+      calleeName: fact.calleeName,
+      receiverText: null,
+      scopePath: [...fact.scopePath],
+      line: fact.line,
+      ...result,
+    });
+  }
+
+  return resolutions;
 }
 
 /**
@@ -270,29 +443,338 @@ export function isBuiltinReceiver(receiverText: string | null): boolean {
 }
 
 /**
- * Branch dispatcher for member-access calls (DR-PHASE-4-B). Distinguishes
- * `this.method()`, imported-binding member calls, super.method(), and
- * unknown-receiver calls. Returns the CallResolutionKind plus any auxiliary
- * fields (resolvedTargetCodeRefId / candidates / reason).
+ * Branch dispatcher for member-access calls (DR-PHASE-4-B + ORCHESTRATOR
+ * option-1 guardrails approved 2026-05-03):
  *
- * Implementation lands in task 1.8.
+ *   1. `this.X()` → look up X in the enclosing class's own methods only
+ *      (guardrail 3: own methods, no parent classes, no interfaces).
+ *   2. `super.X()` → unresolved (parent-class hierarchy traversal is out
+ *      of Phase 4 scope per guardrail 3).
+ *   3. `obj.X()` where obj is bound by `const obj = new Y()` in the
+ *      enclosing scope (guardrail 1: literal `const x = new Y()` pattern
+ *      only, no factories) → resolve X against Y's own methods only.
+ *      Factory pattern `const obj = makeY()` is NOT matched and stays
+ *      ambiguous (guardrail 4).
+ *   4. `localName.X()` where localName is a Phase 3 ImportResolution
+ *      binding to a resolved target — emit ambiguous (we don't know what
+ *      X is on the target without type inference; guardrail 3 forbids
+ *      walking interfaces).
+ *   5. `obj.X()` where obj is unknown but X exists in the symbol table
+ *      with two or more candidates → ambiguous with candidates[].
+ *   6. `obj.X()` where obj is unknown and X has exactly one candidate →
+ *      ambiguous with candidates=[that one]. Guardrail 4 forbids silent
+ *      resolution for unknown receivers.
+ *   7. `obj.X()` where obj is unknown and X has zero candidates →
+ *      unresolved with reason='receiver_not_in_symbol_table'.
  */
 export function classifyMethodCall(
   fact: RawCallFact,
   symbolTable: SymbolTable,
   importResolutions: readonly ImportResolution[],
   callerCodeRefId: string | null,
+  newInitMap: NewInitializerMap,
 ): {
   kind: CallResolutionKind;
   resolvedTargetCodeRefId?: string;
   candidates?: string[];
   reason?: string;
 } {
-  void fact;
-  void symbolTable;
+  const receiver = fact.receiverText;
+  const callee = fact.calleeName;
+
+  // (1) this.X() — resolve in enclosing class scope.
+  if (receiver === 'this') {
+    const enclosingClass = findEnclosingClassName(fact.scopePath);
+    if (!enclosingClass) {
+      return { kind: 'unresolved', reason: 'this_outside_class_scope' };
+    }
+    const qualifiedName = `${enclosingClass}.${callee}`;
+    const entries = symbolTable.get(qualifiedName) ?? [];
+    const sameFile = entries.filter(e => e.sourceFile === fact.sourceFile);
+    if (sameFile.length === 1) {
+      return { kind: 'resolved', resolvedTargetCodeRefId: sameFile[0].codeRefId };
+    }
+    if (sameFile.length > 1) {
+      return { kind: 'ambiguous', candidates: sameFile.map(e => e.codeRefId) };
+    }
+    return { kind: 'unresolved', reason: 'this_method_not_in_class' };
+  }
+
+  // (2) super.X() — out of scope per guardrail 3.
+  if (receiver === 'super') {
+    return { kind: 'unresolved', reason: 'super_call_out_of_scope' };
+  }
+
+  // (3) obj.X() where obj = new Y() (literal pattern, option-1 narrow scan).
+  if (receiver !== null && callerCodeRefId) {
+    const perScope = newInitMap.get(callerCodeRefId);
+    const className = perScope?.get(receiver);
+    if (className) {
+      const qualifiedName = `${className}.${callee}`;
+      const entries = symbolTable.get(qualifiedName) ?? [];
+      // Guardrail 3: own methods only. Method scope entries' qualifierPath
+      // is [className]; reject anything else (no parent-class / interface
+      // walking). Multi-file matches with the same class name → ambiguous.
+      const ownMethods = entries.filter(
+        e => e.scope === 'method'
+          && e.qualifierPath?.length === 1
+          && e.qualifierPath[0] === className,
+      );
+      if (ownMethods.length === 1) {
+        return { kind: 'resolved', resolvedTargetCodeRefId: ownMethods[0].codeRefId };
+      }
+      if (ownMethods.length > 1) {
+        return { kind: 'ambiguous', candidates: ownMethods.map(e => e.codeRefId) };
+      }
+      // class is known but method not in own methods → unresolved.
+      return {
+        kind: 'unresolved',
+        reason: 'method_not_in_class_own_methods',
+      };
+    }
+  }
+
+  // (4) localName.X() bound by Phase 3 ImportResolution. We know the
+  //     receiver is an imported namespace / default, but we don't know
+  //     what X is on it without walking module exports. Emit ambiguous
+  //     so consumers know there's a receiver but the method target is
+  //     undetermined.
+  if (receiver !== null) {
+    const importBinding = importResolutions.find(
+      ir => ir.sourceFile === fact.sourceFile
+        && ir.localName === receiver
+        && ir.kind === 'resolved',
+    );
+    if (importBinding) {
+      const candidates = (symbolTable.get(callee) ?? [])
+        .filter(e => e.scope === 'method')
+        .map(e => e.codeRefId);
+      if (candidates.length >= 2) {
+        return { kind: 'ambiguous', candidates };
+      }
+      if (candidates.length === 1) {
+        return { kind: 'ambiguous', candidates };
+      }
+      return { kind: 'unresolved', reason: 'imported_receiver_method_unknown' };
+    }
+  }
+
+  // (5)/(6)/(7) Unknown receiver — ambiguous-or-unresolved, never resolved
+  // (DR-PHASE-4-B + guardrail 4).
+  const calleeEntries = (symbolTable.get(callee) ?? [])
+    .filter(e => e.scope === 'method');
+  if (calleeEntries.length >= 2) {
+    return {
+      kind: 'ambiguous',
+      candidates: calleeEntries.map(e => e.codeRefId),
+    };
+  }
+  if (calleeEntries.length === 1) {
+    return {
+      kind: 'ambiguous',
+      candidates: calleeEntries.map(e => e.codeRefId),
+      reason: 'single_candidate_unknown_receiver',
+    };
+  }
+  return { kind: 'unresolved', reason: 'receiver_not_in_symbol_table' };
+}
+
+/**
+ * Bare-call classifier (no receiver). Lookup priority per roadmap.md
+ * line 289-296: local → enclosing → class → imported → same-file →
+ * global if unambiguous.
+ *
+ * Phase 4 collapses these via the symbol table: the table already has
+ * 'imported' entries scoped to importer file. Strategy:
+ *   1. Same-file matches first. If exactly one → resolved. If 2+ →
+ *      ambiguous within file.
+ *   2. If no same-file match but one or more 'imported' entries scoped
+ *      to this file → use the imported entry.
+ *   3. Otherwise look across the whole project. Exactly one match →
+ *      resolved (global if unambiguous). 2+ → ambiguous. Zero →
+ *      unresolved.
+ */
+function classifyBareCall(
+  fact: RawCallFact,
+  symbolTable: SymbolTable,
+  importResolutions: readonly ImportResolution[],
+): {
+  kind: CallResolutionKind;
+  resolvedTargetCodeRefId?: string;
+  candidates?: string[];
+  reason?: string;
+} {
   void importResolutions;
-  void callerCodeRefId;
-  return { kind: 'unresolved', reason: 'classify_method_call_not_implemented' };
+  const callee = fact.calleeName;
+  const entries = symbolTable.get(callee) ?? [];
+  if (entries.length === 0) {
+    return { kind: 'unresolved', reason: 'callee_not_in_symbol_table' };
+  }
+
+  // 1) Same-file priority. Class methods are excluded — bare calls
+  //    cannot target a class method without a receiver.
+  const sameFile = entries.filter(
+    e => e.sourceFile === fact.sourceFile && e.scope !== 'method',
+  );
+  // Within the same file, prefer scope match: nested function calls
+  // should pick the entry whose qualifierPath aligns with fact.scopePath.
+  if (sameFile.length > 1) {
+    const scopeMatched = sameFile.filter(e =>
+      qualifierPathMatchesScope(e.qualifierPath, fact.scopePath),
+    );
+    if (scopeMatched.length === 1) {
+      return { kind: 'resolved', resolvedTargetCodeRefId: scopeMatched[0].codeRefId };
+    }
+    if (scopeMatched.length > 1) {
+      return {
+        kind: 'ambiguous',
+        candidates: scopeMatched.map(e => e.codeRefId),
+      };
+    }
+    return { kind: 'ambiguous', candidates: sameFile.map(e => e.codeRefId) };
+  }
+  if (sameFile.length === 1) {
+    return { kind: 'resolved', resolvedTargetCodeRefId: sameFile[0].codeRefId };
+  }
+
+  // 2) Imported entries scoped to this file.
+  const imported = entries.filter(
+    e => e.scope === 'imported' && e.sourceFile === fact.sourceFile,
+  );
+  if (imported.length === 1) {
+    return { kind: 'resolved', resolvedTargetCodeRefId: imported[0].codeRefId };
+  }
+  if (imported.length > 1) {
+    return { kind: 'ambiguous', candidates: imported.map(e => e.codeRefId) };
+  }
+
+  // 3) Project-wide. Class methods excluded.
+  const projectWide = entries.filter(e => e.scope !== 'method');
+  if (projectWide.length === 1) {
+    return { kind: 'resolved', resolvedTargetCodeRefId: projectWide[0].codeRefId };
+  }
+  if (projectWide.length >= 2) {
+    return { kind: 'ambiguous', candidates: projectWide.map(e => e.codeRefId) };
+  }
+  return { kind: 'unresolved', reason: 'callee_not_in_symbol_table' };
+}
+
+// ============================================================================
+// Helpers
+// ============================================================================
+
+function indexElementsByFile(elements: ElementData[]): Map<string, ElementData[]> {
+  const map = new Map<string, ElementData[]>();
+  for (const elem of elements) {
+    const list = map.get(elem.file);
+    if (list) list.push(elem);
+    else map.set(elem.file, [elem]);
+  }
+  for (const list of map.values()) {
+    list.sort((a, b) => a.line - b.line);
+  }
+  return map;
+}
+
+function findEnclosingClassName(scopePath: string[]): string | null {
+  // The extractor pushes class names verbatim (capitalized identifier).
+  // Walk from the outermost scope inward and pick the first capitalized
+  // segment. Method-name segments may or may not be capitalized; relying
+  // on capitalization alone is heuristic, but the structural shape here
+  // (extractor emits [ClassName, methodName, ...]) makes the FIRST
+  // segment the class when scopePath length >= 2.
+  if (scopePath.length === 0) return null;
+  const first = scopePath[0];
+  // Heuristic: classes are PascalCase. If first segment starts with
+  // uppercase letter, treat as class name.
+  if (first.length > 0 && first[0] === first[0].toUpperCase() && first[0] !== first[0].toLowerCase()) {
+    return first;
+  }
+  return null;
+}
+
+function qualifierPathMatchesScope(
+  qualifierPath: string[] | undefined,
+  scopePath: string[],
+): boolean {
+  if (!qualifierPath || qualifierPath.length === 0) return scopePath.length === 0;
+  if (qualifierPath.length > scopePath.length) return false;
+  for (let i = 0; i < qualifierPath.length; i++) {
+    if (qualifierPath[i] !== scopePath[i]) return false;
+  }
+  return true;
+}
+
+/**
+ * Per-scope variable→class map produced by the narrow `const x = new Y()`
+ * scan (option 1 + guardrails 1+2). Outer key = callerCodeRefId; inner
+ * map = { localVarName → className }. Each enclosing element gets a
+ * fresh inner map (guardrail 2: no carry across scopes).
+ */
+type NewInitializerMap = Map<string, Map<string, string>>;
+
+const NEW_INIT_REGEX = /\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+([A-Z][\w$]*)\s*\(/g;
+
+function buildNewInitializerMap(
+  state: PipelineState,
+  elementsByFile: Map<string, ElementData[]>,
+  projectPath: string,
+): NewInitializerMap {
+  const map: NewInitializerMap = new Map();
+
+  for (const [file, elements] of elementsByFile) {
+    const source = state.sources.get(file);
+    if (!source) continue;
+
+    // Element line range: each function/method element starts at its
+    // own line; ends at the line of the next element with line > this
+    // element's line (or EOF). Sorted ascending by line in
+    // indexElementsByFile.
+    const lines = source.split('\n');
+    const fnElements = elements.filter(
+      e => e.type === 'function' || e.type === 'method' || e.type === 'component' || e.type === 'hook',
+    );
+
+    for (let i = 0; i < fnElements.length; i++) {
+      const elem = fnElements[i];
+      const startLine = elem.line; // 1-indexed
+      // End: next sibling at deeper-or-equal logical depth. We don't
+      // have brace tracking, so use the next fn element's line minus 1
+      // as an upper bound. Outer functions enclosing nested ones will
+      // have a too-wide range that includes the nested fn's body —
+      // that's acceptable per guardrail 2 (the inner fn gets its OWN
+      // separate map, and the per-scope key is callerCodeRefId, which
+      // makes this conservative not aggressive).
+      const endLine = i + 1 < fnElements.length
+        ? fnElements[i + 1].line - 1
+        : lines.length;
+      // 1-indexed inclusive slice.
+      const slice = lines.slice(startLine - 1, endLine).join('\n');
+
+      const codeRefId = elem.codeRefId
+        ?? createCodeRefId(elem, projectPath, { includeLine: true });
+      let perScope = map.get(codeRefId);
+      if (!perScope) {
+        perScope = new Map();
+        map.set(codeRefId, perScope);
+      }
+
+      // GUARDRAIL 1: literal `const X = new Y(` only. No `let`, no `var`,
+      // no factory `makeService()`, no destructuring, no reassignment.
+      let match: RegExpExecArray | null;
+      NEW_INIT_REGEX.lastIndex = 0;
+      while ((match = NEW_INIT_REGEX.exec(slice)) !== null) {
+        const localName = match[1];
+        const className = match[2];
+        // First binding wins per scope (no reassignment tracking).
+        if (!perScope.has(localName)) {
+          perScope.set(localName, className);
+        }
+      }
+    }
+  }
+
+  return map;
 }
 
 /**
