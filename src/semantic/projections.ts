@@ -1,3 +1,4 @@
+import * as path from 'path';
 import type { ElementData } from '../types/types.js';
 import type {
   RawImportFact,
@@ -59,18 +60,30 @@ export interface RawFactsBundle {
 }
 
 /**
- * Group a flat list of raw facts by sourceFile so per-entry attachment is
- * O(elements) rather than O(elements * facts).
+ * Normalize a source path to a project-relative POSIX path so raw-fact keys
+ * match the element.file value used by the projection (which is already
+ * project-relative POSIX).
+ */
+function normalizeFilePath(filePath: string, projectPath: string): string {
+  const rel = path.isAbsolute(filePath) ? path.relative(projectPath, filePath) : filePath;
+  return rel.split(path.sep).join('/');
+}
+
+/**
+ * Group a flat list of raw facts by sourceFile (normalized to project-relative
+ * POSIX) so per-entry attachment is O(elements) rather than O(elements*facts).
  */
 function groupBySourceFile<T extends { sourceFile: string }>(
   facts: T[] | undefined,
+  projectPath: string,
 ): Map<string, T[]> {
   const map = new Map<string, T[]>();
   if (!facts) return map;
   for (const fact of facts) {
-    const list = map.get(fact.sourceFile);
+    const key = normalizeFilePath(fact.sourceFile, projectPath);
+    const list = map.get(key);
     if (list) list.push(fact);
-    else map.set(fact.sourceFile, [fact]);
+    else map.set(key, [fact]);
   }
   return map;
 }
@@ -80,10 +93,10 @@ export function createSemanticRegistryProjection(
   projectPath = process.cwd(),
   rawFactsBundle?: RawFactsBundle,
 ): SemanticRegistryProjection {
-  const importsByFile = groupBySourceFile(rawFactsBundle?.rawImports);
-  const callsByFile = groupBySourceFile(rawFactsBundle?.rawCalls);
-  const exportsByFile = groupBySourceFile(rawFactsBundle?.rawExports);
-  const headerImportsByFile = groupBySourceFile(rawFactsBundle?.rawHeaderImports);
+  const importsByFile = groupBySourceFile(rawFactsBundle?.rawImports, projectPath);
+  const callsByFile = groupBySourceFile(rawFactsBundle?.rawCalls, projectPath);
+  const exportsByFile = groupBySourceFile(rawFactsBundle?.rawExports, projectPath);
+  const headerImportsByFile = groupBySourceFile(rawFactsBundle?.rawHeaderImports, projectPath);
   const hasAnyRawFacts =
     importsByFile.size +
       callsByFile.size +
@@ -116,11 +129,12 @@ export function createSemanticRegistryProjection(
       };
 
       if (hasAnyRawFacts) {
+        const lookupKey = normalizeFilePath(element.file, projectPath);
         entry.rawFacts = {
-          imports: importsByFile.get(element.file) || [],
-          calls: callsByFile.get(element.file) || [],
-          exports: exportsByFile.get(element.file) || [],
-          headerImports: headerImportsByFile.get(element.file) || [],
+          imports: importsByFile.get(lookupKey) || [],
+          calls: callsByFile.get(lookupKey) || [],
+          exports: exportsByFile.get(lookupKey) || [],
+          headerImports: headerImportsByFile.get(lookupKey) || [],
         };
       }
 
