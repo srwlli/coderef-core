@@ -241,7 +241,9 @@ export class RelationshipExtractor {
       if (sourceNode) {
         const moduleSpecifier = this.extractStringLiteral(sourceNode, content);
         const line = node.startPosition.row + 1;
-        const importClause = node.childForFieldName('import_clause');
+        // tree-sitter-typescript exposes `import_clause` as an unnamed-field
+        // child rather than via childForFieldName, so look it up by type.
+        const importClause = node.namedChildren.find(c => c.type === 'import_clause');
 
         const specifiers: RawImportSpecifier[] = [];
         let defaultImport: string | null = null;
@@ -253,7 +255,8 @@ export class RelationshipExtractor {
         );
 
         if (importClause) {
-          // Default binding: `import Foo from '...'` — appears as `identifier` child.
+          // Default binding: `import Foo from '...'` — appears as `identifier`
+          // direct child of import_clause.
           for (const child of importClause.namedChildren) {
             if (child.type === 'identifier') {
               defaultImport = content.slice(child.startIndex, child.endIndex);
@@ -261,7 +264,8 @@ export class RelationshipExtractor {
             }
           }
 
-          // Named imports: `import { a, b as c }`.
+          // Named imports: `import { a, b as c }`. import_specifier nodes
+          // live inside the named_imports descendant.
           for (const spec of importClause.descendantsOfType('import_specifier')) {
             const nameNode = spec.childForFieldName('name');
             const aliasNode = spec.childForFieldName('alias');
@@ -276,8 +280,8 @@ export class RelationshipExtractor {
           // Namespace import: `import * as ns`.
           const ns = importClause.descendantsOfType('namespace_import')[0];
           if (ns) {
-            const nameNode = ns.childForFieldName('name')
-              ?? ns.namedChildren.find(c => c.type === 'identifier');
+            const nameNode = ns.namedChildren.find(c => c.type === 'identifier')
+              ?? ns.childForFieldName('name');
             if (nameNode) {
               namespaceImport = content.slice(nameNode.startIndex, nameNode.endIndex);
             }
