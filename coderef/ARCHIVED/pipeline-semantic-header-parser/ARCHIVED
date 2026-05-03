@@ -1,0 +1,12 @@
+Archived: 2026-05-03T02:32:00Z
+Reviewed by: close-workorder v2.0.0
+Status: PASS
+Original location: coderef/workorder/pipeline-semantic-header-parser/
+Implementation commits: 3f55a21..fb9825d (16 commits, on origin/main)
+Close commits: 051b07e (close metadata + planning artifacts)
+Closing domain: SKILLS (cross-project close per DISPATCH-2026-05-02-012)
+Force-warning-ok: pre-authorized by dispatch
+Phase 2.5 deliverable: all 2344 elements carry non-undefined headerStatus + populated headerFact
+Tests: 25/25 Phase 2.5 PASS, 6/6 Phase 0 ground-truth STILL FAIL (correct discipline)
+Lloyd 9dab453 push: resolved by ORCHESTRATOR directly (out-of-scope from CORE)
+Archive timestamp: 2026-05-03T02:32:00Z

@@ -22,3 +22,10 @@
   status: PASS
   closing_domain: SKILLS
   cross_project: true
+- workorder_id: WO-PIPELINE-SEMANTIC-HEADER-PARSER-001
+  feature_name: pipeline-semantic-header-parser
+  archived_at: 2026-05-03T02:32:00Z
+  archive_path: coderef/archived/pipeline-semantic-header-parser/
+  status: PASS
+  closing_domain: SKILLS
+  cross_project: true
