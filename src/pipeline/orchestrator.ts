@@ -32,11 +32,12 @@ import type {
   RawImportFact,
   RawCallFact,
   RawExportFact,
-  RawHeaderImportFact,
   HeaderFact,
   HeaderImportFact,
   HeaderParseError,
+  ImportResolution,
 } from './types.js';
+import { resolveImports } from './import-resolver.js';
 import type { HeaderStatus } from './element-taxonomy.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
@@ -134,7 +135,6 @@ export class PipelineOrchestrator {
     const allRawImports: RawImportFact[] = [];
     const allRawCalls: RawCallFact[] = [];
     const allRawExports: RawExportFact[] = [];
-    const allRawHeaderImports: RawHeaderImportFact[] = [];
     const allHeaderFacts = new Map<string, HeaderFact>();
     const allHeaderImportFacts: HeaderImportFact[] = [];
     const allHeaderParseErrors: HeaderParseError[] = [];
@@ -158,7 +158,6 @@ export class PipelineOrchestrator {
           allRawImports.push(...result.rawImports);
           allRawCalls.push(...result.rawCalls);
           allRawExports.push(...result.rawExports);
-          allRawHeaderImports.push(...result.rawHeaderImports);
           allHeaderFacts.set(filePath, result.headerFact);
           allHeaderImportFacts.push(...result.headerImportFacts);
           if (result.headerFact.parseErrors) {
@@ -212,10 +211,10 @@ export class PipelineOrchestrator {
       rawImports: allRawImports,
       rawCalls: allRawCalls,
       rawExports: allRawExports,
-      rawHeaderImports: allRawHeaderImports,
       headerFacts: allHeaderFacts,
       headerImportFacts: allHeaderImportFacts,
       headerParseErrors: allHeaderParseErrors,
+      importResolutions: [],
       graph,
       sources,
       options,
@@ -332,7 +331,6 @@ export class PipelineOrchestrator {
     rawImports: RawImportFact[];
     rawCalls: RawCallFact[];
     rawExports: RawExportFact[];
-    rawHeaderImports: RawHeaderImportFact[];
     headerFact: HeaderFact;
     headerStatus: HeaderStatus;
     headerImportFacts: HeaderImportFact[];
@@ -354,7 +352,6 @@ export class PipelineOrchestrator {
         rawImports: [],
         rawCalls: [],
         rawExports: [],
-        rawHeaderImports: [],
         headerFact: { sourceFile: filePath },
         headerStatus: 'missing',
         headerImportFacts: [],
@@ -372,7 +369,6 @@ export class PipelineOrchestrator {
     const rawImports = this.relationshipExtractor.extractRawImports(tree.rootNode, filePath, content, language);
     const rawCalls = this.relationshipExtractor.extractRawCalls(tree.rootNode, filePath, content, language);
     const rawExports = this.relationshipExtractor.extractRawExports(tree.rootNode, filePath, content, language);
-    const rawHeaderImports = this.relationshipExtractor.extractRawHeaderImports(tree.rootNode, filePath, content, language);
 
     // Phase 2.5: parse semantic header and cross-check @exports vs AST.
     const parsed = this.relationshipExtractor.extractHeaderFact(tree.rootNode, filePath, content, language);
@@ -402,7 +398,6 @@ export class PipelineOrchestrator {
       rawImports,
       rawCalls,
       rawExports,
-      rawHeaderImports,
       headerFact,
       headerStatus,
       headerImportFacts,

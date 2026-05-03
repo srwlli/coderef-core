@@ -13,9 +13,15 @@ import type {
   HeaderImportFact,
   HeaderParseError,
 } from './header-fact.js';
+import type {
+  ExportTable,
+  ImportResolution,
+  ImportResolutionKind,
+} from './import-resolver.js';
 
 export type { HeaderStatus, LayerEnum };
 export type { HeaderFact, HeaderImportFact, HeaderParseError };
+export type { ExportTable, ImportResolution, ImportResolutionKind };
 
 /**
  * Pipeline options for configuring scan behavior
@@ -72,17 +78,23 @@ export interface PipelineState {
   rawImports: RawImportFact[];
   rawCalls: RawCallFact[];
   rawExports: RawExportFact[];
-  rawHeaderImports: RawHeaderImportFact[];
   /**
    * Phase 2.5 header-parser outputs. One HeaderFact per scanned source file
    * (possibly empty when no semantic header was detected). The map is keyed
-   * by source file path. headerImportFacts is the structured replacement for
-   * rawHeaderImports — both are populated for one phase of backwards-compat.
-   * headerParseErrors is the union of every file's parse errors.
+   * by source file path. headerImportFacts is the canonical structured
+   * record produced by the semantic header parser. headerParseErrors is the
+   * union of every file's parse errors.
    */
   headerFacts: Map<string, HeaderFact>;
   headerImportFacts: HeaderImportFact[];
   headerParseErrors: HeaderParseError[];
+  /**
+   * Phase 3 import-resolver output. One ImportResolution per RawImportFact
+   * specifier and per HeaderImportFact, classified into one of the 7
+   * ImportResolutionKind values. Resolved entries also drive graph-edge
+   * emission in the orchestrator.
+   */
+  importResolutions: ImportResolution[];
   /** Dependency graph with nodes and edges */
   graph: ExportedGraph;
   /** Source code content indexed by file path */
@@ -288,18 +300,7 @@ export interface RawExportFact {
   line: number;
 }
 
-/**
- * Header-import placeholder.
- *
- * @deprecated Replaced by HeaderImportFact in Phase 2.5
- * (WO-PIPELINE-SEMANTIC-HEADER-PARSER-001); will be removed in Phase 3.
- * Existing consumers should migrate to `state.headerImportFacts`.
- */
-export interface RawHeaderImportFact {
-  /** Source file whose header was scanned. */
-  sourceFile: string;
-  /** Verbatim `<module>:<symbol>` string from the `@imports` array. */
-  rawString: string;
-  /** Always `'placeholder'` in Phase 2. Phase 2.5 introduces other states. */
-  parseStatus: 'placeholder';
-}
+// RawHeaderImportFact was removed in Phase 3
+// (WO-PIPELINE-IMPORT-RESOLUTION-001). HeaderImportFact owns the structured
+// header-import shape; resolution classification (resolved / stale / etc.)
+// lives in ImportResolution.

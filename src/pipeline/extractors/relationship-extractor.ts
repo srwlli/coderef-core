@@ -8,17 +8,17 @@
  * - Legacy: extractImports / extractCalls produce ImportRelationship[] /
  *   CallRelationship[] (kept during transition; consumers migrate phase-by-phase).
  * - Raw facts (Phase 2): extractRawImports / extractRawCalls /
- *   extractRawExports / extractRawHeaderImports produce typed RawXxxFact[]
- *   that carry every detail downstream resolvers (Phase 3 / Phase 4) need.
+ *   extractRawExports produce typed RawXxxFact[] that carry every detail
+ *   downstream resolvers (Phase 3 / Phase 4) need.
+ * - Header (Phase 2.5): extractHeaderFact returns the parsed semantic
+ *   header (HeaderFact + HeaderStatus + HeaderImportFact[]).
  *
- * Phase 2 invariants (enforced by tests):
+ * Phase 2/2.5 invariants (enforced by tests):
  * - No raw fact carries a graph node ID as endpoint.
  * - Method calls preserve receiver text — `obj.save()` is
  *   `{ receiverText: 'obj', calleeName: 'save' }`, never bare `'save'`.
  * - Every RawCallFact has a populated scopePath (may be empty array at
  *   module top level).
- * - RawHeaderImportFact entries are PLACEHOLDERS only; Phase 2.5 owns
- *   real `@imports` BNF parsing.
  */
 
 import type Parser from 'tree-sitter';
@@ -29,7 +29,6 @@ import type {
   RawImportSpecifier,
   RawCallFact,
   RawExportFact,
-  RawHeaderImportFact,
 } from '../types.js';
 import type {
   HeaderFact,
@@ -215,26 +214,6 @@ export class RelationshipExtractor {
         break;
     }
     return facts;
-  }
-
-  /**
-   * Extract RawHeaderImportFact[] for a file.
-   *
-   * @deprecated Phase 2.5 (WO-PIPELINE-SEMANTIC-HEADER-PARSER-001) replaces
-   *   placeholders with structured HeaderImportFact records via parseHeader.
-   *   Use {@link extractHeaderFact} (also returns a HeaderFact + HeaderStatus)
-   *   instead of this method. Will be removed in Phase 3.
-   *
-   * Implementation now delegates to parseHeader so behavior matches the
-   * structured path; the legacy shape is preserved for backwards-compat.
-   */
-  extractRawHeaderImports(
-    _rootNode: Parser.SyntaxNode,
-    filePath: string,
-    content: string,
-    _language: string
-  ): RawHeaderImportFact[] {
-    return collectHeaderImportPlaceholders(filePath, content);
   }
 
   /**
@@ -1249,35 +1228,4 @@ export class RelationshipExtractor {
   }
 }
 
-let deprecationWarned = false;
-
-/**
- * @deprecated Replaced by {@link parseHeader} in Phase 2.5
- * (WO-PIPELINE-SEMANTIC-HEADER-PARSER-001). Returns RawHeaderImportFact
- * placeholders for one phase of backwards-compat; Phase 3 removes this
- * function. Migrate consumers to `state.headerImportFacts`.
- *
- * Now delegates to parseHeader (so behavior matches the structured path)
- * and shapes the structured {module, symbol} records back into the legacy
- * {rawString} placeholder shape. Emits a one-shot console.warn the first
- * time it is invoked in the process.
- */
-export function collectHeaderImportPlaceholders(
-  filePath: string,
-  content: string
-): RawHeaderImportFact[] {
-  if (!deprecationWarned) {
-    deprecationWarned = true;
-    console.warn(
-      '[relationship-extractor] collectHeaderImportPlaceholders is deprecated; ' +
-        'use parseHeader / state.headerImportFacts instead. Removal scheduled for Phase 3.',
-    );
-  }
-  const { importFacts } = parseHeader(content, filePath);
-  return importFacts.map(f => ({
-    sourceFile: f.sourceFile,
-    rawString: `${f.module}:${f.symbol}`,
-    parseStatus: 'placeholder' as const,
-  }));
-}
 

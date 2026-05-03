@@ -48,7 +48,7 @@ export class RegistryGenerator {
           rawImports: state.rawImports,
           rawCalls: state.rawCalls,
           rawExports: state.rawExports,
-          rawHeaderImports: state.rawHeaderImports,
+          headerImportFacts: state.headerImportFacts,
         }),
         null,
         2,

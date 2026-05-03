@@ -4,9 +4,8 @@ import type {
   RawImportFact,
   RawCallFact,
   RawExportFact,
-  RawHeaderImportFact,
 } from '../pipeline/types.js';
-import type { HeaderFact } from '../pipeline/header-fact.js';
+import type { HeaderFact, HeaderImportFact } from '../pipeline/header-fact.js';
 import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
 
@@ -18,15 +17,17 @@ export interface SemanticRegistryProjection {
 }
 
 /**
- * Phase 2 raw-fact bundle attached to a registry entry. All four arrays are
- * file-grain; an entry inherits the raw facts of its containing file.
- * Phase 3/4 resolvers consume these into typed graph edges.
+ * Phase 2/2.5 raw-fact bundle attached to a registry entry. All four arrays
+ * are file-grain; an entry inherits the raw facts of its containing file.
+ * Phase 3/4 resolvers consume these into typed graph edges. headerImports
+ * is the structured HeaderImportFact[] (RawHeaderImportFact was removed in
+ * Phase 3).
  */
 export interface SemanticRegistryRawFacts {
   imports: RawImportFact[];
   calls: RawCallFact[];
   exports: RawExportFact[];
-  headerImports: RawHeaderImportFact[];
+  headerImports: HeaderImportFact[];
 }
 
 export interface SemanticRegistryProjectionEntry {
@@ -62,7 +63,7 @@ export interface RawFactsBundle {
   rawImports?: RawImportFact[];
   rawCalls?: RawCallFact[];
   rawExports?: RawExportFact[];
-  rawHeaderImports?: RawHeaderImportFact[];
+  headerImportFacts?: HeaderImportFact[];
 }
 
 /**
@@ -102,7 +103,7 @@ export function createSemanticRegistryProjection(
   const importsByFile = groupBySourceFile(rawFactsBundle?.rawImports, projectPath);
   const callsByFile = groupBySourceFile(rawFactsBundle?.rawCalls, projectPath);
   const exportsByFile = groupBySourceFile(rawFactsBundle?.rawExports, projectPath);
-  const headerImportsByFile = groupBySourceFile(rawFactsBundle?.rawHeaderImports, projectPath);
+  const headerImportsByFile = groupBySourceFile(rawFactsBundle?.headerImportFacts, projectPath);
   const hasAnyRawFacts =
     importsByFile.size +
       callsByFile.size +
