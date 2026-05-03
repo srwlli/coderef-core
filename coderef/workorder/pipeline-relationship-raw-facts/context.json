@@ -1,0 +1,52 @@
+{
+  "workorder_id": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001",
+  "feature_name": "pipeline-relationship-raw-facts",
+  "project_id": "coderef-core",
+  "predecessor": "WO-PIPELINE-SCANNER-IDENTITY-TAXONOMY-001",
+  "created": "2026-05-03T00:55:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "objective": "Phase 2 of the CODEREF-CORE pipeline refactor. Split relationship extraction into typed raw-fact records (import, call, export, header-import placeholder) without resolution. Raw facts must carry every detail downstream resolvers need: aliases, dynamic flag, type-only flag, receiver text, scope path, callee identity context. No raw fact may claim to be a graph edge.",
+  "scope": {
+    "in": [
+      "RawImportFact type with fields: sourceElementId, sourceFile, moduleSpecifier, specifiers (with alias bindings), defaultImport, namespaceImport, typeOnly, dynamic, line",
+      "RawCallFact type preserving receiverText, scopePath, callExpressionText (full source slice), calleeName, line, language, sourceElementCandidate",
+      "RawExportFact type with sourceFile, exportedName, localName, kind (named|default|reexport|namespace), line",
+      "RawHeaderImportFact PLACEHOLDER type with sourceFile, rawString (the literal '<module>:<symbol>' from @imports header), parseStatus='placeholder' (no actual parsing — Phase 2.5)",
+      "Refactor of src/pipeline/extractors/relationship-extractor.ts to emit the four typed arrays via PipelineState",
+      "Update orchestrator + projection seam to thread raw facts (additive on projections.json)",
+      "Five new test suites: raw-import-facts, raw-call-facts, raw-export-facts, raw-header-import-placeholders, no-graph-edge-claim (the invariant enforcer)"
+    ],
+    "out": [
+      "Semantic header parser implementation (Phase 2.5)",
+      "Import resolution / module specifier resolution (Phase 3)",
+      "Call resolution / scope-aware symbol table (Phase 4)",
+      "Graph construction or graph node ID writes on relationship records (Phase 5)",
+      "Output validation contract (Phase 6)",
+      "RAG facets (Phase 7)",
+      "--strict-headers gate (Phase 6)",
+      "Making the Phase 0 ground-truth tests pass — those become green in Phase 3/4, NOT Phase 2"
+    ]
+  },
+  "hard_constraints": [
+    "Phase 2 hard-stops before Phase 2.5 / Phase 3 / Phase 4. Do not begin resolver implementation in this workorder.",
+    "No raw fact may carry a field that names a graph node ID as endpoint. Enforced by no-graph-edge-claim.test.ts.",
+    "Method calls MUST preserve receiver text. obj.save() is RawCallFact{ receiverText='obj', calleeName='save' }, never bare 'save'.",
+    "Scope path MUST be populated for every call. Walk enclosing functions/classes during AST traversal.",
+    "Header-import facts in this phase are PLACEHOLDERS only. No BNF parsing. No @imports validation. No layer/capability/constraint extraction.",
+    "Phase 0 ground-truth tests MUST CONTINUE TO FAIL for their original reasons. If a ground-truth test starts passing during this WO, that is a regression in Phase 2's discipline (resolution leaked in).",
+    "populate-coderef CLI surface unchanged (flag names, defaults, exit behavior)."
+  ],
+  "ground_truth_test_disposition": "Per roadmap and Gemini prep analysis: the 6 Phase 0 ground-truth tests do NOT pass in Phase 2. Phase 2 produces facts; Phase 3 resolves imports; Phase 4 resolves calls. Tests start passing incrementally across Phase 3/4. The original prep brief stating 'Phase 2 is the phase where the 6 tests start passing' was incorrect — Gemini caught this and adjudication confirmed Gemini's reading against roadmap line 143-184.",
+  "predecessor_artifacts": {
+    "phase_1_archived": "coderef/archived/pipeline-scanner-identity-taxonomy/",
+    "phase_0_archived": "coderef/archived/pipeline-graph-ground-truth-tests/",
+    "ground_truth_tests": "__tests__/pipeline/graph-ground-truth.test.ts"
+  },
+  "prep_artifacts": {
+    "produced_by": "Gemini Flash via Lloyd AgentSpawner PID 24176",
+    "context": "coderef/workorder/pipeline-relationship-raw-facts-prep/context.json",
+    "analysis": "coderef/workorder/pipeline-relationship-raw-facts-prep/analysis.json",
+    "prep_brief": "coderef/workorder/pipeline-relationship-raw-facts-prep/PREP-BRIEF.md"
+  },
+  "next_action": "/execute-workorder WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001"
+}

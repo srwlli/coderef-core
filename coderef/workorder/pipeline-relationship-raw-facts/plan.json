@@ -1,0 +1,196 @@
+{
+  "$schema": "https://coderef/assistant/skills/workflow/_shared/planner/plan.schema.json",
+  "workorder_id": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001",
+  "feature_name": "pipeline-relationship-raw-facts",
+  "created": "2026-05-03T00:55:00Z",
+  "project_id": "coderef-core",
+  "plan_type": "phased",
+  "goal": "Split relationship extraction into raw facts (import, call, export, header-import placeholder) without resolution. Raw facts must carry every detail downstream resolvers need: aliases, dynamic flag, type-only flag, receiver text, scope path, callee identity context. No raw fact may claim to be a graph edge.",
+  "plan_type_rationale": "This is one phase of the sequential nine-phase pipeline refactor. Internal task ordering matters; Phase 2.5 (header parser) and Phase 3 (import resolution) must not start until Phase 2 exit criteria are met. Per the roadmap explicitly, Phase 2 produces facts and does NOT make the Phase 0 ground-truth tests pass — those are satisfied by Phase 3 + Phase 4.",
+  "plan_type_decided_by": "ORCHESTRATOR (Claude Opus) authored from Gemini Flash prep deliverables (PID 24176)",
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "CHECK",
+    "STOP"
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Stop after Phase 2 exit criteria. Do NOT begin Phase 2.5 (semantic header parser implementation), Phase 3 (import resolution), or Phase 4 (call resolution) in this workorder. Header-import facts in Phase 2 are PLACEHOLDERS only — actual @imports parsing is Phase 2.5."
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 2 - Relationship Extraction (Raw Facts)",
+      "hard_stop": true,
+      "description": "Split relationship extractor output into typed raw-fact records per category. Preserve receiver text, scope path, alias bindings, dynamic flag, type-only flag. Land regression tests proving raw facts do not collapse method-call context. Hard-stop before any resolver implementation.",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read current relationship-extraction surface: src/pipeline/extractors/relationship-extractor.ts, src/pipeline/orchestrator.ts, src/pipeline/types.ts, src/scanner/relationship-extractor.ts (if separate), src/scanner/scanner.ts, src/semantic/projections.ts. Note exactly which file emits today's relationship records and where consumers read from.",
+          "touches": [
+            "src/pipeline/extractors/relationship-extractor.ts",
+            "src/pipeline/orchestrator.ts",
+            "src/pipeline/types.ts",
+            "src/scanner/scanner.ts",
+            "src/semantic/projections.ts"
+          ]
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read Phase 0 ground-truth tests at __tests__/pipeline/graph-ground-truth.test.ts. Map every assertion to its required raw-fact fields. The tests will NOT pass in this WO; the goal is to prove the raw facts CARRY every field a resolver will need to make them pass in Phase 3/4.",
+          "touches": [
+            "__tests__/pipeline/graph-ground-truth.test.ts"
+          ]
+        },
+        {
+          "id": "1.3",
+          "verb": "READ",
+          "description": "Read Phase 1's archived plan + execution notes at coderef/archived/pipeline-scanner-identity-taxonomy/. Confirm taxonomy fields (layer, capability, constraints, headerStatus) on ElementData. Phase 2 raw facts must not duplicate fields ElementData already carries.",
+          "touches": [
+            "coderef/archived/pipeline-scanner-identity-taxonomy/plan.json",
+            "coderef/archived/pipeline-scanner-identity-taxonomy/execution-notes.md"
+          ]
+        },
+        {
+          "id": "1.4",
+          "verb": "WRITE",
+          "description": "Add raw-fact type definitions to src/pipeline/types.ts. Required types: RawImportFact, RawCallFact, RawExportFact, RawHeaderImportFact. RawImportFact fields: sourceElementId (codeRefId), sourceFile (relPath), moduleSpecifier (string), specifiers (array of {imported, local} pairs), defaultImport (string|null), namespaceImport (string|null), typeOnly (boolean), dynamic (boolean), line (number). RawCallFact fields: sourceElementCandidate (codeRefId|null — null if scope cannot bind to an element), callExpressionText (string, full source slice e.g. 'obj.method(arg)'), calleeName (string, the trailing identifier 'method'), receiverText (string|null, 'obj' or null for bare calls), scopePath (string array, e.g. ['MyClass', 'myMethod']), line (number), language (string, e.g. 'ts'|'js'|'py'). RawExportFact fields: sourceFile (relPath), exportedName (string), localName (string), kind ('named'|'default'|'reexport'|'namespace'), line (number). RawHeaderImportFact fields: sourceFile (relPath), rawString (string, the literal '<module>:<symbol>' from the @imports header), parseStatus ('placeholder' — Phase 2 emits placeholders only; Phase 2.5 lands real parsing).",
+          "touches": [
+            "src/pipeline/types.ts"
+          ]
+        },
+        {
+          "id": "1.5",
+          "verb": "EDIT",
+          "description": "Refactor src/pipeline/extractors/relationship-extractor.ts so its public output is the four typed raw-fact arrays (rawImports, rawCalls, rawExports, rawHeaderImports) attached to PipelineState rather than today's relationship records. Internal AST walking can stay structurally similar; the contract change is the output shape. PRESERVE receiver text on every method call — do not reduce 'obj.save()' to bare 'save'. PRESERVE scope path on every call — populate scopePath by walking up enclosing functions/classes during AST traversal.",
+          "touches": [
+            "src/pipeline/extractors/relationship-extractor.ts"
+          ]
+        },
+        {
+          "id": "1.6",
+          "verb": "EDIT",
+          "description": "Update src/pipeline/orchestrator.ts to thread the four raw-fact arrays through PipelineState. Existing relationship consumers must either consume raw facts directly OR be marked TODO for Phase 3/4 migration in this same edit (do NOT leave silent breakage). Each consumer gets one of: (a) updated to read raw facts, (b) explicit TODO comment naming the phase that will resolve it, (c) deleted if obsolete.",
+          "touches": [
+            "src/pipeline/orchestrator.ts"
+          ]
+        },
+        {
+          "id": "1.7",
+          "verb": "EDIT",
+          "description": "Wire raw-export extraction into the same extractor pass. Per the existing scanner code, exports may be partly captured today via the elements pass; ensure RawExportFact is the SINGLE canonical export representation going forward. Adapter consumers (DriftGenerator, ContextGenerator) update to read RawExportFact[].",
+          "touches": [
+            "src/pipeline/extractors/relationship-extractor.ts",
+            "src/pipeline/generators/drift-generator.ts",
+            "src/pipeline/generators/context-generator.ts"
+          ]
+        },
+        {
+          "id": "1.8",
+          "verb": "EDIT",
+          "description": "Add raw-header-import PLACEHOLDER extraction. Walk source files for header-comment blocks containing @imports (no parsing yet). For each match, emit RawHeaderImportFact with parseStatus='placeholder' and rawString containing the literal '<module>:<symbol>' captured. DO NOT parse the BNF — that is Phase 2.5. The placeholders exist so Phase 2.5 can replace placeholder strings with structured records and Phase 3 can resolve them.",
+          "touches": [
+            "src/pipeline/extractors/relationship-extractor.ts"
+          ]
+        },
+        {
+          "id": "1.9",
+          "verb": "EDIT",
+          "description": "Update src/semantic/projections.ts to project raw facts into semantic-registry.json. Schema addition: registry items gain an optional 'rawFacts' object with {imports, calls, exports, headerImports} arrays. Do NOT remove or rename existing projection fields — Phase 2 is additive on the projection seam. Existing semantic-canonical.test.ts must continue to pass (or update one assertion that explicitly checks the field set).",
+          "touches": [
+            "src/semantic/projections.ts"
+          ]
+        },
+        {
+          "id": "1.10",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/raw-import-facts.test.ts. Cover: aliases captured (import { foo as bar } from './x' produces RawImportFact with specifiers=[{imported:'foo', local:'bar'}]); dynamic imports flagged (import('./x') produces RawImportFact with dynamic=true); type-only imports flagged (import type { X } from './x' produces typeOnly=true); namespace imports captured (import * as ns from './x' produces namespaceImport='ns'); default imports captured. Use small fixture files under __tests__/.fixtures/raw-imports/.",
+          "touches": [
+            "__tests__/pipeline/raw-import-facts.test.ts",
+            "__tests__/.fixtures/raw-imports/"
+          ]
+        },
+        {
+          "id": "1.11",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/raw-call-facts.test.ts. Cover: method-call receiver preservation (obj.save() produces RawCallFact with receiverText='obj' and calleeName='save', NOT bare 'save'); nested-function scope path (function outer(){ function inner(){ inner() } } produces RawCallFact for inner-call with scopePath=['outer','inner']); class-method scope path (class C { m1(){ this.m2() } } produces scopePath=['C','m1'] for the m2 call); bare call (foo()) produces receiverText=null. Use small fixture files.",
+          "touches": [
+            "__tests__/pipeline/raw-call-facts.test.ts",
+            "__tests__/.fixtures/raw-calls/"
+          ]
+        },
+        {
+          "id": "1.12",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/raw-export-facts.test.ts. Cover: named exports (export const x produces RawExportFact kind='named'); default exports (export default foo produces kind='default'); re-exports (export { x } from './y' produces kind='reexport'); namespace exports (export * as ns from './x' produces kind='namespace').",
+          "touches": [
+            "__tests__/pipeline/raw-export-facts.test.ts",
+            "__tests__/.fixtures/raw-exports/"
+          ]
+        },
+        {
+          "id": "1.13",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/raw-header-import-placeholders.test.ts. Cover: a file with a header-comment block containing '@imports [\"foo:bar\", \"./baz:qux\"]' produces TWO RawHeaderImportFacts each with parseStatus='placeholder' and the rawString preserved verbatim. A file with NO header produces ZERO RawHeaderImportFacts (not an error). Phase 2.5 will land actual parsing; this test only proves placeholders are emitted at the right cardinality.",
+          "touches": [
+            "__tests__/pipeline/raw-header-import-placeholders.test.ts",
+            "__tests__/.fixtures/raw-header-imports/"
+          ]
+        },
+        {
+          "id": "1.14",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/no-graph-edge-claim.test.ts. Cover: every emitted RawImportFact, RawCallFact, RawExportFact, RawHeaderImportFact lacks any field that names a graph node ID as endpoint (no 'targetId', no 'resolvedTo', no 'edgeId'). This test is the ENFORCED invariant from roadmap exit criterion 'no raw relationship claims to be a graph edge yet'. If a future change adds such a field, this test fails until Phase 3/4 owns the resolution.",
+          "touches": [
+            "__tests__/pipeline/no-graph-edge-claim.test.ts"
+          ]
+        },
+        {
+          "id": "1.15",
+          "verb": "TEST",
+          "description": "Run all of: existing pipeline test suite (must still pass); element-taxonomy.test.ts + single-scanner.test.ts (Phase 1 — must still pass); semantic-canonical.test.ts (must still pass after additive projection edit in 1.9); the five new raw-fact tests from 1.10-1.14 (must pass); Phase 0 ground-truth tests at __tests__/pipeline/graph-ground-truth.test.ts (must STILL FAIL for their original reasons — Phase 2 is fact extraction, not resolution; if any ground-truth test passes, that is a regression in Phase 2's discipline). Report counts.",
+          "touches": [
+            "__tests__"
+          ]
+        },
+        {
+          "id": "1.16",
+          "verb": "RUN",
+          "description": "Run /coderef-pipeline coderef-core --stages=scan,populate,validate. Confirm: .coderef/index.json exists and is well-formed; semantic-registry.json projection includes the new optional rawFacts object on at least one item; populate-coderef --semantic CLI surface unchanged (flag names, exit codes, defaults). Compare element/file counts against Phase 1 baseline (319 files, 2285 elements, 11742 relationships); raw-fact totals should be in the same order of magnitude.",
+          "touches": [
+            ".coderef/index.json",
+            ".coderef/semantic-registry.json"
+          ]
+        },
+        {
+          "id": "1.17",
+          "verb": "CHECK",
+          "description": "Verify Phase 2 exit criteria from roadmap line 178-184: aliases captured (1.10 proves), dynamic imports labeled (1.10 proves), method calls preserve receiver text (1.11 proves), calls know enclosing scope (1.11 proves), no raw relationship claims to be a graph edge (1.14 proves). Document each check's pass/fail in execution-notes.md. If any check FAILS, halt with checkpoint_ready and report — do NOT work around.",
+          "touches": [
+            "coderef/workorder/pipeline-relationship-raw-facts/execution-notes.md"
+          ]
+        },
+        {
+          "id": "1.18",
+          "verb": "STOP",
+          "description": "Stop. Do not start Phase 2.5 (semantic header parser implementation), Phase 3 (import resolution), or Phase 4 (call resolution) in this workorder. The Phase 0 ground-truth tests will remain failing — that is correct per roadmap; their pass condition is Phase 3/4, not Phase 2.",
+          "touches": [
+            "coderef/workorder/pipeline-relationship-raw-facts"
+          ]
+        }
+      ]
+    }
+  ],
+  "plan_adjustments_needed": []
+}

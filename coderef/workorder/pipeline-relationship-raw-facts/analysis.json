@@ -1,0 +1,102 @@
+{
+  "workorder_id": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001",
+  "feature_name": "pipeline-relationship-raw-facts",
+  "blast_radius": {
+    "files_modified": [
+      {"path": "src/pipeline/types.ts", "reason": "Add four typed raw-fact interfaces (RawImportFact, RawCallFact, RawExportFact, RawHeaderImportFact)."},
+      {"path": "src/pipeline/extractors/relationship-extractor.ts", "reason": "Refactor public output to four typed arrays. Preserve receiver text + scope path on every call. Add header-import placeholder extraction."},
+      {"path": "src/pipeline/orchestrator.ts", "reason": "Thread raw-fact arrays through PipelineState. Update consumers or mark TODO for Phase 3/4 migration — no silent breakage."},
+      {"path": "src/pipeline/generators/drift-generator.ts", "reason": "Consume RawExportFact[] as canonical export representation."},
+      {"path": "src/pipeline/generators/context-generator.ts", "reason": "Consume RawExportFact[] as canonical export representation."},
+      {"path": "src/semantic/projections.ts", "reason": "Additive: project raw facts as optional rawFacts object on registry items. Existing fields unchanged."}
+    ],
+    "files_created": [
+      {"path": "__tests__/pipeline/raw-import-facts.test.ts", "purpose": "Cover alias capture, dynamic flag, type-only flag, namespace import, default import."},
+      {"path": "__tests__/pipeline/raw-call-facts.test.ts", "purpose": "Cover receiver preservation, scope path for nested functions and class methods, bare-call receiverText=null."},
+      {"path": "__tests__/pipeline/raw-export-facts.test.ts", "purpose": "Cover named, default, reexport, namespace export kinds."},
+      {"path": "__tests__/pipeline/raw-header-import-placeholders.test.ts", "purpose": "Prove placeholder cardinality matches @imports entries; rawString preserved verbatim."},
+      {"path": "__tests__/pipeline/no-graph-edge-claim.test.ts", "purpose": "ENFORCED INVARIANT: no raw-fact field names a graph node ID as endpoint. Fails if Phase 3/4 work leaks into Phase 2."},
+      {"path": "__tests__/.fixtures/raw-imports/", "purpose": "Small fixture files exercising each import variant."},
+      {"path": "__tests__/.fixtures/raw-calls/", "purpose": "Small fixture files exercising receiver preservation and scope nesting."},
+      {"path": "__tests__/.fixtures/raw-exports/", "purpose": "Small fixture files exercising export kinds."},
+      {"path": "__tests__/.fixtures/raw-header-imports/", "purpose": "Files with @imports header blocks for placeholder extraction."}
+    ],
+    "files_deleted": []
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "description": "Receiver text reduction. The current relationship extractor may already collapse 'obj.method()' to bare 'method' in some path. If we miss any code path during the refactor, raw call facts ship without receiverText and Phase 4 cannot resolve method calls correctly.",
+      "mitigation": "Task 1.11 raw-call-facts.test.ts explicitly tests receiverText preservation. Task 1.5 instruction is unambiguous on this. Diff inspection during 1.5 should grep for any reduction logic ('split', 'lastIndexOf', '.replace') in the existing extractor and trace whether any callee-name normalization drops the receiver.",
+      "severity": "high"
+    },
+    {
+      "id": "R2",
+      "description": "Scope path correctness for nested classes/functions. Walking enclosing nodes during AST traversal is straightforward in TS but the Python tree-sitter scanner has a different node shape; scopePath population may diverge.",
+      "mitigation": "Task 1.11 includes a class-method test. Add a Python fixture too if the language=='py' path is in scope (verify in 1.1 read). If divergent, document in execution-notes and mark Python scope-path as 'best-effort, Phase 4 will unify' — acceptable per roadmap which lists language as a RawCallFact field.",
+      "severity": "medium"
+    },
+    {
+      "id": "R3",
+      "description": "Backwards compatibility break on relationship consumers. drift-generator, context-generator, semantic-projections, and possibly registry consumers read today's relationship records. If any consumer is missed during 1.6/1.7, populate-coderef --semantic produces malformed output.",
+      "mitigation": "Task 1.6 explicit instruction: every consumer gets one of update/TODO/delete — no silent breakage. Task 1.16 runs end-to-end populate and compares element/file/relationship counts against Phase 1 baseline (319/2285/11742). Order-of-magnitude mismatch is a halt signal.",
+      "severity": "medium"
+    },
+    {
+      "id": "R4",
+      "description": "Header-import placeholder scope creep. The temptation during 1.8 will be to 'just parse a little' of the @imports header since we're already walking the comment block. Resist — that is Phase 2.5's exit criterion ('every source file walked produces a HeaderFact'). If 1.8 starts parsing, Phase 2.5's plan needs to know.",
+      "mitigation": "Task 1.8 explicit instruction: parseStatus='placeholder' only, rawString preserved verbatim. Task 1.13 test asserts placeholder cardinality, NOT structured content. Diff review should reject any @-tag matching beyond '@imports' detection.",
+      "severity": "low"
+    },
+    {
+      "id": "R5",
+      "description": "Phase 0 ground-truth tests start passing. If Phase 2 work accidentally lands a partial resolver (e.g., binding aliased imports back to source-file relPath), one or more ground-truth tests may flip from FAIL to PASS. That is a regression in Phase 2's discipline — Phase 2 is fact extraction only.",
+      "mitigation": "Task 1.15 explicitly checks ground-truth tests still fail. If any flip to PASS, halt and report. The fix is to back out the partial resolver, not to celebrate the early win.",
+      "severity": "low"
+    },
+    {
+      "id": "R6",
+      "description": "Performance. Adding per-element scope-path arrays + four typed fact arrays + receiver-text retention may inflate populate-coderef memory or runtime. coderef-core scans 319 files / 2285 elements / 11742 relationships today.",
+      "mitigation": "Task 1.16 captures runtime + counts. If runtime regresses >2x, document in execution-notes; defer optimization to a follow-up WO unless it blocks acceptance.",
+      "severity": "low"
+    }
+  ],
+  "decision_records": [
+    {
+      "decision": "Use file-grain scope path stored as string array (e.g. ['MyClass', 'myMethod']), not dotted string ('MyClass.myMethod') or qualified ID.",
+      "rationale": "Arrays preserve disambiguation where method names contain dots (rare but real in some langs) and let Phase 4's scope-aware symbol table walk path elements without re-parsing. Dotted strings would re-introduce the parsing problem we're trying to solve.",
+      "alternatives_considered": ["Dotted string", "Qualified codeRefId computed during extraction (rejected — that is resolution, Phase 4)"]
+    },
+    {
+      "decision": "Header-import facts are placeholders in Phase 2; actual @imports parsing lives in Phase 2.5.",
+      "rationale": "Roadmap explicitly: Phase 2 line 152 lists 'raw header-import facts' as parsed @imports entries WITH a parenthetical 'see Phase 2.5'. Phase 2.5 line 196 owns the parser. Splitting cleanly avoids two phases editing the same code path.",
+      "alternatives_considered": ["Land parser in Phase 2 (rejected — bloats Phase 2 scope, blurs the gate)", "Skip header-imports entirely until Phase 2.5 (rejected — Phase 3 needs the placeholders to know what to resolve)"]
+    },
+    {
+      "decision": "Projection seam edit is additive, not replacing existing fields.",
+      "rationale": "Phase 1 unified projections cleanly. Phase 2 extends, does not rewrite. Existing semantic-canonical.test.ts assertions about projection shape stay green; consumers like ENTITY dashboard see optional new fields without breaking on their absence in older data.",
+      "alternatives_considered": ["Replace relationships array with rawFacts (rejected — breaks ENTITY and any semantic-registry.json reader downstream)"]
+    },
+    {
+      "decision": "Enforce 'no graph-edge claim' invariant via dedicated test, not just code review.",
+      "rationale": "The roadmap exit criterion 'no raw relationship claims to be a graph edge yet' is the boundary that keeps Phase 2 / Phase 3-4 from blurring. A test that asserts the invariant via reflective field inspection (no targetId, no resolvedTo, no edgeId) catches accidental scope creep on every CI run, not just at code review.",
+      "alternatives_considered": ["Code review only (rejected — invariant erodes under future edits)", "Schema-level rejection in projections.ts (rejected — pushes the check downstream of where the violation happens)"]
+    },
+    {
+      "decision": "Ground-truth tests STILL FAIL is an acceptance criterion, not a defect.",
+      "rationale": "Roadmap is explicit: tests pass starting Phase 3/4. Gemini's prep analysis caught the original prep brief's incorrect framing. Phase 2 succeeds when raw facts are complete and unresolved; Phase 3/4 turn that into resolution.",
+      "alternatives_considered": ["Make some tests pass in Phase 2 by binding obvious cases (rejected — adds resolution logic to a phase whose discipline forbids it)"]
+    }
+  ],
+  "ground_truth_test_mapping": [
+    {"test_assertion": "graph edges use node IDs as endpoints", "satisfied_by": "Phase 5 (graph construction) — Phase 2 only emits raw facts that lack endpoint IDs by design"},
+    {"test_assertion": "duplicate identities resolve correctly", "satisfied_by": "Phase 1 (already shipped via createCodeRefId ratification) + Phase 4 (call resolution disambiguates)"},
+    {"test_assertion": "unresolved imports are explicit", "satisfied_by": "Phase 3 (import resolution) — Phase 2 raw facts make resolution possible by capturing aliases + dynamic flag"},
+    {"test_assertion": "unresolved calls are explicit", "satisfied_by": "Phase 4 (call resolution) — Phase 2 raw facts make resolution possible by preserving receiver text + scope path"},
+    {"test_assertion": "alias imports bind local to exported source symbol", "satisfied_by": "Phase 3 (import resolution) — Phase 2 captures the alias binding in RawImportFact.specifiers"},
+    {"test_assertion": "duplicate function names → ambiguous with candidate IDs", "satisfied_by": "Phase 4 (call resolution) — Phase 2 captures scope path enabling disambiguation"},
+    {"test_assertion": "nested functions discriminate", "satisfied_by": "Phase 4 (call resolution) — Phase 2 RawCallFact.scopePath preserves nesting"},
+    {"test_assertion": "class methods preserve qualified context", "satisfied_by": "Phase 4 (call resolution) — Phase 2 RawCallFact.receiverText + scopePath preserve qualified context"},
+    {"test_assertion": "graph validation distinguishes resolved/unresolved/ambiguous", "satisfied_by": "Phase 6 (output validation) — Phase 2 enforces 'no graph edge yet' as precondition"}
+  ]
+}
