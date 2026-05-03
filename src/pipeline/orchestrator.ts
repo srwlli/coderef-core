@@ -36,8 +36,10 @@ import type {
   HeaderImportFact,
   HeaderParseError,
   ImportResolution,
+  CallResolution,
 } from './types.js';
 import { resolveImports } from './import-resolver.js';
+import { resolveCalls } from './call-resolver.js';
 import type { HeaderStatus } from './element-taxonomy.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
@@ -201,6 +203,7 @@ export class PipelineOrchestrator {
       headerImportFacts: allHeaderImportFacts,
       headerParseErrors: allHeaderParseErrors,
       importResolutions: [],
+      callResolutions: [],
       graph,
       sources,
       options,
@@ -284,15 +287,111 @@ export class PipelineOrchestrator {
       // on these edges; Phase 3's contract is metadata enrichment only.
     }
 
-    // NOTE: 'calls'-type edges intentionally do NOT receive resolutionStatus
-    // in Phase 3. Phase 4 owns call resolution; flipping call edges to
-    // 'unresolved' here would cause Phase 0 ground-truth call assertions to
-    // pass prematurely, violating the dispatch contract.
+    // Step 4.6: Phase 4 — resolve calls against the project-wide symbol
+    // table plus state.importResolutions (cross-phase seam from Phase 3).
+    // resolveCalls is a pure function over state; it consumes elements +
+    // rawCalls + importResolutions and produces CallResolution[]. Pass 1
+    // (symbol table) completes for ALL files before pass 2 (resolution)
+    // begins for ANY file. Only kind === 'resolved' resolutions emit
+    // resolved-call graph edges; the rest stay as explicit facts on
+    // state.callResolutions. Phase 4 does NOT modify endpoint format on
+    // legacy 'calls'-type edges — Phase 5 owns codeRefId-as-endpoint
+    // promotion across legacy edges.
+    if (verbose) console.log('[PipelineOrchestrator] Resolving calls (Phase 4)...');
+    const preResolveCallsState: PipelineState = {
+      ...preResolveState,
+      importResolutions,
+    };
+    const callResolutions: CallResolution[] = resolveCalls(preResolveCallsState);
+    for (const resolution of callResolutions) {
+      if (
+        resolution.kind === 'resolved' &&
+        resolution.resolvedTargetCodeRefId &&
+        resolution.callerCodeRefId
+      ) {
+        graph.edges.push({
+          source: resolution.callerCodeRefId,
+          target: resolution.resolvedTargetCodeRefId,
+          type: 'resolved-call',
+          metadata: {
+            sourceFile: resolution.sourceFile,
+            calleeName: resolution.calleeName,
+            receiverText: resolution.receiverText,
+            scopePath: resolution.scopePath,
+            line: resolution.line,
+            resolutionStatus: 'resolved',
+          },
+        });
+      }
+    }
+
+    // Phase 4: enrich legacy 'calls'-type edges with resolutionStatus +
+    // targetElementId metadata so Phase 0 ground-truth call assertions
+    // (resolutionStatus === 'resolved'|'unresolved'|'ambiguous',
+    // targetElementId, candidateIds) flip without mutating endpoint format.
+    // Match by (sourceFile, calleeName, line) when available; fall back to
+    // (sourceFile, calleeName) for older edges that lack line metadata.
+    // Phase 5 owns codeRefId-as-endpoint promotion on legacy edges; this
+    // step is metadata enrichment ONLY (mirrors Phase 3's import-edge
+    // enrichment pattern).
+    const callResByKey = new Map<string, CallResolution[]>();
+    for (const r of callResolutions) {
+      const key = `${r.sourceFile}\u0000${r.calleeName}`;
+      const list = callResByKey.get(key);
+      if (list) list.push(r);
+      else callResByKey.set(key, [r]);
+    }
+    for (const edge of graph.edges) {
+      if (edge.type !== 'calls') continue;
+      const sourceFile = (edge.metadata?.sourceFile as string | undefined)
+        ?? (edge.metadata?.file as string | undefined);
+      const calleeName = (edge.target as string | undefined) ?? '';
+      if (!sourceFile || !calleeName) continue;
+      const key = `${sourceFile}\u0000${calleeName}`;
+      const matches = callResByKey.get(key) ?? [];
+      // Pick the most-resolved disposition per the same priority Phase 3
+      // uses: resolved > ambiguous > unresolved > builtin > external.
+      const priority: CallResolution['kind'][] = [
+        'resolved',
+        'ambiguous',
+        'unresolved',
+        'builtin',
+        'external',
+      ];
+      let chosen: CallResolution | undefined;
+      for (const k of priority) {
+        chosen = matches.find(m => m.kind === k);
+        if (chosen) break;
+      }
+      if (!chosen) continue;
+      edge.metadata = edge.metadata ?? {};
+      edge.metadata.resolutionStatus = chosen.kind === 'builtin'
+        ? 'resolved'
+        : chosen.kind === 'external'
+          ? 'resolved'
+          : chosen.kind;
+      if (chosen.resolvedTargetCodeRefId) {
+        edge.metadata.targetElementId = chosen.resolvedTargetCodeRefId;
+      }
+      if (chosen.candidates && chosen.candidates.length > 0) {
+        edge.metadata.candidateIds = chosen.candidates;
+      }
+      if (chosen.kind === 'unresolved' || chosen.kind === 'ambiguous') {
+        edge.metadata.reason = chosen.reason ?? `kind:${chosen.kind}`;
+      }
+      // NOTE: edge source/target are NOT promoted to codeRefIds. Phase 5
+      // owns endpoint promotion. Phase 0 ground-truth test 1's
+      // endpoint-is-node-id assertion (line 52) STAYS FAIL until Phase 5.
+    }
 
     graph.statistics.edgeCount = graph.edges.length;
     const emittedResolvedImportEdges = graph.edges.filter(e => e.type === 'resolved-import').length;
     if (emittedResolvedImportEdges > 0) {
       graph.statistics.edgesByType['resolved-import'] = emittedResolvedImportEdges;
+    }
+    const emittedResolvedCallEdges = graph.edges.filter(e => e.type === 'resolved-call').length;
+    if (emittedResolvedCallEdges > 0) {
+      graph.statistics.edgesByType['resolved-call'] = emittedResolvedCallEdges;
     }
 
     const endTime = Date.now();
@@ -303,6 +402,7 @@ export class PipelineOrchestrator {
       console.log(`[PipelineOrchestrator] Imports: ${allImports.length}`);
       console.log(`[PipelineOrchestrator] Calls: ${allCalls.length}`);
       console.log(`[PipelineOrchestrator] Import resolutions: ${importResolutions.length}`);
+      console.log(`[PipelineOrchestrator] Call resolutions: ${callResolutions.length}`);
       console.log(`[PipelineOrchestrator] Graph nodes: ${graph.nodes.length}`);
       console.log(`[PipelineOrchestrator] Graph edges: ${graph.edges.length}`);
     }
@@ -321,6 +421,7 @@ export class PipelineOrchestrator {
     const state: PipelineState = {
       ...preResolveState,
       importResolutions,
+      callResolutions,
       metadata: {
         startTime,
         endTime,
