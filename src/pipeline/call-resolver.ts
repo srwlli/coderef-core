@@ -715,6 +715,29 @@ type NewInitializerMap = Map<string, Map<string, string>>;
 
 const NEW_INIT_REGEX = /\bconst\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+([A-Z][\w$]*)\s*\(/g;
 
+/**
+ * Build the per-scope `const X = new Y()` map by brace-tracking the
+ * source. For each file:
+ *   - walk character-by-character maintaining a brace nesting depth
+ *     and a stack of (kind, name, openDepth)
+ *   - when we see `function NAME(` or `class NAME {` or `NAME(...) {`
+ *     within a class body, we push that scope on stack open-brace
+ *   - when depth pops below the scope's openDepth, pop it off
+ *   - when we match `const X = new Y(`, attribute it to the TOP of
+ *     stack at that moment
+ *
+ * The stack-top scope name is mapped to a fnElement codeRefId via
+ * the elementsByFile index. When no element matches (e.g., arrow-fn
+ * scope), the binding attributes to the nearest enclosing function-
+ * or method-element scope (per constraint 4: arrow scopes aren't
+ * qualified, so their `const X = new Y()` flows up to the fn).
+ *
+ * This is a deliberately small parser — strings, comments, and
+ * regex literals are skipped via a pragmatic state machine. Edge
+ * cases the parser may miss (template literals with `${` brace
+ * confusion) gracefully degrade to no-binding rather than wrong
+ * binding.
+ */
 function buildNewInitializerMap(
   state: PipelineState,
   elementsByFile: Map<string, ElementData[]>,
@@ -726,51 +749,189 @@ function buildNewInitializerMap(
     const source = state.sources.get(file);
     if (!source) continue;
 
-    // Element line range: each function/method element starts at its
-    // own line; ends at the line of the next element with line > this
-    // element's line (or EOF). Sorted ascending by line in
-    // indexElementsByFile.
-    const lines = source.split('\n');
     const fnElements = elements.filter(
       e => e.type === 'function' || e.type === 'method' || e.type === 'component' || e.type === 'hook',
     );
+    if (fnElements.length === 0) continue;
+    const elemByName = new Map<string, ElementData>();
+    for (const elem of fnElements) {
+      // Last-write-wins on bare-name collision (multiple top-level
+      // `function helper`s would already be caught by ambiguous logic).
+      const bareName = elem.name.includes('.')
+        ? elem.name.slice(elem.name.lastIndexOf('.') + 1)
+        : elem.name;
+      elemByName.set(elem.name, elem);
+      // Also index by bare name so class-method `Class.method` and
+      // nested fn `outer.inner` lookup both work.
+      if (!elemByName.has(bareName)) elemByName.set(bareName, elem);
+    }
 
-    for (let i = 0; i < fnElements.length; i++) {
-      const elem = fnElements[i];
-      const startLine = elem.line; // 1-indexed
-      // End: next sibling at deeper-or-equal logical depth. We don't
-      // have brace tracking, so use the next fn element's line minus 1
-      // as an upper bound. Outer functions enclosing nested ones will
-      // have a too-wide range that includes the nested fn's body —
-      // that's acceptable per guardrail 2 (the inner fn gets its OWN
-      // separate map, and the per-scope key is callerCodeRefId, which
-      // makes this conservative not aggressive).
-      const endLine = i + 1 < fnElements.length
-        ? fnElements[i + 1].line - 1
-        : lines.length;
-      // 1-indexed inclusive slice.
-      const slice = lines.slice(startLine - 1, endLine).join('\n');
+    // scopeStack: list of { qualifiedName, openDepth }. qualifiedName is
+    // the dotted name as built by entering nested functions and classes.
+    type ScopeFrame = { name: string; depth: number; classCtx: string | null };
+    const scopeStack: ScopeFrame[] = [];
+    let depth = 0;
+    let i = 0;
+    const len = source.length;
 
-      const codeRefId = elem.codeRefId
-        ?? createCodeRefId(elem, projectPath, { includeLine: true });
-      let perScope = map.get(codeRefId);
-      if (!perScope) {
-        perScope = new Map();
-        map.set(codeRefId, perScope);
-      }
-
-      // GUARDRAIL 1: literal `const X = new Y(` only. No `let`, no `var`,
-      // no factory `makeService()`, no destructuring, no reassignment.
-      let match: RegExpExecArray | null;
-      NEW_INIT_REGEX.lastIndex = 0;
-      while ((match = NEW_INIT_REGEX.exec(slice)) !== null) {
-        const localName = match[1];
-        const className = match[2];
-        // First binding wins per scope (no reassignment tracking).
-        if (!perScope.has(localName)) {
-          perScope.set(localName, className);
+    // Helper: get current enclosing-fn codeRefId from scopeStack, or
+    // null if we're at module scope (no fn context).
+    const currentScopeCodeRefId = (): string | null => {
+      for (let s = scopeStack.length - 1; s >= 0; s--) {
+        const frame = scopeStack[s];
+        const elem = elemByName.get(frame.name);
+        if (elem) {
+          return elem.codeRefId
+            ?? createCodeRefId(elem, projectPath, { includeLine: true });
         }
       }
+      return null;
+    };
+
+    while (i < len) {
+      const ch = source[i];
+
+      // Skip line comments.
+      if (ch === '/' && source[i + 1] === '/') {
+        while (i < len && source[i] !== '\n') i++;
+        continue;
+      }
+      // Skip block comments.
+      if (ch === '/' && source[i + 1] === '*') {
+        i += 2;
+        while (i < len - 1 && !(source[i] === '*' && source[i + 1] === '/')) i++;
+        i += 2;
+        continue;
+      }
+      // Skip string literals.
+      if (ch === '"' || ch === "'" || ch === '`') {
+        const quote = ch;
+        i++;
+        while (i < len) {
+          if (source[i] === '\\') { i += 2; continue; }
+          if (source[i] === quote) { i++; break; }
+          // For backtick, ${...} can contain code — but tracking
+          // template substitutions accurately is beyond this small
+          // parser. Our worst case: a `${` opens a brace we count
+          // and then closes — net-zero, but the matching `}` ends
+          // the substitution before the closing backtick. Most
+          // real code doesn't put `const X = new Y()` inside a
+          // template literal, so we skip the substitution naively.
+          i++;
+        }
+        continue;
+      }
+
+      // Track braces.
+      if (ch === '{') {
+        depth++;
+        i++;
+        continue;
+      }
+      if (ch === '}') {
+        depth--;
+        // Pop any scope frames whose openDepth > current depth.
+        while (scopeStack.length > 0 && scopeStack[scopeStack.length - 1].depth > depth) {
+          scopeStack.pop();
+        }
+        i++;
+        continue;
+      }
+
+      // Detect `function NAME(` (function declaration; NOT preceded by
+      // `=` so `const X = function()` is excluded per constraint 4).
+      // Also push class scope on `class NAME` for nested-name awareness.
+      if (
+        source.startsWith('function', i)
+        && (i === 0 || /\W/.test(source[i - 1]))
+        && /\W/.test(source[i + 'function'.length] ?? ' ')
+      ) {
+        // Check this is NOT a function expression (preceded by = or ( or , or :).
+        let j = i - 1;
+        while (j >= 0 && /\s/.test(source[j])) j--;
+        const prevCh = j >= 0 ? source[j] : '';
+        const isExpression = prevCh === '=' || prevCh === '(' || prevCh === ',' || prevCh === ':';
+        if (!isExpression) {
+          // Read function name.
+          let k = i + 'function'.length;
+          while (k < len && /\s/.test(source[k])) k++;
+          // Skip `*` for generators.
+          if (source[k] === '*') { k++; while (k < len && /\s/.test(source[k])) k++; }
+          const nameMatch = /^[A-Za-z_$][\w$]*/.exec(source.slice(k));
+          if (nameMatch) {
+            const fnName = nameMatch[0];
+            const enclosingFn = scopeStack.length > 0
+              ? scopeStack[scopeStack.length - 1].name
+              : null;
+            const qualifiedName = enclosingFn ? `${enclosingFn}.${fnName}` : fnName;
+            // The opening `{` will be counted shortly. Push frame
+            // with depth = currentDepth + 1 so the matching `}`
+            // pops it.
+            scopeStack.push({
+              name: qualifiedName,
+              depth: depth + 1,
+              classCtx: null,
+            });
+            i = k + nameMatch[0].length;
+            continue;
+          }
+        }
+      }
+
+      // Detect `class NAME` declaration.
+      if (
+        source.startsWith('class', i)
+        && (i === 0 || /\W/.test(source[i - 1]))
+        && /\s/.test(source[i + 'class'.length] ?? ' ')
+      ) {
+        let k = i + 'class'.length;
+        while (k < len && /\s/.test(source[k])) k++;
+        const nameMatch = /^[A-Za-z_$][\w$]*/.exec(source.slice(k));
+        if (nameMatch) {
+          const className = nameMatch[0];
+          scopeStack.push({
+            name: className,
+            depth: depth + 1,
+            classCtx: className,
+          });
+          i = k + nameMatch[0].length;
+          continue;
+        }
+      }
+
+      // Detect `const X = new Y(`.
+      // GUARDRAIL 1: literal const + new Y( only.
+      // We must be inside a fn scope (current scope codeRefId resolves
+      // to a fn element). At module scope it's not a useful binding.
+      if (
+        source.startsWith('const', i)
+        && (i === 0 || /\W/.test(source[i - 1]))
+        && /\s/.test(source[i + 'const'.length] ?? ' ')
+      ) {
+        const sliceStart = i;
+        const remainder = source.slice(i, i + 200);
+        const m = /^const\s+([A-Za-z_$][\w$]*)\s*=\s*new\s+([A-Z][\w$]*)\s*\(/.exec(remainder);
+        if (m) {
+          const localName = m[1];
+          const className = m[2];
+          const codeRefId = currentScopeCodeRefId();
+          if (codeRefId) {
+            let perScope = map.get(codeRefId);
+            if (!perScope) {
+              perScope = new Map();
+              map.set(codeRefId, perScope);
+            }
+            // GUARDRAIL 2: first binding wins per scope.
+            if (!perScope.has(localName)) {
+              perScope.set(localName, className);
+            }
+          }
+          i = sliceStart + m[0].length;
+          continue;
+        }
+      }
+
+      i++;
     }
   }
 

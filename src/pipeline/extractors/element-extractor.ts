@@ -89,23 +89,50 @@ export class ElementExtractor {
     content: string,
     elements: ElementData[]
   ): void {
-    const traverse = (node: Parser.SyntaxNode, parentScope?: string) => {
+    // currentFunction: when set, the enclosing function-declaration name.
+    // WO-PIPELINE-CALL-RESOLUTION-001: nested literal function
+    // declarations qualify as `parent.inner`, mirroring Class.method.
+    // Arrow functions and `const x = function() {}` expressions are
+    // intentionally NOT tracked (constraint 4).
+    const traverse = (
+      node: Parser.SyntaxNode,
+      parentScope?: string,
+      currentFunction?: string,
+    ) => {
       // Function declarations: function foo() {}
       if (node.type === 'function_declaration') {
         const nameNode = node.childForFieldName('name');
         if (nameNode) {
+          const bareName = nameNode.text;
+          const qualifiedName = currentFunction
+            ? `${currentFunction}.${bareName}`
+            : bareName;
           const element = this.createFunctionElement(
             node,
             nameNode,
             filePath,
             content,
-            parentScope
+            qualifiedName,
           );
           elements.push(element);
+
+          // Recurse into the function body with currentFunction = the
+          // qualified name so further nesting chains (entry.inner.deep)
+          // qualify correctly. Class context (parentScope) is cleared
+          // because a function declared inside a function is not a class
+          // method.
+          for (const child of node.namedChildren) {
+            traverse(child, undefined, qualifiedName);
+          }
+          return; // Don't double-walk children below.
         }
       }
 
       // Arrow functions and function expressions: const foo = () => {}
+      // CONSTRAINT 4: do NOT treat these as nested-function declarations.
+      // Their declarations are tracked here for top-level / module-scope
+      // emission only — currentFunction is NOT propagated into their
+      // bodies for qualification purposes.
       if (node.type === 'lexical_declaration' || node.type === 'variable_declaration') {
         const declarators = this.findChildrenByType(node, 'variable_declarator');
         for (const declarator of declarators) {
@@ -114,12 +141,14 @@ export class ElementExtractor {
 
           if (nameNode && valueNode) {
             if (valueNode.type === 'arrow_function' || valueNode.type === 'function') {
+              // Bare name; arrow / function-expression scope NOT
+              // propagated to children for qualification (constraint 4).
               const element = this.createFunctionElement(
                 valueNode,
                 nameNode,
                 filePath,
                 content,
-                parentScope
+                undefined,
               );
               elements.push(element);
             } else if (this.isConstantValue(valueNode)) {
@@ -227,7 +256,7 @@ export class ElementExtractor {
 
       // Recursively traverse children
       for (const child of node.children) {
-        traverse(child, parentScope);
+        traverse(child, parentScope, currentFunction);
       }
     };
 
@@ -576,7 +605,14 @@ export class ElementExtractor {
   // ============================================================================
 
   /**
-   * Create a function/component/hook element from AST nodes
+   * Create a function/component/hook element from AST nodes.
+   *
+   * `parentScope`, when provided, is the FULL qualified name to use for
+   * the element (e.g., `entry.inner` for a function declared inside
+   * `entry`). When undefined the bare nameNode text is used. Type
+   * determination (component vs hook vs function) keys on the BARE name
+   * regardless of qualification (a nested `useX` is still a hook by
+   * heuristic).
    */
   private createFunctionElement(
     funcNode: Parser.SyntaxNode,
@@ -585,15 +621,16 @@ export class ElementExtractor {
     content: string,
     parentScope?: string
   ): ElementData {
-    const name = nameNode.text;
+    const bareName = nameNode.text;
+    const name = parentScope ?? bareName;
     const parameters = this.extractParameters(funcNode);
     const isAsync = this.isAsyncFunction(funcNode);
 
     // Determine element type: component (PascalCase), hook (use*), or function
     let elementType: ElementData['type'] = 'function';
-    if (/^[A-Z]/.test(name)) {
+    if (/^[A-Z]/.test(bareName)) {
       elementType = 'component';
-    } else if (/^use[A-Z]/.test(name)) {
+    } else if (/^use[A-Z]/.test(bareName)) {
       elementType = 'hook';
     }
 

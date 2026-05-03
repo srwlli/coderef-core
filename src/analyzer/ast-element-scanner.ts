@@ -138,7 +138,7 @@ export class ASTElementScanner {
     const exportedNames = this.collectExportedNames(sourceFile);
 
     // Visit all nodes
-    this.visitNode(sourceFile, sourceFile, elements, filePath, exportedNames);
+    this.visitNode(sourceFile, sourceFile, elements, filePath, exportedNames, undefined, undefined);
 
     return elements;
   }
@@ -182,7 +182,8 @@ export class ASTElementScanner {
     elements: ElementData[],
     filePath: string,
     exportedNames: Set<string>,
-    currentClass?: string
+    currentClass?: string,
+    currentFunction?: string
   ): void {
     const lineInfo = sourceFile.getLineAndCharacterOfPosition(node.getStart());
     const line = lineInfo.line + 1; // 1-indexed
@@ -193,22 +194,50 @@ export class ASTElementScanner {
     );
 
     // Function declaration: function foo() {}
+    // WO-PIPELINE-CALL-RESOLUTION-001: Nested-function declarations
+    // (a `function inner() {}` literally declared inside another
+    // `function entry() {}`) are qualified as `entry.inner`, mirroring
+    // the existing `Class.method` qualification. Top-level function
+    // declarations stay bare (currentFunction undefined). Arrow
+    // functions and `const x = function() {}` expressions are NOT
+    // qualified by this scanner — only literal function declarations
+    // nested in literal function declarations.
     if (ts.isFunctionDeclaration(node) && node.name) {
-      const name = node.name.text;
-      const isExported = hasExportModifier || exportedNames.has(name);
+      const bareName = node.name.text;
+      const qualifiedName = currentFunction
+        ? `${currentFunction}.${bareName}`
+        : bareName;
+      const isExported = hasExportModifier || exportedNames.has(bareName);
 
-      // Check if it's a React hook
-      const type = name.startsWith('use') && name.length > 3 && name[3] === name[3].toUpperCase()
+      // Check if it's a React hook (heuristic on bare name).
+      const type = bareName.startsWith('use') && bareName.length > 3 && bareName[3] === bareName[3].toUpperCase()
         ? 'hook'
         : 'function';
 
       elements.push({
         type,
-        name,
+        name: qualifiedName,
         file: filePath,
         line,
         exported: isExported,
       });
+
+      // Recurse into the function body with currentFunction set so
+      // any further nested function declarations qualify against the
+      // qualified name path. visitNode's bottom forEachChild block
+      // would otherwise propagate the OUTER currentFunction unchanged.
+      ts.forEachChild(node, child => {
+        this.visitNode(
+          child,
+          sourceFile,
+          elements,
+          filePath,
+          exportedNames,
+          currentClass,
+          qualifiedName,
+        );
+      });
+      return; // Don't double-walk children below.
     }
 
     // Class declaration: class Foo {}
@@ -260,9 +289,12 @@ export class ASTElementScanner {
         }
       }
 
-      // Visit class members with class context
+      // Visit class members with class context. Entering a class clears
+      // currentFunction — nested-function qualification is for literal
+      // `function inner` declarations inside `function entry`, not for
+      // methods inside classes (those use Class.method qualification).
       node.members.forEach(member => {
-        this.visitNode(member, sourceFile, elements, filePath, exportedNames, name);
+        this.visitNode(member, sourceFile, elements, filePath, exportedNames, name, undefined);
       });
       return; // Don't visit children again
     }
@@ -413,7 +445,7 @@ export class ASTElementScanner {
     // Continue visiting child nodes (except for class which we handled above)
     if (!ts.isClassDeclaration(node)) {
       ts.forEachChild(node, child => {
-        this.visitNode(child, sourceFile, elements, filePath, exportedNames, currentClass);
+        this.visitNode(child, sourceFile, elements, filePath, exportedNames, currentClass, currentFunction);
       });
     }
   }
