@@ -1,0 +1,26 @@
+workorder_id: WO-PIPELINE-IMPORT-RESOLUTION-001
+feature_name: pipeline-import-resolution
+phase: Phase 3 of 9-phase coderef-core pipeline rebuild
+archived_at: 2026-05-03T18:50:00Z
+archived_path: coderef/archived/pipeline-import-resolution
+review_status: PASS
+source_dispatch: DISPATCH-2026-05-02-013 (implementation), DISPATCH-2026-05-02-018 (close)
+session_id: daily-agent-session-2026-05-02
+implementation_commit_range: bdd2892..ad736de
+implementation_commit_count: 9
+head_sha: ad736de5706285df445486b2232b34542eedf832
+exit_criteria: 5 of 5 PASS per execution-notes.md
+tests_landed: 14 Phase 3 test files / 23 cases all PASS
+ground_truth_flip_status: zero call assertions flipped early; all applicable import-side assertions flipped to PASS; phase boundary preserved
+populate_coderef_regression: +1.2% elements (2371 vs 2344), +3.2% edges (12428 vs 12041), 1224/1224 imports edges enriched with resolutionStatus metadata
+phase_bleed_check: no Phase 4/5/6/2.5 boundary crossings
+result_summary: |
+  Phase 3 (Import Resolution) closes the second of three populate-coderef
+  pipeline rewrites. Removes RawHeaderImportFact placeholder type. Adds
+  importResolutions, classifyBareSpecifier, resolveTransitiveReExport,
+  pass-1 export tables, pass-2 resolution. resolved-import graph edges
+  emitted with resolutionStatus metadata. Zero RawHeaderImportFact
+  references remain in any .coderef/* output.
+
+  5 of 9 phases now archived (was 4): 0, 1, 2, 2.5, 3. Unblocks Phase 4
+  (call resolution) prep authoring.

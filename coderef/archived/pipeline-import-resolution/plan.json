@@ -1,0 +1,223 @@
+{
+  "$schema": "https://coderef/assistant/skills/workflow/_shared/planner/plan.schema.json",
+  "workorder_id": "WO-PIPELINE-IMPORT-RESOLUTION-001",
+  "feature_name": "pipeline-import-resolution",
+  "created": "2026-05-03T05:35:00Z",
+  "project_id": "coderef-core",
+  "plan_type": "phased",
+  "goal": "Implement Phase 3 of the canonical 9-phase pipeline rebuild: a two-pass import resolver. Pass 1 builds per-file export tables (named, default, namespace, transitive re-exports) from RawExportFact[]. Pass 2 resolves every RawImportFact and HeaderImportFact against those tables, classifying each import as exactly one of {resolved, unresolved, external, ambiguous, dynamic, typeOnly, stale}. Resolved imports become graph edges using canonical codeRefIds as endpoints — Phase 3 is the FIRST phase to write graph edges. Removes the deprecated RawHeaderImportFact type. NO call resolution (Phase 4). NO non-import graph edges (Phase 5). NO --strict-headers gate (Phase 6).",
+  "plan_type_rationale": "Phase 3 of the sequential nine-phase pipeline refactor. Phase 4 (call resolution) cannot start until Phase 3 emits import edges. Phase 0 ground-truth tests' import-related assertions flip from FAIL to PASS in this phase — first phase any ground-truth assertion flips.",
+  "plan_type_decided_by": "ORCHESTRATOR (Claude Opus) authored from Gemini Flash prep V2 deliverables (PID 13176, post-repair) plus /plan-tests-for-workorder skill output (15 criteria → 11 unit + 1 integration + 3 invariant)",
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "RUN", "TEST", "CHECK", "STOP"],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Stop after Phase 3 exit criteria. Do NOT begin Phase 4 (call resolution), Phase 5 (graph construction beyond resolved-import edges), or Phase 6 (--strict-headers gate) in this workorder."
+    }
+  ],
+  "checkpoints": [
+    {
+      "after_task": "1.5",
+      "name": "structural_foundation_review",
+      "reason": "After import-resolver.ts skeleton + types are written and PipelineState is updated, halt for ORCHESTRATOR review of the resolver shape (two-pass split, classification taxonomy, graph-edge emission contract) BEFORE pass-1 / pass-2 implementation lands."
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 3 - Import Resolution",
+      "hard_stop": true,
+      "description": "Build two-pass import resolver. Pass 1 = export tables from RawExportFact[]. Pass 2 = resolve every import (AST + header) against export tables. Classify into 7 kinds. Emit resolved-import graph edges. Remove RawHeaderImportFact. Land 15 tests across 15 ACs. Phase 0 ground-truth import assertions flip to PASS; call assertions remain FAIL.",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read prep deliverables in full: coderef/workorder/pipeline-import-resolution-prep/context.json (scope + 15 acceptance criteria), analysis.json (4 decision records DR-PHASE-3-A through D, 4 risks R-PHASE-3-A through D, cross_phase_dependencies block, edge_cases). Read roadmap.md lines 222-272 for Phase 3 exit criteria.",
+          "touches": [
+            "coderef/workorder/pipeline-import-resolution-prep/context.json",
+            "coderef/workorder/pipeline-import-resolution-prep/analysis.json",
+            "roadmap.md"
+          ]
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read Phase 2 + Phase 2.5 surfaces: src/pipeline/types.ts (RawImportFact, RawExportFact, RawHeaderImportFact deprecated, PipelineState), src/pipeline/header-fact.ts (HeaderFact, HeaderImportFact, HeaderParseError), src/pipeline/extractors/relationship-extractor.ts (consumers of raw facts), src/pipeline/orchestrator.ts (where resolution will be wired in, AND where Phase 2.5's @exports cross-check lives — must coexist with Phase 3 export-table builder per AC-13). Read tsconfig.json (confirmed no `paths` field, but resolver must still read it). Grep src/ for any current consumer of rawHeaderImports field (must be migrated to headerImportFacts before removal).",
+          "touches": [
+            "src/pipeline/types.ts",
+            "src/pipeline/header-fact.ts",
+            "src/pipeline/extractors/relationship-extractor.ts",
+            "src/pipeline/orchestrator.ts",
+            "tsconfig.json"
+          ]
+        },
+        {
+          "id": "1.3",
+          "verb": "WRITE",
+          "description": "Create src/pipeline/import-resolver.ts. Define types: ImportResolutionKind = 'resolved' | 'unresolved' | 'external' | 'ambiguous' | 'dynamic' | 'typeOnly' | 'stale'. ImportResolution { sourceFile, importerCodeRefId, localName, originSpecifier, kind, resolvedTargetCodeRefId?, resolvedModuleFile?, candidates? (for ambiguous), reason? (for unresolved/stale) }. ExportTableEntry { exportedName, originCodeRefId, kind: 'named'|'default'|'namespace'|'reExport', viaModule? (for transitive) }. ExportTable = Map<moduleFile, Map<exportedName, ExportTableEntry>>. Public surface: resolveImports(state: PipelineState): ImportResolution[]. Internal: buildExportTables (pass 1), resolveAstImports + resolveHeaderImports (pass 2), classifyBareSpecifier (external vs unresolved per AC-03/04), resolveModuleSpecifier (relative + extensionless + index + path-alias), resolveTransitiveReExport (chain-following per AC-08). NO file IO during pass 2; tsconfig.json read once at startup of pass 1.",
+          "touches": ["src/pipeline/import-resolver.ts"]
+        },
+        {
+          "id": "1.4",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/types.ts. (a) DELETE RawHeaderImportFact type entirely (was @deprecated in Phase 2.5). (b) DELETE rawHeaderImports field from PipelineState. (c) ADD ImportResolution[] field to PipelineState as `importResolutions`. (d) Re-export ImportResolutionKind + ImportResolution + ExportTable from types.ts so consumers don't need to import from import-resolver.ts directly. Verify zero remaining references to RawHeaderImportFact in src/ (grep). If any consumer still reads rawHeaderImports, fix that consumer to read headerImportFacts (Phase 2.5's structured replacement) — do NOT keep a backwards-compat shim.",
+          "touches": ["src/pipeline/types.ts"]
+        },
+        {
+          "id": "1.5",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/orchestrator.ts. After Phase 2.5's parseHeader + @exports cross-check completes for all files (so HeaderFact / HeaderImportFact / RawExportFact are all populated), invoke resolveImports(state). Write the returned ImportResolution[] into state.importResolutions. For every resolution with kind='resolved', append a graph edge to state.graph using the canonical codeRefIds as endpoints (importerCodeRefId → resolvedTargetCodeRefId). DO NOT emit edges for non-resolved kinds — they remain explicit facts in importResolutions[] (per AC-01: no import is silently dropped). The Phase 2.5 @exports cross-check stays — Phase 3's export-table builder reuses RawExportFact[] without modifying it (AC-13).",
+          "touches": ["src/pipeline/orchestrator.ts"]
+        },
+        {
+          "id": "1.5-CHECKPOINT",
+          "verb": "STOP",
+          "description": "CHECKPOINT: structural_foundation_review. Halt and emit checkpoint_ready. ORCHESTRATOR will review: (a) two-pass split is enforced (no per-file streaming during pass 2), (b) ImportResolutionKind taxonomy matches the 7 kinds in AC-01, (c) graph-edge emission is gated on kind='resolved' only, (d) RawHeaderImportFact removal is clean (no shim left behind), (e) Phase 2.5 @exports cross-check still functions alongside Phase 3 export-table builder. ORCHESTRATOR signals proceed before pass-1/pass-2 implementation tasks (1.6+) begin.",
+          "touches": ["coderef/workorder/pipeline-import-resolution/checkpoint.md"]
+        },
+        {
+          "id": "1.6",
+          "verb": "EDIT",
+          "description": "Implement pass 1 in src/pipeline/import-resolver.ts: buildExportTables(state). Iterate every RawExportFact in state.rawExports. Group by sourceFile. For named exports → ExportTableEntry { exportedName, originCodeRefId: <element's codeRefId>, kind: 'named' }. For default exports → exportedName='default', kind: 'default'. For namespace exports (`export * as ns from './x'`) → kind: 'namespace', viaModule resolved later. For re-exports (`export { foo } from './bar'` and `export * from './bar'`) → kind: 'reExport', viaModule resolved by chain-following in resolveTransitiveReExport. The export table MUST be a deterministic projection of RawExportFact[] with no filtering or normalization beyond what Phase 2 already applied (AC-13). Build the entire table for ALL files before returning.",
+          "touches": ["src/pipeline/import-resolver.ts"]
+        },
+        {
+          "id": "1.7",
+          "verb": "EDIT",
+          "description": "Implement pass 2 in src/pipeline/import-resolver.ts: resolveAstImports(state, exportTables) + resolveHeaderImports(state, exportTables). For each RawImportFact: (a) resolve module specifier via resolveModuleSpecifier (relative → relative path; extensionless → try .ts/.tsx/.js/.jsx; index → try /index.{ts,tsx,...}; path-alias if tsconfig.paths present per AC-05; else node_modules lookup → external; else → unresolved); (b) for each RawImportSpecifier in the fact, look up in resolvedModule's export table; bind localName to originCodeRefId (handles aliases per AC-06, namespace per AC-07, default per AC-07); (c) emit one ImportResolution per specifier. For each HeaderImportFact: same module resolution; verify symbol is in module's export table; missing → kind='stale' with reason (AC-10). Two files importing same name from different modules MUST resolve to distinct codeRefIds (AC-09). Pass 2 MUST NOT do file IO — all module-file existence checks rely on state.files map populated in Phase 1.",
+          "touches": ["src/pipeline/import-resolver.ts"]
+        },
+        {
+          "id": "1.8",
+          "verb": "EDIT",
+          "description": "Implement classifyBareSpecifier in src/pipeline/import-resolver.ts. Read package.json once at startup of buildExportTables (NOT during pass 2 — load and cache). For a bare specifier (no leading ./ or ../): (a) if it's in package.json dependencies/devDependencies/peerDependencies/optionalDependencies → kind='external'; (b) else if it resolves under node_modules/<specifier>/package.json → kind='external'; (c) else → kind='unresolved' (per AC-04: surfaces drift). Record reason='not_in_manifest_or_node_modules' for unresolved bare specifiers.",
+          "touches": ["src/pipeline/import-resolver.ts"]
+        },
+        {
+          "id": "1.9",
+          "verb": "EDIT",
+          "description": "Implement resolveTransitiveReExport in src/pipeline/import-resolver.ts. For an ExportTableEntry with kind='reExport' and viaModule=<resolved module>, look up the symbol in that module's export table; if found → return the underlying originCodeRefId (NOT the re-exporter's). For `export * from './bar'`, expand into one entry per symbol in bar's export table, each with originCodeRefId from bar. Cycle detection: maintain a visited set across the chain; on cycle → kind='unresolved' with reason='reexport_cycle'. AC-08 acceptance: re-exporting module's effective export table includes symbols from `./bar` with the correct origin codeRefIds.",
+          "touches": ["src/pipeline/import-resolver.ts"]
+        },
+        {
+          "id": "1.10",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-shape.test.ts (covers AC-01, integration). Cover: every RawImportFact and HeaderImportFact in test PipelineState produces exactly one ImportResolution; every resolution.kind is one of the 7 valid kinds; total resolution count equals total import-fact count (no silent drops, no duplicates).",
+          "touches": ["__tests__/pipeline/import-resolution-shape.test.ts", "__tests__/.fixtures/import-resolution/"]
+        },
+        {
+          "id": "1.11",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-relative.test.ts (covers AC-02, unit). Tempdir fixture. Cover: relative imports `./x`, `../y`; extensionless `./x` resolves to `./x.ts`; index-file `./x` resolves to `./x/index.ts`. All three resolve to the correct file's codeRefId.",
+          "touches": ["__tests__/pipeline/import-resolution-relative.test.ts", "__tests__/.fixtures/import-resolution/"]
+        },
+        {
+          "id": "1.12",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-external.test.ts (covers AC-03, unit). Inline fixture. Cover: import of package listed in package.json dependencies → kind='external'; import of package present under node_modules/ but absent from package.json → still kind='external' (node_modules wins).",
+          "touches": ["__tests__/pipeline/import-resolution-external.test.ts"]
+        },
+        {
+          "id": "1.13",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-unresolved-bare.test.ts (covers AC-04, unit). Inline fixture. Cover: bare specifier `lodash-fork` NOT in package.json AND NOT in node_modules/ → kind='unresolved' (NOT external) with reason='not_in_manifest_or_node_modules'. This is the drift-surfacing assertion.",
+          "touches": ["__tests__/pipeline/import-resolution-unresolved-bare.test.ts"]
+        },
+        {
+          "id": "1.14",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-tsconfig-paths.test.ts (covers AC-05, unit). Inline fixture. Cover: when tsconfig.json has compilerOptions.paths { '@app/*': ['src/*'] } → import `@app/foo` resolves to src/foo.ts (paths win); when tsconfig has NO `paths` field (current state) → resolver returns no error and falls back to relative/node_modules resolution cleanly.",
+          "touches": ["__tests__/pipeline/import-resolution-tsconfig-paths.test.ts"]
+        },
+        {
+          "id": "1.15",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-alias-binding.test.ts (covers AC-06, unit). Inline fixture. Cover: `import { foo as bar } from './x'` produces ImportResolution where localName='bar' AND resolvedTargetCodeRefId === codeRefId of `./x`'s exported `foo`. This directly satisfies the Phase 0 ground-truth alias-imports assertion.",
+          "touches": ["__tests__/pipeline/import-resolution-alias-binding.test.ts"]
+        },
+        {
+          "id": "1.16",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-namespace-default.test.ts (covers AC-07, unit). Inline fixture. Cover: `import * as ns from './x'` → ImportResolution.localName='ns' bound to the module (resolvedModuleFile set, no single resolvedTargetCodeRefId); `import myDefault from './x'` where x has `export default function f() {}` → resolvedTargetCodeRefId === codeRefId of x's default export.",
+          "touches": ["__tests__/pipeline/import-resolution-namespace-default.test.ts"]
+        },
+        {
+          "id": "1.17",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-reexports.test.ts (covers AC-08, unit). Inline fixture. Cover: `export { foo } from './bar'` — re-exporter's effective export table contains `foo` with originCodeRefId from bar (NOT re-exporter); `export * from './bar'` — re-exporter's table contains every symbol from bar with bar's origin codeRefIds; cycle `a → b → a` → kind='unresolved' with reason='reexport_cycle' (no infinite loop).",
+          "touches": ["__tests__/pipeline/import-resolution-reexports.test.ts"]
+        },
+        {
+          "id": "1.18",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-no-collision.test.ts (covers AC-09, unit). Inline fixture. Cover: file A imports `helpers` from `./mod-a/helpers`; file B imports `helpers` from `./mod-b/helpers`. Both ImportResolutions carry distinct resolvedTargetCodeRefIds (no shared codeRefId, no cross-module collision).",
+          "touches": ["__tests__/pipeline/import-resolution-no-collision.test.ts"]
+        },
+        {
+          "id": "1.19",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-header-imports.test.ts (covers AC-10, unit). Inline fixture. Cover: HeaderImportFact { module: './alpha', symbol: 'doAlpha' } where alpha exports doAlpha → kind='resolved' with resolvedTargetCodeRefId; HeaderImportFact { module: './alpha', symbol: 'doMissing' } where alpha does NOT export doMissing → kind='stale' with structured reason naming the module + missing symbol; HeaderImportFact module resolution uses the SAME resolveModuleSpecifier as AST imports (AC-10 requirement).",
+          "touches": ["__tests__/pipeline/import-resolution-header-imports.test.ts"]
+        },
+        {
+          "id": "1.20",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-determinism.test.ts (INVARIANT, covers AC-11). Cover: idempotency — call resolveImports(state) 100 times on identical state, deepStrictEqual all outputs; purity — Object.freeze inputs and assert no mutations to state.rawImports / state.rawExports / state.headerImportFacts; assert resolveImports does NOT call any fs.* function during pass 2 (mock fs and assert call count for pass-2 path is zero; pass-1 single read of tsconfig and package.json is allowed once at startup).",
+          "touches": ["__tests__/pipeline/import-resolution-determinism.test.ts"]
+        },
+        {
+          "id": "1.21",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-two-pass-ordering.test.ts (INVARIANT, covers AC-12). Tempdir fixture. Cover: instrument buildExportTables to log every call to addEntry; instrument resolveAstImports/resolveHeaderImports to log every call to lookupExport. Assert ALL addEntry calls precede the FIRST lookupExport call across the entire run. Resolver MUST NOT process imports against a partially-built export table — fail fast if order ever inverts.",
+          "touches": ["__tests__/pipeline/import-resolution-two-pass-ordering.test.ts"]
+        },
+        {
+          "id": "1.22",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/import-resolution-cross-phase-export-consistency.test.ts (covers AC-13, unit). Cover: build the export set Phase 2.5's @exports cross-check uses (from RawExportFact[].exportedName grouped by sourceFile); build the export set Phase 3's buildExportTables produces (export table keys per file). Assert deepStrictEqual — both phases see exactly the same exports per file. Any divergence is a Phase 2.5/Phase 3 reconciliation bug (R-PHASE-3-B mitigation).",
+          "touches": ["__tests__/pipeline/import-resolution-cross-phase-export-consistency.test.ts"]
+        },
+        {
+          "id": "1.23",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/no-call-resolution.test.ts (INVARIANT, covers AC-14). Reflective field inspection on emitted ImportResolution[] AND PipelineState. Assert NO field named 'resolvedCallTargetId', 'callEdgeId', 'callResolution', 'methodResolutionKind', 'scopeResolvedTo' exists on any ImportResolution OR on PipelineState. Assert state.calls and state.rawCalls remain unmodified by Phase 3 (pre-existing snapshot vs post-resolution snapshot are deepStrictEqual on call-related fields). This is the Phase 4 boundary enforcer.",
+          "touches": ["__tests__/pipeline/no-call-resolution.test.ts"]
+        },
+        {
+          "id": "1.24",
+          "verb": "WRITE",
+          "description": "Disposition of __tests__/pipeline/raw-header-import-placeholders.test.ts per R-PHASE-3-A. RECOMMENDED: rewrite the file as __tests__/pipeline/header-import-facts-cardinality.test.ts asserting the SAME cardinality property against HeaderImportFact (Phase 2.5's structured replacement) instead of RawHeaderImportFact. Then DELETE the original raw-header-import-placeholders.test.ts. Document the rewrite vs delete decision in execution-notes.md.",
+          "touches": ["__tests__/pipeline/header-import-facts-cardinality.test.ts", "__tests__/pipeline/raw-header-import-placeholders.test.ts"]
+        },
+        {
+          "id": "1.25",
+          "verb": "TEST",
+          "description": "Run all of: existing pipeline test suite (must still pass except where Phase 3 explicitly modifies — raw-header-import-placeholders.test.ts is deleted per 1.24, replaced by header-import-facts-cardinality.test.ts); element-taxonomy + single-scanner tests (Phase 1, must pass); semantic-canonical + 8 Phase 2 raw-fact tests (must pass with rawHeaderImports field absence — if any consumer breaks, fix the consumer); Phase 2.5 tests including header-exports-cross-check.test.ts (must pass — AC-13 reconciliation); 15 new Phase 3 tests from 1.10-1.23 + the rewritten 1.24 test (must pass); Phase 0 ground-truth tests — IMPORT-related assertions in 4 of 6 tests MUST FLIP from FAIL to PASS (alias-imports, resolved-edges import side, unresolved-imports import side, graph-validation import side). Call-related assertions in those tests MUST STILL FAIL (Phase 4 owns those). The 2 fully call-only tests (duplicate-name-ambiguous, nested-method-calls) MUST STILL FAIL. Report exact pass/fail counts per category.",
+          "touches": ["__tests__"]
+        },
+        {
+          "id": "1.26",
+          "verb": "RUN",
+          "description": "Run /coderef-pipeline coderef-core --stages=scan,populate,validate. Confirm: (a) state.importResolutions populated for every scanned file; (b) graph contains import edges for every kind='resolved' resolution with both endpoints being canonical codeRefIds; (c) graph contains NO edges for kind='unresolved' / 'external' / etc. (those stay as explicit facts in importResolutions); (d) zero crashes on tsconfig.json with no `paths` field (current state); (e) zero references to RawHeaderImportFact in any output. Compare counts against Phase 2.5 baseline (same elements/files; relationship count grows by import-edge count).",
+          "touches": [".coderef/index.json", ".coderef/semantic-registry.json"]
+        },
+        {
+          "id": "1.27",
+          "verb": "CHECK",
+          "description": "Verify Phase 3 exit criteria from roadmap line 265-271: (1) `import { foo as bar } from './x'` binds bar to exported foo — confirmed by test 1.15 + Phase 0 ground-truth alias-imports flipping; (2) relative imports resolve to files — confirmed by test 1.11; (3) external packages explicitly classified — confirmed by test 1.12; (4) unresolved imports explicit not silent — confirmed by test 1.13 + AC-01 contract; (5) every @imports entry resolves to real codeRefId or marked unresolved/external/stale — confirmed by test 1.19. Document each in execution-notes.md with the test ID and Phase 0 assertion that proves it. If ANY check fails, halt with checkpoint_ready and report — do NOT work around.",
+          "touches": ["coderef/workorder/pipeline-import-resolution/execution-notes.md"]
+        },
+        {
+          "id": "1.28",
+          "verb": "STOP",
+          "description": "Stop. Phase 3 complete. Do NOT begin Phase 4 (call resolution), Phase 5 (graph construction), or Phase 6 (--strict-headers gate) in this workorder. The 2 fully call-only Phase 0 ground-truth tests will remain failing — that is correct per roadmap. Report final test counts and the list of Phase 0 assertions that flipped (per category: import-related-now-pass, call-related-still-fail, both-types-import-pass-call-fail).",
+          "touches": ["coderef/workorder/pipeline-import-resolution"]
+        }
+      ]
+    }
+  ],
+  "plan_adjustments_needed": []
+}
