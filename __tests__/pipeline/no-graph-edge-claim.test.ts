@@ -72,12 +72,12 @@ describe('Phase 2 no-graph-edge-claim invariant', () => {
       state.rawImports.length +
         state.rawCalls.length +
         state.rawExports.length +
-        state.rawHeaderImports.length,
+        state.headerImportFacts.length,
     ).toBeGreaterThan(0);
 
     assertNoForbiddenKeys(state.rawImports as unknown as Record<string, unknown>[]);
     assertNoForbiddenKeys(state.rawCalls as unknown as Record<string, unknown>[]);
     assertNoForbiddenKeys(state.rawExports as unknown as Record<string, unknown>[]);
-    assertNoForbiddenKeys(state.rawHeaderImports as unknown as Record<string, unknown>[]);
+    assertNoForbiddenKeys(state.headerImportFacts as unknown as Record<string, unknown>[]);
   });
 });

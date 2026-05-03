@@ -39,6 +39,7 @@ import type {
   HeaderImportFact,
 } from './types.js';
 import type { ElementData } from '../types/types.js';
+import { createCodeRefId } from '../utils/coderef-id.js';
 
 /**
  * Classification of a single resolved import binding. Every RawImportFact
@@ -201,6 +202,8 @@ export function resolveImports(state: PipelineState): ImportResolution[] {
  */
 export function buildExportTables(state: PipelineState): ExportTable {
   const elementByLocalName = indexElementsByFileAndLocalName(state.elements, state.projectPath);
+  const projectFiles = collectProjectFiles(state);
+  const pathsMap = loadTsconfigPaths(state.projectPath);
   const tables: ExportTable = new Map();
 
   for (const fact of state.rawExports) {
@@ -211,15 +214,24 @@ export function buildExportTables(state: PipelineState): ExportTable {
     }
 
     if (fact.kind === 'reexport' || fact.kind === 'namespace') {
-      // originCodeRefId for reexports is filled lazily during resolution
-      // (resolveTransitiveReExport chases the chain). Until then, we record
-      // the entry with a sentinel originCodeRefId of the empty string and
-      // the viaModule set; Phase 2 already gives us viaModule.
+      // originCodeRefId for reexports is filled lazily during lookup
+      // (resolveTransitiveReExport chases the chain). Pre-resolve viaModule
+      // (verbatim specifier) to an absolute file path so chain-following
+      // doesn't need to redo the resolution for every consumer.
+      const resolvedVia = fact.viaModule
+        ? resolveModuleSpecifier(
+            fact.viaModule,
+            fact.sourceFile,
+            projectFiles,
+            pathsMap,
+            state.projectPath,
+          )
+        : undefined;
       perFile.set(fact.exportedName, {
         exportedName: fact.exportedName,
         originCodeRefId: '',
         kind: fact.kind === 'namespace' ? 'namespace' : 'reExport',
-        viaModule: fact.viaModule,
+        viaModule: resolvedVia ?? fact.viaModule,
       });
       continue;
     }
@@ -358,12 +370,16 @@ export function resolveModuleSpecifier(
   importerFile: string,
   projectFiles: ReadonlySet<string>,
   pathsMap: ReadonlyMap<string, string[]>,
+  projectPath?: string,
 ): string | undefined {
-  // 1. tsconfig paths take precedence (DR-PHASE-3-B).
+  // 1. tsconfig paths take precedence (DR-PHASE-3-B). Targets are
+  // project-relative POSIX (resolved at load time via baseUrl); join with
+  // projectPath to get absolute candidates the projectFiles set carries.
   const aliasMatch = matchTsconfigPaths(specifier, pathsMap);
-  if (aliasMatch) {
+  if (aliasMatch && projectPath) {
     for (const candidate of aliasMatch) {
-      const resolved = probeRelative(candidate, projectFiles, /* baseDir */ '');
+      const absCandidate = path.resolve(projectPath, candidate);
+      const resolved = probeRelative(toPosix(absCandidate), projectFiles);
       if (resolved) return resolved;
     }
   }
@@ -372,12 +388,12 @@ export function resolveModuleSpecifier(
   if (specifier.startsWith('./') || specifier.startsWith('../') || specifier === '.' || specifier === '..') {
     const importerDir = path.posix.dirname(toPosix(importerFile));
     const joined = path.posix.normalize(path.posix.join(importerDir, specifier));
-    return probeRelative(joined, projectFiles, '');
+    return probeRelative(joined, projectFiles);
   }
 
   // 3. Absolute specifier within project (rare in TS but possible).
   if (path.isAbsolute(specifier)) {
-    return probeRelative(toPosix(specifier), projectFiles, '');
+    return probeRelative(toPosix(specifier), projectFiles);
   }
 
   // Bare specifier — caller handles via classifyBareSpecifier.
@@ -423,6 +439,7 @@ function resolveAstImportsInternal(
       fact.sourceFile,
       projectFiles,
       pathsMap,
+      state.projectPath,
     );
 
     // Bindings to emit: each named specifier, plus default (if any), plus
@@ -482,7 +499,9 @@ function resolveAstImportsInternal(
         // Bind to the module-level element: the file's own element if any.
         const fileElems = elementByFile.get(moduleFile);
         if (fileElems && fileElems.length > 0) {
-          base.resolvedTargetCodeRefId = fileElems[0].codeRefId;
+          const elem = fileElems[0];
+          base.resolvedTargetCodeRefId = elem.codeRefId
+            ?? createCodeRefId(elem, state.projectPath, { includeLine: true });
         }
         out.push(base);
         continue;
@@ -498,13 +517,16 @@ function resolveAstImportsInternal(
       // module's export table; chase re-exports.
       const exportedName = binding.imported!;
       const entry = lookupExport(exportTables, moduleFile, exportedName);
-      if (entry && entry.originCodeRefId) {
+      if (entry) {
+        // Symbol is in the export table. Even if originCodeRefId is empty
+        // (element wasn't extracted, e.g. plain `export const x = 1` in
+        // minimal mode), the import is still resolved at the module level.
         base.kind = 'resolved';
-        base.resolvedTargetCodeRefId = entry.originCodeRefId;
+        if (entry.originCodeRefId) base.resolvedTargetCodeRefId = entry.originCodeRefId;
         out.push(base);
       } else {
         base.kind = 'unresolved';
-        base.reason = entry === undefined ? 'symbol_not_in_module_exports' : 'reexport_cycle';
+        base.reason = 'symbol_not_in_module_exports';
         out.push(base);
       }
     }
@@ -521,7 +543,7 @@ function resolveHeaderImportsInternal(
   projectFiles: ReadonlySet<string>,
 ): ImportResolution[] {
   const out: ImportResolution[] = [];
-  const fileToImporter = indexImporterByFile(state.elements);
+  const fileToImporter = indexImporterByFile(state.elements, state.projectPath);
 
   for (const fact of state.headerImportFacts) {
     const importerCodeRefId = fileToImporter.get(fact.sourceFile) ?? null;
@@ -530,6 +552,7 @@ function resolveHeaderImportsInternal(
       fact.sourceFile,
       projectFiles,
       pathsMap,
+      state.projectPath,
     );
 
     const base: ImportResolution = {
@@ -554,11 +577,12 @@ function resolveHeaderImportsInternal(
 
     base.resolvedModuleFile = moduleFile;
     const entry = lookupExport(exportTables, moduleFile, fact.symbol);
-    if (entry && entry.originCodeRefId) {
+    if (entry) {
       base.kind = 'resolved';
-      base.resolvedTargetCodeRefId = entry.originCodeRefId;
+      if (entry.originCodeRefId) base.resolvedTargetCodeRefId = entry.originCodeRefId;
     } else {
-      // Module resolved but symbol not found — header is stale per AC-10.
+      // Module resolved but symbol not in its export table — header is
+      // stale per AC-10.
       base.kind = 'stale';
       base.reason = 'symbol_not_in_module_exports';
     }
@@ -593,13 +617,13 @@ function lookupExport(
 
 function indexElementsByFileAndLocalName(
   elements: ElementData[],
-  _projectPath: string,
+  projectPath: string,
 ): Map<string, string> {
   const out = new Map<string, string>();
   for (const elem of elements) {
-    if (!elem.codeRefId) continue;
+    const codeRefId = elem.codeRefId ?? createCodeRefId(elem, projectPath, { includeLine: true });
     const key = elementKey(elem.file, elem.name);
-    if (!out.has(key)) out.set(key, elem.codeRefId);
+    if (!out.has(key)) out.set(key, codeRefId);
   }
   return out;
 }
@@ -614,11 +638,15 @@ function indexElementsByFile(elements: ElementData[]): Map<string, ElementData[]
   return out;
 }
 
-function indexImporterByFile(elements: ElementData[]): Map<string, string | null> {
+function indexImporterByFile(
+  elements: ElementData[],
+  projectPath: string,
+): Map<string, string | null> {
   const out = new Map<string, string | null>();
   for (const elem of elements) {
     if (!out.has(elem.file)) {
-      out.set(elem.file, elem.codeRefId ?? null);
+      const codeRefId = elem.codeRefId ?? createCodeRefId(elem, projectPath, { includeLine: true });
+      out.set(elem.file, codeRefId);
     }
   }
   return out;
@@ -665,7 +693,6 @@ function extractPackageName(specifier: string): string {
 function probeRelative(
   candidatePosix: string,
   projectFiles: ReadonlySet<string>,
-  _baseDir: string,
 ): string | undefined {
   // Exact match (already has extension).
   if (projectFiles.has(candidatePosix)) return projectFilesCanonical(projectFiles, candidatePosix);

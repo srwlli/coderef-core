@@ -223,10 +223,72 @@ export class PipelineOrchestrator {
             localName: resolution.localName,
             originSpecifier: resolution.originSpecifier,
             resolvedModuleFile: resolution.resolvedModuleFile,
+            resolutionStatus: 'resolved',
           },
         });
       }
     }
+
+    // Phase 3: enrich legacy 'imports'-type edges with resolutionStatus +
+    // targetElementId metadata so consumers (graph-ground-truth tests,
+    // dashboards) see the resolved/unresolved disposition. Match by
+    // (sourceFile, originSpecifier) → ImportResolution.
+    const resolutionsByKey = new Map<string, ImportResolution[]>();
+    for (const r of importResolutions) {
+      const key = `${r.sourceFile}\u0000${r.originSpecifier}`;
+      const list = resolutionsByKey.get(key);
+      if (list) list.push(r);
+      else resolutionsByKey.set(key, [r]);
+    }
+    for (const edge of graph.edges) {
+      if (edge.type !== 'imports') continue;
+      const key = `${edge.metadata?.sourceFile ?? edge.source}\u0000${edge.target}`;
+      const matches = resolutionsByKey.get(key) ?? [];
+      // An import statement may have multiple bindings (named, default,
+      // namespace) — pick the most-resolved disposition: resolved > stale >
+      // typeOnly > dynamic > external > unresolved.
+      const priority: ImportResolution['kind'][] = [
+        'resolved',
+        'stale',
+        'typeOnly',
+        'dynamic',
+        'external',
+        'ambiguous',
+        'unresolved',
+      ];
+      let chosen: ImportResolution | undefined;
+      for (const k of priority) {
+        chosen = matches.find(m => m.kind === k);
+        if (chosen) break;
+      }
+      if (!chosen) continue;
+      edge.metadata = edge.metadata ?? {};
+      edge.metadata.resolutionStatus = chosen.kind === 'resolved' ? 'resolved'
+        : chosen.kind === 'external' ? 'resolved'
+        : 'unresolved';
+      if (chosen.resolvedTargetCodeRefId) {
+        edge.metadata.targetElementId = chosen.resolvedTargetCodeRefId;
+      }
+      if (chosen.resolvedModuleFile) {
+        edge.metadata.resolvedModuleFile = chosen.resolvedModuleFile;
+      }
+      if (chosen.kind !== 'resolved' && chosen.kind !== 'external') {
+        edge.metadata.reason = chosen.reason ?? `kind:${chosen.kind}`;
+      }
+      // NOTE: edge source/target are NOT promoted to codeRefIds. The Phase 0
+      // ground-truth `expectResolvedEndpointIds` invariant requires node IDs
+      // as endpoints, but the same tests also use findEdge(graph, 'imports',
+      // './alpha') to locate edges by verbatim specifier — replacing target
+      // with a codeRefId would break that lookup. Phase 5 (graph
+      // construction) is the right phase to introduce codeRefId endpoints
+      // on these edges; Phase 3's contract is metadata enrichment only.
+    }
+
+    // NOTE: 'calls'-type edges intentionally do NOT receive resolutionStatus
+    // in Phase 3. Phase 4 owns call resolution; flipping call edges to
+    // 'unresolved' here would cause Phase 0 ground-truth call assertions to
+    // pass prematurely, violating the dispatch contract.
+
     graph.statistics.edgeCount = graph.edges.length;
     graph.statistics.edgesByType['resolved-import'] =
       (graph.statistics.edgesByType['resolved-import'] || 0) +
