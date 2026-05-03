@@ -1,0 +1,17 @@
+You are a read-only prep agent for Phase 4 of the CodeRef Core 9-phase pipeline rebuild.
+
+READ THIS BRIEF FIRST AND FOLLOW IT EXACTLY:
+C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/pipeline-call-resolution-prep/PREP-BRIEF.md
+
+Your job: write context.json and analysis.json in that same directory per the brief's required output shapes. Do not edit source code. Do not commit.
+
+CRITICAL JSON ESCAPING RULE (Phase 3 V1 prep failed on this — do not repeat the mistake):
+When emitting Windows file paths inside JSON string values, every backslash must be doubled. Emit:
+  "C:\\\\Users\\\\willh\\\\Desktop\\\\CODEREF\\\\CODEREF-CORE\\\\src\\\\pipeline\\\\types.ts"
+NOT:
+  "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\types.ts"
+Before writing the file, validate your output parses with JSON.parse. If JSON.parse throws, repair and retry.
+
+DO NOT modify PREP-BRIEF.md. DO NOT touch any file outside coderef/workorder/pipeline-call-resolution-prep/.
+
+When done, exit.

@@ -1,0 +1,129 @@
+{
+  "blast_radius": [
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\types.ts",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\import-resolver.ts",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\call-resolver.ts",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\graph-ground-truth.test.ts",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\no-call-resolution.test.ts"
+  ],
+  "risks": [
+    {
+      "id": "R-PHASE-4-A",
+      "name": "Built-in detection cardinality",
+      "description": "The list of 'what counts as a builtin' is unbounded (every Array/Object/String/Map/Set/Promise/etc. method). Strategy: maintain an allowlist of known-builtin receivers, treat unknown receivers as ambiguous-or-unresolved (NOT builtin). Document where the allowlist lives and how it's updated.",
+      "mitigation": "Allowlist of known built-in receivers resides in src/pipeline/call-resolver.ts as an exported constant. Unknown receivers are classified as `unresolved` or `ambiguous` (per DR-PHASE-4-B)."
+    },
+    {
+      "id": "R-PHASE-4-B",
+      "name": "Cross-phase seam with Phase 3 (ImportResolution.localName)",
+      "description": "If Phase 3's ImportResolution.localName is missing or stale, Phase 4 will silently misclassify imported-symbol calls. Phase 4 must depend on Phase 3 having run, and assert state.importResolutions is non-null before resolveCalls runs.",
+      "mitigation": "Phase 4 reads state.importResolutions (immutable snapshot from Phase 3). Assertion on state.importResolutions !== null guards the start of call resolution; halt-and-throw if violated."
+    },
+    {
+      "id": "R-PHASE-4-C",
+      "name": "Method-call type inference depth",
+      "description": "Method calls like `obj.method()` require knowing obj's type. Phase 4 must NOT attempt full type inference (that's Phase 5+ or out-of-scope entirely). When receiver type is unknown → ambiguous OR unresolved.",
+      "mitigation": "When receiver type is unknown, classify as `ambiguous` if receiverText might match a project symbol (appears in symbol table), or `unresolved` if receiverText is clearly not resolvable. Array.prototype.map etc. are classified as `builtin` (per DR-PHASE-4-A)."
+    },
+    {
+      "id": "R-PHASE-4-D",
+      "name": "Phase 0 ground-truth assertions flipping (more this phase than Phase 3)",
+      "description": "This phase flips MORE assertions than Phase 3 did (Phase 3 flipped 4 import-side; Phase 4 flips 4 call-side + 2 fully-call-only tests). Plan must specify the mechanism for each (delete failing assertion vs add new passing assertion vs flip existing) to avoid disguising regressions as wins.",
+      "mitigation": "Call-side assertions in tests 1, 2, 3, 4, 5, 6 of graph-ground-truth.test.ts flip to PASS. New test no-graph-construction-leaks.test.ts asserts Phase 5 work is NOT included. Mechanism for each flip detailed in ground_truth_test_mapping. Test 1's endpoint-is-node-id assertion stays FAIL — Phase 5 owns that, NOT Phase 4 — and the plan must explicitly document this hold-out."
+    }
+  ],
+  "decision_records": [
+    {
+      "id": "DR-PHASE-4-A",
+      "name": "Built-in detection strategy",
+      "description": "Built-in detection strategy (allowlist vs heuristic vs runtime probe) — pick one and document why.",
+      "decision": "Allowlist strategy. Known built-in receivers maintained as an exported constant in src/pipeline/call-resolver.ts (initial set: Array, Object, Promise, Map, Set, String, Number, Boolean, RegExp, Date, Error, JSON, Math, Reflect, Symbol). Unknown receivers classified per DR-PHASE-4-B (ambiguous or unresolved), NEVER assumed builtin.",
+      "why": "Determinism and simplicity. A fixed allowlist is testable and maintainable; heuristics or runtime probes introduce nondeterminism. Phase 4 prefers explicit unresolved over silent over-resolution."
+    },
+    {
+      "id": "DR-PHASE-4-B",
+      "name": "Method-call ambiguous-vs-unresolved policy",
+      "description": "When does `obj.method()` go to ambiguous with candidates vs straight to unresolved?",
+      "decision": "If receiverText is `this` AND we are inside a class scope → resolve within class methods (AC-03). If receiverText matches an ImportResolution.localName from Phase 3 → resolve via that binding (AC-07). If receiverText matches multiple candidate symbols → ambiguous with candidates[] populated (AC-05). If receiverText matches no known symbol → unresolved with reason='receiver_not_in_symbol_table'. Array.prototype.map etc. are explicitly classified as builtin via the allowlist (DR-PHASE-4-A) — these never reach the ambiguous-vs-unresolved branch.",
+      "why": "Prioritizes resolving known receivers and class-bound `this` while preventing over-resolution for unknown types. Explicitly categorizes builtins to prevent them from polluting project call graphs."
+    },
+    {
+      "id": "DR-PHASE-4-C",
+      "name": "Cross-phase consumption of Phase 3 ImportResolution",
+      "description": "Phase 4 reads-only or copies-and-augments?",
+      "decision": "Phase 4 reads state.importResolutions as an immutable snapshot. It uses ImportResolution.localName and ImportResolution.resolvedTargetCodeRefId for calls to imported symbols. The importResolutions array itself is NOT modified by Phase 4. Phase 4 emits its OWN state.callResolutions array — separate concern, separate field.",
+      "why": "Maintains data integrity and adheres to the read-only nature of data produced by prior phases. Prevents Phase 4 from accidentally invalidating Phase 3's invariants."
+    },
+    {
+      "id": "DR-PHASE-4-D",
+      "name": "Two-pass timing for call resolution",
+      "description": "Symbol-table build is pass 1; resolve is pass 2. Mirror Phase 3? Or single-pass since RawCallFact already carries scopePath? Justify the choice.",
+      "decision": "Two-pass. Pass 1 builds a project-wide scope-aware symbol table (file/function/class/method/imported); Pass 2 resolves every RawCallFact using the symbol table plus state.importResolutions. Mirrors Phase 3's pattern. Pass 1 must complete for ALL files before Pass 2 begins for ANY file (mirrors Phase 3's AC-12).",
+      "why": "Mirrors Phase 3's proven two-pass pattern. Single-pass via scopePath would not handle forward references (a call to a function defined later in the file or in another file). Two-pass is also necessary for ambiguous-detection: only after the full symbol table is built can we know whether a name is duplicated across files."
+    }
+  ],
+  "resolution_surface": {
+    "call_kinds": ["resolved", "unresolved", "ambiguous", "external", "builtin"],
+    "edge_cases": [
+      "this.method(): resolve within class scope when `this` is bound to a class instance",
+      "obj.method() (no type inference): ambiguous when receiver text matches a known symbol of unknown type, unresolved when receiver text is clearly unresolvable",
+      "super.method(): resolve to parent class method (when class hierarchy is statically determinable from same-file or imported class definitions)",
+      "Dynamic dispatch obj[methodName](): unresolved (methodName not statically known)",
+      "IIFE calls (function(){...})(): resolved if the IIFE returns a known function with a name; otherwise unresolved",
+      "Callback invocations arr.forEach(cb): the call to forEach is builtin; the call into cb is resolved if cb is statically known",
+      "Builtin calls Array.prototype.map et al: classified as builtin via allowlist (DR-PHASE-4-A), NEVER project edges (AC-02)",
+      "Calls to default-imported functions: resolve via ImportResolution where localName binds to the default export's codeRefId (AC-07)",
+      "Calls via namespace import (ns.fn()): resolve to ns module's export table for fn"
+    ],
+    "builtin_strategy": {
+      "concrete": "Allowlist of receivers: Array, Object, Promise, Map, Set, String, Number, Boolean, RegExp, Date, Error, JSON, Math, Reflect, Symbol",
+      "location": "src/pipeline/call-resolver.ts as exported constant BUILTIN_RECEIVERS",
+      "unknown_receivers": "Classified as `unresolved` or `ambiguous` per DR-PHASE-4-B; NEVER classified as builtin without an allowlist match",
+      "extensibility": "Allowlist may grow over time; each addition requires a unit test asserting calls on that receiver classify as builtin"
+    }
+  },
+  "ground_truth_test_mapping": [
+    {
+      "test_file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "test_name": "requires resolved import and call edges to use graph node IDs as endpoints",
+      "phase_4_flip": "CALL-side assertion flips to PASS (the call's resolutionStatus === 'resolved' check). Endpoint-is-node-id assertion (line 52, ids.has(edge.source)) STAYS FAIL — Phase 5 owns codeRefId-as-endpoint promotion on legacy edges, NOT Phase 4."
+    },
+    {
+      "test_file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "test_name": "requires unresolved imports and calls to be explicit graph facts",
+      "phase_4_flip": "CALL-side assertion flips to PASS — line 100 expectUnresolved(findEdge(graph, 'calls', 'missingCall')) now succeeds because Phase 4 emits an explicit unresolved CallResolution for that call."
+    },
+    {
+      "test_file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "test_name": "requires duplicate function name calls to be marked ambiguous with candidate IDs",
+      "phase_4_flip": "FULLY flips to PASS. This is the FIRST phase this test passes. AC-05 directly addresses it."
+    },
+    {
+      "test_file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "test_name": "requires alias imports to bind the local alias back to the exported source symbol",
+      "phase_4_flip": "Call-side assertion (the call to localAlias()) flips to PASS via the AC-07 cross-phase seam. Import-side binding was already established in Phase 3."
+    },
+    {
+      "test_file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "test_name": "requires nested functions and class method calls to preserve qualified context",
+      "phase_4_flip": "FULLY flips to PASS. This is the FIRST phase this test passes. AC-06 (qualifying scope path) directly addresses it."
+    },
+    {
+      "test_file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "test_name": "requires graph validation to distinguish resolved, unresolved, and ambiguous edges",
+      "phase_4_flip": "Call-side assertions for duplicate() and absent() flip to PASS (ambiguous and unresolved respectively). Combined with Phase 3's import-side flips, ALL edge kinds (resolved/unresolved/ambiguous) on BOTH imports and calls now satisfy the all-edge invariant — this test fully passes after Phase 4."
+    }
+  ],
+  "cross_phase_dependencies": {
+    "phase_3_to_4_seam": "Phase 4 consumes state.importResolutions (read-only) from Phase 3. For each RawCallFact whose calleeName matches an ImportResolution.localName AND that ImportResolution.kind === 'resolved', the call resolves to ImportResolution.resolvedTargetCodeRefId. This is the primary cross-phase seam (AC-07). Phase 4 MUST assert state.importResolutions is non-null at start of resolveCalls; halt with explicit error otherwise (R-PHASE-4-B mitigation).",
+    "phase_4_to_5_seam": "Phase 4 emits state.callResolutions: CallResolution[]. Each CallResolution carries kind, sourceFile, callerCodeRefId, calleeName, resolvedTargetCodeRefId (when kind='resolved'), candidates (when kind='ambiguous'), reason (when kind='unresolved'/'builtin'). Phase 5 will consume state.callResolutions to construct final call graph edges. Phase 4 MAY emit resolved-call edges to state.graph for resolved kinds (mirrors Phase 3's resolved-import edge emission), but does NOT modify endpoint format — Phase 5 owns endpoint-promotion to canonical codeRefId throughout."
+  },
+  "test_planning_notes": [
+    "Phase 4 must keep Phase 3 tests passing. All tests from Phase 1, 2, 2.5, and 3 must pass — particularly Phase 3's import-resolution-* test suite and the AC-13 cross-phase consistency test.",
+    "Phase 4 must keep Phase 2's no-graph-edge-claim invariant satisfied for the call side until the explicit emission step (mirrors Phase 3's pattern).",
+    "Existing pipeline-snapshot.test.ts has a known pre-existing failure (verified during Phase 3 close via git stash) — not Phase 4's concern.",
+    "New test no-graph-construction-leaks.test.ts will be created as the Phase 5 boundary enforcer. Asserts no Phase 5 graph construction work (e.g. general node-id endpoint promotion, edge schema rebuild) leaks into Phase 4. Specifically: state.graph.nodes count and state.graph.edges schema unchanged from Phase 3 baseline EXCEPT for added resolved-call edges; no new graph construction fields added to PipelineState that belong to Phase 5.",
+    "Existing __tests__/pipeline/no-call-resolution.test.ts (the Phase 3 boundary enforcer that asserted Phase 3 did NOT do call resolution) must be DELETED in Phase 4 (Phase 4 IS call resolution; the boundary enforcer is now obsolete). Document the deletion explicitly in plan.json — silent removal would obscure the boundary transition."
+  ]
+}

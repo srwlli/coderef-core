@@ -1,0 +1,5 @@
+{
+  "agent": "gemini",
+  "command": "cd /d C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE && type coderef\\workorder\\pipeline-call-resolution-prep\\.prompt.txt | gemini --model gemini-2.5-flash-lite -p \"\"",
+  "workorder": "pipeline-call-resolution-prep"
+}

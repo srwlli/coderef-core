@@ -1,0 +1,198 @@
+{
+  "$schema": "https://coderef/assistant/skills/workflow/_shared/planner/plan.schema.json",
+  "workorder_id": "WO-PIPELINE-CALL-RESOLUTION-001",
+  "feature_name": "pipeline-call-resolution",
+  "created": "2026-05-03T19:50:00Z",
+  "project_id": "coderef-core",
+  "plan_type": "phased",
+  "goal": "Implement Phase 4 of the canonical 9-phase pipeline rebuild: a two-pass call resolver. Pass 1 builds a project-wide scope-aware symbol table (file/function/class/method/imported scopes). Pass 2 resolves every RawCallFact against the symbol table plus Phase 3's state.importResolutions, classifying each call into exactly one of {resolved, unresolved, ambiguous, external, builtin}. Resolved calls become graph edges using canonical codeRefIds. Phase 4 flips the call-side of 4 ground-truth tests AND fully flips 2 previously-fully-failing call-only tests. NO Phase 5 graph construction (endpoint-as-node-id promotion stays Phase 5). NO --strict-headers gate (Phase 6). Deletes Phase 3's no-call-resolution.test.ts boundary enforcer (Phase 4 IS call resolution, the enforcer is now obsolete).",
+  "plan_type_rationale": "Phase 4 of the sequential nine-phase pipeline refactor. Phase 5 (graph construction) cannot start until Phase 4 emits call resolutions. This phase flips MORE Phase 0 ground-truth assertions than Phase 3 did (4 call-side flips + 2 fully-call-only test flips) — discipline on the per-assertion flip mechanism is critical to avoid disguising regressions as wins.",
+  "plan_type_decided_by": "ORCHESTRATOR (Claude Opus) authored from Gemini Flash Lite prep deliverables (extracted from agent log after Lite emitted JSON to stdout instead of using its file-write tool — caller-repaired) plus /plan-tests-for-workorder skill output (11 criteria → 6 unit + 1 integration + 4 invariant)",
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "DELETE", "RUN", "TEST", "CHECK", "STOP"],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Stop after Phase 4 exit criteria. Do NOT begin Phase 5 (graph construction beyond resolved-call edges with current endpoint format), Phase 6 (--strict-headers gate), or any later phase in this workorder."
+    }
+  ],
+  "checkpoints": [
+    {
+      "after_task": "1.5",
+      "name": "structural_foundation_review",
+      "reason": "After call-resolver.ts skeleton + types are written, PipelineState surgery completes (add state.callResolutions, delete Phase 3 boundary enforcer test), and orchestrator.ts wiring lands, halt for ORCHESTRATOR review of: (a) two-pass split enforced (symbol table param to pass 2, no per-file streaming), (b) 5-kind ImportResolutionKind taxonomy matches AC-01, (c) graph-edge emission gated on kind='resolved' AND both endpoints bound, (d) Phase 3 cross-phase seam preserved (state.importResolutions read-only consumption), (e) no-call-resolution.test.ts deletion is clean (Phase 4 IS call resolution, the boundary enforcer is obsolete)."
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 4 - Call Resolution",
+      "hard_stop": true,
+      "description": "Build two-pass call resolver. Pass 1 = scope-aware symbol table from PipelineState.elements + Phase 3 imports. Pass 2 = resolve every RawCallFact against symbol table + state.importResolutions. Classify into 5 kinds. Emit resolved-call graph edges. Delete Phase 3 boundary enforcer (obsolete). Land 11 tests across 11 ACs. Phase 0 ground-truth call-side assertions flip to PASS in 4 tests; 2 fully call-only tests flip fully; endpoint-is-node-id assertion stays FAIL (Phase 5 owns it).",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read prep deliverables in full: coderef/workorder/pipeline-call-resolution-prep/context.json (scope + 11 ACs), analysis.json (4 risks R-PHASE-4-A through D, 4 DRs A through D, resolution_surface, ground_truth_test_mapping, cross_phase_dependencies, test_planning_notes including the no-call-resolution.test.ts deletion note). Read roadmap.md lines 274-320 for Phase 4 exit criteria.",
+          "touches": [
+            "coderef/workorder/pipeline-call-resolution-prep/context.json",
+            "coderef/workorder/pipeline-call-resolution-prep/analysis.json",
+            "roadmap.md"
+          ]
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read Phase 2/2.5/3 surfaces: src/pipeline/types.ts (RawCallFact shape with receiverText/calleeName/scopePath; PipelineState; ImportResolution from Phase 3), src/pipeline/import-resolver.ts (the two-pass pattern Phase 4 mirrors), src/pipeline/orchestrator.ts (where Phase 4 wires after Phase 3's resolveImports call), __tests__/pipeline/no-call-resolution.test.ts (Phase 3's boundary enforcer — Phase 4 deletes this; understand what it asserts so the deletion is informed). Grep src/ for any current consumer of state.calls or state.rawCalls (Phase 4 must NOT modify those — only emits to new state.callResolutions).",
+          "touches": [
+            "src/pipeline/types.ts",
+            "src/pipeline/import-resolver.ts",
+            "src/pipeline/orchestrator.ts",
+            "__tests__/pipeline/no-call-resolution.test.ts"
+          ]
+        },
+        {
+          "id": "1.3",
+          "verb": "WRITE",
+          "description": "Create src/pipeline/call-resolver.ts. Define types: CallResolutionKind = 'resolved' | 'unresolved' | 'ambiguous' | 'external' | 'builtin'. CallResolution { sourceFile, callerCodeRefId, calleeName, receiverText, scopePath, kind, resolvedTargetCodeRefId? (kind=resolved only), candidates? (kind=ambiguous), reason? (non-resolved kinds) }. SymbolTableEntry { codeRefId, name, scope ('file'|'function'|'class'|'method'|'imported'), sourceFile, parentScope? }. SymbolTable = Map<string, SymbolTableEntry[]> keyed by name (multi-value because duplicates exist; ambiguous handling depends on it). Public surface: resolveCalls(state: PipelineState): CallResolution[]. Internal: buildSymbolTable (pass 1), resolveCallsAgainstTable (pass 2), classifyMethodCall (this/obj/super branching per DR-PHASE-4-B), isBuiltinReceiver (allowlist check per DR-PHASE-4-A). Export BUILTIN_RECEIVERS as const: ['Array','Object','Promise','Map','Set','String','Number','Boolean','RegExp','Date','Error','JSON','Math','Reflect','Symbol']. NO file IO. NO mutation of state.calls/rawCalls/importResolutions.",
+          "touches": ["src/pipeline/call-resolver.ts"]
+        },
+        {
+          "id": "1.4",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/types.ts. (a) ADD CallResolution[] field to PipelineState as `callResolutions`. (b) Re-export CallResolutionKind + CallResolution + SymbolTable + BUILTIN_RECEIVERS from types.ts. (c) Add field to PipelineState.metadata if needed for symbol table size diagnostics. Verify zero name collisions with existing fields.",
+          "touches": ["src/pipeline/types.ts"]
+        },
+        {
+          "id": "1.5",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/orchestrator.ts. After Phase 3's resolveImports call completes (state.importResolutions populated), invoke resolveCalls(state). Assert state.importResolutions !== null at the top of resolveCalls (R-PHASE-4-B mitigation) — halt with explicit error if violated. Write the returned CallResolution[] into state.callResolutions. For every resolution with kind='resolved', append a graph edge to state.graph using canonical codeRefIds (callerCodeRefId → resolvedTargetCodeRefId, type='resolved-call'). DO NOT emit edges for non-resolved kinds — they remain explicit facts in callResolutions[]. The endpoint format on resolved-call edges matches the resolved-import edge format Phase 3 already uses; Phase 5 owns codeRefId-as-endpoint promotion across legacy edges.",
+          "touches": ["src/pipeline/orchestrator.ts"]
+        },
+        {
+          "id": "1.5b",
+          "verb": "DELETE",
+          "description": "Delete __tests__/pipeline/no-call-resolution.test.ts. This was Phase 3's boundary enforcer asserting that Phase 3 did NOT do call resolution. Phase 4 IS call resolution; the enforcer is obsolete. Document the deletion explicitly in execution-notes.md — silent removal would obscure the boundary transition. (Per test_planning_notes in prep analysis.json.)",
+          "touches": ["__tests__/pipeline/no-call-resolution.test.ts"]
+        },
+        {
+          "id": "1.5-CHECKPOINT",
+          "verb": "STOP",
+          "description": "CHECKPOINT: structural_foundation_review. Halt and emit checkpoint_ready. ORCHESTRATOR will review: (a) two-pass split enforced (no per-file streaming during pass 2; symbol table threaded as parameter), (b) 5-kind CallResolutionKind matches AC-01, (c) graph-edge emission gated on kind='resolved' AND both endpoints bound, (d) Phase 3 cross-phase seam preserved (state.importResolutions read-only, halt-on-null assertion present), (e) no-call-resolution.test.ts deletion is documented with reason. ORCHESTRATOR signals proceed before pass-1/pass-2 implementation tasks (1.6+) begin.",
+          "touches": ["coderef/workorder/pipeline-call-resolution/checkpoint.md"]
+        },
+        {
+          "id": "1.6",
+          "verb": "EDIT",
+          "description": "Implement pass 1 in src/pipeline/call-resolver.ts: buildSymbolTable(state). Iterate state.elements. For each element, derive name + scope from element kind/location: top-level functions → scope='file'; class methods → scope='method' with parentScope=class codeRefId; nested functions → scope='function' with parentScope=enclosing element. Also iterate state.importResolutions: for each ImportResolution with kind='resolved' AND a localName, add SymbolTableEntry { codeRefId: resolvedTargetCodeRefId, name: localName, scope: 'imported', sourceFile: importer's file }. Return SymbolTable (Map<name, SymbolTableEntry[]>). Pass 1 must complete for ALL files before returning (AC-09).",
+          "touches": ["src/pipeline/call-resolver.ts"]
+        },
+        {
+          "id": "1.7",
+          "verb": "EDIT",
+          "description": "Implement pass 2 in src/pipeline/call-resolver.ts: resolveCallsAgainstTable(state, symbolTable). For each RawCallFact: (a) check isBuiltinReceiver(receiverText) — if true → kind='builtin' with reason='in_allowlist'; (b) if receiverText === 'this' AND callerCodeRefId is inside a class → look up calleeName in that class's method scope → kind='resolved' with resolvedTargetCodeRefId, OR kind='unresolved' with reason='this_method_not_in_class'; (c) classify obj.method() per DR-PHASE-4-B (receiverText matches imported localName via state.importResolutions → resolved through Phase 3 binding; receiverText matches symbolTable entry of unknown type → ambiguous with candidates[]; receiverText matches nothing → unresolved with reason='receiver_not_in_symbol_table'); (d) for bare calls (no receiver), look up calleeName in symbolTable using scope priority (local → enclosing → class → imported → same-file → global if unambiguous per roadmap line 289-295). Multiple matches → kind='ambiguous' with candidates[]; one match → kind='resolved'; zero matches → kind='unresolved'. Pass 2 must NOT mutate state.calls or state.rawCalls (Phase 4 boundary preservation per AC-10).",
+          "touches": ["src/pipeline/call-resolver.ts"]
+        },
+        {
+          "id": "1.8",
+          "verb": "EDIT",
+          "description": "Implement classifyMethodCall + isBuiltinReceiver helpers in src/pipeline/call-resolver.ts. classifyMethodCall handles the this/obj/super branching cleanly so resolveCallsAgainstTable stays readable. isBuiltinReceiver does an O(1) Set lookup against BUILTIN_RECEIVERS. Add doc comments noting that the allowlist may grow over time (per DR-PHASE-4-A extensibility note) and each addition must be paired with a unit test.",
+          "touches": ["src/pipeline/call-resolver.ts"]
+        },
+        {
+          "id": "1.9",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-shape.test.ts (covers AC-01, integration). Cover: every RawCallFact in test PipelineState produces exactly one CallResolution; every kind is one of the 5 valid kinds; total resolution count equals total RawCallFact count (no silent drops, no duplicates). Includes a fixture with mixed kinds (resolved, unresolved, ambiguous, builtin, external) to ensure all branches fire.",
+          "touches": ["__tests__/pipeline/call-resolution-shape.test.ts", "__tests__/.fixtures/call-resolution/"]
+        },
+        {
+          "id": "1.10",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-builtin.test.ts (covers AC-02, unit). Cover: calls on Array, Object, Promise, Map, Set, String, Number, Boolean, RegExp, Date, Error, JSON, Math, Reflect, Symbol receivers all classify as kind='builtin'; assert NO graph edge is emitted for any builtin call (state.graph.edges count unchanged after a builtin-only fixture); reason='in_allowlist'.",
+          "touches": ["__tests__/pipeline/call-resolution-builtin.test.ts"]
+        },
+        {
+          "id": "1.11",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-this-method.test.ts (covers AC-03, unit). Inline fixture with class C having method m1, and method m2 calling this.m1(). Cover: kind='resolved', resolvedTargetCodeRefId === codeRefId of C.m1; this.unknownMethod() → kind='unresolved' with reason='this_method_not_in_class'.",
+          "touches": ["__tests__/pipeline/call-resolution-this-method.test.ts"]
+        },
+        {
+          "id": "1.12",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-obj-method.test.ts (covers AC-04, unit). Cover: obj.method() where obj has unknown type but receiverText matches a known symbol → kind='ambiguous' with candidates[] populated; obj.method() where receiverText matches nothing → kind='unresolved' with reason='receiver_not_in_symbol_table'; assert no over-resolution path exists (no test case ends in 'resolved' for unknown-type obj).",
+          "touches": ["__tests__/pipeline/call-resolution-obj-method.test.ts"]
+        },
+        {
+          "id": "1.13",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-ambiguous.test.ts (covers AC-05, unit). Inline fixture with two files each defining a function 'helper' (same name, different bodies, distinct codeRefIds). A third file calls helper(). Cover: kind='ambiguous', candidates[] contains both codeRefIds; resolvedTargetCodeRefId is undefined (ambiguous never has a single resolved target).",
+          "touches": ["__tests__/pipeline/call-resolution-ambiguous.test.ts"]
+        },
+        {
+          "id": "1.14",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-nested-scope.test.ts (covers AC-06, unit). Inline fixture with class Service { handle() { ... } }, top-level function outer that defines nested inner() then calls inner(). Cover: call to inner() resolves with scopePath including 'outer'; call to this.handle() inside Service resolves with scopePath including 'Service'; the qualifying scope path from RawCallFact is honored (not overwritten or dropped) during resolution.",
+          "touches": ["__tests__/pipeline/call-resolution-nested-scope.test.ts"]
+        },
+        {
+          "id": "1.15",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-imported-symbol.test.ts (covers AC-07, unit). Inline fixture with file alpha.ts exporting doAlpha(), file beta.ts: `import { doAlpha as alias } from './alpha'; alias();`. Phase 3 emits ImportResolution for alias→doAlpha. Phase 4 must resolve the call alias() through that ImportResolution: kind='resolved', resolvedTargetCodeRefId === codeRefId of alpha.ts's doAlpha. Cross-phase seam (DR-PHASE-4-C) test.",
+          "touches": ["__tests__/pipeline/call-resolution-imported-symbol.test.ts"]
+        },
+        {
+          "id": "1.16",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-determinism.test.ts (INVARIANT, covers AC-08). Cover: idempotency — call resolveCalls(state) 100 times on identical state, deepStrictEqual all outputs; purity — Object.freeze inputs and assert no mutations to state.rawCalls / state.importResolutions / state.elements; assert resolveCalls does NOT call any fs.* function (mock fs and assert call count for resolveCalls is zero — Phase 4 has NO file IO, the symbol table is built from in-memory state).",
+          "touches": ["__tests__/pipeline/call-resolution-determinism.test.ts"]
+        },
+        {
+          "id": "1.17",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-two-pass-ordering.test.ts (INVARIANT, covers AC-09). Tempdir fixture. Cover: instrument buildSymbolTable to log every call to addEntry; instrument resolveCallsAgainstTable to log every call to lookupSymbol. Assert ALL addEntry calls precede the FIRST lookupSymbol call across the entire run. Resolver MUST NOT process calls against a partially-built symbol table — fail fast if order ever inverts.",
+          "touches": ["__tests__/pipeline/call-resolution-two-pass-ordering.test.ts"]
+        },
+        {
+          "id": "1.18",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/no-graph-construction-leaks.test.ts (INVARIANT, covers AC-10). Reflective field inspection on emitted CallResolution[] AND PipelineState. Assert NO field named 'fileGrainNodeId', 'edgeSchemaVersion', 'graphConstructionPass', 'nodePromotedFrom' exists on any CallResolution OR PipelineState. Assert state.graph.nodes count and edge schema unchanged from Phase 3 baseline EXCEPT for added resolved-call edges (compute baseline by stashing nodes/edges before resolveCalls and comparing). This is the Phase 5 boundary enforcer.",
+          "touches": ["__tests__/pipeline/no-graph-construction-leaks.test.ts"]
+        },
+        {
+          "id": "1.19",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts (INVARIANT, covers R-PHASE-4-B). Cover: invoke resolveCalls on a PipelineState where state.importResolutions is null/undefined → resolveCalls throws with explicit error mentioning 'Phase 3 must run first' (or similar). Cross-phase order discipline test.",
+          "touches": ["__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts"]
+        },
+        {
+          "id": "1.20",
+          "verb": "TEST",
+          "description": "Run all of: existing pipeline test suite (must still pass — particularly Phase 3's import-resolution-* suite + AC-13 cross-phase consistency); element-taxonomy + Phase 1 tests (must pass); Phase 2 raw-fact tests including no-graph-edge-claim (must still pass for IMPORT-side; CALL-side this is the phase that emits resolved-call edges, so the Phase 2 invariant for calls will need a docs note that Phase 4 owns call edge emission); Phase 2.5 tests (must pass); Phase 3 tests (must pass); the rewritten 1.24 test from Phase 3 (must pass); 11 new Phase 4 tests from 1.9-1.19 (must pass); pipeline-snapshot.test.ts pre-existing failure may persist (verified via git stash during Phase 3 close — not Phase 4's concern); Phase 0 ground-truth tests — CALL-related assertions in 4 tests MUST FLIP from FAIL to PASS (test 1 call-side, test 2 call-side, test 4 call-side via cross-phase seam, test 6 call-side); the 2 fully-call-only tests MUST FULLY FLIP (test 3 duplicate-name-ambiguous, test 5 nested-method-calls). Test 1's endpoint-is-node-id assertion (line 52) MUST STILL FAIL — Phase 5 owns it. Report exact pass/fail counts per category.",
+          "touches": ["__tests__"]
+        },
+        {
+          "id": "1.21",
+          "verb": "RUN",
+          "description": "Run /coderef-pipeline coderef-core --stages=scan,populate,validate. Confirm: (a) state.callResolutions populated for every scanned file; (b) graph contains resolved-call edges for every kind='resolved' resolution with both endpoints being canonical codeRefIds; (c) graph contains NO edges for kind='unresolved'/'ambiguous'/'builtin'/'external' (those stay as explicit facts in callResolutions); (d) state.calls and state.rawCalls UNCHANGED from Phase 3 baseline (Phase 4 does NOT modify those — emits to new state.callResolutions). Compare counts against Phase 3 baseline (2371 elements / 12428 edges). Edge growth = number of resolved calls.",
+          "touches": [".coderef/index.json", ".coderef/semantic-registry.json"]
+        },
+        {
+          "id": "1.22",
+          "verb": "CHECK",
+          "description": "Verify Phase 4 exit criteria from roadmap line 314-319: (1) duplicate function names do not resolve incorrectly — confirmed by AC-05 test (1.13) plus Phase 0 test 3 fully flipping; (2) unresolved calls are explicit — confirmed by AC-01 + AC-04 + Phase 0 test 2 call-side flipping; (3) ambiguous calls include candidate IDs — confirmed by AC-05 candidates[] population; (4) built-ins are not treated as project dependencies — confirmed by AC-02 test (1.10) asserting zero edges for builtin calls. Document each in execution-notes.md with the test ID and Phase 0 assertion that proves it. Document the no-call-resolution.test.ts deletion (Phase 3 boundary enforcer obsolete). If ANY check fails, halt with checkpoint_ready and report — do NOT work around.",
+          "touches": ["coderef/workorder/pipeline-call-resolution/execution-notes.md"]
+        },
+        {
+          "id": "1.23",
+          "verb": "STOP",
+          "description": "Stop. Phase 4 complete. Do NOT begin Phase 5 (graph construction, endpoint-is-node-id promotion across legacy edges), Phase 6 (--strict-headers gate), or any later phase in this workorder. Test 1's endpoint-is-node-id assertion stays FAIL — that is correct per roadmap. Report final test counts and the list of Phase 0 assertions that flipped (per category: call-side-flipped-this-phase, fully-call-only-flipped-this-phase, endpoint-is-node-id-still-fail-Phase-5).",
+          "touches": ["coderef/workorder/pipeline-call-resolution"]
+        }
+      ]
+    }
+  ],
+  "plan_adjustments_needed": []
+}

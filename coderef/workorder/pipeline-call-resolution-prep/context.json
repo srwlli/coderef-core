@@ -1,0 +1,38 @@
+{
+  "scope": {
+    "in": [
+      "Build scope-aware symbol table (file, function, class, method, imported)",
+      "Resolve calls in priority order (local → enclosing → class → imported bindings → same-file exports → global if unambiguous)",
+      "Classify every RawCallFact into one of {resolved, unresolved, ambiguous, external, builtin}",
+      "Method-call uncertainty preservation (`this.method()` vs `obj.method()` vs builtin `arr.map()`)",
+      "Built-in detection (do NOT treat Array.prototype.map et al. as project edges)",
+      "Emit resolved-call graph edges using canonical codeRefIds (gated on kind='resolved' AND both endpoints bound)",
+      "Consume Phase 3's ImportResolution.localName bindings for imported-symbol calls",
+      "Add `state.callResolutions` to PipelineState",
+      "Phase 4 boundary enforcer test (no Phase 5 graph construction work leaks)"
+    ],
+    "out": [
+      "Phase 5 graph construction (general node-id endpoints, edge schema rebuild)",
+      "Phase 6 --strict-headers gate",
+      "Phase 7 indexing / RAG",
+      "Phase 8 documentation"
+    ]
+  },
+  "project_id": "coderef-core",
+  "phase": "Phase 4 - Call Resolution",
+  "workorder_id": "WO-PIPELINE-CALL-RESOLUTION-001",
+  "feature_name": "pipeline-call-resolution",
+  "acceptance_criteria": [
+    "AC-01: Every RawCallFact produces exactly one CallResolution; no silent drops",
+    "AC-02: Built-in calls (Array/Object/String prototype methods) classify as `builtin`, NEVER produce project graph edges",
+    "AC-03: `this.method()` resolution restricted to class scope when receiver is `this`",
+    "AC-04: `obj.method()` with no type inference → ambiguous OR unresolved (NEVER silently resolved)",
+    "AC-05: Duplicate function names across files → ambiguous with candidate codeRefIds[] populated",
+    "AC-06: Nested function and class method calls preserve qualifying scope path (Phase 2 RawCallFact already carries scopePath — Phase 4 honors it during resolution)",
+    "AC-07: Calls to imported symbols resolve via Phase 3's ImportResolution.localName binding (cross-phase seam)",
+    "AC-08: Resolution is deterministic and pure over PipelineState (mirror Phase 3's INVARIANT)",
+    "AC-09: Symbol-table-build phase completes before resolve phase begins (mirror Phase 3's two-pass invariant)",
+    "AC-10: NO graph construction work leaks (Phase 5 boundary enforcer)",
+    "AC-11: Phase 0 ground-truth call assertions flip from FAIL to PASS in this phase (4 tests' call-side + 2 fully-call-only tests)"
+  ]
+}
