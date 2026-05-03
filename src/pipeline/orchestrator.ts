@@ -290,9 +290,10 @@ export class PipelineOrchestrator {
     // pass prematurely, violating the dispatch contract.
 
     graph.statistics.edgeCount = graph.edges.length;
-    graph.statistics.edgesByType['resolved-import'] =
-      (graph.statistics.edgesByType['resolved-import'] || 0) +
-      importResolutions.filter(r => r.kind === 'resolved').length;
+    const emittedResolvedImportEdges = graph.edges.filter(e => e.type === 'resolved-import').length;
+    if (emittedResolvedImportEdges > 0) {
+      graph.statistics.edgesByType['resolved-import'] = emittedResolvedImportEdges;
+    }
 
     const endTime = Date.now();
 
