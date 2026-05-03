@@ -298,6 +298,14 @@ export interface RawExportFact {
   kind: RawExportKind;
   /** Line number of the export statement. */
   line: number;
+  /**
+   * For `kind === 'reexport'` and `kind === 'namespace'`: the upstream module
+   * the symbol(s) came from (verbatim specifier from the `from '...'` clause).
+   * Undefined for `kind === 'named'` and `kind === 'default'`. Phase 3's
+   * resolveTransitiveReExport uses this to chain-follow to the underlying
+   * origin codeRefId.
+   */
+  viaModule?: string;
 }
 
 // RawHeaderImportFact was removed in Phase 3

@@ -434,6 +434,9 @@ export class RelationshipExtractor {
       const line = node.startPosition.row + 1;
       const text = content.slice(node.startIndex, node.endIndex);
       const sourceNode = node.childForFieldName('source');
+      const viaModule = sourceNode
+        ? this.extractStringLiteral(sourceNode, content)
+        : undefined;
 
       // `export * as ns from './x'` — namespace re-export.
       const namespaceExport = node.descendantsOfType('namespace_export')[0];
@@ -449,8 +452,24 @@ export class RelationshipExtractor {
           localName: local,
           kind: 'namespace',
           line,
+          viaModule,
         });
         // Recurse into children below — there might be more.
+      }
+
+      // `export * from './bar'` — wildcard re-export. Tree-sitter exposes
+      // this as an export_statement with a source field but no
+      // namespace_export and no export_clause. Encode as a single
+      // RawExportFact with exportedName='*', kind='reexport', viaModule set.
+      if (sourceNode && !namespaceExport && !node.descendantsOfType('export_clause')[0]) {
+        facts.push({
+          sourceFile: filePath,
+          exportedName: '*',
+          localName: '*',
+          kind: 'reexport',
+          line,
+          viaModule,
+        });
       }
 
       // `export { x, y as z } from './m'` (reexport) or `export { x, y as z }` (named).
@@ -470,6 +489,7 @@ export class RelationshipExtractor {
             localName,
             kind: sourceNode ? 'reexport' : 'named',
             line,
+            ...(sourceNode ? { viaModule } : {}),
           });
         }
       }
