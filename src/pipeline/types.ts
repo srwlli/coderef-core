@@ -18,10 +18,18 @@ import type {
   ImportResolution,
   ImportResolutionKind,
 } from './import-resolver.js';
+import type {
+  CallResolution,
+  CallResolutionKind,
+  SymbolTable,
+  SymbolTableEntry,
+} from './call-resolver.js';
 
 export type { HeaderStatus, LayerEnum };
 export type { HeaderFact, HeaderImportFact, HeaderParseError };
 export type { ExportTable, ImportResolution, ImportResolutionKind };
+export type { CallResolution, CallResolutionKind, SymbolTable, SymbolTableEntry };
+export { BUILTIN_RECEIVERS } from './call-resolver.js';
 
 /**
  * Pipeline options for configuring scan behavior
@@ -95,6 +103,15 @@ export interface PipelineState {
    * emission in the orchestrator.
    */
   importResolutions: ImportResolution[];
+  /**
+   * Phase 4 call-resolver output. One CallResolution per RawCallFact,
+   * classified into one of the 5 CallResolutionKind values
+   * (resolved/unresolved/ambiguous/external/builtin). Resolved entries
+   * also drive resolved-call graph-edge emission in the orchestrator.
+   * Phase 4 reads state.importResolutions (cross-phase seam) but does
+   * NOT mutate it.
+   */
+  callResolutions: CallResolution[];
   /** Dependency graph with nodes and edges */
   graph: ExportedGraph;
   /** Source code content indexed by file path */
