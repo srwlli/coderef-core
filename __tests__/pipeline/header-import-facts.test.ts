@@ -4,7 +4,6 @@ import * as path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { parseHeader } from '../../src/pipeline/semantic-header-parser.js';
 import { PipelineOrchestrator } from '../../src/pipeline/orchestrator.js';
-import { collectHeaderImportPlaceholders } from '../../src/pipeline/extractors/relationship-extractor.js';
 
 const created: string[] = [];
 
@@ -61,22 +60,10 @@ describe('Phase 2.5 structured HeaderImportFact records (AC-11)', () => {
     expect(state.headerImportFacts[0]).toMatchObject({ module: './b', symbol: 'helper' });
   });
 
-  it('deprecated collectHeaderImportPlaceholders still produces RawHeaderImportFact[] (backwards-compat)', () => {
-    const src = [
-      '/**',
-      ' * @coderef-semantic:1.0.0',
-      ' * @layer utility',
-      ' * @capability foo-bar',
-      ' * @exports x',
-      ' * @imports ["./alpha:doAlpha"]',
-      ' * @generated 2026-05-03T00:00:00Z',
-      ' */',
-      'export const x = 1;',
-      '',
-    ].join('\n');
-    const facts = collectHeaderImportPlaceholders('sample.ts', src);
-    expect(facts).toHaveLength(1);
-    expect(facts[0].rawString).toBe('./alpha:doAlpha');
-    expect(facts[0].parseStatus).toBe('placeholder');
-  });
+  // Note: the third test for `collectHeaderImportPlaceholders` was removed in
+  // Phase 3 (WO-PIPELINE-IMPORT-RESOLUTION-001) along with the deprecated
+  // function and RawHeaderImportFact type. HeaderImportFact is now the only
+  // header-import shape; cardinality is asserted by raw-header-import-
+  // placeholders.test.ts → header-import-facts-cardinality.test.ts (rewritten
+  // in task 1.24).
 });

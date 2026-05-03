@@ -56,11 +56,10 @@ describe('Phase 2.5 boundary INVARIANT: no import resolution (AC-12)', () => {
     });
 
     expect(
-      state.headerImportFacts.length + state.rawImports.length + state.rawHeaderImports.length,
+      state.headerImportFacts.length + state.rawImports.length,
     ).toBeGreaterThan(0);
 
     assertNoForbidden(state.headerImportFacts as unknown as Record<string, unknown>[]);
     assertNoForbidden(state.rawImports as unknown as Record<string, unknown>[]);
-    assertNoForbidden(state.rawHeaderImports as unknown as Record<string, unknown>[]);
   });
 });

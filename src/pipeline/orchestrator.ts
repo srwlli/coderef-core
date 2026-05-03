@@ -180,6 +180,58 @@ export class PipelineOrchestrator {
     if (verbose) console.log('[PipelineOrchestrator] Building dependency graph...');
     const graph = this.buildGraph(allElements, allImports, allCalls, projectPath);
 
+    // Step 4.5: Phase 3 — resolve imports against export tables and emit
+    // resolved-import graph edges. resolveImports is a pure function over
+    // state; it consumes rawExports / rawImports / headerImportFacts and
+    // produces ImportResolution[]. Pass 1 (export tables) completes for ALL
+    // files before pass 2 (resolution) begins for ANY file. Only kind ===
+    // 'resolved' resolutions emit graph edges; the rest stay as explicit
+    // facts on state.importResolutions.
+    if (verbose) console.log('[PipelineOrchestrator] Resolving imports (Phase 3)...');
+    const preResolveState: PipelineState = {
+      projectPath,
+      files,
+      elements: allElements,
+      imports: allImports,
+      calls: allCalls,
+      rawImports: allRawImports,
+      rawCalls: allRawCalls,
+      rawExports: allRawExports,
+      headerFacts: allHeaderFacts,
+      headerImportFacts: allHeaderImportFacts,
+      headerParseErrors: allHeaderParseErrors,
+      importResolutions: [],
+      graph,
+      sources,
+      options,
+      metadata: {
+        startTime,
+        filesScanned,
+        elementsExtracted: allElements.length,
+        relationshipsExtracted: allImports.length + allCalls.length,
+      },
+    };
+    const importResolutions: ImportResolution[] = resolveImports(preResolveState);
+    for (const resolution of importResolutions) {
+      if (resolution.kind === 'resolved' && resolution.resolvedTargetCodeRefId && resolution.importerCodeRefId) {
+        graph.edges.push({
+          source: resolution.importerCodeRefId,
+          target: resolution.resolvedTargetCodeRefId,
+          type: 'resolved-import',
+          metadata: {
+            sourceFile: resolution.sourceFile,
+            localName: resolution.localName,
+            originSpecifier: resolution.originSpecifier,
+            resolvedModuleFile: resolution.resolvedModuleFile,
+          },
+        });
+      }
+    }
+    graph.statistics.edgeCount = graph.edges.length;
+    graph.statistics.edgesByType['resolved-import'] =
+      (graph.statistics.edgesByType['resolved-import'] || 0) +
+      importResolutions.filter(r => r.kind === 'resolved').length;
+
     const endTime = Date.now();
 
     if (verbose) {
@@ -187,6 +239,7 @@ export class PipelineOrchestrator {
       console.log(`[PipelineOrchestrator] Elements: ${allElements.length}`);
       console.log(`[PipelineOrchestrator] Imports: ${allImports.length}`);
       console.log(`[PipelineOrchestrator] Calls: ${allCalls.length}`);
+      console.log(`[PipelineOrchestrator] Import resolutions: ${importResolutions.length}`);
       console.log(`[PipelineOrchestrator] Graph nodes: ${graph.nodes.length}`);
       console.log(`[PipelineOrchestrator] Graph edges: ${graph.edges.length}`);
     }
@@ -203,21 +256,8 @@ export class PipelineOrchestrator {
 
     // Step 6: Return populated state
     const state: PipelineState = {
-      projectPath,
-      files,
-      elements: allElements,
-      imports: allImports,
-      calls: allCalls,
-      rawImports: allRawImports,
-      rawCalls: allRawCalls,
-      rawExports: allRawExports,
-      headerFacts: allHeaderFacts,
-      headerImportFacts: allHeaderImportFacts,
-      headerParseErrors: allHeaderParseErrors,
-      importResolutions: [],
-      graph,
-      sources,
-      options,
+      ...preResolveState,
+      importResolutions,
       metadata: {
         startTime,
         endTime,
