@@ -379,6 +379,36 @@ export class PipelineOrchestrator {
       if (chosen.kind === 'unresolved' || chosen.kind === 'ambiguous') {
         edge.metadata.reason = chosen.reason ?? `kind:${chosen.kind}`;
       }
+      // For resolved calls that traced through a Phase 3 ImportResolution
+      // binding, populate importedAs (local alias) + exportedName (origin
+      // symbol). Phase 0 ground-truth test 4 asserts both.
+      if (chosen.kind === 'resolved' && chosen.receiverText === null) {
+        const importBinding = importResolutions.find(
+          ir => ir.sourceFile === chosen.sourceFile
+            && ir.localName === chosen.calleeName
+            && ir.kind === 'resolved',
+        );
+        if (importBinding) {
+          edge.metadata.importedAs = importBinding.localName;
+          // Recover the original exportedName from the source RawImportFact
+          // specifier: ImportResolution dropped `imported`, but the matching
+          // specifier in state.rawImports still has it.
+          const matchingFact = preResolveCallsState.rawImports.find(
+            f => f.sourceFile === importBinding.sourceFile
+              && f.moduleSpecifier === importBinding.originSpecifier,
+          );
+          const matchingSpec = matchingFact?.specifiers.find(
+            s => s.local === importBinding.localName,
+          );
+          if (matchingSpec) {
+            edge.metadata.exportedName = matchingSpec.imported;
+          } else if (matchingFact?.defaultImport === importBinding.localName) {
+            edge.metadata.exportedName = 'default';
+          } else if (matchingFact?.namespaceImport === importBinding.localName) {
+            edge.metadata.exportedName = '*';
+          }
+        }
+      }
       // NOTE: edge source/target are NOT promoted to codeRefIds. Phase 5
       // owns endpoint promotion. Phase 0 ground-truth test 1's
       // endpoint-is-node-id assertion (line 52) STAYS FAIL until Phase 5.
