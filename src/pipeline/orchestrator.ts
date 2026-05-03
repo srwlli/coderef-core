@@ -33,7 +33,11 @@ import type {
   RawCallFact,
   RawExportFact,
   RawHeaderImportFact,
+  HeaderFact,
+  HeaderImportFact,
+  HeaderParseError,
 } from './types.js';
+import type { HeaderStatus } from './element-taxonomy.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
@@ -131,6 +135,9 @@ export class PipelineOrchestrator {
     const allRawCalls: RawCallFact[] = [];
     const allRawExports: RawExportFact[] = [];
     const allRawHeaderImports: RawHeaderImportFact[] = [];
+    const allHeaderFacts = new Map<string, HeaderFact>();
+    const allHeaderImportFacts: HeaderImportFact[] = [];
+    const allHeaderParseErrors: HeaderParseError[] = [];
     const sources = new Map<string, string>();
 
     let filesScanned = 0;
@@ -152,6 +159,11 @@ export class PipelineOrchestrator {
           allRawCalls.push(...result.rawCalls);
           allRawExports.push(...result.rawExports);
           allRawHeaderImports.push(...result.rawHeaderImports);
+          allHeaderFacts.set(filePath, result.headerFact);
+          allHeaderImportFacts.push(...result.headerImportFacts);
+          if (result.headerFact.parseErrors) {
+            allHeaderParseErrors.push(...result.headerFact.parseErrors);
+          }
           sources.set(filePath, result.content);
           filesScanned++;
 
@@ -201,9 +213,9 @@ export class PipelineOrchestrator {
       rawCalls: allRawCalls,
       rawExports: allRawExports,
       rawHeaderImports: allRawHeaderImports,
-      headerFacts: new Map(),
-      headerImportFacts: [],
-      headerParseErrors: [],
+      headerFacts: allHeaderFacts,
+      headerImportFacts: allHeaderImportFacts,
+      headerParseErrors: allHeaderParseErrors,
       graph,
       sources,
       options,
@@ -321,6 +333,9 @@ export class PipelineOrchestrator {
     rawCalls: RawCallFact[];
     rawExports: RawExportFact[];
     rawHeaderImports: RawHeaderImportFact[];
+    headerFact: HeaderFact;
+    headerStatus: HeaderStatus;
+    headerImportFacts: HeaderImportFact[];
     content: string;
   }> {
     // Read file content
@@ -340,6 +355,9 @@ export class PipelineOrchestrator {
         rawCalls: [],
         rawExports: [],
         rawHeaderImports: [],
+        headerFact: { sourceFile: filePath },
+        headerStatus: 'missing',
+        headerImportFacts: [],
         content,
       };
     }
@@ -356,7 +374,40 @@ export class PipelineOrchestrator {
     const rawExports = this.relationshipExtractor.extractRawExports(tree.rootNode, filePath, content, language);
     const rawHeaderImports = this.relationshipExtractor.extractRawHeaderImports(tree.rootNode, filePath, content, language);
 
-    return { elements, imports, calls, rawImports, rawCalls, rawExports, rawHeaderImports, content };
+    // Phase 2.5: parse semantic header and cross-check @exports vs AST.
+    const parsed = this.relationshipExtractor.extractHeaderFact(tree.rootNode, filePath, content, language);
+    const headerFact: HeaderFact = parsed.headerFact;
+    const headerImportFacts: HeaderImportFact[] = parsed.importFacts;
+    let headerStatus: HeaderStatus = parsed.headerStatus;
+
+    if (headerStatus === 'defined' && headerFact.exports !== undefined) {
+      const headerSet = new Set(headerFact.exports);
+      const astSet = new Set(rawExports.map(e => e.exportedName));
+      let mismatch = false;
+      for (const name of headerSet) if (!astSet.has(name)) { mismatch = true; break; }
+      if (!mismatch) for (const name of astSet) if (!headerSet.has(name)) { mismatch = true; break; }
+      if (mismatch) headerStatus = 'stale';
+    }
+
+    // Stamp headerStatus + headerFact reference onto every element of this file.
+    for (const elem of elements) {
+      elem.headerStatus = headerStatus;
+      elem.headerFact = headerFact;
+    }
+
+    return {
+      elements,
+      imports,
+      calls,
+      rawImports,
+      rawCalls,
+      rawExports,
+      rawHeaderImports,
+      headerFact,
+      headerStatus,
+      headerImportFacts,
+      content,
+    };
   }
 
   /**

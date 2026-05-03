@@ -318,6 +318,14 @@ export interface ElementData {
   constraints?: string[];
   /** Semantic header parser status. Normalized scanner output always defaults this to "missing". */
   headerStatus?: import('../pipeline/element-taxonomy.js').HeaderStatus;
+  /**
+   * Phase 2.5 reference to the parsed semantic header for this element's
+   * source file (WO-PIPELINE-SEMANTIC-HEADER-PARSER-001). Every element of
+   * the same file shares the same HeaderFact reference. Undefined when no
+   * header was detected or when the element came from a legacy scanner
+   * path that has not been migrated yet.
+   */
+  headerFact?: import('../pipeline/header-fact.js').HeaderFact;
   /** Optional: Whether the element is exported */
   exported?: boolean;
   /**
