@@ -1,0 +1,163 @@
+{
+  "$schema": "https://coderef/assistant/skills/workflow/_shared/planner/plan.schema.json",
+  "workorder_id": "WO-PIPELINE-SEMANTIC-HEADER-PARSER-001",
+  "feature_name": "pipeline-semantic-header-parser",
+  "created": "2026-05-03T02:05:00Z",
+  "project_id": "coderef-core",
+  "plan_type": "phased",
+  "goal": "Implement the canonical semantic header parser per BNF in analyze-coderef-semantics/SKILL.md. Every source file walked produces a HeaderFact and a headerStatus. @layer validates against STANDARDS/layers.json at runtime via element-taxonomy.ts. @exports cross-checks against AST-derived RawExportFact[]. RawHeaderImportFact placeholders become structured HeaderImportFact records. NO @imports resolution (Phase 3). NO --strict-headers gate (Phase 6).",
+  "plan_type_rationale": "This is one phase of the sequential nine-phase pipeline refactor. Phase 3 (import resolution) cannot start until Phase 2.5 emits structured @imports records.",
+  "plan_type_decided_by": "ORCHESTRATOR (Claude Opus) authored from Gemini Flash prep deliverables (PID 24772) plus /plan-tests-for-workorder skill output (15 criteria, 11 unit + 4 invariant)",
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "RUN", "TEST", "CHECK", "STOP"],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Stop after Phase 2.5 exit criteria. Do NOT begin Phase 3 (import resolution) or Phase 6 (--strict-headers gate) in this workorder."
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 2.5 - Semantic Header Parser",
+      "hard_stop": true,
+      "description": "Implement BNF parser, HeaderFact + HeaderImportFact types, headerStatus state transitions, @layer/@capability/@constraint/@generated validation, @exports cross-check vs AST. Replace Phase 2's RawHeaderImportFact placeholders with structured records. Land 15 tests covering 11 acceptance criteria as unit + 4 as invariant enforcers. Hard-stop before resolution.",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read canonical BNF grammar at C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md. Extract grammar rules verbatim, all tag types, error-state semantics. Read STANDARDS/layers.json for the 13-value layer enum.",
+          "touches": ["C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md", "C:/Users/willh/Desktop/CODEREF/ASSISTANT/STANDARDS/layers.json"]
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read Phase 1 + Phase 2 surface: src/pipeline/element-taxonomy.ts (Phase 1's runtime layer-enum loader — parser uses this), src/pipeline/extractors/relationship-extractor.ts (Phase 2's extractRawHeaderImports + collectHeaderImportPlaceholders — parser replaces this logic), src/pipeline/types.ts (RawHeaderImportFact, RawExportFact — parser consumes RawExportFact for cross-check, structurally replaces RawHeaderImportFact), src/types/types.ts (ElementData.headerStatus enum). Grep src/ for any consumer that reads headerStatus today.",
+          "touches": [
+            "src/pipeline/element-taxonomy.ts",
+            "src/pipeline/extractors/relationship-extractor.ts",
+            "src/pipeline/types.ts",
+            "src/types/types.ts"
+          ]
+        },
+        {
+          "id": "1.3",
+          "verb": "WRITE",
+          "description": "Create src/pipeline/header-fact.ts. Define types: HeaderFact (sourceFile, layer?, capability?, constraints?, exports?, imports?, generated?, version?, parseErrors?), HeaderImportFact (sourceFile, module, symbol, line — REPLACES RawHeaderImportFact placeholder), HeaderParseError (tag, message, line, column?), HeaderStatus enum re-export. Export everything from this file.",
+          "touches": ["src/pipeline/header-fact.ts"]
+        },
+        {
+          "id": "1.4",
+          "verb": "WRITE",
+          "description": "Create src/pipeline/semantic-header-parser.ts. Pure function exports: parseHeader(sourceText: string, sourceFile: string): { headerFact: HeaderFact; headerStatus: HeaderStatus; importFacts: HeaderImportFact[] }. Internal: detectHeaderBlock (find leading /** ... */ or # ... block containing @coderef-semantic), parseTag (extract @tag value pairs), validateLayer (uses element-taxonomy.ts loader at runtime — fails closed), validateCapability (kebab-case regex), validateConstraints (JSON array of kebab-case), validateGenerated (ISO 8601 parse). Each validation failure adds a HeaderParseError to parseErrors and contributes to headerStatus=partial. NO file IO. NO mutation of input.",
+          "touches": ["src/pipeline/semantic-header-parser.ts"]
+        },
+        {
+          "id": "1.5",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/types.ts. Mark RawHeaderImportFact as @deprecated with comment 'Replaced by HeaderImportFact in Phase 2.5; will be removed in Phase 3.' Add HeaderFact + HeaderImportFact + HeaderParseError + HeaderStatus to PipelineState (HeaderFact[] keyed by sourceFile, HeaderImportFact[] alongside, HeaderParseError[] in parseErrors collection).",
+          "touches": ["src/pipeline/types.ts"]
+        },
+        {
+          "id": "1.6",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/extractors/relationship-extractor.ts. Refactor extractRawHeaderImports + collectHeaderImportPlaceholders to call parseHeader from semantic-header-parser.ts. Output: HeaderFact + HeaderImportFact[] per file. The @deprecated RawHeaderImportFact path stays present but emits a deprecation warning when invoked (preserves Phase 2 backwards-compat for one phase; Phase 3 removes it).",
+          "touches": ["src/pipeline/extractors/relationship-extractor.ts"]
+        },
+        {
+          "id": "1.7",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/orchestrator.ts. After relationship-extractor produces RawExportFact[] for a file, invoke parseHeader and run @exports cross-check: compare HeaderFact.exports against the file's RawExportFact[].exportedName set. Mismatch → headerStatus=stale; otherwise (and all other validations pass) → headerStatus=defined; else (parse errors) → headerStatus=partial; else (no header detected) → headerStatus=missing. Write headerStatus + HeaderFact reference back to ElementData for every element in the file.",
+          "touches": ["src/pipeline/orchestrator.ts"]
+        },
+        {
+          "id": "1.8",
+          "verb": "EDIT",
+          "description": "Edit src/types/types.ts. ElementData.headerFact (optional, references HeaderFact). headerStatus stays required. Update any consumer that reads headerStatus to also tolerate the new headerFact reference. Confirm no consumer assumes headerStatus is always 'missing' (Phase 1 default).",
+          "touches": ["src/types/types.ts"]
+        },
+        {
+          "id": "1.9",
+          "verb": "EDIT",
+          "description": "Edit src/semantic/projections.ts. Project headerFact + headerStatus into semantic-registry.json items. ADDITIVE only — do not rename or remove existing fields. Existing semantic-canonical.test.ts must still pass.",
+          "touches": ["src/semantic/projections.ts"]
+        },
+        {
+          "id": "1.10",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/header-fact-shape.test.ts (covers AC-01). Cover: every walked file produces a HeaderFact (possibly empty) and a headerStatus value; HeaderFact shape conforms to the type; no file produces undefined headerStatus.",
+          "touches": ["__tests__/pipeline/header-fact-shape.test.ts", "__tests__/.fixtures/header-parser/"]
+        },
+        {
+          "id": "1.11",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/header-layer-runtime-validation.test.ts (INVARIANT, covers AC-02). Cover: parser fails closed when @layer value not in STANDARDS/layers.json; parser succeeds for every value in the layers.json enum; mocking layers.json drift causes parser to reject previously-valid values. Invariant assertion: parser MUST always validate against the runtime-loaded enum, never against a hardcoded list.",
+          "touches": ["__tests__/pipeline/header-layer-runtime-validation.test.ts"]
+        },
+        {
+          "id": "1.12",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/header-tag-validation.test.ts (covers AC-03, AC-04, AC-08). Cover: @capability kebab-case validation (accepts 'pipeline-orchestration', rejects 'pipelineOrchestration'); @constraint JSON array kebab-case (accepts ['idempotent','pure-function'], rejects malformed JSON or non-kebab items); @generated ISO 8601 (accepts '2026-05-03T02:00:00Z', rejects 'today'). Each rejection produces headerStatus=partial with structured parseError.",
+          "touches": ["__tests__/pipeline/header-tag-validation.test.ts"]
+        },
+        {
+          "id": "1.13",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/header-exports-cross-check.test.ts (covers AC-05). INTEGRATION test (parser + AST). Cover: file with @exports matching RawExportFact[] → headerStatus=defined; file with @exports listing symbol not in AST → headerStatus=stale with structured mismatch record; file with AST export not in @exports → also stale (AST is source of truth).",
+          "touches": ["__tests__/pipeline/header-exports-cross-check.test.ts", "__tests__/.fixtures/header-parser/"]
+        },
+        {
+          "id": "1.14",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/header-status-states.test.ts (covers AC-06, AC-07). Cover headerStatus state transitions: file with no header → 'missing' + empty HeaderFact (NOT an error); file with malformed header (e.g. @layer = invalid_layer) → 'partial' + structured parseError record listing which tag failed; file with valid header → 'defined'.",
+          "touches": ["__tests__/pipeline/header-status-states.test.ts"]
+        },
+        {
+          "id": "1.15",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/header-parser-purity.test.ts (INVARIANT, covers AC-09 and AC-10). Cover: idempotency (parseHeader(input) === parseHeader(input) deep-equal across 100 calls with table-driven inputs); purity (parser does not write files, does not invoke any IO, does not mutate the input string or AST). Use Object.freeze on inputs and assert no errors. Assert deepStrictEqual outputs across repeated invocations.",
+          "touches": ["__tests__/pipeline/header-parser-purity.test.ts"]
+        },
+        {
+          "id": "1.16",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/header-import-facts.test.ts (covers AC-11). Cover: file with header @imports ['./alpha:doAlpha', 'react:useState'] produces TWO HeaderImportFact records each with structured {module, symbol} fields; the deprecated RawHeaderImportFact path also still produces output (with deprecation warning) for one more phase of backwards compat.",
+          "touches": ["__tests__/pipeline/header-import-facts.test.ts"]
+        },
+        {
+          "id": "1.17",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/no-import-resolution.test.ts (INVARIANT, covers AC-12). Reflective field inspection on emitted HeaderImportFact + RawImportFact: assert NO field named 'resolvedTo', 'targetId', 'edgeId', 'resolutionStatus', 'resolved' exists on any record. This is the Phase 3 boundary enforcer — fails fast if Phase 3 work leaks into Phase 2.5.",
+          "touches": ["__tests__/pipeline/no-import-resolution.test.ts"]
+        },
+        {
+          "id": "1.18",
+          "verb": "TEST",
+          "description": "Run all of: existing pipeline test suite (must still pass); element-taxonomy + single-scanner tests (Phase 1); semantic-canonical (must still pass after additive 1.9); raw-import-facts + raw-call-facts + raw-export-facts + raw-header-import-placeholders + no-graph-edge-claim (Phase 2 — must still pass; raw-header-import-placeholders may need adjustment if RawHeaderImportFact deprecation changes its shape — if so, fix the test, not the deprecation); 8 new Phase 2.5 tests from 1.10-1.17 (must pass); Phase 0 ground-truth tests (MUST STILL FAIL — header parser is not resolution; if any flips to PASS, halt and report). Report counts.",
+          "touches": ["__tests__"]
+        },
+        {
+          "id": "1.19",
+          "verb": "RUN",
+          "description": "Run /coderef-pipeline coderef-core --stages=scan,populate,validate. Confirm: every element in semantic-registry.json has a non-undefined headerStatus; non-trivial fraction (>20%) of files transition out of 'missing' (since coderef-core source files have no headers today, this WO ships the parser; expect most files to be 'missing' until headers are written, but the parser should successfully detect 'missing' rather than crashing). Compare element/file/relationship counts against Phase 2 baseline (325/2323/12005); same OoM expected.",
+          "touches": [".coderef/index.json", ".coderef/semantic-registry.json"]
+        },
+        {
+          "id": "1.20",
+          "verb": "CHECK",
+          "description": "Verify Phase 2.5 exit criteria from roadmap line 214-218: every source file walked produces a HeaderFact and a headerStatus; STANDARDS/layers.json is the only source of truth for @layer enum; parser fails closed when enum drifts; zero source files contain a header that the parser silently ignores. Document in execution-notes.md. If any check FAILS, halt with checkpoint_ready and report — do NOT work around.",
+          "touches": ["coderef/workorder/pipeline-semantic-header-parser/execution-notes.md"]
+        },
+        {
+          "id": "1.21",
+          "verb": "STOP",
+          "description": "Stop. Do not start Phase 3 (import resolution) or Phase 6 (--strict-headers gate) in this workorder. The Phase 0 ground-truth tests will remain failing — that is correct per roadmap.",
+          "touches": ["coderef/workorder/pipeline-semantic-header-parser"]
+        }
+      ]
+    }
+  ],
+  "plan_adjustments_needed": []
+}

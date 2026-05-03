@@ -1,0 +1,145 @@
+{
+  "workorder_id": "WO-PIPELINE-SEMANTIC-HEADER-PARSER-001",
+  "feature_name": "pipeline-semantic-header-parser",
+  "created": "2026-05-03T02:05:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": "WO-PIPELINE-IMPORT-RESOLUTION (Phase 3, not yet created); WO-PIPELINE-OUTPUT-VALIDATION (Phase 6 --strict-headers gate, not yet created)",
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "objective": "Phase 2.5 of CODEREF-CORE pipeline refactor. Implement canonical semantic header parser per BNF. Every source file walked produces a HeaderFact and a headerStatus. @layer validates against STANDARDS/layers.json at runtime. @exports cross-checks against AST exports. Replace Phase 2's RawHeaderImportFact placeholders with structured records. Hard-stop before Phase 3.",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser\\analysis.json",
+  "artifact_paths": {
+    "context": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser\\context.json",
+    "analysis": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser\\analysis.json",
+    "plan": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser\\plan.json",
+    "communication": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser\\communication.json"
+  },
+  "prep_artifacts": {
+    "produced_by": "Gemini Flash via Lloyd AgentSpawner PID 24772",
+    "context": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser-prep\\context.json",
+    "analysis": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser-prep\\analysis.json",
+    "prep_brief": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-semantic-header-parser-prep\\PREP-BRIEF.md",
+    "test_matrix_skill": "/plan-tests-for-workorder (15 criteria, 11 unit + 4 invariant) — first production use of this skill"
+  },
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "ORCHESTRATOR authored plan from Gemini Flash prep + /plan-tests-for-workorder skill output; CODEREF-CORE executes Phase 2.5 implementation."
+  },
+  "execution_rules": [
+    "Phase 2.5 hard-stops before Phase 3 / Phase 6. Do not begin resolver or strict-gate work in this WO.",
+    "Header parsing must be a pure function — no file IO, no AST mutation, no side effects. Enforced by header-parser-purity.test.ts.",
+    "Header parsing must be idempotent — same input always produces same HeaderFact. Enforced by header-parser-purity.test.ts.",
+    "@layer enum loaded at runtime from STANDARDS/layers.json via element-taxonomy.ts. NEVER hardcoded. Enforced by header-layer-runtime-validation.test.ts.",
+    "@imports resolution MUST NOT be attempted. Enforced by no-import-resolution.test.ts (Phase 3 boundary enforcer).",
+    "Phase 0 ground-truth tests MUST CONTINUE TO FAIL for original reasons.",
+    "populate-coderef CLI surface unchanged.",
+    "Projection seam edits ADDITIVE only — no field renames or removals.",
+    "RawHeaderImportFact deprecated (warning) but NOT removed in this WO. Phase 3 owns removal.",
+    "AST is source of truth for @exports cross-check. Both directions of mismatch produce stale.",
+    "Per-task atomic commits within Phase 1, single push at end (same pattern as Phase 2)."
+  ],
+  "hard_constraints": [
+    "No @imports resolution (Phase 3).",
+    "No --strict-headers validation gate (Phase 6).",
+    "No grammar changes (BNF in analyze-coderef-semantics/SKILL.md is canonical).",
+    "No @layer enum hardcoding (must runtime-load).",
+    "No projection-field renames or removals — additive only.",
+    "No removal of RawHeaderImportFact (deprecation only)."
+  ],
+  "acceptance_criteria": [
+    "Every source file walked produces a HeaderFact (possibly empty) and a headerStatus value (proven by header-fact-shape.test.ts).",
+    "@layer fails closed when not in STANDARDS/layers.json runtime enum (proven by header-layer-runtime-validation.test.ts INVARIANT).",
+    "@capability kebab-case validation; non-kebab produces partial (proven by header-tag-validation.test.ts).",
+    "@constraint JSON-array kebab-case validation; malformed produces partial (proven by header-tag-validation.test.ts).",
+    "@exports cross-check produces stale on mismatch (proven by header-exports-cross-check.test.ts INTEGRATION).",
+    "Files with no header → missing + empty HeaderFact (proven by header-status-states.test.ts).",
+    "Files with malformed headers → partial + structured parse-error (proven by header-status-states.test.ts).",
+    "@generated ISO 8601 validation (proven by header-tag-validation.test.ts).",
+    "Header parsing idempotent (proven by header-parser-purity.test.ts INVARIANT).",
+    "Header parsing pure function (proven by header-parser-purity.test.ts INVARIANT).",
+    "RawHeaderImportFact placeholders replaced with structured HeaderImportFact (proven by header-import-facts.test.ts).",
+    "@imports resolution NEVER attempted (enforced by no-import-resolution.test.ts INVARIANT — Phase 3 boundary).",
+    "Phase 0 ground-truth tests still fail for original reasons.",
+    "populate-coderef CLI surface unchanged.",
+    "Phase 1 + Phase 2 tests still pass (raw-header-import-placeholders.test.ts may be adjusted to match deprecation contract).",
+    "All exit criteria documented in execution-notes.md (task 1.20)."
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "decision": "plan_type=phased",
+      "rationale": "Phase 2.5 is gated; Phase 3 cannot start until structured @imports records exist.",
+      "decided_by": "ORCHESTRATOR",
+      "at": "2026-05-03T02:05:00Z"
+    },
+    {
+      "decision": "Header parser is pure function; cross-check at orchestrator level.",
+      "rationale": "Purity enables idempotency invariant. Cross-check needs both parser output and AST output — orchestrator is the seam.",
+      "at": "2026-05-03T02:05:00Z"
+    },
+    {
+      "decision": "RawHeaderImportFact deprecated but not removed in this WO.",
+      "rationale": "Phase 2 just shipped using placeholders. Removal in Phase 3 (which owns @imports resolution end-to-end).",
+      "at": "2026-05-03T02:05:00Z"
+    },
+    {
+      "decision": "@layer runtime-loaded via element-taxonomy.ts. Hardcoded enum REJECTED.",
+      "rationale": "Roadmap line 217 hard constraint. Phase 1 already shipped the loader for exactly this use case.",
+      "at": "2026-05-03T02:05:00Z"
+    },
+    {
+      "decision": "AST is source of truth for cross-check. Both mismatch directions produce stale.",
+      "rationale": "Code is truth, comments rot. Bidirectional stale lets Phase 6 surface both incomplete-headers and stale-headers.",
+      "at": "2026-05-03T02:05:00Z"
+    },
+    {
+      "decision": "Plan author re-categorized 4 of 15 test criteria from /plan-tests-for-workorder skill output (AC-05 → integration, AC-13 → integration, AC-14 → smoke, AC-15 → smoke).",
+      "rationale": "Skill consumes acceptance-criterion text only; plan-time category corrections are normal. Documented as feedback for future skill enhancement.",
+      "at": "2026-05-03T02:05:00Z"
+    },
+    {
+      "decision": "First production use of /plan-tests-for-workorder skill.",
+      "rationale": "Skill shipped same session (DISPATCH-2026-05-02-007). Phase 2.5 has dense test surface — exactly the first-use case the skill was built for.",
+      "at": "2026-05-03T02:05:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "next_action": "/execute-workorder WO-PIPELINE-SEMANTIC-HEADER-PARSER-001",
+  "communication_log": [
+    {
+      "timestamp": "2026-05-03T02:05:00Z",
+      "actor": "ORCHESTRATOR",
+      "message": "Workorder created for Phase 2.5 (Semantic Header Parser). Plan authored from Gemini Flash prep deliverables (PID 24772) plus /plan-tests-for-workorder skill output (15 criteria, 11 unit + 4 invariant). 21 tasks, hard-stop before Phase 3. Phase 0 ground-truth tests deliberately remain failing per roadmap. First production use of /plan-tests-for-workorder skill."
+    },
+    {
+      "timestamp": "2026-05-03T02:30:00Z",
+      "actor": "close-workorder@2.0.0",
+      "message": "Closed via DISPATCH-2026-05-02-012 (cross-project, SKILLS working dir CODEREF-CORE). Cultural validator scope 11/11 PASS, tracking-validator scope+full 15/15 PASS each. Implementation chain 3f55a21..fb9825d (16 commits) on origin/main. 25/25 Phase 2.5 tests PASS. Phase 0 ground-truth tests still FAIL per Phase 2.5 discipline (resolves Phase 3+). All 2344 elements carry non-undefined headerStatus + populated headerFact. Hand-off to Phase 3 (import resolution) prep."
+    }
+  ],
+  "completed_at": "2026-05-03T02:30:00Z",
+  "closed_at": "2026-05-03T02:30:00Z",
+  "reviewed_at": "2026-05-03T02:30:00Z",
+  "review_result": "PASS",
+  "closed_via": "/close-workorder",
+  "updated": "2026-05-03T02:30:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/archived/pipeline-semantic-header-parser/ARCHIVED",
+    "review_verdict_source": "Step 3 audit",
+    "warnings": [
+      "--force-warning-ok pre-authorized by DISPATCH-2026-05-02-012; no soft-stops surfaced under scope-mode validators"
+    ],
+    "notes": [
+      "Cross-project close from SKILLS (working dir CODEREF-CORE per Phase 0/1/2 proven pattern; STUB-247 captures formalization gap).",
+      "LLOYD commit 9dab453 push out-of-scope flag from CORE was resolved by ORCHESTRATOR directly (pushed to LLOYD origin/main earlier)."
+    ]
+  }
+}

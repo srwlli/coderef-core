@@ -1,0 +1,62 @@
+{
+  "workorder_id": "WO-PIPELINE-SEMANTIC-HEADER-PARSER-001",
+  "feature_name": "pipeline-semantic-header-parser",
+  "project_id": "coderef-core",
+  "predecessor": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001",
+  "created": "2026-05-03T02:05:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "objective": "Phase 2.5 of CODEREF-CORE pipeline refactor. Implement canonical semantic header parser per BNF in analyze-coderef-semantics/SKILL.md. Every source file walked produces a HeaderFact and a headerStatus. @layer validates against STANDARDS/layers.json at runtime. @exports cross-checks against AST-derived RawExportFact[]. Replace Phase 2's RawHeaderImportFact placeholders with structured HeaderImportFact records. Hard-stop before Phase 3 (resolution).",
+  "scope": {
+    "in": [
+      "BNF parser implementation in src/pipeline/semantic-header-parser.ts (pure function, no IO)",
+      "HeaderFact + HeaderImportFact + HeaderParseError type definitions in src/pipeline/header-fact.ts",
+      "@coderef-semantic, @layer, @capability, @constraint, @exports, @imports, @generated tag extraction",
+      "Runtime @layer validation against STANDARDS/layers.json via element-taxonomy.ts (fails closed on enum drift)",
+      "@capability kebab-case validation",
+      "@constraint JSON-array kebab-case validation",
+      "@generated ISO 8601 validation",
+      "@exports cross-check against RawExportFact[] from same file",
+      "headerStatus state transitions: defined / stale / partial / missing",
+      "Replace RawHeaderImportFact placeholders with structured HeaderImportFact records",
+      "Additive projection seam edit (rawFacts + headerFact + headerStatus on registry items)",
+      "8 new test files: header-fact-shape, header-layer-runtime-validation (invariant), header-tag-validation, header-exports-cross-check (integration), header-status-states, header-parser-purity (invariant), header-import-facts, no-import-resolution (invariant — Phase 3 boundary enforcer)"
+    ],
+    "out": [
+      "@imports resolution (Phase 3)",
+      "Graph validation contract (Phase 6)",
+      "--strict-headers gate (Phase 6)",
+      "RAG facets (Phase 7)",
+      "Grammar changes (BNF in analyze-coderef-semantics/SKILL.md is canonical)",
+      "Hardcoding @layer enum in TypeScript (must be runtime load via element-taxonomy.ts)",
+      "Removal of deprecated RawHeaderImportFact (Phase 3 removes it; Phase 2.5 only deprecates it)",
+      "Making the Phase 0 ground-truth tests pass (those become green in Phase 3/4, NOT Phase 2.5)"
+    ]
+  },
+  "hard_constraints": [
+    "Phase 2.5 hard-stops before Phase 3 / Phase 6. Do not begin resolver or strict-gate work in this WO.",
+    "Header parsing must be a pure function — no file IO, no AST mutation, no side effects.",
+    "Header parsing must be idempotent — same input always produces same HeaderFact.",
+    "@layer enum loaded at runtime from STANDARDS/layers.json via element-taxonomy.ts. NEVER hardcoded.",
+    "@imports resolution MUST NOT be attempted (enforced by no-import-resolution.test.ts invariant).",
+    "Phase 0 ground-truth tests MUST CONTINUE TO FAIL for original reasons.",
+    "populate-coderef CLI surface unchanged.",
+    "Projection seam edits ADDITIVE only — no field renames or removals.",
+    "Phase 1 (taxonomy) + Phase 2 (raw facts) tests must continue to pass."
+  ],
+  "ground_truth_test_disposition": "Per roadmap and Phase 2 prep adjudication: the 6 Phase 0 ground-truth tests do NOT pass in Phase 2.5 either. Phase 2.5 produces structured HeaderFacts from comments; resolution (which the tests check) lands in Phase 3 (@imports resolution) and Phase 4 (call resolution). If any ground-truth test flips to PASS during Phase 2.5 execution, that is a regression in Phase 2.5's discipline — halt and report.",
+  "predecessor_artifacts": {
+    "phase_2_archived": "coderef/archived/pipeline-relationship-raw-facts/",
+    "phase_1_archived": "coderef/archived/pipeline-scanner-identity-taxonomy/",
+    "phase_0_archived": "coderef/archived/pipeline-graph-ground-truth-tests/",
+    "ground_truth_tests": "__tests__/pipeline/graph-ground-truth.test.ts",
+    "raw_header_import_fact_placeholder": "src/pipeline/types.ts (Phase 2 placeholder, deprecated by this WO)"
+  },
+  "prep_artifacts": {
+    "produced_by": "Gemini Flash via Lloyd AgentSpawner PID 24772",
+    "context": "coderef/workorder/pipeline-semantic-header-parser-prep/context.json",
+    "analysis": "coderef/workorder/pipeline-semantic-header-parser-prep/analysis.json",
+    "prep_brief": "coderef/workorder/pipeline-semantic-header-parser-prep/PREP-BRIEF.md",
+    "test_matrix_skill": "/plan-tests-for-workorder (15 criteria, 11 unit + 4 invariant)"
+  },
+  "next_action": "/execute-workorder WO-PIPELINE-SEMANTIC-HEADER-PARSER-001"
+}

@@ -1,0 +1,116 @@
+{
+  "workorder_id": "WO-PIPELINE-SEMANTIC-HEADER-PARSER-001",
+  "feature_name": "pipeline-semantic-header-parser",
+  "blast_radius": {
+    "files_modified": [
+      {"path": "src/pipeline/types.ts", "reason": "Mark RawHeaderImportFact @deprecated; add HeaderFact, HeaderImportFact, HeaderParseError, HeaderStatus to PipelineState."},
+      {"path": "src/pipeline/extractors/relationship-extractor.ts", "reason": "Refactor extractRawHeaderImports to call parseHeader; preserve deprecated path with warning for one phase."},
+      {"path": "src/pipeline/orchestrator.ts", "reason": "After RawExportFact[] emission, invoke parseHeader and run @exports cross-check; write headerStatus + HeaderFact reference back to ElementData."},
+      {"path": "src/types/types.ts", "reason": "Add ElementData.headerFact (optional reference). Update consumers tolerating new headerStatus values."},
+      {"path": "src/semantic/projections.ts", "reason": "Project headerFact + headerStatus into semantic-registry.json items. Additive only."}
+    ],
+    "files_created": [
+      {"path": "src/pipeline/header-fact.ts", "purpose": "HeaderFact + HeaderImportFact + HeaderParseError types and HeaderStatus enum re-export."},
+      {"path": "src/pipeline/semantic-header-parser.ts", "purpose": "Pure parseHeader function. Consumes BNF grammar; emits HeaderFact + headerStatus + HeaderImportFact[]."},
+      {"path": "__tests__/pipeline/header-fact-shape.test.ts", "purpose": "AC-01: every walked file produces HeaderFact + headerStatus."},
+      {"path": "__tests__/pipeline/header-layer-runtime-validation.test.ts", "purpose": "AC-02 INVARIANT: parser fails closed on @layer not in STANDARDS/layers.json."},
+      {"path": "__tests__/pipeline/header-tag-validation.test.ts", "purpose": "AC-03+04+08: kebab-case + JSON-array + ISO 8601 validation."},
+      {"path": "__tests__/pipeline/header-exports-cross-check.test.ts", "purpose": "AC-05 INTEGRATION: @exports vs RawExportFact[] cross-check; stale state."},
+      {"path": "__tests__/pipeline/header-status-states.test.ts", "purpose": "AC-06+07: headerStatus state transitions (missing, partial)."},
+      {"path": "__tests__/pipeline/header-parser-purity.test.ts", "purpose": "AC-09+10 INVARIANT: idempotent + pure function."},
+      {"path": "__tests__/pipeline/header-import-facts.test.ts", "purpose": "AC-11: structured HeaderImportFact replaces RawHeaderImportFact placeholder."},
+      {"path": "__tests__/pipeline/no-import-resolution.test.ts", "purpose": "AC-12 INVARIANT: Phase 3 boundary enforcer — no resolution field on any header fact."},
+      {"path": "__tests__/.fixtures/header-parser/", "purpose": "Fixture files exercising defined / stale / partial / missing states with various tag combinations."}
+    ],
+    "files_deleted": []
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "description": "Parser may incorrectly flag valid headers as 'partial' due to BNF interpretation ambiguity. The grammar in analyze-coderef-semantics/SKILL.md is canonical but may have edge cases (e.g., multi-line @constraint arrays, escaped characters).",
+      "mitigation": "Task 1.10-1.17 cover broad input variation. Edge cases discovered during 1.18 test run get fixture additions, not parser permissiveness changes (parser fails closed by design). If grammar ambiguity is found, document as decision_record per prep-brief discipline — do NOT silently extend grammar.",
+      "severity": "high"
+    },
+    {
+      "id": "R2",
+      "description": "@exports cross-check false positives. If RawExportFact[] from Phase 2 has gaps for some export forms (Phase 2 export tests passed 5/5 covering named/default/reexport/namespace, but edge cases like 'export { x as y }' may not be captured), legitimate files get headerStatus=stale incorrectly.",
+      "mitigation": "Task 1.13 integration test covers diverse export shapes. If Phase 2 RawExportFact gap is discovered, log as decision_record — Phase 2 fix is its own follow-up WO. For Phase 2.5: if header-vs-AST mismatch occurs, attribute to AST (AST is source of truth per Phase 2's design), produce stale + structured mismatch record so Phase 6 validation can flag both directions.",
+      "severity": "high"
+    },
+    {
+      "id": "R3",
+      "description": "RawHeaderImportFact deprecation breaks downstream consumers. raw-header-import-placeholders.test.ts (Phase 2) asserts placeholder cardinality — will fail if deprecation path produces different output shape.",
+      "mitigation": "Task 1.6 explicitly preserves the deprecated path with a deprecation warning rather than removing it. Task 1.18 test step explicitly expects raw-header-import-placeholders.test.ts to either still pass OR be adjusted to match the deprecation contract — adjustment is allowed when it's the test catching up to a documented deprecation.",
+      "severity": "medium"
+    },
+    {
+      "id": "R4",
+      "description": "Performance impact of parsing every file's header. coderef-core scans 325 files (Phase 2 baseline). Parsing 325 leading-comment blocks plus running validation per file should be sub-second; if the regex/parser is naive, it could regress populate-coderef runtime materially.",
+      "mitigation": "Task 1.19 captures runtime + counts vs Phase 2 baseline. If runtime regresses >2x, document in execution-notes; defer optimization to a follow-up WO unless it blocks acceptance. Idempotency invariant (AC-09) enables future memoization.",
+      "severity": "low"
+    },
+    {
+      "id": "R5",
+      "description": "Phase 0 ground-truth tests start passing. If parsing introduces resolution-shaped logic accidentally (e.g., @imports resolution inside the parser), one or more ground-truth tests may flip from FAIL to PASS.",
+      "mitigation": "Task 1.17 no-import-resolution.test.ts is an INVARIANT enforcer — fails fast if any header fact field names a resolution endpoint. Task 1.18 explicitly checks ground-truth tests still fail. Halt and report on flip.",
+      "severity": "low"
+    },
+    {
+      "id": "R6",
+      "description": "headerStatus consumer breakage. Any code reading headerStatus today assumes 'missing' (Phase 1 default). After 1.7, files with valid headers transition to 'defined' / 'stale' / 'partial' — consumers that hardcoded `headerStatus === 'missing'` checks will misbehave.",
+      "mitigation": "Task 1.2 grep step catalogs all current consumers. Task 1.8 explicit instruction to update consumers tolerating new values. If a consumer is found that cannot be cleanly updated in this WO, mark TODO with explicit phase reference (no silent breakage per Phase 2 discipline).",
+      "severity": "medium"
+    }
+  ],
+  "decision_records": [
+    {
+      "decision": "Header parser is pure function (no IO, no AST mutation). Cross-check with RawExportFact[] happens at orchestrator level, not inside parser.",
+      "rationale": "Purity enables idempotency (AC-09 invariant), enables future memoization, makes unit testing trivial. Cross-check needs both parser output AND AST output — orchestrator is the seam where both live.",
+      "alternatives_considered": ["Parser does cross-check internally (rejected — couples parser to AST shape, breaks purity)", "Cross-check at projection layer (rejected — projection is too late; semantic-registry consumers want resolved headerStatus)"]
+    },
+    {
+      "decision": "RawHeaderImportFact deprecated but not removed in this WO. Removal in Phase 3.",
+      "rationale": "Phase 2 just shipped using RawHeaderImportFact placeholders; Phase 2's tests assert placeholder shape. Removing in Phase 2.5 forces test updates as part of an unrelated phase. Deprecation + warning preserves Phase 2 contract for one phase; Phase 3 owns the cleanup since Phase 3 is where @imports resolution lives.",
+      "alternatives_considered": ["Remove now (rejected — Phase 2 test churn unrelated to header parsing)", "Keep forever (rejected — RawHeaderImportFact is now redundant; parallel placeholder + structured paths invite drift)"]
+    },
+    {
+      "decision": "@layer enum loaded at runtime via element-taxonomy.ts (Phase 1 loader). Parser fails closed on enum drift.",
+      "rationale": "Hard constraint from roadmap line 217. Phase 1 already shipped the loader specifically for this use case. Hardcoding the enum in TypeScript would require a code change every time STANDARDS/layers.json changes.",
+      "alternatives_considered": ["TypeScript literal union (rejected — violates roadmap)", "Hardcoded array (rejected — same)"]
+    },
+    {
+      "decision": "AST is source of truth for cross-check. Header @exports listing a symbol not in AST → stale (header is wrong). AST export not in @exports → also stale (header is incomplete).",
+      "rationale": "Phase 2 raw export facts are AST-derived and tested. If @exports and AST disagree, code is the truth and the comment is stale. Both directions of mismatch produce stale + a structured mismatch record so Phase 6 (--strict-headers gate) can flag both directions if desired.",
+      "alternatives_considered": ["Header is source of truth (rejected — comments rot, code doesn't)", "Mismatch is silent (rejected — stale headers are exactly what this phase is meant to detect)"]
+    },
+    {
+      "decision": "Test matrix uses /plan-tests-for-workorder skill output as guidance, plan author re-categorizes 'unit' to 'integration' where multiple subsystems are exercised.",
+      "rationale": "The skill (just shipped this session) flagged 11 of 15 criteria as 'unit' because acceptance criterion text didn't carry integration keywords. Plan author judgment: AC-05 (cross-check needs parser + AST) and AC-13 (Phase 0 tests need full populate pipeline) are integration; AC-14 (CLI surface) is smoke. Document this as feedback to /plan-tests-for-workorder for future enhancement (the skill consumes acceptance-criterion text only; plan-time category corrections are normal).",
+      "alternatives_considered": ["Trust skill output verbatim (rejected — would understate integration coverage)"]
+    }
+  ],
+  "ground_truth_test_mapping": [
+    {"test_assertion": "graph edges use node IDs as endpoints", "satisfied_by": "Phase 5 (graph construction) — Phase 2.5 only emits structured HeaderFacts"},
+    {"test_assertion": "duplicate identities resolve correctly", "satisfied_by": "Phase 1 (already shipped) + Phase 4 (call resolution)"},
+    {"test_assertion": "unresolved imports are explicit", "satisfied_by": "Phase 3 (import resolution) — Phase 2.5 only structures @imports as HeaderImportFact"},
+    {"test_assertion": "unresolved calls are explicit", "satisfied_by": "Phase 4 (call resolution)"},
+    {"test_assertion": "alias imports bind local to exported source symbol", "satisfied_by": "Phase 3 (import resolution)"},
+    {"test_assertion": "duplicate function names → ambiguous with candidate IDs", "satisfied_by": "Phase 4 (call resolution)"},
+    {"test_assertion": "nested functions discriminate", "satisfied_by": "Phase 4 (call resolution)"},
+    {"test_assertion": "class methods preserve qualified context", "satisfied_by": "Phase 4 (call resolution)"},
+    {"test_assertion": "graph validation distinguishes resolved/unresolved/ambiguous", "satisfied_by": "Phase 6 (output validation) — Phase 2.5 enforces 'no resolution yet' as precondition via no-import-resolution.test.ts"}
+  ],
+  "test_matrix_summary": {
+    "source": "/plan-tests-for-workorder skill output (DISPATCH-2026-05-02-007 just shipped)",
+    "total_criteria": 15,
+    "unit": 11,
+    "invariant": 4,
+    "invariant_criteria": ["AC-02 @layer fails closed", "AC-09 idempotent", "AC-10 pure function", "AC-12 no resolution"],
+    "plan_author_recategorizations": [
+      "AC-05 → integration (cross-check needs parser + AST)",
+      "AC-13 → integration (needs full populate pipeline to verify Phase 0 still failing)",
+      "AC-14 → smoke (CLI surface check)",
+      "AC-15 → smoke (existing tests run)"
+    ]
+  }
+}
