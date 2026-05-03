@@ -6,6 +6,7 @@ import type {
   RawExportFact,
   RawHeaderImportFact,
 } from '../pipeline/types.js';
+import type { HeaderFact } from '../pipeline/header-fact.js';
 import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
 
@@ -50,6 +51,11 @@ export interface SemanticRegistryProjectionEntry {
    * that haven't migrated yet will not see this field.
    */
   rawFacts?: SemanticRegistryRawFacts;
+  /**
+   * Phase 2.5 parsed semantic header (additive). Optional. Mirrors
+   * ElementData.headerFact for the entry's source file.
+   */
+  headerFact?: HeaderFact;
 }
 
 export interface RawFactsBundle {
@@ -136,6 +142,10 @@ export function createSemanticRegistryProjection(
           exports: exportsByFile.get(lookupKey) || [],
           headerImports: headerImportsByFile.get(lookupKey) || [],
         };
+      }
+
+      if (element.headerFact) {
+        entry.headerFact = element.headerFact;
       }
 
       return entry;
