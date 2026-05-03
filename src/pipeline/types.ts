@@ -8,8 +8,14 @@
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
 import type { HeaderStatus, LayerEnum } from './element-taxonomy.js';
+import type {
+  HeaderFact,
+  HeaderImportFact,
+  HeaderParseError,
+} from './header-fact.js';
 
 export type { HeaderStatus, LayerEnum };
+export type { HeaderFact, HeaderImportFact, HeaderParseError };
 
 /**
  * Pipeline options for configuring scan behavior
@@ -67,6 +73,16 @@ export interface PipelineState {
   rawCalls: RawCallFact[];
   rawExports: RawExportFact[];
   rawHeaderImports: RawHeaderImportFact[];
+  /**
+   * Phase 2.5 header-parser outputs. One HeaderFact per scanned source file
+   * (possibly empty when no semantic header was detected). The map is keyed
+   * by source file path. headerImportFacts is the structured replacement for
+   * rawHeaderImports — both are populated for one phase of backwards-compat.
+   * headerParseErrors is the union of every file's parse errors.
+   */
+  headerFacts: Map<string, HeaderFact>;
+  headerImportFacts: HeaderImportFact[];
+  headerParseErrors: HeaderParseError[];
   /** Dependency graph with nodes and edges */
   graph: ExportedGraph;
   /** Source code content indexed by file path */
@@ -273,10 +289,11 @@ export interface RawExportFact {
 }
 
 /**
- * Header-import placeholder. Phase 2 detects `@imports [...]` blocks in
- * file-leading comments and emits a placeholder per literal `module:symbol`
- * string. No BNF parsing happens here — Phase 2.5 owns that. The placeholder
- * exists so Phase 3 can resolve them once they are parsed.
+ * Header-import placeholder.
+ *
+ * @deprecated Replaced by HeaderImportFact in Phase 2.5
+ * (WO-PIPELINE-SEMANTIC-HEADER-PARSER-001); will be removed in Phase 3.
+ * Existing consumers should migrate to `state.headerImportFacts`.
  */
 export interface RawHeaderImportFact {
   /** Source file whose header was scanned. */
