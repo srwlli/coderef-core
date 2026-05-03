@@ -37,10 +37,22 @@ describe('Phase 2 raw header-import placeholders', () => {
   });
 
   it('emits one placeholder per literal in @imports header array', async () => {
+    // Phase 2.5 (WO-PIPELINE-SEMANTIC-HEADER-PARSER-001) requires a proper
+    // @coderef-semantic marker for detection. Phase 2's regex-only path
+    // accepted any @imports literal in the leading comment block; the
+    // tighter detection is the right call. Fixture updated per dispatch
+    // DISPATCH-2026-05-02-011 directive ("raw-header-import-placeholders
+    // may need adjustment if RawHeaderImportFact deprecation changes its
+    // shape — if so, fix the test, not the deprecation").
     const projectDir = await createProject({
       'src/m.ts': [
         '/**',
+        ' * @coderef-semantic:1.0.0',
+        ' * @layer utility',
+        ' * @capability foo-bar',
+        ' * @exports _',
         ' * @imports ["foo:bar", "./baz:qux"]',
+        ' * @generated 2026-05-03T00:00:00Z',
         ' */',
         'export const _ = 1;',
         '',
@@ -66,7 +78,12 @@ describe('Phase 2 raw header-import placeholders', () => {
     const projectDir = await createProject({
       'src/m.ts': [
         '/**',
+        ' * @coderef-semantic:1.0.0',
+        ' * @layer utility',
+        ' * @capability foo-bar',
+        ' * @exports _',
         ' * @imports ["@scope/pkg:default", "../../deep/path:helper"]',
+        ' * @generated 2026-05-03T00:00:00Z',
         ' */',
         'export const _ = 1;',
         '',
