@@ -1,0 +1,15 @@
+workorder_id: WO-PIPELINE-CALL-RESOLUTION-001
+feature_name: pipeline-call-resolution
+phase: 4 of 9-phase pipeline rebuild (sequence 6/10)
+archived_at: 2026-05-03T23:05:00Z
+archived_by: SKILLS via /close-workorder cross-project pattern
+dispatch_id: DISPATCH-2026-05-02-026
+implementation_dispatch: DISPATCH-2026-05-02-014
+head_sha: cbed763bbcd1b175eaca83cd33dc483241db2431
+commit_range: 8d6872d..cbed763 (10 commits)
+exit_criteria: 4 of 4 PASS
+tests_landed: 11 new Phase 4 tests / 11 PASS
+ground_truth_flips: 5 of 6 PASS (test 1 endpoint-is-node-id stays FAIL per Phase 5 contract)
+populate_coderef_regression: +0.9% elements / +19% edges (2179 new resolved-call edges)
+phase_bleed_check: clean (no Phase 5 graph construction work)
+review_status: WARNING (--force-warning-ok per cross-project close pattern)
