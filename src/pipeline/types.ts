@@ -57,6 +57,16 @@ export interface PipelineState {
   imports: ImportRelationship[];
   /** All extracted call relationships from the single-pass scan */
   calls: CallRelationship[];
+  /**
+   * Phase 2 raw-fact arrays. These are unresolved facts — endpoints are NEVER
+   * graph node IDs. Resolution into edges happens in Phase 3 (imports) /
+   * Phase 4 (calls). The legacy imports/calls arrays above are kept additive
+   * during the transition.
+   */
+  rawImports: RawImportFact[];
+  rawCalls: RawCallFact[];
+  rawExports: RawExportFact[];
+  rawHeaderImports: RawHeaderImportFact[];
   /** Dependency graph with nodes and edges */
   graph: ExportedGraph;
   /** Source code content indexed by file path */
@@ -168,4 +178,111 @@ export interface CallRelationship {
   line: number;
   /** True if this is a method call (object.method()) */
   isMethod?: boolean;
+}
+
+// ============================================================================
+// Phase 2 raw-fact types (WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001)
+//
+// Raw facts carry every detail downstream resolvers need but commit to NO
+// graph node IDs as endpoints. Phase 3 (imports) and Phase 4 (calls) resolve
+// these into typed edges.
+// ============================================================================
+
+/** One specifier from a named-import clause: `import { imported as local }`. */
+export interface RawImportSpecifier {
+  /** The exported name as it appears in the source module. */
+  imported: string;
+  /** The local binding (equal to `imported` when no `as` alias is used). */
+  local: string;
+}
+
+/**
+ * Raw import fact. Captures every binding produced by a single import
+ * statement (named, default, namespace, dynamic) without resolving the
+ * module specifier or the imported symbols to graph nodes.
+ */
+export interface RawImportFact {
+  /** Optional codeRefId of the enclosing element if scope binds to one. */
+  sourceElementId: string | null;
+  /** Source file containing the import statement. */
+  sourceFile: string;
+  /** Verbatim module specifier from the import (e.g. `'./utils'`, `'react'`). */
+  moduleSpecifier: string;
+  /** Named-import specifiers with alias bindings preserved. */
+  specifiers: RawImportSpecifier[];
+  /** Default-import binding name, or null. */
+  defaultImport: string | null;
+  /** Namespace-import binding name (`import * as ns`), or null. */
+  namespaceImport: string | null;
+  /** True when the statement is `import type` (TS-only). */
+  typeOnly: boolean;
+  /** True when this came from a dynamic `import('module')` call. */
+  dynamic: boolean;
+  /** Line number of the import statement (1-indexed). */
+  line: number;
+}
+
+/**
+ * Raw call fact. Preserves every detail Phase 4 needs to resolve the call
+ * back to a graph node (or mark it unresolved/ambiguous): receiver text,
+ * scope path, full call expression text. Method calls keep the receiver —
+ * `obj.save()` is `{ receiverText: 'obj', calleeName: 'save' }`, never bare
+ * `'save'`.
+ */
+export interface RawCallFact {
+  /**
+   * codeRefId of the enclosing element when the call site can be bound to
+   * one, otherwise null. Phase 4 uses this to anchor the call edge source.
+   */
+  sourceElementCandidate: string | null;
+  /** Source file containing the call. */
+  sourceFile: string;
+  /** Full source slice of the call expression, e.g. `obj.method(arg)`. */
+  callExpressionText: string;
+  /** Trailing identifier that names the called function/method. */
+  calleeName: string;
+  /** Receiver text for member-access calls (`obj` in `obj.method()`), or null for bare calls. */
+  receiverText: string | null;
+  /** Enclosing scope path, e.g. `['MyClass', 'myMethod']` or `['outer', 'inner']`. */
+  scopePath: string[];
+  /** Line number of the call expression. */
+  line: number;
+  /** Language extension of the source file (`'ts'`, `'js'`, `'py'`, ...). */
+  language: string;
+}
+
+/** Kind of export. `reexport` covers `export { x } from './y'`. */
+export type RawExportKind = 'named' | 'default' | 'reexport' | 'namespace';
+
+/**
+ * Raw export fact. Single canonical record of a name being exported from a
+ * file. Replaces the duplicated export tracking that previously lived on
+ * `ElementData.exported` and the legacy projection seam.
+ */
+export interface RawExportFact {
+  /** Source file emitting the export. */
+  sourceFile: string;
+  /** Exported name as seen by importers (after `as` for re-exports). */
+  exportedName: string;
+  /** Local binding name in the source file (equal to `exportedName` for named/default with no rename). */
+  localName: string;
+  /** Kind of export. */
+  kind: RawExportKind;
+  /** Line number of the export statement. */
+  line: number;
+}
+
+/**
+ * Header-import placeholder. Phase 2 detects `@imports [...]` blocks in
+ * file-leading comments and emits a placeholder per literal `module:symbol`
+ * string. No BNF parsing happens here — Phase 2.5 owns that. The placeholder
+ * exists so Phase 3 can resolve them once they are parsed.
+ */
+export interface RawHeaderImportFact {
+  /** Source file whose header was scanned. */
+  sourceFile: string;
+  /** Verbatim `<module>:<symbol>` string from the `@imports` array. */
+  rawString: string;
+  /** Always `'placeholder'` in Phase 2. Phase 2.5 introduces other states. */
+  parseStatus: 'placeholder';
 }
