@@ -1,0 +1,16 @@
+workorder_id: WO-PIPELINE-GRAPH-CONSTRUCTION-001
+feature_name: pipeline-graph-construction
+phase: 5 of 9-phase pipeline rebuild (sequence 7/10)
+archived_at: 2026-05-04T08:15:00Z
+archived_by: SKILLS via /close-workorder cross-project pattern
+dispatch_id: DISPATCH-2026-05-02-027
+implementation_dispatch: DISPATCH-2026-05-02-015
+head_sha: ac8dc8e149d496538ae24d4f21fe08beeb511281
+commit_range: 1e7bb74..ac8dc8e (11 commits)
+exit_criteria: 5 of 5 PASS
+tests_landed: 7 new Phase 5 tests + Phase 6 boundary enforcer (no-output-validation.test.ts)
+pipeline_test_suite: 105/105 PASS
+ground_truth_milestone: ALL 6 graph-ground-truth.test.ts assertions PASS — test 1 line 52 endpoint-is-node-id finally flipped (5-phase journey to canonical graph endpoints completes)
+real_world_scale: 3290/3290 resolved edges have both endpoints in graph.nodes; 0/24526 non-resolved edges carry targetId (DR-PHASE-5-A holds at scale)
+phase_bleed_check: clean (no Phase 6 output validation work; AC-05 honest demotion fix)
+review_status: WARNING (--force-warning-ok per cross-project close pattern)
