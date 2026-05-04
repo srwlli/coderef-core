@@ -110,7 +110,9 @@ the Phase 6 close per ORCHESTRATOR. No further piggybacks.
 - **DR-PHASE-6-E** — GI-3 runs before GI-2 to preserve Phase 5 honest-demotion `kind`
 - **DR-PHASE-6-F** — file-grain `headerStatus` aggregation via `buildFileHeaderStatusMap` (first-seen-wins per file)
 - **GI-6 reframe** — `(name, file, line)` tuple instead of `(name, file)`; tolerates nested functions
-- **Phase 1 piggyback** — one-line `return;` at `element-extractor.ts:188`; fix SHA: TBD-pending-commit
+- **Phase 1 piggyback** — one-line `return;` at `element-extractor.ts:188`; fix SHA: `8b5965f`
+- **GI-6 reframe SHA** — `89682b0`
+- **Phase 6 test suite + docs SHA** — `8e7ccaf`
 
 ## Phase 7 boundary enforcer
 
