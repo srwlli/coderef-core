@@ -40,6 +40,7 @@ import type {
 } from './types.js';
 import { resolveImports } from './import-resolver.js';
 import { resolveCalls } from './call-resolver.js';
+import { constructGraph } from './graph-builder.js';
 import type { HeaderStatus } from './element-taxonomy.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
@@ -423,6 +424,31 @@ export class PipelineOrchestrator {
     if (emittedResolvedCallEdges > 0) {
       graph.statistics.edgesByType['resolved-call'] = emittedResolvedCallEdges;
     }
+
+    // Step 4.7: Phase 5 — canonical graph construction. constructGraph
+    // produces an ExportedGraph from PipelineState (after Phase 3 +
+    // Phase 4 have populated importResolutions and callResolutions).
+    // Pass 1 builds nodes with id=canonical codeRefId; pass 2 builds
+    // edges with the new 8-field schema (DR-PHASE-5-D), promoting
+    // 'imports'/'calls' to 'import'/'call' with codeRefId endpoints
+    // (Option B per R-PHASE-5-A) and emitting header-import edges
+    // distinctly (AC-04 / R-PHASE-5-C).
+    //
+    // Phase 5 checkpoint state: the constructGraph call is wired here
+    // and the pre-Phase-5 state (Phase 3 + Phase 4 inline edge
+    // emission) is retained for now. The replacement of state.graph
+    // with the constructGraph result lands in tasks 1.7–1.9 once
+    // pass-2 emission is implemented. Until then, v2Graph is built
+    // and discarded — this lets ORCHESTRATOR see the wiring in
+    // place at checkpoint without breaking the existing test suite.
+    if (verbose) console.log('[PipelineOrchestrator] Constructing canonical graph (Phase 5)...');
+    const preGraphState: PipelineState = {
+      ...preResolveState,
+      importResolutions,
+      callResolutions,
+    };
+    const v2Graph = constructGraph(preGraphState);
+    void v2Graph; // pass-2 implementation in tasks 1.7-1.9 will swap state.graph = v2Graph.
 
     const endTime = Date.now();
 
