@@ -1,6 +1,22 @@
 /**
+ * @legacy
+ * @deprecated Use src/pipeline/graph-builder.ts (canonical Phase 5
+ *             ExportedGraph builder) instead. Plugin hook surface for
+ *             ExportedGraph is not yet defined; this module continues
+ *             to push to the legacy DependencyGraph for plugin
+ *             consumers that have not migrated.
+ *
  * Plugin Graph Integration
  * WO-PLUGIN-SYSTEM-001: Plugin system for custom detectors
+ *
+ * @legacy Pushes edges to the legacy DependencyGraph (see
+ *         src/analyzer/graph-builder.ts). DependencyGraph is
+ *         structurally incompatible with the canonical Phase 5+
+ *         ExportedGraph. This module is NOT consumed by the
+ *         canonical pipeline path. Removal / migration of the
+ *         plugin hook surface to ExportedGraph is scheduled for a
+ *         dedicated cleanup workorder per
+ *         WO-PIPELINE-GRAPH-CONSTRUCTION-001 DR-PHASE-5-C.
  *
  * Integrates plugin graph hooks into the CodeRef graph building process.
  * Allows plugins to add custom edges and relationships.

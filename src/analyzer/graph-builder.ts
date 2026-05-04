@@ -1,6 +1,21 @@
 /**
- * Graph Builder - Constructs dependency graph from parsed relationships
- * Phase 3, Task P3-T3: Relationship Detection & Analysis
+ * @legacy
+ * @deprecated Use src/pipeline/graph-builder.ts (canonical Phase 5
+ *             ExportedGraph builder) instead.
+ *
+ * Graph Builder - Constructs dependency graph from parsed relationships.
+ * Phase 3 (legacy nine-phase numbering, NOT canonical Phase 3 of the
+ * pipeline rebuild), Task P3-T3: Relationship Detection & Analysis.
+ *
+ * @legacy DependencyGraph schema (Map<string, GraphNode> nodes +
+ *         GraphEdge[] edges + edgesBySource/edgesByTarget indexes)
+ *         is structurally incompatible with the canonical Phase 5+
+ *         ExportedGraph (Array nodes + 8-field edge schema). This
+ *         legacy builder is NOT consumed by the canonical pipeline
+ *         path (orchestrator.ts → src/pipeline/graph-builder.ts).
+ *         Removal scheduled for Phase 6 or a dedicated cleanup
+ *         workorder per WO-PIPELINE-GRAPH-CONSTRUCTION-001
+ *         DR-PHASE-5-C.
  *
  * Combines:
  * - Import Parser: builds 'imports' relationship edges
