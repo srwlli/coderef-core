@@ -1,0 +1,218 @@
+{
+  "blast_radius": {
+    "files_to_modify": [
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\types.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\export\\graph-exporter.ts"
+    ],
+    "files_to_create": [
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\graph-builder.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\no-output-validation.test.ts"
+    ],
+    "files_to_mark_legacy_or_remove": [
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-builder.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\plugins\\plugin-graph.ts"
+    ],
+    "files_to_update_tests": [
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\graph-ground-truth.test.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\no-graph-construction-leaks.test.ts"
+    ],
+    "notes": "orchestrator.ts is the heaviest change: Phase 3 and Phase 4 both push to graph.edges inline — Phase 5 must promote endpoints on those pushes OR route all emission through the new graph-builder.ts. graph-exporter.ts's ExportedGraph type needs the new edge schema fields. src/analyzer/graph-builder.ts (DependencyGraph) and src/plugins/plugin-graph.ts emit edges with file-grain endpoints and the old schema — they are the incompatible legacy builders roadmap task 6 targets."
+  },
+  "risks": [
+    {
+      "id": "R-PHASE-5-A",
+      "title": "Endpoint promotion breaks legacy edge consumers",
+      "description": "Phase 3 and Phase 4 both emit legacy 'imports' and 'calls' edges with file-path or bare-name endpoints. From orchestrator.ts: 'imports' edge source=sourceFile (e.g. '/tmp/coderef-graph-ground-truth-xxx/src/beta.ts'), target=verbatim specifier (e.g. './alpha'). 'calls' edge source=callerName, target=calleeName. Promoting both to codeRefIds changes the semantics of findEdge(graph, 'imports', './alpha') — the test helper at graph-ground-truth.test.ts line 41 finds edges by edge.target === target. If target becomes a codeRefId, findEdge('./alpha') returns undefined and every test breaks before Phase 5 can assert anything.",
+      "mitigation": "Two sub-options: (A) keep legacy 'imports'/'calls' type strings but promote endpoints — requires updating findEdge callers in the test; OR (B) retire 'imports'/'calls' type strings entirely and replace with 'import'/'call' type strings with new schema, updating findEdge to accept the new type. Option B is cleaner and prevents confusion between old and new edges. The ground-truth tests already use findEdge(graph, 'imports', ...) and findEdge(graph, 'calls', ...) — any rename of edge type string must update those callers. Recommend Option B with a one-time test migration.",
+      "severity": "HIGH",
+      "affects": [
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\graph-ground-truth.test.ts",
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts"
+      ]
+    },
+    {
+      "id": "R-PHASE-5-B",
+      "title": "Multi-emission-point reconciliation",
+      "description": "grep finds graph.edges.push in FIVE distinct files: (1) orchestrator.ts:220 (resolved-import, Phase 3), (2) orchestrator.ts:312 (resolved-call, Phase 4), (3) src/analyzer/graph-builder.ts:152 (import edge, DependencyGraph), (4) src/analyzer/graph-builder.ts:203 (calls edge, DependencyGraph), (5) src/analyzer/graph-builder.ts:368 (unknown edge, DependencyGraph), (6) src/plugins/plugin-graph.ts:198 (plugin edge, DependencyGraph). Points 3-6 use the legacy DependencyGraph type (Map<id,GraphNode> nodes, GraphEdge[] edges) not ExportedGraph — they are incompatible with the canonical pipeline's state.graph. The orchestrator's buildGraph() method (orchestrator.ts:651) also populates nodes and 'imports'/'calls' edges inline before Phase 3/4 run.",
+      "mitigation": "Decision required — see DR-PHASE-5-B. Short answer: consolidate canonical emission into a new src/pipeline/graph-builder.ts that owns all ExportedGraph node/edge construction. The legacy DependencyGraph builders (graph-builder.ts, plugin-graph.ts) are marked legacy per DR-PHASE-5-C. The orchestrator delegates to graph-builder.ts instead of building inline.",
+      "severity": "HIGH",
+      "affects": [
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts",
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-builder.ts",
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\plugins\\plugin-graph.ts"
+      ]
+    },
+    {
+      "id": "R-PHASE-5-C",
+      "title": "Header-import coexistence vs deduplication",
+      "description": "Roadmap task 5 forbids merging header-import edges with AST import edges. The import-resolver.ts resolveHeaderImports() function (lines 540-593) already classifies HeaderImportFacts through the same resolveModuleSpecifier/lookupExport pipeline and emits ImportResolution[] for them — currently with kind='resolved'/'stale'/'unresolved' but NOT with a distinct relationship field. Phase 3's orchestrator enrichment loop (orchestrator.ts:239-288) matches legacy 'imports' edges by (sourceFile, originSpecifier) — headerImportFact-derived resolutions share the same module specifier as AST imports for the same file, so they are currently merged into the same legacy edge's metadata. Phase 5 must emit SEPARATE graph edges with relationship='header-import' for each HeaderImportFact-derived ImportResolution. This doubles edge count for files where header and AST agree. No current test asserts 'exactly one edge per import' — but the no-graph-construction-leaks.test.ts Phase 5 boundary enforcer checks edge counts against baseline and may need updating.",
+      "mitigation": "Phase 5 must introduce a distinct relationship='header-import' edge type in the new edge schema. The graph-builder emits two separate edges when both an AST ImportResolution and a HeaderImportFact ImportResolution target the same (sourceFile, module, symbol) — this is intentional per drift-detection use case. Document the doubling explicitly in graph statistics (edgesByType['header-import'] count). Update no-graph-construction-leaks baseline expectation to include header-import edges.",
+      "severity": "MEDIUM",
+      "affects": [
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\import-resolver.ts",
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts",
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\no-graph-construction-leaks.test.ts"
+      ]
+    },
+    {
+      "id": "R-PHASE-5-D",
+      "title": "Phase 0 endpoint-is-node-id flip mechanism",
+      "description": "Test 1 line 52 is the expectResolvedEndpointIds helper (graph-ground-truth.test.ts:49-54): it asserts ids.has(edge.source) && ids.has(edge.target) for any edge with metadata.resolutionStatus === 'resolved'. Currently, legacy 'imports' edges have source=sourceFile (an absolute path, NOT a codeRefId) and target='./alpha' (a specifier, NOT a codeRefId). Neither appears in graph.nodes as an id. The flip requires that after Phase 5, these resolved edges have both source and target equal to codeRefIds that exist in graph.nodes. Three mechanisms: (A) mutate endpoint on existing edges in-place during Phase 5 post-processing loop; (B) delete legacy 'imports'/'calls' edges and re-emit with new endpoints; (C) emit new parallel edges with promoted endpoints alongside legacy ones. Option C creates confusion and duplicate edges. Option A has lowest blast radius but leaves old edge type strings in place. Option B cleanest but requires updating every test that uses findEdge with old specifier strings.",
+      "mitigation": "See DR-PHASE-5-D. The recommended approach is Option B: retire legacy 'imports'/'calls' type strings, re-emit as 'import'/'call' with codeRefId endpoints and the new schema. The ground-truth test's findEdge helper at line 41 finds by type+target — updating to find by type+'import' and target=codeRefId is a one-time migration that makes the test semantically correct.",
+      "severity": "HIGH",
+      "affects": [
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\graph-ground-truth.test.ts",
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts"
+      ]
+    },
+    {
+      "id": "R-PHASE-5-E",
+      "title": "ExportedGraph type mismatch with DependencyGraph consumers",
+      "description": "src/analyzer/graph-builder.ts uses DependencyGraph (nodes: Map<string,GraphNode>, edges: GraphEdge[], edgesBySource, edgesByTarget). GraphExporter (src/export/graph-exporter.ts) wraps DependencyGraph but exports ExportedGraph. PipelineState.graph is typed as ExportedGraph (nodes: Array<{id,type,...}>, NOT a Map). The legacy builders in graph-builder.ts and plugin-graph.ts push to DependencyGraph.edges (an array of GraphEdge from src/analyzer/graph-builder.ts imports), NOT ExportedGraph.edges. These two schemas are structurally incompatible — Phase 5 cannot merge them. Marking them legacy prevents confusion.",
+      "mitigation": "Mark graph-builder.ts and plugin-graph.ts as @legacy per DR-PHASE-5-C. Phase 5 only works with ExportedGraph via the canonical pipeline path. Do not attempt to merge or bridge the two schemas.",
+      "severity": "MEDIUM",
+      "affects": [
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\analyzer\\graph-builder.ts",
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\plugins\\plugin-graph.ts",
+        "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\export\\graph-exporter.ts"
+      ]
+    }
+  ],
+  "decision_records": [
+    {
+      "id": "DR-PHASE-5-A",
+      "title": "Endpoint format for non-resolved edges",
+      "decision": "OMIT targetId entirely for non-resolved kinds. Non-resolved edges carry sourceId (the canonical codeRefId of the importer/caller) but no targetId. Instead they carry: originSpecifier (the raw module specifier or callee name), resolutionStatus ('unresolved'|'ambiguous'|'external'|'builtin'|'dynamic'|'typeOnly'|'stale'), reason (string explaining why unresolved), and candidates (array of codeRefIds for ambiguous). This is option (a) from the brief.",
+      "rationale": "A synthetic 'unresolved:<specifier>' targetId would masquerade as a node ID and break any consumer that tests ids.has(edge.target). Omitting targetId makes the unresolved state explicit — no consumer can accidentally treat the edge as resolved. The resolutionStatus field plus reason is sufficient for unresolved edge querying. This mirrors the Phase 3/4 pattern where non-resolved ImportResolutions and CallResolutions never get graph edges at all — Phase 5 promotes them to queryable graph edges but keeps the unresolved semantics.",
+      "impact": "Consumers that query for all edges and then check edge.target will need a null-check. This is correct behavior — accessing edge.target on an unresolved edge is a programming error that should be surfaced."
+    },
+    {
+      "id": "DR-PHASE-5-B",
+      "title": "Single authoritative graph construction path",
+      "decision": "Create src/pipeline/graph-builder.ts as the canonical builder. It exports a single function constructGraph(state: PipelineState): ExportedGraph. The orchestrator's inline buildGraph() method is replaced by a call to constructGraph(). All node creation and edge emission (including promotion of Phase 3 ImportResolution[] and Phase 4 CallResolution[] into graph edges) moves into graph-builder.ts. The orchestrator orchestrates phase ordering but no longer contains any graph.nodes or graph.edges logic.",
+      "rationale": "The orchestrator currently builds nodes inline (orchestrator.ts:656-668), pushes 'imports' and 'calls' edges inline (orchestrator.ts:672-705), then pushes 'resolved-import' edges inline (orchestrator.ts:220-233) and 'resolved-call' edges inline (orchestrator.ts:312-326), then runs two enrichment loops inline (orchestrator.ts:239-288 and 337-415). This is 6 separate graph mutation sites in one file. A dedicated graph-builder.ts consolidates all of these, making the graph construction contract auditable in one place. Migration path: (1) create graph-builder.ts with constructGraph(); (2) move all inline graph logic from orchestrator.ts into it; (3) orchestrator calls constructGraph(stateAfterPhase4) as the final graph step; (4) remove the now-empty inline blocks from orchestrator.ts.",
+      "impact": "graph-builder.ts becomes the Phase 5 blast radius center. orchestrator.ts shrinks significantly. The ExportedGraph returned by constructGraph() becomes the authoritative graph shape consumed by Phase 6+."
+    },
+    {
+      "id": "DR-PHASE-5-C",
+      "title": "Legacy graph output disposition",
+      "decision": "MARK LEGACY, not remove, in Phase 5. src/analyzer/graph-builder.ts and src/plugins/plugin-graph.ts are marked with @legacy JSDoc and a deprecation header comment. They are NOT deleted in Phase 5. Removal is deferred to Phase 6 or a dedicated cleanup workorder after Phase 5 exit criteria are verified.",
+      "rationale": "The legacy DependencyGraph builders are structurally incompatible with ExportedGraph (different node storage: Map vs Array; different edge schema). However, they may still be consumed by non-pipeline code paths (e.g., RAG integration tests at src/integration/rag/__tests__/ that push to DependencyGraph.edges directly per the grep result). Deleting them in Phase 5 has unknown blast radius across those consumers. Marking legacy with a clear deprecation note achieves roadmap task 6's intent ('Remove incompatible graph builders or mark them legacy') without risking regressions in non-pipeline test infrastructure. .coderef/exports/graph.json shape change is deferred to the removal phase.",
+      "impact": "Legacy builders continue to compile and run. They do not interfere with the canonical pipeline's ExportedGraph. Phase 6 or cleanup workorder owns deletion."
+    },
+    {
+      "id": "DR-PHASE-5-D",
+      "title": "Edge ID strategy",
+      "decision": "Deterministic hash of (sourceId, relationship, targetId|originSpecifier, sourceFile, line). Use a simple concatenation hash: id = sha1(sourceId + ':' + relationship + ':' + (targetId ?? originSpecifier) + ':' + sourceFile + ':' + String(line)), truncated to 16 hex characters. For unresolved edges where targetId is absent, use originSpecifier in its place. This guarantees: (a) determinism across runs on identical input; (b) uniqueness for distinct (source, relationship, target, location) tuples; (c) stability across graph re-runs as long as the element's codeRefId is stable.",
+      "rationale": "Sequential counters are not stable across runs (Phase 3/4's INVARIANT requires determinism). UUIDs are random and non-deterministic. A content hash of the tuple that defines edge identity is both deterministic and unique for distinct edges. The 16-hex truncation gives 2^64 collision resistance — adequate for a per-project graph. Full sha1 is not needed; a simple djb2 or Node.js crypto.createHash('sha1') over the concatenated string suffices. The important constraint is that the same edge re-computed from the same state always gets the same id.",
+      "impact": "ExportedGraph edge type gains an 'id' field. graph-builder.ts computes ids during edge construction. No consumer should store edge ids across pipeline runs unless they also re-verify the pipeline produced the same graph."
+    }
+  ],
+  "resolution_surface": {
+    "graph_node_shape": {
+      "id": "canonical codeRefId (currently stored in node.metadata.codeRefId — Phase 5 promotes this to the id field)",
+      "type": "element kind (function|class|interface|module|file|etc.)",
+      "name": "element name",
+      "file": "absolute source file path",
+      "line": "1-indexed line number",
+      "metadata": {
+        "codeRefId": "same as id (kept for backwards compat during transition)",
+        "codeRefIdNoLine": "codeRefId variant without line suffix"
+      }
+    },
+    "edge_schema_fields": {
+      "id": "REQUIRED — deterministic hash (DR-PHASE-5-D)",
+      "sourceId": "REQUIRED — canonical codeRefId of source element",
+      "targetId": "CONDITIONAL — canonical codeRefId of target; absent for non-resolved kinds (DR-PHASE-5-A)",
+      "relationship": "REQUIRED — one of: 'import' | 'call' | 'export' | 'header-import'",
+      "resolutionStatus": "REQUIRED — one of: 'resolved' | 'unresolved' | 'ambiguous' | 'external' | 'builtin' | 'dynamic' | 'typeOnly' | 'stale'",
+      "evidence": "CONDITIONAL — structured evidence object; for resolved: {resolvedModuleFile, originSpecifier, localName}; for calls: {calleeName, receiverText, scopePath}",
+      "sourceLocation": "CONDITIONAL — {file, line} of the import/call statement",
+      "candidates": "CONDITIONAL — array of codeRefIds; only present for resolutionStatus='ambiguous'"
+    },
+    "edge_kinds": [
+      "resolved — both sourceId and targetId present; source and target both in graph.nodes",
+      "unresolved — sourceId present, targetId absent; reason explains why",
+      "ambiguous — sourceId present, targetId absent, candidates[] has >=2 codeRefIds",
+      "external — sourceId present, targetId absent; refers to node_modules or known package",
+      "builtin — sourceId present, targetId absent; callee is a known JS builtin (Array, Promise, etc.)",
+      "dynamic — sourceId present, targetId absent; dynamic import() that cannot be statically resolved",
+      "typeOnly — sourceId present, targetId absent; TypeScript 'import type' with no runtime binding",
+      "stale — sourceId present, targetId absent; HeaderImportFact for symbol not in module's export table"
+    ],
+    "edge_cases": {
+      "header_import_vs_ast_import_duplication": "Same (sourceFile, module, symbol) may appear in both a HeaderImportFact-derived ImportResolution and an AST RawImportFact-derived ImportResolution. Phase 5 emits TWO edges — one with relationship='import', one with relationship='header-import'. This is intentional: a header-import edge with no matching AST import edge is suspicious (drift). Cardinality doubles for aligned files but the semantic distinction is load-bearing.",
+      "reexport_chains": "TransitiveReExport resolution in import-resolver.ts already resolves to the origin codeRefId (the ultimate source, not the intermediary re-exporter). The graph edge targetId is the origin codeRefId. The re-export intermediary is not a node in the graph unless it also has elements.",
+      "namespace_imports": "import * as ns produces an ImportResolution with resolvedModuleFile set but no resolvedTargetCodeRefId (no single element targeted). Edge has relationship='import', resolutionStatus='resolved', targetId=absent but resolvedModuleFile in evidence. The module file itself must be a graph node for this to be meaningful — Phase 5 may need to emit file-grain nodes for modules that are imported as namespaces.",
+      "default_exports": "Resolved to the element's codeRefId via export table entry with exportedName='default'. Standard resolved edge with targetId present.",
+      "builtin_call_edges": "Calls to BUILTIN_RECEIVERS (Array, Object, Promise, etc.) from Phase 4 stay as CallResolution kind='builtin' in state.callResolutions. Phase 5 emits graph edges for them with resolutionStatus='builtin', targetId absent, evidence.calleeName present. These are queryable but not traversed by default graph traversal."
+    }
+  },
+  "ground_truth_test_mapping": {
+    "test_1_line_52_flip": {
+      "test_name": "requires resolved import and call edges to use graph node IDs as endpoints",
+      "file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\graph-ground-truth.test.ts",
+      "failing_assertion": {
+        "line": 52,
+        "code": "expect(ids.has(edge.source)).toBe(true)",
+        "line_53": "expect(ids.has(edge.target)).toBe(true)",
+        "context": "expectResolvedEndpointIds helper (lines 49-54) checks that a resolved edge's source and target both appear in graph.nodes as node ids. Currently FAILS because legacy 'imports' edges have source=sourceFile (absolute path) and target=specifier string ('./alpha'), neither of which matches any graph.nodes[i].id (which are codeRefId strings like 'src/alpha.ts:actual:L1')"
+      },
+      "phase_5_flip_mechanism": "Phase 5 replaces legacy 'imports' and 'calls' edges with new 'import' and 'call' schema edges whose source=importerCodeRefId and target=resolvedTargetCodeRefId (both canonical codeRefIds). Since graph.nodes[i].id is now also a codeRefId, ids.has(edge.source) and ids.has(edge.target) will be true. The test's findEdge helper at line 41 must also be updated — it currently finds edges by (type, target) where type='imports' and target='./alpha' (a specifier). After Phase 5, the lookup must use the new type string 'import' and locate by sourceId or by evidence.originSpecifier."
+    },
+    "test_2_unresolved_explicit": {
+      "test_name": "requires unresolved imports and calls to be explicit graph facts",
+      "status_before_phase_5": "PASSING (Phase 3 + Phase 4 work flipped this)",
+      "phase_5_constraint": "Must NOT break. Phase 5 must ensure unresolved edges remain in graph.edges with resolutionStatus='unresolved' and metadata.reason. The findEdge call at line 98 (type='imports', target='./missing') must still find the unresolved edge — if edge type is renamed to 'import', update the test lookup."
+    },
+    "test_3_ambiguous_calls": {
+      "test_name": "requires duplicate function name calls to be marked ambiguous with candidate IDs",
+      "status_before_phase_5": "PASSING (Phase 4 fully flipped this)",
+      "phase_5_constraint": "Must NOT break. Ambiguous call edges must remain in graph with candidateIds. If edge schema changes, candidateIds must still be queryable via edge.candidates or edge.metadata.candidateIds."
+    },
+    "test_4_alias_imports": {
+      "test_name": "requires alias imports to bind the local alias back to the exported source symbol",
+      "status_before_phase_5": "PASSING (Phase 3 + Phase 4 work flipped this)",
+      "phase_5_constraint": "Must NOT break. The metadata fields importedAs and exportedName on the call edge must survive the edge schema migration."
+    },
+    "test_5_nested_context": {
+      "test_name": "requires nested functions and class method calls to preserve qualified context",
+      "status_before_phase_5": "PASSING (Phase 4 fully flipped this via Phase 1 scanner fix)",
+      "phase_5_constraint": "Must NOT break. targetElementId on the call edge must survive migration."
+    },
+    "test_6_all_edge_distinguish": {
+      "test_name": "requires graph validation to distinguish resolved, unresolved, and ambiguous edges",
+      "status_before_phase_5": "PASSING (Phase 4 fully flipped this)",
+      "phase_5_constraint": "Must NOT break. The loop at line 177 iterates ALL edges and checks resolutionStatus. Phase 5's schema change must preserve resolutionStatus on every edge — no edge may be emitted without it."
+    }
+  },
+  "cross_phase_dependencies": {
+    "phase_3_to_phase_5": {
+      "description": "Phase 5 reads state.importResolutions[] (populated by Phase 3's resolveImports()) to build resolved-import graph edges with promoted endpoints. Each ImportResolution with kind='resolved' has importerCodeRefId (sourceId) and resolvedTargetCodeRefId (targetId). Phase 5's graph-builder.ts replaces the inline resolved-import push in orchestrator.ts:220-233 with a call to constructGraph() that handles this. HeaderImportFact-derived ImportResolutions (those produced by resolveHeaderImports in import-resolver.ts:540-593) must be surfaced as relationship='header-import' edges — currently they are merged with AST import edge metadata. Phase 5 must distinguish them by checking the ImportResolution's origin: header-derived resolutions came from state.headerImportFacts."
+    },
+    "phase_4_to_phase_5": {
+      "description": "Phase 5 reads state.callResolutions[] (populated by Phase 4's resolveCalls()) to build resolved-call graph edges with promoted endpoints. Each CallResolution with kind='resolved' has callerCodeRefId (sourceId) and resolvedTargetCodeRefId (targetId). Phase 5's graph-builder.ts replaces the inline resolved-call push in orchestrator.ts:312-326 with constructGraph(). Non-resolved call resolutions (unresolved/ambiguous/builtin/external) become queryable graph edges with resolutionStatus set and no targetId. The Phase 4 call-enrichment loop (orchestrator.ts:337-415) that stamps metadata onto legacy 'calls' edges is superseded by the new schema — graph-builder.ts emits the full schema edge directly from CallResolution rather than enriching a legacy edge."
+    },
+    "phase_2_5_to_phase_5": {
+      "description": "Phase 2.5 introduced HeaderImportFact (one per import entry in a file's semantic header). Phase 3 runs resolveHeaderImports() over state.headerImportFacts and produces ImportResolutions with kind='resolved'/'stale'/'unresolved'. Phase 5 must surface these as graph edges with relationship='header-import' (distinct from relationship='import' for AST-derived imports). The cross-phase signal is: if a HeaderImportFact-derived ImportResolution has kind='resolved' but no corresponding AST-derived ImportResolution for the same (sourceFile, module, symbol), that is a header-only import — valid, emit as header-import edge. If both exist, emit both edges (intentional duplication for drift detection). If HeaderImportFact kind='stale', emit a header-import edge with resolutionStatus='stale' and no targetId."
+    },
+    "phase_5_to_phase_6_emission_contract": {
+      "description": "Phase 6's validator will receive state.graph in ExportedGraph format from Phase 5. The invariants Phase 6 can rely on: (1) every graph.nodes[i].id is a canonical codeRefId; (2) every edge with resolutionStatus='resolved' has both sourceId and targetId, and both appear in graph.nodes; (3) every edge has an id, sourceId, relationship, and resolutionStatus; (4) header-import edges are independently queryable via edge.relationship==='header-import'; (5) the graph is pure and deterministic (same state produces same graph); (6) no validation/gate fields (strictHeadersViolation, headerDriftScore, schemaValidationResult) are present — those are Phase 6's responsibility."
+    }
+  },
+  "test_planning_notes": {
+    "test_1_line_52_flip": "The flip mechanism is endpoint promotion: replace legacy 'imports'/'calls' edge type strings with 'import'/'call', and replace file-path/specifier endpoints with codeRefId endpoints. The test's findEdge helper at line 41 will need to be updated to find by the new type string and by a lookup that works with codeRefId targets (e.g., find by sourceId matching the importer's codeRefId and by evidence.originSpecifier matching './alpha').",
+    "pipeline_snapshot_test": "pipeline-snapshot.test.ts has been failing since before Phase 3 (verified during Phase 3 and Phase 4 closes). Phase 5 MAY fix it if the snapshot captures graph node ids and the promotion makes them match the canonical codeRefIds. However, Phase 5 must not treat a snapshot fix as a Phase 5 exit criterion — if the snapshot test flips to PASS, document it as a bonus; if it stays FAIL, that is acceptable as a pre-existing condition.",
+    "no_graph_construction_leaks_test": "The existing no-graph-construction-leaks.test.ts (Phase 5 boundary enforcer from Phase 4) currently asserts that no Phase 5 fields (fileGrainNodeId, edgeSchemaVersion, graphConstructionPass, nodePromotedFrom) appear on CallResolution/PipelineState. In Phase 5, this file either gets DELETED (Phase 5 IS graph construction, the enforcer is now obsolete) or REWRITTEN to become the Phase 6 boundary enforcer. The Phase 4 execution-notes confirm this is the Phase 5 boundary enforcer — so Phase 5 deletes it and creates no-output-validation.test.ts as the Phase 6 boundary enforcer.",
+    "phase_6_boundary_enforcer_test": "Create __tests__/pipeline/no-output-validation.test.ts. Pattern mirrors Phase 3's no-call-resolution.test.ts and Phase 4's no-graph-construction-leaks.test.ts. Assert: (1) no field named 'strictHeadersViolation', 'headerDriftScore', 'schemaValidationResult', 'outputGateResult', or 'strictHeadersMode' exists on any graph node, edge, or PipelineState after Phase 5 graph construction; (2) PipelineState does not have a 'validationResults' or 'outputConstraints' field; (3) the graph does not have a 'validationErrors' field. This is the Phase 6 boundary enforcer.",
+    "new_tests_needed": [
+      "graph-construction-node-ids.test.ts — every graph.nodes[i].id is a codeRefId (matches metadata.codeRefId)",
+      "graph-construction-endpoint-promotion.test.ts — resolved edges have source+target in graph.nodes ids set",
+      "graph-construction-header-import-coexistence.test.ts — same module:symbol from header and AST produces two edges with distinct relationship values",
+      "graph-construction-edge-schema.test.ts — every edge has id, sourceId, relationship, resolutionStatus; resolved edges additionally have targetId",
+      "graph-construction-determinism.test.ts — constructGraph(state) called N times produces deepStrictEqual outputs",
+      "no-output-validation.test.ts — Phase 6 boundary enforcer (see above)"
+    ]
+  }
+}

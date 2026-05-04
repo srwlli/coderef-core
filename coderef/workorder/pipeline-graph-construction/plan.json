@@ -1,0 +1,194 @@
+{
+  "$schema": "https://coderef/assistant/skills/workflow/_shared/planner/plan.schema.json",
+  "workorder_id": "WO-PIPELINE-GRAPH-CONSTRUCTION-001",
+  "feature_name": "pipeline-graph-construction",
+  "created": "2026-05-04T02:35:00Z",
+  "project_id": "coderef-core",
+  "plan_type": "phased",
+  "goal": "Implement Phase 5 of the canonical 9-phase pipeline rebuild: construct the graph only from canonical identities. All graph.nodes[i].id values become canonical codeRefIds. Resolved edges' source AND target are codeRefIds that appear in graph.nodes (the long-stubborn Phase 0 test 1 line 52 endpoint-is-node-id assertion finally flips). All edges adopt the new schema (id, sourceId, targetId conditional, relationship, resolutionStatus, evidence, sourceLocation, candidates). Header-import edges (relationship='header-import') and AST import edges (relationship='import') coexist without merging — same module:symbol pair from both sources produces TWO edges (drift-detection use case). All graph construction consolidates into a new src/pipeline/graph-builder.ts (single authoritative path). Legacy DependencyGraph builders (src/analyzer/graph-builder.ts, src/plugins/plugin-graph.ts) marked @legacy but not deleted (deletion deferred to Phase 6 or cleanup WO). NO Phase 6 output validation. NO --strict-headers gate. The Phase 5 boundary enforcer test (no-graph-construction-leaks.test.ts) is DELETED (obsolete because Phase 5 IS graph construction); replaced by no-output-validation.test.ts as the Phase 6 boundary enforcer.",
+  "plan_type_rationale": "Phase 5 of the sequential nine-phase pipeline refactor. Phase 6 (output validation) cannot start until Phase 5 establishes the canonical graph schema. This phase finally flips test 1 line 52 — the only Phase 0 ground-truth assertion that has stayed FAIL through Phase 0/1/2/2.5/3/4. Phase 5 also consolidates graph construction from 6 distinct emission sites into one builder, which is a structural cleanup with HIGH blast radius — discipline on the migration mechanism is critical.",
+  "plan_type_decided_by": "ORCHESTRATOR (Claude Opus) authored from Claude Sonnet prep deliverables (PID 5896, written 2026-05-03T22:32 after Gemini quota walls and an earlier Sonnet limit reset) plus /plan-tests-for-workorder skill output (10 criteria → 6 unit + 2 integration + 2 invariant)",
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "DELETE", "RUN", "TEST", "CHECK", "STOP"],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Stop after Phase 5 exit criteria. Do NOT begin Phase 6 (output validation, --strict-headers gate, schema enforcement at write time), Phase 7 (indexing/RAG), or any later phase in this workorder. The Phase 6 boundary enforcer test (no-output-validation.test.ts) MUST be present at close to enforce this."
+    }
+  ],
+  "checkpoints": [
+    {
+      "after_task": "1.6",
+      "name": "structural_foundation_review",
+      "reason": "After graph-builder.ts skeleton + types + edge schema migration + legacy markers + Phase 5 boundary enforcer deletion + Phase 6 boundary enforcer scaffolding all land, halt for ORCHESTRATOR review of: (a) single authoritative builder path established (graph-builder.ts owns all node/edge construction), (b) edge schema adopts the 8-field shape from prep DR-PHASE-5-D, (c) legacy DependencyGraph builders marked @legacy not deleted, (d) the 6 distinct graph.edges.push sites are consolidated or coordinated, (e) endpoint-promotion mechanism documented (Option B per R-PHASE-5-D: retire 'imports'/'calls' type strings, re-emit as 'import'/'call' with codeRefId endpoints), (f) Phase 5 boundary enforcer (no-graph-construction-leaks.test.ts) deletion is documented; Phase 6 boundary enforcer (no-output-validation.test.ts) scheduled."
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 5 - Graph Construction",
+      "hard_stop": true,
+      "description": "Build canonical graph construction layer. Pass 1 = build graph nodes from state.elements (canonical codeRefIds as ids). Pass 2 = build graph edges from state.importResolutions + state.callResolutions + headerImportFact-derived resolutions, using new 8-field schema. Consolidate 6 distinct emission sites into graph-builder.ts. Mark legacy builders @legacy. Delete obsolete Phase 5 boundary enforcer (no-call-resolution.test.ts was deleted in Phase 4; no-graph-construction-leaks.test.ts is now obsolete). Create Phase 6 boundary enforcer (no-output-validation.test.ts). Land 10 tests across 10 ACs. Phase 0 ground-truth test 1 line 52 (endpoint-is-node-id) finally flips to PASS. All other tests stay PASSING.",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read prep deliverables in full: coderef/workorder/pipeline-graph-construction-prep/context.json (10 ACs), analysis.json (5 risks R-PHASE-5-A through E, 4 DRs, full edge_schema_fields spec, ground_truth_test_mapping per test, cross_phase_dependencies, test_planning_notes including the boundary-enforcer disposition). Read roadmap.md lines 322-358 for Phase 5 exit criteria.",
+          "touches": [
+            "coderef/workorder/pipeline-graph-construction-prep/context.json",
+            "coderef/workorder/pipeline-graph-construction-prep/analysis.json",
+            "roadmap.md"
+          ]
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read all 6 graph emission sites identified by prep: orchestrator.ts (lines 220-233 resolved-import push, 312-326 resolved-call push, 239-288 import enrichment loop, 337-415 call enrichment loop, 651+ buildGraph inline node/edge construction), src/analyzer/graph-builder.ts (DependencyGraph schema, lines 152/203/368 edge pushes), src/plugins/plugin-graph.ts (line 198 plugin edge push), src/export/graph-exporter.ts (ExportedGraph wrapper). Read existing __tests__/pipeline/graph-ground-truth.test.ts entirely — note findEdge helper at line 41 and expectResolvedEndpointIds at lines 49-54 (the test 1 line 52 assertion). Read __tests__/pipeline/no-graph-construction-leaks.test.ts (the obsolete Phase 5 boundary enforcer Phase 4 created).",
+          "touches": [
+            "src/pipeline/orchestrator.ts",
+            "src/analyzer/graph-builder.ts",
+            "src/plugins/plugin-graph.ts",
+            "src/export/graph-exporter.ts",
+            "__tests__/pipeline/graph-ground-truth.test.ts",
+            "__tests__/pipeline/no-graph-construction-leaks.test.ts"
+          ]
+        },
+        {
+          "id": "1.3",
+          "verb": "WRITE",
+          "description": "Create src/pipeline/graph-builder.ts. Define types: EdgeRelationship = 'import' | 'call' | 'export' | 'header-import'. EdgeResolutionStatus = 'resolved' | 'unresolved' | 'ambiguous' | 'external' | 'builtin' | 'dynamic' | 'typeOnly' | 'stale'. GraphEdge { id, sourceId, targetId?, relationship, resolutionStatus, evidence?, sourceLocation?, candidates? }. Public surface: constructGraph(state: PipelineState): ExportedGraph. Internal: buildNodes (pass 1 — every state.elements item becomes a node with id=codeRefId), buildEdges (pass 2 — promote ImportResolution and CallResolution into edges with new schema), computeEdgeId (deterministic hash per DR-PHASE-5-D using crypto.createHash('sha1') over sourceId+relationship+(targetId||originSpecifier)+sourceFile+line, truncated to 16 hex chars), classifyHeaderVsAst (decide relationship='import' vs 'header-import' based on whether the ImportResolution came from headerImportFacts or rawImports). NO file IO. NO mutation of state.elements/importResolutions/callResolutions. Mirror Phase 3/4's two-pass split discipline.",
+          "touches": ["src/pipeline/graph-builder.ts"]
+        },
+        {
+          "id": "1.4",
+          "verb": "EDIT",
+          "description": "Edit src/export/graph-exporter.ts. Update ExportedGraph edge type to match the new 8-field schema from DR-PHASE-5-D. Add EdgeRelationship + EdgeResolutionStatus type unions. Re-export GraphEdge from graph-builder.ts so consumers get the canonical type. Verify ExportedGraph.nodes[i].id stays string-typed (codeRefId as id is type-compatible).",
+          "touches": ["src/export/graph-exporter.ts"]
+        },
+        {
+          "id": "1.5",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/orchestrator.ts. Replace the 6 inline graph emission sites with a single call to constructGraph(state) at the end of the orchestration sequence (after Phase 4's resolveCalls completes). Specifically: (a) DELETE the inline resolved-import edge push (currently lines 220-233); (b) DELETE the inline resolved-call edge push (currently lines 312-326); (c) DELETE the import-enrichment loop (currently lines 239-288) — the new graph-builder builds the full edge with new schema directly from ImportResolution, no enrichment needed; (d) DELETE the call-enrichment loop (currently lines 337-415) — same reasoning; (e) REPLACE the inline buildGraph() method (currently 651+) with a thin wrapper that calls constructGraph(state) and assigns result to state.graph; (f) ENSURE constructGraph() is called AFTER state.callResolutions is populated (Phase 4 must finish before Phase 5). Add halt-on-null assertions for state.importResolutions and state.callResolutions at top of constructGraph.",
+          "touches": ["src/pipeline/orchestrator.ts"]
+        },
+        {
+          "id": "1.6",
+          "verb": "EDIT",
+          "description": "Mark legacy graph builders @legacy per DR-PHASE-5-C. Add deprecation header comment to src/analyzer/graph-builder.ts: '@legacy — DependencyGraph schema is structurally incompatible with the canonical Phase 5+ ExportedGraph. Pipeline code does NOT consume DependencyGraph. Removal scheduled for Phase 6 or a dedicated cleanup workorder.' Same comment on src/plugins/plugin-graph.ts. DO NOT delete either file. Update src/analyzer/graph-builder.ts module-level JSDoc with @deprecated tag pointing at src/pipeline/graph-builder.ts.",
+          "touches": ["src/analyzer/graph-builder.ts", "src/plugins/plugin-graph.ts"]
+        },
+        {
+          "id": "1.6b",
+          "verb": "DELETE",
+          "description": "Delete __tests__/pipeline/no-graph-construction-leaks.test.ts. This was Phase 4's boundary enforcer asserting Phase 5 fields (fileGrainNodeId, edgeSchemaVersion, etc.) would NOT leak into Phase 4. Phase 5 IS graph construction; the enforcer is now obsolete (Phase 4 took the same approach when it deleted Phase 3's no-call-resolution.test.ts). Document the deletion in execution-notes.md.",
+          "touches": ["__tests__/pipeline/no-graph-construction-leaks.test.ts"]
+        },
+        {
+          "id": "1.6c",
+          "verb": "WRITE",
+          "description": "Create __tests__/pipeline/no-output-validation.test.ts as the Phase 6 boundary enforcer. Assert: (1) NO field named 'strictHeadersViolation', 'headerDriftScore', 'schemaValidationResult', 'outputGateResult', 'strictHeadersMode' exists on any graph node, edge, or CallResolution/ImportResolution/PipelineState; (2) PipelineState does NOT have a 'validationResults' or 'outputConstraints' field; (3) state.graph does NOT have a 'validationErrors' field. Pattern mirrors no-call-resolution.test.ts (Phase 3) and no-graph-construction-leaks.test.ts (Phase 4) — same enforcement shape, shifted forward one phase boundary.",
+          "touches": ["__tests__/pipeline/no-output-validation.test.ts"]
+        },
+        {
+          "id": "1.6-CHECKPOINT",
+          "verb": "STOP",
+          "description": "CHECKPOINT: structural_foundation_review. Halt and emit checkpoint_ready. ORCHESTRATOR will review: (a) single authoritative builder established (graph-builder.ts is the only place ExportedGraph nodes/edges are constructed in the canonical pipeline path), (b) edge schema adopts the 8-field shape (id/sourceId/targetId/relationship/resolutionStatus/evidence/sourceLocation/candidates), (c) legacy DependencyGraph builders marked @legacy (not deleted), (d) the 6 inline graph mutation sites in orchestrator.ts removed and consolidated, (e) endpoint-promotion mechanism is Option B (retire 'imports'/'calls' type strings, re-emit as 'import'/'call' with codeRefId endpoints) and the test's findEdge helper migration is documented, (f) no-graph-construction-leaks.test.ts deletion is documented; no-output-validation.test.ts is in place as Phase 6 boundary enforcer. ORCHESTRATOR signals proceed before pass-1/pass-2 implementation tasks (1.7+) begin.",
+          "touches": ["coderef/workorder/pipeline-graph-construction/checkpoint.md"]
+        },
+        {
+          "id": "1.7",
+          "verb": "EDIT",
+          "description": "Implement pass 1 in src/pipeline/graph-builder.ts: buildNodes(state). Iterate state.elements. For each element, emit a graph node with id=createCodeRefId(element). Preserve metadata.codeRefId for backwards compat (one phase). Node fields: id (canonical codeRefId), type (element kind), name, file, line, metadata. NO files emitted as nodes unless they are imported as namespace targets — defer file-grain nodes to a follow-up DR if needed (the prep notes mention namespace imports may need module-as-node treatment; verify whether existing tests require it).",
+          "touches": ["src/pipeline/graph-builder.ts"]
+        },
+        {
+          "id": "1.8",
+          "verb": "EDIT",
+          "description": "Implement pass 2 in src/pipeline/graph-builder.ts: buildEdges(state, nodeIdSet). Iterate state.importResolutions; for each, emit a graph edge per the new schema. Determine relationship: 'import' for ast-derived (the ImportResolution came from a RawImportFact in state.rawImports) or 'header-import' for header-derived (came from a HeaderImportFact in state.headerImportFacts). Edge fields per resolution.kind: kind='resolved' → sourceId=importerCodeRefId, targetId=resolvedTargetCodeRefId, evidence={resolvedModuleFile, originSpecifier, localName}; kind='unresolved' → sourceId set, targetId omitted, reason from resolution; kind='ambiguous' → sourceId set, targetId omitted, candidates=resolution.candidates; kind='external' → sourceId set, targetId omitted, evidence.specifier; etc. Per DR-PHASE-5-A: targetId is OMITTED (not synthetic placeholder) for non-resolved kinds. Same iteration pattern for state.callResolutions producing relationship='call'. AC-04 enforcement: when both an AST ImportResolution and a HeaderImportFact ImportResolution target the same (sourceFile, module, symbol), emit BOTH edges (intentional duplication).",
+          "touches": ["src/pipeline/graph-builder.ts"]
+        },
+        {
+          "id": "1.9",
+          "verb": "EDIT",
+          "description": "Implement computeEdgeId in src/pipeline/graph-builder.ts per DR-PHASE-5-D: deterministic hash via crypto.createHash('sha1').update(sourceId + ':' + relationship + ':' + (targetId ?? originSpecifier) + ':' + sourceFile + ':' + String(line)).digest('hex').slice(0, 16). Document in JSDoc that the same (source, relationship, target/specifier, location) tuple always produces the same id. Emit a stable id even when targetId is absent (use originSpecifier as fallback).",
+          "touches": ["src/pipeline/graph-builder.ts"]
+        },
+        {
+          "id": "1.10",
+          "verb": "EDIT",
+          "description": "Update __tests__/pipeline/graph-ground-truth.test.ts. Change findEdge helper at line 41 to find by (relationship, sourceId-or-specifier) using the new edge schema field names. Update line 52 helper expectResolvedEndpointIds to keep its assertion semantics (ids.has(edge.source) && ids.has(edge.target)) but operate against the new edge.sourceId / edge.targetId fields if those are renamed. Update all test invocations of findEdge that used type='imports' or type='calls' to use type='import' or type='call' (note the rename from plural to singular per the new schema). The test 1 line 52 assertion MUST flip to PASS as a result of the endpoint promotion. The other 5 tests must remain PASSING.",
+          "touches": ["__tests__/pipeline/graph-ground-truth.test.ts"]
+        },
+        {
+          "id": "1.11",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/graph-construction-node-ids.test.ts (covers AC-01, unit). Cover: every graph.nodes[i].id matches a canonical codeRefId pattern; every node.id equals its node.metadata.codeRefId (backwards compat verified); no node has id===undefined or id===null; all ids are unique within the graph.",
+          "touches": ["__tests__/pipeline/graph-construction-node-ids.test.ts"]
+        },
+        {
+          "id": "1.12",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/graph-construction-endpoint-promotion.test.ts (covers AC-02, integration). End-to-end pipeline run on a fixture project. Build the set of graph.nodes ids. Iterate every edge with resolutionStatus='resolved'. Assert ids.has(edge.sourceId) === true AND ids.has(edge.targetId) === true. This is the direct Phase 0 test 1 line 52 flip mechanism reified as a Phase 5-owned regression test.",
+          "touches": ["__tests__/pipeline/graph-construction-endpoint-promotion.test.ts", "__tests__/.fixtures/graph-construction/"]
+        },
+        {
+          "id": "1.13",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/graph-construction-header-import-coexistence.test.ts (covers AC-04, integration). Inline fixture: file alpha.ts exports doAlpha(); file beta.ts has BOTH `import { doAlpha } from './alpha'` (AST) AND a semantic header @imports listing './alpha:doAlpha' (HeaderImportFact). Assert TWO edges exist for that import: one with relationship='import' (from RawImportFact-derived ImportResolution), one with relationship='header-import' (from HeaderImportFact-derived ImportResolution). Both must have the same sourceId (importerCodeRefId of beta.ts's element) AND the same targetId (alpha.ts's doAlpha codeRefId). The duplication is intentional per drift-detection use case.",
+          "touches": ["__tests__/pipeline/graph-construction-header-import-coexistence.test.ts"]
+        },
+        {
+          "id": "1.14",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/graph-construction-edge-schema.test.ts (covers AC-03, AC-05, AC-10, unit). Cover: every edge has REQUIRED fields id, sourceId, relationship, resolutionStatus; resolved edges additionally have targetId; unresolved/ambiguous/external/builtin/dynamic/typeOnly/stale edges DO NOT have targetId (per DR-PHASE-5-A — omitted, not synthetic); ambiguous edges have candidates[] with length >= 2; every edge.id is unique across the graph (no two edges share an id, per DR-PHASE-5-D); every edge.relationship is in the allowed enum {import, call, export, header-import}; every edge.resolutionStatus is in the allowed enum.",
+          "touches": ["__tests__/pipeline/graph-construction-edge-schema.test.ts"]
+        },
+        {
+          "id": "1.15",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/graph-construction-determinism.test.ts (INVARIANT, covers AC-08). Cover: idempotency — call constructGraph(state) 100 times on identical state, deepStrictEqual all outputs (especially edge.id values, since they are hashed); purity — Object.freeze inputs (state.elements, state.importResolutions, state.callResolutions) and assert no mutations; assert constructGraph does NOT call any fs.* function (mock fs and assert call count is zero — graph construction is pure over PipelineState).",
+          "touches": ["__tests__/pipeline/graph-construction-determinism.test.ts"]
+        },
+        {
+          "id": "1.16",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/graph-construction-traversal-defaults.test.ts (covers AC-06, unit). Cover: any graph traversal helper exposed by graph-exporter.ts or graph-builder.ts only follows edges with resolutionStatus='resolved' by default. If the traversal helper has an option to include non-resolved edges, the option must default to false. If no traversal helper exists yet, this test should document the absence and assert no traversal helper accidentally exists with non-default-safe semantics. Phase 5 may add a minimal traverseResolved() helper if the codebase needs one — that's an authoring decision in 1.8/1.9.",
+          "touches": ["__tests__/pipeline/graph-construction-traversal-defaults.test.ts"]
+        },
+        {
+          "id": "1.17",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/graph-construction-legacy-builders.test.ts (covers AC-07, unit). Cover: src/analyzer/graph-builder.ts exports remain accessible (not deleted); but the file's module JSDoc contains '@deprecated' or '@legacy' tag; same for src/plugins/plugin-graph.ts. Assert that the canonical pipeline path (orchestrator → graph-builder.ts) does NOT import from src/analyzer/graph-builder.ts or src/plugins/plugin-graph.ts (grep src/pipeline/ for those imports — should return zero hits).",
+          "touches": ["__tests__/pipeline/graph-construction-legacy-builders.test.ts"]
+        },
+        {
+          "id": "1.18",
+          "verb": "TEST",
+          "description": "Run all of: existing pipeline test suite (must still pass — particularly the 6 ground-truth tests, all of which should now FULLY PASS including test 1 line 52 endpoint-is-node-id); Phase 1 element-taxonomy tests (must pass); Phase 2 raw-fact tests (must pass — Phase 5 does NOT touch raw fact emission); Phase 2.5 header tests (must pass); Phase 3 import-resolution tests (must pass); Phase 4 call-resolution tests (must pass); 7 new Phase 5 tests from 1.11-1.17 (must pass); the new Phase 6 boundary enforcer test no-output-validation.test.ts from 1.6c (must pass). pipeline-snapshot.test.ts pre-existing failure may resolve in this phase (snapshot may match new graph shape) OR persist — document either outcome but treat resolution as bonus. Report exact pass/fail counts. Test 1 line 52 finally flipping to PASS is the headline result.",
+          "touches": ["__tests__"]
+        },
+        {
+          "id": "1.19",
+          "verb": "RUN",
+          "description": "Run /coderef-pipeline coderef-core --stages=scan,populate,validate. Confirm: (a) every node in .coderef/exports/graph.json has an id field that is a canonical codeRefId; (b) every edge with resolutionStatus='resolved' has both sourceId and targetId pointing at existing graph nodes; (c) edges with relationship='header-import' coexist with edges with relationship='import' (search for at least one (sourceId, module, symbol) tuple appearing twice with distinct relationship values); (d) state.graph.statistics.edgesByType reports both 'import' and 'header-import' counts separately; (e) zero edges with resolutionStatus !== 'resolved' have a targetId field (per DR-PHASE-5-A omission). Compare counts against Phase 4 baseline (2371 elements / 12428 edges). Edge count growth depends on header-import duplication factor in real coderef-core source; expect modest growth.",
+          "touches": [".coderef/index.json", ".coderef/semantic-registry.json", ".coderef/exports/graph.json"]
+        },
+        {
+          "id": "1.20",
+          "verb": "CHECK",
+          "description": "Verify Phase 5 exit criteria from roadmap line 352-358: (1) every resolved edge endpoint exists in graph nodes — confirmed by AC-02 test (1.12) plus Phase 0 test 1 line 52 PASSING; (2) unresolved edges queryable separately — confirmed by AC-05 test (1.14); (3) graph traversal only traverses resolved edges by default — confirmed by AC-06 test (1.16); (4) legacy graph output cannot conflict with canonical graph — confirmed by AC-07 test (1.17) checking @legacy markers and import isolation; (5) header-import edges present and distinguishable from AST import edges — confirmed by AC-04 test (1.13). Document each in execution-notes.md with the test ID and Phase 0 assertion that proves it. Document the no-graph-construction-leaks.test.ts deletion (boundary transition) and the new no-output-validation.test.ts (Phase 6 boundary enforcer). If ANY check fails, halt with checkpoint_ready and report — do NOT work around.",
+          "touches": ["coderef/workorder/pipeline-graph-construction/execution-notes.md"]
+        },
+        {
+          "id": "1.21",
+          "verb": "STOP",
+          "description": "Stop. Phase 5 complete. Do NOT begin Phase 6 (output validation, --strict-headers gate), Phase 7 (indexing/RAG), or any later phase in this workorder. The graph-ground-truth.test.ts test 1 line 52 endpoint-is-node-id assertion finally flips to PASS — the last stubborn ground-truth assertion that survived 5 phases. Report final test counts, the list of all 6 ground-truth tests as fully PASSING, and the Phase 6 boundary enforcer (no-output-validation.test.ts) is in place to catch any premature Phase 6 work.",
+          "touches": ["coderef/workorder/pipeline-graph-construction"]
+        }
+      ]
+    }
+  ],
+  "plan_adjustments_needed": []
+}

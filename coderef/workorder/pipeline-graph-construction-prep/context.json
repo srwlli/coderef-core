@@ -1,0 +1,38 @@
+{
+  "scope": {
+    "in": [
+      "All graph nodes use canonical element codeRefIds as their id field (every graph.nodes[i].id must be a canonical codeRefId, not a file path or bare name)",
+      "All resolved edges use codeRefId endpoints for BOTH source AND target — flip Phase 0 ground-truth test 1 line 52 (ids.has(edge.source) && ids.has(edge.target) for resolutionStatus=resolved edges)",
+      "Promote legacy 'imports' edge endpoints: source becomes importerCodeRefId, target becomes resolvedTargetCodeRefId for resolved imports (currently source=sourceFile, target=specifier string)",
+      "Promote legacy 'calls' edge endpoints: source becomes callerCodeRefId, target becomes resolvedTargetCodeRefId for resolved calls (currently source=callerName, target=calleeName string)",
+      "Implement full edge schema per roadmap lines 335-344: id, sourceId, targetId (if resolved), relationship ('import'|'call'|'export'|'header-import'), resolutionStatus, evidence, sourceLocation, candidates (if ambiguous)",
+      "Unresolved/ambiguous/external/builtin/dynamic/typeOnly/stale edges remain queryable in state.graph but NEVER have resolved-endpoint format (no codeRefId as target if unresolved)",
+      "Header-import edges (relationship='header-import') coexist with AST import edges (relationship='import') without merging — independently queryable; same module:symbol pair from both sources produces TWO edges",
+      "Remove or mark legacy any incompatible graph builders: src/analyzer/graph-builder.ts (DependencyGraph-based, incompatible schema), src/plugins/plugin-graph.ts (pushes to DependencyGraph edges)",
+      "Choose one authoritative graph construction path and document it (DR-PHASE-5-B)",
+      "Add Phase 6 boundary enforcer test: no-output-validation.test.ts asserting no --strict-headers gate, semantic header validation, or schema-enforcement-at-write-time work leaks into Phase 5"
+    ],
+    "out": [
+      "Phase 6 output validation: --strict-headers gate, semantic header validation, schema enforcement at write time",
+      "Phase 7 indexing and RAG facets",
+      "Phase 8 documentation sync",
+      "Type inference beyond what Phase 4 already does (DR-PHASE-4 boundary stays held — no flow analysis, no inheritance walking)"
+    ]
+  },
+  "project_id": "coderef-core",
+  "phase": "Phase 5 - Graph Construction",
+  "workorder_id": "WO-PIPELINE-GRAPH-CONSTRUCTION-001",
+  "feature_name": "pipeline-graph-construction",
+  "acceptance_criteria": [
+    "AC-01: Every graph.nodes[i].id is a canonical codeRefId (the value currently stored in node.metadata.codeRefId must become the node.id)",
+    "AC-02: Every resolved edge's source AND target appear in graph.nodes (Phase 0 test 1 line 52 flip: ids.has(edge.source) === true AND ids.has(edge.target) === true for any edge with metadata.resolutionStatus === 'resolved')",
+    "AC-03: Every edge satisfies the new schema — id (required), sourceId (required), relationship (required), resolutionStatus (required); targetId/evidence/sourceLocation/candidates conditional on kind",
+    "AC-04: Header-import edges (relationship='header-import') and AST import edges (relationship='import') coexist with distinct relationship values; same module:symbol pair from both sources produces exactly TWO edges (intentional, per drift-detection use case)",
+    "AC-05: Unresolved/ambiguous/external/builtin/dynamic/typeOnly/stale edges never appear with a codeRefId as both source AND target — at minimum targetId is absent or is a synthetic unresolved placeholder per DR-PHASE-5-A",
+    "AC-06: Graph traversal helpers (if any exist) only traverse edges with resolutionStatus='resolved' by default; non-resolved are opt-in",
+    "AC-07: Legacy graph output (GraphExporter / DependencyGraph in src/analyzer/graph-builder.ts and src/plugins/plugin-graph.ts) is either removed OR explicitly marked legacy with deprecation note (per DR-PHASE-5-C)",
+    "AC-08: Resolution is deterministic and pure — calling constructGraph(state) N times on identical state produces deepStrictEqual outputs (mirror Phase 3/4 INVARIANT)",
+    "AC-09: Phase 6 boundary enforcer test passes: no-output-validation.test.ts asserts no validation/gate fields (strictHeadersViolation, schemaValidationResult, headerDriftScore) appear on any graph node, edge, or PipelineState",
+    "AC-10: Edge id field is unique across all edges in a single graph — no two edges share the same id (per DR-PHASE-5-D strategy)"
+  ]
+}
