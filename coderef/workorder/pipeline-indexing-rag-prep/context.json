@@ -1,0 +1,167 @@
+{
+  "workorder_id": "WO-PIPELINE-INDEXING-RAG-001",
+  "feature_name": "pipeline-indexing-rag",
+  "phase": "Phase 7 - Indexing / RAG Pipeline",
+  "phase_sequence": "9 of 10 gated steps (Phase 7 of 9 in roadmap numbering)",
+  "predecessor_phase": "Phase 6 (output-validation) ARCHIVED 2026-05-04",
+  "predecessor_state": {
+    "commits": "0d7cfa9..971eec0 (6 commits implementation) + 1e7f6f6 archive in CORE + 614b699 ledger in ASSISTANT",
+    "validation_report_baseline": {
+      "valid_edge_count": 3464,
+      "unresolved_count": 19685,
+      "ambiguous_count": 3286,
+      "external_count": 526,
+      "builtin_count": 1096,
+      "header_defined_count": 0,
+      "header_missing_count": 262,
+      "header_stale_count": 0,
+      "header_partial_count": 0,
+      "header_layer_mismatch_count": 0,
+      "header_export_mismatch_count": 0,
+      "source": ".coderef/validation-report.json from coderef-core's own scan (2026-05-04)"
+    },
+    "ground_truth": "All 6 graph-ground-truth.test.ts assertions PASS",
+    "test_state": "140/140 pipeline tests PASS, 21/21 element-extractor tests PASS (incl. Phase 1 piggyback regression test)",
+    "chokepoint": "validatePipelineState invoked exactly once in populate.ts after orchestrator.run() and before generator loop (chokepoint INVARIANT 3/3 PASS)",
+    "validation_result_contract": "src/pipeline/output-validator.ts exports ValidationResult with shape: { ok: boolean, errors: ValidationError[], warnings: ValidationError[], report: ValidationReport (11 numeric fields) }. Caller owns process.exit; validator is pure (no fs, no console)."
+  },
+  "purpose": "Make indexing/RAG output trustworthy. Today, chunksIndexed:0 silently reports success; failed/skipped chunks lack reasons; RAG queries cannot filter by layer/capability/constraint. Phase 7 closes these gaps and operationalizes the semantic facets that Phases 1-3 established. After Phase 7, indexing refuses to run on graphs that fail Phase 6 validation, and downstream agents can trust indexing metadata.",
+  "acceptance_criteria": [
+    {
+      "id": "AC-01",
+      "statement": "Indexing refuses to run when validation-report.json shows ok=false. Returns top-level status='failed' with reason='upstream_validation_failed' and references the validation report path.",
+      "test_strategy": "Unit test: stub validation-report.json with ok:false, invoke indexing-orchestrator, assert status=failed and no embedding API calls made (mock embedding service)."
+    },
+    {
+      "id": "AC-02",
+      "statement": "IndexingResult adds a top-level status field with values 'success' | 'partial' | 'failed'. 'partial' is returned when chunksFailed>0 OR chunksSkipped>0 with reasons; 'failed' is returned when chunksIndexed=0 OR upstream validation failed.",
+      "test_strategy": "Three unit tests: (a) all chunks succeed → status=success; (b) some failed/skipped → status=partial with reasons array; (c) zero chunks → status=failed with reason='no_chunks_produced'."
+    },
+    {
+      "id": "AC-03",
+      "statement": "IndexingResult.chunksFailed[] and chunksSkipped[] entries each carry a reason field (enum: 'unresolved_relationship' | 'header_status_missing' | 'header_status_stale' | 'header_status_partial' | 'embedding_api_error' | 'unchanged' | 'malformed_chunk'). No skip or failure is silent.",
+      "test_strategy": "Unit test: feed chunk-converter elements with each headerStatus value + an unresolved-relationship element + a deliberately malformed chunk; assert each entry in chunksFailed/chunksSkipped has the matching reason enum value."
+    },
+    {
+      "id": "AC-04",
+      "statement": "chunksIndexed:0 returns status='failed' with reason='no_chunks_produced'. The current behavior (success with chunksIndexed:0) is the documented anti-pattern this phase eliminates.",
+      "test_strategy": "Integration test: run indexing on a project with no exported elements (or all elements skipped); assert IndexingResult.status='failed' and exit code non-zero from rag-index CLI."
+    },
+    {
+      "id": "AC-05",
+      "statement": "CodeChunk type gains layer, capability, constraints, headerStatus fields (all optional). chunk-converter.ts populates them from ElementData when present.",
+      "test_strategy": "Type-level test (TypeScript compile) + unit test on chunk-converter: supply ElementData with layer='service', capability='auth', constraints=['no-pii']; assert resulting CodeChunk carries the same values."
+    },
+    {
+      "id": "AC-06",
+      "statement": "CodeChunkMetadata (the filter type used by query-engine.ts at line 60 'filters?: Partial<CodeChunkMetadata>') gains layer, capability, constraints fields, enabling existing filter machinery to scope queries by these facets without new code paths.",
+      "test_strategy": "Unit test on query-engine: pass options.filters={layer:'service'}; assert vectorOptions.filter.layer is set; integration test: index a corpus with mixed layers, query with layer filter, assert returned chunks all match."
+    },
+    {
+      "id": "AC-07",
+      "statement": "rag-search CLI gains --layer, --capability, --constraint flags that pipe through to QueryEngine.filters. Each flag is optional; absence preserves pre-Phase-7 behavior.",
+      "test_strategy": "CLI integration test: `rag-search --layer=service 'authenticate'` returns only chunks where layer=service; absence of flag returns all matching chunks."
+    },
+    {
+      "id": "AC-08",
+      "statement": "rag-index CLI exit code reflects IndexingResult.status: success→0, partial→0 with stderr summary, failed→non-zero. This propagates indexing health to CI/automation.",
+      "test_strategy": "Three CLI integration tests covering each status path; assert exit code matches."
+    },
+    {
+      "id": "AC-09",
+      "statement": "Real-world AC: running rag-index on coderef-core's own source with the Phase 6 baseline (validation-report.json ok=true, valid_edge_count 3464, header_missing_count=262) produces IndexingResult.status='partial' with documented header_status_missing skips matching the file-grain worst-severity aggregation of validation-report.header_missing_count (Path A). Zero unexplained skips/failures.",
+      "test_strategy": "Real-world integration test: run rag-index against coderef-core src/, assert IndexingResult contains explicit reason for every chunksSkipped entry (expected: 262 with reason='header_status_missing' matching validation-report header_missing_count under file-grain aggregation)."
+    },
+    {
+      "id": "AC-10",
+      "statement": "Boundary enforcer test no-rag-indexing.test.ts (Phase 6's enforcer asserting NO Phase 7 fields leak) is DELETED in Phase 7 — Phase 7 IS the indexing layer, the enforcer is obsolete. CREATE no-phase-8-docs-leak.test.ts asserting no Phase 8 documentation-sync fields (e.g., docsGenerated, schemaDoc, apiContractMd) leak into Phase 7 output.",
+      "test_strategy": "Test file existence and content: __tests__/pipeline/no-phase-8-docs-leak.test.ts must exist and assert absence of doc-sync fields in IndexingResult, ValidationReport, and ExportedGraph."
+    },
+    {
+      "id": "AC-11",
+      "statement": "All 6 graph-ground-truth.test.ts assertions remain PASS. Phase 7 is read-only over PipelineState and ExportedGraph — any regression here is a hard halt.",
+      "test_strategy": "CI gate: graph-ground-truth.test.ts runs and passes 6/6."
+    }
+  ],
+  "out_of_scope_hard_stops": [
+    "NO behavioral changes to analyzer / resolver / graph-construction / output-validator layers (Phases 1-6 are read-only territory)",
+    "NO new edge schema fields, no new resolutionStatus values, no new EdgeEvidence variants",
+    "NO Phase 8 documentation work (separate phase)",
+    "NO new vector store backends (chroma, pinecone, sqlite already exist - work within them)",
+    "NO LLM-side embedding model swaps",
+    "NO modifications to ElementData type beyond confirming layer/capability/constraints/headerStatus already exist on it (added in Phase 1 + Phase 2.5)",
+    "NO Phase 1 piggyback fixes (Phase 6 used its one-fix budget on element-extractor.ts:188 - no further piggybacks)",
+    "Maximum 2 new CLI flags across all of Phase 7. Each must justify its existence in DR (DR-PHASE-7-D)."
+  ],
+  "existing_machinery": {
+    "src/indexer/": {
+      "files": ["index-store.ts", "index.ts", "indexer-service.ts", "metadata-index.ts", "query-engine.ts", "relationship-index.ts"],
+      "responsibility": "Lower-level index storage and query primitives. Phase 7 likely does NOT modify this layer - the rag/ layer is the integration point."
+    },
+    "src/integration/rag/": {
+      "files_relevant": ["chunk-converter.ts", "code-chunk.ts", "indexing-orchestrator.ts", "incremental-indexer.ts", "embedding-service.ts", "embedding-text-generator.ts", "semantic-search.ts", "answer-generation-service.ts", "context-builder.ts", "graph-reranker.ts", "confidence-scorer.ts"],
+      "responsibility": "RAG pipeline integration. THIS is the Phase 7 surface.",
+      "key_seams": {
+        "CodeChunk type": "src/integration/rag/code-chunk.ts - extend to add layer/capability/constraints/headerStatus optional fields",
+        "ChunkConverter": "src/integration/rag/chunk-converter.ts:33 convertGraph() - read ElementData facets and write to CodeChunk",
+        "IndexingResult": "src/integration/rag/indexing-orchestrator.ts:99-... interface IndexingResult { chunksIndexed, chunksSkipped, chunksFailed, ... } - add status field + reason fields on skipped/failed entries",
+        "QueryEngine filter": "src/integration/rag/semantic-search.ts:60 'filters?: Partial<CodeChunkMetadata>' - works as-is once CodeChunkMetadata gains the facet fields"
+      }
+    },
+    "src/integration/vector/": {
+      "files": ["chroma-store.ts", "pinecone-store.ts", "sqlite-store.ts", "vector-store.ts"],
+      "responsibility": "Pluggable vector storage. Phase 7 does NOT add backends. Verify metadata filter works across all 3 backends; sqlite is current default per .coderef/rag-index.json."
+    },
+    "src/cli/": {
+      "files_relevant": ["rag-index.ts", "rag-search.ts", "rag-status.ts", "populate.ts"],
+      "responsibility": "CLI entrypoints. rag-index.ts and rag-search.ts gain new flags; populate.ts may gain optional indexing-trigger after validation passes (DR pending)."
+    },
+    "src/pipeline/output-validator.ts": {
+      "responsibility": "Phase 6 validator. Phase 7 reads ValidationResult to gate indexing; does NOT modify."
+    }
+  },
+  "boundary_enforcer_disposition": {
+    "delete": "__tests__/pipeline/no-rag-indexing.test.ts - Phase 6's boundary enforcer asserting Phase 7 fields (ragIndex, embeddingVector, vectorStoreId, chunkId) do NOT leak into Phase 6 output. Phase 7 IS those fields, so the enforcer is obsolete.",
+    "create": "__tests__/pipeline/no-phase-8-docs-leak.test.ts - asserts NO Phase 8 documentation-sync fields (e.g., docsGenerated, schemaDocPath, apiContractMd, generatedAt as a documentation timestamp) leak into IndexingResult, ValidationReport, or ExportedGraph. Mirrors the Phase 6 → Phase 7 boundary pattern."
+  },
+  "phase_6_gate_contract": {
+    "trigger": "indexing-orchestrator.ts entry point (or rag-index.ts CLI) reads .coderef/validation-report.json before any chunk conversion",
+    "refuse_condition": "If validation-report.json does not exist OR ValidationResult.ok is false (errors[].length > 0 with kind in ['graph_integrity', 'phase5_demotion']), return IndexingResult{status: 'failed', reason: 'upstream_validation_failed', validationReportPath: <path>} immediately. No embedding API calls.",
+    "warning_pass_through": "Validation warnings (kind: 'header_drift' when --strict-headers absent) do NOT block indexing - they propagate through to chunksSkipped reasons (header_status_missing/stale/partial) at the per-element grain.",
+    "rationale": "Phase 6 already differentiates errors (fail-hard) from warnings (informational). Phase 7 honors that distinction: graph integrity errors block indexing entirely; header drift warnings degrade to per-chunk skip reasons."
+  },
+  "cli_surface_proposal": {
+    "new_flags_max": 2,
+    "proposed": [
+      {
+        "flag": "--layer=<value> (rag-search only)",
+        "purpose": "Filter RAG search results by element layer enum. Maps to QueryEngine options.filters.layer. Optional. Absence preserves pre-Phase-7 behavior.",
+        "justification": "Roadmap Phase 7 task 6 explicitly requires 'RAG queries can be scoped to a layer'. No alternative without a new flag - filter param has no other CLI surface."
+      },
+      {
+        "flag": "--capability=<value> (rag-search only)",
+        "purpose": "Filter RAG search results by capability tag. Same pattern as --layer.",
+        "justification": "Roadmap Phase 7 task 6 requires capability as a queryable facet. Co-located with --layer for symmetry."
+      }
+    ],
+    "deferred_to_phase_8_or_later": [
+      "--constraint=<value> filter - capability/layer cover the primary use cases; constraints may be sparse in the corpus initially. Add only if usage demands.",
+      "--strict-validation (rag-index) - currently the gate is binary (ok/not-ok); a strict mode would also block on Phase 6 warnings. Defer until header drift is observed in a non-test corpus."
+    ]
+  },
+  "halt_and_report_to_orchestrator_during_implementation": [
+    "If chunk-converter.ts requires changes to ElementData propagation that would touch the analyzer or pipeline-state layer (out-of-scope per hard stops). Surface as a follow-up stub instead.",
+    "If any of the 3 vector store backends (chroma/pinecone/sqlite) does not support metadata-based filtering for the new facet fields. May need an adapter shim or backend-specific filter translation.",
+    "If real-world AC-09 fails because chunksSkipped count diverges from validation-report.header_missing_count (262) - investigate but do NOT silently demote AC; halt and report.",
+    "If the boundary enforcer create-step (no-phase-8-docs-leak.test.ts) fails because Phase 8 fields ALREADY exist somewhere in the pipeline (suggests prior phase scope creep). Report and surface as a stub - Phase 7 does NOT clean up other phases."
+  ],
+  "session_routing": "daily-agent-session-2026-05-04 - all Phase 7 work routes through 5-4. Phase 6 close was the last 5-2-pinned milestone.",
+  "required_skills_for_dispatch": [
+    "/coderef-fast-start",
+    "/join-daily-session",
+    "/align-coderef-culture",
+    "/log-skill",
+    "/execute-workorder",
+    "/plan-tests-for-workorder"
+  ]
+}

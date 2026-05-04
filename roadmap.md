@@ -407,7 +407,7 @@ Exit criteria:
 
 ---
 
-## Phase 7 - Indexing / RAG Pipeline ⏳ NEXT
+## Phase 7 - Indexing / RAG Pipeline ✅ ARCHIVED 2026-05-04 (validation gate enforced; status field success|partial|failed; per-entry skip/fail reasons; --layer/--capability filters on rag-search; AC-09 self-index PASS; 6/6 ground-truth preserved)
 
 Purpose: index only validated, semantically meaningful artifacts, with `layer` and `capability` as first-class facets.
 

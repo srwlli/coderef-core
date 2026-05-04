@@ -1,0 +1,13 @@
+{
+  "valid_edge_count": 3464,
+  "unresolved_count": 19853,
+  "ambiguous_count": 3307,
+  "external_count": 541,
+  "builtin_count": 1103,
+  "header_defined_count": 0,
+  "header_missing_count": 262,
+  "header_stale_count": 0,
+  "header_partial_count": 0,
+  "header_layer_mismatch_count": 0,
+  "header_export_mismatch_count": 0
+}

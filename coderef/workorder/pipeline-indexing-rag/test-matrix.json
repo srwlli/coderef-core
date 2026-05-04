@@ -1,0 +1,139 @@
+{
+  "workorder_id": "WO-PIPELINE-INDEXING-RAG-001",
+  "feature_name": "pipeline-indexing-rag",
+  "generated_at": "2026-05-04T22:09:15.863Z",
+  "schema_version": "1.0.0",
+  "project_conventions": {
+    "test_framework": "node:test",
+    "fixture_dir": "test/fixtures",
+    "assertion_lib": "node:assert",
+    "source": "fallback"
+  },
+  "criteria_matrix": [
+    {
+      "criterion_id": "AC-01",
+      "criterion_text": "Indexing must always refuse to run when validation-report.json shows ok=false",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-01.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    },
+    {
+      "criterion_id": "AC-02",
+      "criterion_text": "IndexingResult must always include status field with values success|partial|failed",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-02.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    },
+    {
+      "criterion_id": "AC-03",
+      "criterion_text": "Each chunksFailed and chunksSkipped entry must always carry a reason field; never silent",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-03.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    },
+    {
+      "criterion_id": "AC-04",
+      "criterion_text": "chunksIndexed=0 must always return status=failed",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-04.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    },
+    {
+      "criterion_id": "AC-05",
+      "criterion_text": "CodeChunk must always carry layer/capability/constraints/headerStatus when present on ElementData",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-05.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    },
+    {
+      "criterion_id": "AC-06",
+      "criterion_text": "CodeChunkMetadata must always support filter by layer/capability/constraints",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-06.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    },
+    {
+      "criterion_id": "AC-07",
+      "criterion_text": "rag-search must support --layer and --capability flags",
+      "primary_category": "unit",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-07.mjs",
+      "fixture_pattern": "inline",
+      "invariant": false,
+      "rationale": "no integration/regression/smoke/invariant signal; default to unit"
+    },
+    {
+      "criterion_id": "AC-08",
+      "criterion_text": "rag-index exit code must reflect IndexingResult.status: success=0, partial=0+stderr, failed=non-zero",
+      "primary_category": "unit",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-08.mjs",
+      "fixture_pattern": "stdin-stdout",
+      "invariant": false,
+      "rationale": "no integration/regression/smoke/invariant signal; default to unit"
+    },
+    {
+      "criterion_id": "AC-09",
+      "criterion_text": "Real-world rag-index on coderef-core must never produce unexplained skips",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-09.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    },
+    {
+      "criterion_id": "AC-10",
+      "criterion_text": "Boundary enforcer no-rag-indexing.test.ts must be deleted; no-phase-8-docs-leak.test.ts must always exist",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-10.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    },
+    {
+      "criterion_id": "AC-11",
+      "criterion_text": "All 6 graph-ground-truth assertions must always remain PASS",
+      "primary_category": "invariant",
+      "secondary_categories": [],
+      "suggested_file": "test/test-pipeline-indexing-rag-ac-11.mjs",
+      "fixture_pattern": "table-driven",
+      "invariant": true,
+      "rationale": "invariant keyword detected"
+    }
+  ],
+  "summary": {
+    "total_criteria": 11,
+    "by_category": {
+      "unit": 2,
+      "integration": 0,
+      "regression": 0,
+      "invariant": 9,
+      "smoke": 0
+    },
+    "invariant_count": 9
+  },
+  "fallback_used": true,
+  "warnings": [
+    "project conventions resolved via fallback (fallback)"
+  ]
+}
