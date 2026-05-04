@@ -1,0 +1,43 @@
+{
+  "scope": {
+    "in": [
+      "Single chokepoint validator function validatePipelineState(state, options) called by populate.ts (src/cli/populate.ts) AFTER orchestrator.run() returns state and BEFORE the generator chain begins — this is the earliest point that precedes ALL writes (index, graph, registry, export, etc.)",
+      "Graph integrity validation (6 checks): (1) node ID uniqueness — no two graph.nodes share the same id; (2) resolved edge endpoint existence — every edge with resolutionStatus='resolved' has both sourceId AND targetId present in the graph.nodes id set; (3) no dangling resolved edges — resolved edges whose sourceId or targetId is absent from graph.nodes are a violation; (4) valid relationship enum — every edge.relationship is one of { import, call, export, header-import }; (5) valid resolutionStatus enum — every edge.resolutionStatus is one of { resolved, unresolved, ambiguous, external, builtin, dynamic, typeOnly, stale }; (6) no duplicate node identities — no two nodes share both the same name and file (element-identity collision independent of id hash)",
+      "Semantic header validation (3 checks): (1) @layer in STANDARDS/layers.json enum — every element/file with headerStatus='defined' must have a layer value that appears in the 13-member layers.json id list; (2) @exports match AST — files whose headerStatus='stale' (already caught at parse-time by orchestrator.ts:467-473) are aggregated into header_export_mismatch_count; Phase 6 READS this status, does NOT re-run the cross-check; (3) @imports non-unresolved or exempt — files with headerStatus='defined' must have all HeaderImportFact entries resolve to a non-unresolved ImportResolution, unless the file is explicitly marked exempt in its header",
+      "Validation report emission with all 11 stats (exact field names locked): valid_edge_count, unresolved_count, ambiguous_count, external_count, builtin_count, header_defined_count, header_missing_count, header_stale_count, header_partial_count, header_layer_mismatch_count, header_export_mismatch_count",
+      "Fail-hard policy: graph integrity violations always cause validatePipelineState to return ok=false with errors[]; orchestrator/CLI translates to non-zero exit code. Header drift (semantic header check failures) produces warnings[] by default and is promoted to errors[] only under --strict-headers",
+      "--strict-headers CLI flag: NEW boolean flag added to src/cli/populate.ts parseArgs() switch, stored as CliArgs.strictHeaders: boolean (default false); passed through to validatePipelineState options as strictHeaders: boolean; when true, header drift entries are promoted from warnings to errors and cause non-zero exit",
+      "PipelineOptions addition: strictHeaders?: boolean field added to src/pipeline/types.ts PipelineOptions interface (optional, default false); also add ValidationReport type and ValidationResult type to types.ts",
+      "DELETE __tests__/pipeline/no-output-validation.test.ts — Phase 5 boundary enforcer asserting Phase 6 fields do not leak into Phase 5; Phase 6 IS output validation so this enforcer is now obsolete (mirrors Phase 4 deleting no-call-resolution.test.ts, Phase 5 deleting no-graph-construction-leaks.test.ts)",
+      "CREATE __tests__/pipeline/no-rag-indexing.test.ts as the Phase 7 boundary enforcer — asserts no Phase 7 fields (ragIndex, embeddingVector, vectorStoreId, chunkId, ragIndexedAt, ragIndexStatus) appear on graph nodes, edges, ImportResolution, CallResolution, or PipelineState",
+      "Phase 5 honest-demotion invariant enforcement: any edge with resolutionStatus='resolved' AND missing/undefined targetId is a graph integrity violation (fail-hard); this forces the upstream resolver to demote correctly per the pattern established in Phase 5 (1/3289 demotion to 'external' when resolvedTargetCodeRefId was absent)",
+      "New file src/pipeline/output-validator.ts (DR-PHASE-6-A decision): contains validatePipelineState(state, options) returning ValidationResult { ok, errors, warnings, report }",
+      "New file .coderef/validation-report.json emitted by a new ValidationReportGenerator or inline within populate.ts after validatePipelineState runs; also a validation pointer field on .coderef/index.json (DR-PHASE-6-C decision)",
+      "Unit tests for all 6 graph integrity checks, 3 semantic header checks, --strict-headers flag behavior (exit code 0 vs nonzero), validation report field presence and types, Phase 5 honest-demotion invariant"
+    ],
+    "out": [
+      "Phase 7 indexing / RAG pipeline — Phase 6 does not touch rag-index.ts, RAG vector store, embedding, or chunkId logic",
+      "Phase 8 documentation sync — generate-foundation-docs, generate-resource-sheet, and related doc-gen scripts are out of scope",
+      "New behavioral changes to the analyzer/resolver/graph-construction layers — Phase 6 is strictly read-only over the ExportedGraph and PipelineState produced by Phases 1-5; it does NOT mutate state.elements, state.importResolutions, state.callResolutions, or state.graph",
+      "Mid-flight repair of validation failures — Phase 6 reports and fails; downstream phases or upstream regenerations fix the root cause; Phase 6 does not patch, demote, or repair graph state it reads",
+      "New edge schema fields or new relationship/resolutionStatus enum values — schema is owned by Phase 5; Phase 6 consumes it read-only",
+      "Legacy DependencyGraph builder cleanup (src/analyzer/graph-builder.ts, src/plugins/plugin-graph.ts marked @legacy in Phase 5; removal is deferred to a cleanup workorder, not Phase 6)"
+    ]
+  },
+  "project_id": "coderef-core",
+  "phase": "Phase 6 - Output Validation",
+  "workorder_id": "WO-PIPELINE-OUTPUT-VALIDATION-001",
+  "feature_name": "pipeline-output-validation",
+  "acceptance_criteria": [
+    "AC-01: Every Phase 5 graph that passed Phase 5 exit criteria also passes Phase 6 graph integrity validation — zero false positives on real coderef-core source (3290 resolved edges, 2759 nodes, 27816 total edges)",
+    "AC-02: Graph integrity violations (node ID collision, missing resolved endpoint, dangling resolved edge, invalid relationship/resolutionStatus enum, duplicate node identity) cause validatePipelineState to return ok=false with a structured errors[] array; orchestrator/CLI translates this to non-zero exit code",
+    "AC-03: Header drift (layer mismatch, export mismatch, unresolved imports) produces warnings[] by default (exit code 0); same drift produces errors[] and non-zero exit code when --strict-headers is set",
+    "AC-04: Validation report contains all 11 fields with exact names: valid_edge_count, unresolved_count, ambiguous_count, external_count, builtin_count, header_defined_count, header_missing_count, header_stale_count, header_partial_count, header_layer_mismatch_count, header_export_mismatch_count — all typed as numbers",
+    "AC-05: Validation report destination is deterministic and consistent across runs: new file .coderef/validation-report.json is always written after a successful pipeline run; .coderef/index.json carries a validation pointer field referencing the report",
+    "AC-06: --strict-headers flag default is false; absence of the flag preserves pre-Phase-6 default behavior modulo new warning emissions (exit code 0, warnings logged to stderr)",
+    "AC-07: Phase 5 honest-demotion invariant is enforced: any edge with resolutionStatus='resolved' AND targetId undefined/absent is caught as a graph integrity violation (fail-hard), forcing the resolver upstream to demote correctly",
+    "AC-08: validatePipelineState is deterministic and pure — N invocations on identical ExportedGraph + PipelineState produce identical ValidationResult including identical report field counts; no file I/O inside the validator itself (file writing is the caller's responsibility)",
+    "AC-09: Phase 7 boundary enforcer test (__tests__/pipeline/no-rag-indexing.test.ts) passes: no Phase 7 fields (ragIndex, embeddingVector, vectorStoreId, chunkId, ragIndexedAt, ragIndexStatus) appear on any pipeline surface after Phase 6 runs",
+    "AC-10: All 6 Phase 0 ground-truth assertions in __tests__/pipeline/graph-ground-truth.test.ts remain PASSING after Phase 6 lands — Phase 6 is read-only over the graph and must not regress any of them"
+  ]
+}

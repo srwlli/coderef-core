@@ -1,0 +1,56 @@
+{
+  "workorder_id": "WO-PIPELINE-OUTPUT-VALIDATION-001",
+  "feature_name": "pipeline-output-validation",
+  "project_id": "coderef-core",
+  "status": "closed",
+  "originating_dispatches": ["DISPATCH-2026-05-02-016", "DISPATCH-2026-05-02-031"],
+  "phases_completed": 1,
+  "tasks_completed": 20,
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "name": "Phase 6 - Output Validation",
+      "completed_at": "2026-05-04T05:30:00Z",
+      "result": "All 11 ACs PASS. validatePipelineState chokepoint at src/pipeline/output-validator.ts. 6 graph integrity checks always fail-hard, 3 semantic header checks warn-by-default with --strict-headers promotion. validation-report.json with 11 numeric fields written to .coderef/. valid_edge_count=3450, ambiguous_count=3286, builtin_count=1096, header_missing_count=259, all defined-file drift fields=0. All 6 Phase 0 graph-ground-truth assertions remain PASSING. 54 test files / 140 tests / 0 failures.",
+      "commits": [
+        {"sha": "0d7cfa9", "summary": "structural foundation (types, validator skeleton, populate.ts wiring, Phase 5 boundary enforcer deletion, Phase 7 boundary enforcer scaffolding)"},
+        {"sha": "74ed5ee", "summary": "feat(pipeline-output-validation): 1.7-1.10 implement 6 graph-integrity + 3 header-drift checks + buildReport + loadLayerEnum safeguard"},
+        {"sha": "89682b0", "summary": "fix(graph-integrity): reframe GI-6 to name+file+line tuple to allow legitimate nested fns"},
+        {"sha": "8b5965f", "summary": "fix(element-extractor): add early return after class_body recursion to prevent duplicate nested-fn emission (Phase 1 piggyback per ORCHESTRATOR Option A authorization)"},
+        {"sha": "8e7ccaf", "summary": "feat(pipeline): add Phase 6 output-validator test suite + workorder docs"},
+        {"sha": "971eec0", "summary": "docs(roadmap): mark Phase 6 ARCHIVED, mark Phase 7 NEXT"}
+      ]
+    }
+  ],
+  "close_metadata": {
+    "closed_at": "2026-05-04T10:45:00Z",
+    "closed_by": "SKILLS",
+    "closed_via": "/close-workorder",
+    "closing_dispatch": "DISPATCH-2026-05-02-031",
+    "closing_session": "daily-agent-session-2026-05-04",
+    "session_pinning_override": {
+      "original_directive": "DISPATCH-031.session_pinning_exception specified daily-agent-session-2026-05-02 (CORE Phase 6 close as exception to 5-4 routing rule)",
+      "override_authorized_by": "user (2026-05-04T)",
+      "override_rationale": "CORE work-stream complete at 971eec0 push. Close is procedural. 5-4 routing avoids --force-warning-ok bypass and exercises validators on calendar-current session artifacts. Cultural validator PASS 11/11 confirmed clean run on 5-4."
+    },
+    "review_status": "PASS",
+    "review_verdict": "All 11 ACs PASS, all 6 ground-truth assertions PASS, validation-report.json present with 11 numeric fields, push clean to origin/main at 971eec0. Cross-project close executed cleanly under 5-4 routing override. No --force-warning-ok bypass needed.",
+    "phase_sequence": "Phase 6 of 9-phase pipeline rebuild. Phase 0/1/2/2.5/3/4/5 already archived. Phase 7 prep authoring unblocked.",
+    "validation_report": {
+      "path": ".coderef/validation-report.json",
+      "size_bytes": 325,
+      "fields": 11,
+      "valid_edge_count": 3450,
+      "header_drift_strict_clean": true
+    },
+    "ground_truth_state": "All 6 assertions in __tests__/pipeline/graph-ground-truth.test.ts PASS post-Phase 6",
+    "test_state": "54 files / 140 tests / 0 failures",
+    "phase_1_piggyback": {
+      "fix_sha": "8b5965f",
+      "scope": "src/pipeline/extractors/element-extractor.ts:188 — add early return after class_body recursion. Mirrors function_declaration pattern at line 127.",
+      "authorized_by": "ORCHESTRATOR Option A (one-line fix as Phase 6 piggyback)",
+      "regression_test": "__tests__/element-extractor.test.ts \"Phase 1 regression: class_declaration recursion leak\" — 21/21 PASS",
+      "scope_discipline": "ONE Phase 1 fix only. No further piggybacks authorized."
+    }
+  }
+}

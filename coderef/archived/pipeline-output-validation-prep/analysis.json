@@ -1,0 +1,349 @@
+{
+  "blast_radius": {
+    "files_touched": [
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\cli\\populate.ts",
+        "reason": "Add --strict-headers flag to parseArgs() switch; add CliArgs.strictHeaders: boolean field; insert validatePipelineState(state, { strictHeaders }) call after orchestrator.run() returns and BEFORE the generator loop begins; handle ValidationResult.ok=false + errors[] to set non-zero exit; write .coderef/validation-report.json to outputDir"
+      },
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\types.ts",
+        "reason": "Add strictHeaders?: boolean to PipelineOptions interface; add ValidationReport type (11 named numeric fields); add ValidationResult type { ok: boolean, errors: ValidationError[], warnings: ValidationWarning[], report: ValidationReport }"
+      },
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\output-validator.ts",
+        "reason": "NEW FILE — single-file implementation per DR-PHASE-6-A. Exports validatePipelineState(state: PipelineState, graph: ExportedGraph, options: { strictHeaders?: boolean, layerEnum: string[] }): ValidationResult. Contains all 6 graph integrity checks and all 3 semantic header checks. Pure function: no file I/O, no process.exit, no console calls — caller handles output and exit"
+      },
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\no-output-validation.test.ts",
+        "reason": "DELETE — Phase 5 boundary enforcer is now obsolete because Phase 6 IS output validation. Same pattern: Phase 4 deleted no-call-resolution.test.ts; Phase 5 deleted no-graph-construction-leaks.test.ts"
+      },
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\no-rag-indexing.test.ts",
+        "reason": "NEW FILE — Phase 7 boundary enforcer. Asserts no Phase 7 fields (ragIndex, embeddingVector, vectorStoreId, chunkId, ragIndexedAt, ragIndexStatus) appear on graph nodes, edges, ImportResolution, CallResolution, or PipelineState after a Phase 6 pipeline run"
+      },
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\output-validation-graph-integrity.test.ts",
+        "reason": "NEW FILE — unit tests covering all 6 graph integrity checks: id uniqueness, resolved endpoint existence, no dangling resolved edges, valid relationship enum, valid resolutionStatus enum, no duplicate node identities. Each check has a PASS fixture (valid Phase 5 graph) and a FAIL fixture (injected violation). Verifies ok=false + errors[] on violation"
+      },
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\output-validation-semantic-headers.test.ts",
+        "reason": "NEW FILE — unit tests covering all 3 semantic header checks: @layer in layers.json enum, @exports match AST (headerStatus=stale aggregation), @imports non-unresolved or exempt. Verifies warnings in default mode and errors under strictHeaders:true"
+      },
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\output-validation-strict-headers.test.ts",
+        "reason": "NEW FILE — behavioral tests for --strict-headers gate: without flag, header drift produces warnings + exit 0; with flag, same drift produces errors + exit!=0. Tests both the validator return value (ok/errors/warnings) and the CLI exit code path"
+      },
+      {
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\output-validation-report.test.ts",
+        "reason": "NEW FILE — tests that the ValidationReport contains all 11 required fields with exact names and number types; that the report is deterministic (same graph, same counts); that .coderef/validation-report.json is written; that index.json carries the validation pointer"
+      }
+    ],
+    "files_read_only": [
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\graph-builder.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\orchestrator.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\header-fact.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\semantic-header-parser.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\export\\graph-exporter.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\index-generator.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\graph-generator.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\registry-generator.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\generators\\export-generator.ts",
+      "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\ASSISTANT\\STANDARDS\\layers.json"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-PHASE-6-A",
+      "title": "Validation chokepoint location",
+      "description": "populate.ts runs multiple independent generators (IndexGenerator, GraphGenerator, RegistryGenerator, ExportGenerator, etc.) sequentially or in parallel via runGenerator(). There is NO single 'before write' hook inside orchestrator.ts — orchestrator.run() returns the PipelineState and does not call generators. The generators are fired in populate.ts after orchestrator.run() returns. The correct chokepoint is therefore in populate.ts, immediately after const state = await orchestrator.run(...) and BEFORE the generators loop.",
+      "recommendation": "Insert validatePipelineState(state, v2Graph, { strictHeaders, layerEnum }) as a blocking call after orchestrator.run() and before the generators array iteration. If validation fails (ok=false), skip ALL generators and exit non-zero. This is the cleanest single chokepoint that precedes every write surface (index.json, graph.json, semantic-registry.json, exports/graph.json). Do NOT insert inside orchestrator.ts — orchestrator is a pure pipeline runner and should not own write-boundary policy.",
+      "approach": "validatePipelineState called once in populate.ts run() before generator loop. On ok=false: log errors, skip generators, process.exit(1). On ok=true with warnings: log warnings to stderr, continue. The validator receives state.graph (ExportedGraph, the Phase 5 canonical graph) and state (PipelineState, for headerStatus aggregation)."
+    },
+    {
+      "id": "R-PHASE-6-B",
+      "title": "Fail-hard vs warning policy granularity",
+      "description": "The boundary between 'graph integrity' (always fail-hard) and 'header drift' (warn by default, fail-hard under --strict-headers) must be precisely defined to avoid misclassification. Misclassifying header drift as graph integrity makes default mode reject valid runs. Misclassifying graph integrity as header drift makes default mode silently emit corrupt graphs.",
+      "graph_integrity_checks": [
+        "node ID uniqueness: two graph.nodes with same id — always fail-hard",
+        "resolved edge endpoint existence: edge.resolutionStatus='resolved' AND (sourceId not in nodeIds OR targetId not in nodeIds) — always fail-hard",
+        "no dangling resolved edges: edge.resolutionStatus='resolved' AND targetId is undefined/absent — always fail-hard (Phase 5 honest-demotion invariant)",
+        "valid relationship enum: edge.relationship not in { import, call, export, header-import } — always fail-hard",
+        "valid resolutionStatus enum: edge.resolutionStatus not in { resolved, unresolved, ambiguous, external, builtin, dynamic, typeOnly, stale } — always fail-hard",
+        "no duplicate node identities: two nodes share same (name, file) — always fail-hard"
+      ],
+      "header_drift_checks": [
+        "@layer in layers.json enum: headerStatus='defined' but layer value not in the 13-member layers.json id list — warn by default, fail-hard under --strict-headers",
+        "@exports match AST: headerStatus='stale' (already downgraded by orchestrator Phase 2.5 cross-check at orchestrator.ts:467-473) aggregated into header_export_mismatch_count — warn by default, fail-hard under --strict-headers",
+        "@imports non-unresolved or exempt: HeaderImportFact entry for a 'defined' file maps to an 'unresolved' ImportResolution and file is not exempt — warn by default, fail-hard under --strict-headers"
+      ]
+    },
+    {
+      "id": "R-PHASE-6-C",
+      "title": "Validation report shape stability",
+      "description": "The 11 stats fields become a public artifact contract. Once CI and dashboards read .coderef/validation-report.json, the field names and types are stable forever. Phase 6 must lock the schema at ship time and treat it as additive-only going forward.",
+      "locked_fields": {
+        "valid_edge_count": "number — count of edges with resolutionStatus='resolved' that pass endpoint-existence check",
+        "unresolved_count": "number — count of edges with resolutionStatus='unresolved'",
+        "ambiguous_count": "number — count of edges with resolutionStatus='ambiguous'",
+        "external_count": "number — count of edges with resolutionStatus='external'",
+        "builtin_count": "number — count of edges with resolutionStatus='builtin'",
+        "header_defined_count": "number — count of files/elements with headerStatus='defined'",
+        "header_missing_count": "number — count of files/elements with headerStatus='missing'",
+        "header_stale_count": "number — count of files/elements with headerStatus='stale'",
+        "header_partial_count": "number — count of files/elements with headerStatus='partial'",
+        "header_layer_mismatch_count": "number — count of files with headerStatus='defined' but layer not in layers.json enum",
+        "header_export_mismatch_count": "number — count of files with headerStatus='stale' (export mismatch already detected by Phase 2.5)"
+      },
+      "mitigation": "Define ValidationReport as a named TypeScript interface in types.ts with all 11 fields as required numbers. Never use Record<string, number>. Test the exact field names in output-validation-report.test.ts. Do not add new fields in Phase 6 without a schema version bump."
+    },
+    {
+      "id": "R-PHASE-6-D",
+      "title": "--strict-headers flag default behavior across consumers",
+      "description": "The --strict-headers flag is new. Its absence must not change existing populate-coderef behavior beyond adding warning emissions. If the flag defaults to anything other than false, or if it is read from an environment variable without an explicit override mechanism, consumers (scripts, CI) that do not set the flag may get unexpected behavior.",
+      "mitigation": "Flag default is false (CliArgs.strictHeaders = false). No environment variable fallback — CLI flag only, no magic. When absent, header drift produces console.warn to stderr and non-zero header_*_count fields in the report, but exit code 0. CI sets --strict-headers explicitly in its populate-coderef invocation. Test: run pipeline on a fixture with known header drift WITHOUT flag → exit 0 + warnings; same run WITH flag → exit 1 + errors."
+    },
+    {
+      "id": "R-PHASE-6-E",
+      "title": "AC-05 honest-demotion pattern from Phase 5",
+      "description": "Phase 5 demoted 1/3289 ImportResolutions from kind='resolved' to resolutionStatus='external' when resolvedTargetCodeRefId was absent (execution-notes.md 'Demotion of resolved-without-target to external' section). Phase 6's resolved-edge-endpoint-existence check must NOT regress this. If a future Phase 3 change emits an edge with resolutionStatus='resolved' but targetId undefined, Phase 6 must catch it as a graph integrity violation and fail-hard, forcing the resolver to demote correctly rather than silently passing the corrupt edge through.",
+      "invariant": "Phase 6 owns: for every edge where edge.resolutionStatus === 'resolved', both edge.sourceId and edge.targetId MUST be (a) present/non-undefined and (b) members of the graph.nodes id set. Violation → fail-hard regardless of --strict-headers. This invariant specifically catches the 'resolved-but-no-targetId' pattern that Phase 5 discovered and manually handled by demotion.",
+      "mitigation": "In output-validator.ts, the resolved-endpoint-existence check runs BEFORE the dangling-resolved-edge check. If targetId is undefined, the edge fails the dangling check (fail-hard). If targetId is defined but not in nodeIds, it fails the endpoint-existence check (also fail-hard). Both paths produce a structured ValidationError with the edge.id and the specific violation type."
+    },
+    {
+      "id": "R-PHASE-6-F",
+      "title": "Header status aggregation requires deduplicated file-level view",
+      "description": "headerStatus is stamped on every element in a file (orchestrator.ts:476-480). A 100-element file with headerStatus='missing' would count as 100 if naively iterating state.elements. The report fields header_defined_count etc. must count FILES, not elements.",
+      "mitigation": "In validatePipelineState, build a Map<string, HeaderStatus> keyed by element.file (or headerFact.sourceFile), taking the first/canonical headerStatus per file. The 11 header_* counts are file-grain counts, not element-grain. Document this in the ValidationReport TypeScript interface JSDoc."
+    }
+  ],
+  "decision_records": [
+    {
+      "id": "DR-PHASE-6-A",
+      "title": "Validator location: single file src/pipeline/output-validator.ts",
+      "decision": "Create a single new file src/pipeline/output-validator.ts. This file exports one public function validatePipelineState and the ValidationResult/ValidationError/ValidationWarning types. Do NOT embed inside graph-builder.ts (graph construction is Phase 5's concern; mixing in Phase 6 policy violates phase boundaries). Do NOT create a src/pipeline/validation/ directory with multiple files — Phase 6 has exactly two validator surfaces (graph integrity + semantic headers), and splitting them across files adds indirection without benefit at this scale.",
+      "rationale": "Single file mirrors the pattern of graph-builder.ts (single authoritative path). The two validator surfaces (graph integrity + semantic headers) share the same ValidationResult return type and the same layers.json enum input, making a shared file more coherent. A src/pipeline/validation/ directory would be warranted only if Phase 7+ adds more validators requiring separate test isolation — defer until needed."
+    },
+    {
+      "id": "DR-PHASE-6-B",
+      "title": "Fail-hard mechanism: return result object, caller decides exit-vs-throw",
+      "decision": "validatePipelineState returns ValidationResult { ok: boolean, errors: ValidationError[], warnings: ValidationWarning[], report: ValidationReport }. It does NOT throw, does NOT call process.exit, does NOT write to console. The caller (populate.ts run()) inspects ok and errors.length, writes warnings to stderr, and calls process.exit(1) when ok===false. This decouples the validator from process semantics.",
+      "rationale": "Result object is easier to test (no mock for process.exit or console), reusable from non-CLI contexts (e.g., a future API endpoint or watch-mode integration), and consistent with Phase 5's constructGraph which also returns a value rather than throwing. The CLI owns the exit decision because it owns the I/O surface."
+    },
+    {
+      "id": "DR-PHASE-6-C",
+      "title": "Validation report destination: new .coderef/validation-report.json PLUS pointer in index.json",
+      "decision": "Phase 6 writes a new file .coderef/validation-report.json containing the full ValidationReport (11 stats fields + generatedAt ISO timestamp + schemaVersion string). In addition, populate.ts adds a validation_report field to the index.json output (via IndexGenerator options or a post-write patch) pointing at './validation-report.json'. This makes the report discoverable from the primary artifact without embedding the 11 numeric fields directly in index.json's element array.",
+      "rationale": "New file separates concerns (consumers that only want the graph don't parse validation noise). Pointer in index.json satisfies roadmap line 404 ('validation stats appear in generated artifacts') without bloating the primary element inventory. The pointer pattern mirrors how .coderef/index.json already references reports/complexity/ and reports/patterns.json via relative paths."
+    },
+    {
+      "id": "DR-PHASE-6-D",
+      "title": "--strict-headers flag plumbing: CLI flag → CliArgs → validatePipelineState option",
+      "decision": "The flag is a CLI argument only (no env var, no config file). Plumbing: (1) src/cli/populate.ts parseArgs() adds case '--strict-headers': args.strictHeaders = true; (2) CliArgs interface adds strictHeaders: boolean (default false); (3) populate.ts run() passes { strictHeaders: args.strictHeaders } to validatePipelineState; (4) src/pipeline/types.ts adds strictHeaders?: boolean to PipelineOptions for documentation completeness, but orchestrator.run() itself does NOT receive or forward the flag — orchestrator stays unaware of validation policy; (5) validatePipelineState option type is { strictHeaders?: boolean, layerEnum: string[] } where layerEnum is loaded from ASSISTANT/STANDARDS/layers.json by the caller before invoking the validator.",
+      "field_name": "strictHeaders",
+      "default": false,
+      "rationale": "CLI flag is roadmap-canonical. Environment variable fallback is avoided (magic, hard to audit in CI). Config file is overkill for a single boolean. Passing layerEnum as an option (rather than importing layers.json inside the validator) keeps the validator pure and testable without filesystem access."
+    }
+  ],
+  "resolution_surface": {
+    "graph_integrity_checks": [
+      {
+        "id": "GI-1",
+        "name": "node_id_uniqueness",
+        "description": "No two elements in graph.nodes share the same id value",
+        "fail_mode": "always fail-hard",
+        "error_shape": "{ check: 'node_id_uniqueness', duplicateId: string, count: number }"
+      },
+      {
+        "id": "GI-2",
+        "name": "resolved_edge_endpoint_existence",
+        "description": "Every edge with resolutionStatus='resolved' has both sourceId AND targetId present as members of the graph.nodes id set",
+        "fail_mode": "always fail-hard",
+        "error_shape": "{ check: 'resolved_edge_endpoint_existence', edgeId: string, missing: 'sourceId' | 'targetId', value: string }"
+      },
+      {
+        "id": "GI-3",
+        "name": "no_dangling_resolved_edges",
+        "description": "Every edge with resolutionStatus='resolved' has targetId defined and non-undefined (the Phase 5 honest-demotion invariant — a resolver that cannot produce a targetId must demote to 'external', not emit a resolved edge with absent targetId)",
+        "fail_mode": "always fail-hard",
+        "error_shape": "{ check: 'no_dangling_resolved_edges', edgeId: string, sourceId: string }"
+      },
+      {
+        "id": "GI-4",
+        "name": "valid_relationship_enum",
+        "description": "Every edge.relationship is one of { import, call, export, header-import }",
+        "fail_mode": "always fail-hard",
+        "error_shape": "{ check: 'valid_relationship_enum', edgeId: string, relationship: string }"
+      },
+      {
+        "id": "GI-5",
+        "name": "valid_resolution_status_enum",
+        "description": "Every edge.resolutionStatus is one of { resolved, unresolved, ambiguous, external, builtin, dynamic, typeOnly, stale }",
+        "fail_mode": "always fail-hard",
+        "error_shape": "{ check: 'valid_resolution_status_enum', edgeId: string, resolutionStatus: string }"
+      },
+      {
+        "id": "GI-6",
+        "name": "no_duplicate_node_identities",
+        "description": "No two graph.nodes share both the same name field AND the same file field — element-identity collision independent of id hash",
+        "fail_mode": "always fail-hard",
+        "error_shape": "{ check: 'no_duplicate_node_identities', name: string, file: string, ids: string[] }"
+      }
+    ],
+    "semantic_header_checks": [
+      {
+        "id": "SH-1",
+        "name": "layer_in_enum",
+        "description": "Every file with headerStatus='defined' must have a layer value that appears in the 13-member id list from ASSISTANT/STANDARDS/layers.json. Phase 2.5 validates @layer at parse time; Phase 6 catches drift between parse-time (layer was valid) and write-time (layer value is now absent from the current layers.json)",
+        "fail_mode": "warn by default; fail-hard under --strict-headers",
+        "warning_shape": "{ check: 'layer_in_enum', file: string, layer: string, knownLayers: string[] }"
+      },
+      {
+        "id": "SH-2",
+        "name": "exports_match_ast",
+        "description": "Files where headerStatus='stale' (already downgraded by orchestrator.ts:467-473 @exports cross-check) are aggregated into header_export_mismatch_count. Phase 6 does NOT re-run the cross-check; it reads the already-computed headerStatus='stale' value",
+        "fail_mode": "warn by default; fail-hard under --strict-headers",
+        "warning_shape": "{ check: 'exports_match_ast', file: string, headerStatus: 'stale' }"
+      },
+      {
+        "id": "SH-3",
+        "name": "imports_non_unresolved",
+        "description": "For every file with headerStatus='defined', every HeaderImportFact entry (state.headerImportFacts for that file) should map to a non-unresolved ImportResolution. Files without any HeaderImportFacts are implicitly exempt. If a project-wide 'exempt' header tag is added in a future phase, Phase 6 should respect it; for now, exemption is file-level absence of @imports declarations",
+        "fail_mode": "warn by default; fail-hard under --strict-headers",
+        "warning_shape": "{ check: 'imports_non_unresolved', file: string, unresolvedImports: Array<{ module: string, symbol: string }> }"
+      }
+    ],
+    "validation_report_fields": [
+      { "field": "valid_edge_count", "type": "number", "source": "edges with resolutionStatus='resolved' that pass GI-2 and GI-3" },
+      { "field": "unresolved_count", "type": "number", "source": "edges with resolutionStatus='unresolved'" },
+      { "field": "ambiguous_count", "type": "number", "source": "edges with resolutionStatus='ambiguous'" },
+      { "field": "external_count", "type": "number", "source": "edges with resolutionStatus='external'" },
+      { "field": "builtin_count", "type": "number", "source": "edges with resolutionStatus='builtin'" },
+      { "field": "header_defined_count", "type": "number", "source": "unique files with headerStatus='defined' (file-grain, not element-grain)" },
+      { "field": "header_missing_count", "type": "number", "source": "unique files with headerStatus='missing'" },
+      { "field": "header_stale_count", "type": "number", "source": "unique files with headerStatus='stale'" },
+      { "field": "header_partial_count", "type": "number", "source": "unique files with headerStatus='partial'" },
+      { "field": "header_layer_mismatch_count", "type": "number", "source": "unique files with headerStatus='defined' AND layer not in layers.json enum (SH-1 violations)" },
+      { "field": "header_export_mismatch_count", "type": "number", "source": "unique files with headerStatus='stale' (SH-2, already caught by Phase 2.5)" }
+    ],
+    "strict_headers_flag_plumbing": {
+      "cli_arg": "--strict-headers",
+      "cli_args_field": "strictHeaders: boolean (default false)",
+      "pipeline_options_field": "strictHeaders?: boolean (optional, default false, in PipelineOptions for documentation; orchestrator does not use it)",
+      "validator_option": "strictHeaders?: boolean in the options parameter of validatePipelineState",
+      "effect_when_true": "semantic header check violations (SH-1, SH-2, SH-3) are promoted from warnings[] to errors[]; ValidationResult.ok becomes false; populate.ts exits with code 1",
+      "effect_when_false_or_absent": "semantic header check violations appear in warnings[] only; ValidationResult.ok is true unless graph integrity violations also present; populate.ts exits with code 0"
+    },
+    "exit_code_behavior": {
+      "graph_integrity_violation": "exit 1 always — regardless of --strict-headers",
+      "header_drift_without_flag": "exit 0 — warnings emitted to stderr, non-zero header_*_count in report",
+      "header_drift_with_strict_headers": "exit 1 — same drift treated as hard error",
+      "clean_run": "exit 0 — ok=true, empty errors[], empty warnings[], all report counts reflect actual graph state"
+    }
+  },
+  "ground_truth_test_mapping": {
+    "note": "Phase 6 is the first phase where all 6 ground-truth assertions are already PASSING. Phase 6 must not break any of them. Phase 6 is read-only over the graph and PipelineState; it does not mutate nodes, edges, or resolutions.",
+    "tests": [
+      {
+        "assertion": "requires resolved import and call edges to use graph node IDs as endpoints",
+        "test_file": "__tests__/pipeline/graph-ground-truth.test.ts line 52 (expectResolvedEndpointIds)",
+        "phase_5_status": "PASS — flipped in Phase 5, 3290/3290 resolved edges have both sourceId + targetId in graph.nodes",
+        "phase_6_impact": "PASS — Phase 6 validates this invariant rather than changing it; validatePipelineState GI-2 and GI-3 enforce the same contract",
+        "risk": "None — Phase 6 is read-only; if GI-2/GI-3 catch a violation, it means Phase 5 regressed, not Phase 6"
+      },
+      {
+        "assertion": "requires unresolved imports and calls to be explicit graph facts",
+        "test_file": "__tests__/pipeline/graph-ground-truth.test.ts (expectUnresolved helper)",
+        "phase_5_status": "PASS in Phase 4, preserved through Phase 5 schema migration",
+        "phase_6_impact": "PASS — Phase 6 counts unresolved edges into unresolved_count; does not remove or modify them",
+        "risk": "None"
+      },
+      {
+        "assertion": "requires duplicate function name calls to be marked ambiguous with candidate IDs",
+        "test_file": "__tests__/pipeline/graph-ground-truth.test.ts (expectAmbiguous helper)",
+        "phase_5_status": "PASS — top-level edge.candidates[] with >= 2 codeRefIds",
+        "phase_6_impact": "PASS — Phase 6 counts ambiguous edges into ambiguous_count; does not mutate candidates[]",
+        "risk": "None"
+      },
+      {
+        "assertion": "requires alias imports to bind the local alias back to the exported source symbol",
+        "test_file": "__tests__/pipeline/graph-ground-truth.test.ts",
+        "phase_5_status": "PASS — top-level resolutionStatus + targetId carry import alias binding",
+        "phase_6_impact": "PASS — Phase 6 reads resolutionStatus/targetId for GI checks; does not alter them",
+        "risk": "None"
+      },
+      {
+        "assertion": "requires nested functions and class method calls to preserve qualified context",
+        "test_file": "__tests__/pipeline/graph-ground-truth.test.ts",
+        "phase_5_status": "PASS — top-level targetId carries entry.inner / Service.handle codeRefIds",
+        "phase_6_impact": "PASS — Phase 6 reads targetId; does not rewrite it",
+        "risk": "None"
+      },
+      {
+        "assertion": "requires graph validation to distinguish resolved, unresolved, and ambiguous edges",
+        "test_file": "__tests__/pipeline/graph-ground-truth.test.ts (all-edge invariant, broadened to 8 EdgeResolutionStatus values in Phase 5)",
+        "phase_5_status": "PASS — all 8 resolutionStatus values accepted",
+        "phase_6_impact": "PASS — Phase 6 GI-5 validates the 8-member enum; any edge with an out-of-enum status fails hard, which would mean Phase 5 regressed, not Phase 6",
+        "risk": "None"
+      }
+    ]
+  },
+  "cross_phase_dependencies": {
+    "phase_5_to_phase_6": {
+      "what_phase_6_reads": [
+        "graph.nodes: ExportedGraph.nodes[] — Phase 6 builds a Set<string> of node ids for endpoint-existence checks (GI-2, GI-3, GI-6)",
+        "graph.edges: ExportedGraph.edges[] — Phase 6 iterates every edge for all 6 graph integrity checks and derives valid_edge_count, unresolved_count, ambiguous_count, external_count, builtin_count",
+        "edge.id: string (16-hex sha1 per DR-PHASE-5-D) — used in ValidationError shape for precise error attribution",
+        "edge.sourceId: string — canonical codeRefId of import/call source",
+        "edge.targetId?: string — present only for resolutionStatus='resolved' (DR-PHASE-5-A omission contract); Phase 6 GI-3 treats absence on a resolved edge as a violation",
+        "edge.relationship: EdgeRelationship — validated against { import, call, export, header-import } enum (GI-4)",
+        "edge.resolutionStatus: EdgeResolutionStatus — validated against 8-member enum (GI-5); used to classify edges into report buckets",
+        "edge.candidates?: string[] — Phase 6 does not validate candidates contents; ambiguous_count counts by resolutionStatus='ambiguous'"
+      ],
+      "emission_contract": "Phase 5 guarantees: every resolved edge has both sourceId and targetId in graph.nodes (AC-02, 3290/3290 on real coderef-core). Phase 6 trusts this contract on green runs and reports violations if Phase 5 ever regresses. The demotion pattern (resolved-without-target → external) was established in Phase 5 execution-notes.md; Phase 6 GI-3 makes it a hard invariant."
+    },
+    "phase_2_5_to_phase_6": {
+      "what_phase_6_reads": [
+        "element.headerStatus: HeaderStatus ('defined' | 'missing' | 'stale' | 'partial') — stamped on every element by orchestrator.ts:476-480; Phase 6 builds a file-grain Map<file, HeaderStatus> for the 4 header_*_count fields and for SH-1/SH-2/SH-3 checks",
+        "element.headerFact?: HeaderFact — contains headerFact.layer (for SH-1 layer-in-enum check) and headerFact.imports (for SH-3 imports-non-unresolved check)",
+        "state.headerImportFacts: HeaderImportFact[] — used by SH-3 to identify which files have @imports declarations; cross-referenced with state.importResolutions to find unresolved entries",
+        "state.importResolutions: ImportResolution[] — SH-3 reads resolutionStatus to check whether a HeaderImportFact maps to an 'unresolved' resolution"
+      ],
+      "note": "Phase 2.5's @exports cross-check at orchestrator.ts:467-473 already downgrades headerStatus from 'defined' to 'stale' when the header @exports list does not match AST exports. Phase 6 does NOT re-run this check — it reads the already-computed headerStatus='stale' and counts it into header_export_mismatch_count (SH-2). Phase 6 aggregates; Phase 2.5 detects."
+    },
+    "phase_6_to_phase_7": {
+      "what_phase_7_can_rely_on": [
+        "If the Phase 6 pipeline run exits 0, the graph written to .coderef/exports/graph.json passes all 6 graph integrity checks — every resolved edge has valid endpoints in graph.nodes, all enum values are members of the canonical sets",
+        ".coderef/validation-report.json exists with all 11 stats fields as numbers — Phase 7's RAG indexer can read valid_edge_count to decide how many edges to index without re-reading the full graph",
+        "Graph corruption (missing endpoints, invalid enums) cannot silently reach Phase 7's indexing layer — Phase 6 fails-hard before any write occurs",
+        "No RAG-specific fields (ragIndex, embeddingVector, vectorStoreId, chunkId) are present on graph nodes, edges, or PipelineState after Phase 6 — enforced by the no-rag-indexing.test.ts boundary enforcer"
+      ]
+    }
+  },
+  "test_planning_notes": {
+    "boundary_enforcer_deletion": "__tests__/pipeline/no-output-validation.test.ts MUST be deleted as Phase 6 entry task. This file asserts that Phase 6 fields (strictHeadersViolation, headerDriftScore, schemaValidationResult, outputGateResult, strictHeadersMode, validationResults, outputConstraints, validationErrors) do not appear on graph nodes/edges/PipelineState. Phase 6 IS output validation — the enforcer is now obsolete. Document deletion in execution-notes.md. Same pattern as Phase 4 deleting no-call-resolution.test.ts and Phase 5 deleting no-graph-construction-leaks.test.ts.",
+    "boundary_enforcer_creation": "__tests__/pipeline/no-rag-indexing.test.ts MUST be created as Phase 6 exit task. Asserts no Phase 7 fields (ragIndex, embeddingVector, vectorStoreId, chunkId, ragIndexedAt, ragIndexStatus) appear on any pipeline surface after a Phase 6 pipeline run. Same enforcement shape as prior boundary enforcers, shifted forward one phase boundary.",
+    "candidate_test_files": [
+      {
+        "file": "__tests__/pipeline/output-validation-graph-integrity.test.ts",
+        "covers": "AC-02 (graph integrity violations = non-zero exit), AC-07 (honest-demotion invariant), AC-10 (no ground-truth regressions). Unit tests with inline fixtures for all 6 GI checks. Each check: one PASS fixture (valid Phase 5 graph slice), one FAIL fixture (injected violation). Verifies ok=false + errors[] with correct shape."
+      },
+      {
+        "file": "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+        "covers": "AC-03 (header drift = warn by default / fail under --strict-headers), SH-1/SH-2/SH-3. Uses inline state fixtures with headerStatus='defined'/'stale'/'partial'/'missing' stamped on elements. Verifies warnings[] in default mode, errors[] under strictHeaders:true."
+      },
+      {
+        "file": "__tests__/pipeline/output-validation-strict-headers.test.ts",
+        "covers": "AC-03 exit code behavior, AC-06 (flag default=false, absence preserves pre-Phase-6 behavior). Exercises the populate.ts CLI exit path via subprocess or mock process.exit. Verifies exit 0 without flag, exit 1 with flag, on identical header-drift input."
+      },
+      {
+        "file": "__tests__/pipeline/output-validation-report.test.ts",
+        "covers": "AC-04 (all 11 fields present, exact names, number types), AC-05 (report destination deterministic), AC-08 (validator is pure/deterministic). Runs validatePipelineState twice on identical input, deepStrictEqual on both reports. Checks that output-dir contains validation-report.json with the required fields. Checks index.json has validation pointer."
+      },
+      {
+        "file": "__tests__/pipeline/no-rag-indexing.test.ts",
+        "covers": "AC-09 (Phase 7 boundary enforcer). Asserts Phase 7 fields absent from all pipeline surfaces after Phase 6 run."
+      }
+    ],
+    "snapshot_note": "pipeline-snapshot.test.ts may fail or pass depending on whether the snapshot includes .coderef/validation-report.json and the new index.json validation pointer field. Phase 6 must NOT treat snapshot resolution as an exit criterion — if the snapshot fails, update it explicitly after all other exit criteria PASS. Do not let snapshot test status block Phase 6 sign-off."
+  }
+}
