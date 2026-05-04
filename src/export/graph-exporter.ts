@@ -19,7 +19,36 @@ import protobuf from 'protobufjs';
 export type ExportFormat = 'json' | 'protobuf';
 
 /**
- * Exported graph structure
+ * Phase 5 canonical edge relationship (re-exported from
+ * src/pipeline/graph-builder.ts via type-only import to avoid a
+ * circular module dependency with the graph-exporter consumer).
+ */
+export type ExportedGraphEdgeRelationship =
+  | 'import'
+  | 'call'
+  | 'export'
+  | 'header-import';
+
+export type ExportedGraphEdgeResolutionStatus =
+  | 'resolved'
+  | 'unresolved'
+  | 'ambiguous'
+  | 'external'
+  | 'builtin'
+  | 'dynamic'
+  | 'typeOnly'
+  | 'stale';
+
+/**
+ * Exported graph structure.
+ *
+ * WO-PIPELINE-GRAPH-CONSTRUCTION-001 / Phase 5: edges adopt the
+ * 8-field canonical schema (id, sourceId, targetId conditional,
+ * relationship, resolutionStatus, evidence, sourceLocation,
+ * candidates) per DR-PHASE-5-D. Legacy fields (source, target,
+ * type, metadata) are kept populated for backwards-compat consumers
+ * during the transition window. A future cleanup workorder removes
+ * the legacy fields.
  */
 export interface ExportedGraph {
   version: string;
@@ -34,10 +63,34 @@ export interface ExportedGraph {
     metadata?: Record<string, any>;
   }>;
   edges: Array<{
+    // Phase 5 canonical fields (8-field schema):
+    /** Required. Deterministic 16-hex-char hash; unique within graph. */
+    id?: string;
+    /** Required. Canonical codeRefId of source element. */
+    sourceId?: string;
+    /** Conditional. Canonical codeRefId of target; absent for non-resolved. */
+    targetId?: string;
+    /** Required. import|call|export|header-import. */
+    relationship?: ExportedGraphEdgeRelationship;
+    /** Required. resolved|unresolved|ambiguous|external|builtin|dynamic|typeOnly|stale. */
+    resolutionStatus?: ExportedGraphEdgeResolutionStatus;
+    /** Conditional. Structured evidence keyed by relationship kind. */
+    evidence?: Record<string, unknown>;
+    /** Conditional. {file, line} of the import/call statement. */
+    sourceLocation?: { file: string; line: number };
+    /** Conditional. >=2 codeRefIds for resolutionStatus='ambiguous'. */
+    candidates?: string[];
+    /** Reason string for non-resolved kinds. */
+    reason?: string;
+    // Legacy compat fields (kept populated through Phase 5):
+    /** @deprecated use sourceId instead. */
     source: string;
+    /** @deprecated use targetId or evidence.originSpecifier instead. */
     target: string;
+    /** @deprecated use relationship instead. */
     type: string;
     weight?: number;
+    /** @deprecated structured fields above replace metadata for canonical edges. */
     metadata?: Record<string, any>;
   }>;
   statistics: {
