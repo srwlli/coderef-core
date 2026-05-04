@@ -174,45 +174,48 @@ export function vendoredPad(value: string): string {
     });
 
     it('should extract import relationships', () => {
-      // Find imports in index.ts
-      const indexImports = state.graph.edges.filter(
-        e => e.type === 'imports' && e.source.includes('index.ts')
-      );
+      // Phase 5 schema migration: edge type 'imports' → 'import';
+      // edge.source is now a canonical codeRefId or file-grain id
+      // (e.g. @File/src/index.ts); edge.target is a codeRefId for
+      // resolved imports OR absent for non-resolved. Match by
+      // evidence.originSpecifier instead of legacy edge.target.
+      const indexImports = state.graph.edges.filter(e => {
+        if (e.relationship !== 'import' && e.type !== 'imports') return false;
+        const sourceFile = (e.evidence as Record<string, unknown> | undefined)?.sourceFile
+          ?? (e.sourceLocation as { file?: string } | undefined)?.file
+          ?? e.source;
+        return typeof sourceFile === 'string' && sourceFile.includes('index.ts');
+      });
 
       expect(indexImports.length).toBeGreaterThanOrEqual(2);
 
-      // getUserData import
-      const userImport = indexImports.find(e => e.target === './user');
-      expect(userImport).toBeDefined();
-      if (userImport?.metadata?.specifiers) {
-        expect(userImport.metadata.specifiers).toContain('getUserData');
-      }
+      const findBySpec = (spec: string) => indexImports.find(e => {
+        const ev = e.evidence as Record<string, unknown> | undefined;
+        return ev?.originSpecifier === spec;
+      });
 
+      // getUserData import
+      expect(findBySpec('./user')).toBeDefined();
       // formatDate import
-      const utilsImport = indexImports.find(e => e.target === './utils');
-      expect(utilsImport).toBeDefined();
-      if (utilsImport?.metadata?.specifiers) {
-        expect(utilsImport.metadata.specifiers).toContain('formatDate');
-      }
+      expect(findBySpec('./utils')).toBeDefined();
     });
 
     it('should extract call relationships', () => {
-      // Find calls in index.ts processUser function
-      const calls = state.graph.edges.filter(e => e.type === 'calls');
+      // Phase 5: edge type 'calls' → 'call'; edge source / target are
+      // canonical codeRefIds; calleeName lives in evidence.calleeName.
+      const calls = state.graph.edges.filter(
+        e => e.relationship === 'call' || e.type === 'calls',
+      );
 
       expect(calls.length).toBeGreaterThanOrEqual(2);
 
-      // getUserData call
-      const getUserDataCall = calls.find(
-        c => c.source === 'processUser' && c.target === 'getUserData'
-      );
-      expect(getUserDataCall).toBeDefined();
+      const findCallByCallee = (callee: string) => calls.find(c => {
+        const ev = c.evidence as Record<string, unknown> | undefined;
+        return ev?.calleeName === callee;
+      });
 
-      // formatDate call
-      const formatDateCall = calls.find(
-        c => c.source === 'processUser' && c.target === 'formatDate'
-      );
-      expect(formatDateCall).toBeDefined();
+      expect(findCallByCallee('getUserData')).toBeDefined();
+      expect(findCallByCallee('formatDate')).toBeDefined();
     });
 
     it('should build dependency graph', () => {
@@ -220,10 +223,15 @@ export function vendoredPad(value: string): string {
       expect(state.graph.nodes).toBeDefined();
       expect(state.graph.edges).toBeDefined();
 
-      // Nodes should include all elements
-      expect(state.graph.nodes.length).toBe(state.elements.length);
+      // Phase 5: graph.nodes includes element-grain nodes PLUS
+      // file-grain pseudo-nodes (one per file with elements/imports
+      // — needed as source endpoints for module-level imports).
+      // Element-grain nodes equal state.elements; file-grain nodes
+      // are the difference.
+      const elementNodes = state.graph.nodes.filter(n => n.type !== 'file');
+      expect(elementNodes.length).toBe(state.elements.length);
 
-      // Each node should have required fields
+      // Each node should have required fields.
       for (const node of state.graph.nodes) {
         expect(node.id).toBeDefined();
         expect(node.type).toBeDefined();
@@ -232,11 +240,11 @@ export function vendoredPad(value: string): string {
         expect(node.line).toBeGreaterThan(0);
       }
 
-      // Edges should include imports + calls
+      // Edges should include imports + calls (Phase 5: 'import' / 'call').
       expect(state.graph.edges.length).toBeGreaterThan(0);
 
-      const importEdges = state.graph.edges.filter(e => e.type === 'imports');
-      const callEdges = state.graph.edges.filter(e => e.type === 'calls');
+      const importEdges = state.graph.edges.filter(e => e.relationship === 'import' || e.type === 'imports');
+      const callEdges = state.graph.edges.filter(e => e.relationship === 'call' || e.type === 'calls');
 
       expect(importEdges.length).toBeGreaterThanOrEqual(2); // At least 2 imports in index.ts
       expect(callEdges.length).toBeGreaterThanOrEqual(2); // At least 2 calls in index.ts
