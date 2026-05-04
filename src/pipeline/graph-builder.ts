@@ -386,7 +386,31 @@ export function buildEdges(
     // localName) tuple, and importerCodeRefId disambiguates further.
     const line = 0;
 
-    // Branch on resolution kind.
+    // Branch on resolution kind. If kind='resolved' but no
+    // resolvedTargetCodeRefId (module bound, but the symbol's element
+    // wasn't extracted — e.g., a re-exported constant from an
+    // unscanned file), demote to 'external' so the graph stays
+    // honest. AC-05 requires resolved edges to have targetId.
+    if (ir.kind === 'resolved' && !ir.resolvedTargetCodeRefId) {
+      const id = computeEdgeId({
+        sourceId,
+        relationship,
+        originSpecifier: ir.originSpecifier,
+        sourceFile,
+        line,
+      });
+      const evidence: EdgeEvidence = {
+        kind: 'external-import',
+        originSpecifier: ir.originSpecifier,
+      };
+      edges.push(buildEdgeRecord({
+        id, sourceId, relationship,
+        resolutionStatus: 'external',
+        evidence,
+        sourceLocation: { file: sourceFile, line },
+      }));
+      continue;
+    }
     if (ir.kind === 'resolved') {
       const targetId = ir.resolvedTargetCodeRefId;
       let evidence: EdgeEvidence;
