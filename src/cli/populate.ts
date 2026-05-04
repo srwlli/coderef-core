@@ -8,6 +8,8 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { PipelineOrchestrator } from '../pipeline/orchestrator.js';
 import type { PipelineState } from '../pipeline/types.js';
+import { validatePipelineState } from '../pipeline/output-validator.js';
+import { loadLayerEnum } from '../pipeline/element-taxonomy.js';
 import { IndexGenerator } from '../pipeline/generators/index-generator.js';
 import { GraphGenerator } from '../pipeline/generators/graph-generator.js';
 import { ComplexityGenerator } from '../pipeline/generators/complexity-generator.js';
@@ -41,6 +43,7 @@ interface CliArgs {
   semanticRegistry: boolean;
   sourceHeaders: boolean;
   llmEnrich: boolean;
+  strictHeaders: boolean;
 }
 
 interface GeneratorRunner {
@@ -69,6 +72,7 @@ function parseArgs(argv: string[]): CliArgs {
     semanticRegistry: true,
     sourceHeaders: false,
     llmEnrich: false,
+    strictHeaders: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -139,6 +143,10 @@ function parseArgs(argv: string[]): CliArgs {
 
       case '--llm-enrich':
         args.llmEnrich = true;
+        break;
+
+      case '--strict-headers':
+        args.strictHeaders = true;
         break;
 
       default:
@@ -267,6 +275,31 @@ async function run(args: CliArgs): Promise<void> {
       select: args.select,
     });
 
+    // Phase 6 chokepoint (R-PHASE-6-A). Single validation surface preceding
+    // every write. On ok=false: log errors, skip generators, exit 1. On
+    // ok=true with warnings: log warnings to stderr, continue. The validator
+    // is pure (no fs, no process.exit, no console). Task 1.10 fleshes out
+    // failure handling and validation-report.json emission.
+    const layerEnum = loadLayerEnum();
+    const validation = validatePipelineState(state, state.graph, {
+      strictHeaders: args.strictHeaders,
+      layerEnum,
+    });
+    if (!validation.ok) {
+      for (const err of validation.errors) {
+        const offender = err.offendingId ?? err.offendingFile ?? '<unknown>';
+        console.error(
+          `[validation error ${err.kind} ${err.check}] ${offender} ${JSON.stringify(err.details)}`,
+        );
+      }
+      process.exit(1);
+    }
+    for (const warn of validation.warnings) {
+      console.error(
+        `[validation warning ${warn.check}] ${warn.offendingFile ?? '<unknown>'} ${JSON.stringify(warn.details)}`,
+      );
+    }
+
     // Initialize all generators
     const generators: GeneratorRunner[] = [
       { name: 'index', instance: new IndexGenerator() },
@@ -319,6 +352,43 @@ async function run(args: CliArgs): Promise<void> {
       for (const gen of activeGenerators) {
         await runGenerator(gen, state, outputDir, generatorTimings, failures, args.verbose, args.json);
       }
+    }
+
+    // Phase 6 (DR-PHASE-6-C): write validation-report.json and patch
+    // index.json with the validation pointer. Only on ok=true (we exited
+    // earlier when ok=false). Failure to write the report is logged but
+    // does not change exit code — the graph artifacts already shipped.
+    try {
+      const reportPath = path.join(outputDir, 'validation-report.json');
+      await fs.writeFile(reportPath, JSON.stringify(validation.report, null, 2), 'utf-8');
+      const indexPath = path.join(outputDir, 'index.json');
+      try {
+        const indexRaw = await fs.readFile(indexPath, 'utf-8');
+        const indexParsed = JSON.parse(indexRaw);
+        if (Array.isArray(indexParsed)) {
+          await fs.writeFile(
+            path.join(outputDir, 'index.validation.json'),
+            JSON.stringify(
+              { report_path: './validation-report.json', status: 'pass' },
+              null,
+              2,
+            ),
+            'utf-8',
+          );
+        } else if (typeof indexParsed === 'object' && indexParsed !== null) {
+          (indexParsed as Record<string, unknown>).validation = {
+            report_path: './validation-report.json',
+            status: 'pass',
+          };
+          await fs.writeFile(indexPath, JSON.stringify(indexParsed, null, 2), 'utf-8');
+        }
+      } catch {
+        // index.json may not exist if IndexGenerator was skipped — fine.
+      }
+    } catch (e) {
+      console.error(
+        `[populate-coderef] Failed to write validation-report.json: ${e instanceof Error ? e.message : String(e)}`,
+      );
     }
 
     if (!args.semanticRegistry) {

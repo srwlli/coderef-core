@@ -24,11 +24,25 @@ import type {
   SymbolTable,
   SymbolTableEntry,
 } from './call-resolver.js';
+import type {
+  ValidationError,
+  ValidationWarning,
+  ValidationReport,
+  ValidationResult,
+  ValidatePipelineStateOptions,
+} from './output-validator.js';
 
 export type { HeaderStatus, LayerEnum };
 export type { HeaderFact, HeaderImportFact, HeaderParseError };
 export type { ExportTable, ImportResolution, ImportResolutionKind };
 export type { CallResolution, CallResolutionKind, SymbolTable, SymbolTableEntry };
+export type {
+  ValidationError,
+  ValidationWarning,
+  ValidationReport,
+  ValidationResult,
+  ValidatePipelineStateOptions,
+};
 export { BUILTIN_RECEIVERS } from './call-resolver.js';
 
 /**
@@ -61,6 +75,17 @@ export interface PipelineOptions {
   incremental?: boolean;
   /** Include line numbers in canonical CodeRef IDs (default: true) */
   codeRefIncludeLine?: boolean;
+  /**
+   * Promote semantic-header drift (SH-1/SH-2/SH-3) from warnings to
+   * errors at the Phase 6 output validator. Default false — header drift
+   * surfaces as stderr warnings + non-zero header_*_count fields in the
+   * validation report, but exit code stays 0.
+   *
+   * orchestrator.run() does NOT consume this field; it is documented here
+   * for completeness. The CLI plumbs it directly into
+   * validatePipelineState options (DR-PHASE-6-D).
+   */
+  strictHeaders?: boolean;
 }
 
 /**
