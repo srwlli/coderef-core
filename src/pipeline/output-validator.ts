@@ -256,6 +256,17 @@ export function validatePipelineState(
  * GI-3 runs BEFORE GI-2 per R-PHASE-6-E mitigation: a resolved edge with
  * `targetId` undefined trips GI-3 (phase5_demotion) so future debugging
  * lands on the resolver's demotion logic rather than the validator.
+ *
+ * GI-6 NOTE (ORCHESTRATOR sequence, real-world Option B): the original
+ * spec said "no two nodes share name AND file". TypeScript codebases
+ * legitimately have multiple nested functions sharing name+file across
+ * different enclosing scopes (e.g. seven distinct `traverse` functions
+ * nested inside different methods of tree-sitter-scanner.ts at distinct
+ * lines). Reframed to "no two nodes share full (name, file, line) tuple":
+ * the line discriminator catches genuine identity collisions while
+ * tolerating nested-function naming. This is a structural sanity check
+ * distinct from GI-1's id-uniqueness check (a future codeRefId scheme
+ * change could decouple id from line).
  */
 function checkGraphIntegrity(graph: ExportedGraph): ValidationError[] {
   const errors: ValidationError[] = [];
@@ -279,24 +290,30 @@ function checkGraphIntegrity(graph: ExportedGraph): ValidationError[] {
     });
   }
 
-  // GI-6: no duplicate node identities (same name AND same file).
+  // GI-6: no duplicate node identities — full (name, file, line) tuple
+  // collision (Option B reframe). The line discriminator tolerates nested
+  // functions sharing name+file across distinct lines while still catching
+  // genuine identity collisions (two emissions of the same element at the
+  // same line).
   const identityToIds = new Map<string, string[]>();
   for (const node of graph.nodes) {
     if (node.name === undefined || node.file === undefined) continue;
-    const key = `${node.name}\u0000${node.file}`;
+    if (node.line === undefined) continue;
+    const key = `${node.name}\u0000${node.file}\u0000${node.line}`;
     const ids = identityToIds.get(key) ?? [];
     ids.push(node.id);
     identityToIds.set(key, ids);
   }
   for (const [key, ids] of identityToIds) {
     if (ids.length < 2) continue;
-    const sepIdx = key.indexOf('\u0000');
-    const name = key.slice(0, sepIdx);
-    const file = key.slice(sepIdx + 1);
+    const parts = key.split('\u0000');
+    const name = parts[0];
+    const file = parts[1];
+    const line = Number(parts[2]);
     errors.push({
       kind: 'graph_integrity',
       check: 'no_duplicate_node_identities',
-      details: { name, file, ids },
+      details: { name, file, line, ids },
     });
   }
 
