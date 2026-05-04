@@ -216,77 +216,13 @@ export class PipelineOrchestrator {
       },
     };
     const importResolutions: ImportResolution[] = resolveImports(preResolveState);
-    for (const resolution of importResolutions) {
-      if (resolution.kind === 'resolved' && resolution.resolvedTargetCodeRefId && resolution.importerCodeRefId) {
-        graph.edges.push({
-          source: resolution.importerCodeRefId,
-          target: resolution.resolvedTargetCodeRefId,
-          type: 'resolved-import',
-          metadata: {
-            sourceFile: resolution.sourceFile,
-            localName: resolution.localName,
-            originSpecifier: resolution.originSpecifier,
-            resolvedModuleFile: resolution.resolvedModuleFile,
-            resolutionStatus: 'resolved',
-          },
-        });
-      }
-    }
-
-    // Phase 3: enrich legacy 'imports'-type edges with resolutionStatus +
-    // targetElementId metadata so consumers (graph-ground-truth tests,
-    // dashboards) see the resolved/unresolved disposition. Match by
-    // (sourceFile, originSpecifier) → ImportResolution.
-    const resolutionsByKey = new Map<string, ImportResolution[]>();
-    for (const r of importResolutions) {
-      const key = `${r.sourceFile}\u0000${r.originSpecifier}`;
-      const list = resolutionsByKey.get(key);
-      if (list) list.push(r);
-      else resolutionsByKey.set(key, [r]);
-    }
-    for (const edge of graph.edges) {
-      if (edge.type !== 'imports') continue;
-      const key = `${edge.metadata?.sourceFile ?? edge.source}\u0000${edge.target}`;
-      const matches = resolutionsByKey.get(key) ?? [];
-      // An import statement may have multiple bindings (named, default,
-      // namespace) — pick the most-resolved disposition: resolved > stale >
-      // typeOnly > dynamic > external > unresolved.
-      const priority: ImportResolution['kind'][] = [
-        'resolved',
-        'stale',
-        'typeOnly',
-        'dynamic',
-        'external',
-        'ambiguous',
-        'unresolved',
-      ];
-      let chosen: ImportResolution | undefined;
-      for (const k of priority) {
-        chosen = matches.find(m => m.kind === k);
-        if (chosen) break;
-      }
-      if (!chosen) continue;
-      edge.metadata = edge.metadata ?? {};
-      edge.metadata.resolutionStatus = chosen.kind === 'resolved' ? 'resolved'
-        : chosen.kind === 'external' ? 'resolved'
-        : 'unresolved';
-      if (chosen.resolvedTargetCodeRefId) {
-        edge.metadata.targetElementId = chosen.resolvedTargetCodeRefId;
-      }
-      if (chosen.resolvedModuleFile) {
-        edge.metadata.resolvedModuleFile = chosen.resolvedModuleFile;
-      }
-      if (chosen.kind !== 'resolved' && chosen.kind !== 'external') {
-        edge.metadata.reason = chosen.reason ?? `kind:${chosen.kind}`;
-      }
-      // NOTE: edge source/target are NOT promoted to codeRefIds. The Phase 0
-      // ground-truth `expectResolvedEndpointIds` invariant requires node IDs
-      // as endpoints, but the same tests also use findEdge(graph, 'imports',
-      // './alpha') to locate edges by verbatim specifier — replacing target
-      // with a codeRefId would break that lookup. Phase 5 (graph
-      // construction) is the right phase to introduce codeRefId endpoints
-      // on these edges; Phase 3's contract is metadata enrichment only.
-    }
+    // Phase 5 (WO-PIPELINE-GRAPH-CONSTRUCTION-001): the inline
+    // resolved-import edge push and the legacy 'imports'-edge
+    // metadata enrichment that lived here in Phase 3 are now owned
+    // by src/pipeline/graph-builder.ts. constructGraph(state) below
+    // emits canonical 'import' edges with codeRefId endpoints and
+    // the 8-field schema; the pre-Phase-5 inline emission has been
+    // deleted to remove the dual-source ambiguity.
 
     // Step 4.6: Phase 4 — resolve calls against the project-wide symbol
     // table plus state.importResolutions (cross-phase seam from Phase 3).
@@ -304,151 +240,43 @@ export class PipelineOrchestrator {
       importResolutions,
     };
     const callResolutions: CallResolution[] = resolveCalls(preResolveCallsState);
-    for (const resolution of callResolutions) {
-      if (
-        resolution.kind === 'resolved' &&
-        resolution.resolvedTargetCodeRefId &&
-        resolution.callerCodeRefId
-      ) {
-        graph.edges.push({
-          source: resolution.callerCodeRefId,
-          target: resolution.resolvedTargetCodeRefId,
-          type: 'resolved-call',
-          metadata: {
-            sourceFile: resolution.sourceFile,
-            calleeName: resolution.calleeName,
-            receiverText: resolution.receiverText,
-            scopePath: resolution.scopePath,
-            line: resolution.line,
-            resolutionStatus: 'resolved',
-          },
-        });
-      }
-    }
-
-    // Phase 4: enrich legacy 'calls'-type edges with resolutionStatus +
-    // targetElementId metadata so Phase 0 ground-truth call assertions
-    // (resolutionStatus === 'resolved'|'unresolved'|'ambiguous',
-    // targetElementId, candidateIds) flip without mutating endpoint format.
-    // Match by (sourceFile, calleeName, line) when available; fall back to
-    // (sourceFile, calleeName) for older edges that lack line metadata.
-    // Phase 5 owns codeRefId-as-endpoint promotion on legacy edges; this
-    // step is metadata enrichment ONLY (mirrors Phase 3's import-edge
-    // enrichment pattern).
-    const callResByKey = new Map<string, CallResolution[]>();
-    for (const r of callResolutions) {
-      const key = `${r.sourceFile}\u0000${r.calleeName}`;
-      const list = callResByKey.get(key);
-      if (list) list.push(r);
-      else callResByKey.set(key, [r]);
-    }
-    for (const edge of graph.edges) {
-      if (edge.type !== 'calls') continue;
-      const sourceFile = (edge.metadata?.sourceFile as string | undefined)
-        ?? (edge.metadata?.file as string | undefined);
-      const calleeName = (edge.target as string | undefined) ?? '';
-      if (!sourceFile || !calleeName) continue;
-      const key = `${sourceFile}\u0000${calleeName}`;
-      const matches = callResByKey.get(key) ?? [];
-      // Pick the most-resolved disposition per the same priority Phase 3
-      // uses: resolved > ambiguous > unresolved > builtin > external.
-      const priority: CallResolution['kind'][] = [
-        'resolved',
-        'ambiguous',
-        'unresolved',
-        'builtin',
-        'external',
-      ];
-      let chosen: CallResolution | undefined;
-      for (const k of priority) {
-        chosen = matches.find(m => m.kind === k);
-        if (chosen) break;
-      }
-      if (!chosen) continue;
-      edge.metadata = edge.metadata ?? {};
-      edge.metadata.resolutionStatus = chosen.kind === 'builtin'
-        ? 'resolved'
-        : chosen.kind === 'external'
-          ? 'resolved'
-          : chosen.kind;
-      if (chosen.resolvedTargetCodeRefId) {
-        edge.metadata.targetElementId = chosen.resolvedTargetCodeRefId;
-      }
-      if (chosen.candidates && chosen.candidates.length > 0) {
-        edge.metadata.candidateIds = chosen.candidates;
-      }
-      if (chosen.kind === 'unresolved' || chosen.kind === 'ambiguous') {
-        edge.metadata.reason = chosen.reason ?? `kind:${chosen.kind}`;
-      }
-      // For resolved calls that traced through a Phase 3 ImportResolution
-      // binding, populate importedAs (local alias) + exportedName (origin
-      // symbol). Phase 0 ground-truth test 4 asserts both.
-      if (chosen.kind === 'resolved' && chosen.receiverText === null) {
-        const importBinding = importResolutions.find(
-          ir => ir.sourceFile === chosen.sourceFile
-            && ir.localName === chosen.calleeName
-            && ir.kind === 'resolved',
-        );
-        if (importBinding) {
-          edge.metadata.importedAs = importBinding.localName;
-          // Recover the original exportedName from the source RawImportFact
-          // specifier: ImportResolution dropped `imported`, but the matching
-          // specifier in state.rawImports still has it.
-          const matchingFact = preResolveCallsState.rawImports.find(
-            f => f.sourceFile === importBinding.sourceFile
-              && f.moduleSpecifier === importBinding.originSpecifier,
-          );
-          const matchingSpec = matchingFact?.specifiers.find(
-            s => s.local === importBinding.localName,
-          );
-          if (matchingSpec) {
-            edge.metadata.exportedName = matchingSpec.imported;
-          } else if (matchingFact?.defaultImport === importBinding.localName) {
-            edge.metadata.exportedName = 'default';
-          } else if (matchingFact?.namespaceImport === importBinding.localName) {
-            edge.metadata.exportedName = '*';
-          }
-        }
-      }
-      // NOTE: edge source/target are NOT promoted to codeRefIds. Phase 5
-      // owns endpoint promotion. Phase 0 ground-truth test 1's
-      // endpoint-is-node-id assertion (line 52) STAYS FAIL until Phase 5.
-    }
-
-    graph.statistics.edgeCount = graph.edges.length;
-    const emittedResolvedImportEdges = graph.edges.filter(e => e.type === 'resolved-import').length;
-    if (emittedResolvedImportEdges > 0) {
-      graph.statistics.edgesByType['resolved-import'] = emittedResolvedImportEdges;
-    }
-    const emittedResolvedCallEdges = graph.edges.filter(e => e.type === 'resolved-call').length;
-    if (emittedResolvedCallEdges > 0) {
-      graph.statistics.edgesByType['resolved-call'] = emittedResolvedCallEdges;
-    }
+    // Phase 5 (WO-PIPELINE-GRAPH-CONSTRUCTION-001): the inline
+    // resolved-call edge push and the legacy 'calls'-edge metadata
+    // enrichment (including importedAs / exportedName population)
+    // that lived here in Phase 4 are now owned by
+    // src/pipeline/graph-builder.ts. constructGraph(state) below
+    // emits canonical 'call' edges with codeRefId endpoints and
+    // the 8-field schema; the pre-Phase-5 inline emission has been
+    // deleted to remove the dual-source ambiguity.
 
     // Step 4.7: Phase 5 — canonical graph construction. constructGraph
     // produces an ExportedGraph from PipelineState (after Phase 3 +
     // Phase 4 have populated importResolutions and callResolutions).
     // Pass 1 builds nodes with id=canonical codeRefId; pass 2 builds
-    // edges with the new 8-field schema (DR-PHASE-5-D), promoting
+    // edges with the 8-field schema (DR-PHASE-5-D), promoting
     // 'imports'/'calls' to 'import'/'call' with codeRefId endpoints
     // (Option B per R-PHASE-5-A) and emitting header-import edges
-    // distinctly (AC-04 / R-PHASE-5-C).
-    //
-    // Phase 5 checkpoint state: the constructGraph call is wired here
-    // and the pre-Phase-5 state (Phase 3 + Phase 4 inline edge
-    // emission) is retained for now. The replacement of state.graph
-    // with the constructGraph result lands in tasks 1.7–1.9 once
-    // pass-2 emission is implemented. Until then, v2Graph is built
-    // and discarded — this lets ORCHESTRATOR see the wiring in
-    // place at checkpoint without breaking the existing test suite.
+    // distinctly (AC-04 / R-PHASE-5-C). state.graph is replaced with
+    // the constructGraph result; the legacy buildGraph() output
+    // (basic file-grain nodes + 'imports'/'calls' edges with
+    // path/specifier endpoints) is superseded.
     if (verbose) console.log('[PipelineOrchestrator] Constructing canonical graph (Phase 5)...');
     const preGraphState: PipelineState = {
       ...preResolveState,
       importResolutions,
       callResolutions,
+      graph,
     };
     const v2Graph = constructGraph(preGraphState);
-    void v2Graph; // pass-2 implementation in tasks 1.7-1.9 will swap state.graph = v2Graph.
+    // Replace state.graph with the canonical Phase 5 result. This is
+    // the atomic swap — all subsequent code reads from the new graph.
+    Object.assign(graph, {
+      nodes: v2Graph.nodes,
+      edges: v2Graph.edges,
+      statistics: v2Graph.statistics,
+      version: v2Graph.version,
+      exportedAt: v2Graph.exportedAt,
+    });
 
     const endTime = Date.now();
 
