@@ -237,6 +237,19 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
       ?? createCodeRefId(elem, projectPath, { includeLine: true });
     const codeRefIdNoLine = elem.codeRefIdNoLine
       ?? createCodeRefId(elem, projectPath, { includeLine: false });
+    // Phase 7 task 1.1.5 (Option 3 per ORCHESTRATOR ruling DISPATCH-2026-05-04-001):
+    // additive metadata propagation of 4 ElementData semantic facets so
+    // chunk-conversion can attach them to RAG chunks without re-routing
+    // through PipelineState. Strictly additive — undefined-passthrough
+    // when ElementData lacks the value. No graph topology change.
+    const metadata: Record<string, unknown> = {
+      codeRefId: id,
+      codeRefIdNoLine,
+    };
+    if (elem.layer !== undefined) metadata.layer = elem.layer;
+    if (elem.capability !== undefined) metadata.capability = elem.capability;
+    if (elem.constraints !== undefined) metadata.constraints = elem.constraints;
+    if (elem.headerStatus !== undefined) metadata.headerStatus = elem.headerStatus;
     return {
       id,
       uuid: globalRegistry.lookup({ name: elem.name, file: elem.file, line: elem.line }),
@@ -244,10 +257,7 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
       name: elem.name,
       file: elem.file,
       line: elem.line,
-      metadata: {
-        codeRefId: id,
-        codeRefIdNoLine,
-      },
+      metadata,
     };
   });
 

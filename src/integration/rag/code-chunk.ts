@@ -123,6 +123,23 @@ export interface CodeChunk {
    * Additional metadata for custom use cases
    */
   metadata?: Record<string, any>;
+
+  // Phase 7 task 1.2 — semantic facets surfaced from ElementData via
+  // ExportedGraph node.metadata (Phase 5 buildNodes propagation, see
+  // src/pipeline/graph-builder.ts). Optional fields, undefined-
+  // passthrough when source ElementData lacks the value.
+
+  /** Semantic layer (kebab-case) sourced from ElementData.layer. */
+  layer?: string;
+
+  /** Semantic capability slug (kebab-case) sourced from ElementData.capability. */
+  capability?: string;
+
+  /** Semantic constraints sourced from ElementData.constraints. */
+  constraints?: string[];
+
+  /** Header parser status sourced from ElementData.headerStatus. */
+  headerStatus?: 'defined' | 'missing' | 'stale' | 'partial';
 }
 
 /**

@@ -150,6 +150,33 @@ export class ChunkConverter {
       dependents = this.extractDependents(node.id, graph);
     }
 
+    // Phase 7 task 1.6 — semantic facet population from
+    // GraphNode.metadata (Phase 5 buildNodes propagates them via the
+    // task 1.1.5 amendment). Undefined-passthrough when the source
+    // ElementData lacked the value. Surfaces layer / capability /
+    // constraints / headerStatus on the chunk so RAG queries can
+    // filter by them.
+    const layer =
+      typeof node.metadata?.layer === 'string' ? node.metadata.layer : undefined;
+    const capability =
+      typeof node.metadata?.capability === 'string'
+        ? node.metadata.capability
+        : undefined;
+    const constraints = Array.isArray(node.metadata?.constraints)
+      ? (node.metadata!.constraints as string[])
+      : undefined;
+    const rawHeaderStatus =
+      typeof node.metadata?.headerStatus === 'string'
+        ? node.metadata.headerStatus
+        : undefined;
+    const headerStatus =
+      rawHeaderStatus === 'defined' ||
+      rawHeaderStatus === 'missing' ||
+      rawHeaderStatus === 'stale' ||
+      rawHeaderStatus === 'partial'
+        ? rawHeaderStatus
+        : undefined;
+
     // Build CodeChunk
     const chunk: CodeChunk = {
       coderef: typeof node.metadata?.codeRefId === 'string' ? node.metadata.codeRefId : node.id,
@@ -166,7 +193,11 @@ export class ChunkConverter {
       dependencyCount: dependencies.length,
       dependentCount: dependents.length,
       complexity: node.metadata?.complexity as number | undefined,
-      coverage: node.metadata?.coverage as number | undefined
+      coverage: node.metadata?.coverage as number | undefined,
+      ...(layer !== undefined && { layer }),
+      ...(capability !== undefined && { capability }),
+      ...(constraints !== undefined && { constraints }),
+      ...(headerStatus !== undefined && { headerStatus }),
     };
 
     // Add related elements if requested

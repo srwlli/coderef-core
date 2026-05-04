@@ -48,6 +48,22 @@ export interface CodeChunkMetadata {
   /** Test coverage percentage (0-100) */
   coverage?: number;
 
+  // Phase 7 task 1.2 — semantic facets enable filter-by-layer/capability
+  // queries via the existing `filter?: Partial<CodeChunkMetadata>` seam
+  // at QueryOptions and semantic-search.ts. No new filter machinery.
+
+  /** Semantic layer (kebab-case) for filter-by-layer queries. */
+  layer?: string;
+
+  /** Semantic capability slug for filter-by-capability queries. */
+  capability?: string;
+
+  /** Semantic constraints for filter-by-constraint queries. */
+  constraints?: string[];
+
+  /** Header parser status: 'defined' | 'missing' | 'stale' | 'partial'. */
+  headerStatus?: string;
+
   /** Additional custom metadata */
   [key: string]: any;
 }
