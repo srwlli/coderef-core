@@ -1,0 +1,193 @@
+{
+  "$schema": "https://coderef/assistant/skills/workflow/_shared/planner/plan.schema.json",
+  "workorder_id": "WO-PIPELINE-OUTPUT-VALIDATION-001",
+  "feature_name": "pipeline-output-validation",
+  "created": "2026-05-04T05:30:00Z",
+  "project_id": "coderef-core",
+  "plan_type": "phased",
+  "goal": "Implement Phase 6 of the canonical 9-phase pipeline rebuild: output validation + --strict-headers gate. Phase 6 is structurally different from Phases 3/4/5 — those built behavior; this builds enforcement. Single chokepoint validator function `validatePipelineState(state, graph, options): ValidationResult` lives at src/pipeline/output-validator.ts. Called in populate.ts AFTER orchestrator.run() returns and BEFORE the generator loop, so it precedes every write surface (index.json, graph.json, semantic-registry.json, exports/graph.json). 6 graph integrity checks always fail-hard. 3 semantic header checks warn by default; promoted to fail-hard under --strict-headers CLI flag. Validation report (11 named numeric fields) written to .coderef/validation-report.json with pointer in index.json. Phase 5 honest-demotion invariant enforced (resolved edges with missing targetId fail-hard). DELETE no-output-validation.test.ts (Phase 5 boundary enforcer obsolete). CREATE no-rag-indexing.test.ts (Phase 7 boundary enforcer). NO new analyzer/resolver/graph-construction behavior — Phase 6 is read-only over PipelineState and ExportedGraph.",
+  "plan_type_rationale": "Phase 6 of the sequential nine-phase pipeline refactor. Phase 7 (indexing/RAG) is gated on Phase 6 because Phase 7 must NOT index failed graph output. This phase introduces the FIRST CLI flag (--strict-headers) since Phase 1 — discipline on default behavior preservation is critical. No Phase 0 ground-truth flips remaining (all 6 already PASS); Phase 6's job is to keep them green AND add structural enforcement for future regressions.",
+  "plan_type_decided_by": "ORCHESTRATOR (Claude Opus) authored from Claude Sonnet prep deliverables (PID 24688, written 2026-05-04T05:09 — the most thorough prep yet at 35KB analysis with 6 risks, 4 DRs, real coderef-core scale numbers cited) plus /plan-tests-for-workorder skill output (10 criteria → 4 unit + 3 integration + 3 invariant)",
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "DELETE", "RUN", "TEST", "CHECK", "STOP"],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Stop after Phase 6 exit criteria. Do NOT begin Phase 7 (indexing/RAG, vector store, embedding, chunkId logic) or Phase 8 (documentation sync) in this workorder. The Phase 7 boundary enforcer test (no-rag-indexing.test.ts) MUST be present at close to enforce this."
+    }
+  ],
+  "checkpoints": [
+    {
+      "after_task": "1.6",
+      "name": "structural_foundation_review",
+      "reason": "After output-validator.ts skeleton + types + populate.ts CLI flag wiring + chokepoint insertion + Phase 5 boundary enforcer deletion + Phase 7 boundary enforcer scaffolding all land, halt for ORCHESTRATOR review of: (a) single chokepoint established (validatePipelineState in populate.ts before generator loop), (b) ValidationResult type matches the 11-stat report contract verbatim, (c) graph-integrity-vs-header-drift classification per R-PHASE-6-B is honored at the type level (errors[] vs warnings[]), (d) --strict-headers CLI flag default false preserves pre-Phase-6 behavior, (e) Phase 5 honest-demotion invariant is included as a graph-integrity check (R-PHASE-6-E mitigation), (f) Phase 5 boundary enforcer (no-output-validation.test.ts) deletion documented; Phase 7 boundary enforcer (no-rag-indexing.test.ts) scheduled."
+    }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 6 - Output Validation",
+      "hard_stop": true,
+      "description": "Build single chokepoint validator. validatePipelineState(state, graph, options): ValidationResult runs 6 graph integrity checks (always fail-hard) + 3 semantic header checks (warn-or-fail per --strict-headers). Inserted in populate.ts after orchestrator.run() and before generator loop. Emits .coderef/validation-report.json with 11 named numeric fields. Adds --strict-headers CLI flag (default false). DELETE Phase 5 boundary enforcer (obsolete). CREATE Phase 7 boundary enforcer. Land 10 tests across 10 ACs. All 6 Phase 0 ground-truth assertions remain PASSING.",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read prep deliverables in full: coderef/workorder/pipeline-output-validation-prep/context.json (10 ACs), analysis.json (6 risks R-PHASE-6-A through F, 4 DRs A through D with concrete decisions, blast_radius listing 9 files-touched + 10 read-only refs, ground_truth_test_mapping confirming all 6 tests stay PASSING, cross_phase_dependencies, test_planning_notes). Read roadmap.md lines 362-406 for Phase 6 exit criteria.",
+          "touches": [
+            "coderef/workorder/pipeline-output-validation-prep/context.json",
+            "coderef/workorder/pipeline-output-validation-prep/analysis.json",
+            "roadmap.md"
+          ]
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read the 10 read-only reference files identified by prep: src/pipeline/graph-builder.ts (Phase 5 canonical builder; output-validator consumes its ExportedGraph), src/pipeline/orchestrator.ts (note line 467-473 @exports cross-check that already sets headerStatus=stale; Phase 6 reads this status, does NOT re-run the cross-check), src/pipeline/header-fact.ts (HeaderFact + HeaderImportFact types), src/pipeline/semantic-header-parser.ts (Phase 2.5 parser), src/export/graph-exporter.ts (ExportedGraph type), src/pipeline/generators/{index,graph,registry,export}-generator.ts (write surfaces Phase 6 must precede), STANDARDS/layers.json (13-member layer enum). Read src/cli/populate.ts entirely — note parseArgs() switch and the generator loop where Phase 6 chokepoint inserts.",
+          "touches": [
+            "src/pipeline/graph-builder.ts",
+            "src/pipeline/orchestrator.ts",
+            "src/pipeline/header-fact.ts",
+            "src/pipeline/semantic-header-parser.ts",
+            "src/export/graph-exporter.ts",
+            "src/pipeline/generators/index-generator.ts",
+            "src/pipeline/generators/graph-generator.ts",
+            "src/pipeline/generators/registry-generator.ts",
+            "src/pipeline/generators/export-generator.ts",
+            "src/cli/populate.ts",
+            "C:/Users/willh/Desktop/CODEREF/ASSISTANT/STANDARDS/layers.json"
+          ]
+        },
+        {
+          "id": "1.3",
+          "verb": "WRITE",
+          "description": "Create src/pipeline/output-validator.ts. Define types (in this file or import from types.ts): ValidationError { kind: 'graph_integrity' | 'phase5_demotion' | 'header_drift_strict'; check: string; offendingId?: string; details: Record<string, unknown> }. ValidationWarning { kind: 'header_drift'; check: string; offendingFile?: string; details: Record<string, unknown> }. ValidationReport { valid_edge_count, unresolved_count, ambiguous_count, external_count, builtin_count, header_defined_count, header_missing_count, header_stale_count, header_partial_count, header_layer_mismatch_count, header_export_mismatch_count: number }. ValidationResult { ok: boolean, errors: ValidationError[], warnings: ValidationWarning[], report: ValidationReport }. Public surface: validatePipelineState(state: PipelineState, graph: ExportedGraph, options: { strictHeaders?: boolean; layerEnum: string[] }): ValidationResult. Pure function — NO file I/O, NO process.exit, NO console output. Caller handles output and exit code. Internal helpers: checkGraphIntegrity (returns ValidationError[]), checkSemanticHeaders (returns either ValidationError[] or ValidationWarning[] depending on strictHeaders), buildReport (returns ValidationReport from PipelineState + ExportedGraph).",
+          "touches": ["src/pipeline/output-validator.ts"]
+        },
+        {
+          "id": "1.4",
+          "verb": "EDIT",
+          "description": "Edit src/pipeline/types.ts. (a) ADD strictHeaders?: boolean field to PipelineOptions interface (optional, default false). (b) Re-export ValidationResult, ValidationReport, ValidationError, ValidationWarning from output-validator.ts so consumers don't need a deep import. (c) Verify zero collisions with existing field names.",
+          "touches": ["src/pipeline/types.ts"]
+        },
+        {
+          "id": "1.5",
+          "verb": "EDIT",
+          "description": "Edit src/cli/populate.ts. (a) Add --strict-headers boolean flag to parseArgs() switch; default false; store as CliArgs.strictHeaders. (b) Pass strictHeaders into PipelineOptions when constructing the orchestrator. (c) AFTER `const state = await orchestrator.run(...)` returns AND BEFORE the generator loop begins: insert `const validation = validatePipelineState(state, state.graph, { strictHeaders: args.strictHeaders, layerEnum: loadLayerEnum() })`. (d) On validation.ok===false: log validation.errors[] to stderr, skip the generator loop entirely, process.exit(1). (e) On validation.ok===true with warnings.length>0: log warnings to stderr (with prefix `[validation warning]`), continue to generators. (f) AFTER generators complete successfully: write .coderef/validation-report.json with the validation.report contents, AND add a `validation: { report_path: '.coderef/validation-report.json', status: validation.ok ? 'pass' : 'fail' }` field to the index.json output (via index-generator.ts coordination if needed, or as a populate.ts post-step). loadLayerEnum() reads STANDARDS/layers.json once at startup.",
+          "touches": ["src/cli/populate.ts"]
+        },
+        {
+          "id": "1.5b",
+          "verb": "DELETE",
+          "description": "Delete __tests__/pipeline/no-output-validation.test.ts. This was Phase 5's boundary enforcer asserting Phase 6 fields would NOT leak into Phase 5. Phase 6 IS output validation; the enforcer is now obsolete. Same pattern Phase 4 used (deleted no-call-resolution.test.ts) and Phase 5 used (deleted no-graph-construction-leaks.test.ts). Document the deletion explicitly in execution-notes.md.",
+          "touches": ["__tests__/pipeline/no-output-validation.test.ts"]
+        },
+        {
+          "id": "1.5c",
+          "verb": "WRITE",
+          "description": "Create __tests__/pipeline/no-rag-indexing.test.ts as the Phase 7 boundary enforcer. Pattern mirrors Phase 3's no-call-resolution.test.ts, Phase 4's no-graph-construction-leaks.test.ts, Phase 5's no-output-validation.test.ts. Assert: (1) NO field named 'ragIndex', 'embeddingVector', 'vectorStoreId', 'chunkId', 'ragIndexedAt', 'ragIndexStatus' exists on any graph node, edge, ImportResolution, CallResolution, or PipelineState; (2) state.graph does NOT have a 'ragChunks' or 'embeddings' field; (3) PipelineState does NOT have a 'ragIndex' or 'vectorStore' field. This is the Phase 7 boundary enforcer.",
+          "touches": ["__tests__/pipeline/no-rag-indexing.test.ts"]
+        },
+        {
+          "id": "1.6-CHECKPOINT",
+          "verb": "STOP",
+          "description": "CHECKPOINT: structural_foundation_review. Halt and emit checkpoint_ready. ORCHESTRATOR will review: (a) single chokepoint established (validatePipelineState called in populate.ts after orchestrator.run() and before generator loop — no other entry points), (b) ValidationResult type matches the 11-stat report contract verbatim from prep, (c) graph-integrity vs header-drift classification per R-PHASE-6-B is honored (graph integrity → errors[]; header drift → warnings[] by default, errors[] under strictHeaders), (d) --strict-headers default false preserves pre-Phase-6 behavior (CLI tests confirm exit 0 when flag absent even with header drift present), (e) Phase 5 honest-demotion invariant included as graph integrity check (resolved edge with missing targetId fails hard), (f) Phase 5 boundary enforcer deletion documented; Phase 7 boundary enforcer in place. ORCHESTRATOR signals proceed before pass-2 implementation tasks (1.7+) begin.",
+          "touches": ["coderef/workorder/pipeline-output-validation/checkpoint.md"]
+        },
+        {
+          "id": "1.7",
+          "verb": "EDIT",
+          "description": "Implement checkGraphIntegrity in src/pipeline/output-validator.ts. Six checks per R-PHASE-6-B graph_integrity_checks list. (1) node ID uniqueness — Set<string> from graph.nodes.map(n => n.id), assert size === nodes.length, else error per duplicate. (2) Resolved edge endpoint existence — for every edge with resolutionStatus='resolved', assert sourceId is in nodeIds set AND targetId is in nodeIds set. (3) No dangling resolved edges — for every edge with resolutionStatus='resolved', assert targetId is defined (not undefined/null/absent). This enforces Phase 5 honest-demotion (R-PHASE-6-E). (4) Valid relationship enum — for every edge, assert edge.relationship in {import, call, export, header-import}. (5) Valid resolutionStatus enum — for every edge, assert edge.resolutionStatus in {resolved, unresolved, ambiguous, external, builtin, dynamic, typeOnly, stale}. (6) No duplicate node identities — Set of (name, file) tuples; assert size matches nodes.length, else error per collision. Each check returns ValidationError objects with kind='graph_integrity' or kind='phase5_demotion' (for check 3 specifically), check name, offendingId or offendingFile where applicable.",
+          "touches": ["src/pipeline/output-validator.ts"]
+        },
+        {
+          "id": "1.8",
+          "verb": "EDIT",
+          "description": "Implement checkSemanticHeaders in src/pipeline/output-validator.ts. Three checks. (1) @layer in layers.json enum: iterate state.elements (or state.headerFacts wherever the canonical header data lives per Phase 2.5); for each element with headerStatus='defined' AND a layer value, assert layer is in options.layerEnum array; otherwise emit a violation. (2) @exports match AST: aggregate every element/file with headerStatus='stale' into the header_export_mismatch_count. The @exports cross-check already runs at orchestrator.ts:467-473 (Phase 2.5) — Phase 6 READS the resulting status, does NOT re-run. Each stale file becomes one violation entry. (3) @imports non-unresolved or exempt: for each element/file with headerStatus='defined', iterate its HeaderImportFact entries; for each entry, look up the corresponding ImportResolution in state.importResolutions (matched by sourceFile + module + symbol) and assert kind !== 'unresolved' OR the file declares itself exempt (header field tbd — check semantic-header-parser.ts for exempt syntax; if no exempt syntax exists today, every unresolved header import is a violation). All three checks emit ValidationWarning objects by default (kind='header_drift'); when options.strictHeaders === true, the function returns these as ValidationError objects (kind='header_drift_strict') instead. The function signature determines which array they go into.",
+          "touches": ["src/pipeline/output-validator.ts"]
+        },
+        {
+          "id": "1.9",
+          "verb": "EDIT",
+          "description": "Implement buildReport in src/pipeline/output-validator.ts. Iterate graph.edges to count: valid_edge_count (resolutionStatus='resolved'), unresolved_count, ambiguous_count, external_count, builtin_count. Iterate state.elements (or headerFacts) to count headerStatus distribution: header_defined_count (headerStatus='defined'), header_missing_count, header_stale_count, header_partial_count. Count layer mismatches and export mismatches as the count of violations from the corresponding semantic-header check (header_layer_mismatch_count, header_export_mismatch_count). All 11 fields MUST be present and typed as numbers (use 0 for empty categories, never undefined). Field names MUST match the prep AC-04 list verbatim — lock the schema NOW (R-PHASE-6-C). Do NOT add new fields without an explicit ORCHESTRATOR sign-off — the report is now a public artifact contract.",
+          "touches": ["src/pipeline/output-validator.ts"]
+        },
+        {
+          "id": "1.10",
+          "verb": "EDIT",
+          "description": "Wire validatePipelineState into populate.ts run() flow per task 1.5 (which created the structural hook). At checkpoint, the call existed but with stub validator returning ok=true. Now flesh out the failure handling and report writing: on ok=false, log every error in validation.errors[] to stderr with structured prefix [validation error <kind> <check>]; skip generator loop; process.exit(1). On ok=true: log every warning to stderr with prefix [validation warning <check>]; run generators; AFTER generators complete write .coderef/validation-report.json with JSON.stringify(validation.report, null, 2); update index.json output to include validation: { report_path, status: 'pass' }.",
+          "touches": ["src/cli/populate.ts"]
+        },
+        {
+          "id": "1.11",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/output-validation-graph-integrity.test.ts (covers AC-01, AC-02, AC-07, unit). Six sub-tests, one per graph integrity check. Each has a PASS fixture (clean Phase 5 graph snippet) and a FAIL fixture (injected violation). Verify validatePipelineState returns ok=false with errors[] of length >= 1 for each FAIL fixture; ok=true with errors[]=[] for each PASS fixture. Specifically include the Phase 5 honest-demotion fixture (edge.resolutionStatus='resolved' with edge.targetId=undefined) — must produce a graph integrity error per AC-07.",
+          "touches": ["__tests__/pipeline/output-validation-graph-integrity.test.ts"]
+        },
+        {
+          "id": "1.12",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/output-validation-semantic-headers.test.ts (covers AC-03, integration). Three sub-tests, one per semantic header check. Each test runs the validator twice — once with strictHeaders:false (default) and once with strictHeaders:true. Default mode: violations produce warnings[] with length >= 1, errors[]=[], ok=true. Strict mode: same violations produce errors[] with length >= 1 (kind='header_drift_strict'), ok=false. Cover: layer-not-in-enum (file with headerStatus='defined' but @layer='not-a-real-layer'), header-status-stale (file with headerStatus='stale' from prior @exports cross-check), unresolved-header-import (file with headerStatus='defined' whose HeaderImportFact maps to ImportResolution kind='unresolved').",
+          "touches": ["__tests__/pipeline/output-validation-semantic-headers.test.ts"]
+        },
+        {
+          "id": "1.13",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/output-validation-strict-headers.test.ts (covers AC-06, integration). Behavioral test for the --strict-headers CLI flag. Use a fixture project with documented header drift (e.g., a file with @layer='not-a-real-layer'). Run populate.ts twice as a child_process: once without --strict-headers (assert exit code 0, stderr contains '[validation warning]'), once with --strict-headers (assert exit code 1, stderr contains '[validation error <kind=header_drift_strict>]'). Assert that the .coderef/ output directory is NOT written in the strict-headers fail case (skipping generators per the chokepoint policy).",
+          "touches": ["__tests__/pipeline/output-validation-strict-headers.test.ts"]
+        },
+        {
+          "id": "1.14",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/output-validation-report.test.ts (covers AC-04, AC-05, AC-08, integration + invariant). Run populate.ts on a small fixture project. Assert: (a) .coderef/validation-report.json exists after the run; (b) the JSON parses; (c) the JSON contains all 11 required fields with EXACT names: valid_edge_count, unresolved_count, ambiguous_count, external_count, builtin_count, header_defined_count, header_missing_count, header_stale_count, header_partial_count, header_layer_mismatch_count, header_export_mismatch_count; (d) every value is typeof === 'number' (never undefined, null, or string); (e) .coderef/index.json contains a validation field pointing at the report. Determinism (AC-08, INVARIANT): run validatePipelineState 100 times on the same state+graph; deepStrictEqual all results including report counts. Purity (AC-08): assert validatePipelineState does NOT call any fs.* function (mock fs and verify call count is zero — file writing is the caller's job, not the validator's).",
+          "touches": ["__tests__/pipeline/output-validation-report.test.ts"]
+        },
+        {
+          "id": "1.15",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/output-validation-determinism.test.ts (INVARIANT, covers AC-08). Cover: idempotency — call validatePipelineState 100 times on identical PipelineState + ExportedGraph, deepStrictEqual all ValidationResult outputs (including the exact report counts and the order of errors[]/warnings[] arrays); purity — Object.freeze inputs and assert no mutations; assert validatePipelineState does NOT call any fs.* function (mock fs at the top of the test, run validator, assert mock call count is zero).",
+          "touches": ["__tests__/pipeline/output-validation-determinism.test.ts"]
+        },
+        {
+          "id": "1.16",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/output-validation-real-world-noregress.test.ts (covers AC-01, AC-10, integration). Run populate.ts on the actual coderef-core source tree (the same regression check Phase 5 ran). Assert: (a) validation.ok === true (zero false positives on real Phase 5-passing graph); (b) report.valid_edge_count === 3290 (matches Phase 5 close baseline); (c) the 6 Phase 0 graph-ground-truth.test.ts assertions all still PASS (run a tracked subset of them as part of this test or invoke them separately and verify exit code). This is the load-bearing 'Phase 6 doesn't regress Phase 5' test.",
+          "touches": ["__tests__/pipeline/output-validation-real-world-noregress.test.ts"]
+        },
+        {
+          "id": "1.17",
+          "verb": "WRITE",
+          "description": "Add __tests__/pipeline/output-validation-chokepoint.test.ts (INVARIANT, covers R-PHASE-6-A). Cover: validatePipelineState is the ONLY validation chokepoint in populate.ts. Use grep/AST inspection on src/cli/populate.ts to assert: (1) validatePipelineState appears exactly once; (2) it is called BEFORE the generator loop (line number of validate < line number of first generator invocation); (3) on validation.ok=false the generators are not invoked (track via instrumentation or by inspecting code structure with regex like 'if (!validation.ok)' followed by 'process.exit'). This invariant prevents future drift where validation gets bypassed by a refactor.",
+          "touches": ["__tests__/pipeline/output-validation-chokepoint.test.ts"]
+        },
+        {
+          "id": "1.18",
+          "verb": "TEST",
+          "description": "Run all of: existing pipeline test suite (must still pass — particularly Phase 5's graph-construction tests + the 6 ground-truth tests; all should remain PASSING); 7 new Phase 6 tests from 1.11-1.17 (must pass); the new Phase 7 boundary enforcer test no-rag-indexing.test.ts from 1.5c (must pass); pipeline-snapshot.test.ts pre-existing failure may resolve OR persist (Phase 6 adds validation-report.json to .coderef/ which may shift the snapshot — document either outcome but treat resolution as bonus, NOT exit criterion). Report exact pass/fail counts. The headline is: zero ground-truth regressions, all 7 new Phase 6 tests PASS, validation-report.json emitted with all 11 fields.",
+          "touches": ["__tests__"]
+        },
+        {
+          "id": "1.19",
+          "verb": "RUN",
+          "description": "Run /coderef-pipeline coderef-core --stages=scan,populate,validate (default mode, NO --strict-headers). Confirm: (a) populate exits 0; (b) .coderef/validation-report.json exists with all 11 fields populated as numbers; (c) report.valid_edge_count === 3290 (matches Phase 5 close); (d) any header drift in the actual coderef-core source produces stderr warnings but does NOT fail the run; (e) .coderef/index.json carries the validation pointer field. Then re-run WITH --strict-headers. Confirm: if any header drift exists, exit code != 0 and .coderef/ is NOT updated; if zero drift exists, exit code 0 and .coderef/ updates normally.",
+          "touches": [".coderef/index.json", ".coderef/validation-report.json"]
+        },
+        {
+          "id": "1.20",
+          "verb": "CHECK",
+          "description": "Verify Phase 6 exit criteria from roadmap line 401-406: (1) bad graph cannot be written as successful output — confirmed by AC-02 + chokepoint enforcement test (1.17); (2) validation stats appear in generated artifacts — confirmed by AC-05 + report.test.ts (1.14); (3) CI can fail on graph integrity regressions — confirmed by AC-02 (graph integrity always exit !=0); (4) CI can fail on header drift when --strict-headers is set — confirmed by AC-03 + AC-06 + strict-headers.test.ts (1.13). Document each in execution-notes.md with the test ID and the populate.ts line that proves it. Document the no-output-validation.test.ts deletion (Phase 5 boundary obsolete) and the new no-rag-indexing.test.ts (Phase 7 boundary enforcer). If ANY check fails, halt with checkpoint_ready and report — do NOT work around.",
+          "touches": ["coderef/workorder/pipeline-output-validation/execution-notes.md"]
+        },
+        {
+          "id": "1.21",
+          "verb": "STOP",
+          "description": "Stop. Phase 6 complete. Do NOT begin Phase 7 (indexing/RAG, vector store, embedding logic) or Phase 8 (documentation) in this workorder. The 6 Phase 0 ground-truth assertions remain PASSING (Phase 6 is read-only; no test flips required). Report final test counts, the validation-report.json shape sample, and the Phase 7 boundary enforcer (no-rag-indexing.test.ts) is in place to catch any premature Phase 7 work.",
+          "touches": ["coderef/workorder/pipeline-output-validation"]
+        }
+      ]
+    }
+  ],
+  "plan_adjustments_needed": []
+}
