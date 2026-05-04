@@ -461,6 +461,53 @@ async function main(): Promise<void> {
           process.stdout.write(`\r${emoji} [${bar}] ${progress.overallProgress.toFixed(1)}% ${progress.stage}`);
         };
 
+    // Phase 7 task 1.5 — validation gate (DR-PHASE-7-A). Read
+    // .coderef/validation-report.json and inject result into
+    // indexing-orchestrator. Missing report = refuse.
+    //
+    // populate-coderef writes only the 11-field ValidationReport (the
+    // report sub-object), and exits BEFORE writing it on ok=false. So
+    // the on-disk format is the report shape, and the existence of
+    // the file on disk implies validation passed. We treat the file's
+    // presence + parseable shape as ok=true; absence/parse-failure as
+    // refuse-with-error.
+    const validationReportPath = path.join(coderefDir, 'validation-report.json');
+    let validation: { ok: boolean; reportPath?: string };
+    try {
+      const raw = await fs.readFile(validationReportPath, 'utf-8');
+      const parsed = JSON.parse(raw);
+      // Accept either: (a) full ValidationResult with explicit ok flag
+      // (programmatic test fixtures), or (b) the 11-field report-only
+      // shape that populate-coderef writes after validation succeeded.
+      const ok =
+        typeof parsed.ok === 'boolean'
+          ? parsed.ok
+          : typeof parsed.valid_edge_count === 'number'
+            ? true
+            : Array.isArray(parsed.errors)
+              ? parsed.errors.length === 0
+              : false;
+      validation = { ok, reportPath: validationReportPath };
+    } catch (err: any) {
+      console.error(
+        `\n❌ Phase 6 validation gate refused: cannot read ${validationReportPath}.`,
+      );
+      console.error(
+        '   Run `populate-coderef` first to produce a valid validation report,',
+      );
+      console.error('   then retry rag-index. Underlying error:', err?.message ?? err);
+      process.exit(1);
+    }
+    if (validation.ok === false) {
+      console.error(
+        `\n❌ Phase 6 validation reports ok=false at ${validationReportPath}.`,
+      );
+      console.error(
+        '   Indexing refused. Resolve graph-integrity errors before re-running.',
+      );
+      process.exit(1);
+    }
+
     // Run indexing
     const startTime = Date.now();
     const result = await orchestrator.indexCodebase({
@@ -468,6 +515,7 @@ async function main(): Promise<void> {
       languages,
       onProgress,
       useAnalyzer: true,
+      validation,
     });
 
     const totalTime = Date.now() - startTime;
@@ -476,7 +524,10 @@ async function main(): Promise<void> {
       process.stdout.write('\n\n');
     }
 
-    // Save index metadata
+    // Save index metadata. Phase 7 (task 1.9): persist the new
+    // status field + per-entry *Details arrays + validation gate
+    // outcome to disk so downstream consumers can introspect the run
+    // without re-invoking the orchestrator.
     const indexMetadata = {
       version: '1.0',
       createdAt: new Date().toISOString(),
@@ -490,6 +541,11 @@ async function main(): Promise<void> {
       chunksFailed: result.chunksFailed,
       filesProcessed: result.filesProcessed,
       processingTimeMs: totalTime,
+      status: result.status,
+      chunksSkippedDetails: result.chunksSkippedDetails,
+      chunksFailedDetails: result.chunksFailedDetails,
+      validationGateRefused: result.validationGateRefused ?? false,
+      validationReportPath: result.validationReportPath,
     };
 
     const indexPath = path.join(coderefDir, 'rag-index.json');
@@ -537,24 +593,36 @@ async function main(): Promise<void> {
       console.log();
     }
 
-    // Exit-code semantics:
-    //   - chunksIndexed > 0 → exit 0 (partial success counts as success;
-    //     any errors are surfaced as warnings above).
-    //   - chunksIndexed === 0 AND we hit hard errors → exit 1 (genuine
-    //     failure: provider unreachable, store unwritable, all conversions
-    //     failed, etc.).
-    //   - chunksIndexed === 0 AND no errors → exit 0 with a hint (legitimate
-    //     empty index — nothing to index, e.g. project has no source files
-    //     in the requested language). Caller's --only switching can produce
-    //     this state intentionally.
-    const indexed = result.chunksIndexed > 0;
-    const hardFailure = !indexed && (result.chunksFailed > 0 || result.errors.length > 0);
-    if (!indexed && !hardFailure && !args.json) {
-      console.log('ℹ️  No chunks were indexed (no source files matched, or all were skipped).');
-      console.log('   This is exit 0; check --lang and --reset if this is unexpected.');
-      console.log();
+    // Phase 7 task 1.9 — exit-code propagation per IndexingResult.status
+    // (DR-PHASE-7-C / AC-08). Replaces the pre-Phase-7 chunksIndexed-as-
+    // success heuristic.
+    if (result.status === 'partial' && !args.json) {
+      const skipsByReason: Record<string, number> = {};
+      for (const entry of result.chunksSkippedDetails) {
+        skipsByReason[entry.reason] = (skipsByReason[entry.reason] || 0) + 1;
+      }
+      const failsByReason: Record<string, number> = {};
+      for (const entry of result.chunksFailedDetails) {
+        failsByReason[entry.reason] = (failsByReason[entry.reason] || 0) + 1;
+      }
+      const skipSummary = Object.entries(skipsByReason)
+        .map(([reason, count]) => `    ${reason}: ${count}`)
+        .join('\n');
+      const failSummary = Object.entries(failsByReason)
+        .map(([reason, count]) => `    ${reason}: ${count}`)
+        .join('\n');
+      console.error('\n⚠️  Partial success — some chunks were skipped or failed:');
+      if (skipSummary) console.error(`  Skipped (${result.chunksSkipped}):\n${skipSummary}`);
+      if (failSummary) console.error(`  Failed (${result.chunksFailed}):\n${failSummary}`);
     }
-    process.exit(hardFailure ? 1 : 0);
+    if (result.status === 'failed') {
+      const cause = result.validationGateRefused
+        ? `Phase 6 validation gate refused (${result.validationReportPath ?? 'no report path'})`
+        : 'No chunks were produced — indexing is unusable. Check --lang and source corpus.';
+      console.error(`\n❌ Indexing failed: ${cause}`);
+      process.exit(1);
+    }
+    process.exit(0);
 
   } catch (error) {
     console.error('\n❌ Indexing failed:\n');

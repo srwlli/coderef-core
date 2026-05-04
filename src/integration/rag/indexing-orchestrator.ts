@@ -65,6 +65,22 @@ export enum IndexingStage {
 }
 
 /**
+ * Caller-injected Phase 6 validation result (DR-PHASE-7-A). The CLI
+ * (rag-index) reads `.coderef/validation-report.json` and passes the
+ * shape into `indexCodebase`. The orchestrator stays pure (no fs).
+ *
+ * Programmatic API consumers MUST also pass validation. Calling
+ * `indexCodebase` without validation throws an explicit error per
+ * task 1.5 — the gate is non-bypassable by accident.
+ */
+export interface ValidationGateInput {
+  /** True iff Phase 6 produced no errors. False blocks indexing. */
+  ok: boolean;
+  /** Optional path to the validation-report.json that gated the run. */
+  reportPath?: string;
+}
+
+/**
  * Options for indexing
  */
 export interface IndexingOptions {
@@ -91,10 +107,81 @@ export interface IndexingOptions {
 
   /** Whether to use the analyzer (AST-based) or regex scanner */
   useAnalyzer?: boolean;
+
+  /**
+   * REQUIRED at the call site: Phase 6 validation gate input
+   * (DR-PHASE-7-A). The orchestrator throws if undefined — callers
+   * must read .coderef/validation-report.json and pass the result.
+   *
+   * When `validation.ok === false`, `indexCodebase` returns
+   * status='failed' with `validationGateRefused: true` and makes NO
+   * embedding API calls. This is the chokepoint contract Phase 7
+   * inherits from Phase 6.
+   *
+   * Marked optional in TypeScript only so existing programmatic
+   * callers surface the omission as a runtime error with a helpful
+   * message — bumping the type to required would break compile for
+   * legitimate test fixtures that need to evolve gradually.
+   */
+  validation?: ValidationGateInput;
+}
+
+// Phase 7 task 1.3 — locked classification enums for per-entry skip and
+// fail reasons. Keep additive; widening either union is a breaking
+// change for downstream consumers that match by reason value.
+
+/**
+ * Reason a chunk was skipped during indexing. Each value documents a
+ * distinct legitimate cause; an unset reason is the silent-success
+ * anti-pattern Phase 7 eliminates (DR-PHASE-7-E).
+ */
+export type SkipReason =
+  | 'unchanged'
+  | 'header_status_missing'
+  | 'header_status_stale'
+  | 'header_status_partial'
+  | 'unresolved_relationship';
+
+/**
+ * Reason a chunk failed during indexing. Distinct from SkipReason: a
+ * fail represents a malfunction (the chunk should have indexed but
+ * could not); a skip represents an intentional omission.
+ */
+export type FailReason = 'embedding_api_error' | 'malformed_chunk';
+
+/**
+ * Per-chunk skip detail entry. Phase 7 invariant: every
+ * chunksSkippedDetails entry has reason !== undefined.
+ */
+export interface SkipEntry {
+  coderefId: string;
+  reason: SkipReason;
+  message?: string;
 }
 
 /**
- * Result from indexing operation
+ * Per-chunk fail detail entry. Phase 7 invariant: every
+ * chunksFailedDetails entry has reason !== undefined.
+ */
+export interface FailEntry {
+  coderefId: string;
+  reason: FailReason;
+  message?: string;
+}
+
+/**
+ * Top-level indexing run status (DR-PHASE-7-C).
+ */
+export type IndexingStatus = 'success' | 'partial' | 'failed';
+
+/**
+ * Result from indexing operation.
+ *
+ * Phase 7 INVARIANT (DR-PHASE-7-B): the shape is strictly additive
+ * over the pre-Phase-7 contract. The numeric counts
+ * (chunksIndexed/Skipped/Failed/filesProcessed) keep their original
+ * type; the new fields (status, *Details, validationGateRefused) are
+ * additive.
  */
 export interface IndexingResult {
   /** Number of chunks successfully indexed */
@@ -117,6 +204,23 @@ export interface IndexingResult {
 
   /** Errors encountered */
   errors: IndexingError[];
+
+  // Phase 7 additive fields:
+
+  /** Top-level status — see IndexingStatus thresholds. */
+  status: IndexingStatus;
+
+  /** Per-chunk skip details. Length === chunksSkipped (invariant). */
+  chunksSkippedDetails: SkipEntry[];
+
+  /** Per-chunk fail details. Length === chunksFailed (invariant). */
+  chunksFailedDetails: FailEntry[];
+
+  /** True when status='failed' because Phase 6 validation gate refused. */
+  validationGateRefused?: boolean;
+
+  /** Optional path to the validation-report.json that gated this run. */
+  validationReportPath?: string;
 }
 
 /**
@@ -183,6 +287,48 @@ export class IndexingOrchestrator {
   async indexCodebase(options: IndexingOptions): Promise<IndexingResult> {
     const startTime = Date.now();
     const errors: IndexingError[] = [];
+
+    // Phase 7 task 1.5 — validation gate (DR-PHASE-7-A). Caller must
+    // inject Phase 6 validation result. Missing validation is a
+    // programmer error: throw with a helpful message rather than
+    // silently bypassing the gate. ok=false short-circuits with
+    // status='failed' and zero embedding API calls.
+    if (options.validation === undefined) {
+      throw new Error(
+        '[indexing-orchestrator] Phase 6 validation result required. ' +
+          'Read .coderef/validation-report.json and pass into ' +
+          'IndexingOptions.validation. Example: ' +
+          '{ ok: report.ok, reportPath: ".coderef/validation-report.json" }.'
+      );
+    }
+    if (options.validation.ok === false) {
+      return {
+        chunksIndexed: 0,
+        chunksSkipped: 0,
+        chunksFailed: 0,
+        filesProcessed: 0,
+        processingTimeMs: Date.now() - startTime,
+        stats: {
+          tokensUsed: 0,
+          avgEmbeddingTimeMs: 0,
+          byType: {},
+          byLanguage: {},
+        },
+        errors: [
+          {
+            stage: IndexingStage.ANALYZING,
+            message:
+              'Phase 6 validation failed (validation-report.json ok=false). ' +
+              'Indexing refused. Resolve graph-integrity errors before re-running.',
+          },
+        ],
+        status: 'failed',
+        chunksSkippedDetails: [],
+        chunksFailedDetails: [],
+        validationGateRefused: true,
+        validationReportPath: options.validation.reportPath,
+      };
+    }
 
     const reportProgress = (
       stage: IndexingStage,
@@ -273,6 +419,160 @@ export class IndexingOrchestrator {
         throw new Error('Non-analyzer mode not yet implemented');
       }
 
+      // Phase 7 task 1.6 — facet enrichment from canonical ExportedGraph
+      // (per ORCHESTRATOR Option 3 ruling). The canonical Phase 5 graph
+      // at .coderef/graph.json (written by populate-coderef) carries
+      // ElementData semantic facets via the task 1.1.5 buildNodes
+      // amendment.
+      //
+      // Path A (worst-severity-wins file-grain aggregation): chunks
+      // produced by AnalyzerService are file-grain (id='file:<path>'),
+      // but ElementData facets attach at element-grain (per fn/class).
+      // We aggregate element-grain facets to file-grain by joining on
+      // node.file (relative POSIX) and computing the worst-severity
+      // headerStatus per file (missing > stale > partial > defined).
+      // Layer/capability are propagated only when all metadata-bearing
+      // elements in a file agree; constraints are unioned. Files with
+      // zero metadata-bearing elements receive no facets and proceed
+      // to indexing normally (no spurious skip).
+      try {
+        const fs = await import('fs/promises');
+        const pathMod = await import('path');
+        const graphJsonPath = pathMod.join(
+          this.basePath,
+          '.coderef',
+          'graph.json',
+        );
+        const raw = await fs.readFile(graphJsonPath, 'utf-8');
+        const exportedGraph = JSON.parse(raw) as {
+          nodes?: Array<{
+            id?: string;
+            file?: string;
+            metadata?: Record<string, unknown>;
+          }>;
+        };
+
+        type FileFacets = {
+          layer?: string;
+          layerConflict?: boolean;
+          capability?: string;
+          capabilityConflict?: boolean;
+          constraints?: Set<string>;
+          headerStatus?: 'defined' | 'missing' | 'stale' | 'partial';
+        };
+        const facetByFile = new Map<string, FileFacets>();
+
+        const headerSeverity: Record<string, number> = {
+          defined: 0,
+          partial: 1,
+          stale: 2,
+          missing: 3,
+        };
+
+        for (const n of exportedGraph.nodes ?? []) {
+          if (typeof n.file !== 'string') continue;
+          const meta = n.metadata ?? {};
+          // skip pure file-grain entries that lack element metadata
+          const hasFacet =
+            typeof meta.layer === 'string' ||
+            typeof meta.capability === 'string' ||
+            Array.isArray(meta.constraints) ||
+            typeof meta.headerStatus === 'string';
+          if (!hasFacet) continue;
+
+          const key = n.file.replace(/\\/g, '/');
+          let f = facetByFile.get(key);
+          if (!f) {
+            f = {};
+            facetByFile.set(key, f);
+          }
+
+          if (typeof meta.layer === 'string') {
+            if (f.layer === undefined) f.layer = meta.layer;
+            else if (f.layer !== meta.layer) f.layerConflict = true;
+          }
+          if (typeof meta.capability === 'string') {
+            if (f.capability === undefined) f.capability = meta.capability;
+            else if (f.capability !== meta.capability)
+              f.capabilityConflict = true;
+          }
+          if (Array.isArray(meta.constraints)) {
+            if (!f.constraints) f.constraints = new Set();
+            for (const c of meta.constraints as unknown[]) {
+              if (typeof c === 'string') f.constraints.add(c);
+            }
+          }
+          const hs = meta.headerStatus;
+          if (
+            hs === 'defined' ||
+            hs === 'missing' ||
+            hs === 'stale' ||
+            hs === 'partial'
+          ) {
+            const cur = f.headerStatus;
+            if (cur === undefined || headerSeverity[hs] > headerSeverity[cur]) {
+              f.headerStatus = hs;
+            }
+          }
+        }
+
+        const normalizeChunkFile = (file: string): string => {
+          let f = file.replace(/\\/g, '/');
+          // strip absolute basePath prefix if present so we can match
+          // the relative POSIX path graph.json uses
+          const baseRel = this.basePath.replace(/\\/g, '/').replace(/\/$/, '');
+          if (f.toLowerCase().startsWith(baseRel.toLowerCase() + '/')) {
+            f = f.slice(baseRel.length + 1);
+          }
+          return f;
+        };
+
+        for (const chunk of chunks) {
+          const key = normalizeChunkFile(chunk.file);
+          const f = facetByFile.get(key);
+          if (!f) continue;
+          if (f.layer !== undefined && !f.layerConflict && chunk.layer === undefined)
+            chunk.layer = f.layer;
+          if (
+            f.capability !== undefined &&
+            !f.capabilityConflict &&
+            chunk.capability === undefined
+          )
+            chunk.capability = f.capability;
+          if (f.constraints && f.constraints.size > 0 && chunk.constraints === undefined)
+            chunk.constraints = Array.from(f.constraints);
+          if (f.headerStatus !== undefined && chunk.headerStatus === undefined)
+            chunk.headerStatus = f.headerStatus;
+        }
+      } catch {
+        // .coderef/graph.json not present or unreadable — fall through
+        // with no enrichment. populate-coderef must run first to give
+        // the canonical element-grain facets; without it chunks index
+        // without facets but the run still succeeds.
+      }
+
+      // Phase 7 task 1.7 — skip-with-reason classification for chunks
+      // whose source ElementData has headerStatus in {missing, stale,
+      // partial} (DR-PHASE-7-E). Filter BEFORE the incremental indexer
+      // so unchanged-but-skipped never gets re-counted as unchanged.
+      const headerStatusSkipDetails: SkipEntry[] = [];
+      const chunksAfterHeaderFilter: CodeChunk[] = [];
+      for (const chunk of chunks) {
+        if (
+          chunk.headerStatus === 'missing' ||
+          chunk.headerStatus === 'stale' ||
+          chunk.headerStatus === 'partial'
+        ) {
+          headerStatusSkipDetails.push({
+            coderefId: chunk.coderef,
+            reason: `header_status_${chunk.headerStatus}` as SkipReason,
+          });
+        } else {
+          chunksAfterHeaderFilter.push(chunk);
+        }
+      }
+      chunks = chunksAfterHeaderFilter;
+
       // Filter for incremental indexing
       const incrementalIndexer = new IncrementalIndexer(
         this.basePath,
@@ -284,6 +584,21 @@ export class IndexingOrchestrator {
           chunks,
           options.incrementalOptions
         );
+
+      // Phase 7 task 1.7 — incremental skip details. Each chunk that
+      // the incremental indexer kept (vs re-indexing) is a skip with
+      // reason='unchanged'. Combined with the header-status skips, the
+      // chunksSkippedDetails array is exhaustive.
+      const incrementalSkipDetails: SkipEntry[] = chunksToKeep.map(
+        (coderefId) => ({
+          coderefId,
+          reason: 'unchanged' as const,
+        }),
+      );
+      const chunksSkippedDetails: SkipEntry[] = [
+        ...headerStatusSkipDetails,
+        ...incrementalSkipDetails,
+      ];
 
       reportProgress(
         IndexingStage.EMBEDDING,
@@ -318,13 +633,21 @@ export class IndexingOrchestrator {
         }
       );
 
-      // Record embedding errors
+      // Record embedding errors + Phase 7 task 1.7 fail-with-reason
+      // classification. Embedding-API failures map to
+      // reason='embedding_api_error' per FailReason union.
+      const chunksFailedDetails: FailEntry[] = [];
       for (const error of embeddingResult.failed) {
         errors.push({
           stage: IndexingStage.EMBEDDING,
           message: error.message,
           context: error.coderef,
           originalError: error.originalError
+        });
+        chunksFailedDetails.push({
+          coderefId: error.coderef,
+          reason: 'embedding_api_error',
+          message: error.message,
         });
       }
 
@@ -347,7 +670,12 @@ export class IndexingOrchestrator {
         80
       );
 
-      // Convert embedded chunks to vector records
+      // Convert embedded chunks to vector records. Phase 7 task 1.6:
+      // propagate semantic facets (layer/capability/constraints/
+      // headerStatus) into vector metadata so the
+      // `filter?: Partial<CodeChunkMetadata>` seam at QueryOptions
+      // automatically supports filter-by-layer / filter-by-capability
+      // queries (AC-06) without new filter machinery.
       const vectorRecords: VectorRecord[] = embeddingResult.embedded.map(
         (item) => ({
           id: item.chunk.coderef,
@@ -364,7 +692,11 @@ export class IndexingOrchestrator {
             dependencyCount: item.chunk.dependencyCount,
             dependentCount: item.chunk.dependentCount,
             complexity: item.chunk.complexity,
-            coverage: item.chunk.coverage
+            coverage: item.chunk.coverage,
+            ...(item.chunk.layer !== undefined && { layer: item.chunk.layer }),
+            ...(item.chunk.capability !== undefined && { capability: item.chunk.capability }),
+            ...(item.chunk.constraints !== undefined && { constraints: item.chunk.constraints }),
+            ...(item.chunk.headerStatus !== undefined && { headerStatus: item.chunk.headerStatus }),
           }
         })
       );
@@ -411,10 +743,24 @@ export class IndexingOrchestrator {
         byLanguage[chunk.language] = (byLanguage[chunk.language] || 0) + 1;
       }
 
+      // Phase 7 task 1.8 — canonical status computation (DR-PHASE-7-C).
+      // chunksSkipped count is the SUM of header-status skips +
+      // incremental "unchanged" skips (per task 1.7). Invariant:
+      // chunksSkipped === chunksSkippedDetails.length and
+      // chunksFailed === chunksFailedDetails.length.
+      const chunksIndexed = embeddingResult.embedded.length;
+      const chunksSkipped = chunksSkippedDetails.length;
+      const chunksFailed = chunksFailedDetails.length;
+      const status: IndexingStatus =
+        chunksIndexed === 0
+          ? 'failed'
+          : chunksFailed > 0 || chunksSkipped > 0
+            ? 'partial'
+            : 'success';
       return {
-        chunksIndexed: embeddingResult.embedded.length,
-        chunksSkipped: chunksToKeep.length,
-        chunksFailed: embeddingResult.failed.length,
+        chunksIndexed,
+        chunksSkipped,
+        chunksFailed,
         filesProcessed: Array.from(
           new Set(chunks.map((c) => c.file))
         ).length,
@@ -426,7 +772,11 @@ export class IndexingOrchestrator {
           byType,
           byLanguage
         },
-        errors
+        errors,
+        status,
+        chunksSkippedDetails,
+        chunksFailedDetails,
+        validationReportPath: options.validation?.reportPath,
       };
     } catch (error: any) {
       errors.push({

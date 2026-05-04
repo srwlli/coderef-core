@@ -171,6 +171,7 @@ describe('Indexing Pipeline Integration', () => {
   describe('Full Pipeline', () => {
     it('should complete full indexing pipeline', async () => {
       const result = await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -202,6 +203,7 @@ describe('Indexing Pipeline Integration', () => {
       });
 
       await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -231,6 +233,7 @@ describe('Indexing Pipeline Integration', () => {
       const progressUpdates: any[] = [];
 
       await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -258,6 +261,7 @@ describe('Indexing Pipeline Integration', () => {
 
     it('should generate correct statistics', async () => {
       const result = await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -294,6 +298,7 @@ describe('Indexing Pipeline Integration', () => {
       });
 
       await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -315,6 +320,7 @@ describe('Indexing Pipeline Integration', () => {
       mockLLMProvider.embed = vi.fn().mockRejectedValue(new Error('Embedding failed'));
 
       const result = await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -332,6 +338,7 @@ describe('Indexing Pipeline Integration', () => {
     it('should skip unchanged files on second run', async () => {
       // First run
       const result1 = await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -347,6 +354,7 @@ describe('Indexing Pipeline Integration', () => {
 
       // Second run (no changes)
       const result2 = await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -363,6 +371,7 @@ describe('Indexing Pipeline Integration', () => {
     it('should force re-index when requested', async () => {
       // First run
       await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,
@@ -374,6 +383,7 @@ describe('Indexing Pipeline Integration', () => {
 
       // Second run with force
       const result = await orchestrator.indexCodebase({
+        validation: { ok: true },
         sourceDir: tempDir,
         languages: ['ts'],
         useAnalyzer: true,

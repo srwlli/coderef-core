@@ -69,6 +69,9 @@ interface CliArgs {
   type?: string;
   file?: string;
   exported?: boolean;
+  // Phase 7 task 1.10 — semantic facet filters (DR-PHASE-7-D).
+  layer?: string;
+  capability?: string;
   json: boolean;
   help: boolean;
 }
@@ -153,6 +156,15 @@ function parseArgs(argv: string[]): CliArgs {
         args.exported = true;
         break;
 
+      // Phase 7 task 1.10 — semantic facet filters (DR-PHASE-7-D).
+      case '--layer':
+        args.layer = value ?? argv[++i];
+        break;
+
+      case '--capability':
+        args.capability = value ?? argv[++i];
+        break;
+
       case '--json':
       case '-j':
         args.json = true;
@@ -188,6 +200,8 @@ OPTIONS:
   -t, --type <type>            Filter by element type: function, class, method, etc.
   -f, --file <pattern>         Filter by file path pattern
   --exported                   Only show exported elements
+  --layer <value>              Filter by semantic layer (e.g. service, ui_component, cli)
+  --capability <value>         Filter by semantic capability slug (kebab-case)
   -j, --json                   Output results as JSON
   -h, --help                   Show this help message
 
@@ -439,6 +453,16 @@ async function main(): Promise<void> {
     if (args.exported !== undefined) {
       searchOptions.exported = args.exported;
     }
+    // Phase 7 task 1.10 — thread --layer / --capability through
+    // SearchOptions.filters (the existing Partial<CodeChunkMetadata>
+    // pass-through). Both fields gained on CodeChunkMetadata in task
+    // 1.2; vector-store metadata-filter pass-through is automatic.
+    if (args.layer !== undefined || args.capability !== undefined) {
+      const facets: Record<string, unknown> = {};
+      if (args.layer !== undefined) facets.layer = args.layer;
+      if (args.capability !== undefined) facets.capability = args.capability;
+      searchOptions.filters = facets;
+    }
 
     // Execute search
     const startTime = Date.now();
@@ -457,6 +481,8 @@ async function main(): Promise<void> {
           type: args.type,
           file: args.file,
           exported: args.exported,
+          layer: args.layer,
+          capability: args.capability,
         },
       }, null, 2));
     } else {
