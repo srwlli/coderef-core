@@ -278,9 +278,21 @@ async function run(args: CliArgs): Promise<void> {
     // Phase 6 chokepoint (R-PHASE-6-A). Single validation surface preceding
     // every write. On ok=false: log errors, skip generators, exit 1. On
     // ok=true with warnings: log warnings to stderr, continue. The validator
-    // is pure (no fs, no process.exit, no console). Task 1.10 fleshes out
-    // failure handling and validation-report.json emission.
-    const layerEnum = loadLayerEnum();
+    // is pure (no fs, no process.exit, no console).
+    //
+    // Safeguard (ORCHESTRATOR design call 3): fail BEFORE the validator if
+    // loadLayerEnum() throws — passing layerEnum:[] would fail every
+    // defined-status file's SH-1 check spuriously. Halt early with a clear
+    // stderr message instead.
+    let layerEnum: readonly string[];
+    try {
+      layerEnum = loadLayerEnum();
+    } catch (e) {
+      console.error(
+        `[populate-coderef] Failed to load layer enum from STANDARDS/layers.json: ${e instanceof Error ? e.message : String(e)}`,
+      );
+      process.exit(1);
+    }
     const validation = validatePipelineState(state, state.graph, {
       strictHeaders: args.strictHeaders,
       layerEnum,
