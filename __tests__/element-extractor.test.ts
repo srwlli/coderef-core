@@ -421,4 +421,43 @@ public:
       expect(elements).toEqual([]);
     });
   });
+
+  describe('Phase 1 regression: class_declaration recursion leak', () => {
+    // Phase 6 piggyback fix (element-extractor.ts:188): class_declaration
+    // handler now returns after manually walking class body, mirroring
+    // function_declaration. Pre-fix, the bottom recursion re-entered the
+    // class body and emitted nested arrow functions inside class methods
+    // twice. Methods themselves were guarded by `&& parentScope`; only
+    // lexical_declaration arrow functions slipped through.
+    it('emits nested arrow functions inside class methods exactly once', async () => {
+      // Two distinct `const visit = ...` arrows mirror the canonical
+      // ast-element-scanner.ts fixture (lines 152 + 459 in the real file).
+      const code = `
+export class Scanner {
+  collectExportedNames(): void {
+    const visit = (node: number) => {
+      console.log(node);
+    };
+    visit(1);
+  }
+
+  extractJSXElements(): void {
+    const visit = (n: number) => {
+      console.log(n);
+    };
+    visit(2);
+  }
+}
+      `.trim();
+
+      const parser = await registry.getParser('ts');
+      const tree = parser!.parse(code);
+      const elements = extractor.extract(tree.rootNode, 'scanner.ts', code, 'ts');
+
+      const visits = elements.filter(e => e.name === 'visit');
+      expect(visits).toHaveLength(2);
+      const lines = visits.map(v => v.line).sort((a, b) => a - b);
+      expect(new Set(lines).size).toBe(2); // distinct lines, no dups
+    });
+  });
 });

@@ -186,6 +186,7 @@ export class ElementExtractor {
           if (classBody) {
             traverse(classBody, name);
           }
+          return; // Don't double-walk children below (mirrors function_declaration pattern at line 127).
         }
       }
 
