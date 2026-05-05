@@ -463,8 +463,12 @@ export class IndexingOrchestrator {
         // construction once the read lands here.
         const graphJsonPath = pathMod.join(this.basePath, '.coderef', 'graph.json');
         let raw: string;
+        let graphStat: { mtimeMs: number };
         try {
-          raw = await fs.readFile(graphJsonPath, 'utf-8');
+          [raw, graphStat] = await Promise.all([
+            fs.readFile(graphJsonPath, 'utf-8'),
+            fs.stat(graphJsonPath),
+          ]);
         } catch (err: any) {
           if (err && err.code === 'ENOENT') {
             throw new Error(
@@ -477,6 +481,39 @@ export class IndexingOrchestrator {
           throw err;
         }
         graph = buildGraphFromExportedJson(JSON.parse(raw));
+
+        // Stale-graph check (DR-SINGLE-SLICE-D, fail-loud). Sample up to
+        // 10 unique source files from the parsed graph and compare each
+        // source's mtime to graph.json's mtime. If any source is newer
+        // the graph is out of date — refuse rather than embed against
+        // stale chunks (the same silent-disagreement failure mode this
+        // WO is meant to eliminate).
+        const sampleFiles: string[] = [];
+        const seen = new Set<string>();
+        for (const n of graph.nodes.values()) {
+          if (!seen.has(n.file)) {
+            seen.add(n.file);
+            sampleFiles.push(n.file);
+            if (sampleFiles.length >= 10) break;
+          }
+        }
+        for (const rel of sampleFiles) {
+          const abs = pathMod.isAbsolute(rel) ? rel : pathMod.join(this.basePath, rel);
+          let srcStat: { mtimeMs: number };
+          try {
+            srcStat = await fs.stat(abs);
+          } catch {
+            continue; // missing source files are ChunkConverter's concern, not ours
+          }
+          if (srcStat.mtimeMs > graphStat.mtimeMs) {
+            throw new Error(
+              `[indexing-orchestrator] .coderef/graph.json is stale — source file ${rel} ` +
+                `is newer (source mtime=${new Date(srcStat.mtimeMs).toISOString()}, ` +
+                `graph mtime=${new Date(graphStat.mtimeMs).toISOString()}). ` +
+                'Re-run `coderef populate` to refresh.',
+            );
+          }
+        }
 
         reportProgress(
           IndexingStage.ANALYZING,
