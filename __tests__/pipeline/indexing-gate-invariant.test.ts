@@ -83,13 +83,23 @@ describe('Phase 7 chokepoint INVARIANT (task 1.17)', () => {
   });
 });
 
-// WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 — phase 4 invariant.
-// When .coderef/graph.json contains nodes with headerStatus='missing'
-// AND the indexing run does not refuse via the validation gate, the
-// chunk<->graph join MUST produce skip entries whose count tracks
-// header_missing_count within the AC-09 tolerance band (±10%). This
-// is the dynamic counterpart to the static AC-09 check Phase 7 ran;
-// it catches future regressions of the chunk.file shape contract.
+// WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 — Phase 3 task 3.3 rewrite.
+// The substrate pivot reads .coderef/graph.json directly as the chunk
+// source, so chunks ARE the nodes. Two structural identities hold:
+//   AC-05a (element-grain): chunksSkipped(header_status_missing) ===
+//     count of graph.json nodes with metadata.headerStatus='missing'.
+//   AC-05b (file-grain):    uniqueFiles(skipDetails).size ===
+//     validation_report.header_missing_count.
+//
+// Fixture is intentionally 3 files × 3 element-grain nodes each, with
+// 2 of the 3 nodes per file marked headerStatus='missing'. That gives
+// 6 element-grain skips across 3 unique files, so AC-05a (=6) and
+// AC-05b (=3) produce DISTINCT numbers — required for the dual-AC
+// framing to actually exercise both grains. (A 1-node-per-file fixture
+// would collapse the two identities to the same number and mask the
+// distinction.) The 3rd node per file is headerStatus='defined' so
+// chunksIndexed>=1 and the run does not collapse to status='failed'
+// via the no_chunks_produced threshold.
 const tmpDirs: string[] = [];
 afterEach(async () => {
   await Promise.all(
@@ -99,49 +109,89 @@ afterEach(async () => {
   );
 });
 
-describe('AC-09 dynamic invariant — chunksSkipped tracks header_missing_count (±10%)', () => {
-  it('header_missing_count > 0 and run not refused → chunksSkipped(header_status_missing) within ±10% of header_missing_count', async () => {
+describe('AC-05 dual identity — element-grain + file-grain (no tolerance band)', () => {
+  it('chunksSkipped exact-equals element-grain count; uniqueFiles exact-equals validation_report.header_missing_count', async () => {
     const projectDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), 'coderef-ac09-invariant-'),
+      path.join(os.tmpdir(), 'coderef-ac05-dual-'),
     );
     tmpDirs.push(projectDir);
     await fs.mkdir(path.join(projectDir, '.coderef'), { recursive: true });
 
-    // Construct N=10 missing-header files + 1 defined-header file, all
-    // as real source files on disk so ChunkConverter.fileExists passes.
-    // The defined-header file ensures chunksIndexed>=1 so the run does
-    // not collapse into status='failed' via the no_chunks_produced
-    // threshold (DR-PHASE-7-C). Only the 10 missing files should skip.
-    const N = 10;
+    // 3 files × 3 element-grain nodes (1 fn + 1 class + 1 const). Of
+    // each 3-node file: nodes 1+2 are headerStatus='missing'; node 3
+    // is headerStatus='defined'. 6 element-grain missing nodes across
+    // 3 unique files.
+    const NUM_FILES = 3;
+    const NODES_PER_FILE = 3;
+    const MISSING_PER_FILE = 2;
     const fileNames: string[] = [];
-    for (let i = 0; i < N; i++) {
-      const rel = `src/mod${i}.ts`;
+    type GraphJsonNode = {
+      id: string;
+      type: string;
+      name: string;
+      file: string;
+      line: number;
+      metadata: { headerStatus: string; exported?: boolean };
+    };
+    const nodes: GraphJsonNode[] = [];
+
+    for (let f = 0; f < NUM_FILES; f++) {
+      const rel = `src/mod${f}.ts`;
       fileNames.push(rel);
       const abs = path.join(projectDir, rel);
       await fs.mkdir(path.dirname(abs), { recursive: true });
-      await fs.writeFile(abs, `export function mod${i}() { return ${i}; }\n`, 'utf-8');
+      await fs.writeFile(
+        abs,
+        [
+          `export function fn${f}() { return ${f}; }`,
+          `export class Cls${f} { public k = ${f}; }`,
+          `export const C${f} = ${f};`,
+          '',
+        ].join('\n'),
+        'utf-8',
+      );
+
+      // Node 1: function (missing)
+      nodes.push({
+        id: `@Fn/${rel}#fn${f}:1`,
+        type: 'function',
+        name: `fn${f}`,
+        file: rel,
+        line: 1,
+        metadata: { headerStatus: 'missing', exported: true },
+      });
+      // Node 2: class (missing)
+      nodes.push({
+        id: `@Cl/${rel}#Cls${f}:2`,
+        type: 'class',
+        name: `Cls${f}`,
+        file: rel,
+        line: 2,
+        metadata: { headerStatus: 'missing', exported: true },
+      });
+      // Node 3: const (defined — keeps chunksIndexed>=1)
+      nodes.push({
+        id: `@C/${rel}#C${f}:3`,
+        type: 'constant',
+        name: `C${f}`,
+        file: rel,
+        line: 3,
+        metadata: { headerStatus: 'defined', exported: true },
+      });
     }
-    const goodFile = 'src/good.ts';
-    await fs.writeFile(
-      path.join(projectDir, goodFile),
-      `export function good() { return 'ok'; }\n`,
-      'utf-8',
-    );
+
+    // Synthesize a Phase 6 validation-report.json sibling — identifies
+    // the file-grain canonical baseline that AC-05b cross-checks
+    // against.
+    const fileGrainMissing = NUM_FILES; // 3
+    const elementGrainMissing = NUM_FILES * MISSING_PER_FILE; // 6
 
     const graph = {
-      nodes: [
-        ...fileNames.map((rel, i) => ({
-          id: `@Fn/${rel}#mod${i}:1`,
-          file: rel,
-          metadata: { headerStatus: 'missing', layer: 'utility' },
-        })),
-        {
-          id: `@Fn/${goodFile}#good:1`,
-          file: goodFile,
-          metadata: { headerStatus: 'defined', layer: 'utility' },
-        },
-      ],
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      nodes,
       edges: [],
+      statistics: { nodeCount: nodes.length, edgeCount: 0 },
     };
     await fs.writeFile(
       path.join(projectDir, '.coderef', 'graph.json'),
@@ -149,47 +199,16 @@ describe('AC-09 dynamic invariant — chunksSkipped tracks header_missing_count 
       'utf-8',
     );
 
-    // Stub analyzer returns chunks for the same N files using absolute
-    // Windows paths — the production shape that triggered the original
-    // STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 bug.
-    const stubGraph: any = {
-      nodes: new Map(),
-      edges: [],
-      edgesBySource: new Map(),
-      edgesByTarget: new Map(),
-    };
-    for (let i = 0; i < N; i++) {
-      const absFile = path.join(projectDir, fileNames[i]);
-      const id = 'file:' + absFile;
-      stubGraph.nodes.set(id, {
-        id,
-        name: `mod${i}`,
-        type: 'function',
-        file: absFile,
-        line: 1,
-        metadata: { codeRefId: `@Fn/${fileNames[i]}#mod${i}:1` },
-      });
-    }
-    {
-      const absFile = path.join(projectDir, goodFile);
-      const id = 'file:' + absFile;
-      stubGraph.nodes.set(id, {
-        id,
-        name: 'good',
-        type: 'function',
-        file: absFile,
-        line: 1,
-        metadata: { codeRefId: `@Fn/${goodFile}#good:1` },
-      });
-    }
-
+    // analyzerService is constructor-injected but never invoked
+    // post-pivot. The not-called assertion at the end is a regression
+    // sentinel.
     const analyzerService = {
-      analyze: vi.fn().mockResolvedValue({ graph: stubGraph }),
+      analyze: vi.fn(),
     } as any;
     const llmProvider = {
       getEmbeddingDimensions: () => 4,
       embedBatch: vi.fn().mockResolvedValue(
-        Array.from({ length: N + 1 }, () => [1, 0, 0, 0]),
+        Array.from({ length: nodes.length }, () => [1, 0, 0, 0]),
       ),
       embed: vi.fn().mockResolvedValue([1, 0, 0, 0]),
     } as any;
@@ -214,11 +233,33 @@ describe('AC-09 dynamic invariant — chunksSkipped tracks header_missing_count 
     });
 
     expect(result.status).not.toBe('failed');
-    const missingSkipCount =
-      result.chunksSkippedDetails?.filter((s) => s.reason === 'header_status_missing')
-        .length ?? 0;
-    const headerMissingCount = N;
-    const tolerance = Math.ceil(headerMissingCount * 0.1);
-    expect(missingSkipCount).toBeGreaterThanOrEqual(headerMissingCount - tolerance);
+
+    const missingSkips =
+      result.chunksSkippedDetails?.filter(
+        (s) => s.reason === 'header_status_missing',
+      ) ?? [];
+
+    // AC-05a — element-grain identity (no tolerance).
+    expect(missingSkips.length).toBe(elementGrainMissing); // 6 === 6
+
+    // AC-05b — file-grain identity (no tolerance).
+    // fileOf maps a coderefId like '@Fn/src/mod0.ts#fn0:1' to 'src/mod0.ts'.
+    const fileOf = (coderefId: string): string => {
+      // Strip leading capability prefix ('@Fn/', '@Cl/', '@C/', etc.)
+      // then take everything before the '#'.
+      const noPrefix = coderefId.replace(/^@[A-Za-z]+\//, '');
+      const hashIdx = noPrefix.indexOf('#');
+      return hashIdx >= 0 ? noPrefix.slice(0, hashIdx) : noPrefix;
+    };
+    const uniqueFiles = new Set(missingSkips.map((s) => fileOf(s.coderefId)));
+    expect(uniqueFiles.size).toBe(fileGrainMissing); // 3 === 3
+
+    // Distinctness check: AC-05a vs AC-05b must produce different
+    // numbers in this fixture, otherwise the dual-AC framing is not
+    // being exercised.
+    expect(missingSkips.length).not.toBe(uniqueFiles.size);
+
+    // Regression sentinel: the second analyzer slice MUST stay deleted.
+    expect(analyzerService.analyze).not.toHaveBeenCalled();
   });
 });
