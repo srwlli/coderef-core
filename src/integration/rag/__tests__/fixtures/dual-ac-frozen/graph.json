@@ -1,0 +1,80 @@
+{
+  "version": "1.0",
+  "exportedAt": "2026-05-06T01:00:00.000Z",
+  "nodes": [
+    {
+      "id": "@Fn/src/mod0.ts#fn0:1",
+      "type": "function",
+      "name": "fn0",
+      "file": "src/mod0.ts",
+      "line": 1,
+      "metadata": { "headerStatus": "missing", "exported": true }
+    },
+    {
+      "id": "@Cl/src/mod0.ts#Cls0:2",
+      "type": "class",
+      "name": "Cls0",
+      "file": "src/mod0.ts",
+      "line": 2,
+      "metadata": { "headerStatus": "missing", "exported": true }
+    },
+    {
+      "id": "@C/src/mod0.ts#C0:3",
+      "type": "constant",
+      "name": "C0",
+      "file": "src/mod0.ts",
+      "line": 3,
+      "metadata": { "headerStatus": "defined", "exported": true }
+    },
+    {
+      "id": "@Fn/src/mod1.ts#fn1:1",
+      "type": "function",
+      "name": "fn1",
+      "file": "src/mod1.ts",
+      "line": 1,
+      "metadata": { "headerStatus": "missing", "exported": true }
+    },
+    {
+      "id": "@Cl/src/mod1.ts#Cls1:2",
+      "type": "class",
+      "name": "Cls1",
+      "file": "src/mod1.ts",
+      "line": 2,
+      "metadata": { "headerStatus": "missing", "exported": true }
+    },
+    {
+      "id": "@C/src/mod1.ts#C1:3",
+      "type": "constant",
+      "name": "C1",
+      "file": "src/mod1.ts",
+      "line": 3,
+      "metadata": { "headerStatus": "defined", "exported": true }
+    },
+    {
+      "id": "@Fn/src/mod2.ts#fn2:1",
+      "type": "function",
+      "name": "fn2",
+      "file": "src/mod2.ts",
+      "line": 1,
+      "metadata": { "headerStatus": "missing", "exported": true }
+    },
+    {
+      "id": "@Cl/src/mod2.ts#Cls2:2",
+      "type": "class",
+      "name": "Cls2",
+      "file": "src/mod2.ts",
+      "line": 2,
+      "metadata": { "headerStatus": "missing", "exported": true }
+    },
+    {
+      "id": "@C/src/mod2.ts#C2:3",
+      "type": "constant",
+      "name": "C2",
+      "file": "src/mod2.ts",
+      "line": 3,
+      "metadata": { "headerStatus": "defined", "exported": true }
+    }
+  ],
+  "edges": [],
+  "statistics": { "nodeCount": 9, "edgeCount": 0 }
+}
