@@ -1,0 +1,145 @@
+{
+  "workorder_id": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001",
+  "feature_name": "indexing-orchestrator-path-normalization-fix",
+  "created": "2026-05-05T02:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-04-036"],
+  "predecessor_for": "STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+  "status": "closed",
+  "completed_at": "2026-05-05T05:45:00Z",
+  "closed_at": "2026-05-05T04:30:00Z",
+  "closed_by": "SKILLS (DISPATCH-037 cross-project /close-workorder)",
+  "current_phase": 5,
+  "phase_status": "complete",
+  "plan_file": "coderef/workorder/indexing-orchestrator-path-normalization-fix/plan.json",
+  "context_file": "coderef/workorder/indexing-orchestrator-path-normalization-fix/context.json",
+  "analysis_file": "coderef/workorder/indexing-orchestrator-path-normalization-fix/analysis.json",
+  "stub_source": "coderef/stubs/STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001.md",
+  "handoff": {
+    "from": "SKILLS (DISPATCH-036)",
+    "to": "CODEREF-CORE (next dispatch — execute-workorder)",
+    "reason": "WO authored from stub; ready for CORE implementation per phased plan (5 phases, 16 tasks)."
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_gates": "Each phase has a halt gate; do not proceed without explicit gate satisfaction. Phase 1 requires implementer+reviewer agreement on fix shape before Phase 2 src/ touch.",
+    "atomic_commits": "One commit per phase task that produces a code/test artifact (target ~5 atomic commits across phases 2-5).",
+    "tsc_invariant": "tsc --noEmit must be clean both configs after every src/ change — Phase 2 gate."
+  },
+  "hard_constraints": [
+    "Phase 7 archive must NOT be reopened (rebuild is COMPLETE)",
+    "No new field on IndexingResult schema",
+    "No new SkipReason enum values",
+    "AC-09 threshold stays at ±10%",
+    "Diff confined to normalizeChunkFile() + tests"
+  ],
+  "blockers": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-05T02:00:00Z",
+      "from": "SKILLS",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_authored",
+      "summary": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 authored from STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001. Plan-type=phased, 5 phases, 16 tasks, AC-01..AC-06. Ready for ORCHESTRATOR to dispatch CODEREF-CORE for execute."
+    },
+    {
+      "at": "2026-05-05T05:30:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "halt_and_report",
+      "summary": "Phase 5 dynamic re-verification: fix verified correct (0→215 chunks correctly skip of 262 missing-header files; was catastrophic 0/262 pre-fix). 8/8 unit + 4/4 invariant + 12/12 ground-truth+boundary all PASS, tsc clean both configs. AC-02 ±10% threshold misses by 17.9% — but the 47-file residual gap is structural: rag-index analyzerService.analyze() produces a smaller graph than populate-coderef graph.json. 3 paths surfaced for ruling."
+    },
+    {
+      "at": "2026-05-05T05:35:00Z",
+      "from": "ORCHESTRATOR",
+      "to": "CODEREF-CORE",
+      "kind": "ruling",
+      "summary": "Path A authorized: land the verified-correct fix; mark AC-02 DIVERGED with structural rationale; file follow-up stub (rag-index analyzer-slice coverage divergence vs populate-coderef graph.json) as priority=high, owner=CODEREF-CORE; Phase 7 archive NOT reopened; closeout report + push."
+    },
+    {
+      "at": "2026-05-05T05:45:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_complete",
+      "summary": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 closed under Path A. Commits: a38a5b4 (fix), 2dcc2a6 (unit test 8/8), 989d05b (invariant 4/4), + closeout. AC-01/03/04/05/06 PASS; AC-02 DIVERGED with stub-002 filed. Standing by for ORCHESTRATOR to dispatch SKILLS for cross-project /close-workorder."
+    },
+    {
+      "at": "2026-05-05T04:30:00Z",
+      "from": "SKILLS",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_closed",
+      "summary": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 archived cross-project under DISPATCH-037. close_metadata captured AC-02 DIVERGED structural rationale; stub-002 linked as predecessor_for. Cultural 11/11 PASS. Tracking validator pending post-archive."
+    }
+  ],
+  "decisions_log": [
+    {"event": "workorder_created", "at": "2026-05-05T02:00:00Z", "by": "create-workorder@2.4.0 (SKILLS via DISPATCH-036)", "rationale": "Phased plan_type selected: bug fix with halt gates between code, tests, and dynamic verification."},
+    {"event": "halt_and_report", "at": "2026-05-05T05:30:00Z", "by": "CODEREF-CORE (DISPATCH-005 phase 5)", "rationale": "WO halt-and-report condition triggered: 'reproduction reveals a different root cause'. Path-normalization fix verified correct in isolation; residual ±10% miss is rag-index analyzer slice vs populate-coderef graph.json coverage divergence (47 of 262 missing-header files don't reach the rag-index analyzer at all)."},
+    {"event": "orchestrator_ruling", "at": "2026-05-05T05:35:00Z", "by": "ORCHESTRATOR", "rationale": "Path A authorized. (B) post-hoc threshold relax sets wrong precedent. (C) violates locked diff radius + DR-PHASE-7-B. (A) lands the load-bearing 0→215 improvement and pushes the analyzer-slice gap to its own scoped follow-up WO."}
+  ],
+  "stub_filed_during_close": "coderef/stubs/STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001.md",
+  "close_metadata": {
+    "closed_at": "2026-05-05T04:30:00Z",
+    "closed_by": "SKILLS (DISPATCH-2026-05-04-037)",
+    "closing_dispatch": "DISPATCH-2026-05-04-037",
+    "session_id": "daily-agent-session-2026-05-04",
+    "review_status": "PASS",
+    "archive_marker": "coderef/archived/indexing-orchestrator-path-normalization-fix/ARCHIVED.md",
+    "implementation_commit_range": "a38a5b4..ee1c1a7",
+    "implementation_commits": [
+      {"sha": "a38a5b4", "subject": "fix(rag): normalize chunk.file URI/absolute paths to relative-POSIX graph keys"},
+      {"sha": "2dcc2a6", "subject": "test(rag): unit fixture for normalizeChunkFile across 4 path shapes (8/8 PASS)"},
+      {"sha": "989d05b", "subject": "test(pipeline): invariant chunksSkipped tracks header_missing_count (AC-09 dynamic, 4/4 PASS)"},
+      {"sha": "ee1c1a7", "subject": "docs(workorder): closeout WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 (Path A)"}
+    ],
+    "ac_status": [
+      {"id": "AC-01", "status": "PASS", "evidence": "8/8 unit tests across 4 path shapes + 4 robustness cases"},
+      {"id": "AC-02", "status": "DIVERGED", "rationale": "Fix verified correct (0→215 of 262 chunks correctly skip); residual 47-file gap (17.9%) is analyzer-slice coverage divergence between populate-coderef graph.json (262 files with missing-header elements) and rag-index analyzerService slice (215 of 262 reach chunk pipeline). NOT a normalizeChunkFile bug. Filed as STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 for follow-up WO."},
+      {"id": "AC-03", "status": "PASS", "evidence": "post-fix observed status='partial' (was incorrectly 'success')"},
+      {"id": "AC-04", "status": "PASS", "evidence": "zero IndexingResult schema delta; no new SkipReason values; existing header_status_missing fires correctly"},
+      {"id": "AC-05", "status": "PASS", "evidence": "graph-ground-truth 6/6 + no-phase-8-docs-leak boundary 6/6 = 12/12 PASS"},
+      {"id": "AC-06", "status": "PASS", "evidence": "tsc --noEmit clean both tsconfig.json + tsconfig.cli.json"}
+    ],
+    "quality": {
+      "ground_truth": "6/6 PASS",
+      "no_phase_8_docs_leak": "6/6 PASS",
+      "unit_path_normalization": "8/8 PASS",
+      "invariant_test": "4/4 PASS",
+      "tsc": "both configs clean",
+      "pipeline_suite": "167/168 (1 pre-existing baseline failure in pipeline-snapshot.test.ts, confirmed via git stash rerun, NOT caused by this WO)"
+    },
+    "diff_radius": {
+      "src_files_modified": ["src/integration/rag/indexing-orchestrator.ts"],
+      "tests_created": ["__tests__/integration/rag/indexing-orchestrator-path-normalization.test.ts"],
+      "tests_extended": ["__tests__/pipeline/indexing-gate-invariant.test.ts"],
+      "constraint_honored": "ZERO src/ delta beyond normalizeChunkFile() + tests (locked diff radius preserved)"
+    },
+    "decisions_honored": [
+      {"id": "DR-PATH-NORM-A", "decision": "Fix shape selection — chose Option 2 (path.relative) + file: URI peel; survives all 4 chunk-file shape combos"},
+      {"id": "DR-PATH-NORM-B", "decision": "AC-09 ±10% threshold preserved; AC-02 marked DIVERGED rather than threshold relaxed"},
+      {"id": "DR-PATH-NORM-C", "decision": "Dynamic re-verification ran locally with Ollama; static unit + invariant cover CI"}
+    ],
+    "halt_resolution": {
+      "halt_at": "2026-05-05T05:30:00Z",
+      "halt_reason": "Phase 5 dynamic re-verification revealed different root cause: residual 17.9% gap is analyzer-slice coverage divergence (47 files missing from rag-index slice), not a normalizeChunkFile bug. Halt-and-report condition triggered.",
+      "orchestrator_ruling": "Path A — land verified-correct fix, mark AC-02 DIVERGED with structural rationale, file follow-up stub. Phase 7 archive NOT reopened.",
+      "ruling_at": "2026-05-05T05:35:00Z"
+    },
+    "stub_filed": {
+      "stub_id": "STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+      "path": "coderef/stubs/STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001.md",
+      "priority": "high",
+      "owner": "CODEREF-CORE",
+      "predecessor": "STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001"
+    },
+    "hard_constraints_honored": [
+      "Phase 7 archive NOT reopened — rebuild remains COMPLETE",
+      "Zero IndexingResult schema additions",
+      "Zero new SkipReason enum values",
+      "AC-09 ±10% threshold preserved (no renegotiation)",
+      "Diff confined to normalizeChunkFile() + tests + closeout docs"
+    ]
+  }
+}
