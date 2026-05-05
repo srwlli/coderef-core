@@ -12,7 +12,6 @@ import { IndexingOrchestrator } from '../../indexing-orchestrator.js';
 import type { DependencyGraph, GraphNode, GraphEdge } from '../../../../analyzer/graph-builder.js';
 import type { LLMProvider } from '../../../llm/llm-provider.js';
 import type { VectorStore, VectorRecord } from '../../../vector/vector-store.js';
-import type { AnalyzerService } from '../../../../analyzer/analyzer-service.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
@@ -20,7 +19,6 @@ import * as os from 'os';
 describe('Indexing Pipeline Integration', () => {
   let mockLLMProvider: LLMProvider;
   let mockVectorStore: VectorStore;
-  let mockAnalyzerService: AnalyzerService;
   let orchestrator: IndexingOrchestrator;
   let tempDir: string;
 
@@ -134,22 +132,10 @@ describe('Indexing Pipeline Integration', () => {
 
     // Write canonical graph.json into tempDir/.coderef/. The orchestrator
     // reads this artifact directly (WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001
-    // substrate pivot) — mockAnalyzerService.analyze is never invoked.
+    // substrate pivot).
     writeGraphJson(tempDir);
 
-    // mockAnalyzerService stays constructor-injected (the field is still
-    // private+stored on IndexingOrchestrator) but its analyze method is
-    // never called. The vi.fn() below is a regression sentinel: if a
-    // future change re-introduces the second analyzer slice, the
-    // assertion in the gate-invariant test (b)
-    // `expect(analyzerService.analyze).not.toHaveBeenCalled()` will
-    // catch it. Free invariant.
-    mockAnalyzerService = {
-      analyze: vi.fn(),
-    } as any;
-
     orchestrator = new IndexingOrchestrator(
-      mockAnalyzerService,
       mockLLMProvider,
       mockVectorStore,
       tempDir
@@ -173,11 +159,6 @@ describe('Indexing Pipeline Integration', () => {
         incrementalOptions: { force: false },
         embeddingOptions: { batchSize: 10 }
       });
-
-      // Substrate-pivot regression sentinel: orchestrator must NOT
-      // invoke a second analyzer slice (WO-RAG-INDEX-SINGLE-ANALYZER-
-      // SLICE-001). Chunks come from .coderef/graph.json directly.
-      expect(mockAnalyzerService.analyze).not.toHaveBeenCalled();
 
       // Verify embeddings were generated
       expect(mockLLMProvider.embed).toHaveBeenCalled();

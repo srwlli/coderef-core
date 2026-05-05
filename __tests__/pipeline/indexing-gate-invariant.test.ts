@@ -14,15 +14,6 @@ import { IndexingOrchestrator } from '../../src/integration/rag/indexing-orchest
 //       produces equivalent results).
 
 function makeOrchestrator() {
-  const stubGraph = {
-    nodes: new Map(),
-    edges: [],
-    edgesBySource: new Map(),
-    edgesByTarget: new Map(),
-  };
-  const analyzerService = {
-    analyze: vi.fn().mockResolvedValue({ graph: stubGraph }),
-  } as any;
   const embedFn = vi.fn();
   const llmProvider = {
     getEmbeddingDimensions: () => 4,
@@ -34,12 +25,8 @@ function makeOrchestrator() {
     stats: vi.fn().mockResolvedValue({}),
     clear: vi.fn().mockResolvedValue(undefined),
   } as any;
-  const orch = new IndexingOrchestrator(
-    analyzerService,
-    llmProvider,
-    vectorStore,
-  );
-  return { orch, analyzerService, embedFn, vectorStore };
+  const orch = new IndexingOrchestrator(llmProvider, vectorStore);
+  return { orch, embedFn, vectorStore };
 }
 
 describe('Phase 7 chokepoint INVARIANT (task 1.17)', () => {
@@ -50,8 +37,8 @@ describe('Phase 7 chokepoint INVARIANT (task 1.17)', () => {
     ).rejects.toThrow(/Phase 6 validation result required/);
   });
 
-  it('(b) validation.ok=false returns status=failed and makes zero embedding/analyzer calls', async () => {
-    const { orch, analyzerService, embedFn, vectorStore } = makeOrchestrator();
+  it('(b) validation.ok=false returns status=failed and makes zero embedding calls', async () => {
+    const { orch, embedFn, vectorStore } = makeOrchestrator();
     const result = await orch.indexCodebase({
       sourceDir: '.',
       useAnalyzer: true,
@@ -60,7 +47,6 @@ describe('Phase 7 chokepoint INVARIANT (task 1.17)', () => {
 
     expect(result.status).toBe('failed');
     expect(result.validationGateRefused).toBe(true);
-    expect(analyzerService.analyze).not.toHaveBeenCalled();
     expect(embedFn).not.toHaveBeenCalled();
     expect(vectorStore.upsert).not.toHaveBeenCalled();
   });
@@ -199,12 +185,6 @@ describe('AC-05 dual identity — element-grain + file-grain (no tolerance band)
       'utf-8',
     );
 
-    // analyzerService is constructor-injected but never invoked
-    // post-pivot. The not-called assertion at the end is a regression
-    // sentinel.
-    const analyzerService = {
-      analyze: vi.fn(),
-    } as any;
     const llmProvider = {
       getEmbeddingDimensions: () => 4,
       embedBatch: vi.fn().mockResolvedValue(
@@ -220,7 +200,6 @@ describe('AC-05 dual identity — element-grain + file-grain (no tolerance band)
     } as any;
 
     const orch = new IndexingOrchestrator(
-      analyzerService,
       llmProvider,
       vectorStore,
       projectDir,
@@ -258,8 +237,5 @@ describe('AC-05 dual identity — element-grain + file-grain (no tolerance band)
     // numbers in this fixture, otherwise the dual-AC framing is not
     // being exercised.
     expect(missingSkips.length).not.toBe(uniqueFiles.size);
-
-    // Regression sentinel: the second analyzer slice MUST stay deleted.
-    expect(analyzerService.analyze).not.toHaveBeenCalled();
   });
 });

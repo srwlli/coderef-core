@@ -22,7 +22,6 @@ afterEach(async () => {
 });
 
 function makeOrchestrator(basePath: string) {
-  const analyzerService = { analyze: vi.fn() } as any;
   const llmProvider = {
     getEmbeddingDimensions: () => 4,
     embed: vi.fn().mockResolvedValue([1, 0, 0, 0]),
@@ -35,7 +34,6 @@ function makeOrchestrator(basePath: string) {
     clear: vi.fn().mockResolvedValue(undefined),
   } as any;
   return new IndexingOrchestrator(
-    analyzerService,
     llmProvider,
     vectorStore,
     basePath,

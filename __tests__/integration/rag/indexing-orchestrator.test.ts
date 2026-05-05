@@ -15,17 +15,6 @@ function makeOrchestrator(opts?: {
 }) {
   const fails = opts?.embedFails ?? 0;
   const succeeds = opts?.embedSucceeds ?? 0;
-  // Minimal stub of AnalyzerService.analyze return shape — enough to
-  // drive ChunkConverter through indexing-orchestrator.
-  const stubGraph = {
-    nodes: new Map(),
-    edges: [],
-    edgesBySource: new Map(),
-    edgesByTarget: new Map(),
-  };
-  const analyzerService = {
-    analyze: vi.fn().mockResolvedValue({ graph: stubGraph }),
-  } as any;
   const llmProvider = { getEmbeddingDimensions: () => 4 } as any;
   const vectorStore = {
     initialize: vi.fn().mockResolvedValue(undefined),
@@ -34,17 +23,16 @@ function makeOrchestrator(opts?: {
     clear: vi.fn().mockResolvedValue(undefined),
   } as any;
   const orch = new IndexingOrchestrator(
-    analyzerService,
     llmProvider,
     vectorStore,
     process.cwd(),
   );
-  return { orch, analyzerService, llmProvider, vectorStore };
+  return { orch, llmProvider, vectorStore };
 }
 
 describe('Phase 7 AC-01 — validation gate refuses ok=false', () => {
   it('returns status=failed with validationGateRefused when ok=false; no embedding calls', async () => {
-    const { orch, analyzerService } = makeOrchestrator();
+    const { orch } = makeOrchestrator();
     const result: IndexingResult = await orch.indexCodebase({
       sourceDir: '.',
       useAnalyzer: true,
@@ -55,9 +43,6 @@ describe('Phase 7 AC-01 — validation gate refuses ok=false', () => {
     expect(result.validationGateRefused).toBe(true);
     expect(result.validationReportPath).toBe('/tmp/validation-report.json');
     expect(result.chunksIndexed).toBe(0);
-    // No embedding API call path was triggered because we short-
-    // circuited before invoking the analyzer.
-    expect(analyzerService.analyze).not.toHaveBeenCalled();
   });
 
   it('throws an explicit error when validation is undefined', async () => {
