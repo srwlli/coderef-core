@@ -1,0 +1,260 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+  "feature_name": "rag-index-single-analyzer-slice",
+  "authored": "2026-05-05T20:30:00Z",
+  "authored_by": "ORCHESTRATOR (post Option (a) pivot)",
+  "owner_domain": "CODEREF-CORE",
+  "supersedes": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+  "plan_type": "phased_implementation",
+  "ruling_reference": "Option (a) — single analyzer slice (see analysis.json ruling block)",
+
+  "objective": "Consolidate rag-index to a single analyzer slice by reading .coderef/graph.json directly instead of running an independent analyzerService.analyze(...). Restore AC-09 to a structural identity (chunksSkipped(header_status_missing) === header_missing_count exactly). Net negative LOC (delete ~100, add ~30). Kills STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 via supersession.",
+
+  "acceptance_criteria": [
+    {
+      "id": "AC-01",
+      "description": "indexing-orchestrator.ts no longer calls analyzerService.analyze(...) inside indexCodebase. Verified by grep: zero occurrences of `this.analyzerService.analyze` in the file.",
+      "verification": "grep -n 'this.analyzerService.analyze' src/integration/rag/indexing-orchestrator.ts → 0 results"
+    },
+    {
+      "id": "AC-02",
+      "description": "indexing-orchestrator.ts reads .coderef/graph.json directly and converts to DependencyGraph shape ChunkConverter consumes. The facet enrichment block (lines ~462-564) is deleted.",
+      "verification": "grep for the comment 'Phase 7 task 1.6 — facet enrichment from canonical ExportedGraph' → 0 results in src/. The graph.json read happens once, as the chunk source, not as enrichment overlay."
+    },
+    {
+      "id": "AC-03",
+      "description": "If .coderef/graph.json is missing, indexCodebase throws an explicit error: 'graph.json not found — run `coderef populate` before `coderef rag-index`.'",
+      "verification": "Unit test: invoke indexCodebase against a directory with no .coderef/graph.json; assert thrown error message matches.",
+      "halt_if_unreachable": "Cannot detect missing graph.json without filesystem access in indexing-orchestrator → HALT (architectural smell)"
+    },
+    {
+      "id": "AC-04",
+      "description": "Stale-graph check fires when sampled source files have mtime > graph.json mtime. Decision (warn vs fail) made in Phase 1 and documented in INVESTIGATION-REPORT.md.",
+      "verification": "Unit test: touch a source file post-graph.json; invoke indexCodebase; assert warning or thrown error per Phase 1 decision."
+    },
+    {
+      "id": "AC-05",
+      "description": "AC-09 identity: chunksSkipped(header_status_missing) === header_missing_count exactly when run against coderef-core itself.",
+      "verification": "Run populate.js + rag-index.js. Inspect .coderef/rag-index.json.chunksSkipped vs .coderef/validation-report.json.header_missing_count → equal (262 === 262 expected).",
+      "halt_if_unreachable": "If chunksSkipped !== header_missing_count after refactor → HALT (likely chunk-conversion bug surfaced, must fix before merge)"
+    },
+    {
+      "id": "AC-06",
+      "description": "Zero changes outside src/integration/rag/*. Verified by git diff --stat.",
+      "verification": "git diff --stat <base>..HEAD -- src/ shows ONLY src/integration/rag/* paths."
+    },
+    {
+      "id": "AC-07",
+      "description": "Zero new fields on IndexingResult schema. Zero new SkipReason enum values.",
+      "verification": "grep IndexingResult shape pre/post → identical fields. grep SkipReason enum pre/post → identical values."
+    },
+    {
+      "id": "AC-08",
+      "description": "tsc --noEmit clean on both tsconfig.json and tsconfig.cli.json after each phase commit.",
+      "verification": "npm run typecheck-all (or equivalent) exits 0."
+    },
+    {
+      "id": "AC-09",
+      "description": "All 6 graph-ground-truth.test.ts assertions still PASS.",
+      "verification": "Run __tests__/pipeline/graph-ground-truth.test.ts; 6/6 PASS."
+    },
+    {
+      "id": "AC-10",
+      "description": "Predecessor + Phase 7 archives untouched. Superseded WO directory (rag-index-analyzer-slice-coverage) status block updated but content otherwise preserved.",
+      "verification": "git diff <base>..HEAD -- coderef/archived/{indexing-orchestrator-path-normalization-fix,pipeline-indexing-rag}/ → EMPTY. coderef/workorder/rag-index-analyzer-slice-coverage/ shows only communication.json status flip."
+    },
+    {
+      "id": "AC-11",
+      "description": "validation-report.header_missing_count remains 262 (populate-coderef untouched).",
+      "verification": "Run populate.js; cat .coderef/validation-report.json → header_missing_count: 262."
+    },
+    {
+      "id": "AC-12",
+      "description": "Net code reduction: lines deleted > lines added in src/integration/rag/* (excluding tests).",
+      "verification": "git diff --stat <base>..HEAD -- src/integration/rag/*.ts (excluding __tests__/) → net negative LOC."
+    },
+    {
+      "id": "AC-13",
+      "description": "WO archived under coderef/archived/rag-index-single-analyzer-slice/ with ARCHIVED.md including AC table + ruling rationale + commit chain + superseded-WO note.",
+      "verification": "Cross-project /close-workorder run by SKILLS produces ARCHIVED.md."
+    }
+  ],
+
+  "phases": [
+    {
+      "phase": 1,
+      "label": "Investigation — verify shape compatibility + downstream-consumer audit",
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Read ChunkConverter.convertGraph + convertNode (src/integration/rag/chunk-converter.ts). Document: (a) what shape DependencyGraph it expects; (b) whether convertNode propagates node.metadata.headerStatus to chunk.headerStatus inline; (c) whether convertNode propagates layer/capability/constraints inline.",
+          "commit_strategy": "no commit yet — investigation"
+        },
+        {
+          "id": "1.2",
+          "description": "Read graph-builder.ts to understand DependencyGraph shape (Map<string, GraphNode>, edges array). Compare to graph.json's serialized shape. Decide: do we need a JSON-to-DependencyGraph adapter, or is the JSON shape directly consumable?",
+          "commit_strategy": "no commit yet — investigation"
+        },
+        {
+          "id": "1.3",
+          "description": "Audit callers of IndexingOrchestrator.indexCodebase: grep src/ + __tests__/ for `indexCodebase(`. List all callers; verify none rely on the divergent rag-index analyzer slice (e.g., 'rag-index sees files populate doesn't').",
+          "commit_strategy": "no commit yet — investigation",
+          "halt_if": "Any caller relies on the divergent slice → HALT, report"
+        },
+        {
+          "id": "1.4",
+          "description": "Decide stale-graph check: warn vs fail. Document choice in INVESTIGATION-REPORT.md with rationale. Default recommendation: fail loud (DR-SINGLE-SLICE-D). Override only if Phase 1 finds a workflow that legitimately runs rag-index post-edit-pre-populate.",
+          "commit_strategy": "no commit yet — investigation"
+        },
+        {
+          "id": "1.5",
+          "description": "Author INVESTIGATION-REPORT.md in WO directory: shape compatibility findings, ChunkConverter propagation status, callers audit, stale-graph decision.",
+          "commit_strategy": "atomic commit: investigate(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): phase 1 investigation report"
+        }
+      ],
+      "halt_and_report": [
+        "1.3 finds a downstream consumer relying on divergent slice → HALT, report (R-SINGLE-SLICE-4)",
+        "1.1/1.2 finds ChunkConverter requires changes outside src/integration/rag/* to consume graph.json → HALT (DR-SINGLE-SLICE-A violation)"
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "Implementation — replace analyze call, delete enrichment block, add safeguards",
+      "tasks": [
+        {
+          "id": "2.1",
+          "description": "Replace analyzerService.analyze(...) at indexing-orchestrator.ts:391 with a graph.json read. Add JSON-to-DependencyGraph adapter (if Phase 1 found one needed). Pass graph to ChunkConverter as before.",
+          "commit_strategy": "atomic commit: feat(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): replace analyzerService.analyze with graph.json read"
+        },
+        {
+          "id": "2.2",
+          "description": "Add explicit error for missing graph.json: 'graph.json not found — run `coderef populate` before `coderef rag-index`.'",
+          "commit_strategy": "atomic commit: feat(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): explicit error for missing graph.json"
+        },
+        {
+          "id": "2.3",
+          "description": "Add stale-graph check (warn or fail per Phase 1 decision). Sample N source files; compare mtime to graph.json mtime.",
+          "commit_strategy": "atomic commit: feat(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): stale-graph staleness check"
+        },
+        {
+          "id": "2.4",
+          "description": "Delete the facet enrichment block (lines ~462-564). If Phase 1 found ChunkConverter does NOT propagate node.metadata.headerStatus inline, add the propagation in convertNode (1-3 lines).",
+          "commit_strategy": "atomic commit: refactor(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): delete redundant facet enrichment block"
+        },
+        {
+          "id": "2.5",
+          "description": "Run tsc --noEmit on both configs after each commit.",
+          "verification": "npm run typecheck-all exits 0"
+        }
+      ],
+      "halt_and_report": [
+        "Fix would require change outside src/integration/rag/* → HALT (DR-SINGLE-SLICE-A)",
+        "Fix would require new IndexingResult field → HALT (DR-PHASE-7-B)",
+        "Fix would require new SkipReason value → HALT (out-of-scope)",
+        "Phase 1 deferred decision (warn vs fail staleness) reveals it's a hard architectural choice, not a stylistic one → HALT, ORCHESTRATOR rules"
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "Tests — staleness + missing-graph + AC-09 identity",
+      "tasks": [
+        {
+          "id": "3.1",
+          "description": "Add unit test for missing graph.json error (AC-03). Invoke indexCodebase against a temp dir with no .coderef/graph.json; assert thrown error message.",
+          "commit_strategy": "atomic commit: test(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): missing-graph error test"
+        },
+        {
+          "id": "3.2",
+          "description": "Add unit test for stale-graph check (AC-04). Touch a source file post-graph.json; invoke indexCodebase; assert warn/error per Phase 1 decision.",
+          "commit_strategy": "atomic commit: test(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): stale-graph check test"
+        },
+        {
+          "id": "3.3",
+          "description": "Add integration test for AC-09 identity. Use a small fixture project with N missing-header files; run populate.js + rag-index.js; assert chunksSkipped(header_status_missing) === header_missing_count exactly.",
+          "commit_strategy": "atomic commit: test(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): AC-09 identity invariant"
+        },
+        {
+          "id": "3.4",
+          "description": "Run full src/integration/rag/__tests__/ suite. Confirm zero regressions on predecessor WO's chunk-conversion + invariant tests + path-normalization tests.",
+          "verification": "Test runner output PASS for all suites"
+        },
+        {
+          "id": "3.5",
+          "description": "Run __tests__/pipeline/graph-ground-truth.test.ts. Confirm 6/6 PASS.",
+          "verification": "Test runner output 6/6 PASS"
+        }
+      ],
+      "halt_and_report": [
+        "Any predecessor test regresses → HALT, investigate (likely a propagation bug from deleting the enrichment block)"
+      ]
+    },
+    {
+      "phase": 4,
+      "label": "Dynamic re-verify + close",
+      "tasks": [
+        {
+          "id": "4.1",
+          "description": "Run populate.js + rag-index.js against coderef-core. Capture chunksSkipped count and header_missing_count.",
+          "verification": "chunksSkipped === header_missing_count exactly (AC-05)",
+          "halt_if": "chunksSkipped !== header_missing_count → HALT, investigate"
+        },
+        {
+          "id": "4.2",
+          "description": "Verify net negative LOC (AC-12). Run git diff --stat <base>..HEAD -- src/integration/rag/*.ts excluding __tests__/.",
+          "verification": "diff output shows lines deleted > lines added"
+        },
+        {
+          "id": "4.3",
+          "description": "Verify boundary (AC-06): git diff --stat <base>..HEAD -- src/ shows ONLY src/integration/rag/* paths.",
+          "verification": "diff output matches AC-06"
+        },
+        {
+          "id": "4.4",
+          "description": "Verify validation-report.header_missing_count = 262 (AC-11).",
+          "verification": "cat .coderef/validation-report.json → header_missing_count: 262"
+        },
+        {
+          "id": "4.5",
+          "description": "Verify predecessor + Phase 7 archives untouched + superseded WO directory only has communication.json status flip (AC-10).",
+          "verification": "git diff <base>..HEAD checks per AC-10"
+        },
+        {
+          "id": "4.6",
+          "description": "Author closeout report in WO directory; status → completing in communication.json. Push all atomic commits in single push.",
+          "commit_strategy": "atomic commit: close(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): closeout report + AC table"
+        }
+      ],
+      "halt_and_report": [
+        "AC-05 identity check fails → HALT, investigate; AC-09 identity is the load-bearing structural property of this WO"
+      ]
+    }
+  ],
+
+  "definition_of_done": [
+    "AC-01..AC-13 all PASS",
+    "All atomic commits pushed clean to origin/main",
+    "INVESTIGATION-REPORT.md present in WO directory",
+    "Cross-project /close-workorder run by SKILLS",
+    "ASSISTANT TRACKING/workorders.json status → archived",
+    "STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 closed via supersession (not fix)"
+  ],
+
+  "execution_rules": {
+    "atomic_commits": "one per phase task per fix target; one push at end of each phase",
+    "tsc_invariant": "tsc --noEmit clean on both configs after each commit",
+    "boundary": "src/integration/rag/* ONLY for src/ changes; tests in src/integration/rag/__tests__/ and __tests__/pipeline/ only",
+    "halt_protocol": "if any halt-and-report point trips, status → halted in communication.json, await ORCHESTRATOR ruling before resuming"
+  },
+
+  "out_of_scope": [
+    "Shared analyzer/scanner code changes (src/analyzer/*, src/scanner/*)",
+    "IndexingResult schema additions (DR-PHASE-7-B locked)",
+    "New SkipReason enum values",
+    "Phase 7 archive modifications",
+    "Predecessor WO archive modifications",
+    "Superseded WO content changes (status block update only)",
+    "populate-coderef CLI changes",
+    "validation-report.json shape changes",
+    "The 5 other CORE bulletproof concepts (frozen fixture, branded paths, schema reduction, seam deletion, two-grain drop) — file as separate stubs, scope as separate WOs"
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+  "feature_name": "rag-index-single-analyzer-slice",
+  "authored": "2026-05-05T20:30:00Z",
+  "authored_by": "ORCHESTRATOR (post Option (a) pivot)",
+  "owner_domain": "CODEREF-CORE",
+  "supersedes": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+
+  "ruling": {
+    "decision": "Option (a) — single analyzer slice. rag-index reads .coderef/graph.json directly; no second analyzerService.analyze(...) call.",
+    "ruling_authority": "ORCHESTRATOR",
+    "ruled_at": "2026-05-05T20:30:00Z",
+    "rationale": "(1) AC-09 becomes a tautology by construction: once chunks come from the same graph.json that validation-report counts header_missing from, the two metrics see the same file population — no ±10% band needed, no probabilistic measurement. (2) Substrate fix beats process compensation. The two-slice architecture was structurally guaranteed to diverge; Phase 7's 262-vs-215 disagreement was the substrate telling the truth. (3) Net negative LOC: delete the analyzer.analyze() call + the entire facet enrichment block (~100 LOC). (4) Kills STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 outright — the stub's premise (two slices need reconciling) is moot when there is one slice. (5) Honest dependency graph: rag-index has always been downstream of populate-coderef; making the dependency explicit (graph.json missing → fail loud) is more honest than today's silent-disagreement behavior."
+  },
+
+  "problem_statement": "rag-index runs an independent analyzerService.analyze(patterns, false) at indexing-orchestrator.ts:391, producing a DependencyGraph that ChunkConverter chunks. The graph.json read at line 469 is only used for facet enrichment onto those chunks. This two-slice architecture means populate-coderef and rag-index can disagree about which files exist (262 vs 215 in coderef-core's own scan). AC-09 alignment becomes a probabilistic ±10% check rather than a structural identity. The fix is to consolidate to one slice: rag-index reads graph.json directly, ChunkConverter consumes it, the facet enrichment block becomes redundant.",
+
+  "fix_shape": {
+    "step_1_replace_analyze_call": {
+      "location": "src/integration/rag/indexing-orchestrator.ts:387-441",
+      "current": "if (options.useAnalyzer) { ... const analysisResult = await this.analyzerService.analyze(patterns, false); graph = analysisResult.graph; ... ChunkConverter ... }",
+      "replacement_sketch": "Read .coderef/graph.json from this.basePath. Parse JSON. Convert to DependencyGraph shape (Map<string, GraphNode> + edges array). Pass to ChunkConverter. Same progress reporting; same chunks output.",
+      "boundary_check": "If graph.json missing → throw explicit error: 'run `coderef populate` before `coderef rag-index` — graph.json missing or stale'.",
+      "boundary_check_2": "Stale-graph: stat graph.json + sample N source files (e.g., 10 randomly chosen .ts/.tsx files); if any source mtime > graph mtime, warn (or fail loud, decide in plan)."
+    },
+    "step_2_delete_facet_enrichment_block": {
+      "location": "src/integration/rag/indexing-orchestrator.ts:462-564",
+      "rationale": "The chunks now come from graph.json directly. Each chunk's source GraphNode already carries its ElementData metadata (headerStatus, layer, capability, constraints). The facet enrichment block exists only to bolt facets onto chunks built from a different graph (the analyzer's). With one graph, this block is a no-op at best, redundant at worst.",
+      "what_must_carry_forward": "ChunkConverter must propagate node.metadata.headerStatus → chunk.headerStatus when building each chunk. This may already happen in ChunkConverter.convertNode; verify in Phase 1.",
+      "if_chunk_converter_does_not_propagate": "Add the propagation inside ChunkConverter (1-3 lines), still inside src/integration/rag/* boundary."
+    },
+    "step_3_keep_path_helper": {
+      "location": "src/integration/rag/indexing-orchestrator.ts:40-53 (normalizeChunkFileForGraphJoin)",
+      "rationale": "Chunk grain stays chunk grain (e.g., 'file:C:\\\\Users\\\\...\\\\file.ts'). Even with one graph, chunk.file may still need normalizing to match graph.nodes[].file (relative POSIX). Keep the helper.",
+      "verify": "Confirm via test that the helper still has callers post-refactor; if not, deprecate cleanly."
+    },
+    "step_4_ac_09_invariant": {
+      "shape": "After indexing run, IndexingResult.chunksSkipped(header_status_missing) MUST equal validation-report.header_missing_count exactly.",
+      "test_form": "Add an integration test that runs populate.js + rag-index.js against a small fixture project with known header_missing files; assert the equality.",
+      "fixture_design_consideration": "CORE's bulletproof recommendation #2 was a frozen fixture project. Scope this fixture to coderef-core itself for now (262 files); a frozen-fixture WO is a separate substrate concern."
+    }
+  },
+
+  "decision_records": [
+    {
+      "id": "DR-SINGLE-SLICE-A",
+      "title": "Boundary: src/integration/rag/* only",
+      "decision": "All fixes ship inside src/integration/rag/* (indexing-orchestrator.ts, chunk-converter.ts). NO changes to src/analyzer/*, src/scanner/*, or src/cli/rag-index.ts beyond passing through the graph path.",
+      "rationale": "Carries forward from predecessor + superseded WO. populate-coderef side stays untouched; the rebuild is COMPLETE."
+    },
+    {
+      "id": "DR-SINGLE-SLICE-B",
+      "title": "AC-09 measured as identity, not ±10%",
+      "decision": "Success criterion is chunksSkipped(header_status_missing) === header_missing_count exactly. ±10% band is dropped from this WO's contract — that band was a probabilistic concession to two-slice divergence; once there is one slice, identity is the honest target.",
+      "rationale": "The bulletproof property: the system can't disagree with itself because there's nothing for it to disagree with."
+    },
+    {
+      "id": "DR-SINGLE-SLICE-C",
+      "title": "Delete the facet enrichment block",
+      "decision": "Lines ~462-564 of indexing-orchestrator.ts (the try/catch block reading graph.json for enrichment) are deleted as part of this WO. ChunkConverter is responsible for propagating node.metadata.headerStatus → chunk.headerStatus inline during convertNode.",
+      "rationale": "Substrate seam reduction (CORE bulletproof #3). Two paths for chunk facets become one; future-you won't debug a phantom enrichment overlay."
+    },
+    {
+      "id": "DR-SINGLE-SLICE-D",
+      "title": "Stale-graph check is fail-loud",
+      "decision": "If any sampled source file mtime > graph.json mtime, error with: 'graph.json is stale — re-run `coderef populate` to refresh.' Don't silently embed against stale data.",
+      "rationale": "Honest dependency surface. Silent staleness is the same failure mode as today's silent disagreement — both let the user think the system saw current code when it didn't."
+    },
+    {
+      "id": "DR-SINGLE-SLICE-E",
+      "title": "Stub class closes via supersession",
+      "decision": "STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 closes via supersession (not via fix). Its premise — two analyzer slices need reconciling — is moot when there is one slice.",
+      "rationale": "Cleaner audit trail. The stub described a real divergence; the divergence is real; the WO that resolved it didn't 'fix' the divergence, it removed the architecture that produced the divergence. Supersession captures that distinction."
+    }
+  ],
+
+  "risks": [
+    {
+      "id": "R-SINGLE-SLICE-1",
+      "description": "ChunkConverter's expected DependencyGraph shape (Map-of-nodes) doesn't match graph.json's serialized shape (array-of-nodes). Need a JSON-to-DependencyGraph adapter.",
+      "mitigation": "Phase 1 verifies the shape. Adapter is local code — likely 10-20 lines (parse JSON, build Map<string, GraphNode>, copy edges array). All inside src/integration/rag/*.",
+      "severity": "low"
+    },
+    {
+      "id": "R-SINGLE-SLICE-2",
+      "description": "ChunkConverter doesn't currently propagate node.metadata.headerStatus → chunk.headerStatus inline; the facet enrichment block was the only path. Deleting the block could regress chunk facet population.",
+      "mitigation": "Phase 1 reads ChunkConverter.convertNode to verify. If propagation absent, add it (1-3 lines). The new test (AC-09 identity) catches the regression if missed.",
+      "severity": "medium"
+    },
+    {
+      "id": "R-SINGLE-SLICE-3",
+      "description": "Graph staleness check (DR-SINGLE-SLICE-D) is too strict and fails on legitimate workflows (e.g., user touches a file with editor that updates mtime but content is unchanged).",
+      "mitigation": "Sample N files (not all) + compare mtime only when N > 0 sampled. If false-positive complaints surface, scope a content-hash check WO; do not pre-optimize.",
+      "severity": "low"
+    },
+    {
+      "id": "R-SINGLE-SLICE-4",
+      "description": "Some downstream consumer of indexCodebase relies on the rag-index-side analyzer producing a different node set than graph.json (e.g., picking up files populate-coderef missed).",
+      "mitigation": "Verify in Phase 1: grep for callers of IndexingOrchestrator.indexCodebase; check whether any test or CLI relies on the divergent slice. If found, halt and report.",
+      "severity": "medium"
+    },
+    {
+      "id": "R-SINGLE-SLICE-5",
+      "description": "graph.json is large (262 files × N nodes/file); JSON.parse may be slow on big projects.",
+      "mitigation": "Phase 1 measures parse time on coderef-core itself. If unacceptable, lazy-parse or stream; address in this WO if simple, defer if structural.",
+      "severity": "low"
+    }
+  ],
+
+  "key_files_to_touch": [
+    "src/integration/rag/indexing-orchestrator.ts (replace analyze call, delete facet enrichment block, add staleness check + missing-graph error)",
+    "src/integration/rag/chunk-converter.ts (verify/add headerStatus propagation in convertNode)",
+    "src/integration/rag/__tests__/indexing-orchestrator.test.ts (or equivalent — tests for the new graph.json read path + staleness + missing-graph error)",
+    "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts (integration test asserting AC-09 identity end-to-end)"
+  ],
+
+  "key_files_to_read_only": [
+    "src/integration/rag/code-chunk.ts",
+    "src/analyzer/graph-builder.ts (for DependencyGraph shape — read to understand, NOT to modify)",
+    "src/cli/rag-index.ts (verify CLI surface unchanged)",
+    "coderef/archived/indexing-orchestrator-path-normalization-fix/ARCHIVED.md",
+    "coderef/workorder/rag-index-analyzer-slice-coverage/communication.json (superseded WO — for context)"
+  ],
+
+  "halt_and_report_points": [
+    "Phase 1: a downstream consumer relies on the divergent rag-index slice (R-SINGLE-SLICE-4) → HALT, report consumers found",
+    "Phase 1: ChunkConverter requires architectural changes outside src/integration/rag/* to consume graph.json shape → HALT (DR-SINGLE-SLICE-A violation)",
+    "Phase 2: graph.json parse performance is unacceptable → HALT, scope streaming approach as separate WO",
+    "Phase 4: AC-09 identity check fails (chunksSkipped !== header_missing_count) → HALT, investigate which side is wrong (likely a chunk-conversion bug, not an architecture bug)"
+  ],
+
+  "real_world_baseline": {
+    "pre_pivot_state": {
+      "ac_09_dynamic": "215/262 chunks correctly skip (after path-normalization fix)",
+      "indexing_result_status": "partial",
+      "validation_report_header_missing_count": 262,
+      "ground_truth": "6/6 PASS"
+    },
+    "target_post_wo_state": {
+      "ac_09_dynamic": "262/262 by identity",
+      "indexing_result_status": "partial (unchanged shape; status flipped because header-missing chunks exist, same as today)",
+      "validation_report_header_missing_count": 262,
+      "ground_truth": "6/6 PASS",
+      "lines_changed_estimate": "net negative (delete ~100, add ~30)"
+    }
+  },
+
+  "post_close_followups": [
+    "Close STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 via supersession (not via fix)",
+    "Memory: capture CORE's bulletproof six-point feedback as a substrate-improvement memory file",
+    "File the 5 remaining substrate stubs (frozen fixture, branded paths, schema reduction, seam deletion, two-grain drop) — one stub each, NOT bundled",
+    "Cross-project /close-workorder via SKILLS dispatch (mirrors DISPATCH-037 pattern)",
+    "If 262/262 lands: capture coda in MEMORY project file as 'rebuild-complete + bulletproof-pivot-1' entry"
+  ]
+}

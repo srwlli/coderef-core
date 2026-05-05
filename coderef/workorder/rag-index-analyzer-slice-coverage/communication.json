@@ -6,9 +6,12 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-04-038"],
   "predecessor_for": null,
-  "status": "plan_created",
+  "status": "superseded",
+  "superseded_at": "2026-05-05T20:30:00Z",
+  "superseded_by": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+  "supersession_reason": "Substrate-level fix (single analyzer slice — rag-index reads .coderef/graph.json directly) supersedes Option 1 (expand analyzer pattern). Option (a) deletes more code than Option 1 adds, makes AC-09 a tautology by construction (chunksSkipped === header_missing_count by identity), and obviates this WO's premise that two analyzer slices need reconciling. CORE flagged the architecture issue post-Option-1-ruling; ORCHESTRATOR pivoted before DISPATCH-006 was accepted.",
   "current_phase": 0,
-  "phase_status": "ready_to_execute",
+  "phase_status": "superseded",
   "plan_file": "coderef/workorder/rag-index-analyzer-slice-coverage/plan.json",
   "context_file": "coderef/workorder/rag-index-analyzer-slice-coverage/context.json",
   "analysis_file": "coderef/workorder/rag-index-analyzer-slice-coverage/analysis.json",
@@ -82,6 +85,13 @@
       "to": "CODEREF-CORE",
       "kind": "option_ruling_issued",
       "summary": "Option 1 selected — expand rag-index analyzer file coverage. BLOCK-OPTION-RULING resolved. Authoring analysis.json + plan.json. Plan targets ≥235/262 AC-09 alignment via investigation-first approach (analyzer glob patterns vs ChunkConverter fileExists vs chunk-eligibility filter)."
+    },
+    {
+      "at": "2026-05-05T20:30:00Z",
+      "from": "ORCHESTRATOR",
+      "to": "CODEREF-CORE",
+      "kind": "supersession",
+      "summary": "WO superseded by WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001. CORE's post-ruling code review revealed that indexing-orchestrator.ts:391 calls analyzerService.analyze(...) independently of populate-coderef, and the graph.json read at line 469 is only used for facet enrichment onto chunks already produced from the second scan. Single-slice fix (read graph.json directly, delete second analyze call + facet enrichment block) is smaller than Option 1 and makes AC-09 a tautology. CORE halted before accepting DISPATCH-006; pivoting clean."
     }
   ],
   "decisions_log": [
@@ -96,7 +106,16 @@
       "at": "2026-05-05T15:55:00Z",
       "by": "ORCHESTRATOR",
       "ruling": "Option 1 — expand rag-index analyzer file coverage",
-      "rationale": "(1) Validation-report.header_missing_count is the canonical pipeline output; Option 2 splits it into two views, weakening the 'measure against shipped validation-report.json' contract. (2) The 47 residual files are type-only modules + __tests__/ — exactly the kinds of artifacts a code-aware RAG should surface for shape and usage queries. (3) AC-09 stays meaningful as a cross-component invariant rather than a within-rag-index consistency check. (4) Cons are bounded: embedding cost is one-time on local Ollama; retrieval noise is mitigatable via existing --layer/--capability filters from Phase 7; surfacing latent ChunkConverter bugs is a feature, not a con. (5) DR-PHASE-7-B holds — Option 1 needs zero IndexingResult schema additions; just analyzer pattern expansion or ChunkConverter filter relaxation."
+      "rationale": "(1) Validation-report.header_missing_count is the canonical pipeline output; Option 2 splits it into two views, weakening the 'measure against shipped validation-report.json' contract. (2) The 47 residual files are type-only modules + __tests__/ — exactly the kinds of artifacts a code-aware RAG should surface for shape and usage queries. (3) AC-09 stays meaningful as a cross-component invariant rather than a within-rag-index consistency check. (4) Cons are bounded: embedding cost is one-time on local Ollama; retrieval noise is mitigatable via existing --layer/--capability filters from Phase 7; surfacing latent ChunkConverter bugs is a feature, not a con. (5) DR-PHASE-7-B holds — Option 1 needs zero IndexingResult schema additions; just analyzer pattern expansion or ChunkConverter filter relaxation.",
+      "superseded_at": "2026-05-05T20:30:00Z",
+      "superseded_reason": "Stub framed two options (expand vs change-basis); CORE's post-ruling code review found a third option (single slice — rag-index reads graph.json directly) that the stub did not anticipate. Option (a) is structurally bulletproof (AC-09 by identity), smaller diff than Option 1, and kills the stub class permanently. Ruling pivoted to Option (a)."
+    },
+    {
+      "event": "supersession",
+      "at": "2026-05-05T20:30:00Z",
+      "by": "ORCHESTRATOR",
+      "ruling": "Option (a) — single analyzer slice. Replace analyzerService.analyze(patterns, false) at indexing-orchestrator.ts:391 with direct graph.json read; delete the now-redundant facet enrichment block (lines ~462-564) — the graph the chunks come from IS the graph carrying the facets; add stale-graph staleness check; restore AC-09 as identity (chunksSkipped === header_missing_count exactly).",
+      "rationale": "Substrate fix beats process compensation. Two analyzer slices were structurally guaranteed to diverge — Phase 7 closing 262=262 statically and 215/262 dynamically wasn't a measurement glitch, it was the substrate telling the truth. Option (a) deletes more code than Option 1 adds, makes the divergence unrepresentable, and kills the stub class via supersession. CORE flagged the architectural issue before DISPATCH-006 was accepted; the cost of pivoting is just authoring replacement WO files (no rollback)."
     }
   ]
 }

@@ -1,0 +1,69 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+  "feature_name": "rag-index-single-analyzer-slice",
+  "created": "2026-05-05T20:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-04-007 (forthcoming)"],
+  "predecessor_for": null,
+  "supersedes": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+  "status": "plan_created",
+  "current_phase": 0,
+  "phase_status": "ready_to_execute",
+  "plan_file": "coderef/workorder/rag-index-single-analyzer-slice/plan.json",
+  "context_file": "coderef/workorder/rag-index-single-analyzer-slice/context.json",
+  "analysis_file": "coderef/workorder/rag-index-single-analyzer-slice/analysis.json",
+  "stub_source": "coderef/stubs/STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001.md (closes via supersession)",
+  "predecessor_workorder": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001",
+  "predecessor_archive": "coderef/archived/indexing-orchestrator-path-normalization-fix",
+  "handoff": {
+    "from": "ORCHESTRATOR (post Option (a) pivot)",
+    "to": "CODEREF-CORE (DISPATCH-007 execution)",
+    "reason": "Option (a) — single analyzer slice — supersedes Option 1. CORE flagged the architecture issue post-Option-1-ruling and before DISPATCH-006 was accepted. Pivoted clean. Plan + analysis + context authored; ready for CODEREF-CORE execution."
+  },
+  "execution_rules": {
+    "plan_type": "phased_implementation",
+    "phase_gates": "Phase 1 (investigation) gates Phase 2 (implementation); Phase 2 gates Phase 3 (tests); Phase 3 gates Phase 4 (close)",
+    "atomic_commits": "one per task per fix target; single push at end of each phase",
+    "tsc_invariant": "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json) after each commit"
+  },
+  "hard_constraints": [
+    "Phase 7 archive MUST NOT be reopened (rebuild COMPLETE)",
+    "Predecessor WO archive (path-normalization-fix) untouched",
+    "Superseded WO directory (rag-index-analyzer-slice-coverage) preserved; only communication.json status block already updated",
+    "Zero changes outside src/integration/rag/*",
+    "Zero IndexingResult schema deltas (DR-PHASE-7-B)",
+    "Zero new SkipReason values",
+    "All 6 graph-ground-truth.test.ts assertions remain PASS",
+    "tsc --noEmit clean both configs after each commit",
+    "validation-report.header_missing_count remains 262 (populate-coderef untouched)",
+    "Cultural validator scope-mode + tracking validator scope-mode must PASS clean"
+  ],
+  "blockers": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-05T20:30:00Z",
+      "from": "ORCHESTRATOR",
+      "to": "CODEREF-CORE",
+      "kind": "wo_authored_post_pivot",
+      "summary": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 authored as replacement for superseded WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001. Plan, analysis, context, communication all in WO dir. Ready for DISPATCH-007 execution. AC-09 target: identity (chunksSkipped === header_missing_count exactly), not ±10% band. Net negative LOC expected. Stub closes via supersession."
+    }
+  ],
+  "decisions_log": [
+    {
+      "event": "wo_creation_post_pivot",
+      "at": "2026-05-05T20:30:00Z",
+      "by": "ORCHESTRATOR",
+      "rationale": "After CORE flagged the substrate-level fix post-Option-1-ruling, ORCHESTRATOR pivoted to Option (a) (single analyzer slice). The superseded WO's plan was tactical (expand pattern); this WO is structural (read graph.json directly, delete second analyze call). Replacing the WO rather than amending preserves audit trail for the pivot."
+    },
+    {
+      "event": "ac_09_basis_change",
+      "at": "2026-05-05T20:30:00Z",
+      "by": "ORCHESTRATOR",
+      "ruling": "AC-09 measured as identity (chunksSkipped === header_missing_count exactly), not ±10% band",
+      "rationale": "DR-SINGLE-SLICE-B. The ±10% band was a probabilistic concession to two-slice divergence. With one slice, identity is the honest target. The system can't disagree with itself because there's nothing to disagree with."
+    }
+  ]
+}

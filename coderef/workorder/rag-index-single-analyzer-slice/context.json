@@ -1,0 +1,66 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+  "feature_name": "rag-index-single-analyzer-slice",
+  "created": "2026-05-05T20:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-04-007 (forthcoming)",
+  "supersedes": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 (Option 1 plan, status=superseded 2026-05-05T20:30Z)",
+  "intake": {
+    "trigger": "substrate_pivot",
+    "user_request": "After Option 1 was ruled and DISPATCH-006 fired (but before CORE accepted), CORE shared a post-Option-1-ruling code review identifying that the architectural fix is to consolidate to one analyzer slice — rag-index reads .coderef/graph.json directly instead of running its own analyzerService.analyze(...). User confirmed the bulletproof framing. ORCHESTRATOR pivoted: pause DISPATCH-006, supersede the analyzer-slice-coverage WO, author this replacement.",
+    "predecessor_wo": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 (CLOSED 2026-05-05, archive 4827b61)",
+    "superseded_wo": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 (status=superseded; same dir + git history preserved)",
+    "stub_disposition": "STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 closes via supersession — its premise (two analyzer slices need reconciling) is moot once there is one slice."
+  },
+  "classification": {
+    "plan_type": "phased_implementation",
+    "plan_type_rationale": "Direct refactor with known fix shape. Phase 1: investigate read-side staleness check options. Phase 2: replace analyze() with graph.json read + delete facet enrichment block. Phase 3: tests + invariant. Phase 4: dynamic re-verify (AC-09 as identity) + close.",
+    "plan_type_decided_by": "ORCHESTRATOR",
+    "discovery_ref": "coderef/workorder/rag-index-single-analyzer-slice/analysis.json",
+    "discovery": "Code review confirmed indexing-orchestrator.ts:391 calls analyzerService.analyze(patterns, false) independently of populate-coderef. Lines 462-564 read graph.json only for facet enrichment onto chunks already produced from the second scan. Replacing line 391 with a graph.json read makes the facet enrichment block redundant — the chunks come from the graph that carries the facets.",
+    "discovery_skipped_reason": null
+  },
+  "scope": {
+    "in_scope": "(1) Replace analyzerService.analyze(...) at indexing-orchestrator.ts:391 with JSON.parse(fs.readFileSync('.coderef/graph.json', 'utf-8')). (2) Convert the parsed JSON to the in-memory DependencyGraph shape ChunkConverter expects (Map-of-nodes + edges array). (3) Delete the facet enrichment block (lines ~462-564) — chunks already carry facets from the graph they were built from. (4) Add stale-graph check: stat graph.json + sample source files; warn or fail if any source mtime > graph mtime. (5) Add explicit error if graph.json missing: 'run coderef populate before coderef rag-index.' (6) Update tests; restore AC-09 as identity.",
+    "out_of_scope": [
+      "Phase 7 archive — locked, must NOT be reopened",
+      "Predecessor WO archive (path-normalization-fix) — closed, must NOT be modified",
+      "Superseded WO directory (rag-index-analyzer-slice-coverage) — leave files in place; status block on communication.json suffices for audit trail",
+      "src/analyzer/* and src/scanner/* changes — populate-coderef side untouched",
+      "IndexingResult schema additions (DR-PHASE-7-B locked)",
+      "New SkipReason enum values",
+      "validation-report.json shape changes",
+      "The 5 other substrate concepts from CORE's bulletproof feedback (frozen fixture, branded paths, schema reduction, seam deletion, two-grain drop) — file as separate stubs, scope as separate WOs"
+    ],
+    "scope_decision_required": null
+  },
+  "constraints": [
+    "Phase 7 archive MUST NOT be reopened (rebuild COMPLETE)",
+    "Predecessor + superseded WO archives untouched",
+    "Zero changes outside src/integration/rag/*",
+    "Zero IndexingResult schema deltas (DR-PHASE-7-B)",
+    "Zero new SkipReason values",
+    "Cultural validator scope-mode + tracking validator scope-mode must PASS clean",
+    "Session routing: daily-agent-session-2026-05-04 (5-4 calendar-current)",
+    "All 6 graph-ground-truth.test.ts assertions remain PASS",
+    "tsc --noEmit clean both configs after each commit",
+    "validation-report.header_missing_count remains 262 (populate-coderef untouched)"
+  ],
+  "evidence_summary": {
+    "ac_09_pre_pivot_state": "215/262 chunks correctly skip (post-path-normalization-fix; 47-file gap due to two analyzer slices)",
+    "ac_09_post_pivot_target": "262/262 by identity (chunksSkipped(header_status_missing) === header_missing_count, exactly — no ±10% band needed)",
+    "structural_proof": "Once chunks come from the same graph.json that validation-report counts header_missing from, the two metrics see the same file population by construction. There is no slice for them to disagree about.",
+    "code_evidence": [
+      "indexing-orchestrator.ts:391 — analyzerService.analyze(patterns, false) call to delete",
+      "indexing-orchestrator.ts:462-564 — facet enrichment block to delete (graph.json read happens here, but only for enrichment, not as the chunk source)",
+      "chunk-converter.ts:214-224 — groupNodesByFile iterates graph.nodes faithfully; whatever graph goes in, ChunkConverter chunks it. The slice is decided entirely upstream.",
+      "indexing-orchestrator.ts:40-53 — normalizeChunkFileForGraphJoin stays useful (chunk grain is still chunk grain)"
+    ]
+  },
+  "pending_artifacts": {
+    "analysis_json": "Authored alongside this context.json",
+    "plan_json": "Authored alongside this context.json",
+    "communication_json": "Authored at WO creation"
+  }
+}
