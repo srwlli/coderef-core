@@ -1,0 +1,71 @@
+{
+  "workorder_id": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001",
+  "feature_name": "indexing-orchestrator-path-normalization-fix",
+  "analysis_authored_at": "2026-05-05T02:00:00Z",
+  "blast_radius": {
+    "files_modified": ["src/integration/rag/indexing-orchestrator.ts"],
+    "files_created": ["__tests__/integration/rag/indexing-orchestrator-path-normalization.test.ts"],
+    "files_extended": ["__tests__/pipeline/indexing-gate-invariant.test.ts"],
+    "downstream_consumers": ["rag-index CLI (E2E smoke)", "rag-status CLI (consumes IndexingResult)"]
+  },
+  "risks": [
+    {
+      "id": "R-1",
+      "title": "Fix only handles 'file:' URI prefix; underlying basePath comparison still fragile on edge OSes",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Stub option 2 (path.relative-based) is more robust; implementer should pick option 2 if option 1 leaves edge cases. Unit test fixture must include all four shape combos: abs-Win+rel-POSIX, abs-POSIX+rel-POSIX, file:abs-Win+rel-POSIX, file:abs-POSIX+rel-POSIX."
+    },
+    {
+      "id": "R-2",
+      "title": "Invariant test tolerance ±10% might mask a smaller real divergence",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Stub explicitly sets ±10% per ORCHESTRATOR Path A constraint; do NOT renegotiate. The dynamic equality is the canonical signal."
+    },
+    {
+      "id": "R-3",
+      "title": "E2E smoke re-run requires Ollama up; may not be available at CI time",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "E2E re-verification is local-only (requires CODEREF_LLM_PROVIDER=ollama). The unit + invariant tests in CI provide static coverage; dynamic check belongs in implementer's manual smoke."
+    },
+    {
+      "id": "R-4",
+      "title": "Accidentally touching IndexingResult shape or adding SkipReason value",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Hard constraint enforced by no-phase-8-docs-leak boundary spirit (keeping Phase 7 closeout pristine). PR review scope: diff must be confined to normalizeChunkFile + tests."
+    }
+  ],
+  "candidates": [
+    {"file": "src/integration/rag/indexing-orchestrator.ts", "role": "fix-target", "lines": "519-545"},
+    {"file": "__tests__/integration/rag/", "role": "unit-test-target"},
+    {"file": "__tests__/pipeline/indexing-gate-invariant.test.ts", "role": "invariant-extension-target"},
+    {"file": ".coderef/graph.json", "role": "fixture-source (262 header_missing entries)"},
+    {"file": "coderef-vectors.json", "role": "fixture-source (chunk-side absolute Windows paths)"}
+  ],
+  "dependencies": [
+    {"name": "@coderef/core CLI bins", "where": "dist/src/cli/*.js", "purpose": "rag-index, populate, rag-status"},
+    {"name": "Ollama", "where": "external", "purpose": "E2E smoke local provider (CODEREF_LLM_PROVIDER=ollama)"},
+    {"name": "vitest", "where": "vitest.config", "purpose": "unit + invariant test runner"}
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-PATH-NORM-A",
+      "decision": "Fix shape selection (option 1 file:-prefix-peel vs option 2 path.relative vs option 3 dual-key) is implementer's call",
+      "rationale": "Stub explicitly leaves this open. Implementer should pick the option that survives all 4 shape combos (abs-Win, abs-POSIX, file:abs-Win, file:abs-POSIX) on the unit-test fixture and minimizes orchestrator state churn."
+    },
+    {
+      "id": "DR-PATH-NORM-B",
+      "decision": "Invariant tolerance stays at ±10%",
+      "rationale": "ORCHESTRATOR Path A constraint locked at Phase 7 close. Do not renegotiate."
+    },
+    {
+      "id": "DR-PATH-NORM-C",
+      "decision": "AC-09 dynamic alignment is verified manually via E2E smoke, not in CI",
+      "rationale": "CI doesn't run Ollama. Unit + invariant tests cover the structural fix; dynamic equality is the implementer's halt-gate signal before close."
+    }
+  ]
+}

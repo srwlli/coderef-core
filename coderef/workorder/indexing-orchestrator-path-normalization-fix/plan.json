@@ -1,0 +1,85 @@
+{
+  "workorder_id": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001",
+  "feature_name": "indexing-orchestrator-path-normalization-fix",
+  "created": "2026-05-05T02:00:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Bug fix in a single function with new unit + invariant tests + E2E verification. Multiple ordered tasks with halt gates between code change, test additions, and dynamic re-verification — fits phased pattern.",
+  "plan_type_decided_by": "create-workorder@2.4.0 (skills-domain manual classification)",
+  "objective": "Fix normalizeChunkFile() so absolute-Windows-path chunk.file values correctly map to relative-POSIX graph node.file keys, restoring AC-09 dynamic alignment (chunksSkipped == header_missing_count ±10% when header_missing>0).",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Reproduce + select fix shape",
+      "gate": "Reproduction shows chunksSkipped=0 vs expected ~262; implementer picks fix option (1, 2, or 3 from stub) and documents in execution-notes.md",
+      "tasks": [
+        {"id": "1.1", "verb": "RUN", "what": "node dist/src/cli/populate.js . to populate graph; then CODEREF_LLM_PROVIDER=ollama CODEREF_RAG_LOCAL_ONLY=1 node dist/src/cli/rag-index.js --dir . --reset to reproduce skip miss"},
+        {"id": "1.2", "verb": "READ", "what": ".coderef/rag-index.json — confirm status='success' (wrong) and chunksSkipped=0 (wrong)"},
+        {"id": "1.3", "verb": "WRITE", "what": "execution-notes.md — record reproduction output + selected fix shape (option 1 / 2 / 3 + rationale)"},
+        {"id": "1.4", "verb": "STOP", "what": "Halt gate: implementer + reviewer agree on fix shape before any src/ change"}
+      ]
+    },
+    {
+      "phase": 2,
+      "title": "Implement fix",
+      "gate": "src/integration/rag/indexing-orchestrator.ts diff localized to normalizeChunkFile body; tsc --noEmit clean both configs",
+      "tasks": [
+        {"id": "2.1", "verb": "EDIT", "what": "src/integration/rag/indexing-orchestrator.ts — modify normalizeChunkFile() per selected shape (peel file: prefix, or path.relative, or dual-key). Keep diff to ~10-20 LOC."},
+        {"id": "2.2", "verb": "RUN", "what": "tsc --noEmit on both tsconfig configs — expect clean"},
+        {"id": "2.3", "verb": "COMMIT", "what": "fix(rag): normalize chunk.file URI/absolute paths to graph.json relative-POSIX keys"}
+      ]
+    },
+    {
+      "phase": 3,
+      "title": "Add unit test",
+      "gate": "New test fixture covers all 4 shape combos (abs-Win, abs-POSIX, file:abs-Win, file:abs-POSIX); 4/4 PASS",
+      "tasks": [
+        {"id": "3.1", "verb": "WRITE", "what": "__tests__/integration/rag/indexing-orchestrator-path-normalization.test.ts — fixture with 4 chunk-file shapes + relative-POSIX graph keys, asserts join succeeds for all 4"},
+        {"id": "3.2", "verb": "RUN", "what": "vitest run __tests__/integration/rag/indexing-orchestrator-path-normalization.test.ts — expect 4/4 PASS"},
+        {"id": "3.3", "verb": "COMMIT", "what": "test(rag): unit fixture for normalizeChunkFile across 4 path shapes"}
+      ]
+    },
+    {
+      "phase": 4,
+      "title": "Extend invariant test",
+      "gate": "indexing-gate-invariant.test.ts asserts chunksSkipped >= header_missing_count - tolerance whenever header_missing>0; full suite GREEN",
+      "tasks": [
+        {"id": "4.1", "verb": "EDIT", "what": "__tests__/pipeline/indexing-gate-invariant.test.ts — add invariant: when header_missing_count>0 AND IndexingResult.status != 'failed', assert chunksSkipped(header_status_missing) >= header_missing_count - tolerance"},
+        {"id": "4.2", "verb": "RUN", "what": "vitest run __tests__/pipeline/indexing-gate-invariant.test.ts — expect existing 6 + 1 new = 7/7 PASS"},
+        {"id": "4.3", "verb": "COMMIT", "what": "test(pipeline): invariant chunksSkipped >= header_missing_count - tolerance"}
+      ]
+    },
+    {
+      "phase": 5,
+      "title": "Dynamic re-verification + close",
+      "gate": "E2E smoke shows status='partial', chunksSkipped within ±10% of header_missing_count=262; ground-truth 6/6 PASS; no-phase-8-docs-leak 6/6 PASS; tsc clean",
+      "tasks": [
+        {"id": "5.1", "verb": "RUN", "what": "Re-run E2E smoke on coderef-core's own source (Ollama up). Confirm: status='partial', chunksIndexed=1, chunksSkipped~262 (±10%)"},
+        {"id": "5.2", "verb": "RUN", "what": "Full vitest pipeline+rag suite — confirm no regressions; ground-truth 6/6 PASS"},
+        {"id": "5.3", "verb": "RUN", "what": "no-phase-8-docs-leak.test.ts — confirm 6/6 PASS (no boundary touch)"},
+        {"id": "5.4", "verb": "WRITE", "what": "execution-notes.md — closeout report: dynamic chunksSkipped count, % alignment vs 262, AC-01..AC-06 status table"},
+        {"id": "5.5", "verb": "COMMIT", "what": "docs(workorder): closeout report"},
+        {"id": "5.6", "verb": "RUN", "what": "git push origin main — push all 5 atomic commits"}
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    {"id": "AC-01", "statement": "normalizeChunkFile correctly maps absolute-Windows-path chunk.file to relative-POSIX graph node.file"},
+    {"id": "AC-02", "statement": "chunksSkipped count matches header_missing_count ±10% on dynamic E2E run"},
+    {"id": "AC-03", "statement": "IndexingResult.status='partial' when header_missing>0 (was incorrectly 'success')"},
+    {"id": "AC-04", "statement": "No schema additions to IndexingResult; no new SkipReason values; existing header_status_missing fires correctly"},
+    {"id": "AC-05", "statement": "graph-ground-truth 6/6 PASS, no-phase-8-docs-leak 6/6 PASS"},
+    {"id": "AC-06", "statement": "tsc --noEmit clean both configs"}
+  ],
+  "hard_constraints": [
+    "Phase 7 archive must NOT be reopened (rebuild is COMPLETE)",
+    "No new field on IndexingResult schema (DR-PHASE-7-B locked)",
+    "No new SkipReason values (existing header_status_missing is correct)",
+    "AC-09 stays at ±10% threshold (no renegotiation)",
+    "Diff confined to normalizeChunkFile() + tests + closeout docs"
+  ],
+  "halt_and_report_conditions": [
+    "If fix-shape selection requires touching IndexingResult schema → HALT, ORCHESTRATOR ruling required",
+    "If invariant test reveals header_missing_count==0 in fixture (degenerate) → HALT, fixture must use real graph.json with non-zero header_missing",
+    "If tsc breaks in either config → HALT before commit"
+  ]
+}

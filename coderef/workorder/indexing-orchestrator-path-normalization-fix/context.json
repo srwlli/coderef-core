@@ -1,0 +1,67 @@
+{
+  "workorder_id": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001",
+  "feature_name": "indexing-orchestrator-path-normalization-fix",
+  "created": "2026-05-05T02:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-04-036",
+  "intake": {
+    "trigger": "stub",
+    "stub_id": "STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001",
+    "stub_path": "coderef/stubs/STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001.md",
+    "user_request": "Run /create-workorder against STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 (CORE) to author a follow-up WO. Phase classification: post-rebuild maintenance (NOT a Phase 7 reopen)."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Bug fix in a single function (~10-20 LOC) with new unit + invariant tests + E2E verification. Multiple ordered tasks with halt gates between code change, test additions, and dynamic re-verification — fits phased pattern (not strict because no foundation-doc surgery, not light because halt gates matter for AC-09 dynamic alignment).",
+    "plan_type_decided_by": "create-workorder@2.4.0 (skills-domain manual classification)",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        {"file": "src/integration/rag/indexing-orchestrator.ts", "lines": "519-545", "reason": "normalizeChunkFile site"},
+        {"file": "__tests__/integration/rag/", "reason": "unit test fixture target"},
+        {"file": "__tests__/pipeline/indexing-gate-invariant.test.ts", "reason": "invariant extension target"}
+      ],
+      "blast_radius": {
+        "files_modified": 1,
+        "files_created": 1,
+        "estimated_loc_change": "10-30"
+      }
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "Modify normalizeChunkFile() in src/integration/rag/indexing-orchestrator.ts so absolute-Windows-path chunk.file values correctly map to relative-POSIX graph node.file keys",
+      "Peel 'file:' URI prefix before basePath strip (stub option 1) OR equivalent path.relative()-based approach (stub option 2) — implementer selects",
+      "Add 1 unit test in __tests__/integration/rag/ asserting the join succeeds on absolute-Windows + relative-POSIX fixture",
+      "Extend __tests__/pipeline/indexing-gate-invariant.test.ts with chunksSkipped >= header_missing_count - tolerance assertion",
+      "Re-run E2E smoke fixtures and confirm AC-09 dynamic alignment holds",
+      "Atomic commits + push to origin/main"
+    ],
+    "out_of_scope": [
+      "Phase 7 archive reopen — the 9-phase pipeline rebuild is COMPLETE",
+      "IndexingResult schema additions",
+      "New SkipReason values",
+      "Doc changes outside this WO directory",
+      "AC-09 threshold renegotiation (stays at ±10%)"
+    ]
+  },
+  "constraints": [
+    "MUST NOT reopen Phase 7 archive (rebuild is complete)",
+    "MUST NOT add fields to IndexingResult schema (DR-PHASE-7-B locked additive)",
+    "MUST NOT add new SkipReason enum values (existing header_status_missing is correct)",
+    "MUST keep AC-09 threshold at ±10% (no renegotiation)",
+    "MUST NOT touch docs outside this WO dir",
+    "Fix must localize to normalizeChunkFile() and its tests"
+  ],
+  "stub_evidence": {
+    "source_location": "src/integration/rag/indexing-orchestrator.ts:519-545",
+    "concrete_data": {
+      "chunk_file_example": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\index.ts",
+      "node_file_example": "index.ts",
+      "facetByFile_size": 262,
+      "expected_AC09": "chunksSkipped == header_missing_count (262) ±10%",
+      "actual_AC09_dynamic": "chunksSkipped == 0 (silent join failure)"
+    }
+  }
+}
