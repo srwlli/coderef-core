@@ -27,6 +27,30 @@ import {
 } from './incremental-indexer.js';
 import type { CodeChunk } from './code-chunk.js';
 import type { VectorRecord } from '../vector/vector-store.js';
+import * as pathMod from 'path';
+
+/**
+ * Reduce a chunk-side file path to the relative-POSIX form that
+ * .coderef/graph.json node.file keys use, so the facet enrichment
+ * join in indexCodebase can succeed regardless of how upstream
+ * chunk producers shaped chunk.file (absolute Windows backslash,
+ * absolute POSIX, or with a leading 'file:' URI prefix). Pure
+ * function — no I/O. Exported for unit testing.
+ */
+export function normalizeChunkFileForGraphJoin(
+  file: string,
+  basePath: string,
+): string {
+  // Peel any 'file:' URI prefix that upstream chunk producers may
+  // have left attached.
+  let raw = file.startsWith('file:') ? file.slice('file:'.length) : file;
+  raw = raw.replace(/\\/g, '/');
+  if (pathMod.isAbsolute(raw)) {
+    const absBase = pathMod.resolve(basePath).replace(/\\/g, '/');
+    return pathMod.relative(absBase, raw).replace(/\\/g, '/');
+  }
+  return raw;
+}
 
 /**
  * Progress callback for indexing
@@ -437,7 +461,6 @@ export class IndexingOrchestrator {
       // to indexing normally (no spurious skip).
       try {
         const fs = await import('fs/promises');
-        const pathMod = await import('path');
         const graphJsonPath = pathMod.join(
           this.basePath,
           '.coderef',
@@ -516,22 +539,8 @@ export class IndexingOrchestrator {
           }
         }
 
-        const absBasePath = pathMod.resolve(this.basePath).replace(/\\/g, '/');
-        const normalizeChunkFile = (file: string): string => {
-          // Peel any 'file:' URI prefix that upstream chunk producers
-          // may have left attached, then normalize separators.
-          let raw = file.startsWith('file:') ? file.slice('file:'.length) : file;
-          raw = raw.replace(/\\/g, '/');
-          // Absolute chunk paths get reduced to their basePath-relative
-          // POSIX form so they line up with graph.json node.file keys.
-          if (pathMod.isAbsolute(raw)) {
-            return pathMod.relative(absBasePath, raw).replace(/\\/g, '/');
-          }
-          return raw;
-        };
-
         for (const chunk of chunks) {
-          const key = normalizeChunkFile(chunk.file);
+          const key = normalizeChunkFileForGraphJoin(chunk.file, this.basePath);
           const f = facetByFile.get(key);
           if (!f) continue;
           if (f.layer !== undefined && !f.layerConflict && chunk.layer === undefined)
