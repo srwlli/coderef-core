@@ -1,520 +1,551 @@
-# Coderef Core Schema Reference
+# CodeRef Core Schema Reference
 
-**Date:** 2025-09-17
-**Schema Version:** 2.0.0
-**Maintainer:** Coderef Development Team
+**Last updated:** 2026-05-05 (Phase 8 — pipeline rebuild close)
+**Status:** post-rebuild canonical reference (Phases 0–7 archived)
 
-## Overview
+This document is the canonical schema reference for `@coderef/core` after the 9-phase pipeline rebuild. It covers the four schema families produced by the pipeline:
 
-This document provides comprehensive schema documentation for the Coderef Core library, including all data models, type definitions, validation rules, and relationships. The schema supports semantic code reference management through structured data types that enable parsing, scanning, and drift detection capabilities.
+1. **Scanner schema** — `ElementData` (per-element record after raw scanning + Phase 1 + Phase 2.5 enrichment)
+2. **Relationship schema** — raw fact types (Phase 2) and resolved relationships (Phase 3 + Phase 4)
+3. **Resolution statuses** — `ImportResolutionKind`, `CallResolutionKind`, `EdgeResolutionStatus`
+4. **Graph schema** — `GraphEdgeV2` (8-field edge), `EdgeEvidence` (10-variant union), `GraphNode` shape (with Phase 7 facet propagation), `ExportedGraph`
 
-## Core Data Models
-
-### ElementData Interface
-
-The fundamental data structure representing discovered code elements in the codebase.
-
-```typescript
-interface ElementData {
-  // Core fields
-  type: 'function' | 'class' | 'component' | 'hook' | 'method' | 'constant' | 'interface' | 'type' | 'decorator' | 'property' | 'unknown';
-  name: string;        // Element identifier (alphanumeric + underscore)
-  file: string;        // Normalized file path (forward slashes)
-  line: number;        // 1-based line number (positive integer)
-
-  // Optional metadata (Phase 1: AST Integration)
-  exported?: boolean;              // Whether element is exported
-  parameters?: string[];           // Function/method parameters from AST
-
-  // Phase 4: Relationship Tracking
-  calls?: string[];                // Functions/methods called by this element
-  imports?: Array<{                // Import statements in this file
-    source: string;                // Module path (e.g., './utils', 'react')
-    specifiers?: string[];         // Named imports (e.g., ['useState', 'useEffect'])
-    default?: string;              // Default import name
-    namespace?: string;            // Namespace import (e.g., import * as React)
-    dynamic?: boolean;             // True for dynamic import() calls (Phase 5)
-    line: number;                  // Line number of import
-  }>;
-  dependencies?: string[];         // Resolved module/file paths
-  calledBy?: string[];            // Elements that call this element (reverse relationship)
-}
-```
-
-**Validation Rules:**
-- `type`: Must be one of the enumerated values
-- `name`: Required, non-empty string matching `[a-zA-Z0-9_$]+`
-- `file`: Required, normalized path without extensions
-- `line`: Required, positive integer ≥ 1
-- `parameters`: Optional array of parameter names
-- `calls`: Optional array of function names called by this element
-- `imports`: Optional array of import statements (populated when `useAST: true`)
-- `dependencies`: Optional array of resolved dependency paths
-- `calledBy`: Optional array of caller element names
-
-**JSON Schema:**
-```json
-{
-  "type": "object",
-  "required": ["type", "name", "file", "line"],
-  "properties": {
-    "type": {
-      "type": "string",
-      "enum": ["function", "class", "component", "hook", "method", "unknown"]
-    },
-    "name": {
-      "type": "string",
-      "pattern": "^[a-zA-Z0-9_$]+$",
-      "minLength": 1
-    },
-    "file": {
-      "type": "string",
-      "minLength": 1
-    },
-    "line": {
-      "type": "integer",
-      "minimum": 1
-    }
-  }
-}
-```
-
-### ParsedCodeRef Interface
-
-Structured representation of Coderef2 tags after parsing.
-
-```typescript
-interface ParsedCodeRef {
-  type: string;              // Tag type (@Fn, @Cl, @C, etc.)
-  path: string;             // File path without extension
-  element: string | null;   // Element name (optional)
-  line: number | null;      // Line number (optional)
-  metadata?: Record<string, any>; // Optional key-value pairs
-}
-```
-
-**Validation Rules:**
-- `type`: Required, must start with uppercase letter `[A-Z][A-Za-z0-9]*`
-- `path`: Required, file path without `#:{}` characters
-- `element`: Optional element name without `#:{}` characters
-- `line`: Optional positive integer
-- `metadata`: Optional object with string keys
-
-**JSON Schema:**
-```json
-{
-  "type": "object",
-  "required": ["type", "path"],
-  "properties": {
-    "type": {
-      "type": "string",
-      "pattern": "^[A-Z][A-Za-z0-9]*$"
-    },
-    "path": {
-      "type": "string",
-      "pattern": "^[^#:{}]+$"
-    },
-    "element": {
-      "oneOf": [
-        {"type": "null"},
-        {"type": "string", "pattern": "^[^#:{}]+$"}
-      ]
-    },
-    "line": {
-      "oneOf": [
-        {"type": "null"},
-        {"type": "integer", "minimum": 1}
-      ]
-    },
-    "metadata": {
-      "type": "object",
-      "additionalProperties": true
-    }
-  }
-}
-```
-
-### IndexedCoderef Type
-
-Enhanced tracking structure for indexed code references.
-
-```typescript
-type IndexedCoderef = {
-  // Core tag components
-  type: string;              // Tag type
-  path: string;             // Target file path
-  element: string | null;   // Target element name
-  line: number | null;      // Target line number
-  metadata?: Record<string, any>; // Optional metadata
-
-  // Index-specific tracking
-  file: string;           // Source file containing the tag
-  indexLine: number;      // Line number where tag appears
-  originalTag: string;    // Complete original tag string
-}
-```
-
-**Relationships:**
-- Extends `ParsedCodeRef` with tracking information
-- `file` ≠ `path` (source vs target distinction)
-- `indexLine` ≠ `line` (tag location vs target location)
-
-## Enumerated Types
-
-### DriftStatus Enum
-
-Represents the status of code reference drift analysis.
-
-```typescript
-type DriftStatus =
-  | 'unchanged'  // Perfect match - element exists at specified location
-  | 'moved'      // Element exists but line number changed
-  | 'renamed'    // Similar element exists (fuzzy name match)
-  | 'missing'    // Element no longer exists in codebase
-  | 'unknown';   // Unable to determine status (analysis error)
-```
-
-**State Transitions:**
-```
-unchanged → moved      (line number change)
-unchanged → renamed    (element renamed)
-unchanged → missing    (element deleted)
-moved → missing        (element deleted after move)
-renamed → missing      (element deleted after rename)
-unknown → *           (retry analysis)
-```
-
-### ElementType Enum
-
-Supported code element types for scanning.
-
-```typescript
-type ElementType =
-  | 'function'   // Function declarations and expressions
-  | 'class'      // Class declarations
-  | 'component'  // React components (PascalCase functions)
-  | 'hook'       // React hooks (functions starting with 'use')
-  | 'method'     // Class methods
-  | 'unknown';   // Unrecognized elements
-```
-
-**Detection Patterns:**
-- `function`: `function name()` or `const name = () =>`
-- `class`: `class Name {}`
-- `component`: `function ComponentName()` (PascalCase)
-- `hook`: `function useHookName()` (starts with 'use')
-- `method`: Functions within class declarations
-
-## Configuration Schemas
-
-### ScanOptions Interface
-
-Configuration options for code scanning operations.
-
-```typescript
-interface ScanOptions {
-  // Basic options
-  include?: string | string[];    // Glob patterns for inclusion
-  exclude?: string | string[];    // Glob patterns for exclusion
-  recursive?: boolean;            // Scan subdirectories
-  langs?: string[];              // File extensions to scan
-  customPatterns?: Array<{       // Custom element patterns
-    type: ElementData['type'],
-    pattern: RegExp,
-    nameGroup: number,
-    lang: string
-  }>;
-  includeComments?: boolean;      // Scan commented code
-  verbose?: boolean;             // Enable debug output
-
-  // Phase 1: AST Integration
-  useAST?: boolean;              // Use AST-based parsing (95%+ accuracy) vs regex (85%)
-  fallbackToRegex?: boolean;     // Fallback to regex if AST parsing fails (default: true)
-
-  // Phase 2: Parallel Processing
-  parallel?: boolean | {         // Enable parallel file processing
-    workers?: number;            // Number of worker threads (default: CPU cores - 1)
-  };
-
-  // Phase 5: Progress Reporting
-  onProgress?: (progress: {      // Callback for progress updates during scanning
-    currentFile: string;
-    filesProcessed: number;
-    totalFiles: number;
-    elementsFound: number;
-    percentComplete: number;     // 0-100
-  }) => void;
-}
-```
-
-**Default Values:**
-```typescript
-const defaultOptions: ScanOptions = {
-  exclude: ['**/node_modules/**', '**/dist/**', '**/build/**'],
-  recursive: true,
-  langs: ['ts', 'js', 'tsx', 'jsx'],
-  includeComments: false,
-  verbose: false
-}
-```
-
-### DriftDetectionOptions Type
-
-Configuration for drift detection analysis.
-
-```typescript
-type DriftDetectionOptions = {
-  lang?: string | string[];      // Languages to analyze
-  fixThreshold?: number;         // Similarity threshold (0-1)
-  verbose?: boolean;            // Debug output
-  scanOptions?: ScanOptions;    // Nested scan configuration
-}
-```
-
-**Validation Constraints:**
-- `fixThreshold`: Must be between 0.0 and 1.0 (inclusive)
-- `lang`: Must be supported language extensions
-- `scanOptions`: Must be valid ScanOptions object
-
-## Report Schemas
-
-### DriftReport Type
-
-Individual drift analysis report structure.
-
-```typescript
-type DriftReport = {
-  coderef: string;           // Original tag string
-  status: DriftStatus;       // Analysis result
-  originalFile: string;      // Source file path
-  originalLine: number;      // Source line number
-  currentFile?: string;      // Current target file (if found)
-  currentLine?: number;      // Current target line (if found)
-  suggestedFix?: string;     // Recommended correction
-  confidence: number;        // Confidence score (0-1)
-}
-```
-
-**Conditional Fields:**
-- `currentFile`: Present when `status` is 'unchanged', 'moved', or 'renamed'
-- `currentLine`: Present when `currentFile` is present
-- `suggestedFix`: Present when `status` is 'moved' or 'renamed'
-
-## Validation Rules
-
-### Tag Format Validation
-
-Coderef2 tags must follow the strict format: `@Type/path#element:line{metadata}`
-
-**Regex Pattern:**
-```regex
-/@([A-Z][A-Za-z0-9]*)\/([^#:{}]+)(?:#([^:{}]+))?(?::(\d+))?(?:{(.+)})?/
-```
-
-**Component Breakdown:**
-1. `@([A-Z][A-Za-z0-9]*)` - Type (uppercase start)
-2. `\/([^#:{}]+)` - Path (no special chars)
-3. `(?:#([^:{}]+))?` - Optional element
-4. `(?::(\d+))?` - Optional line number
-5. `(?:{(.+)})?` - Optional metadata
-
-**Validation Errors:**
-```json
-{
-  "invalidFormat": "Tag does not match required pattern",
-  "missingType": "Tag type is required and must start with uppercase",
-  "missingPath": "File path is required",
-  "invalidLine": "Line number must be positive integer",
-  "invalidMetadata": "Metadata must be valid JSON or key=value pairs"
-}
-```
-
-### File Path Validation
-
-File paths are normalized using specific rules:
-
-```typescript
-function normalizeCoderefPath(filePath: string): string {
-  return filePath
-    .replace(/^(?:src|app|lib)[\\/]/, '')           // Remove common prefixes
-    .replace(/\\/g, '/')                            // Windows → POSIX slashes
-    .replace(/\.(ts|js|tsx|jsx|py|java)$/, '');     // Remove extensions
-}
-```
-
-**Examples:**
-- `src/auth/login.ts` → `auth/login`
-- `app\\components\\Button.tsx` → `components/Button`
-- `lib/utils/math.js` → `utils/math`
-
-## Relationships and Constraints
-
-### Entity Relationships
-
-```
-ElementData 1:N ScanOptions
-ParsedCodeRef 1:1 IndexedCoderef
-IndexedCoderef 1:1 DriftReport
-DriftReport N:1 DriftStatus
-```
-
-### Referential Integrity
-
-1. **Element-File Relationship:**
-   - `ElementData.file` must be valid file path
-   - `ElementData.line` must exist in the file
-   - `ElementData.name` must be found at specified line
-
-2. **Tag-Element Relationship:**
-   - `ParsedCodeRef.path` should resolve to existing file
-   - `ParsedCodeRef.element` should exist in target file
-   - `ParsedCodeRef.line` should match element location
-
-3. **Index-Source Relationship:**
-   - `IndexedCoderef.file` must be valid source file
-   - `IndexedCoderef.indexLine` must contain the tag
-   - `IndexedCoderef.originalTag` must be parseable
-
-### Consistency Constraints
-
-1. **Path Consistency:**
-   ```typescript
-   // All paths must be normalized
-   assert(path.includes('\\') === false);
-   assert(path.endsWith('.ts') === false);
-   ```
-
-2. **Line Number Consistency:**
-   ```typescript
-   // Line numbers must be positive
-   assert(line >= 1);
-   assert(Number.isInteger(line));
-   ```
-
-3. **Type Consistency:**
-   ```typescript
-   // Element types must be supported
-   const validTypes = ['function', 'class', 'component', 'hook', 'method', 'unknown'];
-   assert(validTypes.includes(elementType));
-   ```
-
-## Examples and Usage Patterns
-
-### Complete Element Example
-
-```typescript
-const element: ElementData = {
-  type: 'function',
-  name: 'authenticateUser',
-  file: 'auth/login',
-  line: 42
-};
-
-// Validation check
-function validateElement(element: ElementData): string[] {
-  const errors: string[] = [];
-
-  if (!/^[a-zA-Z0-9_$]+$/.test(element.name)) {
-    errors.push('Invalid element name format');
-  }
-
-  if (element.line < 1) {
-    errors.push('Line number must be positive');
-  }
-
-  if (element.file.includes('\\')) {
-    errors.push('File path must use forward slashes');
-  }
-
-  return errors;
-}
-```
-
-### Tag Parsing Example
-
-```typescript
-// Input tag
-const tagString = '@Fn/auth/login#authenticateUser:42{status:"active",version:2}';
-
-// Parsed result
-const parsed: ParsedCodeRef = {
-  type: 'Fn',
-  path: 'auth/login',
-  element: 'authenticateUser',
-  line: 42,
-  metadata: {
-    status: 'active',
-    version: 2
-  }
-};
-
-// Validation errors
-const validationErrors = [
-  {
-    "field": "metadata.status",
-    "message": "String values should be unquoted in metadata",
-    "suggestion": 'Use status=active instead of status:"active"'
-  }
-];
-```
-
-### Drift Report Example
-
-```typescript
-const driftReport: DriftReport = {
-  coderef: '@Fn/auth/login#authenticateUser:42',
-  status: 'moved',
-  originalFile: 'docs/api.md',
-  originalLine: 15,
-  currentFile: 'src/auth/login.ts',
-  currentLine: 45,
-  suggestedFix: '@Fn/auth/login#authenticateUser:45',
-  confidence: 0.95
-};
-```
-
-## Migration and Versioning
-
-### Schema Evolution
-
-Version 2.0.0 introduces breaking changes from 1.x:
-
-1. **Enhanced Element Types:**
-   - Added `interface`, `enum`, `type` to ElementData
-   - Deprecated generic `unknown` type where possible
-
-2. **Improved Drift Detection:**
-   - Added `ambiguous` and `error` to DriftStatus
-   - Enhanced confidence scoring
-
-3. **Metadata Validation:**
-   - Stricter JSON parsing rules
-   - Better error messages for malformed metadata
-
-### Backward Compatibility
-
-```typescript
-// Legacy v1.x element (still supported)
-interface LegacyElementData {
-  type: 'function' | 'class' | 'unknown';
-  name: string;
-  file: string;
-  line: number;
-}
-
-// Migration function
-function migrateLegacyElement(legacy: LegacyElementData): ElementData {
-  return {
-    ...legacy,
-    type: legacy.type === 'unknown' ? 'function' : legacy.type
-  };
-}
-```
+Header grammar (`@coderef-semantic:1.0.0` block) is canonical in the ASSISTANT repo and mirrored at [docs/HEADER-GRAMMAR.md](./HEADER-GRAMMAR.md). Public API contract is at [docs/API.md](./API.md). Agent usage contract is at [/AGENTS.md](../AGENTS.md).
 
 ---
 
-**Schema Documentation Generated by:** AI Code Analysis System
-**Last Updated:** 2025-09-17T12:00:00Z
-**Generated with:** [Claude Code](https://claude.ai/code)
+## 1. Scanner Schema
 
-*This schema reference provides complete type definitions, validation rules, and usage examples for the Coderef Core library. All schemas are designed for programmatic validation and seamless integration with TypeScript-based development workflows.*
+### ElementData
+
+Truth source: `src/types/types.ts` (interface `ElementData`, lines 304–412).
+
+```typescript
+interface ElementData {
+  // Core identity (Phase 0)
+  type: 'function' | 'class' | 'component' | 'hook' | 'method'
+      | 'constant' | 'interface' | 'type' | 'decorator' | 'property' | 'unknown';
+  name: string;
+  file: string;
+  line: number;
+
+  // Canonical CodeRef IDs (Phase 1: scanner identity & taxonomy)
+  /** Canonical CodeRef ID, line-anchored: @Fn/src/file.ts#name:12 */
+  codeRefId?: string;
+  /** Stable CodeRef ID without line anchoring: @Fn/src/file.ts#name */
+  codeRefIdNoLine?: string;
+
+  // Phase 1 / Phase 2.5 semantic facets (file-grain)
+  /** File-grain semantic layer; values from ASSISTANT/STANDARDS/layers.json. */
+  layer?: LayerEnum;
+  /** File-grain semantic capability slug; kebab-case. */
+  capability?: string;
+  /** File-grain semantic constraints; each entry kebab-case. */
+  constraints?: string[];
+  /** Semantic header parser status. Normalized scanner output defaults this to "missing". */
+  headerStatus?: 'defined' | 'missing' | 'stale' | 'partial';
+
+  // Phase 2.5: parsed semantic header reference
+  /** Reference to the parsed @coderef-semantic block for this element's source file.
+   *  All elements in the same file share the same HeaderFact reference. Undefined when
+   *  no header was detected. */
+  headerFact?: HeaderFact;
+
+  // Phase 4 relationship tracking (legacy — Phase 2/3/4 raw + resolved arrays
+  // on PipelineState are now canonical for downstream consumers)
+  exported?: boolean;
+  parameters?: string[] | Array<{ name: string; type?: string }>;
+  calls?: string[];
+  imports?: Array<{
+    source: string;
+    specifiers?: string[];
+    default?: string;
+    namespace?: string;
+    dynamic?: boolean;
+    line: number;
+  }>;
+  dependencies?: string[];
+  calledBy?: string[];
+
+  // Optional enrichment (tree-sitter, route detection, frontend calls)
+  route?: RouteMetadata;
+  frontendCall?: FrontendCall;
+  returnType?: string;
+  async?: boolean;
+  decorators?: string[];
+  docstring?: string;
+  parentScope?: string;
+  complexity?: { cyclomatic: number; nestingDepth: number };
+  metadata?: Record<string, any>;
+
+  // WO-CODEREF-SEMANTIC-INTEGRATION-001 (Phase 1 semantic fields)
+  exports?: Array<{ name: string; type?: 'default' | 'named'; target?: string }>;
+  usedBy?: Array<{ file: string; imports?: string[]; line?: number }>;
+  related?: Array<{ file: string; reason?: string; confidence?: number }>;
+  rules?: Array<{ rule: string; description?: string; severity?: 'error' | 'warning' | 'info' }>;
+}
+```
+
+**LayerEnum** — 13 canonical layer values, sourced from `ASSISTANT/STANDARDS/layers.json` (CORE never forks the enum):
+
+```
+ui_component | service | utility | data_access | api | integration | domain
+| validation | parser | formatter | cli | configuration | test_support
+```
+
+**Validation rules (enforced by Phase 6 chokepoint):**
+
+- `name`, `file`, `line`, `type` are required.
+- `layer` (when present) must be in the LayerEnum above.
+- `capability`, individual `constraints` items must match `^[a-z][a-z0-9-]*$` (kebab-case).
+- `headerStatus` defaults to `'missing'` for files without a parsed header.
+
+### PipelineState
+
+Truth source: `src/pipeline/types.ts` (interface `PipelineState`, lines 94–163).
+
+`PipelineState` is **internal pipeline plumbing**, not a downstream consumer surface. Agents should NOT read it. Downstream consumers read the exported artifacts (`ExportedGraph`, `ValidationResult`, `IndexingResult`) instead.
+
+`PipelineState` fields produced by each phase:
+
+| Phase | Fields |
+|------:|--------|
+| 0 | `projectPath`, `files`, `sources`, `options`, `metadata` |
+| 1 | `elements: ElementData[]` (with codeRefId / codeRefIdNoLine) |
+| 2 | `rawImports: RawImportFact[]`, `rawCalls: RawCallFact[]`, `rawExports: RawExportFact[]` |
+| 2.5 | `headerFacts: Map<file, HeaderFact>`, `headerImportFacts: HeaderImportFact[]`, `headerParseErrors: HeaderParseError[]` |
+| 3 | `importResolutions: ImportResolution[]` |
+| 4 | `callResolutions: CallResolution[]` |
+| 5 | `graph: ExportedGraph` |
+
+The legacy `imports: ImportRelationship[]` and `calls: CallRelationship[]` fields are kept additive during the transition; new code reads `rawImports` / `rawCalls` instead.
+
+---
+
+## 2. Relationship Schema
+
+### Raw facts (Phase 2)
+
+Truth source: `src/pipeline/types.ts` (lines 274–352) and `src/pipeline/extractors/relationship-extractor.ts`.
+
+Raw facts are **unresolved** by design. Endpoints are NEVER graph node IDs. Resolution into edges happens in Phase 3 (imports) and Phase 4 (calls).
+
+#### `RawImportFact`
+
+One per import statement. Captures every binding produced (named, default, namespace, dynamic) without resolving the module specifier or the imported symbols.
+
+```typescript
+interface RawImportFact {
+  sourceElementId: string | null;   // codeRefId of enclosing element if scoped
+  sourceFile: string;
+  moduleSpecifier: string;          // verbatim, e.g. './utils', 'react'
+  specifiers: RawImportSpecifier[]; // named-import bindings (with `as` aliases)
+  defaultImport: string | null;
+  namespaceImport: string | null;   // `import * as ns`
+  typeOnly: boolean;                // TS `import type`
+  dynamic: boolean;                 // `import('module')` call
+  line: number;
+}
+
+interface RawImportSpecifier {
+  imported: string;  // exported name in source module
+  local: string;     // local binding (= imported when no `as`)
+}
+```
+
+#### `RawCallFact`
+
+One per call expression. Method calls keep the receiver — `obj.save()` is `{ receiverText: 'obj', calleeName: 'save' }`, never bare `'save'`.
+
+```typescript
+interface RawCallFact {
+  sourceElementCandidate: string | null; // codeRefId of enclosing element when bindable
+  sourceFile: string;
+  callExpressionText: string;            // full source slice
+  calleeName: string;                    // trailing identifier
+  receiverText: string | null;           // `obj` in `obj.method()`, or null
+  scopePath: string[];                   // e.g. ['MyClass', 'myMethod']
+  line: number;
+  language: string;                      // 'ts' | 'js' | 'py' | ...
+}
+```
+
+#### `RawExportFact`
+
+Single canonical record of a name being exported from a file. Replaces duplicated export tracking that previously lived on `ElementData.exported` and the legacy projection seam.
+
+```typescript
+type RawExportKind = 'named' | 'default' | 'reexport' | 'namespace';
+
+interface RawExportFact {
+  sourceFile: string;
+  exportedName: string;          // as seen by importers (after `as`)
+  localName: string;             // local binding in source file
+  kind: RawExportKind;
+  line: number;
+  viaModule?: string;            // for kind='reexport' or 'namespace'
+}
+```
+
+#### Header-derived facts (Phase 2.5)
+
+Truth source: `src/pipeline/header-fact.ts`.
+
+`HeaderFact` records the parsed `@coderef-semantic:1.0.0` block (if present) for a source file. `HeaderImportFact[]` is the canonical structured list of header-declared imports — distinct from the AST-derived `RawImportFact[]` because headers can declare imports the AST doesn't see. Phase 3 resolves both into `ImportResolution[]`.
+
+### Resolved relationships (Phase 3 + Phase 4)
+
+Truth sources: `src/pipeline/import-resolver.ts`, `src/pipeline/call-resolver.ts`.
+
+Resolved relationships are the per-binding / per-call records produced by the resolvers. Every `RawImportFact` specifier produces ONE `ImportResolution`; every `RawCallFact` produces ONE `CallResolution`. Arity is exact — duplicates are not introduced and bindings are not silently dropped.
+
+#### `ImportResolution`
+
+```typescript
+interface ImportResolution {
+  sourceFile: string;
+  importerCodeRefId: string | null;
+  localName: string;
+  originSpecifier: string;
+  kind: ImportResolutionKind;        // see § 3
+  resolvedTargetCodeRefId?: string;   // present iff kind='resolved' (and default imports)
+  // ... additional reason / candidates fields per kind
+}
+```
+
+`ExportTable` is the per-module index of `ExportTableEntry` records that the import resolver builds during pass 1, then consumes during pass 2:
+
+```typescript
+interface ExportTableEntry {
+  exportedName: string;
+  originCodeRefId: string;
+  kind: 'named' | 'default' | 'namespace' | 'reExport';
+  viaModule?: string;
+}
+type ExportTable = Map<string, Map<string, ExportTableEntry>>;
+```
+
+#### `CallResolution`
+
+```typescript
+interface CallResolution {
+  sourceFile: string;
+  callerCodeRefId: string | null;
+  calleeName: string;
+  receiverText: string | null;
+  scopePath: string[];
+  line: number;
+  kind: CallResolutionKind;          // see § 3
+  resolvedTargetCodeRefId?: string;  // present iff kind='resolved'
+  // ... candidates / reason fields per kind
+}
+```
+
+`SymbolTable` is the lookup index Phase 4 builds from `state.elements` plus Phase 3's resolved imports:
+
+```typescript
+interface SymbolTableEntry {
+  codeRefId: string;
+  name: string;
+  sourceFile: string;
+  scope: 'file' | 'function' | 'class' | 'method' | 'imported';
+  // ... enclosing-scope ref
+}
+type SymbolTable = Map<string, SymbolTableEntry[]>;
+```
+
+`BUILTIN_RECEIVERS` is the allowlist of receiver identifiers that classify as `kind='builtin'` (and produce NO project graph edge). Truth source: `src/pipeline/call-resolver.ts` lines 183–199. The list at this writing: `Array, Object, Promise, Map, Set, String, Number, Boolean, RegExp, Date, Error, JSON, Math, Reflect, Symbol`.
+
+### Distinctions surfaced by the schema
+
+The schema makes the following 7 distinctions explicit (per the rebuild's Final DoD):
+
+| Distinction | Where it surfaces |
+|-------------|-------------------|
+| (a) raw extracted facts | `RawImportFact`, `RawCallFact`, `RawExportFact`, `HeaderImportFact` |
+| (b) resolved relationships | `ImportResolution.kind='resolved'`, `CallResolution.kind='resolved'`, edges with `resolutionStatus='resolved'` |
+| (c) unresolved relationships | `kind='unresolved'`, edges with `resolutionStatus='unresolved'` |
+| (d) graph edges | `GraphEdgeV2` (8-field schema, § 4) |
+| (e) header-derived edges vs AST-derived edges | `relationship='header-import'` (header-derived) vs `relationship='import'` (AST-derived) |
+| (f) external dependencies | `kind='external'`, edges with `resolutionStatus='external'` |
+| (g) built-ins | `kind='builtin'` (calls only), edges with `resolutionStatus='builtin'` |
+
+---
+
+## 3. Resolution Statuses
+
+### `ImportResolutionKind` (7 values)
+
+Truth source: `src/pipeline/import-resolver.ts` lines 68–75.
+
+| Value | Meaning |
+|-------|---------|
+| `resolved` | Specifier matched a project export. `resolvedTargetCodeRefId` is set. Drives Phase 5 `relationship='import'` edges with `resolutionStatus='resolved'`. |
+| `unresolved` | Specifier did not match anything (project, external, or built-in). Reason carried on `ImportResolution.reason`. |
+| `external` | Module resolves to a known external package (e.g., `react`, `lodash`). Not chased into node_modules. |
+| `ambiguous` | Multiple candidates matched; resolver could not pick one. `candidates` carries ≥2 codeRefIds. |
+| `dynamic` | `import('module')` call — module specifier may be a runtime expression. Not resolved at static-analysis time. |
+| `typeOnly` | TypeScript `import type` — type-level only, no runtime edge. |
+| `stale` | Header-import declares a binding that the file no longer actually imports (header drift SH-2). |
+
+### `CallResolutionKind` (5 values)
+
+Truth source: `src/pipeline/call-resolver.ts` lines 73–78.
+
+| Value | Meaning |
+|-------|---------|
+| `resolved` | Call site matched exactly one symbol in scope. `resolvedTargetCodeRefId` is set. Drives Phase 5 `relationship='call'` edges with `resolutionStatus='resolved'`. |
+| `unresolved` | No symbol matched. Could be a typo, a call into untyped code, or a method on an unknown receiver. |
+| `ambiguous` | Multiple matches; resolver could not pick one (per DR-PHASE-4-B). `candidates` carries ≥2 codeRefIds. |
+| `external` | Receiver / callee resolves into an external package (e.g., a method on an imported library type). |
+| `builtin` | Receiver is in `BUILTIN_RECEIVERS`. No project graph edge emitted. |
+
+### `EdgeResolutionStatus` (8 values)
+
+Truth source: `src/pipeline/graph-builder.ts` lines 77–85, mirrored on `ExportedGraph` at `src/export/graph-exporter.ts` lines 32–40.
+
+| Value | Source |
+|-------|--------|
+| `resolved` | from `ImportResolutionKind='resolved'` or `CallResolutionKind='resolved'` |
+| `unresolved` | from `kind='unresolved'` (also covers `kind='dynamic'` / `'typeOnly'` per DR — see EdgeEvidence reason strings) |
+| `ambiguous` | from `kind='ambiguous'` |
+| `external` | from `kind='external'` |
+| `builtin` | from call `kind='builtin'` |
+| `dynamic` | reserved; currently mapped to `unresolved` with `reason='dynamic'` |
+| `typeOnly` | reserved; currently mapped to `unresolved` with `reason='typeOnly'` |
+| `stale` | from header-import `kind='stale'` (SH-2 header drift) |
+
+---
+
+## 4. Graph Schema
+
+### `GraphEdgeV2` (8-field canonical edge — DR-PHASE-5-D)
+
+Truth source: `src/pipeline/graph-builder.ts` lines 127–162.
+
+```typescript
+interface GraphEdgeV2 {
+  /** Required. Deterministic 16-hex hash; unique within graph. */
+  id: string;
+  /** Required. Canonical codeRefId of source element. */
+  sourceId: string;
+  /** Conditional. Canonical codeRefId of target. Present only when resolutionStatus='resolved' (DR-PHASE-5-A: omitted, not synthetic, for non-resolved). */
+  targetId?: string;
+  /** Required. import | call | export | header-import. */
+  relationship: EdgeRelationship;
+  /** Required. resolved | unresolved | ambiguous | external | builtin | dynamic | typeOnly | stale. */
+  resolutionStatus: EdgeResolutionStatus;
+  /** Conditional. Discriminated-union evidence (10 variants). */
+  evidence?: EdgeEvidence;
+  /** Conditional. {file, line} of the import/call statement. */
+  sourceLocation?: { file: string; line: number };
+  /** Conditional. ≥2 codeRefIds; present only when resolutionStatus='ambiguous'. */
+  candidates?: string[];
+  /** Reason string for non-resolved kinds. Mirrors ImportResolution / CallResolution reason. */
+  reason?: string;
+  // Legacy compat surface (matches ExportedGraph['edges'][number]) — populated additively
+  // during the transition window. Future cleanup workorder removes these.
+  source: string;
+  target: string;
+  type: string;
+  metadata?: Record<string, unknown>;
+}
+
+type EdgeRelationship = 'import' | 'call' | 'export' | 'header-import';
+
+type EdgeResolutionStatus =
+  | 'resolved' | 'unresolved' | 'ambiguous' | 'external'
+  | 'builtin' | 'dynamic' | 'typeOnly' | 'stale';
+```
+
+### `EdgeEvidence` (10-variant discriminated union)
+
+Truth source: `src/pipeline/graph-builder.ts` lines 104–114.
+
+```typescript
+type EdgeEvidence =
+  | { kind: 'resolved-import';     resolvedModuleFile: string; originSpecifier: string; localName: string }
+  | { kind: 'unresolved-import';   originSpecifier: string;    reason: string }
+  | { kind: 'ambiguous-import';    originSpecifier: string;    candidates: string[] }
+  | { kind: 'external-import';     originSpecifier: string;    packageName?: string }
+  | { kind: 'resolved-call';       calleeName: string; receiverText: string; scopePath: string }
+  | { kind: 'unresolved-call';     calleeName: string; receiverText: string; reason: string }
+  | { kind: 'ambiguous-call';      calleeName: string; receiverText: string; candidates: string[] }
+  | { kind: 'builtin-call';        calleeName: string; receiverText: string }
+  | { kind: 'header-import';       module: string; symbol: string; resolvedModuleFile?: string }
+  | { kind: 'stale-header-import'; module: string; symbol: string; reason: string };
+```
+
+Phase 6's validator reads `edge.evidence.{field}` for invariant checks; the discriminator lets TypeScript enforce the shape per `(relationship, resolutionStatus)` combination at the validator boundary.
+
+`dynamic` / `typeOnly` / `stale` (non-header) imports use the `unresolved-import` variant with appropriate `reason` strings (Phase 5 maps them to that variant rather than introducing more variants).
+
+### `GraphNode` shape (Phase 7 facet propagation)
+
+Truth source: `src/pipeline/graph-builder.ts` lines 233–260 (`buildNodes`).
+
+Each `state.elements` item becomes a graph node with `id = canonical codeRefId` (AC-01). Phase 7 added facet propagation onto `metadata`:
+
+```typescript
+{
+  id: string;                  // canonical codeRefId
+  uuid?: string;
+  type: string;
+  name?: string;
+  file?: string;
+  line?: number;
+  metadata?: {
+    codeRefId: string;
+    codeRefIdNoLine?: string;
+    layer?: LayerEnum;         // copied from ElementData.layer iff defined
+    capability?: string;       // copied from ElementData.capability iff defined
+    constraints?: string[];    // copied from ElementData.constraints iff defined
+    headerStatus?: 'defined' | 'missing' | 'stale' | 'partial'; // copied from ElementData.headerStatus iff defined
+    [k: string]: unknown;
+  };
+}
+```
+
+The Phase 7 `IndexingOrchestrator` reads these `metadata.{layer, capability, constraints, headerStatus}` fields to surface semantic facets on `CodeChunk` records (file-grain worst-severity aggregation for `headerStatus`; conflict-suppression for `layer`/`capability`; union for `constraints`).
+
+### `ExportedGraph`
+
+Truth source: `src/export/graph-exporter.ts` lines 53+.
+
+```typescript
+interface ExportedGraph {
+  version: string;
+  exportedAt: number;
+  nodes: GraphNode[];   // (shape per § 4 above)
+  edges: GraphEdgeV2[]; // (8-field schema)
+}
+```
+
+`ExportedGraph` is the canonical Phase 5 graph artifact. The legacy `DependencyGraph` projection lives behind `src/semantic/projections.ts` and is `@legacy` — new consumers read `ExportedGraph` directly.
+
+---
+
+## 5. Validation Report (Phase 6 contract)
+
+Truth source: `src/pipeline/output-validator.ts` lines 110–151.
+
+The 11-field locked `ValidationReport` is a public artifact contract — field names are LOCKED additive-only (no rename, no drop, without explicit ORCHESTRATOR sign-off). All fields are required numbers (use 0 for empty categories, never undefined / null / string).
+
+```typescript
+interface ValidationReport {
+  valid_edge_count: number;            // edges with resolutionStatus='resolved' that pass GI-2 + GI-3
+  unresolved_count: number;
+  ambiguous_count: number;
+  external_count: number;
+  builtin_count: number;
+  header_defined_count: number;        // unique files (R-PHASE-6-F file-grain)
+  header_missing_count: number;
+  header_stale_count: number;
+  header_partial_count: number;
+  header_layer_mismatch_count: number; // SH-1
+  header_export_mismatch_count: number; // SH-2 export drift
+}
+
+interface ValidationResult {
+  ok: boolean;                         // true iff errors.length === 0
+  errors: ValidationError[];           // graph-integrity (always fail-hard) + strict-promoted header drift
+  warnings: ValidationWarning[];       // header drift in default mode (SH-1/SH-2/SH-3)
+  report: ValidationReport;            // always populated, even on ok=false
+}
+```
+
+`validatePipelineState(state, graph, options)` is **pure**: no fs, no `process.exit`, no console. The CLI plumbs `ValidatePipelineStateOptions.layerEnum` (loaded from `ASSISTANT/STANDARDS/layers.json`) and `strictHeaders` directly per DR-PHASE-6-D.
+
+Real-world post-Phase-7 baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`):
+
+| Field | Value |
+|-------|------:|
+| `valid_edge_count` | 3464 |
+| `header_missing_count` | 262 |
+| `header_defined_count` | 0 |
+| `header_stale_count` | 0 |
+| `header_partial_count` | 0 |
+| (other counts) | 0 |
+| (inferred `ok`) | true |
+
+---
+
+## 6. Indexing Result (Phase 7 contract)
+
+Truth source: `src/integration/rag/indexing-orchestrator.ts` lines 138–224 and `src/integration/rag/code-chunk.ts` lines 17–143.
+
+The Phase 7 `IndexingResult` shape is **strictly additive** over the pre-Phase-7 contract (DR-PHASE-7-B): numeric counts keep their original types; the new fields (`status`, `*Details`, `validationGateRefused`, `validationReportPath`) are additive.
+
+```typescript
+type IndexingStatus = 'success' | 'partial' | 'failed';
+
+type SkipReason =
+  | 'unchanged'
+  | 'header_status_missing'
+  | 'header_status_stale'
+  | 'header_status_partial'
+  | 'unresolved_relationship';
+
+type FailReason = 'embedding_api_error' | 'malformed_chunk';
+
+interface SkipEntry {  coderefId: string; reason: SkipReason;  message?: string }
+interface FailEntry {  coderefId: string; reason: FailReason;  message?: string }
+
+interface IndexingResult {
+  // Pre-Phase-7 numeric counts (unchanged)
+  chunksIndexed: number;
+  chunksSkipped: number;
+  chunksFailed: number;
+  filesProcessed: number;
+  processingTimeMs: number;
+  stats: IndexingStatistics;
+  errors: IndexingError[];
+
+  // Phase 7 additive fields:
+  status: IndexingStatus;                   // see threshold table below
+  chunksSkippedDetails: SkipEntry[];        // length === chunksSkipped (invariant)
+  chunksFailedDetails: FailEntry[];         // length === chunksFailed (invariant)
+  validationGateRefused?: boolean;          // true when status='failed' due to refused validation gate
+  validationReportPath?: string;            // path to the validation-report.json that gated this run
+}
+```
+
+**Status thresholds (DR-PHASE-7-C):**
+
+| `status` | Condition |
+|---------|-----------|
+| `success` | `chunksIndexed > 0` AND `chunksSkipped === 0` AND `chunksFailed === 0` |
+| `partial` | `chunksIndexed > 0` AND (`chunksSkipped > 0` OR `chunksFailed > 0`) |
+| `failed`  | `chunksIndexed === 0` OR `validationGateRefused === true` |
+
+The orchestrator **refuses to run** when the gating `ValidationResult.ok === false` (DR-PHASE-7-A): `IndexingResult` is returned with `status='failed'` and `validationGateRefused=true`. This eliminates the pre-Phase-7 `chunksIndexed=0` silent-success anti-pattern.
+
+### `CodeChunk` (Phase 7 facets)
+
+`CodeChunk` carries optional semantic facets propagated from `ElementData` via `GraphNode.metadata`:
+
+```typescript
+interface CodeChunk {
+  // Existing fields (coderef, type, name, file, line, language, sourceCode, ...)
+  // ...
+
+  // Phase 7 facets (file-grain, optional, undefined-passthrough when source lacks)
+  layer?: string;
+  capability?: string;
+  constraints?: string[];
+  headerStatus?: 'defined' | 'missing' | 'stale' | 'partial';
+}
+```
+
+These facets are filterable via `rag-search --layer <value>` and `rag-search --capability <value>` (Phase 7 CLI surface).
+
+---
+
+## Cross-references
+
+- Header grammar (BNF): [docs/HEADER-GRAMMAR.md](./HEADER-GRAMMAR.md) — mirror of `ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md`
+- Public API contract: [docs/API.md](./API.md)
+- Agent usage contract: [/AGENTS.md](../AGENTS.md)
+- CLI reference: [docs/CLI.md](./CLI.md)
+- Architecture overview: [docs/ARCHITECTURE.md](./ARCHITECTURE.md)
+- Phase archives (per-phase ARCHIVED.md): `coderef/archived/pipeline-*/`
