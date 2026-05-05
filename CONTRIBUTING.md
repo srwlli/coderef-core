@@ -179,6 +179,8 @@ To add support for a new language:
 3. Add tests in `src/scanner/__tests__/`
 4. Update `docs/CLI.md` supported languages list
 
+For changes that touch the post-rebuild pipeline (`src/pipeline/*`, `src/integration/rag/*`, `src/export/graph-exporter.ts`, `src/types/types.ts → ElementData`), see the architecture overview at [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) and the schema reference at [docs/SCHEMA.md](./docs/SCHEMA.md). Phase 6's `validatePipelineState` is the chokepoint — any change that produces an `ExportedGraph` must keep `__tests__/pipeline/graph-ground-truth.test.ts` (6/6) and `__tests__/pipeline/no-phase-8-docs-leak.test.ts` GREEN.
+
 ---
 
 ## Reporting Issues

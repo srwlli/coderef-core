@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-05-05] — Phase 8: Documentation Update
+
+### Documentation
+- Rewrote `docs/SCHEMA.md` as the canonical schema reference with sibling sections for Scanner Schema (`ElementData`), Relationship Schema (raw facts + resolved relationships), Resolution Statuses (`ImportResolutionKind` 7 values, `CallResolutionKind` 5 values, `EdgeResolutionStatus` 8 values), Graph Schema (8-field `GraphEdgeV2`, 10-variant `EdgeEvidence`, `GraphNode` with Phase 7 facet propagation, `ExportedGraph`), Validation Report (11-field locked Phase 6 contract), and Indexing Result (Phase 7 additive shape with `IndexingStatus` thresholds, `SkipReason`, `FailReason`).
+- Created `docs/HEADER-GRAMMAR.md` as a citation-mirror of the canonical BNF at `ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md`. CORE never forks the grammar.
+- Rewrote `docs/API.md` to cover the post-rebuild public surface, stability commitments, Phase 6 validation gate, Phase 7 indexing contract, and the explicit `What NOT to import` boundary.
+- Rewrote `AGENTS.md` as the canonical CORE-side agent usage contract: validation-report.json gate, IndexingResult.status semantics, rag-index exit codes, what-not-to-read, version compatibility commitments, with footer pointer to `ASSISTANT/PROJECT-CONTEXT/coderef-core/CONTEXT.md` for general project rules. `CLAUDE.md` and `GEMINI.md` remain unchanged 5-line pointer stubs (Path C ruling, 2026-05-05).
+- Updated `docs/CLI.md` to document `--strict-headers` (Phase 6) on `populate-coderef`, the validation-gate behavior + `IndexingResult.status` exit codes on `rag-index`, and `--layer` / `--capability` filter flags (Phase 7) on `rag-search`.
+- Updated `docs/rag-http-api.md` with Phase 7 reality: `IndexingResult.status` field on responses, `validationGateRefused` semantics, per-entry `SkipReason` / `FailReason` enum, `--layer` / `--capability` query passthrough.
+- Rewrote `docs/ARCHITECTURE.md` as a phase-ordering overview (Phases 0–7) with `ExportedGraph` canonical and `DependencyGraph` marked `@legacy`.
+- Archived 4 audit-style root markdown to `docs/archive/<file>-2026-05-05.md` with dated banners (DR-PHASE-8-A): `EXECUTIVE-SUMMARY`, `CODEREF-ANALYSIS-REPORT`, `DUPLICATE-FILES-AUDIT`, `GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN`. Archived `docs/coderef-semantic-schema.md` (predates Phase 1+2.5; superseded by `docs/SCHEMA.md`).
+
+### Pipeline Rebuild Complete (Phase 0..7)
+
+The 9-phase pipeline rebuild is complete. Per-phase archives are at `coderef/archived/pipeline-*/ARCHIVED.md`:
+
+| Phase | Slug | Outcome |
+|------:|------|---------|
+| 0 | `pipeline-graph-ground-truth-tests` | 6 ground-truth assertions PASS |
+| 1 | `pipeline-scanner-identity-taxonomy` | canonical `codeRefId`, `ElementData.layer/capability/constraints/headerStatus` |
+| 2 | `pipeline-relationship-raw-facts` | `RawImportFact` / `RawCallFact` / `RawExportFact` (endpoints never node IDs) |
+| 2.5 | `pipeline-semantic-header-parser` | `@coderef-semantic:1.0.0` parser; `HeaderFact` per file |
+| 3 | `pipeline-import-resolution` | `ImportResolution[]` with 7-value `ImportResolutionKind` |
+| 4 | `pipeline-call-resolution` | `CallResolution[]` with 5-value `CallResolutionKind` |
+| 5 | `pipeline-graph-construction` | 8-field `GraphEdgeV2`, 10-variant `EdgeEvidence`, `ExportedGraph` canonical |
+| 6 | `pipeline-output-validation` | `validatePipelineState` chokepoint, 11-field `ValidationReport`, `--strict-headers` |
+| 7 | `pipeline-indexing-rag` | `IndexingResult.status`, refuse-on-`ok=false`, `SkipReason` / `FailReason`, `--layer` / `--capability` filters, file-grain worst-severity facet aggregation |
+
+Final post-Phase-7 baseline: `valid_edge_count=3464`, `header_missing_count=262`, all other validation counts `0`, ground-truth 6/6 PASS. Phase 8 archives the rebuild as a documentation pass with zero source code changes.
+
+---
+
 ## [Unreleased]
 
 ### Added

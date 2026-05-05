@@ -51,6 +51,23 @@ See [IMP-CORE-052](improvements.json) for planned tree-sitter expansion to all l
 
 ---
 
+## Pipeline Rebuild Status — Complete (2026-05-05)
+
+The 9-phase pipeline rebuild (Phase 0 through Phase 7) is complete and archived. Phase 8 (this WO) aligned the documentation to the post-rebuild reality. After rebuild close, `@coderef/core` ships:
+
+- Canonical `codeRefId` per element + a Phase 1 identity taxonomy on `ElementData` (`layer`, `capability`, `constraints`, `headerStatus`).
+- Single-pass `PipelineOrchestrator` with deterministic phase ordering: discovery → scanner → raw facts → semantic header parser → import resolution → call resolution → graph construction.
+- An 8-field canonical graph edge schema with a 10-variant discriminated `EdgeEvidence` union and `GraphNode.metadata` carrying semantic facets (Phase 5 + Phase 7 propagation).
+- A pure Phase 6 `validatePipelineState` chokepoint that emits an 11-field locked `ValidationReport` to `.coderef/validation-report.json`.
+- A Phase 7 `rag-index` that **refuses to run** when the validation report's `ok=false` (no more silent `chunksIndexed=0`). `IndexingResult` carries top-level `status: 'success' | 'partial' | 'failed'` plus per-entry `SkipReason` / `FailReason`.
+- `rag-search --layer` and `--capability` filter flags for facet-scoped semantic search.
+
+Real-world post-Phase-7 baseline (from coderef-core's own scan): `valid_edge_count=3464`, `header_missing_count=262`, all other counts `0`, ground-truth tests 6/6 PASS.
+
+For details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/SCHEMA.md](docs/SCHEMA.md), [AGENTS.md](AGENTS.md). Per-phase archives: `coderef/archived/pipeline-*/`.
+
+---
+
 ## Installation
 
 ### From Source (Current)
@@ -338,7 +355,7 @@ console.log(`Deprecated Calls: ${report.migration.deprecated.length}`);
 - Architecture changes (Monolith → Microservices)
 - Parameter syntax conversion (`/users/<int:id>` → `/users/{id}`)
 
-📖 **[Full Migration Validation Guide](docs/MIGRATION-VALIDATION.md)**
+📖 **[Full Migration Validation Guide](docs/MIGRATION.md)**
 
 ---
 
@@ -440,7 +457,7 @@ console.log(meta.description); // "React/Vue component"
 
 ## API Reference
 
-See **[API.md](coderef/foundation-docs/API.md)** for complete API documentation.
+See **[docs/API.md](docs/API.md)** for the complete public API contract (post-rebuild canonical reference). The auto-generated foundation snapshot at `coderef/foundation-docs/API.md` is also kept in sync as a machine-readable companion.
 
 ### Main Exports
 
@@ -468,7 +485,7 @@ See **[API.md](coderef/foundation-docs/API.md)** for complete API documentation.
 
 ## Architecture
 
-See **[ARCHITECTURE.md](coderef/foundation-docs/ARCHITECTURE.md)** for detailed system design.
+See **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** for the post-rebuild architecture overview (9-phase pipeline ordering and artifacts). The foundation snapshot at `coderef/foundation-docs/ARCHITECTURE.md` is auto-generated.
 
 ### High-Level Overview
 
@@ -510,7 +527,7 @@ See **[ARCHITECTURE.md](coderef/foundation-docs/ARCHITECTURE.md)** for detailed 
 
 ## Data Models
 
-See **[SCHEMA.md](coderef/foundation-docs/SCHEMA.md)** for complete data schemas.
+See **[docs/SCHEMA.md](docs/SCHEMA.md)** for the canonical schema reference (scanner, relationship, resolution, graph, validation, indexing). The foundation snapshot at `coderef/foundation-docs/SCHEMA.md` is auto-generated.
 
 ### Core Types
 
@@ -836,11 +853,15 @@ How @coderef/core compares to existing code intelligence tools:
 
 ## Resources
 
-- **[API Documentation](coderef/foundation-docs/API.md)** - Complete API reference
-- **[Architecture Guide](coderef/foundation-docs/ARCHITECTURE.md)** - System design and patterns
-- **[Schema Reference](coderef/foundation-docs/SCHEMA.md)** - Data models and types
-- **[CLAUDE.md](CLAUDE.md)** - AI development context
-- **[Ecosystem Integration](../../README.md)** - CodeRef Ecosystem documentation (workflows, workorders, sessions, CLI)
+- **[docs/API.md](docs/API.md)** — public API contract (post-rebuild canonical)
+- **[docs/SCHEMA.md](docs/SCHEMA.md)** — schema reference (scanner, relationship, resolution, graph, validation, indexing)
+- **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** — 9-phase pipeline ordering and artifact boundaries
+- **[docs/HEADER-GRAMMAR.md](docs/HEADER-GRAMMAR.md)** — `@coderef-semantic:1.0.0` BNF (mirror of ASSISTANT canonical)
+- **[docs/CLI.md](docs/CLI.md)** — CLI flag reference (`--strict-headers`, `--layer`, `--capability`)
+- **[docs/rag-http-api.md](docs/rag-http-api.md)** — RAG HTTP server contract
+- **[AGENTS.md](AGENTS.md)** — agent usage contract (validation gate, `IndexingResult.status`, exit codes)
+- **[CLAUDE.md](CLAUDE.md)** / **[GEMINI.md](GEMINI.md)** — agent project-context pointer stubs
+- **Per-phase archives:** `coderef/archived/pipeline-*/ARCHIVED.md`
 
 ---
 
