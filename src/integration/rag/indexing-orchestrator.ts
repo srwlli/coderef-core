@@ -12,7 +12,11 @@
  */
 
 import type { AnalyzerService } from '../../analyzer/analyzer-service.js';
-import type { DependencyGraph } from '../../analyzer/graph-builder.js';
+import type {
+  DependencyGraph,
+  GraphEdge,
+  GraphNode,
+} from '../../analyzer/graph-builder.js';
 import type { LLMProvider } from '../llm/llm-provider.js';
 import type { VectorStore } from '../vector/vector-store.js';
 import { ChunkConverter } from './chunk-converter.js';
@@ -27,6 +31,7 @@ import {
 } from './incremental-indexer.js';
 import type { CodeChunk } from './code-chunk.js';
 import type { VectorRecord } from '../vector/vector-store.js';
+import * as fs from 'fs/promises';
 import * as pathMod from 'path';
 
 /**
@@ -50,6 +55,70 @@ export function normalizeChunkFileForGraphJoin(
     return pathMod.relative(absBase, raw).replace(/\\/g, '/');
   }
   return raw;
+}
+
+/**
+ * Adapt the on-disk .coderef/graph.json shape (flat node/edge arrays)
+ * to the in-memory DependencyGraph that ChunkConverter consumes
+ * (Map-keyed nodes + edgesBySource/edgesByTarget reverse indexes).
+ *
+ * graph.json node.id carries the canonical capability-tagged element
+ * identifier (e.g., '@Fn/file.ts#name:line'); ChunkConverter joins
+ * dependencies/dependents through these ids via the reverse-index
+ * Maps. node.metadata (layer/capability/constraints/headerStatus) is
+ * preserved unchanged so ChunkConverter.convertNode can propagate
+ * facets onto each chunk inline (see chunk-converter.ts L153-201).
+ *
+ * Pure function — no I/O. Exported for unit testing.
+ */
+export function buildGraphFromExportedJson(rawJson: unknown): DependencyGraph {
+  const j = rawJson as { nodes?: unknown[]; edges?: unknown[] };
+  const nodes = new Map<string, GraphNode>();
+  const edges: GraphEdge[] = [];
+  const edgesBySource = new Map<string, GraphEdge[]>();
+  const edgesByTarget = new Map<string, GraphEdge[]>();
+
+  for (const raw of j.nodes ?? []) {
+    const n = raw as Partial<GraphNode>;
+    if (typeof n.id !== 'string' || typeof n.file !== 'string') continue;
+    nodes.set(n.id, {
+      id: n.id,
+      uuid: typeof n.uuid === 'string' ? n.uuid : undefined,
+      name: typeof n.name === 'string' ? n.name : n.id,
+      type: typeof n.type === 'string' ? n.type : 'unknown',
+      file: n.file,
+      line: typeof n.line === 'number' ? n.line : undefined,
+      metadata:
+        n.metadata && typeof n.metadata === 'object'
+          ? (n.metadata as Record<string, unknown>)
+          : undefined,
+    });
+  }
+
+  for (const raw of j.edges ?? []) {
+    const e = raw as Partial<GraphEdge>;
+    if (typeof e.source !== 'string' || typeof e.target !== 'string' || typeof e.type !== 'string')
+      continue;
+    const edge: GraphEdge = {
+      source: e.source,
+      target: e.target,
+      type: e.type as GraphEdge['type'],
+      weight: typeof e.weight === 'number' ? e.weight : undefined,
+      metadata:
+        e.metadata && typeof e.metadata === 'object'
+          ? (e.metadata as Record<string, unknown>)
+          : undefined,
+    };
+    edges.push(edge);
+    const src = edgesBySource.get(edge.source);
+    if (src) src.push(edge);
+    else edgesBySource.set(edge.source, [edge]);
+    const tgt = edgesByTarget.get(edge.target);
+    if (tgt) tgt.push(edge);
+    else edgesByTarget.set(edge.target, [edge]);
+  }
+
+  return { nodes, edges, edgesBySource, edgesByTarget };
 }
 
 /**
@@ -385,12 +454,16 @@ export class IndexingOrchestrator {
       let chunks: CodeChunk[];
 
       if (options.useAnalyzer) {
-        // Use AST-based analyzer
-        const languages = options.languages ?? ['ts', 'tsx', 'js', 'jsx', 'py'];
-        const patterns = languages.map(lang => `${options.sourceDir}/**/*.${lang}`);
-        const analysisResult = await this.analyzerService.analyze(patterns, false);
-
-        graph = analysisResult.graph;
+        // WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 — substrate pivot.
+        // The chunk source is the canonical .coderef/graph.json written
+        // by populate-coderef. There is no second analyzer slice; chunks
+        // ARE the nodes of the graph that validation-report counted
+        // header_missing from. AC-05a (element-grain identity) and
+        // AC-05b (file-grain cross-component identity) hold by
+        // construction once the read lands here.
+        const graphJsonPath = pathMod.join(this.basePath, '.coderef', 'graph.json');
+        const raw = await fs.readFile(graphJsonPath, 'utf-8');
+        graph = buildGraphFromExportedJson(JSON.parse(raw));
 
         reportProgress(
           IndexingStage.ANALYZING,
