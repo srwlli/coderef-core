@@ -10,7 +10,7 @@
     "decision": "Option (a) — single analyzer slice. rag-index reads .coderef/graph.json directly; no second analyzerService.analyze(...) call.",
     "ruling_authority": "ORCHESTRATOR",
     "ruled_at": "2026-05-05T20:30:00Z",
-    "rationale": "(1) AC-09 becomes a tautology by construction: once chunks come from the same graph.json that validation-report counts header_missing from, the two metrics see the same file population — no ±10% band needed, no probabilistic measurement. (2) Substrate fix beats process compensation. The two-slice architecture was structurally guaranteed to diverge; Phase 7's 262-vs-215 disagreement was the substrate telling the truth. (3) Net negative LOC: delete the analyzer.analyze() call + the entire facet enrichment block (~100 LOC). (4) Kills STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 outright — the stub's premise (two slices need reconciling) is moot when there is one slice. (5) Honest dependency graph: rag-index has always been downstream of populate-coderef; making the dependency explicit (graph.json missing → fail loud) is more honest than today's silent-disagreement behavior."
+    "rationale": "(1) AC-05 becomes DUAL identities by construction post-pivot: (a) element-grain chunksSkipped === graph.json missing-header node count (~2410===~2410), and (b) file-grain uniqueFiles(chunksSkippedDetails) === validation_report.header_missing_count (262===262). Both hold structurally; no ±10% band, no probabilistic measurement. The dual framing was forced by CORE's Phase 1 probe revealing the original single-AC '262===262 element-grain' was unreachable (graph.json is element-grain at ~9× the file count). (2) Substrate fix beats process compensation. The two-slice architecture was structurally guaranteed to diverge; Phase 7's 262-vs-215 disagreement was the substrate telling the truth. (3) Net negative LOC: delete the analyzer.analyze() call + the entire facet enrichment block (~100 LOC), add ~30 src + ~5 test. (4) Kills STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 outright — the stub's premise (two slices need reconciling) is moot when there is one slice. (5) Honest dependency graph: rag-index has always been downstream of populate-coderef; making the dependency explicit (graph.json missing → fail loud) is more honest than today's silent-disagreement behavior. (6) File-grain aggregation in test code preserves the validation-report-as-canonical-baseline contract from Phases 0-8 without re-introducing a runtime aggregation seam — exactly bulletproof concept #2 (executable invariants)."
   },
 
   "problem_statement": "rag-index runs an independent analyzerService.analyze(patterns, false) at indexing-orchestrator.ts:391, producing a DependencyGraph that ChunkConverter chunks. The graph.json read at line 469 is only used for facet enrichment onto those chunks. This two-slice architecture means populate-coderef and rag-index can disagree about which files exist (262 vs 215 in coderef-core's own scan). AC-09 alignment becomes a probabilistic ±10% check rather than a structural identity. The fix is to consolidate to one slice: rag-index reads graph.json directly, ChunkConverter consumes it, the facet enrichment block becomes redundant.",
@@ -34,10 +34,11 @@
       "rationale": "Chunk grain stays chunk grain (e.g., 'file:C:\\\\Users\\\\...\\\\file.ts'). Even with one graph, chunk.file may still need normalizing to match graph.nodes[].file (relative POSIX). Keep the helper.",
       "verify": "Confirm via test that the helper still has callers post-refactor; if not, deprecate cleanly."
     },
-    "step_4_ac_09_invariant": {
-      "shape": "After indexing run, IndexingResult.chunksSkipped(header_status_missing) MUST equal validation-report.header_missing_count exactly.",
-      "test_form": "Add an integration test that runs populate.js + rag-index.js against a small fixture project with known header_missing files; assert the equality.",
-      "fixture_design_consideration": "CORE's bulletproof recommendation #2 was a frozen fixture project. Scope this fixture to coderef-core itself for now (262 files); a frozen-fixture WO is a separate substrate concern."
+    "step_4_dual_ac_invariants": {
+      "shape": "After indexing run, BOTH identities MUST hold strictly: (AC-05a element-grain) chunksSkipped(header_status_missing) === count of graph.json nodes with metadata.headerStatus==='missing'; (AC-05b file-grain) uniqueFiles(chunksSkippedDetails where reason==='header_status_missing').size === validation_report.header_missing_count.",
+      "test_form": "Rewrite predecessor invariant test (__tests__/pipeline/indexing-gate-invariant.test.ts:102-223) — replace ±10% file-grain assertion with both identity assertions. Drop ±10% language entirely.",
+      "fixture_design_requirement": "Fixture must have multiple element-grain nodes per file (e.g., 2-3 nodes per file across N files) so AC-05a and AC-05b produce distinct numbers. Otherwise the dual-AC framing collapses to a single number and isn't being tested. Per CORE Phase 1 flag.",
+      "no_schema_delta": "File-grain aggregation lives in TEST CODE only. IndexingResult.chunksSkippedDetails already exists (locked-additive shape); counting uniques over it in a test assertion is zero schema change."
     }
   },
 
@@ -50,9 +51,9 @@
     },
     {
       "id": "DR-SINGLE-SLICE-B",
-      "title": "AC-09 measured as identity, not ±10%",
-      "decision": "Success criterion is chunksSkipped(header_status_missing) === header_missing_count exactly. ±10% band is dropped from this WO's contract — that band was a probabilistic concession to two-slice divergence; once there is one slice, identity is the honest target.",
-      "rationale": "The bulletproof property: the system can't disagree with itself because there's nothing for it to disagree with."
+      "title": "Dual-identity AC-05 (element-grain + file-grain), no ±10% tolerance",
+      "decision": "AC-05 splits into AC-05a (element-grain identity: chunksSkipped(header_status_missing) === count of graph.json nodes with metadata.headerStatus==='missing', ~2410===~2410) AND AC-05b (file-grain identity: uniqueFiles(chunksSkippedDetails where reason==='header_status_missing').size === validation_report.header_missing_count, 262===262). Both held strictly. NO ±10% tolerance on either. File-grain aggregation lives in TEST CODE only — counting uniques over the existing chunksSkippedDetails array introduces zero IndexingResult schema delta (DR-PHASE-7-B preserved).",
+      "rationale": "CORE Phase 1 probe revealed the original AC-05 wording (262===262 element-grain) was structurally unreachable: graph.json ships ~2410 element-grain nodes (one per fn/class/method) covering 262 unique files. Element-grain chunksSkipped post-pivot will be ~2410, not 262. Single-AC framing forced a choice: (A) reword to element-grain only — severs the validation-report cross-component contract Phases 0-8 invoked; (B) dual-AC with file-grain test aggregation — preserves both invariants; (C) collapse chunks to file-grain — sacrifices RAG retrieval quality. Ruling: (B). The substrate's actual shape is two identities at two grains; making both load-bearing makes the structural truth visible instead of hidden behind a single conflated metric. The ±10% band was the probabilistic concession to two-slice divergence — gone post-pivot."
     },
     {
       "id": "DR-SINGLE-SLICE-C",
@@ -75,6 +76,12 @@
   ],
 
   "risks": [
+    {
+      "id": "R-SINGLE-SLICE-0",
+      "description": "Grain mismatch between AC-05a (element-grain) and AC-05b (file-grain) is invisible if the test fixture has only one node per file — both identities collapse to the same number and the dual-AC framing isn't being exercised.",
+      "mitigation": "Plan task 3.3 explicitly requires fixture tweak: multiple element-grain nodes per file (e.g., 2-3 per file across N files). AC-05a (~2N or ~3N) and AC-05b (N) become distinct numbers. Per CORE Phase 1 flag.",
+      "severity": "medium"
+    },
     {
       "id": "R-SINGLE-SLICE-1",
       "description": "ChunkConverter's expected DependencyGraph shape (Map-of-nodes) doesn't match graph.json's serialized shape (array-of-nodes). Need a JSON-to-DependencyGraph adapter.",
@@ -131,17 +138,22 @@
 
   "real_world_baseline": {
     "pre_pivot_state": {
-      "ac_09_dynamic": "215/262 chunks correctly skip (after path-normalization fix)",
+      "ac_09_dynamic_file_grain": "215/262 chunks correctly skip (after path-normalization fix; 47-file gap from two-slice divergence)",
       "indexing_result_status": "partial",
       "validation_report_header_missing_count": 262,
+      "graph_json_total_nodes": 2771,
+      "graph_json_missing_header_nodes": 2410,
+      "graph_json_unique_missing_header_files": 262,
       "ground_truth": "6/6 PASS"
     },
     "target_post_wo_state": {
-      "ac_09_dynamic": "262/262 by identity",
+      "ac_05a_element_grain_identity": "chunksSkipped(header_status_missing) === ~2410 (graph.json missing-header node count)",
+      "ac_05b_file_grain_identity": "uniqueFiles(skipped header_missing chunks).size === 262 (validation_report.header_missing_count)",
       "indexing_result_status": "partial (unchanged shape; status flipped because header-missing chunks exist, same as today)",
       "validation_report_header_missing_count": 262,
       "ground_truth": "6/6 PASS",
-      "lines_changed_estimate": "net negative (delete ~100, add ~30)"
+      "lines_changed_estimate": "net negative (delete ~100, add ~30 src + ~5 test)",
+      "schema_delta": "ZERO — file-grain aggregation lives in test code; chunksSkippedDetails already exists in IndexingResult"
     }
   },
 

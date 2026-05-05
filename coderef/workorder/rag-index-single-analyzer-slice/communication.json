@@ -49,6 +49,20 @@
       "to": "CODEREF-CORE",
       "kind": "wo_authored_post_pivot",
       "summary": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 authored as replacement for superseded WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001. Plan, analysis, context, communication all in WO dir. Ready for DISPATCH-007 execution. AC-09 target: identity (chunksSkipped === header_missing_count exactly), not ±10% band. Net negative LOC expected. Stub closes via supersession."
+    },
+    {
+      "at": "2026-05-05T21:30:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "halt_pre_implementation",
+      "summary": "Phase 1 probe (commit 9d84677) revealed AC-05 wording ('chunksSkipped === header_missing_count exactly, 262===262') is mathematically unreachable post-pivot. graph.json ships 2771 element-grain nodes (2410 with headerStatus='missing') covering 262 unique files. Element-grain chunks post-pivot will produce ~2410 skips, not 262. Surfaced three paths (A/B/C); recommended (B) — dual-AC framing with file-grain aggregation in test code. HALT pending ORCHESTRATOR ruling. Phase 1 commit pushed-ready; no implementation until ruling lands."
+    },
+    {
+      "at": "2026-05-05T21:35:00Z",
+      "from": "ORCHESTRATOR",
+      "to": "CODEREF-CORE",
+      "kind": "ruling_dual_ac_framing",
+      "summary": "Ruling: (B) — dual-AC framing. AC-05 splits into AC-05a (element-grain identity ~2410===~2410) + AC-05b (file-grain identity 262===262, computed via uniqueFiles aggregation in test code). Both load-bearing, both strict, no ±10% tolerance. Zero IndexingResult schema delta — chunksSkippedDetails already exists; uniques counted in test assertion. Path 3.3 rewrites the predecessor invariant test (drops ±10% language); fixture must have multiple nodes per file to make AC-05a and AC-05b distinct. Phase 4 dynamic re-verify checks BOTH identities. Plan + analysis + communication updated; CORE resumes from Phase 1 commit 9d84677 with corrected ACs."
     }
   ],
   "decisions_log": [
@@ -63,7 +77,16 @@
       "at": "2026-05-05T20:30:00Z",
       "by": "ORCHESTRATOR",
       "ruling": "AC-09 measured as identity (chunksSkipped === header_missing_count exactly), not ±10% band",
-      "rationale": "DR-SINGLE-SLICE-B. The ±10% band was a probabilistic concession to two-slice divergence. With one slice, identity is the honest target. The system can't disagree with itself because there's nothing to disagree with."
+      "rationale": "DR-SINGLE-SLICE-B (initial). The ±10% band was a probabilistic concession to two-slice divergence. With one slice, identity is the honest target.",
+      "superseded_at": "2026-05-05T21:35:00Z",
+      "superseded_reason": "Original wording assumed file-grain comparison (262===262) but graph.json is element-grain. CORE Phase 1 probe surfaced the mismatch before implementation. Ruling refined to dual-AC framing."
+    },
+    {
+      "event": "ac_05_dual_framing_ruling",
+      "at": "2026-05-05T21:35:00Z",
+      "by": "ORCHESTRATOR",
+      "ruling": "Path (B) — split AC-05 into AC-05a (element-grain identity) + AC-05b (file-grain identity computed via test-code uniqueFiles aggregation). Both load-bearing strict identities, no ±10% tolerance, zero IndexingResult schema delta.",
+      "rationale": "(A) severs validation-report cross-component contract from Phases 0-8 (same failure mode as yesterday's Option 2). (C) sacrifices RAG retrieval quality for AC wording. (B) preserves both invariants: element-grain captures 'chunks are nodes' substrate truth; file-grain preserves canonical-baseline cross-check. Test-code aggregation operationalizes bulletproof concept #2 (executable invariants) without re-introducing a runtime aggregation seam. Net negative LOC holds (delete ~100, add ~30 src + ~5 test). CORE Phase 1 catch was sharper than the WO author's premise — the grain mismatch was hidden behind 'one graph, one identity' framing that was half-right."
     }
   ]
 }

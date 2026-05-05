@@ -8,7 +8,7 @@
   "plan_type": "phased_implementation",
   "ruling_reference": "Option (a) — single analyzer slice (see analysis.json ruling block)",
 
-  "objective": "Consolidate rag-index to a single analyzer slice by reading .coderef/graph.json directly instead of running an independent analyzerService.analyze(...). Restore AC-09 to a structural identity (chunksSkipped(header_status_missing) === header_missing_count exactly). Net negative LOC (delete ~100, add ~30). Kills STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 via supersession.",
+  "objective": "Consolidate rag-index to a single analyzer slice by reading .coderef/graph.json directly instead of running an independent analyzerService.analyze(...). Establish DUAL structural identities — AC-05a element-grain (chunksSkipped(header_status_missing) === graph.json missing-header node count, ~2410===~2410) AND AC-05b file-grain (uniqueFiles(skipped header_missing chunks) === validation_report.header_missing_count, 262===262). Both identities hold by construction post-pivot; AC-05b preserves the validation-report-as-canonical-baseline contract through Phases 0-8. File-grain aggregation lives in TEST CODE only (no IndexingResult schema delta). Net negative LOC (delete ~100, add ~30 src + ~5 test). Kills STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 via supersession.",
 
   "acceptance_criteria": [
     {
@@ -33,10 +33,17 @@
       "verification": "Unit test: touch a source file post-graph.json; invoke indexCodebase; assert warning or thrown error per Phase 1 decision."
     },
     {
-      "id": "AC-05",
-      "description": "AC-09 identity: chunksSkipped(header_status_missing) === header_missing_count exactly when run against coderef-core itself.",
-      "verification": "Run populate.js + rag-index.js. Inspect .coderef/rag-index.json.chunksSkipped vs .coderef/validation-report.json.header_missing_count → equal (262 === 262 expected).",
-      "halt_if_unreachable": "If chunksSkipped !== header_missing_count after refactor → HALT (likely chunk-conversion bug surfaced, must fix before merge)"
+      "id": "AC-05a",
+      "description": "Element-grain structural identity: chunksSkipped(header_status_missing) === count of nodes in graph.json with metadata.headerStatus === 'missing'. Both numbers are element-grain (per CORE Phase 1 probe: ~2410 === ~2410 on coderef-core itself). This identity holds 'by construction' because chunks ARE the nodes after the pivot.",
+      "verification": "Run populate.js + rag-index.js. Compute graph.json missing-header element count (one node per fn/class/method with headerStatus='missing'). Assert exactly equal to IndexingResult.chunksSkipped count where reason === 'header_status_missing'.",
+      "halt_if_unreachable": "If element-grain identity fails → HALT (likely a propagation bug from deleting the facet enrichment block; ChunkConverter must propagate node.metadata.headerStatus → chunk.headerStatus inline)"
+    },
+    {
+      "id": "AC-05b",
+      "description": "File-grain cross-component identity: uniqueFiles(chunksSkippedDetails where reason === 'header_status_missing').size === validation_report.header_missing_count exactly. Both numbers are file-grain (262 === 262 on coderef-core itself). This identity preserves the validation-report-as-canonical-baseline contract that has been load-bearing through Phases 0-8 — the cross-component invariant connecting upstream pipeline output to downstream indexing consumer.",
+      "verification": "After indexing run, compute new Set(IndexingResult.chunksSkippedDetails.filter(s => s.reason === 'header_status_missing').map(s => fileOf(s.coderefId))).size. Assert exactly equal to validation_report.header_missing_count. NO ±10% tolerance band — strict identity.",
+      "halt_if_unreachable": "If file-grain identity fails → HALT (the file populations have diverged, which after the single-slice pivot should be structurally impossible; investigate root cause before merge)",
+      "implementation_note": "Aggregation lives in TEST CODE only. Counting uniques over the existing chunksSkippedDetails array introduces zero IndexingResult schema delta (DR-PHASE-7-B preserved). The test assertion specifies the contract; no runtime aggregation seam."
     },
     {
       "id": "AC-06",
@@ -156,7 +163,7 @@
     },
     {
       "phase": 3,
-      "label": "Tests — staleness + missing-graph + AC-09 identity",
+      "label": "Tests — staleness + missing-graph + dual-AC identity (AC-05a element-grain + AC-05b file-grain)",
       "tasks": [
         {
           "id": "3.1",
@@ -170,8 +177,9 @@
         },
         {
           "id": "3.3",
-          "description": "Add integration test for AC-09 identity. Use a small fixture project with N missing-header files; run populate.js + rag-index.js; assert chunksSkipped(header_status_missing) === header_missing_count exactly.",
-          "commit_strategy": "atomic commit: test(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): AC-09 identity invariant"
+          "description": "Rewrite predecessor invariant test (__tests__/pipeline/indexing-gate-invariant.test.ts:102-223 'AC-09 dynamic invariant — chunksSkipped tracks header_missing_count (±10%)'). Replace ±10% file-grain assertion with TWO strict-identity assertions: (a) AC-05a element-grain: chunksSkipped(header_status_missing) === count of graph.json nodes with metadata.headerStatus==='missing' EXACTLY; (b) AC-05b file-grain: uniqueFiles(chunksSkippedDetails where reason==='header_status_missing').size === validation_report.header_missing_count EXACTLY. Drop the ±10% language entirely — that band was the probabilistic concession to two-slice divergence and is no longer the right contract.",
+          "fixture_requirement": "CORE flagged: existing fixture has N=10 missing-header files with one node each. Post-pivot, AC-05a and AC-05b collapse to the same number on this fixture. Tweak fixture to have multiple element-grain nodes per file (e.g., 2-3 nodes per file across the 10 files) so AC-05a (~25 element-grain) and AC-05b (10 file-grain) are demonstrably distinct numbers and the dual-AC framing is actually exercised.",
+          "commit_strategy": "atomic commit: test(WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001): rewrite indexing-gate-invariant for dual-AC identity (drop ±10% band, add element-grain + file-grain identities, multi-node-per-file fixture)"
         },
         {
           "id": "3.4",
@@ -185,7 +193,8 @@
         }
       ],
       "halt_and_report": [
-        "Any predecessor test regresses → HALT, investigate (likely a propagation bug from deleting the enrichment block)"
+        "Any predecessor test regresses → HALT, investigate (likely a propagation bug from deleting the enrichment block)",
+        "AC-05a or AC-05b fixture-level test fails on the rewritten invariant → HALT, investigate which identity is broken (substrate vs propagation)"
       ]
     },
     {
@@ -194,9 +203,9 @@
       "tasks": [
         {
           "id": "4.1",
-          "description": "Run populate.js + rag-index.js against coderef-core. Capture chunksSkipped count and header_missing_count.",
-          "verification": "chunksSkipped === header_missing_count exactly (AC-05)",
-          "halt_if": "chunksSkipped !== header_missing_count → HALT, investigate"
+          "description": "Run populate.js + rag-index.js against coderef-core. Capture: (1) chunksSkipped(header_status_missing) count; (2) graph.json node count where metadata.headerStatus==='missing' (element-grain); (3) uniqueFiles count over chunksSkippedDetails filtered to reason==='header_status_missing' (file-grain); (4) validation_report.header_missing_count (file-grain).",
+          "verification": "Both identities hold STRICTLY: AC-05a — (1) === (2) exactly (~2410 === ~2410). AC-05b — (3) === (4) exactly (262 === 262). NO tolerance band on either.",
+          "halt_if": "Either identity fails → HALT, investigate. AC-05a failure is propagation bug (chunk.headerStatus not flowing from node.metadata.headerStatus). AC-05b failure is structural impossibility post-pivot — investigate root cause before merge."
         },
         {
           "id": "4.2",
@@ -231,7 +240,7 @@
   ],
 
   "definition_of_done": [
-    "AC-01..AC-13 all PASS",
+    "AC-01..AC-13 all PASS (AC-05 split into AC-05a + AC-05b — both identities hold strictly)",
     "All atomic commits pushed clean to origin/main",
     "INVESTIGATION-REPORT.md present in WO directory",
     "Cross-project /close-workorder run by SKILLS",
