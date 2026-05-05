@@ -150,3 +150,137 @@ The 7 required distinctions per roadmap line 466 are explicitly covered in at le
 - 2026-05-05T01:05:00Z — Dispatch DISPATCH-2026-05-04-002 accepted; required skills 1-4 logged; /execute-workorder logged.
 - 2026-05-05T01:10:00Z — Task 1.1 survey: confirmed AGENTS.md/CLAUDE.md/GEMINI.md are 5-line pointer stubs; HALT for ORCHESTRATOR ruling.
 - 2026-05-05T01:25:00Z — ORCHESTRATOR ruling Path C accepted; DR-PHASE-8-D revised; plan task 1.10 updated; resuming work.
+- 2026-05-05T02:30:00Z — Tasks 1.3-1.14 completed in parallel: SCHEMA.md (full rewrite, 6 sections), HEADER-GRAMMAR.md (created as ASSISTANT BNF mirror), API.md (full rewrite), AGENTS.md (canonical contract + footer pointer), CLI.md (Phase 6/7 flag updates), rag-http-api.md (Phase 7 alignment), ARCHITECTURE.md (full rewrite as 9-phase overview), MIGRATION.md (reverified-still-true — DB migration helper, not pipeline migration), coderef-semantic-schema.md (archived to docs/archive/).
+- 2026-05-05T02:45:00Z — Tasks 1.15-1.20 completed: 4 root + 1 docs/ archive moves with banners; cross-link audit (zero broken live-doc links); CONTRIBUTING.md note added; AGENT-WORKFLOW-GUIDE.md kept distinct (migration-validation track); remaining docs/ surveyed (DEPLOY-*, ROUTE-*, FRONTEND-CALL-DETECTION, LLOYD-INTEGRATION, COMPONENTS, plugins/ — all current-truthful or out-of-scope); CHANGELOG.md Phase 8 dated entry + Pipeline Rebuild Complete table added; README.md gained rebuild-status section + 3 broken cross-links fixed (foundation-docs/* → docs/*, MIGRATION-VALIDATION.md → MIGRATION.md, ../../README.md removed).
+- 2026-05-05T02:55:00Z — Task 1.21 + 1.22 completed: 7-distinction coverage table written (AC-08 satisfied); stale-claim inventory closed (8 entries, zero unaddressed, AC-09 satisfied).
+- 2026-05-05T03:00:00Z — Task 1.23 quality gate PASS: no-phase-8-docs-leak.test.ts 6/6 PASS, graph-ground-truth.test.ts 6/6 PASS, tsc --noEmit clean, git diff src/ ZERO changes.
+- 2026-05-05T03:10:00Z — Task 1.24 atomic commits + push completed. 7 commits c51cdaa..76921f1 pushed to origin/main (push range 689af34..76921f1). Post-push quality gate re-run: 12/12 PASS, tsc clean, src/ delta confirmed ZERO.
+
+---
+
+## Closeout report (task 1.25 — CLOSE-READY)
+
+**Final state:** Phase 8 work complete; all 26 tasks resolved. WO ready for SKILLS /close-workorder dispatch.
+
+### Phase 8 commit range
+
+| SHA | Subject |
+|-----|---------|
+| `c51cdaa` | docs(schema, grammar): rewrite SCHEMA.md as canonical post-rebuild reference + add HEADER-GRAMMAR.md mirror |
+| `7927581` | docs(api, agents): rewrite API.md + AGENTS.md per Path C ruling |
+| `8e079f3` | docs(cli, rag-http-api): document Phase 6 + Phase 7 CLI surfaces |
+| `dab2e9a` | docs(architecture): rewrite ARCHITECTURE.md as 9-phase pipeline overview |
+| `ddae92d` | docs(archive): relocate 4 audit-style root + 1 docs/ file per DR-PHASE-8-A |
+| `39ab3f7` | docs(changelog, readme, contributing): Phase 8 entry + rebuild-complete + post-rebuild summary |
+| `76921f1` | docs(workorder): Phase 8 plan + execution-notes + closeout |
+
+**Phase 8 commit range:** `c51cdaa..76921f1` (7 commits)
+**Push range:** `689af34..76921f1` → `origin/main` (clean push; no force, no hook bypass)
+
+### Validation-report.json baseline reaffirmed (no change since Phase 7)
+
+| Field | Value |
+|-------|------:|
+| `valid_edge_count` | 3464 |
+| `header_missing_count` | 262 |
+| `header_defined_count` | 0 |
+| `header_stale_count` | 0 |
+| `header_partial_count` | 0 |
+| `header_layer_mismatch_count` | 0 |
+| `header_export_mismatch_count` | 0 |
+| `unresolved_count` | 0 |
+| `ambiguous_count` | 0 |
+| `external_count` | 0 |
+| `builtin_count` | 0 |
+| (inferred `ok`) | true |
+
+**Source:** `.coderef/validation-report.json` (committed in Phase 7's `2c02878`).
+
+### Quality gate post-commit (task 1.23 re-run)
+
+| Check | Result |
+|-------|--------|
+| `npx vitest run __tests__/pipeline/no-phase-8-docs-leak.test.ts` | 6/6 PASS (boundary enforcer GREEN — AC-10 satisfied) |
+| `npx vitest run __tests__/pipeline/graph-ground-truth.test.ts` | 6/6 PASS (AC-11 satisfied) |
+| `npx tsc --noEmit` | clean both configs |
+| `git diff --stat 689af34 HEAD -- src/` | empty (ZERO src/ changes — Phase 8 hard rule satisfied) |
+
+### Doc files modified / created / archived
+
+**Modified (10):**
+- `AGENTS.md` (rewrite, ~150 lines, canonical agent contract + footer pointer)
+- `CHANGELOG.md` (append Phase 8 entry + rebuild-complete table)
+- `CONTRIBUTING.md` (add small note in 'Adding Scanner Languages' section)
+- `README.md` (add Pipeline Rebuild Status section; fix 3 broken cross-links; rewrite Resources block)
+- `docs/API.md` (rewrite, post-rebuild canonical)
+- `docs/ARCHITECTURE.md` (rewrite, 9-phase overview)
+- `docs/CLI.md` (Phase 6/7 flag updates: --strict-headers, --layer/--capability, validation-gate behavior)
+- `docs/SCHEMA.md` (rewrite, 6 canonical sections)
+- `docs/rag-http-api.md` (Phase 7 alignment: status field, validationGateRefused, SkipReason/FailReason, layer/capability filter passthrough)
+
+**Created (1):**
+- `docs/HEADER-GRAMMAR.md` (mirror of ASSISTANT canonical BNF, with citation banner + sync-touchpoint convention)
+
+**Archived (5 — moved to `docs/archive/<file>-2026-05-05.md`):**
+- `EXECUTIVE-SUMMARY.md` → `docs/archive/EXECUTIVE-SUMMARY-2026-05-05.md`
+- `CODEREF-ANALYSIS-REPORT.md` → `docs/archive/CODEREF-ANALYSIS-REPORT-2026-05-05.md`
+- `DUPLICATE-FILES-AUDIT.md` → `docs/archive/DUPLICATE-FILES-AUDIT-2026-05-05.md`
+- `GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN.md` → `docs/archive/GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN-2026-05-05.md`
+- `docs/coderef-semantic-schema.md` → `docs/archive/coderef-semantic-schema-2026-05-05.md`
+
+**Unchanged (per Path C ruling and survey):**
+- `CLAUDE.md`, `GEMINI.md` — 5-line pointer stubs (Path C)
+- `docs/AGENT-WORKFLOW-GUIDE.md` — migration-validation track, not pipeline (kept distinct from AGENTS.md per task 1.2)
+- `docs/MIGRATION.md` — DB migration helper feature, not pipeline-migration; reverified-still-true
+- `docs/COMPONENTS.md`, `docs/DEPLOY-*.md`, `docs/FRONTEND-CALL-DETECTION.md`, `docs/LLOYD-INTEGRATION.md`, `docs/ROUTE-*.md`, `docs/AUDIT-REPORT.md`, `docs/plugins/` — surveyed at task 1.18; current-truthful or out-of-Phase-8-scope
+
+### Acceptance-criteria status
+
+| AC | Statement | Status |
+|----|-----------|--------|
+| AC-01 | Scanner schema canonical at single location with all 4 facet fields, cites src | PASS — docs/SCHEMA.md § 1 cites `src/types/types.ts` (lines 304-412) |
+| AC-02 | Relationship schema covers 4 raw fact types AND resolved relationships | PASS — docs/SCHEMA.md § 2 |
+| AC-03 | Header grammar doc as canonical mirror of ASSISTANT BNF | PASS — docs/HEADER-GRAMMAR.md created with citation |
+| AC-04 | Graph schema covers 8-field edge + 10-variant evidence + GraphNode metadata | PASS — docs/SCHEMA.md § 4 |
+| AC-05 | Resolution statuses documented end-to-end | PASS — docs/SCHEMA.md § 3 (7 ImportResolutionKind + 5 CallResolutionKind + 8 EdgeResolutionStatus) |
+| AC-06 | Public API contract documented with stability commitments | PASS — docs/API.md |
+| AC-07 | Agent usage contract documented with what-to-read / what-NOT-to-read | PASS — AGENTS.md (Path C) |
+| AC-08 | All 7 distinctions explicitly covered | PASS — see distinction coverage table above |
+| AC-09 | stale_claim_inventory zero entries unaddressed | PASS — see stale-claim inventory table above (8 entries, all addressed) |
+| AC-10 | no-phase-8-docs-leak.test.ts GREEN | PASS — 6/6 |
+| AC-11 | graph-ground-truth.test.ts 6/6 PASS | PASS — 6/6 |
+| AC-12 | CHANGELOG Phase 8 entry + README aligned | PASS — CHANGELOG dated section + 9-phase rebuild-complete table; README rebuild-status section + cross-links fixed |
+
+### Decision records honored
+
+- **DR-PHASE-8-A** — audit-style root markdown archived to `docs/archive/<file>-2026-05-05.md` with dated banners. ✓
+- **DR-PHASE-8-B** — one-source-per-topic enforced; SCHEMA.md is canonical for scanner/relationship/graph/resolution/validation/indexing as 6 sibling sections; HEADER-GRAMMAR.md standalone (mirror); API.md and ARCHITECTURE.md cross-link rather than duplicate. ✓
+- **DR-PHASE-8-C** — HEADER-GRAMMAR.md is a citation-mirror with explicit pointer to ASSISTANT canonical; sync-touchpoint convention block included. ✓
+- **DR-PHASE-8-D (revised, Path C)** — AGENTS.md = canonical CORE-side contract + footer pointer to CONTEXT.md; CLAUDE.md/GEMINI.md = unchanged pointer stubs; plan task 1.10 revised. ✓
+- **DR-PHASE-8-E** — CHANGELOG.md keeps current format; Phase 8 dated section + Pipeline Rebuild Complete line added; no format migration. ✓
+
+### Halt-and-report points encountered
+
+| Point | Where | Resolution |
+|-------|-------|-----------|
+| Task 1.1 (DR-PHASE-8-D vs pointer architecture) | AGENTS.md/CLAUDE.md/GEMINI.md are 5-line pointer stubs to ASSISTANT CONTEXT.md | ORCHESTRATOR ruling Path C — expand AGENTS.md with contract + footer pointer; leave CLAUDE.md/GEMINI.md unchanged |
+
+(No other halt-and-report conditions triggered. Tasks 1.13, 1.15, 1.23 completed cleanly. No code-vs-doc conflicts surfaced; no stubs filed.)
+
+### Required skills logged
+
+For DISPATCH-2026-05-04-002:
+1. `/coderef-fast-start` — ✓ logged
+2. `/join-daily-session` — ✓ logged
+3. `/align-coderef-culture` — ✓ logged
+4. `/log-skill` — ✓ logged
+5. `/execute-workorder` — ✓ logged
+
+(All 5 required skills logged via `node SKILLS/WORKFLOW/log-skill/run.mjs --dispatch-id=DISPATCH-2026-05-04-002` against `daily-agent-session-2026-05-04/CODEREF-CORE/activity-log.jsonl`.)
+
+### Next step (out of CORE scope)
+
+ORCHESTRATOR fills DISPATCH-035 placeholders (or the next number) and dispatches it for SKILLS to run the cross-project /close-workorder. After that lands, the Phase 8 archive completes the 9-phase pipeline rebuild and Final DoD #9 ("docs match actual schemas and behavior") is satisfied.
+
+After Phase 8 archives, **the rebuild is done.** There is no Phase 9.
+
