@@ -1,827 +1,249 @@
-# Coderef Core API Reference
+# CodeRef Core Public API
 
-**Date:** 2025-09-17
-**Version:** 2.0.0
+**Last updated:** 2026-05-05 (Phase 8 — pipeline rebuild close)
+**Package:** `@coderef/core` v2.0.0
+**Status:** post-rebuild canonical reference
 
-## Overview
+This document is the canonical reference for the **public API surface** that external programmatic callers can rely on. It covers entry points exported from `src/index.ts` plus the post-rebuild Phase 6 (validation) and Phase 7 (indexing/RAG) contracts.
 
-This document provides comprehensive API documentation for the Coderef Core library. The API enables programmatic access to semantic code reference management through tag parsing, code scanning, and drift analysis capabilities.
+For schema types referenced below (`ElementData`, `PipelineState`, `ImportResolution`, `CallResolution`, `GraphEdgeV2`, `EdgeEvidence`, `ExportedGraph`, `ValidationResult`, `IndexingResult`), see [docs/SCHEMA.md](./SCHEMA.md). For the semantic header grammar, see [docs/HEADER-GRAMMAR.md](./HEADER-GRAMMAR.md). For agent usage (what to read vs. what to ignore), see [/AGENTS.md](../AGENTS.md).
 
-### Reference Documentation
+---
 
-- **README.md**: Installation, quick start, and usage examples
-- **ARCHITECTURE.md**: System design, module boundaries, and data flow
-- **SCHEMA.md**: Data models, validation rules, and type definitions
+## Stability commitments
 
-## Core API Endpoints
+| Surface | Stability |
+|---------|-----------|
+| Pipeline types (`PipelineState`, `ElementData`, raw fact types, resolution types, `GraphEdgeV2`, `EdgeEvidence`, `ExportedGraph`) | **stable** — locked at Phase 5 (DR-PHASE-5-D); additive-only changes only |
+| `ValidationReport` (11 fields) | **stable** — locked at Phase 6 (R-PHASE-6-C); field names additive-only with explicit ORCHESTRATOR sign-off |
+| `IndexingResult` (with Phase 7 additive fields) | **stable** — locked at Phase 7 (DR-PHASE-7-B); shape strictly additive over pre-Phase-7 contract |
+| `IndexingStatus`, `SkipReason`, `FailReason`, status thresholds | **stable** — Phase 7 (DR-PHASE-7-C, DR-PHASE-7-E) |
+| Header grammar (BNF) | **stable** — canonical at `ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md`; CORE mirrors |
+| `LayerEnum` | **stable** — canonical at `ASSISTANT/STANDARDS/layers.json`; CORE never forks |
+| Scanner / pipeline orchestrator entry points (`PipelineOrchestrator`, `scanCurrentElements`) | **stable** — public; signature changes are SemVer-major |
+| Internal pipeline plumbing (`PipelineState` mutation order, intermediate caches, registry implementations) | **internal** — agents should NOT depend on internal sequencing |
+| Legacy projection (`DependencyGraph`, `buildDependencyGraph`) | **`@legacy`** — kept for transition; new consumers use `ExportedGraph` |
 
-### Parser Functions
+---
 
-#### `parseCodeRef(tag: string): ParsedCodeRef`
+## 1. Pipeline orchestration
 
-Parses a Coderef2 tag string into structured components.
+### `PipelineOrchestrator`
 
-**Parameters:**
-- `tag` (string): Coderef2 tag in format `@Type/path#element:line{metadata}`
+Truth source: `src/pipeline/orchestrator.ts`. Re-exported from `@coderef/core`.
 
-**Returns:** `ParsedCodeRef` object with structured tag components
+The end-to-end pipeline driver. Runs phases 0 → 5 in order: discovery → element extraction → raw-fact extraction → header parsing → import resolution → call resolution → graph construction.
 
-**Example Request:**
 ```typescript
-import { parseCodeRef } from 'coderef-core';
+import { PipelineOrchestrator } from '@coderef/core';
 
-const result = parseCodeRef('@Fn/auth/login#authenticateUser:42{status:"active"}');
+const orchestrator = new PipelineOrchestrator(projectPath, options);
+const state: PipelineState = await orchestrator.run();
+// state.elements, state.rawImports/rawCalls/rawExports,
+// state.headerFacts/headerImportFacts, state.importResolutions,
+// state.callResolutions, state.graph all populated.
 ```
 
-**Example Response:**
+`PipelineOrchestrator.run()` does NOT call the Phase 6 validator or the Phase 7 indexing orchestrator. Those are wired by the CLI entry points (`populate-coderef`, `rag-index`) so callers stay in control of validation policy and exit-code semantics.
+
+### Phase types and entry points
+
 ```typescript
-{
-  type: "Fn",
-  path: "auth/login",
-  element: "authenticateUser",
-  line: 42,
-  metadata: { status: "active" }
-}
+import type {
+  PipelineState,
+  PipelineOptions,
+  ElementData,
+  // Raw facts (Phase 2)
+  RawImportFact, RawCallFact, RawExportFact, RawImportSpecifier,
+  // Header facts (Phase 2.5)
+  HeaderFact, HeaderImportFact, HeaderParseError,
+  // Resolutions (Phase 3 / Phase 4)
+  ImportResolution, ImportResolutionKind, ExportTable,
+  CallResolution, CallResolutionKind, SymbolTable,
+  // Graph (Phase 5)
+  EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2,
+  ExportedGraph,
+  // Validation (Phase 6)
+  ValidationReport, ValidationResult, ValidationError, ValidationWarning,
+  ValidatePipelineStateOptions,
+} from '@coderef/core';
+
+import {
+  PipelineOrchestrator,
+  // Resolvers and builder (low-level)
+  resolveImports,        // Phase 3 driver
+  resolveCalls,          // Phase 4 driver
+  buildGraph, buildNodes,// Phase 5 driver and node-pass
+  // Validation
+  validatePipelineState, // Phase 6 chokepoint (pure)
+  BUILTIN_RECEIVERS,     // Phase 4 receiver allowlist
+} from '@coderef/core';
 ```
 
-**Error Responses:**
+The lower-level `resolveImports`, `resolveCalls`, and `buildGraph` are exposed for callers who need to drive a custom phase ordering or interleave with their own analysis. Use `PipelineOrchestrator.run()` for the standard path.
+
+---
+
+## 2. Phase 6 — Validation (output gate)
+
+Truth source: `src/pipeline/output-validator.ts`. See [docs/SCHEMA.md § 5](./SCHEMA.md) for the full `ValidationReport` field list.
+
 ```typescript
-// Invalid format
-{
-  "error": "Invalid Coderef2 tag: @fn/auth/login",
-  "code": "INVALID_FORMAT",
-  "message": "Tag type must start with uppercase letter"
-}
+import { validatePipelineState, type ValidationResult } from '@coderef/core';
 
-// Missing required components
-{
-  "error": "Invalid Coderef2 tag: @Fn",
-  "code": "MISSING_PATH",
-  "message": "File path is required after type"
-}
-```
-
-#### `generateCodeRef(parts: ParsedCodeRef): string`
-
-Generates a properly formatted Coderef2 tag string from components.
-
-**Parameters:**
-- `parts` (ParsedCodeRef): Object containing tag components
-
-**Returns:** Formatted tag string
-
-**Example Request:**
-```typescript
-import { generateCodeRef } from 'coderef-core';
-
-const tag = generateCodeRef({
-  type: 'Cl',
-  path: 'models/User',
-  element: 'validateCredentials',
-  line: 15,
-  metadata: { async: true, deprecated: false }
+const result: ValidationResult = validatePipelineState(state, state.graph, {
+  strictHeaders: false,
+  layerEnum: layerEnumLoadedByCaller, // load from ASSISTANT/STANDARDS/layers.json
 });
-```
 
-**Example Response:**
-```typescript
-"@Cl/models/User#validateCredentials:15{\"async\":true,\"deprecated\":false}"
-```
-
-#### `extractCodeRefs(content: string): ParsedCodeRef[]`
-
-Extracts and parses all Coderef2 tags from text content.
-
-**Parameters:**
-- `content` (string): Text content to search for tags
-
-**Returns:** Array of parsed Coderef tags
-
-**Example Request:**
-```typescript
-const content = `
-# API Documentation
-Check the user authentication: @Fn/auth/login#authenticateUser:42
-The User model: @Cl/models/User#constructor:8
-`;
-
-const tags = extractCodeRefs(content);
-```
-
-**Example Response:**
-```typescript
-[
-  {
-    type: "Fn",
-    path: "auth/login",
-    element: "authenticateUser",
-    line: 42,
-    metadata: undefined
-  },
-  {
-    type: "Cl",
-    path: "models/User",
-    element: "constructor",
-    line: 8,
-    metadata: undefined
+if (!result.ok) {
+  for (const err of result.errors) {
+    // err.kind: 'graph_integrity' | 'phase5_demotion' | 'header_drift_strict'
   }
-]
+  // map result.ok → exit code (0 vs 1) at the CLI boundary
+}
+for (const warn of result.warnings) {
+  // header_drift in default mode (SH-1, SH-2, SH-3); promoted to errors when strictHeaders=true
+}
+// result.report is the 11-field ValidationReport — always populated, even on ok=false
 ```
 
-#### `isValidCoderefTag(tag: string): boolean`
+**Purity guarantee.** `validatePipelineState` is **pure**: no fs, no `process.exit`, no console. Callers own:
+- loading `layerEnum` (from `ASSISTANT/STANDARDS/layers.json` via `element-taxonomy.loadLayerEnum()`),
+- mapping `result.ok` to a process exit code,
+- writing `result.report` to `.coderef/validation-report.json` if the run is going to gate Phase 7 indexing.
 
-Validates if a string matches the Coderef2 tag format.
+The CLI entry `populate-coderef` (in `src/cli/populate.ts`) is the canonical wiring; downstream callers can copy that pattern.
 
-**Parameters:**
-- `tag` (string): Tag string to validate
+**Public artifact:** `.coderef/validation-report.json` — the 11-field `ValidationReport` plus an inferred `ok` flag — is consumable by external automation. The Phase 7 indexing orchestrator gates on it.
 
-**Returns:** Boolean indicating validity
+---
 
-**Example Request:**
+## 3. Phase 7 — Indexing / RAG
+
+Truth source: `src/integration/rag/indexing-orchestrator.ts`. See [docs/SCHEMA.md § 6](./SCHEMA.md) for `IndexingResult`, `IndexingStatus`, `SkipReason`, `FailReason`, and the status threshold table.
+
+The indexing orchestrator is currently exposed as a CLI (`rag-index`) and as a programmatic surface inside `src/integration/rag/`. Programmatic callers pass a `ValidationResult`-shaped gate (`{ ok: boolean }`) — the orchestrator itself is pure and never reads the validation report file directly (DR-PHASE-7-A). The CLI bridges fs → orchestrator.
+
 ```typescript
-const isValid1 = isValidCoderefTag('@Fn/auth/login#authenticateUser:42');
-const isValid2 = isValidCoderefTag('@fn/auth/login'); // Invalid: lowercase type
+// Conceptual usage (programmatic — the import path may stabilise in a follow-up release;
+// today the orchestrator is consumed via the rag-index CLI):
+const result: IndexingResult = await indexCodebase({
+  validation: { ok: true },           // caller-injected gate (DR-PHASE-7-A)
+  validationReportPath: '.coderef/validation-report.json',
+  // ... vector-store config, project path, etc.
+});
+
+if (result.status === 'failed') {
+  // result.validationGateRefused indicates the gate refused to run (validation.ok=false)
+}
+// result.chunksSkippedDetails carries one SkipEntry per skipped chunk (length === chunksSkipped)
+// result.chunksFailedDetails carries one FailEntry per failed chunk (length === chunksFailed)
+// Phase 7 INVARIANT: every detail entry has reason !== undefined.
 ```
 
-**Example Response:**
+**Status thresholds (DR-PHASE-7-C):**
+
+| `status` | Condition |
+|---------|-----------|
+| `success` | `chunksIndexed > 0` AND `chunksSkipped === 0` AND `chunksFailed === 0` |
+| `partial` | `chunksIndexed > 0` AND (`chunksSkipped > 0` OR `chunksFailed > 0`) |
+| `failed`  | `chunksIndexed === 0` OR `validationGateRefused === true` |
+
+**SkipReason / FailReason:** see [docs/SCHEMA.md § 6](./SCHEMA.md) for the full enums. Skips correspond to header-drift / unresolved-relationship cases (intentional omission); fails correspond to embedding-API errors / malformed chunks (malfunction).
+
+**Semantic facets on chunks:** `CodeChunk.{layer, capability, constraints, headerStatus}` are populated when the source `ElementData` has them, propagated through `GraphNode.metadata`. The `rag-search` CLI exposes `--layer` and `--capability` filters that filter chunks by these facets.
+
+---
+
+## 4. Scanner / parser surfaces
+
 ```typescript
-true  // First tag is valid
-false // Second tag is invalid
-```
+import {
+  scanCurrentElements,
+  LANGUAGE_PATTERNS,
+  DEFAULT_EXCLUDE_PATTERNS,
+} from '@coderef/core';
 
-### Scanner Functions
-
-#### `scanCurrentElements(dir: string, lang?: string | string[], options?: ScanOptions): Promise<ElementData[]>`
-
-Scans directory for code elements using pattern matching or AST analysis.
-
-**Parameters:**
-- `dir` (string): Directory path to scan
-- `lang` (string | string[]): File extensions to include (default: 'ts')
-- `options` (ScanOptions): Configuration options
-
-**Returns:** Promise resolving to array of discovered elements
-
-**Example Request:**
-```typescript
-import { scanCurrentElements } from 'coderef-core';
-
-const elements = await scanCurrentElements('./src', ['ts', 'tsx'], {
+const elements: ElementData[] = await scanCurrentElements('./src', ['ts', 'tsx', 'js'], {
   recursive: true,
-  exclude: ['**/*.test.*', '**/node_modules/**'],
-  verbose: true,
-  customPatterns: [
-    {
-      type: 'hook',
-      pattern: /export const (use[A-Z]\w+)/g,
-      nameGroup: 1,
-      lang: 'ts'
-    }
-  ]
 });
 ```
 
-**Example Response:**
+The legacy regex scanner remains a public entry point; callers driving the full pipeline use `PipelineOrchestrator` instead. See [docs/SCHEMA.md § 1](./SCHEMA.md) for the `ElementData` shape.
+
+### Configuration presets
+
 ```typescript
-[
-  {
-    type: "function",
-    name: "authenticateUser",
-    file: "src/auth/login.ts",
-    line: 42
-  },
-  {
-    type: "class",
-    name: "User",
-    file: "src/models/User.ts",
-    line: 8
-  },
-  {
-    type: "component",
-    name: "LoginForm",
-    file: "src/components/LoginForm.tsx",
-    line: 15
-  }
-]
+import { loadPreset, detectPreset, applyPreset, SCAN_PRESETS } from '@coderef/core';
+
+const preset = loadPreset('react');
+const detected = detectPreset('./my-project'); // ['nextjs', 'monorepo']
+const config = applyPreset('nextjs', ['custom/**']);
 ```
 
-**ScanOptions Interface** (Phase 4 & 5 Extensions):
+### Error reporting
+
 ```typescript
-interface ScanOptions {
-  /** Scan recursively into subdirectories */
-  recursive?: boolean;
-  /** Glob patterns for file inclusion */
-  include?: string | string[];
-  /** Glob patterns for file exclusion */
-  exclude?: string | string[];
-  /** Languages to scan (file extensions) */
-  langs?: string[];
-  /** Whether to show verbose output */
-  verbose?: boolean;
-
-  // Phase 1: AST Integration
-  /** Use AST-based parsing (95%+ accuracy) instead of regex (85%) */
-  useAST?: boolean;
-  /** Fallback to regex if AST parsing fails (default: true) */
-  fallbackToRegex?: boolean;
-
-  // Phase 2: Parallel Processing
-  /** Enable parallel file processing with worker threads */
-  parallel?: boolean | { workers?: number };
-
-  // Phase 4: Relationship Tracking
-  /** Extract import statements (ESM, CommonJS, dynamic) */
-  trackImports?: boolean; // Enabled when useAST is true
-  /** Extract function call relationships */
-  trackCalls?: boolean;   // Enabled when useAST is true
-
-  // Phase 5: Progress Reporting
-  /** Callback for progress updates during scanning */
-  onProgress?: (progress: {
-    currentFile: string;
-    filesProcessed: number;
-    totalFiles: number;
-    elementsFound: number;
-    percentComplete: number;
-  }) => void;
-}
+import {
+  createScanError, formatScanError, printScanErrors,
+  type ScanError, type ScanErrorType, type ScanErrorSeverity, type ScanResult,
+} from '@coderef/core';
 ```
 
 ---
 
-## IncrementalCache
+## 5. Exported helper modules (route validation, migration, frontend update)
 
-Persistent cache for incremental scanning operations. Maintains element metadata across scan sessions using file modification timestamps.
+These are stable public surfaces but unrelated to the pipeline rebuild. They retain their pre-rebuild API.
 
-### Usage
-
-```typescript
-import { IncrementalCache } from '@coderef/core';
-
-const cache = new IncrementalCache({
-  projectRoot: '/my/project',
-  cacheDir: '.coderef/cache'
-});
-
-// Initialize
-await cache.initialize();
-
-// Check which files need scanning
-const { filesToScan, filesSkipped } = await cache.checkFiles([
-  'src/file1.ts',
-  'src/file2.ts'
-]);
-
-// After scanning, save results
-await cache.saveFileResult('src/file1.ts', [
-  { name: 'myFunction', type: 'function', line: 10 }
-]);
-
-// Persist to disk
-await cache.saveCacheToDisk();
-```
-
-### Constructor
-
-```typescript
-new IncrementalCache(options: IncrementalCacheOptions)
-```
-
-**Options:**
-- `projectRoot: string` - Absolute path to project root
-- `cacheDir?: string` - Cache directory relative to project (default: `.coderef/cache`)
-
-### Methods
-
-#### `initialize(): Promise<void>`
-
-Initialize cache, loading existing data from disk if present.
-
-#### `checkFiles(files: string[]): Promise<CheckFilesResult>`
-
-Determine which files need to be scanned based on mtime comparison.
-
-**Returns:**
-```typescript
-{
-  filesToScan: string[];    // Files that need scanning
-  filesSkipped: number;     // Count of unchanged files
-}
-```
-
-#### `saveFileResult(filePath: string, elements: CodeElement[]): Promise<void>`
-
-Save scan results for a file to cache.
-
-#### `loadFileResult(filePath: string): Promise<CodeElement[] | null>`
-
-Load cached elements for a file if available and valid.
-
-#### `saveCacheToDisk(): Promise<void>`
-
-Persist all cache data to disk.
-
-#### `clear(): Promise<void>`
-
-Clear all cached data (memory and disk).
-
-#### `getStatistics(): Promise<CacheStatistics>`
-
-Get cache statistics including size and hit rate.
+| Module | Entry points | Notes |
+|--------|--------------|-------|
+| Route normalizer | `normalizeRoutePath`, `normalizeFlaskRoute`, `normalizeFastAPIRoute`, `normalizeExpressRoute`, `normalizeNextJsRoute`, `extractDynamicSegments` | WO-ROUTE-VALIDATION-ENHANCEMENT-001 |
+| Route matcher | `exactMatch`, `dynamicMatch`, `partialMatch`, `calculateMatchConfidence`, `findBestMatch`, `matchHttpMethods` | |
+| Route validator | `loadFrontendCalls`, `loadServerRoutes`, `detectMissingRoutes`, `detectUnusedRoutes`, `detectMethodMismatches`, `classifyIssue`, `generateValidationReport`, `saveValidationReport` | (Distinct from `validatePipelineState` — these are the route-validation helpers for the `validate-routes` CLI.) |
+| Report generator | `formatIssueSummary`, `formatIssueDetails`, `formatRecommendations`, `formatAutoFixSection`, `generateMarkdownReport`, `saveMarkdownReport` | |
+| Migration validation | `validateMigrationConfig`, `applyMappings`, `applyExplicitMapping`, `applyPatternMapping`, `calculateMigrationCoverage`, `findUnmappedCalls`, `findDeprecatedCalls`, `loadMigrationMapping`, `validateMigration` | WO-MIGRATION-VALIDATION-001 |
+| Frontend update generator | `generateUpdateSuggestions`, `batchProcessCalls`, `generateGitPatch`, `applyModifications`, `generateUpdateReport`, `exportBatchResults` | IMP-CORE-044 |
 
 ---
 
-## SCAN_CACHE (In-Memory LRU)
-
-Global in-memory LRU cache for rapid repeated scans. Used internally by `scanCurrentElements()` to avoid re-parsing unchanged files within the same process.
-
-### Characteristics
-
-- **Capacity:** 100 entries
-- **Key:** Normalized absolute file path
-- **Value:** `{ mtimeMs: number, elements: CodeElement[] }`
-- **Eviction:** LRU (Least Recently Used)
-
-### Usage
-
-```typescript
-import { SCAN_CACHE } from '@coderef/core';
-
-// Check if file is in cache
-const cached = SCAN_CACHE.get('/project/src/file.ts');
-if (cached && cached.mtimeMs === currentMtime) {
-  return cached.elements; // Use cached result
-}
-
-// Store in cache after scanning
-SCAN_CACHE.set(filePath, { mtimeMs, elements });
-```
-
-### Note
-
-`SCAN_CACHE` is primarily for internal use. For persistent caching across sessions, use `IncrementalCache`.
-
-**ElementData Interface** (Extended with Phase 4 fields):
-```typescript
-interface ElementData {
-  type: 'function' | 'class' | 'component' | 'hook' | 'method' | 'constant' | 'interface' | 'type' | 'decorator' | 'property' | 'unknown';
-  name: string;
-  file: string;
-  line: number;
-  exported?: boolean;
-  parameters?: string[];
-  calls?: string[]; // Functions/methods called by this element
-
-  // Phase 4: Relationship Tracking
-  imports?: Array<{
-    source: string;          // Module path (e.g., './utils', 'react')
-    specifiers?: string[];   // Named imports (e.g., ['useState', 'useEffect'])
-    default?: string;        // Default import name
-    namespace?: string;      // Namespace import (e.g., import * as React)
-    dynamic?: boolean;       // True for dynamic import() calls (Phase 5)
-    line: number;            // Line number of import
-  }>;
-  dependencies?: string[];   // Resolved module/file paths
-  calledBy?: string[];       // Elements that call this element
-}
-```
-
-**Phase 4 Example - Relationship Tracking:**
-```typescript
-import { scanCurrentElements } from 'coderef-core';
-
-// Scan with import and call tracking
-const elements = await scanCurrentElements('./src', 'ts', {
-  useAST: true, // Required for relationship tracking
-  recursive: true
-});
-
-// Elements now include imports and calls
-console.log(elements[0]);
-/*
-{
-  type: "function",
-  name: "processData",
-  file: "src/utils/data.ts",
-  line: 10,
-  exports: true,
-  imports: [
-    { source: "lodash", specifiers: ["map", "filter"], line: 1 },
-    { source: "./validator", default: "validate", line: 2 },
-    { source: "./module", dynamic: true, line: 15 }  // Dynamic import()
-  ],
-  calls: ["validate", "map", "filter"],
-  calledBy: ["main", "handler"]
-}
-*/
-```
-
-**Phase 5 Example - Progress Reporting:**
-```typescript
-import { scanCurrentElements } from 'coderef-core';
-
-// Track progress during scan
-await scanCurrentElements('./src', ['ts', 'tsx'], {
-  useAST: true,
-  recursive: true,
-  onProgress: (progress) => {
-    console.log(`[${progress.percentComplete}%] ${progress.currentFile}`);
-    console.log(`  Processed: ${progress.filesProcessed}/${progress.totalFiles}`);
-    console.log(`  Elements found: ${progress.elementsFound}`);
-  }
-});
-
-// Output:
-// [25%] src/auth/login.ts
-//   Processed: 10/40
-//   Elements found: 15
-// [50%] src/models/User.ts
-//   Processed: 20/40
-//   Elements found: 28
-```
-
-**Error Response:**
-```typescript
-{
-  "error": "Directory not found: ./invalid-path",
-  "code": "DIRECTORY_NOT_FOUND",
-  "message": "Specified directory does not exist or is not accessible"
-}
-```
-
-### Utility Functions
-
-#### `normalizeCoderefPath(filePath: string): string`
-
-Normalizes file paths for consistent Coderef tag generation.
-
-**Parameters:**
-- `filePath` (string): File path to normalize
-
-**Returns:** Normalized path string
-
-**Example Request:**
-```typescript
-import { normalizeCoderefPath } from 'coderef-core/utils/fs';
-
-const normalized = normalizeCoderefPath('src\\auth\\login.ts');
-```
-
-**Example Response:**
-```typescript
-"auth/login"  // Removes src prefix, converts slashes, removes extension
-```
-
-#### `collectFiles(root: string, ext?: string | string[], exclude?: string[]): string[]`
-
-Recursively collects files with specified extensions.
-
-**Parameters:**
-- `root` (string): Root directory to search
-- `ext` (string | string[]): File extensions to include (default: 'ts')
-- `exclude` (string[]): Patterns to exclude (default: ['node_modules', 'dist', 'build'])
-
-**Returns:** Array of file paths
-
-**Example Request:**
-```typescript
-import { collectFiles } from 'coderef-core/utils/fs';
-
-const tsFiles = collectFiles('./src', ['ts', 'tsx'], ['**/*.test.*']);
-```
-
-**Example Response:**
-```typescript
-[
-  "src/auth/login.ts",
-  "src/models/User.ts",
-  "src/components/LoginForm.tsx"
-]
-```
-
-## Configuration Schemas
-
-### ScanOptions
-
-Configuration object for code scanning operations.
-
-```typescript
-interface ScanOptions {
-  include?: string | string[];     // Glob patterns for inclusion
-  exclude?: string | string[];     // Glob patterns for exclusion
-  recursive?: boolean;             // Scan subdirectories (default: true)
-  langs?: string[];               // File extensions to scan
-  customPatterns?: Array<{        // Custom element patterns
-    type: ElementData['type'],
-    pattern: RegExp,
-    nameGroup: number,
-    lang: string
-  }>;
-  includeComments?: boolean;       // Scan commented code (default: false)
-  verbose?: boolean;              // Enable debug output (default: false)
-}
-```
-
-**Default Configuration:**
-```typescript
-{
-  exclude: ['**/node_modules/**', '**/dist/**', '**/build/**'],
-  recursive: true,
-  langs: ['ts', 'js', 'tsx', 'jsx'],
-  includeComments: false,
-  verbose: false
-}
-```
-
-### DriftDetectionOptions
-
-Configuration for drift analysis operations.
-
-```typescript
-type DriftDetectionOptions = {
-  lang?: string | string[];        // Languages to analyze
-  fixThreshold?: number;           // Similarity threshold (0-1, default: 0.8)
-  verbose?: boolean;              // Debug output (default: false)
-  scanOptions?: ScanOptions;      // Nested scan configuration
-}
-```
-
-## Authentication & Authorization
-
-**Note:** Coderef Core is a client-side library operating on local file systems. No authentication is required for API access.
-
-**File System Permissions:**
-- Read access required for source directories
-- Write access required for output file generation
-- Respects operating system file permissions
-
-## Rate Limiting
-
-**File System Operations:**
-- No artificial rate limiting applied
-- Performance limited by disk I/O and CPU
-- Typical throughput: 500 files/second (regex), 250 files/second (AST)
-
-**Memory Management:**
-- Automatic garbage collection
-- Streaming file processing to limit memory usage
-- Configurable exclusion patterns to reduce scope
-
-## Error Handling
-
-### HTTP-Style Error Codes
-
-Although this is a library (not HTTP), error responses follow similar patterns:
-
-| Code | Type | Description |
-|------|------|-------------|
-| `INVALID_FORMAT` | 400-style | Malformed input data |
-| `NOT_FOUND` | 404-style | File/directory not found |
-| `PERMISSION_DENIED` | 403-style | Insufficient file permissions |
-| `INTERNAL_ERROR` | 500-style | Unexpected processing error |
-
-### Error Response Format
-
-```typescript
-interface ApiError {
-  error: string;           // Human-readable error message
-  code: string;           // Machine-readable error code
-  message?: string;       // Additional context
-  details?: any;          // Error-specific details
-}
-```
-
-### Common Error Scenarios
-
-#### Tag Parsing Errors
-
-```typescript
-// Invalid tag format
-{
-  "error": "Invalid Coderef2 tag: @lowercase/path",
-  "code": "INVALID_FORMAT",
-  "message": "Tag type must start with uppercase letter",
-  "details": {
-    "input": "@lowercase/path",
-    "expected": "@Uppercase/path"
-  }
-}
-
-// Malformed metadata
-{
-  "error": "Invalid metadata in tag: @Fn/path{invalid json}",
-  "code": "INVALID_METADATA",
-  "message": "Metadata must be valid JSON or key=value pairs",
-  "details": {
-    "metadata": "invalid json",
-    "suggestion": "Use {\"key\":\"value\"} or key=value format"
-  }
-}
-```
-
-#### Scanning Errors
-
-```typescript
-// Directory access error
-{
-  "error": "Cannot access directory: /restricted/path",
-  "code": "PERMISSION_DENIED",
-  "message": "Insufficient permissions to read directory",
-  "details": {
-    "path": "/restricted/path",
-    "permissions": "r--"
-  }
-}
-
-// File processing error
-{
-  "error": "Failed to process file: corrupted.ts",
-  "code": "PROCESSING_ERROR",
-  "message": "File contains invalid UTF-8 sequences",
-  "details": {
-    "file": "src/corrupted.ts",
-    "encoding": "invalid"
-  }
-}
-```
-
-## Pagination
-
-**File System Operations:**
-- No explicit pagination for directory scanning
-- Files processed in batches for memory efficiency
-- Results returned as complete arrays
-
-**Large Dataset Handling:**
-```typescript
-// For very large codebases, consider processing in chunks
-const processInChunks = async (dir: string) => {
-  const subdirs = fs.readdirSync(dir, { withFileTypes: true })
-    .filter(entry => entry.isDirectory())
-    .map(entry => entry.name);
-
-  const results = [];
-  for (const subdir of subdirs) {
-    const elements = await scanCurrentElements(path.join(dir, subdir));
-    results.push(...elements);
-  }
-  return results;
-};
-```
-
-## API Usage Examples
-
-### Complete Integration Example
-
-```bash
-# cURL equivalent for file system operations
-# (Actual usage through Node.js/TypeScript)
-
-# Scan directory
-node -e "
-import { scanCurrentElements } from 'coderef-core';
-const elements = await scanCurrentElements('./src', 'ts');
-console.log(JSON.stringify(elements, null, 2));
-"
-
-# Parse tag
-node -e "
-import { parseCodeRef } from 'coderef-core';
-const parsed = parseCodeRef('@Fn/auth/login#authenticateUser:42');
-console.log(JSON.stringify(parsed, null, 2));
-"
-```
-
-### Batch Processing Example
-
-```typescript
-import { scanCurrentElements, parseCodeRef, generateCodeRef } from 'coderef-core';
-
-async function processCodebase(rootDir: string) {
-  try {
-    // 1. Scan for current elements
-    const elements = await scanCurrentElements(rootDir, ['ts', 'tsx'], {
-      recursive: true,
-      exclude: ['**/node_modules/**', '**/*.test.*']
-    });
-
-    // 2. Generate tags for each element
-    const tags = elements.map(element =>
-      generateCodeRef({
-        type: element.type === 'function' ? 'Fn' :
-              element.type === 'class' ? 'Cl' : 'C',
-        path: element.file.replace(/^src\//, '').replace(/\.(ts|tsx)$/, ''),
-        element: element.name,
-        line: element.line
-      })
-    );
-
-    // 3. Validate all generated tags
-    const validTags = tags.filter(tag => {
-      try {
-        parseCodeRef(tag);
-        return true;
-      } catch (error) {
-        console.warn(`Invalid generated tag: ${tag}`);
-        return false;
-      }
-    });
-
-    return {
-      elementsFound: elements.length,
-      tagsGenerated: tags.length,
-      validTags: validTags.length,
-      tags: validTags
-    };
-
-  } catch (error) {
-    throw {
-      error: "Batch processing failed",
-      code: "BATCH_ERROR",
-      message: error.message,
-      details: { rootDir }
-    };
-  }
-}
-```
-
-### Error Handling Example
-
-```typescript
-import { scanCurrentElements, parseCodeRef } from 'coderef-core';
-
-async function safeCodeAnalysis(dir: string, tags: string[]) {
-  const results = {
-    elements: [],
-    parsedTags: [],
-    errors: []
-  };
-
-  // Safe scanning with error recovery
-  try {
-    results.elements = await scanCurrentElements(dir, 'ts', { verbose: false });
-  } catch (error) {
-    results.errors.push({
-      operation: 'scan',
-      error: error.message,
-      code: 'SCAN_FAILED'
-    });
-  }
-
-  // Safe tag parsing with individual error handling
-  for (const tag of tags) {
-    try {
-      const parsed = parseCodeRef(tag);
-      results.parsedTags.push(parsed);
-    } catch (error) {
-      results.errors.push({
-        operation: 'parse',
-        input: tag,
-        error: error.message,
-        code: 'PARSE_FAILED'
-      });
-    }
-  }
-
-  return results;
-}
-```
-
-## Performance Benchmarks
-
-### Response Time Metrics
-
-| Operation | Input Size | Average Time | Memory Usage |
-|-----------|------------|--------------|--------------|
-| `parseCodeRef()` | Single tag | <1ms | <1KB |
-| `generateCodeRef()` | Single object | <1ms | <1KB |
-| `extractCodeRefs()` | 1KB text | <5ms | <10KB |
-| `scanCurrentElements()` | 100 files | <200ms | <10MB |
-| `scanCurrentElements()` | 1000 files | <2s | <50MB |
-
-### Throughput Benchmarks
-
-```typescript
-// Performance testing example
-import { performance } from 'perf_hooks';
-
-async function benchmarkScanning(dir: string) {
-  const start = performance.now();
-  const elements = await scanCurrentElements(dir, 'ts');
-  const end = performance.now();
-
-  return {
-    elementsFound: elements.length,
-    processingTime: `${(end - start).toFixed(2)}ms`,
-    throughput: `${(elements.length / (end - start) * 1000).toFixed(0)} elements/second`
-  };
-}
-```
+## 6. CLI entry points
+
+The package binaries (`bin` in `package.json`) are the stable CLI surface:
+
+| CLI | Entry | Notes |
+|-----|-------|-------|
+| `populate-coderef` | `src/cli/populate.ts` | Phase 6 chokepoint — runs pipeline → validation gate. Honors `--strict-headers`. |
+| `coderef-scan` | `src/cli/scan.ts` | Legacy / regex scanner |
+| `coderef-pipeline` | `src/cli/coderef-pipeline.ts` | Pipeline runner |
+| `coderef-watch` | `src/cli/coderef-watch.ts` | File watcher |
+| `coderef-rag-server` | `src/cli/coderef-rag-server.ts` | RAG HTTP server |
+| `rag-index` | `src/cli/rag-index.ts` | Phase 7 indexer; reads `.coderef/validation-report.json`, refuses on `ok=false`. Exit codes: success→0, partial→0+stderr, failed→non-zero. |
+| `rag-search` | `src/cli/rag-search.ts` | Phase 7 query CLI; supports `--layer` and `--capability` filters. |
+| `rag-status` | `src/cli/rag-status.ts` | Health check |
+| `validate-routes` | `src/cli/validate-routes.ts` | Frontend-call vs. server-route validator (route-validation track, not the pipeline validator) |
+| `scan-frontend-calls` | `src/cli/scan-frontend-calls.ts` | Frontend API call detection |
+
+See [docs/CLI.md](./CLI.md) for full per-flag CLI reference and [docs/rag-http-api.md](./rag-http-api.md) for the RAG server HTTP endpoints.
 
 ---
 
-**API Documentation Generated by:** AI Code Analysis System
-**Last Updated:** 2025-09-17T12:00:00Z
-**Generated with:** [Claude Code](https://claude.ai/code)
+## What NOT to import
 
-*This API reference provides complete programmatic access to semantic code reference management. All endpoints support both synchronous and asynchronous operation patterns for flexible integration with existing development workflows.*
+- `src/pipeline/types.ts → PipelineState` — internal pipeline plumbing, not for downstream consumers. Read the exported artifacts instead (`ExportedGraph` from `src/export/graph-exporter.ts`, `ValidationResult` from `validatePipelineState`, `IndexingResult` from the indexing orchestrator).
+- `src/integration/rag/__internal/*` — adapter shims and queue scaffolding that are not API.
+- `src/scanner/standalone-scanner.ts` (or similar) — legacy fallback paths kept for migration; new code uses `PipelineOrchestrator`.
+- Anything under `src/integration/vector/__tests__/` — fixtures and mocks.
+
+---
+
+## Cross-references
+
+- [docs/SCHEMA.md](./SCHEMA.md) — full schema reference (scanner, relationship, resolution, graph, validation, indexing)
+- [docs/HEADER-GRAMMAR.md](./HEADER-GRAMMAR.md) — `@coderef-semantic:1.0.0` BNF mirror
+- [docs/CLI.md](./CLI.md) — CLI flag reference
+- [docs/rag-http-api.md](./rag-http-api.md) — RAG HTTP server contract
+- [/AGENTS.md](../AGENTS.md) — agent usage contract (what an LLM should read vs. ignore)
+- [docs/ARCHITECTURE.md](./ARCHITECTURE.md) — high-level architecture and phase ordering
+- Phase archives: `coderef/archived/pipeline-*/ARCHIVED.md`
