@@ -1,0 +1,23 @@
+=== WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 — dual-AC static verification ===
+Graph file        : .coderef\graph.json
+Validation file   : .coderef\validation-report.json
+Total graph nodes : 2777
+
+--- AC-05a (element-grain identity) ---
+  chunksSkipped(header_status_missing) = 2415
+  graph nodes with hs=missing           = 2415
+  identity holds                        : true
+
+--- AC-05b (file-grain identity) ---
+  uniqueFiles(skipDetails).size         = 263
+  validation_report.header_missing_count = 263
+  identity holds                         : true
+
+--- Distinctness (AC-05a ≠ AC-05b) ---
+  element-grain 2415 ≠ file-grain 263 : true
+
+--- Cross-check (graph internal consistency) ---
+  files with hs=missing in graph        = 263
+  matches validation_report             : true
+
+VERDICT: PASS — AC-05a and AC-05b both hold as strict identities.

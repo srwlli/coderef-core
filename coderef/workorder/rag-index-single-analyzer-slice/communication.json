@@ -7,9 +7,10 @@
   "originating_dispatches": ["DISPATCH-2026-05-04-007 (forthcoming)"],
   "predecessor_for": null,
   "supersedes": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
-  "status": "plan_created",
-  "current_phase": 0,
-  "phase_status": "ready_to_execute",
+  "status": "complete",
+  "completed_at": "2026-05-05T21:00:00Z",
+  "current_phase": 5,
+  "phase_status": "closeout_ready",
   "plan_file": "coderef/workorder/rag-index-single-analyzer-slice/plan.json",
   "context_file": "coderef/workorder/rag-index-single-analyzer-slice/context.json",
   "analysis_file": "coderef/workorder/rag-index-single-analyzer-slice/analysis.json",
@@ -63,6 +64,27 @@
       "to": "CODEREF-CORE",
       "kind": "ruling_dual_ac_framing",
       "summary": "Ruling: (B) — dual-AC framing. AC-05 splits into AC-05a (element-grain identity ~2410===~2410) + AC-05b (file-grain identity 262===262, computed via uniqueFiles aggregation in test code). Both load-bearing, both strict, no ±10% tolerance. Zero IndexingResult schema delta — chunksSkippedDetails already exists; uniques counted in test assertion. Path 3.3 rewrites the predecessor invariant test (drops ±10% language); fixture must have multiple nodes per file to make AC-05a and AC-05b distinct. Phase 4 dynamic re-verify checks BOTH identities. Plan + analysis + communication updated; CORE resumes from Phase 1 commit 9d84677 with corrected ACs."
+    },
+    {
+      "at": "2026-05-05T22:00:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "halt_phase_4_verification_path",
+      "summary": "Phase 4 dynamic E2E rag-index hung at ~25 min (~9× chunk count due to element-grain pivot caused embedding workload to balloon). The embedding step is irrelevant to AC-05a/AC-05b (pre-embedding properties). Surfaced 3 paths: (A) wait 25 min for live run, (B) static probe (chunk→skip code path without embedding), (C) trust dual-AC vitest fixture as authoritative. Recommended (B). Standing by for ruling."
+    },
+    {
+      "at": "2026-05-05T22:05:00Z",
+      "from": "ORCHESTRATOR",
+      "to": "CODEREF-CORE",
+      "kind": "ruling_phase_4_static_probe",
+      "summary": "Ruling: (B) static probe. AC-05a/b are pre-embedding properties; running Ollama for 25 min adds no information about either identity. Dual-AC vitest fixture (affff3a) is authoritative substrate proof; static probe extends to scale proof on real data. Caveat: pin probe script + output in WO directory so future reviewers can replay."
+    },
+    {
+      "at": "2026-05-05T22:10:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_complete",
+      "summary": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 complete (closeout-ready). Static probe verify-dual-ac.mjs in WO dir reports AC-05a 2415===2415, AC-05b 263===263, distinctness 2415≠263, graph⇄validation cross-check 263===263. AC-01..AC-11 PASS. AC-12 DIVERGED (+12 net LOC vs estimated negative — AC-03/AC-04 safeguards add ~52 LOC the plan estimate didn't account for; substrate goal achieved). AC-13 deferred to SKILLS-side /close-workorder. 9 commits 9d84677..(closeout) ready to push. STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 closes via supersession at /close-workorder. Standing by for ORCHESTRATOR to dispatch SKILLS for cross-project /close-workorder."
     }
   ],
   "decisions_log": [
@@ -87,6 +109,20 @@
       "by": "ORCHESTRATOR",
       "ruling": "Path (B) — split AC-05 into AC-05a (element-grain identity) + AC-05b (file-grain identity computed via test-code uniqueFiles aggregation). Both load-bearing strict identities, no ±10% tolerance, zero IndexingResult schema delta.",
       "rationale": "(A) severs validation-report cross-component contract from Phases 0-8 (same failure mode as yesterday's Option 2). (C) sacrifices RAG retrieval quality for AC wording. (B) preserves both invariants: element-grain captures 'chunks are nodes' substrate truth; file-grain preserves canonical-baseline cross-check. Test-code aggregation operationalizes bulletproof concept #2 (executable invariants) without re-introducing a runtime aggregation seam. Net negative LOC holds (delete ~100, add ~30 src + ~5 test). CORE Phase 1 catch was sharper than the WO author's premise — the grain mismatch was hidden behind 'one graph, one identity' framing that was half-right."
+    },
+    {
+      "event": "phase_4_static_probe_ruling",
+      "at": "2026-05-05T22:05:00Z",
+      "by": "ORCHESTRATOR",
+      "ruling": "Path (B) — static probe (chunk→skip code path without embedding) replaces full live rag-index for Phase 4 dynamic verification.",
+      "rationale": "AC-05a/AC-05b are pre-embedding properties. Live Ollama run adds no information about either identity (it tests AC-08/AC-09/AC-11, all already verified). Dual-AC vitest fixture (affff3a) is authoritative substrate proof; static probe extends to scale proof on real coderef-core data. Verification cost matched to verification target. Caveat: pin probe script + captured output in WO directory."
+    },
+    {
+      "event": "ac_12_divergence_acknowledged",
+      "at": "2026-05-05T22:10:00Z",
+      "by": "CODEREF-CORE",
+      "ruling": "AC-12 (net negative LOC in src/integration/rag/*.ts) reported as DIVERGED rather than retro-shimmed.",
+      "rationale": "Plan estimated 'delete ~100, add ~30'; actual diff is 138/126 = +12 net. The +12 is structurally accountable to AC-03 missing-graph error (~14 LOC) + AC-04 stale-graph fail-loud check (~38 LOC) — both load-bearing safeguards per DR-SINGLE-SLICE-D and ORCHESTRATOR's explicit ask, both with paired tests. The substrate goal (single analyzer slice, AC-05a/b strict identity) IS achieved; LOC count is a poor proxy for substrate complexity here. Reporting truthfully so the closeout artifact and SKILLS' tracking ledger see the actual number rather than a massaged claim."
     }
   ]
 }
