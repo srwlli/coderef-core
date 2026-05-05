@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-04-040"],
   "predecessor_for": null,
-  "status": "plan_created",
-  "current_phase": 0,
-  "phase_status": "ready_to_execute",
+  "status": "complete",
+  "completed_at": "2026-05-05T22:35:00Z",
+  "current_phase": 2,
+  "phase_status": "closeout_ready",
   "plan_file": "coderef/workorder/cleanup-indexing-orchestrator-analyzerservice-param/plan.json",
   "context_file": "coderef/workorder/cleanup-indexing-orchestrator-analyzerservice-param/context.json",
   "analysis_file": "coderef/workorder/cleanup-indexing-orchestrator-analyzerservice-param/analysis.json",
@@ -47,6 +48,13 @@
       "to": "ORCHESTRATOR",
       "kind": "wo_authored",
       "summary": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001 authored under DISPATCH-040 (low priority, post-rebuild + post-bulletproof-pivot-1 maintenance). Plan_type=simple_implementation; 2 atomic commits planned (production then test); 12 ACs; net negative ~-15 LOC target. Predecessor WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 ARCHIVED.md confirmed three callsites at scoping time. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for execution."
+    },
+    {
+      "at": "2026-05-05T22:35:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_complete",
+      "summary": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001 complete (closeout-ready). Two atomic commits landed: bc19e12 (C1: production cleanup, -6 net LOC across indexing-orchestrator.ts + rag-index.ts) + 11cb000 (C2: test cleanup, -60 net LOC across 4 test fixtures). Total -66 net LOC, exceeds plan's -15 target. AC-01..AC-09 PASS, AC-10 PASS, AC-11 deferred to /close-workorder, AC-12 deferred to /close-workorder. Plan estimated 1 test fixture; actual scope was 4 test files (predecessor WO grep had not surfaced makeOrchestrator helpers in __tests__/pipeline/ + __tests__/integration/rag/ — but fixing them was the same mechanical edit). Three regression-sentinel `analyzerService.analyze).not.toHaveBeenCalled()` assertions deleted per DR-CLEANUP-B (the field they referenced no longer exists). Verification: tsc clean both configs; vitest 263/264 PASS (1 pre-existing baseline failure: chunk-converter:243 maxSourceCodeLength, unrelated, documented in predecessor WO closeout); graph-ground-truth 6/6 PASS; verify-dual-ac.mjs static probe AC-05a 2415===2415 + AC-05b 263===263 PASS (substrate identity preserved). 2 commits ready to push. Standing by for ORCHESTRATOR to dispatch SKILLS for cross-project /close-workorder."
     }
   ],
   "decisions_log": [
@@ -55,6 +63,13 @@
       "at": "2026-05-05T23:00:00Z",
       "by": "SKILLS via /create-workorder (DISPATCH-040)",
       "rationale": "DISPATCH-040 dispatch payload directed plan_type=simple_implementation (no investigation phase; mechanical cleanup). Predecessor WO already documented dependency surface exhaustively, so SKILLS authored full plan + analysis + context + communication directly rather than seeding a partial plan deferred to ORCHESTRATOR (the DISPATCH-038 / WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 pattern). Full /create-workorder Step 4-7 chain ran."
+    },
+    {
+      "event": "test_scope_expansion_acknowledged",
+      "at": "2026-05-05T22:35:00Z",
+      "by": "CODEREF-CORE",
+      "ruling": "Plan T2.1 named only src/integration/rag/__tests__/integration/indexing-pipeline.test.ts but the audit clause ('any other test in src/integration/rag/__tests__/ that constructs IndexingOrchestrator with analyzerService — same edit treatment if found') broadened naturally to three sibling fixtures: __tests__/pipeline/indexing-gate-invariant.test.ts (makeOrchestrator + dual-AC), __tests__/integration/rag/indexing-orchestrator.test.ts, __tests__/integration/rag/indexing-orchestrator-graph-source.test.ts. Same surgical edit applied to all four; tsc + vitest gates ran identically.",
+      "rationale": "T2.1 audit language was authored to catch exactly this case. Scope expansion stays inside DR-CLEANUP-A (test cleanup is one commit); LOC count exceeds plan target net negative which is the explicit AC-08 direction; no boundary violation (all four files are in the explicit boundary src/integration/rag/* + __tests__/, no src/cli/ second touch). Regression-sentinel assertion deletion (3 sites) is the spirit of DR-CLEANUP-B applied uniformly — the field is gone, so any expect on it was already false-positive surface."
     }
   ]
 }
