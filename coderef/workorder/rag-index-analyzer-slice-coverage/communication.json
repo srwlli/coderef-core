@@ -1,0 +1,85 @@
+{
+  "workorder_id": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+  "feature_name": "rag-index-analyzer-slice-coverage",
+  "created": "2026-05-05T05:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-04-038"],
+  "predecessor_for": null,
+  "status": "pending_plan",
+  "current_phase": 0,
+  "phase_status": "scoping",
+  "plan_file": null,
+  "context_file": "coderef/workorder/rag-index-analyzer-slice-coverage/context.json",
+  "analysis_file": null,
+  "stub_source": "coderef/stubs/STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001.md",
+  "predecessor_workorder": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001",
+  "predecessor_archive": "coderef/archived/indexing-orchestrator-path-normalization-fix",
+  "handoff": {
+    "from": "SKILLS (DISPATCH-038, /create-workorder scoping seed)",
+    "to": "ORCHESTRATOR (Option 1 vs Option 2 ruling)",
+    "reason": "Stub and dispatch payload both direct ORCHESTRATOR to rule on Option 1 (expand rag-index analyzer coverage) vs Option 2 (change AC-09 measurement basis) BEFORE plan.json is authored. /create-workorder seeded the WO directory + context.json + this communication.json; ORCHESTRATOR authors plan.json + analysis.json post-ruling, then dispatches CODEREF-CORE for execution."
+  },
+  "execution_rules": {
+    "plan_type": "DEFERRED",
+    "phase_gates": "TBD post-ruling",
+    "atomic_commits": "TBD post-ruling",
+    "tsc_invariant": "tsc --noEmit must remain clean both configs (tsconfig.json + tsconfig.cli.json) — invariant carries forward from predecessor WO"
+  },
+  "hard_constraints": [
+    "Phase 7 archive MUST NOT be reopened (rebuild is COMPLETE)",
+    "No new field on IndexingResult schema (DR-PHASE-7-B locked additive)",
+    "No new SkipReason values",
+    "Predecessor WO archive (indexing-orchestrator-path-normalization-fix) stays CLOSED with AC-02 DIVERGED — must NOT be reopened",
+    "Cultural validator scope-mode + tracking validator scope-mode must PASS clean (5-4 calendar-current routing)"
+  ],
+  "scope_decision_required": {
+    "decision": "Option 1 (expand rag-index analyzer coverage) vs Option 2 (change AC-09 measurement basis to rag-index-own analyzer file count)",
+    "ruling_authority": "ORCHESTRATOR",
+    "ruling_required_before": "plan.json + analysis.json authorship",
+    "trade_offs_summary": {
+      "option_1_expand_coverage": {
+        "summary": "Adjust rag-index analyzerService.analyze(...) and/or ChunkConverter filter chain so every file in .coderef/graph.json with element-grain metadata produces at least one chunk (target: 262/262 reachable).",
+        "pro": "Restores ±10% AC-09 alignment without bending metric. Future RAG covers type-only modules + __tests__/ files (arguably belong in retrieval).",
+        "con": "+47 files × N elements/file. Embedding cost rises. Index size rises. Some test files may add noise.",
+        "risk": "Latent ChunkConverter bugs may surface when expanded coverage hits previously-untested chunk shapes.",
+        "blast_radius_estimate": "src/integration/rag/indexing-orchestrator.ts (analyzer invocation site ~L367) + src/integration/rag/chunk-converter.ts filter chain"
+      },
+      "option_2_change_metric_basis": {
+        "summary": "Redefine AC-09 alignment so chunksSkipped(header_status_missing) is compared to count of missing-header files that ALSO appear in rag-index's analyzer graph (NOT to validation-report.header_missing_count).",
+        "pro": "Honest within-rag-index consistency check. Zero src/ change inside rag-index/ChunkConverter.",
+        "con": "Splits header_missing_count into 'populate-coderef view' and 'rag-index view' — two canonical numbers future agents must reconcile. AC-09 becomes within-rag-index check, not end-to-end pipeline check.",
+        "risk": "Weakens 'measure against shipped validation-report.json' contract that ORCHESTRATOR has consistently invoked.",
+        "blast_radius_estimate": "AC-09 specification document + validation-report consumer code paths (no src/ inside rag-index)"
+      }
+    }
+  },
+  "blockers": [
+    {
+      "id": "BLOCK-OPTION-RULING",
+      "description": "ORCHESTRATOR ruling on Option 1 vs Option 2 is required before plan.json + analysis.json can be authored",
+      "blocked_step": "Step 6 of /create-workorder (plan.json authorship)",
+      "raised_at": "2026-05-05T05:00:00Z",
+      "raised_by": "SKILLS (/create-workorder scoping seed)"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-05T05:00:00Z",
+      "from": "SKILLS",
+      "to": "ORCHESTRATOR",
+      "kind": "scoping_seed_authored",
+      "summary": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 directory seeded with context.json + communication.json under DISPATCH-038. Status=pending_plan; plan.json + analysis.json deferred per stub+dispatch direction. Option 1 vs Option 2 ruling owed by ORCHESTRATOR before scoping completes. Block raised: BLOCK-OPTION-RULING."
+    }
+  ],
+  "decisions_log": [
+    {
+      "event": "scoping_seed_authored",
+      "at": "2026-05-05T05:00:00Z",
+      "by": "create-workorder@2.4.0 (SKILLS via DISPATCH-038)",
+      "rationale": "Stub Section 'Two scope options for the follow-up WO (NOT prescriptive)' explicitly states the WO must pick ONE option BEFORE any plan.json is authored. Dispatch-038 payload reinforces: 'ORCHESTRATOR rules on Option 1 vs Option 2 BEFORE plan.json is finalized.' Seeded context.json + communication.json (status=pending_plan) and surfaced the decision in scope_decision_required block; deferred plan.json + analysis.json per direction."
+    }
+  ]
+}

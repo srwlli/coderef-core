@@ -1,0 +1,82 @@
+{
+  "workorder_id": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+  "feature_name": "rag-index-analyzer-slice-coverage",
+  "created": "2026-05-05T05:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-04-038",
+  "intake": {
+    "trigger": "stub_scoping_dispatch",
+    "user_request": "Scope STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 (the 47-file analyzer-slice coverage gap surfaced during DISPATCH-037 post-fix dynamic re-verification, after WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 closed AC-02 DIVERGED) into a CORE-side follow-up WO. The stub explicitly defers Option 1 vs Option 2 selection to ORCHESTRATOR before plan.json is authored.",
+    "stub_id": "STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+    "stub_path": "coderef/stubs/STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001.md",
+    "predecessor_wo": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 (closed 2026-05-05T04:30Z, archive commit 4827b61)",
+    "predecessor_stub": "STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001"
+  },
+  "classification": {
+    "plan_type": "DEFERRED",
+    "plan_type_rationale": "ORCHESTRATOR ruling on Option 1 (expand rag-index analyzer coverage) vs Option 2 (change AC-09 measurement basis to rag-index-own analyzer file count) is a hard prerequisite per stub and dispatch payload. plan_type cannot be classified until the option is selected because the two options have materially different blast radii (Option 1 touches src/integration/rag/indexing-orchestrator.ts + ChunkConverter; Option 2 touches validation-report consumers only).",
+    "plan_type_decided_by": "ORCHESTRATOR (pending)",
+    "discovery_ref": null,
+    "discovery": null,
+    "discovery_skipped_reason": "discovery requires plan_type which requires option selection which requires ORCHESTRATOR ruling"
+  },
+  "scope": {
+    "in_scope": "TBD post-ruling. Both options share: AC reaching ±10% AC-09 dynamic alignment; no Phase 7 archive reopen; no IndexingResult schema delta; no new SkipReason values.",
+    "out_of_scope": [
+      "Phase 7 archive of WO-PIPELINE-INDEXING-RAG-001 — locked, must NOT be reopened",
+      "Predecessor WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 archive — closed AC-02 DIVERGED, must NOT be reopened",
+      "IndexingResult schema additions",
+      "New SkipReason enum values"
+    ],
+    "scope_decision_required": {
+      "decision": "Option 1 vs Option 2 (see stub Section 'Two scope options for the follow-up WO')",
+      "ruling_authority": "ORCHESTRATOR",
+      "ruling_required_before": "plan.json authorship (Step 6 of /create-workorder)",
+      "options": {
+        "option_1_expand_coverage": {
+          "summary": "Adjust rag-index analyzerService.analyze(...) and/or ChunkConverter filter chain so every file in .coderef/graph.json with element-grain metadata produces at least one chunk.",
+          "pro": "Restores ±10% AC-09 alignment without bending metric. Future RAG covers type-only modules + __tests__/ files.",
+          "con": "+47 files × N elements/file. Embedding cost rises. Index size rises. Some test files may add noise.",
+          "risk": "Latent ChunkConverter bugs may surface when expanded coverage hits previously-untested chunk shapes."
+        },
+        "option_2_change_metric_basis": {
+          "summary": "Redefine AC-09 alignment so chunksSkipped(header_status_missing) is compared to count of missing-header files that ALSO appear in rag-index's analyzer graph (NOT to validation-report.header_missing_count).",
+          "pro": "Honest within-rag-index consistency check. Zero src/ change inside rag-index/ChunkConverter.",
+          "con": "Splits header_missing_count into 'populate-coderef view' and 'rag-index view' — two canonical numbers future agents must reconcile.",
+          "risk": "Weakens 'measure against shipped validation-report.json' contract that ORCHESTRATOR has consistently invoked."
+        }
+      }
+    }
+  },
+  "constraints": [
+    "Phase 7 archive MUST NOT be reopened (rebuild is COMPLETE per DISPATCH-035, 2026-05-05T01:50Z)",
+    "No new field on IndexingResult schema (DR-PHASE-7-B locked additive)",
+    "No new SkipReason values (existing header_status_missing fires correctly)",
+    "Predecessor WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 stays CLOSED with AC-02 DIVERGED — its archive must NOT be reopened",
+    "Cultural validator scope-mode + tracking validator scope-mode must PASS clean",
+    "Session routing: daily-agent-session-2026-05-04 (5-4 calendar-current)"
+  ],
+  "evidence_summary": {
+    "ac_09_observed": "215 chunks correctly skipped of 262 missing-header files (gap = 47, gap_pct = 17.9%)",
+    "ac_09_expected_band": "236 ≤ x ≤ 288 (±10% of 262)",
+    "structural_root_cause": "populate-coderef writes graph.json from full Phase 1 + 2.5 + 5 element-grain scan (360 files seen, 262 with headerStatus=missing). rag-index invokes analyzerService.analyze(['./**/*.ts','./**/*.tsx','./**/*.js','./**/*.jsx','./**/*.py'], false) producing 2009 nodes covering ~215 of those 262 files. The 47-file shortfall consists primarily of type-only modules (no functions/classes for analyzer's element extractor to anchor on) and __tests__/ files (likely filtered by analyzer settings).",
+    "concrete_examples_from_47_residual": [
+      "src/analyzer/js-call-detector/types.ts",
+      "src/integration/rag/code-chunk.ts",
+      "src/pipeline/header-fact.ts",
+      "src/integration/rag/__tests__/chunk-converter.test.ts",
+      "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts"
+    ],
+    "static_check_passes": "node check on .coderef/graph.json directly returns 262 — Phase 1 + 2.5 + 5 + 6 (validation-report) are internally consistent. Mismatch is in rag-index → ChunkConverter coverage shrink.",
+    "probe_scripts": [
+      "coderef/archived/indexing-orchestrator-path-normalization-fix/diff-skipped.mjs",
+      "coderef/archived/indexing-orchestrator-path-normalization-fix/probe-analyzer.mjs"
+    ]
+  },
+  "pending_artifacts": {
+    "analysis_json": "Deferred — authored by ORCHESTRATOR after Option 1 vs Option 2 ruling",
+    "plan_json": "Deferred — authored by ORCHESTRATOR after Option 1 vs Option 2 ruling",
+    "communication_json": "Authored at scoping seed (status=pending_plan)"
+  }
+}
