@@ -516,15 +516,18 @@ export class IndexingOrchestrator {
           }
         }
 
+        const absBasePath = pathMod.resolve(this.basePath).replace(/\\/g, '/');
         const normalizeChunkFile = (file: string): string => {
-          let f = file.replace(/\\/g, '/');
-          // strip absolute basePath prefix if present so we can match
-          // the relative POSIX path graph.json uses
-          const baseRel = this.basePath.replace(/\\/g, '/').replace(/\/$/, '');
-          if (f.toLowerCase().startsWith(baseRel.toLowerCase() + '/')) {
-            f = f.slice(baseRel.length + 1);
+          // Peel any 'file:' URI prefix that upstream chunk producers
+          // may have left attached, then normalize separators.
+          let raw = file.startsWith('file:') ? file.slice('file:'.length) : file;
+          raw = raw.replace(/\\/g, '/');
+          // Absolute chunk paths get reduced to their basePath-relative
+          // POSIX form so they line up with graph.json node.file keys.
+          if (pathMod.isAbsolute(raw)) {
+            return pathMod.relative(absBasePath, raw).replace(/\\/g, '/');
           }
-          return f;
+          return raw;
         };
 
         for (const chunk of chunks) {
