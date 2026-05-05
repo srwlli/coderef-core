@@ -1,0 +1,77 @@
+{
+  "workorder_id": "WO-PIPELINE-INDEXING-RAG-001",
+  "feature_name": "pipeline-indexing-rag",
+  "created": "2026-05-04T15:00:00Z",
+  "owner_domain": "CORE",
+  "target_project": "coderef-core",
+  "target_project_dir": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+  "originating_dispatches": ["DISPATCH-2026-05-04-001"],
+  "session_id": "daily-agent-session-2026-05-04",
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": null,
+  "phase_status": "completed",
+  "completed_at": "2026-05-04T22:50:00Z",
+  "closed_at": "2026-05-05T00:35:00Z",
+  "updated": "2026-05-05T00:35:00Z",
+  "phase_number": 7,
+  "phase_label": "indexing/RAG",
+  "pipeline_rebuild_total_phases": 9,
+  "predecessor_phase_close": "1e7f6f6 (Phase 6 close)",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/archived/pipeline-indexing-rag/ARCHIVED.md",
+    "review_verdict_source": "DISPATCH-2026-05-04-033 audit (cultural 11/11 PASS, tracking 15/15 PASS)",
+    "warnings": [],
+    "implementation_summary": "Phase 7 (indexing/RAG) of 9-phase coderef-core pipeline rebuild. Adds CodeChunk + IndexingResult facets (layer/capability/constraints/headerStatus), ChunkConverter switched to ExportedGraph (Phase 5 canonical) with facet propagation via additive metadata copy in buildNodes. Validation gate refuses indexing on validation-report ok=false. Path A worst-severity file-grain aggregation with 0% divergence vs header_missing_count baseline (262=262). Status field replaces silent-success on chunksIndexed=0. Per-entry chunksSkippedDetails / chunksFailedDetails with reason enums. --layer / --capability filter flags on rag-search. Boundary enforcer swap (no-rag-indexing → no-phase-8-docs-leak).",
+    "commits": [
+      "63da6ae feat(rag): structural foundation - CodeChunk/IndexingResult facets + ChunkConverter + GraphBuilder propagation",
+      "385e9f8 feat(rag): validation gate + Path A facet aggregation + status field + per-entry reasons + --layer/--capability filters",
+      "1cc1380 test(rag): Phase 7 invariants, AC-01..09 coverage, boundary enforcer swap",
+      "2c02878 docs(workorder, baselines): Phase 7 workorder + closeout + validation-report baseline"
+    ],
+    "implementation_commit_range": "63da6ae..2c02878",
+    "push_range": "1e7f6f6..2c02878",
+    "remote": "origin/main (CODEREF-CORE)",
+    "branch": "main",
+    "pushed": true,
+    "validation_report": {
+      "valid_edge_count": 3464,
+      "header_missing_count": 262,
+      "header_defined_count": 0,
+      "header_stale_count": 0,
+      "header_partial_count": 0,
+      "header_layer_mismatch_count": 0,
+      "header_export_mismatch_count": 0,
+      "ac_09_alignment": "Path A file-grain worst-severity aggregation: 262/262 (0% divergence)"
+    },
+    "tests": {
+      "ground_truth": "6/6 PASS (AC-11)",
+      "phase_7_surface": "29/29 PASS across 6 test files (indexing-gate-invariant, graph-construction-facet-propagation, no-phase-8-docs-leak, indexing-orchestrator AC-01..06, facet-filter)",
+      "broader_pipeline_rag": "177/178 PASS (1 pre-existing pipeline-snapshot baseline failure, not Phase 7 introduced)",
+      "tsc": "clean both configs",
+      "acceptance_criteria": "AC-01 through AC-11 all PASS"
+    },
+    "decision_records_honored": ["DR-PHASE-7-A", "DR-PHASE-7-B", "DR-PHASE-7-C", "DR-PHASE-7-D", "DR-PHASE-7-E"],
+    "halt_points_triggered": [
+      "Task 1.1 R-PHASE-7-G — GraphNode facet propagation gap. ORCHESTRATOR ruling: Option 3 (additive metadata copy in Phase 5 buildNodes; chunk-converter switches to ExportedGraph). Resolved via task 1.1.5 amendment."
+    ],
+    "stubs_filed_during_phase_7": [],
+    "validators": {
+      "cultural_scope_mode": "PASS 11/11 (scope=WO-PIPELINE-INDEXING-RAG-001)",
+      "tracking_pre_archive": "PASS 15/15",
+      "tracking_post_archive": "(see Step 16.5 in close commit)"
+    },
+    "deferred_followups": [
+      "Discord #coderef-status announcement deferred — webhook still 404 (user holds credentials)"
+    ],
+    "phase_8_handoff": "Only Phase 8 (documentation) remains in 9-phase rebuild. boundary enforcer no-phase-8-docs-leak.test.ts gates that work."
+  },
+  "communication_log": [
+    {
+      "timestamp": "2026-05-05T00:35:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder under DISPATCH-2026-05-04-033. Cross-project close: target=CODEREF-CORE. Audit PASS (cultural 11/11, tracking 15/15). 4 atomic commits 63da6ae..2c02878 pushed origin/main (push range 1e7f6f6..2c02878). Phase 7 surface 29/29 PASS, ground-truth 6/6 PASS, AC-01..AC-11 all PASS, validation-report 262/262 Path A alignment. Archived coderef/workorder/pipeline-indexing-rag → coderef/archived/pipeline-indexing-rag."
+    }
+  ]
+}

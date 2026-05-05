@@ -378,11 +378,11 @@ Task 1.16 RESOLVED. Proceeding to atomic commits + push + closeout (tasks 1.22-1
 - `63da6ae` — feat(rag): Phase 7 structural foundation - CodeChunk/IndexingResult facets + ChunkConverter + GraphBuilder propagation
 - `385e9f8` — feat(rag): Phase 7 validation gate + Path A facet aggregation + status field + per-entry reasons + --layer/--capability filters
 - `1cc1380` — test(rag): Phase 7 invariants, AC-01..09 coverage, boundary enforcer swap
-- `<DOCS_COMMIT_SHA>` — docs(workorder, baselines): Phase 7 workorder + closeout + validation-report baseline
+- `2c02878` — docs(workorder, baselines): Phase 7 workorder + closeout + validation-report baseline
 
 Predecessor (Phase 6 archive): `1e7f6f6`
-Phase 7 implementation range: `1e7f6f6..<DOCS_COMMIT_SHA>` (4 atomic commits)
-Push range: `1e7f6f6..<DOCS_COMMIT_SHA>` to `origin/main`
+Phase 7 implementation range: `1e7f6f6..2c02878` (4 atomic commits)
+Push range: `1e7f6f6..2c02878` to `origin/main`
 
 ### Validation-report baseline (post-Path-A)
 
