@@ -566,125 +566,14 @@ export class IndexingOrchestrator {
         throw new Error('Non-analyzer mode not yet implemented');
       }
 
-      // Phase 7 task 1.6 — facet enrichment from canonical ExportedGraph
-      // (per ORCHESTRATOR Option 3 ruling). The canonical Phase 5 graph
-      // at .coderef/graph.json (written by populate-coderef) carries
-      // ElementData semantic facets via the task 1.1.5 buildNodes
-      // amendment.
-      //
-      // Path A (worst-severity-wins file-grain aggregation): chunks
-      // produced by AnalyzerService are file-grain (id='file:<path>'),
-      // but ElementData facets attach at element-grain (per fn/class).
-      // We aggregate element-grain facets to file-grain by joining on
-      // node.file (relative POSIX) and computing the worst-severity
-      // headerStatus per file (missing > stale > partial > defined).
-      // Layer/capability are propagated only when all metadata-bearing
-      // elements in a file agree; constraints are unioned. Files with
-      // zero metadata-bearing elements receive no facets and proceed
-      // to indexing normally (no spurious skip).
-      try {
-        const fs = await import('fs/promises');
-        const graphJsonPath = pathMod.join(
-          this.basePath,
-          '.coderef',
-          'graph.json',
-        );
-        const raw = await fs.readFile(graphJsonPath, 'utf-8');
-        const exportedGraph = JSON.parse(raw) as {
-          nodes?: Array<{
-            id?: string;
-            file?: string;
-            metadata?: Record<string, unknown>;
-          }>;
-        };
-
-        type FileFacets = {
-          layer?: string;
-          layerConflict?: boolean;
-          capability?: string;
-          capabilityConflict?: boolean;
-          constraints?: Set<string>;
-          headerStatus?: 'defined' | 'missing' | 'stale' | 'partial';
-        };
-        const facetByFile = new Map<string, FileFacets>();
-
-        const headerSeverity: Record<string, number> = {
-          defined: 0,
-          partial: 1,
-          stale: 2,
-          missing: 3,
-        };
-
-        for (const n of exportedGraph.nodes ?? []) {
-          if (typeof n.file !== 'string') continue;
-          const meta = n.metadata ?? {};
-          // skip pure file-grain entries that lack element metadata
-          const hasFacet =
-            typeof meta.layer === 'string' ||
-            typeof meta.capability === 'string' ||
-            Array.isArray(meta.constraints) ||
-            typeof meta.headerStatus === 'string';
-          if (!hasFacet) continue;
-
-          const key = n.file.replace(/\\/g, '/');
-          let f = facetByFile.get(key);
-          if (!f) {
-            f = {};
-            facetByFile.set(key, f);
-          }
-
-          if (typeof meta.layer === 'string') {
-            if (f.layer === undefined) f.layer = meta.layer;
-            else if (f.layer !== meta.layer) f.layerConflict = true;
-          }
-          if (typeof meta.capability === 'string') {
-            if (f.capability === undefined) f.capability = meta.capability;
-            else if (f.capability !== meta.capability)
-              f.capabilityConflict = true;
-          }
-          if (Array.isArray(meta.constraints)) {
-            if (!f.constraints) f.constraints = new Set();
-            for (const c of meta.constraints as unknown[]) {
-              if (typeof c === 'string') f.constraints.add(c);
-            }
-          }
-          const hs = meta.headerStatus;
-          if (
-            hs === 'defined' ||
-            hs === 'missing' ||
-            hs === 'stale' ||
-            hs === 'partial'
-          ) {
-            const cur = f.headerStatus;
-            if (cur === undefined || headerSeverity[hs] > headerSeverity[cur]) {
-              f.headerStatus = hs;
-            }
-          }
-        }
-
-        for (const chunk of chunks) {
-          const key = normalizeChunkFileForGraphJoin(chunk.file, this.basePath);
-          const f = facetByFile.get(key);
-          if (!f) continue;
-          if (f.layer !== undefined && !f.layerConflict && chunk.layer === undefined)
-            chunk.layer = f.layer;
-          if (
-            f.capability !== undefined &&
-            !f.capabilityConflict &&
-            chunk.capability === undefined
-          )
-            chunk.capability = f.capability;
-          if (f.constraints && f.constraints.size > 0 && chunk.constraints === undefined)
-            chunk.constraints = Array.from(f.constraints);
-          if (f.headerStatus !== undefined && chunk.headerStatus === undefined)
-            chunk.headerStatus = f.headerStatus;
-        }
-      } catch {
-        // .coderef/graph.json not present or unreadable — fall through
-        // with no enrichment. populate-coderef must run first to give
-        // the canonical element-grain facets; without it chunks index
-        // without facets but the run still succeeds.
-      }
+      // WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 — facet enrichment block
+      // deleted. Chunks now come from the same .coderef/graph.json that
+      // carries the element-grain facets, so ChunkConverter.convertNode
+      // (chunk-converter.ts L153-201) propagates layer/capability/
+      // constraints/headerStatus inline at chunk creation time. The
+      // separate file-grain aggregation that this block performed was
+      // a Phase 7 compensation for the two-slice architecture; with one
+      // slice it is redundant.
 
       // Phase 7 task 1.7 — skip-with-reason classification for chunks
       // whose source ElementData has headerStatus in {missing, stale,
