@@ -1,6 +1,10 @@
-# CodeRef-Core Project Analysis Report
+# CodeRef-Core Project Analysis Report (ARCHIVED)
 
-**Generated:** 2026-01-17
+> **Archive banner.** This document captures the project state as it stood on 2026-01-17 (pre-rebuild analysis snapshot). Content is preserved for historical reference. For current state see [docs/ARCHITECTURE.md](../ARCHITECTURE.md), [docs/SCHEMA.md](../SCHEMA.md), and the per-phase archives at `coderef/archived/pipeline-*/`.
+
+---
+
+**Original generated date:** 2026-01-17
 **Codebase Version:** WO-SCANNER-INTEGRATION-001 (Complete ✅)
 **Data Source:** `.coderef/index.json` (2,516 elements scanned)
 **Total Elements:** 2,516 (n = 100%)

@@ -1,3 +1,9 @@
+# CodeRef Semantic Schema (ARCHIVED — pre-rebuild snapshot)
+
+> **Archive banner.** This document captures the project state at 2026-05-05 (Phase 1 of WO-CODEREF-SEMANTIC-INTEGRATION-001, before the 9-phase pipeline rebuild). Content is preserved for historical reference. For current state see [docs/SCHEMA.md](../SCHEMA.md) — the four ElementData semantic fields documented here (`exports`, `used_by`, `related`, `rules`) are now part of the canonical scanner schema there. Header grammar (`@coderef-semantic:1.0.0`) lives at [docs/HEADER-GRAMMAR.md](../HEADER-GRAMMAR.md).
+
+---
+
 # CodeRef Semantic Schema
 
 **Version:** 1.0.0  

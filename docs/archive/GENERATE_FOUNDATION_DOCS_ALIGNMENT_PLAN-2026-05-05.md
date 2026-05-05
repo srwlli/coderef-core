@@ -1,4 +1,9 @@
-# GENERATE FOUNDATION DOCS - SCANNER ALIGNMENT PLAN
+# GENERATE FOUNDATION DOCS - SCANNER ALIGNMENT PLAN (ARCHIVED)
+
+> **Archive banner.** This document captures a planning artifact from before the 9-phase pipeline rebuild. Content is preserved for historical reference. The plan described here was superseded by the rebuild itself (Phase 0..7); for current foundation-docs alignment see ASSISTANT-side `SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md` and CORE-side [docs/SCHEMA.md](../SCHEMA.md).
+
+---
+
 ## Week 1 Implementation: Index.json Schema Consumption
 
 **Status:** READY FOR IMPLEMENTATION  

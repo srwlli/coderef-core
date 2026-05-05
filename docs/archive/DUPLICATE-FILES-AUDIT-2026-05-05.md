@@ -1,6 +1,10 @@
-# CodeRef Core - Duplicate Files Audit Report
+# CodeRef Core - Duplicate Files Audit Report (ARCHIVED)
 
-**Date:** 2025-01-27  
+> **Archive banner.** This document captures a duplicate-files audit performed on 2025-01-27. Content is preserved for historical reference. The audit was a one-time cleanup pass — for current source structure see the live tree under `src/`.
+
+---
+
+**Original date:** 2025-01-27  
 **Auditor:** AI Assistant  
 **Scope:** Complete audit of duplicate files between root and src/ directories
 
