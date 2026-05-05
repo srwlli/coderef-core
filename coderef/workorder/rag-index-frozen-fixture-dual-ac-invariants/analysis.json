@@ -1,0 +1,117 @@
+{
+  "workorder_id": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001",
+  "feature_name": "rag-index-frozen-fixture-dual-ac-invariants",
+  "authored_at": "2026-05-06T00:50:00Z",
+  "authored_by": "SKILLS (DISPATCH-045 /create-workorder)",
+  "summary": "Promote the existing in-code dual-AC fixture (__tests__/pipeline/indexing-gate-invariant.test.ts:98-241) to a frozen on-disk fixture under src/integration/rag/__tests__/fixtures/dual-ac-frozen/. Add anti-tautology guard. Verify CI wiring is blocking. Three atomic commits.",
+  "current_state": {
+    "seed_test": {
+      "path": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+      "block_lines": "98-241",
+      "summary": "AC-05 dual-identity test that builds a 3-file × 3-node fixture procedurally inside the test (NUM_FILES=3, NODES_PER_FILE=3, MISSING_PER_FILE=2). Writes graph.json + 3 source files into a tempdir per test run. Asserts: missingSkips.length === 6 (AC-05a), uniqueFiles.size === 3 (AC-05b), missingSkips.length !== uniqueFiles.size (distinctness).",
+      "weakness": "Inputs are built procedurally from JS constants → not diffable as a PR artifact, not inspectable as a frozen baseline, vulnerable to silent test-helper drift if the construction code changes shape. Expected counts (6, 3) are hard-coded numbers in expectations — borderline tautology since the same constants compute both the input and the expectation.",
+      "strength": "The shape (3×3 with 2 missing + 1 defined per file) correctly exercises both grains and produces distinct numbers (6 ≠ 3) — this is the right shape; only the storage form changes."
+    },
+    "ci_wiring_baseline": {
+      "vitest_config": "Default vitest config picks up __tests__/pipeline/* per current setup — verify in this WO",
+      "blocking_status": "Test is blocking today (vitest run fails the test if assertions fail) — verify in this WO",
+      "package_json_script": "Default `npm test` or equivalent runs vitest — verify"
+    },
+    "fixture_target_location": {
+      "proposed": "src/integration/rag/__tests__/fixtures/dual-ac-frozen/",
+      "rationale": "Per dispatch-045 boundary directive (src/integration/rag/__tests__/* + minimal CI wiring). The seed test currently sits at __tests__/pipeline/, but the frozen fixture is fundamentally a rag-integration artifact — co-locating it with the rag tests improves cohesion. The test that uses the fixture lives at src/integration/rag/__tests__/dual-ac-frozen.test.ts (new) OR refactor the existing __tests__/pipeline/indexing-gate-invariant.test.ts AC-05 block to load the fixture (decision in plan)."
+    }
+  },
+  "investigation_targets": {
+    "skipped": false,
+    "discovery_only_no_dedicated_phase": true,
+    "rationale": "Seed test exists and is the working reference; surface area is fully enumerated. The plan handles a single decision point (refactor existing test vs author new test) inline, not via a phase."
+  },
+  "implementation_strategy": {
+    "approach": "Three atomic commits: (C1) author frozen fixture + README; (C2) author or refactor test to load the fixture, with anti-tautology guard; (C3) CI wiring verification + lock-down.",
+    "commits": [
+      {
+        "label": "C1: author frozen fixture",
+        "scope": "src/integration/rag/__tests__/fixtures/dual-ac-frozen/* (new files only)",
+        "operations": [
+          "Create directory src/integration/rag/__tests__/fixtures/dual-ac-frozen/",
+          "Author dual-ac-frozen/graph.json: serialize the 9-node graph (3 files × 3 nodes; 2 hs=missing + 1 hs=defined per file). Identical shape to what the seed test currently builds in code, but as a static file.",
+          "Author dual-ac-frozen/validation-report.json: { header_missing_count: 3 } (file-grain canonical).",
+          "Author 3 source files dual-ac-frozen/src/mod0.ts, mod1.ts, mod2.ts each with `export function fnN()`, `export class ClsN`, `export const CN`. Identical to seed.",
+          "Author dual-ac-frozen/README.md: documents the invariant — skipped element count === graph nodes with hs=missing; uniqueFiles(skipDetails).size === validation_report.header_missing_count. Documents that 2415/263 are real-codebase anchors and NOT load-bearing for this fixture."
+        ],
+        "tsc_check": "tsc --noEmit clean both configs (no .ts changes here, but verify nothing breaks)"
+      },
+      {
+        "label": "C2: load frozen fixture in test + anti-tautology guard",
+        "scope": "Either __tests__/pipeline/indexing-gate-invariant.test.ts (refactor existing AC-05 block) OR src/integration/rag/__tests__/dual-ac-frozen.test.ts (new file). Plan recommends the refactor path — keep the assertions where they were when shipped; replace the procedural build with a frozen-fixture load.",
+        "operations": [
+          "Replace the in-code build block (lines ~104-186 in current seed) with: copy fixture dir into a tmpdir (or read directly from on-disk fixture path), read graph.json + validation-report.json from the fixture",
+          "Anti-tautology guard: expected element-grain count is computed from the loaded graph.json (count of nodes with metadata.headerStatus==='missing'), NOT from a hardcoded literal 6 in the test. Same for file-grain (size of unique files in the same node set). If the fixture changes shape later, the expectation tracks; the test still asserts identity, not number.",
+          "Distinctness assertion preserved: expected element-grain !== expected file-grain (compute both from the input independently; assert the relation)",
+          "Verify the test file still compiles (tsc) and runs green (vitest)"
+        ],
+        "tsc_check": "tsc --noEmit clean both configs"
+      },
+      {
+        "label": "C3: CI wiring verification + lock-down",
+        "scope": "package.json scripts and/or vitest.config.ts; possibly a CI gate script",
+        "operations": [
+          "Verify default `vitest run` picks up the dual-AC test (whether refactored in __tests__/pipeline/ or new at src/integration/rag/__tests__/)",
+          "Verify the test is blocking (failed assertions return non-zero exit)",
+          "If anything is unclear or advisory-only today, lock it down: explicit include glob for the fixture's test file, package.json `test` script that runs vitest with the right config",
+          "Document the lock-down in the WO communication.json so the close summary captures the before/after"
+        ],
+        "tsc_check": "tsc --noEmit clean both configs"
+      }
+    ],
+    "verification": [
+      "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json)",
+      "Refactored test (or new test) runs green with the frozen fixture",
+      "Mutate the fixture (e.g., flip a single node from hs=missing to hs=defined) and confirm the test FAILS — proves the assertion is real, not tautological. Revert the mutation before commit.",
+      "Full `vitest run` pass on the rag-related test suites",
+      "graph-ground-truth.test.ts: 6/6 PASS (preserved from predecessor WO)",
+      "Real-codebase anchor still intact: predecessor archive's verify-dual-ac.mjs static probe still reports 2415===2415 + 263===263 (sanity check, optional)"
+    ]
+  },
+  "risk_assessment": {
+    "overall_risk": "low",
+    "risks": [
+      {
+        "id": "R-1",
+        "description": "Refactoring the existing __tests__/pipeline/indexing-gate-invariant.test.ts AC-05 block introduces a regression in the gate-invariant tests (a) (b) (c) that share the same file",
+        "likelihood": "low",
+        "impact": "test suite failure on C2",
+        "mitigation": "The AC-05 block is structurally separate from the (a)/(b)/(c) Phase 7 chokepoint INVARIANT block — they live in different `describe` blocks. Edits are confined to the AC-05 describe block."
+      },
+      {
+        "id": "R-2",
+        "description": "Frozen fixture's graph.json drift from the schema rag-index expects (e.g., a future schema change to graph.json node shape)",
+        "likelihood": "low",
+        "impact": "fixture becomes stale and the test fails for the wrong reason",
+        "mitigation": "Document the fixture invariant in README.md; add a comment in the test pointing to the README; if a future schema change happens, the fixture is updated as part of that schema change, not silently"
+      },
+      {
+        "id": "R-3",
+        "description": "Anti-tautology guard is implemented incorrectly — expected count is still effectively computed from runtime output",
+        "likelihood": "low",
+        "impact": "the WO ships but the invariant is vulnerable",
+        "mitigation": "Plan calls out: expected count comes from inspecting the loaded fixture file (the input), NOT from inspecting the IndexingResult (the output). The test computes expected element-grain count by reading graph.json and counting hs=missing nodes; computes expected file-grain count by reading graph.json and counting unique files among hs=missing nodes. These come from the input. The IndexingResult is what's compared against."
+      },
+      {
+        "id": "R-4",
+        "description": "CI wiring is already correct and the WO produces no actionable C3 change",
+        "likelihood": "medium",
+        "impact": "C3 commit is small or empty",
+        "mitigation": "If verification confirms current wiring is correct + blocking, document the verification in C3's commit message and skip code changes. The verification itself is the value of the commit."
+      }
+    ]
+  },
+  "expected_outcome": {
+    "loc_delta": "+30 to +80 net LOC (new fixture files + minor test refactor) — modest positive, expected per dispatch-045 blast radius",
+    "files_changed": "5-7 files (3 fixture sources + graph.json + validation-report.json + README + 1 test refactor; possibly +1 CI config)",
+    "atomic_commits": 3,
+    "tsc_status": "clean both configs throughout",
+    "test_pass_rate": "100% — refactored test still green; existing tests preserved"
+  }
+}

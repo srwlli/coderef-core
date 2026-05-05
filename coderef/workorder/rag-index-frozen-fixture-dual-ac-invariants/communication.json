@@ -1,0 +1,64 @@
+{
+  "workorder_id": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001",
+  "feature_name": "rag-index-frozen-fixture-dual-ac-invariants",
+  "created": "2026-05-06T00:50:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-04-045"],
+  "predecessor_for": null,
+  "stub_source": "STUB-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 (CORE 1cc4acb, ASSISTANT 1465920, DISPATCH-042)",
+  "predecessor_workorder": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+  "predecessor_archive": "coderef/archived/rag-index-single-analyzer-slice",
+  "sibling_stub_pending_scope": "STUB-RAG-INDEX-SEAM-DELETION-001 (CORE bbdeba5, DISPATCH-043) — depends on this WO landing first",
+  "status": "plan_created",
+  "current_phase": 0,
+  "phase_status": "ready_to_execute",
+  "plan_file": "coderef/workorder/rag-index-frozen-fixture-dual-ac-invariants/plan.json",
+  "context_file": "coderef/workorder/rag-index-frozen-fixture-dual-ac-invariants/context.json",
+  "analysis_file": "coderef/workorder/rag-index-frozen-fixture-dual-ac-invariants/analysis.json",
+  "handoff": {
+    "from": "SKILLS (DISPATCH-045 /create-workorder)",
+    "to": "CODEREF-CORE (execution dispatch forthcoming from ORCHESTRATOR)",
+    "reason": "Scoping complete: simple_implementation plan with 3 atomic commits + 16 ACs + 5 decision records. Boundary clarification recorded in DR-FROZEN-B (fixture lands in src/integration/rag/__tests__/fixtures/; test stays at __tests__/pipeline/ to preserve git blame + adjacency to Phase 7 chokepoint invariants — surface at execution if ORCHESTRATOR wants the test path moved too). Identity-not-numbers + anti-tautology guard locked. Mutation-guard demonstration is the AC-11 closure evidence."
+  },
+  "execution_rules": {
+    "plan_type": "simple_implementation",
+    "phase_gates": "Phase 1 (fixture authored) gates Phase 2 (test refactor); Phase 2 gates Phase 3 (CI verification + lock-down); each phase requires tsc clean both configs + relevant test green",
+    "atomic_commits": "3 (one per phase)",
+    "tsc_invariant": "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json) after each commit"
+  },
+  "hard_constraints": [
+    "Phase 7 archive MUST NOT be reopened",
+    "Predecessor archives untouched (rag-index-single-analyzer-slice, cleanup-indexing-orchestrator-analyzerservice-param, path-normalization-fix, pipeline-indexing-rag)",
+    "Boundary: __tests__/pipeline/* (existing seed) + src/integration/rag/__tests__/fixtures/ (new fixture) + minimal CI wiring (vitest config / package.json) ONLY",
+    "Production code in src/integration/rag/*.ts MUST NOT change",
+    "AnalyzerService source code (src/analyzer/analyzer-service.ts) stays untouched",
+    "Frozen fixture must encode the IDENTITY relationship, NOT specific real-world numbers (2415/263 are anchor numbers but not load-bearing)",
+    "Anti-tautology guard required: expected counts computed from loaded graph.json (input), not hardcoded literals or runtime output",
+    "Distinctness assertion stays in form `not.toBe(otherGrain)` — assert relationship, not specific numbers",
+    "Existing __tests__/pipeline/indexing-gate-invariant.test.ts AC-05 block (lines 98-241) is the SEED — refactor in place, do NOT duplicate at new path",
+    "Phase 7 chokepoint INVARIANT block (lines 32-70 of same file) untouched",
+    "tsc --noEmit clean both configs after each commit",
+    "Cultural validator scope-mode + tracking validator scope-mode PASS clean (acknowledge pre-existing 14/15 stubs.json schema drift per STUB-044)"
+  ],
+  "blockers": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-06T00:50:00Z",
+      "from": "SKILLS",
+      "to": "ORCHESTRATOR",
+      "kind": "wo_authored",
+      "summary": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 authored under DISPATCH-045 (high priority post-bulletproof-pivot-1 backlog, concept #2 of 6). plan_type=simple_implementation; 3 atomic commits planned (fixture + test refactor + CI verification); 16 ACs; +30 to +80 net LOC target. Predecessor stub STUB-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 (CORE 1cc4acb) is the source; predecessor WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 (a19249a) is the substrate that introduced dual-AC framing. Boundary clarification recorded in DR-FROZEN-B (fixture lands in src/integration/rag/__tests__/fixtures/, test stays at __tests__/pipeline/ — surface during execution if ORCHESTRATOR wants test moved too). Identity-not-numbers + anti-tautology + distinctness-as-relationship all locked in DR-FROZEN-C/D. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for execution."
+    }
+  ],
+  "decisions_log": [
+    {
+      "event": "wo_creation",
+      "at": "2026-05-06T00:50:00Z",
+      "by": "SKILLS via /create-workorder (DISPATCH-045)",
+      "rationale": "DISPATCH-045 dispatch payload directed plan_type=simple_implementation OR phased_implementation depending on whether fixture-shape decision needs an investigation phase. SKILLS judged no investigation phase needed: the seed test (__tests__/pipeline/indexing-gate-invariant.test.ts:98-241) is a working reference, surface area is enumerable from a single grep, and the only real decision (refactor seed in place vs author new test) is recorded inline in DR-FROZEN-B rather than dragged through a phase. Full /create-workorder Step 4-7 chain ran."
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "workorder_id": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001",
+  "feature_name": "rag-index-frozen-fixture-dual-ac-invariants",
+  "authored_at": "2026-05-06T00:50:00Z",
+  "authored_by": "SKILLS (DISPATCH-045 /create-workorder)",
+  "plan_type": "simple_implementation",
+  "summary": "Promote the in-code dual-AC fixture to a frozen on-disk artifact with anti-tautology guard and verified CI wiring. Three atomic commits; test+fixture+CI only — production code untouched.",
+  "phases": [
+    {
+      "phase": 1,
+      "label": "Author frozen fixture",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T1.1",
+          "subject": "Create fixture directory + graph.json",
+          "operations": [
+            "Create directory src/integration/rag/__tests__/fixtures/dual-ac-frozen/",
+            "Author graph.json with the 9-node graph (3 files × 3 nodes; 2 hs=missing + 1 hs=defined per file). Identical structural shape to seed test lines 122-167.",
+            "Node IDs follow seed convention: @Fn/{file}#{name}:{line}, @Cl/{file}#{name}:{line}, @C/{file}#{name}:{line}",
+            "Top-level shape: { version: '1.0', exportedAt: <ISO>, nodes: [...], edges: [], statistics: { nodeCount: 9, edgeCount: 0 } }"
+          ]
+        },
+        {
+          "task_id": "T1.2",
+          "subject": "Create source files + validation-report",
+          "operations": [
+            "Author dual-ac-frozen/src/mod0.ts, mod1.ts, mod2.ts each with `export function fnN()`, `export class ClsN`, `export const CN` matching seed",
+            "Author dual-ac-frozen/validation-report.json: { header_missing_count: 3 } (file-grain canonical baseline)"
+          ]
+        },
+        {
+          "task_id": "T1.3",
+          "subject": "Document the invariant",
+          "operations": [
+            "Author dual-ac-frozen/README.md describing: (1) the fixture's purpose, (2) the dual-AC identity relationship being asserted, (3) the 6/3 expected counts and how they're derived from fixture shape, (4) anchor note that 2415/263 are real-codebase numbers — NOT load-bearing for this fixture, (5) what to do if the rag-index graph schema changes (update fixture as part of that schema change, never silently)"
+          ]
+        },
+        {
+          "task_id": "T1.4",
+          "subject": "tsc gate after C1",
+          "operations": ["Run `tsc --noEmit` against tsconfig.json — must be clean", "Run `tsc --noEmit -p tsconfig.cli.json` — must be clean"]
+        }
+      ],
+      "commit_message_template": "feat(WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001): author frozen fixture for dual-AC identity invariant",
+      "phase_gate": "C1 lands AND tsc clean both configs."
+    },
+    {
+      "phase": 2,
+      "label": "Refactor AC-05 test to load frozen fixture + anti-tautology guard",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T2.1",
+          "subject": "Replace procedural fixture-build with frozen-fixture load",
+          "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+          "operations": [
+            "Locate the AC-05 dual-identity describe block (lines ~98-241 of current file)",
+            "Replace lines ~104-186 (the in-test fixture build) with code that copies src/integration/rag/__tests__/fixtures/dual-ac-frozen/* into a tmpdir (the test's existing tempDir pattern)",
+            "Read graph.json and validation-report.json from the loaded fixture",
+            "Pass the fixture's projectDir to IndexingOrchestrator as today",
+            "Preserve the (a)/(b)/(c) Phase 7 chokepoint INVARIANT describe block (lines 32-70) untouched"
+          ]
+        },
+        {
+          "task_id": "T2.2",
+          "subject": "Anti-tautology guard",
+          "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+          "operations": [
+            "Compute expected element-grain count by inspecting the loaded graph.json (count nodes with metadata.headerStatus === 'missing'). Do NOT use a hardcoded literal 6.",
+            "Compute expected file-grain count by inspecting the loaded graph.json (size of Set of files among hs=missing nodes). Do NOT use a hardcoded literal 3.",
+            "Read expected file-grain canonical from validation-report.json's header_missing_count and assert it equals the computed file-grain count from graph.json (cross-check inside the fixture)",
+            "Assertions: missingSkips.length === expectedElementGrain (AC-05a); uniqueFiles.size === expectedFileGrain (AC-05b); expectedElementGrain !== expectedFileGrain (distinctness; if the fixture ever changes to make these equal, the dual-AC framing collapses and the test must fail loudly)"
+          ]
+        },
+        {
+          "task_id": "T2.3",
+          "subject": "Test pass + tsc gate",
+          "operations": [
+            "Run vitest against __tests__/pipeline/indexing-gate-invariant.test.ts — all describes PASS",
+            "Run vitest against src/integration/rag/__tests__/* — all PASS",
+            "Run `tsc --noEmit` both configs — clean"
+          ]
+        }
+      ],
+      "commit_message_template": "test(WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001): load frozen fixture + anti-tautology guard for AC-05 dual identity",
+      "phase_gate": "C2 lands AND test green AND tsc clean both configs."
+    },
+    {
+      "phase": 3,
+      "label": "Verify + lock CI wiring",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T3.1",
+          "subject": "Verify default vitest run is blocking",
+          "operations": [
+            "Run default `vitest run` (no scope flags) — confirm the AC-05 dual-identity test is included",
+            "Mutate the fixture: flip src/integration/rag/__tests__/fixtures/dual-ac-frozen/graph.json so one hs=missing node becomes hs=defined. Confirm `vitest run` FAILS the AC-05 dual identity assertion. Revert the mutation before any commit.",
+            "Verify the failure exit code is non-zero (CI-blocking)"
+          ]
+        },
+        {
+          "task_id": "T3.2",
+          "subject": "Lock down wiring (if needed)",
+          "operations": [
+            "If vitest config / package.json scripts already include the test in default run: document the verification in the commit message; no code change needed.",
+            "If anything is advisory-only or excluded by glob: lock it down via vitest config explicit include or package.json `test` script update.",
+            "If C3 ends up as a verification-only commit (no code change), still create the commit with a clear message — the verification itself is the closure artifact."
+          ]
+        },
+        {
+          "task_id": "T3.3",
+          "subject": "Closeout-ready handoff",
+          "operations": [
+            "Update communication.json status=complete with closeout-ready marker",
+            "Append CODEREF-CORE → ORCHESTRATOR communication_log entry summarizing the 3-commit chain + LOC delta + test results + mutation-guard demonstration",
+            "Hand off to ORCHESTRATOR for cross-project /close-workorder dispatch"
+          ]
+        }
+      ],
+      "commit_message_template": "ci(WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001): verify dual-AC fixture is blocking in default vitest run",
+      "phase_gate": "C3 lands AND mutation-guard demonstrated AND tsc clean."
+    }
+  ],
+  "acceptance_criteria": [
+    {"id": "AC-01", "statement": "Frozen fixture exists at src/integration/rag/__tests__/fixtures/dual-ac-frozen/ with graph.json + validation-report.json + 3 source files + README.md", "verification": "ls of the fixture dir shows all expected files"},
+    {"id": "AC-02", "statement": "graph.json fixture encodes 3 files × 3 nodes (2 hs=missing + 1 hs=defined per file = 6 element-grain skips, 3 file-grain unique)", "verification": "Inspection of graph.json"},
+    {"id": "AC-03", "statement": "validation-report.json fixture has header_missing_count=3 (matches file-grain unique count from graph.json)", "verification": "Inspection of validation-report.json + cross-check"},
+    {"id": "AC-04", "statement": "AC-05 dual-identity test loads the frozen fixture (NOT procedural build)", "verification": "git diff over the WO range shows fs.readFile or copy of fixture dir; no in-test JS construction loops"},
+    {"id": "AC-05", "statement": "Anti-tautology guard: expected counts are computed from loaded graph.json (input), NOT hardcoded literals 6/3", "verification": "test source: expected = nodes.filter(n => n.metadata.headerStatus === 'missing').length and equivalent for unique files"},
+    {"id": "AC-06", "statement": "Distinctness assertion preserved (element-grain !== file-grain; 6 ≠ 3 in this fixture)", "verification": "test source contains expect(...).not.toBe(...) for the two grains"},
+    {"id": "AC-07", "statement": "Cross-check assertion: graph.json file-grain unique count === validation-report header_missing_count", "verification": "test source asserts the cross-check"},
+    {"id": "AC-08", "statement": "tsc --noEmit clean both configs throughout 3 commits", "verification": "Three clean tsc runs across phase gates"},
+    {"id": "AC-09", "statement": "All existing tests in src/integration/rag/__tests__/ + __tests__/pipeline/* continue to PASS", "verification": "vitest run shows green for the full suite"},
+    {"id": "AC-10", "statement": "Phase 7 chokepoint INVARIANT block (lines 32-70 of indexing-gate-invariant.test.ts) is untouched", "verification": "git diff shows zero changes to lines 32-70"},
+    {"id": "AC-11", "statement": "Mutation guard demonstrated: flipping one fixture node from hs=missing to hs=defined causes the AC-05 test to FAIL (verifying the test is real, not tautological); mutation reverted before any commit", "verification": "Phase 3 task T3.1 evidence captured in C3 commit message or close report"},
+    {"id": "AC-12", "statement": "Default `vitest run` (no scope flags) executes the AC-05 dual-identity test and is blocking (non-zero exit on failure)", "verification": "Run vitest with mutated fixture; observe FAIL + non-zero exit; revert"},
+    {"id": "AC-13", "statement": "Production code in src/integration/rag/* is untouched", "verification": "git diff over WO range shows zero changes outside __tests__/* and fixture dir and possibly package.json/vitest config"},
+    {"id": "AC-14", "statement": "AnalyzerService source code (src/analyzer/analyzer-service.ts) is untouched", "verification": "git diff shows zero changes to that file"},
+    {"id": "AC-15", "statement": "Cultural validator scope-mode 11/11 PASS + tracking validator scope-mode (within achievable limits, acknowledging stubs.json schema drift recorded in STUB-044)", "verification": "Both validators pass at close time"},
+    {"id": "AC-16", "statement": "/close-workorder produces ARCHIVED.md + tracking ledger updates + workorder_completed/closed events", "verification": "Cross-project close artifact landed"}
+  ],
+  "decisions_record": [
+    {
+      "id": "DR-FROZEN-A",
+      "decision": "Frozen fixture lives under src/integration/rag/__tests__/fixtures/dual-ac-frozen/ rather than at the existing seed test's location (__tests__/pipeline/)",
+      "rationale": "The fixture is fundamentally a rag-integration artifact and belongs co-located with the rag tests for cohesion. The test that loads it can stay at __tests__/pipeline/ (continuing to share the same describe block as the Phase 7 chokepoint INVARIANT) — separation of fixture data from test logic is the standard pattern.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-06T00:50:00Z"
+    },
+    {
+      "id": "DR-FROZEN-B",
+      "decision": "Refactor the existing __tests__/pipeline/indexing-gate-invariant.test.ts AC-05 block in place rather than authoring a new test file at src/integration/rag/__tests__/dual-ac-frozen.test.ts",
+      "rationale": "Refactor preserves git blame continuity, keeps the AC-05 assertions visually adjacent to the Phase 7 chokepoint invariants (which they semantically depend on), and avoids the orphan-test problem (two tests asserting the same property at different paths is a future maintenance trap). Trade-off: the test path doesn't strictly match dispatch-045's preferred boundary src/integration/rag/__tests__/* — but the FIXTURE does land in that boundary, which is what the dispatch's intent is really about.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-06T00:50:00Z",
+      "boundary_clarification": "Dispatch-045 boundary directive said 'src/integration/rag/__tests__/* + minimal CI wiring'. SKILLS interprets this as the FIXTURE landing in src/integration/rag/__tests__/fixtures/, while the test that loads it stays in its existing path. If ORCHESTRATOR wants the test moved as well, surface during execution review."
+    },
+    {
+      "id": "DR-FROZEN-C",
+      "decision": "Anti-tautology guard implementation: expected counts are computed from the loaded graph.json (the INPUT), not from a hardcoded literal and not from the IndexingResult (the OUTPUT)",
+      "rationale": "If expected counts are hardcoded literals, a future fixture change can drift the input without triggering test re-validation. If expected counts are lifted from runtime output, the test is tautological (passes by definition). Computing from the loaded input fixture means: the test re-derives what the fixture should produce and asserts the production code produces that — independent paths from input to expected and input to actual.",
+      "decided_by": "SKILLS scoping (per dispatch-045 explicit constraint)",
+      "decided_at": "2026-05-06T00:50:00Z"
+    },
+    {
+      "id": "DR-FROZEN-D",
+      "decision": "Distinctness check stays as `expect(elementGrain).not.toBe(fileGrain)` (assert different numbers) rather than asserting specific values like `not.toBe(6)` or `not.toBe(3)`",
+      "rationale": "Identity-not-numbers principle from dispatch-045: the test asserts the RELATIONSHIP, not specific numerical values. If the fixture is later expanded to 5 files × 4 nodes, the distinctness check still works (10 element-grain ≠ 5 file-grain). Hardcoding numbers in the assertion would re-introduce the brittleness the WO is built to remove.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-06T00:50:00Z"
+    },
+    {
+      "id": "DR-FROZEN-E",
+      "decision": "C3 may be a verification-only commit (no code change) if CI wiring is already correct + blocking",
+      "rationale": "The verification itself is the closure artifact. The mutation-guard demonstration in T3.1 is the load-bearing evidence; documenting the result in the commit message satisfies the WO's CI-wiring AC. Forcing a code change just to have a non-empty C3 would be ceremony without information yield.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-06T00:50:00Z"
+    }
+  ],
+  "estimated_loc_delta": "+30 to +80 net (per dispatch-045 expected_blast_radius)",
+  "estimated_atomic_commits": 3,
+  "estimated_phases": 3
+}

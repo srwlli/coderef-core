@@ -1,0 +1,70 @@
+{
+  "workorder_id": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001",
+  "feature_name": "rag-index-frozen-fixture-dual-ac-invariants",
+  "created": "2026-05-06T00:50:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-04-045",
+  "intake": {
+    "trigger": "stub_promotion_dispatch",
+    "user_request": "Promote STUB-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 (CORE 1cc4acb, DISPATCH-042) into a fully-scoped WO. Bulletproof concept #2 of 6: lock the dual-AC identity (AC-05a element-grain + AC-05b file-grain) into a deterministic frozen fixture that runs in CI as a blocking invariant.",
+    "predecessor_stub": "STUB-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001",
+    "predecessor_stub_path": "coderef/stubs/STUB-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001.md",
+    "predecessor_wo": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 (archived 2026-05-05, CORE a19249a) — substrate pivot that introduced the dual-AC framing",
+    "predecessor_cleanup_wo": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001 (archived 2026-05-05, CORE cba7cbb)",
+    "sibling_stub_pending_scope": "STUB-RAG-INDEX-SEAM-DELETION-001 (active, CORE bbdeba5) — depends on this WO landing first per safety-net ordering"
+  },
+  "classification": {
+    "plan_type": "simple_implementation",
+    "plan_type_rationale": "Mechanical test+CI work with a known seed (existing dual-AC test at __tests__/pipeline/indexing-gate-invariant.test.ts:98-241). Three change targets identified at scoping time: (1) frozen on-disk fixture under __tests__/fixtures/ (or inline), (2) anti-tautology guard, (3) CI wiring (vitest/package.json). No investigation phase needed; seed fixture already exercises both grains correctly.",
+    "plan_type_decided_by": "SKILLS scoping (DISPATCH-045 dispatch payload: 'Plan_type likely simple_implementation OR phased_implementation depending on whether SKILLS judges fixture-shape decision needs an investigation phase'). SKILLS judges no investigation needed — the seed test is the working reference.",
+    "discovery_ref": "coderef/workorder/rag-index-frozen-fixture-dual-ac-invariants/analysis.json",
+    "discovery": "Seed test at __tests__/pipeline/indexing-gate-invariant.test.ts:98-241 already constructs a 3×3 fixture in code (NUM_FILES=3, NODES_PER_FILE=3, MISSING_PER_FILE=2 → 6 element-grain skips, 3 file-grain unique). The fixture is procedural (built each test run from constants) rather than frozen on-disk. This WO promotes it to a frozen artifact.",
+    "discovery_skipped_reason": null
+  },
+  "scope": {
+    "in_scope": [
+      "Author a frozen on-disk fixture under src/integration/rag/__tests__/fixtures/dual-ac-frozen/ (graph.json + validation-report.json + 3 source files mod0.ts/mod1.ts/mod2.ts) capturing the same 3×3 shape the seed test builds in code",
+      "Refactor the AC-05 dual-identity test (currently at __tests__/pipeline/indexing-gate-invariant.test.ts:98-241) to load the frozen fixture from disk OR replace with a new test under src/integration/rag/__tests__/ that uses it",
+      "Add an anti-tautology guard: expected counts (6 element-grain, 3 file-grain) must come from independent computation in the test, not from the fixture's runtime output",
+      "Update vitest config / package.json scripts so the dual-AC test runs in default `vitest run` and is blocking (it already does — verify, do not assume)",
+      "Document the fixture invariant relationship in a fixture README.md: skipped element count === graph nodes with hs=missing; uniqueFiles(skipDetails).size === validation_report.header_missing_count",
+      "Boundary clarification: the seed test lives at __tests__/pipeline/, not src/integration/rag/__tests__/. WO scope explicitly extends to BOTH __tests__/pipeline/* AND src/integration/rag/__tests__/* AND a new fixture dir, plus minimal CI wiring (vitest config or package.json)"
+    ],
+    "out_of_scope": [
+      "Phase 7 archive — locked, must NOT be reopened",
+      "Predecessor archives (rag-index-single-analyzer-slice, cleanup-indexing-orchestrator-analyzerservice-param, path-normalization-fix, pipeline-indexing-rag) — closed, must NOT be modified",
+      "Production code in src/integration/rag/* — this WO is test+fixture+CI only",
+      "AnalyzerService source code (still used by populate-coderef + BreakingChangeDetector)",
+      "Sibling stub STUB-RAG-INDEX-SEAM-DELETION-001 — separate WO, depends on this one landing first",
+      "The 3 remaining unstubbed bulletproof concepts (branded paths, schema reduction, two-grain drop)",
+      "Hardcoding 2415/263 anywhere in the fixture (those are real-codebase numbers; the fixture must encode the IDENTITY relationship at smaller scale)",
+      "Any new IndexingResult schema fields (DR-PHASE-7-B locked additive)"
+    ]
+  },
+  "constraints": [
+    "Phase 7 archive MUST NOT be reopened",
+    "Predecessor archives untouched",
+    "Boundary: __tests__/pipeline/* + src/integration/rag/__tests__/* + new fixture dir + minimal CI wiring (vitest config / package.json) ONLY",
+    "Production code in src/integration/rag/* MUST NOT change in this WO",
+    "AnalyzerService source code stays untouched",
+    "Frozen fixture must encode the IDENTITY relationship, NOT specific real-world numbers (2415/263 are anchor numbers but not load-bearing)",
+    "Anti-tautology guard required: expected counts must be computed from input parameters (NUM_FILES, NODES_PER_FILE, MISSING_PER_FILE) or asserted independently — NOT lifted from runtime output",
+    "Existing dual-AC vitest test (__tests__/pipeline/indexing-gate-invariant.test.ts:98-241) is the SEED — extend or replace, not duplicate",
+    "tsc --noEmit clean both configs after each commit",
+    "Cultural validator scope-mode + tracking validator scope-mode must PASS clean (acknowledge pre-existing 14/15 stubs.json schema drift per STUB-044)",
+    "Session routing: daily-agent-session-2026-05-04 (5-4 calendar-current)"
+  ],
+  "evidence_summary": {
+    "seed_fixture_location": "__tests__/pipeline/indexing-gate-invariant.test.ts lines 98-241 (the AC-05 dual-identity test block)",
+    "seed_fixture_shape": "3 files × 3 nodes/file = 9 total nodes; 2 missing + 1 defined per file = 6 element-grain hs=missing, 3 file-grain unique",
+    "seed_fixture_assertions_today": [
+      "missingSkips.length === 6 (element-grain identity)",
+      "uniqueFiles.size === 3 (file-grain identity)",
+      "missingSkips.length !== uniqueFiles.size (distinctness check)"
+    ],
+    "what_changes_in_this_wo": "The 3×3 input is currently built procedurally in the test from JS constants. This WO promotes it to a frozen on-disk artifact (graph.json + validation-report.json + source files) so the inputs are inspectable, diffable in PRs, and immune to silent test-helper drift. The assertions stay strict; the anti-tautology guard ensures expected counts come from independent computation.",
+    "ci_wiring_baseline_check": "Default `vitest run` already picks up __tests__/pipeline/* per current config — WO must verify and document, not assume",
+    "real_world_anchor_numbers_at_predecessor_archive": "AC-05a 2415===2415, AC-05b 263===263 (NOT load-bearing for this WO; the fixture uses 6/3 and asserts the identity relationship at smaller scale)"
+  }
+}
