@@ -1,0 +1,96 @@
+{
+  "workorder_id": "WO-PIPELINE-DOCUMENTATION-UPDATE-001",
+  "feature_name": "pipeline-documentation-update",
+  "phase": "Phase 8 (documentation update) — final phase of 9-phase pipeline rebuild",
+  "owner_domain": "CODEREF-CORE",
+  "originating_dispatch": "DISPATCH-2026-05-04-002",
+  "closing_dispatch": "DISPATCH-2026-05-04-035",
+  "close_metadata": {
+    "closed_at": "2026-05-05T01:40:00Z",
+    "closed_by": "SKILLS",
+    "implementation_commit_range": "c51cdaa..168632d",
+    "implementation_push_range": "689af34..168632d",
+    "push_target": "origin/main",
+    "force_push_used": false,
+    "atomic_commits_count": 8,
+    "implementation_summary": "Phase 8 documentation alignment: 9 doc files modified (AGENTS.md, CHANGELOG.md, CONTRIBUTING.md, README.md, docs/API.md, docs/ARCHITECTURE.md, docs/CLI.md, docs/SCHEMA.md, docs/rag-http-api.md), 1 created (docs/HEADER-GRAMMAR.md mirror of ASSISTANT BNF), 5 archived (EXECUTIVE-SUMMARY/CODEREF-ANALYSIS-REPORT/DUPLICATE-FILES-AUDIT/GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN to docs/archive/-2026-05-05.md, plus docs/coderef-semantic-schema). CLAUDE.md/GEMINI.md unchanged per (C) Hybrid ruling on Task 1.1 halt. AGENTS.md expanded to ~150-line canonical CORE-side contract with footer pointer to ASSISTANT CONTEXT.md.",
+    "validation_report": {
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/.coderef/validation-report.json",
+      "valid_edge_count": 3464,
+      "header_missing_count": 262,
+      "header_defined_count": 0,
+      "header_stale_count": 0,
+      "header_partial_count": 0,
+      "header_layer_mismatch_count": 0,
+      "header_export_mismatch_count": 0,
+      "ok": "inferred-true",
+      "delta_from_phase_7": "ZERO — Phase 8 is doc-only by definition; baseline unchanged"
+    },
+    "tests": {
+      "ground_truth": "6/6 PASS (AC-11)",
+      "boundary_enforcer": "no-phase-8-docs-leak.test.ts 6/6 PASS (AC-10)",
+      "tsc_status": "tsc --noEmit clean both configs",
+      "src_diff_check": "git diff --stat 689af34 HEAD -- src/ → EMPTY (zero src/ changes verified, Phase 8 hard rule honored)"
+    },
+    "acceptance_criteria_status": {
+      "AC-01": "PASS — docs/SCHEMA.md § 1 cites src/types/types.ts:304-412",
+      "AC-02": "PASS — docs/SCHEMA.md § 2 covers 4 raw fact types + resolved relationships",
+      "AC-03": "PASS — docs/HEADER-GRAMMAR.md created as canonical mirror with citation",
+      "AC-04": "PASS — docs/SCHEMA.md § 4 (8-field edge + 10-variant evidence + GraphNode metadata)",
+      "AC-05": "PASS — docs/SCHEMA.md § 3 (7 ImportResolutionKind + 5 CallResolutionKind + 8 EdgeResolutionStatus)",
+      "AC-06": "PASS — docs/API.md public-API contract with stability commitments",
+      "AC-07": "PASS — AGENTS.md agent usage contract (Path C ruling)",
+      "AC-08": "PASS — all 7 distinctions covered (distinction-coverage table)",
+      "AC-09": "PASS — 8 stale-claim inventory entries all addressed",
+      "AC-10": "PASS — no-phase-8-docs-leak.test.ts 6/6",
+      "AC-11": "PASS — graph-ground-truth.test.ts 6/6",
+      "AC-12": "PASS — CHANGELOG dated Phase 8 entry + README rebuild-status section + cross-links fixed"
+    },
+    "decision_records_honored": {
+      "DR-PHASE-8-A": "audit-style root markdown archived to docs/archive/<file>-2026-05-05.md with dated banners",
+      "DR-PHASE-8-B": "one-source-per-topic; SCHEMA.md canonical for scanner/relationship/graph/resolution/validation/indexing as 6 sibling sections; HEADER-GRAMMAR.md standalone (mirror); API.md and ARCHITECTURE.md cross-link",
+      "DR-PHASE-8-C": "HEADER-GRAMMAR.md is citation-mirror with explicit pointer to ASSISTANT canonical; sync-touchpoint convention block included",
+      "DR-PHASE-8-D (revised, Path C)": "AGENTS.md = canonical CORE-side contract + footer pointer to CONTEXT.md; CLAUDE.md/GEMINI.md = unchanged pointer stubs",
+      "DR-PHASE-8-E": "CHANGELOG.md keeps current format; Phase 8 dated section + Pipeline Rebuild Complete line added; no format migration"
+    },
+    "halt_points_triggered": [
+      {
+        "task": "1.1",
+        "issue": "DR-PHASE-8-D conflict: AGENTS.md/CLAUDE.md/GEMINI.md were 5-line pointer stubs, not substantive contract files",
+        "ruling": "(C) Hybrid — expand AGENTS.md to ~150-line canonical contract with footer pointer; leave CLAUDE.md/GEMINI.md as pointer stubs",
+        "ruled_by": "ORCHESTRATOR",
+        "outcome": "Resolved — DR-PHASE-8-D revised; AGENTS.md became canonical CORE contract; CLAUDE.md/GEMINI.md unchanged"
+      }
+    ],
+    "stubs_filed_during_phase_8": [],
+    "validators": {
+      "cultural_validator": "PASS 11/11 (no --force-warning-ok, 5-4 routing)",
+      "tracking_validator": "PASS 15/15 pre-archive"
+    },
+    "core_implementation_commits": [
+      { "sha": "c51cdaa", "subject": "docs(schema, grammar): rewrite SCHEMA.md as canonical post-rebuild reference + add HEADER-GRAMMAR.md mirror" },
+      { "sha": "7927581", "subject": "docs(api, agents): rewrite API.md + AGENTS.md per Path C ruling" },
+      { "sha": "8e079f3", "subject": "docs(cli, rag-http-api): document Phase 6 + Phase 7 CLI surfaces" },
+      { "sha": "dab2e9a", "subject": "docs(architecture): rewrite ARCHITECTURE.md as 9-phase pipeline overview" },
+      { "sha": "ddae92d", "subject": "docs(archive): relocate 4 audit-style root + 1 docs/ file per DR-PHASE-8-A" },
+      { "sha": "39ab3f7", "subject": "docs(changelog, readme, contributing): Phase 8 entry + rebuild-complete + post-rebuild summary" },
+      { "sha": "76921f1", "subject": "docs(workorder): Phase 8 plan + execution-notes + closeout" },
+      { "sha": "168632d", "subject": "docs(workorder): Phase 8 closeout report" }
+    ],
+    "deferred_items": [
+      {
+        "item": "Discord #coderef-status announcement",
+        "blocker": "webhook returns HTTP 404 'Unknown Webhook' (credentials held by user)",
+        "significance": "This is the rebuild-complete announcement — the marquee post — to be replayed when webhook rotates",
+        "blocking_for_close": false
+      }
+    ],
+    "rebuild_completion_state": {
+      "phases_archived": "10 of 10 gated steps (Phase 0, 1, 2, 2.5, 3, 4, 5, 6, 7, 8)",
+      "rebuild_status": "COMPLETE",
+      "final_dod_alignment": "Final Definition of Done #9 ('docs match actual schemas and behavior') satisfied by Phase 8. ALL 9 DoD items now satisfied.",
+      "no_phase_9": "There is no Phase 9. The rebuild is done."
+    },
+    "phase_9_handoff": "N/A — Phase 8 was the final phase. Rebuild is COMPLETE."
+  }
+}
