@@ -462,7 +462,20 @@ export class IndexingOrchestrator {
         // AC-05b (file-grain cross-component identity) hold by
         // construction once the read lands here.
         const graphJsonPath = pathMod.join(this.basePath, '.coderef', 'graph.json');
-        const raw = await fs.readFile(graphJsonPath, 'utf-8');
+        let raw: string;
+        try {
+          raw = await fs.readFile(graphJsonPath, 'utf-8');
+        } catch (err: any) {
+          if (err && err.code === 'ENOENT') {
+            throw new Error(
+              `[indexing-orchestrator] .coderef/graph.json not found at ${graphJsonPath}. ` +
+                'Run `coderef populate` before `coderef rag-index` — rag-index reads ' +
+                'the canonical graph.json that populate-coderef writes; without it ' +
+                'there is no chunk source.',
+            );
+          }
+          throw err;
+        }
         graph = buildGraphFromExportedJson(JSON.parse(raw));
 
         reportProgress(
