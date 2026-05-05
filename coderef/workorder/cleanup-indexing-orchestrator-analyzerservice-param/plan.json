@@ -1,0 +1,144 @@
+{
+  "workorder_id": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001",
+  "feature_name": "cleanup-indexing-orchestrator-analyzerservice-param",
+  "authored_at": "2026-05-05T23:00:00Z",
+  "authored_by": "SKILLS (DISPATCH-040 /create-workorder)",
+  "plan_type": "simple_implementation",
+  "summary": "Remove the @deprecated analyzerService constructor parameter and private field from IndexingOrchestrator. Update the single CLI caller and the single test fixture that still pass the now-unused argument. Two atomic commits (production then test) gated by tsc + vitest.",
+  "phases": [
+    {
+      "phase": 1,
+      "label": "Production cleanup",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T1.1",
+          "subject": "Remove analyzerService field + ctor param from IndexingOrchestrator",
+          "file": "src/integration/rag/indexing-orchestrator.ts",
+          "operations": [
+            "Delete `import type { AnalyzerService } from '../../analyzer/analyzer-service.js';` at L14",
+            "Delete `private analyzerService: AnalyzerService;` at L360",
+            "Delete `analyzerService: AnalyzerService,` ctor parameter at L366",
+            "Delete `this.analyzerService = analyzerService;` ctor body at L371",
+            "Update class JSDoc header at L356-358 to reflect simpler dependency surface (no longer mentions AnalyzerService as a dependency)"
+          ]
+        },
+        {
+          "task_id": "T1.2",
+          "subject": "Remove AnalyzerService construction + argument from CLI caller",
+          "file": "src/cli/rag-index.ts",
+          "operations": [
+            "Delete `import { AnalyzerService } from '../analyzer/analyzer-service.js';` at L14",
+            "Delete `const analyzerService = new AnalyzerService(args.projectDir);` at L437",
+            "Delete `analyzerService,` argument from `new IndexingOrchestrator(...)` call at L441 (so the call becomes `new IndexingOrchestrator(llmProvider, vectorStore, args.projectDir)`)"
+          ]
+        },
+        {
+          "task_id": "T1.3",
+          "subject": "tsc + vitest gate (production layer)",
+          "operations": [
+            "Run `tsc --noEmit` against tsconfig.json — must be clean",
+            "Run `tsc --noEmit -p tsconfig.cli.json` — must be clean",
+            "If either fails, HALT — investigate missed callsite and surface to ORCHESTRATOR before C2"
+          ]
+        }
+      ],
+      "commit_message_template": "feat(WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001): remove unused analyzerService param + field from IndexingOrchestrator",
+      "phase_gate": "Phase 1 commit landed AND tsc clean both configs. If gate fails, HALT and report to ORCHESTRATOR."
+    },
+    {
+      "phase": 2,
+      "label": "Test cleanup",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T2.1",
+          "subject": "Remove dead mock + ctor argument from indexing-pipeline test fixture",
+          "file": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts",
+          "operations": [
+            "Delete `mockAnalyzerService = { analyze: vi.fn() } as any;` declaration at L147-149",
+            "Delete `mockAnalyzerService,` argument from `new IndexingOrchestrator(...)` call at L152",
+            "Delete or condense the L140-146 commentary block — the 'regression sentinel' it describes refers to an assertion that does not exist in source. If keeping any text, condense to a single line noting that IndexingOrchestrator no longer takes an analyzer dependency post-WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+            "Audit any other test in src/integration/rag/__tests__/ that constructs IndexingOrchestrator with analyzerService — same edit treatment if found"
+          ]
+        },
+        {
+          "task_id": "T2.2",
+          "subject": "Full test suite gate",
+          "operations": [
+            "Run vitest against src/integration/rag/__tests__/ — all PASS",
+            "Run vitest against __tests__/pipeline/ — all PASS",
+            "Run dual-AC fixture from commit affff3a — AC-05a 2415===2415 + AC-05b 263===263 both PASS",
+            "Run graph-ground-truth.test.ts — 6/6 PASS"
+          ]
+        }
+      ],
+      "commit_message_template": "test(WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001): drop dead mockAnalyzerService from indexing-pipeline test",
+      "phase_gate": "Phase 2 commit landed AND all tests PASS AND tsc clean both configs."
+    },
+    {
+      "phase": 3,
+      "label": "Closeout-ready handoff",
+      "atomic_commits": 0,
+      "tasks": [
+        {
+          "task_id": "T3.1",
+          "subject": "Update communication.json status=complete with closeout-ready marker",
+          "operations": [
+            "Set status=complete, completed_at, current_phase=2, phase_status=closeout_ready",
+            "Append CODEREF-CORE → ORCHESTRATOR communication_log entry summarizing the 2-commit chain + LOC delta + test results",
+            "Hand off to ORCHESTRATOR for cross-project /close-workorder dispatch (mirrors the WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 pattern: CORE completes, SKILLS closes via dispatch)"
+          ]
+        }
+      ],
+      "phase_gate": "Communication.json closeout-ready. ORCHESTRATOR dispatches SKILLS for cross-project /close-workorder."
+    }
+  ],
+  "acceptance_criteria": [
+    {"id": "AC-01", "statement": "src/integration/rag/indexing-orchestrator.ts no longer declares analyzerService field or ctor param; AnalyzerService import removed", "verification": "grep -E 'analyzerService|AnalyzerService' src/integration/rag/indexing-orchestrator.ts returns zero matches"},
+    {"id": "AC-02", "statement": "src/cli/rag-index.ts no longer constructs AnalyzerService or passes it to IndexingOrchestrator", "verification": "grep -E 'AnalyzerService' src/cli/rag-index.ts returns zero matches"},
+    {"id": "AC-03", "statement": "indexing-pipeline.test.ts no longer references mockAnalyzerService", "verification": "grep -i 'analyzerService' src/integration/rag/__tests__/integration/indexing-pipeline.test.ts returns zero matches"},
+    {"id": "AC-04", "statement": "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json)", "verification": "Two clean tsc runs"},
+    {"id": "AC-05", "statement": "All existing tests in src/integration/rag/__tests__/ + __tests__/pipeline/ continue to PASS", "verification": "vitest run shows green for all relevant suites"},
+    {"id": "AC-06", "statement": "AC-05a + AC-05b dual-AC identity tests (commit affff3a fixture) remain PASS — substrate identity preserved", "verification": "Fixture run shows PASS"},
+    {"id": "AC-07", "statement": "graph-ground-truth.test.ts: 6/6 PASS", "verification": "Test run shows 6/6"},
+    {"id": "AC-08", "statement": "Net negative LOC in src/integration/rag/* + src/cli/rag-index.ts (real cleanup, not zero-sum)", "verification": "git diff --stat over the 2-commit range shows deletions exceed insertions; target ~-15 net LOC"},
+    {"id": "AC-09", "statement": "AnalyzerService source code (src/analyzer/analyzer-service.ts) untouched (still used by populate-coderef CLI)", "verification": "git diff over range shows zero changes to that file"},
+    {"id": "AC-10", "statement": "No predecessor archive disturbed (path-normalization-fix, rag-index-single-analyzer-slice, pipeline-indexing-rag)", "verification": "git diff over range shows zero changes under coderef/archived/"},
+    {"id": "AC-11", "statement": "Cultural validator scope-mode 11/11 PASS + tracking validator scope-mode 15/15 PASS", "verification": "Both validators pass at close time"},
+    {"id": "AC-12", "statement": "/close-workorder produces ARCHIVED.md + tracking ledger updates + workorder_completed/closed events", "verification": "Cross-project close artifact landed"}
+  ],
+  "decisions_record": [
+    {
+      "id": "DR-CLEANUP-A",
+      "decision": "Two atomic commits rather than one — separate production cleanup from test cleanup",
+      "rationale": "Keeps tsc gate clean between phases. If C1 fails the tsc check, the test file is untouched and the failure is isolated. Easier to bisect later.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-05T23:00:00Z"
+    },
+    {
+      "id": "DR-CLEANUP-B",
+      "decision": "Delete the regression-sentinel commentary at indexing-pipeline.test.ts L140-146 rather than activating it",
+      "rationale": "The comment claims an assertion (`expect(analyzerService.analyze).not.toHaveBeenCalled()`) exists; grep confirms it does not. The mock is genuinely dead weight. Activating the assertion would require the field to stay (defeats this WO's purpose) or asserting on a removed field (impossible). Deleting the misleading commentary is the honest move.",
+      "decided_by": "SKILLS scoping (after grep verification)",
+      "decided_at": "2026-05-05T23:00:00Z"
+    },
+    {
+      "id": "DR-CLEANUP-C",
+      "decision": "Do NOT touch AnalyzerService source code (src/analyzer/analyzer-service.ts)",
+      "rationale": "AnalyzerService is still used by populate-coderef CLI and by BreakingChangeDetector. Only the IndexingOrchestrator dependency on it goes away. Touching the analyzer source would expand blast radius unnecessarily.",
+      "decided_by": "ORCHESTRATOR via DISPATCH-040 out_of_scope block",
+      "decided_at": "2026-05-05T22:45:00Z"
+    },
+    {
+      "id": "DR-CLEANUP-D",
+      "decision": "Plan_type=simple_implementation (no investigation phase)",
+      "rationale": "Predecessor WO ARCHIVED.md exhaustively documented the dependency surface. Three callsites known at scoping time. Adding an investigation phase would be ceremony without information yield.",
+      "decided_by": "ORCHESTRATOR via DISPATCH-040 (skills_action_required: 'Plan_type likely simple_implementation')",
+      "decided_at": "2026-05-05T22:45:00Z"
+    }
+  ],
+  "estimated_loc_delta": "-15 net (target: production -8 to -10, test -5 to -8, JSDoc -1 to -2)",
+  "estimated_atomic_commits": 2,
+  "estimated_phases": 2
+}

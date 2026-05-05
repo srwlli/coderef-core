@@ -1,0 +1,116 @@
+{
+  "workorder_id": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001",
+  "feature_name": "cleanup-indexing-orchestrator-analyzerservice-param",
+  "authored_at": "2026-05-05T23:00:00Z",
+  "authored_by": "SKILLS (DISPATCH-040 /create-workorder)",
+  "summary": "Mechanical cleanup: remove three call-site fingerprints of an @deprecated dependency. No investigation phase needed; predecessor WO already exhaustively documented the dependency surface and confirmed it is genuinely unused post-substrate-pivot. Plan structure: 2 atomic commits (production + test) plus a verification step.",
+  "current_state": {
+    "indexing_orchestrator_ts": {
+      "path": "src/integration/rag/indexing-orchestrator.ts",
+      "current_shape": "class IndexingOrchestrator carries a private analyzerService field that is assigned in the constructor but never read after WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 replaced the second analyzerService.analyze() call with a graph.json read. Field is JSDoc-flagged @deprecated.",
+      "callsites": [
+        {"line": 14, "kind": "import_type", "text": "import type { AnalyzerService } from '../../analyzer/analyzer-service.js';"},
+        {"line": 360, "kind": "private_field_decl", "text": "private analyzerService: AnalyzerService;"},
+        {"line": 366, "kind": "ctor_param", "text": "analyzerService: AnalyzerService,"},
+        {"line": 371, "kind": "ctor_body_assignment", "text": "this.analyzerService = analyzerService;"}
+      ]
+    },
+    "rag_index_cli": {
+      "path": "src/cli/rag-index.ts",
+      "current_shape": "CLI entrypoint constructs an AnalyzerService instance solely to feed it to the IndexingOrchestrator constructor. The instance is otherwise unused in this file post-pivot.",
+      "callsites": [
+        {"line": 14, "kind": "import", "text": "import { AnalyzerService } from '../analyzer/analyzer-service.js';"},
+        {"line": 437, "kind": "construction", "text": "const analyzerService = new AnalyzerService(args.projectDir);"},
+        {"line": 441, "kind": "ctor_argument", "text": "analyzerService,"}
+      ]
+    },
+    "indexing_pipeline_test": {
+      "path": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts",
+      "current_shape": "Test fixture constructs IndexingOrchestrator with a mockAnalyzerService whose analyze method is a vi.fn() that is never invoked or asserted on. Lines 140-146 contain a comment block claiming the mock acts as a 'regression sentinel' — but the assertion `expect(analyzerService.analyze).not.toHaveBeenCalled()` referenced in that comment does not actually exist in test source. The mock is therefore dead weight, not a load-bearing invariant.",
+      "callsites": [
+        {"line": "147-149", "kind": "mock_decl", "text": "mockAnalyzerService = { analyze: vi.fn() } as any;"},
+        {"line": 152, "kind": "ctor_argument", "text": "mockAnalyzerService,"},
+        {"line": "140-146", "kind": "commentary", "text": "regression-sentinel comment block — describes an assertion that does not exist in source"}
+      ]
+    },
+    "other_consumers_check": {
+      "method": "Grep src/ for `new IndexingOrchestrator` and `analyzerService` (predecessor-WO grep already exhaustive)",
+      "result": "Only three sites identified above. BreakingChangeDetector uses AnalyzerService independently and is outside this WO's diff radius (different file, different class).",
+      "confidence": "high — predecessor WO ARCHIVED.md confirms diff radius was src/integration/rag/* only"
+    }
+  },
+  "investigation_targets": {
+    "skipped": true,
+    "rationale": "Predecessor WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 ARCHIVED.md already enumerated the dependency surface post-pivot. Three callsites are known with line numbers; no probe scripts or behavioral investigation needed."
+  },
+  "implementation_strategy": {
+    "approach": "Two atomic commits plus tsc/test verification.",
+    "commits": [
+      {
+        "label": "C1: production cleanup",
+        "scope": "src/integration/rag/indexing-orchestrator.ts + src/cli/rag-index.ts",
+        "operations": [
+          "Delete L14 import type AnalyzerService (orchestrator)",
+          "Delete L360 private analyzerService field declaration",
+          "Delete L366 analyzerService ctor parameter",
+          "Delete L371 this.analyzerService assignment",
+          "Update class JSDoc header comment if it references AnalyzerService dependency",
+          "Delete L14 import AnalyzerService (rag-index.ts CLI)",
+          "Delete L437 const analyzerService = new AnalyzerService(...)",
+          "Delete L441 analyzerService argument from new IndexingOrchestrator(...)"
+        ],
+        "tsc_check": "tsc --noEmit clean both configs after this commit"
+      },
+      {
+        "label": "C2: test cleanup",
+        "scope": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts",
+        "operations": [
+          "Delete L147-149 mockAnalyzerService declaration + vi.fn() analyze",
+          "Delete L152 mockAnalyzerService ctor argument",
+          "Delete or condense L140-146 regression-sentinel commentary (the sentinel never existed; misleading comment)",
+          "Verify all assertions in this test file still PASS"
+        ],
+        "tsc_check": "tsc --noEmit clean both configs after this commit"
+      }
+    ],
+    "verification": [
+      "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json)",
+      "vitest run src/integration/rag/__tests__/ — all pass",
+      "vitest run __tests__/pipeline/ — all pass",
+      "Verify AC-05a + AC-05b dual-AC identity tests still PASS (commit affff3a fixture)"
+    ]
+  },
+  "risk_assessment": {
+    "overall_risk": "low",
+    "risks": [
+      {
+        "id": "R-1",
+        "description": "Hidden callsite somewhere in the repo that constructs IndexingOrchestrator with analyzerService and is missed by the grep",
+        "likelihood": "very low",
+        "impact": "tsc compile failure on C1, surfaced immediately",
+        "mitigation": "tsc gate after C1 will catch any missed callsite. Predecessor WO already grep-confirmed exhaustive."
+      },
+      {
+        "id": "R-2",
+        "description": "Removing the mock breaks an assertion that DOES live somewhere in the test file (i.e., the commentary at L140-146 is real, not stale)",
+        "likelihood": "low",
+        "impact": "test failure on C2",
+        "mitigation": "Inspect test file fully before C2; if the assertion exists, decide whether to keep the mock as a true regression sentinel (drop the JSDoc @deprecated, keep the field but unused — alternative path) or delete the assertion if it is itself dead weight"
+      },
+      {
+        "id": "R-3",
+        "description": "AC-05a/b vitest fixture (affff3a) constructs IndexingOrchestrator differently and breaks",
+        "likelihood": "very low",
+        "impact": "fixture test failure",
+        "mitigation": "Fixture is in __tests__ tree; same boundary; if it constructs IndexingOrchestrator with analyzerService it gets the same edit treatment in C2"
+      }
+    ]
+  },
+  "expected_outcome": {
+    "loc_delta": "net negative ~-15 LOC (5-8 deletions in production code, 5-7 deletions + ~5 commentary lines deleted in test)",
+    "files_changed": 3,
+    "atomic_commits": 2,
+    "tsc_status": "clean both configs throughout",
+    "test_pass_rate": "100% — all existing tests continue to pass; dual-AC identity preserved"
+  }
+}

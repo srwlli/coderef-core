@@ -1,0 +1,60 @@
+{
+  "workorder_id": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001",
+  "feature_name": "cleanup-indexing-orchestrator-analyzerservice-param",
+  "created": "2026-05-05T23:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-04-040"],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 0,
+  "phase_status": "ready_to_execute",
+  "plan_file": "coderef/workorder/cleanup-indexing-orchestrator-analyzerservice-param/plan.json",
+  "context_file": "coderef/workorder/cleanup-indexing-orchestrator-analyzerservice-param/context.json",
+  "analysis_file": "coderef/workorder/cleanup-indexing-orchestrator-analyzerservice-param/analysis.json",
+  "stub_source": null,
+  "predecessor_workorder": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+  "predecessor_archive": "coderef/archived/rag-index-single-analyzer-slice",
+  "handoff": {
+    "from": "SKILLS (DISPATCH-040 /create-workorder)",
+    "to": "CODEREF-CORE (execution dispatch forthcoming from ORCHESTRATOR)",
+    "reason": "Scoping complete: simple_implementation plan with 2 atomic commits + 12 ACs authored. No Option-ruling deferral needed (mechanical cleanup). Predecessor WO ARCHIVED.md confirms dependency surface; three callsites enumerated with line numbers."
+  },
+  "execution_rules": {
+    "plan_type": "simple_implementation",
+    "phase_gates": "Phase 1 (production cleanup) gates Phase 2 (test cleanup); each phase requires tsc clean both configs before commit lands; Phase 2 requires full test pass before closeout-ready",
+    "atomic_commits": "2 (one per phase)",
+    "tsc_invariant": "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json) after each commit"
+  },
+  "hard_constraints": [
+    "Phase 7 archive MUST NOT be reopened",
+    "Predecessor archives untouched (path-normalization-fix, rag-index-single-analyzer-slice, pipeline-indexing-rag)",
+    "Boundary: src/integration/rag/* + src/cli/rag-index.ts ONLY",
+    "AnalyzerService source code (src/analyzer/analyzer-service.ts) stays untouched",
+    "All existing tests in src/integration/rag/__tests__/ + __tests__/pipeline/ continue to PASS",
+    "AC-05a + AC-05b dual-AC identity (commit affff3a fixture) stays PASS",
+    "tsc --noEmit clean both configs after each commit",
+    "Cultural validator scope-mode + tracking validator scope-mode must PASS clean",
+    "Net negative LOC required (real cleanup)"
+  ],
+  "blockers": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-05T23:00:00Z",
+      "from": "SKILLS",
+      "to": "ORCHESTRATOR",
+      "kind": "wo_authored",
+      "summary": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001 authored under DISPATCH-040 (low priority, post-rebuild + post-bulletproof-pivot-1 maintenance). Plan_type=simple_implementation; 2 atomic commits planned (production then test); 12 ACs; net negative ~-15 LOC target. Predecessor WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 ARCHIVED.md confirmed three callsites at scoping time. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for execution."
+    }
+  ],
+  "decisions_log": [
+    {
+      "event": "wo_creation",
+      "at": "2026-05-05T23:00:00Z",
+      "by": "SKILLS via /create-workorder (DISPATCH-040)",
+      "rationale": "DISPATCH-040 dispatch payload directed plan_type=simple_implementation (no investigation phase; mechanical cleanup). Predecessor WO already documented dependency surface exhaustively, so SKILLS authored full plan + analysis + context + communication directly rather than seeding a partial plan deferred to ORCHESTRATOR (the DISPATCH-038 / WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 pattern). Full /create-workorder Step 4-7 chain ran."
+    }
+  ]
+}

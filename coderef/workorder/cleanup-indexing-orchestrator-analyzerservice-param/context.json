@@ -1,0 +1,61 @@
+{
+  "workorder_id": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001",
+  "feature_name": "cleanup-indexing-orchestrator-analyzerservice-param",
+  "created": "2026-05-05T23:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-04-040",
+  "intake": {
+    "trigger": "post_close_followup_dispatch",
+    "user_request": "Remove the @deprecated analyzerService constructor parameter and private field from IndexingOrchestrator. The field was retained (with @deprecated JSDoc) during WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 so that WO's diff radius stayed inside src/integration/rag/* and didn't have to touch src/cli/rag-index.ts. Now that the substrate WO is closed (a19249a, archive 2026-05-05), the cleanup is a clean low-priority follow-up.",
+    "predecessor_wo": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 (archived 2026-05-05, CORE commit a19249a)"
+  },
+  "classification": {
+    "plan_type": "simple_implementation",
+    "plan_type_rationale": "Mechanical cleanup with known callsites. No investigation phase required — predecessor WO exhaustively documented the dependency surface. Three change targets identified at scoping time: (1) IndexingOrchestrator ctor + field, (2) src/cli/rag-index.ts construction site + AnalyzerService import, (3) indexing-pipeline.test.ts mock construction. Each is small and self-contained; can ship as 2-3 atomic commits.",
+    "plan_type_decided_by": "ORCHESTRATOR (DISPATCH-040 dispatch payload: 'Plan_type likely simple_implementation (no investigation phase needed — fix is mechanical)')",
+    "discovery_ref": "coderef/workorder/cleanup-indexing-orchestrator-analyzerservice-param/analysis.json",
+    "discovery": "Three callsites enumerated. AnalyzerService is still used by populate-coderef CLI; only the IndexingOrchestrator dependency on it goes away. The 'regression sentinel' comment in indexing-pipeline.test.ts (line 145) refers to an assertion that exists only in commentary — the mock is functionally dead weight and can be removed cleanly.",
+    "discovery_skipped_reason": null
+  },
+  "scope": {
+    "in_scope": [
+      "src/integration/rag/indexing-orchestrator.ts: remove `private analyzerService: AnalyzerService` field (L360); remove `analyzerService: AnalyzerService,` ctor param (L366); remove `this.analyzerService = analyzerService;` assignment (L371); remove unused `import type { AnalyzerService }` (L14); update class JSDoc that references analyzer dependency",
+      "src/cli/rag-index.ts: remove `import { AnalyzerService } from '../analyzer/analyzer-service.js'` (L14); remove `const analyzerService = new AnalyzerService(args.projectDir);` (L437); remove `analyzerService,` argument from `new IndexingOrchestrator(...)` (L441)",
+      "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts: remove `mockAnalyzerService` declaration + `vi.fn() analyze` mock (L147-149); remove `mockAnalyzerService,` argument from `new IndexingOrchestrator(...)` (L152); update or remove the 'regression sentinel' commentary at L140-146 since the field no longer exists",
+      "Verify no other production or test callsite constructs IndexingOrchestrator with analyzerService — predecessor-WO grep confirmed only these three sites"
+    ],
+    "out_of_scope": [
+      "Phase 7 archive — locked, must NOT be reopened",
+      "Predecessor archives (path-normalization-fix, rag-index-single-analyzer-slice, pipeline-indexing-rag) — closed, must NOT be modified",
+      "AnalyzerService source code itself (src/analyzer/analyzer-service.ts) — still used by populate-coderef CLI",
+      "ChunkConverter changes — already shipped in single-slice WO",
+      "graph.json read path — already shipped",
+      "Any new IndexingResult schema fields (DR-PHASE-7-B locked additive)",
+      "BreakingChangeDetector or any other component that uses AnalyzerService for legitimate reasons — outside this WO's diff radius",
+      "Phase 7 invariant tests, dual-AC fixture (commit affff3a), graph-ground-truth tests — must continue to PASS but no edits"
+    ]
+  },
+  "constraints": [
+    "Phase 7 archive MUST NOT be reopened",
+    "Predecessor archives untouched",
+    "Boundary: src/integration/rag/* + src/cli/rag-index.ts ONLY (no AnalyzerService source edits)",
+    "AnalyzerService source code stays untouched (still used by populate-coderef)",
+    "All existing tests in src/integration/rag/__tests__/ + __tests__/pipeline/ continue to PASS",
+    "AC-05a + AC-05b dual-AC identity tests stay PASS (substrate identity preserved)",
+    "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json) after each commit",
+    "Cultural validator scope-mode + tracking validator scope-mode must PASS clean",
+    "Net negative LOC required (real cleanup, not zero-sum rename)",
+    "Session routing: daily-agent-session-2026-05-04 (5-4 calendar-current)"
+  ],
+  "evidence_summary": {
+    "callsite_inventory": {
+      "src/integration/rag/indexing-orchestrator.ts": ["L14 import type", "L360 private field decl", "L366 ctor param", "L371 ctor body assignment"],
+      "src/cli/rag-index.ts": ["L14 import", "L437 construction", "L441 ctor argument"],
+      "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts": ["L147-149 mock decl", "L152 ctor argument", "L140-146 commentary block"]
+    },
+    "expected_loc_delta": "net negative ~-15 LOC (5-7 deletions in production, 5-7 deletions in tests, 1-3 line edits in CLI)",
+    "tsc_invariant": "Both configs must be clean after each commit",
+    "predecessor_wo_evidence": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 ARCHIVED.md confirms the field is genuinely unused post-substrate-pivot (analyzerService.analyze is never called in production; mock is dead in test). The deprecation was a deliberate boundary-preserving choice, not an unfinished refactor."
+  }
+}
