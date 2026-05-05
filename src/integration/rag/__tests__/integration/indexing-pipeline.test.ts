@@ -24,55 +24,59 @@ describe('Indexing Pipeline Integration', () => {
   let orchestrator: IndexingOrchestrator;
   let tempDir: string;
 
-  // Helper to create mock graph with proper interface
-  const createMockGraph = (basePath: string): DependencyGraph => {
-    const graph: DependencyGraph = {
-      nodes: new Map<string, GraphNode>(),
-      edges: [] as GraphEdge[],
-      edgesBySource: new Map<string, GraphEdge[]>(),
-      edgesByTarget: new Map<string, GraphEdge[]>()
+  // WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001: orchestrator now reads
+  // .coderef/graph.json directly. The on-disk shape is flat node + edge
+  // arrays (not Map-keyed), with relative-POSIX node.file paths and
+  // capability-tagged node.id values — matches what populate-coderef
+  // writes. Each tempDir gets one of these written by writeGraphJson()
+  // in beforeEach. No facets are populated here (these tests exercise
+  // chunking/embedding/vector-store, not AC-05a/AC-05b which has its
+  // own dedicated invariant test).
+  const writeGraphJson = (basePath: string): void => {
+    const graphJson = {
+      version: '1.0',
+      exportedAt: new Date().toISOString(),
+      nodes: [
+        {
+          id: '@Fn/auth/login.ts#authenticate:10',
+          type: 'function',
+          name: 'authenticate',
+          file: 'auth/login.ts',
+          line: 10,
+          metadata: { exported: true },
+        },
+        {
+          id: '@Fn/utils/hash.ts#hashPassword:5',
+          type: 'function',
+          name: 'hashPassword',
+          file: 'utils/hash.ts',
+          line: 5,
+          metadata: { exported: false },
+        },
+        {
+          id: '@Cl/models/User.ts#User:1',
+          type: 'class',
+          name: 'User',
+          file: 'models/User.ts',
+          line: 1,
+          metadata: { exported: true },
+        },
+      ],
+      edges: [
+        {
+          source: '@Fn/auth/login.ts#authenticate:10',
+          target: '@Fn/utils/hash.ts#hashPassword:5',
+          type: 'calls',
+        },
+      ],
+      statistics: { nodeCount: 3, edgeCount: 1 },
     };
-
-    // Add test nodes (using actual GraphNode interface)
-    const node1: GraphNode = {
-      id: 'auth/login.ts:authenticate',
-      type: 'function',
-      file: path.join(basePath, 'auth', 'login.ts'),
-      line: 10,
-      metadata: { exported: true }
-    };
-
-    const node2: GraphNode = {
-      id: 'utils/hash.ts:hashPassword',
-      type: 'function',
-      file: path.join(basePath, 'utils', 'hash.ts'),
-      line: 5,
-      metadata: { exported: false }
-    };
-
-    const node3: GraphNode = {
-      id: 'models/User.ts:User',
-      type: 'class',
-      file: path.join(basePath, 'models', 'User.ts'),
-      line: 1,
-      metadata: { exported: true }
-    };
-
-    graph.nodes.set(node1.id, node1);
-    graph.nodes.set(node2.id, node2);
-    graph.nodes.set(node3.id, node3);
-
-    // Add an edge for dependency
-    const edge: GraphEdge = {
-      source: 'auth/login.ts:authenticate',
-      target: 'utils/hash.ts:hashPassword',
-      type: 'calls'
-    };
-    graph.edges.push(edge);
-    graph.edgesBySource.set(edge.source, [edge]);
-    graph.edgesByTarget.set(edge.target, [edge]);
-
-    return graph;
+    fs.mkdirSync(path.join(basePath, '.coderef'), { recursive: true });
+    fs.writeFileSync(
+      path.join(basePath, '.coderef', 'graph.json'),
+      JSON.stringify(graphJson),
+      'utf-8',
+    );
   };
 
   beforeEach(() => {
@@ -128,29 +132,20 @@ describe('Indexing Pipeline Integration', () => {
       getProviderName: vi.fn().mockReturnValue('mock-vector-store')
     };
 
-    // Create mock graph with temp directory path
-    const mockGraph = createMockGraph(tempDir);
+    // Write canonical graph.json into tempDir/.coderef/. The orchestrator
+    // reads this artifact directly (WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001
+    // substrate pivot) — mockAnalyzerService.analyze is never invoked.
+    writeGraphJson(tempDir);
 
+    // mockAnalyzerService stays constructor-injected (the field is still
+    // private+stored on IndexingOrchestrator) but its analyze method is
+    // never called. The vi.fn() below is a regression sentinel: if a
+    // future change re-introduces the second analyzer slice, the
+    // assertion in the gate-invariant test (b)
+    // `expect(analyzerService.analyze).not.toHaveBeenCalled()` will
+    // catch it. Free invariant.
     mockAnalyzerService = {
-      analyzeCodebase: vi.fn().mockResolvedValue({
-        graph: mockGraph,
-        statistics: {
-          nodeCount: 3,
-          edgeCount: 1,
-          fileCount: 3
-        },
-        analysisTime: 100
-      }),
-      setElementMap: vi.fn(),
-      analyze: vi.fn().mockResolvedValue({
-        graph: mockGraph,
-        statistics: {
-          nodeCount: 3,
-          edgeCount: 1,
-          fileCount: 3
-        },
-        analysisTime: 100
-      })
+      analyze: vi.fn(),
     } as any;
 
     orchestrator = new IndexingOrchestrator(
@@ -179,8 +174,10 @@ describe('Indexing Pipeline Integration', () => {
         embeddingOptions: { batchSize: 10 }
       });
 
-      // Verify analyzer was called
-      expect(mockAnalyzerService.analyze).toHaveBeenCalled();
+      // Substrate-pivot regression sentinel: orchestrator must NOT
+      // invoke a second analyzer slice (WO-RAG-INDEX-SINGLE-ANALYZER-
+      // SLICE-001). Chunks come from .coderef/graph.json directly.
+      expect(mockAnalyzerService.analyze).not.toHaveBeenCalled();
 
       // Verify embeddings were generated
       expect(mockLLMProvider.embed).toHaveBeenCalled();
