@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-04-036"],
   "predecessor_for": null,
-  "status": "plan_created",
-  "current_phase": 1,
-  "phase_status": "ready",
+  "status": "complete",
+  "completed_at": "2026-05-05T05:45:00Z",
+  "current_phase": 5,
+  "phase_status": "complete",
   "plan_file": "coderef/workorder/indexing-orchestrator-path-normalization-fix/plan.json",
   "context_file": "coderef/workorder/indexing-orchestrator-path-normalization-fix/context.json",
   "analysis_file": "coderef/workorder/indexing-orchestrator-path-normalization-fix/analysis.json",
@@ -32,9 +33,6 @@
     "Diff confined to normalizeChunkFile() + tests"
   ],
   "blockers": [],
-  "decisions_log": [
-    {"event": "workorder_created", "at": "2026-05-05T02:00:00Z", "by": "create-workorder@2.4.0 (SKILLS via DISPATCH-036)", "rationale": "Phased plan_type selected: bug fix with halt gates between code, tests, and dynamic verification."}
-  ],
   "phase_transitions": [],
   "plan_adjustments": [],
   "communication_log": [
@@ -44,6 +42,33 @@
       "to": "ORCHESTRATOR",
       "kind": "workorder_authored",
       "summary": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 authored from STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001. Plan-type=phased, 5 phases, 16 tasks, AC-01..AC-06. Ready for ORCHESTRATOR to dispatch CODEREF-CORE for execute."
+    },
+    {
+      "at": "2026-05-05T05:30:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "halt_and_report",
+      "summary": "Phase 5 dynamic re-verification: fix verified correct (0→215 chunks correctly skip of 262 missing-header files; was catastrophic 0/262 pre-fix). 8/8 unit + 4/4 invariant + 12/12 ground-truth+boundary all PASS, tsc clean both configs. AC-02 ±10% threshold misses by 17.9% — but the 47-file residual gap is structural: rag-index analyzerService.analyze() produces a smaller graph than populate-coderef graph.json. 3 paths surfaced for ruling."
+    },
+    {
+      "at": "2026-05-05T05:35:00Z",
+      "from": "ORCHESTRATOR",
+      "to": "CODEREF-CORE",
+      "kind": "ruling",
+      "summary": "Path A authorized: land the verified-correct fix; mark AC-02 DIVERGED with structural rationale; file follow-up stub (rag-index analyzer-slice coverage divergence vs populate-coderef graph.json) as priority=high, owner=CODEREF-CORE; Phase 7 archive NOT reopened; closeout report + push."
+    },
+    {
+      "at": "2026-05-05T05:45:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_complete",
+      "summary": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 closed under Path A. Commits: a38a5b4 (fix), 2dcc2a6 (unit test 8/8), 989d05b (invariant 4/4), + closeout. AC-01/03/04/05/06 PASS; AC-02 DIVERGED with stub-002 filed. Standing by for ORCHESTRATOR to dispatch SKILLS for cross-project /close-workorder."
     }
-  ]
+  ],
+  "decisions_log": [
+    {"event": "workorder_created", "at": "2026-05-05T02:00:00Z", "by": "create-workorder@2.4.0 (SKILLS via DISPATCH-036)", "rationale": "Phased plan_type selected: bug fix with halt gates between code, tests, and dynamic verification."},
+    {"event": "halt_and_report", "at": "2026-05-05T05:30:00Z", "by": "CODEREF-CORE (DISPATCH-005 phase 5)", "rationale": "WO halt-and-report condition triggered: 'reproduction reveals a different root cause'. Path-normalization fix verified correct in isolation; residual ±10% miss is rag-index analyzer slice vs populate-coderef graph.json coverage divergence (47 of 262 missing-header files don't reach the rag-index analyzer at all)."},
+    {"event": "orchestrator_ruling", "at": "2026-05-05T05:35:00Z", "by": "ORCHESTRATOR", "rationale": "Path A authorized. (B) post-hoc threshold relax sets wrong precedent. (C) violates locked diff radius + DR-PHASE-7-B. (A) lands the load-bearing 0→215 improvement and pushes the analyzer-slice gap to its own scoped follow-up WO."}
+  ],
+  "stub_filed_during_close": "coderef/stubs/STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001.md"
 }
