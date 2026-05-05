@@ -11,7 +11,6 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import { AnalyzerService } from '../analyzer/analyzer-service.js';
 import { detectProjectLanguages, validateCliLanguages } from './detect-languages.js';
 
 // Dynamic imports for optional RAG dependencies
@@ -433,12 +432,8 @@ async function main(): Promise<void> {
     // Initialize vector store (now safe — any incompatible state was cleared above)
     await vectorStore.initialize();
 
-    // Initialize analyzer
-    const analyzerService = new AnalyzerService(args.projectDir);
-
     // Create orchestrator
     const orchestrator = new IndexingOrchestrator(
-      analyzerService,
       llmProvider,
       vectorStore,
       args.projectDir

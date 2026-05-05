@@ -3,15 +3,13 @@
  * P3-T1: Orchestrates the complete pipeline from source code to vector DB
  *
  * This is the main entry point for RAG indexing. It coordinates:
- * 1. Code scanning (AnalyzerService)
- * 2. Graph building (GraphBuilder)
- * 3. Chunk conversion
- * 4. Embedding generation
- * 5. Vector storage
- * 6. Incremental indexing
+ * 1. Graph load from .coderef/graph.json (populate-coderef is the producer)
+ * 2. Chunk conversion
+ * 3. Embedding generation
+ * 4. Vector storage
+ * 5. Incremental indexing
  */
 
-import type { AnalyzerService } from '../../analyzer/analyzer-service.js';
 import type {
   DependencyGraph,
   GraphEdge,
@@ -354,21 +352,22 @@ export interface IndexingError {
 }
 
 /**
- * Orchestrates the complete RAG indexing pipeline
+ * Orchestrates the complete RAG indexing pipeline.
+ *
+ * Reads the persisted graph from `.coderef/graph.json` rather than running a
+ * second analyzer slice in-process. populate-coderef owns the single canonical
+ * graph build.
  */
 export class IndexingOrchestrator {
-  private analyzerService: AnalyzerService;
   private llmProvider: LLMProvider;
   private vectorStore: VectorStore;
   private basePath: string;
 
   constructor(
-    analyzerService: AnalyzerService,
     llmProvider: LLMProvider,
     vectorStore: VectorStore,
     basePath: string = process.cwd()
   ) {
-    this.analyzerService = analyzerService;
     this.llmProvider = llmProvider;
     this.vectorStore = vectorStore;
     this.basePath = basePath;
