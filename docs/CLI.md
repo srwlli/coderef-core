@@ -25,9 +25,9 @@ node dist/src/cli/index.js <command>
 | Command | Purpose | Key Flags |
 |---------|---------|-----------|
 | [`coderef-scan`](#coderef-scan) | Scan code for elements | `--dir`, `--lang`, `--recursive`, `--useAST` |
-| [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts | `--dir`, `--clean`, `--skip-drift` |
-| [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search | `--dir`, `--chroma-url`, `--ollama-url` |
-| [`coderef-rag-search`](#coderef-rag-search) | Search indexed code | `--query`, `--type`, `--max-results` |
+| [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
+| [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--dir`, `--chroma-url`, `--ollama-url` |
+| [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--query`, `--type`, `--layer`, `--capability` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--dir`, `--chroma-url` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
 | [`coderef-watch`](#coderef-watch) | Workspace file-watcher daemon for foundation-docs freshness | `--project-dir`, `--debounce-ms`, `--once`, `--no-pipeline`, `--json` |
@@ -307,8 +307,19 @@ npx populate-coderef ./my-project --mode full
 | `--semantic` | Legacy alias for `--semantic-registry` | `true` |
 | `--no-semantic-registry` | Remove/skip `semantic-registry.json` projection | `false` |
 | `--source-headers` | Write optional CodeRef-Semantics headers into source files | `false` |
+| `--strict-headers` | Promote semantic-header drift (SH-1, SH-2, SH-3) from warnings to hard errors at the Phase 6 validator. `populate-coderef` exits non-zero on header drift. | `false` |
 | `-j, --json` | Output JSON summary | `false` |
 | `-v, --verbose` | Verbose output | `false` |
+
+**Phase 6 chokepoint behavior.** `populate-coderef` runs `validatePipelineState` after the pipeline finishes and writes the resulting 11-field `ValidationReport` to `.coderef/validation-report.json`. The CLI's exit code reflects `ValidationResult.ok`:
+
+| `ValidationResult` | Exit code | Stderr |
+|---|---:|---|
+| `ok=true`, no warnings | `0` | quiet |
+| `ok=true`, warnings present (default-mode header drift) | `0` | warning summary (SH-1/SH-2/SH-3 file lists) |
+| `ok=false` (graph-integrity error or `--strict-headers` promoting header drift) | non-zero | error detail |
+
+Downstream `rag-index` reads `validation-report.json` and refuses to run when `ok=false` — see [`rag-index`](#coderef-rag-index) below.
 
 ### Examples
 
@@ -321,6 +332,9 @@ npx populate-coderef ./my-project --mode minimal
 
 # Generate optional human-facing source headers
 npx populate-coderef ./my-project --source-headers
+
+# Hard-fail on any semantic header drift (CI mode)
+npx populate-coderef ./my-project --strict-headers
 ```
 
 ### Generated Artifacts
@@ -343,12 +357,14 @@ npx populate-coderef ./my-project --source-headers
 
 ## coderef-rag-index
 
-Index codebase into a vector database for semantic search.
+Index codebase into a vector database for semantic search. Reads `.coderef/validation-report.json` (produced by `populate-coderef`) and **refuses to run** when `ok=false` — eliminates the pre-Phase-7 `chunksIndexed=0` silent-success anti-pattern.
+
+The CLI binary is `rag-index` (registered in `package.json`). `coderef-rag-index` is the historical name.
 
 ### Usage
 
 ```bash
-npx coderef-rag-index --dir ./src --chroma-url http://localhost:8000
+npx rag-index --dir ./src --chroma-url http://localhost:8000
 ```
 
 ### Options
@@ -363,37 +379,66 @@ npx coderef-rag-index --dir ./src --chroma-url http://localhost:8000
 | `--skip-existing` | Skip already-indexed files | `false` |
 | `-v, --verbose` | Verbose output | `false` |
 
+(There are no Phase 7 flags on `rag-index` — DR-PHASE-7-D capped new flags at two, both on `rag-search`.)
+
+### Validation gate (Phase 6 → Phase 7 contract)
+
+`rag-index` reads `<project>/.coderef/validation-report.json` before any indexing work begins:
+
+| `validation-report.json` state | `rag-index` behavior |
+|---|---|
+| File present, `ok=true` | proceed to index |
+| File present, `ok=false` | return `IndexingResult` with `status='failed'`, `validationGateRefused=true`, `chunksIndexed=0`. Exit non-zero. |
+| File missing or malformed | hard error; exit non-zero. Run `populate-coderef` first. |
+
+This is the load-bearing Phase 6 → Phase 7 gate (DR-PHASE-7-A). Programmatic callers inject the gate themselves; the orchestrator is pure and never reads the report directly.
+
+### `IndexingResult.status` and exit codes
+
+`rag-index` emits an `IndexingResult` (see [docs/SCHEMA.md § 6](./SCHEMA.md)) with a top-level `status`:
+
+| `status` | Condition | Exit code | Stderr |
+|---------|-----------|----------:|--------|
+| `success` | `chunksIndexed > 0` AND `chunksSkipped === 0` AND `chunksFailed === 0` | `0` | quiet |
+| `partial` | `chunksIndexed > 0` AND (`chunksSkipped > 0` OR `chunksFailed > 0`) | `0` | warning summary with skipped/failed counts and per-entry reasons |
+| `failed`  | `chunksIndexed === 0` OR `validationGateRefused === true` | non-zero | error detail |
+
+`chunksSkippedDetails[]` and `chunksFailedDetails[]` carry one entry per skipped/failed chunk with a `reason` enum (see [docs/SCHEMA.md § 6](./SCHEMA.md) for `SkipReason` / `FailReason`). Header-drift (`headerStatus` ∈ {missing, stale, partial}) skips with the corresponding `header_status_*` reason rather than failing — DR-PHASE-7-E.
+
 ### Examples
 
 ```bash
 # Index with local ChromaDB
-npx coderef-rag-index --dir ./src
+npx rag-index --dir ./src
 
 # Index with remote ChromaDB
-npx coderef-rag-index --dir ./src --chroma-url https://chroma.example.com
+npx rag-index --dir ./src --chroma-url https://chroma.example.com
 
 # Use specific embedding model
-npx coderef-rag-index --dir ./src --model all-minilm
+npx rag-index --dir ./src --model all-minilm
 
 # Incremental indexing
-npx coderef-rag-index --dir ./src --skip-existing
+npx rag-index --dir ./src --skip-existing
 ```
 
 ### Prerequisites
 
-- ChromaDB server running (local or remote)
-- Ollama server running (for embeddings)
+- `.coderef/validation-report.json` present and `ok=true` — run `populate-coderef` first.
+- ChromaDB server running (local or remote).
+- Ollama server running (for embeddings).
 
 ---
 
 ## coderef-rag-search
 
-Search indexed codebase using natural language queries.
+Search the indexed codebase using natural language queries, with optional filtering by Phase 7 semantic facets.
+
+The CLI binary is `rag-search` (registered in `package.json`). `coderef-rag-search` is the historical name.
 
 ### Usage
 
 ```bash
-npx coderef-rag-search --query "authentication middleware" --type function
+npx rag-search --query "authentication middleware" --type function
 ```
 
 ### Options
@@ -401,7 +446,9 @@ npx coderef-rag-search --query "authentication middleware" --type function
 | Flag | Description | Default |
 |------|-------------|---------|
 | `-q, --query <text>` | Search query (required) | - |
-| `-t, --type <type>` | Filter by element type | All types |
+| `-t, --type <type>` | Filter by element type (`function`, `class`, `method`, ...) | All types |
+| `--layer <value>` | Filter by semantic `@layer` (e.g. `service`, `ui_component`, `cli`). Phase 7. | None |
+| `--capability <value>` | Filter by semantic `@capability` slug (kebab-case). Phase 7. | None |
 | `--max-results <n>` | Maximum results | `10` |
 | `--threshold <score>` | Minimum similarity score | `0.7` |
 | `--chroma-url <url>` | ChromaDB server URL | `http://localhost:8000` |
@@ -409,20 +456,33 @@ npx coderef-rag-search --query "authentication middleware" --type function
 | `--model <name>` | Embedding model | `nomic-embed-text` |
 | `--json` | Output as JSON | `false` |
 
+`--layer` and `--capability` map to the `CodeChunk.{layer, capability}` facets propagated from `ElementData` via `GraphNode.metadata` (Phase 5 → Phase 7). They pass through to the vector-store metadata filter — only chunks with matching values are returned. Layer values come from `ASSISTANT/STANDARDS/layers.json` (the 13-value `LayerEnum`); capability values are free-form kebab-case slugs declared in source headers.
+
+`--constraint` is **deferred** (DR-PHASE-7-D capped new flags at two on `rag-search`). Filtering by constraint can be achieved post-query with JSON output.
+
 ### Examples
 
 ```bash
 # Basic search
-npx coderef-rag-search --query "user login function"
+npx rag-search --query "user login function"
 
-# Filter by type
-npx coderef-rag-search --query "database connection" --type class
+# Filter by element type
+npx rag-search --query "database connection" --type class
+
+# Filter by semantic layer (Phase 7)
+npx rag-search --query "queue worker" --layer service
+
+# Filter by capability slug (Phase 7)
+npx rag-search --query "embedding" --capability rag-indexing
+
+# Combine filters
+npx rag-search --query "validate" --layer validation --capability output-validation
 
 # Higher threshold for precision
-npx coderef-rag-search --query "error handling" --threshold 0.85
+npx rag-search --query "error handling" --threshold 0.85
 
 # JSON output for piping
-npx coderef-rag-search --query "API routes" --json | jq '.results[]'
+npx rag-search --query "API routes" --json | jq '.results[]'
 ```
 
 ### Output Format

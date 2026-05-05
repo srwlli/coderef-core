@@ -164,6 +164,8 @@ Run a vector-RAG search against a project's indexed `.coderef/coderef-vectors.js
 | `type`        | string  | no       | —       | Filter by element type (`function`, `class`, ...)    |
 | `file`        | string  | no       | —       | Filter by file-path substring                        |
 | `exported`    | boolean | no       | —       | If `true`, only exported elements                    |
+| `layer`       | string  | no       | —       | Filter by semantic `@layer` (Phase 7). One of the 13 `LayerEnum` values. |
+| `capability`  | string  | no       | —       | Filter by semantic `@capability` slug (Phase 7). Free-form kebab-case.   |
 
 ```bash
 curl -X POST http://localhost:52849/api/rag/query \
@@ -227,7 +229,12 @@ curl -X POST http://localhost:52849/api/rag/index \
   -d '{ "project_dir": "/abs/path/to/project" }'
 ```
 
-### Response (200)
+### Phase 6 → Phase 7 validation gate
+
+`rag-index` (the spawned subprocess) reads `<project_dir>/.coderef/validation-report.json` and **refuses to run** when `ok=false` (DR-PHASE-7-A). This is the same gate enforced by the CLI directly. The HTTP server reports the result via the `IndexingResult.status` field on the success response and via non-zero `exit_code` on the failure response.
+
+### Response (200, success/partial)
+
 ```json
 {
   "api_version": 1,
@@ -235,11 +242,30 @@ curl -X POST http://localhost:52849/api/rag/index \
   "project_dir": "/abs/path/to/project",
   "exit_code": 0,
   "duration_ms": 18342,
+  "indexing_result": {
+    "status": "success",
+    "chunksIndexed": 215,
+    "chunksSkipped": 0,
+    "chunksFailed": 0,
+    "filesProcessed": 28,
+    "validationGateRefused": false,
+    "validationReportPath": ".coderef/validation-report.json",
+    "chunksSkippedDetails": [],
+    "chunksFailedDetails": []
+  },
   "stdout_tail": "Indexed 215 chunks across 28 files\nIndex written to .coderef/coderef-vectors.json"
 }
 ```
 
-### Response (500, indexing failed)
+If `chunksSkipped > 0` or `chunksFailed > 0`, `indexing_result.status` becomes `"partial"` (still HTTP 200, exit 0), and the per-entry detail arrays carry `{coderefId, reason, message?}` records. `reason` is one of:
+
+- **`SkipReason`:** `unchanged`, `header_status_missing`, `header_status_stale`, `header_status_partial`, `unresolved_relationship`.
+- **`FailReason`:** `embedding_api_error`, `malformed_chunk`.
+
+See [docs/SCHEMA.md § 6](./SCHEMA.md) for full enum definitions.
+
+### Response (500, indexing failed — including validation-gate refusal)
+
 ```json
 {
   "api_version": 1,
@@ -247,9 +273,20 @@ curl -X POST http://localhost:52849/api/rag/index \
   "project_dir": "/abs/path/to/project",
   "exit_code": 1,
   "duration_ms": 4210,
+  "indexing_result": {
+    "status": "failed",
+    "chunksIndexed": 0,
+    "chunksSkipped": 0,
+    "chunksFailed": 0,
+    "filesProcessed": 0,
+    "validationGateRefused": true,
+    "validationReportPath": ".coderef/validation-report.json"
+  },
   "stderr_tail": "<last 20 lines of rag-index stderr>"
 }
 ```
+
+`validationGateRefused=true` indicates the run failed because the Phase 6 validation report carried `ok=false` (or was missing/malformed). Run `populate-coderef` first.
 
 ### Response (409, mutex held)
 ```json
