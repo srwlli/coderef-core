@@ -6,12 +6,12 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-04-038"],
   "predecessor_for": null,
-  "status": "pending_plan",
+  "status": "plan_created",
   "current_phase": 0,
-  "phase_status": "scoping",
-  "plan_file": null,
+  "phase_status": "ready_to_execute",
+  "plan_file": "coderef/workorder/rag-index-analyzer-slice-coverage/plan.json",
   "context_file": "coderef/workorder/rag-index-analyzer-slice-coverage/context.json",
-  "analysis_file": null,
+  "analysis_file": "coderef/workorder/rag-index-analyzer-slice-coverage/analysis.json",
   "stub_source": "coderef/stubs/STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001.md",
   "predecessor_workorder": "WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001",
   "predecessor_archive": "coderef/archived/indexing-orchestrator-path-normalization-fix",
@@ -54,13 +54,16 @@
       }
     }
   },
-  "blockers": [
+  "blockers": [],
+  "resolved_blockers": [
     {
       "id": "BLOCK-OPTION-RULING",
       "description": "ORCHESTRATOR ruling on Option 1 vs Option 2 is required before plan.json + analysis.json can be authored",
-      "blocked_step": "Step 6 of /create-workorder (plan.json authorship)",
       "raised_at": "2026-05-05T05:00:00Z",
-      "raised_by": "SKILLS (/create-workorder scoping seed)"
+      "raised_by": "SKILLS (/create-workorder scoping seed)",
+      "resolved_at": "2026-05-05T15:55:00Z",
+      "resolved_by": "ORCHESTRATOR",
+      "resolution": "Option 1 — expand rag-index analyzer file coverage. Reasoning: (1) honest single source of truth — validation-report.header_missing_count stays canonical, no two-view split; (2) the 47 files are type-only modules + __tests__/ which belong in retrieval anyway; (3) AC-09 stays meaningful as end-to-end pipeline check, not within-rag-index consistency; (4) Option 1 cons are bounded (one-time embedding cost on local Ollama; noise mitigatable via existing --layer/--capability filters; surfacing latent ChunkConverter bugs is a feature); (5) DR-PHASE-7-B holds — no IndexingResult schema delta needed."
     }
   ],
   "phase_transitions": [],
@@ -72,6 +75,13 @@
       "to": "ORCHESTRATOR",
       "kind": "scoping_seed_authored",
       "summary": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001 directory seeded with context.json + communication.json under DISPATCH-038. Status=pending_plan; plan.json + analysis.json deferred per stub+dispatch direction. Option 1 vs Option 2 ruling owed by ORCHESTRATOR before scoping completes. Block raised: BLOCK-OPTION-RULING."
+    },
+    {
+      "at": "2026-05-05T15:55:00Z",
+      "from": "ORCHESTRATOR",
+      "to": "CODEREF-CORE",
+      "kind": "option_ruling_issued",
+      "summary": "Option 1 selected — expand rag-index analyzer file coverage. BLOCK-OPTION-RULING resolved. Authoring analysis.json + plan.json. Plan targets ≥235/262 AC-09 alignment via investigation-first approach (analyzer glob patterns vs ChunkConverter fileExists vs chunk-eligibility filter)."
     }
   ],
   "decisions_log": [
@@ -80,6 +90,13 @@
       "at": "2026-05-05T05:00:00Z",
       "by": "create-workorder@2.4.0 (SKILLS via DISPATCH-038)",
       "rationale": "Stub Section 'Two scope options for the follow-up WO (NOT prescriptive)' explicitly states the WO must pick ONE option BEFORE any plan.json is authored. Dispatch-038 payload reinforces: 'ORCHESTRATOR rules on Option 1 vs Option 2 BEFORE plan.json is finalized.' Seeded context.json + communication.json (status=pending_plan) and surfaced the decision in scope_decision_required block; deferred plan.json + analysis.json per direction."
+    },
+    {
+      "event": "option_ruling",
+      "at": "2026-05-05T15:55:00Z",
+      "by": "ORCHESTRATOR",
+      "ruling": "Option 1 — expand rag-index analyzer file coverage",
+      "rationale": "(1) Validation-report.header_missing_count is the canonical pipeline output; Option 2 splits it into two views, weakening the 'measure against shipped validation-report.json' contract. (2) The 47 residual files are type-only modules + __tests__/ — exactly the kinds of artifacts a code-aware RAG should surface for shape and usage queries. (3) AC-09 stays meaningful as a cross-component invariant rather than a within-rag-index consistency check. (4) Cons are bounded: embedding cost is one-time on local Ollama; retrieval noise is mitigatable via existing --layer/--capability filters from Phase 7; surfacing latent ChunkConverter bugs is a feature, not a con. (5) DR-PHASE-7-B holds — Option 1 needs zero IndexingResult schema additions; just analyzer pattern expansion or ChunkConverter filter relaxation."
     }
   ]
 }

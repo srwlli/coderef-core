@@ -14,12 +14,12 @@
     "predecessor_stub": "STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001"
   },
   "classification": {
-    "plan_type": "DEFERRED",
-    "plan_type_rationale": "ORCHESTRATOR ruling on Option 1 (expand rag-index analyzer coverage) vs Option 2 (change AC-09 measurement basis to rag-index-own analyzer file count) is a hard prerequisite per stub and dispatch payload. plan_type cannot be classified until the option is selected because the two options have materially different blast radii (Option 1 touches src/integration/rag/indexing-orchestrator.ts + ChunkConverter; Option 2 touches validation-report consumers only).",
-    "plan_type_decided_by": "ORCHESTRATOR (pending)",
-    "discovery_ref": null,
-    "discovery": null,
-    "discovery_skipped_reason": "discovery requires plan_type which requires option selection which requires ORCHESTRATOR ruling"
+    "plan_type": "phased_investigation_then_fix",
+    "plan_type_rationale": "Option 1 ruling locked 2026-05-05T15:55Z. Plan structures investigation (T1 globs / T2 analyzer-internal / T3 ChunkConverter) before fix to avoid preemptively touching all three surfaces. Investigation phase is committed before any src/ changes.",
+    "plan_type_decided_by": "ORCHESTRATOR (Option 1 ruling 2026-05-05T15:55Z)",
+    "discovery_ref": "coderef/workorder/rag-index-analyzer-slice-coverage/analysis.json",
+    "discovery": "Three investigation targets enumerated in analysis.json investigation_targets block. Probe scripts inherited from predecessor archive (diff-skipped.mjs, probe-analyzer.mjs).",
+    "discovery_skipped_reason": null
   },
   "scope": {
     "in_scope": "TBD post-ruling. Both options share: AC reaching ±10% AC-09 dynamic alignment; no Phase 7 archive reopen; no IndexingResult schema delta; no new SkipReason values.",

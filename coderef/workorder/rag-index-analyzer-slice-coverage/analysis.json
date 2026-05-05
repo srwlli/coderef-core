@@ -1,0 +1,158 @@
+{
+  "workorder_id": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+  "feature_name": "rag-index-analyzer-slice-coverage",
+  "authored": "2026-05-05T15:55:00Z",
+  "authored_by": "ORCHESTRATOR (post Option 1 ruling)",
+  "owner_domain": "CODEREF-CORE",
+
+  "ruling": {
+    "decision": "Option 1 — expand rag-index analyzer file coverage",
+    "ruling_authority": "ORCHESTRATOR",
+    "ruled_at": "2026-05-05T15:55:00Z",
+    "rationale_summary": "Honest single source of truth (validation-report.header_missing_count canonical); the 47 residual files belong in retrieval (type-only + tests); AC-09 stays meaningful end-to-end; cons bounded; DR-PHASE-7-B holds with zero schema delta."
+  },
+
+  "problem_statement": "After path-normalization fix (WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001, archive 4827b61), AC-09 dynamic alignment is 215/262 chunks correctly skipped (17.9% gap, outside locked ±10% band). Root cause is structural: rag-index's analyzerService.analyze(...) covers ~215 of the 262 missing-header files. The 47-file shortfall is primarily type-only modules and __tests__/ files — present in .coderef/graph.json (populate-coderef element-grain scan) but absent from rag-index's analyzer graph.",
+
+  "investigation_targets": {
+    "T1_analyzer_glob_patterns": {
+      "location": "src/integration/rag/indexing-orchestrator.ts (analyzer invocation site, ~L367)",
+      "current_invocation": "analyzerService.analyze(['./**/*.ts','./**/*.tsx','./**/*.js','./**/*.jsx','./**/*.py'], false)",
+      "hypothesis": "The glob list is sufficient to match all 47 files on disk (test-files end in .ts/.tsx, type-only files end in .ts), so glob coverage is likely NOT the gap. Verify by globbing the patterns directly and confirming all 47 names appear.",
+      "investigation_method": "Run a node script that globs the same patterns from the same cwd and asserts membership of all 47 residual filenames."
+    },
+    "T2_analyzer_internal_filter": {
+      "location": "analyzerService.analyze internals (extractor / scanner code paths)",
+      "hypothesis": "Even with matching globs, the analyzer's element extractor may skip files that produce no extractable elements (type-only files, certain test patterns). This would mean files reach the analyzer but produce zero nodes, getting dropped before ChunkConverter sees them.",
+      "investigation_method": "Probe analyzerService.analyze output directly; check whether the 47 residual filenames appear in the returned node list at all (with any node count, including zero)."
+    },
+    "T3_chunk_converter_filter_chain": {
+      "location": "src/integration/rag/chunk-converter.ts",
+      "hypothesis": "ChunkConverter has a filter chain (fileExists check + chunk-eligibility filter). If files reach ChunkConverter but produce no eligible chunks (e.g., element type not in the chunk-eligible enum), they vanish at the conversion stage rather than the analyzer stage.",
+      "investigation_method": "Probe ChunkConverter output for the 47 residual filenames; instrument or trace which filter (if any) drops them."
+    }
+  },
+
+  "expected_root_cause_distribution": "T2 (analyzer internal filter) is highest-probability for type-only files (no functions/classes for the element extractor to anchor on). T3 (chunk-converter filter) is highest-probability for __tests__/ files (chunk-eligibility may exclude test patterns). T1 (glob) is lowest-probability — investigated for completeness, not expected to be the cause.",
+
+  "fix_strategy_constraints": [
+    "Investigate ALL THREE targets first; do NOT preemptively change all three. Identify the 1-2 actual gap-source(s) and adjust them.",
+    "Prefer the smallest blast radius that closes the gap — if T2 alone explains 35/47, fix T2 first and reassess T3.",
+    "If T3 fix would require widening chunk-eligibility to include element types currently excluded by design, FILE A NEW STUB — do NOT widen unilaterally.",
+    "If T2 fix would require changing element-extraction behavior in shared analyzer code (not rag-index local code), HALT and report — analyzer-side changes affect populate-coderef and would risk reopening Phase 1.",
+    "Zero changes to IndexingResult schema (DR-PHASE-7-B locked)."
+  ],
+
+  "decision_records": [
+    {
+      "id": "DR-ANALYZER-SLICE-A",
+      "title": "Investigation order: T1 → T2 → T3",
+      "decision": "Run T1 (glob check) first as a 5-minute verification step; expected NO-OP. Then T2 (analyzer internal output) and T3 (ChunkConverter output) in parallel during Phase 1.",
+      "rationale": "T1 is cheap and rules out a whole hypothesis class. T2 and T3 are the actual likely sources; running them in parallel saves a phase boundary."
+    },
+    {
+      "id": "DR-ANALYZER-SLICE-B",
+      "title": "Boundary: rag-index local code only",
+      "decision": "All fixes ship inside src/integration/rag/* (indexing-orchestrator.ts, chunk-converter.ts, ChunkConverter helpers). NO changes to shared analyzer code (src/analyzer/*) or scanner code (src/scanner/*).",
+      "rationale": "Shared analyzer/scanner changes affect populate-coderef and risk reopening Phase 1 / Phase 5 archives. The rebuild is COMPLETE; this is post-rebuild maintenance."
+    },
+    {
+      "id": "DR-ANALYZER-SLICE-C",
+      "title": "AC-02 target: ≥235/262 (matches predecessor ±10% band)",
+      "decision": "Success criterion is ≥235 chunks correctly skipped (matches the ±10% lower-bound threshold the predecessor WO held to). Hitting 262/262 is preferred but not required if last-mile coverage requires shared-analyzer changes.",
+      "rationale": "±10% is the original AC-09 contract from Phase 7; preserving that threshold is the goal. Going beyond 235 is bonus."
+    },
+    {
+      "id": "DR-ANALYZER-SLICE-D",
+      "title": "If 235 unreachable inside rag-index local code, file STUB and close DIVERGED",
+      "decision": "If investigation finds the 47-file gap can ONLY be closed by changes to shared analyzer/scanner code, the WO closes with AC-02 DIVERGED (mirroring predecessor pattern) and a new STUB-ANALYZER-SHARED-EXTRACTOR-COVERAGE-001 is filed for an analyzer-side WO that ORCHESTRATOR scopes separately.",
+      "rationale": "DR-ANALYZER-SLICE-B is load-bearing; we don't break it to chase a metric."
+    },
+    {
+      "id": "DR-ANALYZER-SLICE-E",
+      "title": "Test fixtures: type-only file + __tests__ file",
+      "decision": "Add at least one type-only fixture (no functions/classes) and one __tests__/ fixture to the existing chunk-conversion test suite. Assert each produces ≥1 chunk after the fix.",
+      "rationale": "These are the two structural gap categories. Direct fixtures prevent regression even if the analyzer/converter is later refactored."
+    }
+  ],
+
+  "risks": [
+    {
+      "id": "R-ANALYZER-SLICE-1",
+      "description": "T2 fix requires shared-analyzer change — would reopen Phase 1 risk.",
+      "mitigation": "DR-ANALYZER-SLICE-B + halt-and-report rule. Close WO DIVERGED + file new stub.",
+      "severity": "high"
+    },
+    {
+      "id": "R-ANALYZER-SLICE-2",
+      "description": "T3 fix widens chunk-eligibility and creates retrieval noise from test files.",
+      "mitigation": "Existing --layer/--capability filters from Phase 7 mitigate noise per query. If retrieval-noise complaints surface in production use, scope a follow-up WO; do not pre-optimize.",
+      "severity": "medium"
+    },
+    {
+      "id": "R-ANALYZER-SLICE-3",
+      "description": "Expanding coverage exposes latent ChunkConverter bugs on previously-untested chunk shapes.",
+      "mitigation": "The new test fixtures (DR-ANALYZER-SLICE-E) catch shape bugs early. Existing invariant tests from predecessor WO catch join bugs. tsc --noEmit clean is the type-shape gate.",
+      "severity": "medium"
+    },
+    {
+      "id": "R-ANALYZER-SLICE-4",
+      "description": "Embedding cost / index size growth from +47 files makes local Ollama runs slow.",
+      "mitigation": "One-time cost on local Ollama; rag-index supports --reset and reuse. If runtime regression is significant, document in ARCHIVED.md; do not block merge.",
+      "severity": "low"
+    },
+    {
+      "id": "R-ANALYZER-SLICE-5",
+      "description": "Investigation reveals a 6th category of files (beyond type-only + tests) not covered by either fixture.",
+      "mitigation": "Expected — diff-skipped.mjs + probe-analyzer.mjs (preserved in predecessor archive) enumerate the full 47. Add fixture(s) for the additional category before close.",
+      "severity": "low"
+    }
+  ],
+
+  "key_files_to_touch": [
+    "src/integration/rag/indexing-orchestrator.ts (analyzer invocation site if T1/T2 fix required)",
+    "src/integration/rag/chunk-converter.ts (filter chain if T3 fix required)",
+    "src/integration/rag/__tests__/chunk-converter.test.ts (add type-only + tests fixtures per DR-ANALYZER-SLICE-E)"
+  ],
+
+  "key_files_to_read_only": [
+    "src/integration/rag/code-chunk.ts",
+    "src/analyzer/analyzer-service.ts (or wherever analyzerService.analyze lives — read to understand internal filter, NOT to modify)",
+    "coderef/archived/indexing-orchestrator-path-normalization-fix/ARCHIVED.md (predecessor close report)",
+    "coderef/archived/indexing-orchestrator-path-normalization-fix/diff-skipped.mjs (47-file enumerator)",
+    "coderef/archived/indexing-orchestrator-path-normalization-fix/probe-analyzer.mjs (analyzer-graph probe)",
+    "coderef/stubs/STUB-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001.md"
+  ],
+
+  "halt_and_report_points": [
+    "Phase 1 investigation reveals ALL THREE targets are insufficient (gap is in shared analyzer/scanner code) → close DIVERGED per DR-ANALYZER-SLICE-D",
+    "Phase 2 fix would require widening chunk-eligibility enum to include currently-excluded element types → file new stub, halt",
+    "Phase 2 fix would require changes outside src/integration/rag/* → halt per DR-ANALYZER-SLICE-B",
+    "Phase 3 dynamic re-verify shows chunksSkipped < 235 with all in-scope fixes applied → close DIVERGED per DR-ANALYZER-SLICE-C/D",
+    "Any phase: introducing IndexingResult schema field → halt (DR-PHASE-7-B violation)",
+    "Any phase: introducing new SkipReason enum value → halt (out-of-scope)"
+  ],
+
+  "real_world_baseline": {
+    "predecessor_post_fix_state": {
+      "ac_09_dynamic": "215/262 chunks correctly skip with header_status_missing",
+      "indexing_result_status": "partial",
+      "validation_report_header_missing_count": 262,
+      "ground_truth": "6/6 PASS",
+      "tsc": "clean both configs"
+    },
+    "target_post_wo_state": {
+      "ac_09_dynamic": "≥235/262 (preferred: 262/262 if reachable inside rag-index local code)",
+      "indexing_result_status": "partial (unchanged shape)",
+      "validation_report_header_missing_count": "262 (unchanged — populate-coderef side untouched)",
+      "ground_truth": "6/6 PASS (unchanged)",
+      "tsc": "clean both configs (gate)"
+    }
+  },
+
+  "post_close_followups": [
+    "If WO closes with AC-02 DIVERGED, file STUB-ANALYZER-SHARED-EXTRACTOR-COVERAGE-001 capturing exactly which residual files require shared-analyzer changes.",
+    "Update Phase 7 ARCHIVED.md cross-reference to point to this WO's archive (ASSISTANT-side patch, not CORE — Phase 7 archive itself stays untouched).",
+    "Optional: if 262/262 lands cleanly, capture the win in MEMORY project file as a coda to the rebuild-complete entry."
+  ]
+}

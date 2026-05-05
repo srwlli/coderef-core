@@ -1,0 +1,228 @@
+{
+  "workorder_id": "WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001",
+  "feature_name": "rag-index-analyzer-slice-coverage",
+  "authored": "2026-05-05T15:55:00Z",
+  "authored_by": "ORCHESTRATOR (post Option 1 ruling)",
+  "owner_domain": "CODEREF-CORE",
+  "plan_type": "phased_investigation_then_fix",
+  "ruling_reference": "Option 1 — expand rag-index analyzer file coverage (see analysis.json ruling block)",
+
+  "objective": "Close the 47-file analyzer-slice coverage gap (215/262 → ≥235/262 AC-09 alignment) via investigation-first then minimal-blast-radius fix inside src/integration/rag/* only. Restores AC-09 ±10% threshold without touching shared analyzer/scanner code or IndexingResult schema.",
+
+  "acceptance_criteria": [
+    {
+      "id": "AC-01",
+      "description": "Phase 1 investigation report identifies which of T1 (glob), T2 (analyzer internal filter), T3 (ChunkConverter filter) is the actual gap source. Report committed before any src/ changes.",
+      "verification": "Phase 1 produces an INVESTIGATION-REPORT.md in the WO directory enumerating per-target findings with concrete probe-script output."
+    },
+    {
+      "id": "AC-02",
+      "description": "Live AC-09 dynamic alignment: chunksSkipped(header_status_missing) ≥ 235 of 262 missing-header files (matches ±10% predecessor threshold).",
+      "verification": "Run rag-index against coderef-core itself; inspect .coderef/rag-index.json; chunksSkipped ≥ 235.",
+      "halt_if_unreachable": "DR-ANALYZER-SLICE-D — close DIVERGED + file STUB-ANALYZER-SHARED-EXTRACTOR-COVERAGE-001"
+    },
+    {
+      "id": "AC-03",
+      "description": "Zero changes outside src/integration/rag/*. Verified by git diff --stat.",
+      "verification": "git diff --stat <base>..HEAD -- src/ shows ONLY src/integration/rag/* paths."
+    },
+    {
+      "id": "AC-04",
+      "description": "Zero new field on IndexingResult schema. Zero new SkipReason enum values.",
+      "verification": "grep IndexingResult shape pre/post → identical fields. grep SkipReason enum pre/post → identical values."
+    },
+    {
+      "id": "AC-05",
+      "description": "tsc --noEmit clean on both tsconfig.json and tsconfig.cli.json after each phase commit.",
+      "verification": "npm run typecheck-all (or equivalent) exits 0."
+    },
+    {
+      "id": "AC-06",
+      "description": "Test fixtures added: at least one type-only file fixture + at least one __tests__/ file fixture in src/integration/rag/__tests__/. Each fixture asserts ≥1 chunk produced post-fix.",
+      "verification": "Run targeted test file; PASS on both fixtures."
+    },
+    {
+      "id": "AC-07",
+      "description": "Existing chunk-conversion + invariant tests from predecessor WO still PASS (no regressions).",
+      "verification": "Full src/integration/rag/__tests__/ suite PASS."
+    },
+    {
+      "id": "AC-08",
+      "description": "All 6 graph-ground-truth.test.ts assertions still PASS.",
+      "verification": "Run __tests__/pipeline/graph-ground-truth.test.ts; 6/6 PASS."
+    },
+    {
+      "id": "AC-09",
+      "description": "Predecessor WO archive (indexing-orchestrator-path-normalization-fix) is NOT modified. Verified by git diff against its files.",
+      "verification": "git diff <base>..HEAD -- coderef/archived/indexing-orchestrator-path-normalization-fix/ → EMPTY."
+    },
+    {
+      "id": "AC-10",
+      "description": "Phase 7 archive (pipeline-indexing-rag) is NOT modified. Verified by git diff.",
+      "verification": "git diff <base>..HEAD -- coderef/archived/pipeline-indexing-rag/ → EMPTY."
+    },
+    {
+      "id": "AC-11",
+      "description": "validation-report.header_missing_count remains 262 (populate-coderef side untouched).",
+      "verification": "Run populate.js; cat .coderef/validation-report.json → header_missing_count = 262."
+    },
+    {
+      "id": "AC-12",
+      "description": "WO archived under coderef/archived/rag-index-analyzer-slice-coverage/ with ARCHIVED.md including AC table + per-target findings + commit chain + decisions + hard constraints.",
+      "verification": "Cross-project /close-workorder run by SKILLS produces ARCHIVED.md."
+    }
+  ],
+
+  "phases": [
+    {
+      "phase": 1,
+      "label": "Investigation — identify gap source(s)",
+      "tasks": [
+        {
+          "id": "1.1",
+          "description": "Re-run baseline: populate.js + rag-index.js against coderef-core. Capture chunksSkipped count (expect 215 pre-fix).",
+          "commit_strategy": "no commit yet"
+        },
+        {
+          "id": "1.2",
+          "description": "T1: glob check — write a probe that runs the same glob list ['./**/*.ts','./**/*.tsx','./**/*.js','./**/*.jsx','./**/*.py'] from project root; assert membership of all 47 residual filenames (from predecessor archive's diff-skipped.mjs).",
+          "expected_outcome": "All 47 files match globs (T1 NOT the gap source). Document in INVESTIGATION-REPORT.md.",
+          "halt_if": "Globs miss any of 47 files → T1 IS a partial gap source; document and proceed."
+        },
+        {
+          "id": "1.3",
+          "description": "T2: analyzer-internal-filter check — write a probe that calls analyzerService.analyze(...) directly and lists every filename in returned node array. Assert membership of all 47 residual filenames.",
+          "expected_outcome": "Likely SOME of 47 are missing from analyzer output (type-only files). Document which ones in INVESTIGATION-REPORT.md."
+        },
+        {
+          "id": "1.4",
+          "description": "T3: ChunkConverter-filter check — write a probe that runs ChunkConverter against the analyzer output and lists every filename that produces ≥1 chunk. Compare to T2 output.",
+          "expected_outcome": "ChunkConverter may drop additional files (likely __tests__/ patterns). Document in INVESTIGATION-REPORT.md."
+        },
+        {
+          "id": "1.5",
+          "description": "Author INVESTIGATION-REPORT.md in WO directory: per-target findings table, root-cause attribution per residual file, recommended fix surface(s).",
+          "commit_strategy": "atomic commit: investigate(WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001): phase 1 investigation report"
+        }
+      ],
+      "halt_and_report": [
+        "If investigation reveals all three targets are insufficient and gap is in shared analyzer/scanner code → close DIVERGED per DR-ANALYZER-SLICE-D, file STUB-ANALYZER-SHARED-EXTRACTOR-COVERAGE-001."
+      ]
+    },
+    {
+      "phase": 2,
+      "label": "Implementation — minimal-blast-radius fix",
+      "tasks": [
+        {
+          "id": "2.1",
+          "description": "Apply T2 fix if root cause: adjust analyzer-side handling INSIDE src/integration/rag/* only. If fix requires shared-analyzer change, HALT per DR-ANALYZER-SLICE-B.",
+          "commit_strategy": "atomic commit per fix target"
+        },
+        {
+          "id": "2.2",
+          "description": "Apply T3 fix if root cause: adjust ChunkConverter filter chain. If fix requires widening chunk-eligibility enum, HALT and file stub.",
+          "commit_strategy": "atomic commit per fix target"
+        },
+        {
+          "id": "2.3",
+          "description": "Run tsc --noEmit on both configs after each commit; ensure clean.",
+          "verification": "npm run typecheck-all exits 0"
+        }
+      ],
+      "halt_and_report": [
+        "Fix would require change outside src/integration/rag/* → HALT (DR-ANALYZER-SLICE-B)",
+        "Fix would require new IndexingResult field → HALT (DR-PHASE-7-B violation)",
+        "Fix would require new SkipReason value → HALT (out-of-scope)"
+      ]
+    },
+    {
+      "phase": 3,
+      "label": "Tests — fixtures + regression",
+      "tasks": [
+        {
+          "id": "3.1",
+          "description": "Add type-only file fixture in src/integration/rag/__tests__/. Assert ChunkConverter produces ≥1 chunk for it post-fix.",
+          "commit_strategy": "atomic commit: test(WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001): type-only fixture"
+        },
+        {
+          "id": "3.2",
+          "description": "Add __tests__/ file fixture in src/integration/rag/__tests__/. Assert ChunkConverter produces ≥1 chunk for it post-fix.",
+          "commit_strategy": "atomic commit: test(WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001): __tests__ fixture"
+        },
+        {
+          "id": "3.3",
+          "description": "Run full src/integration/rag/__tests__/ suite. Confirm zero regressions on predecessor WO's chunk-conversion + invariant tests.",
+          "verification": "Test runner output PASS for all suites"
+        },
+        {
+          "id": "3.4",
+          "description": "Run __tests__/pipeline/graph-ground-truth.test.ts. Confirm 6/6 PASS.",
+          "verification": "Test runner output 6/6 PASS"
+        }
+      ],
+      "halt_and_report": [
+        "Any predecessor test regresses → HALT, investigate (likely a shape bug surfaced by widened coverage; this is what we wanted to find but must be fixed before merge)"
+      ]
+    },
+    {
+      "phase": 4,
+      "label": "Dynamic re-verify + close",
+      "tasks": [
+        {
+          "id": "4.1",
+          "description": "Run populate.js + rag-index.js against coderef-core. Capture chunksSkipped count.",
+          "verification": "chunksSkipped ≥ 235 (AC-02)",
+          "halt_if": "chunksSkipped < 235 → close DIVERGED per DR-ANALYZER-SLICE-D"
+        },
+        {
+          "id": "4.2",
+          "description": "Run git diff --stat <base>..HEAD -- src/ → confirm ONLY src/integration/rag/* paths (AC-03).",
+          "verification": "diff output matches AC-03"
+        },
+        {
+          "id": "4.3",
+          "description": "Verify validation-report.header_missing_count = 262 (AC-11).",
+          "verification": "cat .coderef/validation-report.json → header_missing_count: 262"
+        },
+        {
+          "id": "4.4",
+          "description": "Verify predecessor + Phase 7 archives untouched (AC-09 + AC-10).",
+          "verification": "git diff <base>..HEAD -- coderef/archived/{indexing-orchestrator-path-normalization-fix,pipeline-indexing-rag}/ → EMPTY"
+        },
+        {
+          "id": "4.5",
+          "description": "Author closeout report in WO directory; status → completing in communication.json. Push all atomic commits in single push.",
+          "commit_strategy": "atomic commit: close(WO-RAG-INDEX-ANALYZER-SLICE-COVERAGE-001): closeout report + AC table"
+        }
+      ],
+      "halt_and_report": [
+        "AC-02 unreachable inside rag-index local code → close DIVERGED + file STUB-ANALYZER-SHARED-EXTRACTOR-COVERAGE-001"
+      ]
+    }
+  ],
+
+  "definition_of_done": [
+    "AC-01..AC-12 all PASS or AC-02 marked DIVERGED with structural rationale + follow-up stub filed",
+    "All atomic commits pushed clean to origin/main",
+    "INVESTIGATION-REPORT.md present in WO directory",
+    "Cross-project /close-workorder run by SKILLS",
+    "ASSISTANT TRACKING/workorders.json status → archived"
+  ],
+
+  "execution_rules": {
+    "atomic_commits": "one per phase task per fix target; one push at end of each phase",
+    "tsc_invariant": "tsc --noEmit clean on both configs after each commit",
+    "boundary": "src/integration/rag/* ONLY for src/ changes; tests in src/integration/rag/__tests__/ and __tests__/pipeline/ only",
+    "halt_protocol": "if any halt-and-report point trips, status → halted in communication.json, await ORCHESTRATOR ruling before resuming"
+  },
+
+  "out_of_scope": [
+    "Shared analyzer/scanner code changes (src/analyzer/*, src/scanner/*)",
+    "IndexingResult schema additions (DR-PHASE-7-B locked)",
+    "New SkipReason enum values",
+    "Phase 7 archive modifications",
+    "Predecessor WO archive modifications",
+    "populate-coderef CLI changes",
+    "validation-report.json shape changes"
+  ]
+}
