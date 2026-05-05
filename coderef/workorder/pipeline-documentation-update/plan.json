@@ -1,0 +1,259 @@
+{
+  "workorder_id": "WO-PIPELINE-DOCUMENTATION-UPDATE-001",
+  "feature_name": "pipeline-documentation-update",
+  "phase": "Phase 8 - Documentation Update",
+  "phase_sequence": "10 of 10 gated steps (Phase 8 of 9 in roadmap numbering — final phase of pipeline rebuild)",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "target_project_dir": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+
+  "summary": "Final phase of the 9-phase pipeline rebuild. Doc-only WO: truth-up documentation against shipped behavior across the 7 required doc surfaces (scanner schema, relationship schema, header grammar, graph schema, resolution statuses, public API contract, agent usage contract) and the 7 required distinctions (raw facts, resolved relationships, unresolved relationships, graph edges, header-derived vs AST-derived, external dependencies, built-ins). Remove stale claims. Archive point-in-time audit-style root markdown. ZERO source code changes — Phase 8 is doc-only by definition.",
+
+  "load_bearing_constraints": [
+    "ZERO source code changes. If a doc is wrong because the code is wrong, file a stub — do NOT fix the code.",
+    "no-phase-8-docs-leak.test.ts boundary enforcer must remain GREEN — Phase 8 introduces zero new TypeScript field names from the forbidden 8 (docsGenerated, schemaDocPath, schemaDocMd, apiContractMd, agentUsageContractMd, headerGrammarDocPath, documentationVersion, docsBuildTimestamp) into Phase 7 source surfaces.",
+    "All 6 graph-ground-truth.test.ts assertions must remain PASS — no behavioral regression.",
+    "tsc --noEmit must remain clean both configs.",
+    "BNF mirror in docs/HEADER-GRAMMAR.md cites ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md as canonical authority — does NOT fork the grammar.",
+    "Real numbers only — cite post-Phase-7 baseline (valid_edge_count=3464, header_missing=262); no invented metrics.",
+    "There is no Phase 9. After Phase 8, the rebuild is done."
+  ],
+
+  "predecessor_state": {
+    "phase_7_archive": "coderef/archived/pipeline-indexing-rag/ (closed 2026-05-05 under DISPATCH-2026-05-04-033)",
+    "implementation_commits_phase_7": "63da6ae..2c02878 (4 atomic commits) + archive 689af34 in CORE + ledger 2c83682 in ASSISTANT",
+    "validation_report_baseline": "valid_edge_count=3464, header_missing=262, all other counts 0, ok inferred true",
+    "ground_truth_state": "6/6 PASS",
+    "boundary_enforcer_state": "no-phase-8-docs-leak.test.ts shipped Phase 7, currently GREEN, must remain GREEN through Phase 8 close"
+  },
+
+  "tasks": [
+    {
+      "id": "1.1",
+      "title": "Survey existing doc surfaces and confirm prep inventory",
+      "description": "READ every file in docs/ + every root *.md (per existing_doc_surfaces in context.json). For each, confirm/correct the 'current state' tag (current-truthful / stale-needs-rewrite / point-in-time-archive / unsure-ask). Update analysis.json stale_claim_inventory with concrete file:section findings — every entry needs source-of-truth-citation. Output: execution-notes.md inventory section with one line per surveyed file.",
+      "deliverable": "execution-notes.md inventory section + updated analysis.json stale_claim_inventory",
+      "halt_if": "an existing doc claims behavior that contradicts current code AND fixing the doc would require knowing intent that isn't preserved anywhere — halt, ask"
+    },
+    {
+      "id": "1.2",
+      "title": "Lock style guide decisions (cross-reference DR-PHASE-8-B and prep style_guide_decisions_to_lock)",
+      "description": "Pick concrete answers for: (a) one-source-per-topic structure — does graph-schema live as section in SCHEMA.md or standalone GRAPH-SCHEMA.md? (b) audit-style root markdown disposition — confirm DR-PHASE-8-A archive-with-banner. (c) README.md role — table-of-contents vs standalone summary. Document choices at top of execution-notes.md as load-bearing decisions for the rest of the WO.",
+      "deliverable": "execution-notes.md style guide section with locked decisions",
+      "blocked_by": ["1.1"]
+    },
+    {
+      "id": "1.3",
+      "title": "Rewrite docs/SCHEMA.md — Scanner Schema section",
+      "description": "Section authoritative for ElementData (per AC-01). Document fields with current types. Cite src/semantic/element-data.ts (or canonical truth-source path). Include layer, capability, constraints, headerStatus per Phase 1 + Phase 2.5. Use real-world example from coderef-core's own scan output.",
+      "deliverable": "docs/SCHEMA.md Scanner Schema section reflects current ElementData",
+      "blocked_by": ["1.2"]
+    },
+    {
+      "id": "1.4",
+      "title": "Rewrite docs/SCHEMA.md — Relationship Schema section",
+      "description": "Section authoritative for raw fact types AND resolved relationships (per AC-02). Distinguish raw extracted facts (RawImportFact, RawCallFact, RawExportFact, plus header-derived fact type) from resolved relationships (Phase 3 import resolutions, Phase 4 call resolutions). Cite source files for each. Distinction (a) and (b) of roadmap line 466 satisfied here.",
+      "deliverable": "docs/SCHEMA.md Relationship Schema section",
+      "blocked_by": ["1.2"]
+    },
+    {
+      "id": "1.5",
+      "title": "Rewrite docs/SCHEMA.md — Resolution Statuses section",
+      "description": "Section authoritative for the full status set (per AC-05). Import-resolution statuses (resolved/unresolved/external/builtin/ambiguous) + the 5 CallResolutionKinds from Phase 4. Each status defined with semantic distinction. Distinction (c) and (g) of roadmap line 466 satisfied here.",
+      "deliverable": "docs/SCHEMA.md Resolution Statuses section",
+      "blocked_by": ["1.2"]
+    },
+    {
+      "id": "1.6",
+      "title": "Rewrite docs/SCHEMA.md — Graph Schema section (or create docs/GRAPH-SCHEMA.md per task 1.2 decision)",
+      "description": "Authoritative for 8-field edge schema (id, sourceId, targetId, relationship, resolutionStatus, evidence, sourceLocation, candidates), 10-variant discriminated-union EdgeEvidence, and GraphNode shape including Phase 7's facet metadata propagation. Distinction (d) and (e) of roadmap line 466 satisfied here. Cite src/pipeline/graph-builder.ts.",
+      "deliverable": "Graph schema documented per AC-04",
+      "blocked_by": ["1.2"]
+    },
+    {
+      "id": "1.7",
+      "title": "Create docs/HEADER-GRAMMAR.md as mirror of ASSISTANT canonical BNF",
+      "description": "Per AC-03 and DR-PHASE-8-C. Top of file declares mirror status with full path citation to ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md. Copy the BNF productions verbatim. Add sync-touchpoint convention block: 'Future header-grammar changes must update both ASSISTANT canonical and this CORE mirror in the same WO closeout.'",
+      "deliverable": "docs/HEADER-GRAMMAR.md created with explicit mirror citation",
+      "blocked_by": ["1.2"]
+    },
+    {
+      "id": "1.8",
+      "title": "Rewrite docs/API.md — public API contract",
+      "description": "Per AC-06. Document stable public exports from src/index.ts (or canonical entry). Function signatures + return types. Version compatibility commitments. Cross-link into SCHEMA.md and HEADER-GRAMMAR.md rather than restating types. Exclude internal-only utilities. Add Phase 6 (validation-report contract) and Phase 7 (IndexingResult.status) coverage.",
+      "deliverable": "docs/API.md reflects current public surface",
+      "blocked_by": ["1.3", "1.4", "1.5", "1.6"]
+    },
+    {
+      "id": "1.9",
+      "title": "Rewrite AGENTS.md — agent usage contract",
+      "description": "Per AC-07 and DR-PHASE-8-D. Cover: (a) what agents should read (validation-report.json, IndexingResult.status, exit codes from rag-index), (b) what is internal pipeline state not for agent consumption (PipelineState internals), (c) the gate contract (validation-report.ok=false → indexing refuses to run), (d) IndexingResult.status semantics (success/partial/failed) + per-entry skip/fail reasons enum, (e) exit code semantics from rag-index CLI (success→0, partial→0+stderr, failed→non-zero), (f) version compatibility commitments. AGENTS.md becomes the canonical base; CLAUDE.md and GEMINI.md become Claude/Gemini-specific addenda that link to AGENTS.md.",
+      "deliverable": "AGENTS.md rewritten as canonical agent contract",
+      "blocked_by": ["1.8"]
+    },
+    {
+      "id": "1.10",
+      "title": "Verify CLAUDE.md/GEMINI.md remain pointer stubs; no edits needed",
+      "description": "Per ORCHESTRATOR DR-PHASE-8-D revision (Path C, 2026-05-05): CLAUDE.md and GEMINI.md remain unchanged 5-line pointer stubs delegating to ASSISTANT/PROJECT-CONTEXT/coderef-core/CONTEXT.md. Their current purity is what Claude Code reads via the project-instructions header — modifying them risks regressing the Claude Code surface. AGENTS.md alone carries the canonical CORE-side agent-usage contract per task 1.9 (with footer pointer to CONTEXT.md for general project rules).",
+      "deliverable": "CLAUDE.md/GEMINI.md verified unchanged; record verification in execution-notes.md",
+      "blocked_by": ["1.9"]
+    },
+    {
+      "id": "1.11",
+      "title": "Update docs/CLI.md with --strict-headers (Phase 6) and --layer/--capability/--constraint (Phase 7) flags",
+      "description": "Document each flag: what it does, when to use it, what it gates. Cite src/cli/populate.ts for --strict-headers and src/cli/rag-search.ts for the rag-search filter flags. Tie --strict-headers behavior to validation-report.json gating.",
+      "deliverable": "docs/CLI.md covers all post-rebuild flags",
+      "blocked_by": ["1.2"]
+    },
+    {
+      "id": "1.12",
+      "title": "Update docs/rag-http-api.md with Phase 7 reality",
+      "description": "Document IndexingResult.status field, refuse-on-invalid behavior (validation-report.ok=false → indexing refuses), per-entry skip reason enum, --layer/--capability filter pass-through to vector store metadata.",
+      "deliverable": "docs/rag-http-api.md reflects Phase 7 contracts",
+      "blocked_by": ["1.2"]
+    },
+    {
+      "id": "1.13",
+      "title": "Rewrite-or-trim docs/ARCHITECTURE.md",
+      "description": "Survey result from task 1.1 dictates rewrite vs trim. ExportedGraph (Phase 5) is canonical; DependencyGraph is @legacy — any architecture diagram or text claiming DependencyGraph is the live graph is stale. Cross-reference into SCHEMA.md sections rather than restating types. Distinction (d) and (e) of roadmap line 466 reinforced here.",
+      "deliverable": "docs/ARCHITECTURE.md reflects post-rebuild architecture",
+      "blocked_by": ["1.6"]
+    },
+    {
+      "id": "1.14",
+      "title": "Rewrite-or-archive docs/MIGRATION.md and docs/coderef-semantic-schema.md",
+      "description": "Per R-PHASE-8-D. If MIGRATION.md promises migrations from versions that pre-date pipeline rebuild and those paths are dead, archive to docs/archive/MIGRATION-pre-rebuild-<date>.md with banner. If still useful, rewrite. Same survey-based decision for coderef-semantic-schema.md (likely merge into SCHEMA.md and archive original).",
+      "deliverable": "MIGRATION.md and coderef-semantic-schema.md decided, executed",
+      "blocked_by": ["1.3", "1.4"]
+    },
+    {
+      "id": "1.15",
+      "title": "Archive point-in-time audit-style root markdown per DR-PHASE-8-A",
+      "description": "Move with dated banners: EXECUTIVE-SUMMARY.md → docs/archive/EXECUTIVE-SUMMARY-2026-05-05.md, AUDIT-REPORT.md → docs/archive/AUDIT-REPORT-2026-05-05.md, CODEREF-ANALYSIS-REPORT.md → docs/archive/CODEREF-ANALYSIS-REPORT-2026-05-05.md, DUPLICATE-FILES-AUDIT.md → docs/archive/DUPLICATE-FILES-AUDIT-2026-05-05.md, GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN.md → docs/archive/GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN-2026-05-05.md. Each gets banner: 'This document captures project state at 2026-05-05; for current state see <pointer>.' Verify no other doc cross-links into these — if so, update the cross-link target.",
+      "deliverable": "5 audit-style root markdown files archived with banners + cross-link audit",
+      "blocked_by": ["1.1"]
+    },
+    {
+      "id": "1.16",
+      "title": "Update CONTRIBUTING.md if it documents pipeline workflow",
+      "description": "Survey result dictates scope. If CONTRIBUTING.md describes how to add scanners/resolvers/etc. and those instructions are now stale, rewrite. If it's only social/license content, leave alone.",
+      "deliverable": "CONTRIBUTING.md aligned or confirmed not in scope",
+      "blocked_by": ["1.1"]
+    },
+    {
+      "id": "1.17",
+      "title": "Update docs/AGENT-WORKFLOW-GUIDE.md (consolidate or distinguish from AGENTS.md)",
+      "description": "Per cross-reference map. If overlapping with AGENTS.md, consolidate (move workflow content into AGENTS.md and archive the standalone) or distinguish (AGENT-WORKFLOW-GUIDE = how-to-do-tasks, AGENTS = what-to-read-as-base-contract). Pick one in task 1.2 style decisions.",
+      "deliverable": "docs/AGENT-WORKFLOW-GUIDE.md decided, executed",
+      "blocked_by": ["1.9"]
+    },
+    {
+      "id": "1.18",
+      "title": "Survey and update remaining docs/ files (DEPLOY-*, FRONTEND-CALL-DETECTION.md, ROUTE-*.md, COMPONENTS.md, plugins/)",
+      "description": "Most of these are likely either current-truthful (no rewrite) or out-of-Phase-8-scope (e.g., LLOYD-INTEGRATION.md is LLOYD's concern not CORE's). Confirm-and-mark in execution-notes.md per file.",
+      "deliverable": "Remaining docs/ files surveyed and disposition recorded",
+      "blocked_by": ["1.1"]
+    },
+    {
+      "id": "1.19",
+      "title": "Append Phase 8 entry to CHANGELOG.md per AC-12 and DR-PHASE-8-E",
+      "description": "Add entry: dated section for 2026-05-05 (or close date) summarizing the Phase 8 doc rebuild. Add separate line: 'Pipeline Rebuild Complete (Phase 0..7): canonical IDs, semantic header parsing, three-layer resolution, output validation, indexing with semantic facets shipped. See coderef/archived/pipeline-* for per-phase archives.' Keep current CHANGELOG format.",
+      "deliverable": "CHANGELOG.md gains Phase 8 entry + rebuild-complete line",
+      "blocked_by": ["1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.11", "1.12", "1.13", "1.14", "1.15"]
+    },
+    {
+      "id": "1.20",
+      "title": "Audit and update README.md per AC-12 and R-PHASE-8-F",
+      "description": "Top-level summary alignment: ensure README's project description aligns with Phase 7-shipped reality (canonical IDs, validated graph, indexing with facets, --strict-headers + --layer/--capability flags, refuse-on-invalid). Cross-link audit: walk every intra-repo markdown link in README.md and verify the target exists post-Phase-8 archival. Fix broken links.",
+      "deliverable": "README.md aligned + zero broken intra-repo links",
+      "blocked_by": ["1.15", "1.19"]
+    },
+    {
+      "id": "1.21",
+      "title": "Walk roadmap line 466 distinctions checklist (AC-08)",
+      "description": "Per AC-08, walk the 7 required distinctions: (a) raw extracted facts, (b) resolved relationships, (c) unresolved relationships, (d) graph edges, (e) header-derived vs AST-derived, (f) external dependencies, (g) built-ins. For each, find at least one doc paragraph that defines or exemplifies it, and record which doc covers which distinction in execution-notes.md. If any distinction is not covered, ADD a paragraph to the most appropriate doc.",
+      "deliverable": "All 7 distinctions explicitly covered with file:section references",
+      "blocked_by": ["1.3", "1.4", "1.5", "1.6", "1.13"]
+    },
+    {
+      "id": "1.22",
+      "title": "Walk stale_claim_inventory and close every entry (AC-09)",
+      "description": "For each entry in analysis.json stale_claim_inventory: confirm status is one of 'rewritten' | 'removed' | 'reverified-still-true'. Zero entries left at 'unaddressed'. Record each entry's resolution in execution-notes.md.",
+      "deliverable": "stale_claim_inventory fully addressed",
+      "blocked_by": ["1.3", "1.4", "1.5", "1.6", "1.7", "1.8", "1.9", "1.11", "1.12", "1.13", "1.14"]
+    },
+    {
+      "id": "1.23",
+      "title": "Quality gate per AC-10 + AC-11",
+      "description": "RUN: (a) npx vitest run __tests__/pipeline/no-phase-8-docs-leak.test.ts → must PASS (AC-10). (b) npx vitest run __tests__/pipeline/graph-ground-truth.test.ts → must PASS 6/6 (AC-11). (c) npx tsc --noEmit → must PASS clean both configs. (d) git diff --stat HEAD~ -- src/ → must show ZERO changes (Phase 8 hard rule). If any check fails, halt-and-report — do NOT proceed.",
+      "deliverable": "All 4 quality checks PASS with output captured in execution-notes.md",
+      "halt_if": "any check fails or src/ shows any change"
+    },
+    {
+      "id": "1.24",
+      "title": "Atomic commits + push",
+      "description": "Group commits sensibly: (a) docs(schema): SCHEMA.md rewrite (scanner+relationship+graph+resolution sections), (b) docs(grammar): create HEADER-GRAMMAR.md mirror, (c) docs(api): API.md rewrite, (d) docs(agents): AGENTS.md rewrite + CLAUDE.md/GEMINI.md trim, (e) docs(cli): CLI.md update for --strict-headers + --layer/--capability, (f) docs(rag): rag-http-api.md update, (g) docs(architecture): ARCHITECTURE.md align, (h) docs(migration): MIGRATION.md + coderef-semantic-schema.md disposition, (i) docs(archive): move audit-style root markdown to docs/archive/ with banners, (j) docs(contributing): CONTRIBUTING.md align if in-scope, (k) docs(workflow): AGENT-WORKFLOW-GUIDE.md decision, (l) docs(misc): remaining docs/ surveys, (m) docs(changelog): CHANGELOG.md Phase 8 entry + rebuild-complete line, (n) docs(readme): README.md align + cross-link audit. Push to origin/main when local commits are clean.",
+      "deliverable": "Commits landed and pushed origin/main",
+      "blocked_by": ["1.23"]
+    },
+    {
+      "id": "1.25",
+      "title": "Closeout report",
+      "description": "Fill execution-notes.md with: final commit SHAs + push range, validation-report.json baseline reaffirmed (no change since Phase 7), ground-truth 6/6 PASS, no-phase-8-docs-leak.test.ts GREEN, tsc clean, list of every doc file modified/created/archived with one-line summary each, stale_claim_inventory close-out table, AC-08 distinction coverage table. Set status.json state=completing. Confirm /log-skill executed for all required skills against DISPATCH-001.",
+      "deliverable": "execution-notes.md closeout block + status.json state=completing + skills logged",
+      "blocked_by": ["1.24"]
+    },
+    {
+      "id": "1.26",
+      "title": "Report closeout-ready to ORCHESTRATOR for SKILLS close dispatch",
+      "description": "Post closeout report with: implementation commit range + push range, validation-report numbers (unchanged), ground-truth status, boundary enforcer status, list of doc files touched (modified/created/archived). ORCHESTRATOR will author the cross-project /close-workorder dispatch (DISPATCH-035 or next number) for SKILLS to archive Phase 8 and update TRACKING.",
+      "deliverable": "closeout-ready report posted to ORCHESTRATOR"
+    }
+  ],
+
+  "halt_and_report_points": [
+    "Task 1.1: existing doc claims behavior that contradicts current code AND fixing requires unrecoverable intent",
+    "Task 1.13: ARCHITECTURE.md rewrite reveals an architectural drift between docs and code that is itself a code bug — file stub, do NOT inline-fix",
+    "Task 1.15: a doc cross-links into a file being archived, and the cross-link target needs to change to a non-obvious new location",
+    "Task 1.23: any of the 4 quality checks fails OR src/ shows ANY change",
+    "Any task: discovering a code-vs-doc conflict where code is wrong (not doc) — file stub, do NOT inline-fix"
+  ],
+
+  "out_of_scope": [
+    "Source code changes (zero tolerance — file stub, do not inline-fix)",
+    "New tests beyond doc-presence checks (boundary enforcer is sufficient)",
+    "New CLI flags",
+    "New schema fields, new resolution statuses, new evidence variants",
+    "ROUTER work (held)",
+    "LLOYD changes",
+    "ASSISTANT-side skill changes",
+    "Performance optimization",
+    "Test infrastructure changes",
+    "Phase 9 anything (there is no Phase 9)"
+  ],
+
+  "session_routing": "daily-agent-session-2026-05-04 (or later calendar-current session) — all CORE work routes through current calendar session per 2026-05-04 directive",
+
+  "success_criteria": [
+    "All 7 required docs (roadmap line 455) exist at canonical locations and reflect current code",
+    "All 7 required distinctions (roadmap line 466) explicitly covered in at least one doc",
+    "stale_claim_inventory fully addressed (zero entries unaddressed)",
+    "no-phase-8-docs-leak.test.ts GREEN",
+    "graph-ground-truth.test.ts 6/6 PASS",
+    "tsc --noEmit clean",
+    "git diff src/ shows zero changes (verified at task 1.23)",
+    "CHANGELOG.md gains Phase 8 entry + 'Pipeline Rebuild Complete' line",
+    "README.md aligned with Phase 7 reality + zero broken intra-repo links",
+    "Audit-style root markdown archived to docs/archive/ with dated banners"
+  ],
+
+  "definition_of_done_alignment": {
+    "_purpose": "Phase 8 close completes the rebuild's Final Definition of Done (roadmap line 494). Item 9 ('docs match actual schemas and behavior') is Phase 8's direct charge.",
+    "items_satisfied_by_phase_8": ["#9 docs match actual schemas and behavior"],
+    "items_already_satisfied_by_prior_phases": ["#1-#8 (canonical IDs, single scanner, header parsing, import resolution, call resolution, graph node IDs, output validation, RAG facets)"],
+    "rebuild_complete_after_phase_8": true
+  },
+
+  "authored_by": "ORCHESTRATOR",
+  "authored_at": "2026-05-05T00:50:00Z"
+}

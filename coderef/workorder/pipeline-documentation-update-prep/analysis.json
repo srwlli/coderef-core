@@ -1,0 +1,228 @@
+{
+  "workorder_id": "WO-PIPELINE-DOCUMENTATION-UPDATE-001",
+  "feature_name": "pipeline-documentation-update",
+  "phase": "Phase 8 - Documentation Update",
+  "authored_by": "ORCHESTRATOR",
+  "authored_at": "2026-05-05T00:50:00Z",
+
+  "risks": [
+    {
+      "id": "R-PHASE-8-A",
+      "description": "Stale-claim regression during rewrite: rewriting one doc accidentally introduces a new stale claim about another phase's behavior (e.g., rewriting SCHEMA.md against current ElementData but referencing old DependencyGraph terminology in a graph-schema cross-reference).",
+      "mitigation": "Each doc edit cites its source file in the diff message. Reviewer checks every claim against the cited source. AC-09 stale_claim_inventory close-out forces explicit status per item — no item left unaddressed.",
+      "severity": "medium"
+    },
+    {
+      "id": "R-PHASE-8-B",
+      "description": "Doc-vs-code drift discovery mid-implementation: while rewriting a doc to match shipped behavior, the agent finds the code doesn't actually match its own architecture (e.g., a documented behavior is wrong, but reality is also wrong in a different way). Phase 8 has zero code-fix budget.",
+      "mitigation": "Hard rule: any code-vs-code conflict files a stub through the normal flow, does NOT inline-fix. Plan task lists 'discover-stub-and-continue' explicitly as a halt-and-report point.",
+      "severity": "medium"
+    },
+    {
+      "id": "R-PHASE-8-C",
+      "description": "BNF mirror drift: docs/HEADER-GRAMMAR.md (CORE) and SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md (ASSISTANT) diverge over time because the mirror is manual. Future header grammar changes touch ASSISTANT but forget CORE.",
+      "mitigation": "Mirror doc states the canonical source explicitly with file path + commit-pin. Future header-grammar WOs add 'update CORE mirror' as a closeout task. Risk is post-Phase-8 maintenance, not Phase 8 itself — file follow-up stub if drift detection automation is wanted.",
+      "severity": "low"
+    },
+    {
+      "id": "R-PHASE-8-D",
+      "description": "MIGRATION.md backward-compatibility claims that no longer hold: pipeline rebuild changed scanner identity, relationship extraction, graph schema. MIGRATION.md may promise migration paths from versions that pre-date these changes and now point to dead code.",
+      "mitigation": "Survey MIGRATION.md early in prep. If full rewrite needed, AC-09 covers it via stale_claim_inventory. If migration paths are now obsolete (no users on those paths), candidate for archival to docs/archive/MIGRATION-pre-rebuild.md with banner.",
+      "severity": "medium"
+    },
+    {
+      "id": "R-PHASE-8-E",
+      "description": "Audit-style root markdown overcommitment: EXECUTIVE-SUMMARY.md, AUDIT-REPORT.md, CODEREF-ANALYSIS-REPORT.md are point-in-time snapshots. Treating each as a doc to keep current would balloon Phase 8 scope and produce permanently-stale-tomorrow outputs.",
+      "mitigation": "DR-PHASE-8-A locks disposition: archive vs delete vs banner. Phase 8 does NOT promise to keep audit-style snapshots current — they are dated artifacts of the rebuild itself.",
+      "severity": "low"
+    },
+    {
+      "id": "R-PHASE-8-F",
+      "description": "README.md cross-link rot: README.md often acts as a table-of-contents pointing into docs/. After Phase 8 rewrites/renames/archives several docs, README's links break.",
+      "mitigation": "Plan task explicitly: 'README.md cross-link audit' as one of the last Phase 8 tasks (after all docs/ rewrites land). Use a markdown link-check tool (or grep) to find broken links.",
+      "severity": "medium"
+    },
+    {
+      "id": "R-PHASE-8-G",
+      "description": "Boundary enforcer false-positive risk if a doc-content example accidentally matches the regex. The enforcer test scans TypeScript source files for the 8 forbidden field names with regex `\\b{name}\\s*[:?=]`. Markdown isn't scanned, so the risk is low — but if a Phase 8 task eventually proposes a TypeScript snippet INSIDE a doc that triggers the regex by some toolchain quirk, the enforcer could fire.",
+      "mitigation": "Risk is theoretical (the enforcer scans .ts files, not .md). Document in plan: if ever the enforcer fires on Phase 8 work, halt-and-report — do NOT relax the regex.",
+      "severity": "low"
+    }
+  ],
+
+  "decision_records": [
+    {
+      "id": "DR-PHASE-8-A",
+      "question": "What disposition for the audit-style root markdown files (EXECUTIVE-SUMMARY.md, AUDIT-REPORT.md, CODEREF-ANALYSIS-REPORT.md, DUPLICATE-FILES-AUDIT.md, GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN.md)?",
+      "decision": "Archive to docs/archive/<filename>-<YYYY-MM-DD>.md with a one-line dated banner explaining the snapshot is preserved for historical reference. Do NOT keep them in root, do NOT delete them. Banner text: 'This document captures the project state at <date>; for current state see <pointer>.'",
+      "rationale": "These are valuable historical artifacts of the rebuild process — deletion loses institutional memory. Keeping them in root creates the appearance they're current truth. Archival with explicit dated banners preserves history without misleading readers.",
+      "alternatives_considered": [
+        "Delete outright — loses history; rejected.",
+        "Leave in root with banner — clutters root and risks reader confusion; rejected.",
+        "Move to docs/archive/ without banner — confusing without context; rejected."
+      ]
+    },
+    {
+      "id": "DR-PHASE-8-B",
+      "question": "One-source-per-topic vs distributed-with-cross-links for the schema/contract docs (scanner schema, relationship schema, graph schema, resolution statuses)?",
+      "decision": "One-source-per-topic. Each schema gets ONE canonical doc file. Other docs cross-link rather than duplicate. SCHEMA.md becomes the canonical location for scanner-schema and relationship-schema (sibling sections). Graph schema gets its own GRAPH-SCHEMA.md (or graph-schema section in SCHEMA.md — TBD by prep). API.md cross-links into SCHEMA.md rather than restating types.",
+      "rationale": "Distributed duplication is the primary source of drift. A single canonical location makes the truth source obvious and makes future maintenance one-place-to-update. Cross-linking is cheap; copy-paste is expensive over time.",
+      "alternatives_considered": [
+        "Distributed with cross-links — what we have today, drift-prone; rejected.",
+        "Massive single SCHEMA.md covering everything — too long to navigate; rejected.",
+        "One file per type (per Phase, per layer) — fragments truth; rejected."
+      ]
+    },
+    {
+      "id": "DR-PHASE-8-C",
+      "question": "How does the CORE-side header grammar doc relate to the canonical BNF in ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md?",
+      "decision": "CORE-side doc is a MIRROR with explicit citation. Top of file declares: 'Mirror of canonical BNF at <full path to ASSISTANT SKILL.md>. Authoritative source is the ASSISTANT-side document; this CORE-side mirror exists for self-contained CORE doc builds. Sync touchpoint: any change to the ASSISTANT BNF must update this mirror in the same WO closeout.'",
+      "rationale": "CORE consumers shouldn't have to traverse to ASSISTANT to read the grammar that CORE's parser implements, but ASSISTANT remains the canonical authority. Mirror-with-citation gives both: convenience and clear authority. Sync-touchpoint convention forces future grammar changes to keep the mirror current.",
+      "alternatives_considered": [
+        "Live-include via tooling — overkill for a doc; rejected.",
+        "Symlink — Windows-hostile; rejected.",
+        "No CORE-side doc, link only — bad UX for CORE readers; rejected.",
+        "CORE becomes the authority and ASSISTANT mirrors — wrong direction (BNF originated in ASSISTANT skill); rejected."
+      ]
+    },
+    {
+      "id": "DR-PHASE-8-D",
+      "question": "How is the agent usage contract structured (separate AGENTS.md vs section in API.md vs new docs/AGENT-USAGE.md)?",
+      "decision": "Use existing AGENTS.md at repo root as the canonical agent usage contract. Rewrite to cover: (a) what to read (validation-report.json, IndexingResult.status, exit codes), (b) what is internal pipeline state not for agent consumption, (c) the gate contract (validation-report.ok=false → indexing refuses), (d) IndexingResult.status semantics, (e) version compatibility commitments. AGENTS.md is well-named for the audience and already exists.",
+      "rationale": "Repurposing existing well-named file beats creating a new one. AGENTS.md is the obvious place an agent or agent-author looks. CLAUDE.md and GEMINI.md (also at root) become Claude/Gemini-specific addenda that link to AGENTS.md as the base contract.",
+      "alternatives_considered": [
+        "New docs/AGENT-USAGE.md — duplicates AGENTS.md role; rejected.",
+        "Section in API.md — buries the contract; rejected.",
+        "Triple split AGENTS.md/CLAUDE.md/GEMINI.md as siblings — loses the canonical-base-contract pattern; rejected."
+      ]
+    },
+    {
+      "id": "DR-PHASE-8-E",
+      "question": "CHANGELOG.md format — keep current format or migrate to Keep-a-Changelog?",
+      "decision": "Keep current format. Phase 8 adds a single new entry summarizing the doc rebuild and a 'Pipeline Rebuild Complete (Phase 0..7)' line citing archive paths. Format migration is out-of-scope; format consistency with prior entries wins over format upgrade.",
+      "rationale": "Format migration is its own concern, decoupled from Phase 8's doc-truth-up mission. Mixing them would expand scope and risk. If Keep-a-Changelog migration is wanted later, it gets its own WO.",
+      "alternatives_considered": [
+        "Migrate to Keep-a-Changelog now — scope creep; rejected.",
+        "Skip CHANGELOG entirely — rebuild milestone deserves a changelog entry; rejected."
+      ]
+    }
+  ],
+
+  "key_files_to_touch": [
+    {"path": "docs/SCHEMA.md", "action": "rewrite", "reason": "primary location for scanner-schema + relationship-schema canonical content (DR-PHASE-8-B)"},
+    {"path": "docs/HEADER-GRAMMAR.md", "action": "create-as-mirror", "reason": "AC-03 — canonical mirror of ASSISTANT BNF (DR-PHASE-8-C); does not exist today, needs creation"},
+    {"path": "docs/API.md", "action": "rewrite", "reason": "AC-06 — public API contract; needs Phase 6/7 contract additions (validation-report, IndexingResult.status)"},
+    {"path": "docs/CLI.md", "action": "update", "reason": "Phase 6 --strict-headers + Phase 7 --layer/--capability flags need documentation"},
+    {"path": "docs/ARCHITECTURE.md", "action": "rewrite-or-trim", "reason": "highest drift risk — likely written against pre-rebuild scanner; either full rewrite or major trim"},
+    {"path": "docs/MIGRATION.md", "action": "rewrite-or-archive", "reason": "R-PHASE-8-D — likely fully stale; survey decides between rewrite to current and archive"},
+    {"path": "docs/coderef-semantic-schema.md", "action": "merge-into-SCHEMA-or-archive", "reason": "almost certainly stale against Phase 1+2.5; either merge content into SCHEMA.md or archive"},
+    {"path": "docs/rag-http-api.md", "action": "update", "reason": "Phase 7 status field + refuse-on-invalid behavior needs alignment"},
+    {"path": "docs/AGENT-WORKFLOW-GUIDE.md", "action": "survey-and-decide", "reason": "may overlap with AGENTS.md (DR-PHASE-8-D); decide consolidate vs distinct"},
+    {"path": "AGENTS.md", "action": "rewrite", "reason": "AC-07 canonical agent usage contract per DR-PHASE-8-D"},
+    {"path": "CLAUDE.md", "action": "update", "reason": "Claude-specific addendum to AGENTS.md; trim duplication"},
+    {"path": "GEMINI.md", "action": "update", "reason": "Gemini-specific addendum to AGENTS.md; trim duplication"},
+    {"path": "CONTRIBUTING.md", "action": "update", "reason": "if it documents pipeline workflow, must align with shipped phases"},
+    {"path": "CHANGELOG.md", "action": "append-entry", "reason": "AC-12 — Phase 8 dated entry + 'Pipeline rebuild complete' line per DR-PHASE-8-E"},
+    {"path": "README.md", "action": "audit-and-update", "reason": "AC-12 — top-level summary alignment + R-PHASE-8-F cross-link audit"},
+    {"path": "docs/archive/EXECUTIVE-SUMMARY-2026-05-05.md", "action": "create-via-move", "reason": "DR-PHASE-8-A — relocate root EXECUTIVE-SUMMARY.md with dated banner"},
+    {"path": "docs/archive/AUDIT-REPORT-2026-05-05.md", "action": "create-via-move", "reason": "DR-PHASE-8-A"},
+    {"path": "docs/archive/CODEREF-ANALYSIS-REPORT-2026-05-05.md", "action": "create-via-move", "reason": "DR-PHASE-8-A"},
+    {"path": "docs/archive/DUPLICATE-FILES-AUDIT-2026-05-05.md", "action": "create-via-move", "reason": "DR-PHASE-8-A"},
+    {"path": "docs/archive/GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN-2026-05-05.md", "action": "create-via-move", "reason": "DR-PHASE-8-A — planning doc, candidate for archive"}
+  ],
+
+  "key_files_to_read_only": [
+    {"path": "src/semantic/element-data.ts", "reason": "ElementData truth source for scanner schema doc"},
+    {"path": "src/pipeline/types.ts", "reason": "PipelineState shape — internal, doc as 'not for agent consumption' per AC-07"},
+    {"path": "src/pipeline/relationship-extractor.ts", "reason": "raw fact types truth source"},
+    {"path": "src/pipeline/import-resolver.ts", "reason": "import-resolution status enum truth source"},
+    {"path": "src/pipeline/call-resolver.ts", "reason": "call-resolution kinds (5 CallResolutionKinds) truth source"},
+    {"path": "src/pipeline/graph-builder.ts", "reason": "8-field edge + GraphNode + EdgeEvidence union truth source"},
+    {"path": "src/pipeline/output-validator.ts", "reason": "ValidationResult / ValidationReport contract truth source"},
+    {"path": "src/integration/rag/indexing-orchestrator.ts", "reason": "IndexingResult shape + status semantics truth source"},
+    {"path": "src/integration/rag/code-chunk.ts", "reason": "CodeChunk shape with Phase 7 facets truth source"},
+    {"path": "src/integration/rag/query-engine.ts", "reason": "rag-search filter behavior truth source"},
+    {"path": "src/cli/populate.ts", "reason": "chokepoint INVARIANT location — Phase 6 contract"},
+    {"path": "src/cli/rag-index.ts", "reason": "exit code semantics truth source for AC-07"},
+    {"path": "src/cli/rag-search.ts", "reason": "--layer/--capability/--constraint flag wiring"},
+    {"path": "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md", "reason": "BNF canonical source — ASSISTANT side, mirrored by CORE doc per DR-PHASE-8-C"},
+    {"path": "C:/Users/willh/Desktop/CODEREF/ASSISTANT/STANDARDS/layers.json", "reason": "@layer enum authoritative source per Refactor Rules line 488"},
+    {"path": "coderef/archived/pipeline-graph-ground-truth-tests/ARCHIVED.md", "reason": "Phase 0 archive — ground-truth context"},
+    {"path": "coderef/archived/pipeline-scanner-identity-taxonomy/ARCHIVED.md", "reason": "Phase 1 archive"},
+    {"path": "coderef/archived/pipeline-relationship-raw-facts/ARCHIVED.md", "reason": "Phase 2 archive"},
+    {"path": "coderef/archived/pipeline-semantic-header-parser/ARCHIVED.md", "reason": "Phase 2.5 archive"},
+    {"path": "coderef/archived/pipeline-import-resolution/ARCHIVED.md", "reason": "Phase 3 archive"},
+    {"path": "coderef/archived/pipeline-call-resolution/ARCHIVED.md", "reason": "Phase 4 archive"},
+    {"path": "coderef/archived/pipeline-graph-construction/ARCHIVED.md", "reason": "Phase 5 archive"},
+    {"path": "coderef/archived/pipeline-output-validation/ARCHIVED.md", "reason": "Phase 6 archive"},
+    {"path": "coderef/archived/pipeline-indexing-rag/ARCHIVED.md", "reason": "Phase 7 archive — most recent, primary doc-vs-current-state reference"}
+  ],
+
+  "stale_claim_inventory_seed": {
+    "_note": "Seed list. Prep agent (or implementation agent if prep is omitted) expands this during the survey pass. Each entry's status starts at 'unaddressed' and moves to 'rewritten' | 'removed' | 'reverified-still-true' as Phase 8 work proceeds.",
+    "candidates": [
+      {"file": "docs/coderef-semantic-schema.md", "claim": "predates Phase 1 layer/capability/constraints + Phase 2.5 headerStatus", "reality": "ElementData now carries those fields; semantic schema must reflect", "source_of_truth": "src/semantic/element-data.ts + Phase 1 + Phase 2.5 archives"},
+      {"file": "docs/MIGRATION.md", "claim": "likely promises migrations from pre-rebuild scanner", "reality": "scanner identity changed in Phase 1; old migration paths may be dead", "source_of_truth": "Phase 1 archive + current src/semantic/"},
+      {"file": "docs/ARCHITECTURE.md", "claim": "may reference DependencyGraph as authoritative graph", "reality": "ExportedGraph (Phase 5) is canonical; DependencyGraph is @legacy", "source_of_truth": "Phase 5 archive ARCHIVED.md + src/pipeline/graph-builder.ts"},
+      {"file": "docs/CLI.md", "claim": "may not document --strict-headers (Phase 6) or --layer/--capability (Phase 7)", "reality": "both flags exist", "source_of_truth": "src/cli/populate.ts + src/cli/rag-search.ts"},
+      {"file": "docs/rag-http-api.md", "claim": "may not document IndexingResult.status field or refuse-on-invalid behavior", "reality": "both are post-Phase-7 reality", "source_of_truth": "src/integration/rag/indexing-orchestrator.ts"},
+      {"file": "AGENTS.md", "claim": "may predate validation-report.json gate contract", "reality": "indexing now refuses to run on validation-report.ok=false; agents need to know this", "source_of_truth": "Phase 6 + Phase 7 archives"},
+      {"file": "docs/SCHEMA.md", "claim": "may predate 8-field edge schema or 10-variant EdgeEvidence", "reality": "Phase 5 locked these", "source_of_truth": "Phase 5 archive + src/pipeline/graph-builder.ts"},
+      {"file": "README.md", "claim": "top-level summary may understate the rebuild's scope or claim pre-rebuild architecture", "reality": "9-phase rebuild complete; 6 ground-truth assertions PASS; canonical IDs + resolved relationships + validated graph + indexing-with-facets shipped", "source_of_truth": "all phase archives"}
+    ]
+  },
+
+  "cross_reference_map": {
+    "_purpose": "For each of the 7 required docs (roadmap line 455), where its content currently lives or will live.",
+    "scanner_schema": {"target_file": "docs/SCHEMA.md (section: Scanner Schema)", "current_state": "may exist in stale form in docs/coderef-semantic-schema.md — merge or rewrite"},
+    "relationship_schema": {"target_file": "docs/SCHEMA.md (section: Relationship Schema)", "current_state": "scattered across docs/SCHEMA.md and docs/ARCHITECTURE.md — consolidate"},
+    "header_grammar": {"target_file": "docs/HEADER-GRAMMAR.md (NEW — mirror of ASSISTANT canonical)", "current_state": "does not exist as standalone CORE doc today; must be created per DR-PHASE-8-C"},
+    "graph_schema": {"target_file": "docs/SCHEMA.md (section: Graph Schema) OR docs/GRAPH-SCHEMA.md", "current_state": "DR-PHASE-8-B chose one-source-per-topic; prep decides between SCHEMA.md section and standalone file"},
+    "resolution_statuses": {"target_file": "docs/SCHEMA.md (section: Resolution Statuses)", "current_state": "currently scattered across phase archives and docs; consolidate"},
+    "public_api_contract": {"target_file": "docs/API.md (rewrite)", "current_state": "exists, likely partial against Phase 6/7"},
+    "agent_usage_contract": {"target_file": "AGENTS.md (rewrite per DR-PHASE-8-D)", "current_state": "exists, likely predates Phase 6/7 contracts"}
+  },
+
+  "phase_8_completion_criteria": [
+    "All 7 required docs (roadmap line 455) exist at their canonical locations and reflect current code behavior",
+    "All 7 required distinctions (roadmap line 466) appear explicitly in at least one doc with concrete examples or definitions",
+    "stale_claim_inventory has zero entries at status='unaddressed'",
+    "boundary enforcer __tests__/pipeline/no-phase-8-docs-leak.test.ts is GREEN",
+    "all 6 graph-ground-truth.test.ts assertions PASS (no regression)",
+    "tsc --noEmit clean",
+    "no source code changes outside docs/, root *.md, and CHANGELOG.md (verify via git diff at close)",
+    "CHANGELOG.md gains a Phase 8 entry + 'Pipeline rebuild complete (Phase 0..7)' line",
+    "README.md cross-link audit passes (no broken intra-repo links)",
+    "Audit-style root markdown moved to docs/archive/ with dated banners per DR-PHASE-8-A"
+  ],
+
+  "phase_8_boundary": {
+    "_purpose": "Explicit list of fields, files, and behaviors that belong to Phase 9+ (which does NOT exist) or to ongoing maintenance. Phase 8 must NOT touch these.",
+    "_note": "There is no Phase 9. After Phase 8, the rebuild is complete. The items below are explicitly out-of-scope for Phase 8 even if the urge arises during implementation.",
+    "no_leak_items": [
+      "Source code behavior changes (zero tolerance — file stub, do not fix)",
+      "New test files beyond doc-presence checks (the boundary enforcer is sufficient; do not add more)",
+      "New CLI flags (Phase 7 closed the CLI surface for the rebuild)",
+      "New schema fields (none — Phase 5 + Phase 7 closed the type surfaces)",
+      "ROUTER/LLOYD work (separate tracks, held)",
+      "ASSISTANT-side skill changes (ASSISTANT skills can read new docs, but doc-update WO does not modify skills)",
+      "Performance optimization (not a Phase 8 concern)",
+      "Test infrastructure changes (no-phase-8-docs-leak.test.ts is the only doc-related test, and it shipped in Phase 7)"
+    ]
+  },
+
+  "real_world_baseline": {
+    "_source": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/.coderef/validation-report.json (post-Phase-7 baseline)",
+    "valid_edge_count": 3464,
+    "header_missing_count": 262,
+    "header_defined_count": 0,
+    "header_stale_count": 0,
+    "header_partial_count": 0,
+    "header_layer_mismatch_count": 0,
+    "header_export_mismatch_count": 0,
+    "ok_inferred": true,
+    "ground_truth_pass_count": "6/6",
+    "phase_7_surface_test_count": "29/29 PASS across 6 files",
+    "_phase_8_use": "These numbers should appear in updated docs (e.g., README.md, CHANGELOG.md) as illustration of the post-rebuild state. Doc rewrites should NOT invent baseline numbers."
+  }
+}

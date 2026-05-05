@@ -1,0 +1,190 @@
+{
+  "workorder_id": "WO-PIPELINE-DOCUMENTATION-UPDATE-001",
+  "feature_name": "pipeline-documentation-update",
+  "phase": "Phase 8 - Documentation Update",
+  "phase_sequence": "10 of 10 gated steps (Phase 8 of 9 in roadmap numbering — final phase)",
+  "predecessor_phase": "Phase 7 (indexing/RAG) ARCHIVED 2026-05-05",
+  "predecessor_state": {
+    "implementation_commits": "63da6ae..2c02878 (4 atomic commits) + 689af34 archive in CORE + 2c83682 ledger in ASSISTANT",
+    "push_range": "1e7f6f6..2c02878 to origin/main",
+    "validation_report_baseline": {
+      "valid_edge_count": 3464,
+      "header_missing_count": 262,
+      "header_defined_count": 0,
+      "header_stale_count": 0,
+      "header_partial_count": 0,
+      "header_layer_mismatch_count": 0,
+      "header_export_mismatch_count": 0,
+      "ok_inferred": true,
+      "source": ".coderef/validation-report.json from coderef-core's own scan (post-Phase-7)"
+    },
+    "ac_09_alignment": "Path A file-grain worst-severity aggregation: 262/262 (0% divergence vs header_missing_count baseline)",
+    "ground_truth": "All 6 graph-ground-truth.test.ts assertions PASS",
+    "test_state": "29/29 Phase 7 surface tests PASS across 6 test files; 177/178 broader pipeline+rag suite (1 pre-existing pipeline-snapshot baseline failure, not Phase-7-introduced); tsc --noEmit clean both configs",
+    "indexing_result_contract": "src/integration/rag/indexing-orchestrator.ts now exports IndexingResult with top-level status: 'success' | 'partial' | 'failed', chunksFailed[]/chunksSkipped[] entries each carry reason enum, refuses to run when validation-report.ok=false, --layer/--capability filters wired through to vector store metadata filter pass-through",
+    "validation_result_contract": "src/pipeline/output-validator.ts exports ValidationResult { ok: boolean, errors[], warnings[], report (11 numeric fields) }. Caller owns process.exit; validator is pure.",
+    "boundary_enforcer_in_place": "__tests__/pipeline/no-phase-8-docs-leak.test.ts shipped in Phase 7. Declares 8 forbidden field names (docsGenerated, schemaDocPath, schemaDocMd, apiContractMd, agentUsageContractMd, headerGrammarDocPath, documentationVersion, docsBuildTimestamp). Phase 8 keeps it green by doing work in markdown."
+  },
+  "purpose": "Make documentation match the code. Eight phases of pipeline rebuild produced canonical IDs, semantic header parsing, three layers of resolution, output validation, and indexing with semantic-facet metadata. Many docs were written against pre-rebuild or intermediate states. Phase 8's single job is to truth-up the doc surfaces against shipped behavior. No code changes. No new schema fields. No new tests beyond doc-presence checks. After Phase 8 archives, the 9-phase rebuild is complete and the Final Definition of Done is satisfied.",
+  "acceptance_criteria": [
+    {
+      "id": "AC-01",
+      "statement": "Scanner schema is documented in a single canonical location with current ElementData shape including layer, capability, constraints, headerStatus fields. Doc cites the source file (src/semantic/element-data.ts or wherever ElementData lives) so future drift is detectable.",
+      "test_strategy": "Doc-presence test: assert docs/SCHEMA.md (or chosen location) contains a section titled 'Scanner Schema' or 'ElementData Schema' that names all four facet fields. Code-side spot-check: every field declared on ElementData appears in the doc."
+    },
+    {
+      "id": "AC-02",
+      "statement": "Relationship schema is documented covering the 4 raw fact types (RawImportFact, RawCallFact, RawExportFact, plus any header-derived fact type) AND the resolved-relationship surfaces produced by Phase 3 (imports) and Phase 4 (calls). Doc explicitly distinguishes raw facts from resolved relationships per roadmap line 466.",
+      "test_strategy": "Doc-presence test: assert docs/SCHEMA.md (or chosen location) contains both 'raw facts' and 'resolved relationships' sections; each lists the canonical type names that exist in src/."
+    },
+    {
+      "id": "AC-03",
+      "statement": "Header grammar doc exists in docs/ as a canonical mirror of the BNF in SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md (ASSISTANT repo). Doc explicitly states it is a mirror and points back to the authoritative source. Doc uses the same BNF productions, no divergence.",
+      "test_strategy": "Doc-presence test: assert docs/HEADER-GRAMMAR.md (or chosen filename) exists. Manual content audit: every BNF production in the ASSISTANT canonical source appears in the CORE mirror, in the same order, with the same tokens."
+    },
+    {
+      "id": "AC-04",
+      "statement": "Graph schema is documented covering the 8-field edge schema (id, sourceId, targetId, relationship, resolutionStatus, evidence, sourceLocation, candidates), the 10-variant discriminated-union EdgeEvidence, and GraphNode shape including Phase 7's facet metadata propagation (layer/capability/constraints/headerStatus on metadata). Doc cites src/pipeline/graph-builder.ts as truth source.",
+      "test_strategy": "Doc-presence test: assert graph schema doc contains the 8 edge-field names + 10 evidence variants + the metadata.facets reference."
+    },
+    {
+      "id": "AC-05",
+      "statement": "Resolution statuses are documented end-to-end: import-resolution statuses (resolved/unresolved/external/builtin/ambiguous), call-resolution kinds (5 CallResolutionKinds from Phase 4), with semantic distinctions made explicit per roadmap line 466 (resolved vs unresolved relationships, external dependencies, built-ins).",
+      "test_strategy": "Doc-presence test: assert resolution-status doc names every status enum value that exists in src/. Lossless audit: each enum value in source has matching doc paragraph."
+    },
+    {
+      "id": "AC-06",
+      "statement": "Public API contract is documented: which exports from src/index.ts (or canonical entry) are stable and consumable by external callers, what the function signatures and return types are, what the version compatibility commitments are. Excludes internal-only utilities.",
+      "test_strategy": "Doc-presence test: assert docs/API.md (or chosen location) covers the canonical public exports. Audit: each public export named in the doc resolves to an actual export."
+    },
+    {
+      "id": "AC-07",
+      "statement": "Agent usage contract is documented: what an LLM agent or downstream automation should read (e.g., validation-report.json, IndexingResult.status, exit codes) vs what is internal pipeline state not meant for agent consumption. Includes the gate contract (validation-report.ok=false → indexing refuses) and the IndexingResult.status semantics (success/partial/failed).",
+      "test_strategy": "Doc-presence test: assert agent-usage doc names validation-report.json, IndexingResult.status, exit code semantics from rag-index, and explicitly what NOT to read."
+    },
+    {
+      "id": "AC-08",
+      "statement": "All 7 required distinctions from roadmap line 466 appear explicitly in at least one doc with concrete examples or clear definitions: (a) raw extracted facts, (b) resolved relationships, (c) unresolved relationships, (d) graph edges, (e) header-derived edges vs AST-derived edges, (f) external dependencies, (g) built-ins.",
+      "test_strategy": "Audit checklist: walk the 7 distinctions, for each find at least one doc paragraph that defines it. Track which doc covers which distinction in the analysis."
+    },
+    {
+      "id": "AC-09",
+      "statement": "Stale claims are removed. Inventory is captured during prep (analysis.json stale_claim_inventory) and every entry is either rewritten to truth or removed. No doc retains a claim that contradicts current Phase 7 code state.",
+      "test_strategy": "Pre-Phase-8 prep produces stale_claim_inventory list. Phase 8 closeout verifies each item: status='rewritten' | 'removed' | 'reverified-still-true'. No item left at status='unaddressed'."
+    },
+    {
+      "id": "AC-10",
+      "statement": "Boundary enforcer __tests__/pipeline/no-phase-8-docs-leak.test.ts remains GREEN. Phase 8 introduces zero new TypeScript field names from the forbidden 8 (docsGenerated, schemaDocPath, schemaDocMd, apiContractMd, agentUsageContractMd, headerGrammarDocPath, documentationVersion, docsBuildTimestamp) into Phase 7 source surfaces.",
+      "test_strategy": "Run the boundary enforcer test post-Phase-8-implementation. Must PASS. (Trivially green if Phase 8 work stays in docs/ and root *.md files.)"
+    },
+    {
+      "id": "AC-11",
+      "statement": "All 6 graph-ground-truth.test.ts assertions remain PASS. Phase 8 is doc-only over PipelineState, ExportedGraph, ValidationResult, IndexingResult — any code change is a hard halt and a stub-file event, not Phase 8 in-scope.",
+      "test_strategy": "CI gate: graph-ground-truth.test.ts runs and passes 6/6 post-Phase-8."
+    },
+    {
+      "id": "AC-12",
+      "statement": "CHANGELOG.md gains a Phase 8 entry summarizing the doc rebuild, plus a 'Pipeline rebuild complete' line citing the 9-phase span (Phase 0..7) with archived commit ranges or archive dir paths. README.md is updated if its top-level summary contradicts Phase 7 reality.",
+      "test_strategy": "Doc-presence test: assert CHANGELOG.md has a Phase 8 dated entry. README.md spot-check: top-level claims align with shipped code."
+    }
+  ],
+  "out_of_scope_hard_stops": [
+    "NO source code changes. ZERO. If a doc is wrong because the code is wrong, file a stub — do NOT fix the code in Phase 8.",
+    "NO new test changes (no-phase-8-docs-leak.test.ts is Phase 7's gate; Phase 8 keeps it green by NOT adding any of the 8 forbidden field names to Phase 7 surfaces)",
+    "NO Phase 9 anything (there is no Phase 9 — Phase 8 is the final phase)",
+    "NO new CLI flags",
+    "NO new schema fields, no new resolution statuses, no new evidence variants",
+    "NO ROUTER work (held)",
+    "NO LLOYD changes",
+    "NO ASSISTANT-side skill changes (skills can read the new docs, but skill authoring is its own track)",
+    "NO behavioral changes anywhere — Phase 8 is doc-only by definition"
+  ],
+  "existing_doc_surfaces": {
+    "docs_dir": {
+      "ARCHITECTURE.md": "current state TBD — survey during prep",
+      "API.md": "likely needs Phase 6/7 contract additions (validation-report, IndexingResult.status)",
+      "AUDIT-REPORT.md": "point-in-time audit — survey for archive vs leave",
+      "CLI.md": "needs --strict-headers (Phase 6) + --layer/--capability (Phase 7) additions",
+      "COMPONENTS.md": "current state TBD — survey",
+      "DEPLOY-CODEREF-RAG-SERVER.md": "may need IndexingResult.status references",
+      "DEPLOY-CODEREF-WATCH.md": "current state TBD — survey",
+      "FRONTEND-CALL-DETECTION.md": "current state TBD — survey",
+      "LLOYD-INTEGRATION.md": "out of Phase 8 scope unless docs claim CORE behavior that has changed",
+      "MIGRATION.md": "almost certainly stale — pipeline rebuild changed migration boundary",
+      "README.md": "table of contents for docs/ — needs cross-link audit",
+      "ROUTE-DETECTION.md": "current state TBD — survey",
+      "ROUTE-VALIDATION.md": "current state TBD — survey",
+      "ROUTE.md": "current state TBD — survey",
+      "SCHEMA.md": "TARGET — primary location for scanner-schema/relationship-schema/graph-schema rewrites",
+      "AGENT-WORKFLOW-GUIDE.md": "agent usage contract candidate — survey for fit",
+      "coderef-semantic-schema.md": "almost certainly stale against Phase 1+2.5",
+      "examples-semantic-index.json": "likely stale — verify against current scanner output",
+      "rag-http-api.md": "needs Phase 7 alignment (status field, refuse-on-invalid)",
+      "plugins/": "subdir — defer to subdir survey"
+    },
+    "root_markdown": {
+      "README.md": "top-level project README — primary entry, needs Phase 8 alignment",
+      "AGENTS.md": "agent contract — primary candidate for AC-07 agent usage contract",
+      "CLAUDE.md": "Claude-specific agent doc — survey for fit",
+      "GEMINI.md": "Gemini-specific agent doc — survey for fit",
+      "CONTRIBUTING.md": "contributor guide — needs Phase 8 alignment if it documents pipeline workflow",
+      "CHANGELOG.md": "needs Phase 8 entry + pipeline-rebuild-complete entry",
+      "EXECUTIVE-SUMMARY.md": "point-in-time audit — survey for archive vs delete vs leave",
+      "AUDIT-REPORT.md": "point-in-time — survey",
+      "CODEREF-ANALYSIS-REPORT.md": "point-in-time — survey",
+      "DUPLICATE-FILES-AUDIT.md": "point-in-time — survey",
+      "IMPORTANT-WORKORDER-FILES.md": "ops doc — survey for current truth",
+      "GENERATE_FOUNDATION_DOCS_ALIGNMENT_PLAN.md": "planning doc — likely stale vs shipped Phase 8 plan, candidate for archive"
+    }
+  },
+  "boundary_enforcer_disposition": {
+    "test_path": "__tests__/pipeline/no-phase-8-docs-leak.test.ts",
+    "shipped_in": "Phase 7 (commits 1cc1380 and earlier)",
+    "forbidden_field_names": [
+      "docsGenerated",
+      "schemaDocPath",
+      "schemaDocMd",
+      "apiContractMd",
+      "agentUsageContractMd",
+      "headerGrammarDocPath",
+      "documentationVersion",
+      "docsBuildTimestamp"
+    ],
+    "checked_files": [
+      "src/integration/rag/indexing-orchestrator.ts",
+      "src/integration/rag/code-chunk.ts",
+      "src/integration/vector/vector-store.ts",
+      "src/pipeline/output-validator.ts",
+      "src/export/graph-exporter.ts",
+      "src/pipeline/types.ts"
+    ],
+    "phase_8_compliance": "Trivially green by virtue of Phase 8 work happening entirely in docs/ + root *.md. No source code changes means no opportunity to introduce forbidden field names. The enforcer is shipped and stays — Phase 8 does NOT delete it (it is now the permanent post-rebuild boundary)."
+  },
+  "truth_sources": {
+    "scanner_schema": "src/semantic/element-data.ts (or wherever ElementData lives) + Phase 1 archive ARCHIVED.md",
+    "relationship_schema_raw_facts": "src/pipeline/relationship-extractor.ts (or canonical location) + Phase 2 archive",
+    "header_grammar_canonical": "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md (BNF authoritative — ASSISTANT side)",
+    "header_status_state_transitions": "Phase 2.5 archive analysis.json + src/semantic/header-* files",
+    "import_resolution_statuses": "Phase 3 archive ARCHIVED.md + src/pipeline/import-resolver.ts (or canonical)",
+    "call_resolution_kinds": "Phase 4 archive ARCHIVED.md (5 CallResolutionKinds) + src/pipeline/call-resolver.ts",
+    "graph_edge_schema": "src/pipeline/graph-builder.ts (8-field edge, 10-variant EdgeEvidence) + Phase 5 archive",
+    "graph_node_shape": "src/pipeline/graph-builder.ts buildNodes (Phase 7 metadata propagation) + Phase 7 archive ARCHIVED.md",
+    "validation_report_contract": "src/pipeline/output-validator.ts + Phase 6 archive ARCHIVED.md (11 numeric fields, ok flag)",
+    "indexing_result_contract": "src/integration/rag/indexing-orchestrator.ts + src/integration/rag/code-chunk.ts + Phase 7 archive ARCHIVED.md",
+    "rag_query_filters": "src/integration/rag/query-engine.ts + src/cli/rag-search.ts (--layer/--capability/--constraint flags)",
+    "layer_enum_authoritative": "C:/Users/willh/Desktop/CODEREF/ASSISTANT/STANDARDS/layers.json (per Refactor Rules line 488 — only source of truth for @layer enum)",
+    "exit_code_semantics_rag_index": "src/cli/rag-index.ts (success→0, partial→0+stderr, failed→non-zero)",
+    "chokepoint_invariant": "src/cli/populate.ts validatePipelineState invocation (Phase 6 chokepoint INVARIANT 3/3 PASS)"
+  },
+  "style_guide_decisions_to_lock": [
+    "One-source-per-topic: each schema/contract gets ONE canonical doc; other docs cross-link rather than duplicate. Decision needed: ARCHITECTURE.md as table-of-contents pointing into SCHEMA.md sections, or each topic gets its own file.",
+    "Mirror-and-cite: when CORE doc mirrors ASSISTANT-side authoritative content (BNF, layer enum), state explicitly that it is a mirror and link back. No silent duplication.",
+    "Audit-style root markdown disposition: EXECUTIVE-SUMMARY.md, AUDIT-REPORT.md, CODEREF-ANALYSIS-REPORT.md, DUPLICATE-FILES-AUDIT.md are point-in-time. Decision needed: archive to docs/archive/ vs delete vs leave-with-date-banner.",
+    "CHANGELOG.md format: keep current format or migrate to Keep-a-Changelog? Decision needed.",
+    "README.md as ToC vs README.md as standalone summary: pick one, do not mix."
+  ],
+  "phase_routing": "All Phase 8 work routes through daily-agent-session-2026-05-04 (or later session if calendar advances). 5-2 stays as frozen audit trail per established routing rule. Phase 8 implementation will land on origin/main of CODEREF-CORE; ASSISTANT-side TRACKING ledger commit follows close.",
+  "session_id_at_authoring": "daily-agent-session-2026-05-04",
+  "authored_by": "ORCHESTRATOR",
+  "authored_at": "2026-05-05T00:50:00Z"
+}
