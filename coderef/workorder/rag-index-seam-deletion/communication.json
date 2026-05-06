@@ -1,0 +1,77 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SEAM-DELETION-001",
+  "feature_name": "rag-index-seam-deletion",
+  "created": "2026-05-06T01:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-04-047"],
+  "predecessor_for": null,
+  "stub_source": "STUB-RAG-INDEX-SEAM-DELETION-001 (CORE bbdeba5, ASSISTANT f8338bf, DISPATCH-043)",
+  "predecessor_safety_net_workorder": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001",
+  "predecessor_safety_net_archive": "coderef/archived/rag-index-frozen-fixture-dual-ac-invariants",
+  "predecessor_substrate_pivot_workorder": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
+  "predecessor_substrate_pivot_archive": "coderef/archived/rag-index-single-analyzer-slice",
+  "status": "plan_created",
+  "current_phase": 0,
+  "phase_status": "ready_to_execute_phase_1",
+  "plan_file": "coderef/workorder/rag-index-seam-deletion/plan.json",
+  "context_file": "coderef/workorder/rag-index-seam-deletion/context.json",
+  "analysis_file": "coderef/workorder/rag-index-seam-deletion/analysis.json",
+  "handoff": {
+    "from": "SKILLS (DISPATCH-047 /create-workorder)",
+    "to": "CODEREF-CORE (Phase 1 execution dispatch forthcoming from ORCHESTRATOR)",
+    "reason": "Scoping complete: phased_implementation plan with 3 phases + 16 ACs + 5 decision records. Phase 1 (seam inventory) can begin immediately on CORE dispatch. Anchor case (chunk-converter.ts:60-63) requires ORCHESTRATOR ruling on Option A/B/C BEFORE its specific atomic-removal commit lands in Phase 2; the rest of Phase 2 can proceed for unambiguous seams. Frozen-fixture WO (CORE 282382a) is the live safety net."
+  },
+  "execution_rules": {
+    "plan_type": "phased_implementation",
+    "phase_gates": "Phase 1 (inventory + ruling-required surface) gates Phase 2 (per-seam atomic removals). Within Phase 2, per-seam removals are independent atomic commits; ruling-blocked seams skip until ruled. Phase 3 (closeout-ready handoff) gates cross-project /close-workorder.",
+    "atomic_commits": "Phase 1: 1; Phase 2: 5-15 (one per seam); Phase 3: 1. Total 7-17 anticipated.",
+    "tsc_invariant": "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json) after each commit",
+    "frozen_fixture_invariant": "Per Phase 2 commit, vitest run against frozen-fixture must PASS (CI-blocking)",
+    "real_world_substrate_identity": "AC-05a 2415===2415 + AC-05b 263===263 must PASS at close (verified via predecessor WO static probe verify-dual-ac.mjs); optionally per-commit"
+  },
+  "hard_constraints": [
+    "Phase 7 archive MUST NOT be reopened",
+    "Predecessor archives untouched (rag-index-frozen-fixture-dual-ac-invariants, rag-index-single-analyzer-slice, cleanup-indexing-orchestrator-analyzerservice-param, path-normalization-fix, pipeline-indexing-rag)",
+    "Boundary: src/integration/rag/* (production) + src/integration/rag/__tests__/* (tests) ONLY",
+    "AnalyzerService source code (src/analyzer/analyzer-service.ts) stays untouched",
+    "Frozen-fixture file contents (src/integration/rag/__tests__/fixtures/dual-ac-frozen/*) are FROZEN — do NOT modify; HALT if a seam removal requires fixture change",
+    "Frozen-fixture CI-blocking invariant must PASS at every Phase 2 commit",
+    "AC-05a real-world 2415===2415 + AC-05b real-world 263===263 preserved at close (and ideally per-commit via static probe)",
+    "Phase 7 chokepoint INVARIANT block (lines 32-70 of __tests__/pipeline/indexing-gate-invariant.test.ts) untouched",
+    "Each seam removal must EITHER delete cleanly OR promote to explicit-failure semantics — silent fallback is the anti-pattern being eliminated",
+    "tsc --noEmit clean both configs after each commit",
+    "Cultural validator scope-mode + tracking validator scope-mode PASS clean (acknowledge pre-existing 14/15 stubs.json schema drift per STUB-044)",
+    "No new SkipReason enum value or IndexingResult schema field beyond what ORCHESTRATOR rules on the anchor case (DR-PHASE-7-B locked-additive)",
+    "Net negative LOC required (real cleanup, not zero-sum)"
+  ],
+  "blockers": [
+    {
+      "id": "BLOCK-ANCHOR-RULING",
+      "description": "ORCHESTRATOR ruling required on chunk-converter.ts:60-63 anchor case (Option A: earn-keep via SkipReason; Option B: delete; Option C: keep but log) before its Phase 2 atomic-removal commit can land. Phase 1 inventory + other-seam Phase 2 commits can proceed without the ruling.",
+      "raised_at": "2026-05-06T01:40:00Z",
+      "raised_by": "SKILLS (/create-workorder scoping seed)",
+      "blocking_step": "Phase 2 atomic-removal commit for chunk-converter.ts:60-63 specifically",
+      "non_blocking_for": "Phase 1 inventory authoring, Phase 2 atomic removals of unambiguous seams elsewhere in the inventory"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-06T01:40:00Z",
+      "from": "SKILLS",
+      "to": "ORCHESTRATOR",
+      "kind": "wo_authored",
+      "summary": "WO-RAG-INDEX-SEAM-DELETION-001 authored under DISPATCH-047 (medium priority post-bulletproof-pivot-1 backlog, concept #3 of 6). Promotes STUB-RAG-INDEX-SEAM-DELETION-001 (CORE bbdeba5) into a phased_implementation plan with 3 phases + 16 ACs + 5 decision records (DR-SEAM-A..E). Phase 1 = seam inventory + anchor-case A/B/C ruling-required surface. Phase 2+ = per-seam atomic removals (5-15 commits anticipated). Phase 3 = closeout-ready. Frozen-fixture WO (CORE 282382a) is the live safety net; per-commit verification gates include both frozen-fixture invariant AND optional real-codebase static probe (verify-dual-ac.mjs). BLOCK-ANCHOR-RULING raised: ORCHESTRATOR rules on chunk-converter.ts:60-63 Option A/B/C before Phase 2 atomic removal of that specific seam can land; non-blocking for Phase 1 + other Phase 2 commits. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for Phase 1 execution."
+    }
+  ],
+  "decisions_log": [
+    {
+      "event": "wo_creation",
+      "at": "2026-05-06T01:40:00Z",
+      "by": "SKILLS via /create-workorder (DISPATCH-047)",
+      "rationale": "DISPATCH-047 dispatch payload directed plan_type=phased_implementation (seam inventory before atomic removal). SKILLS confirmed phased: investigation is non-skippable because the seam list is unknown at scoping time. Anchor case judged ambiguous (three options with legitimate trade-offs); surfaced as scope_decision_required block per dispatch-047 directive ('If anchor case ambiguous, surface for ORCHESTRATOR ruling'). DR-SEAM-A..E recorded covering plan_type, anchor-case deferral, per-commit gates, fixture-frozen exemption, and keep_with_justification legitimacy."
+    }
+  ]
+}

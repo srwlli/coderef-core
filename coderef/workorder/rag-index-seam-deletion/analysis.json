@@ -1,0 +1,113 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SEAM-DELETION-001",
+  "feature_name": "rag-index-seam-deletion",
+  "authored_at": "2026-05-06T01:40:00Z",
+  "authored_by": "SKILLS (DISPATCH-047 /create-workorder)",
+  "summary": "Walk src/integration/rag/* and remove seams that don't earn keep. Phase 1 = seam inventory (discovery; non-skippable). Anchor case (chunk-converter.ts:60-63) requires ORCHESTRATOR ruling on Option A/B/C before its atomic removal commit lands. Phase 2+ = per-seam atomic removals, each gated by tsc + frozen-fixture invariant + AC-05a/b real-world identity preservation. Investigation-first by structure; per-seam disposition is the load-bearing decision.",
+  "current_state": {
+    "anchor_case": {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "lines": "60-63",
+      "code_block": "const fileExists = await this.fileExists(filePath);\nif (!fileExists) {\n  // Silently skip non-existent files (they're phantom import targets)\n  continue;\n}",
+      "issue": "Silent skip with zero observable signal — no counter, no log, no chunksSkippedDetails entry, no failure surface",
+      "resolution_options": "Three options A/B/C documented in context.scope.scope_decision_required block; ORCHESTRATOR rules"
+    },
+    "predecessor_seam_deletions_already_landed": [
+      "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 deleted the facet enrichment block (chunk-converter.ts:462-564 at the time) and the second analyzerService.analyze call in indexing-orchestrator.ts. Two major seams already gone.",
+      "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001 removed the @deprecated analyzerService constructor param + private field. Mechanical cleanup of the post-pivot-1 dependency surface."
+    ],
+    "safety_net_in_place": {
+      "wo": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001",
+      "archive_commit": "282382a",
+      "frozen_fixture_path": "src/integration/rag/__tests__/fixtures/dual-ac-frozen/",
+      "ci_blocking_confirmed": "Mutation-guard Path A demonstrated CI exit 1 on identity-breaking input mutation",
+      "test_assertions": "AC-05a element-grain identity (chunksSkipped count === graph hs=missing nodes); AC-05b file-grain identity (uniqueFiles size === validation-report.header_missing_count); cross-check; distinctness",
+      "limits": "Frozen fixture has no phantom-import case; if a seam removal targets phantom-import behavior specifically, the invariant alone won't catch a regression — manual real-codebase static probe (predecessor verify-dual-ac.mjs) is the secondary guard"
+    }
+  },
+  "investigation_targets": {
+    "skipped": false,
+    "investigation_is_phase_1": true,
+    "rationale": "The seam inventory cannot be enumerated at scoping time — that IS the work of Phase 1. SKILLS surfaced the four broad target areas from the stub (chunk-converter.ts, indexing-orchestrator.ts, broader sweep, __tests__/) but the per-file per-seam list with disposition is what Phase 1 produces."
+  },
+  "implementation_strategy": {
+    "approach": "Phase 1 inventory (one commit: inventory.md authored). Anchor-case ruling block surfaced post-Phase-1 if not yet ruled. Phase 2+ atomic-commit removals (one seam per commit). Closeout phase ties up communication + LOC accounting.",
+    "phases_summary": [
+      {
+        "phase": 1,
+        "label": "Seam inventory + anchor-case ruling surface",
+        "commits": 1,
+        "deliverable": "coderef/workorder/rag-index-seam-deletion/inventory.md enumerating every seam in src/integration/rag/* with: file, lines, current code, classification (silent_skip|swallowed_error|dead_branch|pass_through|justified_keep), proposed disposition (delete|promote|keep), rationale. The anchor case (chunk-converter.ts:60-63) is enumerated with all three options surfaced verbatim from context.json scope_decision_required block.",
+        "halt_condition": "If Phase 1 surfaces ambiguity beyond the anchor case (e.g., a second seam with multiple legitimate paths), HALT and surface to ORCHESTRATOR for ruling before Phase 2."
+      },
+      {
+        "phase": 2,
+        "label": "Per-seam atomic removals (ruling-blocked seams skipped until ruled)",
+        "commits": "5-15 anticipated based on stub inventory targets; finalized post-Phase-1",
+        "deliverable": "One atomic commit per seam removal. Commit message names the seam (file:lines), the disposition (delete|promote), and the rationale. Each commit's tsc + frozen-fixture invariant + AC-05a/b real-world checks are documented in the commit message.",
+        "halt_condition": "Any commit that trips the frozen-fixture invariant OR breaks AC-05a/b real-world identity → HALT immediately. Any seam that turns out to genuinely earn keep on closer inspection (handles a real failure mode) → leave in place with explicit justification comment, document in inventory.md update."
+      },
+      {
+        "phase": 3,
+        "label": "Closeout-ready handoff",
+        "commits": 1,
+        "deliverable": "communication.json status=complete with closeout-ready marker; final LOC accounting; final seam-disposition table; CODEREF-CORE → ORCHESTRATOR communication_log entry summarizing the commit chain + per-seam outcomes.",
+        "halt_condition": null
+      }
+    ],
+    "verification_per_commit": [
+      "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json)",
+      "vitest run src/integration/rag/__tests__/ — frozen-fixture invariant + all rag-suite tests PASS",
+      "vitest run __tests__/pipeline/ — Phase 7 chokepoint INVARIANT + AC-05 dual-identity (frozen-fixture-loaded) PASS",
+      "Optional manual: rerun predecessor WO static probe verify-dual-ac.mjs against current real codebase; AC-05a 2415===2415 + AC-05b 263===263 still PASS"
+    ]
+  },
+  "risk_assessment": {
+    "overall_risk": "medium",
+    "risks": [
+      {
+        "id": "R-1",
+        "description": "Phase 1 inventory misses a seam; that seam ships unaudited",
+        "likelihood": "medium",
+        "impact": "future seam-deletion follow-up WO needed",
+        "mitigation": "Inventory uses grep for explicit patterns (try { ... } catch, ?? null, || {}, async (...)=>{...catch{}}, fileExists guards) plus eyeball read of every file in src/integration/rag/*. Document the search method in inventory.md so future audits can re-run it."
+      },
+      {
+        "id": "R-2",
+        "description": "A seam removal in Phase 2 silently breaks production behavior on a real-codebase edge case the frozen-fixture doesn't exercise",
+        "likelihood": "medium",
+        "impact": "regression in real coderef-core rag-index runs (e.g., on a project with phantom imports or unusual file shapes)",
+        "mitigation": "Each Phase 2 commit re-runs the predecessor WO static probe (verify-dual-ac.mjs) against the current real codebase as part of the verification gate, in addition to the frozen-fixture invariant. If real-world AC-05a/b identity shifts post-removal, HALT immediately."
+      },
+      {
+        "id": "R-3",
+        "description": "Anchor case Option A is ruled but DR-PHASE-7-B (locked-additive IndexingResult schema) is hard, blocking Option A",
+        "likelihood": "low-medium",
+        "impact": "anchor case removal blocked; Options B or C are the fallback",
+        "mitigation": "Option A's blast radius includes a SkipReason enum addition. If ORCHESTRATOR rules DR-PHASE-7-B is hard, Options B (delete) or C (log-only) are still available. The scope_decision_required block flags this conditional dependency."
+      },
+      {
+        "id": "R-4",
+        "description": "Inventory turns up a 'seam' that's actually load-bearing — a fallback branch or pass-through that is needed for a documented edge case the WO author didn't realize",
+        "likelihood": "medium",
+        "impact": "false-positive; the seam should NOT be removed",
+        "mitigation": "Per-seam disposition includes a 'keep-with-justification' option. Any seam that turns out to handle a real failure mode gets 'keep' with a single-sentence comment naming the failure mode (per stub earning-keep criterion #3). LOC reduction target accommodates this; not every inventoried seam is required to be removed."
+      },
+      {
+        "id": "R-5",
+        "description": "Test updates in Phase 2 accidentally weaken the substrate-identity assertions",
+        "likelihood": "low",
+        "impact": "frozen-fixture invariant or AC-05 dual-identity test loses bite",
+        "mitigation": "Frozen-fixture file contents are out-of-scope by directive — they cannot be modified. Tests in src/integration/rag/__tests__/* OTHER THAN the frozen-fixture loader can be modified, but only to adjust expectations (silent-skip → explicit-failure assertion). Boundary: do NOT change what the test asserts about substrate identity."
+      }
+    ]
+  },
+  "expected_outcome": {
+    "loc_delta": "Net negative target. Stub estimate 5-15 seams; if average -5 LOC per removal = -25 to -75 net. Some removals may be larger (delete entire pass-through helper class). Final number depends on Phase 1 inventory.",
+    "files_changed": "Likely 5-10 files in src/integration/rag/* + corresponding test updates",
+    "atomic_commits": "Phase 1: 1; Phase 2: 5-15; Phase 3: 1. Total 7-17 commits.",
+    "tsc_status": "clean both configs throughout",
+    "test_pass_rate": "100% — frozen-fixture invariant + AC-05 dual-identity + Phase 7 chokepoint INVARIANT + all other rag-suite tests preserved",
+    "real_world_substrate_identity": "AC-05a 2415===2415 + AC-05b 263===263 preserved (verified per-commit via static probe)"
+  }
+}

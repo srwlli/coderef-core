@@ -1,0 +1,121 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SEAM-DELETION-001",
+  "feature_name": "rag-index-seam-deletion",
+  "created": "2026-05-06T01:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-04-047",
+  "intake": {
+    "trigger": "stub_promotion_dispatch",
+    "user_request": "Promote STUB-RAG-INDEX-SEAM-DELETION-001 (CORE bbdeba5, DISPATCH-043) into a fully-scoped WO. Bulletproof concept #3 of 6: walk src/integration/rag/* end-to-end and delete seams that don't earn keep — silent skips, try/catch swallowers, dead-code branches, pass-through layers. CORE-flagged anchor case: chunk-converter.ts:60-63 silent fileExists skip with three resolution options (A/B/C) requiring ORCHESTRATOR ruling.",
+    "predecessor_stub": "STUB-RAG-INDEX-SEAM-DELETION-001",
+    "predecessor_stub_path": "coderef/stubs/STUB-RAG-INDEX-SEAM-DELETION-001.md",
+    "predecessor_safety_net_wo": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 (archived 2026-05-06, CORE 282382a) — CI-blocking dual-AC invariant in place",
+    "predecessor_substrate_pivot_wo": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 (archived 2026-05-05, CORE a19249a)",
+    "predecessor_cleanup_wo": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001 (archived 2026-05-05, CORE cba7cbb)"
+  },
+  "classification": {
+    "plan_type": "phased_implementation",
+    "plan_type_rationale": "Phase 1 = seam inventory (walk src/integration/rag/* and src/integration/rag/__tests__/*; enumerate every try/catch swallower, silent skip, dead-code branch, pass-through layer; per-seam disposition = delete | promote-to-explicit-failure | keep-with-justification). Phase 1 also surfaces the chunk-converter.ts:60-63 anchor case A/B/C decision as a scope_decision_required block — ORCHESTRATOR rules before Phase 2. Phase 2+ = atomic-commit removals (one seam per commit) gated by tsc + frozen-fixture invariant + AC-05a/b real-world identity preservation. Investigation phase is non-skippable: the seam list is unknown at scoping time and the per-seam disposition is the load-bearing decision per seam.",
+    "plan_type_decided_by": "SKILLS scoping (DISPATCH-047 dispatch payload: 'Plan_type likely phased_implementation (seam inventory before atomic removal)'). SKILLS confirms phased; investigation is required, not optional.",
+    "discovery_ref": "coderef/workorder/rag-index-seam-deletion/analysis.json",
+    "discovery": "Stub markdown enumerates 4 broad inventory targets (chunk-converter.ts, indexing-orchestrator.ts, rag/* broader sweep, rag/__tests__/*). Anchor case (chunk-converter.ts:60-63) verified at line numbers. Earning-keep criteria + dead-weight signals enumerated in stub.",
+    "discovery_skipped_reason": null
+  },
+  "scope": {
+    "in_scope": [
+      "Phase 1: walk src/integration/rag/* (production) + src/integration/rag/__tests__/* (tests) and produce a seam inventory document with per-seam disposition (delete | promote-to-explicit-failure | keep-with-justification + comment)",
+      "Phase 1: surface chunk-converter.ts:60-63 anchor case A/B/C ruling-required block to ORCHESTRATOR before Phase 2 starts",
+      "Phase 2+: atomic-commit removals (one seam per commit; ~5-15 commits anticipated based on stub inventory targets)",
+      "Per-seam removals must EITHER delete cleanly OR promote to explicit-failure semantics (throw, log, count in IndexingResult) — silent fallback is the anti-pattern being eliminated",
+      "Per-commit gates: tsc clean both configs, frozen-fixture CI-blocking invariant still PASSES, AC-05a real-world 2415===2415 + AC-05b real-world 263===263 still PASS",
+      "Tests that currently exercise the silent-skip branches are updated to expect explicit failures (or deleted if branch was dead)",
+      "Seam inventory doc + per-seam disposition rationale lands in WO directory as inventory.md (or analogous artifact) for archive evidence"
+    ],
+    "out_of_scope": [
+      "Phase 7 archive — locked, MUST NOT be reopened",
+      "Predecessor archives (rag-index-frozen-fixture-dual-ac-invariants, rag-index-single-analyzer-slice, cleanup-indexing-orchestrator-analyzerservice-param, path-normalization-fix, pipeline-indexing-rag) — all CLOSED, must NOT be modified",
+      "AnalyzerService source code (src/analyzer/analyzer-service.ts) — still used by populate-coderef + BreakingChangeDetector",
+      "Production code outside src/integration/rag/* — boundary violation",
+      "Frozen-fixture file contents (src/integration/rag/__tests__/fixtures/dual-ac-frozen/) — frozen by definition; if a seam removal requires fixture changes, HALT and reframe",
+      "The dual-AC fixture and frozen-fixture invariant ARE the substrate-identity safety net — exempt from seam audit per stub directive",
+      "Schema reduction (concept #5), branded paths (concept #4), two-grain drop (concept #6) — separate WOs",
+      "Any new IndexingResult schema fields BEYOND the anchor-case Option A path (which itself requires ORCHESTRATOR ruling on DR-PHASE-7-B locked-additive constraint)"
+    ],
+    "scope_decision_required": {
+      "decision": "chunk-converter.ts:60-63 silent fileExists skip — choose Option A, B, or C",
+      "ruling_authority": "ORCHESTRATOR",
+      "ruling_required_before": "Phase 2 atomic removals begin (Phase 1 inventory may run before ruling, but the anchor case removal commit cannot land until ORCHESTRATOR rules)",
+      "options": {
+        "option_a_earn_keep": {
+          "summary": "Convert silent skip to chunksSkipped with new SkipReason='phantom_import_target'; surface count in IndexingResult; add fixture assertion that no real-codebase scan produces unexpected phantoms",
+          "pro": "Earns keep — the seam handles a real failure mode (phantom imports) with explicit observable semantics. Most defensible if phantom imports actually occur on real coderef-core scans.",
+          "con": "Requires new SkipReason enum value; touches DR-PHASE-7-B locked-additive constraint on IndexingResult. ORCHESTRATOR must rule on whether DR-PHASE-7-B allows the addition.",
+          "risk": "Low — additive only. Frozen-fixture invariant tests are not affected (their input has no phantoms).",
+          "blast_radius": "src/integration/rag/chunk-converter.ts (~5-10 LOC for SkipReason+counter), src/integration/rag/types.ts or wherever SkipReason enum lives (1 line), tests covering chunksSkippedDetails (small)"
+        },
+        "option_b_delete": {
+          "summary": "Remove the fileExists check entirely; let the read-error path (lines 65-77) handle missing files via existing errors[] accumulator",
+          "pro": "Most aggressive cleanup. Eliminates silent skip without adding schema surface. Honors DR-PHASE-7-B without exception.",
+          "con": "If phantom imports DO occur on real scans, they get surfaced as readFile errors instead of skipped silently — a behavior change. Errors[] accumulator may not track them at the same granularity as the current skip path.",
+          "risk": "Medium — behavior change for any phantom-import case. Frozen-fixture invariant unaffected (no phantoms in input). AC-05a/b real-world identity preservation requires verification: confirm that on real coderef-core scan, no files hit lines 60-63 today (or only files that the read-error path handles equivalently).",
+          "blast_radius": "src/integration/rag/chunk-converter.ts (delete ~5 LOC), tests that mock the fileExists branch (delete or update)"
+        },
+        "option_c_keep_but_log": {
+          "summary": "Add a console.warn or logger call inside the silent-skip branch so the drop becomes observable in CI output (even if not surfaced in IndexingResult)",
+          "pro": "Minimal change. Restores observability without schema surface. No behavior change for the chunk pipeline.",
+          "con": "Half-measure — warnings don't fail CI, callers can't assert on them, and logs are noisy at scale. Doesn't earn keep on the criteria-1 test (\"surfaces a real failure mode explicitly via assertable mechanism\"). Likely to be re-flagged in a future seam audit.",
+          "risk": "Low — purely additive log line. Honors all locked constraints. But weakens the bulletproof-#3 substrate by accepting a silent-but-logged seam as the resolved state.",
+          "blast_radius": "src/integration/rag/chunk-converter.ts (+1-2 LOC), no test updates"
+        }
+      },
+      "skills_recommendation": "SKILLS does not pre-rule. Surface per dispatch-047 directive ('If anchor case (chunk-converter.ts:60-63) ambiguous, surface for ORCHESTRATOR ruling'). All three options have legitimate trade-offs; the choice depends on (a) whether DR-PHASE-7-B is hard or negotiable, (b) whether phantom imports actually occur on real coderef-core scans, (c) the degree to which 'earn keep via observable mechanism' is treated as non-negotiable for bulletproof #3."
+    }
+  },
+  "constraints": [
+    "Phase 7 archive MUST NOT be reopened",
+    "Predecessor archives untouched",
+    "Boundary: src/integration/rag/* (production) + src/integration/rag/__tests__/* (tests) ONLY",
+    "AnalyzerService source code (src/analyzer/analyzer-service.ts) stays untouched",
+    "AC-05a real-world 2415===2415 MUST stay PASS (verified post-each-commit via predecessor WO static probe)",
+    "AC-05b real-world 263===263 MUST stay PASS",
+    "Frozen-fixture CI-blocking invariant MUST stay PASS — if any seam removal trips it, HALT and reframe",
+    "Frozen-fixture file contents under src/integration/rag/__tests__/fixtures/dual-ac-frozen/ are frozen — do NOT modify; if a removal requires fixture change, HALT",
+    "Each seam removal must EITHER delete cleanly OR promote to explicit-failure semantics — do NOT replace one silent seam with another",
+    "tsc --noEmit clean both configs after each atomic commit",
+    "Cultural validator scope-mode + tracking validator scope-mode PASS clean (acknowledge pre-existing 14/15 stubs.json schema drift per STUB-044)",
+    "Net negative LOC required (real cleanup, not zero-sum) — plan should target measurable reduction",
+    "Anchor case ruling REQUIRED before Phase 2 atomic-removal commit for that specific seam lands"
+  ],
+  "evidence_summary": {
+    "anchor_case_verified": {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "lines": "60-63",
+      "code": "const fileExists = await this.fileExists(filePath); if (!fileExists) { continue; }",
+      "issue": "Silent skip with zero observable signal — no counter, no log, no entry in chunksSkippedDetails, no failure surface"
+    },
+    "stub_inventory_targets_at_scoping": [
+      "src/integration/rag/chunk-converter.ts (silent skips, fallback branches, type-coercion fallbacks)",
+      "src/integration/rag/indexing-orchestrator.ts (post-pivot-1 try/catch swallowers, optional-chaining fallback branches)",
+      "src/integration/rag/* broader sweep (embedding adapters, vector-store adapters, pass-through layers, helper wrappers)",
+      "src/integration/rag/__tests__/* (silent-mock antipatterns; frozen-fixture + dual-AC tests EXEMPT)"
+    ],
+    "earning_keep_criteria_from_stub": [
+      "Surfaces a real failure mode explicitly (throw, log-to-CI, IndexingResult counter)",
+      "Exercised by a test (happy-path + failure mode it handles)",
+      "Carries a single-sentence comment explaining WHY (failure mode), not WHAT (workaround)"
+    ],
+    "dead_weight_signals_from_stub": [
+      "Swallows errors with no log, no throw, no counter",
+      "Pass-through layer with no added semantics",
+      "Comment justifies the workaround instead of the failure mode",
+      "Added 'for safety' with no documented failure mode"
+    ],
+    "safety_net_status": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 archived 2026-05-06 (CORE 282382a). Frozen-fixture invariant CI-blocking confirmed via mutation-guard Path A. Any seam removal that silently shifts AC-05a/b on synthetic input will trip the invariant immediately."
+  },
+  "pending_artifacts": {
+    "analysis_json": "Authored at scoping seed",
+    "plan_json": "Authored at scoping seed (Phase 1 inventory + scope_decision_required surface; Phase 2+ atomic removals contingent on anchor-case ruling)",
+    "communication_json": "Authored at scoping seed (status=plan_created)"
+  }
+}

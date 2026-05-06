@@ -1,0 +1,160 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SEAM-DELETION-001",
+  "feature_name": "rag-index-seam-deletion",
+  "authored_at": "2026-05-06T01:40:00Z",
+  "authored_by": "SKILLS (DISPATCH-047 /create-workorder)",
+  "plan_type": "phased_implementation",
+  "summary": "Three phases: (1) seam inventory + anchor-case ruling surface, (2) per-seam atomic removals (1 commit per seam, ruling-blocked seams skipped until ruled), (3) closeout-ready handoff. Frozen-fixture invariant + AC-05a/b real-world identity are non-negotiable gates per commit.",
+  "phases": [
+    {
+      "phase": 1,
+      "label": "Seam inventory + anchor-case ruling surface",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T1.1",
+          "subject": "Walk src/integration/rag/* and produce seam inventory",
+          "operations": [
+            "Grep src/integration/rag/* for: `try {` `} catch`, `?? null`, `?? {}`, `|| {}`, `|| []`, `as any`, `Number(`, `fileExists`, `existsSync`, async catch blocks, optional-chaining-with-fallback patterns",
+            "Eyeball-read every .ts file in src/integration/rag/* and src/integration/rag/__tests__/*",
+            "Classify each candidate: silent_skip | swallowed_error | dead_branch | pass_through | type_coercion_fallback | justified_keep",
+            "For each candidate, propose disposition: delete | promote_to_explicit_failure | keep_with_justification",
+            "If disposition is keep_with_justification, the inventory entry MUST name the failure mode (criterion-3 from stub)"
+          ]
+        },
+        {
+          "task_id": "T1.2",
+          "subject": "Author inventory.md in WO directory",
+          "operations": [
+            "Create coderef/workorder/rag-index-seam-deletion/inventory.md",
+            "Document grep methodology so future audits can re-run it",
+            "Table per file: seam | lines | classification | disposition | rationale",
+            "Anchor case (chunk-converter.ts:60-63) is enumerated with all three options (A/B/C) verbatim from context.json scope_decision_required block — flag as RULING_REQUIRED",
+            "Surface any other ambiguous seam (multiple legitimate paths) as RULING_REQUIRED for ORCHESTRATOR"
+          ]
+        },
+        {
+          "task_id": "T1.3",
+          "subject": "Phase 1 commit + handoff for anchor-case ruling",
+          "operations": [
+            "Commit message: 'inventory(WO-RAG-INDEX-SEAM-DELETION-001): seam audit of src/integration/rag/* + anchor-case ruling required'",
+            "tsc --noEmit clean both configs (no production code changes in Phase 1, but verify nothing inadvertently touched)",
+            "Update communication.json with Phase 1 complete + ruling-required block citing inventory.md",
+            "HALT: do NOT begin Phase 2 atomic removals until ORCHESTRATOR rules on anchor case (and any other RULING_REQUIRED seams)"
+          ]
+        }
+      ],
+      "commit_message_template": "inventory(WO-RAG-INDEX-SEAM-DELETION-001): seam audit + anchor-case A/B/C ruling required",
+      "phase_gate": "Phase 1 commit landed AND inventory.md authored AND tsc clean AND ruling-required block surfaced in communication.json. ORCHESTRATOR rules on anchor case (+ any other surfaced RULING_REQUIRED seams) before Phase 2 begins."
+    },
+    {
+      "phase": 2,
+      "label": "Per-seam atomic removals (post-ruling)",
+      "atomic_commits": "5-15 (finalized post-Phase-1)",
+      "tasks": [
+        {
+          "task_id": "T2.X (one task per seam)",
+          "subject": "For each seam in inventory.md with disposition=delete or disposition=promote, author one atomic commit",
+          "operations": [
+            "Edit src/integration/rag/<file>.ts to remove or promote the seam",
+            "Update tests in src/integration/rag/__tests__/<file>.test.ts that exercised the silent branch (silent-skip → explicit-failure assertion, or delete if branch was dead)",
+            "tsc --noEmit clean both configs",
+            "vitest run src/integration/rag/__tests__/ — frozen-fixture invariant + all rag-suite tests PASS",
+            "vitest run __tests__/pipeline/ — Phase 7 chokepoint INVARIANT + AC-05 dual-identity PASS",
+            "Optional: rerun verify-dual-ac.mjs against real codebase; AC-05a 2415===2415 + AC-05b 263===263 still PASS",
+            "Commit message: per-seam template noting file:lines, disposition, rationale, gate results"
+          ]
+        },
+        {
+          "task_id": "T2.HALT (any commit)",
+          "subject": "Halt-and-report triggers",
+          "operations": [
+            "HALT if frozen-fixture invariant trips on the post-removal state",
+            "HALT if AC-05a/b real-world identity shifts on the post-removal state (real codebase static probe)",
+            "HALT if a seam initially classified delete or promote turns out to handle a real failure mode (reclassify as keep_with_justification, document in inventory.md update commit, do NOT remove)",
+            "HALT if any change required outside src/integration/rag/* + src/integration/rag/__tests__/* (boundary violation)",
+            "HALT if any new SkipReason enum value or IndexingResult schema field is needed beyond what ORCHESTRATOR ruled in the anchor-case ruling (DR-PHASE-7-B)"
+          ]
+        }
+      ],
+      "commit_message_template": "refactor(WO-RAG-INDEX-SEAM-DELETION-001): {disposition} seam at {file}:{lines} — {rationale}",
+      "phase_gate": "All inventory.md disposition=delete and disposition=promote seams have landed as atomic commits AND every commit passed tsc + frozen-fixture invariant + AC-05 dual-identity. Real-world substrate identity (AC-05a 2415, AC-05b 263) preserved. LOC delta net negative."
+    },
+    {
+      "phase": 3,
+      "label": "Closeout-ready handoff",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T3.1",
+          "subject": "Final accounting + closeout marker",
+          "operations": [
+            "Update inventory.md with final per-seam outcomes (delete | promote | keep_with_justification + commit SHAs)",
+            "Update communication.json: status=complete, completed_at, current_phase=2, phase_status=closeout_ready",
+            "Append CODEREF-CORE → ORCHESTRATOR communication_log entry: commit chain summary, total LOC delta, per-seam outcome table, frozen-fixture invariant + AC-05 + real-world identity preservation evidence",
+            "Hand off to ORCHESTRATOR for cross-project /close-workorder dispatch"
+          ]
+        }
+      ],
+      "phase_gate": "Communication.json closeout-ready. ORCHESTRATOR dispatches SKILLS for cross-project /close-workorder."
+    }
+  ],
+  "acceptance_criteria": [
+    {"id": "AC-01", "statement": "Phase 1 inventory.md exists in WO directory with grep methodology + per-file per-seam classification + disposition + rationale", "verification": "inspection of inventory.md"},
+    {"id": "AC-02", "statement": "Anchor case (chunk-converter.ts:60-63) resolved per ORCHESTRATOR ruling on Option A/B/C; resolution applied in a Phase 2 atomic commit", "verification": "git log + inventory.md final entry"},
+    {"id": "AC-03", "statement": "Each Phase 2 atomic commit removes or promotes exactly one seam (no bundled removals)", "verification": "git log per-commit diff radius"},
+    {"id": "AC-04", "statement": "Each Phase 2 commit passes tsc --noEmit clean both configs", "verification": "Per-commit tsc evidence in commit message or close report"},
+    {"id": "AC-05", "statement": "Frozen-fixture CI-blocking invariant PASSES at every Phase 2 commit", "verification": "vitest run on src/integration/rag/__tests__/fixtures/dual-ac-frozen/ test path per commit"},
+    {"id": "AC-06", "statement": "AC-05a real-world 2415===2415 + AC-05b real-world 263===263 PASS at WO close (verified via predecessor WO static probe verify-dual-ac.mjs)", "verification": "static probe output captured in close report"},
+    {"id": "AC-07", "statement": "Phase 7 chokepoint INVARIANT block (lines 32-70 of __tests__/pipeline/indexing-gate-invariant.test.ts) untouched", "verification": "git diff over WO range shows zero changes to lines 32-70"},
+    {"id": "AC-08", "statement": "All Phase 2 changes are within src/integration/rag/* + src/integration/rag/__tests__/* boundary", "verification": "git diff over WO range shows no changes outside this radius"},
+    {"id": "AC-09", "statement": "AnalyzerService source code (src/analyzer/analyzer-service.ts) untouched", "verification": "git diff shows zero changes to that file"},
+    {"id": "AC-10", "statement": "Frozen-fixture file contents (src/integration/rag/__tests__/fixtures/dual-ac-frozen/*) untouched", "verification": "git diff shows zero changes to the fixture directory"},
+    {"id": "AC-11", "statement": "No new SkipReason enum value or IndexingResult schema field added beyond what ORCHESTRATOR rules on the anchor case (DR-PHASE-7-B)", "verification": "git diff inspection of types.ts and IndexingResult definitions"},
+    {"id": "AC-12", "statement": "Net negative LOC across the WO commit range (real cleanup, not zero-sum)", "verification": "git diff --stat over fcea78a..(close) shows deletions exceed insertions"},
+    {"id": "AC-13", "statement": "Each disposition=keep_with_justification seam carries a single-sentence comment naming the failure mode it handles (per stub criterion #3)", "verification": "Inspection of post-WO source for inventory keeps"},
+    {"id": "AC-14", "statement": "Predecessor archives untouched (rag-index-frozen-fixture-dual-ac-invariants, rag-index-single-analyzer-slice, cleanup-indexing-orchestrator-analyzerservice-param, path-normalization-fix, pipeline-indexing-rag)", "verification": "git diff over WO range shows zero changes under coderef/archived/"},
+    {"id": "AC-15", "statement": "Cultural validator scope-mode 11/11 PASS + tracking validator scope-mode 15/15 PASS at close", "verification": "Both validators pass at close time"},
+    {"id": "AC-16", "statement": "/close-workorder produces ARCHIVED.md + tracking ledger updates + workorder_completed/closed events; STUB-RAG-INDEX-SEAM-DELETION-001 closed_via_workorder", "verification": "Cross-project close artifact landed"}
+  ],
+  "decisions_record": [
+    {
+      "id": "DR-SEAM-A",
+      "decision": "Plan_type=phased_implementation; Phase 1 inventory is non-skippable",
+      "rationale": "The seam list is unknown at scoping time; that's the work of Phase 1. Skipping Phase 1 (e.g., scoping individual removals upfront) would require SKILLS or ORCHESTRATOR to do the inventory at scoping time, which puts the load-bearing decision in the wrong phase. Phased structure also accommodates multiple ruling-required seams (anchor case + any others surfaced in Phase 1).",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-06T01:40:00Z"
+    },
+    {
+      "id": "DR-SEAM-B",
+      "decision": "Anchor case (chunk-converter.ts:60-63) ruling deferred to ORCHESTRATOR via scope_decision_required block; SKILLS does not pre-rule",
+      "rationale": "All three options (A/B/C) have legitimate trade-offs documented in the stub. The choice depends on (a) whether DR-PHASE-7-B is hard or negotiable, (b) whether phantom imports actually occur on real coderef-core scans (data Phase 1 may surface), (c) the degree to which 'earn keep via observable mechanism' is treated as non-negotiable for bulletproof #3. Per dispatch-047 directive: 'If anchor case ambiguous, surface for ORCHESTRATOR ruling.' SKILLS judges it ambiguous and surfaces. Ruling-required block lives in context.scope.scope_decision_required.",
+      "decided_by": "SKILLS scoping (per DISPATCH-047 directive)",
+      "decided_at": "2026-05-06T01:40:00Z"
+    },
+    {
+      "id": "DR-SEAM-C",
+      "decision": "Per-commit verification gates include both frozen-fixture CI invariant AND optional real-codebase static probe (verify-dual-ac.mjs from predecessor WO archive)",
+      "rationale": "The frozen fixture has no phantom-import case. If a Phase 2 commit removes a seam that affects phantom-import behavior, the synthetic-input invariant won't catch a real-codebase regression. The static probe rerun is the secondary guard. Marked optional because it requires a real coderef-core scan (~25min if live rag-index, but verify-dual-ac.mjs is static so faster); execution can decide cadence — at minimum at Phase 3 closeout.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-06T01:40:00Z"
+    },
+    {
+      "id": "DR-SEAM-D",
+      "decision": "Frozen-fixture file contents are EXEMPT from this WO's edits; if a seam removal requires fixture changes, HALT and reframe rather than amend the fixture",
+      "rationale": "The fixture is the safety net. Modifying it during a seam-deletion WO would defeat the safety-net property — the test could be silently weakened to accommodate a problematic removal. If a seam genuinely cannot be removed without fixture change, that's a signal the seam earns keep OR that the fixture itself has a gap (which would be a separate WO).",
+      "decided_by": "SKILLS scoping (per dispatch-047 hard constraint)",
+      "decided_at": "2026-05-06T01:40:00Z"
+    },
+    {
+      "id": "DR-SEAM-E",
+      "decision": "Disposition=keep_with_justification is a legitimate Phase 2 outcome; not every inventoried seam must be removed",
+      "rationale": "Earning-keep criteria from stub specify when a seam earns keep. Phase 1 inventory may classify some candidates as keep_with_justification. The WO target is 'remove seams that don't earn keep,' not 'remove every seam.' False-positive prevention: per-seam disposition gives the WO author license to leave a seam in place if it handles a real failure mode, with a single-sentence comment naming the failure mode.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-06T01:40:00Z"
+    }
+  ],
+  "estimated_loc_delta": "-25 to -75 net (5-15 seams × ~-5 LOC average; Phase 1 finalizes the count)",
+  "estimated_atomic_commits": "7-17 (Phase 1: 1, Phase 2: 5-15, Phase 3: 1)",
+  "estimated_phases": 3
+}
