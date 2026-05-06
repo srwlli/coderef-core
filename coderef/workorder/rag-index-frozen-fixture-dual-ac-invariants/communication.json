@@ -10,9 +10,10 @@
   "predecessor_workorder": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
   "predecessor_archive": "coderef/archived/rag-index-single-analyzer-slice",
   "sibling_stub_pending_scope": "STUB-RAG-INDEX-SEAM-DELETION-001 (CORE bbdeba5, DISPATCH-043) — depends on this WO landing first",
-  "status": "plan_created",
-  "current_phase": 0,
-  "phase_status": "ready_to_execute",
+  "status": "complete",
+  "completed_at": "2026-05-05T20:20:00Z",
+  "current_phase": 3,
+  "phase_status": "closeout_ready",
   "plan_file": "coderef/workorder/rag-index-frozen-fixture-dual-ac-invariants/plan.json",
   "context_file": "coderef/workorder/rag-index-frozen-fixture-dual-ac-invariants/context.json",
   "analysis_file": "coderef/workorder/rag-index-frozen-fixture-dual-ac-invariants/analysis.json",
@@ -51,6 +52,13 @@
       "to": "ORCHESTRATOR",
       "kind": "wo_authored",
       "summary": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 authored under DISPATCH-045 (high priority post-bulletproof-pivot-1 backlog, concept #2 of 6). plan_type=simple_implementation; 3 atomic commits planned (fixture + test refactor + CI verification); 16 ACs; +30 to +80 net LOC target. Predecessor stub STUB-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 (CORE 1cc4acb) is the source; predecessor WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 (a19249a) is the substrate that introduced dual-AC framing. Boundary clarification recorded in DR-FROZEN-B (fixture lands in src/integration/rag/__tests__/fixtures/, test stays at __tests__/pipeline/ — surface during execution if ORCHESTRATOR wants test moved too). Identity-not-numbers + anti-tautology + distinctness-as-relationship all locked in DR-FROZEN-C/D. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for execution."
+    },
+    {
+      "at": "2026-05-05T20:20:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_complete",
+      "summary": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 complete (closeout-ready). Three atomic commits landed: e17561b (C1 fixture authoring +144 LOC), 3adf32a (C2 test refactor +98/-107 = -9 net LOC + vitest config exclude), 6fafa98 (C3 verification-only with MUTATION-GUARD-EVIDENCE.md +76 LOC). Total +211 net LOC (overshoot vs +30-80 target driven by fixture data + evidence file content; reported truthfully). AC-01..AC-14 PASS, AC-15/AC-16 deferred to /close-workorder. T3.1 hit halt-and-report point: under DR-FROZEN-C input-derived expected, original plan recipe (flip ONE node) does NOT fail test because dual-AC identity holds in mutated fixture; surfaced 3 paths to ORCHESTRATOR. ORCHESTRATOR ruled Path A (flip both missing nodes of mod0). Mutation captured as `expected 3 to be 2` cross-check FAIL at line 175 of test, vitest exits 1 (CI-blocking confirmed), mutation reverted, evidence in MUTATION-GUARD-EVIDENCE.md. Verification: tsc clean both configs at every phase gate; vitest 263/264 PASS in pipeline+integration sweep (1 pre-existing baseline failure: chunk-converter:243 maxSourceCodeLength, unrelated, documented in predecessor WO closeouts); default `vitest run` includes AC-05 dual-identity test. Production code in src/integration/rag/*.ts (excluding __tests__/) untouched (AC-13). AnalyzerService source untouched (AC-14). Phase 7 chokepoint INVARIANT block lines 32-70 untouched (AC-10). Bulletproof concept #2 of 6 shipped. Standing by for ORCHESTRATOR to dispatch SKILLS for cross-project /close-workorder."
     }
   ],
   "decisions_log": [
@@ -59,6 +67,20 @@
       "at": "2026-05-06T00:50:00Z",
       "by": "SKILLS via /create-workorder (DISPATCH-045)",
       "rationale": "DISPATCH-045 dispatch payload directed plan_type=simple_implementation OR phased_implementation depending on whether fixture-shape decision needs an investigation phase. SKILLS judged no investigation phase needed: the seed test (__tests__/pipeline/indexing-gate-invariant.test.ts:98-241) is a working reference, surface area is enumerable from a single grep, and the only real decision (refactor seed in place vs author new test) is recorded inline in DR-FROZEN-B rather than dragged through a phase. Full /create-workorder Step 4-7 chain ran."
+    },
+    {
+      "event": "t31_mutation_guard_clarification",
+      "at": "2026-05-05T20:10:00Z",
+      "by": "CODEREF-CORE (halt-and-report) → ORCHESTRATOR (Path A ruling)",
+      "ruling": "Plan T3.1's original recipe ('flip ONE hs=missing node → test FAILS') was inconsistent with DR-FROZEN-C input-derived expected. Single-node flip yields a mutated fixture where the dual-AC identity STILL HOLDS (re-derived expected matches actual). 3 paths surfaced: (A) flip BOTH missing nodes of one file, breaking file-grain invariant 3→2; (B) mutate validation-report.json (sentinel-side); (C) hardcoded supplementary assertion (rejected — violates DR-FROZEN-D). ORCHESTRATOR ruled (A): substrate-side mutation is the correct shape for catching production drift. NOT a new DR — DR-FROZEN-C still governs; this is plan-spec clarification inline.",
+      "rationale": "Path A demonstrates the substrate-vs-baseline mechanic: graph.json (substrate) disagreeing with validation-report.json (baseline) is what the cross-check at test line 175 catches. Sentinel-side mutation (Path B) only proves the two files agree, not that production code honors the identity. Hardcoded supplementary assertion (Path C) directly violates DR-FROZEN-D identity-not-numbers principle."
+    },
+    {
+      "event": "vitest_config_glob_addition_acknowledged",
+      "at": "2026-05-05T20:00:00Z",
+      "by": "CODEREF-CORE",
+      "ruling": "Added `**/__tests__/fixtures/**` to the vitest exclude glob in vitest.config.ts. Necessary because the fixture src/*.ts files (legitimate non-test TypeScript modules) were picked up by vitest's `**/__tests__/**/*.ts` include glob and triggered 'No test suite found' false positives.",
+      "rationale": "Falls within the dispatch's 'minimal CI wiring' boundary clause. 3-line addition, scoped to the exclude list. No production code change; no test logic change."
     }
   ]
 }
