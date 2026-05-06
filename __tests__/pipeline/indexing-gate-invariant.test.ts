@@ -69,23 +69,20 @@ describe('Phase 7 chokepoint INVARIANT (task 1.17)', () => {
   });
 });
 
-// WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 — Phase 3 task 3.3 rewrite.
-// The substrate pivot reads .coderef/graph.json directly as the chunk
-// source, so chunks ARE the nodes. Two structural identities hold:
-//   AC-05a (element-grain): chunksSkipped(header_status_missing) ===
-//     count of graph.json nodes with metadata.headerStatus='missing'.
-//   AC-05b (file-grain):    uniqueFiles(skipDetails).size ===
-//     validation_report.header_missing_count.
+// WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 — Phase 2 refactor.
+// The dual-AC fixture was previously built procedurally inside this
+// describe block. It now lives on disk as a frozen artifact at
+// src/integration/rag/__tests__/fixtures/dual-ac-frozen/. The test
+// loads the fixture, computes expected counts FROM the loaded input
+// (not from runtime output, not from hardcoded literals), and asserts
+// production output matches. This is the anti-tautology guard
+// (DR-FROZEN-C): independent paths from input to expected and input
+// to actual.
 //
-// Fixture is intentionally 3 files × 3 element-grain nodes each, with
-// 2 of the 3 nodes per file marked headerStatus='missing'. That gives
-// 6 element-grain skips across 3 unique files, so AC-05a (=6) and
-// AC-05b (=3) produce DISTINCT numbers — required for the dual-AC
-// framing to actually exercise both grains. (A 1-node-per-file fixture
-// would collapse the two identities to the same number and mask the
-// distinction.) The 3rd node per file is headerStatus='defined' so
-// chunksIndexed>=1 and the run does not collapse to status='failed'
-// via the no_chunks_produced threshold.
+// AC-05a (element-grain): chunksSkipped(header_status_missing) ===
+//   count of graph.json nodes with metadata.headerStatus='missing'.
+// AC-05b (file-grain):    uniqueFiles(skipDetails).size ===
+//   validation_report.header_missing_count.
 const tmpDirs: string[] = [];
 afterEach(async () => {
   await Promise.all(
@@ -95,100 +92,92 @@ afterEach(async () => {
   );
 });
 
-describe('AC-05 dual identity — element-grain + file-grain (no tolerance band)', () => {
+const FROZEN_FIXTURE_DIR = path.resolve(
+  __dirname,
+  '..',
+  '..',
+  'src',
+  'integration',
+  'rag',
+  '__tests__',
+  'fixtures',
+  'dual-ac-frozen',
+);
+
+async function copyDir(src: string, dst: string): Promise<void> {
+  await fs.mkdir(dst, { recursive: true });
+  const entries = await fs.readdir(src, { withFileTypes: true });
+  for (const entry of entries) {
+    const s = path.join(src, entry.name);
+    const d = path.join(dst, entry.name);
+    if (entry.isDirectory()) {
+      await copyDir(s, d);
+    } else {
+      await fs.copyFile(s, d);
+    }
+  }
+}
+
+describe('AC-05 dual identity — element-grain + file-grain (frozen fixture)', () => {
   it('chunksSkipped exact-equals element-grain count; uniqueFiles exact-equals validation_report.header_missing_count', async () => {
     const projectDir = await fs.mkdtemp(
-      path.join(os.tmpdir(), 'coderef-ac05-dual-'),
+      path.join(os.tmpdir(), 'coderef-ac05-frozen-'),
     );
     tmpDirs.push(projectDir);
+
+    // Stage the frozen fixture into the tmpdir. Copy src files to
+    // projectDir/src and graph.json to projectDir/.coderef/graph.json
+    // so the orchestrator finds them at the expected paths.
+    await copyDir(
+      path.join(FROZEN_FIXTURE_DIR, 'src'),
+      path.join(projectDir, 'src'),
+    );
     await fs.mkdir(path.join(projectDir, '.coderef'), { recursive: true });
+    const graphPath = path.join(projectDir, '.coderef', 'graph.json');
+    await fs.copyFile(
+      path.join(FROZEN_FIXTURE_DIR, 'graph.json'),
+      graphPath,
+    );
 
-    // 3 files × 3 element-grain nodes (1 fn + 1 class + 1 const). Of
-    // each 3-node file: nodes 1+2 are headerStatus='missing'; node 3
-    // is headerStatus='defined'. 6 element-grain missing nodes across
-    // 3 unique files.
-    const NUM_FILES = 3;
-    const NODES_PER_FILE = 3;
-    const MISSING_PER_FILE = 2;
-    const fileNames: string[] = [];
-    type GraphJsonNode = {
-      id: string;
-      type: string;
-      name: string;
-      file: string;
-      line: number;
-      metadata: { headerStatus: string; exported?: boolean };
-    };
-    const nodes: GraphJsonNode[] = [];
+    // Stamp graph.json mtime to NOW so the orchestrator's staleness
+    // check (graph mtime must be >= every source mtime) passes. Copy
+    // operations on Windows can leave graph mtime slightly behind
+    // freshly-copied source files.
+    const now = new Date();
+    await fs.utimes(graphPath, now, now);
 
-    for (let f = 0; f < NUM_FILES; f++) {
-      const rel = `src/mod${f}.ts`;
-      fileNames.push(rel);
-      const abs = path.join(projectDir, rel);
-      await fs.mkdir(path.dirname(abs), { recursive: true });
-      await fs.writeFile(
-        abs,
-        [
-          `export function fn${f}() { return ${f}; }`,
-          `export class Cls${f} { public k = ${f}; }`,
-          `export const C${f} = ${f};`,
-          '',
-        ].join('\n'),
-        'utf-8',
-      );
-
-      // Node 1: function (missing)
-      nodes.push({
-        id: `@Fn/${rel}#fn${f}:1`,
-        type: 'function',
-        name: `fn${f}`,
-        file: rel,
-        line: 1,
-        metadata: { headerStatus: 'missing', exported: true },
-      });
-      // Node 2: class (missing)
-      nodes.push({
-        id: `@Cl/${rel}#Cls${f}:2`,
-        type: 'class',
-        name: `Cls${f}`,
-        file: rel,
-        line: 2,
-        metadata: { headerStatus: 'missing', exported: true },
-      });
-      // Node 3: const (defined — keeps chunksIndexed>=1)
-      nodes.push({
-        id: `@C/${rel}#C${f}:3`,
-        type: 'constant',
-        name: `C${f}`,
-        file: rel,
-        line: 3,
-        metadata: { headerStatus: 'defined', exported: true },
-      });
-    }
-
-    // Synthesize a Phase 6 validation-report.json sibling — identifies
-    // the file-grain canonical baseline that AC-05b cross-checks
-    // against.
-    const fileGrainMissing = NUM_FILES; // 3
-    const elementGrainMissing = NUM_FILES * MISSING_PER_FILE; // 6
-
-    const graph = {
-      version: '1.0',
-      exportedAt: new Date().toISOString(),
-      nodes,
-      edges: [],
-      statistics: { nodeCount: nodes.length, edgeCount: 0 },
-    };
-    await fs.writeFile(
+    // Anti-tautology guard (DR-FROZEN-C): compute expected counts by
+    // inspecting the loaded graph.json INPUT, not from runtime output
+    // and not from hardcoded literals. If a future fixture drift
+    // changes the shape, expected and actual re-derive independently.
+    const graphRaw = await fs.readFile(
       path.join(projectDir, '.coderef', 'graph.json'),
-      JSON.stringify(graph),
       'utf-8',
     );
+    const graphParsed = JSON.parse(graphRaw) as {
+      nodes: Array<{ file: string; metadata?: { headerStatus?: string } }>;
+    };
+    const missingNodes = graphParsed.nodes.filter(
+      (n) => n.metadata?.headerStatus === 'missing',
+    );
+    const expectedElementGrain = missingNodes.length;
+    const expectedFileGrain = new Set(missingNodes.map((n) => n.file)).size;
+
+    // Cross-check: validation-report.json's file-grain baseline must
+    // match the file-grain count derived from graph.json (AC-07).
+    const validationRaw = await fs.readFile(
+      path.join(FROZEN_FIXTURE_DIR, 'validation-report.json'),
+      'utf-8',
+    );
+    const validationParsed = JSON.parse(validationRaw) as {
+      header_missing_count: number;
+    };
+    expect(validationParsed.header_missing_count).toBe(expectedFileGrain);
 
     const llmProvider = {
       getEmbeddingDimensions: () => 4,
       embedBatch: vi.fn().mockResolvedValue(
-        Array.from({ length: nodes.length }, () => [1, 0, 0, 0]),
+        Array.from({ length: graphParsed.nodes.length }, () => [1, 0, 0, 0]),
       ),
       embed: vi.fn().mockResolvedValue([1, 0, 0, 0]),
     } as any;
@@ -218,24 +207,25 @@ describe('AC-05 dual identity — element-grain + file-grain (no tolerance band)
         (s) => s.reason === 'header_status_missing',
       ) ?? [];
 
-    // AC-05a — element-grain identity (no tolerance).
-    expect(missingSkips.length).toBe(elementGrainMissing); // 6 === 6
+    // AC-05a — element-grain identity (no tolerance), expected derived
+    // from input fixture (not runtime, not hardcoded).
+    expect(missingSkips.length).toBe(expectedElementGrain);
 
-    // AC-05b — file-grain identity (no tolerance).
-    // fileOf maps a coderefId like '@Fn/src/mod0.ts#fn0:1' to 'src/mod0.ts'.
+    // AC-05b — file-grain identity (no tolerance), expected derived
+    // from input fixture.
     const fileOf = (coderefId: string): string => {
-      // Strip leading capability prefix ('@Fn/', '@Cl/', '@C/', etc.)
-      // then take everything before the '#'.
       const noPrefix = coderefId.replace(/^@[A-Za-z]+\//, '');
       const hashIdx = noPrefix.indexOf('#');
       return hashIdx >= 0 ? noPrefix.slice(0, hashIdx) : noPrefix;
     };
     const uniqueFiles = new Set(missingSkips.map((s) => fileOf(s.coderefId)));
-    expect(uniqueFiles.size).toBe(fileGrainMissing); // 3 === 3
+    expect(uniqueFiles.size).toBe(expectedFileGrain);
 
-    // Distinctness check: AC-05a vs AC-05b must produce different
-    // numbers in this fixture, otherwise the dual-AC framing is not
-    // being exercised.
+    // Distinctness check (DR-FROZEN-D): the two grains MUST produce
+    // different numbers under this fixture, otherwise the dual-AC
+    // framing collapses. Asserting the RELATIONSHIP, not specific
+    // values — works for any fixture where the invariant holds.
+    expect(expectedElementGrain).not.toBe(expectedFileGrain);
     expect(missingSkips.length).not.toBe(uniqueFiles.size);
   });
 });
