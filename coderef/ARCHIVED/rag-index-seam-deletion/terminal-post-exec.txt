@@ -1,0 +1,28 @@
+=============================================================
+WORKORDER: WO-RAG-INDEX-SEAM-DELETION-001  |  rag-index-seam-deletion  |  COMPLETE
+Session: daily-agent-session-2026-05-08  |  Phases: 3  |  Commits: 4  |  Pushes: 2
+Parent stub: STUB-RAG-INDEX-SEAM-DELETION-001 (will be closed on archive)
+
+FILES CREATED:
+  + coderef/workorder/rag-index-seam-deletion/inventory.md  (3afd853)
+
+FILES MODIFIED:
+  ~ coderef/workorder/rag-index-seam-deletion/communication.json  (3afd853, cfd485a)
+  ~ src/integration/rag/chunk-converter.ts  (ffe79e9)
+  ~ TRACKING/workorders.json  (c1552ad)
+  ~ TRACKING/stubs.json  (c1552ad)
+  ~ TRACKING/active-work.json  (c1552ad)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Seam inventory + anchor-case ruling surface  (3afd853)
+  [x] Phase 2: Per-seam atomic removals — 1 commit (fileExists delete)  (ffe79e9)
+  [x] Phase 3: Closeout-ready handoff  (cfd485a)
+  [x] TRACKING close (ASSISTANT repo)  (c1552ad)
+
+Gates: tsc CLEAN | vitest 87/87 PASS | frozen-fixture PASS | pipeline invariant 4/4 PASS
+LOC delta: -28 (net negative — AC-12 satisfied)
+
+Session: updated  |  Registry: synced  |  Validator: PASS (10/15; 5 pre-existing drift)
+
+APPROVE -> /close-workorder WO-RAG-INDEX-SEAM-DELETION-001
+=============================================================
