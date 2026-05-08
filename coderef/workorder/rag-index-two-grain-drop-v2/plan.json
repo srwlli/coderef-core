@@ -1,0 +1,60 @@
+{
+  "workorder_id": "WO-RAG-INDEX-TWO-GRAIN-DROP-002",
+  "feature_name": "rag-index-two-grain-drop-v2",
+  "created": "2026-05-08T23:30:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single-site change + verification. No phases or hard stops needed — prior audit already complete.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Implement + verify",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read src/pipeline/output-validator.ts L487-614 (buildFileHeaderFactMap + buildFileHeaderStatusMap + buildReport). Confirm buildFileHeaderStatusMap signature and how graph is threaded to the call site. Identify if graph parameter needs to be added.",
+          "success_criteria": "Exact signature confirmed. Call chain understood."
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read coderef/ARCHIVED/rag-index-two-grain-drop/audit-matrix.md (commit 6587dca). Confirm buildFileHeaderStatusMap is the sole replacement target and buildFileHeaderFactMap is explicitly out of scope.",
+          "success_criteria": "Audit matrix read. Scope confirmed."
+        },
+        {
+          "id": "1.3",
+          "verb": "EDIT",
+          "description": "In src/pipeline/output-validator.ts buildFileHeaderStatusMap: replace state.elements iteration with graph.nodes iteration filtering metadata.fileGrain===true nodes, reading metadata.headerStatus. Add graph: ExportedGraph parameter if not already present. Update call site in buildReport to pass graph.",
+          "success_criteria": "buildFileHeaderStatusMap iterates graph.nodes (fileGrain nodes only). No state.elements access. Return type Map<string, HeaderStatus> unchanged."
+        },
+        {
+          "id": "1.4",
+          "verb": "TEST",
+          "description": "Run full test suite: npx jest. All tests must PASS.",
+          "success_criteria": "Exit 0, all tests PASS."
+        },
+        {
+          "id": "1.5",
+          "verb": "RUN",
+          "description": "Run frozen-fixture invariants: AC-05a 2415===2415 and AC-05b 263===263.",
+          "success_criteria": "AC-05a PASS. AC-05b PASS."
+        },
+        {
+          "id": "1.6",
+          "verb": "RUN",
+          "description": "Run tsc clean: npx tsc --noEmit (tsconfig.json) and npx tsc --noEmit -p tsconfig.build.json.",
+          "success_criteria": "Both exit 0."
+        },
+        {
+          "id": "1.7",
+          "verb": "COMMIT",
+          "description": "Commit all changes. Message: 'refactor(WO-RAG-INDEX-TWO-GRAIN-DROP-002): replace element-grain iteration in buildFileHeaderStatusMap with file-grain graph nodes'",
+          "success_criteria": "Commit hash recorded."
+        }
+      ]
+    }
+  ]
+}

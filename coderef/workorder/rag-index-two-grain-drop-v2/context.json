@@ -1,0 +1,57 @@
+{
+  "workorder_id": "WO-RAG-INDEX-TWO-GRAIN-DROP-002",
+  "feature_name": "rag-index-two-grain-drop-v2",
+  "created": "2026-05-08T23:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "orchestrator",
+    "user_request": "Bulletproof concept #6 re-open (v2). Prerequisite WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001 complete: file-grain pseudo-nodes now carry headerStatus. Replace state.elements iteration in output-validator.ts buildFileHeaderStatusMap with graph-node file-grain iteration."
+  },
+  "originating_dispatch": "DISPATCH-2026-05-08-008",
+  "predecessor_wos": [
+    "WO-RAG-INDEX-TWO-GRAIN-DROP-001 (premises-invalidated, archived)",
+    "WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001 (archived — prerequisite complete)"
+  ],
+  "classification": {
+    "plan_type": "light",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "plan_type_rationale": "Single-site change: replace state.elements loop in output-validator.ts buildFileHeaderStatusMap with graph-node file-grain loop. Prerequisite already satisfied. No audit phase needed — audit-matrix.md from v1 (commit 6587dca) is the reference. Direct implementation.",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "src/pipeline/output-validator.ts — buildFileHeaderStatusMap (L607-614): replace state.elements iteration with graph.nodes iteration filtering fileGrain===true nodes",
+      "Verify counts match: file-grain node headerStatus counts must equal current element-iteration counts (263===263 per AC-05b)",
+      "All 239+ tests PASS at close",
+      "tsc clean (both configs) at close",
+      "AC-05a 2415===2415 and AC-05b 263===263 PASS at close"
+    ],
+    "out_of_scope": [
+      "buildFileHeaderFactMap — headerFact is not in graph nodes; leave as-is",
+      "Changes to graph-builder.ts (prerequisite already done)",
+      "Changes to ValidationReport schema (locked 11-field schema)",
+      "Changes to indexing-orchestrator.ts chunk-grain skip paths",
+      "CLI display changes"
+    ]
+  },
+  "constraints": [
+    "ValidationReport 11-field schema must not change — output shape is locked",
+    "DR-PHASE-7-B: no new fields without paired invariant test",
+    "AC-05a 2415===2415 and AC-05b 263===263 must PASS at close",
+    "buildFileHeaderStatusMap function signature and return type must not change (exported, used by tests)"
+  ],
+  "audit_reference": {
+    "prior_audit_commit": "6587dca",
+    "audit_matrix": "coderef/ARCHIVED/rag-index-two-grain-drop/audit-matrix.md",
+    "note": "Phase 1 audit from v1 WO identified buildFileHeaderStatusMap as the sole replacement target. buildFileHeaderFactMap explicitly out of scope (no graph equivalent for headerFact)."
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}
