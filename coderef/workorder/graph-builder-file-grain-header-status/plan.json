@@ -1,0 +1,60 @@
+{
+  "workorder_id": "WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001",
+  "feature_name": "graph-builder-file-grain-header-status",
+  "created": "2026-05-08T23:10:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single-site change in graph-builder.ts + one paired invariant test. No phases needed.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Implement + test",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read src/pipeline/graph-builder.ts L230-295 (buildNodes function). Confirm exact lines of file-grain pseudo-node emission block and the element-grain headerStatus stamp pattern at L252.",
+          "success_criteria": "Exact lines confirmed. Change site identified."
+        },
+        {
+          "id": "1.2",
+          "verb": "EDIT",
+          "description": "In buildNodes(), before the seenFiles loop that emits file-grain nodes (L281-290): build a Map<file, HeaderStatus> from state.elements (first-seen-wins, same policy as buildFileHeaderStatusMap). Then in the file-grain node push, add headerStatus from the map if present: metadata.headerStatus = fileHeaderStatus.get(file).",
+          "success_criteria": "File-grain pseudo-nodes in graph output carry headerStatus when the file has elements with a defined headerStatus. Files with no elements omit headerStatus."
+        },
+        {
+          "id": "1.3",
+          "verb": "TEST",
+          "description": "Add paired invariant test: load the frozen-fixture graph.json after indexing; assert that file-grain nodes (type='file', metadata.fileGrain=true) for files that have elements carry a non-undefined headerStatus. Assert count > 0.",
+          "success_criteria": "New test PASS. DR-PHASE-7-B satisfied: new field has paired invariant test."
+        },
+        {
+          "id": "1.4",
+          "verb": "TEST",
+          "description": "Run full test suite: npx jest. All 239+ tests must PASS.",
+          "success_criteria": "Exit 0, all tests PASS."
+        },
+        {
+          "id": "1.5",
+          "verb": "RUN",
+          "description": "Run frozen-fixture invariant tests: AC-05a 2415===2415 and AC-05b 263===263.",
+          "success_criteria": "AC-05a PASS. AC-05b PASS."
+        },
+        {
+          "id": "1.6",
+          "verb": "RUN",
+          "description": "Run tsc clean: npx tsc --noEmit (tsconfig.json) and npx tsc --noEmit -p tsconfig.build.json.",
+          "success_criteria": "Both exit 0."
+        },
+        {
+          "id": "1.7",
+          "verb": "COMMIT",
+          "description": "Commit all changes. Message: 'feat(WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001): stamp headerStatus on file-grain pseudo-nodes'",
+          "success_criteria": "Commit hash recorded."
+        }
+      ]
+    }
+  ]
+}

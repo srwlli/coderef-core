@@ -6,7 +6,8 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-007"],
   "predecessor_for": "WO-RAG-INDEX-TWO-GRAIN-DROP-001",
-  "status": "implementing",
+  "status": "complete",
+  "completed_at": "2026-05-08T23:00:00Z",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/graph-builder-file-grain-header-status/plan.json",
@@ -43,6 +44,12 @@
       "event": "phase_1_complete",
       "by": "CODEREF-CORE",
       "note": "Phase 1 complete. graph-builder.ts buildNodes() file-grain emission block updated: Map<file,HeaderStatus> built from state.elements (first-seen-wins), stamped onto file-grain pseudo-node metadata. Paired invariant tests added to graph-construction-facet-propagation.test.ts (2 new tests). All 56 pipeline test files PASS (154 tests). AC-05a 4 tests PASS. tsc clean both configs."
+    },
+    {
+      "at": "2026-05-08T23:05:00Z",
+      "event": "workorder_complete",
+      "by": "CODEREF-CORE",
+      "note": "WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001 complete. Single phase. Commit c8090e8. Foundation-docs gate PASS (validator_exit=0). tracking-validator 9 PASS / 6 FAIL (pre-existing STUB-044 drift, not caused by this WO). Unblocks WO-RAG-INDEX-TWO-GRAIN-DROP-001 re-open."
     }
   ]
 }
