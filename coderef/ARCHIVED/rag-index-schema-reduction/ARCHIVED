@@ -1,0 +1,8 @@
+Archived: 2026-05-08T21:10:00Z
+Status: WARNING
+Workorder: WO-RAG-INDEX-SCHEMA-REDUCTION-001
+Feature: rag-index-schema-reduction
+Bulletproof concept: #5 of 6 — IndexingResult schema reduction
+Original location: coderef/workorder/rag-index-schema-reduction/
+Final commits: de5030e (Phase 1 audit), f0e8220 (Phase 2 removals), d714377 (WO complete)
+Outcome: filesProcessed + processingTimeMs removed; 14 fields freeze-annotated @frozen; AC-05a + AC-05b PASS

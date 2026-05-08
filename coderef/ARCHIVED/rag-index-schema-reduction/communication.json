@@ -1,0 +1,86 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SCHEMA-REDUCTION-001",
+  "feature_name": "rag-index-schema-reduction",
+  "created": "2026-05-08T18:30:00Z",
+  "owner_domain": "SKILLS",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-005"],
+  "predecessor_for": null,
+  "status": "closed",
+  "completed_at": "2026-05-08T20:00:00Z",
+  "closed_at": "2026-05-08T21:10:00Z",
+  "updated": "2026-05-08T21:10:00Z",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/rag-index-schema-reduction/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (cultural validator WARNING — infrastructure gap with spawn pattern) + projects.json pre-existing drift (not this WO)",
+    "warnings": [
+      "cultural validator: 2 warn-severity checks (spawn pattern, no direct session join)",
+      "tracking validator: projects.json enum violations — pre-existing drift, predates this WO entirely"
+    ]
+  },
+  "current_phase": 2,
+  "phase_status": "complete",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-index-schema-reduction\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-index-schema-reduction\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-index-schema-reduction\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated. Phase 1 audit-only; Phase 2 is a hard stop gated on audit-matrix.md completion."
+  },
+  "execution_rules": {
+    "phase_type": "phased",
+    "hard_stops": ["phase_2"],
+    "gate_rule": "Do not start Phase 2 until Phase 1 audit-matrix.md is complete and AC-05a + AC-05b confirmed passing at baseline"
+  },
+  "hard_constraints": [
+    "DR-PHASE-7-B locked-additive: may REMOVE or FREEZE fields only — no new fields",
+    "chunksSkippedDetails MUST be preserved — AC-05a and AC-05b access it directly",
+    "AC-05a (element-grain) and AC-05b (file-grain) frozen-fixture invariants must PASS at WO close",
+    "Scope is IndexingResult + IndexingStatistics + IndexingError ONLY — not CodeChunk, not CLI flags, not rag-index.json payload"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [
+    {
+      "timestamp": "2026-05-08T18:30:00Z",
+      "event": "plan_reauthored",
+      "source": "create-workorder",
+      "message": "Replaced prior plan (incorrect scope: CodeChunk optionality + --slim flags) with correct scope per DISPATCH-2026-05-08-005: IndexingResult schema audit only."
+    }
+  ],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-08T18:30:00Z",
+      "event": "workorder_created",
+      "source": "create-workorder",
+      "message": "Workorder WO-RAG-INDEX-SCHEMA-REDUCTION-001 created. Plan type: phased, 2 phases. Phase 2 is a hard stop gated on Phase 1 audit-matrix.md. Scope: IndexingResult + IndexingStatistics + IndexingError field audit only."
+    },
+    {
+      "timestamp": "2026-05-08T19:45:00Z",
+      "event": "phase_1_complete",
+      "source": "execute-workorder",
+      "message": "Phase 1 audit complete. audit-matrix.md written. Findings: IndexingResult — REMOVE: filesProcessed, processingTimeMs (2 fields); FREEZE: chunksSkipped, chunksFailed, stats, errors, chunksFailedDetails (5 fields); KEEP: chunksIndexed, status, chunksSkippedDetails, validationGateRefused, validationReportPath (5 fields). IndexingStatistics — FREEZE all 5 fields. IndexingError — FREEZE all 4 fields. AC-05a and AC-05b PASS at baseline (indexing-gate-invariant.test.ts 12/12). Pre-existing 67 failures are unrelated to this WO scope. HARD STOP: Phase 2 requires USER/ORCHESTRATOR approval before field removal begins."
+    },
+    {
+      "timestamp": "2026-05-08T20:00:00Z",
+      "event": "phase_2_gate_ruling",
+      "source": "ORCHESTRATOR",
+      "message": "Option A approved: remove filesProcessed + processingTimeMs, freeze all other untested fields with @frozen JSDoc. No code churn beyond the two removal targets."
+    },
+    {
+      "timestamp": "2026-05-08T20:00:00Z",
+      "event": "workorder_complete",
+      "source": "execute-workorder",
+      "message": "WO-RAG-INDEX-SCHEMA-REDUCTION-001 complete. Phase 1: audit-matrix.md (de5030e). Phase 2: 2 fields removed (filesProcessed, processingTimeMs), 14 fields freeze-annotated with @frozen JSDoc, CLI consumer updated (f0e8220). tsc clean both configs. 12/12 invariant tests PASS. AC-05a + AC-05b confirmed green. foundation-docs gate PASS (validator_exit=0). tracking-validator 9/15 PASS (6 pre-existing STUB-044 drift). Ready for /close-workorder."
+    },
+    {
+      "timestamp": "2026-05-08T21:10:00Z",
+      "event": "workorder_closed",
+      "source": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit: cultural validator WARNING (spawn pattern infra gap), tracking validator projects.json pre-existing drift acknowledged. Archived to coderef/ARCHIVED/rag-index-schema-reduction/."
+    }
+  ]
+}

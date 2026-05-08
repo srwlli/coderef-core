@@ -1,0 +1,38 @@
+=============================================================
+WORKORDER: WO-RAG-INDEX-SCHEMA-REDUCTION-001  |  rag-index-schema-reduction  |  COMPLETE
+Session: daily-agent-session-2026-05-08 / CODEREF-CORE  |  Phases: 2  |  Commits: 3  |  Pushes: 1
+Parent stub: none (predecessor_stub: null — dispatched directly)
+
+FILES CREATED:
+  + coderef/workorder/rag-index-schema-reduction/audit-matrix.md   (de5030e)
+
+FILES MODIFIED:
+  ~ src/integration/rag/indexing-orchestrator.ts                   (f0e8220)
+    - filesProcessed removed from IndexingResult interface
+    - processingTimeMs removed from IndexingResult interface
+    - Local var processingTimeMs removed from indexCodebase()
+    - Two production return sites updated (refusal path + success path)
+    - @frozen JSDoc added to chunksSkipped, chunksFailed, stats, errors, chunksFailedDetails
+    - IndexingStatistics: all 5 fields annotated @frozen
+    - IndexingError: all 4 fields annotated @frozen
+  ~ src/cli/rag-index.ts                                           (f0e8220)
+    - filesProcessed removed from indexMetadata object
+    - "Files processed:" console.log display line removed
+  ~ coderef/workorder/rag-index-schema-reduction/communication.json (d714377)
+  ~ coderef/foundation-docs/API.md + 3 sibling docs                (d714377)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Field coverage audit → audit-matrix.md             (de5030e)
+  [x] Phase 2: Remove + freeze (Option A — ORCHESTRATOR approved)  (f0e8220)
+  [x] Close-out: foundation-docs + tracking + push                 (d714377)
+
+SCHEMA DELTA:
+  REMOVED: IndexingResult.filesProcessed, IndexingResult.processingTimeMs (-2 fields)
+  FROZEN:  chunksSkipped, chunksFailed, stats, errors, chunksFailedDetails,
+           all IndexingStatistics fields (5), all IndexingError fields (4) = 14 @frozen
+
+Session: updated  |  Registry: synced  |  Validator: PASS (exit 0; pre-existing STUB-044 drift)
+AC-05a: PASS  |  AC-05b: PASS  |  tsc: CLEAN (both configs)
+
+APPROVE -> /close-workorder WO-RAG-INDEX-SCHEMA-REDUCTION-001
+=============================================================

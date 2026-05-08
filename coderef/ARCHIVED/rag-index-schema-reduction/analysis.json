@@ -1,0 +1,95 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SCHEMA-REDUCTION-001",
+  "feature_name": "rag-index-schema-reduction",
+  "analysis_authored_at": "2026-05-08T18:30:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/integration/rag/indexing-orchestrator.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "__tests__/integration/rag/indexing-orchestrator.test.ts",
+      "__tests__/pipeline/indexing-gate-invariant.test.ts",
+      "__tests__/integration/rag/indexing-orchestrator-graph-source.test.ts",
+      "__tests__/integration/rag/indexing-orchestrator-path-normalization.test.ts"
+    ]
+  },
+  "field_audit": {
+    "IndexingResult": {
+      "chunksIndexed":        { "invariant_coverage": true,  "tests": ["AC-01", "AC-02"],     "disposition": "keep" },
+      "chunksSkipped":        { "invariant_coverage": false, "tests": [],                      "disposition": "freeze-candidate" },
+      "chunksFailed":         { "invariant_coverage": false, "tests": [],                      "disposition": "freeze-candidate" },
+      "filesProcessed":       { "invariant_coverage": false, "tests": [],                      "disposition": "remove-candidate" },
+      "processingTimeMs":     { "invariant_coverage": false, "tests": [],                      "disposition": "remove-candidate" },
+      "stats":                { "invariant_coverage": false, "tests": [],                      "disposition": "freeze-candidate — entire IndexingStatistics sub-object" },
+      "errors":               { "invariant_coverage": false, "tests": [],                      "disposition": "freeze-candidate — entire IndexingError[] sub-array" },
+      "status":               { "invariant_coverage": true,  "tests": ["AC-01", "AC-02"],     "disposition": "keep" },
+      "chunksSkippedDetails": { "invariant_coverage": true,  "tests": ["AC-05a", "AC-05b"],   "disposition": "keep — AC-05a/05b access directly; DO NOT remove or freeze" },
+      "chunksFailedDetails":  { "invariant_coverage": false, "tests": [],                      "disposition": "freeze-candidate" },
+      "validationGateRefused":{ "invariant_coverage": true,  "tests": ["AC-01"],              "disposition": "keep" },
+      "validationReportPath": { "invariant_coverage": true,  "tests": ["AC-01"],              "disposition": "keep" }
+    },
+    "IndexingStatistics": {
+      "tokensUsed":         { "invariant_coverage": false, "tests": [], "disposition": "freeze-candidate" },
+      "estimatedCost":      { "invariant_coverage": false, "tests": [], "disposition": "remove-candidate — already optional" },
+      "avgEmbeddingTimeMs": { "invariant_coverage": false, "tests": [], "disposition": "freeze-candidate" },
+      "byType":             { "invariant_coverage": false, "tests": [], "disposition": "freeze-candidate" },
+      "byLanguage":         { "invariant_coverage": false, "tests": [], "disposition": "freeze-candidate" }
+    },
+    "IndexingError": {
+      "stage":         { "invariant_coverage": false, "tests": [], "disposition": "freeze-candidate" },
+      "message":       { "invariant_coverage": false, "tests": [], "disposition": "freeze-candidate" },
+      "context":       { "invariant_coverage": false, "tests": [], "disposition": "freeze-candidate — already optional" },
+      "originalError": { "invariant_coverage": false, "tests": [], "disposition": "freeze-candidate — already optional" }
+    }
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "chunksSkippedDetails removal would break AC-05a/AC-05b",
+      "likelihood": "certain if misidentified",
+      "impact": "high",
+      "mitigation": "Field is marked keep in audit matrix — must not be removed or frozen"
+    },
+    {
+      "id": "R2",
+      "title": "Removing stats/errors breaks non-test consumers (CLI output, logging)",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Phase 1 audit must grep all consumers before Phase 2 removes anything"
+    },
+    {
+      "id": "R3",
+      "title": "Frozen fields misidentified as removable",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Phase 1 produces written audit matrix; Phase 2 hard stop gates on completion"
+    }
+  ],
+  "candidates": [
+    "src/integration/rag/indexing-orchestrator.ts — IndexingResult interface (lines 278-316)",
+    "src/integration/rag/indexing-orchestrator.ts — IndexingStatistics interface (lines 321-336)",
+    "src/integration/rag/indexing-orchestrator.ts — IndexingError interface (lines 341-353)"
+  ],
+  "dependencies": [
+    "__tests__/pipeline/indexing-gate-invariant.test.ts — AC-05a/AC-05b frozen fixture tests",
+    "__tests__/integration/rag/indexing-orchestrator.test.ts — AC-01, AC-02, AC-03, AC-05, AC-06"
+  ],
+  "public_api_hits": [
+    "IndexingResult (exported interface)",
+    "IndexingStatistics (exported interface)",
+    "IndexingError (exported interface)"
+  ],
+  "decision_records": [
+    {
+      "id": "DR-1",
+      "decision": "chunksSkippedDetails is a KEEP — not a freeze/remove candidate",
+      "rationale": "AC-05a and AC-05b in indexing-gate-invariant.test.ts access result.chunksSkippedDetails directly. Removing it would break both frozen-fixture invariants required to PASS at WO close."
+    },
+    {
+      "id": "DR-2",
+      "decision": "Phase 1 is audit-only — no code changes",
+      "rationale": "DR-PHASE-7-B locked-additive applies — changes in Phase 2 are removals/freezes only. Phase 1 establishes the written audit matrix before any interface change is made."
+    }
+  ]
+}
