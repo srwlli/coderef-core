@@ -1,0 +1,50 @@
+{
+  "workorder_id": "WO-RAG-INDEX-TWO-GRAIN-DROP-001",
+  "feature_name": "rag-index-two-grain-drop",
+  "created": "2026-05-08T22:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "orchestrator",
+    "user_request": "Bulletproof concept #6 — drop the two-grain debate. Pick file-grain (worst severity wins) and delete element-grain code paths from anything outside the analyzer. Most consumers don't need element resolution; ones that do can ask the analyzer directly."
+  },
+  "originating_dispatch": "DISPATCH-2026-05-08-006",
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Two-phase: Phase 1 is audit-only (inventory all element-grain aggregation paths outside the analyzer, produce audit-matrix.md). Phase 2 is deletion gated on Phase 1 hard stop. Scope is bounded but requires careful inventory before code removal.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "Audit all element-grain aggregation code paths outside src/analyzer/ and src/pipeline/analyzer.ts",
+      "Delete element-grain-to-file-grain aggregation in output-validator.ts (buildFileHeaderStatusMap iterates state.elements)",
+      "Replace with file-grain data sourced directly from graph.json (already has file-grain header status from pipeline Phase 5)",
+      "Confirm skip-count aggregation in indexing-orchestrator.ts is chunk-grain (already correct) — no change needed",
+      "All 239 tests PASS at close",
+      "tsc clean (both tsconfig.json and tsconfig.build.json) at close",
+      "AC-05a (2415===2415 element-grain) and AC-05b (263===263 file-grain) PASS at close"
+    ],
+    "out_of_scope": [
+      "Changes to src/analyzer/ internals",
+      "Changes to skip-count/chunksSkipped paths (already chunk-grain — correct)",
+      "Adding new grain abstractions",
+      "Changing the ValidationReport schema (11-field schema is locked)",
+      "Changes to CLI display logic"
+    ]
+  },
+  "constraints": [
+    "DR-PHASE-7-B locked-additive: no new fields may be added without paired invariant test",
+    "ValidationReport 11-field schema is locked — output shape must not change",
+    "Phase 1 hard stop: audit-matrix.md must be committed before Phase 2 begins",
+    "Frozen-fixture dual-AC invariants must PASS: AC-05a 2415===2415, AC-05b 263===263"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

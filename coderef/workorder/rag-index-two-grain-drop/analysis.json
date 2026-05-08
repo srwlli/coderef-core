@@ -1,0 +1,70 @@
+{
+  "workorder_id": "WO-RAG-INDEX-TWO-GRAIN-DROP-001",
+  "feature_name": "rag-index-two-grain-drop",
+  "analysis_authored_at": "2026-05-08T22:00:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/output-validator.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "src/pipeline/orchestrator.ts (calls buildReport / buildFileHeaderStatusMap)",
+      "src/cli/validate-routes.ts (consumes ValidationReport)",
+      "test files consuming output-validator exports"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "title": "ValidationReport field correctness after element-grain removal",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Graph.json already carries file-grain headerStatus from pipeline Phase 5. Confirm file-grain counts from graph nodes match current element-iteration counts before deleting."
+    },
+    {
+      "id": "R-002",
+      "title": "Existing tests rely on element-iteration internals",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Run full test suite after Phase 2. buildFileHeaderStatusMap is exported — check test imports and update if needed."
+    },
+    {
+      "id": "R-003",
+      "title": "AC-05a / AC-05b frozen-fixture counts drift",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Run frozen-fixture invariant tests immediately after Phase 2 code change. Both must read 2415===2415 and 263===263 before commit."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/pipeline/output-validator.ts",
+      "symbol": "buildFileHeaderStatusMap",
+      "note": "Iterates state.elements (element-grain) to produce file-grain header status map. Can be replaced with graph-node iteration (file-grain directly)."
+    },
+    {
+      "file": "src/pipeline/output-validator.ts",
+      "symbol": "buildReport (internal headerFact iteration)",
+      "note": "Also iterates state.elements for headerFact. Same pattern — file-grain data available from graph."
+    }
+  ],
+  "dependencies": [
+    "src/pipeline/output-validator.ts",
+    "src/pipeline/orchestrator.ts",
+    "src/types/types.ts (PipelineState, ValidationReport)",
+    "SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Use graph.json file-grain nodes as source for header status counts instead of state.elements iteration",
+      "rationale": "Graph.json is the single source of truth for file-grain facts post pipeline-rebuild Phase 5. element-iteration outside the analyzer is the smell concept #6 targets."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Chunk-grain skip-count paths in indexing-orchestrator.ts are NOT in scope",
+      "rationale": "chunksSkipped / chunksSkippedDetails are chunk-grain by design — the skip unit IS a chunk. No change needed."
+    }
+  ]
+}
