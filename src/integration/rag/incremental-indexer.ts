@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import type { CodeChunk } from './code-chunk.js';
 import type { DependencyGraph } from '../../analyzer/graph-builder.js';
+import { type AbsolutePath, type RelativePath, toAbsolute, toRelative } from './path-types.js';
 
 /**
  * State of a single file in the index
@@ -97,13 +98,13 @@ export interface IncrementalIndexOptions {
  * Manages incremental indexing to avoid redundant work
  */
 export class IncrementalIndexer {
-  private basePath: string;
+  private basePath: AbsolutePath;
   private stateFile: string;
   private currentState?: IndexState;
 
   constructor(basePath: string = process.cwd(), stateFile?: string) {
-    this.basePath = basePath;
-    this.stateFile = stateFile ?? path.join(basePath, '.coderef-rag-index.json');
+    this.basePath = toAbsolute(basePath);
+    this.stateFile = stateFile ?? path.join(this.basePath, '.coderef-rag-index.json');
   }
 
   /**
@@ -166,7 +167,7 @@ export class IncrementalIndexer {
    * Analyze which files need re-indexing
    */
   async analyzeChanges(
-    currentFiles: string[],
+    currentFiles: RelativePath[],
     options?: IncrementalIndexOptions
   ): Promise<IncrementalAnalysisResult> {
     const opts: Required<IncrementalIndexOptions> = {
@@ -209,7 +210,7 @@ export class IncrementalIndexer {
         newFiles.push(file);
       } else {
         // Check if file was modified
-        const currentHash = await this.hashFile(file);
+        const currentHash = await this.hashFile(toRelative(file));
 
         if (currentHash !== previousFileState.hash) {
           // File was modified
@@ -227,7 +228,7 @@ export class IncrementalIndexer {
     // Find deleted files
     const currentFileSet = new Set(currentFiles);
     for (const [file, fileState] of previousState.files) {
-      if (!currentFileSet.has(file)) {
+      if (!currentFileSet.has(toRelative(file))) {
         deletedFiles.push(file);
         chunksToDelete.push(...fileState.chunks);
       }
@@ -258,8 +259,8 @@ export class IncrementalIndexer {
     chunksToIndex: CodeChunk[];
     chunksToKeep: string[];
   }> {
-    // Get all unique files from chunks
-    const files = new Set(allChunks.map(chunk => chunk.file));
+    // chunk.file values are graph.json node.file keys — always relative.
+    const files = new Set(allChunks.map(chunk => toRelative(chunk.file)));
     const fileList = Array.from(files);
 
     // Analyze changes
@@ -326,7 +327,7 @@ export class IncrementalIndexer {
 
     // Update file states
     for (const [file, chunks] of chunksByFile) {
-      const hash = await this.hashFile(file);
+      const hash = await this.hashFile(toRelative(file));
 
       state.files.set(file, {
         file,
@@ -349,12 +350,12 @@ export class IncrementalIndexer {
   /**
    * Hash file content using SHA-256
    */
-  async hashFile(filePath: string): Promise<string> {
+  async hashFile(filePath: RelativePath): Promise<string> {
     try {
-      const fullPath = path.isAbsolute(filePath)
-        ? filePath
-        : path.join(this.basePath, filePath);
-
+      // filePath is always relative (chunk.file = node.file from graph.json, GUARD-3).
+      // basePath is always absolute. The isAbsolute ternary that was here
+      // previously was dead code — removed by WO-RAG-INDEX-BRANDED-PATHS-001.
+      const fullPath: AbsolutePath = toAbsolute(path.join(this.basePath, filePath));
       const content = await fs.readFile(fullPath, 'utf-8');
       return crypto.createHash('sha256').update(content).digest('hex');
     } catch (error: any) {
@@ -414,7 +415,7 @@ export class IncrementalIndexer {
   /**
    * Check if a specific file needs reindexing
    */
-  async needsReindexing(filePath: string): Promise<boolean> {
+  async needsReindexing(filePath: RelativePath): Promise<boolean> {
     const state = await this.loadState();
 
     if (!state) {

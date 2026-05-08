@@ -12,6 +12,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { detectProjectLanguages, validateCliLanguages } from './detect-languages.js';
+import { toAbsolute } from '../integration/rag/path-types.js';
 
 // Dynamic imports for optional RAG dependencies
 let OpenAIProvider: any;
@@ -432,11 +433,13 @@ async function main(): Promise<void> {
     // Initialize vector store (now safe — any incompatible state was cleared above)
     await vectorStore.initialize();
 
-    // Create orchestrator
+    // Create orchestrator — args.projectDir is always absolute (user-supplied
+    // absolute path or resolved from process.cwd()). toAbsolute() documents
+    // the invariant at the boundary (Option A ruling, DR-BRAND-D).
     const orchestrator = new IndexingOrchestrator(
       llmProvider,
       vectorStore,
-      args.projectDir
+      toAbsolute(args.projectDir)
     );
 
     // Progress callback

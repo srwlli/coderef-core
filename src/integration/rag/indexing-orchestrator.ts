@@ -31,6 +31,7 @@ import type { CodeChunk } from './code-chunk.js';
 import type { VectorRecord } from '../vector/vector-store.js';
 import * as fs from 'fs/promises';
 import * as pathMod from 'path';
+import { type AbsolutePath, type RelativePath, toAbsolute, toRelative } from './path-types.js';
 
 /**
  * Reduce a chunk-side file path to the relative-POSIX form that
@@ -361,7 +362,7 @@ export interface IndexingError {
 export class IndexingOrchestrator {
   private llmProvider: LLMProvider;
   private vectorStore: VectorStore;
-  private basePath: string;
+  private basePath: AbsolutePath;
 
   constructor(
     llmProvider: LLMProvider,
@@ -370,7 +371,7 @@ export class IndexingOrchestrator {
   ) {
     this.llmProvider = llmProvider;
     this.vectorStore = vectorStore;
-    this.basePath = basePath;
+    this.basePath = toAbsolute(basePath);
   }
 
   /**
@@ -496,8 +497,11 @@ export class IndexingOrchestrator {
             if (sampleFiles.length >= 10) break;
           }
         }
-        for (const rel of sampleFiles) {
-          const abs = pathMod.isAbsolute(rel) ? rel : pathMod.join(this.basePath, rel);
+        for (const rel of sampleFiles.map(toRelative)) {
+          // rel is always a graph.json node.file (relative path, GUARD-2).
+          // basePath is always absolute. The isAbsolute ternary that was here
+          // previously was dead code — removed by WO-RAG-INDEX-BRANDED-PATHS-001.
+          const abs: AbsolutePath = toAbsolute(pathMod.join(this.basePath, rel));
           let srcStat: { mtimeMs: number };
           try {
             srcStat = await fs.stat(abs);

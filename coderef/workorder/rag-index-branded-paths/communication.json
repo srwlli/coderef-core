@@ -50,7 +50,10 @@
       "raised_at": "2026-05-08T15:45:00Z",
       "raised_by": "CODEREF-CORE Phase 1 inventory",
       "blocking_step": "Phase 3 T3.2 (IndexingOrchestrator) and IncrementalIndexer propagation",
-      "non_blocking_for": "Phase 2 (path-types.ts), Phase 3 T3.1 (ChunkConverter propagation)"
+      "non_blocking_for": "Phase 2 (path-types.ts), Phase 3 T3.1 (ChunkConverter propagation)",
+      "resolved_at": "2026-05-08T16:00:00Z",
+      "resolved_by": "ORCHESTRATOR",
+      "resolution": "Option A — extend boundary to include src/cli/rag-index.ts. Apply toAbsolute(args.projectDir) at line 439. args.projectDir is always absolute (user-supplied or resolved from process.cwd()). Brand documents an already-held invariant; CLI type-checked is preferable to hiding cast inside constructor. Scope addition: src/cli/rag-index.ts only."
     }
   ],
   "phase_transitions": [
