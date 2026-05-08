@@ -6,8 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-008"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-08T23:55:00Z",
+  "closed_at": "2026-05-09T00:10:00Z",
+  "updated": "2026-05-09T00:10:00Z",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-index-two-grain-drop-v2/plan.json",
@@ -29,6 +31,16 @@
     "All tests must PASS",
     "tsc clean both configs"
   ],
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/rag-index-two-grain-drop-v2/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — WARNING (spawn pattern gap, pre-existing across all WO closes)",
+    "warnings": [
+      "Cultural validator WARNING: mapping-table.json absent (spawn pattern infra gap — pre-existing, non-blocking).",
+      "6 pre-existing STUB-044 drift rows in tracking-validator (not caused by this WO; scope-mode PASS).",
+      "4 UUID anchor warnings in foundation-docs gate (pre-existing)."
+    ]
+  },
   "blockers": [],
   "decisions_log": [],
   "phase_transitions": [],
@@ -50,8 +62,8 @@
       "at": "2026-05-08T23:55:00Z",
       "event": "workorder_complete",
       "by": "CODEREF-CORE",
-      "note": "Phase 1 complete. Implementation commit 4f165a2. 154 pipeline tests PASS (56 files). AC-05a 4 tests PASS. tsc clean both configs. foundation-docs gate PASS (validator_exit=0). Tracking: workorders.json + sessions.json status=complete.",
-      "commit": "4f165a2",
+      "note": "Phase 1 complete. Implementation commit 4f165a2. 154 pipeline tests PASS (56 files). AC-05a 2415===2415 PASS. AC-05b 263===263 PASS. tsc clean both configs. foundation-docs gate PASS (validator_exit=0). Tracking: workorders.json + sessions.json status=complete. BULLETPROOF CONCEPT #6 COMPLETE.",
+      "commits": ["4f165a2", "fd1821b"],
       "phase6_foundation_docs_gate": {
         "outcome": "pass",
         "generator_exit": 0,
@@ -59,6 +71,12 @@
         "uuid_warnings": 4,
         "note": "4 UUID anchor warnings are pre-existing"
       }
+    },
+    {
+      "at": "2026-05-09T00:10:00Z",
+      "event": "workorder_closed",
+      "by": "ORCHESTRATOR",
+      "note": "Closed via /close-workorder. AUDIT WARNING (spawn gap, pre-existing). Commits 4f165a2 + fd1821b. buildFileHeaderStatusMap now iterates graph.nodes (fileGrain) instead of state.elements. ALL 6 BULLETPROOF CONCEPTS COMPLETE."
     }
   ]
 }
