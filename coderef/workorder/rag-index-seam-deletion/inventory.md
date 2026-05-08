@@ -80,14 +80,26 @@ Eyeball-read: no try/catch swallowers, silent skips, or dead-code branches found
 
 ---
 
-## Phase 2 Execution Order
+## Phase 2 Outcomes
 
-1. `chunk-converter.ts` anchor-case: delete lines 57–63 (fileExists call site) + lines 245–256 (dead `fileExists()` method). One atomic commit. Update tests if any exercised the fileExists branch (confirmed: none do).
+| seam | file | lines (pre-edit) | disposition | commit |
+|---|---|---|---|---|
+| fileExists call site (silent skip) | chunk-converter.ts | 57–63 | **deleted** | ffe79e9 |
+| fileExists() private method (dead code) | chunk-converter.ts | 245–256 | **deleted** | ffe79e9 |
 
-No other Phase 2 atomic commits required — all other seams earn keep.
+All other 12 seams: **keep_with_justification** — no Phase 2 commits required for them.
+
+**Net LOC delta:** -28 (2 inserted comment lines, 30 deleted). Satisfies AC-12 (net negative).
+
+**Gates per ffe79e9:**
+- tsc --noEmit: CLEAN
+- vitest src/integration/rag/__tests__/: 6/6 files, 87/87 PASS
+- vitest __tests__/pipeline/indexing-gate-invariant.test.ts: 4/4 PASS
+- Frozen-fixture invariant: PASS
+- Phase 7 chokepoint block (lines 32-70): UNTOUCHED
 
 ---
 
 ## RULING_REQUIRED: None
 
-All seams are resolved. Anchor-case ruling locked to Option B per DISPATCH-2026-05-08-001.
+All seams resolved. Anchor-case ruling: Option B (DISPATCH-2026-05-08-001).
