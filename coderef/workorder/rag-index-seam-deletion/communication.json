@@ -11,10 +11,18 @@
   "predecessor_safety_net_archive": "coderef/archived/rag-index-frozen-fixture-dual-ac-invariants",
   "predecessor_substrate_pivot_workorder": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
   "predecessor_substrate_pivot_archive": "coderef/archived/rag-index-single-analyzer-slice",
-  "status": "complete",
+  "status": "closed",
   "current_phase": 3,
-  "phase_status": "closeout_ready",
+  "phase_status": "closed",
   "completed_at": "2026-05-08T15:45:00Z",
+  "closed_at": "2026-05-08T16:25:00Z",
+  "updated": "2026-05-08T16:25:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/archived/rag-index-seam-deletion/ARCHIVED",
+    "review_verdict_source": "validate-coderef-culture scope-mode 11/11 PASS",
+    "warnings": ["pre-existing uncommitted changes in ASSISTANT repo (unrelated to WO scope)"]
+  },
   "plan_file": "coderef/workorder/rag-index-seam-deletion/plan.json",
   "context_file": "coderef/workorder/rag-index-seam-deletion/context.json",
   "analysis_file": "coderef/workorder/rag-index-seam-deletion/analysis.json",
@@ -100,6 +108,11 @@
       "to": "ORCHESTRATOR",
       "kind": "wo_complete",
       "summary": "WO-RAG-INDEX-SEAM-DELETION-001 closeout-ready. Phase 1: inventory.md (3afd853). Phase 2: chunk-converter.ts fileExists seam deleted (ffe79e9, -28 LOC). Phase 3: communication.json + inventory.md final accounting (this commit). Gates: tsc clean, 87/87 rag-suite PASS, 4/4 pipeline invariant PASS, frozen-fixture invariant PASS, Phase 7 chokepoint block untouched, AC-01..AC-15 all satisfied (AC-06 real-world identity probe pending at close time). Requesting /close-workorder dispatch from ORCHESTRATOR."
+    },
+    {
+      "at": "2026-05-08T16:25:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (cultural validator 11/11 scope-mode PASS, tracking validator scope-mode PASS). All 3 phases finalized. Commits 3afd853 + ffe79e9 + cfd485a pushed. Archiving to coderef/archived/rag-index-seam-deletion/."
     }
   ],
   "decisions_log": [
