@@ -4,12 +4,14 @@
   "created": "2026-05-08T17:00:00Z",
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
-  "originating_dispatches": ["daily-agent-session-2026-05-08"],
+  "originating_dispatches": [
+    "daily-agent-session-2026-05-08"
+  ],
   "predecessor_for": null,
   "stub_source": null,
   "predecessor_workorder": "WO-RAG-INDEX-SEAM-DELETION-001",
   "predecessor_archive": "coderef/archived/rag-index-seam-deletion",
-  "status": "complete",
+  "status": "closed",
   "current_phase": 4,
   "phase_status": "closeout_ready",
   "completed_at": "2026-05-08T16:15:00Z",
@@ -81,7 +83,10 @@
       "label": "Propagate branded types",
       "status": "complete",
       "completed_at": "2026-05-08T16:05:00Z",
-      "commits": ["e2b2655 (chunk-converter.ts T3.1)", "8d3da3e (indexing-orchestrator.ts + incremental-indexer.ts + CLI T3.2, Option A ruling)"],
+      "commits": [
+        "e2b2655 (chunk-converter.ts T3.1)",
+        "8d3da3e (indexing-orchestrator.ts + incremental-indexer.ts + CLI T3.2, Option A ruling)"
+      ],
       "tsc": "PASS both configs",
       "vitest": "rag-suite 87/87 PASS, pipeline 152/152 PASS",
       "boundary_ruling": "Option A applied — src/cli/rag-index.ts:439 toAbsolute(args.projectDir)"
@@ -123,6 +128,13 @@
       "to": "ORCHESTRATOR",
       "kind": "wo_authored",
       "summary": "WO-RAG-INDEX-BRANDED-PATHS-001 authored at daily-agent-session-2026-05-08 (bulletproof concept #4 of 6). Scoped directly — no predecessor stub. Plan_type=phased_implementation; 4 phases (inventory → path-types.ts → propagation → closeout); 5-7 atomic commits; 14 ACs; 5 decision records (DR-BRAND-A..E). Predecessor WO-RAG-INDEX-SEAM-DELETION-001 (CORE cfd485a) is the immediate predecessor; frozen-fixture invariant (CORE 282382a) is the live safety net. Boundary strictly src/integration/rag/*.ts — no ruling required before Phase 1; Phase 1 inventory is non-skippable and determines exact brand classifications (absolute/relative/either) per path parameter. path.join() call sites stay; branding makes inputs typed. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for Phase 1 execution."
+    },
+    {
+      "at": "2026-05-08T18:00:00Z",
+      "from": "close-workorder v2.0.0",
+      "to": "TRACKING",
+      "kind": "workorder_closed",
+      "summary": "Workorder closed via /close-workorder. Audit WARNING (cultural 2 warn-severity; projects.json pre-existing drift). Finalized, committed, archive pending. 4 phases, 5 commits, 239 tests PASS, tsc clean, AC-05a/b preserved."
     }
   ],
   "decisions_log": [
@@ -132,5 +144,16 @@
       "by": "SKILLS (daily-agent-session-2026-05-08 scoping)",
       "rationale": "Scoped directly per bulletproof series pattern (no stub predecessor). Plan_type=phased_implementation: Phase 1 inventory is non-skippable because exact per-parameter brand classification (absolute/relative/either) requires reading every path-bearing method signature in src/integration/rag/*.ts at execution time. DR-BRAND-A..E recorded covering plan_type, boundary enforcement, path-types.ts design, propagation strategy, and halt conditions."
     }
-  ]
+  ],
+  "closed_at": "2026-05-08T18:00:00Z",
+  "updated": "2026-05-08T18:00:00Z",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/rag-index-branded-paths/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (cultural validator WARNING — 2 warn-severity checks; tracking validator projects.json pre-existing drift acknowledged)",
+    "warnings": [
+      "cultural validator: 2 warn-severity checks (alignment_gate_skipped resolved via manual history entry after user ran /align-coderef-culture in CODEREF-CORE)",
+      "tracking validator: projects.json 42 enum violations — pre-existing drift, last changed at 3932802, predates this WO"
+    ]
+  }
 }

@@ -1,0 +1,107 @@
+session_metadata:
+  session_id: SES-2026-05-08-RAG-INDEX-BRANDED-PATHS
+  workorder_id: WO-RAG-INDEX-BRANDED-PATHS-001
+  feature_name: rag-index-branded-paths
+  date: "2026-05-08"
+  agent: Claude Sonnet 4.6
+  agent_domain: CODEREF-CORE
+  domain: CODEREF-CORE
+  dispatch_id: DISPATCH-2026-05-08-001
+  bulletproof_concept: "#4 of 6 — Branded path types (AbsolutePath/RelativePath)"
+  predecessor_wo: WO-RAG-INDEX-SEAM-DELETION-001
+
+closure_verification:
+  doc_discovery_ran: true
+  registries_validated: true
+  active_work_cleaned: true
+  final_push_complete: true
+
+tools_used:
+  - Read
+  - Edit
+  - Write
+  - Bash (tsc, vitest, git)
+  - Grep
+  - Glob
+  - Agent (Explore)
+
+files_modified:
+  created:
+    - path: src/integration/rag/path-types.ts
+      commit: d255a6b
+      description: "AbsolutePath + RelativePath branded types; toAbsolute, toRelative, isAbsolutePath helpers"
+    - path: coderef/workorder/rag-index-branded-paths/inventory.md
+      commit: 18efc18
+      description: "Phase 1 path audit — per-parameter brand classification table, HALT-BOUNDARY-VIOLATION section"
+  modified:
+    - path: src/integration/rag/chunk-converter.ts
+      commit: e2b2655
+      description: "basePath: AbsolutePath; filePath params: RelativePath; Map<RelativePath,…>; GUARD-1 removed"
+    - path: src/integration/rag/indexing-orchestrator.ts
+      commit: 8d3da3e
+      description: "basePath: AbsolutePath; staleness rel: RelativePath; GUARD-2 removed"
+    - path: src/integration/rag/incremental-indexer.ts
+      commit: 8d3da3e
+      description: "basePath: AbsolutePath; hashFile/needsReindexing/analyzeChanges params: RelativePath; GUARD-3 removed"
+    - path: src/cli/rag-index.ts
+      commit: 8d3da3e
+      description: "toAbsolute(args.projectDir) at IndexingOrchestrator construction (Option A boundary extension)"
+    - path: coderef/workorder/rag-index-branded-paths/communication.json
+      commit: ff9e662
+      description: "Phase transitions, blocker resolution, workorder_complete event, closeout_complete event"
+
+documents_generated:
+  - path: coderef/workorder/rag-index-branded-paths/inventory.md
+    type: workorder_artifact
+  - path: coderef/workorder/rag-index-branded-paths/terminal-post-exec.txt
+    type: terminal_surface
+
+decisions:
+  - id: HALT-BOUNDARY-VIOLATION
+    description: "Phase 1 inventory found src/cli/rag-index.ts:439 constructs IndexingOrchestrator with args.projectDir — outside src/integration/rag/ boundary. Three options (A/B/C) raised."
+    ruling: "Option A — extend boundary to include src/cli/rag-index.ts. Apply toAbsolute(args.projectDir) at line 439."
+    ruled_by: ORCHESTRATOR
+    rationale: "args.projectDir is always absolute (user-supplied or resolved from process.cwd()). Brand documents an already-held invariant; CLI type-checked is preferable to hiding cast inside constructor."
+
+  - id: LOC-DELTA-OVERAGE
+    description: "Plan estimated +15 to +40 net LOC. Actual: +57 net (94 insertions, 37 deletions)."
+    ruling: "Accurately reported — not retro-shimmed. incremental-indexer.ts had more Map<string>→RelativePath boundary cast sites than anticipated at scoping time."
+
+  - id: normalizeChunkFileForGraphJoin-keepstring
+    description: "normalizeChunkFileForGraphJoin accepts absolute, relative, and file: URI paths by design. Branding either parameter would be wrong — pure normalization function. Kept as string per DR-BRAND-E."
+
+outcomes:
+  - "path-types.ts created: AbsolutePath, RelativePath, toAbsolute(), toRelative(), isAbsolutePath()"
+  - "Three dead isAbsolute() runtime guards removed (GUARD-1, GUARD-2, GUARD-3)"
+  - "CLI boundary extended to src/cli/rag-index.ts per Option A ruling"
+  - "239 tests PASS (rag-suite 87/87 + pipeline 152/152)"
+  - "tsc clean both configs (tsconfig.json + tsconfig.cli.json) after all commits"
+  - "Frozen-fixture dual-AC invariant PASS throughout"
+  - "AC-05a 2415===2415, AC-05b 263===263 preserved"
+
+issues_encountered:
+  - description: "tsc error: string not assignable to RelativePath at incremental-indexer.ts:231 and :330"
+    resolution: "Added toRelative() casts at three internal call sites where Map<string> keys fed branded RelativePath params. Self-discovered and fixed during T3.2."
+
+tracking:
+  workorder_status: complete
+  tracking_validator: "exit 0 (10 PASS, 5 FAIL pre-existing STUB-044 drift)"
+  foundation_docs_gate: "PASS (validator_exit=0; 4 UUID warnings pre-existing)"
+  doc_discovery: "0 candidates (pure type-layer change)"
+
+commits:
+  - hash: 18efc18
+    message: "inventory(WO-RAG-INDEX-BRANDED-PATHS-001): path audit of src/integration/rag/*.ts — brand classifications confirmed"
+    phase: 1
+  - hash: d255a6b
+    message: "types(WO-RAG-INDEX-BRANDED-PATHS-001): define AbsolutePath + RelativePath branded types in path-types.ts"
+    phase: 2
+  - hash: e2b2655
+    message: "refactor(WO-RAG-INDEX-BRANDED-PATHS-001): brand chunk-converter.ts path params — remove isAbsolute guard"
+    phase: 3
+  - hash: 8d3da3e
+    message: "refactor(WO-RAG-INDEX-BRANDED-PATHS-001): brand indexing-orchestrator.ts + incremental-indexer.ts + CLI boundary (Option A)"
+    phase: 3
+  - hash: ff9e662
+    message: "closeout(WO-RAG-INDEX-BRANDED-PATHS-001): Phase 4 final accounting — inventory.md outcomes + communication.json closeout-ready"
+    phase: 4
