@@ -1,0 +1,55 @@
+{
+  "workorder_id": "WO-RAG-INDEX-TWO-GRAIN-DROP-002",
+  "feature_name": "rag-index-two-grain-drop-v2",
+  "analysis_authored_at": "2026-05-08T23:30:00Z",
+  "blast_radius": {
+    "files_modified": ["src/pipeline/output-validator.ts"],
+    "files_created": [],
+    "downstream_consumers": [
+      "src/pipeline/orchestrator.ts (calls buildReport which calls buildFileHeaderStatusMap)",
+      "test files that import buildFileHeaderStatusMap"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "title": "Count mismatch between element-iteration and graph-node iteration",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "AC-05b 263===263 is the verification gate. Run frozen-fixture test immediately after change. If counts differ, investigate before committing."
+    },
+    {
+      "id": "R-002",
+      "title": "graph parameter not available in buildFileHeaderStatusMap signature",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Check current signature. If only state is passed, may need to also accept graph parameter. buildReport already receives graph — thread it through or refactor call site."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/pipeline/output-validator.ts",
+      "lines": "607-614",
+      "symbol": "buildFileHeaderStatusMap",
+      "change": "Replace: for (const element of state.elements) loop → for (const node of graph.nodes) loop filtering node.metadata?.fileGrain === true, using node.metadata.headerStatus."
+    }
+  ],
+  "dependencies": [
+    "src/pipeline/output-validator.ts",
+    "src/pipeline/types.ts (PipelineState, ExportedGraph)",
+    "src/pipeline/graph-builder.ts (fileGrainNodeId — confirms file-grain node shape)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "buildFileHeaderStatusMap source: state.elements → graph.nodes (fileGrain filter)",
+      "rationale": "WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001 stamped headerStatus on file-grain nodes. graph.nodes is now the canonical file-grain source. Eliminates element-grain iteration outside the analyzer."
+    },
+    {
+      "id": "DR-002",
+      "decision": "buildFileHeaderFactMap left unchanged",
+      "rationale": "headerFact has no graph-node equivalent. Confirmed by v1 Phase 1 audit (commit 6587dca audit-matrix.md). Out of scope."
+    }
+  ]
+}

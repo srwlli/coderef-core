@@ -1,0 +1,82 @@
+{
+  "workorder_id": "WO-RAG-INDEX-TWO-GRAIN-DROP-002",
+  "feature_name": "rag-index-two-grain-drop-v2",
+  "created": "2026-05-08T23:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-008"],
+  "predecessor_for": null,
+  "status": "closed",
+  "completed_at": "2026-05-08T23:55:00Z",
+  "closed_at": "2026-05-09T00:10:00Z",
+  "updated": "2026-05-09T00:10:00Z",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-index-two-grain-drop-v2/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-index-two-grain-drop-v2/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-index-two-grain-drop-v2/analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "Bulletproof concept #6 re-open. Prerequisite satisfied. Replace state.elements iteration in buildFileHeaderStatusMap with graph-node file-grain loop."
+  },
+  "execution_rules": {
+    "phase_1": "Single phase, no hard stop. Implement change, run all tests + AC invariants + tsc clean, commit."
+  },
+  "hard_constraints": [
+    "ValidationReport 11-field schema must not change",
+    "buildFileHeaderStatusMap return type Map<string, HeaderStatus> must not change",
+    "buildFileHeaderFactMap must NOT be changed (no graph equivalent for headerFact)",
+    "AC-05a 2415===2415 and AC-05b 263===263 must PASS",
+    "All tests must PASS",
+    "tsc clean both configs"
+  ],
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/rag-index-two-grain-drop-v2/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — WARNING (spawn pattern gap, pre-existing across all WO closes)",
+    "warnings": [
+      "Cultural validator WARNING: mapping-table.json absent (spawn pattern infra gap — pre-existing, non-blocking).",
+      "6 pre-existing STUB-044 drift rows in tracking-validator (not caused by this WO; scope-mode PASS).",
+      "4 UUID anchor warnings in foundation-docs gate (pre-existing)."
+    ]
+  },
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-08T23:30:00Z",
+      "event": "workorder_created",
+      "by": "ORCHESTRATOR",
+      "note": "WO-RAG-INDEX-TWO-GRAIN-DROP-002 created. Bulletproof concept #6 re-open. Prerequisite WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001 archived. Premise now valid: file-grain nodes carry headerStatus."
+    },
+    {
+      "at": "2026-05-08T23:45:00Z",
+      "event": "phase_1_started",
+      "by": "CODEREF-CORE",
+      "note": "Task 1.3 EDIT: buildFileHeaderStatusMap — added graph:ExportedGraph param, replaced state.elements loop with graph.nodes fileGrain filter. checkSemanticHeaders and buildReport call sites updated. SH-* tests updated with graphWithFileGrain fixture helper."
+    },
+    {
+      "at": "2026-05-08T23:55:00Z",
+      "event": "workorder_complete",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 complete. Implementation commit 4f165a2. 154 pipeline tests PASS (56 files). AC-05a 2415===2415 PASS. AC-05b 263===263 PASS. tsc clean both configs. foundation-docs gate PASS (validator_exit=0). Tracking: workorders.json + sessions.json status=complete. BULLETPROOF CONCEPT #6 COMPLETE.",
+      "commits": ["4f165a2", "fd1821b"],
+      "phase6_foundation_docs_gate": {
+        "outcome": "pass",
+        "generator_exit": 0,
+        "validator_exit": 0,
+        "uuid_warnings": 4,
+        "note": "4 UUID anchor warnings are pre-existing"
+      }
+    },
+    {
+      "at": "2026-05-09T00:10:00Z",
+      "event": "workorder_closed",
+      "by": "ORCHESTRATOR",
+      "note": "Closed via /close-workorder. AUDIT WARNING (spawn gap, pre-existing). Commits 4f165a2 + fd1821b. buildFileHeaderStatusMap now iterates graph.nodes (fileGrain) instead of state.elements. ALL 6 BULLETPROOF CONCEPTS COMPLETE."
+    }
+  ]
+}

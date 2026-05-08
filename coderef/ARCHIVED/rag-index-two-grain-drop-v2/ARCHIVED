@@ -1,0 +1,8 @@
+Archived: 2026-05-09T00:10:00Z
+Status: WARNING
+Workorder: WO-RAG-INDEX-TWO-GRAIN-DROP-002
+Feature: rag-index-two-grain-drop-v2
+Bulletproof concept: #6 of 6 — Two-grain drop (COMPLETE)
+Original location: coderef/workorder/rag-index-two-grain-drop-v2/
+Final commits: 4f165a2 (impl), fd1821b (closeout), 41f0ac4 (close)
+Outcome: buildFileHeaderStatusMap in output-validator.ts now iterates graph.nodes (fileGrain filter) instead of state.elements. Element-grain paths outside the analyzer eliminated. 154 tests PASS. AC-05a 2415===2415 + AC-05b 263===263 PASS. tsc clean both configs. ALL 6 BULLETPROOF CONCEPTS COMPLETE.
