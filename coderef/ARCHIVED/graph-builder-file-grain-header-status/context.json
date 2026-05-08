@@ -1,0 +1,47 @@
+{
+  "workorder_id": "WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001",
+  "feature_name": "graph-builder-file-grain-header-status",
+  "created": "2026-05-08T23:10:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "orchestrator",
+    "user_request": "Prerequisite for bulletproof concept #6 (two-grain drop). Stamp headerStatus onto file-grain pseudo-nodes in graph-builder.ts so that output-validator.ts can replace its state.elements iteration with a graph-node file-grain loop. Phase 1 audit found 0/362 file-grain nodes carry headerStatus — this WO fixes that."
+  },
+  "originating_dispatch": "DISPATCH-2026-05-08-007",
+  "predecessor_wos": ["WO-RAG-INDEX-TWO-GRAIN-DROP-001"],
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single-site change: one block in graph-builder.ts buildNodes() L281-290. Stamp headerStatus onto file-grain pseudo-node metadata from first matching element. Paired invariant test required (DR-PHASE-7-B). No phases needed.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "src/pipeline/graph-builder.ts — file-grain pseudo-node emission block (L281-290): look up headerStatus from first matching element for each file, stamp onto metadata",
+      "One paired invariant test: assert that graph.json file-grain nodes carry headerStatus after the change",
+      "All 239 tests PASS at close",
+      "tsc clean (both configs) at close",
+      "AC-05a 2415===2415 and AC-05b 263===263 PASS at close"
+    ],
+    "out_of_scope": [
+      "output-validator.ts changes (those belong to the successor WO-RAG-INDEX-TWO-GRAIN-DROP-001 re-open)",
+      "Changes to headerFact propagation (separate concern)",
+      "Changes to element-grain node metadata",
+      "CLI or report schema changes"
+    ]
+  },
+  "constraints": [
+    "DR-PHASE-7-B locked-additive: the new headerStatus field on file-grain nodes must have a paired invariant test",
+    "graph.json node schema must not break existing consumers (headerStatus is optional — already present on element nodes)",
+    "Frozen-fixture dual-AC invariants must PASS: AC-05a 2415===2415, AC-05b 263===263"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

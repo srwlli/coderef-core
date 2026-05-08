@@ -1,0 +1,7 @@
+Archived: 2026-05-08T23:20:00Z
+Status: WARNING
+Workorder: WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001
+Feature: graph-builder-file-grain-header-status
+Original location: coderef/workorder/graph-builder-file-grain-header-status/
+Final commits: c8090e8 (impl + tests), af648f8 (closeout), a3488ac (close)
+Outcome: headerStatus stamped on file-grain pseudo-nodes in graph-builder.ts buildNodes(). 2 paired invariant tests added. 154 tests PASS. AC-05a 2415===2415 + AC-05b 263===263 PASS. tsc clean. Unblocks WO-RAG-INDEX-TWO-GRAIN-DROP-001 re-open.

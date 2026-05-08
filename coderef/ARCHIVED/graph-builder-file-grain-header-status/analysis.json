@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001",
+  "feature_name": "graph-builder-file-grain-header-status",
+  "analysis_authored_at": "2026-05-08T23:10:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/graph-builder.ts"
+    ],
+    "files_created": [
+      "one new test file or addition to existing graph-builder test"
+    ],
+    "downstream_consumers": [
+      "output-validator.ts (will use this in successor WO)",
+      "graph.json consumers that read file-grain node metadata"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "title": "File with no extracted elements has no headerStatus to stamp",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "seenFiles includes files from importResolutions (no elements). headerStatus is optional — simply omit if no element found for that file. Same pattern as element-grain nodes where headerStatus is undefined."
+    },
+    {
+      "id": "R-002",
+      "title": "Multiple elements per file with different headerStatus values",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "First-seen-wins per file — same policy as buildFileHeaderStatusMap in output-validator.ts (every element from a given file shares the same headerStatus, so deterministic)."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/pipeline/graph-builder.ts",
+      "lines": "281-290",
+      "symbol": "buildNodes (file-grain pseudo-node emission block)",
+      "change": "Before pushing file-grain node, look up headerStatus from first element matching file. If found, add to metadata."
+    }
+  ],
+  "dependencies": [
+    "src/pipeline/graph-builder.ts",
+    "src/pipeline/types.ts (PipelineState, ElementData)",
+    "src/types/types.ts (HeaderStatus)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "First-seen-wins per file for headerStatus on file-grain node",
+      "rationale": "Matches existing buildFileHeaderStatusMap policy in output-validator.ts. Every element from a file shares the same headerStatus (stamped by orchestrator.ts Phase 5), so first-match is deterministic."
+    },
+    {
+      "id": "DR-002",
+      "decision": "headerStatus omitted (not null) when file has no elements",
+      "rationale": "Consistent with element-grain node pattern where headerStatus is optional (L252 in graph-builder). Avoids polluting file-grain nodes for import-only files."
+    }
+  ]
+}
