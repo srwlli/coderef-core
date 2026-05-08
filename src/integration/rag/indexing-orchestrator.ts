@@ -271,30 +271,38 @@ export type IndexingStatus = 'success' | 'partial' | 'failed';
  *
  * Phase 7 INVARIANT (DR-PHASE-7-B): the shape is strictly additive
  * over the pre-Phase-7 contract. The numeric counts
- * (chunksIndexed/Skipped/Failed/filesProcessed) keep their original
- * type; the new fields (status, *Details, validationGateRefused) are
- * additive.
+ * (chunksIndexed/Skipped/Failed) keep their original type; the new
+ * fields (status, *Details, validationGateRefused) are additive.
+ *
+ * WO-RAG-INDEX-SCHEMA-REDUCTION-001 (Option A): filesProcessed and
+ * processingTimeMs removed — no invariant tests, no logic consumers.
  */
 export interface IndexingResult {
   /** Number of chunks successfully indexed */
   chunksIndexed: number;
 
-  /** Number of chunks skipped (unchanged) */
+  /**
+   * Number of chunks skipped (unchanged).
+   * @frozen — no invariant test; must not be modified without adding a paired test.
+   */
   chunksSkipped: number;
 
-  /** Number of failed chunks */
+  /**
+   * Number of failed chunks.
+   * @frozen — no invariant test; must not be modified without adding a paired test.
+   */
   chunksFailed: number;
 
-  /** Total files processed */
-  filesProcessed: number;
-
-  /** Processing time in milliseconds */
-  processingTimeMs: number;
-
-  /** Statistics */
+  /**
+   * Statistics.
+   * @frozen — no invariant test; must not be modified without adding a paired test.
+   */
   stats: IndexingStatistics;
 
-  /** Errors encountered */
+  /**
+   * Errors encountered.
+   * @frozen — no invariant test; must not be modified without adding a paired test.
+   */
   errors: IndexingError[];
 
   // Phase 7 additive fields:
@@ -305,7 +313,10 @@ export interface IndexingResult {
   /** Per-chunk skip details. Length === chunksSkipped (invariant). */
   chunksSkippedDetails: SkipEntry[];
 
-  /** Per-chunk fail details. Length === chunksFailed (invariant). */
+  /**
+   * Per-chunk fail details. Length === chunksFailed (invariant).
+   * @frozen — no invariant test on content; must not be modified without adding a paired test.
+   */
   chunksFailedDetails: FailEntry[];
 
   /** True when status='failed' because Phase 6 validation gate refused. */
@@ -316,39 +327,41 @@ export interface IndexingResult {
 }
 
 /**
- * Statistics from indexing
+ * Statistics from indexing.
+ * All fields @frozen — no invariant tests; must not be modified without adding paired tests.
  */
 export interface IndexingStatistics {
-  /** Total tokens used */
+  /** @frozen Total tokens used */
   tokensUsed: number;
 
-  /** Estimated cost */
+  /** @frozen Estimated cost */
   estimatedCost?: number;
 
-  /** Average embedding time per chunk (ms) */
+  /** @frozen Average embedding time per chunk (ms) */
   avgEmbeddingTimeMs: number;
 
-  /** Chunks by type */
+  /** @frozen Chunks by type */
   byType: Record<string, number>;
 
-  /** Chunks by language */
+  /** @frozen Chunks by language */
   byLanguage: Record<string, number>;
 }
 
 /**
- * Error during indexing
+ * Error during indexing.
+ * All fields @frozen — no invariant tests; must not be modified without adding paired tests.
  */
 export interface IndexingError {
-  /** Stage where error occurred */
+  /** @frozen Stage where error occurred */
   stage: IndexingStage;
 
-  /** Error message */
+  /** @frozen Error message */
   message: string;
 
-  /** Optional context */
+  /** @frozen Optional context */
   context?: string;
 
-  /** Original error */
+  /** @frozen Original error */
   originalError?: Error;
 }
 
@@ -399,8 +412,6 @@ export class IndexingOrchestrator {
         chunksIndexed: 0,
         chunksSkipped: 0,
         chunksFailed: 0,
-        filesProcessed: 0,
-        processingTimeMs: Date.now() - startTime,
         stats: {
           tokensUsed: 0,
           avgEmbeddingTimeMs: 0,
@@ -758,8 +769,6 @@ export class IndexingOrchestrator {
         100
       );
 
-      const processingTimeMs = Date.now() - startTime;
-
       // Calculate statistics
       const chunkStats = embeddingResult.stats;
       const byType: Record<string, number> = {};
@@ -788,10 +797,6 @@ export class IndexingOrchestrator {
         chunksIndexed,
         chunksSkipped,
         chunksFailed,
-        filesProcessed: Array.from(
-          new Set(chunks.map((c) => c.file))
-        ).length,
-        processingTimeMs,
         stats: {
           tokensUsed: chunkStats.totalTokensUsed,
           estimatedCost: (chunkStats.totalTokensUsed / 1_000_000) * 0.020,

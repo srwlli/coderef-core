@@ -537,7 +537,6 @@ async function main(): Promise<void> {
       chunksIndexed: result.chunksIndexed,
       chunksSkipped: result.chunksSkipped,
       chunksFailed: result.chunksFailed,
-      filesProcessed: result.filesProcessed,
       processingTimeMs: totalTime,
       status: result.status,
       chunksSkippedDetails: result.chunksSkippedDetails,
@@ -559,7 +558,6 @@ async function main(): Promise<void> {
     } else {
       console.log('✅ Indexing complete!\n');
       console.log('📊 Statistics:');
-      console.log(`  Files processed: ${result.filesProcessed}`);
       console.log(`  Chunks indexed: ${result.chunksIndexed}`);
       if (result.chunksSkipped > 0) {
         console.log(`  Chunks skipped: ${result.chunksSkipped}`);
