@@ -270,8 +270,14 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
   // a file as a graph entity rather than a code element. Phase 6
   // validators may opt to filter them out for element-only queries.
   const seenFiles = new Set<string>();
+  // First-seen-wins per file — same policy as buildFileHeaderStatusMap in
+  // output-validator.ts. Used to stamp headerStatus on file-grain nodes.
+  const fileHeaderStatus = new Map<string, string>();
   for (const elem of state.elements) {
     seenFiles.add(elem.file);
+    if (elem.headerStatus !== undefined && !fileHeaderStatus.has(elem.file)) {
+      fileHeaderStatus.set(elem.file, elem.headerStatus);
+    }
   }
   // Also include files referenced by importResolutions (importer side)
   // so module-level imports always have a source-node.
@@ -280,13 +286,16 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
   }
   for (const file of seenFiles) {
     const id = fileGrainNodeId(file, projectPath);
+    const fileGrainMeta: Record<string, unknown> = { codeRefId: id, codeRefIdNoLine: id, fileGrain: true };
+    const hs = fileHeaderStatus.get(file);
+    if (hs !== undefined) fileGrainMeta.headerStatus = hs;
     nodes.push({
       id,
       type: 'file',
       name: id,
       file,
       line: 1,
-      metadata: { codeRefId: id, codeRefIdNoLine: id, fileGrain: true },
+      metadata: fileGrainMeta,
     });
   }
 
