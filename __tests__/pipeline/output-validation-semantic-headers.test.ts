@@ -35,6 +35,22 @@ function emptyGraph(): ExportedGraph {
   };
 }
 
+function graphWithFileGrain(files: Array<{ file: string; status: HeaderStatus }>): ExportedGraph {
+  return {
+    version: 'phase5', exportedAt: 0,
+    nodes: files.map(({ file, status }) => ({
+      id: `@File/${file}`,
+      type: 'file',
+      name: `@File/${file}`,
+      file,
+      line: 1,
+      metadata: { codeRefId: `@File/${file}`, codeRefIdNoLine: `@File/${file}`, fileGrain: true, headerStatus: status },
+    })),
+    edges: [],
+    statistics: { nodeCount: files.length, edgeCount: 0, edgesByType: {}, densityRatio: 0 },
+  };
+}
+
 function stampedElement(file: string, status: HeaderStatus, headerFact?: HeaderFact): ElementData {
   return {
     name: 'X',
@@ -80,10 +96,11 @@ describe('Phase 6 SH-1: layer_in_enum', () => {
   it('PASS: defined file with layer in enum produces no warning/error', () => {
     const fact: HeaderFact = { sourceFile: 'src/x.ts', layer: 'utility' };
     const state = makeState([stampedElement('src/x.ts', 'defined', fact)]);
-    const def = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: false });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'defined' }]);
+    const def = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
     expect(def.warnings.filter(w => w.check === 'layer_in_enum')).toEqual([]);
     expect(def.errors).toEqual([]);
-    const strict = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: true });
+    const strict = validatePipelineState(state, graph, { layerEnum, strictHeaders: true });
     expect(strict.errors.filter(e => e.check === 'layer_in_enum')).toEqual([]);
     expect(strict.ok).toBe(true);
   });
@@ -91,7 +108,8 @@ describe('Phase 6 SH-1: layer_in_enum', () => {
   it('FAIL default: bad layer → warnings[] only, ok=true', () => {
     const fact: HeaderFact = { sourceFile: 'src/x.ts', layer: 'not-a-real-layer' };
     const state = makeState([stampedElement('src/x.ts', 'defined', fact)]);
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: false });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'defined' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
     expect(r.warnings.filter(w => w.check === 'layer_in_enum').length).toBe(1);
     expect(r.errors.filter(e => e.check === 'layer_in_enum')).toEqual([]);
     expect(r.ok).toBe(true);
@@ -100,7 +118,8 @@ describe('Phase 6 SH-1: layer_in_enum', () => {
   it('FAIL strict: bad layer → errors[kind=header_drift_strict], ok=false', () => {
     const fact: HeaderFact = { sourceFile: 'src/x.ts', layer: 'not-a-real-layer' };
     const state = makeState([stampedElement('src/x.ts', 'defined', fact)]);
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: true });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'defined' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: true });
     const violations = r.errors.filter(e => e.check === 'layer_in_enum');
     expect(violations.length).toBe(1);
     expect(violations[0].kind).toBe('header_drift_strict');
@@ -111,20 +130,23 @@ describe('Phase 6 SH-1: layer_in_enum', () => {
 describe('Phase 6 SH-2: exports_match_ast (headerStatus=stale)', () => {
   it('PASS: no stale files → no warning', () => {
     const state = makeState([stampedElement('src/x.ts', 'defined')]);
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: false });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'defined' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
     expect(r.warnings.filter(w => w.check === 'exports_match_ast')).toEqual([]);
   });
 
   it('FAIL default: stale file → warnings[], ok=true', () => {
     const state = makeState([stampedElement('src/x.ts', 'stale')]);
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: false });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'stale' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
     expect(r.warnings.filter(w => w.check === 'exports_match_ast').length).toBe(1);
     expect(r.ok).toBe(true);
   });
 
   it('FAIL strict: stale file → errors[kind=header_drift_strict], ok=false', () => {
     const state = makeState([stampedElement('src/x.ts', 'stale')]);
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: true });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'stale' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: true });
     const violations = r.errors.filter(e => e.check === 'exports_match_ast');
     expect(violations.length).toBe(1);
     expect(violations[0].kind).toBe('header_drift_strict');
@@ -144,7 +166,8 @@ describe('Phase 6 SH-3: imports_non_unresolved', () => {
         kind: 'resolved',
       }],
     });
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: false });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'defined' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
     expect(r.warnings.filter(w => w.check === 'imports_non_unresolved')).toEqual([]);
   });
 
@@ -159,7 +182,8 @@ describe('Phase 6 SH-3: imports_non_unresolved', () => {
         kind: 'unresolved',
       }],
     });
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: false });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'defined' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
     const violations = r.warnings.filter(w => w.check === 'imports_non_unresolved');
     expect(violations.length).toBe(1);
     expect(r.ok).toBe(true);
@@ -176,7 +200,8 @@ describe('Phase 6 SH-3: imports_non_unresolved', () => {
         kind: 'unresolved',
       }],
     });
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: true });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'defined' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: true });
     const violations = r.errors.filter(e => e.check === 'imports_non_unresolved');
     expect(violations.length).toBe(1);
     expect(violations[0].kind).toBe('header_drift_strict');
@@ -185,7 +210,8 @@ describe('Phase 6 SH-3: imports_non_unresolved', () => {
 
   it('EXEMPT: defined file with NO HeaderImportFacts → no warning', () => {
     const state = makeState([stampedElement('src/x.ts', 'defined')]);
-    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: true });
+    const graph = graphWithFileGrain([{ file: 'src/x.ts', status: 'defined' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: true });
     expect(r.warnings.filter(w => w.check === 'imports_non_unresolved')).toEqual([]);
     expect(r.errors.filter(e => e.check === 'imports_non_unresolved')).toEqual([]);
   });

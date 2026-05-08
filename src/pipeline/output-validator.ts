@@ -206,7 +206,7 @@ export function validatePipelineState(
   const integrityErrors = checkGraphIntegrity(graph);
   errors.push(...integrityErrors);
 
-  const headerDrifts = checkSemanticHeaders(state, options);
+  const headerDrifts = checkSemanticHeaders(state, graph, options);
   if (options.strictHeaders) {
     for (const drift of headerDrifts) {
       errors.push({
@@ -401,10 +401,11 @@ function checkGraphIntegrity(graph: ExportedGraph): ValidationError[] {
  */
 function checkSemanticHeaders(
   state: PipelineState,
+  graph: ExportedGraph,
   options: ValidatePipelineStateOptions,
 ): ValidationWarning[] {
   const warnings: ValidationWarning[] = [];
-  const fileToStatus = buildFileHeaderStatusMap(state);
+  const fileToStatus = buildFileHeaderStatusMap(graph);
   const fileToHeaderFact = buildFileHeaderFactMap(state);
   const layerEnum = options.layerEnum;
 
@@ -545,7 +546,7 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
     }
   }
 
-  const fileToStatus = buildFileHeaderStatusMap(state);
+  const fileToStatus = buildFileHeaderStatusMap(graph);
   let header_defined_count = 0;
   let header_missing_count = 0;
   let header_stale_count = 0;
@@ -596,19 +597,21 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
 }
 
 /**
- * Build a Map<file, HeaderStatus> from state.elements (R-PHASE-6-F).
- * headerStatus is stamped per element by orchestrator.ts:476-480, but
- * the report fields are file-grain. First-seen-wins per file (every
- * element from a given file shares the same headerStatus, so this is
- * deterministic).
+ * Build a Map<file, HeaderStatus> from file-grain graph nodes (R-PHASE-6-F,
+ * WO-RAG-INDEX-TWO-GRAIN-DROP-002). graph-builder.ts stamps headerStatus onto
+ * file-grain pseudo-nodes (metadata.fileGrain===true) using first-seen-wins
+ * per file — same policy as the prior state.elements iteration. Only file-grain
+ * nodes carry headerStatus; element-grain nodes are skipped.
  *
  * Exported for use by tasks 1.8 / 1.9 implementations and unit tests.
  */
-export function buildFileHeaderStatusMap(state: PipelineState): Map<string, HeaderStatus> {
+export function buildFileHeaderStatusMap(graph: ExportedGraph): Map<string, HeaderStatus> {
   const fileToStatus = new Map<string, HeaderStatus>();
-  for (const element of state.elements) {
-    if (element.headerStatus !== undefined && !fileToStatus.has(element.file)) {
-      fileToStatus.set(element.file, element.headerStatus);
+  for (const node of graph.nodes) {
+    if (!node.metadata?.fileGrain) continue;
+    const hs = node.metadata?.headerStatus;
+    if (hs !== undefined && node.file !== undefined && !fileToStatus.has(node.file)) {
+      fileToStatus.set(node.file, hs as HeaderStatus);
     }
   }
   return fileToStatus;
