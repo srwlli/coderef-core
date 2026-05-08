@@ -117,10 +117,28 @@
 - `IndexingOptions.reportPath` — not a join operand; branding adds no safety
 - `CodeChunk.file` — shared type defined outside rag/ boundary
 
-**Net LOC delta estimate (post-ruling, all three guards removed):**
-- `path-types.ts`: +25-35 LOC
-- `chunk-converter.ts`: -3 LOC (guard deletion), +3 LOC (brand casts + import) = ≈ 0
-- `indexing-orchestrator.ts`: -3 LOC (guard deletion), +3 LOC (brand casts + import) = ≈ 0
-- `incremental-indexer.ts`: -3 LOC (guard deletion), +3 LOC (brand casts + import) = ≈ 0
-- Tests: +5-15 LOC (toAbsolute/toRelative at construction sites)
-- **Net: +25-50 LOC** (matches plan estimate of +15 to +40)
+**Final outcomes (post-execution):**
+
+| parameter | file | disposition | commit |
+|---|---|---|---|
+| `ChunkConverter.basePath` | chunk-converter.ts | AbsolutePath — branded | e2b2655 |
+| `ChunkConverter.readFile.filePath` | chunk-converter.ts | RelativePath — branded; GUARD-1 removed | e2b2655 |
+| `ChunkConverter.groupNodesByFile` return | chunk-converter.ts | Map<RelativePath,…> — branded | e2b2655 |
+| `ChunkConverter.detectLanguage.filePath` | chunk-converter.ts | RelativePath — branded | e2b2655 |
+| `ChunkConverter.extractRelatedElements.filePath` | chunk-converter.ts | RelativePath — branded | e2b2655 |
+| `IndexingOrchestrator.basePath` | indexing-orchestrator.ts | AbsolutePath — branded | 8d3da3e |
+| `IndexingOrchestrator` staleness `rel` | indexing-orchestrator.ts | RelativePath — branded; GUARD-2 removed | 8d3da3e |
+| `IncrementalIndexer.basePath` | incremental-indexer.ts | AbsolutePath — branded | 8d3da3e |
+| `IncrementalIndexer.hashFile.filePath` | incremental-indexer.ts | RelativePath — branded; GUARD-3 removed | 8d3da3e |
+| `IncrementalIndexer.needsReindexing.filePath` | incremental-indexer.ts | RelativePath — branded | 8d3da3e |
+| `IncrementalIndexer.analyzeChanges.currentFiles` | incremental-indexer.ts | RelativePath[] — branded | 8d3da3e |
+| `toAbsolute(args.projectDir)` CLI call site | src/cli/rag-index.ts | AbsolutePath cast at boundary (Option A ruling) | 8d3da3e |
+| `normalizeChunkFileForGraphJoin.file` | indexing-orchestrator.ts | keep as string — normalization fn accepts all forms | — |
+| `normalizeChunkFileForGraphJoin.basePath` | indexing-orchestrator.ts | keep as string — pathMod.resolve() normalizes | — |
+| `IndexingOptions.reportPath` | indexing-orchestrator.ts | keep as string — not a join operand | — |
+| `CodeChunk.file` | code-chunk.ts (shared) | keep as string — outside boundary | — |
+
+**Final LOC delta:** +57 net (94 insertions, 37 deletions across src/ files).
+Plan estimated +15 to +40; actual +57 — `incremental-indexer.ts` had more cast sites (Map<string> key → RelativePath boundaries) than anticipated at scoping. Accurately reported.
+
+**Tests:** no test file changes required. tsc clean on both configs after all commits. All 239 tests PASS (rag-suite 87/87 + pipeline 152/152).

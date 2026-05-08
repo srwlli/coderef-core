@@ -9,9 +9,10 @@
   "stub_source": null,
   "predecessor_workorder": "WO-RAG-INDEX-SEAM-DELETION-001",
   "predecessor_archive": "coderef/archived/rag-index-seam-deletion",
-  "status": "implementing",
-  "current_phase": 1,
-  "phase_status": "complete",
+  "status": "complete",
+  "current_phase": 4,
+  "phase_status": "closeout_ready",
+  "completed_at": "2026-05-08T16:15:00Z",
   "plan_file": "coderef/workorder/rag-index-branded-paths/plan.json",
   "context_file": "coderef/workorder/rag-index-branded-paths/context.json",
   "analysis_file": "coderef/workorder/rag-index-branded-paths/analysis.json",
@@ -62,12 +63,46 @@
       "label": "Path inventory",
       "status": "complete",
       "completed_at": "2026-05-08T15:45:00Z",
+      "commit": "18efc18",
       "tsc": "PASS both configs",
       "notes": "HALT-BOUNDARY-VIOLATION surfaced: src/cli/rag-index.ts constructs new IndexingOrchestrator(..., args.projectDir). Three options (A/B/C) raised for ORCHESTRATOR ruling per DR-BRAND-D before Phase 3 propagation into IndexingOrchestrator. ChunkConverter propagation (Phase 3 T3.1) is unblocked — all its call sites are within src/integration/rag/. IncrementalIndexer propagation is contingent on orchestrator ruling (all its construction passes this.basePath from IndexingOrchestrator)."
+    },
+    {
+      "phase": 2,
+      "label": "Define path-types.ts",
+      "status": "complete",
+      "completed_at": "2026-05-08T15:55:00Z",
+      "commit": "d255a6b",
+      "tsc": "PASS both configs",
+      "vitest": "rag-suite 87/87 PASS"
+    },
+    {
+      "phase": 3,
+      "label": "Propagate branded types",
+      "status": "complete",
+      "completed_at": "2026-05-08T16:05:00Z",
+      "commits": ["e2b2655 (chunk-converter.ts T3.1)", "8d3da3e (indexing-orchestrator.ts + incremental-indexer.ts + CLI T3.2, Option A ruling)"],
+      "tsc": "PASS both configs",
+      "vitest": "rag-suite 87/87 PASS, pipeline 152/152 PASS",
+      "boundary_ruling": "Option A applied — src/cli/rag-index.ts:439 toAbsolute(args.projectDir)"
+    },
+    {
+      "phase": 4,
+      "label": "Test updates + closeout",
+      "status": "complete",
+      "completed_at": "2026-05-08T16:15:00Z",
+      "notes": "No test file changes required — tsc clean on both configs with no test-file errors. 239 tests PASS."
     }
   ],
   "plan_adjustments": [],
   "communication_log": [
+    {
+      "at": "2026-05-08T16:15:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_complete",
+      "summary": "WO-RAG-INDEX-BRANDED-PATHS-001 complete. 4 phases, 5 commits (18efc18 inventory, d255a6b path-types.ts, e2b2655 chunk-converter.ts T3.1, 8d3da3e orchestrator+incremental+CLI T3.2, closeout commit pending). ACs verified: AC-01 inventory.md authored; AC-02 path-types.ts with AbsolutePath/RelativePath/toAbsolute/toRelative/isAbsolutePath; AC-03 ChunkConverter.basePath: AbsolutePath; AC-04 readFile.filePath: RelativePath; AC-05 isAbsolute guard at :222-225 removed; AC-06 IndexingOrchestrator.basePath: AbsolutePath; AC-07 pathMod.isAbsolute guard at :500 removed; AC-08 no runtime behavior changes (same path.join calls; 239 tests PASS); AC-09 tsc PASS all commits; AC-10 frozen-fixture PASS; AC-12 Phase 7 chokepoint untouched; AC-13 all changes within src/integration/rag/* + src/cli/rag-index.ts (Option A extension, ORCHESTRATOR-ruled); AC-14 validators PASS. AC-11 real-world identity: static probe deferred to /close-workorder (standard pattern). Net LOC delta: +57 (plan estimated +15 to +40; incremental-indexer had more Map-key cast sites than anticipated — reported accurately, not retro-shimmed). Ready for cross-project /close-workorder dispatch."
+    },
     {
       "at": "2026-05-08T15:45:00Z",
       "from": "CODEREF-CORE",
