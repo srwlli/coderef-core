@@ -1,0 +1,32 @@
+=============================================================
+WORKORDER: WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001  |  graph-builder-file-grain-header-status  |  COMPLETE
+Session: daily-agent-session-2026-05-08 / CODEREF-CORE  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/graph-builder-file-grain-header-status/communication.json  (c8090e8)
+  + coderef/workorder/graph-builder-file-grain-header-status/analysis.json  (af648f8)
+  + coderef/workorder/graph-builder-file-grain-header-status/context.json  (af648f8)
+  + coderef/workorder/graph-builder-file-grain-header-status/plan.json  (af648f8)
+
+FILES MODIFIED:
+  ~ src/pipeline/graph-builder.ts  (c8090e8)
+  ~ __tests__/pipeline/graph-construction-facet-propagation.test.ts  (c8090e8)
+
+SCHEMA DELTA (graph-builder.ts — file-grain pseudo-nodes):
+  + metadata.headerStatus: string (optional) — from first matching element, first-seen-wins
+
+PHASE CHECKLIST:
+  [x] Phase 1: Implement + test  (c8090e8 — impl + tests | af648f8 — closeout)
+
+TEST RESULTS:
+  Pipeline tests: 154 PASS / 56 files
+  AC-05a (element-grain): 2415===2415 PASS
+  AC-05b (file-grain): 263===263 PASS
+  tsc clean: tsconfig.json + tsconfig.cli.json
+  Foundation-docs gate: PASS (validator_exit=0)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing STUB-044 drift, 9 PASS / 6 FAIL)
+
+APPROVE -> /close-workorder WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001
+=============================================================

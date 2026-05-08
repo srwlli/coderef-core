@@ -6,8 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-007"],
   "predecessor_for": "WO-RAG-INDEX-TWO-GRAIN-DROP-001",
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-08T23:00:00Z",
+  "closed_at": "2026-05-08T23:20:00Z",
+  "updated": "2026-05-08T23:20:00Z",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/graph-builder-file-grain-header-status/plan.json",
@@ -28,6 +30,15 @@
     "tsc clean (both configs) at close",
     "headerStatus must be optional on file-grain nodes — files with no elements must not error"
   ],
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/graph-builder-file-grain-header-status/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — WARNING (spawn pattern gap, pre-existing across all WO closes)",
+    "warnings": [
+      "Cultural validator WARNING: mapping-table.json absent (spawn pattern infra gap — pre-existing, non-blocking).",
+      "tracking-validator 9 PASS / 6 FAIL: pre-existing STUB-044 drift, not caused by this WO (scope mode: this WO's row PASS)."
+    ]
+  },
   "blockers": [],
   "decisions_log": [],
   "phase_transitions": [],
@@ -50,6 +61,12 @@
       "event": "workorder_complete",
       "by": "CODEREF-CORE",
       "note": "WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001 complete. Single phase. Commit c8090e8. Foundation-docs gate PASS (validator_exit=0). tracking-validator 9 PASS / 6 FAIL (pre-existing STUB-044 drift, not caused by this WO). Unblocks WO-RAG-INDEX-TWO-GRAIN-DROP-001 re-open."
+    },
+    {
+      "at": "2026-05-08T23:20:00Z",
+      "event": "workorder_closed",
+      "by": "ORCHESTRATOR",
+      "note": "Closed via /close-workorder. AUDIT WARNING (spawn gap, pre-existing). Commits c8090e8 + af648f8. headerStatus now stamped on file-grain pseudo-nodes. Unblocks concept #6 re-open."
     }
   ]
 }
