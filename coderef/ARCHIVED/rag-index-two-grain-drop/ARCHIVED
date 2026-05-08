@@ -1,0 +1,10 @@
+Archived: 2026-05-08T23:00:00Z
+Status: WARNING
+Workorder: WO-RAG-INDEX-TWO-GRAIN-DROP-001
+Feature: rag-index-two-grain-drop
+Bulletproof concept: #6 of 6 — Two-grain drop
+Original location: coderef/workorder/rag-index-two-grain-drop/
+Close reason: premises-invalidated
+Phase 1 commit: 6587dca (audit-matrix.md)
+Phase 2 close commit: dbf4d29
+Outcome: Phase 1 audit complete. graph.json file-grain pseudo-nodes carry zero headerStatus (0/362). Phase 2 descoped — successor WO needed to stamp headerStatus on file-grain nodes in graph-builder.ts first.

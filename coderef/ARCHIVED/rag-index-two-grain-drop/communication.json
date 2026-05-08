@@ -1,0 +1,75 @@
+{
+  "workorder_id": "WO-RAG-INDEX-TWO-GRAIN-DROP-001",
+  "feature_name": "rag-index-two-grain-drop",
+  "created": "2026-05-08T22:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-006"],
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "completed_at": "2026-05-08T22:30:00Z",
+  "closed_at": "2026-05-08T23:00:00Z",
+  "updated": "2026-05-08T23:00:00Z",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-index-two-grain-drop/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-index-two-grain-drop/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rag-index-two-grain-drop/analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "Bulletproof concept #6 — drop element-grain code paths outside the analyzer. Phase 1 audit-only; Phase 2 gated on ORCHESTRATOR approval."
+  },
+  "execution_rules": {
+    "phase_1": "READ + AUDIT only. No code changes in Phase 1. Produce audit-matrix.md and report to ORCHESTRATOR.",
+    "phase_2": "Code changes gated on Phase 1 approval. Replace element-grain aggregation with file-grain sources. Tests + AC invariants must PASS."
+  },
+  "hard_constraints": [
+    "ValidationReport 11-field schema must not change — output shape is locked",
+    "DR-PHASE-7-B: no new fields without paired invariant test",
+    "AC-05a 2415===2415 and AC-05b 263===263 must PASS at Phase 2 close",
+    "All 239 tests must PASS at Phase 2 close",
+    "tsc clean (both configs) at Phase 2 close"
+  ],
+  "close_metadata": {
+    "review_status": "WARNING",
+    "close_reason": "premises-invalidated",
+    "archive_marker": "coderef/ARCHIVED/rag-index-two-grain-drop/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — WARNING (spawn pattern gap, same as prior WO closes)",
+    "warnings": [
+      "Phase 2 premise invalidated: graph.json file-grain pseudo-nodes carry zero headerStatus (0/362 nodes). Replacement impossible as scoped.",
+      "Cultural validator WARNING: mapping-table.json absent (spawn pattern infra gap — pre-existing, non-blocking)."
+    ],
+    "successor_wo": "WO-RAG-INDEX-GRAPH-BUILDER-HEADER-STATUS-001 (prerequisite: stamp headerStatus on file-grain nodes in graph-builder.ts)"
+  },
+  "blockers": [],
+  "decisions_log": [
+    {
+      "at": "2026-05-08T23:00:00Z",
+      "by": "ORCHESTRATOR",
+      "decision": "Option B — descope/defer. Phase 2 premise invalidated. Close as premises-invalidated. Prerequisite WO needed: stamp headerStatus on file-grain pseudo-nodes in graph-builder.ts first."
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-08T22:00:00Z",
+      "event": "workorder_created",
+      "by": "ORCHESTRATOR",
+      "note": "WO-RAG-INDEX-TWO-GRAIN-DROP-001 created. Bulletproof concept #6. Phase 1 audit ready."
+    },
+    {
+      "at": "2026-05-08T22:30:00Z",
+      "event": "phase_1_complete",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 audit complete. CRITICAL DISCOVERY: file-grain pseudo-nodes in graph.json carry zero headerStatus data (0/362 nodes). buildFileHeaderStatusMap replacement with file-grain nodes is impossible. buildFileHeaderFactMap has no graph-node equivalent. Replacement is possible using element-grain graph nodes (same grain, different source object) but does not change grain type. Options A/B/C surfaced to ORCHESTRATOR. HARD STOP — awaiting Phase 2 ruling."
+    },
+    {
+      "at": "2026-05-08T23:00:00Z",
+      "event": "workorder_closed",
+      "by": "ORCHESTRATOR",
+      "note": "ORCHESTRATOR ruling: Option B — descope/defer. WO closed as premises-invalidated (WARNING). Audit deliverable (audit-matrix.md, commit 6587dca) is the outcome. Successor: prerequisite WO to stamp headerStatus on file-grain pseudo-nodes in graph-builder.ts."
+    }
+  ]
+}
