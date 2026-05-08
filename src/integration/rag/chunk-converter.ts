@@ -54,18 +54,11 @@ export class ChunkConverter {
 
       // Read file once for all nodes in it
       if (opts.includeSourceCode || opts.includeDocumentation) {
-        // Check if file exists before attempting to read
-        // Skip phantom import targets (e.g., .js files from TypeScript ESM imports)
-        const fileExists = await this.fileExists(filePath);
-        if (!fileExists) {
-          // Silently skip non-existent files (they're phantom import targets)
-          continue;
-        }
-
         try {
           fileContent = await this.readFile(filePath);
         } catch (error: any) {
-          // File reading failed, record errors for all nodes
+          // File reading failed (missing file, EACCES, EISDIR, etc.) — record
+          // errors for all nodes in this file and move on.
           for (const node of nodes) {
             errors.push({
               coderef: node.id,
@@ -232,27 +225,6 @@ export class ChunkConverter {
       : path.join(this.basePath, filePath);
 
     return await fs.readFile(fullPath, 'utf-8');
-  }
-
-  /**
-   * Check if a path resolves to a readable file.
-   *
-   * Uses `stat().isFile()` so directory-typed graph nodes (rare upstream
-   * bug; observed on LLOYD) are filtered here cheaply rather than
-   * throwing EISDIR in `readFile()` downstream and counting as a hard
-   * error in the indexing summary.
-   */
-  private async fileExists(filePath: string): Promise<boolean> {
-    const fullPath = path.isAbsolute(filePath)
-      ? filePath
-      : path.join(this.basePath, filePath);
-
-    try {
-      const st = await fs.stat(fullPath);
-      return st.isFile();
-    } catch {
-      return false;
-    }
   }
 
   /**
