@@ -11,9 +11,9 @@
   "predecessor_safety_net_archive": "coderef/archived/rag-index-frozen-fixture-dual-ac-invariants",
   "predecessor_substrate_pivot_workorder": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001",
   "predecessor_substrate_pivot_archive": "coderef/archived/rag-index-single-analyzer-slice",
-  "status": "plan_created",
-  "current_phase": 0,
-  "phase_status": "ready_to_execute_phase_1",
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "complete",
   "plan_file": "coderef/workorder/rag-index-seam-deletion/plan.json",
   "context_file": "coderef/workorder/rag-index-seam-deletion/context.json",
   "analysis_file": "coderef/workorder/rag-index-seam-deletion/analysis.json",
@@ -55,7 +55,28 @@
       "non_blocking_for": "Phase 1 inventory authoring, Phase 2 atomic removals of unambiguous seams elsewhere in the inventory"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "from": 0,
+      "to": 1,
+      "at": "2026-05-08T15:30:00Z",
+      "by": "SKILLS (DISPATCH-2026-05-08-001)",
+      "summary": "Phase 1 execution begun"
+    },
+    {
+      "from": 1,
+      "to": "complete",
+      "at": "2026-05-08T15:35:00Z",
+      "by": "SKILLS (DISPATCH-2026-05-08-001)",
+      "summary": "Phase 1 complete: inventory.md authored, 2 delete + 12 keep_with_justification seams classified. Anchor-case ruling: Option B locked per dispatch. No RULING_REQUIRED seams remain."
+    }
+  ],
+  "anchor_case_ruling": {
+    "option": "B",
+    "ruling_source": "DISPATCH-2026-05-08-001",
+    "ruling_at": "2026-05-08T00:00:00Z",
+    "summary": "Delete fileExists check at chunk-converter.ts:57-63; let readFile error path own missing-file behavior. Companion: delete dead fileExists() private method at lines 245-256."
+  },
   "plan_adjustments": [],
   "communication_log": [
     {
@@ -64,6 +85,13 @@
       "to": "ORCHESTRATOR",
       "kind": "wo_authored",
       "summary": "WO-RAG-INDEX-SEAM-DELETION-001 authored under DISPATCH-047 (medium priority post-bulletproof-pivot-1 backlog, concept #3 of 6). Promotes STUB-RAG-INDEX-SEAM-DELETION-001 (CORE bbdeba5) into a phased_implementation plan with 3 phases + 16 ACs + 5 decision records (DR-SEAM-A..E). Phase 1 = seam inventory + anchor-case A/B/C ruling-required surface. Phase 2+ = per-seam atomic removals (5-15 commits anticipated). Phase 3 = closeout-ready. Frozen-fixture WO (CORE 282382a) is the live safety net; per-commit verification gates include both frozen-fixture invariant AND optional real-codebase static probe (verify-dual-ac.mjs). BLOCK-ANCHOR-RULING raised: ORCHESTRATOR rules on chunk-converter.ts:60-63 Option A/B/C before Phase 2 atomic removal of that specific seam can land; non-blocking for Phase 1 + other Phase 2 commits. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for Phase 1 execution."
+    },
+    {
+      "at": "2026-05-08T15:35:00Z",
+      "from": "SKILLS",
+      "to": "ORCHESTRATOR",
+      "kind": "phase1_complete",
+      "summary": "Phase 1 complete. Seam inventory authored at coderef/workorder/rag-index-seam-deletion/inventory.md. Result: 2 seams flagged delete (anchor-case fileExists call site + dead fileExists() method), 12 seams earn keep_with_justification, 0 RULING_REQUIRED (anchor-case ruling Option B received from DISPATCH-2026-05-08-001). Phase 2 has exactly 1 atomic commit: delete chunk-converter.ts:57-63 + chunk-converter.ts:245-256. No other removals needed."
     }
   ],
   "decisions_log": [
