@@ -6,8 +6,9 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-005"],
   "predecessor_for": null,
-  "status": "implementing",
-  "current_phase": 1,
+  "status": "complete",
+  "completed_at": "2026-05-08T20:00:00Z",
+  "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-index-schema-reduction\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-index-schema-reduction\\context.json",
@@ -51,6 +52,18 @@
       "event": "phase_1_complete",
       "source": "execute-workorder",
       "message": "Phase 1 audit complete. audit-matrix.md written. Findings: IndexingResult — REMOVE: filesProcessed, processingTimeMs (2 fields); FREEZE: chunksSkipped, chunksFailed, stats, errors, chunksFailedDetails (5 fields); KEEP: chunksIndexed, status, chunksSkippedDetails, validationGateRefused, validationReportPath (5 fields). IndexingStatistics — FREEZE all 5 fields. IndexingError — FREEZE all 4 fields. AC-05a and AC-05b PASS at baseline (indexing-gate-invariant.test.ts 12/12). Pre-existing 67 failures are unrelated to this WO scope. HARD STOP: Phase 2 requires USER/ORCHESTRATOR approval before field removal begins."
+    },
+    {
+      "timestamp": "2026-05-08T20:00:00Z",
+      "event": "phase_2_gate_ruling",
+      "source": "ORCHESTRATOR",
+      "message": "Option A approved: remove filesProcessed + processingTimeMs, freeze all other untested fields with @frozen JSDoc. No code churn beyond the two removal targets."
+    },
+    {
+      "timestamp": "2026-05-08T20:00:00Z",
+      "event": "workorder_complete",
+      "source": "execute-workorder",
+      "message": "WO-RAG-INDEX-SCHEMA-REDUCTION-001 complete. Phase 1: audit-matrix.md (de5030e). Phase 2: 2 fields removed (filesProcessed, processingTimeMs), 14 fields freeze-annotated with @frozen JSDoc, CLI consumer updated (f0e8220). tsc clean both configs. 12/12 invariant tests PASS. AC-05a + AC-05b confirmed green. foundation-docs gate PASS (validator_exit=0). tracking-validator 9/15 PASS (6 pre-existing STUB-044 drift). Ready for /close-workorder."
     }
   ]
 }
