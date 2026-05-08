@@ -1,0 +1,170 @@
+{
+  "workorder_id": "WO-RAG-INDEX-BRANDED-PATHS-001",
+  "feature_name": "rag-index-branded-paths",
+  "authored_at": "2026-05-08T17:00:00Z",
+  "authored_by": "SKILLS (daily-agent-session-2026-05-08 scoping)",
+  "summary": "Introduce TypeScript branded path types (AbsolutePath, RelativePath) into src/integration/rag/ to make absolute/relative confusion a compile-time error rather than a runtime guard that callers can accidentally bypass. Two confirmed runtime isAbsolute() guards in chunk-converter.ts and indexing-orchestrator.ts become redundant once the type system enforces path kind at the call site. No branded path types exist anywhere in src/ today. Boundary strictly src/integration/rag/ — no changes to any upstream layer.",
+  "current_state": {
+    "runtime_guards_confirmed": [
+      {
+        "id": "GUARD-1",
+        "file": "src/integration/rag/chunk-converter.ts",
+        "lines": "222-225",
+        "code_block": "private async readFile(filePath: string): Promise<string> {\n  const fullPath = path.isAbsolute(filePath)\n    ? filePath\n    : path.join(this.basePath, filePath);\n  return await fs.readFile(fullPath, 'utf-8');\n}",
+        "issue": "filePath is typed as raw string. The isAbsolute branch exists solely because the type system allows callers to pass either an absolute or relative path — there is no compile-time enforcement that only relative paths arrive here.",
+        "input_path_contract": "graph.json node.file values are project-relative paths. filePath should always be RelativePath; the absolute branch is a defensive fallback with no legitimate caller today.",
+        "basepath_type_today": "ChunkConverter.basePath: string (line 24). Should be AbsolutePath — it is always set to a real filesystem root by callers."
+      },
+      {
+        "id": "GUARD-2",
+        "file": "src/integration/rag/indexing-orchestrator.ts",
+        "lines": "500",
+        "code_block": "const abs = pathMod.isAbsolute(rel) ? rel : pathMod.join(this.basePath, rel);",
+        "issue": "rel is a graph.json node.file value (project-relative string) typed as raw string. Same root cause as GUARD-1: the type system cannot express that graph node file paths are always relative.",
+        "input_path_contract": "rel should always be RelativePath; this.basePath should always be AbsolutePath.",
+        "surrounding_context": "Part of a staleness check in the stale-graph detection loop (lines 490-510). The pattern is used repeatedly across the codebase for graph.json node.file → absolute path resolution."
+      }
+    ],
+    "branded_types_in_src_today": "None. Confirmed by grep for '__brand' pattern across all src/*.ts files — zero hits.",
+    "basepath_constructor_chain": {
+      "chunk_converter": "ChunkConverter constructor takes basePath: string = process.cwd() (chunk-converter.ts line 26). External callers (indexing-orchestrator.ts) set this to the resolved project root — which is always absolute.",
+      "indexing_orchestrator": "IndexingOrchestrator uses basePath internally (exact constructor signature to be confirmed in Phase 1 inventory). Callers are expected to pass an absolute filesystem path."
+    },
+    "safety_net_in_place": {
+      "wo": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001",
+      "archive_commit": "282382a",
+      "frozen_fixture_path": "src/integration/rag/__tests__/fixtures/dual-ac-frozen/",
+      "ci_blocking_confirmed": "Mutation-guard Path A demonstrated CI exit 1 on identity-breaking input mutation",
+      "test_assertions": "AC-05a element-grain identity (chunksSkipped count === graph hs=missing nodes); AC-05b file-grain identity (uniqueFiles size === validation-report.header_missing_count)",
+      "limits": "Frozen fixture input paths are hardcoded relative strings. If branding requires fixture changes, HALT — the fixture is the safety net and cannot be modified in this WO."
+    },
+    "seam_deletion_outcome": {
+      "wo": "WO-RAG-INDEX-SEAM-DELETION-001",
+      "archive_commit": "cfd485a",
+      "relevant_deletion": "Deleted silent fileExists skip at chunk-converter.ts:57-63 (-28 LOC net). The readFile method (lines 222-225) still has the raw path.isAbsolute() guard — that is what this WO targets."
+    }
+  },
+  "investigation_targets": {
+    "skipped": false,
+    "investigation_is_phase_1": true,
+    "rationale": "The exact per-parameter brand classification (absolute-only / relative-only / either) requires reading every path-bearing method signature in src/integration/rag/*.ts. GUARD-1 and GUARD-2 are the confirmed primary targets, but Phase 1 must enumerate: (a) any additional path-bearing string parameters in other rag/*.ts files, (b) every external call site that sets basePath (to confirm absolute invariant), (c) every location that consumes node.file from graph.json (to confirm relative invariant), (d) test fixtures that pass path strings to ChunkConverter or IndexingOrchestrator (to determine test update surface)."
+  },
+  "implementation_strategy": {
+    "approach": "Phase 1: path inventory. Phase 2: define path-types.ts. Phase 3: propagate branded types into chunk-converter.ts and indexing-orchestrator.ts, removing now-redundant isAbsolute guards. Phase 4: update tests + closeout.",
+    "path_types_design": {
+      "file": "src/integration/rag/path-types.ts",
+      "proposed_exports": [
+        "export type AbsolutePath = string & { readonly __brand: 'AbsolutePath' };",
+        "export type RelativePath = string & { readonly __brand: 'RelativePath' };",
+        "export function toAbsolute(p: string): AbsolutePath { return p as AbsolutePath; }",
+        "export function toRelative(p: string): RelativePath { return p as RelativePath; }",
+        "export function isAbsolutePath(p: string): p is AbsolutePath { return path.isAbsolute(p); } // type guard — keep the semantic check, just elevate it"
+      ],
+      "design_notes": [
+        "Branded types are zero-runtime-overhead — the __brand property is a type-system phantom; it does not exist at runtime.",
+        "toAbsolute() and toRelative() are intentionally thin casts — they name the invariant the CALLER must enforce, not validate it. The runtime check (path.isAbsolute) moves from every call site to the single boundary where externally-sourced strings enter the system.",
+        "isAbsolutePath() type guard is included for edge cases where a runtime check is genuinely needed (e.g., CLI entry point receiving user-supplied path). It can replace the isAbsolute guards at GUARD-1/GUARD-2 call sites if Phase 1 determines a full erasure of the guards is unsafe.",
+        "If Phase 1 surfaces additional path brands needed (e.g., GraphFilePath for node.file canonical form), add them to path-types.ts in Phase 2."
+      ]
+    },
+    "propagation_strategy": {
+      "chunk_converter": [
+        "ChunkConverter.basePath: string → AbsolutePath (field + constructor parameter)",
+        "readFile(filePath: string) → readFile(filePath: RelativePath) — removes need for isAbsolute branch",
+        "path.join(this.basePath, filePath) result becomes AbsolutePath (can be cast or inferred by the type system)",
+        "groupNodesByFile: the Map key (node.file) is RelativePath — update key type if grouped.set/get is typed"
+      ],
+      "indexing_orchestrator": [
+        "basePath: string → AbsolutePath wherever it appears in the constructor/class (Phase 1 confirms exact lines)",
+        "const rel: string (graph node.file local) → const rel: RelativePath (branded cast from node.file)",
+        "const abs = pathMod.isAbsolute(rel) ? rel : pathMod.join(this.basePath, rel) → const abs: AbsolutePath = pathMod.join(this.basePath, rel) (guard removed, join is always correct now)",
+        "normalizeChunkFileForGraphJoin(file: string, basePath: string) — if basePath param is actually AbsolutePath at every call site, update signature; if file input is not guaranteed a brand, leave as string (Phase 1 decides)"
+      ]
+    },
+    "phases_summary": [
+      {
+        "phase": 1,
+        "label": "Path inventory",
+        "commits": 1,
+        "deliverable": "coderef/workorder/rag-index-branded-paths/inventory.md — per-file table: parameter/variable name, current type, proposed brand (AbsolutePath/RelativePath/leave-as-string), rationale, and call-site confirmation evidence. GUARD-1 and GUARD-2 confirmed. Any additional guards or path parameters surfaced.",
+        "halt_condition": "If any path parameter that needs branding is consumed outside src/integration/rag/ → HALT and surface to ORCHESTRATOR as boundary violation requiring scope change."
+      },
+      {
+        "phase": 2,
+        "label": "Define path-types.ts",
+        "commits": 1,
+        "deliverable": "src/integration/rag/path-types.ts with AbsolutePath, RelativePath, toAbsolute(), toRelative(), and isAbsolutePath() type guard. No other files touched in this commit. tsc clean both configs.",
+        "halt_condition": "If tsc --noEmit fails on the new file (e.g., circular import, tsconfig include issue) → HALT and fix before Phase 3."
+      },
+      {
+        "phase": 3,
+        "label": "Propagate branded types through production files",
+        "commits": "2-4 (one commit per file or logical grouping, e.g., chunk-converter.ts then indexing-orchestrator.ts)",
+        "deliverable": "chunk-converter.ts and indexing-orchestrator.ts updated: basePath: AbsolutePath, filePath/rel: RelativePath, redundant isAbsolute guards removed. Each commit: tsc clean + frozen-fixture invariant PASS + AC-05 dual-identity PASS.",
+        "halt_condition": "tsc --noEmit fails after any commit → HALT and fix before next. Frozen-fixture invariant trips → HALT. Any branding change required outside src/integration/rag/ → HALT (boundary violation)."
+      },
+      {
+        "phase": 4,
+        "label": "Test updates + closeout-ready",
+        "commits": 1,
+        "deliverable": "src/integration/rag/__tests__/*.ts updated if any test passes raw string paths where branded types are now required. Closeout-ready communication.json update with commit chain summary, LOC delta, and per-parameter outcome table.",
+        "halt_condition": "Frozen-fixture file contents must remain untouched. If test update requires modifying dual-ac-frozen/ fixture → HALT."
+      }
+    ],
+    "verification_per_commit": [
+      "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json)",
+      "vitest run src/integration/rag/__tests__/ — all rag-suite tests + frozen-fixture invariant PASS",
+      "vitest run __tests__/pipeline/ — Phase 7 chokepoint INVARIANT + AC-05 dual-identity (frozen-fixture-loaded) PASS",
+      "Optional at Phase 3/4: rerun predecessor WO static probe verify-dual-ac.mjs against real codebase; AC-05a 2415===2415 + AC-05b 263===263 still PASS"
+    ]
+  },
+  "risk_assessment": {
+    "overall_risk": "low-medium",
+    "risks": [
+      {
+        "id": "R-1",
+        "description": "A call site outside src/integration/rag/ constructs ChunkConverter or IndexingOrchestrator with a non-branded string, requiring the boundary to expand",
+        "likelihood": "medium",
+        "impact": "boundary violation; HALT required; scope change or callers-use-toAbsolute-at-their-boundary strategy needed",
+        "mitigation": "Phase 1 inventory explicitly enumerates all external call sites for ChunkConverter and IndexingOrchestrator constructors. If external callers are found, the Phase 2 path-types.ts is still correct — callers simply apply toAbsolute() at their own boundary. If those callers are outside src/integration/rag/, HALT and surface to ORCHESTRATOR: the WO boundary must be extended or the propagation must stop at the rag/ interface boundary with a toAbsolute() cast at the choke point."
+      },
+      {
+        "id": "R-2",
+        "description": "graph.json node.file values are NOT always relative — some edge case returns an absolute path, breaking the RelativePath brand invariant",
+        "likelihood": "low",
+        "impact": "the RelativePath brand would encode a false invariant; branded type would be worse than raw string",
+        "mitigation": "Phase 1 inventory inspects normalizeChunkFileForGraphJoin (indexing-orchestrator.ts:43-60) and the graph-builder contract for node.file. If any code path in src/integration/rag/ handles a non-relative node.file, the RelativePath cast is replaced with an isAbsolutePath() type guard instead of a static cast. Decision recorded inline in inventory.md."
+      },
+      {
+        "id": "R-3",
+        "description": "Removing the isAbsolute runtime guard at GUARD-1/GUARD-2 silently breaks a production edge case where an absolute path does arrive at readFile()",
+        "likelihood": "low",
+        "impact": "regression in real rag-index runs where a caller was relying on the guard as a fallback",
+        "mitigation": "Phase 1 confirms the absolute-path branch at GUARD-1 has no legitimate callers (all call sites pass graph node.file values, which are relative per contract). If Phase 1 finds a legitimate absolute-path caller, the guard stays and is replaced by a typed union (AbsolutePath | RelativePath) with explicit handling per branch. The guard is only removed when Phase 1 confirms the absolute branch is unreachable via the correct type."
+      },
+      {
+        "id": "R-4",
+        "description": "tsc strict-mode rejects the branded type pattern (string intersection with object) under the project's tsconfig settings",
+        "likelihood": "very-low",
+        "impact": "Phase 2 blocked; alternative pattern needed (e.g., opaque type via unique symbol)",
+        "mitigation": "String intersection branded types (`type T = string & { readonly __brand: 'T' }`) are the standard TypeScript pattern and are compatible with all strict-mode flags. If tsconfig has unusual settings that reject this, Phase 2 pivots to unique symbol branding (`declare const __brand: unique symbol; type T = string & { readonly [__brand]: 'T' }`) — semantically identical, same zero-runtime-overhead, more strict-mode friendly."
+      },
+      {
+        "id": "R-5",
+        "description": "Test files that construct ChunkConverter or IndexingOrchestrator with literal string paths fail tsc after Phase 3 propagation",
+        "likelihood": "medium",
+        "impact": "Phase 4 test updates required; extent depends on test surface area",
+        "mitigation": "Phase 4 is explicitly scoped to handle this. Tests apply toAbsolute() or toRelative() at their construction sites. The frozen-fixture test files are exempt (frozen-fixture contents untouched). The mutation-guard evidence file is also read-only."
+      }
+    ]
+  },
+  "expected_outcome": {
+    "loc_delta": "Net slightly positive (+15 to +40 LOC): path-types.ts is new (~25-35 LOC); runtime guard deletions at GUARD-1/GUARD-2 are -3 to -6 LOC each; test updates are +5 to +15 LOC. Not a cleanup WO — the goal is type-safety, not LOC reduction.",
+    "files_changed": "New: src/integration/rag/path-types.ts. Modified: chunk-converter.ts, indexing-orchestrator.ts, src/integration/rag/__tests__/*.ts (likely 1-3 test files). Phase 1 may surface additional files.",
+    "atomic_commits": "Phase 1: 1 (inventory.md); Phase 2: 1 (path-types.ts); Phase 3: 2-4 (per-file propagation); Phase 4: 1 (test updates + closeout). Total 5-7 commits.",
+    "tsc_status": "clean both configs throughout; this is the primary regression gate — tsc catching the absolute/relative confusion at compile time is the entire point",
+    "test_pass_rate": "100% — frozen-fixture invariant + AC-05 dual-identity + Phase 7 chokepoint INVARIANT + all other rag-suite tests preserved",
+    "real_world_substrate_identity": "AC-05a 2415===2415 + AC-05b 263===263 preserved (verified at close via static probe)",
+    "type_system_outcome": "After this WO: calling readFile(someAbsolutePath) is a compile error. Passing an unbranded string as basePath is a compile error. The isAbsolute guards that currently defend against these bugs become dead code and are removed."
+  }
+}
