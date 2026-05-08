@@ -1,0 +1,28 @@
+=============================================================
+WORKORDER: WO-RAG-INDEX-BRANDED-PATHS-001  |  rag-index-branded-paths  |  COMPLETE
+Session: daily-agent-session-2026-05-08 / CODEREF-CORE  |  Phases: 4  |  Commits: 6  |  Pushes: 2
+Parent stub: none (predecessor_stub: null — scoped directly)
+
+FILES CREATED:
+  + src/integration/rag/path-types.ts                    (d255a6b)
+  + coderef/workorder/rag-index-branded-paths/inventory.md  (18efc18)
+
+FILES MODIFIED:
+  ~ src/integration/rag/chunk-converter.ts               (e2b2655)
+  ~ src/integration/rag/indexing-orchestrator.ts         (8d3da3e)
+  ~ src/integration/rag/incremental-indexer.ts           (8d3da3e)
+  ~ src/cli/rag-index.ts                                 (8d3da3e)
+  ~ coderef/foundation-docs/INDEX.md + 7 sibling docs    (2342e19)
+  ~ coderef/workorder/rag-index-branded-paths/communication.json  (2342e19)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Path inventory                            (18efc18)
+  [x] Phase 2: Define path-types.ts                     (d255a6b)
+  [x] Phase 3: Propagate branded types                   (e2b2655, 8d3da3e)
+  [x] Phase 4: Test updates + closeout                   (ff9e662)
+  [x] Close-out: foundation-docs + tracking + push       (2342e19)
+
+Session: updated  |  Registry: synced  |  Validator: PASS (exit 0; pre-existing STUB-044 drift)
+
+APPROVE -> /close-workorder WO-RAG-INDEX-BRANDED-PATHS-001
+=============================================================

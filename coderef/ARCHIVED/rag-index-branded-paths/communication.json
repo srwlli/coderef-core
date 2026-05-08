@@ -1,0 +1,159 @@
+{
+  "workorder_id": "WO-RAG-INDEX-BRANDED-PATHS-001",
+  "feature_name": "rag-index-branded-paths",
+  "created": "2026-05-08T17:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [
+    "daily-agent-session-2026-05-08"
+  ],
+  "predecessor_for": null,
+  "stub_source": null,
+  "predecessor_workorder": "WO-RAG-INDEX-SEAM-DELETION-001",
+  "predecessor_archive": "coderef/archived/rag-index-seam-deletion",
+  "status": "closed",
+  "current_phase": 4,
+  "phase_status": "closeout_ready",
+  "completed_at": "2026-05-08T16:15:00Z",
+  "plan_file": "coderef/workorder/rag-index-branded-paths/plan.json",
+  "context_file": "coderef/workorder/rag-index-branded-paths/context.json",
+  "analysis_file": "coderef/workorder/rag-index-branded-paths/analysis.json",
+  "handoff": {
+    "from": "SKILLS (daily-agent-session-2026-05-08 /create-workorder scoping)",
+    "to": "CODEREF-CORE (execution dispatch forthcoming from ORCHESTRATOR)",
+    "reason": "Scoping complete: phased_implementation plan with 4 phases + 14 ACs + 5 decision records (DR-BRAND-A..E). No stub predecessor — scoped directly per bulletproof series pattern. Path inventory (Phase 1) is non-skippable: the exact string parameters that require branding, and their brand classification (absolute/relative/either), are confirmed only by reading the source at execution time. No ORCHESTRATOR ruling required before Phase 1 begins. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for Phase 1 execution."
+  },
+  "execution_rules": {
+    "plan_type": "phased_implementation",
+    "phase_gates": "Phase 1 (path inventory) gates Phase 2 (path-types.ts definition); Phase 2 gates Phase 3 (propagation through chunk-converter.ts + indexing-orchestrator.ts); Phase 3 gates Phase 4 (test updates + closeout-ready). Each phase requires tsc clean both configs + all rag-suite + pipeline tests green.",
+    "atomic_commits": "Phase 1: 1 (inventory doc); Phase 2: 1 (path-types.ts); Phase 3: 2-4 (per-file propagation, one commit per file or logical grouping); Phase 4: 1 (test updates + closeout). Total 5-7 anticipated.",
+    "tsc_invariant": "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json) after each commit",
+    "frozen_fixture_invariant": "Per Phase 3/4 commit, vitest run against frozen-fixture dual-AC test must PASS",
+    "real_world_substrate_identity": "AC-05a 2415===2415 + AC-05b 263===263 must PASS at close (verified via predecessor WO static probe verify-dual-ac.mjs)"
+  },
+  "hard_constraints": [
+    "Phase 7 archive MUST NOT be reopened",
+    "Predecessor archives untouched (rag-index-seam-deletion, rag-index-frozen-fixture-dual-ac-invariants, rag-index-single-analyzer-slice, cleanup-indexing-orchestrator-analyzerservice-param, path-normalization-fix, pipeline-indexing-rag)",
+    "Boundary: src/integration/rag/*.ts ONLY — no changes to pipeline/, scanner/, analyzer/, or any layer outside src/integration/rag/",
+    "AnalyzerService source code (src/analyzer/analyzer-service.ts) stays untouched",
+    "Frozen-fixture file contents (src/integration/rag/__tests__/fixtures/dual-ac-frozen/*) are FROZEN — do NOT modify",
+    "Frozen-fixture CI-blocking invariant must PASS at every Phase 3/4 commit",
+    "AC-05a real-world 2415===2415 + AC-05b real-world 263===263 preserved at close",
+    "Phase 7 chokepoint INVARIANT block (lines 32-70 of __tests__/pipeline/indexing-gate-invariant.test.ts) untouched",
+    "path-types.ts must NOT introduce runtime overhead beyond a brand cast — no actual filesystem checks, no path resolution side-effects in the branded type constructors",
+    "path.join(this.basePath, filePath) call sites STAY — branding makes their inputs typed, not removed",
+    "Any branding propagation required outside src/integration/rag/ → HALT (boundary violation)",
+    "tsc --noEmit clean both configs after each commit",
+    "Cultural validator scope-mode + tracking validator scope-mode PASS clean (acknowledge pre-existing stubs.json schema drift per STUB-044)"
+  ],
+  "blockers": [
+    {
+      "id": "BLOCK-BRAND-BOUNDARY",
+      "description": "ORCHESTRATOR ruling required on DR-BRAND-D (boundary violation). src/cli/rag-index.ts:439 constructs new IndexingOrchestrator(..., args.projectDir) — outside src/integration/rag/ boundary. Option A: extend boundary (1 file/1 line change in src/cli/); Option B: toAbsolute() cast inside IndexingOrchestrator constructor (keeps CLI unbranded); Option C: scope to ChunkConverter only (leaves orchestrator/incremental-indexer unbranded). Phase 3 T3.1 (ChunkConverter propagation) is unblocked. T3.2 (IndexingOrchestrator propagation) + IncrementalIndexer propagation are blocked until ruling.",
+      "raised_at": "2026-05-08T15:45:00Z",
+      "raised_by": "CODEREF-CORE Phase 1 inventory",
+      "blocking_step": "Phase 3 T3.2 (IndexingOrchestrator) and IncrementalIndexer propagation",
+      "non_blocking_for": "Phase 2 (path-types.ts), Phase 3 T3.1 (ChunkConverter propagation)",
+      "resolved_at": "2026-05-08T16:00:00Z",
+      "resolved_by": "ORCHESTRATOR",
+      "resolution": "Option A — extend boundary to include src/cli/rag-index.ts. Apply toAbsolute(args.projectDir) at line 439. args.projectDir is always absolute (user-supplied or resolved from process.cwd()). Brand documents an already-held invariant; CLI type-checked is preferable to hiding cast inside constructor. Scope addition: src/cli/rag-index.ts only."
+    }
+  ],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "label": "Path inventory",
+      "status": "complete",
+      "completed_at": "2026-05-08T15:45:00Z",
+      "commit": "18efc18",
+      "tsc": "PASS both configs",
+      "notes": "HALT-BOUNDARY-VIOLATION surfaced: src/cli/rag-index.ts constructs new IndexingOrchestrator(..., args.projectDir). Three options (A/B/C) raised for ORCHESTRATOR ruling per DR-BRAND-D before Phase 3 propagation into IndexingOrchestrator. ChunkConverter propagation (Phase 3 T3.1) is unblocked — all its call sites are within src/integration/rag/. IncrementalIndexer propagation is contingent on orchestrator ruling (all its construction passes this.basePath from IndexingOrchestrator)."
+    },
+    {
+      "phase": 2,
+      "label": "Define path-types.ts",
+      "status": "complete",
+      "completed_at": "2026-05-08T15:55:00Z",
+      "commit": "d255a6b",
+      "tsc": "PASS both configs",
+      "vitest": "rag-suite 87/87 PASS"
+    },
+    {
+      "phase": 3,
+      "label": "Propagate branded types",
+      "status": "complete",
+      "completed_at": "2026-05-08T16:05:00Z",
+      "commits": [
+        "e2b2655 (chunk-converter.ts T3.1)",
+        "8d3da3e (indexing-orchestrator.ts + incremental-indexer.ts + CLI T3.2, Option A ruling)"
+      ],
+      "tsc": "PASS both configs",
+      "vitest": "rag-suite 87/87 PASS, pipeline 152/152 PASS",
+      "boundary_ruling": "Option A applied — src/cli/rag-index.ts:439 toAbsolute(args.projectDir)"
+    },
+    {
+      "phase": 4,
+      "label": "Test updates + closeout",
+      "status": "complete",
+      "completed_at": "2026-05-08T16:15:00Z",
+      "notes": "No test file changes required — tsc clean on both configs with no test-file errors. 239 tests PASS."
+    }
+  ],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-08T16:30:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "closeout_complete",
+      "summary": "Step 5 close-out complete. Foundation-docs gate: PASS (validator_exit=0; 4 UUID warnings are pre-existing, not this WO). Doc-discovery: 0 candidates (pure type-layer change, no doc impact). Tracking ledger: workorders.json + sessions.json updated (WO-RAG-INDEX-BRANDED-PATHS-001 status=complete, completed=2026-05-08). Tracking-validator: exit 0 (10 PASS, 5 FAIL — all pre-existing STUB-044 drift). Session log authored at .coderef/sessions/SES-2026-05-08-RAG-INDEX-BRANDED-PATHS.yaml. Terminal-post-exec.txt written. Ready for /close-workorder dispatch."
+    },
+    {
+      "at": "2026-05-08T16:15:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "workorder_complete",
+      "summary": "WO-RAG-INDEX-BRANDED-PATHS-001 complete. 4 phases, 5 commits (18efc18 inventory, d255a6b path-types.ts, e2b2655 chunk-converter.ts T3.1, 8d3da3e orchestrator+incremental+CLI T3.2, closeout commit pending). ACs verified: AC-01 inventory.md authored; AC-02 path-types.ts with AbsolutePath/RelativePath/toAbsolute/toRelative/isAbsolutePath; AC-03 ChunkConverter.basePath: AbsolutePath; AC-04 readFile.filePath: RelativePath; AC-05 isAbsolute guard at :222-225 removed; AC-06 IndexingOrchestrator.basePath: AbsolutePath; AC-07 pathMod.isAbsolute guard at :500 removed; AC-08 no runtime behavior changes (same path.join calls; 239 tests PASS); AC-09 tsc PASS all commits; AC-10 frozen-fixture PASS; AC-12 Phase 7 chokepoint untouched; AC-13 all changes within src/integration/rag/* + src/cli/rag-index.ts (Option A extension, ORCHESTRATOR-ruled); AC-14 validators PASS. AC-11 real-world identity: static probe deferred to /close-workorder (standard pattern). Net LOC delta: +57 (plan estimated +15 to +40; incremental-indexer had more Map-key cast sites than anticipated — reported accurately, not retro-shimmed). Ready for cross-project /close-workorder dispatch."
+    },
+    {
+      "at": "2026-05-08T15:45:00Z",
+      "from": "CODEREF-CORE",
+      "to": "ORCHESTRATOR",
+      "kind": "phase_complete_ruling_required",
+      "summary": "Phase 1 inventory complete (inventory.md authored). tsc PASS both configs. HALT-BOUNDARY-VIOLATION: src/cli/rag-index.ts:439 constructs IndexingOrchestrator with args.projectDir (outside src/integration/rag/ boundary). BLOCK-BRAND-BOUNDARY raised. Three options for ORCHESTRATOR ruling: (A) extend boundary — src/cli/ in scope, toAbsolute() at CLI call site; (B) internal cast — constructor accepts string, casts to AbsolutePath internally; (C) scope to ChunkConverter only. ChunkConverter Phase 3 T3.1 is unblocked (all call sites within boundary). Proceeding to Phase 2 (path-types.ts) and Phase 3 T3.1 while awaiting ruling on T3.2+."
+    },
+    {
+      "at": "2026-05-08T17:00:00Z",
+      "from": "SKILLS",
+      "to": "ORCHESTRATOR",
+      "kind": "wo_authored",
+      "summary": "WO-RAG-INDEX-BRANDED-PATHS-001 authored at daily-agent-session-2026-05-08 (bulletproof concept #4 of 6). Scoped directly — no predecessor stub. Plan_type=phased_implementation; 4 phases (inventory → path-types.ts → propagation → closeout); 5-7 atomic commits; 14 ACs; 5 decision records (DR-BRAND-A..E). Predecessor WO-RAG-INDEX-SEAM-DELETION-001 (CORE cfd485a) is the immediate predecessor; frozen-fixture invariant (CORE 282382a) is the live safety net. Boundary strictly src/integration/rag/*.ts — no ruling required before Phase 1; Phase 1 inventory is non-skippable and determines exact brand classifications (absolute/relative/either) per path parameter. path.join() call sites stay; branding makes inputs typed. Standing by for ORCHESTRATOR to dispatch CODEREF-CORE for Phase 1 execution."
+    },
+    {
+      "at": "2026-05-08T18:00:00Z",
+      "from": "close-workorder v2.0.0",
+      "to": "TRACKING",
+      "kind": "workorder_closed",
+      "summary": "Workorder closed via /close-workorder. Audit WARNING (cultural 2 warn-severity; projects.json pre-existing drift). Finalized, committed, archive pending. 4 phases, 5 commits, 239 tests PASS, tsc clean, AC-05a/b preserved."
+    }
+  ],
+  "decisions_log": [
+    {
+      "event": "wo_creation",
+      "at": "2026-05-08T17:00:00Z",
+      "by": "SKILLS (daily-agent-session-2026-05-08 scoping)",
+      "rationale": "Scoped directly per bulletproof series pattern (no stub predecessor). Plan_type=phased_implementation: Phase 1 inventory is non-skippable because exact per-parameter brand classification (absolute/relative/either) requires reading every path-bearing method signature in src/integration/rag/*.ts at execution time. DR-BRAND-A..E recorded covering plan_type, boundary enforcement, path-types.ts design, propagation strategy, and halt conditions."
+    }
+  ],
+  "closed_at": "2026-05-08T18:00:00Z",
+  "updated": "2026-05-08T18:00:00Z",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/rag-index-branded-paths/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (cultural validator WARNING — 2 warn-severity checks; tracking validator projects.json pre-existing drift acknowledged)",
+    "warnings": [
+      "cultural validator: 2 warn-severity checks (alignment_gate_skipped resolved via manual history entry after user ran /align-coderef-culture in CODEREF-CORE)",
+      "tracking validator: projects.json 42 enum violations — pre-existing drift, last changed at 3932802, predates this WO"
+    ]
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "workorder_id": "WO-RAG-INDEX-BRANDED-PATHS-001",
+  "feature_name": "rag-index-branded-paths",
+  "created": "2026-05-08T17:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "daily-agent-session-2026-05-08",
+  "intake": {
+    "trigger": "direct_scoping",
+    "user_request": "Scope bulletproof concept #4 of 6 (branded paths) for CODEREF-CORE. No stub predecessor — scoped directly in the same pattern as frozen-fixture (#2) and seam-deletion (#3) WOs. Problem: src/integration/rag/ uses raw string for all path values (basePath, filePath, fullPath, graphPath, reportPath). The runtime isAbsolute() guards at chunk-converter.ts:222-225 and indexing-orchestrator.ts:500 exist because the type system cannot distinguish absolute from relative paths. Fix: TypeScript branded types (AbsolutePath, RelativePath) that make absolute/relative confusion a compile-time error.",
+    "predecessor_stub": null,
+    "predecessor_stub_path": null,
+    "predecessor_wo": "WO-RAG-INDEX-SEAM-DELETION-001 (archived 2026-05-08, CORE cfd485a) — seam deletion including the silent fileExists skip (-28 LOC)",
+    "predecessor_safety_net_wo": "WO-RAG-INDEX-FROZEN-FIXTURE-DUAL-AC-INVARIANTS-001 (archived 2026-05-06, CORE 282382a) — CI-blocking dual-AC frozen fixture",
+    "predecessor_substrate_pivot_wo": "WO-RAG-INDEX-SINGLE-ANALYZER-SLICE-001 (archived 2026-05-05, CORE a19249a)",
+    "predecessor_cleanup_wo": "WO-CLEANUP-INDEXING-ORCHESTRATOR-ANALYZERSERVICE-PARAM-001 (archived 2026-05-05, CORE cba7cbb)"
+  },
+  "classification": {
+    "plan_type": "phased_implementation",
+    "plan_type_rationale": "Phase 1 = path inventory (walk src/integration/rag/*.ts, enumerate every string parameter that is actually a path, classify each as absolute-only / relative-only / either; document which runtime isAbsolute() guards exist and why). Phase 1 is non-skippable: the exact brand classification per parameter is the load-bearing decision, and it cannot be enumerated at scoping time without risking misclassification. Phase 2 = define path-types.ts with AbsolutePath / RelativePath branded types + constructor functions. Phase 3 = propagate branded types through chunk-converter.ts and indexing-orchestrator.ts (replace raw string params, remove redundant isAbsolute runtime guards). Phase 4 = update __tests__ if any test constructs paths as raw strings that now need branding + closeout.",
+    "plan_type_decided_by": "SKILLS scoping (daily-agent-session-2026-05-08). SKILLS judges phased: the per-parameter classification (absolute/relative/either) is unknowable at scoping time without reading the source, and a misclassification would propagate a wrong brand silently through the type system — worse than the raw string status quo.",
+    "discovery_ref": "coderef/workorder/rag-index-branded-paths/analysis.json",
+    "discovery": "Two confirmed runtime isAbsolute() guards at scoping time: (1) chunk-converter.ts:222-225 readFile() method: `const fullPath = path.isAbsolute(filePath) ? filePath : path.join(this.basePath, filePath)`. (2) indexing-orchestrator.ts:500 staleness check: `const abs = pathMod.isAbsolute(rel) ? rel : pathMod.join(this.basePath, rel)`. Both exist because callers pass relative node.file paths from graph.json but the type is string — no compile-time enforcement. No branded path types exist anywhere in src/ today (confirmed by grep at scoping). basePath field on ChunkConverter (line 24) and IndexingOrchestrator is raw string.",
+    "discovery_skipped_reason": null
+  },
+  "scope": {
+    "in_scope": [
+      "Phase 1: walk src/integration/rag/*.ts and src/integration/rag/__tests__/*.ts; enumerate every string parameter that is actually a path; classify each as absolute-only / relative-only / either; document which runtime isAbsolute() guards exist and why; produce inventory.md in WO directory",
+      "Phase 2: define src/integration/rag/path-types.ts with AbsolutePath branded type, RelativePath branded type, toAbsolute() constructor, toRelative() constructor, and any additional helpers Phase 1 determines necessary (e.g., joinAbsolute(), isAbsolutePath() type guard)",
+      "Phase 3: propagate branded types through chunk-converter.ts — replace basePath: string with basePath: AbsolutePath on the class field and constructor; replace filePath: string in readFile() with RelativePath; replace groupNodesByFile node.file parameter types where applicable; remove redundant path.isAbsolute() runtime guards that become type-enforced",
+      "Phase 3 (continued): propagate branded types through indexing-orchestrator.ts — replace basePath: string with basePath: AbsolutePath where it appears; brand the rel variable from graph.json node.file as RelativePath; remove redundant pathMod.isAbsolute() runtime guard at line 500; update normalizeChunkFileForGraphJoin() signature if basePath param is included",
+      "Phase 4: update src/integration/rag/__tests__/*.ts if any test passes raw string literals where branded types are now required; update path-bearing test fixtures if applicable (excluding frozen-fixture dir which is frozen); closeout-ready communication.json update",
+      "path-types.ts exports are ONLY consumed within src/integration/rag/ — if any caller outside the boundary needs branding, HALT and report"
+    ],
+    "out_of_scope": [
+      "Phase 7 archive — locked, MUST NOT be reopened",
+      "Predecessor archives (rag-index-seam-deletion, rag-index-frozen-fixture-dual-ac-invariants, rag-index-single-analyzer-slice, cleanup-indexing-orchestrator-analyzerservice-param, path-normalization-fix, pipeline-indexing-rag) — all CLOSED, must NOT be modified",
+      "AnalyzerService source code (src/analyzer/analyzer-service.ts) — untouched",
+      "Pipeline, scanner, analyzer, or any layer outside src/integration/rag/ — boundary violation if touched",
+      "Frozen-fixture file contents (src/integration/rag/__tests__/fixtures/dual-ac-frozen/*) — frozen by definition; if branding requires fixture changes, HALT and reframe",
+      "Removing path.join(this.basePath, filePath) call sites — these are CORRECT, only the input types change",
+      "Runtime path resolution logic — branded types are zero-runtime-overhead type tags only",
+      "Concept #5 (schema reduction) and concept #6 (two-grain drop) — separate WOs",
+      "Branding every string in the codebase — scope is RAG integration layer path parameters only",
+      "Branding GraphNode.file itself in graph-builder.ts (outside boundary) — only the local variables that consume node.file within src/integration/rag/ are branded"
+    ]
+  },
+  "constraints": [
+    "Phase 7 archive MUST NOT be reopened",
+    "Predecessor archives untouched",
+    "Boundary: src/integration/rag/*.ts ONLY — any branding change required outside this directory → HALT (boundary violation)",
+    "AnalyzerService source code stays untouched",
+    "Frozen-fixture file contents (src/integration/rag/__tests__/fixtures/dual-ac-frozen/*) are FROZEN — do NOT modify; HALT if branding requires fixture change",
+    "Frozen-fixture CI-blocking invariant must PASS at every Phase 3/4 commit",
+    "AC-05a real-world 2415===2415 + AC-05b real-world 263===263 preserved at close",
+    "Phase 7 chokepoint INVARIANT block (lines 32-70 of __tests__/pipeline/indexing-gate-invariant.test.ts) untouched",
+    "path.join(this.basePath, filePath) call sites STAY — branding makes inputs typed, not removed",
+    "Branded type constructors (toAbsolute, toRelative) must be zero-runtime-overhead — no I/O, no path.resolve calls, no stat checks inside the constructor; branding is a cast that names the invariant the CALLER is required to enforce",
+    "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json) after each commit",
+    "Cultural validator scope-mode + tracking validator scope-mode PASS clean (acknowledge pre-existing stubs.json schema drift per STUB-044)",
+    "No new IndexingResult schema fields or SkipReason enum values (DR-PHASE-7-B locked-additive; branded types are type-layer only)"
+  ],
+  "evidence_summary": {
+    "confirmed_runtime_guards_at_scoping": [
+      {
+        "file": "src/integration/rag/chunk-converter.ts",
+        "lines": "222-225",
+        "code": "const fullPath = path.isAbsolute(filePath) ? filePath : path.join(this.basePath, filePath);",
+        "why_guard_exists": "filePath comes from graph.json node.file (project-relative string), but the parameter type is raw string — callers could accidentally pass an absolute path or an already-joined path. Guard defends against double-join.",
+        "brand_fix": "filePath: RelativePath parameter on readFile(); this.basePath: AbsolutePath on constructor; path.join(this.basePath, filePath) always produces AbsolutePath — isAbsolute guard becomes redundant and can be removed."
+      },
+      {
+        "file": "src/integration/rag/indexing-orchestrator.ts",
+        "lines": "500",
+        "code": "const abs = pathMod.isAbsolute(rel) ? rel : pathMod.join(this.basePath, rel);",
+        "why_guard_exists": "rel is graph.json node.file — should always be relative per graph.json contract, but the raw string type cannot enforce it. Guard defends against the same double-join bug.",
+        "brand_fix": "rel: RelativePath local variable (branded from node.file cast); this.basePath: AbsolutePath; pathMod.join() produces AbsolutePath — isAbsolute guard becomes redundant and can be removed."
+      }
+    ],
+    "confirmed_no_branded_types_in_src": "grep -r '__brand' src/ returns zero hits at scoping time. No AbsolutePath, RelativePath, or branded path types exist anywhere in src/.",
+    "basepath_field_current_type": "ChunkConverter.basePath: string (chunk-converter.ts:24). IndexingOrchestrator basePath: string (confirmed by constructor signature at indexing-orchestrator.ts; exact line TBD in Phase 1 inventory).",
+    "graph_node_file_is_relative": "graph.json node.file keys are project-relative paths (confirmed by normalizeChunkFileForGraphJoin docstring at indexing-orchestrator.ts:38-42 and chunk-converter.ts groupNodesByFile usage). These are the RelativePath inputs.",
+    "call_sites_that_set_basepath": "Phase 1 inventory must enumerate every external call site that constructs ChunkConverter(basePath) or IndexingOrchestrator({basePath}) within src/integration/rag/ to determine if callers pass absolute paths (which they should) — these call sites are where toAbsolute() must be applied."
+  },
+  "pending_artifacts": {
+    "analysis_json": "Authored at scoping seed",
+    "plan_json": "Authored at scoping seed (4 phases; no ruling required before Phase 1)",
+    "communication_json": "Authored at scoping seed (status=plan_created)"
+  }
+}

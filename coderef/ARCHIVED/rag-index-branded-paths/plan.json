@@ -1,0 +1,222 @@
+{
+  "workorder_id": "WO-RAG-INDEX-BRANDED-PATHS-001",
+  "feature_name": "rag-index-branded-paths",
+  "authored_at": "2026-05-08T17:00:00Z",
+  "authored_by": "SKILLS (daily-agent-session-2026-05-08 scoping)",
+  "plan_type": "phased_implementation",
+  "summary": "Four phases: (1) path inventory — walk src/integration/rag/*.ts, classify every path-bearing string parameter as absolute-only/relative-only/either, confirm call-site contracts; (2) define src/integration/rag/path-types.ts with AbsolutePath / RelativePath branded types + constructor functions; (3) propagate branded types through chunk-converter.ts and indexing-orchestrator.ts, removing now-redundant isAbsolute() runtime guards; (4) update __tests__ for branding call sites + closeout-ready handoff. Frozen-fixture invariant + AC-05a/b real-world identity are non-negotiable gates per commit.",
+  "phases": [
+    {
+      "phase": 1,
+      "label": "Path inventory",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T1.1",
+          "subject": "Walk src/integration/rag/*.ts and enumerate every path-bearing string parameter",
+          "operations": [
+            "Grep src/integration/rag/*.ts for: basePath, filePath, fullPath, graphPath, reportPath, path.isAbsolute, pathMod.isAbsolute, path.join, pathMod.join, path.resolve, node.file, n.file, rel, abs",
+            "For each hit: read surrounding method/constructor signature; determine whether the string is absolute-only, relative-only, or either at every call site",
+            "Confirm GUARD-1 invariant: readFile(filePath) is ONLY called from groupNodesByFile loop which iterates graph node.file values (always relative per graph.json contract)",
+            "Confirm GUARD-2 invariant: the rel variable at indexing-orchestrator.ts:499 is always a graph.json node.file (relative) — the absolute branch of the ternary is unreachable in correct usage",
+            "Enumerate every external call site that constructs ChunkConverter(basePath) within src/integration/rag/ — confirm all pass absolute paths",
+            "Enumerate every external call site that accesses IndexingOrchestrator basePath within src/integration/rag/ — confirm all are absolute",
+            "Check normalizeChunkFileForGraphJoin(file: string, basePath: string): determine if basePath param is always absolute at its call sites and whether file param has a guaranteed relative contract",
+            "Check incremental-indexer.ts, embedding-service.ts, answer-generation-service.ts, semantic-search.ts, context-builder.ts, and any other src/integration/rag/*.ts files for additional path-bearing string parameters"
+          ]
+        },
+        {
+          "task_id": "T1.2",
+          "subject": "Author inventory.md in WO directory",
+          "operations": [
+            "Create coderef/workorder/rag-index-branded-paths/inventory.md",
+            "Document grep methodology so future audits can re-run it",
+            "Table per parameter: file | method/field | parameter name | current type | proposed brand | call-site evidence | rationale",
+            "Flag any parameter where brand classification is ambiguous (absolute/relative/either) — these require inline Phase 1 decision, not ORCHESTRATOR ruling",
+            "Flag any path-bearing string in a file outside src/integration/rag/ that would need branding as a consequence of propagation — mark as HALT-BOUNDARY-VIOLATION if found"
+          ]
+        },
+        {
+          "task_id": "T1.3",
+          "subject": "Phase 1 commit",
+          "operations": [
+            "Commit message: 'inventory(WO-RAG-INDEX-BRANDED-PATHS-001): path audit of src/integration/rag/*.ts'",
+            "tsc --noEmit clean both configs (no production code changes in Phase 1, but verify nothing inadvertently touched)",
+            "Update communication.json with Phase 1 complete summary",
+            "Proceed to Phase 2 immediately — no ORCHESTRATOR ruling required unless T1.1 surfaces a HALT-BOUNDARY-VIOLATION"
+          ]
+        }
+      ],
+      "commit_message_template": "inventory(WO-RAG-INDEX-BRANDED-PATHS-001): path audit of src/integration/rag/*.ts — brand classifications confirmed",
+      "phase_gate": "inventory.md authored in WO directory; per-parameter brand classifications confirmed; tsc clean both configs. HALT only if boundary violation found. Otherwise proceed to Phase 2."
+    },
+    {
+      "phase": 2,
+      "label": "Define path-types.ts",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T2.1",
+          "subject": "Author src/integration/rag/path-types.ts",
+          "operations": [
+            "Create src/integration/rag/path-types.ts",
+            "Define: export type AbsolutePath = string & { readonly __brand: 'AbsolutePath' };",
+            "Define: export type RelativePath = string & { readonly __brand: 'RelativePath' };",
+            "Define: export function toAbsolute(p: string): AbsolutePath { return p as AbsolutePath; }",
+            "Define: export function toRelative(p: string): RelativePath { return p as RelativePath; }",
+            "Define: export function isAbsolutePath(p: string): p is AbsolutePath { return require('path').isAbsolute(p); } — or import path at top of file; include this guard for any edge case where a runtime check is still needed after propagation",
+            "If Phase 1 inventory surfaces additional brand types needed (e.g., GraphRelativePath for node.file), add them here per inventory.md spec",
+            "Do NOT import from or modify any other file in this commit — path-types.ts must be self-contained (import path if needed, nothing else from rag/)"
+          ]
+        },
+        {
+          "task_id": "T2.2",
+          "subject": "Verify and commit",
+          "operations": [
+            "tsc --noEmit clean both configs — this commit adds only a new .ts file with no side-effects; any tsc failure is a tsconfig include problem, not a type error",
+            "vitest run src/integration/rag/__tests__/ — no test should reference path-types.ts yet; this is a smoke check that the new file doesn't break the test runner",
+            "Commit message: 'types(WO-RAG-INDEX-BRANDED-PATHS-001): define AbsolutePath + RelativePath branded types in path-types.ts'"
+          ]
+        }
+      ],
+      "commit_message_template": "types(WO-RAG-INDEX-BRANDED-PATHS-001): define AbsolutePath + RelativePath branded types in src/integration/rag/path-types.ts",
+      "phase_gate": "path-types.ts exists; tsc clean both configs; no existing test broken. Proceed to Phase 3."
+    },
+    {
+      "phase": 3,
+      "label": "Propagate branded types through chunk-converter.ts and indexing-orchestrator.ts",
+      "atomic_commits": "2-4 (one commit per file or logical grouping; finalized post-Phase-1-inventory)",
+      "tasks": [
+        {
+          "task_id": "T3.1",
+          "subject": "Propagate into chunk-converter.ts",
+          "operations": [
+            "Import { AbsolutePath, RelativePath, toAbsolute, toRelative } from './path-types.js'",
+            "Change ChunkConverter.basePath: string → basePath: AbsolutePath (field at line 24 + constructor parameter at line 26)",
+            "Constructor default: process.cwd() → toAbsolute(process.cwd()) — process.cwd() is always absolute, so this cast is correct",
+            "Change readFile(filePath: string) → readFile(filePath: RelativePath) — parameter type change only",
+            "Remove the path.isAbsolute(filePath) ternary at lines 222-225; replace with direct: const fullPath: AbsolutePath = toAbsolute(path.join(this.basePath, filePath)) — or simply let the result be inferred; the ternary's absolute branch is now unreachable by type",
+            "Update groupNodesByFile: if node.file is used as Map key and the Map key type is inferred, adding RelativePath narrows the type; verify the Map<RelativePath, GraphNode[]> is correct per inventory.md",
+            "tsc --noEmit clean both configs after edits before committing",
+            "vitest run src/integration/rag/__tests__/ — frozen-fixture invariant PASS; all rag-suite tests PASS",
+            "vitest run __tests__/pipeline/ — Phase 7 chokepoint INVARIANT + AC-05 dual-identity PASS"
+          ]
+        },
+        {
+          "task_id": "T3.2",
+          "subject": "Propagate into indexing-orchestrator.ts",
+          "operations": [
+            "Import { AbsolutePath, RelativePath, toAbsolute, toRelative } from './path-types.js'",
+            "Brand basePath wherever it appears in the class (Phase 1 inventory confirms exact field/constructor lines)",
+            "In the staleness check loop (around line 499): change `for (const rel of sampleFiles)` → brand rel as RelativePath when iterating graph node.file values: `const rel = n.file as RelativePath` (or via toRelative cast)",
+            "Remove the pathMod.isAbsolute(rel) ternary at line 500; replace with direct: `const abs: AbsolutePath = toAbsolute(pathMod.join(this.basePath, rel))`",
+            "Update normalizeChunkFileForGraphJoin signature if Phase 1 determines basePath is always absolute at its call sites — change basePath: string → basePath: AbsolutePath",
+            "tsc --noEmit clean both configs",
+            "vitest run src/integration/rag/__tests__/ — frozen-fixture invariant PASS; all rag-suite tests PASS",
+            "vitest run __tests__/pipeline/ — Phase 7 chokepoint INVARIANT + AC-05 dual-identity PASS"
+          ]
+        },
+        {
+          "task_id": "T3.HALT",
+          "subject": "Phase 3 halt-and-report triggers",
+          "operations": [
+            "HALT if tsc --noEmit fails after any Phase 3 commit — fix before next commit; do NOT suppress with `as any` or `@ts-ignore`",
+            "HALT if frozen-fixture CI-blocking invariant trips on the post-propagation state",
+            "HALT if any branded type change is required outside src/integration/rag/ (boundary violation — surface to ORCHESTRATOR)",
+            "HALT if removing the isAbsolute guard causes any vitest test to fail (indicating the guard was actually load-bearing for some code path) — reclassify that guard as keep_with_justification in inventory.md update; restore the guard as typed union (AbsolutePath | RelativePath)"
+          ]
+        }
+      ],
+      "commit_message_template": "refactor(WO-RAG-INDEX-BRANDED-PATHS-001): brand {file} path params (basePath: AbsolutePath, {params}: RelativePath) — remove isAbsolute guard at {lines}",
+      "phase_gate": "chunk-converter.ts and indexing-orchestrator.ts updated; redundant isAbsolute guards removed; tsc clean both configs; frozen-fixture invariant PASS; AC-05 dual-identity PASS; no changes outside src/integration/rag/."
+    },
+    {
+      "phase": 4,
+      "label": "Test updates + closeout-ready",
+      "atomic_commits": 1,
+      "tasks": [
+        {
+          "task_id": "T4.1",
+          "subject": "Update src/integration/rag/__tests__/*.ts for branded type call sites",
+          "operations": [
+            "Run tsc --noEmit to surface any remaining type errors in test files (Phase 3 commits may have left test files with raw string → branded type mismatches)",
+            "For each test file error: apply toAbsolute() at basePath construction sites; apply toRelative() at filePath/rel construction sites",
+            "Do NOT modify src/integration/rag/__tests__/fixtures/dual-ac-frozen/* — frozen by definition",
+            "Do NOT modify the frozen-fixture test logic (dual-AC invariant assertions) — only the path construction lines if they now require branding",
+            "tsc --noEmit clean both configs after updates",
+            "vitest run src/integration/rag/__tests__/ — all tests PASS including frozen-fixture invariant",
+            "vitest run __tests__/pipeline/ — Phase 7 chokepoint INVARIANT + AC-05 dual-identity PASS"
+          ]
+        },
+        {
+          "task_id": "T4.2",
+          "subject": "Final accounting + closeout marker",
+          "operations": [
+            "Update inventory.md with final per-parameter outcomes (brand applied | left-as-string | guard-kept with rationale + commit SHAs)",
+            "Update communication.json: status=complete, completed_at, current_phase=4, phase_status=closeout_ready",
+            "Append CODEREF-CORE → ORCHESTRATOR communication_log entry: commit chain summary (Phase 1..4), total LOC delta, per-parameter outcome table, tsc status, frozen-fixture invariant evidence, AC-05a/b real-world identity evidence (or note that static probe pending at /close-workorder time)",
+            "Optional: run verify-dual-ac.mjs static probe against real codebase; confirm AC-05a 2415===2415 + AC-05b 263===263 still PASS; include output in communication_log entry",
+            "Hand off to ORCHESTRATOR for cross-project /close-workorder dispatch"
+          ]
+        }
+      ],
+      "phase_gate": "All test files tsc-clean; all rag-suite + pipeline tests PASS; communication.json closeout-ready. ORCHESTRATOR dispatches SKILLS for cross-project /close-workorder."
+    }
+  ],
+  "acceptance_criteria": [
+    {"id": "AC-01", "statement": "Phase 1 inventory.md exists in WO directory with grep methodology + per-parameter brand classification table (file, method/field, current type, proposed brand, call-site evidence, rationale)", "verification": "inspection of inventory.md"},
+    {"id": "AC-02", "statement": "src/integration/rag/path-types.ts exists with AbsolutePath branded type, RelativePath branded type, toAbsolute() constructor, toRelative() constructor, isAbsolutePath() type guard", "verification": "file inspection"},
+    {"id": "AC-03", "statement": "ChunkConverter.basePath field and constructor parameter typed as AbsolutePath", "verification": "tsc confirms no string→AbsolutePath implicit assignment anywhere; git diff inspection"},
+    {"id": "AC-04", "statement": "ChunkConverter.readFile() filePath parameter typed as RelativePath", "verification": "tsc + git diff"},
+    {"id": "AC-05", "statement": "Runtime path.isAbsolute() guard at chunk-converter.ts:222-225 removed — replaced by typed join or direct cast", "verification": "git diff shows deletion of isAbsolute ternary; tsc confirms AbsolutePath result is correct"},
+    {"id": "AC-06", "statement": "IndexingOrchestrator basePath typed as AbsolutePath wherever it appears in the class", "verification": "tsc + git diff"},
+    {"id": "AC-07", "statement": "Runtime pathMod.isAbsolute() guard at indexing-orchestrator.ts:500 removed — replaced by typed join with RelativePath input", "verification": "git diff shows deletion of isAbsolute ternary; tsc confirms"},
+    {"id": "AC-08", "statement": "No runtime behavior changes — the same path.join() calls are made; only the type annotations change + the now-dead isAbsolute branches are deleted", "verification": "vitest 100% pass rate pre/post; no new errors or behavior changes in test output"},
+    {"id": "AC-09", "statement": "tsc --noEmit clean both configs (tsconfig.json + tsconfig.cli.json) after every commit in the WO range", "verification": "commit-by-commit tsc evidence in close report"},
+    {"id": "AC-10", "statement": "Frozen-fixture CI-blocking invariant PASSES at every Phase 3/4 commit", "verification": "vitest run on frozen-fixture path per commit"},
+    {"id": "AC-11", "statement": "AC-05a real-world 2415===2415 + AC-05b real-world 263===263 PASS at WO close", "verification": "static probe verify-dual-ac.mjs output in close report"},
+    {"id": "AC-12", "statement": "Phase 7 chokepoint INVARIANT block (lines 32-70 of __tests__/pipeline/indexing-gate-invariant.test.ts) untouched", "verification": "git diff over WO range shows zero changes to those lines"},
+    {"id": "AC-13", "statement": "All changes are within src/integration/rag/*.ts boundary — no files outside this boundary modified", "verification": "git diff over WO range shows no changes outside src/integration/rag/"},
+    {"id": "AC-14", "statement": "Cultural validator scope-mode 11/11 PASS + tracking validator scope-mode PASS at close", "verification": "Both validators pass at close time"}
+  ],
+  "decisions_record": [
+    {
+      "id": "DR-BRAND-A",
+      "decision": "Plan_type=phased_implementation; Phase 1 path inventory is non-skippable",
+      "rationale": "The exact per-parameter brand classification (absolute/relative/either) requires reading every path-bearing method signature in src/integration/rag/*.ts at execution time. A misclassification would encode a wrong brand into the type system — silently worse than the raw string status quo. Two guards are confirmed at scoping time (GUARD-1, GUARD-2), but Phase 1 must confirm there are no additional guards, and must verify the call-site contracts (all basePath callers pass absolute, all filePath/rel callers pass relative) before Phase 3 removes the guards as 'redundant'.",
+      "decided_by": "SKILLS scoping (daily-agent-session-2026-05-08)",
+      "decided_at": "2026-05-08T17:00:00Z"
+    },
+    {
+      "id": "DR-BRAND-B",
+      "decision": "Branded types are zero-runtime-overhead string intersections; toAbsolute/toRelative are thin casts that name the caller-enforced invariant, not validators",
+      "rationale": "The purpose of branding is to move the runtime isAbsolute check from every internal call site to the single boundary where externally-sourced strings enter the system (CLI entry point, test fixture setup, ChunkConverter constructor). Inside src/integration/rag/, all path-bearing strings either come from graph.json (contract: relative) or from the caller-supplied basePath (contract: absolute). The cast at those boundaries is the assertion. Adding path.isAbsolute() inside toAbsolute() would create a throwing validator — correct but heavy; the isAbsolutePath() type guard is provided separately for edge-case runtime checks.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-08T17:00:00Z"
+    },
+    {
+      "id": "DR-BRAND-C",
+      "decision": "path.join(this.basePath, filePath) call sites STAY; only the input types change; the isAbsolute ternaries wrapping these joins are what gets removed",
+      "rationale": "The join is correct. The bug-prone pattern is the ternary that lets callers accidentally pass an absolute path as filePath and have it silently bypass the join. Branding filePath as RelativePath and basePath as AbsolutePath makes the ternary's absolute branch a dead code path — it can never be reached via the correct type. The join itself remains: path.join(AbsolutePath, RelativePath) → AbsolutePath is the canonical operation that branding now enforces.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-08T17:00:00Z"
+    },
+    {
+      "id": "DR-BRAND-D",
+      "decision": "Boundary is strictly src/integration/rag/*.ts; if branding propagation requires changes outside this boundary, HALT and surface to ORCHESTRATOR",
+      "rationale": "Branded types are contagious — once AbsolutePath is defined, any caller that constructs ChunkConverter with a raw string will get a tsc error. The scope of this WO assumes that all such callers are within src/integration/rag/. If Phase 1 surfaces callers outside the boundary (e.g., in src/cli/, src/index.ts, or test files at __tests__/pipeline/), the HALT-BOUNDARY-VIOLATION path is taken. ORCHESTRATOR then rules: (a) extend the boundary, (b) introduce a toAbsolute() cast at the rag-layer interface so external callers remain unbranded, or (c) scope change.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-08T17:00:00Z"
+    },
+    {
+      "id": "DR-BRAND-E",
+      "decision": "No new IndexingResult schema fields or SkipReason enum values in this WO; branding is type-layer only",
+      "rationale": "DR-PHASE-7-B (locked-additive on IndexingResult) is not implicated by branded path types. The branded types live in path-types.ts and are consumed only within src/integration/rag/ production and test code. They do not affect the IndexingResult shape, SkipReason/FailReason unions, SkipEntry/FailEntry interfaces, or any public API surface. This WO is orthogonal to the schema reduction concept (#5) which IS a separate WO.",
+      "decided_by": "SKILLS scoping",
+      "decided_at": "2026-05-08T17:00:00Z"
+    }
+  ],
+  "estimated_loc_delta": "+15 to +40 net (path-types.ts ~25-35 LOC new; isAbsolute guard deletions -6 to -10 LOC; test updates +5 to +15 LOC)",
+  "estimated_atomic_commits": "5-7 (Phase 1: 1, Phase 2: 1, Phase 3: 2-4, Phase 4: 1)",
+  "estimated_phases": 4
+}
