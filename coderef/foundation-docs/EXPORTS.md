@@ -2,8 +2,8 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-04-28  
-**Total Exported:** 845 elements  
+**Generated:** 2026-05-05  
+**Total Exported:** 916 elements  
 <!-- coderef:uuid=exports-root -->
 
 ---
@@ -18,21 +18,19 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **394** | 249 | 643 |
-| class | **110** | 5 | 115 |
-| interface | **304** | 53 | 357 |
-| type | **32** | 7 | 39 |
+| function | **405** | 347 | 752 |
+| interface | **346** | 54 | 400 |
+| type | **47** | 11 | 58 |
+| constant | **3** | 13 | 16 |
 | component | **2** | 0 | 2 |
-| constant | **3** | 9 | 12 |
+| class | **113** | 5 | 118 |
 
 ---
 
-## Exported Functions (394)
+## Exported Functions (405)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
-| <!-- coderef:uuid=23d43897-2e93-5fef-8f01-3d7cd517805d --> `authenticateUser` | `__tests__/.test-integration-project/src/auth.ts` | ❌ | username, password | `23d43897...` |
-| <!-- coderef:uuid=a64f8685-aefb-5cdd-85c6-c3f4cc7553e1 --> `main` | `__tests__/.test-venv-fixtures/src/app.py` | ❌ |  | `a64f8685...` |
 | <!-- coderef:uuid=4065d22a-ec62-5daa-ad16-3510ce254711 --> `createMockEnvironment` | `__tests__/generators/helpers.ts` | ✅ |  | `4065d22a...` |
 | <!-- coderef:uuid=1bdbedc8-e2b5-5c2a-862d-edb4df750916 --> `cleanupEnvironment` | `__tests__/generators/helpers.ts` | ✅ | projectDir | `1bdbedc8...` |
 | <!-- coderef:uuid=0de8e636-6fdb-59e0-ac50-80545a268cc3 --> `readJson` | `__tests__/generators/helpers.ts` | ✅ | filePath | `0de8e636...` |
@@ -81,18 +79,17 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=6b9619d1-c763-5755-b509-9021fe2830f7 --> `log` | `autoresearch/scanner-quality/scripts/verify_element_classification.py` | ❌ |  | `6b9619d1...` |
 | <!-- coderef:uuid=b7ed018a-6b07-511d-81f0-75900cab4c88 --> `rescan_corpus` | `autoresearch/scanner-quality/scripts/verify_element_classification.py` | ❌ |  | `b7ed018a...` |
 | <!-- coderef:uuid=c3a17ab1-8688-5ca2-af9c-0ca9ddcf9228 --> `load_index` | `autoresearch/scanner-quality/scripts/verify_element_classification.py` | ❌ |  | `c3a17ab1...` |
+| <!-- coderef:uuid=f6b8feba-1166-5a35-9d1d-c61ea64d754f --> `detect_duplicate_pairs` | `autoresearch/scanner-quality/scripts/verify_element_classification.py` | ❌ |  | `f6b8feba...` |
+| <!-- coderef:uuid=367b72bd-92af-5ed5-979b-b4126f579a21 --> `calculate_score` | `autoresearch/scanner-quality/scripts/verify_element_classification.py` | ❌ |  | `367b72bd...` |
 
-*... and 344 more functions. See index.json for complete list.*
+*... and 355 more functions. See index.json for complete list.*
 
 ---
 
-## Exported Classes (110)
+## Exported Classes (113)
 
 | Class | File | UUID |
 |-------|------|------|
-| <!-- coderef:uuid=a694e64b-9579-5157-bed7-06b4c3b2cd1c --> `AuthService` | `__tests__/.test-integration-project/src/auth.ts` | `a694e64b...` |
-| <!-- coderef:uuid=31abb0f1-f063-5915-8263-25bbbcb975f0 --> `UserService` | `__tests__/.test-integration-project/src/user.ts` | `31abb0f1...` |
-| <!-- coderef:uuid=379c9e21-879d-5bb4-b451-e4b67568c9b7 --> `Application` | `__tests__/.test-venv-fixtures/src/app.py` | `379c9e21...` |
 | <!-- coderef:uuid=b64fa021-a3dd-52f2-bb30-49de20027ac7 --> `TestSetupCoderefDirs` | `scripts/setup-coderef-dir/test_setup_coderef_dirs.py` | `b64fa021...` |
 | <!-- coderef:uuid=2bc8be97-21c1-56e7-b734-6f3e328fc178 --> `AnalyzerService` | `src/analyzer/analyzer-service.ts` | `2bc8be97...` |
 | <!-- coderef:uuid=33f6a07e-db4c-5b11-8e09-3c622015fbc0 --> `ASTElementScanner` | `src/analyzer/ast-element-scanner.ts` | `33f6a07e...` |
@@ -106,7 +103,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=180f232a-cf1d-5546-8d42-b7bb3c68b8f0 --> `DynamicImportDetector` | `src/analyzer/dynamic-import-detector.ts` | `180f232a...` |
 | <!-- coderef:uuid=855a10b5-3898-56d6-b15f-d78e77b488d0 --> `EntryPointDetector` | `src/analyzer/entry-detector.ts` | `855a10b5...` |
 | <!-- coderef:uuid=7611106f-dd47-5d59-8d23-5031613efb55 --> `GraphAnalyzer` | `src/analyzer/graph-analyzer.ts` | `7611106f...` |
-| <!-- coderef:uuid=bc596d08-babc-51dc-b7a0-ba8bf76257c1 --> `GraphBuilder` | `src/analyzer/graph-builder.ts` | `bc596d08...` |
+| <!-- coderef:uuid=ca91c67f-8801-562d-8000-2479586333c2 --> `GraphBuilder` | `src/analyzer/graph-builder.ts` | `ca91c67f...` |
 | <!-- coderef:uuid=d01332f6-3b1d-54ef-9755-55a76de91676 --> `GraphError` | `src/analyzer/graph-error.ts` | `d01332f6...` |
 | <!-- coderef:uuid=25462f21-200c-535e-80b6-f4e12fec6687 --> `ImportParser` | `src/analyzer/import-parser.ts` | `25462f21...` |
 | <!-- coderef:uuid=70a6b63c-5960-5e00-8d5c-b9cd387f59d3 --> `JSCallDetector` | `src/analyzer/js-call-detector/index.ts` | `70a6b63c...` |
@@ -114,6 +111,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=65622d6d-2f3d-50f9-a56b-febeb85bc876 --> `MigrationRouteAnalyzer` | `src/analyzer/migration-route-analyzer.ts` | `65622d6d...` |
 | <!-- coderef:uuid=874a9209-cb07-53e7-8520-e7c048fad06d --> `ProjectClassifier` | `src/analyzer/project-classifier.ts` | `874a9209...` |
 | <!-- coderef:uuid=f0af31c7-b5a2-5ebf-80ef-56bed17df937 --> `IncrementalCache` | `src/cache/incremental-cache.ts` | `f0af31c7...` |
+| <!-- coderef:uuid=3f7570d3-1eba-5d70-8007-0906de072a93 --> `DryRunSemanticOrchestrator` | `src/cli/semantic-integration.ts` | `3f7570d3...` |
 | <!-- coderef:uuid=b1154317-c963-5751-8442-c83cc3e571c0 --> `AgenticFormatter` | `src/context/agentic-formatter.ts` | `b1154317...` |
 | <!-- coderef:uuid=658223e3-8a56-5806-800a-40fa854336a9 --> `BreakingChangeDetector` | `src/context/breaking-change-detector/index.ts` | `658223e3...` |
 | <!-- coderef:uuid=fcb7085e-cc3f-52a4-9c1e-2f284eb20d7b --> `ComplexityScorer` | `src/context/complexity-scorer.ts` | `fcb7085e...` |
@@ -134,7 +132,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=b6717069-8c21-550a-b301-bbfcd7443fbb --> `ParseError` | `src/errors/ParseError.ts` | `b6717069...` |
 | <!-- coderef:uuid=618eb107-c336-554a-8bb6-7d82e97a0fe6 --> `ScanError` | `src/errors/ScanError.ts` | `618eb107...` |
 | <!-- coderef:uuid=80a308a4-4e05-5919-b59e-f23754efac24 --> `ValidationError` | `src/errors/ValidationError.ts` | `80a308a4...` |
-| <!-- coderef:uuid=7c1d764a-c212-5cc9-9f5a-18af8bf28b55 --> `GraphExporter` | `src/export/graph-exporter.ts` | `7c1d764a...` |
+| <!-- coderef:uuid=06044f5b-936b-5ccd-8903-b6332fc22309 --> `GraphExporter` | `src/export/graph-exporter.ts` | `06044f5b...` |
 | <!-- coderef:uuid=301845a5-4fa4-5812-90ac-80d047d818ea --> `CodeRefFormatter` | `src/formatter/formatter.ts` | `301845a5...` |
 | <!-- coderef:uuid=c8db0846-bcf2-5734-9eaa-59ce7f80b751 --> `IndexStore` | `src/indexer/index-store.ts` | `c8db0846...` |
 | <!-- coderef:uuid=3e9d5162-7c6d-5118-a05d-1b7a96685ff6 --> `IndexerService` | `src/indexer/indexer-service.ts` | `3e9d5162...` |
@@ -156,7 +154,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=603c896d-a590-5352-aa46-9cc244fb6434 --> `EmbeddingTextGenerator` | `src/integration/rag/embedding-text-generator.ts` | `603c896d...` |
 | <!-- coderef:uuid=c3f9e4a2-b38f-525c-a8a1-def8ab9ef3ab --> `GraphReRanker` | `src/integration/rag/graph-reranker.ts` | `c3f9e4a2...` |
 | <!-- coderef:uuid=8e3e6904-ff48-580a-bd27-aea97c89f5a4 --> `IncrementalIndexer` | `src/integration/rag/incremental-indexer.ts` | `8e3e6904...` |
-| <!-- coderef:uuid=23476138-98db-5d06-bb0b-8c88fd53b978 --> `IndexingOrchestrator` | `src/integration/rag/indexing-orchestrator.ts` | `23476138...` |
+| <!-- coderef:uuid=0660b180-0446-5e1d-88e9-c6abb10ddb2d --> `IndexingOrchestrator` | `src/integration/rag/indexing-orchestrator.ts` | `0660b180...` |
 | <!-- coderef:uuid=dad82c3f-1a3d-5c9a-b758-c205bb0a8bb8 --> `PromptTemplateBuilder` | `src/integration/rag/prompt-templates.ts` | `dad82c3f...` |
 | <!-- coderef:uuid=c71d95a7-34f1-5b66-814d-9354e6399691 --> `PromptValidator` | `src/integration/rag/prompt-templates.ts` | `c71d95a7...` |
 | <!-- coderef:uuid=107792bb-625a-538b-9fe0-bd62568f535b --> `ConfigError` | `src/integration/rag/rag-config.ts` | `107792bb...` |
@@ -165,34 +163,39 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=dd96fb73-a219-5416-ac41-387b0586a028 --> `ChromaStore` | `src/integration/vector/chroma-store.ts` | `dd96fb73...` |
 | <!-- coderef:uuid=a154a7f1-f71f-5eb3-9d0e-f7c27b74ce91 --> `PineconeStore` | `src/integration/vector/pinecone-store.ts` | `a154a7f1...` |
 | <!-- coderef:uuid=1f7f748a-3e8c-59fd-ab82-d563398643eb --> `SQLiteVectorStore` | `src/integration/vector/sqlite-store.ts` | `1f7f748a...` |
-| <!-- coderef:uuid=3e348ea7-9423-5772-9b50-08274652ae34 --> `VectorStoreError` | `src/integration/vector/vector-store.ts` | `3e348ea7...` |
+| <!-- coderef:uuid=c2482117-a1ac-53a7-b6a0-13a0940093fe --> `VectorStoreError` | `src/integration/vector/vector-store.ts` | `c2482117...` |
 | <!-- coderef:uuid=8174f439-314f-5a68-b5d6-c30757915aff --> `CodeRefParser` | `src/parser/parser.ts` | `8174f439...` |
-| <!-- coderef:uuid=6283ef9e-3e4c-5455-af1b-31ef07a6b67e --> `ElementExtractor` | `src/pipeline/extractors/element-extractor.ts` | `6283ef9e...` |
-| <!-- coderef:uuid=803df79e-17ff-5c44-9388-80e875480f55 --> `RelationshipExtractor` | `src/pipeline/extractors/relationship-extractor.ts` | `803df79e...` |
+| <!-- coderef:uuid=b5d76746-1efb-57bd-85d3-cda19f66991d --> `ElementExtractor` | `src/pipeline/extractors/element-extractor.ts` | `b5d76746...` |
+| <!-- coderef:uuid=41c1ca54-2c65-5f7b-a305-94bcfe6f4b2e --> `RelationshipExtractor` | `src/pipeline/extractors/relationship-extractor.ts` | `41c1ca54...` |
 | <!-- coderef:uuid=c03b0bd8-82f7-5798-9838-d93dc5bbf091 --> `ComplexityGenerator` | `src/pipeline/generators/complexity-generator.ts` | `c03b0bd8...` |
 | <!-- coderef:uuid=a69bf413-a312-5725-9431-1dd14b12fc1e --> `ContextGenerator` | `src/pipeline/generators/context-generator.ts` | `a69bf413...` |
 | <!-- coderef:uuid=cafb4ff7-1a32-5aa1-8ffe-98f9dc79f595 --> `CoverageGenerator` | `src/pipeline/generators/coverage-generator.ts` | `cafb4ff7...` |
 | <!-- coderef:uuid=df6b90a8-532a-5993-b888-b50934e42a99 --> `DiagramGenerator` | `src/pipeline/generators/diagram-generator.ts` | `df6b90a8...` |
-| <!-- coderef:uuid=87b58033-7bb5-5440-84a8-7170f17927e1 --> `DriftGenerator` | `src/pipeline/generators/drift-generator.ts` | `87b58033...` |
+| <!-- coderef:uuid=f545ec8d-a841-587a-a122-2988b5ae3fff --> `DriftGenerator` | `src/pipeline/generators/drift-generator.ts` | `f545ec8d...` |
 | <!-- coderef:uuid=3a6afba3-ee49-50ef-a644-92dc082f12e2 --> `ExportGenerator` | `src/pipeline/generators/export-generator.ts` | `3a6afba3...` |
 | <!-- coderef:uuid=81132ccc-b152-5dfd-b259-bdef30649fcc --> `GraphGenerator` | `src/pipeline/generators/graph-generator.ts` | `81132ccc...` |
 | <!-- coderef:uuid=668de392-cede-517e-a5d3-380e2fec6324 --> `HealthGenerator` | `src/pipeline/generators/health-generator.ts` | `668de392...` |
-| <!-- coderef:uuid=877c5cbb-63f6-5552-9cbc-c9d98ea52870 --> `IndexGenerator` | `src/pipeline/generators/index-generator.ts` | `877c5cbb...` |
+| <!-- coderef:uuid=f71bc2e8-f2fa-5026-8401-064b30bf8586 --> `IndexGenerator` | `src/pipeline/generators/index-generator.ts` | `f71bc2e8...` |
 | <!-- coderef:uuid=fb4b2f8f-5f05-5f3e-b82e-43011a6bbd18 --> `PatternGenerator` | `src/pipeline/generators/pattern-generator.ts` | `fb4b2f8f...` |
-| <!-- coderef:uuid=61c80b91-4578-548a-9400-f4a84b59a762 --> `RegistryGenerator` | `src/pipeline/generators/registry-generator.ts` | `61c80b91...` |
+| <!-- coderef:uuid=c85c5ae0-d1e7-57fb-a6e3-f4ba8dc4da04 --> `RegistryGenerator` | `src/pipeline/generators/registry-generator.ts` | `c85c5ae0...` |
 | <!-- coderef:uuid=81164899-d2c2-5794-9620-3f4986291b5b --> `ValidationGenerator` | `src/pipeline/generators/validation-generator.ts` | `81164899...` |
 | <!-- coderef:uuid=bc8d3461-b5dd-5949-a26d-bc528523955f --> `GrammarRegistry` | `src/pipeline/grammar-registry.ts` | `bc8d3461...` |
 | <!-- coderef:uuid=a6d24281-a619-5630-93bd-0fc8a2c8f5eb --> `IncrementalCache` | `src/pipeline/incremental-cache.ts` | `a6d24281...` |
-| <!-- coderef:uuid=8819b00b-1d7a-5a40-beb5-bbf60f99bdd3 --> `PipelineOrchestrator` | `src/pipeline/orchestrator.ts` | `8819b00b...` |
+| <!-- coderef:uuid=4c91dd67-2deb-5c7b-9af0-f87346a92853 --> `PipelineOrchestrator` | `src/pipeline/orchestrator.ts` | `4c91dd67...` |
 | <!-- coderef:uuid=c3fa80f8-fb66-5cc1-a7bd-a0f6aa9e0bba --> `PluginError` | `src/plugins/plugin-registry.ts` | `c3fa80f8...` |
 | <!-- coderef:uuid=2ccfdedf-3d03-5906-8ccb-524251463a4a --> `PluginRegistry` | `src/plugins/plugin-registry.ts` | `2ccfdedf...` |
 | <!-- coderef:uuid=55ef4f3f-3f0f-5f42-963d-4d6ebb6369d1 --> `QueryExecutor` | `src/query/query-executor.ts` | `55ef4f3f...` |
 | <!-- coderef:uuid=7c5e3104-c03f-5f44-98c0-08444a79116a --> `EntityRegistry` | `src/registry/entity-registry.ts` | `7c5e3104...` |
 | <!-- coderef:uuid=e13a9288-62f7-5299-8e0d-09712a2871a0 --> `FileWatcher` | `src/scanner/file-watcher.ts` | `e13a9288...` |
 | <!-- coderef:uuid=a8235972-1b93-5edf-9172-cf83436df274 --> `LRUCache` | `src/scanner/lru-cache.ts` | `a8235972...` |
-| <!-- coderef:uuid=0ce9ce52-33f1-5607-898c-dd4ab2625f1d --> `TreeSitterScanner` | `src/scanner/tree-sitter-scanner.ts` | `0ce9ce52...` |
+| <!-- coderef:uuid=677d043c-ca1f-58b6-aa5c-89f0aa79f261 --> `TreeSitterScanner` | `src/scanner/tree-sitter-scanner.ts` | `677d043c...` |
 | <!-- coderef:uuid=3f78efd0-ad34-53ff-85e6-7f62ffddf15c --> `SearchIndex` | `src/search/search-engine.ts` | `3f78efd0...` |
 | <!-- coderef:uuid=e721f55c-5d3a-54dc-b139-55d5b9ce3016 --> `SearchEngine` | `src/search/search-engine.ts` | `e721f55c...` |
+| <!-- coderef:uuid=0925fedc-8463-5175-b939-4a44035554a1 --> `ASTExtractor` | `src/semantic/ast-extractor.ts` | `0925fedc...` |
+| <!-- coderef:uuid=bea64818-c246-547b-b76d-146737ac899f --> `HeaderGenerator` | `src/semantic/header-generator.ts` | `bea64818...` |
+| <!-- coderef:uuid=99d3b65d-0dee-56c6-97c5-07d6c1d5cfa1 --> `LLMEnricher` | `src/semantic/llm-enricher.ts` | `99d3b65d...` |
+| <!-- coderef:uuid=090e8da2-40a8-5d23-bcc1-8ca8b2f4d7d4 --> `SemanticOrchestrator` | `src/semantic/orchestrator.ts` | `090e8da2...` |
+| <!-- coderef:uuid=db09fee4-45b9-56ef-a5fd-b338e5c818f1 --> `RegistrySyncer` | `src/semantic/registry-sync.ts` | `db09fee4...` |
 | <!-- coderef:uuid=44f637a8-1549-53c0-882e-a8ee0f6c8215 --> `OpenAI` | `src/types/external-modules.d.ts` | `44f637a8...` |
 | <!-- coderef:uuid=53446943-36d7-5c9e-a825-b2166b788997 --> `Anthropic` | `src/types/external-modules.d.ts` | `53446943...` |
 | <!-- coderef:uuid=f0828598-a430-5760-b9f6-cff70310889b --> `ChromaClient` | `src/types/external-modules.d.ts` | `f0828598...` |
@@ -203,12 +206,12 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 ---
 
-## Exported Interfaces (304)
+## Exported Interfaces (346)
 
 | Interface | File | UUID |
 |-----------|------|------|
 | <!-- coderef:uuid=69e94b04-890b-5e60-873e-19e9d1a1cf9f --> `MockEnvironment` | `__tests__/generators/helpers.ts` | `69e94b04...` |
-| <!-- coderef:uuid=fa021624-ac04-5c59-bfc7-c06828d0ce25 --> `ConversionOptions` | `src/adapter/graph-to-elements.ts` | `fa021624...` |
+| <!-- coderef:uuid=7a33ee81-ce8b-5b87-8e13-4b507beff72a --> `ConversionOptions` | `src/adapter/graph-to-elements.ts` | `7a33ee81...` |
 | <!-- coderef:uuid=a30c2671-c140-58a5-be22-4f4103670bd6 --> `AnalysisResult` | `src/analyzer/analyzer-service.ts` | `a30c2671...` |
 | <!-- coderef:uuid=8aadb1e6-f6ef-5a98-8b14-7750d728e375 --> `ASTScanResult` | `src/analyzer/ast-element-scanner.ts` | `8aadb1e6...` |
 | <!-- coderef:uuid=122d90f5-cc39-5350-b923-db88d8a4f783 --> `CallExpression` | `src/analyzer/call-detector.ts` | `122d90f5...` |
@@ -238,11 +241,11 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=fa80323c-cb84-50a7-a3b8-c334121c1f5c --> `ProtobufEnum` | `src/analyzer/contract-detector.ts` | `fa80323c...` |
 | <!-- coderef:uuid=76a01a9f-4957-58a7-b83c-98345e07326b --> `JsonSchema` | `src/analyzer/contract-detector.ts` | `76a01a9f...` |
 
-*... and 274 more interfaces. See index.json for complete list.*
+*... and 316 more interfaces. See index.json for complete list.*
 
 ---
 
-## Exported Type Aliases (32)
+## Exported Type Aliases (47)
 
 | Type | File | UUID |
 |------|------|------|
@@ -253,6 +256,8 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=a8966a47-a45a-5fba-bbbf-8f22c9452874 --> `WebAppType` | `src/analyzer/project-classifier.ts` | `a8966a47...` |
 | <!-- coderef:uuid=e2d589f5-c6b5-56d0-bee4-3639d7577a83 --> `SupportedCliLanguage` | `src/cli/detect-languages.ts` | `e2d589f5...` |
 | <!-- coderef:uuid=4564fb01-0be8-5b25-b8c7-3ff9a3ef0173 --> `ExportFormat` | `src/export/graph-exporter.ts` | `4564fb01...` |
+| <!-- coderef:uuid=75607deb-9f36-5885-a03d-9617f54b8daa --> `ExportedGraphEdgeRelationship` | `src/export/graph-exporter.ts` | `75607deb...` |
+| <!-- coderef:uuid=993553d0-8030-594c-8561-20917a0ead2c --> `ExportedGraphEdgeResolutionStatus` | `src/export/graph-exporter.ts` | `993553d0...` |
 | <!-- coderef:uuid=07c8d306-e673-5f4a-99b7-febb122ed473 --> `IndexSchemaVersion` | `src/fileGeneration/index-storage.ts` | `07c8d306...` |
 | <!-- coderef:uuid=a47c54b2-47b2-532e-8c0a-fb046bf543d9 --> `IndexFormat` | `src/fileGeneration/index-storage.ts` | `a47c54b2...` |
 | <!-- coderef:uuid=9c5b8985-1db6-5dde-accc-642185ba3df2 --> `IndexingStage` | `src/indexer/indexer-service.ts` | `9c5b8985...` |
@@ -263,15 +268,28 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=8e78596f-e294-5cfa-83af-40d1418c16d6 --> `LLMProviderFactory` | `src/integration/llm/llm-provider.ts` | `8e78596f...` |
 | <!-- coderef:uuid=90ab6400-5d79-55c1-9be5-aebf5e0cb6c7 --> `ProgressCallback` | `src/integration/rag/embedding-service.ts` | `90ab6400...` |
 | <!-- coderef:uuid=b47068cd-caf5-5961-9c5c-36068043e998 --> `QueryStrategy` | `src/integration/rag/graph-reranker.ts` | `b47068cd...` |
-| <!-- coderef:uuid=cfc92a0e-2a1c-5fce-8006-98b71a2494fc --> `IndexingProgressCallback` | `src/integration/rag/indexing-orchestrator.ts` | `cfc92a0e...` |
+| <!-- coderef:uuid=169f7532-bd2b-513f-8cae-7c1ac5b1c0af --> `IndexingProgressCallback` | `src/integration/rag/indexing-orchestrator.ts` | `169f7532...` |
+| <!-- coderef:uuid=bcf78089-2f25-50a6-8741-b069d1ba8fb4 --> `SkipReason` | `src/integration/rag/indexing-orchestrator.ts` | `bcf78089...` |
+| <!-- coderef:uuid=85ae9c2a-c13a-537d-a89b-bee0c7221770 --> `FailReason` | `src/integration/rag/indexing-orchestrator.ts` | `85ae9c2a...` |
+| <!-- coderef:uuid=5e5276fb-e801-5b7b-a1c3-968e10331ba0 --> `IndexingStatus` | `src/integration/rag/indexing-orchestrator.ts` | `5e5276fb...` |
 | <!-- coderef:uuid=14de5e71-3af0-5df3-b1c1-92e56436d012 --> `LLMProviderName` | `src/integration/rag/rag-config.ts` | `14de5e71...` |
-| <!-- coderef:uuid=e122b28a-41c6-5fcd-b0b4-24694d88bbc6 --> `VectorStoreFactory` | `src/integration/vector/vector-store.ts` | `e122b28a...` |
-| <!-- coderef:uuid=2de26097-3f2f-55db-8736-935dfcc1823b --> `LanguageExtension` | `src/pipeline/types.ts` | `2de26097...` |
-| <!-- coderef:uuid=d38e7aee-cfbb-52a4-a236-bf3f987ae87f --> `PluginSource` | `src/plugins/types.ts` | `d38e7aee...` |
+| <!-- coderef:uuid=ed3d0c3b-6b5a-5de0-aff2-5e7aa5993d0e --> `VectorStoreFactory` | `src/integration/vector/vector-store.ts` | `ed3d0c3b...` |
+| <!-- coderef:uuid=b23e0be0-cae1-5989-8473-d96e708f1e1d --> `CallResolutionKind` | `src/pipeline/call-resolver.ts` | `b23e0be0...` |
+| <!-- coderef:uuid=ebf41ea2-c702-5d21-9d5e-a8a4b966a7d3 --> `SymbolTable` | `src/pipeline/call-resolver.ts` | `ebf41ea2...` |
+| <!-- coderef:uuid=c174e2fd-d67d-54f0-b1ad-89c7cc1cbd98 --> `LayerEnum` | `src/pipeline/element-taxonomy.ts` | `c174e2fd...` |
+| <!-- coderef:uuid=06eaada3-9fbf-5843-9471-471da3bbb37f --> `HeaderStatus` | `src/pipeline/element-taxonomy.ts` | `06eaada3...` |
+| <!-- coderef:uuid=bb246707-3d69-50af-81d4-4d0c04869df5 --> `EdgeRelationship` | `src/pipeline/graph-builder.ts` | `bb246707...` |
+| <!-- coderef:uuid=dc2e7a9d-a28d-52a1-8048-7cb3b2c11cf3 --> `EdgeResolutionStatus` | `src/pipeline/graph-builder.ts` | `dc2e7a9d...` |
+| <!-- coderef:uuid=b7c2ffa2-89c5-544e-ae87-4673db0a936e --> `EdgeEvidence` | `src/pipeline/graph-builder.ts` | `b7c2ffa2...` |
+| <!-- coderef:uuid=b3a75b61-0a29-56f1-a2d2-1dd92ee74082 --> `ImportResolutionKind` | `src/pipeline/import-resolver.ts` | `b3a75b61...` |
+| <!-- coderef:uuid=f739d7e0-7c48-52c2-8729-0727352a6f5e --> `ExportTable` | `src/pipeline/import-resolver.ts` | `f739d7e0...` |
+| <!-- coderef:uuid=7b1eb3df-a8ca-5861-a551-78a3ef129980 --> `LanguageExtension` | `src/pipeline/types.ts` | `7b1eb3df...` |
+| <!-- coderef:uuid=7e767c74-d760-53dc-98c7-e73610e23da3 --> `RawExportKind` | `src/pipeline/types.ts` | `7e767c74...` |
+| <!-- coderef:uuid=817e72ad-7760-59af-a4ad-4f9a6585784a --> `PluginSource` | `src/plugins/types.ts` | `817e72ad...` |
 | <!-- coderef:uuid=9078420a-e9fb-5fb9-998d-d6cfecf56a41 --> `QueryType` | `src/query/query-executor.ts` | `9078420a...` |
 | <!-- coderef:uuid=f015bedb-6b4f-5c15-b198-3c36ffb7ac81 --> `ScanErrorType` | `src/scanner/error-reporter.ts` | `f015bedb...` |
 | <!-- coderef:uuid=1d7b7eac-fb41-5628-8044-978a8f47fcf9 --> `ScanErrorSeverity` | `src/scanner/error-reporter.ts` | `1d7b7eac...` |
-| <!-- coderef:uuid=e226ebbc-4cc2-5cee-9251-6e26ab1bd294 --> `EnrichedElementData` | `src/scanner/tree-sitter-scanner.ts` | `e226ebbc...` |
+| <!-- coderef:uuid=960a8f69-90b5-55fe-8516-404df806ef44 --> `EnrichedElementData` | `src/scanner/tree-sitter-scanner.ts` | `960a8f69...` |
 | <!-- coderef:uuid=93701d95-f097-52c6-9718-d578d5aa9902 --> `LogLevel` | `src/utils/logger.ts` | `93701d95...` |
 | <!-- coderef:uuid=c4e63eb5-6129-5153-af8a-aa78e5741646 --> `ConfidenceLevel` | `src/validator/frontend-update-generator.ts` | `c4e63eb5...` |
 | <!-- coderef:uuid=ce1bc486-ca73-5c55-b8b6-0dc550fec856 --> `IndexedCoderef` | `types.d.ts` | `ce1bc486...` |

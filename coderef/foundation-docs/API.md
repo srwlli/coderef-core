@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-05-01 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-05-08 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -71,6 +71,7 @@ interface ScanOptions {
 
 <!-- coderef:uuid=5e396d0c-4eec-5e7b-a73f-7a9d08af021c -->
 <!-- coderef:uuid=483d35de-3418-5427-9349-8cbe2d195d57 -->
+<!-- coderef:uuid=b61231c5-e14b-55fc-821c-40005cba575e -->
 ### `scanFilesWithAST()`
 
 Scan files using AST-based analysis for accurate element detection.

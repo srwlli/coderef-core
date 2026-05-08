@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-04-28  
+**Generated:** 2026-05-05  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,191 |
-| **Total Files** | 302 |
-| **Total Lines** | 87,419 |
+| **Total Elements** | 2,415 |
+| **Total Files** | 383 |
+| **Total Lines** | 101,947 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,13 +22,13 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 643 | 29.3% |
-| method | 1,023 | 46.7% |
-| interface | 357 | 16.3% |
-| class | 115 | 5.2% |
-| type | 39 | 1.8% |
+| function | 752 | 31.1% |
+| method | 1,069 | 44.3% |
+| interface | 400 | 16.6% |
+| class | 118 | 4.9% |
+| type | 58 | 2.4% |
 | component | 2 | 0.1% |
-| constant | 12 | 0.5% |
+| constant | 16 | 0.7% |
 
 ---
 
@@ -36,31 +36,31 @@
 
 | Rank | File | Elements | Density |
 |------|------|----------|---------|
-| 1 | `src/pipeline/generators/context-generator.ts` | 66 | 🔴 Very High |
-| 2 | `src/scanner/tree-sitter-scanner.ts` | 63 | 🔴 Very High |
-| 3 | `src/pipeline/extractors/element-extractor.ts` | 34 | 🟡 High |
-| 4 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
-| 5 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
-| 6 | `src/search/search-engine.ts` | 31 | 🟡 High |
-| 7 | `src/analyzer/contract-detector.ts` | 30 | 🟡 High |
-| 8 | `src/indexer/index-store.ts` | 30 | 🟡 High |
-| 9 | `src/indexer/relationship-index.ts` | 30 | 🟡 High |
-| 10 | `src/analyzer/database-detector.ts` | 29 | 🟢 Medium |
+| 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
+| 2 | `src/scanner/tree-sitter-scanner.ts` | 56 | 🔴 Very High |
+| 3 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
+| 4 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
+| 5 | `src/search/search-engine.ts` | 31 | 🟡 High |
+| 6 | `src/indexer/index-store.ts` | 30 | 🟡 High |
+| 7 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
+| 8 | `src/pipeline/import-resolver.ts` | 29 | 🟢 Medium |
+| 9 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
+| 10 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
 | 11 | `src/cli/coderef-rag-server.ts` | 27 | 🟢 Medium |
-| 12 | `src/pipeline/generators/pattern-generator.ts` | 27 | 🟢 Medium |
+| 12 | `src/indexer/relationship-index.ts` | 27 | 🟢 Medium |
 | 13 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
-| 14 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
-| 15 | `src/scanner/scanner.ts` | 24 | 🟢 Medium |
-| 16 | `src/analyzer/design-pattern-detector.ts` | 23 | 🟢 Medium |
-| 17 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
-| 18 | `src/export/graph-exporter.ts` | 23 | 🟢 Medium |
-| 19 | `src/analyzer/dependency-analyzer.ts` | 22 | 🟢 Medium |
-| 20 | `src/indexer/metadata-index.ts` | 22 | 🟢 Medium |
-| 21 | `src/integration/rag/conversation-manager.ts` | 22 | 🟢 Medium |
-| 22 | `src/types/types.ts` | 22 | 🟢 Medium |
-| 23 | `src/validator/migration-mapper.ts` | 22 | 🟢 Medium |
-| 24 | `src/analyzer/analyzer-service.ts` | 21 | 🟢 Medium |
-| 25 | `src/analyzer/config-analyzer.ts` | 21 | 🟢 Medium |
+| 14 | `src/export/graph-exporter.ts` | 25 | 🟢 Medium |
+| 15 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
+| 16 | `src/pipeline/extractors/relationship-extractor.ts` | 25 | 🟢 Medium |
+| 17 | `src/scanner/scanner.ts` | 24 | 🟢 Medium |
+| 18 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
+| 19 | `src/types/types.ts` | 23 | 🟢 Medium |
+| 20 | `src/analyzer/dependency-analyzer.ts` | 22 | 🟢 Medium |
+| 21 | `src/analyzer/design-pattern-detector.ts` | 22 | 🟢 Medium |
+| 22 | `src/indexer/metadata-index.ts` | 22 | 🟢 Medium |
+| 23 | `src/integration/rag/conversation-manager.ts` | 22 | 🟢 Medium |
+| 24 | `src/pipeline/generators/pattern-generator.ts` | 22 | 🟢 Medium |
+| 25 | `src/validator/migration-mapper.ts` | 22 | 🟢 Medium |
 
 ---
 
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,191 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,415 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 
