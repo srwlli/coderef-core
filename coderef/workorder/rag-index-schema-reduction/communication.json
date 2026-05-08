@@ -1,0 +1,56 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SCHEMA-REDUCTION-001",
+  "feature_name": "rag-index-schema-reduction",
+  "created": "2026-05-08T18:30:00Z",
+  "owner_domain": "SKILLS",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-005"],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-index-schema-reduction\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-index-schema-reduction\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-index-schema-reduction\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated. Phase 1 audit-only; Phase 2 is a hard stop gated on audit-matrix.md completion."
+  },
+  "execution_rules": {
+    "phase_type": "phased",
+    "hard_stops": ["phase_2"],
+    "gate_rule": "Do not start Phase 2 until Phase 1 audit-matrix.md is complete and AC-05a + AC-05b confirmed passing at baseline"
+  },
+  "hard_constraints": [
+    "DR-PHASE-7-B locked-additive: may REMOVE or FREEZE fields only — no new fields",
+    "chunksSkippedDetails MUST be preserved — AC-05a and AC-05b access it directly",
+    "AC-05a (element-grain) and AC-05b (file-grain) frozen-fixture invariants must PASS at WO close",
+    "Scope is IndexingResult + IndexingStatistics + IndexingError ONLY — not CodeChunk, not CLI flags, not rag-index.json payload"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [
+    {
+      "timestamp": "2026-05-08T18:30:00Z",
+      "event": "plan_reauthored",
+      "source": "create-workorder",
+      "message": "Replaced prior plan (incorrect scope: CodeChunk optionality + --slim flags) with correct scope per DISPATCH-2026-05-08-005: IndexingResult schema audit only."
+    }
+  ],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-08T18:30:00Z",
+      "event": "workorder_created",
+      "source": "create-workorder",
+      "message": "Workorder WO-RAG-INDEX-SCHEMA-REDUCTION-001 created. Plan type: phased, 2 phases. Phase 2 is a hard stop gated on Phase 1 audit-matrix.md. Scope: IndexingResult + IndexingStatistics + IndexingError field audit only."
+    },
+    {
+      "timestamp": "2026-05-08T19:45:00Z",
+      "event": "phase_1_complete",
+      "source": "execute-workorder",
+      "message": "Phase 1 audit complete. audit-matrix.md written. Findings: IndexingResult — REMOVE: filesProcessed, processingTimeMs (2 fields); FREEZE: chunksSkipped, chunksFailed, stats, errors, chunksFailedDetails (5 fields); KEEP: chunksIndexed, status, chunksSkippedDetails, validationGateRefused, validationReportPath (5 fields). IndexingStatistics — FREEZE all 5 fields. IndexingError — FREEZE all 4 fields. AC-05a and AC-05b PASS at baseline (indexing-gate-invariant.test.ts 12/12). Pre-existing 67 failures are unrelated to this WO scope. HARD STOP: Phase 2 requires USER/ORCHESTRATOR approval before field removal begins."
+    }
+  ]
+}

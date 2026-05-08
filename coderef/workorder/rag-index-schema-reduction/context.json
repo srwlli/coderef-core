@@ -1,0 +1,64 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SCHEMA-REDUCTION-001",
+  "feature_name": "rag-index-schema-reduction",
+  "created": "2026-05-08T18:30:00Z",
+  "owner_domain": "SKILLS",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-08-005",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Audit every field on IndexingResult + IndexingStatistics + IndexingError against its paired invariant test. Fields with no invariant test are candidates for removal or freezing. Output: minimum-surface IndexingResult that satisfies all existing invariant tests and rejects additions without paired tests."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Schema audit (Phase 1 read-only) must be gated before any field removal or freezing (Phase 2). Phase 2 is a hard stop requiring Phase 1 audit matrix to be complete and reviewed before any interface change.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        "src/integration/rag/indexing-orchestrator.ts",
+        "__tests__/integration/rag/indexing-orchestrator.test.ts",
+        "__tests__/pipeline/indexing-gate-invariant.test.ts"
+      ],
+      "blast_radius": [
+        "src/integration/rag/indexing-orchestrator.ts"
+      ],
+      "public_api_hits": [
+        "IndexingResult (exported interface)",
+        "IndexingStatistics (exported interface)",
+        "IndexingError (exported interface)"
+      ],
+      "warnings": []
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "IndexingResult interface — all fields",
+      "IndexingStatistics interface — all fields",
+      "IndexingError interface — all fields",
+      "Paired invariant test audit per field",
+      "Removal or freezing of fields with zero invariant test coverage"
+    ],
+    "out_of_scope": [
+      "CodeChunk interface (NOT in scope)",
+      "ChunkConverter or --slim CLI flags (NOT in scope)",
+      "rag-index.json payload format (NOT in scope)",
+      "Vector store schema",
+      "Any additive field changes (DR-PHASE-7-B locked-additive: remove/freeze only)"
+    ]
+  },
+  "constraints": [
+    "DR-PHASE-7-B locked-additive: this WO may REMOVE or FREEZE fields only — no new fields",
+    "AC-05a frozen fixture: chunksSkipped(header_status_missing) === element-grain count from graph.json fixture must PASS at close",
+    "AC-05b frozen fixture: uniqueFiles(skipDetails).size === validation_report.header_missing_count must PASS at close",
+    "chunksSkippedDetails MUST be preserved — AC-05a/05b tests access result.chunksSkippedDetails directly",
+    "Predecessors: WO-RAG-INDEX-BRANDED-PATHS-001 (archived), WO-RAG-INDEX-SEAM-DELETION-001 (archived)"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

@@ -1,0 +1,88 @@
+{
+  "workorder_id": "WO-RAG-INDEX-SCHEMA-REDUCTION-001",
+  "feature_name": "rag-index-schema-reduction",
+  "created": "2026-05-08T18:30:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Audit phase (Phase 1) must complete and be reviewed before any field removal or freezing (Phase 2). Phase 2 is a hard stop gated on the written audit matrix.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": ["phase_2"],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Audit IndexingResult + IndexingStatistics + IndexingError Field Coverage",
+      "description": "Read-only audit phase. Map every field on IndexingResult, IndexingStatistics, and IndexingError to its invariant test coverage. Produce a written audit matrix identifying which fields are covered, which are freeze-candidates, and which are remove-candidates. No code changes in this phase.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read IndexingResult, IndexingStatistics, IndexingError interfaces in src/integration/rag/indexing-orchestrator.ts (lines 278-353). List all fields.",
+          "success_criteria": "Complete field list for all three interfaces documented"
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read __tests__/integration/rag/indexing-orchestrator.test.ts and __tests__/pipeline/indexing-gate-invariant.test.ts. For each field in step 1.1, note which AC test(s) reference it.",
+          "success_criteria": "Field-to-test coverage matrix complete; zero fields unclassified"
+        },
+        {
+          "id": "1.3",
+          "verb": "READ",
+          "description": "Grep all other consumers of IndexingResult, IndexingStatistics, IndexingError across the codebase (CLI, scripts, other tests). Note any non-test usages of uncovered fields.",
+          "success_criteria": "Consumer map complete; no uncovered field has a silent non-test consumer"
+        },
+        {
+          "id": "1.4",
+          "verb": "CHECK",
+          "description": "Run npm test. Confirm AC-05a and AC-05b pass before any changes. Record baseline pass/fail state.",
+          "success_criteria": "Test suite passes; AC-05a and AC-05b confirmed green"
+        },
+        {
+          "id": "1.5",
+          "verb": "WRITE",
+          "description": "Write the audit matrix to coderef/workorder/rag-index-schema-reduction/audit-matrix.md: per-field disposition (keep / freeze / remove) with rationale. Must include DR-1 (chunksSkippedDetails = KEEP) and DR-PHASE-7-B constraint.",
+          "success_criteria": "audit-matrix.md exists; every field has a disposition with rationale"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "title": "Remove or Freeze Uncovered Fields",
+      "description": "Apply the Phase 1 audit matrix. Remove fields classified as remove-candidates. Mark fields classified as freeze-candidates with a JSDoc freeze comment. Verify AC-05a (2415===2415) and AC-05b (263===263) still PASS after all changes.",
+      "hard_stop": true,
+      "gate": "Phase 1 audit-matrix.md complete and reviewed; AC-05a + AC-05b passing at Phase 1 baseline",
+      "tasks": [
+        {
+          "id": "2.1",
+          "verb": "READ",
+          "description": "Read audit-matrix.md from Phase 1. Confirm disposition for every field before making any change.",
+          "success_criteria": "All dispositions confirmed; chunksSkippedDetails is KEEP"
+        },
+        {
+          "id": "2.2",
+          "verb": "EDIT",
+          "description": "In indexing-orchestrator.ts: remove fields classified as remove-candidates (filesProcessed, processingTimeMs, estimatedCost) from IndexingResult / IndexingStatistics interfaces and their production assignments.",
+          "success_criteria": "TypeScript compiles with 0 errors after removal"
+        },
+        {
+          "id": "2.3",
+          "verb": "EDIT",
+          "description": "In indexing-orchestrator.ts: add JSDoc freeze comment to fields classified as freeze-candidates (chunksSkipped, chunksFailed, stats, errors, chunksFailedDetails, all IndexingStatistics required fields, all IndexingError fields). Comment format: /** @frozen — no invariant test; must not be modified without adding a paired test. */",
+          "success_criteria": "All freeze-candidates annotated; TypeScript compiles clean"
+        },
+        {
+          "id": "2.4",
+          "verb": "TEST",
+          "description": "Run full test suite: npm test. Confirm AC-05a and AC-05b still PASS. Confirm no regression in any other test.",
+          "success_criteria": "All tests pass; AC-05a (chunksSkipped element-grain === fixture) and AC-05b (uniqueFiles file-grain === validation_report.header_missing_count) both PASS"
+        },
+        {
+          "id": "2.5",
+          "verb": "COMMIT",
+          "description": "Commit all changes: feat(rag): IndexingResult schema reduction — remove uncovered fields, freeze untested fields",
+          "success_criteria": "Clean git commit on CODEREF-CORE; no untracked changes"
+        }
+      ]
+    }
+  ]
+}
