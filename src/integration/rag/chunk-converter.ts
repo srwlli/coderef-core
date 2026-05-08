@@ -16,15 +16,16 @@ import type {
   ChunkGenerationError,
   ChunkStatistics
 } from './code-chunk.js';
+import { type AbsolutePath, type RelativePath, toAbsolute, toRelative } from './path-types.js';
 
 /**
  * Converts GraphNodes to CodeChunks for RAG embedding
  */
 export class ChunkConverter {
-  private basePath: string;
+  private basePath: AbsolutePath;
 
   constructor(basePath: string = process.cwd()) {
-    this.basePath = basePath;
+    this.basePath = toAbsolute(basePath);
   }
 
   /**
@@ -110,7 +111,7 @@ export class ChunkConverter {
     const name = this.extractElementName(node.id);
 
     // Detect language from file extension
-    const language = this.detectLanguage(node.file);
+    const language = this.detectLanguage(toRelative(node.file));
 
     // Extract source code if requested
     let sourceCode: string | undefined;
@@ -195,7 +196,7 @@ export class ChunkConverter {
 
     // Add related elements if requested
     if (options.includeRelatedElements) {
-      chunk.relatedElements = this.extractRelatedElements(node.file, node.id, graph);
+      chunk.relatedElements = this.extractRelatedElements(toRelative(node.file), node.id, graph);
     }
 
     return chunk;
@@ -204,13 +205,14 @@ export class ChunkConverter {
   /**
    * Group nodes by file for efficient processing
    */
-  private groupNodesByFile(graph: DependencyGraph): Map<string, GraphNode[]> {
-    const grouped = new Map<string, GraphNode[]>();
+  private groupNodesByFile(graph: DependencyGraph): Map<RelativePath, GraphNode[]> {
+    const grouped = new Map<RelativePath, GraphNode[]>();
 
     for (const node of graph.nodes.values()) {
-      const nodes = grouped.get(node.file) || [];
+      const rel = toRelative(node.file);
+      const nodes = grouped.get(rel) || [];
       nodes.push(node);
-      grouped.set(node.file, nodes);
+      grouped.set(rel, nodes);
     }
 
     return grouped;
@@ -219,11 +221,11 @@ export class ChunkConverter {
   /**
    * Read file content
    */
-  private async readFile(filePath: string): Promise<string> {
-    const fullPath = path.isAbsolute(filePath)
-      ? filePath
-      : path.join(this.basePath, filePath);
-
+  private async readFile(filePath: RelativePath): Promise<string> {
+    // filePath is always relative (graph.json node.file contract, GUARD-1).
+    // basePath is always absolute. Join is correct; the isAbsolute ternary
+    // that was here previously was dead code — removed by WO-RAG-INDEX-BRANDED-PATHS-001.
+    const fullPath: AbsolutePath = toAbsolute(path.join(this.basePath, filePath));
     return await fs.readFile(fullPath, 'utf-8');
   }
 
@@ -239,7 +241,7 @@ export class ChunkConverter {
   /**
    * Detect programming language from file extension
    */
-  private detectLanguage(filePath: string): string {
+  private detectLanguage(filePath: RelativePath): string {
     const ext = path.extname(filePath).toLowerCase();
 
     const languageMap: Record<string, string> = {
@@ -401,7 +403,7 @@ export class ChunkConverter {
    * Extract related elements from the same file
    */
   private extractRelatedElements(
-    filePath: string,
+    filePath: RelativePath,
     excludeNodeId: string,
     graph: DependencyGraph
   ): string[] {
