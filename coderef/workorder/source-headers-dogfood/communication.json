@@ -1,0 +1,40 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-DOGFOOD-001",
+  "feature_name": "source-headers-dogfood",
+  "created": "2026-05-09T00:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-006"],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "Dogfood populate-coderef --source-headers on coderef-core itself. Feature branch only, review and conditional commit."
+  },
+  "execution_rules": {
+    "phase_1": "Single phase, no hard stop. Create branch, run --source-headers, review diff, commit if correct, push. Do NOT merge to main."
+  },
+  "hard_constraints": [
+    "Do NOT merge feature/source-headers-dogfood to main",
+    "Only commit if header output is semantically correct",
+    "If populate-coderef exits non-zero, halt and report — do not commit"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-09T00:40:00Z",
+      "event": "workorder_created",
+      "by": "CODEREF-CORE",
+      "note": "WO-SOURCE-HEADERS-DOGFOOD-001 created. Plan type: light. Dogfood run of populate-coderef --source-headers on coderef-core branch feature/source-headers-dogfood."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-DOGFOOD-001",
+  "feature_name": "source-headers-dogfood",
+  "analysis_authored_at": "2026-05-09T00:40:00Z",
+  "blast_radius": {
+    "files_modified": ["All src/**/*.ts files that populate-coderef --source-headers elects to stamp (unknown until run)"],
+    "files_created": [],
+    "downstream_consumers": [
+      "Any consumer that reads semantic header blocks in source files (documentation tools, IDE extensions)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "title": "Headers stamped on files that already have conflicting docblocks",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Review diff before committing. Abort commit if output looks garbled or overwrites existing meaningful docblocks."
+    },
+    {
+      "id": "R-002",
+      "title": "populate-coderef --source-headers modifies test files unexpectedly",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Review diff scope. Test files should not have semantic headers — check whether the flag skips test dirs."
+    },
+    {
+      "id": "R-003",
+      "title": "Branch diverges from main if left unmerged while main advances",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Dogfood branch is review-only. ORCHESTRATOR decides merge timing."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/**/*.ts",
+      "symbol": "all exported functions/classes",
+      "change": "Add CodeRef-Semantics semantic header block via --source-headers flag"
+    }
+  ],
+  "dependencies": [
+    "npx populate-coderef (coderef-core CLI at C:/Users/willh/Desktop/CODEREF/coderef-core)",
+    ".coderef/index.json (must be up-to-date for accurate header stamping)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Run from coderef-core root on . (self-dogfood). Feature branch only, no merge.",
+      "rationale": "Dogfood pattern: test populate-coderef --source-headers on the project that implements it before enabling more broadly."
+    }
+  ]
+}

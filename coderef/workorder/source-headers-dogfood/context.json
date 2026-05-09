@@ -1,0 +1,54 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-DOGFOOD-001",
+  "feature_name": "source-headers-dogfood",
+  "created": "2026-05-09T00:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-08-006",
+  "intake": {
+    "trigger": "orchestrator",
+    "user_request": "Run populate-coderef --source-headers on CODEREF-CORE itself on branch feature/source-headers-dogfood. Create the branch, run the command, review the diff, commit if headers look correct. Do not merge to main — leave on branch for review."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single command execution (populate-coderef --source-headers) on a feature branch, followed by diff review and conditional commit. No code changes to logic, no phases, no hard stops. Outcome is a diff for human review.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "Create branch feature/source-headers-dogfood from main",
+      "Run: npx populate-coderef . --source-headers (from coderef-core root)",
+      "Review the diff of modified source files",
+      "Commit the result if headers look correct",
+      "Leave branch unmerged — do NOT merge to main"
+    ],
+    "out_of_scope": [
+      "Merging feature/source-headers-dogfood to main",
+      "Modifying the source-headers implementation in populate.ts or CLI",
+      "Changes to test files",
+      "Changes to .coderef/ output artifacts (those are gitignored)"
+    ]
+  },
+  "constraints": [
+    "Do NOT merge to main — branch is for review only",
+    "Only commit if headers look semantically correct (no garbled output)",
+    "If populate-coderef --source-headers exits non-zero, halt and report"
+  ],
+  "predecessor_stub": null,
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {
+      "decorators": "present",
+      "errorHandling": "present",
+      "asyncPatterns": "present",
+      "testGaps": "present",
+      "middleware": "present",
+      "dependencyInjection": "present"
+    },
+    "dependency_cycles": [],
+    "errors": []
+  }
+}
