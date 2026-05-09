@@ -1,0 +1,55 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001",
+  "feature_name": "source-headers-dogfood-smoke",
+  "created": "2026-05-09T17:54:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-09-002",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Smoke test on feature/source-headers-dogfood — confirm parser returns headerStatus:defined for a sample file, run rag-index, verify chunks_attempted > 0"
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Read-only verification task: no source modifications, single-phase, confirms existing state via CLI runs and file inspection",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [
+      { "file": "src/pipeline/generators/context-generator.ts", "complexity": 102 },
+      { "file": "src/scanner/scanner.ts", "complexity": 99 },
+      { "file": "src/analyzer/ast-element-scanner.ts", "complexity": 65 }
+    ],
+    "pattern_inventory": {
+      "decorators": true,
+      "errorHandling": true,
+      "asyncPatterns": true,
+      "testGaps": true,
+      "middleware": true,
+      "dependencyInjection": true
+    },
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Run populate-coderef --source-headers on feature/source-headers-dogfood",
+      "Inspect headerStatus for a defined sample file",
+      "Run rag-index and capture chunks_attempted count",
+      "Report results to ORCHESTRATOR"
+    ],
+    "out_of_scope": [
+      "Fixing stale exports_match_ast mismatches (129 files)",
+      "Generator or parser code changes",
+      "Merging feature branch to main"
+    ]
+  },
+  "constraints": [
+    "Execute on feature/source-headers-dogfood branch only",
+    "Read-only validation — no source file modifications",
+    "OpenAI key absent — embedding_api_error expected; chunks_attempted > 0 is AC"
+  ]
+}

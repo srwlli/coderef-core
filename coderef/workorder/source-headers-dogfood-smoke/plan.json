@@ -1,0 +1,36 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001",
+  "feature_name": "source-headers-dogfood-smoke",
+  "created": "2026-05-09T17:54:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Read-only verification — no source modifications",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Dogfood smoke test",
+      "tasks": [
+        {
+          "id": "T1.1",
+          "verb": "RUN",
+          "description": "Run populate-coderef --source-headers on feature/source-headers-dogfood to refresh rag-index chunks"
+        },
+        {
+          "id": "T1.2",
+          "verb": "CHECK",
+          "description": "Inspect headerStatus for one defined sample file in .coderef/rag-index.json — confirm headerStatus:defined present"
+        },
+        {
+          "id": "T1.3",
+          "verb": "RUN",
+          "description": "Run rag-index CLI and capture output — confirm chunks_attempted > 0"
+        },
+        {
+          "id": "T1.4",
+          "verb": "COMMIT",
+          "description": "Commit smoke test evidence (workorder files) on feature/source-headers-dogfood"
+        }
+      ]
+    }
+  ]
+}
