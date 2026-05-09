@@ -24,6 +24,10 @@ export const DEFAULT_PIPELINE_IGNORE_PATTERNS = [
   '.turbo/',
   '.parcel-cache/',
   '.svelte-kit/',
+  // Minified/hashed build artifacts (workbox, webpack chunks, service workers)
+  '**/*.min.js',
+  '**/workbox-*.js',
+  '**/*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].js',
 ] as const;
 
 function normalizePattern(pattern: string): string | null {

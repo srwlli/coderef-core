@@ -298,7 +298,11 @@ export const DEFAULT_EXCLUDE_PATTERNS = [
   '**/archived/**',
   '**/tmp/**',
   '**/temp/**',
-  '**/backup/**'
+  '**/backup/**',
+  // Minified/hashed build artifacts (workbox, webpack chunks, service workers)
+  '**/*.min.js',
+  '**/workbox-*.js',
+  '**/*-[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f].js',
 ] as const;
 
 /**
