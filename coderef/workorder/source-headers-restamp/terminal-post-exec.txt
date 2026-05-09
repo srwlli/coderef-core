@@ -1,0 +1,42 @@
+=============================================================
+WORKORDER: WO-SOURCE-HEADERS-RESTAMP-001  |  source-headers-restamp  |  COMPLETE
+Session: daily-agent-session-2026-05-08 / CODEREF-CORE  |  Phases: 1  |  Commits: 2  |  Pushes: 2
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/source-headers-restamp/context.json    (b074140)
+  + coderef/workorder/source-headers-restamp/analysis.json   (b074140)
+  + coderef/workorder/source-headers-restamp/plan.json       (b074140)
+  + coderef/workorder/source-headers-restamp/communication.json  (b074140 → 84748ed)
+  + coderef/workorder/source-headers-restamp/terminal-post-exec.txt  (close-out)
+
+FILES MODIFIED ON feature/source-headers-dogfood:
+  ~ src/semantic/header-generator.ts  (d3ed7f5) — formatAsComments: @coderef-semantic: 1.0.0, no colon, no brackets
+  ~ src/semantic/header-generator.test.ts  (d3ed7f5) — test expectations updated
+  ~ 174 src/ and __tests__ source files  (d3ed7f5) — strip @semantic, restamp @coderef-semantic: 1.0.0
+
+PHASE CHECKLIST:
+  [x] Phase 1: Audit, fix, restamp, reindex
+        T1.1 git checkout feature/source-headers-dogfood — PASS
+        T1.2 Stamper located: src/semantic/header-generator.ts L171 (formatAsComments)
+        T1.3 header-generator.ts updated: @coderef-semantic: 1.0.0, no colon, no brackets
+        T1.4 174 files stripped @semantic, restamped @coderef-semantic — PASS
+        T1.5 populate-coderef: headerStatus={missing:256, stale:9, defined:5, undefined:99}
+        T1.6 rag-index --reset: 125 chunks passed header gate (attempted embedding), 2607 skipped header_status_missing. Embedding failed: no OpenAI key (pre-existing, non-blocking)
+        T1.7 Commit d3ed7f5 pushed to feature/source-headers-dogfood — PASS
+        T1.8 git checkout main — PASS
+
+FINDINGS:
+  Header gate: NOW PASSING for defined files
+  125 chunks attempted embedding (up from 0 in WO-SOURCE-HEADERS-E2E-VALIDATION-001)
+  Format corrections applied:
+    1. @semantic -> @coderef-semantic: 1.0.0 (marker fix)
+    2. @exports: [A] -> @exports A (no colon — extractTagValue regex doesn't consume ':')
+    3. [A, B] -> A, B (no brackets — parseExportsList doesn't strip bracket wrapping)
+  Root causes documented. header-generator.ts formatAsComments updated for future re-stamps.
+  Tests: 15 PASS
+
+Session: updated  |  Registry: synced  |  Validator: 9 PASS / 6 FAIL (pre-existing STUB-044 drift)
+
+APPROVE -> /close-workorder WO-SOURCE-HEADERS-RESTAMP-001
+=============================================================
