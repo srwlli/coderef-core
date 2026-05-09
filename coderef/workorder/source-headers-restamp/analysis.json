@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-RESTAMP-001",
+  "feature_name": "source-headers-restamp",
+  "analysis_authored_at": "2026-05-09T03:45:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/cli/populate-coderef.ts (or populate-coderef bin) — update --source-headers stamp format",
+      "All ~174 source files on feature/source-headers-dogfood — strip @semantic blocks + re-stamp with @coderef-semantic: 1.0.0"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "src/pipeline/semantic-header-parser.ts — will now detect @coderef-semantic: blocks (SEMANTIC_MARKER_RE match)",
+      ".coderef/graph.json — rebuilt with headerStatus: present on file-grain nodes",
+      ".coderef-rag-index.json — rebuilt with > 0 chunks indexed"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "title": "Strip regex over-matches non-@semantic block comments",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Review strip regex carefully; limit to @semantic blocks bounded by /** */ delimiters"
+    },
+    {
+      "id": "R-002",
+      "title": "--source-headers format change breaks other consumers",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Search codebase for @semantic consumers before changing format; update semantic-header-parser.ts if needed"
+    },
+    {
+      "id": "R-003",
+      "title": "rag-index still fails on embedding (OpenAI key missing)",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "Success metric = chunks_skipped drops to 0 (header gate passes); embedding failures are pre-existing and non-blocking for this WO"
+    }
+  ],
+  "candidates": [
+    "populate-coderef --source-headers implementation",
+    "src/pipeline/semantic-header-parser.ts (verify SEMANTIC_MARKER_RE matches new format)",
+    "Feature branch source files (strip + restamp)"
+  ],
+  "dependencies": [
+    "populate-coderef CLI (npx populate-coderef)",
+    "rag-index CLI (npx rag-index)",
+    "feature/source-headers-dogfood branch"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Resolution Option A selected",
+      "rationale": "Fix --source-headers to emit @coderef-semantic: 1.0.0 full grammar. Minimal downstream impact — changes the stamper output to match the existing parser expectation. Options B (fix parser) and C (decouple) ruled out as higher risk / off-mission.",
+      "alternatives": ["B: fix semantic-header-parser to also accept @semantic", "C: treat @semantic as graph-enrichment only"]
+    }
+  ]
+}

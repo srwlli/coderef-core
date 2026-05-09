@@ -1,0 +1,65 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-RESTAMP-001",
+  "feature_name": "source-headers-restamp",
+  "created": "2026-05-09T03:45:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Targeted branch operation with known root cause; no broad discovery needed",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Audit, fix, restamp, reindex",
+      "gate": "All tasks in Phase 1 complete; rag-index reports chunks_skipped < 2705 (header gate passing for at least some nodes)",
+      "tasks": [
+        {
+          "id": "T1.1",
+          "verb": "RUN",
+          "description": "git checkout feature/source-headers-dogfood",
+          "success_criteria": "On feature branch"
+        },
+        {
+          "id": "T1.2",
+          "verb": "READ",
+          "description": "Locate the --source-headers implementation in populate-coderef CLI source. Find where @semantic blocks are stamped. Confirm the exact output format emitted.",
+          "success_criteria": "Source file and line number identified; stamped format confirmed as @semantic (wrong) vs @coderef-semantic: X.Y.Z (needed)"
+        },
+        {
+          "id": "T1.3",
+          "verb": "EDIT",
+          "description": "Update --source-headers stamper to emit @coderef-semantic: 1.0.0 format that matches SEMANTIC_MARKER_RE in semantic-header-parser.ts L43. The new block must include: version (1.0.0), and preserve exports/used_by data in the correct grammar.",
+          "success_criteria": "Source updated; tsc clean (or build passes); new stamp format matches /@coderef-semantic\\s*:\\s*([0-9]+\\.[0-9]+\\.[0-9]+)/"
+        },
+        {
+          "id": "T1.4",
+          "verb": "RUN",
+          "description": "Strip old @semantic blocks from all source files on the branch. Run: node -e script or a targeted strip pass. Verify no @semantic blocks remain.",
+          "success_criteria": "grep -r '@semantic' src/ returns 0 results (or only @coderef-semantic results)"
+        },
+        {
+          "id": "T1.5",
+          "verb": "RUN",
+          "description": "npx populate-coderef . -- to rebuild graph.json with corrected --source-headers. Check headerStatus distribution on file-grain nodes.",
+          "success_criteria": "headerStatus: present > 0 on file-grain nodes; no nodes with headerStatus: missing (or missing count reduced from 370)"
+        },
+        {
+          "id": "T1.6",
+          "verb": "RUN",
+          "description": "npx rag-index -- to rebuild vectors. Capture: chunks_indexed, chunks_skipped, skip reasons.",
+          "success_criteria": "chunks_indexed > 0 (header gate now passing). chunks_skipped reason=header_status_missing should be 0 or greatly reduced. Embedding failures (OpenAI key) are pre-existing non-blocking."
+        },
+        {
+          "id": "T1.7",
+          "verb": "COMMIT",
+          "description": "Commit changes to feature/source-headers-dogfood: updated stamper source + any build artifacts. Push branch.",
+          "success_criteria": "Commit on feature/source-headers-dogfood, pushed to remote"
+        },
+        {
+          "id": "T1.8",
+          "verb": "RUN",
+          "description": "git checkout main (return to main branch after validation)",
+          "success_criteria": "Back on main branch, working tree clean"
+        }
+      ]
+    }
+  ]
+}

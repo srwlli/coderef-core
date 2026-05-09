@@ -1,0 +1,57 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-RESTAMP-001",
+  "feature_name": "source-headers-restamp",
+  "created": "2026-05-09T03:45:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-008"],
+  "predecessor_for": null,
+  "predecessor_stub": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "coderef/workorder/source-headers-restamp/plan.json",
+  "context_file": "coderef/workorder/source-headers-restamp/context.json",
+  "analysis_file": "coderef/workorder/source-headers-restamp/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and registered. Ready for Phase 1 execution."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "gate_required": true,
+    "rollback_policy": "revert feature branch changes; do not touch main"
+  },
+  "hard_constraints": [
+    "Work on feature/source-headers-dogfood only — do NOT merge to main",
+    "Resolution Option A: fix --source-headers stamp format to @coderef-semantic: 1.0.0",
+    "Pre-existing STUB-044 schema drift in tracking-validator is acknowledged — do not fail on it",
+    "OpenAI API key missing is pre-existing — embedding failures non-blocking for this WO"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_decided",
+      "plan_type": "light",
+      "rationale": "Targeted branch operation with known root cause from WO-SOURCE-HEADERS-E2E-VALIDATION-001",
+      "at": "2026-05-09T03:45:00Z"
+    },
+    {
+      "event": "resolution_option_selected",
+      "selection": "Option A",
+      "rationale": "Fix --source-headers stamper to emit @coderef-semantic: 1.0.0 format matching SEMANTIC_MARKER_RE. Minimal risk; no parser changes needed.",
+      "at": "2026-05-09T03:45:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "source": "create-workorder",
+      "summary": "WO-SOURCE-HEADERS-RESTAMP-001 created (light, 1 phase, 8 tasks). Resolution Option A selected: fix --source-headers format mismatch.",
+      "at": "2026-05-09T03:45:00Z"
+    }
+  ]
+}

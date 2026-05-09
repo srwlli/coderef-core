@@ -1,0 +1,49 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-RESTAMP-001",
+  "feature_name": "source-headers-restamp",
+  "created": "2026-05-09T03:45:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-08-008",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Re-stamp the 174 source files on feature/source-headers-dogfood with the fixed @coderef-semantic: 1.0.0 format. Strip old @semantic blocks first, re-run --source-headers, then rebuild graph.json + rag-index and verify > 0 chunks indexed."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Targeted branch operation: strip old @semantic blocks, re-stamp with correct @coderef-semantic: 1.0.0 format, repopulate graph, reindex. No broad discovery needed — root cause and files already identified in WO-SOURCE-HEADERS-E2E-VALIDATION-001.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Strip @semantic blocks stamped by populate-coderef --source-headers from all source files on feature/source-headers-dogfood",
+      "Update populate-coderef --source-headers to emit @coderef-semantic: 1.0.0 format (Resolution Option A from WO-SOURCE-HEADERS-E2E-VALIDATION-001)",
+      "Re-run populate-coderef . on feature branch to rebuild graph.json with corrected headerStatus",
+      "Re-run rag-index to rebuild vectors with header-gated chunks now passing",
+      "Verify > 0 chunks indexed (headerStatus: present on file-grain nodes)"
+    ],
+    "out_of_scope": [
+      "Merging feature/source-headers-dogfood to main",
+      "Fixing OpenAI API key configuration (pre-existing environment issue)",
+      "Running live discovery RAG query (blocked by OpenAI key)",
+      "Modifying semantic-header-parser.ts (Resolution Option B — not selected)",
+      "Decoupling @semantic from headerStatus signal (Resolution Option C — not selected)"
+    ]
+  },
+  "constraints": [
+    "Work on feature/source-headers-dogfood only — do NOT merge to main",
+    "Resolution Option A selected: fix --source-headers output to emit @coderef-semantic: 1.0.0 format",
+    "predecessor_stub: null (no parent stub)"
+  ],
+  "predecessor_workorders": ["WO-SOURCE-HEADERS-DOGFOOD-001", "WO-SOURCE-HEADERS-E2E-VALIDATION-001"],
+  "predecessor_stub": null
+}
