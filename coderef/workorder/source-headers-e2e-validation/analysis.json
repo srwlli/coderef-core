@@ -1,0 +1,62 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-E2E-VALIDATION-001",
+  "feature_name": "source-headers-e2e-validation",
+  "analysis_authored_at": "2026-05-09T02:00:00Z",
+  "blast_radius": {
+    "files_modified": [".coderef/graph.json", ".coderef/index.json (repopulated)", ".coderef-rag-index.json", ".coderef/coderef-vectors.json"],
+    "files_created": [],
+    "downstream_consumers": [
+      "RAG discovery (CODEREF_LLOYD_DISCOVERY_RAG=1 queries)",
+      "Lloyd context enrichment in create-workorder / execute-workorder"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "title": "populate-coderef overwrites .coderef/ artifacts on feature branch",
+      "likelihood": "certain",
+      "impact": "low",
+      "mitigation": "These are regenerable artifacts. Overwrite is expected and desired on the feature branch."
+    },
+    {
+      "id": "R-002",
+      "title": "RAG query returns no hits — semantic_context empty",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "If no hits, report the empty result with details on why (vector count, embedding shape, query). Negative result is still a valid finding."
+    },
+    {
+      "id": "R-003",
+      "title": "CODEREF_LLOYD_DISCOVERY_RAG=1 requires Lloyd to be reachable",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Check Lloyd/rag-server status before query. If unavailable, report the infrastructure state and fallback result."
+    }
+  ],
+  "candidates": [
+    {
+      "file": ".coderef/graph.json",
+      "symbol": "all nodes",
+      "change": "Repopulated with @semantic metadata from source-headers-dogfood branch"
+    },
+    {
+      "file": ".coderef-rag-index.json / coderef-vectors.json",
+      "symbol": "vector index",
+      "change": "Rebuilt from enriched graph via rag-index"
+    }
+  ],
+  "dependencies": [
+    "npx populate-coderef (coderef-core CLI)",
+    "npx rag-index (coderef-core CLI)",
+    "CODEREF_LLOYD_DISCOVERY_RAG=1 (env flag)",
+    "Lloyd / coderef-rag-server (must be reachable for step 3)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Run as light plan — validation only, no source code changes",
+      "rationale": "This is a dogfood e2e smoke test of the --source-headers pipeline. No logic modification is in scope."
+    }
+  ]
+}

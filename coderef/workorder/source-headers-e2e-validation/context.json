@@ -1,0 +1,45 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-E2E-VALIDATION-001",
+  "feature_name": "source-headers-e2e-validation",
+  "created": "2026-05-09T02:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-08-007",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "On branch feature/source-headers-dogfood: (1) run populate-coderef . to rebuild graph.json with @semantic metadata, (2) run rag-index to rebuild vectors from the enriched graph, (3) run a discovery query with CODEREF_LLOYD_DISCOVERY_RAG=1 against a real workorder topic and verify semantic_context is populated with meaningful hits."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Validation/investigation run on a feature branch. No code changes to coderef-core logic. Single execution sequence: populate + rag-index + query + report.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "git checkout feature/source-headers-dogfood",
+      "npx populate-coderef . (rebuild graph.json with @semantic metadata from stamped source files)",
+      "npx rag-index (rebuild vectors from enriched graph)",
+      "Run discovery query with CODEREF_LLOYD_DISCOVERY_RAG=1 on topic 'output-validator file-grain aggregation'",
+      "Report: hits returned, fields populated, e2e pipeline working Y/N"
+    ],
+    "out_of_scope": [
+      "Merging feature/source-headers-dogfood to main",
+      "Modifying source files",
+      "Changes to rag-index or populate-coderef logic"
+    ]
+  },
+  "constraints": [
+    "Must run on feature/source-headers-dogfood branch (not main)",
+    "Do NOT merge to main",
+    "Return to main after validation"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-E2E-VALIDATION-001",
+  "feature_name": "source-headers-e2e-validation",
+  "created": "2026-05-09T02:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-007"],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-e2e-validation/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-e2e-validation/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-e2e-validation/analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "E2E validation: repopulate + reindex + discovery query on feature/source-headers-dogfood. Report semantic_context hits."
+  },
+  "execution_rules": {
+    "phase_1": "Single phase, no hard stop. Checkout branch, repopulate, reindex, query, report, return to main."
+  },
+  "hard_constraints": [
+    "Must run on feature/source-headers-dogfood branch",
+    "Do NOT merge to main",
+    "Return to main after validation"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-09T02:00:00Z",
+      "event": "workorder_created",
+      "by": "CODEREF-CORE",
+      "note": "WO-SOURCE-HEADERS-E2E-VALIDATION-001 created. Plan type: light. E2E smoke test of @semantic pipeline on feature/source-headers-dogfood."
+    }
+  ]
+}
