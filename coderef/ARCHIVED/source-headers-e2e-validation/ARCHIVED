@@ -1,0 +1,8 @@
+Archived: 2026-05-09T02:55:00Z
+Reviewed by: close-workorder v2.0.0
+Status: WARNING
+Workorder: WO-SOURCE-HEADERS-E2E-VALIDATION-001
+Feature: source-headers-e2e-validation
+Original location: coderef/workorder/source-headers-e2e-validation/
+Final commit: 288273a (close) — 0c76640 (e2e validation complete)
+Outcome: E2E pipeline NOT working. Root cause: @semantic format mismatch — semantic-header-parser.ts L43 expects @coderef-semantic: X.Y.Z, not @semantic. 2705 chunks skipped (header_status_missing). Resolution options A/B/C documented.

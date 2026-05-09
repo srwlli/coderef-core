@@ -1,0 +1,87 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-E2E-VALIDATION-001",
+  "feature_name": "source-headers-e2e-validation",
+  "created": "2026-05-09T02:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-007"],
+  "predecessor_for": null,
+  "status": "closed",
+  "completed_at": "2026-05-09T02:30:00Z",
+  "closed_at": "2026-05-09T02:55:00Z",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-e2e-validation/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-e2e-validation/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-e2e-validation/analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "E2E validation: repopulate + reindex + discovery query on feature/source-headers-dogfood. Report semantic_context hits."
+  },
+  "execution_rules": {
+    "phase_1": "Single phase, no hard stop. Checkout branch, repopulate, reindex, query, report, return to main."
+  },
+  "hard_constraints": [
+    "Must run on feature/source-headers-dogfood branch",
+    "Do NOT merge to main",
+    "Return to main after validation"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "findings": {
+    "populate_exit": 0,
+    "rag_index_exit": 1,
+    "chunks_indexed": 0,
+    "chunks_skipped": 2705,
+    "chunks_failed": 99,
+    "skip_reason": "header_status_missing (all 2705 chunks)",
+    "root_cause": "@semantic blocks stamped by --source-headers use the @semantic tag. The semantic-header-parser (src/pipeline/semantic-header-parser.ts L43) detects @coderef-semantic: X.Y.Z format only. @semantic blocks are NOT recognized — headerStatus remains 'missing' on all file-grain nodes after repopulate.",
+    "rag_query_result": "FAILED — OpenAI API key not configured (embedding_api_error). Vector store empty (0 records). CODEREF_LLOYD_DISCOVERY_RAG=1 query fails — semantic_context NOT populated.",
+    "e2e_pipeline_working": false,
+    "gap_identified": "Format mismatch: --source-headers stamps @semantic (exports/used_by only), semantic-header-parser expects @coderef-semantic: with full grammar (version, layer, owners, exports, imports). The two formats are incompatible."
+  },
+  "communication_log": [
+    {
+      "at": "2026-05-09T02:00:00Z",
+      "event": "workorder_created",
+      "by": "CODEREF-CORE",
+      "note": "WO-SOURCE-HEADERS-E2E-VALIDATION-001 created. Plan type: light. E2E smoke test of @semantic pipeline on feature/source-headers-dogfood."
+    },
+    {
+      "at": "2026-05-09T02:05:00Z",
+      "event": "phase_1_started",
+      "by": "CODEREF-CORE",
+      "note": "Checked out feature/source-headers-dogfood. Running T1.1-T1.5."
+    },
+    {
+      "at": "2026-05-09T02:10:00Z",
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "skip",
+      "reason": "missing_infra — scripts/doc-gen/ not present"
+    },
+    {
+      "at": "2026-05-09T02:30:00Z",
+      "event": "workorder_complete",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 complete. populate-coderef exit:0. rag-index exit:1 (0 chunks indexed, 2705 skipped, 99 failed). Root cause: @semantic format mismatch — parser expects @coderef-semantic: not @semantic. Vector store empty. Discovery query fails (no OpenAI key). E2E pipeline NOT working. Gap reported."
+    },
+    {
+      "at": "2026-05-09T02:55:00Z",
+      "event": "workorder_closed",
+      "by": "ORCHESTRATOR",
+      "note": "WO-SOURCE-HEADERS-E2E-VALIDATION-001 closed. Tracking validators PASS (scoped). Archive complete."
+    }
+  ],
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/source-headers-e2e-validation/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — WARNING (2 soft stops: mapping_coverage, tool_canonicity pre-existing)",
+    "warnings": [
+      "mapping_coverage: mapping-table.json not present for CODEREF-CORE",
+      "tool_canonicity: no mapping-table.json to check"
+    ]
+  }
+}
