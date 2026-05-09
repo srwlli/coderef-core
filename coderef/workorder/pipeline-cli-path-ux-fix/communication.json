@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-PIPELINE-CLI-PATH-UX-FIX-001",
+  "feature_name": "pipeline-cli-path-ux-fix",
+  "created": "2026-05-09T05:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-006"],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-cli-path-ux-fix\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-cli-path-ux-fix\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-cli-path-ux-fix\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Light plan. Single phase, no hard stops. Ready for immediate execution by CODEREF-CORE agent after current dispatch (DISPATCH-2026-05-08-010) closes."
+  },
+  "execution_rules": {
+    "phase_type": "light",
+    "hard_stops": [],
+    "gate_rule": "No hard stops. Execute Phase 1 fully in one pass."
+  },
+  "hard_constraints": [
+    "Positional path fallback must not break existing --project-dir users",
+    "Error message must name the exact flag: --project-dir <path>",
+    "If source is TypeScript, rebuild after editing before testing",
+    "docs/CLI.md must be updated if --help output changes"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-09T05:40:00Z",
+      "event": "workorder_created",
+      "source": "create-workorder",
+      "message": "Workorder WO-PIPELINE-CLI-PATH-UX-FIX-001 created. Plan type: light (Rule 6 fallthrough). 1 phase, 6 tasks. SKILLS-side review dispatch: DISPATCH-2026-05-08-006. Spawned from STUB-270. Ready for CODEREF-CORE execution after DISPATCH-2026-05-08-010 closes."
+    }
+  ]
+}

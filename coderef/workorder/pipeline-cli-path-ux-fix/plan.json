@@ -1,0 +1,55 @@
+{
+  "workorder_id": "WO-PIPELINE-CLI-PATH-UX-FIX-001",
+  "feature_name": "pipeline-cli-path-ux-fix",
+  "created": "2026-05-09T05:40:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Rule 6 fallthrough: focused CLI UX fix in a single file. No multi-layer impact, no architectural change.",
+  "plan_type_decided_by": "create-workorder@2.5.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Audit, Fix, and Verify CLI Path UX",
+      "description": "Locate the coderef-pipeline.js CLI entry point, audit how --project-dir is parsed, implement the UX fix (error message + --help + optional positional fallback), rebuild if needed, test the fix, update CLI.md if --help changed, and commit.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Locate the coderef-pipeline CLI entry point: check src/cli/coderef-pipeline.js, dist/src/cli/coderef-pipeline.js, or bin/. Read it and identify the arg parser used (yargs/minimist/commander) and how --project-dir is currently declared. Confirm whether positional args are supported.",
+          "success_criteria": "Exact source file path identified; arg parser library confirmed; current --project-dir declaration read; positional support status known"
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Run `coderef-pipeline --help` (or `node <entry> --help`) and capture current output. Confirm --project-dir is listed and what the current error behavior is when --project-dir is omitted.",
+          "success_criteria": "Current --help output captured; silent-fail behavior on missing --project-dir confirmed"
+        },
+        {
+          "id": "1.3",
+          "verb": "EDIT",
+          "description": "In the identified CLI source file: (a) add validation that errors with a clear actionable message when --project-dir is not provided: 'Error: --project-dir <path> is required. Example: coderef-pipeline scan --project-dir /path/to/project'; (b) update .option() description for --project-dir to mark it as required and explain its purpose; (c) if the arg parser supports positional args cleanly, add positional path as an alias for --project-dir.",
+          "success_criteria": "Running `coderef-pipeline` with no --project-dir prints the error message. `--help` shows --project-dir prominently. Existing `--project-dir <path>` invocations still work."
+        },
+        {
+          "id": "1.4",
+          "verb": "RUN",
+          "description": "If the source is TypeScript: run `npm run build` or `tsc` in the CODEREF-CORE root to compile. Then run a smoke test: `coderef-pipeline` (no args) → expect error message. `coderef-pipeline --project-dir C:/Users/willh/Desktop/CODEREF/CODEREF-CORE` → expect normal pipeline behavior (or at minimum no path-missing error).",
+          "success_criteria": "Build succeeds. Missing-path error test: prints error message with --project-dir hint. With-path test: does not print path-missing error."
+        },
+        {
+          "id": "1.5",
+          "verb": "EDIT",
+          "description": "If --help output changed: update CODEREF-CORE/docs/CLI.md to reflect the new --project-dir flag description and any new positional arg syntax.",
+          "success_criteria": "CLI.md reflects current --help output for coderef-pipeline. If --help unchanged, skip."
+        },
+        {
+          "id": "1.6",
+          "verb": "COMMIT",
+          "description": "Stage and commit all changes: CLI source, docs/CLI.md (if changed). Message: fix(coderef-pipeline): add --project-dir required error + --help UX improvements",
+          "success_criteria": "Clean git commit. No untracked changes in staged files."
+        }
+      ]
+    }
+  ]
+}

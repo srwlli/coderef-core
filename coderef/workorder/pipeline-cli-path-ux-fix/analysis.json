@@ -1,0 +1,60 @@
+{
+  "workorder_id": "WO-PIPELINE-CLI-PATH-UX-FIX-001",
+  "feature_name": "pipeline-cli-path-ux-fix",
+  "analysis_authored_at": "2026-05-09T05:40:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "CODEREF-CORE/src/cli/coderef-pipeline.js (or equivalent entry — exact path TBD via Task 1.1 audit)"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "docs/CLI.md — must be updated if --help output changes",
+      "All users of coderef-pipeline CLI command (passive — backwards-compatible fix)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "title": "Positional path fallback breaks existing --project-dir users",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Positional arg is additive — --project-dir still works, positional is a new alias. If yargs/minimist is used, test precedence order explicitly."
+    },
+    {
+      "id": "R-002",
+      "title": "CLI entry point is compiled/generated — editing .js source doesn't take effect",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Task 1.1 audit identifies exact source file and whether a build step is needed. If TypeScript source, edit .ts file and rebuild before testing."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "CODEREF-CORE/src/cli/coderef-pipeline.js (or .ts)",
+      "role": "primary — CLI entry point where --project-dir is parsed",
+      "action": "EDIT"
+    },
+    {
+      "file": "CODEREF-CORE/docs/CLI.md",
+      "role": "reference doc — must reflect updated --help output",
+      "action": "EDIT (conditional on --help change)"
+    }
+  ],
+  "dependencies": [
+    "yargs/minimist/commander — whichever arg parser coderef-pipeline uses (TBD via audit)",
+    "CODEREF-CORE build step — if TypeScript source, run tsc or npm run build after editing"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Light plan type — no discovery needed",
+      "rationale": "Single-file CLI UX fix. No architectural change, no cross-layer impact. Light plan is appropriate."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Positional path fallback is optional",
+      "rationale": "The primary fix is the error message + --help improvement. Positional fallback is a nice-to-have that the implementer should judge based on how the CLI arg parser is set up."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "workorder_id": "WO-PIPELINE-CLI-PATH-UX-FIX-001",
+  "feature_name": "pipeline-cli-path-ux-fix",
+  "created": "2026-05-09T05:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-08-006",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "coderef-pipeline CLI has weak project path UX — requires --project-dir flag but this is undiscoverable (positional path fails silently). User hit this during gridiron-franchise scan+populate run. Scope: audit coderef-pipeline.js CLI flag design, compare --project-dir vs positional arg convention, stub a workorder for fixing the UX gap (better error message, --help output, or positional fallback)."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Rule 6 fallthrough: focused CLI UX fix — single file (coderef-pipeline.js), no architectural change, no multi-layer impact. Light plan sufficient.",
+    "plan_type_decided_by": "create-workorder@2.5.0",
+    "plan_type_override": null,
+    "classifier_choice": "light",
+    "discovery_ref": null,
+    "discovery": null,
+    "discovery_rag": null,
+    "discovery_rag_enabled": false
+  },
+  "scope": {
+    "in_scope": [
+      "Audit coderef-pipeline.js CLI flag design: --project-dir vs positional arg convention",
+      "Add clear error message when --project-dir is omitted (fail with actionable hint, not silent)",
+      "Improve --help output to surface --project-dir prominently as the primary required arg",
+      "Optionally add positional path fallback so `coderef-pipeline <path>` works without the flag",
+      "Verify fix against gridiron-franchise scan+populate use case"
+    ],
+    "out_of_scope": [
+      "Changes to other CLI commands (coderef-scan, populate-coderef, rag-index, etc.)",
+      "Structural refactor of the pipeline orchestration logic",
+      "Adding new pipeline stages or flags unrelated to path UX",
+      "Test suite changes beyond a basic smoke test for the new error path"
+    ]
+  },
+  "constraints": [
+    "Positional path fallback (if added) must not break existing --project-dir users",
+    "Error message must name the exact flag: --project-dir <path>",
+    "CODEREF-CORE CLI reference doc (docs/CLI.md) must be updated if --help output changes"
+  ],
+  "stub_id": "STUB-270",
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": ["semantic_scan skipped for light plan"]
+  }
+}
