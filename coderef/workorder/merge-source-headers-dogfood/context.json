@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-MERGE-SOURCE-HEADERS-DOGFOOD-001",
+  "feature_name": "merge-source-headers-dogfood",
+  "created": "2026-05-09T18:35:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-09-003",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Merge feature/source-headers-dogfood into main. Smoke test passed (310 nodes headerStatus:defined, 409 chunks attempted embedding). No source changes needed — merge only."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single git merge + push operation. No source code changes, no feature work — pure branch integration.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "git merge feature/source-headers-dogfood into main",
+      "git push main to origin",
+      "Confirm clean working tree and linear history"
+    ],
+    "out_of_scope": [
+      "Source code changes",
+      "Resolving exports_match_ast stale mismatches (129 files)",
+      "Any new feature work"
+    ]
+  },
+  "constraints": [
+    "Merge onto main branch only",
+    "No --force push",
+    "Verify merge is a fast-forward or clean merge — no source conflict resolution"
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "workorder_id": "WO-MERGE-SOURCE-HEADERS-DOGFOOD-001",
+  "feature_name": "merge-source-headers-dogfood",
+  "created": "2026-05-09T18:35:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-09-003"],
+  "predecessor_for": null,
+  "status": "complete",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "completed_at": "2026-05-09T18:50:00Z",
+  "plan_file": "coderef/workorder/merge-source-headers-dogfood/plan.json",
+  "context_file": "coderef/workorder/merge-source-headers-dogfood/context.json",
+  "analysis_file": "coderef/workorder/merge-source-headers-dogfood/analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "DISPATCH-2026-05-09-003: Merge feature/source-headers-dogfood into main — smoke test PASS"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "inter_phase_halts": false,
+    "strict_task_vocabulary": true,
+    "foundation_docs_gate": false
+  },
+  "hard_constraints": [
+    "Merge onto main branch only",
+    "No --force push",
+    "No source code changes — merge only"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-09T18:35:00Z",
+      "by": "CODEREF-CORE",
+      "note": "WO-MERGE-SOURCE-HEADERS-DOGFOOD-001 created; light plan, 1 phase, 4 tasks. Dispatch: DISPATCH-2026-05-09-003."
+    },
+    {
+      "event": "merge_conflict_resolved",
+      "at": "2026-05-09T18:50:00Z",
+      "by": "CODEREF-CORE",
+      "note": "Conflicts in src/semantic/header-generator.ts and src/semantic/header-generator.test.ts — both resolved by taking feature branch version (--theirs). Feature branch version contains validated fixes (formatAsComments + insertHeaders) that produced 310 defined nodes and 409 chunks attempted embedding. Main had partial fix fe131d9 that lacked the insert-position fix."
+    },
+    {
+      "event": "phase_complete",
+      "at": "2026-05-09T18:50:00Z",
+      "by": "CODEREF-CORE",
+      "note": "Merge commit 3898c82 pushed to origin/main. feature/source-headers-dogfood integrated. AC met: branch merged, main pushed, clean state confirmed."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-09T18:50:00Z",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 complete. feature/source-headers-dogfood merged into main (3898c82). Conflicts resolved via --theirs (feature branch correct). Main pushed to origin."
+    }
+  ]
+}

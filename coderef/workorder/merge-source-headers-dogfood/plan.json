@@ -1,0 +1,36 @@
+{
+  "workorder_id": "WO-MERGE-SOURCE-HEADERS-DOGFOOD-001",
+  "feature_name": "merge-source-headers-dogfood",
+  "created": "2026-05-09T18:35:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single git merge + push — no source changes",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Merge feature/source-headers-dogfood into main",
+      "tasks": [
+        {
+          "id": "T1.1",
+          "verb": "CHECK",
+          "description": "Verify current branch state and confirm feature/source-headers-dogfood is ahead of main with no conflicts"
+        },
+        {
+          "id": "T1.2",
+          "verb": "RUN",
+          "description": "Checkout main, merge feature/source-headers-dogfood, push to origin"
+        },
+        {
+          "id": "T1.3",
+          "verb": "CHECK",
+          "description": "Confirm clean working tree, correct HEAD on main, and push succeeded"
+        },
+        {
+          "id": "T1.4",
+          "verb": "COMMIT",
+          "description": "Commit workorder files on main (created during merge)"
+        }
+      ]
+    }
+  ]
+}

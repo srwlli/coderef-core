@@ -1,0 +1,30 @@
+{
+  "workorder_id": "WO-MERGE-SOURCE-HEADERS-DOGFOOD-001",
+  "feature_name": "merge-source-headers-dogfood",
+  "analysis_authored_at": "2026-05-09T18:35:00Z",
+  "blast_radius": {
+    "files_modified": 0,
+    "files_created": 0,
+    "downstream_consumers": ["main branch consumers"]
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Merge conflict",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "feature/source-headers-dogfood has only additive changes (headers + workorder files); main has no diverging changes to those files"
+    },
+    {
+      "id": "R2",
+      "title": "Non-fast-forward merge introduces extraneous history",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Inspect git log before push; use --no-ff only if explicit merge commit is desired"
+    }
+  ],
+  "candidates": [],
+  "dependencies": ["git CLI"],
+  "public_api_hits": [],
+  "decision_records": []
+}
