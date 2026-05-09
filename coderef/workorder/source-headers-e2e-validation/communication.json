@@ -6,8 +6,9 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-007"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-09T02:30:00Z",
+  "closed_at": "2026-05-09T02:55:00Z",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-e2e-validation/plan.json",
@@ -66,6 +67,21 @@
       "event": "workorder_complete",
       "by": "CODEREF-CORE",
       "note": "Phase 1 complete. populate-coderef exit:0. rag-index exit:1 (0 chunks indexed, 2705 skipped, 99 failed). Root cause: @semantic format mismatch — parser expects @coderef-semantic: not @semantic. Vector store empty. Discovery query fails (no OpenAI key). E2E pipeline NOT working. Gap reported."
+    },
+    {
+      "at": "2026-05-09T02:55:00Z",
+      "event": "workorder_closed",
+      "by": "ORCHESTRATOR",
+      "note": "WO-SOURCE-HEADERS-E2E-VALIDATION-001 closed. Tracking validators PASS (scoped). Archive complete."
     }
-  ]
+  ],
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/source-headers-e2e-validation/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — WARNING (2 soft stops: mapping_coverage, tool_canonicity pre-existing)",
+    "warnings": [
+      "mapping_coverage: mapping-table.json not present for CODEREF-CORE",
+      "tool_canonicity: no mapping-table.json to check"
+    ]
+  }
 }
