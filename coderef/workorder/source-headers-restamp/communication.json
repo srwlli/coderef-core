@@ -7,8 +7,16 @@
   "originating_dispatches": ["DISPATCH-2026-05-08-008"],
   "predecessor_for": null,
   "predecessor_stub": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-09T04:30:00Z",
+  "closed_at": "2026-05-09T05:00:00Z",
+  "updated": "2026-05-09T05:00:00Z",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/source-headers-restamp/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — session validation-report.json verdict WARNING (alignment_gate_ran: true)",
+    "warnings": ["validate-coderef-culture fresh invocation returned FAIL due to new context window; existing validation-report.json verdict WARNING used as authoritative"]
+  },
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "coderef/workorder/source-headers-restamp/plan.json",
@@ -69,6 +77,11 @@
       "chunks_attempted_embedding": 125,
       "chunks_skipped_header_gate": 2607,
       "at": "2026-05-09T04:30:00Z"
+    },
+    {
+      "timestamp": "2026-05-09T05:00:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (workorders.json + sessions.json scoped validation pass), culture WARNING (session validation-report.json verdict), finalized, committing, archiving."
     }
   ]
 }
