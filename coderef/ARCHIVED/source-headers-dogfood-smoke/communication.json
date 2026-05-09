@@ -1,0 +1,69 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001",
+  "feature_name": "source-headers-dogfood-smoke",
+  "created": "2026-05-09T17:54:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-09-002"],
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "completed_at": "2026-05-09T18:10:00Z",
+  "closed_at": "2026-05-09T18:28:00Z",
+  "updated": "2026-05-09T18:28:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/source-headers-dogfood-smoke/ARCHIVED",
+    "review_verdict_source": "Step 3 audit",
+    "warnings": []
+  },
+  "plan_file": "coderef/workorder/source-headers-dogfood-smoke/plan.json",
+  "context_file": "coderef/workorder/source-headers-dogfood-smoke/context.json",
+  "analysis_file": "coderef/workorder/source-headers-dogfood-smoke/analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "DISPATCH-2026-05-09-002: Smoke test — confirm headerStatus:defined for sample file, chunks_attempted > 0 on feature/source-headers-dogfood"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "inter_phase_halts": false,
+    "strict_task_vocabulary": true,
+    "foundation_docs_gate": false
+  },
+  "hard_constraints": [
+    "Execute on feature/source-headers-dogfood branch only",
+    "Read-only validation — no source file modifications",
+    "OpenAI key absent — chunks_attempted > 0 is AC (embedding_api_error expected)"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-09T17:54:00Z",
+      "by": "CODEREF-CORE",
+      "note": "WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001 created; light plan, 1 phase, 4 tasks. Dispatch: DISPATCH-2026-05-09-002."
+    },
+    {
+      "event": "phase_complete",
+      "at": "2026-05-09T18:10:00Z",
+      "by": "CODEREF-CORE",
+      "note": "T1.1: populate-coderef --source-headers ran clean (all 174 files already had semantic headers). T1.2: graph.json shows 310 nodes headerStatus:defined (sample: src/analyzer/graph-error.ts#GraphError). T1.3: rag-index --reset confirms chunksFailed:409 — 409 chunks passed header gate + attempted embedding (OpenAI invalid_api_key, pre-existing). AC met: chunks_attempted=409 > 0."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-09T18:10:00Z",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 complete. Smoke test passed: parser returns headerStatus:defined (310 nodes), rag-index confirms 409 chunks attempted embedding. No source modifications made."
+    },
+    {
+      "timestamp": "2026-05-09T18:28:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (cultural-alignment PASS, tracking scoped PASS). 1 phase, 2 commits, archived to coderef/ARCHIVED/source-headers-dogfood-smoke/."
+    }
+  ]
+}
