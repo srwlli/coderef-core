@@ -162,16 +162,16 @@ export class HeaderGenerator {
       if (headers.length === 0) return comments;
 
       comments.push(`/**`);
-      comments.push(` * @semantic`);
+      comments.push(` * @coderef-semantic: 1.0.0`);
       for (const header of headers) {
-        comments.push(` * ${header.type}: ${header.content.join(', ')}`);
+        comments.push(` * @${header.type}: ${header.content.join(', ')}`);
       }
       comments.push(` */`);
       return comments;
     }
 
     for (const header of headers) {
-      comments.push(`// @semantic ${header.type}: ${header.content.join(', ')}`);
+      comments.push(`// @coderef-semantic: 1.0.0 @${header.type}: ${header.content.join(', ')}`);
     }
 
     return comments;
@@ -306,8 +306,8 @@ export class HeaderGenerator {
   }
 
   private hasSemanticHeader(content: string): boolean {
-    return /(^|\r?\n)\/\*\*\r?\n(?: \*.*\r?\n)* \* @semantic\r?\n(?: \*.*\r?\n)* \*\//.test(content)
-      || /^\/\/\s*@semantic/m.test(content);
+    return /\/\*\*[\s\S]*?@coderef-semantic\s*:[\s\S]*?\*\//.test(content)
+      || /^\/\/\s*@coderef-semantic\s*:/m.test(content);
   }
 }
 
