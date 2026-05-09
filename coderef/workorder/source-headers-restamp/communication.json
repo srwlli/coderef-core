@@ -7,9 +7,10 @@
   "originating_dispatches": ["DISPATCH-2026-05-08-008"],
   "predecessor_for": null,
   "predecessor_stub": null,
-  "status": "plan_created",
+  "status": "complete",
+  "completed_at": "2026-05-09T04:30:00Z",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "complete",
   "plan_file": "coderef/workorder/source-headers-restamp/plan.json",
   "context_file": "coderef/workorder/source-headers-restamp/context.json",
   "analysis_file": "coderef/workorder/source-headers-restamp/analysis.json",
@@ -52,6 +53,22 @@
       "source": "create-workorder",
       "summary": "WO-SOURCE-HEADERS-RESTAMP-001 created (light, 1 phase, 8 tasks). Resolution Option A selected: fix --source-headers format mismatch.",
       "at": "2026-05-09T03:45:00Z"
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "skip",
+      "reason": "missing_infra — docs/foundation/ does not exist",
+      "at": "2026-05-09T04:30:00Z"
+    },
+    {
+      "event": "workorder_complete",
+      "source": "execute-workorder",
+      "summary": "Phase 1 complete. 174 source files restamped: @semantic -> @coderef-semantic: 1.0.0 (no colon, no brackets). 125 chunks attempted embedding (passed header gate; failed: no OpenAI key, pre-existing). header-generator.ts formatAsComments updated. 15 tests pass. Commit d3ed7f5 pushed to feature/source-headers-dogfood.",
+      "commit": "d3ed7f5",
+      "headerStatus_defined": 5,
+      "chunks_attempted_embedding": 125,
+      "chunks_skipped_header_gate": 2607,
+      "at": "2026-05-09T04:30:00Z"
     }
   ]
 }
