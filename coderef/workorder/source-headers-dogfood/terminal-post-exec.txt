@@ -1,0 +1,30 @@
+=============================================================
+WORKORDER: WO-SOURCE-HEADERS-DOGFOOD-001  |  source-headers-dogfood  |  COMPLETE
+Session: daily-agent-session-2026-05-08 / CODEREF-CORE  |  Phases: 1  |  Commits: 3  |  Pushes: 2
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/source-headers-dogfood/context.json    (c97bb19)
+  + coderef/workorder/source-headers-dogfood/analysis.json   (c97bb19)
+  + coderef/workorder/source-headers-dogfood/plan.json       (c97bb19)
+  + coderef/workorder/source-headers-dogfood/communication.json  (c97bb19 → 742aadd)
+  + 174 src/**/*.ts @semantic blocks on feature/source-headers-dogfood  (f960678)
+  + coderef/workorder/source-headers-dogfood/terminal-post-exec.txt  (close-out)
+
+FILES MODIFIED:
+  ~ TRACKING/workorders.json  (211045f — ASSISTANT repo)
+  ~ TRACKING/sessions.json    (211045f — ASSISTANT repo)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Branch + run + review + conditional commit
+        T1.1 git checkout -b feature/source-headers-dogfood
+        T1.2 npx populate-coderef . --source-headers  (exit:0, 174 files)
+        T1.3 diff reviewed — PASS (correct @semantic format, no overwrites)
+        T1.4 commit f960678 on feature/source-headers-dogfood
+        T1.5 git push -u origin feature/source-headers-dogfood  (pushed)
+      close-out commit 742aadd (coderef-core) + 211045f (ASSISTANT)
+
+Session: updated  |  Registry: synced  |  Validator: 9 PASS / 6 FAIL (pre-existing STUB-044 drift, not caused by this WO)
+
+APPROVE -> /close-workorder WO-SOURCE-HEADERS-DOGFOOD-001
+=============================================================
