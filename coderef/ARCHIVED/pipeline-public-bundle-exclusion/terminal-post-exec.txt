@@ -1,0 +1,21 @@
+=============================================================
+WORKORDER: WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001  |  pipeline-public-bundle-exclusion  |  COMPLETE
+Session: SES-pipeline-public-bundle-exclusion  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  (none)
+
+FILES MODIFIED:
+  ~ src/pipeline/ignore-rules.ts  (72049ab)
+  ~ src/scanner/scanner.ts  (72049ab)
+  ~ coderef/workorder/pipeline-public-bundle-exclusion/communication.json  (59b07d9)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Add minified bundle globs to ignore-rules.ts + scanner.ts  (72049ab)
+  [x] Step 5 close-out: tracking ledger + communication.json finalized  (59b07d9)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing schema drift — not caused by this WO)
+
+APPROVE -> /close-workorder WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001
+=============================================================
