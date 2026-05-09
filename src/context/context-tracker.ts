@@ -10,9 +10,9 @@
  */
 
 /**
- * @semantic
- * exports: [ContextEntry, ContextHistory, ContextTracker]
- * used_by: [src/integration/ai-prompt-generator.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ContextEntry, ContextHistory, ContextTracker
+ * @used_by src/integration/ai-prompt-generator.ts
  */
 
 /**

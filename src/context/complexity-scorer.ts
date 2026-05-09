@@ -11,9 +11,9 @@
  */
 
 /**
- * @semantic
- * exports: [ComplexityScorer]
- * used_by: [src/context/task-context-generator.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ComplexityScorer
+ * @used_by src/context/task-context-generator.ts
  */
 
 import type { ElementComplexity, ComplexityMetrics, ElementData } from './types.js';

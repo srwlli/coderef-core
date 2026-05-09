@@ -7,8 +7,8 @@
  */
 
 /**
- * @semantic
- * exports: [PluginConfigEntry, ConfigLoaderOptions, loadConfigPlugins]
+ * @coderef-semantic: 1.0.0
+ * @exports PluginConfigEntry, ConfigLoaderOptions, loadConfigPlugins
  */
 
 import * as path from 'path';

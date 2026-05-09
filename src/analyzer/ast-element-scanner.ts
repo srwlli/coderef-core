@@ -15,9 +15,9 @@
  */
 
 /**
- * @semantic
- * exports: [ASTScanResult, ASTElementScanner, visit, scanFileWithAST, scanFilesWithAST]
- * used_by: [src/scanner/scanner.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ASTScanResult, ASTElementScanner, visit, scanFileWithAST, scanFilesWithAST
+ * @used_by src/scanner/scanner.ts
  */
 
 import * as fs from 'fs';

@@ -13,8 +13,8 @@
  */
 
 /**
- * @semantic
- * exports: [ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate]
+ * @coderef-semantic: 1.0.0
+ * @exports ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate
  */
 
 import { DependencyGraph, GraphNode, GraphEdge } from './graph-builder.js';

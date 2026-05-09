@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [ChromaStore, createChromaStore]
- * used_by: [src/cli/rag-index.ts, src/cli/rag-search.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ChromaStore, createChromaStore
+ * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts
  */
 
 import { ChromaClient, Collection } from 'chromadb';

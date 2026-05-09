@@ -12,8 +12,8 @@
  */
 
 /**
- * @semantic
- * exports: [BreakingChangeDetector]
+ * @coderef-semantic: 1.0.0
+ * @exports BreakingChangeDetector
  */
 
 // Re-export all types

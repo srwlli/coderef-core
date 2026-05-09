@@ -10,8 +10,8 @@
  */
 
 /**
- * @semantic
- * exports: [AIQueryType, GeneratedPrompt, AIPromptGenerator]
+ * @coderef-semantic: 1.0.0
+ * @exports AIQueryType, GeneratedPrompt, AIPromptGenerator
  */
 
 import { GraphNode } from '../analyzer/graph-builder.js';

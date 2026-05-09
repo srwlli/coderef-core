@@ -11,8 +11,8 @@
  */
 
 /**
- * @semantic
- * exports: [TraversalResult, MultiHopResult, MultiHopTraversal]
+ * @coderef-semantic: 1.0.0
+ * @exports TraversalResult, MultiHopResult, MultiHopTraversal
  */
 
 import { DependencyGraph, GraphNode, GraphEdge } from '../analyzer/graph-builder.js';

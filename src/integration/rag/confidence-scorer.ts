@@ -10,9 +10,9 @@
  */
 
 /**
- * @semantic
- * exports: [ConfidenceBreakdown, ConfidenceScoringOptions, ConfidenceScorer]
- * used_by: [src/integration/rag/__tests__/confidence-scorer.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ConfidenceBreakdown, ConfidenceScoringOptions, ConfidenceScorer
+ * @used_by src/integration/rag/__tests__/confidence-scorer.test.ts
  */
 
 import type { Answer } from './answer-generation-service.js';

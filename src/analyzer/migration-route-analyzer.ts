@@ -11,9 +11,9 @@
  */
 
 /**
- * @semantic
- * exports: [MigrationRouteElement, AffectedCaller, BreakingChange, OrphanedCall, FrameworkStats, MigrationRouteAnalyzer, extractAllRoutes, findOrphanedCalls, detectBreakingChanges]
- * used_by: [src/fileGeneration/detectPatterns.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports MigrationRouteElement, AffectedCaller, BreakingChange, OrphanedCall, FrameworkStats, MigrationRouteAnalyzer, extractAllRoutes, findOrphanedCalls, detectBreakingChanges
+ * @used_by src/fileGeneration/detectPatterns.ts
  */
 
 import { ElementData, RouteMetadata, FrontendCall } from '../types/types.js';

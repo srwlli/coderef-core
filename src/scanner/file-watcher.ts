@@ -8,8 +8,8 @@
  */
 
 /**
- * @semantic
- * exports: [FileWatcherOptions, WatcherStats, FileWatcher]
+ * @coderef-semantic: 1.0.0
+ * @exports FileWatcherOptions, WatcherStats, FileWatcher
  */
 
 import chokidar from 'chokidar';

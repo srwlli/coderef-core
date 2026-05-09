@@ -9,8 +9,8 @@
  */
 
 /**
- * @semantic
- * exports: [generateContext]
+ * @coderef-semantic: 1.0.0
+ * @exports generateContext
  */
 
 import * as fs from 'fs/promises';

@@ -10,8 +10,8 @@
  */
 
 /**
- * @semantic
- * exports: [DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns]
+ * @coderef-semantic: 1.0.0
+ * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
  */
 
 import * as fs from 'fs';

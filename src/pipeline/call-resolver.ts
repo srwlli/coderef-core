@@ -44,9 +44,9 @@
  */
 
 /**
- * @semantic
- * exports: [CallResolutionKind, CallResolution, SymbolTableEntry, SymbolTable, resolveCalls, buildSymbolTable, addEntry, resolveCallsAgainstTable, isBuiltinReceiver, classifyMethodCall, deriveCallerCodeRefId]
- * used_by: [src/pipeline/orchestrator.ts, src/pipeline/types.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports CallResolutionKind, CallResolution, SymbolTableEntry, SymbolTable, resolveCalls, buildSymbolTable, addEntry, resolveCallsAgainstTable, isBuiltinReceiver, classifyMethodCall, deriveCallerCodeRefId
+ * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts
  */
 
 import type {

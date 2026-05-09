@@ -8,9 +8,9 @@
  */
 
 /**
- * @semantic
- * exports: [attachFileImportsToElements, buildSemanticRelationships, deduplicateUsedBy]
- * used_by: [src/pipeline/semantic-elements.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports attachFileImportsToElements, buildSemanticRelationships, deduplicateUsedBy
+ * @used_by src/pipeline/semantic-elements.ts
  */
 
 import type { ElementData } from '../types/types.js';

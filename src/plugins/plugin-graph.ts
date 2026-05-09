@@ -23,8 +23,8 @@
  */
 
 /**
- * @semantic
- * exports: [PluginGraphOptions, applyPluginGraphHooks, getPluginGraphStats]
+ * @coderef-semantic: 1.0.0
+ * @exports PluginGraphOptions, applyPluginGraphHooks, getPluginGraphStats
  */
 
 import { DependencyGraph, GraphEdge } from '../analyzer/graph-builder.js';

@@ -1,7 +1,7 @@
 /**
- * @semantic
- * exports: [AbsolutePath, RelativePath, toAbsolute, toRelative, isAbsolutePath]
- * used_by: [src/cli/rag-index.ts, src/integration/rag/chunk-converter.ts, src/integration/rag/incremental-indexer.ts, src/integration/rag/indexing-orchestrator.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports AbsolutePath, RelativePath, toAbsolute, toRelative, isAbsolutePath
+ * @used_by src/cli/rag-index.ts, src/integration/rag/chunk-converter.ts, src/integration/rag/incremental-indexer.ts, src/integration/rag/indexing-orchestrator.ts
  */
 
 import * as path from 'path';

@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [Parameter, CallExpression, CallEdge, ModuleImport, ModuleExport, TraversalContext, CallPatternAnalysis, DetectedElement]
- * used_by: [src/analyzer/js-call-detector/analyzer.ts, src/analyzer/js-call-detector/index.ts, src/analyzer/js-call-detector/module-analyzer.ts, src/analyzer/js-call-detector/parser.ts, src/analyzer/js-call-detector/visitor.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports Parameter, CallExpression, CallEdge, ModuleImport, ModuleExport, TraversalContext, CallPatternAnalysis, DetectedElement
+ * @used_by src/analyzer/js-call-detector/analyzer.ts, src/analyzer/js-call-detector/index.ts, src/analyzer/js-call-detector/module-analyzer.ts, src/analyzer/js-call-detector/parser.ts, src/analyzer/js-call-detector/visitor.ts
  */
 
 /**

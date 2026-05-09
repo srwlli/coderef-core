@@ -10,8 +10,8 @@
  */
 
 /**
- * @semantic
- * exports: [TestPatternAnalyzer]
+ * @coderef-semantic: 1.0.0
+ * @exports TestPatternAnalyzer
  */
 
 import type {

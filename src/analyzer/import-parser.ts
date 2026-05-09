@@ -13,9 +13,9 @@
  */
 
 /**
- * @semantic
- * exports: [ImportStatement, ImportEdge, ImportParser]
- * used_by: [src/analyzer/graph-builder.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ImportStatement, ImportEdge, ImportParser
+ * @used_by src/analyzer/graph-builder.ts
  */
 
 import * as fs from 'fs';

@@ -13,9 +13,9 @@
  */
 
 /**
- * @semantic
- * exports: [SQLiteVectorStore]
- * used_by: [src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts, __tests__/integration/rag/facet-filter.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports SQLiteVectorStore
+ * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts, __tests__/integration/rag/facet-filter.test.ts
  */
 
 import * as fs from 'fs';

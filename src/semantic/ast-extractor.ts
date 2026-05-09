@@ -7,9 +7,9 @@
  */
 
 /**
- * @semantic
- * exports: [ExportInfo, ImportInfo, SemanticExtractionResult, ASTExtractorOptions, ASTExtractor, astExtractor, extractBatch]
- * used_by: [src/semantic/header-generator.ts, src/semantic/orchestrator.ts, src/semantic/registry-sync.ts, __tests__/pipeline/single-scanner.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ExportInfo, ImportInfo, SemanticExtractionResult, ASTExtractorOptions, ASTExtractor, astExtractor, extractBatch
+ * @used_by src/semantic/header-generator.ts, src/semantic/orchestrator.ts, src/semantic/registry-sync.ts, __tests__/pipeline/single-scanner.test.ts
  */
 
 import * as fs from 'fs';

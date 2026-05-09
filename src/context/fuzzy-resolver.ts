@@ -9,8 +9,8 @@
  */
 
 /**
- * @semantic
- * exports: [FuzzyMatch, DriftResult, FuzzyResolver]
+ * @coderef-semantic: 1.0.0
+ * @exports FuzzyMatch, DriftResult, FuzzyResolver
  */
 
 import { GraphNode } from '../analyzer/graph-builder.js';

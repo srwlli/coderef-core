@@ -12,8 +12,8 @@
  */
 
 /**
- * @semantic
- * exports: [JSCallDetector]
+ * @coderef-semantic: 1.0.0
+ * @exports JSCallDetector
  */
 
 // Re-export all types

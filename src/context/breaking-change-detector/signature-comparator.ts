@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [compareSignatures, compareParameters, isBreakingChange, analyzeDifference]
- * used_by: [src/context/breaking-change-detector/index.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports compareSignatures, compareParameters, isBreakingChange, analyzeDifference
+ * @used_by src/context/breaking-change-detector/index.ts
  */
 
 import { SignatureChange, ParameterDiff } from './types.js';

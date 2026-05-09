@@ -17,9 +17,9 @@
  */
 
 /**
- * @semantic
- * exports: [ElementExtractor, traverse]
- * used_by: [src/pipeline/orchestrator.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ElementExtractor, traverse
+ * @used_by src/pipeline/orchestrator.ts
  */
 
 import type Parser from 'tree-sitter';

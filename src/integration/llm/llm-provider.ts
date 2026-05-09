@@ -7,9 +7,9 @@
  */
 
 /**
- * @semantic
- * exports: [CompletionOptions, LLMResponse, LLMError, LLMProvider, LLMProviderFactory, LLMProviderConfig]
- * used_by: [src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts, src/integration/rag/answer-generation-service.ts, src/integration/rag/embedding-service.ts, src/integration/rag/indexing-orchestrator.ts, src/integration/rag/rag-config.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports CompletionOptions, LLMResponse, LLMError, LLMProvider, LLMProviderFactory, LLMProviderConfig
+ * @used_by src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts, src/integration/rag/answer-generation-service.ts, src/integration/rag/embedding-service.ts, src/integration/rag/indexing-orchestrator.ts, src/integration/rag/rag-config.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts
  */
 
 /**

@@ -19,9 +19,9 @@
  */
 
 /**
- * @semantic
- * exports: [EnrichedElementData, TreeSitterScanner, traverse]
- * used_by: [src/scanner/scanner.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports EnrichedElementData, TreeSitterScanner, traverse
+ * @used_by src/scanner/scanner.ts
  */
 
 import * as fs from 'fs';

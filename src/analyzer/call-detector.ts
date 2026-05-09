@@ -15,9 +15,9 @@
  */
 
 /**
- * @semantic
- * exports: [CallExpression, CallEdge, CallDetector]
- * used_by: [src/analyzer/graph-builder.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports CallExpression, CallEdge, CallDetector
+ * @used_by src/analyzer/graph-builder.ts
  */
 
 import * as fs from 'fs';

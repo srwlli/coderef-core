@@ -10,8 +10,8 @@
  */
 
 /**
- * @semantic
- * exports: [AgenticFormatter]
+ * @coderef-semantic: 1.0.0
+ * @exports AgenticFormatter
  */
 
 import type {

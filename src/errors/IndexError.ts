@@ -6,8 +6,8 @@
  */
 
 /**
- * @semantic
- * exports: [IndexError]
+ * @coderef-semantic: 1.0.0
+ * @exports IndexError
  */
 
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';

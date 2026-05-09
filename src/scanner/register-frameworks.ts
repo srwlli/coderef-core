@@ -7,9 +7,9 @@
  */
 
 /**
- * @semantic
- * exports: [registerDefaultFrameworks]
- * used_by: [src/scanner/scanner.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports registerDefaultFrameworks
+ * @used_by src/scanner/scanner.ts
  */
 
 import { frameworkRegistry } from './framework-registry.js';

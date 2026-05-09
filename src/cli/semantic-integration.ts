@@ -4,8 +4,8 @@
  */
 
 /**
- * @semantic
- * exports: [SemanticIntegrationOptions, DryRunSemanticOrchestrator, runSemanticIntegration, validateIdempotency]
+ * @coderef-semantic: 1.0.0
+ * @exports SemanticIntegrationOptions, DryRunSemanticOrchestrator, runSemanticIntegration, validateIdempotency
  */
 
 import * as fs from 'fs';

@@ -11,8 +11,8 @@
  */
 
 /**
- * @semantic
- * exports: [TaskContextGenerator]
+ * @coderef-semantic: 1.0.0
+ * @exports TaskContextGenerator
  */
 
 import { ComplexityScorer } from './complexity-scorer.js';

@@ -18,9 +18,9 @@
  */
 
 /**
- * @semantic
- * exports: [OllamaProvider, createOllamaProvider]
- * used_by: [src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports OllamaProvider, createOllamaProvider
+ * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts
  */
 
 import type {

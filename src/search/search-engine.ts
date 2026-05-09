@@ -11,8 +11,8 @@
  */
 
 /**
- * @semantic
- * exports: [SearchIndexEntry, SearchResult, SearchOptions, SearchIndex, TagCloudEntry, SearchStatistics, SearchEngine]
+ * @coderef-semantic: 1.0.0
+ * @exports SearchIndexEntry, SearchResult, SearchOptions, SearchIndex, TagCloudEntry, SearchStatistics, SearchEngine
  */
 
 /**

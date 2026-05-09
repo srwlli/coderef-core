@@ -11,8 +11,8 @@
  */
 
 /**
- * @semantic
- * exports: [generateDiagrams]
+ * @coderef-semantic: 1.0.0
+ * @exports generateDiagrams
  */
 
 import * as fs from 'fs/promises';

@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [RouteMatch, exactMatch, dynamicMatch, partialMatch, calculateMatchConfidence, matchHttpMethods, findBestMatch]
- * used_by: [src/validator/route-validator.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports RouteMatch, exactMatch, dynamicMatch, partialMatch, calculateMatchConfidence, matchHttpMethods, findBestMatch
+ * @used_by src/validator/route-validator.ts
  */
 
 import type { NormalizedRoute } from './route-normalizer.js';

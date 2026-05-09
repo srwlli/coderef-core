@@ -10,9 +10,9 @@
  */
 
 /**
- * @semantic
- * exports: [ElementImpact, BlastRadius, ImpactSummary, ImpactSimulator]
- * used_by: [src/context/breaking-change-detector/index.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ElementImpact, BlastRadius, ImpactSummary, ImpactSimulator
+ * @used_by src/context/breaking-change-detector/index.ts
  */
 
 import { DependencyGraph, GraphNode, GraphEdge } from '../analyzer/graph-builder.js';

@@ -10,8 +10,8 @@
  */
 
 /**
- * @semantic
- * exports: [ExampleExtractor]
+ * @coderef-semantic: 1.0.0
+ * @exports ExampleExtractor
  */
 
 import type { CodeExamplesResult, CodeExample, PatternGroup } from './types.js';

@@ -7,9 +7,9 @@
  */
 
 /**
- * @semantic
- * exports: [LocalLoaderOptions, discoverLocalPlugins, loadLocalPlugin, loadAllLocalPlugins]
- * used_by: [src/plugins/loaders/config-loader.ts, src/plugins/plugin-scanner.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports LocalLoaderOptions, discoverLocalPlugins, loadLocalPlugin, loadAllLocalPlugins
+ * @used_by src/plugins/loaders/config-loader.ts, src/plugins/plugin-scanner.ts
  */
 
 import * as fs from 'fs';

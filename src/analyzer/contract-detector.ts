@@ -10,8 +10,8 @@
  */
 
 /**
- * @semantic
- * exports: [OpenApiSpec, OpenApiPath, OpenApiComponent, GraphqlSchema, GraphqlType, GraphqlOperation, ProtobufDefinition, ProtobufMessage, ProtobufField, ProtobufService, ProtobufMethod, ProtobufEnum, JsonSchema, ContractAnalysis, ContractDetector, traverse, analyzeContracts]
+ * @coderef-semantic: 1.0.0
+ * @exports OpenApiSpec, OpenApiPath, OpenApiComponent, GraphqlSchema, GraphqlType, GraphqlOperation, ProtobufDefinition, ProtobufMessage, ProtobufField, ProtobufService, ProtobufMethod, ProtobufEnum, JsonSchema, ContractAnalysis, ContractDetector, traverse, analyzeContracts
  */
 
 import * as fs from 'fs';

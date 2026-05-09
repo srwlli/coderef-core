@@ -6,8 +6,8 @@
  */
 
 /**
- * @semantic
- * exports: [ScanError]
+ * @coderef-semantic: 1.0.0
+ * @exports ScanError
  */
 
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';

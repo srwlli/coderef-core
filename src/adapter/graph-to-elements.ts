@@ -6,8 +6,8 @@
  */
 
 /**
- * @semantic
- * exports: [ConversionOptions, convertGraphToElements, getConversionStats]
+ * @coderef-semantic: 1.0.0
+ * @exports ConversionOptions, convertGraphToElements, getConversionStats
  */
 
 import { DependencyGraph } from '../analyzer/graph-builder.js';

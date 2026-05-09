@@ -9,9 +9,9 @@
  */
 
 /**
- * @semantic
- * exports: [IndexGenerator]
- * used_by: [src/cli/populate.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports IndexGenerator
+ * @used_by src/cli/populate.ts
  */
 
 import type { PipelineState } from '../types.js';

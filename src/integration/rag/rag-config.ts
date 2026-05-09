@@ -9,8 +9,8 @@
  */
 
 /**
- * @semantic
- * exports: [LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader]
+ * @coderef-semantic: 1.0.0
+ * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
  */
 
 import type { LLMProviderConfig } from '../llm/llm-provider.js';

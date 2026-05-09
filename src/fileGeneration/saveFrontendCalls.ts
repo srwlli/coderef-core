@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [FrontendCallElement, FrontendCallsOutput, formatFrontendCallsOutput, saveFrontendCalls, generateFrontendCallsOutput, countFrontendCalls]
- * used_by: [src/cli/scan-frontend-calls.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports FrontendCallElement, FrontendCallsOutput, formatFrontendCallsOutput, saveFrontendCalls, generateFrontendCallsOutput, countFrontendCalls
+ * @used_by src/cli/scan-frontend-calls.ts
  */
 
 import * as fs from 'fs/promises';

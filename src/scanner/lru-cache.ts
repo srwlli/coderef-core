@@ -6,9 +6,9 @@
  */
 
 /**
- * @semantic
- * exports: [LRUCache, ScanCacheEntry, createScannerCache]
- * used_by: [src/scanner/scanner.ts, src/scanner/__tests__/lru-cache.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports LRUCache, ScanCacheEntry, createScannerCache
+ * @used_by src/scanner/scanner.ts, src/scanner/__tests__/lru-cache.test.ts
  */
 
 import { ElementData } from '../types/types.js';

@@ -9,9 +9,9 @@
  */
 
 /**
- * @semantic
- * exports: [GraphGenerator]
- * used_by: [src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports GraphGenerator
+ * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */
 
 import * as fs from 'fs/promises';

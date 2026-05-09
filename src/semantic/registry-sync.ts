@@ -6,9 +6,9 @@
  */
 
 /**
- * @semantic
- * exports: [RegistryEntry, RegistrySyncOptions, SyncResult, RegistrySyncer, syncEntry, refreshSync]
- * used_by: [src/semantic/orchestrator.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports RegistryEntry, RegistrySyncOptions, SyncResult, RegistrySyncer, syncEntry, refreshSync
+ * @used_by src/semantic/orchestrator.ts
  */
 
 import * as fs from 'fs';

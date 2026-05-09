@@ -10,9 +10,9 @@
  */
 
 /**
- * @semantic
- * exports: [DependencyHealth, SecurityVulnerability, DependencyHealthReport, DependencyAnalyzer, analyzeDependencyHealth]
- * used_by: [src/pipeline/generators/health-generator.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports DependencyHealth, SecurityVulnerability, DependencyHealthReport, DependencyAnalyzer, analyzeDependencyHealth
+ * @used_by src/pipeline/generators/health-generator.ts
  */
 
 import * as fs from 'fs/promises';

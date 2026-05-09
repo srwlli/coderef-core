@@ -7,8 +7,8 @@
  */
 
 /**
- * @semantic
- * exports: [PluginScanOptions, scanWithPlugins, getPluginScannerStats, initializePluginScanning]
+ * @coderef-semantic: 1.0.0
+ * @exports PluginScanOptions, scanWithPlugins, getPluginScannerStats, initializePluginScanning
  */
 
 import { minimatch } from 'minimatch';

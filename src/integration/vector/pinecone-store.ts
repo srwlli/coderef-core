@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [PineconeStore, createPineconeStore]
- * used_by: [src/cli/rag-index.ts, src/cli/rag-search.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports PineconeStore, createPineconeStore
+ * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts
  */
 
 import { Pinecone } from '@pinecone-database/pinecone';

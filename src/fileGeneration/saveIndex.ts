@@ -7,8 +7,8 @@
  */
 
 /**
- * @semantic
- * exports: [saveIndex]
+ * @coderef-semantic: 1.0.0
+ * @exports saveIndex
  */
 
 import * as path from 'path';

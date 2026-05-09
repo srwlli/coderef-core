@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [GraphError]
- * used_by: [src/analyzer/analyzer-service.ts, src/analyzer/graph-builder.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports GraphError
+ * @used_by src/analyzer/analyzer-service.ts, src/analyzer/graph-builder.ts
  */
 
 export class GraphError extends Error {

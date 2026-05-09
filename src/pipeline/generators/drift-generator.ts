@@ -22,9 +22,9 @@
  */
 
 /**
- * @semantic
- * exports: [DriftGenerator]
- * used_by: [src/cli/populate.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports DriftGenerator
+ * @used_by src/cli/populate.ts
  */
 
 import * as fs from 'fs/promises';

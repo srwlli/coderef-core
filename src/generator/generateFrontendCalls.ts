@@ -4,8 +4,8 @@
  */
 
 /**
- * @semantic
- * exports: [FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile]
+ * @coderef-semantic: 1.0.0
+ * @exports FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile
  */
 
 import { ElementData } from '../types/types.js';

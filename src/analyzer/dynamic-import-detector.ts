@@ -12,9 +12,9 @@
  */
 
 /**
- * @semantic
- * exports: [DynamicImport, DynamicCallEdge, DynamicImportDetector]
- * used_by: [__tests__/dynamic-imports.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports DynamicImport, DynamicCallEdge, DynamicImportDetector
+ * @used_by __tests__/dynamic-imports.test.ts
  */
 
 import * as fs from 'fs';

@@ -11,8 +11,8 @@
  */
 
 /**
- * @semantic
- * exports: [EdgeCaseDetector]
+ * @coderef-semantic: 1.0.0
+ * @exports EdgeCaseDetector
  */
 
 import type { EdgeCaseDetection, EdgeCaseIssue, ElementData } from './types.js';

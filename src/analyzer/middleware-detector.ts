@@ -12,8 +12,8 @@
  */
 
 /**
- * @semantic
- * exports: [MiddlewareMapping, MiddlewareChain, MiddlewareHandler, DIContainer, DIProvider, DIImport, MiddlewareAnalysis, MiddlewareDetector, analyzeMiddlewareAndDI]
+ * @coderef-semantic: 1.0.0
+ * @exports MiddlewareMapping, MiddlewareChain, MiddlewareHandler, DIContainer, DIProvider, DIImport, MiddlewareAnalysis, MiddlewareDetector, analyzeMiddlewareAndDI
  */
 
 import type { ElementData } from '../types/types.js';

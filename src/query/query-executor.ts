@@ -10,8 +10,8 @@
  */
 
 /**
- * @semantic
- * exports: [QueryType, QueryRequest, QueryResult, QueryExecutor]
+ * @coderef-semantic: 1.0.0
+ * @exports QueryType, QueryRequest, QueryResult, QueryExecutor
  */
 
 import AnalyzerService from '../analyzer/analyzer-service.js';

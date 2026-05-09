@@ -6,8 +6,8 @@
  */
 
 /**
- * @semantic
- * exports: [ValidationError]
+ * @coderef-semantic: 1.0.0
+ * @exports ValidationError
  */
 
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';

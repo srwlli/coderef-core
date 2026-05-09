@@ -10,9 +10,9 @@
  */
 
 /**
- * @semantic
- * exports: [PromptVariables, PromptTemplateBuilder, PromptValidator]
- * used_by: [src/integration/rag/answer-generation-service.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports PromptVariables, PromptTemplateBuilder, PromptValidator
+ * @used_by src/integration/rag/answer-generation-service.ts
  */
 
 /**

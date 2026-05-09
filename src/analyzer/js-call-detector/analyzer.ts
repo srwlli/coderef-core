@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [buildCallEdges, analyzeCallPatterns]
- * used_by: [src/analyzer/js-call-detector/index.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports buildCallEdges, analyzeCallPatterns
+ * @used_by src/analyzer/js-call-detector/index.ts
  */
 
 import { CallExpression, CallEdge, CallPatternAnalysis } from './types.js';

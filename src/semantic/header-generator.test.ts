@@ -84,7 +84,7 @@ describe('HeaderGenerator', () => {
 
       expect(comments.some((c) => c.includes('/**'))).toBe(true);
       expect(comments.some((c) => c.includes('*/'))).toBe(true);
-      expect(comments.some((c) => c.includes('@semantic'))).toBe(true);
+      expect(comments.some((c) => c.includes('@coderef-semantic: 1.0.0'))).toBe(true);
     });
 
     test('should merge block comments into one semantic header block', () => {
@@ -100,9 +100,9 @@ describe('HeaderGenerator', () => {
       ]);
       const comments = generator.formatAsComments(headers);
 
-      expect(comments.filter(comment => comment.includes('@semantic'))).toHaveLength(1);
-      expect(comments.join('\n')).toContain('exports: [one]');
-      expect(comments.join('\n')).toContain('used_by: [src/consumer.ts]');
+      expect(comments.filter(comment => comment.includes('@coderef-semantic: 1.0.0'))).toHaveLength(1);
+      expect(comments.join('\n')).toContain('@exports one');
+      expect(comments.join('\n')).toContain('@used_by src/consumer.ts');
     });
 
     test('should format headers as line comments when specified', () => {
@@ -112,7 +112,7 @@ describe('HeaderGenerator', () => {
       const comments = lineGenerator.formatAsComments(headers);
 
       expect(comments.some((c) => c.startsWith('//'))).toBe(true);
-      expect(comments.some((c) => c.includes('@semantic'))).toBe(true);
+      expect(comments.some((c) => c.includes('@coderef-semantic: 1.0.0'))).toBe(true);
     });
   });
 
@@ -125,16 +125,16 @@ describe('HeaderGenerator', () => {
       await generateHeaders(file, exports, [], []);
 
       const content = fs.readFileSync(file, 'utf-8');
-      expect(content).toContain('@semantic');
-      expect(content).toContain('exports: [myFunc]');
+      expect(content).toContain('@coderef-semantic: 1.0.0');
+      expect(content).toContain('@exports myFunc');
     });
 
     test('should preserve existing semantic headers', async () => {
       const file = path.join(tempDir, 'test.ts');
       const originalContent = `
 /**
- * @semantic
- * exports: [oldFunc]
+ * @coderef-semantic: 1.0.0
+ * @exports oldFunc
  */
 export function myFunc() {}`;
       fs.writeFileSync(file, originalContent);
@@ -146,17 +146,17 @@ export function myFunc() {}`;
       expect(content).toBe(originalContent); // Unchanged
     });
 
-    test('should not skip files that only mention @semantic in code', async () => {
+    test('should not skip files that only mention @coderef-semantic in code', async () => {
       const file = path.join(tempDir, 'literal.ts');
-      fs.writeFileSync(file, "const marker = '@semantic';\nexport function myFunc() {}");
+      fs.writeFileSync(file, "const marker = '@coderef-semantic';\nexport function myFunc() {}");
 
       const exports: ExportInfo[] = [{ name: 'myFunc', type: 'named', line: 1 }];
       await generateHeaders(file, exports, []);
 
       const content = fs.readFileSync(file, 'utf-8');
       expect(content.startsWith('/**')).toBe(true);
-      expect((content.match(/\* @semantic/g) || []).length).toBe(1);
-      expect(content).toContain("const marker = '@semantic';");
+      expect((content.match(/@coderef-semantic: 1\.0\.0/g) || []).length).toBe(1);
+      expect(content).toContain("const marker = '@coderef-semantic';");
     });
 
     test('should skip files with shebang correctly', async () => {
@@ -168,7 +168,7 @@ export function myFunc() {}`;
 
       const content = fs.readFileSync(file, 'utf-8');
       expect(content.startsWith('#!/usr/bin/env node')).toBe(true);
-      expect(content).toContain('@semantic');
+      expect(content).toContain('@coderef-semantic: 1.0.0');
     });
 
     test('should insert cleanly after CRLF block comments', async () => {

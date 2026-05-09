@@ -21,9 +21,9 @@
  */
 
 /**
- * @semantic
- * exports: [ParseHeaderResult, parseHeader]
- * used_by: [src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports ParseHeaderResult, parseHeader
+ * @used_by src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts
  */
 
 import type { HeaderStatus } from './element-taxonomy.js';

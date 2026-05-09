@@ -4,9 +4,9 @@
  */
 
 /**
- * @semantic
- * exports: [loadFrontendCalls, loadServerRoutes, detectMissingRoutes, detectUnusedRoutes, detectMethodMismatches, classifyIssue, generateValidationReport, saveValidationReport, loadMigrationMapping, validateMigration]
- * used_by: [src/cli/validate-routes.ts]
+ * @coderef-semantic: 1.0.0
+ * @exports loadFrontendCalls, loadServerRoutes, detectMissingRoutes, detectUnusedRoutes, detectMethodMismatches, classifyIssue, generateValidationReport, saveValidationReport, loadMigrationMapping, validateMigration
+ * @used_by src/cli/validate-routes.ts
  */
 
 import * as fs from 'fs/promises';
