@@ -1,6 +1,7 @@
 # Gap Matrix — WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001
 
 **Phase 1 verification completed: 2026-05-09T05:10:00Z**
+**Phase 1 re-verified (execute-workorder run): 2026-05-09T05:30:00Z**
 **Auditor: execute-workorder skill (Claude Sonnet 4.6)**
 
 ---
@@ -19,7 +20,7 @@
 | C-08 | Persist `discovery_rag` to context.json under `classification.discovery_rag` key (all required fields) | **WIRING NEEDED** | SKILL.md §Step 4.5 specifies the schema (rag_hits, lloyd_provenance, fallback_used, error, ms, discovery_rag_timestamp, discovery_rag_enabled). RAG-DISCOVERY-STEP.md must document the full persistence schema. |
 | C-09 | `discovery_rag_timestamp: ISO timestamp` in context.json | **WIRING NEEDED** | Part of C-08 persistence schema. Not yet enforced by any reference doc. |
 | C-10 | `discovery_rag_enabled: bool` in context.json | **WIRING NEEDED** | Part of C-08 persistence schema. Not yet enforced by any reference doc. |
-| C-11 | skill.json `reads[]` includes `discovery_rag.py` | **MISSING** | skill.json reads[] does NOT include discovery_rag.py. It IS in depends_on[]. T2.2 adds it to reads[]. |
+| C-11 | skill.json `reads[]` includes `discovery_rag.py` | **DONE** | Confirmed present in both reads[] (line 22) and depends_on[] in skill.json v2.5.0. T2.2 is a no-op — pre-satisfied. |
 | C-12 | `RAG-DISCOVERY-STEP.md` reference doc exists at `references/RAG-DISCOVERY-STEP.md` | **MISSING** | File does not exist. SKILL.md Step 3.6 ends with "See references/RAG-DISCOVERY-STEP.md for the full contract." The reference is broken. T2.3 creates it. |
 
 ---
@@ -28,15 +29,15 @@
 
 | Status | Count | Items |
 |---|---|---|
-| DONE | 4 | C-03, C-04, C-05, C-06 |
+| DONE | 5 | C-03, C-04, C-05, C-06, C-11 |
 | WIRING NEEDED | 6 | C-01, C-02, C-07, C-08, C-09, C-10 |
-| MISSING | 2 | C-11, C-12 |
+| MISSING | 1 | C-12 |
 
-**DONE items** require no code changes. They confirm discovery_rag.py is complete, callable, and behaves correctly.
+**DONE items** require no code changes. They confirm discovery_rag.py is complete, callable, and behaves correctly. C-11 is also pre-satisfied: skill.json already includes discovery_rag.py in both reads[] and depends_on[].
 
-**WIRING NEEDED items** (C-01, C-02, C-07, C-08, C-09, C-10) are all addressed by creating `RAG-DISCOVERY-STEP.md` (T2.3) — the reference doc that agents follow to execute Step 3.6. Once the reference doc exists and skill.json reads[] is updated, the wiring is complete.
+**WIRING NEEDED items** (C-01, C-02, C-07, C-08, C-09, C-10) are all addressed by creating `RAG-DISCOVERY-STEP.md` (T2.3) — the reference doc that agents follow to execute Step 3.6. Once the reference doc exists, the wiring contract is complete.
 
-**MISSING items** (C-11, C-12) have direct Phase 2 tasks: T2.2 (skill.json) and T2.3 (RAG-DISCOVERY-STEP.md).
+**MISSING item** (C-12) has a direct Phase 2 task: T2.3 (RAG-DISCOVERY-STEP.md).
 
 ---
 
@@ -47,7 +48,7 @@
 | discovery_rag.py importable from ASSISTANT context | PASS | `from discovery_rag import enrich_with_rag` succeeds; urllib3 version warning benign |
 | enrich_with_rag() signature matches Step 3.6 contract | PASS | Exact match on all positional + keyword args |
 | /coderef-rag-server status command available | PASS | `coderef-rag-server status` documented; outputs healthy + index size + uptime |
-| skill.json reads[] includes discovery_rag.py | FAIL (gap) | Not present in reads[]; IS in depends_on[] — T2.2 fixes |
+| skill.json reads[] includes discovery_rag.py | PASS | Present in both reads[] and depends_on[] — T2.2 is a no-op |
 | RAG-DISCOVERY-STEP.md exists | FAIL (missing) | File absent; broken SKILL.md reference — T2.3 creates |
 | CODEREF_LLOYD_DISCOVERY_RAG env var wired in execution layer | PENDING | No explicit enforcement exists; RAG-DISCOVERY-STEP.md + skill.json fix addresses via contract |
 
@@ -55,7 +56,7 @@
 
 ## Phase 2 Action Plan
 
-1. **T2.2** — Add `SKILLS/WORKFLOW/_shared/planner/discovery_rag.py` to `skill.json` reads[]. One-line edit.
+1. **T2.2** — skill.json reads[] already includes `discovery_rag.py`. **NO-OP — pre-satisfied.** Log and skip.
 2. **T2.3** — Write `references/RAG-DISCOVERY-STEP.md`. Full Step 3.6 contract: feature flag, pre-flight, call signature, fallback, context.json persistence schema. This is the primary deliverable.
 3. **T2.4** — Test flag=OFF (discovery_rag absent from context.json) and flag=ON+vectors_missing (fallback_used=true, no block).
 4. **T2.5** — Commit all changes.
