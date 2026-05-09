@@ -46,11 +46,11 @@ against a single target project: **scan → populate → foundation-docs → RAG
 ### Usage
 
 ```bash
-# Run the full pipeline against the current directory
-npx coderef-pipeline
-
-# Target an external project
+# Target a project (--project-dir is required)
 npx coderef-pipeline --project-dir /path/to/project
+
+# Positional path alias (equivalent to --project-dir)
+npx coderef-pipeline /path/to/project
 
 # Skip the rag leg
 npx coderef-pipeline --project-dir /path/to/project --skip rag
@@ -69,7 +69,7 @@ npx coderef-pipeline --project-dir /path/to/project --dry-run
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `--project-dir <path>` | Target project root. Propagated to populate, doc-gen, and rag-index. | `process.cwd()` |
+| `--project-dir <path>` | Target project root (**required**). Propagated to populate, doc-gen, and rag-index. Also accepts first positional argument. | — |
 | `--only <legs>` | Comma-separated subset to run (`scan`, `populate`, `docs`, `rag`). | All legs |
 | `--skip <legs>` | Comma-separated legs to skip. | None |
 | `--ollama-base-url <url>` | Ollama endpoint used by the rag leg. | `http://localhost:11434` or `CODEREF_LLM_BASE_URL` |

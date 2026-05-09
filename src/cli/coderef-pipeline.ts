@@ -29,6 +29,7 @@ import * as fs from 'fs';
 
 interface CliArgs {
   projectDir: string;
+  projectDirExplicit: boolean;
   dryRun: boolean;
   only?: Set<string>;
   skip?: Set<string>;
@@ -46,9 +47,12 @@ function printHelp(): void {
 
 USAGE:
   coderef-pipeline --project-dir <path> [OPTIONS]
+  coderef-pipeline <path> [OPTIONS]
 
 OPTIONS:
-  --project-dir <path>       Target project root (default: process.cwd()).
+  --project-dir <path>       Target project root (required).
+                             Can also be supplied as the first positional arg.
+                             Example: coderef-pipeline --project-dir /path/to/project
   --only <legs>              Comma-separated subset of legs to run.
                              Valid: scan, populate, docs, rag
   --skip <legs>              Comma-separated legs to skip.
@@ -78,6 +82,7 @@ RAG LOCAL-ONLY CONSTRAINT:
 function parseArgs(argv: string[]): CliArgs {
   const args: CliArgs = {
     projectDir: process.cwd(),
+    projectDirExplicit: false,
     dryRun: false,
     verbose: false,
     ollamaBaseUrl: process.env.CODEREF_LLM_BASE_URL || 'http://localhost:11434',
@@ -94,6 +99,7 @@ function parseArgs(argv: string[]): CliArgs {
         process.exit(0);
       case '--project-dir':
         args.projectDir = path.resolve(argv[++i]);
+        args.projectDirExplicit = true;
         break;
       case '--only':
         args.only = new Set(argv[++i].split(',').map(s => s.trim()));
@@ -120,16 +126,29 @@ function parseArgs(argv: string[]): CliArgs {
       default:
         if (a.startsWith('--project-dir=')) {
           args.projectDir = path.resolve(a.slice('--project-dir='.length));
+          args.projectDirExplicit = true;
         } else if (a.startsWith('--only=')) {
           args.only = new Set(a.slice('--only='.length).split(',').map(s => s.trim()));
         } else if (a.startsWith('--skip=')) {
           args.skip = new Set(a.slice('--skip='.length).split(',').map(s => s.trim()));
+        } else if (!a.startsWith('-') && !args.projectDirExplicit) {
+          // Positional path alias: first non-flag arg is treated as --project-dir
+          args.projectDir = path.resolve(a);
+          args.projectDirExplicit = true;
         } else {
           console.error(`Unknown argument: ${a}`);
           printHelp();
           process.exit(2);
         }
     }
+  }
+
+  if (!args.projectDirExplicit) {
+    console.error('Error: --project-dir <path> is required.');
+    console.error('Example: coderef-pipeline --project-dir /path/to/project');
+    console.error('         coderef-pipeline /path/to/project');
+    console.error('Run with --help for full usage.');
+    process.exit(1);
   }
 
   return args;
