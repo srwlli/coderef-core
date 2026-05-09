@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-006"],
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
+  "completed_at": "2026-05-09T06:15:00Z",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-cli-path-ux-fix\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-cli-path-ux-fix\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\pipeline-cli-path-ux-fix\\analysis.json",
@@ -38,6 +39,12 @@
       "event": "workorder_created",
       "source": "create-workorder",
       "message": "Workorder WO-PIPELINE-CLI-PATH-UX-FIX-001 created. Plan type: light (Rule 6 fallthrough). 1 phase, 6 tasks. SKILLS-side review dispatch: DISPATCH-2026-05-08-006. Spawned from STUB-270. Ready for CODEREF-CORE execution after DISPATCH-2026-05-08-010 closes."
+    },
+    {
+      "timestamp": "2026-05-09T06:15:00Z",
+      "event": "workorder_complete",
+      "source": "execute-workorder",
+      "message": "Phase 1 complete. Silent cwd fallback replaced with explicit error. Positional path alias added. --help and docs/CLI.md updated. Commit: 6fcdf46. Foundation-docs gate: PASS. Tracking ledger: synced (STUB-270 closed)."
     }
   ]
 }
