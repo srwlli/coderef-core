@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-012"],
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
+  "completed_at": "2026-05-09T07:30:00Z",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\pipeline-public-bundle-exclusion\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\pipeline-public-bundle-exclusion\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\pipeline-public-bundle-exclusion\\analysis.json",
@@ -38,6 +39,36 @@
       "event": "workorder_created",
       "source": "create-workorder",
       "message": "Workorder WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001 created. Plan type: light (Rule 6 fallthrough). 1 phase, 6 tasks. Spawned from DISPATCH-2026-05-08-012. Ready for CODEREF-CORE execution."
+    },
+    {
+      "timestamp": "2026-05-09T07:00:00Z",
+      "event": "phase_started",
+      "source": "execute-workorder",
+      "message": "Phase 1 execution started. Tasks: confirm locations, add globs to ignore-rules.ts, add globs to scanner.ts, build, verify gridiron-franchise, commit."
+    },
+    {
+      "timestamp": "2026-05-09T07:20:00Z",
+      "event": "implementation_complete",
+      "source": "execute-workorder",
+      "message": "Phase 1 complete. Added 3 glob patterns to DEFAULT_PIPELINE_IGNORE_PATTERNS (ignore-rules.ts) and DEFAULT_EXCLUDE_PATTERNS (scanner.ts). Build clean. gridiron-franchise scan+populate exit 0. Commit: 72049ab."
+    },
+    {
+      "timestamp": "2026-05-09T07:28:00Z",
+      "event": "foundation_docs_gate",
+      "source": "execute-workorder",
+      "message": "Step 5.0: validate-docs.js exit 0 (warnings: 6 pre-existing invalid UUID anchors — not caused by this WO)."
+    },
+    {
+      "timestamp": "2026-05-09T07:29:00Z",
+      "event": "doc_discovery",
+      "source": "execute-workorder",
+      "message": "Step 5.1: doc-discovery found 0 candidates. No doc updates required for ignore-pattern changes."
+    },
+    {
+      "timestamp": "2026-05-09T07:30:00Z",
+      "event": "workorder_complete",
+      "source": "execute-workorder",
+      "message": "WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001 complete. Tracking ledger updated. Session log authored. Final commit + push pending."
     }
   ]
 }
