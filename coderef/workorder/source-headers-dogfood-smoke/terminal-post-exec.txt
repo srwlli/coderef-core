@@ -1,0 +1,31 @@
+=============================================================
+WORKORDER: WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001  |  source-headers-dogfood-smoke  |  COMPLETE
+Session: daily-agent-session-2026-05-09 / CODEREF-CORE  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/source-headers-dogfood-smoke/context.json       (9d22bb6)
+  + coderef/workorder/source-headers-dogfood-smoke/analysis.json      (9d22bb6)
+  + coderef/workorder/source-headers-dogfood-smoke/plan.json          (9d22bb6)
+  + coderef/workorder/source-headers-dogfood-smoke/communication.json (9d22bb6)
+
+FILES MODIFIED:
+  ~ coderef/foundation-docs/EXPORTS.md       (70c23b7)
+  ~ coderef/foundation-docs/HOTSPOTS.md      (70c23b7)
+  ~ coderef/foundation-docs/INDEX.md         (70c23b7)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md (70c23b7)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Dogfood smoke test  (9d22bb6)
+  [x] Phase 1 closeout: foundation-docs regenerated  (70c23b7)
+
+SMOKE TEST RESULTS:
+  - populate-coderef --source-headers: PASS (174 files already stamped, skipped)
+  - headerStatus:defined nodes in graph.json: 310 (sample: src/analyzer/graph-error.ts#GraphError)
+  - rag-index --reset: chunksFailed=409 (passed header gate, OpenAI invalid_api_key pre-existing)
+  - AC: chunks_attempted=409 > 0 MET
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing schema drift, 7 failures)
+
+APPROVE -> /close-workorder WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001
+=============================================================
