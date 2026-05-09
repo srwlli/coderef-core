@@ -1,0 +1,43 @@
+=============================================================
+WORKORDER: WO-SOURCE-HEADERS-E2E-VALIDATION-001  |  source-headers-e2e-validation  |  COMPLETE
+Session: daily-agent-session-2026-05-08 / CODEREF-CORE  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/source-headers-e2e-validation/context.json    (a2892da)
+  + coderef/workorder/source-headers-e2e-validation/analysis.json   (a2892da)
+  + coderef/workorder/source-headers-e2e-validation/plan.json       (a2892da)
+  + coderef/workorder/source-headers-e2e-validation/communication.json  (a2892da → close-out)
+  + coderef/workorder/source-headers-e2e-validation/terminal-post-exec.txt  (close-out)
+
+FILES MODIFIED:
+  ~ TRACKING/workorders.json  (ASSISTANT repo — close-out commit)
+  ~ TRACKING/sessions.json    (ASSISTANT repo — close-out commit)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Repopulate + reindex + discovery query + report
+        T1.1 git checkout feature/source-headers-dogfood — PASS
+        T1.2 npx populate-coderef . exit:0, headerStatus=missing on all 370 file-grain nodes
+        T1.3 npx rag-index exit:1, chunks_indexed=0, chunks_skipped=2705 (header_status_missing)
+        T1.4 CODEREF_LLOYD_DISCOVERY_RAG=1 rag-search — FAIL (no vectors, no OpenAI key)
+        T1.5 git checkout main — PASS
+
+FINDINGS:
+  E2E pipeline: NOT WORKING
+  Root cause: FORMAT MISMATCH
+    --source-headers stamps:  @semantic + exports/used_by arrays
+    parser expects:           @coderef-semantic: X.Y.Z (SEMANTIC_MARKER_RE)
+    File: src/pipeline/semantic-header-parser.ts L43
+  All 2705 chunks skipped: reason=header_status_missing
+  Vector store: 0 records
+  semantic_context: NOT populated
+
+  Resolution options surfaced:
+    A: Update --source-headers to emit @coderef-semantic: X.Y.Z (full grammar)
+    B: Update semantic-header-parser to recognize @semantic blocks
+    C: Treat @semantic as graph-enrichment only (not a headerStatus signal)
+
+Session: updated  |  Registry: synced  |  Validator: 9 PASS / 6 FAIL (pre-existing STUB-044 drift)
+
+APPROVE -> /close-workorder WO-SOURCE-HEADERS-E2E-VALIDATION-001
+=============================================================
