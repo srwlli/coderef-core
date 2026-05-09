@@ -1,0 +1,51 @@
+{
+  "workorder_id": "WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001",
+  "feature_name": "pipeline-public-bundle-exclusion",
+  "created": "2026-05-09T06:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-08-012",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "populate-coderef graph validator chokes on minified public/*.js bundles (e.g. public/workbox-4754cb34.js), reporting duplicate node identities (#n:1, #r:1, #i:1 — single-letter minified identifiers colliding). This aborts populate, which blocks complexity/summary.json generation, which blocks workorder creation. Fix: exclude generated public/*.js build artifacts from scan/populate scope. Verify against gridiron-franchise project."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Rule 6 fallthrough: focused exclusion-pattern fix in 2 co-located files (ignore-rules.ts + scanner.ts). No architectural change, no multi-layer pipeline impact. Light plan sufficient.",
+    "plan_type_decided_by": "create-workorder@2.5.0",
+    "plan_type_override": null,
+    "classifier_choice": "light",
+    "discovery_ref": null,
+    "discovery": null,
+    "discovery_rag": null,
+    "discovery_rag_enabled": false
+  },
+  "scope": {
+    "in_scope": [
+      "Add minified JS bundle patterns to DEFAULT_PIPELINE_IGNORE_PATTERNS in src/pipeline/ignore-rules.ts",
+      "Add same patterns to DEFAULT_EXCLUDE_PATTERNS in src/scanner/scanner.ts",
+      "Patterns: **/*.min.js, **/workbox-*.js, **/*-[0-9a-f]*.js (content-hashed bundles), **/chunk-*.js",
+      "Verify gridiron-franchise populate exits 0 after fix",
+      "Update docs/CLI.md comment if --help output changes (unlikely)"
+    ],
+    "out_of_scope": [
+      "Changes to the graph validator logic itself",
+      "Changes to any other CLI commands or pipeline stages",
+      "Adding new CLI flags for per-project exclusion (already exists via .coderefignore)",
+      "Refactoring the ignore-rules or scanner architecture"
+    ]
+  },
+  "constraints": [
+    "Fix must not exclude hand-authored JS in public/ if any — use specific minified-bundle patterns, not public/**",
+    "Exclusion must be convention-based (filename patterns), not path-based exclusion of all public/",
+    "Verify gridiron-franchise populate exits 0 after fix",
+    "Both ignore-rules.ts and scanner.ts DEFAULT patterns must be updated for consistency"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": ["semantic_scan skipped for light plan"]
+  }
+}

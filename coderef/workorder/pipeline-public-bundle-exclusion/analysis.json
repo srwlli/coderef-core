@@ -1,0 +1,61 @@
+{
+  "workorder_id": "WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001",
+  "feature_name": "pipeline-public-bundle-exclusion",
+  "analysis_authored_at": "2026-05-09T06:30:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/ignore-rules.ts",
+      "src/scanner/scanner.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "src/pipeline/orchestrator.ts (imports loadIgnorePatterns from ignore-rules.ts)",
+      "src/cli/detect-languages.ts (imports loadIgnorePatterns from ignore-rules.ts)",
+      "src/cli/scan.ts (uses DEFAULT_EXCLUDE_PATTERNS from scanner.ts)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-01",
+      "title": "Over-broad exclusion pattern",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Use specific filename patterns (*.min.js, workbox-*.js, content-hash patterns) not blanket public/ dir exclusion"
+    },
+    {
+      "id": "R-02",
+      "title": "Hand-authored JS in public/ mistakenly excluded",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Patterns target minified/hashed bundle naming conventions, not the public/ directory itself"
+    },
+    {
+      "id": "R-03",
+      "title": "Scanner and pipeline ignore patterns diverge",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Update both DEFAULT_EXCLUDE_PATTERNS (scanner.ts) and DEFAULT_PIPELINE_IGNORE_PATTERNS (ignore-rules.ts) in same commit"
+    }
+  ],
+  "candidates": [
+    "src/pipeline/ignore-rules.ts — DEFAULT_PIPELINE_IGNORE_PATTERNS (line 5)",
+    "src/scanner/scanner.ts — DEFAULT_EXCLUDE_PATTERNS (line 287)"
+  ],
+  "dependencies": [
+    "minimatch (already imported in ignore-rules.ts)",
+    "TypeScript compiler (rebuild required after edit)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "Target convention-based filename patterns, not public/ directory exclusion",
+      "rationale": "Dispatch constraint: must not exclude hand-authored JS in public/. Minified bundles are identified by naming convention (*.min.js, workbox-*.js, content-hashed filenames like workbox-4754cb34.js)"
+    },
+    {
+      "id": "DEC-002",
+      "decision": "Update both DEFAULT_PIPELINE_IGNORE_PATTERNS and DEFAULT_EXCLUDE_PATTERNS",
+      "rationale": "The pipeline orchestrator path uses ignore-rules.ts; the scan CLI path uses scanner.ts. Both must exclude minified bundles or the fix is partial — populate fixes but scan re-indexes them on next run."
+    }
+  ]
+}

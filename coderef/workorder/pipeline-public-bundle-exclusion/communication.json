@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001",
+  "feature_name": "pipeline-public-bundle-exclusion",
+  "created": "2026-05-09T06:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-012"],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\pipeline-public-bundle-exclusion\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\pipeline-public-bundle-exclusion\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\pipeline-public-bundle-exclusion\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Light plan. Single phase, no hard stops. Ready for immediate execution."
+  },
+  "execution_rules": {
+    "phase_type": "light",
+    "hard_stops": [],
+    "gate_rule": "No hard stops. Execute Phase 1 fully in one pass."
+  },
+  "hard_constraints": [
+    "Fix must not exclude hand-authored JS in public/ — use specific minified-bundle filename patterns",
+    "Both ignore-rules.ts and scanner.ts DEFAULT patterns must be updated for consistency",
+    "Verify gridiron-franchise populate exits 0 after fix",
+    "If source is TypeScript, rebuild after editing before testing"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-09T06:30:00Z",
+      "event": "workorder_created",
+      "source": "create-workorder",
+      "message": "Workorder WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001 created. Plan type: light (Rule 6 fallthrough). 1 phase, 6 tasks. Spawned from DISPATCH-2026-05-08-012. Ready for CODEREF-CORE execution."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "workorder_id": "WO-PIPELINE-PUBLIC-BUNDLE-EXCLUSION-001",
+  "feature_name": "pipeline-public-bundle-exclusion",
+  "created": "2026-05-09T06:30:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Rule 6 fallthrough: focused exclusion-pattern fix in 2 co-located files. No architectural change, no multi-layer impact.",
+  "plan_type_decided_by": "create-workorder@2.5.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Add Minified Bundle Exclusion Patterns and Verify",
+      "description": "Add minified JS bundle exclusion patterns to DEFAULT_PIPELINE_IGNORE_PATTERNS (ignore-rules.ts) and DEFAULT_EXCLUDE_PATTERNS (scanner.ts). Rebuild TypeScript. Verify against gridiron-franchise populate run.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read src/pipeline/ignore-rules.ts and src/scanner/scanner.ts to confirm exact line positions and current pattern lists before editing.",
+          "success_criteria": "Both files read; DEFAULT_PIPELINE_IGNORE_PATTERNS and DEFAULT_EXCLUDE_PATTERNS locations confirmed"
+        },
+        {
+          "id": "1.2",
+          "verb": "EDIT",
+          "description": "In src/pipeline/ignore-rules.ts: add to DEFAULT_PIPELINE_IGNORE_PATTERNS: glob patterns for minified bundles (workbox-*.js, content-hashed bundles, and files ending in .minified.js). Add comment: '// Minified/hashed build artifacts (workbox, webpack chunks)'",
+          "success_criteria": "Patterns appended to DEFAULT_PIPELINE_IGNORE_PATTERNS. File parses (no syntax errors). Pattern comment present."
+        },
+        {
+          "id": "1.3",
+          "verb": "EDIT",
+          "description": "In src/scanner/scanner.ts: add the same three patterns to DEFAULT_EXCLUDE_PATTERNS. Add same comment: '// Minified/hashed build artifacts (workbox, webpack chunks)'",
+          "success_criteria": "Patterns appended to DEFAULT_EXCLUDE_PATTERNS. File parses. Comment present. Both files now consistent."
+        },
+        {
+          "id": "1.4",
+          "verb": "RUN",
+          "description": "Run npm run build in coderef-core root to compile TypeScript. Confirm no type errors.",
+          "success_criteria": "Build exits 0. No TypeScript errors in ignore-rules.ts or scanner.ts."
+        },
+        {
+          "id": "1.5",
+          "verb": "RUN",
+          "description": "Run coderef-pipeline against gridiron-franchise project: node dist/src/cli/coderef-pipeline.js --project-dir <gridiron-franchise-path> --only scan,populate --dry-run first, then actual run. Confirm populate exits 0 and no duplicate node identity errors appear in output.",
+          "success_criteria": "populate leg exits 0. No 'duplicate node identities' or 'node_id_uniqueness' errors in output. complexity/summary.json generated."
+        },
+        {
+          "id": "1.6",
+          "verb": "COMMIT",
+          "description": "Stage and commit: src/pipeline/ignore-rules.ts, src/scanner/scanner.ts. Message: fix(pipeline): exclude minified JS bundles from scan/populate scope",
+          "success_criteria": "Clean git commit. No untracked changes in staged files."
+        }
+      ]
+    }
+  ]
+}
