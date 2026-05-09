@@ -1,0 +1,75 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-DOGFOOD-001",
+  "feature_name": "source-headers-dogfood",
+  "created": "2026-05-09T00:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-006"],
+  "predecessor_for": null,
+  "status": "closed",
+  "completed_at": "2026-05-09T01:30:00Z",
+  "closed_at": "2026-05-09T01:55:00Z",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/analysis.json",
+  "handoff": {
+    "from": "ORCHESTRATOR",
+    "to": "CODEREF-CORE",
+    "reason": "Dogfood populate-coderef --source-headers on coderef-core itself. Feature branch only, review and conditional commit."
+  },
+  "execution_rules": {
+    "phase_1": "Single phase, no hard stop. Create branch, run --source-headers, review diff, commit if correct, push. Do NOT merge to main."
+  },
+  "hard_constraints": [
+    "Do NOT merge feature/source-headers-dogfood to main",
+    "Only commit if header output is semantically correct",
+    "If populate-coderef exits non-zero, halt and report — do not commit"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-09T00:40:00Z",
+      "event": "workorder_created",
+      "by": "CODEREF-CORE",
+      "note": "WO-SOURCE-HEADERS-DOGFOOD-001 created. Plan type: light. Dogfood run of populate-coderef --source-headers on coderef-core branch feature/source-headers-dogfood."
+    },
+    {
+      "at": "2026-05-09T01:00:00Z",
+      "event": "phase_1_started",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 started. Tasks: branch creation, run --source-headers, review diff, commit, push."
+    },
+    {
+      "at": "2026-05-09T01:10:00Z",
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "skip",
+      "reason": "missing_infra — scripts/doc-gen/ not present"
+    },
+    {
+      "at": "2026-05-09T01:30:00Z",
+      "event": "workorder_complete",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 complete. Branch feature/source-headers-dogfood created. populate-coderef --source-headers exit:0. 174 source files stamped with @semantic blocks (exports + used_by). Diff reviewed: correct format, no docblock overwrites, test files not stamped. Commit f960678 on feature branch. Branch pushed to origin. Returned to main."
+    },
+    {
+      "at": "2026-05-09T01:55:00Z",
+      "event": "workorder_closed",
+      "by": "close-workorder v2.0.0",
+      "note": "Closed via /close-workorder. Audit WARNING (mapping_coverage + tool_canonicity soft stops — pre-existing). Tracking validated. Committed + archived."
+    }
+  ],
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/source-headers-dogfood/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — WARNING (2 soft stops: mapping_coverage, tool_canonicity pre-existing)",
+    "warnings": [
+      "mapping_coverage: mapping-table.json not present for CODEREF-CORE",
+      "tool_canonicity: no mapping-table.json to check"
+    ]
+  }
+}

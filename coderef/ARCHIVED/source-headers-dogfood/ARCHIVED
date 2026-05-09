@@ -1,0 +1,8 @@
+Archived: 2026-05-09T01:55:00Z
+Reviewed by: close-workorder v2.0.0
+Status: WARNING
+Workorder: WO-SOURCE-HEADERS-DOGFOOD-001
+Feature: source-headers-dogfood
+Original location: coderef/workorder/source-headers-dogfood/
+Final commit: c8fab2c (close) — f960678 (dogfood headers on feature branch)
+Outcome: populate-coderef --source-headers exit:0. 174 source files stamped with @semantic blocks on feature/source-headers-dogfood. Diff reviewed PASS. Branch left unmerged for review.
