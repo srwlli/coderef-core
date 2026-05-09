@@ -6,10 +6,18 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-09-003"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "completed_at": "2026-05-09T18:50:00Z",
+  "closed_at": "2026-05-09T20:46:00Z",
+  "updated": "2026-05-09T20:46:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/merge-source-headers-dogfood/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (validate-coderef-culture PASS, scope mode)",
+    "warnings": []
+  },
   "plan_file": "coderef/workorder/merge-source-headers-dogfood/plan.json",
   "context_file": "coderef/workorder/merge-source-headers-dogfood/context.json",
   "analysis_file": "coderef/workorder/merge-source-headers-dogfood/analysis.json",
@@ -57,6 +65,11 @@
       "at": "2026-05-09T18:50:00Z",
       "by": "CODEREF-CORE",
       "note": "Phase 1 complete. feature/source-headers-dogfood merged into main (3898c82). Conflicts resolved via --theirs (feature branch correct). Main pushed to origin."
+    },
+    {
+      "timestamp": "2026-05-09T20:46:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (cultural alignment PASS, tracking-validator PASS scope mode, git clean). 1 phase, 3 commits, pushed to origin/main. Archive pending."
     }
   ]
 }

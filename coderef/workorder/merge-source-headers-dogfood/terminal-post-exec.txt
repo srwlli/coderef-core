@@ -1,0 +1,34 @@
+=============================================================
+WORKORDER: WO-MERGE-SOURCE-HEADERS-DOGFOOD-001  |  merge-source-headers-dogfood  |  COMPLETE
+Session: daily-agent-session-2026-05-09 / CODEREF-CORE  |  Phases: 1  |  Commits: 3  |  Pushes: 3
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/merge-source-headers-dogfood/context.json       (75c1803)
+  + coderef/workorder/merge-source-headers-dogfood/analysis.json      (75c1803)
+  + coderef/workorder/merge-source-headers-dogfood/plan.json          (75c1803)
+  + coderef/workorder/merge-source-headers-dogfood/communication.json (75c1803)
+
+FILES MODIFIED:
+  ~ src/semantic/header-generator.ts       (3898c82)  [conflict resolved: feature wins]
+  ~ src/semantic/header-generator.test.ts  (3898c82)  [conflict resolved: feature wins]
+  ~ coderef/foundation-docs/EXPORTS.md     (8cd6eae)
+  ~ coderef/foundation-docs/HOTSPOTS.md    (8cd6eae)
+  ~ coderef/foundation-docs/INDEX.md       (8cd6eae)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md  (8cd6eae)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Merge (merge commit)       (3898c82)
+  [x] Phase 1: Workorder files committed  (75c1803)
+  [x] Phase 1 closeout: foundation-docs   (8cd6eae)
+
+MERGE DETAILS:
+  - feature/source-headers-dogfood → main (non-fast-forward, merge commit)
+  - Conflicts: header-generator.ts, header-generator.test.ts
+  - Resolution: --theirs (feature branch — validated correct)
+  - Result: 174 src files with @coderef-semantic:1.0.0 now on main
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing schema drift, 7 failures)
+
+APPROVE -> /close-workorder WO-MERGE-SOURCE-HEADERS-DOGFOOD-001
+=============================================================
