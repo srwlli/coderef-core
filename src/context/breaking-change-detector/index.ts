@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports BreakingChangeDetector
+ */
+
+/**
  * IMP-CORE-035: Breaking Change Detector - Modular Architecture
  * 
  * Main entry point that re-exports the BreakingChangeDetector class and all types.

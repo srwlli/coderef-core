@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports IndexRecord, IndexStorage, IndexStats, IndexStore, createIndexStore, indexReferences
+ * @used_by src/indexer/indexer-service.ts, src/indexer/metadata-index.ts, src/indexer/query-engine.ts, src/indexer/relationship-index.ts, __tests__/indexer.test.ts
+ */
+
+/**
  * CodeRef2 Index Storage Layer
  *
  * Primary indices for efficient reference lookup:

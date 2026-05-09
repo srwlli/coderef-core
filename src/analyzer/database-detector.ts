@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports PrismaModel, PrismaField, PrismaRelation, PrismaSchema, TypeormEntity, TypeormColumn, TypeormRelation, SequelizeModel, SequelizeColumn, SequelizeAssociation, MongooseSchema, MongooseField, DatabaseAnalysis, DatabaseDetection, DatabaseDetector, traverse, analyzeDatabase
+ */
+
+/**
  * IMP-CORE-021: Database Schema and ORM Detector
  *
  * Detects and analyzes:

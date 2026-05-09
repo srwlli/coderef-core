@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports SemanticPipelineOptions, PipelineResult, SemanticOrchestrator, traverse, runSemanticPipeline
+ * @used_by src/cli/semantic-integration.ts, __tests__/pipeline/single-scanner.test.ts
+ */
+
+/**
  * Semantic orchestrator - coordinates full workflow
  *
  * Orchestrates AST extraction, header generation, LLM enrichment,

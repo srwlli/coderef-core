@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports FileNotFoundError
+ */
+
+/**
  * FileNotFoundError - Missing files or directories
  * @module errors
  *

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports EdgeCaseDetector
+ */
+
+/**
  * Edge Case Detector
  *
  * Detects potential issues in code:

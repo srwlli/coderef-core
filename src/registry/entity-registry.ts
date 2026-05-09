@@ -1,3 +1,9 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports EntityRegistry
+ * @used_by src/pipeline/generators/graph-output.ts, src/pipeline/generators/registry-generator.ts, src/pipeline/graph-builder.ts, src/pipeline/orchestrator.ts, src/pipeline/semantic-elements.ts
+ */
+
 import * as crypto from 'crypto';
 import { EntityRecord, RegistryState, EntityLookup } from './types';
 

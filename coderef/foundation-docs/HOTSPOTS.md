@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-08  
+**Generated:** 2026-05-09  
 <!-- coderef:uuid=hotspots-root -->
 
 ---
@@ -21,9 +21,9 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 383 |
-| **Total Elements** | 2,415 |
-| **Total Lines** | 101,947 |
+| **Total Files** | 390 |
+| **Total Elements** | 2,425 |
+| **Total Lines** | 103,159 |
 | **Entry Points** | 84 |
 | **Critical Functions** | 20 |
 

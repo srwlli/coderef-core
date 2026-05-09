@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports GraphGenerator
+ * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
+ */
+
+/**
  * GraphGenerator - Generate graph.json from PipelineState
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-002

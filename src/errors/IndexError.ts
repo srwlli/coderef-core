@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports IndexError
+ */
+
+/**
  * IndexError - Index file issues
  * @module errors
  *

@@ -1,0 +1,70 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-RESTAMP-002",
+  "feature_name": "source-headers-restamp-002",
+  "analysis_authored_at": "2026-05-09T14:10:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "~174 source files on feature/source-headers-dogfood (header block rewrites)",
+      ".coderef/graph.json (rebuild)",
+      ".coderef/rag-index.json (rebuild)",
+      ".coderef/index.json (repopulate side-effect)"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "rag-search (reads rag-index)",
+      "graph queries (reads graph.json)",
+      "ORCHESTRATOR verification pass"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "Header stripping misses files",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Verify file count before and after strip matches 174"
+    },
+    {
+      "id": "R2",
+      "title": "populate-coderef --source-headers skips files with preserveExisting=true",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Strip all @semantic blocks first so no existing headers remain; populate then writes fresh @coderef-semantic:1.0.0 blocks"
+    },
+    {
+      "id": "R3",
+      "title": "rag-index chunks = 0 after rebuild",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Prior run achieved 125 chunks attempted embedding; same pipeline should succeed. Verify count > 0 as acceptance gate."
+    },
+    {
+      "id": "R4",
+      "title": "Embedding failure (no OpenAI key)",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "Pre-existing environment limitation acknowledged in WO-SOURCE-HEADERS-RESTAMP-001 result. Chunks attempted embedding > 0 is the passing bar; actual embedding success is not required."
+    }
+  ],
+  "candidates": [
+    "feature/source-headers-dogfood branch source files (174 .ts/.js files with @semantic blocks)"
+  ],
+  "dependencies": [
+    "populate-coderef CLI (--source-headers flag)",
+    "rag-index CLI",
+    "git checkout feature/source-headers-dogfood"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-A",
+      "decision": "Create new WO-SOURCE-HEADERS-RESTAMP-002 rather than reopening archived WO-001",
+      "rationale": "WO-001 is archived/closed; TRACKING integrity requires new WO for new execution pass"
+    },
+    {
+      "id": "DR-B",
+      "decision": "Strip @semantic blocks manually before --source-headers re-run",
+      "rationale": "populate-coderef --source-headers with preserveExisting=true would skip already-stamped files; stripping first forces a clean re-stamp with the fixed @coderef-semantic:1.0.0 format"
+    }
+  ]
+}

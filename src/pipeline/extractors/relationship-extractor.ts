@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports RelationshipExtractor
+ * @used_by src/pipeline/orchestrator.ts
+ */
+
+/**
  * RelationshipExtractor - AST-based import and call relationship extraction
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 2, Task IMPL-003

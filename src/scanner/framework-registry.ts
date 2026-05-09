@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports FrameworkDetectionResult, FrameworkDetector
+ * @used_by src/plugins/types.ts, src/scanner/register-frameworks.ts, src/scanner/scanner.ts
+ */
+
+/**
  * Framework Registry - Configurable framework detection for API routes
  * IMP-CORE-038: Extract scanner framework detection to configurable registry
  *

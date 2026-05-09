@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ElementImpact, BlastRadius, ImpactSummary, ImpactSimulator
+ * @used_by src/context/breaking-change-detector/index.ts
+ */
+
+/**
  * Impact Simulator - Calculate blast radius and cascading impacts
  * Phase 5, Task P5-T4: Impact Simulation Engine
  *

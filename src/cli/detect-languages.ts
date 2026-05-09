@@ -1,3 +1,9 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports SupportedCliLanguage, formatSupportedLanguages, validateCliLanguages, detectProjectLanguages
+ * @used_by src/cli/populate.ts, src/cli/rag-index.ts
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { loadIgnorePatterns, shouldIgnorePath } from '../pipeline/ignore-rules.js';

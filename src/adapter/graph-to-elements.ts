@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ConversionOptions, convertGraphToElements, getConversionStats
+ */
+
+/**
  * Graph to Elements Adapter
  * Converts AST DependencyGraph to ElementData[] format
  *

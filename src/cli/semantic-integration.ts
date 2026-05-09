@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports SemanticIntegrationOptions, DryRunSemanticOrchestrator, runSemanticIntegration, validateIdempotency
+ */
+
+/**
  * Semantic CLI integration wrapper
  * Coordinates SemanticOrchestrator invocation with dry-run mode and safety guards
  */

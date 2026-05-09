@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports generateDiagrams
+ */
+
+/**
  * Generate Diagrams - Create visual dependency diagrams
  *
  * Outputs:

@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports EntryPointType, EntryPoint, EntryPointDetector
+ * @used_by src/analyzer/project-classifier.ts, src/pipeline/generators/context-generator.ts
+ */
+
+/**
  * EntryPointDetector - Detect application entry points and bootstrap files
  *
  * IMP-CORE-018: Add entry point and bootstrap detection

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports PluginScanOptions, scanWithPlugins, getPluginScannerStats, initializePluginScanning
+ */
+
+/**
  * Plugin Scanner Integration
  * WO-PLUGIN-SYSTEM-001: Plugin system for custom detectors
  *

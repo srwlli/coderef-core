@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ValidationError
+ */
+
+/**
  * ValidationError - Validation failures
  * @module errors
  *

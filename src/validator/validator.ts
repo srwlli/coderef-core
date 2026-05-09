@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ValidationResult, ValidatorOptions, CodeRefValidator, validateCodeRef, validateCodeRefs
+ * @used_by __tests__/integration.test.ts
+ */
+
+/**
  * CodeRef2 Reference Validator
  *
  * Validates parsed CodeRef objects against specification rules

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ScanError
+ */
+
+/**
  * ScanError - Scanner failures
  * @module errors
  *

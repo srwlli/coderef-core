@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports CoverageGenerator
+ * @used_by src/cli/populate.ts
+ */
+
+/**
  * CoverageGenerator - Analyze test coverage from PipelineState
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-005

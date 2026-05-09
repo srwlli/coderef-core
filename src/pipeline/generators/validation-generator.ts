@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ValidationGenerator
+ * @used_by src/cli/populate.ts
+ */
+
+/**
  * ValidationGenerator - Validate CodeRef2 references in source files
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-007

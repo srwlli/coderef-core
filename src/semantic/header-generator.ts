@@ -164,14 +164,16 @@ export class HeaderGenerator {
       comments.push(`/**`);
       comments.push(` * @coderef-semantic: 1.0.0`);
       for (const header of headers) {
-        comments.push(` * @${header.type}: ${header.content.join(', ')}`);
+        const value = header.content.join(', ').replace(/^\[|\]$/g, '');
+        comments.push(` * @${header.type} ${value}`);
       }
       comments.push(` */`);
       return comments;
     }
 
     for (const header of headers) {
-      comments.push(`// @coderef-semantic: 1.0.0 @${header.type}: ${header.content.join(', ')}`);
+      const value = header.content.join(', ').replace(/^\[|\]$/g, '');
+      comments.push(`// @coderef-semantic: 1.0.0 @${header.type} ${value}`);
     }
 
     return comments;
@@ -193,36 +195,18 @@ export class HeaderGenerator {
       const comments = this.formatAsComments(headers);
       const headerBlock = comments.join('\n');
 
-      // Find insertion point (after shebang and initial comments)
+      // Insert at file start so the parser's /^\s*\/\*\*/ anchor finds it first.
+      // Only skip a shebang line — everything else (existing JSDoc, license
+      // headers) stays below the semantic block.
       let insertPoint = 0;
       if (content.startsWith('#!/')) {
-        // Skip shebang line
         insertPoint = content.indexOf('\n') + 1;
       }
 
-      // Skip license headers and leading comments
-      while (insertPoint < content.length && content[insertPoint] === '/') {
-        if (content.substr(insertPoint, 2) === '//') {
-          const lineEnd = content.indexOf('\n', insertPoint);
-          insertPoint = lineEnd === -1 ? content.length : lineEnd + 1;
-        } else if (content.substr(insertPoint, 2) === '/*') {
-          const commentEnd = content.indexOf('*/', insertPoint);
-          if (commentEnd === -1) break;
-          insertPoint = commentEnd + 2;
-          insertPoint = this.skipSingleNewline(content, insertPoint);
-        } else {
-          break;
-        }
-      }
-
-      // Insert header block
-      const prefix = content.slice(0, insertPoint);
-      const suffix = content.slice(insertPoint).replace(/^\r?\n/, '');
       const lineEnding = content.includes('\r\n') ? '\r\n' : '\n';
-      const separator = prefix.length > 0
-        ? (prefix.endsWith('\n') ? lineEnding : lineEnding + lineEnding)
-        : '';
-      const newContent = prefix + separator + headerBlock.replace(/\n/g, lineEnding) + lineEnding + lineEnding + suffix;
+      const prefix = content.slice(0, insertPoint);
+      const suffix = content.slice(insertPoint);
+      const newContent = prefix + headerBlock.replace(/\n/g, lineEnding) + lineEnding + lineEnding + suffix;
       fs.writeFileSync(filePath, newContent, 'utf-8');
     } catch (error) {
       console.error(`Error inserting headers into ${filePath}:`, error instanceof Error ? error.message : error);

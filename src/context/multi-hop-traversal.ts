@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports TraversalResult, MultiHopResult, MultiHopTraversal
+ */
+
+/**
  * Multi-Hop Traversal - Query relationships at 2-5 levels deep
  * Phase 5, Task P5-T1: Multi-hop Reference Maps (used-by, calls, depends-on)
  *

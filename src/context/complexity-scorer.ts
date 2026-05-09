@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ComplexityScorer
+ * @used_by src/context/task-context-generator.ts
+ */
+
+/**
  * Complexity Scorer
  *
  * Calculates complexity metrics for code elements:

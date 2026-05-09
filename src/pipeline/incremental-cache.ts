@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports FileCacheEntry, CacheState, CacheCheckResult, IncrementalCache
+ */
+
+/**
  * IncrementalCache - File change tracking for performance optimization
  *
  * IMP-CORE-028: Implement incremental context updates for performance

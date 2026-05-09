@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports JSCallDetector
+ */
+
+/**
  * IMP-CORE-035: JavaScript Call Detector - Modular Architecture
  * 
  * Main entry point that re-exports the JSCallDetector class and all types.

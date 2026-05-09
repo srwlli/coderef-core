@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports LogLevel
+ * @used_by src/integration/rag/conversation-manager.ts
+ */
+
+/**
  * Logger Utility
  * @module utils/logger
  *

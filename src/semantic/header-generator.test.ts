@@ -101,8 +101,8 @@ describe('HeaderGenerator', () => {
       const comments = generator.formatAsComments(headers);
 
       expect(comments.filter(comment => comment.includes('@coderef-semantic: 1.0.0'))).toHaveLength(1);
-      expect(comments.join('\n')).toContain('@exports: [one]');
-      expect(comments.join('\n')).toContain('@used_by: [src/consumer.ts]');
+      expect(comments.join('\n')).toContain('@exports one');
+      expect(comments.join('\n')).toContain('@used_by src/consumer.ts');
     });
 
     test('should format headers as line comments when specified', () => {
@@ -126,16 +126,12 @@ describe('HeaderGenerator', () => {
 
       const content = fs.readFileSync(file, 'utf-8');
       expect(content).toContain('@coderef-semantic: 1.0.0');
-      expect(content).toContain('@exports: [myFunc]');
+      expect(content).toContain('@exports myFunc');
     });
 
     test('should preserve existing semantic headers', async () => {
       const file = path.join(tempDir, 'test.ts');
       const originalContent = `
-/**
- * @coderef-semantic: 1.0.0
- * @exports: [oldFunc]
- */
 export function myFunc() {}`;
       fs.writeFileSync(file, originalContent);
 

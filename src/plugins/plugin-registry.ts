@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports PluginError, PluginRegistry
+ * @used_by src/plugins/loaders/npm-loader.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-scanner.ts
+ */
+
+/**
  * Plugin Registry
  * WO-PLUGIN-SYSTEM-001: Plugin system for custom detectors
  *

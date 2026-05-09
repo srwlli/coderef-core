@@ -1,0 +1,52 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-RESTAMP-002",
+  "feature_name": "source-headers-restamp-002",
+  "created": "2026-05-09T14:10:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-08-008",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Re-stamp 174 source files on feature/source-headers-dogfood. Strip all existing @semantic header blocks from the 174 stamped files, re-run populate-coderef --source-headers (generator now emits @coderef-semantic:1.0.0 format), rebuild graph.json + rag-index, verify rag-index chunks > 0."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Rule 6 fallthrough: no strict or phased criteria matched. Scripted re-run of existing CLI tool sequence with no new code changes required.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {
+      "decorators": 0,
+      "errorHandling": 864,
+      "functionExports": 0,
+      "imports": 0
+    },
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Strip old @semantic header blocks from 174 source files on feature/source-headers-dogfood",
+      "Re-run populate-coderef --source-headers to emit @coderef-semantic:1.0.0 format",
+      "Rebuild graph.json via populate-coderef",
+      "Rebuild rag-index via rag-index command",
+      "Verify rag-index chunks > 0"
+    ],
+    "out_of_scope": [
+      "Changes to main branch source code",
+      "Fixing embedding failures (no OpenAI key — pre-existing environment issue)",
+      "Modifying the header-generator implementation",
+      "Merging feature/source-headers-dogfood to main"
+    ]
+  },
+  "constraints": [
+    "Must execute on feature/source-headers-dogfood branch",
+    "preserveExisting must be false (or headers stripped first) so --source-headers rewrites all files",
+    "Prior WO-SOURCE-HEADERS-RESTAMP-001 is archived — this is a fresh re-run pass"
+  ],
+  "pre_existing_drift": false
+}

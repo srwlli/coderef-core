@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports extractImportsFromAST, extractExportsFromAST
+ * @used_by src/analyzer/js-call-detector/index.ts
+ */
+
+/**
  * IMP-CORE-035: JavaScript Module Analyzer
  * Extracts imports and exports from AST
  */

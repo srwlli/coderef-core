@@ -1,3 +1,9 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports normalizeGraphForOutput
+ * @used_by src/pipeline/generators/export-generator.ts, src/pipeline/generators/graph-generator.ts
+ */
+
 import * as path from 'path';
 import type { ExportedGraph } from '../../export/graph-exporter.js';
 import { globalRegistry } from '../../registry/entity-registry.js';

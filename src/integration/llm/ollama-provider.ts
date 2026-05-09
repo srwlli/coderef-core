@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports OllamaProvider, createOllamaProvider
+ * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts
+ */
+
+/**
  * Ollama LLM Provider Implementation
  * P2-T1: Implements LLMProvider interface using local Ollama API
  *

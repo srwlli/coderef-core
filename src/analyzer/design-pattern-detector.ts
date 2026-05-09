@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
+ */
+
+/**
  * IMP-CORE-027: Design Pattern Detector
  *
  * Detects common design patterns using AST-based analysis:

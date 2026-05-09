@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports validateReferences
+ */
+
+/**
  * Validate References - Find broken references and missing imports
  *
  * Outputs: .coderef/reports/validation.json

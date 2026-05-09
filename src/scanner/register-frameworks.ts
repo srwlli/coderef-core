@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports registerDefaultFrameworks
+ * @used_by src/scanner/scanner.ts
+ */
+
+/**
  * Register Default Framework Detectors
  * IMP-CORE-038: Auto-register all built-in framework detectors
  *

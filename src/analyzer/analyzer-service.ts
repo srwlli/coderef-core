@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports AnalysisResult, AnalyzerService
+ * @used_by src/context/breaking-change-detector/index.ts, src/context/context-generator.ts, src/query/query-executor.ts
+ */
+
+/**
  * Analyzer Service - Unified API for relationship analysis
  * Phase 3, Task P3-T5: Relationship Detection & Analysis
  *

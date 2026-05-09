@@ -1,6 +1,13 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports EntityRecord, RegistryState, EntityLookup
+ * @used_by src/registry/entity-registry.ts
+ */
+
+/**
  * Represents a unique code entity (function, class, component, etc.)
  */
+
 export interface EntityRecord {
   /** Deterministic UUID5 based on file, name, and line */
   uuid: string;

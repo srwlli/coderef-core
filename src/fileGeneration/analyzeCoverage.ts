@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports analyzeCoverage
+ */
+
+/**
  * Analyze Coverage - Detect test coverage gaps
  *
  * Outputs: .coderef/reports/coverage.json

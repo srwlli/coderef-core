@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports IndexGenerator
+ * @used_by src/cli/populate.ts
+ */
+
+/**
  * IndexGenerator - Generate index.json from PipelineState
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-001

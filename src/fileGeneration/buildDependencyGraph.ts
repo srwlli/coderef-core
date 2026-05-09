@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports DependencyGraph, GraphNode, GraphEdge, buildDependencyGraph
+ */
+
+/**
  * Build Dependency Graph - Analyze import relationships
  *
  * Outputs:

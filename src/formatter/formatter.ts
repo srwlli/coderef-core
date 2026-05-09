@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports CodeRefFormatter, formatCodeRef, formatCodeRefs
+ * @used_by __tests__/integration.test.ts
+ */
+
+/**
  * CodeRef2 Reference Formatter
  *
  * Formats and normalizes CodeRef references to canonical form

@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports FileIndexState, IndexState, IncrementalAnalysisResult, IncrementalIndexOptions, IncrementalIndexer
+ * @used_by src/integration/rag/indexing-orchestrator.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts
+ */
+
+/**
  * Incremental Indexer
  * P2-T5: Tracks file changes to avoid re-embedding unchanged code
  *

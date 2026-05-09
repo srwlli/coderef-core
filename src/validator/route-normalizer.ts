@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports NormalizedRoute, normalizeFlaskRoute, normalizeFastAPIRoute, normalizeExpressRoute, normalizeNextJsRoute, extractDynamicSegments, normalizeRoutePath
+ * @used_by src/validator/route-matcher.ts, src/validator/route-validator.ts
+ */
+
+/**
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Route Normalization Module
  * Normalizes routes from different frameworks to a common format for comparison
  */

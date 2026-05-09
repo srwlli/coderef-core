@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports RegistryEntry, RegistrySyncOptions, SyncResult, RegistrySyncer, syncEntry, refreshSync
+ * @used_by src/semantic/orchestrator.ts
+ */
+
+/**
  * Registry sync module for unified-registry.json synchronization
  *
  * Syncs extracted semantic data and enriched metadata into the unified registry

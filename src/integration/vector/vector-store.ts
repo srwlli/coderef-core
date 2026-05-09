@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports CodeChunkMetadata, VectorRecord, QueryOptions, VectorMatch, VectorQueryResult, VectorStoreStats, VectorStoreError, VectorStore, VectorStoreConfig, VectorStoreFactory
+ * @used_by src/integration/rag/answer-generation-service.ts, src/integration/rag/indexing-orchestrator.ts, src/integration/rag/rag-config.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/graph-reranker.test.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts, src/integration/vector/chroma-store.ts, src/integration/vector/pinecone-store.ts, src/integration/vector/sqlite-store.ts, __tests__/integration/rag/facet-filter.test.ts, __tests__/integration/rag/indexing-orchestrator.test.ts
+ */
+
+/**
  * Vector Store Interface
  * P1-T4: Provider-agnostic interface for vector database operations
  *

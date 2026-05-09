@@ -1,0 +1,73 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-RESTAMP-002",
+  "feature_name": "source-headers-restamp-002",
+  "created": "2026-05-09T14:10:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Rule 6 fallthrough: no strict or phased criteria matched. Scripted re-run of existing CLI tool sequence with no new code changes.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "goal": "Re-stamp 174 source files on feature/source-headers-dogfood with @coderef-semantic:1.0.0 format by stripping old @semantic blocks and re-running populate-coderef --source-headers, then rebuild graph.json + rag-index and verify chunks > 0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Strip + Re-stamp + Rebuild + Verify",
+      "hard_stop": false,
+      "description": "Checkout feature/source-headers-dogfood, strip all @semantic header blocks from the 174 stamped files, re-run populate-coderef --source-headers to write @coderef-semantic:1.0.0 headers, rebuild graph.json and rag-index, verify chunks > 0, commit and push.",
+      "tasks": [
+        {
+          "id": "T1.1",
+          "verb": "RUN",
+          "description": "CHECK out feature/source-headers-dogfood branch",
+          "touches": [],
+          "success_criteria": "git checkout feature/source-headers-dogfood exits 0"
+        },
+        {
+          "id": "T1.2",
+          "verb": "RUN",
+          "description": "STRIP all @semantic header blocks from the 174 source files (sed/script removes block from @semantic-version through @semantic-generated lines)",
+          "touches": ["src/**/*.ts"],
+          "success_criteria": "No @semantic (legacy format) blocks remain in any source file"
+        },
+        {
+          "id": "T1.3",
+          "verb": "RUN",
+          "description": "Re-run populate-coderef --source-headers to stamp @coderef-semantic:1.0.0 headers on all eligible files",
+          "touches": ["src/**/*.ts"],
+          "success_criteria": "populate-coderef --source-headers exits 0; files contain @coderef-semantic:1.0.0 blocks"
+        },
+        {
+          "id": "T1.4",
+          "verb": "RUN",
+          "description": "Rebuild graph.json via populate-coderef (standard populate pass)",
+          "touches": [".coderef/graph.json"],
+          "success_criteria": "populate-coderef exits 0; .coderef/graph.json updated"
+        },
+        {
+          "id": "T1.5",
+          "verb": "RUN",
+          "description": "Rebuild rag-index",
+          "touches": [".coderef/rag-index.json"],
+          "success_criteria": "rag-index command exits 0 or chunks_attempted > 0 in output"
+        },
+        {
+          "id": "T1.6",
+          "verb": "CHECK",
+          "description": "Verify rag-index chunks > 0 (chunks_attempted_embedding field)",
+          "touches": [],
+          "success_criteria": "chunks_attempted_embedding > 0 confirmed"
+        },
+        {
+          "id": "T1.7",
+          "verb": "COMMIT",
+          "description": "Commit restamped source headers on feature/source-headers-dogfood",
+          "touches": ["src/**/*.ts"],
+          "success_criteria": "git commit exits 0; push to origin/feature/source-headers-dogfood succeeds"
+        }
+      ]
+    }
+  ],
+  "hard_stops": [],
+  "plan_adjustments_needed": [],
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "RUN", "TEST", "COMMIT", "CHECK", "STOP", "DELETE"]
+}

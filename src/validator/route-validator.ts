@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports loadFrontendCalls, loadServerRoutes, detectMissingRoutes, detectUnusedRoutes, detectMethodMismatches, classifyIssue, generateValidationReport, saveValidationReport, loadMigrationMapping, validateMigration
+ * @used_by src/cli/validate-routes.ts
+ */
+
+/**
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Route Validation Engine
  * Phase 3: Validates frontend API calls against server routes
  */

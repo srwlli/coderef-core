@@ -1,0 +1,37 @@
+{
+  "workorder_id": "WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001",
+  "feature_name": "source-headers-dogfood-smoke",
+  "analysis_authored_at": "2026-05-09T17:54:00Z",
+  "blast_radius": {
+    "files_modified": 0,
+    "files_created": 0,
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "rag-index stale graph",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Re-run populate-coderef before rag-index to refresh graph.json timestamp"
+    },
+    {
+      "id": "R2",
+      "title": "chunks_attempted = 0 (all stale)",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "WO-SOURCE-HEADERS-RESTAMP-002 confirmed 41 defined files; rag-index should produce > 0 chunks"
+    }
+  ],
+  "candidates": [
+    "src/semantic/header-generator.ts",
+    "src/pipeline/semantic-header-parser.ts",
+    ".coderef/rag-index.json"
+  ],
+  "dependencies": [
+    "populate-coderef CLI (dist/cli/populate.js)",
+    "rag-index CLI (dist/cli/rag-index.js)"
+  ],
+  "public_api_hits": [],
+  "decision_records": []
+}
