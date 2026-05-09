@@ -1,0 +1,88 @@
+{
+  "workorder_id": "WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001",
+  "feature_name": "wire-discovery-rag-create-workorder",
+  "created": "2026-05-09T05:00:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Classifier returned light (Rule 6 fallthrough), overridden to phased: spans ASSISTANT orchestration + reference doc creation, Phase 2 is a hard stop gated on Phase 1 verification matrix.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": ["phase_2"],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Verification and Pre-Flight Gap Audit",
+      "description": "Read-only verification phase. Confirm discovery_rag.py is callable from the create-workorder execution context, map every SKILL.md Step 3.6 contract item to its implementation status, confirm /coderef-rag-server status endpoint is reachable, and write a gap matrix. No code changes in this phase.",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read SKILLS/WORKFLOW/_shared/planner/discovery_rag.py and confirm: enrich_with_rag() signature matches SKILL.md Step 3.6 call contract (goal, project_dir, target_root, rag_endpoint, rag_freshness_days). Record return shape.",
+          "success_criteria": "enrich_with_rag() call contract confirmed; return shape {hits, rewrote_query, lloyd_provenance, fallback_used, error, ms} matches spec"
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read SKILLS/CORE/coderef-rag-server/SKILL.md. Confirm /coderef-rag-server status command syntax and what it outputs (endpoint, exit code, JSON shape).",
+          "success_criteria": "/coderef-rag-server status contract documented; exit code for unreachable server confirmed"
+        },
+        {
+          "id": "1.3",
+          "verb": "CHECK",
+          "description": "Verify CODEREF_LLOYD_DISCOVERY_RAG=1 path: import discovery_rag.py from a test invocation and confirm the module loads without error from the ASSISTANT execution context.",
+          "success_criteria": "from SKILLS.WORKFLOW._shared.planner.discovery_rag import enrich_with_rag succeeds; no import errors"
+        },
+        {
+          "id": "1.4",
+          "verb": "READ",
+          "description": "Read SKILLS/WORKFLOW/create-workorder/skill.json. Confirm whether reads[] includes discovery_rag.py. Record current reads list.",
+          "success_criteria": "reads list reviewed; gap (if any) between current reads and required reads documented"
+        },
+        {
+          "id": "1.5",
+          "verb": "WRITE",
+          "description": "Write Phase 1 gap matrix to coderef/workorder/wire-discovery-rag-create-workorder/gap-matrix.md. Per-item: SKILL.md Step 3.6 contract item, current status (DONE / MISSING / WIRING NEEDED), action required in Phase 2.",
+          "success_criteria": "gap-matrix.md exists; every Step 3.6 contract item classified; HARD STOP: Phase 2 requires gap-matrix review"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "title": "Wire Discovery RAG into create-workorder Execution",
+      "description": "Apply Phase 1 gap matrix. Wire enrich_with_rag() invocation into create-workorder Step 3.6 execution layer (orchestration script). Persist discovery_rag output to context.json. Add pre-flight /coderef-rag-server status check. Create RAG-DISCOVERY-STEP.md reference doc. Confirm skill.json reads list. Test both enabled and disabled flag paths.",
+      "hard_stop": true,
+      "gate": "Phase 1 gap-matrix.md complete; all Step 3.6 items classified; USER/ORCHESTRATOR approval before Phase 2 begins",
+      "tasks": [
+        {
+          "id": "2.1",
+          "verb": "READ",
+          "description": "Read gap-matrix.md from Phase 1. Confirm all action items before making any change.",
+          "success_criteria": "All WIRING NEEDED items confirmed; no MISSING items remain unresolved"
+        },
+        {
+          "id": "2.2",
+          "verb": "EDIT",
+          "description": "In SKILLS/WORKFLOW/create-workorder/skill.json: add discovery_rag.py to reads[] if not present.",
+          "success_criteria": "skill.json reads list includes SKILLS/WORKFLOW/_shared/planner/discovery_rag.py"
+        },
+        {
+          "id": "2.3",
+          "verb": "WRITE",
+          "description": "Create SKILLS/WORKFLOW/create-workorder/references/RAG-DISCOVERY-STEP.md. Content: Step 3.6 full contract (pre-flight health check via /coderef-rag-server status, feature flag check, enrich_with_rag() call, fallback handling, context.json persistence schema). This is the reference doc already cited in SKILL.md.",
+          "success_criteria": "RAG-DISCOVERY-STEP.md exists with: feature flag contract, pre-flight check contract, enrich_with_rag call signature, context.json discovery_rag schema, fallback behavior table"
+        },
+        {
+          "id": "2.4",
+          "verb": "TEST",
+          "description": "Test CODEREF_LLOYD_DISCOVERY_RAG=0 path: invoke create-workorder with flag OFF; confirm discovery_rag key is absent from context.json (or discovery_rag_enabled=false). Test CODEREF_LLOYD_DISCOVERY_RAG=1 path with vectors_missing: confirm fallback_used=true, empty hits, workorder proceeds. Both paths must not block.",
+          "success_criteria": "Flag=OFF: discovery_rag absent or disabled. Flag=ON + vectors_missing: fallback_used=true, no block, workorder completes"
+        },
+        {
+          "id": "2.5",
+          "verb": "COMMIT",
+          "description": "Commit all changes: feat(discovery-rag): wire CODEREF_LLOYD_DISCOVERY_RAG into create-workorder Step 3.6",
+          "success_criteria": "Clean git commit on CODEREF-CORE workorder dir + ASSISTANT skill changes; no untracked changes"
+        }
+      ]
+    }
+  ]
+}

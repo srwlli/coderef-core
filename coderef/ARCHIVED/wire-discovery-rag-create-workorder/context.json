@@ -1,0 +1,57 @@
+{
+  "workorder_id": "WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001",
+  "feature_name": "wire-discovery-rag-create-workorder",
+  "created": "2026-05-09T05:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-08-009",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Enable CODEREF_LLOYD_DISCOVERY_RAG integration: wire the semantic header RAG index into /create-workorder so workorder planning is seeded with relevant files, patterns, and constraints from the indexed graph. 125 chunks are now indexed (header gate PASSING after WO-SOURCE-HEADERS-RESTAMP-001). Goal: /create-workorder --discovery-rag flag (or env var) surfaces semantic context from rag-index during workorder scoping."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Classifier returned light (Rule 6 fallthrough), overridden to phased: wiring spans multiple layers (discovery_rag.py helper, create-workorder orchestration, context.json persistence, SKILL.md update) and requires a Phase 1 verification gate before Phase 2 implementation begins. Phase 2 is a hard stop.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "plan_type_override": "phased",
+    "classifier_choice": "light",
+    "discovery_ref": null,
+    "discovery": null,
+    "discovery_rag": null,
+    "discovery_rag_enabled": false
+  },
+  "scope": {
+    "in_scope": [
+      "Wire CODEREF_LLOYD_DISCOVERY_RAG env var check into /create-workorder Step 3.6 execution layer",
+      "Call /coderef-rag-server status as pre-flight check before enrich_with_rag()",
+      "Invoke enrich_with_rag(goal, project_dir, target_root) from discovery_rag.py",
+      "Persist discovery_rag result to context.json under discovery_rag key (all required fields)",
+      "Handle fallback scenarios: vectors_missing, vectors_stale, Lloyd unreachable",
+      "Write RAG-DISCOVERY-STEP.md reference doc (the spec referenced by SKILL.md but not yet created)",
+      "Test both CODEREF_LLOYD_DISCOVERY_RAG=1 and =0 paths",
+      "Test fallback path (vectors missing / Lloyd unavailable)",
+      "Verify create-workorder skill.json reads list includes discovery_rag.py"
+    ],
+    "out_of_scope": [
+      "CODEREF-CORE infrastructure changes (RAG server, CLI, vector store all complete)",
+      "execute-workorder validator consuming discovery_rag from context.json (future workorder)",
+      "Lloyd client changes (lloyd_client.py is complete)",
+      "Automatic reindex trigger (fallback logs a suggestion; no auto-rebuild)",
+      "CODEREF_LLOYD_CLASSIFIER flag wiring (separate flag, already partially wired)",
+      "RAG index rebuild (125 chunks indexed from WO-SOURCE-HEADERS-RESTAMP-001)"
+    ]
+  },
+  "constraints": [
+    "RAG is enrichment NOT a gate — fallback_used=true must never block /create-workorder",
+    "Do not shell out to hardcoded rag-server bin path — use /coderef-rag-server skill for lifecycle ops",
+    "discovery_rag.py module must not be modified — it is complete; only the caller (create-workorder orchestration) is wired",
+    "SKILL.md Step 3.6 pseudocode already specifies the contract — implementation must match it exactly"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": ["semantic_scan extraction skipped for phased plan with ASSISTANT-layer target"]
+  }
+}

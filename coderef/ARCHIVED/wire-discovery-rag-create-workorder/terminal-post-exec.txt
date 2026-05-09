@@ -1,0 +1,33 @@
+=============================================================
+WORKORDER: WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001  |  wire-discovery-rag-create-workorder  |  COMPLETE
+Session: daily-agent-session-2026-05-08 / CODEREF-CORE  |  Phases: 2  |  Commits: 4  |  Pushes: 2
+
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/wire-discovery-rag-create-workorder/gap-matrix.md  (9ea79fe)
+  + SKILLS/WORKFLOW/create-workorder/references/RAG-DISCOVERY-STEP.md  (cd51a7d)
+
+FILES MODIFIED:
+  ~ coderef/workorder/wire-discovery-rag-create-workorder/communication.json  (9ea79fe, 7264bb6, fdb079c)
+  ~ SKILLS/WORKFLOW/create-workorder/skill.json  (cd51a7d)
+  ~ TRACKING/workorders.json  (d7f9235)
+  ~ TRACKING/sessions.json  (d7f9235)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Verification and Pre-Flight Gap Audit  (9ea79fe — coderef-core)
+  [x] Phase 2: Wire Discovery RAG into create-workorder Execution  (7264bb6 — coderef-core, cd51a7d — ASSISTANT)
+
+ACCEPTANCE CRITERIA:
+  [PASS] enrich_with_rag() signature confirmed; return shape matches spec (T1.1)
+  [PASS] /coderef-rag-server status contract documented (T1.2)
+  [PASS] discovery_rag.py imports cleanly from ASSISTANT context (T1.3)
+  [PASS] skill.json reads[] updated — discovery_rag.py added (T2.2 / C-11)
+  [PASS] RAG-DISCOVERY-STEP.md written — full Step 3.6 contract (T2.3 / C-12)
+  [PASS] flag=OFF path: skip confirmed (T2.4)
+  [PASS] flag=ON + vectors_missing: fallback_used=true, no block (T2.4)
+
+Session: updated  |  Registry: synced  |  Validator: PASS (projects.json + project-context.json pre-existing drift, not in scope)
+
+APPROVE -> /close-workorder WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001
+=============================================================

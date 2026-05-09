@@ -1,0 +1,100 @@
+{
+  "workorder_id": "WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001",
+  "feature_name": "wire-discovery-rag-create-workorder",
+  "analysis_authored_at": "2026-05-09T05:00:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "ASSISTANT/SKILLS/WORKFLOW/create-workorder/SKILL.md (Step 3.6 already spec'd; update notes if needed)",
+      "ASSISTANT/SKILLS/WORKFLOW/create-workorder/skill.json (confirm reads list)"
+    ],
+    "files_created": [
+      "ASSISTANT/SKILLS/WORKFLOW/create-workorder/references/RAG-DISCOVERY-STEP.md",
+      "CODEREF-CORE/coderef/workorder/wire-discovery-rag-create-workorder/ (this workorder)"
+    ],
+    "downstream_consumers": [
+      "context.json in all future workorders (gains discovery_rag field when flag=1)",
+      "execute-workorder validator (future: will consume discovery_rag from context.json)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-001",
+      "title": "Lloyd unavailable during create-workorder execution",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "discovery_rag.py already handles LloydUnavailableError and returns fallback_used=true — wiring layer must propagate gracefully, not re-raise"
+    },
+    {
+      "id": "R-002",
+      "title": "coderef-vectors.json age check gives false-positive stale on first use",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Freshness check uses file mtime; after WO-SOURCE-HEADERS-RESTAMP-001 the vectors should be fresh. Test confirms correct path."
+    },
+    {
+      "id": "R-003",
+      "title": "RAG server not running when feature flag is ON",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Pre-flight /coderef-rag-server status check catches this; fallback_used=true if unreachable — workorder continues"
+    },
+    {
+      "id": "R-004",
+      "title": "discovery_rag key collision with existing context.json fields",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "SKILL.md Step 4.5 already specifies discovery_rag as a top-level optional key — no collision possible"
+    }
+  ],
+  "candidates": [
+    {
+      "file": "ASSISTANT/SKILLS/WORKFLOW/_shared/planner/discovery_rag.py",
+      "role": "source — enrich_with_rag() entry point; complete, no changes needed",
+      "action": "READ"
+    },
+    {
+      "file": "ASSISTANT/SKILLS/WORKFLOW/create-workorder/SKILL.md",
+      "role": "spec — Step 3.6 documents the contract; Phase 1 verifies alignment, Phase 2 confirms wiring matches",
+      "action": "VERIFY/UPDATE"
+    },
+    {
+      "file": "ASSISTANT/SKILLS/WORKFLOW/create-workorder/skill.json",
+      "role": "metadata — reads list must include discovery_rag.py",
+      "action": "CHECK/EDIT"
+    },
+    {
+      "file": "ASSISTANT/SKILLS/WORKFLOW/create-workorder/references/RAG-DISCOVERY-STEP.md",
+      "role": "reference doc — referenced by SKILL.md but not yet created; Phase 2 creates it",
+      "action": "WRITE"
+    },
+    {
+      "file": "ASSISTANT/SKILLS/CORE/coderef-rag-server/SKILL.md",
+      "role": "infrastructure spec — pre-flight /coderef-rag-server status contract",
+      "action": "READ"
+    }
+  ],
+  "dependencies": [
+    "ASSISTANT/tools/lloyd_client.py — called by discovery_rag.py; must be reachable",
+    "CODEREF-CORE RAG server at port 52849 — pre-flight health check target",
+    "CODEREF-CORE/.coderef/coderef-vectors.json — freshness check target",
+    "CODEREF_LLOYD_DISCOVERY_RAG env var — feature flag; default OFF"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Override classifier plan_type from light to phased",
+      "rationale": "Task spans ASSISTANT orchestration layer and requires Phase 1 verification before Phase 2 implementation. Phased plan provides a hard stop at Phase 1 for review before any code changes land."
+    },
+    {
+      "id": "DR-002",
+      "decision": "No CODEREF-CORE files will be modified",
+      "rationale": "All RAG infrastructure (server, CLI, vector store, Lloyd client) is complete and operational. The gap is 100% in the ASSISTANT orchestration layer (create-workorder skill execution)."
+    },
+    {
+      "id": "DR-003",
+      "decision": "RAG-DISCOVERY-STEP.md reference doc is in-scope for this workorder",
+      "rationale": "SKILL.md Step 3.6 already references references/RAG-DISCOVERY-STEP.md but the file does not exist. Creating it completes the contract surface and is a natural deliverable of wiring the feature."
+    }
+  ]
+}
