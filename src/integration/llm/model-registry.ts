@@ -13,6 +13,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [ProviderSpec, getProviderSpec, getEmbeddingDimensions, supportsEmbeddings, ProviderDoesNotSupportEmbeddings, validateRegistry]
+ * used_by: [src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts]
+ */
+
+/**
  * Specification for a single LLM provider's models and capabilities
  */
 export interface ProviderSpec {

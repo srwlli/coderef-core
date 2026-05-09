@@ -10,6 +10,11 @@
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 2
  */
 
+/**
+ * @semantic
+ * exports: [TaskContextGenerator]
+ */
+
 import { ComplexityScorer } from './complexity-scorer.js';
 import type {
   TaskContext,

@@ -5,6 +5,11 @@
  * Thrown when CodeRef tag parsing fails due to invalid format
  */
 
+/**
+ * @semantic
+ * exports: [ParseError]
+ */
+
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';
 
 /**

@@ -12,6 +12,11 @@
  * @see C:\Users\willh\.mcp-servers\coderef\sessions\reference-sheet-reconciliation\coderef-system-output.md
  */
 
+/**
+ * @semantic
+ * exports: [ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate]
+ */
+
 import { DependencyGraph, GraphNode, GraphEdge } from './graph-builder.js';
 
 /**

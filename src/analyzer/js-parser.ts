@@ -8,6 +8,12 @@
  * - Graceful error handling for invalid syntax
  */
 
+/**
+ * @semantic
+ * exports: [JSParseOptions, JSParseResult, parseJavaScript, parseJavaScriptFile, isJavaScriptFile, isTypeScriptFile, getSourceTypeFromExtension, parseJavaScriptFileAuto]
+ * used_by: [src/analyzer/js-call-detector/index.ts]
+ */
+
 import { parse, Options, Node } from 'acorn';
 import * as fs from 'fs';
 

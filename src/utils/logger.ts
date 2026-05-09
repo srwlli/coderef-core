@@ -6,6 +6,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [LogLevel]
+ * used_by: [src/integration/rag/conversation-manager.ts]
+ */
+
+/**
  * Log severity levels
  */
 export type LogLevel = 'ERROR' | 'WARN' | 'INFO' | 'DEBUG';

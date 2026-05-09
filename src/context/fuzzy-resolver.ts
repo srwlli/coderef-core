@@ -8,6 +8,11 @@
  * - Confidence scoring
  */
 
+/**
+ * @semantic
+ * exports: [FuzzyMatch, DriftResult, FuzzyResolver]
+ */
+
 import { GraphNode } from '../analyzer/graph-builder.js';
 
 /**

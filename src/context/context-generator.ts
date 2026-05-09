@@ -5,6 +5,11 @@
  * Part of WO-CONTEXT-GENERATION-001
  */
 
+/**
+ * @semantic
+ * exports: [ContextOptions, ContextResult, ContextGenerator]
+ */
+
 import { scanCurrentElements } from '../scanner/scanner.js';
 import { AnalyzerService } from '../analyzer/analyzer-service.js';
 import { EntryPointDetector } from './entry-point-detector.js';

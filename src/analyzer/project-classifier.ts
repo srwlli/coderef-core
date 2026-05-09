@@ -17,6 +17,12 @@
  * - Mobile app: React Native/Flutter
  */
 
+/**
+ * @semantic
+ * exports: [ProjectCategory, ApiServiceType, WebAppType, ProjectClassification, ProjectClassifier]
+ * used_by: [src/pipeline/generators/context-generator.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { EntryPoint } from './entry-detector.js';

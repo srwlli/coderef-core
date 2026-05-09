@@ -8,6 +8,11 @@
  * @module fileGeneration/buildDependencyGraph
  */
 
+/**
+ * @semantic
+ * exports: [DependencyGraph, GraphNode, GraphEdge, buildDependencyGraph]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';

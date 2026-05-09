@@ -6,6 +6,12 @@
  * optimization for API rate limits and token usage.
  */
 
+/**
+ * @semantic
+ * exports: [EmbeddedChunk, ProgressCallback, EmbeddingProgress, EmbeddingServiceOptions, EmbeddingResult, EmbeddingError, EmbeddingStatistics, EmbeddingService]
+ * used_by: [src/integration/rag/indexing-orchestrator.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts]
+ */
+
 import type { LLMProvider } from '../llm/llm-provider.js';
 import type { CodeChunk } from './code-chunk.js';
 import {

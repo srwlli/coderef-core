@@ -13,6 +13,11 @@
  * @module validator/frontend-update-generator
  */
 
+/**
+ * @semantic
+ * exports: [ConfidenceLevel, FrontendUpdateSuggestion, BatchUpdateResult, GitPatch, FileModification, getConfidenceLevel, calculatePathConfidence, generateUpdateSuggestions, batchProcessCalls, generateModifications, generateGitPatch, applyModifications, generateUpdateReport, exportBatchResults]
+ */
+
 import type { FrontendCall, MigrationMapping } from '../types/types.js';
 import { applyMappings } from './migration-mapper.js';
 

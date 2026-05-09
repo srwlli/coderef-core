@@ -5,6 +5,12 @@
  * Part of WO-CONTEXT-GENERATION-001
  */
 
+/**
+ * @semantic
+ * exports: [EntryPointDetector]
+ * used_by: [src/context/context-generator.ts]
+ */
+
 import type { ElementData } from '../types/types.js';
 import * as path from 'path';
 

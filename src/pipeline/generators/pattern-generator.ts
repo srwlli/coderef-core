@@ -7,6 +7,12 @@
  * Patterns: Decorators, error handling, async patterns, test gaps
  */
 
+/**
+ * @semantic
+ * exports: [PatternGenerator, isTestFile, isPipelineOrchestrator, estimateComplexity, isInternalFunction, calculatePriority]
+ * used_by: [src/cli/populate.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';

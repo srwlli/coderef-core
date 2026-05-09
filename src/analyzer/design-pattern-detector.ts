@@ -9,6 +9,11 @@
  * - Decorator: Component interface, concrete decorator wrapping
  */
 
+/**
+ * @semantic
+ * exports: [DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 

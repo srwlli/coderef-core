@@ -6,6 +6,12 @@
  * Provides plugin discovery, lifecycle management, and integration hooks.
  */
 
+/**
+ * @semantic
+ * exports: [PluginError, PluginRegistry]
+ * used_by: [src/plugins/loaders/npm-loader.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-scanner.ts]
+ */
+
 import { Plugin, PluginRegistration, CodeDetector, GraphHook, PluginSource } from './types.js';
 
 /**

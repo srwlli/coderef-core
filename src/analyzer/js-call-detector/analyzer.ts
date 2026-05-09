@@ -3,6 +3,12 @@
  * Builds call edges and analyzes patterns
  */
 
+/**
+ * @semantic
+ * exports: [buildCallEdges, analyzeCallPatterns]
+ * used_by: [src/analyzer/js-call-detector/index.ts]
+ */
+
 import { CallExpression, CallEdge, CallPatternAnalysis } from './types.js';
 
 /**

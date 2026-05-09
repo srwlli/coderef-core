@@ -6,6 +6,12 @@
  * significantly reducing API costs and processing time for large codebases.
  */
 
+/**
+ * @semantic
+ * exports: [FileIndexState, IndexState, IncrementalAnalysisResult, IncrementalIndexOptions, IncrementalIndexer]
+ * used_by: [src/integration/rag/indexing-orchestrator.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as crypto from 'crypto';

@@ -9,6 +9,11 @@
  * - Comprehensive error handling
  */
 
+/**
+ * @semantic
+ * exports: [QueryType, QueryRequest, QueryResult, QueryExecutor]
+ */
+
 import AnalyzerService from '../analyzer/analyzer-service.js';
 import { GraphNode } from '../analyzer/graph-builder.js';
 

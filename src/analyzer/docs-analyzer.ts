@@ -11,6 +11,12 @@
  * - Code comment density
  */
 
+/**
+ * @semantic
+ * exports: [ReadmeSection, ReadmeAnalysis, JSDocCoverage, ChangelogAnalysis, CommentDensity, ApiDocsAnalysis, DocumentationQuality, DocsAnalyzer, analyzeDocs]
+ * used_by: [src/pipeline/generators/context-generator.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 

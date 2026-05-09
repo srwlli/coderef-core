@@ -6,6 +6,12 @@
  * custom pattern definitions, and domain-specific analysis without modifying core code.
  */
 
+/**
+ * @semantic
+ * exports: [PluginManifest, DetectorDefinition, HookDefinition, CodeDetector, DetectionResult, GraphHook, CustomEdge, GraphBuilderContext, Plugin, PluginSource, PluginRegistration]
+ * used_by: [src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts, src/plugins/manifest-schema.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-registry.ts, src/plugins/plugin-scanner.ts]
+ */
+
 import { FrameworkDetectionResult } from '../scanner/framework-registry.js';
 import { CodeElement } from '../types/types.js';
 

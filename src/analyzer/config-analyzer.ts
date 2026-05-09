@@ -10,6 +10,12 @@
  * - .env files: environment variables
  */
 
+/**
+ * @semantic
+ * exports: [PackageJsonAnalysis, TsConfigAnalysis, DockerfileStage, DockerfileAnalysis, DockerComposeService, DockerComposeAnalysis, GitHubActionStep, GitHubActionJob, GitHubActionWorkflow, EnvFileAnalysis, ConfigAnalysis, ConfigAnalyzer, analyzeProjectConfig]
+ * used_by: [src/pipeline/generators/context-generator.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 

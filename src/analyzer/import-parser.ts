@@ -12,6 +12,12 @@
  * Builds 'imports' relationship edges for dependency graph
  */
 
+/**
+ * @semantic
+ * exports: [ImportStatement, ImportEdge, ImportParser]
+ * used_by: [src/analyzer/graph-builder.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 

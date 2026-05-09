@@ -12,6 +12,12 @@
  * - Suitable for codebases up to ~10,000 files
  */
 
+/**
+ * @semantic
+ * exports: [SQLiteVectorStore]
+ * used_by: [src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts, __tests__/integration/rag/facet-filter.test.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import {

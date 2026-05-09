@@ -11,6 +11,12 @@
  * - detectCircularDependencies() - Find cycles in graph
  */
 
+/**
+ * @semantic
+ * exports: [TraversalPath, CircularDependency, GraphAnalyzer, dfs]
+ * used_by: [src/analyzer/analyzer-service.ts, src/context/multi-hop-traversal.ts]
+ */
+
 import { DependencyGraph, GraphNode, GraphEdge } from './graph-builder.js';
 
 /**

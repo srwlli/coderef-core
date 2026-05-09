@@ -11,6 +11,11 @@
  * - analyzer.ts: Call graph building and pattern analysis
  */
 
+/**
+ * @semantic
+ * exports: [JSCallDetector]
+ */
+
 // Re-export all types
 export type {
   Parameter,

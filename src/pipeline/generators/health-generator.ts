@@ -8,6 +8,11 @@
  * - Maintenance recommendations
  */
 
+/**
+ * @semantic
+ * exports: [HealthMetrics, HealthGenerator, generateHealthReport]
+ */
+
 import type { PipelineState } from '../types.js';
 import {
   DependencyAnalyzer,

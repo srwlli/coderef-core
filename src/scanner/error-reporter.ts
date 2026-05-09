@@ -1,6 +1,11 @@
 // coderef-core/scanner/error-reporter.ts
 
 /**
+ * @semantic
+ * exports: [ScanErrorType, ScanErrorSeverity, ScanError, ScanStats, ScanResult, createScanError, createScanErrorWithContext, formatScanError, printScanErrors, initScanStats, finalizeScanStats]
+ */
+
+/**
  * Type of scanning error
  */
 export type ScanErrorType =  | 'read'        // File read errors (ENOENT, EACCES, etc.)

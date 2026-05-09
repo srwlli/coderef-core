@@ -1,3 +1,9 @@
+/**
+ * @semantic
+ * exports: [loadIgnorePatterns, shouldIgnorePath]
+ * used_by: [src/cli/detect-languages.ts, src/pipeline/orchestrator.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { minimatch } from 'minimatch';

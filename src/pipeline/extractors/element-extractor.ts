@@ -16,6 +16,12 @@
  * ```
  */
 
+/**
+ * @semantic
+ * exports: [ElementExtractor, traverse]
+ * used_by: [src/pipeline/orchestrator.ts]
+ */
+
 import type Parser from 'tree-sitter';
 import type { ElementData } from '../../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../element-taxonomy.js';

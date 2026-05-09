@@ -4,6 +4,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [NormalizedRoute, normalizeFlaskRoute, normalizeFastAPIRoute, normalizeExpressRoute, normalizeNextJsRoute, extractDynamicSegments, normalizeRoutePath]
+ * used_by: [src/validator/route-matcher.ts, src/validator/route-validator.ts]
+ */
+
+/**
  * Normalized route representation
  */
 export interface NormalizedRoute {

@@ -7,6 +7,12 @@
  * - used_by: Reverse import tracking (which files depend on this)
  */
 
+/**
+ * @semantic
+ * exports: [attachFileImportsToElements, buildSemanticRelationships, deduplicateUsedBy]
+ * used_by: [src/pipeline/semantic-elements.ts]
+ */
+
 import type { ElementData } from '../types/types.js';
 import type { ImportRelationship } from '../pipeline/types.js';
 import * as path from 'path';

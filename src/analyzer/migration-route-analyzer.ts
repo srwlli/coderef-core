@@ -10,6 +10,12 @@
  * @module analyzer/migration-route-analyzer
  */
 
+/**
+ * @semantic
+ * exports: [MigrationRouteElement, AffectedCaller, BreakingChange, OrphanedCall, FrameworkStats, MigrationRouteAnalyzer, extractAllRoutes, findOrphanedCalls, detectBreakingChanges]
+ * used_by: [src/fileGeneration/detectPatterns.ts]
+ */
+
 import { ElementData, RouteMetadata, FrontendCall } from '../types/types.js';
 
 /**

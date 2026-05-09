@@ -7,6 +7,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [CodeChunkMetadata, VectorRecord, QueryOptions, VectorMatch, VectorQueryResult, VectorStoreStats, VectorStoreError, VectorStore, VectorStoreConfig, VectorStoreFactory]
+ * used_by: [src/integration/rag/answer-generation-service.ts, src/integration/rag/indexing-orchestrator.ts, src/integration/rag/rag-config.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/graph-reranker.test.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts, src/integration/vector/chroma-store.ts, src/integration/vector/pinecone-store.ts, src/integration/vector/sqlite-store.ts, __tests__/integration/rag/facet-filter.test.ts, __tests__/integration/rag/indexing-orchestrator.test.ts]
+ */
+
+/**
  * Metadata attached to each code chunk in the vector store
  *
  * This metadata enables filtering and provides context for search results

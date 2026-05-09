@@ -10,6 +10,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [PromptVariables, PromptTemplateBuilder, PromptValidator]
+ * used_by: [src/integration/rag/answer-generation-service.ts]
+ */
+
+/**
  * Variables available in prompt templates
  */
 export interface PromptVariables {

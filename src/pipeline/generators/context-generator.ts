@@ -7,6 +7,12 @@
  * Content: Project stats, entry points, critical functions, architecture overview
  */
 
+/**
+ * @semantic
+ * exports: [CallGraphNode, CallGraphEdge, CallGraph, ExecutiveSummary, RiskHeatMap, WorkOrderPriority, DependencyRisk, DependencyRiskAnalysis, ArchitecturePattern, ArchitectureAnalysis, ProjectContext, ContextGenerator, isTestFile, isEntryPoint, isPipelineOrchestrator, isOrchestrator, MAX_DEPTH, dfs]
+ * used_by: [src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';

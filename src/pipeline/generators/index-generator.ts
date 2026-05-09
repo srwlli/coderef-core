@@ -8,6 +8,12 @@
  * Schema: Backward-compatible with existing index.json, additive-only changes
  */
 
+/**
+ * @semantic
+ * exports: [IndexGenerator]
+ * used_by: [src/cli/populate.ts]
+ */
+
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import { writeIndexVariants } from '../../fileGeneration/index-storage.js';

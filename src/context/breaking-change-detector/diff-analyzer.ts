@@ -3,6 +3,12 @@
  * Finds impacted call sites and extracts call context
  */
 
+/**
+ * @semantic
+ * exports: [findImpactedCallSites, extractCallContext, getChangedElements, extractSignaturesFromRef, extractSignaturesFromWorktree]
+ * used_by: [src/context/breaking-change-detector/index.ts]
+ */
+
 import { SignatureChange, ImpactedCallSite } from './types.js';
 import { calculateConfidence, isCompatibleCall } from './impact-assessor.js';
 

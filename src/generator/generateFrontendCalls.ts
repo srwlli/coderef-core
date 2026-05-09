@@ -3,6 +3,11 @@
  * Filters frontend API call elements and generates frontend-calls.json output
  */
 
+/**
+ * @semantic
+ * exports: [FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile]
+ */
+
 import { ElementData } from '../types/types.js';
 import { FrontendCall } from '../analyzer/frontend-call-parsers.js';
 

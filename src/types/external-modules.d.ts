@@ -3,6 +3,11 @@
  * These modules are loaded dynamically and may not be installed
  */
 
+/**
+ * @semantic
+ * exports: [OpenAI, Anthropic, ChromaClient, Collection, Pinecone]
+ */
+
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 declare module 'openai' {

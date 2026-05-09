@@ -7,6 +7,12 @@
  * Metrics: Cyclomatic complexity, LOC, parameter count per element
  */
 
+/**
+ * @semantic
+ * exports: [ComplexityGenerator]
+ * used_by: [src/cli/populate.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';

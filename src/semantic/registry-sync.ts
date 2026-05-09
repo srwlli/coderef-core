@@ -5,6 +5,12 @@
  * with schema validation and conflict resolution.
  */
 
+/**
+ * @semantic
+ * exports: [RegistryEntry, RegistrySyncOptions, SyncResult, RegistrySyncer, syncEntry, refreshSync]
+ * used_by: [src/semantic/orchestrator.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import type { ExportInfo } from './ast-extractor.js';

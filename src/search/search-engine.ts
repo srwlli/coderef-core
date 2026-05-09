@@ -11,6 +11,11 @@
  */
 
 /**
+ * @semantic
+ * exports: [SearchIndexEntry, SearchResult, SearchOptions, SearchIndex, TagCloudEntry, SearchStatistics, SearchEngine]
+ */
+
+/**
  * Search index entry
  */
 export interface SearchIndexEntry {

@@ -10,6 +10,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [ContextEntry, ContextHistory, ContextTracker]
+ * used_by: [src/integration/ai-prompt-generator.ts]
+ */
+
+/**
  * Represents a stored context entry with metadata
  */
 export interface ContextEntry {

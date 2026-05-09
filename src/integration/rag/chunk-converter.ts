@@ -6,6 +6,12 @@
  * by enriching graph nodes with source code, documentation, and dependency context.
  */
 
+/**
+ * @semantic
+ * exports: [ChunkConverter]
+ * used_by: [src/integration/rag/indexing-orchestrator.ts, src/integration/rag/__tests__/chunk-converter.test.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { DependencyGraph, GraphNode } from '../../analyzer/graph-builder.js';

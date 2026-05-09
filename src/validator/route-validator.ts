@@ -3,6 +3,12 @@
  * Phase 3: Validates frontend API calls against server routes
  */
 
+/**
+ * @semantic
+ * exports: [loadFrontendCalls, loadServerRoutes, detectMissingRoutes, detectUnusedRoutes, detectMethodMismatches, classifyIssue, generateValidationReport, saveValidationReport, loadMigrationMapping, validateMigration]
+ * used_by: [src/cli/validate-routes.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type {

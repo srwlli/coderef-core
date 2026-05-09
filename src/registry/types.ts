@@ -1,6 +1,13 @@
 /**
  * Represents a unique code entity (function, class, component, etc.)
  */
+
+/**
+ * @semantic
+ * exports: [EntityRecord, RegistryState, EntityLookup]
+ * used_by: [src/registry/entity-registry.ts]
+ */
+
 export interface EntityRecord {
   /** Deterministic UUID5 based on file, name, and line */
   uuid: string;

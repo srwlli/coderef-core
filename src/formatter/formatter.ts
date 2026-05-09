@@ -12,6 +12,12 @@
  * - Consistent quoting in metadata strings
  */
 
+/**
+ * @semantic
+ * exports: [CodeRefFormatter, formatCodeRef, formatCodeRefs]
+ * used_by: [__tests__/integration.test.ts]
+ */
+
 import { ParsedCodeRef } from '../parser/parser.js';
 
 export class CodeRefFormatter {

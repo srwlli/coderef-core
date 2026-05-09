@@ -3,6 +3,12 @@
  * Scans files for frontend API calls and attaches metadata to elements
  */
 
+/**
+ * @semantic
+ * exports: [scanFileForFrontendCalls, attachFrontendCalls, scanProjectForFrontendCalls]
+ * used_by: [src/fileGeneration/saveFrontendCalls.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls } from '../analyzer/frontend-call-parsers.js';

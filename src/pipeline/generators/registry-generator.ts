@@ -7,6 +7,12 @@
  * Format: RegistryState with entities and stats
  */
 
+/**
+ * @semantic
+ * exports: [RegistryGenerator]
+ * used_by: [src/cli/populate.ts, __tests__/pipeline/single-scanner.test.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';

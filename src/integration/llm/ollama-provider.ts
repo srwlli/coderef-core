@@ -17,6 +17,12 @@
  * NEGATIVE TEST: See __tests__/ollama-provider-unreachable.test.ts
  */
 
+/**
+ * @semantic
+ * exports: [OllamaProvider, createOllamaProvider]
+ * used_by: [src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts]
+ */
+
 import type {
   LLMProvider,
   CompletionOptions,

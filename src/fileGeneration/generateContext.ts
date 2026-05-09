@@ -8,6 +8,11 @@
  * @module fileGeneration/generateContext
  */
 
+/**
+ * @semantic
+ * exports: [generateContext]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';

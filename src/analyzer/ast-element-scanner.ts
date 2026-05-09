@@ -14,6 +14,12 @@
  * - Export status for all elements
  */
 
+/**
+ * @semantic
+ * exports: [ASTScanResult, ASTElementScanner, visit, scanFileWithAST, scanFilesWithAST]
+ * used_by: [src/scanner/scanner.ts]
+ */
+
 import * as fs from 'fs';
 import * as ts from 'typescript';
 import { ElementData } from '../types/types.js';

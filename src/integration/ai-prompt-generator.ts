@@ -9,6 +9,11 @@
  * - Token limit optimization
  */
 
+/**
+ * @semantic
+ * exports: [AIQueryType, GeneratedPrompt, AIPromptGenerator]
+ */
+
 import { GraphNode } from '../analyzer/graph-builder.js';
 import { ContextTracker } from '../context/context-tracker.js';
 

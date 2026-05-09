@@ -3,6 +3,12 @@
  * Generates frontend-calls.json by scanning project files for API calls
  */
 
+/**
+ * @semantic
+ * exports: [FrontendCallElement, FrontendCallsOutput, formatFrontendCallsOutput, saveFrontendCalls, generateFrontendCallsOutput, countFrontendCalls]
+ * used_by: [src/cli/scan-frontend-calls.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { scanProjectForFrontendCalls } from '../scanner/frontend-scanner.js';

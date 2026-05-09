@@ -6,6 +6,12 @@
  * Targets < 100ms query performance
  */
 
+/**
+ * @semantic
+ * exports: [QueryResult, QueryFilter, QueryEngineConfig, QueryEngine, createQueryEngine]
+ * used_by: [src/indexer/indexer-service.ts, __tests__/indexer.test.ts]
+ */
+
 import { ParsedCodeRef } from '../parser/parser.js';
 import { IndexStore } from './index-store.js';
 import { MetadataIndex, MetadataCategory } from './metadata-index.js';

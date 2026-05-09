@@ -5,6 +5,12 @@
  * for offline operation and rate limit resilience.
  */
 
+/**
+ * @semantic
+ * exports: [EnrichmentRequest, EnrichedMetadata, LLMEnricherOptions, LLMEnricher, enrichMetadata, enrichBatch]
+ * used_by: [src/semantic/orchestrator.ts, src/semantic/registry-sync.ts]
+ */
+
 import type { ElementData } from '../types/types.js';
 
 export interface EnrichmentRequest {

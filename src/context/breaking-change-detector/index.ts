@@ -11,6 +11,11 @@
  * - hint-generator.ts: Migration hint generation
  */
 
+/**
+ * @semantic
+ * exports: [BreakingChangeDetector]
+ */
+
 // Re-export all types
 export type {
   SignatureChange,

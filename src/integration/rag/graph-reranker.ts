@@ -7,6 +7,12 @@
  * more relevant results.
  */
 
+/**
+ * @semantic
+ * exports: [ReRankingOptions, QueryStrategy, ReRankedResult, RankingExplanation, GraphReRanker]
+ * used_by: [src/integration/rag/answer-generation-service.ts, src/integration/rag/confidence-scorer.ts, src/integration/rag/context-builder.ts, src/integration/rag/__tests__/confidence-scorer.test.ts, src/integration/rag/__tests__/graph-reranker.test.ts]
+ */
+
 import type { DependencyGraph } from '../../analyzer/graph-builder.js';
 import type { SearchResult } from './semantic-search.js';
 

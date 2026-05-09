@@ -1,6 +1,12 @@
 // coderef-core/analyzer/route-parsers.ts
 // WO-API-ROUTE-DETECTION-001: Multi-framework route detection parsers
 
+/**
+ * @semantic
+ * exports: [parseFlaskRoute, parseFastAPIRoute, parseExpressRoute, parseNextJsRoute, parseNextJsPagesRoute, parseSvelteKitRoute, parseNuxtRoute, parseRemixRoute, extractRouteMetadata]
+ * used_by: [src/scanner/scanner.ts]
+ */
+
 import { RouteMetadata } from '../types/types.js';
 
 /**

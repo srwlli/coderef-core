@@ -11,6 +11,12 @@
  * Creates relationship edges for dependency graph
  */
 
+/**
+ * @semantic
+ * exports: [DynamicImport, DynamicCallEdge, DynamicImportDetector]
+ * used_by: [__tests__/dynamic-imports.test.ts]
+ */
+
 import * as fs from 'fs';
 import * as ts from 'typescript';
 import * as path from 'path';

@@ -6,6 +6,12 @@
  * context for semantic search while optimizing for embedding model performance.
  */
 
+/**
+ * @semantic
+ * exports: [TextGenerationOptions, EmbeddingTextGenerator]
+ * used_by: [src/integration/rag/embedding-service.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts]
+ */
+
 import type { CodeChunk } from './code-chunk.js';
 
 /**

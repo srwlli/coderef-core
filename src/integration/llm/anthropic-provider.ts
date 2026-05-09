@@ -3,6 +3,12 @@
  * P1-T3: Implements LLMProvider interface using Anthropic Claude API
  */
 
+/**
+ * @semantic
+ * exports: [AnthropicProvider, createAnthropicProvider]
+ * used_by: [src/cli/rag-index.ts, src/cli/rag-search.ts]
+ */
+
 import Anthropic from '@anthropic-ai/sdk';
 import type {
   LLMProvider,

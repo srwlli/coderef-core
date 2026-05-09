@@ -7,6 +7,12 @@
  * Formats: Full JSON export, JSON-LD with context, wrapped Mermaid
  */
 
+/**
+ * @semantic
+ * exports: [ExportGenerator]
+ * used_by: [src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';

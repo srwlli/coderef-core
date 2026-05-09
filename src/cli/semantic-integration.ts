@@ -3,6 +3,11 @@
  * Coordinates SemanticOrchestrator invocation with dry-run mode and safety guards
  */
 
+/**
+ * @semantic
+ * exports: [SemanticIntegrationOptions, DryRunSemanticOrchestrator, runSemanticIntegration, validateIdempotency]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { SemanticOrchestrator } from '../semantic/orchestrator.js';

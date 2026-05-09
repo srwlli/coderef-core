@@ -10,6 +10,12 @@
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 1
  */
 
+/**
+ * @semantic
+ * exports: [ComplexityScorer]
+ * used_by: [src/context/task-context-generator.ts]
+ */
+
 import type { ElementComplexity, ComplexityMetrics, ElementData } from './types.js';
 
 /**

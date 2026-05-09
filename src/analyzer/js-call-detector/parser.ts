@@ -3,6 +3,12 @@
  * Extracts call expressions from AST nodes
  */
 
+/**
+ * @semantic
+ * exports: [parseCallExpression, parseNewExpression, extractObjectName, isNestedCall, extractParameters, extractParameter]
+ * used_by: [src/analyzer/js-call-detector/visitor.ts]
+ */
+
 import { CallExpression, Parameter, TraversalContext } from './types.js';
 
 /**

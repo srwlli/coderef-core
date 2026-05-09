@@ -3,6 +3,12 @@
  * P1-T5: Implements VectorStore interface using Pinecone cloud service
  */
 
+/**
+ * @semantic
+ * exports: [PineconeStore, createPineconeStore]
+ * used_by: [src/cli/rag-index.ts, src/cli/rag-search.ts]
+ */
+
 import { Pinecone } from '@pinecone-database/pinecone';
 import type {
   VectorStore,

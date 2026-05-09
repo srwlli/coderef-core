@@ -7,6 +7,12 @@
  * Per specification lines 173-186
  */
 
+/**
+ * @semantic
+ * exports: [RelationshipType, RelationshipEdge, GraphNode, RelationshipIndex, walk, hasCycle, createRelationshipIndex]
+ * used_by: [src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts]
+ */
+
 import { ParsedCodeRef } from '../parser/parser.js';
 import { IndexRecord } from './index-store.js';
 

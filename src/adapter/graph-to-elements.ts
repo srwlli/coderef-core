@@ -5,6 +5,11 @@
  * @Fn/core/adapter#convertGraphToElements
  */
 
+/**
+ * @semantic
+ * exports: [ConversionOptions, convertGraphToElements, getConversionStats]
+ */
+
 import { DependencyGraph } from '../analyzer/graph-builder.js';
 import { ElementData } from '../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';

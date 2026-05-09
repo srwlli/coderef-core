@@ -5,6 +5,12 @@
  * Discovers and loads plugins from @coderef/* npm packages in node_modules.
  */
 
+/**
+ * @semantic
+ * exports: [NpmLoaderOptions, LoadResult, discoverNpmPlugins, loadNpmPlugin, loadAllNpmPlugins]
+ * used_by: [src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/plugin-scanner.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { Plugin, PluginManifest, CodeDetector, GraphHook } from '../types.js';

@@ -18,6 +18,12 @@
  * - Parse overhead: ~10-20ms per file (vs ~5ms for regex)
  */
 
+/**
+ * @semantic
+ * exports: [EnrichedElementData, TreeSitterScanner, traverse]
+ * used_by: [src/scanner/scanner.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import Parser from 'tree-sitter';

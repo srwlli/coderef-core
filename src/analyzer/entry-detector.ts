@@ -11,6 +11,12 @@
  * - Serverless function handlers (AWS Lambda, etc.)
  */
 
+/**
+ * @semantic
+ * exports: [EntryPointType, EntryPoint, EntryPointDetector]
+ * used_by: [src/analyzer/project-classifier.ts, src/pipeline/generators/context-generator.ts]
+ */
+
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
 

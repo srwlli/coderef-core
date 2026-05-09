@@ -8,6 +8,12 @@
  * 3. Returning ranked results
  */
 
+/**
+ * @semantic
+ * exports: [SearchResult, SearchOptions, QueryContext, SearchResponse, SemanticSearchService]
+ * used_by: [src/cli/coderef-rag-server.ts, src/cli/rag-search.ts, src/integration/rag/answer-generation-service.ts, src/integration/rag/context-builder.ts, src/integration/rag/graph-reranker.ts, src/integration/rag/__tests__/graph-reranker.test.ts]
+ */
+
 import type { LLMProvider } from '../llm/llm-provider.js';
 import type { VectorStore, QueryOptions as VectorQueryOptions } from '../vector/vector-store.js';
 import type { DependencyGraph } from '../../analyzer/graph-builder.js';

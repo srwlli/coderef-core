@@ -10,6 +10,12 @@
  * 5. Calculates confidence
  */
 
+/**
+ * @semantic
+ * exports: [AnswerOptions, Answer, AnswerGenerationService]
+ * used_by: [src/integration/rag/confidence-scorer.ts, src/integration/rag/conversation-manager.ts, src/integration/rag/__tests__/confidence-scorer.test.ts]
+ */
+
 import type { LLMProvider } from '../llm/llm-provider.js';
 import type { VectorStore } from '../vector/vector-store.js';
 import type { DependencyGraph } from '../../analyzer/graph-builder.js';

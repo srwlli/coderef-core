@@ -8,6 +8,12 @@
  * Per specification lines 575-621
  */
 
+/**
+ * @semantic
+ * exports: [MetadataCategory, MetadataIndexEntry, MetadataIndex, createMetadataIndex]
+ * used_by: [src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts]
+ */
+
 import { ParsedCodeRef } from '../parser/parser.js';
 import { IndexRecord, IndexStorage } from './index-store.js';
 

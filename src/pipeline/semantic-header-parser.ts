@@ -20,6 +20,12 @@
  * `ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md` (BNF).
  */
 
+/**
+ * @semantic
+ * exports: [ParseHeaderResult, parseHeader]
+ * used_by: [src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts]
+ */
+
 import type { HeaderStatus } from './element-taxonomy.js';
 import { isKebabCase, isValidLayer } from './element-taxonomy.js';
 import type {

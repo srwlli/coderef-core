@@ -11,6 +11,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [CodeRefErrorOptions, CodeRefError]
+ * used_by: [src/errors/FileNotFoundError.ts, src/errors/IndexError.ts, src/errors/ParseError.ts, src/errors/ScanError.ts, src/errors/ValidationError.ts]
+ */
+
+/**
  * Options for creating a CodeRefError
  */
 export interface CodeRefErrorOptions {

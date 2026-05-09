@@ -5,6 +5,11 @@
  * Thrown when input validation fails
  */
 
+/**
+ * @semantic
+ * exports: [ValidationError]
+ */
+
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';
 
 /**

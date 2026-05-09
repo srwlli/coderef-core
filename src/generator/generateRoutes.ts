@@ -5,6 +5,12 @@
  * Filters frontend API call elements and generates frontend-calls.json output
  */
 
+/**
+ * @semantic
+ * exports: [RouteElement, RoutesOutput, filterRouteElements, formatRoutesJson, sortRoutes, generateRoutes, saveRoutesToFile, FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile]
+ * used_by: [src/fileGeneration/saveIndex.ts]
+ */
+
 import { ElementData, RouteMetadata, FrontendCall } from '../types/types.js';
 
 /**

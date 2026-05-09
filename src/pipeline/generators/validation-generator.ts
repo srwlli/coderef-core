@@ -7,6 +7,12 @@
  * Analysis: Broken CodeRef2 references, validation errors
  */
 
+/**
+ * @semantic
+ * exports: [ValidationGenerator]
+ * used_by: [src/cli/populate.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';

@@ -5,6 +5,12 @@
  * from extracted AST information and semantic metadata.
  */
 
+/**
+ * @semantic
+ * exports: [SemanticHeader, HeaderGenerationOptions, HeaderGenerator, generateHeaders]
+ * used_by: [src/cli/populate.ts, src/semantic/orchestrator.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import type { ExportInfo, ImportInfo } from './ast-extractor.js';

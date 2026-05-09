@@ -8,6 +8,11 @@
  * - RAG behavior settings
  */
 
+/**
+ * @semantic
+ * exports: [LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader]
+ */
+
 import type { LLMProviderConfig } from '../llm/llm-provider.js';
 import type { VectorStoreConfig } from '../vector/vector-store.js';
 

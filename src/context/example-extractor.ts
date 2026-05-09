@@ -9,6 +9,11 @@
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 5
  */
 
+/**
+ * @semantic
+ * exports: [ExampleExtractor]
+ */
+
 import type { CodeExamplesResult, CodeExample, PatternGroup } from './types.js';
 
 /**

@@ -3,6 +3,12 @@
  * Recursively traverses AST to find call expressions and context
  */
 
+/**
+ * @semantic
+ * exports: [visitNode, extractParametersFromAST, extractElementsFromAST]
+ * used_by: [src/analyzer/js-call-detector/index.ts]
+ */
+
 import { CallExpression, Parameter, TraversalContext, DetectedElement } from './types.js';
 import { parseCallExpression, parseNewExpression, extractParameters } from './parser.js';
 

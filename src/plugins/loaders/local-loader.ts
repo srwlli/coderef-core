@@ -6,6 +6,12 @@
  * Useful for in-development plugins or project-specific extensions.
  */
 
+/**
+ * @semantic
+ * exports: [LocalLoaderOptions, discoverLocalPlugins, loadLocalPlugin, loadAllLocalPlugins]
+ * used_by: [src/plugins/loaders/config-loader.ts, src/plugins/plugin-scanner.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { Plugin, PluginManifest, CodeDetector, GraphHook } from '../types.js';

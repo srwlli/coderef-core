@@ -11,6 +11,11 @@
  * - Middleware pattern mapping for framework migrations
  */
 
+/**
+ * @semantic
+ * exports: [MiddlewareMapping, MiddlewareChain, MiddlewareHandler, DIContainer, DIProvider, DIImport, MiddlewareAnalysis, MiddlewareDetector, analyzeMiddlewareAndDI]
+ */
+
 import type { ElementData } from '../types/types.js';
 
 /**

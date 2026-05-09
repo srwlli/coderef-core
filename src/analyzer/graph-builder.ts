@@ -27,6 +27,12 @@
  * - Support for 5 relationship types: imports, calls, depends-on, implements, tests
  */
 
+/**
+ * @semantic
+ * exports: [GraphNode, GraphEdge, DependencyGraph, GraphBuilder]
+ * used_by: [src/adapter/graph-to-elements.ts, src/analyzer/analyzer-service.ts, src/analyzer/graph-analyzer.ts, src/analyzer/graph-helpers.ts, src/context/fuzzy-resolver.ts, src/context/impact-simulator.ts, src/context/multi-hop-traversal.ts, src/export/graph-exporter.ts, src/integration/ai-prompt-generator.ts, src/integration/rag/answer-generation-service.ts, src/integration/rag/chunk-converter.ts, src/integration/rag/graph-reranker.ts, src/integration/rag/incremental-indexer.ts, src/integration/rag/indexing-orchestrator.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/chunk-converter.test.ts, src/integration/rag/__tests__/graph-reranker.test.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts, src/plugins/plugin-graph.ts, src/query/query-executor.ts, __tests__/accuracy-validation.test.ts, __tests__/orphan-detection.test.ts]
+ */
+
 import ImportParser, { ImportEdge, ImportStatement } from './import-parser.js';
 import CallDetector, { CallEdge, CallExpression } from './call-detector.js';
 import { GraphError, GraphErrorCode } from './graph-error.js';

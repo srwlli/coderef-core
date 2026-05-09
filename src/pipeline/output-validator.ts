@@ -52,6 +52,12 @@
  * Map<file, HeaderStatus> taking the canonical status per file.
  */
 
+/**
+ * @semantic
+ * exports: [ValidationError, ValidationWarning, ValidationReport, ValidationResult, ValidatePipelineStateOptions, validatePipelineState, buildFileHeaderStatusMap]
+ * used_by: [src/cli/populate.ts, src/pipeline/types.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts]
+ */
+
 import type { PipelineState } from './types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
 import type { HeaderStatus, LayerEnum } from './element-taxonomy.js';

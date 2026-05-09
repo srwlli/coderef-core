@@ -9,6 +9,11 @@
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 6
  */
 
+/**
+ * @semantic
+ * exports: [AgenticFormatter]
+ */
+
 import type {
   AgenticContext,
   ConfidenceBreakdown,

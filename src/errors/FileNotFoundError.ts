@@ -5,6 +5,11 @@
  * Thrown when a required file or directory cannot be found
  */
 
+/**
+ * @semantic
+ * exports: [FileNotFoundError]
+ */
+
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';
 
 /**

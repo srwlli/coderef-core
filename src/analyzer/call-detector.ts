@@ -14,6 +14,12 @@
  * Builds 'calls' relationship edges for dependency graph
  */
 
+/**
+ * @semantic
+ * exports: [CallExpression, CallEdge, CallDetector]
+ * used_by: [src/analyzer/graph-builder.ts]
+ */
+
 import * as fs from 'fs';
 import * as ts from 'typescript';
 

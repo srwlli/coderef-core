@@ -10,6 +10,11 @@
  * - Result memoization
  */
 
+/**
+ * @semantic
+ * exports: [TraversalResult, MultiHopResult, MultiHopTraversal]
+ */
+
 import { DependencyGraph, GraphNode, GraphEdge } from '../analyzer/graph-builder.js';
 import GraphAnalyzer from '../analyzer/graph-analyzer.js';
 

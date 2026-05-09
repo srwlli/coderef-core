@@ -9,6 +9,11 @@
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 4
  */
 
+/**
+ * @semantic
+ * exports: [TestPatternAnalyzer]
+ */
+
 import type {
   TestPatternAnalysis,
   TestPattern,

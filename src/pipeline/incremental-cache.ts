@@ -7,6 +7,11 @@
  * Reduces scan time for large projects by only processing modified files.
  */
 
+/**
+ * @semantic
+ * exports: [FileCacheEntry, CacheState, CacheCheckResult, IncrementalCache]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { createHash } from 'crypto';

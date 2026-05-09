@@ -10,6 +10,12 @@
  * - Quality metrics
  */
 
+/**
+ * @semantic
+ * exports: [ContextBuilderOptions, BuiltContext, ContextBuilder]
+ * used_by: [src/integration/rag/answer-generation-service.ts, src/integration/rag/confidence-scorer.ts, src/integration/rag/__tests__/confidence-scorer.test.ts]
+ */
+
 import type { SearchResult } from './semantic-search.js';
 import type { ReRankedResult } from './graph-reranker.js';
 

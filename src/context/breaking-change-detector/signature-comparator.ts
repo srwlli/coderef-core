@@ -3,6 +3,12 @@
  * Compares function signatures and detects incompatibilities
  */
 
+/**
+ * @semantic
+ * exports: [compareSignatures, compareParameters, isBreakingChange, analyzeDifference]
+ * used_by: [src/context/breaking-change-detector/index.ts]
+ */
+
 import { SignatureChange, ParameterDiff } from './types.js';
 
 /**

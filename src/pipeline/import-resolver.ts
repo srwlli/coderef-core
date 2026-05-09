@@ -30,6 +30,12 @@
  *   AC-14: NO call resolution work in Phase 3 (Phase 4 boundary).
  */
 
+/**
+ * @semantic
+ * exports: [ImportResolutionKind, ImportResolution, ExportTableEntry, ExportTable, resolveImports, buildExportTables, resolveAstImports, resolveHeaderImports, classifyBareSpecifier, resolveTransitiveReExport, resolveModuleSpecifier]
+ * used_by: [src/pipeline/orchestrator.ts, src/pipeline/types.ts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 import type {

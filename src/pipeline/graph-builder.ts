@@ -47,6 +47,12 @@
  *                 over sourceId+relationship+target+location).
  */
 
+/**
+ * @semantic
+ * exports: [EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived]
+ * used_by: [src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts]
+ */
+
 import * as crypto from 'crypto';
 import type { PipelineState, CallResolution, ImportResolution } from './types.js';
 import type { ElementData } from '../types/types.js';

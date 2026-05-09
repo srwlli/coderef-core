@@ -6,6 +6,11 @@
  * Enables explicit plugin configuration in project config.
  */
 
+/**
+ * @semantic
+ * exports: [PluginConfigEntry, ConfigLoaderOptions, loadConfigPlugins]
+ */
+
 import * as path from 'path';
 import { Plugin, CodeDetector, GraphHook } from '../types.js';
 import { validateManifest, MANIFEST_FILENAME } from '../manifest-schema.js';

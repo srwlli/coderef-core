@@ -5,6 +5,11 @@
  * Thrown when index file operations fail
  */
 
+/**
+ * @semantic
+ * exports: [IndexError]
+ */
+
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';
 
 /**

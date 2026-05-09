@@ -1,6 +1,12 @@
 // coderef-core/analyzer/frontend-call-parsers.ts
 // WO-ROUTE-VALIDATION-ENHANCEMENT-001: Frontend API call detection parsers
 
+/**
+ * @semantic
+ * exports: [parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls, extractHttpMethod, extractCallLocation]
+ * used_by: [src/fileGeneration/saveFrontendCalls.ts, src/generator/generateFrontendCalls.ts, src/scanner/frontend-scanner.ts, src/scanner/scanner.ts, src/types/types.ts]
+ */
+
 import { parse } from '@babel/parser';
 import traverse from '@babel/traverse';
 import * as t from '@babel/types';

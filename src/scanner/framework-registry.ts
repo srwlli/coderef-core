@@ -8,6 +8,12 @@
  * - Open/closed principle for adding new frameworks
  */
 
+/**
+ * @semantic
+ * exports: [FrameworkDetectionResult, FrameworkDetector]
+ * used_by: [src/plugins/types.ts, src/scanner/register-frameworks.ts, src/scanner/scanner.ts]
+ */
+
 import { RouteMetadata } from '../types/types.js';
 
 /**

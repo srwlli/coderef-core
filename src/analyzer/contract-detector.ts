@@ -9,6 +9,11 @@
  * - JSON Schema files
  */
 
+/**
+ * @semantic
+ * exports: [OpenApiSpec, OpenApiPath, OpenApiComponent, GraphqlSchema, GraphqlType, GraphqlOperation, ProtobufDefinition, ProtobufMessage, ProtobufField, ProtobufService, ProtobufMethod, ProtobufEnum, JsonSchema, ContractAnalysis, ContractDetector, traverse, analyzeContracts]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 

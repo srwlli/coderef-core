@@ -6,6 +6,11 @@
  * @module fileGeneration/detectPatterns
  */
 
+/**
+ * @semantic
+ * exports: [ApiEndpoint, detectPatterns, getApiEndpointStats]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData, RouteMetadata } from '../types/types.js';

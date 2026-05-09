@@ -3,6 +3,12 @@
  * Generates human-readable markdown reports from validation results
  */
 
+/**
+ * @semantic
+ * exports: [formatIssueSummary, formatIssueDetails, formatRecommendations, formatAutoFixSection, generateMarkdownReport, saveMarkdownReport]
+ * used_by: [src/cli/validate-routes.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { RouteValidation, ValidationIssue } from '../types/types.js';

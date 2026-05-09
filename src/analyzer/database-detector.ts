@@ -9,6 +9,11 @@
  * - Database configurations
  */
 
+/**
+ * @semantic
+ * exports: [PrismaModel, PrismaField, PrismaRelation, PrismaSchema, TypeormEntity, TypeormColumn, TypeormRelation, SequelizeModel, SequelizeColumn, SequelizeAssociation, MongooseSchema, MongooseField, DatabaseAnalysis, DatabaseDetection, DatabaseDetector, traverse, analyzeDatabase]
+ */
+
 import * as fs from 'fs';
 import * as path from 'path';
 

@@ -14,6 +14,12 @@
  * - Subsequent calls return cached parser instantly
  */
 
+/**
+ * @semantic
+ * exports: [GrammarRegistry]
+ * used_by: [src/pipeline/orchestrator.ts]
+ */
+
 import Parser from 'tree-sitter';
 import {
   GRAMMAR_PACKAGES,

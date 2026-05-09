@@ -7,6 +7,11 @@
  * Enables real-time code indexing for IDE integration.
  */
 
+/**
+ * @semantic
+ * exports: [FileWatcherOptions, WatcherStats, FileWatcher]
+ */
+
 import chokidar from 'chokidar';
 import * as path from 'path';
 import { IncrementalCache } from '../cache/incremental-cache.js';

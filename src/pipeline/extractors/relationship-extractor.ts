@@ -21,6 +21,12 @@
  *   module top level).
  */
 
+/**
+ * @semantic
+ * exports: [RelationshipExtractor]
+ * used_by: [src/pipeline/orchestrator.ts]
+ */
+
 import type Parser from 'tree-sitter';
 import type {
   ImportRelationship,

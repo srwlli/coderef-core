@@ -11,6 +11,12 @@
  * Implementation follows specification canonical format rules (lines 464-471)
  */
 
+/**
+ * @semantic
+ * exports: [ValidationResult, ValidatorOptions, CodeRefValidator, validateCodeRef, validateCodeRefs]
+ * used_by: [__tests__/integration.test.ts]
+ */
+
 import { ParsedCodeRef } from '../parser/parser.js';
 
 export interface ValidationResult {

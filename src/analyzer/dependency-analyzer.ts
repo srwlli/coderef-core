@@ -9,6 +9,12 @@
  * - Peer dependency satisfaction
  */
 
+/**
+ * @semantic
+ * exports: [DependencyHealth, SecurityVulnerability, DependencyHealthReport, DependencyAnalyzer, analyzeDependencyHealth]
+ * used_by: [src/pipeline/generators/health-generator.ts]
+ */
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { exec } from 'child_process';

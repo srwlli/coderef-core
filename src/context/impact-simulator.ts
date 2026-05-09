@@ -9,6 +9,12 @@
  * - Impact summary reporting
  */
 
+/**
+ * @semantic
+ * exports: [ElementImpact, BlastRadius, ImpactSummary, ImpactSimulator]
+ * used_by: [src/context/breaking-change-detector/index.ts]
+ */
+
 import { DependencyGraph, GraphNode, GraphEdge } from '../analyzer/graph-builder.js';
 
 /**

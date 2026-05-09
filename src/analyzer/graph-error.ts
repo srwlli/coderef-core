@@ -3,6 +3,12 @@
  * Used for validation and error handling in graph loading/saving
  */
 
+/**
+ * @semantic
+ * exports: [GraphError]
+ * used_by: [src/analyzer/analyzer-service.ts, src/analyzer/graph-builder.ts]
+ */
+
 export class GraphError extends Error {
   constructor(
     message: string,

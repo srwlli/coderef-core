@@ -5,6 +5,11 @@
  * Thrown when code scanning operations fail
  */
 
+/**
+ * @semantic
+ * exports: [ScanError]
+ */
+
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';
 
 /**

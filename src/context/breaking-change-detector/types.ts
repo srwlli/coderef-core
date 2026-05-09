@@ -4,6 +4,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [SignatureChange, ImpactedCallSite, MigrationHint, BreakingChangeReport, BlastRadius, ParameterDiff, ContextualFactor]
+ * used_by: [src/context/breaking-change-detector/diff-analyzer.ts, src/context/breaking-change-detector/hint-generator.ts, src/context/breaking-change-detector/impact-assessor.ts, src/context/breaking-change-detector/index.ts, src/context/breaking-change-detector/signature-comparator.ts]
+ */
+
+/**
  * Represents a change to a function/method signature
  */
 export interface SignatureChange {

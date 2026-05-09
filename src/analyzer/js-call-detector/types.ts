@@ -4,6 +4,12 @@
  */
 
 /**
+ * @semantic
+ * exports: [Parameter, CallExpression, CallEdge, ModuleImport, ModuleExport, TraversalContext, CallPatternAnalysis, DetectedElement]
+ * used_by: [src/analyzer/js-call-detector/analyzer.ts, src/analyzer/js-call-detector/index.ts, src/analyzer/js-call-detector/module-analyzer.ts, src/analyzer/js-call-detector/parser.ts, src/analyzer/js-call-detector/visitor.ts]
+ */
+
+/**
  * Parameter information extracted from function signature
  */
 export interface Parameter {

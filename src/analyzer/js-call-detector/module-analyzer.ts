@@ -3,6 +3,12 @@
  * Extracts imports and exports from AST
  */
 
+/**
+ * @semantic
+ * exports: [extractImportsFromAST, extractExportsFromAST]
+ * used_by: [src/analyzer/js-call-detector/index.ts]
+ */
+
 import { ModuleImport, ModuleExport } from './types.js';
 
 /**
