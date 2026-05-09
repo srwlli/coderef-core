@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports DependencyHealth, SecurityVulnerability, DependencyHealthReport, DependencyAnalyzer, analyzeDependencyHealth
+ * @used_by src/pipeline/generators/health-generator.ts
+ */
+
+/**
  * IMP-CORE-023: Dependency Health Analyzer
  * 
  * Analyzes dependency health including:
@@ -7,12 +13,6 @@
  * - License compatibility checking
  * - Unused dependency detection
  * - Peer dependency satisfaction
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports DependencyHealth, SecurityVulnerability, DependencyHealthReport, DependencyAnalyzer, analyzeDependencyHealth
- * @used_by src/pipeline/generators/health-generator.ts
  */
 
 import * as fs from 'fs/promises';

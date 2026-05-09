@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports SearchIndexEntry, SearchResult, SearchOptions, SearchIndex, TagCloudEntry, SearchStatistics, SearchEngine
+ */
+
+/**
  * Advanced Search Engine
  *
  * Provides enhanced search capabilities for document content:
@@ -8,11 +13,6 @@
  * - Section-specific search
  * - Tag-based filtering
  * - Relevance scoring
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports SearchIndexEntry, SearchResult, SearchOptions, SearchIndex, TagCloudEntry, SearchStatistics, SearchEngine
  */
 
 /**

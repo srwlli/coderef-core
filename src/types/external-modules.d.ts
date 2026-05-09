@@ -1,11 +1,11 @@
 /**
- * Type declarations for optional external dependencies
- * These modules are loaded dynamically and may not be installed
+ * @coderef-semantic: 1.0.0
+ * @exports OpenAI, Anthropic, ChromaClient, Collection, Pinecone
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports OpenAI, Anthropic, ChromaClient, Collection, Pinecone
+ * Type declarations for optional external dependencies
+ * These modules are loaded dynamically and may not be installed
  */
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

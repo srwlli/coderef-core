@@ -1,12 +1,12 @@
 /**
- * IMP-CORE-035: JavaScript Call Graph Analyzer
- * Builds call edges and analyzes patterns
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports buildCallEdges, analyzeCallPatterns
  * @used_by src/analyzer/js-call-detector/index.ts
+ */
+
+/**
+ * IMP-CORE-035: JavaScript Call Graph Analyzer
+ * Builds call edges and analyzes patterns
  */
 
 import { CallExpression, CallEdge, CallPatternAnalysis } from './types.js';

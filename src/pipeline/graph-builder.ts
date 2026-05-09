@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived
+ * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
+ */
+
+/**
  * Phase 5 Graph Builder
  *
  * WO-PIPELINE-GRAPH-CONSTRUCTION-001
@@ -45,12 +51,6 @@
  *                 NOT deleted in Phase 5.
  *   DR-PHASE-5-D: deterministic sha1 hash for edge ids (16 hex chars
  *                 over sourceId+relationship+target+location).
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived
- * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
  */
 
 import * as crypto from 'crypto';

@@ -1,16 +1,16 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports RegistryGenerator
+ * @used_by src/cli/populate.ts, __tests__/pipeline/single-scanner.test.ts
+ */
+
+/**
  * RegistryGenerator - Persist the entity registry to disk
  *
  * WO-CODEREF-CORE-REGISTRY-001 - Phase 1, Task T1-5
  *
  * Produces: .coderef/registry/entities.json
  * Format: RegistryState with entities and stats
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports RegistryGenerator
- * @used_by src/cli/populate.ts, __tests__/pipeline/single-scanner.test.ts
  */
 
 import * as fs from 'fs/promises';

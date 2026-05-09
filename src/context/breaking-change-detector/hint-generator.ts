@@ -1,12 +1,12 @@
 /**
- * IMP-CORE-035: Migration Hint Generator
- * Generates migration strategies for breaking changes
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports generateMigrationHints, suggestWrapPattern, suggestRenamePattern, suggestAdapterPattern, suggestDefaultParamPattern, suggestOptionsObjectPattern
  * @used_by src/context/breaking-change-detector/index.ts
+ */
+
+/**
+ * IMP-CORE-035: Migration Hint Generator
+ * Generates migration strategies for breaking changes
  */
 
 import { SignatureChange, ImpactedCallSite, MigrationHint } from './types.js';

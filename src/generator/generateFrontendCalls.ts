@@ -1,11 +1,11 @@
 /**
- * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Frontend Call Generation Module
- * Filters frontend API call elements and generates frontend-calls.json output
+ * @coderef-semantic: 1.0.0
+ * @exports FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile
+ * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Frontend Call Generation Module
+ * Filters frontend API call elements and generates frontend-calls.json output
  */
 
 import { ElementData } from '../types/types.js';

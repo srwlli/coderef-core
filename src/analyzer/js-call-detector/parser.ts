@@ -1,12 +1,12 @@
 /**
- * IMP-CORE-035: JavaScript Call Parser
- * Extracts call expressions from AST nodes
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports parseCallExpression, parseNewExpression, extractObjectName, isNestedCall, extractParameters, extractParameter
  * @used_by src/analyzer/js-call-detector/visitor.ts
+ */
+
+/**
+ * IMP-CORE-035: JavaScript Call Parser
+ * Extracts call expressions from AST nodes
  */
 
 import { CallExpression, Parameter, TraversalContext } from './types.js';

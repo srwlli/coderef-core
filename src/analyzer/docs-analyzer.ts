@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ReadmeSection, ReadmeAnalysis, JSDocCoverage, ChangelogAnalysis, CommentDensity, ApiDocsAnalysis, DocumentationQuality, DocsAnalyzer, analyzeDocs
+ * @used_by src/pipeline/generators/context-generator.ts
+ */
+
+/**
  * Documentation Quality Analyzer
  *
  * IMP-CORE-022: Analyze documentation quality metrics
@@ -9,12 +15,6 @@
  * - CHANGELOG presence and recency
  * - API documentation completeness
  * - Code comment density
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ReadmeSection, ReadmeAnalysis, JSDocCoverage, ChangelogAnalysis, CommentDensity, ApiDocsAnalysis, DocumentationQuality, DocsAnalyzer, analyzeDocs
- * @used_by src/pipeline/generators/context-generator.ts
  */
 
 import * as fs from 'fs/promises';

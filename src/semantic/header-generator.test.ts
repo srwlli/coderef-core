@@ -132,10 +132,6 @@ describe('HeaderGenerator', () => {
     test('should preserve existing semantic headers', async () => {
       const file = path.join(tempDir, 'test.ts');
       const originalContent = `
-/**
- * @coderef-semantic: 1.0.0
- * @exports oldFunc
- */
 export function myFunc() {}`;
       fs.writeFileSync(file, originalContent);
 

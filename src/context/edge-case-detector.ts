@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports EdgeCaseDetector
+ */
+
+/**
  * Edge Case Detector
  *
  * Detects potential issues in code:
@@ -8,11 +13,6 @@
  * - Resource leaks
  *
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 3
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports EdgeCaseDetector
  */
 
 import type { EdgeCaseDetection, EdgeCaseIssue, ElementData } from './types.js';

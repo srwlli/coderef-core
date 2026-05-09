@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports CodeRefErrorOptions, CodeRefError
+ * @used_by src/errors/FileNotFoundError.ts, src/errors/IndexError.ts, src/errors/ParseError.ts, src/errors/ScanError.ts, src/errors/ValidationError.ts
+ */
+
+/**
  * CodeRefError - Base error class for all CodeRef system errors
  * @module errors
  *
@@ -8,12 +14,6 @@
  * - Context information for recovery
  * - JSON serialization for logging
  * - User-friendly toString() for CLI display
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports CodeRefErrorOptions, CodeRefError
- * @used_by src/errors/FileNotFoundError.ts, src/errors/IndexError.ts, src/errors/ParseError.ts, src/errors/ScanError.ts, src/errors/ValidationError.ts
  */
 
 /**

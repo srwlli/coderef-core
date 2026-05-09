@@ -1,16 +1,16 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports attachFileImportsToElements, buildSemanticRelationships, deduplicateUsedBy
+ * @used_by src/pipeline/semantic-elements.ts
+ */
+
+/**
  * Semantic Analyzer - Build exports and used_by relationships
  * WO-CODEREF-SEMANTIC-INTEGRATION-001: Phase 1
  *
  * Analyzes elements to build semantic relationships:
  * - exports: What each file provides
  * - used_by: Reverse import tracking (which files depend on this)
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports attachFileImportsToElements, buildSemanticRelationships, deduplicateUsedBy
- * @used_by src/pipeline/semantic-elements.ts
  */
 
 import type { ElementData } from '../types/types.js';

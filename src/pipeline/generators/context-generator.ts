@@ -1,16 +1,16 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports CallGraphNode, CallGraphEdge, CallGraph, ExecutiveSummary, RiskHeatMap, WorkOrderPriority, DependencyRisk, DependencyRiskAnalysis, ArchitecturePattern, ArchitectureAnalysis, ProjectContext, ContextGenerator, isTestFile, isEntryPoint, isPipelineOrchestrator, isOrchestrator, MAX_DEPTH, dfs
+ * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
+ */
+
+/**
  * ContextGenerator - Generate project context overview
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-010
  *
  * Produces: .coderef/context.json, context.md
  * Content: Project stats, entry points, critical functions, architecture overview
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports CallGraphNode, CallGraphEdge, CallGraph, ExecutiveSummary, RiskHeatMap, WorkOrderPriority, DependencyRisk, DependencyRiskAnalysis, ArchitecturePattern, ArchitectureAnalysis, ProjectContext, ContextGenerator, isTestFile, isEntryPoint, isPipelineOrchestrator, isOrchestrator, MAX_DEPTH, dfs
- * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */
 
 import * as fs from 'fs/promises';

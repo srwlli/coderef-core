@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ComplexityMetrics, ElementComplexity, ContextFilterCriteria, ImpactScope, TaskSpecificContext, TaskContext, EdgeCaseIssue, EdgeCaseDetection, TestPattern, TestFileInfo, TestPatternAnalysis, CodeExample, PatternGroup, CodeExamplesResult, ConfidenceBreakdown, AgenticContext, ContextGenerationOptions, SignatureChange, ImpactedCallSite, MigrationHint, BreakingChangeReport
+ * @used_by src/context/agentic-formatter.ts, src/context/complexity-scorer.ts, src/context/edge-case-detector.ts, src/context/example-extractor.ts, src/context/task-context-generator.ts, src/context/test-pattern-analyzer.ts, src/context/__tests__/breaking-change-detector.test.ts
+ */
+
+/**
  * Shared Type Definitions for Context Generation
  *
  * Provides types for all six phases:
@@ -10,12 +16,6 @@
  * Phase 6: Agentic Output Formatting
  *
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ComplexityMetrics, ElementComplexity, ContextFilterCriteria, ImpactScope, TaskSpecificContext, TaskContext, EdgeCaseIssue, EdgeCaseDetection, TestPattern, TestFileInfo, TestPatternAnalysis, CodeExample, PatternGroup, CodeExamplesResult, ConfidenceBreakdown, AgenticContext, ContextGenerationOptions, SignatureChange, ImpactedCallSite, MigrationHint, BreakingChangeReport
- * @used_by src/context/agentic-formatter.ts, src/context/complexity-scorer.ts, src/context/edge-case-detector.ts, src/context/example-extractor.ts, src/context/task-context-generator.ts, src/context/test-pattern-analyzer.ts, src/context/__tests__/breaking-change-detector.test.ts
  */
 
 import type { ElementData } from '../types/types.js';

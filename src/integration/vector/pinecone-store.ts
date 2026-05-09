@@ -1,12 +1,12 @@
 /**
- * Pinecone Vector Store Implementation
- * P1-T5: Implements VectorStore interface using Pinecone cloud service
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports PineconeStore, createPineconeStore
  * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts
+ */
+
+/**
+ * Pinecone Vector Store Implementation
+ * P1-T5: Implements VectorStore interface using Pinecone cloud service
  */
 
 import { Pinecone } from '@pinecone-database/pinecone';

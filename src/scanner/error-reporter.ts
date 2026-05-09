@@ -1,9 +1,9 @@
-// coderef-core/scanner/error-reporter.ts
-
 /**
  * @coderef-semantic: 1.0.0
  * @exports ScanErrorType, ScanErrorSeverity, ScanError, ScanStats, ScanResult, createScanError, createScanErrorWithContext, formatScanError, printScanErrors, initScanStats, finalizeScanStats
  */
+
+// coderef-core/scanner/error-reporter.ts
 
 /**
  * Type of scanning error

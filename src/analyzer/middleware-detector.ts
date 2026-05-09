@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports MiddlewareMapping, MiddlewareChain, MiddlewareHandler, DIContainer, DIProvider, DIImport, MiddlewareAnalysis, MiddlewareDetector, analyzeMiddlewareAndDI
+ */
+
+/**
  * IMP-CORE-010, IMP-CORE-043: Middleware and Dependency Injection Detector
  *
  * Detects middleware chains and DI patterns:
@@ -9,11 +14,6 @@
  * - Flask decorators (@require_auth, @login_required)
  * - Django decorators (@login_required, @permission_required)
  * - Middleware pattern mapping for framework migrations
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports MiddlewareMapping, MiddlewareChain, MiddlewareHandler, DIContainer, DIProvider, DIImport, MiddlewareAnalysis, MiddlewareDetector, analyzeMiddlewareAndDI
  */
 
 import type { ElementData } from '../types/types.js';

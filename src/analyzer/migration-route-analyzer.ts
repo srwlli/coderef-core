@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports MigrationRouteElement, AffectedCaller, BreakingChange, OrphanedCall, FrameworkStats, MigrationRouteAnalyzer, extractAllRoutes, findOrphanedCalls, detectBreakingChanges
+ * @used_by src/fileGeneration/detectPatterns.ts
+ */
+
+/**
  * IMP-CORE-039: Migration Route Analyzer
  *
  * Unifies route metadata extraction for migration analysis.
@@ -8,12 +14,6 @@
  * Replaces ad-hoc keyword matching in detectApiEndpoints with rich RouteMetadata.
  *
  * @module analyzer/migration-route-analyzer
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports MigrationRouteElement, AffectedCaller, BreakingChange, OrphanedCall, FrameworkStats, MigrationRouteAnalyzer, extractAllRoutes, findOrphanedCalls, detectBreakingChanges
- * @used_by src/fileGeneration/detectPatterns.ts
  */
 
 import { ElementData, RouteMetadata, FrontendCall } from '../types/types.js';

@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ConfidenceBreakdown, ConfidenceScoringOptions, ConfidenceScorer
+ * @used_by src/integration/rag/__tests__/confidence-scorer.test.ts
+ */
+
+/**
  * Confidence Scorer
  * P4-T4: Advanced confidence scoring for answer quality assessment
  *
@@ -7,12 +13,6 @@
  * - Source diversity
  * - Answer completeness
  * - Historical performance
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ConfidenceBreakdown, ConfidenceScoringOptions, ConfidenceScorer
- * @used_by src/integration/rag/__tests__/confidence-scorer.test.ts
  */
 
 import type { Answer } from './answer-generation-service.js';

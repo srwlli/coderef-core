@@ -1,14 +1,14 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports EntryPointDetector
+ * @used_by src/context/context-generator.ts
+ */
+
+/**
  * Entry Point Detector
  * Detects entry points in code via naming and file patterns
  *
  * Part of WO-CONTEXT-GENERATION-001
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports EntryPointDetector
- * @used_by src/context/context-generator.ts
  */
 
 import type { ElementData } from '../types/types.js';

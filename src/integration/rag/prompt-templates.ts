@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports PromptVariables, PromptTemplateBuilder, PromptValidator
+ * @used_by src/integration/rag/answer-generation-service.ts
+ */
+
+/**
  * Prompt Templates
  * P4-T1: Templates for LLM interactions in RAG system
  *
@@ -7,12 +13,6 @@
  * - Cite sources with CodeRef tags
  * - Provide relevant metadata
  * - Suggest related questions
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports PromptVariables, PromptTemplateBuilder, PromptValidator
- * @used_by src/integration/rag/answer-generation-service.ts
  */
 
 /**

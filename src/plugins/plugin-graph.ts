@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports PluginGraphOptions, applyPluginGraphHooks, getPluginGraphStats
+ */
+
+/**
  * @legacy
  * @deprecated Use src/pipeline/graph-builder.ts (canonical Phase 5
  *             ExportedGraph builder) instead. Plugin hook surface for
@@ -20,11 +25,6 @@
  *
  * Integrates plugin graph hooks into the CodeRef graph building process.
  * Allows plugins to add custom edges and relationships.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports PluginGraphOptions, applyPluginGraphHooks, getPluginGraphStats
  */
 
 import { DependencyGraph, GraphEdge } from '../analyzer/graph-builder.js';

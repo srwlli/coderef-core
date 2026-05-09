@@ -1,15 +1,15 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports PluginError, PluginRegistry
+ * @used_by src/plugins/loaders/npm-loader.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-scanner.ts
+ */
+
+/**
  * Plugin Registry
  * WO-PLUGIN-SYSTEM-001: Plugin system for custom detectors
  *
  * Central registry for loading, managing, and executing plugins.
  * Provides plugin discovery, lifecycle management, and integration hooks.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports PluginError, PluginRegistry
- * @used_by src/plugins/loaders/npm-loader.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-scanner.ts
  */
 
 import { Plugin, PluginRegistration, CodeDetector, GraphHook, PluginSource } from './types.js';

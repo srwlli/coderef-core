@@ -1,14 +1,14 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ApiEndpoint, detectPatterns, getApiEndpointStats
+ */
+
+/**
  * Detect Patterns - Find common code patterns
  *
  * Outputs: .coderef/reports/patterns.json
  *
  * @module fileGeneration/detectPatterns
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ApiEndpoint, detectPatterns, getApiEndpointStats
  */
 
 import * as fs from 'fs/promises';

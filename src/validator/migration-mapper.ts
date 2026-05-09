@@ -1,12 +1,12 @@
 /**
- * WO-MIGRATION-VALIDATION-001: Migration Mapper
- * Handles migration config validation and path transformation
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports validateMigrationConfig, checkRequiredFields, validateRegexPatterns, detectPathConflicts, checkDeprecatedAddedOverlap, applyExplicitMapping, applyPatternMapping, applyMappings, calculateMigrationCoverage, findUnmappedCalls, findDeprecatedCalls, groupCoverageByApiPrefix, SemanticParameterMapping, SemanticParameterMapper
  * @used_by src/validator/frontend-update-generator.ts, src/validator/route-validator.ts
+ */
+
+/**
+ * WO-MIGRATION-VALIDATION-001: Migration Mapper
+ * Handles migration config validation and path transformation
  */
 
 import type { MigrationMapping } from '../types/types.js';

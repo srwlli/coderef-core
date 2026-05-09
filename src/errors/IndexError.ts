@@ -1,13 +1,13 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports IndexError
+ */
+
+/**
  * IndexError - Index file issues
  * @module errors
  *
  * Thrown when index file operations fail
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports IndexError
  */
 
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';

@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ImportStatement, ImportEdge, ImportParser
+ * @used_by src/analyzer/graph-builder.ts
+ */
+
+/**
  * Import Parser - Detects import/export relationships in source code
  * Phase 3, Task P3-T1: Relationship Detection & Analysis
  *
@@ -10,12 +16,6 @@
  * - Dynamic imports: import('x')
  *
  * Builds 'imports' relationship edges for dependency graph
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ImportStatement, ImportEdge, ImportParser
- * @used_by src/analyzer/graph-builder.ts
  */
 
 import * as fs from 'fs';

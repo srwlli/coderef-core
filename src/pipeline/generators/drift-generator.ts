@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports DriftGenerator
+ * @used_by src/cli/populate.ts
+ */
+
+/**
  * DriftGenerator - Detect drift between source files and the indexed snapshot.
  *
  * Produces: .coderef/reports/drift.json
@@ -19,12 +25,6 @@
  * drift on a freshly-populated repo because the stored index and the current
  * run used different parameter serializations. Mtime-based drift is immune
  * to that schema-version skew.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports DriftGenerator
- * @used_by src/cli/populate.ts
  */
 
 import * as fs from 'fs/promises';

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ExampleExtractor
+ */
+
+/**
  * Example Extractor
  *
  * Extracts code examples and groups by pattern:
@@ -7,11 +12,6 @@
  * - Generate pattern documentation
  *
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 5
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ExampleExtractor
  */
 
 import type { CodeExamplesResult, CodeExample, PatternGroup } from './types.js';

@@ -1,12 +1,12 @@
 /**
- * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Save Frontend Calls File Generation
- * Generates frontend-calls.json by scanning project files for API calls
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports FrontendCallElement, FrontendCallsOutput, formatFrontendCallsOutput, saveFrontendCalls, generateFrontendCallsOutput, countFrontendCalls
  * @used_by src/cli/scan-frontend-calls.ts
+ */
+
+/**
+ * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Save Frontend Calls File Generation
+ * Generates frontend-calls.json by scanning project files for API calls
  */
 
 import * as fs from 'fs/promises';

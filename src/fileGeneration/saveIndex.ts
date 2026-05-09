@@ -1,14 +1,14 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports saveIndex
+ */
+
+/**
  * Save Index - Save scan results to disk
  *
  * Outputs: .coderef/index.json, .coderef/routes.json (WO-API-ROUTE-DETECTION-001)
  *
  * @module fileGeneration/saveIndex
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports saveIndex
  */
 
 import * as path from 'path';

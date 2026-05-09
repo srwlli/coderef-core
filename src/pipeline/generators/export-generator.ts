@@ -1,16 +1,16 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ExportGenerator
+ * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
+ */
+
+/**
  * ExportGenerator - Export graph in various formats
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-009
  *
  * Produces: .coderef/exports/graph.json, graph.jsonld, diagram-wrapped.md
  * Formats: Full JSON export, JSON-LD with context, wrapped Mermaid
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ExportGenerator
- * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */
 
 import * as fs from 'fs/promises';

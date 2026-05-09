@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ConversationMessage, ConversationSession, ConversationOptions, ConversationManager
+ */
+
+/**
  * Conversation Manager
  * P4-T3: Manages conversation sessions and message history
  *
@@ -7,11 +12,6 @@
  * - Maintaining session context
  * - Supporting conversation continuation
  * - Managing session lifecycle
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ConversationMessage, ConversationSession, ConversationOptions, ConversationManager
  */
 
 import type { Answer } from './answer-generation-service.js';

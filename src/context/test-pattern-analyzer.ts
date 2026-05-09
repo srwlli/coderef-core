@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports TestPatternAnalyzer
+ */
+
+/**
  * Test Pattern Analyzer
  *
  * Analyzes test files and patterns:
@@ -7,11 +12,6 @@
  * - Calculate coverage metrics
  *
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 4
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports TestPatternAnalyzer
  */
 
 import type {

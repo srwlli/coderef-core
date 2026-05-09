@@ -1,15 +1,15 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports FileWatcherOptions, WatcherStats, FileWatcher
+ */
+
+/**
  * FileWatcher - Real-time file monitoring for incremental scanning
  *
  * IMP-CORE-057: Implement incremental scanning with file-watcher
  *
  * Uses chokidar to monitor file system changes and trigger incremental scans.
  * Enables real-time code indexing for IDE integration.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports FileWatcherOptions, WatcherStats, FileWatcher
  */
 
 import chokidar from 'chokidar';

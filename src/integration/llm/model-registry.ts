@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ProviderSpec, getProviderSpec, getEmbeddingDimensions, supportsEmbeddings, ProviderDoesNotSupportEmbeddings, validateRegistry
+ * @used_by src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts
+ */
+
+/**
  * Model Registry
  * P1-T1: Single source of truth for LLM provider specifications
  *
@@ -10,12 +16,6 @@
  *
  * ALL dimension values must come from this registry. No hardcoded
  * dimension literals allowed in provider implementations.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ProviderSpec, getProviderSpec, getEmbeddingDimensions, supportsEmbeddings, ProviderDoesNotSupportEmbeddings, validateRegistry
- * @used_by src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts
  */
 
 /**

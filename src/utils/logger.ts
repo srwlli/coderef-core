@@ -1,14 +1,14 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports LogLevel
+ * @used_by src/integration/rag/conversation-manager.ts
+ */
+
+/**
  * Logger Utility
  * @module utils/logger
  *
  * Provides structured logging with severity levels and configurable verbosity
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports LogLevel
- * @used_by src/integration/rag/conversation-manager.ts
  */
 
 /**

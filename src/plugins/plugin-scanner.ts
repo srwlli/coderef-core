@@ -1,14 +1,14 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports PluginScanOptions, scanWithPlugins, getPluginScannerStats, initializePluginScanning
+ */
+
+/**
  * Plugin Scanner Integration
  * WO-PLUGIN-SYSTEM-001: Plugin system for custom detectors
  *
  * Integrates plugin detectors into the CodeRef scanning process.
  * Runs plugin detectors alongside built-in patterns for extensible code analysis.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports PluginScanOptions, scanWithPlugins, getPluginScannerStats, initializePluginScanning
  */
 
 import { minimatch } from 'minimatch';

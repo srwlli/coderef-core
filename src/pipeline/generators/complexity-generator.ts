@@ -1,16 +1,16 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ComplexityGenerator
+ * @used_by src/cli/populate.ts
+ */
+
+/**
  * ComplexityGenerator - Generate complexity metrics from PipelineState
  *
  * WO-CODEREF-CORE-REGISTRY-001 - Phase 3, Task T3-1
  *
  * Produces: .coderef/reports/complexity/summary.json and complexity.json
  * Metrics: Cyclomatic complexity, LOC, parameter count per element
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ComplexityGenerator
- * @used_by src/cli/populate.ts
  */
 
 import * as fs from 'fs/promises';

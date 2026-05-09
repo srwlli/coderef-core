@@ -1,15 +1,15 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports registerDefaultFrameworks
+ * @used_by src/scanner/scanner.ts
+ */
+
+/**
  * Register Default Framework Detectors
  * IMP-CORE-038: Auto-register all built-in framework detectors
  *
  * Import this module to register all default framework detectors
  * with the global framework registry.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports registerDefaultFrameworks
- * @used_by src/scanner/scanner.ts
  */
 
 import { frameworkRegistry } from './framework-registry.js';

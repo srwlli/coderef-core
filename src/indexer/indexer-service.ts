@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports IndexingStage, IndexingResult, BatchIndexingResult, IndexerStats, IndexerService, createIndexerService
+ * @used_by __tests__/indexer.test.ts
+ */
+
+/**
  * CodeRef2 Indexer Service
  *
  * Orchestration layer that coordinates all indexing components:
@@ -8,12 +14,6 @@
  * - QueryEngine (multi-dimensional queries)
  *
  * Provides unified indexing pipeline and public API
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports IndexingStage, IndexingResult, BatchIndexingResult, IndexerStats, IndexerService, createIndexerService
- * @used_by __tests__/indexer.test.ts
  */
 
 import { ParsedCodeRef } from '../parser/parser.js';

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports FuzzyMatch, DriftResult, FuzzyResolver
+ */
+
+/**
  * Fuzzy Resolver - Detect moved/renamed code elements
  * Phase 5, Task P5-T3: Fuzzy Resolution for Drift Detection
  *
@@ -6,11 +11,6 @@
  * - Multi-metric string similarity (name, path, signature)
  * - Element matching despite drift
  * - Confidence scoring
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports FuzzyMatch, DriftResult, FuzzyResolver
  */
 
 import { GraphNode } from '../analyzer/graph-builder.js';

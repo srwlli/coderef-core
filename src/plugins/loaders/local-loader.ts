@@ -1,15 +1,15 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports LocalLoaderOptions, discoverLocalPlugins, loadLocalPlugin, loadAllLocalPlugins
+ * @used_by src/plugins/loaders/config-loader.ts, src/plugins/plugin-scanner.ts
+ */
+
+/**
  * Local Plugin Loader
  * WO-PLUGIN-SYSTEM-001: Plugin system for custom detectors
  *
  * Discovers and loads plugins from local .coderef/plugins/ directory.
  * Useful for in-development plugins or project-specific extensions.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports LocalLoaderOptions, discoverLocalPlugins, loadLocalPlugin, loadAllLocalPlugins
- * @used_by src/plugins/loaders/config-loader.ts, src/plugins/plugin-scanner.ts
  */
 
 import * as fs from 'fs';

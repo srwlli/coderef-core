@@ -1,12 +1,12 @@
 /**
- * Chroma Vector Store Implementation
- * P1-T6: Implements VectorStore interface using Chroma (self-hosted option)
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports ChromaStore, createChromaStore
  * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts
+ */
+
+/**
+ * Chroma Vector Store Implementation
+ * P1-T6: Implements VectorStore interface using Chroma (self-hosted option)
  */
 
 import { ChromaClient, Collection } from 'chromadb';

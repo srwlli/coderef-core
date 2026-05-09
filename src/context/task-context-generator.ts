@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports TaskContextGenerator
+ */
+
+/**
  * Task Context Generator
  *
  * Generates task-specific context by:
@@ -8,11 +13,6 @@
  * - Assessing risk level
  *
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 2
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports TaskContextGenerator
  */
 
 import { ComplexityScorer } from './complexity-scorer.js';

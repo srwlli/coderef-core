@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports generateContext
+ */
+
+/**
  * Generate Context - Create AI-readable project context
  *
  * Outputs:
@@ -6,11 +11,6 @@
  * - .coderef/context.md (human-readable summary)
  *
  * @module fileGeneration/generateContext
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports generateContext
  */
 
 import * as fs from 'fs/promises';

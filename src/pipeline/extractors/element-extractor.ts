@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ElementExtractor, traverse
+ * @used_by src/pipeline/orchestrator.ts
+ */
+
+/**
  * Element Extractor - AST visitor for code element extraction
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 1, Task IMPL-002
@@ -14,12 +20,6 @@
  * const extractor = new ElementExtractor();
  * const elements = extractor.extract(tree.rootNode, filePath, content, 'ts');
  * ```
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ElementExtractor, traverse
- * @used_by src/pipeline/orchestrator.ts
  */
 
 import type Parser from 'tree-sitter';

@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports AnswerOptions, Answer, AnswerGenerationService
+ * @used_by src/integration/rag/confidence-scorer.ts, src/integration/rag/conversation-manager.ts, src/integration/rag/__tests__/confidence-scorer.test.ts
+ */
+
+/**
  * Answer Generation Service
  * P4-T2: Orchestrates the complete Q&A pipeline
  *
@@ -8,12 +14,6 @@
  * 3. Builds context
  * 4. Generates answer with LLM
  * 5. Calculates confidence
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports AnswerOptions, Answer, AnswerGenerationService
- * @used_by src/integration/rag/confidence-scorer.ts, src/integration/rag/conversation-manager.ts, src/integration/rag/__tests__/confidence-scorer.test.ts
  */
 
 import type { LLMProvider } from '../llm/llm-provider.js';

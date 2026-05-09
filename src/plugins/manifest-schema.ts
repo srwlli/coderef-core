@@ -1,15 +1,15 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports validateManifest, parseManifest, MANIFEST_FILENAME, getManifestPath
+ * @used_by src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts
+ */
+
+/**
  * Plugin Manifest Schema
  * WO-PLUGIN-SYSTEM-001: Plugin system for custom detectors
  *
  * JSON Schema and validation for coderef-plugin.json manifest files.
  * Plugins must include this file in their root directory.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports validateManifest, parseManifest, MANIFEST_FILENAME, getManifestPath
- * @used_by src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts
  */
 
 import { PluginManifest, DetectorDefinition, HookDefinition } from './types.js';

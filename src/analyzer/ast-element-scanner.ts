@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ASTScanResult, ASTElementScanner, visit, scanFileWithAST, scanFilesWithAST
+ * @used_by src/scanner/scanner.ts
+ */
+
+/**
  * AST Element Scanner - Detects code elements using TypeScript Compiler API
  * WO-AST-ELEMENT-SCANNER-001
  *
@@ -12,12 +18,6 @@
  * - Class declarations: class Foo {}
  * - Method definitions: class { method() {} }
  * - Export status for all elements
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ASTScanResult, ASTElementScanner, visit, scanFileWithAST, scanFilesWithAST
- * @used_by src/scanner/scanner.ts
  */
 
 import * as fs from 'fs';

@@ -1,13 +1,13 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports FileNotFoundError
+ */
+
+/**
  * FileNotFoundError - Missing files or directories
  * @module errors
  *
  * Thrown when a required file or directory cannot be found
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports FileNotFoundError
  */
 
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';

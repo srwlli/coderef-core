@@ -1,15 +1,15 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports TextGenerationOptions, EmbeddingTextGenerator
+ * @used_by src/integration/rag/embedding-service.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts
+ */
+
+/**
  * Embedding Text Generator
  * P2-T3: Generates optimized text representations for embedding models
  *
  * Converts CodeChunks into structured text that includes all relevant
  * context for semantic search while optimizing for embedding model performance.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports TextGenerationOptions, EmbeddingTextGenerator
- * @used_by src/integration/rag/embedding-service.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts
  */
 
 import type { CodeChunk } from './code-chunk.js';

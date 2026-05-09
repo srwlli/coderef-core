@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ImportResolutionKind, ImportResolution, ExportTableEntry, ExportTable, resolveImports, buildExportTables, resolveAstImports, resolveHeaderImports, classifyBareSpecifier, resolveTransitiveReExport, resolveModuleSpecifier
+ * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts
+ */
+
+/**
  * Phase 3 Import Resolver
  *
  * WO-PIPELINE-IMPORT-RESOLUTION-001
@@ -28,12 +34,6 @@
  *     cross-check and Phase 3's stale-import check therefore see the SAME
  *     export set.
  *   AC-14: NO call resolution work in Phase 3 (Phase 4 boundary).
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ImportResolutionKind, ImportResolution, ExportTableEntry, ExportTable, resolveImports, buildExportTables, resolveAstImports, resolveHeaderImports, classifyBareSpecifier, resolveTransitiveReExport, resolveModuleSpecifier
- * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts
  */
 
 import * as fs from 'fs';

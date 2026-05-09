@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports FileCacheEntry, CacheState, CacheCheckResult, IncrementalCache
+ * @used_by src/cli/scan.ts, src/pipeline/orchestrator.ts, src/scanner/file-watcher.ts, src/scanner/scanner.ts, src/scanner/__tests__/incremental-cache-recursive.test.ts, src/scanner/__tests__/parallel-path-behavior.test.ts, src/types/types.ts
+ */
+
+/**
  * IncrementalCache - File change tracking for performance optimization
  *
  * IMP-CORE-028: Implement incremental context updates for performance
@@ -6,12 +12,6 @@
  *
  * Tracks file hashes and timestamps to skip unchanged files on subsequent runs.
  * Reduces scan time for large projects by only processing modified files.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports FileCacheEntry, CacheState, CacheCheckResult, IncrementalCache
- * @used_by src/cli/scan.ts, src/pipeline/orchestrator.ts, src/scanner/file-watcher.ts, src/scanner/scanner.ts, src/scanner/__tests__/incremental-cache-recursive.test.ts, src/scanner/__tests__/parallel-path-behavior.test.ts, src/types/types.ts
  */
 
 import * as fs from 'fs/promises';

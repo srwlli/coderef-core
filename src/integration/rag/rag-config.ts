@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
+ */
+
+/**
  * RAG Configuration Loader
  * P5-T1: Loads and validates RAG configuration from environment
  *
@@ -6,11 +11,6 @@
  * - LLM providers (OpenAI, Anthropic)
  * - Vector stores (Pinecone, Chroma)
  * - RAG behavior settings
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
  */
 
 import type { LLMProviderConfig } from '../llm/llm-provider.js';

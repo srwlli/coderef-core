@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate
+ */
+
+/**
  * Graph Query Helpers - Utility functions for querying DependencyGraph
  *
  * Provides 4 core query functions for resource sheet auto-population:
@@ -10,11 +15,6 @@
  * Purpose: Enable 60-80% auto-fill rate for resource sheet generation
  * Context: WO-RESOURCE-SHEET-GRAPH-INTEGRATION-001
  * @see C:\Users\willh\.mcp-servers\coderef\sessions\reference-sheet-reconciliation\coderef-system-output.md
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate
  */
 
 import { DependencyGraph, GraphNode, GraphEdge } from './graph-builder.js';

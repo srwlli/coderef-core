@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports AgenticFormatter
+ */
+
+/**
  * Agentic Formatter
  *
  * Formats comprehensive context for AI agent consumption:
@@ -7,11 +12,6 @@
  * - Produces JSON for agent APIs
  *
  * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 6
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports AgenticFormatter
  */
 
 import type {

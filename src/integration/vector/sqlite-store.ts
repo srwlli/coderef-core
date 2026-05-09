@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports SQLiteVectorStore
+ * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts, __tests__/integration/rag/facet-filter.test.ts
+ */
+
+/**
  * SQLite/File-based Vector Store
  * WO-SQLITE-VECTOR-STORE-001
  *
@@ -10,12 +16,6 @@
  * - Pure JavaScript (no native modules)
  * - Persistent storage in .coderef/ directory
  * - Suitable for codebases up to ~10,000 files
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports SQLiteVectorStore
- * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts, __tests__/integration/rag/facet-filter.test.ts
  */
 
 import * as fs from 'fs';

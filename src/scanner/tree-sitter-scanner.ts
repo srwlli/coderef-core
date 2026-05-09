@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports EnrichedElementData, TreeSitterScanner, traverse
+ * @used_by src/scanner/scanner.ts
+ */
+
+/**
  * TreeSitterScanner - AST-based code element scanner
  *
  * WO-TREE-SITTER-SCANNER-001
@@ -16,12 +22,6 @@
  * - Target: <5s for 500 files (comparable to regex scanner)
  * - Grammar loading overhead: ~50-100ms per language (one-time cost)
  * - Parse overhead: ~10-20ms per file (vs ~5ms for regex)
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports EnrichedElementData, TreeSitterScanner, traverse
- * @used_by src/scanner/scanner.ts
  */
 
 import * as fs from 'fs';

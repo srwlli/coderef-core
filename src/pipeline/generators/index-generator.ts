@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports IndexGenerator
+ * @used_by src/cli/populate.ts
+ */
+
+/**
  * IndexGenerator - Generate index.json from PipelineState
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-001
@@ -6,12 +12,6 @@
  * Produces: .coderef/index.json
  * Format: Array of ElementData objects with enriched fields
  * Schema: Backward-compatible with existing index.json, additive-only changes
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports IndexGenerator
- * @used_by src/cli/populate.ts
  */
 
 import type { PipelineState } from '../types.js';

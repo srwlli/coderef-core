@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ContextBuilderOptions, BuiltContext, ContextBuilder
+ * @used_by src/integration/rag/answer-generation-service.ts, src/integration/rag/confidence-scorer.ts, src/integration/rag/__tests__/confidence-scorer.test.ts
+ */
+
+/**
  * Context Builder
  * P3-T4: Formats retrieved code chunks into LLM-ready markdown context
  *
@@ -8,12 +14,6 @@
  * - Relevance scores
  * - Dependency information
  * - Quality metrics
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ContextBuilderOptions, BuiltContext, ContextBuilder
- * @used_by src/integration/rag/answer-generation-service.ts, src/integration/rag/confidence-scorer.ts, src/integration/rag/__tests__/confidence-scorer.test.ts
  */
 
 import type { SearchResult } from './semantic-search.js';

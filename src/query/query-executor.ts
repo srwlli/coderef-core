@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports QueryType, QueryRequest, QueryResult, QueryExecutor
+ */
+
+/**
  * Query Executor - Multi-dimensional query engine for relationship analysis
  * Phase 4, Task P4-T1: Query Engine Implementation
  *
@@ -7,11 +12,6 @@
  * - Result caching for performance optimization
  * - Performance tracking and benchmarking
  * - Comprehensive error handling
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports QueryType, QueryRequest, QueryResult, QueryExecutor
  */
 
 import AnalyzerService from '../analyzer/analyzer-service.js';

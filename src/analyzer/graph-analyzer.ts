@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports TraversalPath, CircularDependency, GraphAnalyzer, dfs
+ * @used_by src/analyzer/analyzer-service.ts, src/context/multi-hop-traversal.ts
+ */
+
+/**
  * Graph Analyzer - Query and traverse the dependency graph
  * Phase 3, Task P3-T4: Relationship Detection & Analysis
  *
@@ -9,12 +15,6 @@
  * - getDependencies(element) - What does this element depend on?
  * - traverse(startNode, depth) - Multi-hop traversal
  * - detectCircularDependencies() - Find cycles in graph
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports TraversalPath, CircularDependency, GraphAnalyzer, dfs
- * @used_by src/analyzer/analyzer-service.ts, src/context/multi-hop-traversal.ts
  */
 
 import { DependencyGraph, GraphNode, GraphEdge } from './graph-builder.js';

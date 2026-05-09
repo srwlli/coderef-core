@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports RelationshipExtractor
+ * @used_by src/pipeline/orchestrator.ts
+ */
+
+/**
  * RelationshipExtractor - AST-based import and call relationship extraction
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 2, Task IMPL-003
@@ -19,12 +25,6 @@
  *   `{ receiverText: 'obj', calleeName: 'save' }`, never bare `'save'`.
  * - Every RawCallFact has a populated scopePath (may be empty array at
  *   module top level).
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports RelationshipExtractor
- * @used_by src/pipeline/orchestrator.ts
  */
 
 import type Parser from 'tree-sitter';

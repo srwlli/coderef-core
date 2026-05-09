@@ -1,13 +1,13 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ValidationError
+ */
+
+/**
  * ValidationError - Validation failures
  * @module errors
  *
  * Thrown when input validation fails
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ValidationError
  */
 
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports OpenApiSpec, OpenApiPath, OpenApiComponent, GraphqlSchema, GraphqlType, GraphqlOperation, ProtobufDefinition, ProtobufMessage, ProtobufField, ProtobufService, ProtobufMethod, ProtobufEnum, JsonSchema, ContractAnalysis, ContractDetector, traverse, analyzeContracts
+ */
+
+/**
  * IMP-CORE-020: API Contract Detector
  *
  * Detects and analyzes API contracts:
@@ -7,11 +12,6 @@
  * - Protocol Buffer (.proto) files
  * - gRPC service definitions
  * - JSON Schema files
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports OpenApiSpec, OpenApiPath, OpenApiComponent, GraphqlSchema, GraphqlType, GraphqlOperation, ProtobufDefinition, ProtobufMessage, ProtobufField, ProtobufService, ProtobufMethod, ProtobufEnum, JsonSchema, ContractAnalysis, ContractDetector, traverse, analyzeContracts
  */
 
 import * as fs from 'fs';

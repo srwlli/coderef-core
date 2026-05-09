@@ -1,14 +1,14 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports validateReferences
+ */
+
+/**
  * Validate References - Find broken references and missing imports
  *
  * Outputs: .coderef/reports/validation.json
  *
  * @module fileGeneration/validateReferences
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports validateReferences
  */
 
 import * as fs from 'fs/promises';

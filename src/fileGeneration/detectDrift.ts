@@ -1,14 +1,14 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports detectDrift
+ */
+
+/**
  * Detect Drift - Find changes since last scan
  *
  * Outputs: .coderef/reports/drift.json
  *
  * @module fileGeneration/detectDrift
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports detectDrift
  */
 
 import * as fs from 'fs/promises';

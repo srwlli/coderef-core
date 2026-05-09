@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports GraphGenerator
+ * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
+ */
+
+/**
  * GraphGenerator - Generate graph.json from PipelineState
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-002
@@ -6,12 +12,6 @@
  * Produces: .coderef/graph.json
  * Format: ExportedGraph with nodes and edges
  * Schema: Matches packages/core/src/export/graph-exporter.ts ExportedGraph interface
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports GraphGenerator
- * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */
 
 import * as fs from 'fs/promises';

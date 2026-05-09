@@ -1,13 +1,13 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ParseError
+ */
+
+/**
  * ParseError - Tag parsing failures
  * @module errors
  *
  * Thrown when CodeRef tag parsing fails due to invalid format
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ParseError
  */
 
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';

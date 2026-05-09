@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports MetadataCategory, MetadataIndexEntry, MetadataIndex, createMetadataIndex
+ * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
+ */
+
+/**
  * CodeRef2 Metadata Index
  *
  * Category-based indexing for metadata attributes
@@ -6,12 +12,6 @@
  * plus custom metadata values
  *
  * Per specification lines 575-621
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports MetadataCategory, MetadataIndexEntry, MetadataIndex, createMetadataIndex
- * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
  */
 
 import { ParsedCodeRef } from '../parser/parser.js';

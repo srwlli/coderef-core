@@ -1,12 +1,12 @@
 /**
- * IMP-CORE-035: JavaScript AST Visitor
- * Recursively traverses AST to find call expressions and context
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports visitNode, extractParametersFromAST, extractElementsFromAST
  * @used_by src/analyzer/js-call-detector/index.ts
+ */
+
+/**
+ * IMP-CORE-035: JavaScript AST Visitor
+ * Recursively traverses AST to find call expressions and context
  */
 
 import { CallExpression, Parameter, TraversalContext, DetectedElement } from './types.js';

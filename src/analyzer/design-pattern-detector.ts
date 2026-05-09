@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
+ */
+
+/**
  * IMP-CORE-027: Design Pattern Detector
  *
  * Detects common design patterns using AST-based analysis:
@@ -7,11 +12,6 @@
  * - Observer: Subject/Observer interfaces, subscribe/notify methods
  * - Strategy: Strategy interface, context with interchangeable algorithms
  * - Decorator: Component interface, concrete decorator wrapping
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
  */
 
 import * as fs from 'fs';

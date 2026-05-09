@@ -1,15 +1,15 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ExportInfo, ImportInfo, SemanticExtractionResult, ASTExtractorOptions, ASTExtractor, astExtractor, extractBatch
+ * @used_by src/semantic/header-generator.ts, src/semantic/orchestrator.ts, src/semantic/registry-sync.ts, __tests__/pipeline/single-scanner.test.ts
+ */
+
+/**
  * Legacy AST-based extraction helper for CodeRef-Semantics.
  *
  * The canonical scanner path is PipelineOrchestrator -> PipelineState. This
  * helper remains exported for compatibility and focused import/export extraction;
  * it is not an alternate source of ElementData or graph truth.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ExportInfo, ImportInfo, SemanticExtractionResult, ASTExtractorOptions, ASTExtractor, astExtractor, extractBatch
- * @used_by src/semantic/header-generator.ts, src/semantic/orchestrator.ts, src/semantic/registry-sync.ts, __tests__/pipeline/single-scanner.test.ts
  */
 
 import * as fs from 'fs';

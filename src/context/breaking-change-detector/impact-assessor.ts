@@ -1,12 +1,12 @@
 /**
- * IMP-CORE-035: Impact Assessor
- * Calculates severity and confidence scores for breaking changes
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports calculateSeverity, calculateConfidence, scoreCallType, adjustForContextualFactors, calculateReportConfidence, isCompatibleCall
  * @used_by src/context/breaking-change-detector/diff-analyzer.ts, src/context/breaking-change-detector/index.ts
+ */
+
+/**
+ * IMP-CORE-035: Impact Assessor
+ * Calculates severity and confidence scores for breaking changes
  */
 
 import { SignatureChange, ImpactedCallSite, BlastRadius } from './types.js';

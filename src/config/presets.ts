@@ -1,9 +1,9 @@
-// coderef-core/config/presets.ts
-
 /**
  * @coderef-semantic: 1.0.0
  * @exports ScanPreset, loadPreset, detectPreset, mergePresets, applyPreset
  */
+
+// coderef-core/config/presets.ts
 
 import * as fs from 'fs';
 import * as path from 'path';

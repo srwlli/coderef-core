@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports ValidationError, ValidationWarning, ValidationReport, ValidationResult, ValidatePipelineStateOptions, validatePipelineState, buildFileHeaderStatusMap
+ * @used_by src/cli/populate.ts, src/pipeline/types.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
+ */
+
+/**
  * Phase 6 Output Validator
  *
  * WO-PIPELINE-OUTPUT-VALIDATION-001
@@ -50,12 +56,6 @@
  * element by orchestrator.ts:476-480. The 4 header_*_count fields and the
  * 2 header_*_mismatch_count fields are FILE-grain — built via
  * Map<file, HeaderStatus> taking the canonical status per file.
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ValidationError, ValidationWarning, ValidationReport, ValidationResult, ValidatePipelineStateOptions, validatePipelineState, buildFileHeaderStatusMap
- * @used_by src/cli/populate.ts, src/pipeline/types.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
  */
 
 import type { PipelineState } from './types.js';

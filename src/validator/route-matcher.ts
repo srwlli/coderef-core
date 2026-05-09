@@ -1,12 +1,12 @@
 /**
- * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Route Matching Module
- * Matches frontend API calls to server routes with confidence scoring
- */
-
-/**
  * @coderef-semantic: 1.0.0
  * @exports RouteMatch, exactMatch, dynamicMatch, partialMatch, calculateMatchConfidence, matchHttpMethods, findBestMatch
  * @used_by src/validator/route-validator.ts
+ */
+
+/**
+ * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Route Matching Module
+ * Matches frontend API calls to server routes with confidence scoring
  */
 
 import type { NormalizedRoute } from './route-normalizer.js';

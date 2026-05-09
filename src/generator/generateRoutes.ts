@@ -1,14 +1,14 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports RouteElement, RoutesOutput, filterRouteElements, formatRoutesJson, sortRoutes, generateRoutes, saveRoutesToFile, FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile
+ * @used_by src/fileGeneration/saveIndex.ts
+ */
+
+/**
  * WO-API-ROUTE-DETECTION-001: Route Generation Module
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Added Frontend Call Generation
  * Filters route-enabled elements and generates routes.json output
  * Filters frontend API call elements and generates frontend-calls.json output
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports RouteElement, RoutesOutput, filterRouteElements, formatRoutesJson, sortRoutes, generateRoutes, saveRoutesToFile, FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile
- * @used_by src/fileGeneration/saveIndex.ts
  */
 
 import { ElementData, RouteMetadata, FrontendCall } from '../types/types.js';
