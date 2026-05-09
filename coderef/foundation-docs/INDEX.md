@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-05  
+**Generated:** 2026-05-09  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,415 |
-| **Total Files** | 383 |
-| **Total Lines** | 101,947 |
+| **Total Elements** | 2,425 |
+| **Total Files** | 390 |
+| **Total Lines** | 103,159 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,11 +22,11 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 752 | 31.1% |
-| method | 1,069 | 44.3% |
-| interface | 400 | 16.6% |
-| class | 118 | 4.9% |
-| type | 58 | 2.4% |
+| function | 761 | 31.4% |
+| method | 1,065 | 43.9% |
+| interface | 400 | 16.5% |
+| class | 122 | 5.0% |
+| type | 59 | 2.4% |
 | component | 2 | 0.1% |
 | constant | 16 | 0.7% |
 
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,415 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,425 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

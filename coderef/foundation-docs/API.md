@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-05-08 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-05-09 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -33,6 +33,8 @@
 
 <!-- coderef:uuid=23d01bc8-2217-52d2-a80a-fd5574eb3b75 -->
 <!-- coderef:uuid=39693cc3-b2c1-5b99-a14d-ead77728400e -->
+<!-- coderef:uuid=29f5b689-2f41-5bc4-a742-f93f6f7e4989 -->
+<!-- coderef:uuid=9fb0c439-8d89-5ba9-b278-e627fafc3163 -->
 ### `scanCurrentElements()`
 
 Scan code elements from a directory using regex patterns.
@@ -72,6 +74,8 @@ interface ScanOptions {
 <!-- coderef:uuid=5e396d0c-4eec-5e7b-a73f-7a9d08af021c -->
 <!-- coderef:uuid=483d35de-3418-5427-9349-8cbe2d195d57 -->
 <!-- coderef:uuid=b61231c5-e14b-55fc-821c-40005cba575e -->
+<!-- coderef:uuid=7f7af160-8738-5c55-9104-4c7ee251185d -->
+<!-- coderef:uuid=afdd1859-f88f-52a6-b820-681af07fd9e9 -->
 ### `scanFilesWithAST()`
 
 Scan files using AST-based analysis for accurate element detection.

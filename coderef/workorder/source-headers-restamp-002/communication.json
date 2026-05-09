@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-008"],
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
+  "completed_at": "2026-05-09T15:10:00Z",
   "plan_file": "coderef/workorder/source-headers-restamp-002/plan.json",
   "context_file": "coderef/workorder/source-headers-restamp-002/context.json",
   "analysis_file": "coderef/workorder/source-headers-restamp-002/analysis.json",
@@ -50,6 +51,36 @@
       "at": "2026-05-09T14:35:00Z",
       "by": "CODEREF-CORE",
       "note": "ADJ-A: Files already had @coderef-semantic:1.0.0 format (WO-001 state). ADJ-B: Strip executed (174 blocks removed). T1.3: Re-ran --source-headers but generator emits @exports: [Name1, Name2] with brackets; parser rejects brackets via IDENTIFIER_RE → headerStatus: partial → rag-index skips all chunks. HALT awaiting ORCHESTRATOR ruling on fix path: (A) fix header-generator emit format, (B) fix parser bracket tolerance, (C) revert to WO-001 state."
+    },
+    {
+      "event": "orchestrator_ruling",
+      "at": "2026-05-09T14:40:00Z",
+      "by": "ORCHESTRATOR",
+      "note": "Path (A): fix generator, not parser. Parser is authoritative."
+    },
+    {
+      "event": "second_halt",
+      "at": "2026-05-09T14:50:00Z",
+      "by": "CODEREF-CORE",
+      "note": "Discovered second mismatch: generator insertHeaders() placed semantic block AFTER existing file JSDoc; parser /^\\s*\\/\\*\\*/ anchor takes only the first block. Halted for second ruling."
+    },
+    {
+      "event": "orchestrator_ruling_2",
+      "at": "2026-05-09T14:55:00Z",
+      "by": "ORCHESTRATOR",
+      "note": "Path (A): insert before existing file header. Parser is authoritative; generator conforms."
+    },
+    {
+      "event": "phase_complete",
+      "at": "2026-05-09T15:10:00Z",
+      "by": "CODEREF-CORE",
+      "note": "Generator fixed (insert-before + no-bracket emit). 174 src files restamped. 41 files headerStatus:defined. rag-index: 409 chunks attempted embedding (OpenAI key absent, pre-existing). Commit 158992e pushed to origin/feature/source-headers-dogfood."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-09T15:10:00Z",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 complete. Two generator fixes shipped (formatAsComments + insertHeaders). AC met: chunks_attempted_embedding=409 > 0."
     }
   ]
 }
