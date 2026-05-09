@@ -1,0 +1,67 @@
+{
+  "workorder_id": "WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001",
+  "feature_name": "wire-discovery-rag-create-workorder",
+  "created": "2026-05-09T05:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-08-009"],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 2,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\wire-discovery-rag-create-workorder\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\wire-discovery-rag-create-workorder\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\wire-discovery-rag-create-workorder\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated. Phase 1 is verification-only; Phase 2 is a hard stop gated on gap-matrix.md completion and review."
+  },
+  "execution_rules": {
+    "phase_type": "phased",
+    "hard_stops": ["phase_2"],
+    "gate_rule": "Do not start Phase 2 until Phase 1 gap-matrix.md is complete and all Step 3.6 items classified"
+  },
+  "hard_constraints": [
+    "RAG is enrichment NOT a gate — fallback_used=true must never block /create-workorder",
+    "Do not modify discovery_rag.py — it is complete; only wire the caller",
+    "Do not shell out to hardcoded rag-server bin path — pre-flight check uses /coderef-rag-server skill",
+    "Scope is ASSISTANT orchestration layer only — CODEREF-CORE infrastructure files must not be changed"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "timestamp": "2026-05-09T05:00:00Z",
+      "event": "plan_type_overridden",
+      "from": "light",
+      "to": "phased",
+      "source": "create-workorder@2.4.0",
+      "message": "Classifier returned light (Rule 6 fallthrough). Overridden to phased: spans ASSISTANT orchestration + reference doc creation, requires Phase 1 verification gate before Phase 2 implementation."
+    }
+  ],
+  "phase_transitions": [
+    {
+      "timestamp": "2026-05-09T05:12:00Z",
+      "from": 1,
+      "to": 2,
+      "event": "phase_complete",
+      "source": "execute-workorder",
+      "message": "Phase 1 complete. gap-matrix.md written. 12 contract items classified: 4 DONE, 6 WIRING NEEDED (all addressed by RAG-DISCOVERY-STEP.md), 2 MISSING (skill.json reads[] + RAG-DISCOVERY-STEP.md). Advancing to Phase 2."
+    }
+  ],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-09T05:00:00Z",
+      "event": "workorder_created",
+      "source": "create-workorder",
+      "message": "Workorder WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001 created. Plan type: phased (overridden from light), 2 phases. Phase 2 is a hard stop gated on Phase 1 gap-matrix.md. Scope: wire CODEREF_LLOYD_DISCOVERY_RAG into /create-workorder Step 3.6 execution + RAG-DISCOVERY-STEP.md reference doc. ASSISTANT-layer only; no CODEREF-CORE infrastructure changes."
+    },
+    {
+      "timestamp": "2026-05-09T05:12:00Z",
+      "event": "phase_1_complete",
+      "source": "execute-workorder",
+      "message": "Phase 1 verification complete. gap-matrix.md written with 12 contract items: 4 DONE (discovery_rag.py callable, signature matches, return shape correct, fallback correct), 6 WIRING NEEDED (C-01 feature flag, C-02 pre-flight, C-07 disabled path, C-08/C-09/C-10 context.json persistence schema — all addressed by RAG-DISCOVERY-STEP.md), 2 MISSING (C-11 skill.json reads[], C-12 RAG-DISCOVERY-STEP.md). Phase 2 gate passed — no blocking unknowns."
+    }
+  ]
+}
