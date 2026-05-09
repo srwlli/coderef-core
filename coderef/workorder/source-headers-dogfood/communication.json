@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-08-006"],
   "predecessor_for": null,
-  "status": "plan_created",
+  "status": "complete",
+  "completed_at": "2026-05-09T01:30:00Z",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/source-headers-dogfood/analysis.json",
@@ -35,6 +36,24 @@
       "event": "workorder_created",
       "by": "CODEREF-CORE",
       "note": "WO-SOURCE-HEADERS-DOGFOOD-001 created. Plan type: light. Dogfood run of populate-coderef --source-headers on coderef-core branch feature/source-headers-dogfood."
+    },
+    {
+      "at": "2026-05-09T01:00:00Z",
+      "event": "phase_1_started",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 started. Tasks: branch creation, run --source-headers, review diff, commit, push."
+    },
+    {
+      "at": "2026-05-09T01:10:00Z",
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "skip",
+      "reason": "missing_infra — scripts/doc-gen/ not present"
+    },
+    {
+      "at": "2026-05-09T01:30:00Z",
+      "event": "workorder_complete",
+      "by": "CODEREF-CORE",
+      "note": "Phase 1 complete. Branch feature/source-headers-dogfood created. populate-coderef --source-headers exit:0. 174 source files stamped with @semantic blocks (exports + used_by). Diff reviewed: correct format, no docblock overwrites, test files not stamped. Commit f960678 on feature branch. Branch pushed to origin. Returned to main."
     }
   ]
 }
