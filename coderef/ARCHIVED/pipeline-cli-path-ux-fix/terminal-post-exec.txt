@@ -1,0 +1,31 @@
+=============================================================
+WORKORDER: WO-PIPELINE-CLI-PATH-UX-FIX-001  |  pipeline-cli-path-ux-fix  |  COMPLETE
+Session: daily-agent-session-2026-05-08 / CODEREF-CORE  |  Phases: 1  |  Commits: 3  |  Pushes: 2
+
+Parent stub: STUB-270 (closed on complete)
+
+FILES CREATED:
+  (none)
+
+FILES MODIFIED:
+  ~ src/cli/coderef-pipeline.ts  (6fcdf46 — coderef-core)
+  ~ docs/CLI.md  (6fcdf46 — coderef-core)
+  ~ coderef/workorder/pipeline-cli-path-ux-fix/communication.json  (6fcdf46, 0ecd1ae — coderef-core)
+  ~ TRACKING/workorders.json  (95e2d3d — ASSISTANT)
+  ~ TRACKING/sessions.json  (95e2d3d — ASSISTANT)
+  ~ TRACKING/stubs.json  (95e2d3d — ASSISTANT)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Audit, Fix, and Verify CLI Path UX  (6fcdf46 — coderef-core)
+
+ACCEPTANCE CRITERIA:
+  [PASS] coderef-pipeline (no args) prints error with --project-dir hint
+  [PASS] coderef-pipeline /path works (positional alias)
+  [PASS] coderef-pipeline --project-dir /path still works (no regression)
+  [PASS] --help shows both USAGE forms, --project-dir marked required
+  [PASS] docs/CLI.md updated to match
+
+Session: updated  |  Registry: synced  |  Validator: PASS (projects.json + project-context.json pre-existing drift, not in scope)
+
+APPROVE -> /close-workorder WO-PIPELINE-CLI-PATH-UX-FIX-001
+=============================================================
