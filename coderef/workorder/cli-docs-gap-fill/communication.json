@@ -7,9 +7,10 @@
   "originating_dispatches": ["DISPATCH-2026-05-11-013"],
   "predecessor_stub": null,
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
+  "completed_at": "2026-05-11T21:00:00Z",
   "plan_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\plan.json",
   "context_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\context.json",
   "analysis_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\analysis.json",
@@ -41,6 +42,24 @@
       "timestamp": "2026-05-11T20:45:00Z",
       "source": "create-workorder",
       "summary": "WO-CLI-DOCS-GAP-FILL-001 created. light plan, 1 phase, 7 tasks. Documents coderef-analyze, coderef-query, coderef-detect-languages, coderef-semantic-integration in docs/CLI.md."
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "timestamp": "2026-05-11T21:00:00Z",
+      "artifact_paths": ["coderef/foundation-docs/INDEX.md", "coderef/foundation-docs/EXPORTS.md", "coderef/foundation-docs/HOTSPOTS.md", "coderef/foundation-docs/RELATIONSHIPS.md"],
+      "note": "8 invalid UUID anchors pre-existing, not introduced by this workorder"
+    },
+    {
+      "event": "workorder_complete",
+      "timestamp": "2026-05-11T21:00:00Z",
+      "source": "execute-workorder",
+      "summary": "Phase 1 complete. Added 4 CLI sections to docs/CLI.md: coderef-analyze, coderef-query, coderef-detect-languages, coderef-semantic-integration. Commit: bc400a1.",
+      "commits": ["bc400a1"],
+      "phases_closed": [1],
+      "plan_deviations": []
     }
   ]
 }
