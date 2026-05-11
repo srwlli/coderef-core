@@ -1,0 +1,13 @@
+{
+  "stub_id": "STUB-273",
+  "feature_name": "cli-full-feature-coverage",
+  "description": "Expose all CODEREF-CORE CLI tools via package.json bin entries. Add missing bin entries for semantic-integration and detect-languages. Audit all 12 CLI entry points for complete flag coverage, consistent --help output, and matching SKILL.md documentation.",
+  "category": "feature",
+  "priority": "high",
+  "status": "closed",
+  "closed_at": "2026-05-11T05:38:00Z",
+  "resolution": "Deep-dive discovery found no bin gaps. All 10 CLI commands are correctly exposed in package.json bin. detect-languages and semantic-integration are helper modules imported by other CLIs — they are not standalone commands and should not have bin entries. Only defect found: CLI.md command overview listed detect-languages as a command (line 37). Fixed by removing that row. WO-CLI-FULL-FEATURE-COVERAGE-001.",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-11T05:45:00Z"
+}

@@ -34,7 +34,6 @@ node dist/src/cli/index.js <command>
 | [`coderef-rag-server`](rag-http-api.md) | Always-on HTTP RAG server for cross-runtime callers (port 52849) | `--port`, `--help` |
 | [`scan-frontend-calls`](#scan-frontend-calls) | Detect frontend API calls | `--dir`, `--pattern`, `--output` |
 | [`validate-routes`](#validate-routes) | Validate API route definitions | `--dir`, `--strict`, `--fix` |
-| [`detect-languages`](#detect-languages) | Detect project languages | `--dir`, `--json` |
 
 ---
 
