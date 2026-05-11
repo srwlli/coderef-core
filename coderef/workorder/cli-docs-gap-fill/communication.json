@@ -1,0 +1,46 @@
+{
+  "workorder_id": "WO-CLI-DOCS-GAP-FILL-001",
+  "feature_name": "cli-docs-gap-fill",
+  "created": "2026-05-11T20:45:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-11-013"],
+  "predecessor_stub": null,
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\plan.json",
+  "context_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\context.json",
+  "analysis_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored. Ready for Phase 1 execution."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "hard_stops": [],
+    "phase_gate": "none",
+    "rollback_on_failure": false
+  },
+  "hard_constraints": [
+    "All flag documentation must be sourced from actual parseArgs definitions in source files",
+    "CLI section format must match existing CLI.md format exactly",
+    "Bin entry names must match package.json (coderef-detect-languages, coderef-semantic-integration)",
+    "Command Overview table must be updated",
+    "No edits to existing CLI.md sections"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "timestamp": "2026-05-11T20:45:00Z",
+      "source": "create-workorder",
+      "summary": "WO-CLI-DOCS-GAP-FILL-001 created. light plan, 1 phase, 7 tasks. Documents coderef-analyze, coderef-query, coderef-detect-languages, coderef-semantic-integration in docs/CLI.md."
+    }
+  ]
+}

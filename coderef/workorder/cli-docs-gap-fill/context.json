@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-CLI-DOCS-GAP-FILL-001",
+  "feature_name": "cli-docs-gap-fill",
+  "created": "2026-05-11T20:45:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-11-013",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Add docs/CLI.md entries for the 4 CLIs added in dispatch-012 that have no documentation: coderef-analyze, coderef-query, coderef-detect-languages, coderef-semantic-integration. Each entry should match the existing CLI.md format: description, flags, example invocations, exit codes, and any gate contracts."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single file documentation edit (docs/CLI.md). No source code changes, no public API surface modifications, no blast radius beyond the one markdown file. Light plan: Rule 6 fallthrough.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {
+      "decorators": 0,
+      "errorHandling": 865,
+      "functionExports": 0,
+      "imports": 0
+    },
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "discovery_rag": {
+    "rag_hits": [],
+    "fallback_used": true,
+    "error": "foundation-docs path not found",
+    "ms": 3758,
+    "discovery_rag_enabled": true,
+    "discovery_rag_timestamp": "2026-05-11T20:16:38.140662Z"
+  },
+  "scope": {
+    "in_scope": [
+      "Add coderef-analyze section to docs/CLI.md (12 analysis types, 7 flags, examples, exit codes)",
+      "Add coderef-query section to docs/CLI.md (8 query types, 5 flags, examples, exit codes)",
+      "Add coderef-detect-languages section to docs/CLI.md (3 flags, examples, exit codes)",
+      "Add coderef-semantic-integration section to docs/CLI.md (8 flags, examples, exit codes)",
+      "Update Command Overview table with 4 new rows"
+    ],
+    "out_of_scope": [
+      "Source code changes to any CLI implementation",
+      "New CLI tools beyond the 4 specified",
+      "Changes to existing CLI.md sections",
+      "Test authoring"
+    ]
+  },
+  "constraints": [
+    "All 4 CLI sections must match existing CLI.md format exactly (description, options table, examples, exit codes)",
+    "Flags must be sourced from actual source file parseArgs definitions — no invention",
+    "Command Overview table must be updated with correct entries for all 4 CLIs"
+  ]
+}

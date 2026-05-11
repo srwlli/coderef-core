@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-CLI-DOCS-GAP-FILL-001",
+  "feature_name": "cli-docs-gap-fill",
+  "analysis_authored_at": "2026-05-11T20:45:00Z",
+  "blast_radius": {
+    "files_modified": ["docs/CLI.md"],
+    "files_created": [],
+    "downstream_consumers": [
+      "Any agent or human reading CLI.md for coderef-analyze, coderef-query, coderef-detect-languages, or coderef-semantic-integration reference"
+    ]
+  },
+  "risks": [
+    {
+      "id": "R-01",
+      "title": "Flag documentation drift if source files change after doc authoring",
+      "likelihood": "low",
+      "impact": "minor",
+      "mitigation": "Flags sourced from actual parseArgs definitions in source files at time of authoring. IMP-CORE-088 covers adding tests that would catch drift."
+    },
+    {
+      "id": "R-02",
+      "title": "Existing CLI.md sections touched accidentally",
+      "likelihood": "low",
+      "impact": "minor",
+      "mitigation": "Only append new sections and update Command Overview table. No edits to existing sections."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "docs/CLI.md",
+      "changes": [
+        "Add 4 rows to Command Overview table",
+        "Add coderef-analyze section (12 types, 7 flags)",
+        "Add coderef-query section (8 query types, 5 flags)",
+        "Add coderef-detect-languages section (3 flags)",
+        "Add coderef-semantic-integration section (8 flags)"
+      ]
+    }
+  ],
+  "dependencies": [
+    "src/cli/coderef-analyze.ts — source of truth for flags and analysis types",
+    "src/cli/coderef-query.ts — source of truth for flags and query types",
+    "src/cli/detect-languages-cli.ts — source of truth for flags",
+    "src/cli/semantic-integration-cli.ts — source of truth for flags"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-01",
+      "decision": "Document coderef-detect-languages (not detect-languages) as the bin entry name",
+      "rationale": "package.json bin entry added in dispatch-012 is 'coderef-detect-languages' pointing to detect-languages-cli.ts; the old CLI.md 'detect-languages' section documents a different (pre-existing) CLI."
+    },
+    {
+      "id": "DR-02",
+      "decision": "Document coderef-semantic-integration (not semantic-integration) as the bin entry name",
+      "rationale": "package.json bin entry added in dispatch-012 is 'coderef-semantic-integration' pointing to semantic-integration-cli.ts."
+    }
+  ]
+}

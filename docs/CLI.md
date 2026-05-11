@@ -34,6 +34,10 @@ node dist/src/cli/index.js <command>
 | [`coderef-rag-server`](rag-http-api.md) | Always-on HTTP RAG server for cross-runtime callers (port 52849) | `--port`, `--help` |
 | [`scan-frontend-calls`](#scan-frontend-calls) | Detect frontend API calls | `--dir`, `--pattern`, `--output` |
 | [`validate-routes`](#validate-routes) | Validate API route definitions | `--dir`, `--strict`, `--fix` |
+| [`coderef-analyze`](#coderef-analyze) | Run a single analysis pass (config, contracts, DB, patterns, complexity, impact, breaking-changes, etc.) | `--project`, `--type`, `--output`, `--element`, `--depth`, `--from`, `--to` |
+| [`coderef-query`](#coderef-query) | Execute a relationship query on a project graph (calls, imports, depends-on, shortest-path, all-paths) | `--project`, `--type`, `--target`, `--source`, `--depth`, `--format` |
+| [`coderef-detect-languages`](#coderef-detect-languages) | Detect programming languages used in a project | `--project`, `--ignore-file`, `--json` |
+| [`coderef-semantic-integration`](#coderef-semantic-integration) | Run semantic header generation and registry sync | `--project`, `--output`, `--registry`, `--dry-run`, `--file`, `--validate-idempotency` |
 
 ---
 
@@ -720,6 +724,294 @@ JSON format:
   "totalFiles": 500
 }
 ```
+
+---
+
+## coderef-analyze
+
+Run a single analysis pass on a project. Supports 12 analysis types covering configuration, contracts, database patterns, dependencies, design patterns, documentation, middleware, dependency graphs, complexity scoring, blast-radius simulation, multi-hop traversal, and breaking-change detection.
+
+### Usage
+
+```bash
+coderef-analyze --project=<path> --type=<type> [options]
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--project=<path>` | Path to the project root (**required**) | — |
+| `--type=<type>` | Analysis type (**required**; see table below) | — |
+| `--output=<fmt>` | Output format: `json` \| `text` | `text` |
+| `--element=<id>` | Target element ID (required for: `impact`, `multi-hop`) | — |
+| `--depth=<N>` | Max traversal depth (used by: `impact`, `multi-hop`) | `5` |
+| `--from=<ref>` | Git ref baseline (required for: `breaking-changes`) | — |
+| `--to=<ref>` | Git ref head (optional for: `breaking-changes`; defaults to worktree) | worktree |
+| `--help` | Print help | — |
+
+### Analysis types
+
+| Type | Description | Required extras |
+|------|-------------|-----------------|
+| `config` | Detect project configuration (tsconfig, package.json, Docker, env) | — |
+| `contract` | Detect API contracts (OpenAPI, GraphQL, Protobuf, JSON Schema) | — |
+| `db` | Detect database patterns (ORM, raw queries, migrations) | — |
+| `dependency` | Analyze npm dependency health (outdated, missing, unused) | — |
+| `pattern` | Detect design patterns (Singleton, Observer, Factory, etc.) | — |
+| `docs` | Analyze documentation coverage and quality | — |
+| `middleware` | Detect middleware chains and DI containers | — |
+| `graph` | Build and print the full dependency graph | — |
+| `complexity` | Score element complexity (requires project scan) | — |
+| `impact` | Simulate blast radius for a changed element | `--element` |
+| `multi-hop` | Traverse multi-hop relationships | `--element` |
+| `breaking-changes` | Detect breaking API changes between two git refs | `--from` |
+
+### Examples
+
+```bash
+# Detect project configuration
+coderef-analyze --project=. --type=config
+
+# Detect API contracts (JSON output)
+coderef-analyze --project=. --type=contract --output=json
+
+# Analyze npm dependency health
+coderef-analyze --project=. --type=dependency
+
+# Score complexity across all elements
+coderef-analyze --project=. --type=complexity --output=json
+
+# Blast-radius simulation for a specific element
+coderef-analyze --project=. --type=impact --element="src/scanner.ts"
+
+# Multi-hop traversal (custom depth)
+coderef-analyze --project=. --type=multi-hop --element="src/scanner.ts" --depth=3
+
+# Detect breaking changes since last release tag
+coderef-analyze --project=. --type=breaking-changes --from=v1.2.0
+
+# Detect breaking changes between two refs
+coderef-analyze --project=. --type=breaking-changes --from=main --to=feature/my-branch
+```
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Analysis error or unhandled exception |
+| `1` | `--project` missing, `--type` invalid, or type-specific required flag missing (`--element`, `--from`) |
+
+---
+
+## coderef-query
+
+Execute a relationship query on a project's dependency graph. Runs a full project analysis on first call (may take several seconds), then answers one of 8 structural relationship questions.
+
+### Usage
+
+```bash
+coderef-query --project=<path> --type=<type> --target=<element> [options]
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--project=<path>` | Path to the project root (**required**) | — |
+| `--type=<type>` | Query type (**required**; see table below) | — |
+| `--target=<element>` | Target element to query, e.g. `src/scanner.ts` (**required**) | — |
+| `--source=<element>` | Source element for path queries (required for: `shortest-path`, `all-paths`) | — |
+| `--depth=<N>` | Max traversal depth | `5` |
+| `--format=<fmt>` | Result format: `raw` \| `summary` \| `full` | `summary` |
+| `--help` | Print help | — |
+
+### Query types
+
+| Type | Description | Required extras |
+|------|-------------|-----------------|
+| `what-calls` | What calls the target element? | — |
+| `what-calls-me` | What does the target element call? | — |
+| `what-imports` | What does the target element import? | — |
+| `what-imports-me` | What imports the target element? | — |
+| `what-depends-on` | What does the target element depend on? | — |
+| `what-depends-on-me` | What depends on the target element? | — |
+| `shortest-path` | Shortest dependency path between `--source` and `--target` | `--source` |
+| `all-paths` | All dependency paths between `--source` and `--target` | `--source` |
+
+### Examples
+
+```bash
+# What calls a specific file?
+coderef-query --project=. --type=what-calls --target="src/scanner.ts"
+
+# What does a file import?
+coderef-query --project=. --type=what-imports --target="src/cli/index.ts"
+
+# What depends on a given module?
+coderef-query --project=. --type=what-depends-on-me --target="src/utils/path-utils.ts"
+
+# Shortest dependency path between two elements
+coderef-query --project=. --type=shortest-path --source="src/cli/index.ts" --target="src/scanner.ts"
+
+# All paths (full format, deeper traversal)
+coderef-query --project=. --type=all-paths --source="src/cli/index.ts" --target="src/scanner.ts" --depth=8 --format=full
+```
+
+### Output format
+
+All query types emit JSON to stdout:
+
+```json
+{
+  "type": "what-calls-me",
+  "target": "src/scanner.ts",
+  "results": ["src/cli/coderef-scan.ts", "src/integration/indexing-orchestrator.ts"],
+  "format": "summary"
+}
+```
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Query error, missing required flag, or invalid `--type` |
+
+---
+
+## coderef-detect-languages
+
+Detect the programming languages used in a project by scanning file extensions. Returns a list of detected language names. Uses `.coderefignore` (if present) to exclude directories.
+
+### Usage
+
+```bash
+coderef-detect-languages --project=<path> [options]
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--project=<path>` | Path to the project root (**required**) | — |
+| `--ignore-file=<path>` | Path to ignore file | `.coderefignore` |
+| `--json` | Output as JSON array instead of line-by-line | `false` |
+| `--help` | Print help | — |
+
+### Examples
+
+```bash
+# Detect languages in the current directory
+coderef-detect-languages --project=.
+
+# JSON output
+coderef-detect-languages --project=/path/to/project --json
+
+# Custom ignore file
+coderef-detect-languages --project=. --ignore-file=.myignore
+```
+
+### Output
+
+Line-by-line (default):
+```
+TypeScript
+JavaScript
+Python
+```
+
+JSON (`--json`):
+```json
+["TypeScript", "JavaScript", "Python"]
+```
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success (including "no languages detected") |
+| `1` | Error scanning directory or reading ignore file |
+| `1` | `--project` not provided |
+
+---
+
+## coderef-semantic-integration
+
+Run semantic header generation, LLM enrichment, and registry synchronization across a project. Reads `.coderef/index.json` as input and writes semantic headers into source files and updates `registry/entities.json`.
+
+### Usage
+
+```bash
+coderef-semantic-integration --project=<path> [options]
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--project=<path>` | Path to the project root (**required**) | — |
+| `--output=<path>` | Output directory for generated artifacts | `<project>/.coderef` |
+| `--registry=<path>` | Path to registry file | `<project>/.coderef/registry/entities.json` |
+| `--dry-run` | Preview changes without writing files | `false` |
+| `--no-headers` | Skip header generation | `false` |
+| `--no-enrich` | Skip LLM enrichment | `false` |
+| `--no-sync-registry` | Skip registry sync | `false` |
+| `--file=<path>` | Process a single file instead of the whole project | — |
+| `--validate-idempotency` | Run twice and verify identical results | `false` |
+| `--help` | Print help | — |
+
+### Examples
+
+```bash
+# Full integration pass on the current project
+coderef-semantic-integration --project=.
+
+# Dry-run preview (no files written)
+coderef-semantic-integration --project=. --dry-run
+
+# Process a single file only
+coderef-semantic-integration --project=. --file=src/scanner.ts
+
+# Skip LLM enrichment (headers only, no Ollama required)
+coderef-semantic-integration --project=. --no-enrich
+
+# Verify that two consecutive runs produce identical output
+coderef-semantic-integration --project=. --validate-idempotency
+
+# Registry sync only (skip header write and enrichment)
+coderef-semantic-integration --project=. --no-headers --no-enrich
+```
+
+### Output
+
+On success:
+```
+Done: 42 files processed, 38 headers generated, 35 entries enriched, 42 registry entries updated
+```
+
+With `--dry-run`:
+```
+[dry-run] Would write 42 file(s), 183204 bytes
+  src/scanner.ts
+  src/cli/index.ts
+  ...
+```
+
+With `--validate-idempotency`:
+```
+Idempotency check: PASS
+First run:  { "filesProcessed": 42, ... }
+Second run: { "filesProcessed": 42, ... }
+```
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Integration error, `--project` missing, or idempotency check FAIL |
 
 ---
 

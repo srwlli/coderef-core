@@ -1,0 +1,60 @@
+{
+  "workorder_id": "WO-CLI-DOCS-GAP-FILL-001",
+  "feature_name": "cli-docs-gap-fill",
+  "created": "2026-05-11T20:45:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single file documentation edit. No source changes, no public API surface changes, no blast radius beyond docs/CLI.md.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Add 4 CLI sections to docs/CLI.md",
+      "goal": "Document coderef-analyze, coderef-query, coderef-detect-languages, and coderef-semantic-integration in CLI.md matching existing format",
+      "tasks": [
+        {
+          "id": "T1.1",
+          "verb": "EDIT",
+          "description": "Add 4 rows to Command Overview table in docs/CLI.md: coderef-analyze, coderef-query, coderef-detect-languages, coderef-semantic-integration",
+          "success_criteria": "Table has 4 new rows with correct anchor links, purpose summaries, and key flags"
+        },
+        {
+          "id": "T1.2",
+          "verb": "EDIT",
+          "description": "Add coderef-analyze section to docs/CLI.md: description of 12 analysis types, options table (--project, --type, --output, --element, --depth, --from, --to, --help), examples for each type, exit codes",
+          "success_criteria": "Section present after existing entries; all 12 analysis types documented with usage notes for type-specific required flags (--element for impact/multi-hop, --from for breaking-changes)"
+        },
+        {
+          "id": "T1.3",
+          "verb": "EDIT",
+          "description": "Add coderef-query section to docs/CLI.md: description of 8 query types, options table (--project, --type, --target, --source, --depth, --format, --help), examples, exit codes. Note: --source required for shortest-path and all-paths.",
+          "success_criteria": "Section present; 8 query types listed; conditional --source requirement documented"
+        },
+        {
+          "id": "T1.4",
+          "verb": "EDIT",
+          "description": "Add coderef-detect-languages section to docs/CLI.md: description, options table (--project, --ignore-file, --json, --help), examples, exit codes",
+          "success_criteria": "Section present; bin name documented as coderef-detect-languages (not detect-languages)"
+        },
+        {
+          "id": "T1.5",
+          "verb": "EDIT",
+          "description": "Add coderef-semantic-integration section to docs/CLI.md: description, options table (--project, --output, --registry, --dry-run, --no-headers, --no-enrich, --no-sync-registry, --file, --validate-idempotency, --help), examples, exit codes",
+          "success_criteria": "Section present; all 8 flags documented; --validate-idempotency mode described"
+        },
+        {
+          "id": "T1.6",
+          "verb": "COMMIT",
+          "description": "git add docs/CLI.md && git commit referencing WO-CLI-DOCS-GAP-FILL-001 and DISPATCH-2026-05-11-013",
+          "success_criteria": "Clean commit; all 4 sections present in committed file"
+        },
+        {
+          "id": "T1.7",
+          "verb": "STOP",
+          "description": "HARD STOP — wait for /close-workorder WO-CLI-DOCS-GAP-FILL-001",
+          "success_criteria": "Workorder closed; dispatch-013 marked completed"
+        }
+      ]
+    }
+  ]
+}
