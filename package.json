@@ -17,7 +17,9 @@
     "coderef-rag-server": "./dist/src/cli/coderef-rag-server.js",
     "coderef-analyze": "./dist/src/cli/coderef-analyze.js",
     "coderef-query": "./dist/src/cli/coderef-query.js",
-    "coderef-search": "./dist/src/cli/coderef-search.js"
+    "coderef-search": "./dist/src/cli/coderef-search.js",
+    "coderef-detect-languages": "./dist/src/cli/detect-languages-cli.js",
+    "coderef-semantic-integration": "./dist/src/cli/semantic-integration-cli.js"
   },
   "exports": {
     ".": {
