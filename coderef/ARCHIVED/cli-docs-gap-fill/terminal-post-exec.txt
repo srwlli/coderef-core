@@ -1,0 +1,21 @@
+=============================================================
+WORKORDER: WO-CLI-DOCS-GAP-FILL-001  |  cli-docs-gap-fill  |  COMPLETE
+Session: daily-agent-session-2026-05-11  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/cli-docs-gap-fill/context.json     (bc400a1)
+  + coderef/workorder/cli-docs-gap-fill/analysis.json    (bc400a1)
+  + coderef/workorder/cli-docs-gap-fill/plan.json        (bc400a1)
+  + coderef/workorder/cli-docs-gap-fill/communication.json (80f553d)
+
+FILES MODIFIED:
+  ~ docs/CLI.md  (bc400a1) — +516 lines: 4 CLI sections + Command Overview rows
+
+PHASE CHECKLIST:
+  [x] Phase 1: Add 4 CLI sections to docs/CLI.md  (bc400a1, 80f553d)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift, not in scope)
+
+APPROVE -> /close-workorder WO-CLI-DOCS-GAP-FILL-001
+=============================================================
