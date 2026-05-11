@@ -168,6 +168,6 @@ Phase archives (`coderef/archived/pipeline-*/ARCHIVED.md`) document each phase's
 
 For general project rules (build, test, contribution conventions, agent execution norms), read:
 
-`C:\Users\willh\Desktop\CODEREF\ASSISTANT\PROJECT-CONTEXT\coderef-core\CONTEXT.md`
+`C:\Users\willh\Desktop\CODEREF\ASSISTANT\PROJECT-CONTEXT\CODEREF-CORE\CONTEXT.md`
 
 (That file is the canonical project-context document maintained on the ASSISTANT side. It is the same target that this repo's `CLAUDE.md` and `GEMINI.md` pointer stubs delegate to.)
