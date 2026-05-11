@@ -7,10 +7,18 @@
   "originating_dispatches": ["DISPATCH-2026-05-11-013"],
   "predecessor_stub": null,
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "completed_at": "2026-05-11T21:00:00Z",
+  "closed_at": "2026-05-11T21:10:00Z",
+  "updated": "2026-05-11T21:10:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/cli-docs-gap-fill/ARCHIVED",
+    "review_verdict_source": "Step 3 audit",
+    "warnings": ["projects.json and project-context.json pre-existing schema drift — not in scope"]
+  },
   "plan_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\plan.json",
   "context_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\context.json",
   "analysis_file": "C:\\Users\\willh\\desktop\\coderef\\coderef-core\\coderef\\workorder\\cli-docs-gap-fill\\analysis.json",
@@ -60,6 +68,23 @@
       "commits": ["bc400a1"],
       "phases_closed": [1],
       "plan_deviations": []
+    },
+    {
+      "event": "phase6_quality_check",
+      "outcome": "skip",
+      "reason": "missing_artifacts",
+      "timestamp": "2026-05-11T21:10:00Z"
+    },
+    {
+      "event": "phase6_route_check",
+      "outcome": "skip",
+      "reason": "no_route_files_changed",
+      "timestamp": "2026-05-11T21:10:00Z"
+    },
+    {
+      "timestamp": "2026-05-11T21:10:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (cultural alignment PASS, tracking scope PASS, semantic validation PASS). Finalized, committed bc400a1+80f553d, archive pending."
     }
   ]
 }
