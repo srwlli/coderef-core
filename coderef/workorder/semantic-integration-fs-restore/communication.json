@@ -6,8 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-12T15:30:00Z",
+  "closed_at": "2026-05-12T15:45:00Z",
+  "updated": "2026-05-12T15:45:00Z",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "coderef/workorder/semantic-integration-fs-restore/plan.json",
@@ -47,6 +49,12 @@
     }
   ],
   "plan_adjustments": [],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/semantic-integration-fs-restore/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — 0 scoped findings",
+    "warnings": ["migrate-sessions-to-vault.py absent — vault sync skipped (non-blocking)"]
+  },
   "communication_log": [
     {
       "event": "workorder_created",
@@ -84,6 +92,11 @@
       "phases_closed": [1],
       "commit": "7178f03",
       "deviations": ["ADJ-01: Object.defineProperty used instead of direct assignment for ESM-safe fs patching"]
+    },
+    {
+      "timestamp": "2026-05-12T15:45:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (0 scoped findings), phase 1 complete, commits 7178f03+ee6cb26 pushed, archive pending."
     }
   ]
 }
