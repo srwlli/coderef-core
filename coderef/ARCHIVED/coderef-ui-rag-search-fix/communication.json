@@ -1,0 +1,92 @@
+{
+  "workorder_id": "WO-CODEREF-UI-RAG-SEARCH-FIX-001",
+  "feature_name": "coderef-ui-rag-search-fix",
+  "created": "2026-05-12T14:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "completed_at": "2026-05-12T14:30:00Z",
+  "closed_at": "2026-05-12T14:45:00Z",
+  "updated": "2026-05-12T14:45:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/coderef-ui-rag-search-fix/ARCHIVED",
+    "review_verdict_source": "Step 3 audit",
+    "warnings": []
+  },
+  "plan_file": "coderef/workorder/coderef-ui-rag-search-fix/plan.json",
+  "context_file": "coderef/workorder/coderef-ui-rag-search-fix/context.json",
+  "analysis_file": "coderef/workorder/coderef-ui-rag-search-fix/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated. 2-line fix ready for execution."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "hard_stops": [],
+    "phase_gates": false,
+    "auto_advance": true
+  },
+  "hard_constraints": [
+    "rag-search must still receive --project-dir from top-level Project Dir field",
+    "No change to other commands or routing logic"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-12T14:15:00Z",
+      "by": "create-workorder@2.4.0",
+      "note": "WO-CODEREF-UI-RAG-SEARCH-FIX-001 created from IMP-CORE-089 (rag-search duplicate --project-dir in tkinter UI)"
+    },
+    {
+      "event": "semantic_context_consumed",
+      "rag_hit_count": 0,
+      "header_hit_count": 0,
+      "foundation_doc_count": 0,
+      "fallback_used": true
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": ["coderef/foundation-docs/INDEX.md", "coderef/foundation-docs/EXPORTS.md", "coderef/foundation-docs/HOTSPOTS.md", "coderef/foundation-docs/RELATIONSHIPS.md"]
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-12T14:30:00Z",
+      "phases_closed": [1],
+      "commit": "6e2472a",
+      "summary": "Removed duplicate --project-dir entry from CMD_OPTIONS['rag-search']. 1-line deletion. Smoke test PASS, syntax check PASS. Closes IMP-CORE-089."
+    },
+    {
+      "event": "dependency_audit",
+      "vulnerable_count": 0,
+      "skipped": false
+    },
+    {
+      "event": "close_audit",
+      "at": "2026-05-12T14:45:00Z",
+      "cultural_alignment": "PASS",
+      "tracking_validator": "PASS (scoped)",
+      "git_state": "PASS",
+      "semantic_validation": "PASS",
+      "quality_check": "skip (quality.json absent)",
+      "route_check": "skip (no route files changed)"
+    },
+    {
+      "timestamp": "2026-05-12T14:45:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS, finalized, committed d08080e, archiving to coderef/ARCHIVED/coderef-ui-rag-search-fix/."
+    }
+  ]
+}
