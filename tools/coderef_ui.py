@@ -102,7 +102,6 @@ CMD_OPTIONS = {
     ],
     "rag-search": [
         ("entry_positional", "query", "Query (positional)",                    ""),
-        ("entry",    "--project-dir", "--project-dir / -p",                    ""),
         ("entry",    "--provider",    "--provider",                             ""),
         ("dropdown", "--store",       "--store",
          ["sqlite", "pinecone", "chroma"],                                     "sqlite"),
