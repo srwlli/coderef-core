@@ -2,8 +2,16 @@
   "workorder_id": "WO-CODEREF-TKINTER-UI-001",
   "feature_name": "coderef-tkinter-ui",
   "created": "2026-05-12T12:30:00Z",
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-12T13:30:00Z",
+  "closed_at": "2026-05-12T13:50:00Z",
+  "updated": "2026-05-12T13:50:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/coderef-tkinter-ui/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (scoped, 0 WO-specific findings)",
+    "warnings": []
+  },
   "history": [
     {
       "event": "workorder_created",
@@ -40,9 +48,29 @@
       "event": "workorder_complete",
       "at": "2026-05-12T13:30:00Z",
       "phases_closed": ["Phase 1: Execute"],
-      "commits": ["0ccc195"],
+      "commits": ["0ccc195", "3d374fd"],
       "deliverables": ["tools/coderef_ui.py"],
       "plan_deviations": []
+    },
+    {
+      "event": "dependency_audit",
+      "vulnerable_count": 0,
+      "skipped": false
+    },
+    {
+      "event": "close_audit",
+      "at": "2026-05-12T13:50:00Z",
+      "cultural_alignment": "PASS (scoped, 0 WO-specific findings)",
+      "tracking_validator": "PASS (workorders.json scoped — fixed null archived fields)",
+      "git_state": "clean for WO commits; pre-existing uncommitted .coderef/ changes",
+      "route_check": "skip (no route files changed)",
+      "quality_check": "skip (new Python file only, no TS changes)"
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-05-12T13:50:00Z",
+      "by": "close-workorder@2.0.0",
+      "summary": "Workorder closed via /close-workorder. Audit PASS, all phases complete, archive pending."
     }
   ],
   "notes": [
