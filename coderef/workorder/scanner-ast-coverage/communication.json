@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "implementing",
-  "current_phase": 1,
-  "phase_status": "in_progress",
+  "status": "complete",
+  "current_phase": 2,
+  "phase_status": "complete",
+  "completed_at": "2026-05-12T16:30:00Z",
   "plan_file": "coderef/workorder/scanner-ast-coverage/plan.json",
   "context_file": "coderef/workorder/scanner-ast-coverage/context.json",
   "analysis_file": "coderef/workorder/scanner-ast-coverage/analysis.json",
@@ -51,6 +52,14 @@
       "at": "2026-05-12T16:00:00Z",
       "by": "execute-workorder@1.5.0",
       "note": "Phase 1 execution started: promote tree-sitter to default + wire JSCallDetector."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-12T16:30:00Z",
+      "by": "execute-workorder@1.5.0",
+      "phases_closed": [1, 2],
+      "commit": "65a1e46",
+      "note": "Phase 1: useTreeSitter defaults to true, JSCallDetector wired into tree-sitter path for TS/JS. Phase 2: scanner-worker.ts tree-sitter path added, useAST branch fixed to use ASTElementScanner+JSCallDetector. 2 test fixes (ast-mode: add useTreeSitter:false; parallel-path: update dedup expectation for accurate multi-declaration behavior). Foundation docs gate: PASS (exit 0). CLI.md updated. IMP-CORE-052 and IMP-CORE-078 closed."
     }
   ]
 }

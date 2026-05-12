@@ -230,8 +230,8 @@ npx coderef-scan --dir ./src --lang ts,tsx --recursive
 | `-d, --dir <path>` | Directory to scan | Current directory |
 | `-l, --lang <langs>` | Comma-separated languages | `ts,tsx,js,jsx,py,go,rs,java,cpp,c` |
 | `-r, --recursive` | Scan recursively | `true` |
-| `--useAST` | Use AST parsing for TS/JS | `false` |
-| `--useTreeSitter` | Use tree-sitter parsing | `false` |
+| `--useAST` | Use TypeScript compiler API for TS/JS (legacy opt-in) | `false` |
+| `--useTreeSitter` | Use tree-sitter parsing (IMP-CORE-052: now default `true`; pass `false` to force regex) | `true` |
 | `--fallbackToRegex` | Fallback to regex on AST failure | `true` |
 | `--parallel` | Use parallel processing | `false` |
 | `--includeComments` | Include commented code | `false` |

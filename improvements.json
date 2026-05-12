@@ -64,8 +64,10 @@
       "title": "Replace regex parsing with AST for all languages",
       "category": "accuracy",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-21",
+      "closed": "2026-05-12",
+      "resolution": "Promoted tree-sitter to default scanner path (useTreeSitter now defaults to true). JSCallDetector pass wired into tree-sitter path for TS/JS. Commit: 65a1e46.",
       "body": "External review identified regex-based parsing as primary accuracy limitation (score 6.5/10). Currently only Python uses tree-sitter AST (100% accuracy). TypeScript, JavaScript, Go, Rust, Java, C#, PHP all use regex patterns. Expanding tree-sitter coverage would boost accuracy rating +1.5 points and match CodeQL-level precision. See scanner-quality autoresearch baselines for comparison.",
       "files": [
         "src/scanner/scanner.ts",
@@ -293,8 +295,10 @@
       "title": "Fix parallel AST scans to match sequential AST accuracy",
       "category": "accuracy",
       "severity": "minor",
-      "status": "open",
+      "status": "done",
       "logged": "2026-04-23",
+      "closed": "2026-05-12",
+      "resolution": "scanner-worker.ts: added tree-sitter path matching main scanner default; fixed useAST TS branch to use ASTElementScanner + JSCallDetector (was JSCallDetector-only). Commit: 65a1e46.",
       "body": "Parallel AST scans for TypeScript are not equivalent to sequential AST scans. The worker implementation in scanner-worker.ts (line 58) uses JSCallDetector for TS, while the main path in scanner.ts (line 1164) uses ASTElementScanner and attaches imports/calls. If worker mode actually runs, callers asking for AST accuracy get a downgraded result set.",
       "files": [
         "src/scanner/scanner-worker.ts:58",
