@@ -1,0 +1,65 @@
+{
+  "workorder_id": "WO-SCANNER-AST-COVERAGE-001",
+  "feature_name": "scanner-ast-coverage",
+  "created": "2026-05-12T14:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "improvements-review",
+    "user_request": "Fix IMP-CORE-052: Replace regex-based parsing with tree-sitter AST for TypeScript, JavaScript, Go, Rust, Java, C#, and PHP. Python already uses tree-sitter at 100% accuracy. Expanding AST coverage to remaining languages is the highest-ROI scanner quality improvement (estimated accuracy jump from 6.5/10 to 8+/10)."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Multi-language AST rollout touching scanner core, pattern-loader, and per-language grammar bindings. Each language is an independent slice but shares the same infrastructure changes. Phased delivery de-risks regression: TypeScript/JavaScript first (highest traffic), then compiled languages (Go, Rust), then JVM/other (Java, C#, PHP). Gate between phases on accuracy regression tests.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        "src/scanner/scanner.ts",
+        "src/scanner/pattern-loader.ts",
+        "src/scanner/scanner-worker.ts",
+        "src/scanner/languages/"
+      ],
+      "blast_radius": [
+        "src/scanner/scanner.ts",
+        "src/scanner/pattern-loader.ts",
+        "src/scanner/scanner-worker.ts",
+        "src/pipeline/orchestrator.ts",
+        "__tests__/scanner.test.ts"
+      ],
+      "public_api_hits": [],
+      "hotspot_hits": ["src/scanner/scanner.ts"],
+      "warnings": []
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [
+      { "file": "src/scanner/scanner.ts", "complexity": "high", "reason": "1500+ lines, 15 language paths, AST + regex modes" }
+    ],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Phase 1: TypeScript + JavaScript — tree-sitter AST parity with Python path",
+      "Phase 2: Go + Rust — tree-sitter grammar bindings + scanner integration",
+      "Phase 3: Java + C# + PHP — tree-sitter grammar bindings + scanner integration",
+      "Accuracy regression test suite for each language (ground-truth fixtures)",
+      "Worker path (scanner-worker.ts) must be updated to use AST path for TS/JS"
+    ],
+    "out_of_scope": [
+      "Languages not already supported (no new language onboarding)",
+      "Data-flow or type-flow analysis (IMP-CORE-053, separate WO)",
+      "Route detection changes (IMP-CORE-036, separate WO)",
+      "Python scanner (already AST, no change needed)"
+    ]
+  },
+  "constraints": [
+    "tree-sitter bindings must be available as npm packages (no native compile step added to CI)",
+    "Fallback to regex if tree-sitter grammar fails to load — no hard crash on grammar missing",
+    "All existing scanner tests must pass after each phase",
+    "Performance: AST scan must not exceed 2x sequential regex scan time per file"
+  ]
+}

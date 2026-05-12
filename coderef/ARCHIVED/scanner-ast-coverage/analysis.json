@@ -1,0 +1,96 @@
+{
+  "workorder_id": "WO-SCANNER-AST-COVERAGE-001",
+  "feature_name": "scanner-ast-coverage",
+  "analysis_authored_at": "2026-05-12T14:15:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/scanner/scanner.ts",
+      "src/scanner/pattern-loader.ts",
+      "src/scanner/scanner-worker.ts",
+      "package.json (new tree-sitter grammar deps)",
+      "__tests__/scanner.test.ts"
+    ],
+    "files_created": [
+      "src/scanner/ast/ts-ast-scanner.ts",
+      "src/scanner/ast/js-ast-scanner.ts",
+      "src/scanner/ast/go-ast-scanner.ts",
+      "src/scanner/ast/rust-ast-scanner.ts",
+      "src/scanner/ast/java-ast-scanner.ts",
+      "src/scanner/ast/csharp-ast-scanner.ts",
+      "src/scanner/ast/php-ast-scanner.ts",
+      "__tests__/ast-accuracy/ts-fixture.test.ts",
+      "__tests__/ast-accuracy/js-fixture.test.ts",
+      "__tests__/ast-accuracy/go-fixture.test.ts",
+      "__tests__/ast-accuracy/rust-fixture.test.ts",
+      "__tests__/ast-accuracy/java-fixture.test.ts"
+    ],
+    "downstream_consumers": [
+      "src/pipeline/orchestrator.ts (calls scanner)",
+      "src/cli/scan.ts",
+      "src/cli/coderef-pipeline.ts"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-01",
+      "title": "tree-sitter binary incompatibility on Windows (node-gyp rebuild)",
+      "likelihood": "medium",
+      "impact": "major",
+      "mitigation": "Use pre-built wasm bindings (tree-sitter-{lang}/bindings/web) — no native compile required. Fall back to regex silently if wasm load fails."
+    },
+    {
+      "id": "RISK-02",
+      "title": "AST scanner slower than regex for large files, breaking performance SLA",
+      "likelihood": "medium",
+      "impact": "major",
+      "mitigation": "Phase 1 includes perf benchmarks on coderef-core itself. Gate Phase 2 on <2x slowdown per file."
+    },
+    {
+      "id": "RISK-03",
+      "title": "Accuracy regression on edge-case patterns currently handled by regex heuristics",
+      "likelihood": "low",
+      "impact": "major",
+      "mitigation": "Ground-truth fixture tests per language before shipping each phase. Regex stays as fallback."
+    },
+    {
+      "id": "RISK-04",
+      "title": "scanner-worker.ts worker path not updated, causing silent accuracy downgrade for parallel scans",
+      "likelihood": "high",
+      "impact": "major",
+      "mitigation": "Phase 1 gate explicitly includes worker path update (resolves IMP-CORE-078 at the same time)."
+    }
+  ],
+  "candidates": [
+    "src/scanner/scanner.ts",
+    "src/scanner/pattern-loader.ts",
+    "src/scanner/scanner-worker.ts"
+  ],
+  "dependencies": [
+    "tree-sitter npm package",
+    "tree-sitter-typescript",
+    "tree-sitter-javascript",
+    "tree-sitter-go",
+    "tree-sitter-rust",
+    "tree-sitter-java",
+    "tree-sitter-c-sharp",
+    "tree-sitter-php"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-01",
+      "decision": "Create per-language AST scanner modules in src/scanner/ast/ rather than modifying scanner.ts inline",
+      "rationale": "Isolates grammar-specific logic, enables independent testing, and avoids further bloating the already-large scanner.ts. scanner.ts calls into ast/ modules."
+    },
+    {
+      "id": "DR-02",
+      "decision": "Use tree-sitter wasm bindings, not native node bindings",
+      "rationale": "Eliminates node-gyp build requirement on Windows. wasm path is slower by ~15% but removes CI/install friction entirely."
+    },
+    {
+      "id": "DR-03",
+      "decision": "Phase 1 resolves IMP-CORE-078 (worker path accuracy) at no extra cost",
+      "rationale": "scanner-worker.ts TS path is already the bug location — updating it to AST is part of Phase 1 scope, not a separate workorder."
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "workorder_id": "WO-SCANNER-AST-COVERAGE-001",
+  "feature_name": "scanner-ast-coverage",
+  "created": "2026-05-12T14:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 2,
+  "phase_status": "complete",
+  "completed_at": "2026-05-12T16:30:00Z",
+  "closed_at": "2026-05-12T16:45:00Z",
+  "updated": "2026-05-12T16:45:00Z",
+  "plan_file": "coderef/workorder/scanner-ast-coverage/plan.json",
+  "context_file": "coderef/workorder/scanner-ast-coverage/context.json",
+  "analysis_file": "coderef/workorder/scanner-ast-coverage/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan revised 2026-05-12: TreeSitterScanner already exists. Work is promoting tree-sitter to default and fixing worker parity (IMP-CORE-078)."
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "hard_stops": [],
+    "phase_gates": false,
+    "auto_advance": true
+  },
+  "hard_constraints": [
+    "No native compile step (node-gyp) added to install or CI",
+    "Regex fallback must remain active when wasm fails to load",
+    "All existing vitest tests must pass after each phase",
+    "AST scan time per file must be < 2x regex scan time"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-12T14:15:00Z",
+      "by": "create-workorder@2.4.0",
+      "note": "WO-SCANNER-AST-COVERAGE-001 created from IMP-CORE-052 (replace regex with AST for 7 languages). Phase 1 also resolves IMP-CORE-078 (worker path accuracy downgrade)."
+    },
+    {
+      "event": "plan_revised",
+      "at": "2026-05-12T16:00:00Z",
+      "by": "execute-workorder@1.5.0",
+      "note": "Plan rewritten after discovery: TreeSitterScanner already exists with all 7 grammars installed. Original plan would have re-created existing infrastructure. Revised scope: (1) promote useTreeSitter to default, wire JSCallDetector into tree-sitter path; (2) fix worker parity (IMP-CORE-078). DISPATCH-2026-05-12-003 accepted."
+    },
+    {
+      "event": "execution_started",
+      "at": "2026-05-12T16:00:00Z",
+      "by": "execute-workorder@1.5.0",
+      "note": "Phase 1 execution started: promote tree-sitter to default + wire JSCallDetector."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-12T16:30:00Z",
+      "by": "execute-workorder@1.5.0",
+      "phases_closed": [1, 2],
+      "commit": "65a1e46",
+      "note": "Phase 1: useTreeSitter defaults to true, JSCallDetector wired into tree-sitter path for TS/JS. Phase 2: scanner-worker.ts tree-sitter path added, useAST branch fixed to use ASTElementScanner+JSCallDetector. 2 test fixes (ast-mode: add useTreeSitter:false; parallel-path: update dedup expectation for accurate multi-declaration behavior). Foundation docs gate: PASS (exit 0). CLI.md updated. IMP-CORE-052 and IMP-CORE-078 closed."
+    },
+    {
+      "timestamp": "2026-05-12T16:45:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS: 0 scoped findings, tracking validator clean for this WO, dependency audit skipped (no output), quality check skipped (quality.json absent), route check skipped (no route files changed). Committed and archived."
+    }
+  ],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/scanner-ast-coverage/ARCHIVED",
+    "review_verdict_source": "Step 3 audit",
+    "warnings": []
+  }
+}
