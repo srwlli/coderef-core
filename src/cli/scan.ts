@@ -20,6 +20,7 @@ interface ScanOptions {
   disablePlugins?: boolean;
   incremental?: boolean;
   useAST?: boolean;
+  noTreeSitter?: boolean;
 }
 
 const SUPPORTED_LANGUAGES = ['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c'];
@@ -36,8 +37,9 @@ function printHelp(): void {
   console.log('  --languages     Comma-separated list of languages (default: all 10)');
   console.log('  --plugins       Comma-separated list of plugins to enable');
   console.log('  --no-plugins    Disable all plugins');
-  console.log('  --useAST        Use AST-based parsing for TS/JS (slower, more accurate, enables import parsing)');
-  console.log('  --incremental   Use incremental scanning (skip unchanged files)');
+  console.log('  --useAST          Use TypeScript compiler API for TS/JS (legacy opt-in; tree-sitter is default)');
+  console.log('  --no-tree-sitter  Force regex-only mode, disabling tree-sitter parser');
+  console.log('  --incremental     Use incremental scanning (skip unchanged files)');
   console.log('  --help, -h      Show this help message');
   console.log('');
   console.log('Examples:');
@@ -45,6 +47,7 @@ function printHelp(): void {
   console.log('  coderef-scan C:\\path\\to\\project');
   console.log('  coderef-scan . --languages ts,tsx,js');
   console.log('  coderef-scan . --useAST');
+  console.log('  coderef-scan . --no-tree-sitter');
 }
 
 async function scanProject(projectPath: string, options: ScanOptions = {}): Promise<void> {
@@ -70,7 +73,8 @@ async function scanProject(projectPath: string, options: ScanOptions = {}): Prom
     const elements = await scanCurrentElements(projectPath, languages, {
       verbose: true,
       cache,
-      useAST: options.useAST
+      useAST: options.useAST,
+      useTreeSitter: options.noTreeSitter ? false : undefined
     });
     const duration = Date.now() - startTime;
 
@@ -166,6 +170,12 @@ async function main(): Promise<void> {
   const useASTIndex = args.indexOf('--useAST');
   if (useASTIndex !== -1) {
     options.useAST = true;
+  }
+
+  // Parse --no-tree-sitter flag (force regex-only mode)
+  const noTreeSitterIndex = args.indexOf('--no-tree-sitter');
+  if (noTreeSitterIndex !== -1) {
+    options.noTreeSitter = true;
   }
 
   await scanProject(projectPath, options);

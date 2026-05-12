@@ -204,10 +204,11 @@ export class MyClass {
 
     const elements = await scanCurrentElements(tempDir, ['ts'], {
       useAST: false,
+      useTreeSitter: false, // Explicitly test regex path; tree-sitter is now default
       recursive: false
     });
 
-    // Should detect function and class with regex patterns
+    // Should detect function and class via regex
     expect(elements.length).toBeGreaterThanOrEqual(2);
 
     const func = elements.find(e => e.name === 'myFunction');
