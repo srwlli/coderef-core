@@ -1,0 +1,18 @@
+=============================================================
+WORKORDER: WO-CODEREF-UI-RAG-SEARCH-FIX-001  |  coderef-ui-rag-search-fix  |  COMPLETE
+Session: daily-agent-session-2026-05-12  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: n/a (originated from IMP-CORE-089)
+
+FILES CREATED:
+  (none)
+
+FILES MODIFIED:
+  ~ tools/coderef_ui.py  (6e2472a)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Remove duplicate --project-dir from rag-search CMD_OPTIONS  (6e2472a)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift, not WO scope)
+
+APPROVE -> /close-workorder WO-CODEREF-UI-RAG-SEARCH-FIX-001
+=============================================================

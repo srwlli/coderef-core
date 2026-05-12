@@ -6,10 +6,18 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "completed_at": "2026-05-12T14:30:00Z",
+  "closed_at": "2026-05-12T14:45:00Z",
+  "updated": "2026-05-12T14:45:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/coderef-ui-rag-search-fix/ARCHIVED",
+    "review_verdict_source": "Step 3 audit",
+    "warnings": []
+  },
   "plan_file": "coderef/workorder/coderef-ui-rag-search-fix/plan.json",
   "context_file": "coderef/workorder/coderef-ui-rag-search-fix/context.json",
   "analysis_file": "coderef/workorder/coderef-ui-rag-search-fix/analysis.json",
@@ -59,6 +67,26 @@
       "phases_closed": [1],
       "commit": "6e2472a",
       "summary": "Removed duplicate --project-dir entry from CMD_OPTIONS['rag-search']. 1-line deletion. Smoke test PASS, syntax check PASS. Closes IMP-CORE-089."
+    },
+    {
+      "event": "dependency_audit",
+      "vulnerable_count": 0,
+      "skipped": false
+    },
+    {
+      "event": "close_audit",
+      "at": "2026-05-12T14:45:00Z",
+      "cultural_alignment": "PASS",
+      "tracking_validator": "PASS (scoped)",
+      "git_state": "PASS",
+      "semantic_validation": "PASS",
+      "quality_check": "skip (quality.json absent)",
+      "route_check": "skip (no route files changed)"
+    },
+    {
+      "timestamp": "2026-05-12T14:45:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS, finalized, committed d08080e, archiving to coderef/ARCHIVED/coderef-ui-rag-search-fix/."
     }
   ]
 }

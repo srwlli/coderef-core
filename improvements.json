@@ -3,9 +3,9 @@
   "schema_version": "1.0",
   "project": "coderef-core",
   "scope": "scanner",
-  "counter": 86,
-  "last_updated": "2026-04-29",
-  "last_pruned": "2026-04-23",
+  "counter": 91,
+  "last_updated": "2026-05-12",
+  "last_pruned": "2026-05-11",
   "archived": [
     "IMP-CORE-003",
     "IMP-CORE-004",
@@ -36,7 +36,12 @@
     "IMP-CORE-034",
     "IMP-CORE-039",
     "IMP-CORE-042",
-    "IMP-CORE-044"
+    "IMP-CORE-044",
+    "IMP-CORE-057",
+    "IMP-CORE-076",
+    "IMP-CORE-077",
+    "IMP-CORE-080",
+    "IMP-CORE-081"
   ],
   "items": [
     {
@@ -90,19 +95,6 @@
       "target_tenant": "my-code",
       "target_repo": "Entity",
       "integration_path": "Entity/apps/web/app/my-code/"
-    },
-    {
-      "id": "IMP-CORE-057",
-      "title": "Implement incremental scanning with file-watcher",
-      "category": "performance",
-      "severity": "major",
-      "status": "completed",
-      "logged": "2026-04-21",
-      "completed": "2026-04-23",
-      "commit": "354e6cc",
-      "body": "External review (9/10 utility, 8/10 performance) suggests incremental scanning for enterprise monorepos. As projects grow, full re-scan becomes expensive. Implement file-watcher or cache based on file hashes (already generated) to only re-scan changed files. This would enable real-time IDE integration and make system viable for large codebases. Second review specifically noted this as priority for enterprise adoption.",
-      "files": ["src/scanner/scanner.ts", "src/cache/file-hash-cache.ts"],
-      "related": ["IMP-CORE-052"]
     },
     {
       "id": "IMP-CORE-061",
@@ -255,30 +247,6 @@
       "files": ["src/scanner/scanner.ts:782-799"]
     },
     {
-      "id": "IMP-CORE-076",
-      "title": "Fix recursive incremental scans for nested files",
-      "category": "robustness",
-      "severity": "major",
-      "status": "completed",
-      "logged": "2026-04-23",
-      "completed": "2026-04-23",
-      "body": "Recursive incremental scans are broken for nested files. The recursive branch in scanner.ts (line 885) strips cache, while cache diff/update only runs against the top-level files list in scanner.ts (line 949) and scanner.ts (line 1316). In practice, real recursive project scans will keep rescanning subtrees and can leave deleted nested paths in the cache.",
-      "files": ["src/scanner/scanner.ts:885", "src/scanner/scanner.ts:949", "src/scanner/scanner.ts:1316"],
-      "solution": "Added collectFiles() helper to gather all files from full subtree before incremental filtering. Cache check/update now runs on complete file list."
-    },
-    {
-      "id": "IMP-CORE-077",
-      "title": "Fix parallel path to preserve normal scanner behavior",
-      "category": "robustness",
-      "severity": "major",
-      "status": "completed",
-      "logged": "2026-04-23",
-      "completed": "2026-04-23",
-      "body": "The successful parallel path does not preserve normal scanner behavior. In scanner.ts (line 981), a non-empty worker result returns immediately, before the shared deduplication and bookkeeping path at the bottom of the function. That makes parallel: true semantically different from sequential mode and leaves progress/incremental state stale.",
-      "files": ["src/scanner/scanner.ts:981"],
-      "solution": "Added parallelSucceeded flag. Parallel path now sets flag and continues to shared deduplication/cache update instead of returning early."
-    },
-    {
       "id": "IMP-CORE-078",
       "title": "Fix parallel AST scans to match sequential AST accuracy",
       "category": "accuracy",
@@ -297,31 +265,6 @@
       "logged": "2026-04-26",
       "body": "improvements.json header counter was 75 while the highest existing IMP-CORE-NNN id in items[] was 078. Following the file's own derivation rule, the next appended entry would have rolled to IMP-CORE-076 and collided with an id already in the local archived[] array (or with the 061-078 active range). This invocation advances counter to 81 (post-append) to restore the monotonic-high-water-mark invariant, but the underlying drift was likely introduced when prior pruning passes recalculated counter from a live count rather than preserving the historical max. Add a guard at write-time so counter never decreases.",
       "files": ["improvements.json:6"]
-    },
-    {
-      "id": "IMP-CORE-080",
-      "title": "Schema fields, enums, and id pattern diverge from canonical TRACKING schema",
-      "category": "architecture",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-26",
-      "closed": "2026-04-27",
-      "resolution": "ORCHESTRATOR Decision 1 (Option C): canonical TRACKING/schemas/improvements.schema.json relaxed to accept both IMP-NNN and IMP-PROJECT-NNN id patterns (^IMP(-[A-Z][A-Z0-9-]*)?-\\d+$), 'completed' added as deprecated alias for 'done' on status enum, category enum loosened to advisory (minLength:1) so per-project labels like 'thread-safety'/'logging' validate. CORE's 26-record improvements.json now passes canonical validation without data migration. Verified by TRACKING/tests/test_improvements_schema_imp080.py (8/8 pass). The non-resolving $schema URL on the CORE envelope is preserved as-is; only the canonical schema's $id is authoritative for validation.",
-      "body": "improvements.json uses an id pattern (IMP-CORE-NNN) that does not match canonical TRACKING/schemas/improvements.schema.json (^IMP-\\d+$); a status value 'completed' that is not in the canonical enum (open|in-progress|done|wont-fix); and category labels (accuracy, technical-depth, developer-experience, configuration, robustness, thread-safety, type-safety, logging) outside the canonical 7-category set (code-quality, architecture, performance, testing, security, ux, docs). It also carries non-canonical envelope fields (archived[], last_pruned, _note) and per-item fields (solution, commit, target_tenant, target_repo, integration_path). The $schema URL also points to https://schemas.coderef.com/improvements/v1, which does not resolve; canonical $id is https://coderef.io/schemas/tracking/improvements.schema.json. Validating this file with the canonical schema would fail on every active entry. Either (a) migrate this file to the canonical schema, or (b) document that CORE intentionally maintains a divergent local schema and skip canonical validation for this path.",
-      "files": ["improvements.json:1-8"],
-      "related": ["IMP-CORE-079"]
-    },
-    {
-      "id": "IMP-CORE-081",
-      "title": "coderef-core not registered in TRACKING/improvement-index.json",
-      "category": "architecture",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-26",
-      "closed": "2026-04-27",
-      "resolution": "ORCHESTRATOR Decision 2 (Option A): coderef-core entry already added on disk to TRACKING/improvement-index.json on 2026-04-26 19:50Z; commit landed 2026-04-27 by TRACKING. Item count synced to 26. Architectural follow-up (auto-write hook in register-project-tracking) deferred to a separate dispatch per ORCHESTRATOR Decision 3 — sequenced AFTER the writer-adapter-migration follow-up queued by DISPATCH-2026-04-26-002.",
-      "body": "The central improvement-index registry at ASSISTANT/TRACKING/improvement-index.json lists 21 project entries (assistant, assistant-skills, assistant-standards, assistant-project-context, assistant-tracking, entity + 14 stl-agent subentries, coderef-context-mcp) but has NO entry for project_id=coderef-core. This means TRACKING-driven sweeps, registry-sweep tooling, and any cross-project improvement reporting silently skip CORE's 22-item improvement log. This invocation creates the missing entry as part of Step 7 sync; the underlying registration drift should be prevented by wiring CORE into register-project-tracking on first improvements-skill invocation.",
-      "files": ["improvements.json", "../ASSISTANT/TRACKING/improvement-index.json"]
     },
     {
       "id": "IMP-CORE-082",
@@ -377,7 +320,62 @@
       "body": "Fire non-blocking background ollama pull command in _resolve_available_model if selected_model is missing but system is healthy. Self-heals environment; first request might use fallback, but subsequent requests will automatically have correct model available without manual intervention.",
       "files": ["src/routing/smartrouter.ts"],
       "related": ["IMP-CORE-083"]
+    },
+    {
+      "id": "IMP-CORE-087",
+      "title": "DryRunSemanticOrchestrator never restores patched fs module",
+      "category": "security",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-05-11",
+      "body": "interceptFileWrites() (line 44) monkey-patches the global fs.writeFileSync and fs.promises.writeFile but never restores the originals. Any subsequent call in the same process — including test suites and back-to-back CLI invocations — runs with the patched fs, silently suppressing writes that should succeed. Add a restore() method and call it after processProject()/processFile() completes, or replace the global-patch strategy with a dependency-injected fs adapter.",
+      "files": ["src/cli/semantic-integration.ts:44-67"]
+    },
+    {
+      "id": "IMP-CORE-088",
+      "title": "Add tests for detect-languages-cli and semantic-integration-cli",
+      "category": "testing",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-05-11",
+      "body": "detect-languages-cli.ts and semantic-integration-cli.ts have zero test coverage. Every other CLI entry point with complex branch logic (coderef-watch, coderef-rag-server) has a dedicated test file in __tests__/. The two new CLIs cover flag parsing, --dry-run branching, --validate-idempotency, and graceful error exits — all untested paths that can silently regress.",
+      "files": [
+        "src/cli/detect-languages-cli.ts",
+        "src/cli/semantic-integration-cli.ts"
+      ]
+    },
+    {
+      "id": "IMP-CORE-089",
+      "title": "Fix rag-search duplicate --project-dir emission in UI",
+      "category": "ux",
+      "severity": "minor",
+      "status": "done",
+      "logged": "2026-05-12",
+      "closed": "2026-05-12",
+      "resolution": "Removed redundant --project-dir entry from CMD_OPTIONS['rag-search']; PROJECT_DIR_FLAG_CMDS auto-injection is the sole source. Commit 6e2472a.",
+      "body": "tools/coderef_ui.py line 105 adds an explicit --project-dir entry widget for rag-search inside CMD_OPTIONS, while rag-search is also in PROJECT_DIR_FLAG_CMDS which causes _build_args() to auto-inject --project-dir from the top-level Project Dir field. If both fields are populated, --project-dir appears twice in the argv list, causing a yargs parse error. Either remove the CMD_OPTIONS entry or remove rag-search from PROJECT_DIR_FLAG_CMDS and rely solely on the CMD_OPTIONS widget.",
+      "files": ["tools/coderef_ui.py:105", "tools/coderef_ui.py:217"]
+    },
+    {
+      "id": "IMP-CORE-090",
+      "title": "Replace console.log with logger in graph-to-elements and incremental-cache",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-05-12",
+      "body": "src/adapter/graph-to-elements.ts (lines 57-59, 128-131) and src/cache/incremental-cache.ts (lines 102-207) use raw console.log without importing the project logger. The rest of the codebase routes through src/utils/logger.ts, making these files inconsistent and their output invisible to log aggregation. Replace all console.log calls in both files with logger calls at the appropriate level.",
+      "files": ["src/adapter/graph-to-elements.ts:57-131", "src/cache/incremental-cache.ts:102-207"]
+    },
+    {
+      "id": "IMP-CORE-091",
+      "title": "Implement smart truncation in ai-prompt-generator.ts",
+      "category": "performance",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-05-12",
+      "body": "Line 271 of src/integration/ai-prompt-generator.ts is marked TODO: Smart truncation that preserves structure. Without this, large projects that exceed the context window receive a silently truncated prompt with no structural guarantees — high-value sections (exports, entry points) can be dropped in favor of lexicographic order. Implement size-aware truncation that retains headers, critical elements, and semantics before falling back to simple slicing.",
+      "files": ["src/integration/ai-prompt-generator.ts:271"]
     }
   ],
-  "_note": "29 open items + 3 done (057, 076, 077, 080, 081) retained per local archival convention. 5 SmartRouter enhancements appended 2026-04-29 (IMP-CORE-082 through IMP-CORE-086) targeting performance and reliability for 4GB VRAM hardware constraints. Counter advanced to 86."
+  "_note": "Pruned 5 done/completed entries (057, 076, 077, 080, 081) on 2026-05-11. Appended IMP-CORE-087 (DryRunSemanticOrchestrator fs leak) and IMP-CORE-088 (missing CLI tests). Counter advanced to 88. Appended IMP-CORE-089 (rag-search duplicate --project-dir), IMP-CORE-090 (console.log in adapter/cache), IMP-CORE-091 (missing smart truncation). Counter advanced to 91."
 }
