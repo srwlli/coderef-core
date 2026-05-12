@@ -31,6 +31,9 @@ export class DryRunSemanticOrchestrator {
   private originalOrchestrator: SemanticOrchestrator;
   private dryRun: boolean;
   private capturedWrites: Map<string, string> = new Map();
+  private _originalWriteFileSync: typeof fs.writeFileSync | null = null;
+  private _originalWriteFile: typeof fs.promises.writeFile | null = null;
+  private _restored: boolean = false;
 
   constructor(orchestrator: SemanticOrchestrator, dryRun: boolean) {
     this.originalOrchestrator = orchestrator;
@@ -44,26 +47,52 @@ export class DryRunSemanticOrchestrator {
   private interceptFileWrites(): void {
     const originalWrite = fs.writeFileSync;
     const originalWriteFile = fs.promises.writeFile;
-    const mutableFs = fs as unknown as {
-      writeFileSync: typeof fs.writeFileSync;
-      promises: { writeFile: typeof fs.promises.writeFile };
-    };
+    this._originalWriteFileSync = originalWrite;
+    this._originalWriteFile = originalWriteFile;
+    this._restored = false;
 
-    mutableFs.writeFileSync = ((path: string, data: string | Buffer, ...args: any[]) => {
-      if (this.shouldCapture(path)) {
-        this.capturedWrites.set(path, typeof data === 'string' ? data : data.toString());
-        return undefined as any;
-      }
-      return originalWrite.call(fs, path, data, ...args);
-    }) as any;
+    Object.defineProperty(fs, 'writeFileSync', {
+      configurable: true,
+      writable: true,
+      value: (filePath: string, data: string | Buffer, ...args: any[]) => {
+        if (this.shouldCapture(filePath)) {
+          this.capturedWrites.set(filePath, typeof data === 'string' ? data : data.toString());
+          return undefined;
+        }
+        return originalWrite.call(fs, filePath, data, ...args);
+      },
+    });
 
-    mutableFs.promises.writeFile = (async (path: string, data: string | Buffer, ...args: any[]) => {
-      if (this.shouldCapture(path)) {
-        this.capturedWrites.set(path, typeof data === 'string' ? data : data.toString());
-        return;
-      }
-      return originalWriteFile.call(fs.promises, path, data, ...args);
-    }) as any;
+    Object.defineProperty(fs.promises, 'writeFile', {
+      configurable: true,
+      writable: true,
+      value: async (filePath: string, data: string | Buffer, ...args: any[]) => {
+        if (this.shouldCapture(filePath)) {
+          this.capturedWrites.set(filePath, typeof data === 'string' ? data : data.toString());
+          return;
+        }
+        return originalWriteFile.call(fs.promises, filePath, data, ...args);
+      },
+    });
+  }
+
+  restore(): void {
+    if (this._restored) return;
+    if (this._originalWriteFileSync !== null) {
+      Object.defineProperty(fs, 'writeFileSync', {
+        configurable: true,
+        writable: true,
+        value: this._originalWriteFileSync,
+      });
+    }
+    if (this._originalWriteFile !== null) {
+      Object.defineProperty(fs.promises, 'writeFile', {
+        configurable: true,
+        writable: true,
+        value: this._originalWriteFile,
+      });
+    }
+    this._restored = true;
   }
 
   private shouldCapture(filePath: string): boolean {
@@ -74,11 +103,19 @@ export class DryRunSemanticOrchestrator {
   }
 
   async processProject(): Promise<PipelineResult> {
-    return this.originalOrchestrator.processProject();
+    try {
+      return await this.originalOrchestrator.processProject();
+    } finally {
+      this.restore();
+    }
   }
 
   async processFile(filePath: string): Promise<void> {
-    return this.originalOrchestrator.processFile(filePath);
+    try {
+      return await this.originalOrchestrator.processFile(filePath);
+    } finally {
+      this.restore();
+    }
   }
 
   getCapturedWrites(): Map<string, string> {
