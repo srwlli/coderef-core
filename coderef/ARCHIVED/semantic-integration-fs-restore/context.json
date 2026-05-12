@@ -1,0 +1,41 @@
+{
+  "workorder_id": "WO-SEMANTIC-INTEGRATION-FS-RESTORE-001",
+  "feature_name": "semantic-integration-fs-restore",
+  "created": "2026-05-12T14:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "improvements-review",
+    "user_request": "Fix IMP-CORE-087: DryRunSemanticOrchestrator.interceptFileWrites() monkey-patches global fs but never restores originals, leaking the patch into subsequent process calls and test suite runs."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single-file fix in src/cli/semantic-integration.ts. No blast radius into other modules. Targeted surgical change with clear test path.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "src/cli/semantic-integration.ts — add restore() method, call it after processProject()/processFile()",
+      "Unit test for interceptFileWrites/restore cycle"
+    ],
+    "out_of_scope": [
+      "Refactoring the full DryRunSemanticOrchestrator class",
+      "Changing the dry-run flag contract",
+      "Dependency-injected fs adapter (larger refactor)"
+    ]
+  },
+  "constraints": [
+    "Must not change the public interface of DryRunSemanticOrchestrator",
+    "restore() must be idempotent (safe to call multiple times)",
+    "No new runtime dependencies"
+  ]
+}

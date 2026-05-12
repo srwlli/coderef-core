@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-SEMANTIC-INTEGRATION-FS-RESTORE-001",
+  "feature_name": "semantic-integration-fs-restore",
+  "analysis_authored_at": "2026-05-12T14:15:00Z",
+  "blast_radius": {
+    "files_modified": ["src/cli/semantic-integration.ts"],
+    "files_created": [],
+    "downstream_consumers": [
+      "src/cli/semantic-integration-cli.ts (calls DryRunSemanticOrchestrator)",
+      "__tests__/ (new test for restore cycle)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-01",
+      "title": "restore() called after error path may leave fs in partially patched state",
+      "likelihood": "low",
+      "impact": "major",
+      "mitigation": "Wrap restore() in finally block so it always runs even on exception"
+    },
+    {
+      "id": "RISK-02",
+      "title": "Idempotent restore causes double-restore if orchestrator is re-used",
+      "likelihood": "low",
+      "impact": "minor",
+      "mitigation": "Guard restore() with a _restored boolean flag; no-op on second call"
+    }
+  ],
+  "candidates": [
+    "src/cli/semantic-integration.ts:44-67 (interceptFileWrites method)"
+  ],
+  "dependencies": [
+    "Node.js fs module (already imported)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-01",
+      "decision": "Add restore() method to DryRunSemanticOrchestrator, call in finally block of processProject()/processFile()",
+      "rationale": "Minimal change, no public interface change, easy to test. Full DI refactor (IMP-CORE-087 body suggests as alternative) is out-of-scope for this WO."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "workorder_id": "WO-SEMANTIC-INTEGRATION-FS-RESTORE-001",
+  "feature_name": "semantic-integration-fs-restore",
+  "created": "2026-05-12T14:15:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single-file targeted fix. No discovery needed. Zero blast radius outside semantic-integration.ts.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Fix interceptFileWrites fs leak",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/cli/semantic-integration.ts lines 40-80 to understand full interceptFileWrites() structure and all call sites of processProject()/processFile()",
+          "success_criteria": "Full picture of where the patch is applied and where process methods complete"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add private _originalWriteFileSync and _originalWriteFile fields to DryRunSemanticOrchestrator; save originals before patching in interceptFileWrites(). Add restore() method that reassigns them back and sets a _restored guard flag.",
+          "success_criteria": "restore() exists, is idempotent, restores both fs.writeFileSync and fs.promises.writeFile"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Wrap processProject() and processFile() body in try/finally, calling this.restore() in the finally block",
+          "success_criteria": "restore() is called even if processProject()/processFile() throws"
+        },
+        {
+          "verb": "TEST",
+          "description": "Write a unit test: instantiate DryRunSemanticOrchestrator, call processProject() on a fixture dir, then verify fs.writeFileSync is the original function post-call",
+          "success_criteria": "Test passes; fs.writeFileSync identity check passes after orchestrator exits"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx vitest --run to confirm all existing tests still pass",
+          "success_criteria": "0 failing tests"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit fix and test with message: fix(semantic-integration): restore fs patch after dry-run completes (IMP-CORE-087)",
+          "success_criteria": "Clean commit on main"
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    "restore() method exists on DryRunSemanticOrchestrator",
+    "restore() is called in finally block of processProject() and processFile()",
+    "restore() is idempotent (guarded by _restored flag)",
+    "Unit test verifies fs.writeFileSync identity is restored after orchestrator exits",
+    "All existing vitest tests pass"
+  ]
+}
