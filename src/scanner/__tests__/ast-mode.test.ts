@@ -180,6 +180,7 @@ export class { // Malformed - missing name
 
     const elements = await scanCurrentElements(tempDir, ['ts'], {
       useAST: true,
+      useTreeSitter: false, // Test AST-only path explicitly; tree-sitter is now default
       fallbackToRegex: false,
       recursive: false
     });

@@ -54,33 +54,101 @@ if (parentPort) {
             const content = fs.readFileSync(file, 'utf-8');
             const includeComments = options?.includeComments || false;
 
-            // Check if we should use AST mode
-            if (options?.useAST && (lang === 'ts' || lang === 'js')) {
+            // IMP-CORE-052: tree-sitter is the default path (useTreeSitter !== false)
+            const useTreeSitterMode = options?.useTreeSitter !== false;
+            if (useTreeSitterMode && (lang === 'ts' || lang === 'js' || lang === 'go' || lang === 'rs' || lang === 'java' || lang === 'cpp' || lang === 'c' || lang === 'py')) {
               try {
-                // Dynamic import to avoid circular dependencies
+                const { TreeSitterScanner } = await import('./tree-sitter-scanner.js');
+                const treeSitterScanner = new TreeSitterScanner();
+                const treeSitterElements = await treeSitterScanner.scanFile(file);
+                const elementsBefore = scanner.getElements().length;
+                for (const element of treeSitterElements) {
+                  scanner.addElement(element);
+                }
+                // Wire JSCallDetector for TS/JS call graph data (IMP-CORE-052)
+                if (lang === 'ts' || lang === 'js') {
+                  try {
+                    const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
+                    const detector = new JSCallDetector();
+                    const fileImports = detector.detectImports(file);
+                    const fileCalls = detector.detectCalls(file);
+                    const allElements = scanner.getElements();
+                    const fileElements = allElements.slice(elementsBefore);
+                    for (const element of fileElements) {
+                      const elementCalls = fileCalls
+                        .filter(call => call.callerFunction === element.name || call.callerClass === element.name)
+                        .map(call => call.calleeFunction);
+                      if (fileImports.length > 0) {
+                        element.imports = fileImports.map(imp => ({
+                          source: imp.source,
+                          specifiers: imp.specifiers.filter(s => s !== 'default'),
+                          default: imp.isDefault ? imp.specifiers[0] : undefined,
+                          dynamic: imp.dynamic || false,
+                          line: imp.line
+                        }));
+                      }
+                      if (elementCalls.length > 0) {
+                        element.calls = elementCalls;
+                      }
+                    }
+                  } catch {
+                    // Non-fatal: structural elements already added; call data is best-effort
+                  }
+                }
+                if (options?.fallbackToRegex === false) {
+                  filesProcessed++;
+                  continue;
+                }
+              } catch {
+                if (options?.fallbackToRegex === false) {
+                  errors++;
+                  continue;
+                }
+                // Fall through to regex
+              }
+            } else if (options?.useAST && (lang === 'ts' || lang === 'js')) {
+              // IMP-CORE-078: useAST path now matches main thread — ASTElementScanner + JSCallDetector
+              try {
+                let astElements: any[];
+                if (lang === 'ts') {
+                  const { ASTElementScanner } = await import('../analyzer/ast-element-scanner.js');
+                  const astScanner = new ASTElementScanner('.');
+                  astElements = astScanner.scanFile(file);
+                } else {
+                  const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
+                  const detector = new JSCallDetector();
+                  astElements = detector.detectElements(file);
+                }
                 const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
                 const detector = new JSCallDetector();
-                const astElements = detector.detectElements(file);
-
-                // Add AST-detected elements
+                const fileImports = detector.detectImports(file);
+                const fileCalls = detector.detectCalls(file);
                 for (const element of astElements) {
+                  const elementCalls = fileCalls
+                    .filter(call => call.callerFunction === element.name || call.callerClass === element.name)
+                    .map(call => call.calleeFunction);
                   scanner.addElement({
                     type: element.type as ElementData['type'],
                     name: element.name,
                     file: element.file,
                     line: element.line,
-                    exported: element.exported
+                    exported: element.exported,
+                    imports: fileImports.length > 0 ? fileImports.map(imp => ({
+                      source: imp.source,
+                      specifiers: imp.specifiers.filter(s => s !== 'default'),
+                      default: imp.isDefault ? imp.specifiers[0] : undefined,
+                      dynamic: imp.dynamic || false,
+                      line: imp.line
+                    })) : undefined,
+                    calls: elementCalls.length > 0 ? elementCalls : undefined
                   });
                 }
-
-                // Skip regex if fallback disabled
                 if (options.fallbackToRegex === false) {
                   filesProcessed++;
                   continue;
                 }
-              } catch (astError) {
-                // AST failed, continue to regex if fallback enabled
-                if (options.fallbackToRegex === false) {
+              } catch {
+                if (options?.fallbackToRegex === false) {
                   errors++;
                   continue;
                 }

@@ -1114,7 +1114,9 @@ export async function scanCurrentElements(
           const elementsBefore = scanner.getElements().length;
 
           // WO-TREE-SITTER-SCANNER-001: Tree-sitter Integration
-          const useTreeSitterMode = options.useTreeSitter;
+          // IMP-CORE-052: useTreeSitter defaults to true — tree-sitter is now the primary path
+          // for all supported languages. Set useTreeSitter: false to force regex-only mode.
+          const useTreeSitterMode = options.useTreeSitter !== false;
           const fallbackEnabled = options.fallbackToRegex !== false; // Default true
 
           if (useTreeSitterMode) {
@@ -1133,6 +1135,42 @@ export async function scanCurrentElements(
               // Add tree-sitter elements to scanner
               for (const element of treeSitterElements) {
                 scanner.addElement(element);
+              }
+
+              // IMP-CORE-052: Wire JSCallDetector pass for TS/JS — attaches calls[] and imports[]
+              // to structural elements from tree-sitter, preserving the same call graph data
+              // the useAST branch produces.
+              if (currentLang === 'ts' || currentLang === 'js') {
+                try {
+                  const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
+                  const detector = new JSCallDetector();
+                  const fileImports = detector.detectImports(file);
+                  const fileCalls = detector.detectCalls(file);
+                  const allElements = scanner.getElements();
+                  const fileElements = allElements.slice(elementsBefore);
+                  for (const element of fileElements) {
+                    const elementCalls = fileCalls
+                      .filter(call => call.callerFunction === element.name || call.callerClass === element.name)
+                      .map(call => call.calleeFunction);
+                    if (fileImports.length > 0) {
+                      element.imports = fileImports.map(imp => ({
+                        source: imp.source,
+                        specifiers: imp.specifiers.filter(s => s !== 'default'),
+                        default: imp.isDefault ? imp.specifiers[0] : undefined,
+                        dynamic: imp.dynamic || false,
+                        line: imp.line
+                      }));
+                    }
+                    if (elementCalls.length > 0) {
+                      element.calls = elementCalls;
+                    }
+                  }
+                } catch (callDetectorError) {
+                  if (verbose) {
+                    console.warn(`JSCallDetector failed for ${file} in tree-sitter mode:`, callDetectorError);
+                  }
+                  // Non-fatal: structural elements already added; call data is best-effort
+                }
               }
 
               if (verbose) {
