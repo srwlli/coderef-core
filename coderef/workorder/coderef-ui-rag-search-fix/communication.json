@@ -1,0 +1,64 @@
+{
+  "workorder_id": "WO-CODEREF-UI-RAG-SEARCH-FIX-001",
+  "feature_name": "coderef-ui-rag-search-fix",
+  "created": "2026-05-12T14:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "complete",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "completed_at": "2026-05-12T14:30:00Z",
+  "plan_file": "coderef/workorder/coderef-ui-rag-search-fix/plan.json",
+  "context_file": "coderef/workorder/coderef-ui-rag-search-fix/context.json",
+  "analysis_file": "coderef/workorder/coderef-ui-rag-search-fix/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated. 2-line fix ready for execution."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "hard_stops": [],
+    "phase_gates": false,
+    "auto_advance": true
+  },
+  "hard_constraints": [
+    "rag-search must still receive --project-dir from top-level Project Dir field",
+    "No change to other commands or routing logic"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-12T14:15:00Z",
+      "by": "create-workorder@2.4.0",
+      "note": "WO-CODEREF-UI-RAG-SEARCH-FIX-001 created from IMP-CORE-089 (rag-search duplicate --project-dir in tkinter UI)"
+    },
+    {
+      "event": "semantic_context_consumed",
+      "rag_hit_count": 0,
+      "header_hit_count": 0,
+      "foundation_doc_count": 0,
+      "fallback_used": true
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": ["coderef/foundation-docs/INDEX.md", "coderef/foundation-docs/EXPORTS.md", "coderef/foundation-docs/HOTSPOTS.md", "coderef/foundation-docs/RELATIONSHIPS.md"]
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-12T14:30:00Z",
+      "phases_closed": [1],
+      "commit": "6e2472a",
+      "summary": "Removed duplicate --project-dir entry from CMD_OPTIONS['rag-search']. 1-line deletion. Smoke test PASS, syntax check PASS. Closes IMP-CORE-089."
+    }
+  ]
+}

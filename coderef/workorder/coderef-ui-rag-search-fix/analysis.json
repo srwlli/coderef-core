@@ -1,0 +1,31 @@
+{
+  "workorder_id": "WO-CODEREF-UI-RAG-SEARCH-FIX-001",
+  "feature_name": "coderef-ui-rag-search-fix",
+  "analysis_authored_at": "2026-05-12T14:15:00Z",
+  "blast_radius": {
+    "files_modified": ["tools/coderef_ui.py"],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-01",
+      "title": "Removing CMD_OPTIONS widget leaves user with no per-command override for project-dir",
+      "likelihood": "low",
+      "impact": "minor",
+      "mitigation": "The top-level Project Dir field already provides this. The CMD_OPTIONS widget was the duplicate — removal does not reduce capability."
+    }
+  ],
+  "candidates": [
+    "tools/coderef_ui.py:103-106 (CMD_OPTIONS['rag-search'] --project-dir entry)"
+  ],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-01",
+      "decision": "Remove --project-dir entry from CMD_OPTIONS['rag-search'], rely on PROJECT_DIR_FLAG_CMDS auto-injection",
+      "rationale": "Keeps routing logic in one place (the routing sets), avoids confusion about which field wins. Alternative — remove rag-search from PROJECT_DIR_FLAG_CMDS and keep the CMD_OPTIONS widget — would require the user to manually fill a per-command field rather than using the shared Project Dir, degrading UX."
+    }
+  ]
+}
