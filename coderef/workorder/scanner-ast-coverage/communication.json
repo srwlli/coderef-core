@@ -6,10 +6,12 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 2,
   "phase_status": "complete",
   "completed_at": "2026-05-12T16:30:00Z",
+  "closed_at": "2026-05-12T16:45:00Z",
+  "updated": "2026-05-12T16:45:00Z",
   "plan_file": "coderef/workorder/scanner-ast-coverage/plan.json",
   "context_file": "coderef/workorder/scanner-ast-coverage/context.json",
   "analysis_file": "coderef/workorder/scanner-ast-coverage/analysis.json",
@@ -60,6 +62,17 @@
       "phases_closed": [1, 2],
       "commit": "65a1e46",
       "note": "Phase 1: useTreeSitter defaults to true, JSCallDetector wired into tree-sitter path for TS/JS. Phase 2: scanner-worker.ts tree-sitter path added, useAST branch fixed to use ASTElementScanner+JSCallDetector. 2 test fixes (ast-mode: add useTreeSitter:false; parallel-path: update dedup expectation for accurate multi-declaration behavior). Foundation docs gate: PASS (exit 0). CLI.md updated. IMP-CORE-052 and IMP-CORE-078 closed."
+    },
+    {
+      "timestamp": "2026-05-12T16:45:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS: 0 scoped findings, tracking validator clean for this WO, dependency audit skipped (no output), quality check skipped (quality.json absent), route check skipped (no route files changed). Committed and archived."
     }
-  ]
+  ],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/scanner-ast-coverage/ARCHIVED",
+    "review_verdict_source": "Step 3 audit",
+    "warnings": []
+  }
 }
