@@ -52,8 +52,12 @@
       "status": "open",
       "logged": "2026-04-20",
       "body": "route-parsers.ts is 518 lines with parsers for 7 frameworks (Flask, FastAPI, Express, Next.js, SvelteKit, Nuxt, Remix). Adding new frameworks requires modifying this central file, violating open/closed principle. Migrate to plugin architecture: src/analyzer/route-parsers/{framework}/parser.ts with common interface.",
-      "files": ["src/analyzer/route-parsers.ts:1-517"],
-      "related": ["WO-API-ROUTE-DETECTION-001"]
+      "files": [
+        "src/analyzer/route-parsers.ts:1-517"
+      ],
+      "related": [
+        "WO-API-ROUTE-DETECTION-001"
+      ]
     },
     {
       "id": "IMP-CORE-052",
@@ -63,8 +67,13 @@
       "status": "open",
       "logged": "2026-04-21",
       "body": "External review identified regex-based parsing as primary accuracy limitation (score 6.5/10). Currently only Python uses tree-sitter AST (100% accuracy). TypeScript, JavaScript, Go, Rust, Java, C#, PHP all use regex patterns. Expanding tree-sitter coverage would boost accuracy rating +1.5 points and match CodeQL-level precision. See scanner-quality autoresearch baselines for comparison.",
-      "files": ["src/scanner/scanner.ts", "src/scanner/pattern-loader.ts"],
-      "related": ["IMP-CORE-036"]
+      "files": [
+        "src/scanner/scanner.ts",
+        "src/scanner/pattern-loader.ts"
+      ],
+      "related": [
+        "IMP-CORE-036"
+      ]
     },
     {
       "id": "IMP-CORE-053",
@@ -74,7 +83,10 @@
       "status": "open",
       "logged": "2026-04-21",
       "body": "Current system lacks deep semantic analysis (type-flow, data-flow, symbolic execution). Review suggests this limits technical depth score to 7/10 vs CodeQL. Adding data-flow tracking would enable dead code detection, security vulnerability analysis, and more precise impact analysis. Would differentiate from Semgrep pattern-matching approach.",
-      "files": ["src/analyzer/dependency-analyzer.ts", "src/graph/graph-builder.ts"]
+      "files": [
+        "src/analyzer/dependency-analyzer.ts",
+        "src/graph/graph-builder.ts"
+      ]
     },
     {
       "id": "IMP-CORE-056",
@@ -104,7 +116,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Lines 1149-1150 import JSCallDetector twice in the AST mode section - once for JS files (line 1143) and once for imports/calls detection (line 1149). The second import is redundant and adds unnecessary overhead. Remove duplicate import and reuse the detector instance.",
-      "files": ["src/scanner/scanner.ts:1149-1150"]
+      "files": [
+        "src/scanner/scanner.ts:1149-1150"
+      ]
     },
     {
       "id": "IMP-CORE-062",
@@ -114,7 +128,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "processNextJsPagesRoute (line 456) is marked as @deprecated with comment 'Use frameworkRegistry instead' but is never called anywhere in the codebase. Framework registry handles Next.js Pages routes via registered detectors. Remove this dead code to reduce maintenance burden.",
-      "files": ["src/scanner/scanner.ts:456-471"]
+      "files": [
+        "src/scanner/scanner.ts:456-471"
+      ]
     },
     {
       "id": "IMP-CORE-063",
@@ -124,7 +140,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Line 307 hardcodes 50MB cache limit. Different projects have different memory constraints and file sizes. Expose this as a configurable option in ScanOptions with sensible default. Small projects could use lower limits, large monorepos could use higher limits.",
-      "files": ["src/scanner/scanner.ts:307"]
+      "files": [
+        "src/scanner/scanner.ts:307"
+      ]
     },
     {
       "id": "IMP-CORE-064",
@@ -134,7 +152,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Line 986 calls fs.statSync without try-catch. If file is deleted between directory scan and file processing, this throws uncaught error. Wrap in try-catch and skip file if stat fails, with verbose logging.",
-      "files": ["src/scanner/scanner.ts:986"]
+      "files": [
+        "src/scanner/scanner.ts:986"
+      ]
     },
     {
       "id": "IMP-CORE-065",
@@ -144,7 +164,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Lines 828-831 and 836-844 mutate global LANGUAGE_PATTERNS object for custom patterns and unsupported languages. This is not thread-safe for concurrent scans. Use local pattern map per scan or deep clone before mutation. Also mutates during validation (828-831) which is side effect.",
-      "files": ["src/scanner/scanner.ts:828-831,836-844"]
+      "files": [
+        "src/scanner/scanner.ts:828-831,836-844"
+      ]
     },
     {
       "id": "IMP-CORE-066",
@@ -154,7 +176,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "processNextJsRoute (line 384) hardcodes '/app/api/' path check. Some projects use custom API directories or different Next.js configurations. Make this path configurable via ScanOptions with default '/app/api/'.",
-      "files": ["src/scanner/scanner.ts:384"]
+      "files": [
+        "src/scanner/scanner.ts:384"
+      ]
     },
     {
       "id": "IMP-CORE-067",
@@ -164,7 +188,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Custom patterns (lines 836-845) accept RegExp objects without validation. Invalid regex patterns will throw at runtime during scanning. Validate patterns during registration using pattern.test('') and reject invalid patterns with clear error message.",
-      "files": ["src/scanner/scanner.ts:836-845"]
+      "files": [
+        "src/scanner/scanner.ts:836-845"
+      ]
     },
     {
       "id": "IMP-CORE-068",
@@ -174,7 +200,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "sortPatternsByPriority (line 604) has wrong type signature. Input/return type excludes extractMetadata and extractFrontendCall fields that exist in PatternConfig. This causes type errors when called with full PatternConfig array. Update signature to match PatternConfig interface.",
-      "files": ["src/scanner/scanner.ts:603-611"]
+      "files": [
+        "src/scanner/scanner.ts:603-611"
+      ]
     },
     {
       "id": "IMP-CORE-069",
@@ -184,7 +212,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Line 1022 uses fs.readFileSync without timeout. Large files (>100MB) or network-mounted filesystems can hang indefinitely. Add timeout using fs.promises with AbortSignal or implement file size check before reading (skip files > configurable limit).",
-      "files": ["src/scanner/scanner.ts:1022"]
+      "files": [
+        "src/scanner/scanner.ts:1022"
+      ]
     },
     {
       "id": "IMP-CORE-070",
@@ -194,7 +224,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Recursive scan (line 881) doesn't track depth. Circular symlinks or deeply nested directory structures can cause stack overflow or infinite loops. Add maxDepth parameter to ScanOptions (default 20) and track current depth during recursion.",
-      "files": ["src/scanner/scanner.ts:881"]
+      "files": [
+        "src/scanner/scanner.ts:881"
+      ]
     },
     {
       "id": "IMP-CORE-071",
@@ -204,7 +236,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Lines 770 and 1285 use console.error for error logging. Rest of codebase uses logger from src/utils/logger.ts. Inconsistent logging makes debugging harder and breaks log aggregation. Replace with logger.error() calls.",
-      "files": ["src/scanner/scanner.ts:770,1285"]
+      "files": [
+        "src/scanner/scanner.ts:770,1285"
+      ]
     },
     {
       "id": "IMP-CORE-072",
@@ -214,7 +248,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "processSvelteKitRoute (line 477), processNuxtRoute (line 512), processRemixRoute (line 533) are defined but never called. Framework registry should handle these, or they should be invoked in processFile. Dead code adds maintenance burden. Either integrate into framework registry or remove.",
-      "files": ["src/scanner/scanner.ts:477-527,533-562"]
+      "files": [
+        "src/scanner/scanner.ts:477-527,533-562"
+      ]
     },
     {
       "id": "IMP-CORE-073",
@@ -224,7 +260,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Line 1491 hardcodes 90% threshold for 'entirely commented' files. Some projects have different comment density patterns. Make this threshold configurable via ScanOptions with default 0.9. Allows tuning for codebases with heavy documentation.",
-      "files": ["src/scanner/scanner.ts:1491"]
+      "files": [
+        "src/scanner/scanner.ts:1491"
+      ]
     },
     {
       "id": "IMP-CORE-074",
@@ -234,7 +272,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Lines 709-718 check multiple worker file paths but don't validate the file is actually a valid worker script. Could load wrong file if path collision exists. Add validation: check file exists, has .js extension, and contains expected worker message handler code before spawning.",
-      "files": ["src/scanner/scanner.ts:709-718"]
+      "files": [
+        "src/scanner/scanner.ts:709-718"
+      ]
     },
     {
       "id": "IMP-CORE-075",
@@ -244,7 +284,9 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "scanCurrentElements (line 782) doesn't validate input parameters. Invalid dir (non-existent), empty lang array, or malformed options cause confusing errors downstream. Add validation at function start: check dir exists, langs is non-empty array, options has valid structure. Throw clear errors for invalid inputs.",
-      "files": ["src/scanner/scanner.ts:782-799"]
+      "files": [
+        "src/scanner/scanner.ts:782-799"
+      ]
     },
     {
       "id": "IMP-CORE-078",
@@ -254,7 +296,10 @@
       "status": "open",
       "logged": "2026-04-23",
       "body": "Parallel AST scans for TypeScript are not equivalent to sequential AST scans. The worker implementation in scanner-worker.ts (line 58) uses JSCallDetector for TS, while the main path in scanner.ts (line 1164) uses ASTElementScanner and attaches imports/calls. If worker mode actually runs, callers asking for AST accuracy get a downgraded result set.",
-      "files": ["src/scanner/scanner-worker.ts:58", "src/scanner/scanner.ts:1164"]
+      "files": [
+        "src/scanner/scanner-worker.ts:58",
+        "src/scanner/scanner.ts:1164"
+      ]
     },
     {
       "id": "IMP-CORE-079",
@@ -264,7 +309,9 @@
       "status": "open",
       "logged": "2026-04-26",
       "body": "improvements.json header counter was 75 while the highest existing IMP-CORE-NNN id in items[] was 078. Following the file's own derivation rule, the next appended entry would have rolled to IMP-CORE-076 and collided with an id already in the local archived[] array (or with the 061-078 active range). This invocation advances counter to 81 (post-append) to restore the monotonic-high-water-mark invariant, but the underlying drift was likely introduced when prior pruning passes recalculated counter from a live count rather than preserving the historical max. Add a guard at write-time so counter never decreases.",
-      "files": ["improvements.json:6"]
+      "files": [
+        "improvements.json:6"
+      ]
     },
     {
       "id": "IMP-CORE-082",
@@ -274,7 +321,9 @@
       "status": "open",
       "logged": "2026-04-29",
       "body": "Integrate real-time hardware check into _decide_escalation function. If detect_vram() returns less than 4000MB, trigger automatic escalation for medium complexity tasks that would normally stay local. Prevents Out of Memory (OOM) crashes on 4GB VRAM host machine during heavy agentic workflows.",
-      "files": ["src/routing/smartrouter.ts"],
+      "files": [
+        "src/routing/smartrouter.ts"
+      ],
       "related": []
     },
     {
@@ -285,8 +334,12 @@
       "status": "open",
       "logged": "2026-04-29",
       "body": "Move blocking requests.get call in _get_available_ollama_models to async call or background thread that refreshes every 60 seconds. Currently synchronous fetch blocks routing on every request. Shaves 50-200ms off routing latency per request by removing network wait time from hot path.",
-      "files": ["src/routing/smartrouter.ts"],
-      "related": ["IMP-CORE-082"]
+      "files": [
+        "src/routing/smartrouter.ts"
+      ],
+      "related": [
+        "IMP-CORE-082"
+      ]
     },
     {
       "id": "IMP-CORE-084",
@@ -296,8 +349,12 @@
       "status": "open",
       "logged": "2026-04-29",
       "body": "Add regex or keyword check in compute_complexity_score to detect hieroglyphic strings and treat them as logic-bearing code. Automatically routes code-based hieroglyph tasks to most capable local or frontier models, ensuring they are not treated as simple text strings.",
-      "files": ["src/routing/smartrouter.ts"],
-      "related": ["IMP-CORE-082"]
+      "files": [
+        "src/routing/smartrouter.ts"
+      ],
+      "related": [
+        "IMP-CORE-082"
+      ]
     },
     {
       "id": "IMP-CORE-085",
@@ -307,8 +364,12 @@
       "status": "open",
       "logged": "2026-04-29",
       "body": "Implement hash-based cache for RouteDecision. If prompt and task_type are identical to a recent request, return previous RouteDecision immediately. Eliminates redundant RAG slice fetching and preprompt assembly for repetitive agent loops (like fix-this-error cycles).",
-      "files": ["src/routing/smartrouter.ts"],
-      "related": ["IMP-CORE-083"]
+      "files": [
+        "src/routing/smartrouter.ts"
+      ],
+      "related": [
+        "IMP-CORE-083"
+      ]
     },
     {
       "id": "IMP-CORE-086",
@@ -318,18 +379,26 @@
       "status": "open",
       "logged": "2026-04-29",
       "body": "Fire non-blocking background ollama pull command in _resolve_available_model if selected_model is missing but system is healthy. Self-heals environment; first request might use fallback, but subsequent requests will automatically have correct model available without manual intervention.",
-      "files": ["src/routing/smartrouter.ts"],
-      "related": ["IMP-CORE-083"]
+      "files": [
+        "src/routing/smartrouter.ts"
+      ],
+      "related": [
+        "IMP-CORE-083"
+      ]
     },
     {
       "id": "IMP-CORE-087",
       "title": "DryRunSemanticOrchestrator never restores patched fs module",
       "category": "security",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-05-11",
       "body": "interceptFileWrites() (line 44) monkey-patches the global fs.writeFileSync and fs.promises.writeFile but never restores the originals. Any subsequent call in the same process — including test suites and back-to-back CLI invocations — runs with the patched fs, silently suppressing writes that should succeed. Add a restore() method and call it after processProject()/processFile() completes, or replace the global-patch strategy with a dependency-injected fs adapter.",
-      "files": ["src/cli/semantic-integration.ts:44-67"]
+      "files": [
+        "src/cli/semantic-integration.ts:44-67"
+      ],
+      "closed": "2026-05-12",
+      "resolution": "Added restore() method with _restored idempotency guard. Wrapped processProject()/processFile() in try/finally. Used Object.defineProperty for fs patch (ESM-safe). 5 unit tests. Commit 7178f03."
     },
     {
       "id": "IMP-CORE-088",
@@ -354,7 +423,10 @@
       "closed": "2026-05-12",
       "resolution": "Removed redundant --project-dir entry from CMD_OPTIONS['rag-search']; PROJECT_DIR_FLAG_CMDS auto-injection is the sole source. Commit 6e2472a.",
       "body": "tools/coderef_ui.py line 105 adds an explicit --project-dir entry widget for rag-search inside CMD_OPTIONS, while rag-search is also in PROJECT_DIR_FLAG_CMDS which causes _build_args() to auto-inject --project-dir from the top-level Project Dir field. If both fields are populated, --project-dir appears twice in the argv list, causing a yargs parse error. Either remove the CMD_OPTIONS entry or remove rag-search from PROJECT_DIR_FLAG_CMDS and rely solely on the CMD_OPTIONS widget.",
-      "files": ["tools/coderef_ui.py:105", "tools/coderef_ui.py:217"]
+      "files": [
+        "tools/coderef_ui.py:105",
+        "tools/coderef_ui.py:217"
+      ]
     },
     {
       "id": "IMP-CORE-090",
@@ -364,7 +436,10 @@
       "status": "open",
       "logged": "2026-05-12",
       "body": "src/adapter/graph-to-elements.ts (lines 57-59, 128-131) and src/cache/incremental-cache.ts (lines 102-207) use raw console.log without importing the project logger. The rest of the codebase routes through src/utils/logger.ts, making these files inconsistent and their output invisible to log aggregation. Replace all console.log calls in both files with logger calls at the appropriate level.",
-      "files": ["src/adapter/graph-to-elements.ts:57-131", "src/cache/incremental-cache.ts:102-207"]
+      "files": [
+        "src/adapter/graph-to-elements.ts:57-131",
+        "src/cache/incremental-cache.ts:102-207"
+      ]
     },
     {
       "id": "IMP-CORE-091",
@@ -374,7 +449,9 @@
       "status": "open",
       "logged": "2026-05-12",
       "body": "Line 271 of src/integration/ai-prompt-generator.ts is marked TODO: Smart truncation that preserves structure. Without this, large projects that exceed the context window receive a silently truncated prompt with no structural guarantees — high-value sections (exports, entry points) can be dropped in favor of lexicographic order. Implement size-aware truncation that retains headers, critical elements, and semantics before falling back to simple slicing.",
-      "files": ["src/integration/ai-prompt-generator.ts:271"]
+      "files": [
+        "src/integration/ai-prompt-generator.ts:271"
+      ]
     }
   ],
   "_note": "Pruned 5 done/completed entries (057, 076, 077, 080, 081) on 2026-05-11. Appended IMP-CORE-087 (DryRunSemanticOrchestrator fs leak) and IMP-CORE-088 (missing CLI tests). Counter advanced to 88. Appended IMP-CORE-089 (rag-search duplicate --project-dir), IMP-CORE-090 (console.log in adapter/cache), IMP-CORE-091 (missing smart truncation). Counter advanced to 91."

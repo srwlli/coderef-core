@@ -1,0 +1,89 @@
+{
+  "workorder_id": "WO-SEMANTIC-INTEGRATION-FS-RESTORE-001",
+  "feature_name": "semantic-integration-fs-restore",
+  "created": "2026-05-12T14:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "complete",
+  "completed_at": "2026-05-12T15:30:00Z",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "coderef/workorder/semantic-integration-fs-restore/plan.json",
+  "context_file": "coderef/workorder/semantic-integration-fs-restore/context.json",
+  "analysis_file": "coderef/workorder/semantic-integration-fs-restore/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated. Ready for execution."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "hard_stops": [],
+    "phase_gates": false,
+    "auto_advance": true
+  },
+  "hard_constraints": [
+    "Do not change the public interface of DryRunSemanticOrchestrator",
+    "restore() must be idempotent",
+    "No new runtime dependencies"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "id": "ADJ-01",
+      "summary": "Used Object.defineProperty instead of direct assignment for fs monkey-patching. Vitest ESM module namespace presents fs as non-configurable via direct property assignment; Object.defineProperty with configurable:true works in both CJS runtime and vi.mock test context.",
+      "applied": true
+    }
+  ],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "from": "ready",
+      "to": "complete",
+      "at": "2026-05-12T15:30:00Z",
+      "commit": "7178f03"
+    }
+  ],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-12T14:15:00Z",
+      "by": "create-workorder@2.4.0",
+      "note": "WO-SEMANTIC-INTEGRATION-FS-RESTORE-001 created from IMP-CORE-087 (DryRunSemanticOrchestrator fs leak)"
+    },
+    {
+      "event": "execution_started",
+      "at": "2026-05-12T15:00:00Z",
+      "by": "execute-workorder@1.5.0"
+    },
+    {
+      "event": "semantic_context_consumed",
+      "rag_hit_count": 0,
+      "header_hit_count": 0,
+      "foundation_doc_count": 0,
+      "fallback_used": true
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": [
+        "coderef/foundation-docs/INDEX.md",
+        "coderef/foundation-docs/EXPORTS.md",
+        "coderef/foundation-docs/HOTSPOTS.md",
+        "coderef/foundation-docs/RELATIONSHIPS.md"
+      ]
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-12T15:30:00Z",
+      "phases_closed": [1],
+      "commit": "7178f03",
+      "deviations": ["ADJ-01: Object.defineProperty used instead of direct assignment for ESM-safe fs patching"]
+    }
+  ]
+}
