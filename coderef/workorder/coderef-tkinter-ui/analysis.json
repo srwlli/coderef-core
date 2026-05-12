@@ -1,0 +1,283 @@
+{
+  "workorder_id": "WO-CODEREF-TKINTER-UI-001",
+  "feature_name": "coderef-tkinter-ui",
+  "analysis_version": "1.1.0",
+  "analyzed_at": "2026-05-12T13:00:00Z",
+  "goal": "Build a tkinter GUI control panel that wraps the coderef-core CLI commands, allowing a user to select a project directory, choose a command, configure flags, run the command with streaming output, and stop it mid-run.",
+  "requirements": [
+    "Project directory picker with Browse button (persists last-used path)",
+    "Command selector (all 15 bins): pipeline, scan, populate, rag-index, rag-search, rag-status, rag-server, watch, analyze, query, search, detect-languages, semantic-integration, validate-routes, scan-frontend-calls",
+    "Commands grouped by category in the selector: Pipeline, Scan/Populate, RAG, Query/Analyze, Utilities",
+    "Context-sensitive options panel per command — see per-command flag map in analysis",
+    "Query/target entry field (shown for rag-search, coderef-search, coderef-query, coderef-analyze impact/multi-hop)",
+    "Color-coded status badge: Idle (gray) / Running (blue) / Done (green) / Error (red)",
+    "Run / Stop / Clear buttons",
+    "Scrollable streaming output pane (auto-scroll, monospace font)",
+    "Non-blocking subprocess via threading so UI stays responsive"
+  ],
+  "per_command_flags": {
+    "coderef-pipeline": {
+      "positional": "<project-dir> (or --project-dir <path>)",
+      "flags": [
+        "--project-dir <path>",
+        "--only <scan|populate|docs|rag>  (comma-separated subset)",
+        "--skip <scan|populate|docs|rag>  (comma-separated subset)",
+        "--dry-run",
+        "--rag-reset",
+        "--ollama-base-url <url>",
+        "--ollama-model <name>",
+        "--verbose / -v"
+      ],
+      "env": ["CODEREF_LLM_BASE_URL", "CODEREF_LLM_MODEL"]
+    },
+    "coderef-scan": {
+      "positional": "<project-path> (required)",
+      "flags": [
+        "--languages <csv>",
+        "--plugins <csv>",
+        "--no-plugins",
+        "--useAST",
+        "--incremental"
+      ],
+      "env": []
+    },
+    "populate-coderef": {
+      "positional": "<project-dir> (first non-flag arg)",
+      "flags": [
+        "--lang / -l <csv>",
+        "--output / -o <path>",
+        "--verbose / -v",
+        "--json / -j",
+        "--skip / -s <generators csv>",
+        "--parallel / -p",
+        "--mode / -m <full|minimal|context>",
+        "--select <generators csv>",
+        "--semantic-registry / --no-semantic-registry",
+        "--source-headers",
+        "--llm-enrich",
+        "--strict-headers"
+      ],
+      "env": []
+    },
+    "rag-index": {
+      "positional": "<project-dir> (first non-flag arg)",
+      "flags": [
+        "--project-dir / -p <path>",
+        "--provider <string>  (any string; common: openai, anthropic, ollama)",
+        "--store <sqlite|pinecone|chroma>",
+        "--reset",
+        "--lang / -l <csv>",
+        "--verbose / -v",
+        "--json / -j"
+      ],
+      "env": ["CODEREF_LLM_PROVIDER", "CODEREF_LLM_BASE_URL", "CODEREF_LLM_MODEL", "CODEREF_SQLITE_PATH", "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "PINECONE_API_KEY"]
+    },
+    "rag-search": {
+      "positional": "<query> (first non-flag arg — NOT a --query flag)",
+      "flags": [
+        "--project-dir / -p <path>",
+        "--provider <string>",
+        "--store <sqlite|pinecone|chroma>",
+        "--top-k / -k <n>",
+        "--min-score <float>",
+        "--lang / -l <string>",
+        "--type / -t <string>",
+        "--file / -f <pattern>",
+        "--exported",
+        "--layer <string>",
+        "--capability <string>",
+        "--json / -j"
+      ],
+      "env": ["CODEREF_LLM_PROVIDER"]
+    },
+    "rag-status": {
+      "positional": "<project-dir> (first non-flag arg)",
+      "flags": [
+        "--project-dir / -p <path>",
+        "--json / -j"
+      ],
+      "env": ["CODEREF_SQLITE_PATH"]
+    },
+    "coderef-rag-server": {
+      "positional": null,
+      "flags": [
+        "--port / -p <n>  (default: 52849)"
+      ],
+      "env": ["CODEREF_RAG_HTTP_PORT", "CODEREF_LLM_BASE_URL", "CODEREF_LLM_MODEL", "CODEREF_SQLITE_PATH"]
+    },
+    "coderef-watch": {
+      "positional": null,
+      "flags": [
+        "--project-dir / -p <path>",
+        "--debounce-ms <n>  (default: 30000)",
+        "--languages / -l <csv>",
+        "--exclude <csv>",
+        "--include-rag",
+        "--once",
+        "--no-pipeline",
+        "--json / -j",
+        "--verbose / -v"
+      ],
+      "env": ["CODEREF_SESSION_ID"]
+    },
+    "coderef-analyze": {
+      "positional": null,
+      "flags": [
+        "--project <path>  (REQUIRED)",
+        "--type <config|contract|db|dependency|pattern|docs|middleware|graph|complexity|impact|multi-hop|breaking-changes>  (REQUIRED)",
+        "--output <json|text>",
+        "--element <id>  (required for: impact, multi-hop)",
+        "--depth <n>",
+        "--from <ref>  (required for: breaking-changes)",
+        "--to <ref>  (optional for: breaking-changes)"
+      ],
+      "env": []
+    },
+    "coderef-query": {
+      "positional": null,
+      "flags": [
+        "--project <path>  (REQUIRED)",
+        "--type <what-calls|what-calls-me|what-imports|what-imports-me|what-depends-on|what-depends-on-me|shortest-path|all-paths>  (REQUIRED)",
+        "--target <element>  (REQUIRED)",
+        "--source <element>  (required for: shortest-path, all-paths)",
+        "--depth <n>",
+        "--format <raw|summary|full>"
+      ],
+      "env": []
+    },
+    "coderef-search": {
+      "positional": null,
+      "flags": [
+        "--project <path>  (REQUIRED)",
+        "--query <text>  (REQUIRED)",
+        "--tags <csv>",
+        "--sort <relevance|lastUpdated|wordCount>",
+        "--min-score <n>",
+        "--limit <n>"
+      ],
+      "env": []
+    },
+    "coderef-detect-languages": {
+      "positional": null,
+      "flags": [
+        "--project <path>  (REQUIRED)",
+        "--ignore-file <path>",
+        "--json"
+      ],
+      "env": []
+    },
+    "coderef-semantic-integration": {
+      "positional": null,
+      "flags": [
+        "--project <path>  (REQUIRED)",
+        "--output <path>",
+        "--registry <path>",
+        "--dry-run",
+        "--no-headers",
+        "--no-enrich",
+        "--no-sync-registry",
+        "--file <path>",
+        "--validate-idempotency"
+      ],
+      "env": []
+    },
+    "validate-routes": {
+      "positional": null,
+      "flags": [
+        "--project-dir / -p <path>",
+        "--frontend-calls / -f <path>",
+        "--server-routes / -s <path>",
+        "--fail-on-critical / -c",
+        "--output / -o <path>"
+      ],
+      "env": []
+    },
+    "scan-frontend-calls": {
+      "positional": "<project-dir> (first non-flag arg)",
+      "flags": [
+        "--project-dir / -p <path>",
+        "--output / -o <path>",
+        "--extensions / -e <csv>"
+      ],
+      "env": []
+    }
+  },
+  "out_of_scope": [
+    "Packaging as EXE (separate concern)",
+    "Changes to any existing coderef-core src/ TypeScript files",
+    "Multi-project tabs or session history"
+  ],
+  "constraints": [
+    "Python 3.x + tkinter stdlib only (no third-party GUI deps)",
+    "Must invoke CLI via subprocess using the coderef-core bin paths",
+    "Output file: tools/coderef_ui.py (new standalone file)"
+  ],
+  "ui_design": {
+    "ascii_wireframe": [
+      "+--------------------------------------------------------------------+",
+      "|  CodeRef Control Panel                                      v1.0   |",
+      "+--------------------------------------------------------------------+",
+      "|  Project Dir: [__________________________________________] [Browse] |",
+      "+--------------------------------------------------------------------+",
+      "|  Command:                                                           |",
+      "|  -- Pipeline -------------------------------------------------------+",
+      "|  (•) pipeline       ( ) watch                                       |",
+      "|  -- Scan / Populate ------------------------------------------------+",
+      "|  ( ) scan           ( ) populate       ( ) detect-languages         |",
+      "|  -- RAG ------------------------------------------------------------+",
+      "|  ( ) rag-index      ( ) rag-search     ( ) rag-status               |",
+      "|  ( ) rag-server                                                      |",
+      "|  -- Query / Analyze ------------------------------------------------+",
+      "|  ( ) query          ( ) analyze        ( ) search                   |",
+      "|  -- Utilities ------------------------------------------------------+",
+      "|  ( ) semantic-integration  ( ) validate-routes                      |",
+      "|  ( ) scan-frontend-calls                                            |",
+      "+--------------------------------------------------------------------+",
+      "|  Options:  (panel swaps per selected command)                       |",
+      "|                                                                     |",
+      "|  [pipeline selected]                                                |",
+      "|  --only:  [x] scan  [ ] populate  [ ] docs  [ ] rag                |",
+      "|  --skip:  [__________________]   [ ] --rag-reset  [ ] --dry-run     |",
+      "|                                                                     |",
+      "|  [query selected]                                                   |",
+      "|  Type: [what-calls-me         v]  Target: [__________________]      |",
+      "|  --depth: [5]  --format: [summary v]                               |",
+      "|                                                                     |",
+      "|  [analyze selected]                                                 |",
+      "|  Type: [complexity            v]  Element: [________________]       |",
+      "|  --output: [text v]  --depth: [5]  --from: [____]  --to: [____]    |",
+      "|                                                                     |",
+      "|  [rag-search / search selected]                                     |",
+      "|  Query: [__________________________________________]                 |",
+      "|  --top-k: [10]  --min-score: [0.0]  --lang: [____]                 |",
+      "+--------------------------------------------------------------------+",
+      "|  Status: [ Idle ]                                                   |",
+      "|  [    Run    ]   [   Stop   ]   [   Clear   ]                      |",
+      "+--------------------------------------------------------------------+",
+      "|  Output:                                                            |",
+      "|  +----------------------------------------------------------------+|",
+      "|  | > coderef-pipeline . --only scan                              ||",
+      "|  | [scan] Scanning 142 files...                                  ||",
+      "|  | [scan] Done in 1.2s                                           ||",
+      "|  |                                                                ||",
+      "|  +----------------------------------------------------------------+|",
+      "+--------------------------------------------------------------------+"
+    ],
+    "notes": [
+      "Options panel is a dynamic frame that swaps widgets based on selected command",
+      "Dropdowns used for enum args (--type, --format, --output, --store, --provider)",
+      "Text entry used for free-form args (--target, --query, --skip, --depth)",
+      "Checkboxes used for boolean flags",
+      "Fields hidden/shown based on which command is active to avoid clutter"
+    ]
+  },
+  "affected_files": {
+    "new": [
+      "tools/coderef_ui.py"
+    ],
+    "modified": [],
+    "deleted": []
+  },
+  "risks": [],
+  "pre_existing_drift": false
+}

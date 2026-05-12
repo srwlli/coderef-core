@@ -1,0 +1,56 @@
+{
+  "plan_type": "light",
+  "workorder_id": "WO-CODEREF-TKINTER-UI-001",
+  "feature_name": "coderef-tkinter-ui",
+  "created": "2026-05-12T12:30:00Z",
+  "plan_type_rationale": "Light plan: new standalone Python file (tools/coderef_ui.py), no changes to existing coderef-core src/. Zero blast radius into production code.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Execute",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "EDIT",
+          "description": "Create tools/coderef_ui.py — tkinter GUI wrapping all 15 coderef-core CLI bins. Implement: project dir picker (persists to .coderef-ui-prefs.json), command selector grouped by category (Pipeline, Scan/Populate, RAG, Query/Analyze, Utilities), dynamic options panel that swaps widgets per command (dropdowns for enums, checkboxes for booleans, text entries for free-form args, fields hidden when irrelevant), color-coded status badge (Idle/Running/Done/Error), Run/Stop/Clear buttons, scrollable streaming output pane (monospace, auto-scroll). Use threading.Thread + subprocess.Popen for non-blocking execution. See analysis.json per_command_flags for the full flag map per command.",
+          "file": "tools/coderef_ui.py",
+          "acceptance": [
+            "File is runnable: python tools/coderef_ui.py opens the window",
+            "All 15 commands present in selector, grouped by category",
+            "Options panel swaps correctly when switching commands",
+            "Run button spawns subprocess and streams output to pane",
+            "Stop button terminates subprocess cleanly",
+            "Status badge updates: Idle → Running → Done/Error",
+            "Query/target fields visible only for relevant commands",
+            "Enum flags use dropdowns (--type, --format, --store, --provider, --output)",
+            "Boolean flags use checkboxes",
+            "Last project dir persists across restarts via .coderef-ui-prefs.json"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "TEST",
+          "description": "Smoke-test the UI manually: launch with python tools/coderef_ui.py, select a project dir, run coderef-pipeline with --dry-run or rag-status (fast), confirm output streams, status badge updates, Stop works.",
+          "acceptance": [
+            "Window opens without errors",
+            "At least one command runs and produces output",
+            "Status transitions correctly"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "COMMIT",
+          "description": "Commit tools/coderef_ui.py with message: feat(tools): add tkinter control panel for coderef-core CLI"
+        }
+      ]
+    }
+  ],
+  "ac": [
+    "tools/coderef_ui.py exists and is runnable",
+    "All 15 CLI commands accessible from UI, grouped by category",
+    "Subprocess streaming works non-blocking",
+    "Status badge reflects run state correctly",
+    "No changes to src/ TypeScript files"
+  ]
+}

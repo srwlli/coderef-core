@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-09  
+**Generated:** 2026-05-11  
 **Total Exported:** 931 elements  
 <!-- coderef:uuid=exports-root -->
 

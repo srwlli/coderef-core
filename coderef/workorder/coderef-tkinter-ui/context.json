@@ -1,0 +1,32 @@
+{
+  "workorder_id": "WO-CODEREF-TKINTER-UI-001",
+  "feature_name": "coderef-tkinter-ui",
+  "created": "2026-05-12T12:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": null,
+  "intake": {
+    "trigger": "user",
+    "user_request": "tkinter ui for the core tool please. first ideate and asci the ui"
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Light plan: new standalone Python file (tools/coderef_ui.py), no changes to existing coderef-core src/. Zero blast radius into production code.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "discovery_rag": {
+    "rag_hits": [],
+    "lloyd_provenance": null,
+    "fallback_used": true,
+    "error": "RAG discovery skipped — light plan, standalone new file"
+  }
+}
