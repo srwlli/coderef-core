@@ -30,5 +30,5 @@ coverage/
 *.tmp
 nul
 
-# Large generated artifacts
-.coderef/semantic-registry.json
+# Generated coderef artifacts directory (all scanner/RAG/index output)
+.coderef/
