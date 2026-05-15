@@ -530,9 +530,15 @@ export class RelationshipExtractor {
         });
       }
 
-      // `export const x = ...`, `export function foo(){}`, `export class Bar {}`
+      // `export const x = ...`, `export function foo(){}`, `export class Bar {}`,
+      // `export interface Foo {}`, `export type Bar = ...`
       for (const child of node.namedChildren) {
-        if (child.type === 'function_declaration' || child.type === 'class_declaration') {
+        if (
+          child.type === 'function_declaration' ||
+          child.type === 'class_declaration' ||
+          child.type === 'interface_declaration' ||
+          child.type === 'type_alias_declaration'
+        ) {
           const nameNode = child.childForFieldName('name');
           if (nameNode) {
             // Skip if this was the default-export branch (already pushed above).
