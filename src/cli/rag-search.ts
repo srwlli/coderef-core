@@ -72,6 +72,8 @@ interface CliArgs {
   // Phase 7 task 1.10 — semantic facet filters (DR-PHASE-7-D).
   layer?: string;
   capability?: string;
+  // --constraint key:value generalized filter (DR-PHASE-7-D followup).
+  constraint?: string;
   json: boolean;
   help: boolean;
 }
@@ -165,6 +167,13 @@ function parseArgs(argv: string[]): CliArgs {
         args.capability = value ?? argv[++i];
         break;
 
+      // --constraint key:value — generalized filter shorthand.
+      // Recognized keys: type, file, lang, layer, capability, exported.
+      case '--constraint': {
+        args.constraint = value ?? argv[++i];
+        break;
+      }
+
       case '--json':
       case '-j':
         args.json = true;
@@ -202,6 +211,7 @@ OPTIONS:
   --exported                   Only show exported elements
   --layer <value>              Filter by semantic layer (e.g. service, ui_component, cli)
   --capability <value>         Filter by semantic capability slug (kebab-case)
+  --constraint <key:value>     Generalized filter shorthand. Keys: type, file, lang, layer, capability, exported
   -j, --json                   Output results as JSON
   -h, --help                   Show this help message
 
@@ -462,6 +472,36 @@ async function main(): Promise<void> {
       if (args.layer !== undefined) facets.layer = args.layer;
       if (args.capability !== undefined) facets.capability = args.capability;
       searchOptions.filters = facets;
+    }
+
+    // --constraint key:value — apply after explicit flags so explicit flags win.
+    if (args.constraint !== undefined) {
+      const sep = args.constraint.indexOf(':');
+      if (sep === -1) {
+        console.error(`Error: --constraint must be in key:value format (got "${args.constraint}")`);
+        process.exit(2);
+      }
+      const cKey = args.constraint.slice(0, sep);
+      const cVal = args.constraint.slice(sep + 1);
+      const knownKeys = ['type', 'file', 'lang', 'layer', 'capability', 'exported'];
+      if (!knownKeys.includes(cKey)) {
+        console.error(`Error: unrecognized --constraint key "${cKey}". Recognized: ${knownKeys.join(', ')}`);
+        process.exit(2);
+      }
+      switch (cKey) {
+        case 'type': if (!args.type) searchOptions.type = cVal; break;
+        case 'file': if (!args.file) searchOptions.file = cVal; break;
+        case 'lang': if (!args.lang) searchOptions.language = cVal; break;
+        case 'layer':
+          if (!args.layer) { searchOptions.filters = { ...(searchOptions.filters ?? {}), layer: cVal }; }
+          break;
+        case 'capability':
+          if (!args.capability) { searchOptions.filters = { ...(searchOptions.filters ?? {}), capability: cVal }; }
+          break;
+        case 'exported':
+          if (args.exported === undefined) searchOptions.exported = cVal !== 'false' && cVal !== '0';
+          break;
+      }
     }
 
     // Execute search

@@ -252,35 +252,64 @@ Please provide relevant analysis and recommendations.`,
   }
 
   /**
-   * Optimize prompt to fit token budget
+   * Optimize prompt to fit token budget using structure-preserving truncation.
+   *
+   * Strategy: split prompt into logical sections on markdown headings and
+   * blank-line boundaries. Keep all signature lines (function/class/type
+   * keyword lines, one-liners, and heading lines). Drop body lines — the
+   * lines between a signature and the next blank line — when over budget.
+   * This preserves the structural skeleton while shedding implementation
+   * detail that costs tokens but rarely helps LLM understanding of shape.
    */
   private optimizePromptForTokens(
     prompt: string,
     budget: number
   ): { optimized: string; truncated: boolean } {
-    const tokenCount = this.estimateTokens(prompt);
-
-    if (tokenCount <= budget) {
+    if (this.estimateTokens(prompt) <= budget) {
       return { optimized: prompt, truncated: false };
     }
 
-    // Calculate how much we need to keep
-    const ratio = budget / tokenCount;
-    const charLimit = Math.floor(prompt.length * ratio);
+    const lines = prompt.split('\n');
+    const SIGNATURE_RE = /^\s*(function |class |interface |type |const |let |var |export |import |async |private |public |protected |#|##|###)/;
+    const BODY_SKIP_RE = /^\s{2,}[^#\-*\s]/; // indented non-list, non-heading lines
 
-    // TODO: Smart truncation that preserves structure
-    // For now, simple truncation
-    let truncated = prompt.substring(0, charLimit);
-
-    // Try to truncate at paragraph boundary
-    const lastParagraphEnd = truncated.lastIndexOf('\n\n');
-    if (lastParagraphEnd > charLimit * 0.8) {
-      truncated = truncated.substring(0, lastParagraphEnd);
+    // Pass 1: keep all signature/heading lines; drop body lines to meet budget.
+    const kept: string[] = [];
+    let inBody = false;
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i];
+      if (line.trim() === '') {
+        inBody = false;
+        kept.push(line);
+        continue;
+      }
+      if (SIGNATURE_RE.test(line)) {
+        inBody = true;
+        kept.push(line);
+        continue;
+      }
+      if (inBody && BODY_SKIP_RE.test(line)) {
+        // Drop body line — record placeholder only once per gap
+        if (kept[kept.length - 1] !== '  // ...') kept.push('  // ...');
+        continue;
+      }
+      kept.push(line);
     }
 
-    truncated += '\n\n[Context truncated to fit token limit]';
+    let result = kept.join('\n');
 
-    return { optimized: truncated, truncated: true };
+    // Pass 2: if still over budget, hard-truncate at last section boundary.
+    if (this.estimateTokens(result) > budget) {
+      const charLimit = Math.floor(budget * 4); // 1 token ≈ 4 chars
+      result = result.substring(0, charLimit);
+      const lastHeading = result.lastIndexOf('\n##');
+      const lastBlank = result.lastIndexOf('\n\n');
+      const cutAt = Math.max(lastHeading, lastBlank);
+      if (cutAt > charLimit * 0.7) result = result.substring(0, cutAt);
+    }
+
+    result += '\n\n[Context truncated to fit token limit]';
+    return { optimized: result, truncated: true };
   }
 
   /**

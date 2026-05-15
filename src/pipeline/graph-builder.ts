@@ -67,9 +67,9 @@ import { globalRegistry } from '../registry/entity-registry.js';
  *                   RawImportFact). Sourced via state.rawImports.
  *   call          — Phase 4 CallResolution. Sourced via
  *                   state.callResolutions.
- *   export        — reserved for future use; Phase 5 does not emit
- *                   export edges (exports are tracked on nodes via
- *                   element.exported).
+ *   export        — file-to-element edge for exported elements; source
+ *                   is the file-grain node, target is the element's
+ *                   codeRefId. Emitted in buildEdges pass 2.5.
  *   header-import — Header-derived ImportResolution (came from a
  *                   HeaderImportFact). Sourced via
  *                   state.headerImportFacts. Per AC-04 these coexist
@@ -537,6 +537,33 @@ export function buildEdges(
       sourceLocation: { file: sourceFile, line },
       candidates: ir.candidates,
       reason: ir.reason,
+    }));
+  }
+
+  // === Export edges ===
+  // Emit one export edge per exported element. Source = file-grain node
+  // (the file that owns the export), target = the element's codeRefId.
+  // resolutionStatus is always 'resolved' — both endpoints are known.
+  for (const elem of state.elements) {
+    if (!elem.exported) continue;
+    const elemId = elem.codeRefId
+      ?? createCodeRefId(elem, state.projectPath, { includeLine: true });
+    const fileId = fileGrainNodeId(elem.file, state.projectPath);
+    const id = computeEdgeId({
+      sourceId: fileId,
+      relationship: 'export',
+      targetId: elemId,
+      originSpecifier: elem.name,
+      sourceFile: elem.file,
+      line: elem.line ?? 0,
+    });
+    edges.push(buildEdgeRecord({
+      id,
+      sourceId: fileId,
+      targetId: elemId,
+      relationship: 'export',
+      resolutionStatus: 'resolved',
+      sourceLocation: { file: elem.file, line: elem.line ?? 0 },
     }));
   }
 

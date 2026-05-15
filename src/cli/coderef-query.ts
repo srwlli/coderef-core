@@ -31,10 +31,10 @@ Options:
 Query types:
   what-calls         What calls the target element?
   what-calls-me      What does the target element call?
-  what-imports       What does the target element import?
-  what-imports-me    What imports the target element?
-  what-depends-on    What does the target element depend on?
-  what-depends-on-me What depends on the target element?
+  what-imports       What does the target element import? (outbound)
+  what-imports-me    What imports the target element? (inbound)
+  what-depends-on    What files depend on the target element? (inbound dependents)
+  what-depends-on-me What does the target element depend on? (outbound dependencies)
   shortest-path      Shortest dependency path between --source and --target
   all-paths          All dependency paths between --source and --target
 

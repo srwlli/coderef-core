@@ -155,20 +155,20 @@ export class QueryExecutor {
         return this.analyzer.getCallees(target);
 
       case 'what-imports':
-        // What does this element depend on? (imports)
+        // What files does this element import? (outbound import edges)
         return this.analyzer.getDependencies(target, maxDepth);
 
       case 'what-imports-me':
-        // What depends on this element? (imports it)
+        // What files import this element? (inbound import edges)
         return this.analyzer.getDependents(target, maxDepth);
 
       case 'what-depends-on':
-        // What does this element depend on?
-        return this.analyzer.getDependencies(target, maxDepth);
+        // What files depend on this element? (inbound dependents)
+        return this.analyzer.getDependents(target, maxDepth);
 
       case 'what-depends-on-me':
-        // What depends on this element?
-        return this.analyzer.getDependents(target, maxDepth);
+        // What does this element depend on? (outbound dependencies)
+        return this.analyzer.getDependencies(target, maxDepth);
 
       case 'shortest-path':
         // Find shortest path between two elements
