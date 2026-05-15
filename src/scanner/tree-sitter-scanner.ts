@@ -745,6 +745,7 @@ export class TreeSitterScanner {
             async: isAsync || undefined,
             parameters: this.extractRustParameters(node, content),
             returnType: this.extractRustReturnType(node, content),
+            decorators: this.extractRustAttributes(node, content),
             docstring: this.extractRustDocstring(node, content),
             parentScope,
             complexity: this.estimateComplexity(node)
@@ -765,6 +766,7 @@ export class TreeSitterScanner {
             file: filePath,
             line,
             exported: this.isRustPublic(node),
+            decorators: this.extractRustAttributes(node, content),
             docstring: this.extractRustDocstring(node, content)
           });
         }
@@ -783,6 +785,7 @@ export class TreeSitterScanner {
             file: filePath,
             line,
             exported: this.isRustPublic(node),
+            decorators: this.extractRustAttributes(node, content),
             docstring: this.extractRustDocstring(node, content)
           });
         }
@@ -801,6 +804,7 @@ export class TreeSitterScanner {
             file: filePath,
             line,
             exported: this.isRustPublic(node),
+            decorators: this.extractRustAttributes(node, content),
             docstring: this.extractRustDocstring(node, content)
           });
         }
@@ -930,6 +934,20 @@ export class TreeSitterScanner {
   }
 
   /**
+   * Extract Rust outer attributes (#[derive(...)], #[cfg(...)], etc.)
+   */
+  private extractRustAttributes(node: Parser.SyntaxNode, content: string): string[] | undefined {
+    const attrs: string[] = [];
+    let current = node.previousSibling;
+    while (current && current.type === 'attribute_item') {
+      const inner = current.descendantsOfType('identifier')[0];
+      if (inner) attrs.unshift(inner.text);
+      current = current.previousSibling;
+    }
+    return attrs.length > 0 ? attrs : undefined;
+  }
+
+  /**
    * Extract Java elements from AST
    * Handles: classes, interfaces, enums, methods, annotations
    */
@@ -955,7 +973,8 @@ export class TreeSitterScanner {
             line,
             exported: this.isJavaPublic(node),
             decorators: this.extractJavaAnnotations(node, content),
-            docstring: this.extractJavaDocstring(node, content)
+            docstring: this.extractJavaDocstring(node, content),
+            complexity: this.estimateComplexity(node)
           });
 
           // Extract methods within class
@@ -980,7 +999,8 @@ export class TreeSitterScanner {
             line,
             exported: this.isJavaPublic(node),
             decorators: this.extractJavaAnnotations(node, content),
-            docstring: this.extractJavaDocstring(node, content)
+            docstring: this.extractJavaDocstring(node, content),
+            complexity: this.estimateComplexity(node)
           });
 
           // Extract methods within interface
@@ -1005,7 +1025,8 @@ export class TreeSitterScanner {
             line,
             exported: this.isJavaPublic(node),
             decorators: this.extractJavaAnnotations(node, content),
-            docstring: this.extractJavaDocstring(node, content)
+            docstring: this.extractJavaDocstring(node, content),
+            complexity: this.estimateComplexity(node)
           });
         }
       }
