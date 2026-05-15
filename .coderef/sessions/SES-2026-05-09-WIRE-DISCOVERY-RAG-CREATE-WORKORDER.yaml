@@ -1,0 +1,77 @@
+session_metadata:
+  session_id: SES-2026-05-09-WIRE-DISCOVERY-RAG-CREATE-WORKORDER
+  workorder_id: WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001
+  feature_name: wire-discovery-rag-create-workorder
+  date: "2026-05-09"
+  domain: CODEREF-CORE
+  agent: Claude Sonnet 4.6
+  dispatch: DISPATCH-2026-05-08-010
+  originating_dispatch: DISPATCH-2026-05-08-009 (created by SKILLS)
+
+tools_used:
+  - Read (discovery_rag.py, coderef-rag-server SKILL.md, skill.json, SKILL.md, plan.json, communication.json, context.json, analysis.json)
+  - Write (gap-matrix.md, RAG-DISCOVERY-STEP.md, session log)
+  - Edit (communication.json, skill.json)
+  - Bash (python import check, flag path tests, git commits, tracking-validator)
+  - TaskCreate / TaskUpdate (10 tasks)
+
+files_modified:
+  created:
+    - path: coderef/workorder/wire-discovery-rag-create-workorder/gap-matrix.md
+      commit: 9ea79fe (coderef-core Phase 1)
+      note: 12 Step 3.6 contract items classified
+    - path: SKILLS/WORKFLOW/create-workorder/references/RAG-DISCOVERY-STEP.md
+      commit: cd51a7d (ASSISTANT Phase 2)
+      note: Full Step 3.6 contract — primary deliverable
+  modified:
+    - path: coderef/workorder/wire-discovery-rag-create-workorder/communication.json
+      commits: [9ea79fe, 7264bb6] (coderef-core)
+      note: Phase transitions, workorder_complete event, foundation-docs gate skip
+    - path: SKILLS/WORKFLOW/create-workorder/skill.json
+      commit: cd51a7d (ASSISTANT)
+      note: Added discovery_rag.py to reads[] list
+    - path: TRACKING/workorders.json
+      note: status=complete, completed=2026-05-09 (committed in Step 5.5)
+    - path: TRACKING/sessions.json
+      note: status=complete (committed in Step 5.5)
+
+decisions:
+  - id: DEC-001
+    decision: "T2.2 added discovery_rag.py to reads[] even though it was already in depends_on[]"
+    rationale: "reads[] is a separate metadata field for runtime reads. depends_on[] is for build-time deps. Both should list discovery_rag.py per gap-matrix C-11."
+  - id: DEC-002
+    decision: "projects.json and project-context.json validator failures treated as pre-existing drift"
+    rationale: "These files have 0 rows for WO-WIRE-DISCOVERY-RAG-CREATE-WORKORDER-001. The schema violations are pre-existing and unrelated to this workorder. workorders.json, sessions.json, stubs.json all PASS."
+  - id: DEC-003
+    decision: "foundation-docs gate skipped silently"
+    rationale: "ASSISTANT repo has .coderef/index.json but no scripts/doc-gen/ — gate skips per missing_infra condition in FOUNDATION-DOCS-GATE.md."
+
+outcomes:
+  - "RAG-DISCOVERY-STEP.md written — full Step 3.6 contract for CODEREF_LLOYD_DISCOVERY_RAG wiring"
+  - "skill.json reads[] updated — discovery_rag.py now listed"
+  - "Tests PASS: flag=OFF (skip path), flag=ON+vectors_missing (fallback_used=true, no block)"
+  - "All 12 gap-matrix contract items resolved"
+  - "All hard constraints satisfied: RAG not a gate, discovery_rag.py unmodified, no hardcoded rag-server, CODEREF-CORE infra unchanged"
+
+issues_encountered:
+  - "gap-matrix.md C-11 note: linter re-read skill.json and noted discovery_rag.py was already in depends_on[]; T2.2 still correct to add to reads[] as they are distinct fields"
+  - "tracking-validator projects.json FAIL: pre-existing schema drift, not introduced by this workorder"
+
+tracking:
+  workorders_json: complete (status=complete, completed=2026-05-09)
+  sessions_json: complete (status=complete)
+  stubs_json: no stub to close (predecessor_stub: null)
+  improvements_json: no improvement to close
+
+commits:
+  coderef-core:
+    - hash: 9ea79fe
+      message: "feat(wire-discovery-rag-create-workorder): phase 1 - verification and gap audit"
+      files: [gap-matrix.md, communication.json, context.json, plan.json, analysis.json]
+    - hash: 7264bb6
+      message: "feat(wire-discovery-rag-create-workorder): phase 2 complete - RAG discovery wired"
+      files: [communication.json]
+  assistant:
+    - hash: cd51a7d
+      message: "feat(wire-discovery-rag-create-workorder): wire Step 3.6 RAG discovery contract"
+      files: [skill.json, RAG-DISCOVERY-STEP.md]

@@ -1,0 +1,61 @@
+session_metadata:
+  session_id: SES-2026-05-08-RAG-INDEX-SEAM-DELETION
+  workorder_id: WO-RAG-INDEX-SEAM-DELETION-001
+  date: "2026-05-08"
+  domain: SKILLS
+  dispatch: DISPATCH-2026-05-08-001
+  status: complete
+
+tools_used:
+  - grep (seam inventory)
+  - Read (eyeball scan of 15 production .ts files)
+  - Write (inventory.md)
+  - Edit (chunk-converter.ts anchor-case removal, communication.json, tracking registries)
+  - Bash (tsc --noEmit, vitest, git)
+
+files_modified:
+  created:
+    - path: coderef/workorder/rag-index-seam-deletion/inventory.md
+      commit: 3afd853
+  modified:
+    - path: coderef/workorder/rag-index-seam-deletion/communication.json
+      commits: [3afd853, cfd485a]
+    - path: src/integration/rag/chunk-converter.ts
+      commit: ffe79e9
+      change: Deleted fileExists call site (lines 57-63) + dead fileExists() method (lines 245-256)
+
+decisions:
+  - id: D-01
+    decision: "Option B ruling applied: delete fileExists check, let readFile error path own missing-file behavior"
+    rationale: "Ruling locked in DISPATCH-2026-05-08-001 before execution began"
+  - id: D-02
+    decision: "12 of 14 inventory seams earn keep_with_justification — only 2 deleted"
+    rationale: "Audit revealed remaining seams surface real failure modes with explicit observable signals"
+  - id: D-03
+    decision: "Net -28 LOC (not -25 to -75 estimated) — inventory narrowed the target to 1 seam pair"
+    rationale: "Phase 1 inventory is the correct place to resolve the estimate; result is accurate"
+
+outcomes:
+  - "inventory.md authored with 14-seam per-file classification table"
+  - "chunk-converter.ts fileExists silent skip deleted (Option B)"
+  - "chunk-converter.ts dead fileExists() private method deleted"
+  - "All gates passed: tsc clean, 87/87 rag-suite, 4/4 pipeline invariant, frozen-fixture PASS"
+  - "TRACKING: WO status=complete, stub status=closed"
+  - "Net LOC delta: -28"
+
+issues_encountered:
+  - "Pre-existing tracking validator failures (5 FAILs) — all pre-existing drift per STUB-044 + notes.md"
+  - "stubs.json schema requires STUB-NNN numeric IDs — named ID STUB-RAG-INDEX-SEAM-DELETION-001 violates pattern (pre-existing drift)"
+
+tracking:
+  workorders_updated: [WO-RAG-INDEX-SEAM-DELETION-001]
+  stubs_closed: [STUB-RAG-INDEX-SEAM-DELETION-001]
+  validator_state: "10 PASS / 5 FAIL (all 5 pre-existing)"
+
+commits:
+  - hash: 3afd853
+    message: "inventory(WO-RAG-INDEX-SEAM-DELETION-001): seam audit of src/integration/rag/* + anchor-case Option B ruling received"
+  - hash: ffe79e9
+    message: "refactor(WO-RAG-INDEX-SEAM-DELETION-001): delete silent fileExists seam at chunk-converter.ts:57-63 + dead method :245-256"
+  - hash: cfd485a
+    message: "closeout(WO-RAG-INDEX-SEAM-DELETION-001): Phase 3 final accounting"

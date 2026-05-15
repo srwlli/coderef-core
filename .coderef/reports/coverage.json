@@ -1,8 +1,8 @@
 {
   "summary": {
-    "totalFiles": 225,
-    "testedFiles": 75,
-    "coveragePercentage": 33
+    "totalFiles": 249,
+    "testedFiles": 86,
+    "coveragePercentage": 35
   },
   "files": [
     {
@@ -206,7 +206,15 @@
       "testFile": "src/scanner/__tests__/incremental-cache-recursive.test.ts"
     },
     {
+      "file": "src/cli/coderef-analyze.ts",
+      "tested": false
+    },
+    {
       "file": "src/cli/coderef-pipeline.ts",
+      "tested": false
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
       "tested": false
     },
     {
@@ -214,9 +222,17 @@
       "tested": false
     },
     {
+      "file": "src/cli/coderef-search.ts",
+      "tested": false
+    },
+    {
       "file": "src/cli/coderef-watch.ts",
       "tested": true,
       "testFile": "__tests__/coderef-watch-lloyd-read.test.py"
+    },
+    {
+      "file": "src/cli/detect-languages-cli.ts",
+      "tested": false
     },
     {
       "file": "src/cli/detect-languages.ts",
@@ -247,6 +263,15 @@
       "file": "src/cli/scan.ts",
       "tested": true,
       "testFile": "scripts/scan-cli/test_scan_cli.test.ts"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "tested": false
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "tested": true,
+      "testFile": "src/cli/semantic-integration.test.ts"
     },
     {
       "file": "src/cli/validate-routes.ts",
@@ -562,6 +587,11 @@
     },
     {
       "file": "src/integration/rag/indexing-orchestrator.ts",
+      "tested": true,
+      "testFile": "__tests__/integration/rag/indexing-orchestrator-graph-source.test.ts"
+    },
+    {
+      "file": "src/integration/rag/path-types.ts",
       "tested": false
     },
     {
@@ -603,6 +633,15 @@
       "file": "src/parser/parser.ts",
       "tested": true,
       "testFile": "src/analyzer/frontend-call-parsers.test.ts"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/element-taxonomy.ts",
+      "tested": true,
+      "testFile": "__tests__/pipeline/element-taxonomy.test.ts"
     },
     {
       "file": "src/pipeline/extractors/element-extractor.ts",
@@ -682,7 +721,20 @@
       "testFile": "__tests__/grammar-registry.test.ts"
     },
     {
+      "file": "src/pipeline/graph-builder.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/header-fact.ts",
+      "tested": true,
+      "testFile": "__tests__/pipeline/header-fact-shape.test.ts"
+    },
+    {
       "file": "src/pipeline/ignore-rules.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
       "tested": false
     },
     {
@@ -697,6 +749,19 @@
     },
     {
       "file": "src/pipeline/orchestrator.ts",
+      "tested": true,
+      "testFile": "src/semantic/orchestrator.test.ts"
+    },
+    {
+      "file": "src/pipeline/output-validator.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/semantic-elements.ts",
+      "tested": false
+    },
+    {
+      "file": "src/pipeline/semantic-header-parser.ts",
       "tested": false
     },
     {
@@ -804,11 +869,49 @@
       "tested": false
     },
     {
+      "file": "src/semantic/ast-extractor.ts",
+      "tested": true,
+      "testFile": "src/semantic/ast-extractor.test.ts"
+    },
+    {
+      "file": "src/semantic/header-generator.ts",
+      "tested": true,
+      "testFile": "src/semantic/header-generator.test.ts"
+    },
+    {
+      "file": "src/semantic/index.ts",
+      "tested": true,
+      "testFile": "src/fileGeneration/__tests__/index-storage.test.ts"
+    },
+    {
+      "file": "src/semantic/llm-enricher.ts",
+      "tested": true,
+      "testFile": "src/semantic/llm-enricher.test.ts"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "tested": true,
+      "testFile": "src/semantic/orchestrator.test.ts"
+    },
+    {
+      "file": "src/semantic/projections.ts",
+      "tested": false
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "tested": true,
+      "testFile": "src/semantic/registry-sync.test.ts"
+    },
+    {
       "file": "src/types/external-modules.d.ts",
       "tested": false
     },
     {
       "file": "src/types/types.ts",
+      "tested": false
+    },
+    {
+      "file": "src/utils/coderef-id.ts",
       "tested": false
     },
     {
@@ -979,6 +1082,10 @@
       "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
       "tested": true,
       "testFile": "scripts/setup-coderef-dir/test_setup_coderef_dirs.py"
+    },
+    {
+      "file": "tools/coderef_ui.py",
+      "tested": false
     }
   ],
   "untested": [
@@ -1012,13 +1119,18 @@
     "src/analyzer/js-call-detector/visitor.ts",
     "src/analyzer/middleware-detector.ts",
     "src/analyzer/project-classifier.ts",
+    "src/cli/coderef-analyze.ts",
     "src/cli/coderef-pipeline.ts",
+    "src/cli/coderef-query.ts",
     "src/cli/coderef-rag-server.ts",
+    "src/cli/coderef-search.ts",
+    "src/cli/detect-languages-cli.ts",
     "src/cli/detect-languages.ts",
     "src/cli/rag-index.ts",
     "src/cli/rag-search.ts",
     "src/cli/rag-status.ts",
     "src/cli/scan-frontend-calls.ts",
+    "src/cli/semantic-integration-cli.ts",
     "src/config/presets.ts",
     "src/context/agentic-formatter.ts",
     "src/context/breaking-change-detector/diff-analyzer.ts",
@@ -1067,17 +1179,22 @@
     "src/integration/rag/conversation-manager.ts",
     "src/integration/rag/embedding-service.ts",
     "src/integration/rag/incremental-indexer.ts",
-    "src/integration/rag/indexing-orchestrator.ts",
+    "src/integration/rag/path-types.ts",
     "src/integration/rag/prompt-templates.ts",
     "src/integration/rag/rag-config.ts",
     "src/integration/rag/semantic-search.ts",
     "src/integration/vector/sqlite-store.ts",
     "src/integration/vector/vector-store.ts",
+    "src/pipeline/call-resolver.ts",
     "src/pipeline/generators/graph-output.ts",
     "src/pipeline/generators/health-generator.ts",
     "src/pipeline/generators/registry-generator.ts",
+    "src/pipeline/graph-builder.ts",
     "src/pipeline/ignore-rules.ts",
-    "src/pipeline/orchestrator.ts",
+    "src/pipeline/import-resolver.ts",
+    "src/pipeline/output-validator.ts",
+    "src/pipeline/semantic-elements.ts",
+    "src/pipeline/semantic-header-parser.ts",
     "src/pipeline/types.ts",
     "src/plugins/loaders/config-loader.ts",
     "src/plugins/loaders/local-loader.ts",
@@ -1099,8 +1216,10 @@
     "src/scanner/semantic-analyzer.ts",
     "src/search/search-engine.ts",
     "src/search-client.ts",
+    "src/semantic/projections.ts",
     "src/types/external-modules.d.ts",
     "src/types/types.ts",
+    "src/utils/coderef-id.ts",
     "src/utils/logger.ts",
     "types.d.ts",
     "utils/fs.d.ts",
@@ -1131,6 +1250,7 @@
     "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
     "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
     "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
-    "create_wo.py"
+    "create_wo.py",
+    "tools/coderef_ui.py"
   ]
 }

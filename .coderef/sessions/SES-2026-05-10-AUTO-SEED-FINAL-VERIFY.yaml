@@ -1,0 +1,52 @@
+session_metadata:
+  session_id: SES-2026-05-10-AUTO-SEED-FINAL-VERIFY
+  date: "2026-05-10"
+  agent: claude-sonnet-4-6
+  agent_domain: CODEREF-CORE
+  workorder_id: null
+  focus: Auto-seed final verification — confirm rag_enabled=true with OPENCLAW fully up
+  working_directory: C:\Users\willh\Desktop\CODEREF\CODEREF-CORE
+
+closure_verification:
+  doc_discovery_ran: false
+  registries_validated: false
+  active_work_cleaned: false
+  final_push_complete: false
+
+tools_used:
+  - Bash
+  - Skill (log-session)
+
+files_modified:
+  created:
+    - C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\.coderef\sessions\SES-2026-05-10-AUTO-SEED-FINAL-VERIFY.yaml
+  modified: []
+  deleted: []
+
+documents_generated: []
+
+decisions:
+  - id: D-001
+    decision: Test /api/generate with 180s timeout instead of lloyd_client.py default 60s
+    rationale: Prior timeouts could have been cold model load; 180s would surface actual response
+    outcome: 503 received after ~30s — not a timeout issue; Lloyd generate path has internal error
+
+outcomes:
+  - DISPATCH-2026-05-09-006 accepted and executed
+  - Phase A fully operational — phase_a_skill=operational, headers_indexed=true, foundation_docs=true
+  - rag_enabled=false persists despite OPENCLAW (52848) being up and health-passing
+  - /api/generate returns 503 with empty detail field — internal Lloyd service error, not a gateway issue
+  - Both Lloyd health endpoints (52847, 52848) pass; generate path is broken independently
+
+issues_encountered:
+  - id: I-001
+    issue: Lloyd /api/generate returns 503 with empty detail ("Lloyd service error:" + empty string)
+    impact: rag_enabled=false; RAG enrichment in auto-seed dispatches still blocked
+    resolution: Reported to user — requires Lloyd service layer investigation (model load or config error)
+
+tracking:
+  next_steps:
+    - Investigate Lloyd /api/generate 503 — check logs for phi4-mini model load error or service config
+    - After Lloyd generate fix, re-run auto-seed against CODEREF-CORE to confirm rag_enabled=true
+    - STUB-271 (cli-core-feature-coverage) not yet committed to coderef-core repo
+    - coderef-vectors.json still has zero embeddings (secondary, address after RAG pipeline healthy)

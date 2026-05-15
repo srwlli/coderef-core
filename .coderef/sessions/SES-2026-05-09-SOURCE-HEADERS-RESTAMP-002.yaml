@@ -1,0 +1,43 @@
+session_metadata:
+  session_id: SES-source-headers-restamp-002
+  workorder_id: WO-SOURCE-HEADERS-RESTAMP-002
+  date: "2026-05-09"
+  branch: feature/source-headers-dogfood
+  agent: claude-sonnet-4-6
+
+decisions:
+  - id: ADJ-A
+    decision: Skip initial strip — files already in @coderef-semantic:1.0.0 format from WO-001
+    outcome: Incorrect — stale @exports caused headerStatus:stale; strip was needed
+  - id: ADJ-B
+    decision: Proceed with strip-restamp using current dist
+    outcome: Revealed dist was stale; formatAsComments emitted colon + brackets
+  - id: DR-FIX-1
+    decision: Fix formatAsComments() — source already correct, rebuild dist
+    rationale: "ORCHESTRATOR ruling (A): fix generator, not parser. Parser is authoritative."
+  - id: DR-FIX-2
+    decision: Fix insertHeaders() to prepend block before all existing content
+    rationale: "ORCHESTRATOR ruling (A): parser anchors to first /**...*/ block; generator must place semantic block first"
+
+outcomes:
+  - header-generator.ts insertHeaders() now inserts @coderef-semantic block at file start (before existing JSDoc)
+  - formatAsComments() emits @tag Name1, Name2 (no colon, no brackets) — matches parser IDENTIFIER_RE
+  - 174 src/*.ts files restamped with correct @coderef-semantic:1.0.0 blocks in position 0
+  - 41 src files headerStatus:defined (up from 5); stale:129 (exports mismatch, future work)
+  - rag-index: 409 chunks attempted embedding (header gate passing); OpenAI key absent (pre-existing)
+
+issues_encountered:
+  - Stale dist — header-generator.js in dist did not match source; required npm run build
+  - Generator insert position — placed block after file JSDoc instead of before; parser missed it
+  - exports_match_ast stale downgrade — 129 files have @exports that don't match current AST; not blocking (409 defined files pass gate)
+
+tracking:
+  workorder: WO-SOURCE-HEADERS-RESTAMP-002
+  session: SES-source-headers-restamp-002
+  dispatch: DISPATCH-2026-05-08-008
+
+commits:
+  - hash: "158992e"
+    message: "restamp(source-headers-restamp-002): fix generator insert position + re-stamp 174 src files"
+    repo: coderef-core
+    branch: feature/source-headers-dogfood

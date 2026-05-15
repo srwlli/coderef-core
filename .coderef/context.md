@@ -2,9 +2,9 @@
 
 ## Statistics
 
-- **Total Files:** 302
-- **Total Elements:** 2191
-- **Total Lines:** 87419
+- **Total Files:** 394
+- **Total Elements:** 2423
+- **Total Lines:** 104763
 - **Languages:** ts, js, py
 
 
@@ -17,9 +17,9 @@
 ### Detection Indicators
 
 - Server entry points: 1
-- CLI entry points: 29
+- CLI entry points: 28
 - package.json bin field present
-- Library entry points: 20
+- Library entry points: 21
 - Library exports configured
 - TypeScript declarations present
 - Hybrid: library + cli-tool
@@ -46,7 +46,7 @@
 
 - **MICROSERVICES** (60% confidence)
   - Found 0 service directories
-  - Found 10 service class implementations
+  - Found 8 service class implementations
   - Multiple entry points detected (potential service boundaries)
 
 
@@ -132,14 +132,32 @@ Found 84 application entry points. Primary entry point is marked with ⭐.
 - **index.ts** [library]
   - File: src/search/index.ts
   - Library entry point
+- **index.ts** [library]
+  - File: src/semantic/index.ts
+  - Library entry point
+- **detect-languages-cli.ts** [cli]
+  - File: src/cli/detect-languages-cli.ts
+  - CLI command entry
+- **semantic-integration-cli.ts** [cli]
+  - File: src/cli/semantic-integration-cli.ts
+  - CLI command entry
 - **main** [cli]
   - File: demo-all-modules.ts
+  - CLI command handler (main)
+- **main** [cli]
+  - File: src/cli/coderef-analyze.ts
   - CLI command handler (main)
 - **main** [cli]
   - File: src/cli/coderef-pipeline.ts
   - CLI command handler (main)
 - **main** [cli]
+  - File: src/cli/coderef-query.ts
+  - CLI command handler (main)
+- **main** [cli]
   - File: src/cli/coderef-rag-server.ts
+  - CLI command handler (main)
+- **main** [cli]
+  - File: src/cli/coderef-search.ts
   - CLI command handler (main)
 - **main** [cli]
   - File: src/cli/coderef-watch.ts
@@ -184,21 +202,6 @@ Found 84 application entry points. Primary entry point is marked with ⭐.
   - File: autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py
   - CLI command handler (main)
 - **main** [cli] (exported)
-  - File: autoresearch/scanner-quality/01-element-classification/apply_iteration_5.py
-  - CLI command handler (main)
-- **main** [cli] (exported)
-  - File: autoresearch/scanner-quality/03-test-coverage-linkage/apply_iteration_1.py
-  - CLI command handler (main)
-- **main** [cli] (exported)
-  - File: autoresearch/scanner-quality/04-async-pattern-detection/apply_iteration_1.py
-  - CLI command handler (main)
-- **main** [cli] (exported)
-  - File: autoresearch/scanner-quality/05-context-summary-signal/apply_iteration_1.py
-  - CLI command handler (main)
-- **main** [cli] (exported)
-  - File: autoresearch/scanner-quality/06-test-gap-precision/apply_iteration_1.py
-  - CLI command handler (main)
-- **main** [cli] (exported)
   - File: autoresearch/scanner-quality/scripts/verify_async_patterns.py
   - CLI command handler (main)
 - **main** [cli] (exported)
@@ -215,9 +218,6 @@ Found 84 application entry points. Primary entry point is marked with ⭐.
   - CLI command handler (main)
 - **main** [cli] (exported)
   - File: autoresearch/scanner-quality/scripts/verify_test_linkage.py
-  - CLI command handler (main)
-- **main** [cli] (exported)
-  - File: __tests__/.test-venv-fixtures/src/app.py
   - CLI command handler (main)
 - **coderef-rag-server.ts** [server]
   - File: src/cli/coderef-rag-server.ts
@@ -329,16 +329,20 @@ Found 84 application entry points. Primary entry point is marked with ⭐.
 
 - **ContextGenerator.generateMarkdown** - Complexity: 102, Dependents: 0
   - File: src/pipeline/generators/context-generator.ts
-- **scanCurrentElements** - Complexity: 40, Dependents: 1
-  - File: scanner.js
+- **scanCurrentElements** - Complexity: 40, Dependents: 0
+  - File: src/scanner/scanner.ts
+- **ASTElementScanner.visitNode** - Complexity: 65, Dependents: 0
+  - File: src/analyzer/ast-element-scanner.ts
 - **EmbeddingTextGenerator.generate** - Complexity: 30, Dependents: 0
   - File: src/integration/rag/embedding-text-generator.ts
-- **ASTElementScanner.visitNode** - Complexity: 63, Dependents: 0
-  - File: src/analyzer/ast-element-scanner.ts
-- **extractExportsFromAST** - Complexity: 55, Dependents: 3
+- **currentScopeCodeRefId** - Complexity: 65, Dependents: 0
+  - File: src/pipeline/call-resolver.ts
+- **extractExportsFromAST** - Complexity: 55, Dependents: 0
   - File: src/analyzer/js-call-detector/module-analyzer.ts
-- **extractElementsFromAST** - Complexity: 51, Dependents: 3
+- **extractElementsFromAST** - Complexity: 51, Dependents: 0
   - File: src/analyzer/js-call-detector/visitor.ts
+- **run** - Complexity: 41, Dependents: 0
+  - File: src/cli/populate.ts
 - **DatabaseDetector.detect** - Complexity: 9, Dependents: 0
   - File: src/analyzer/database-detector.ts
 - **buildDependencyGraph** - Complexity: 8, Dependents: 0
@@ -353,8 +357,6 @@ Found 84 application entry points. Primary entry point is marked with ⭐.
   - File: src/analyzer/analyzer-service.ts
 - **QueryExecutor.execute** - Complexity: 4, Dependents: 0
   - File: src/query/query-executor.ts
-- **IndexGenerator.generate** - Complexity: 3, Dependents: 0
-  - File: src/pipeline/generators/index-generator.ts
 - **FrameworkRegistry.detect** - Complexity: 3, Dependents: 0
   - File: src/scanner/framework-registry.ts
 - **DependencyAnalyzer.analyze** - Complexity: 2, Dependents: 0
@@ -365,8 +367,6 @@ Found 84 application entry points. Primary entry point is marked with ⭐.
   - File: src/analyzer/docs-analyzer.ts
 - **EntryPointDetector.detect** - Complexity: 2, Dependents: 0
   - File: src/analyzer/entry-detector.ts
-- **ContextGenerator.generate** - Complexity: 2, Dependents: 0
-  - File: src/context/context-generator.ts
 
 ## Dependency Risk Analysis
 
@@ -461,18 +461,24 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
 
 - **ContextGenerator.generateMarkdown** - Complexity: 102
   - File: src/pipeline/generators/context-generator.ts
-- **ASTElementScanner.visitNode** - Complexity: 63
+- **ASTElementScanner.visitNode** - Complexity: 65
   - File: src/analyzer/ast-element-scanner.ts
+- **currentScopeCodeRefId** - Complexity: 65
+  - File: src/pipeline/call-resolver.ts
 - **extractExportsFromAST** - Complexity: 55
   - File: src/analyzer/js-call-detector/module-analyzer.ts
 - **extractElementsFromAST** - Complexity: 51
   - File: src/analyzer/js-call-detector/visitor.ts
 - **ContextGenerator.detectTechStack** - Complexity: 32
   - File: src/pipeline/generators/context-generator.ts
+- **run** - Complexity: 41
+  - File: src/cli/populate.ts
 - **EmbeddingTextGenerator.generate** - Complexity: 30
   - File: src/integration/rag/embedding-text-generator.ts
 - **scanCurrentElements** - Complexity: 40
   - File: src/scanner/scanner.ts
+- **PipelineOrchestrator.run** - Complexity: 29
+  - File: src/pipeline/orchestrator.ts
 - **ContextGenerator.detectMVCPatterns** - Complexity: 28
   - File: src/pipeline/generators/context-generator.ts
 - **extractImportsFromAST** - Complexity: 37
@@ -489,16 +495,22 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
   - File: src/analyzer/docs-analyzer.ts
 - **DocsAnalyzer.analyzeChangelog** - Complexity: 25
   - File: src/analyzer/docs-analyzer.ts
-- **PipelineOrchestrator.run** - Complexity: 25
-  - File: src/pipeline/orchestrator.ts
 - **loadLocalPlugin** - Complexity: 35
   - File: src/plugins/loaders/local-loader.ts
 - **loadNpmPlugin** - Complexity: 35
   - File: src/plugins/loaders/npm-loader.ts
+- **classifyMethodCall** - Complexity: 34
+  - File: src/pipeline/call-resolver.ts
+- **RelationshipExtractor.walkRawTsExports** - Complexity: 34
+  - File: src/pipeline/extractors/relationship-extractor.ts
 - **SearchIndex.search** - Complexity: 34
   - File: src/search/search-engine.ts
+- **ChunkConverter.convertNode** - Complexity: 33
+  - File: src/integration/rag/chunk-converter.ts
 - **EmbeddingService.embedChunks** - Complexity: 23
   - File: src/integration/rag/embedding-service.ts
+- **buildEdges** - Complexity: 33
+  - File: src/pipeline/graph-builder.ts
 - **ContractDetector.parseOpenApi** - Complexity: 32
   - File: src/analyzer/contract-detector.ts
 - **GraphBuilder.importGraphFromJSON** - Complexity: 22
@@ -507,6 +519,8 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
   - File: src/analyzer/js-call-detector/visitor.ts
 - **ContextBuilder.buildResultSection** - Complexity: 22
   - File: src/integration/rag/context-builder.ts
+- **reportProgress** - Complexity: 32
+  - File: src/integration/rag/indexing-orchestrator.ts
 - **validateManifest** - Complexity: 32
   - File: src/plugins/manifest-schema.ts
 - **generateExportsMd** - Complexity: 32
@@ -515,30 +529,17 @@ Found 35 functions without test coverage. Prioritized by complexity and architec
   - File: src/analyzer/database-detector.ts
 - **DocsAnalyzer.analyzeReadme** - Complexity: 21
   - File: src/analyzer/docs-analyzer.ts
-- **ProjectClassifier.detectApiSubtype** - Complexity: 30
-  - File: src/analyzer/project-classifier.ts
-- **ProjectClassifier.detectWebSubtype** - Complexity: 30
-  - File: src/analyzer/project-classifier.ts
-- **CodeRefParser.parse** - Complexity: 29
-  - File: src/parser/parser.ts
-- **convertGraphToElements** - Complexity: 28
-  - File: src/adapter/graph-to-elements.ts
-- **GraphAnalyzer.traverse** - Complexity: 18
-  - File: src/analyzer/graph-analyzer.ts
-- **MigrationRouteAnalyzer.detectBreakingChanges** - Complexity: 18
-  - File: src/analyzer/migration-route-analyzer.ts
-- **GraphReRanker.rerank** - Complexity: 28
-  - File: src/integration/rag/graph-reranker.ts
 
 ## Module Structure
 
-- **src:** 221 files
-- **__tests__:** 41 files
+- **src:** 254 files
+- **__tests__:** 99 files
 - **autoresearch:** 14 files
 - **scripts:** 11 files
 - **.:** 8 files
 - **examples:** 4 files
 - **utils:** 3 files
+- **tools:** 1 files
 
 ## Executive Summary
 
@@ -564,32 +565,32 @@ Top 20 high-risk areas by complexity × test coverage:
   - File: src/pipeline/generators/context-generator.ts
   - Complexity: 102, Estimated Coverage: 0%
 - **scanner** (CRITICAL) - Risk Score: 100
-  - File: scanner.js
-  - Complexity: 40, Estimated Coverage: 20%
+  - File: src/scanner/scanner.ts
+  - Complexity: 40, Estimated Coverage: 0%
+- **ast-element-scanner** (CRITICAL) - Risk Score: 100
+  - File: src/analyzer/ast-element-scanner.ts
+  - Complexity: 65, Estimated Coverage: 0%
 - **embedding-text-generator** (CRITICAL) - Risk Score: 100
   - File: src/integration/rag/embedding-text-generator.ts
   - Complexity: 30, Estimated Coverage: 0%
-- **ast-element-scanner** (CRITICAL) - Risk Score: 100
-  - File: src/analyzer/ast-element-scanner.ts
-  - Complexity: 63, Estimated Coverage: 0%
+- **call-resolver** (CRITICAL) - Risk Score: 100
+  - File: src/pipeline/call-resolver.ts
+  - Complexity: 65, Estimated Coverage: 0%
 - **module-analyzer** (CRITICAL) - Risk Score: 100
   - File: src/analyzer/js-call-detector/module-analyzer.ts
   - Complexity: 55, Estimated Coverage: 0%
 - **visitor** (CRITICAL) - Risk Score: 100
   - File: src/analyzer/js-call-detector/visitor.ts
   - Complexity: 51, Estimated Coverage: 0%
+- **populate** (CRITICAL) - Risk Score: 100
+  - File: src/cli/populate.ts
+  - Complexity: 41, Estimated Coverage: 0%
 - **database-detector** (CRITICAL) - Risk Score: 100
   - File: src/analyzer/database-detector.ts
   - Complexity: 31, Estimated Coverage: 0%
 - **docs-analyzer** (CRITICAL) - Risk Score: 100
   - File: src/analyzer/docs-analyzer.ts
   - Complexity: 25, Estimated Coverage: 0%
-- **scanner** (CRITICAL) - Risk Score: 100
-  - File: src/scanner/scanner.ts
-  - Complexity: 40, Estimated Coverage: 0%
-- **context-builder** (CRITICAL) - Risk Score: 100
-  - File: src/integration/rag/context-builder.ts
-  - Complexity: 27, Estimated Coverage: 0%
 
 ## Recommended Work Order Priorities
 
@@ -600,35 +601,39 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
    - Effort: large, Rationale: Critical function (complexity 102, 0 dependents) lacks test coverage
 
 2. **[TESTING]** scanCurrentElements
-   - File: scanner.js
-   - Effort: large, Rationale: Critical function (complexity 40, 1 dependents) lacks test coverage
+   - File: src/scanner/scanner.ts
+   - Effort: large, Rationale: Critical function (complexity 40, 0 dependents) lacks test coverage
 
-3. **[TESTING]** EmbeddingTextGenerator.generate
+3. **[TESTING]** ASTElementScanner.visitNode
+   - File: src/analyzer/ast-element-scanner.ts
+   - Effort: large, Rationale: Critical function (complexity 65, 0 dependents) lacks test coverage
+
+4. **[TESTING]** EmbeddingTextGenerator.generate
    - File: src/integration/rag/embedding-text-generator.ts
    - Effort: large, Rationale: Critical function (complexity 30, 0 dependents) lacks test coverage
 
-4. **[TESTING]** ASTElementScanner.visitNode
-   - File: src/analyzer/ast-element-scanner.ts
-   - Effort: large, Rationale: Critical function (complexity 63, 0 dependents) lacks test coverage
+5. **[TESTING]** currentScopeCodeRefId
+   - File: src/pipeline/call-resolver.ts
+   - Effort: large, Rationale: Critical function (complexity 65, 0 dependents) lacks test coverage
 
-5. **[TESTING]** extractExportsFromAST
+6. **[TESTING]** extractExportsFromAST
    - File: src/analyzer/js-call-detector/module-analyzer.ts
-   - Effort: large, Rationale: Critical function (complexity 55, 3 dependents) lacks test coverage
+   - Effort: large, Rationale: Critical function (complexity 55, 0 dependents) lacks test coverage
 
-6. **[TESTING]** extractElementsFromAST
+7. **[TESTING]** extractElementsFromAST
    - File: src/analyzer/js-call-detector/visitor.ts
-   - Effort: large, Rationale: Critical function (complexity 51, 3 dependents) lacks test coverage
+   - Effort: large, Rationale: Critical function (complexity 51, 0 dependents) lacks test coverage
 
-7. **[TESTING]** ContextGenerator.detectTechStack
-   - File: src/pipeline/generators/context-generator.ts
-   - Effort: medium, Rationale: High-complexity function (32) lacks test coverage
+8. **[TESTING]** run
+   - File: src/cli/populate.ts
+   - Effort: large, Rationale: Critical function (complexity 41, 0 dependents) lacks test coverage
 
 
 ## Documentation Quality
 
-- **Overall Score:** 63/100 (GOOD)
-- **Files Analyzed:** 619
-- **Average Comment Density:** 37.2%
+- **Overall Score:** 74/100 (GOOD)
+- **Files Analyzed:** 699
+- **Average Comment Density:** 37.0%
 
 ### README Analysis
 
@@ -647,8 +652,8 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 
 ### JSDoc/TSDoc Coverage
 
-- **Files:** 309
-- **Average Coverage:** 70.2%
+- **Files:** 350
+- **Average Coverage:** 66.7%
 
 **Low Coverage Files:**
 
@@ -662,9 +667,9 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 
 - **Exists:** Yes
 - **Format:** keepachangelog
-- **Total Entries:** 12
-- **Last Updated:** 223 days ago
-- **Recency Score:** 39/100
+- **Total Entries:** 13
+- **Last Updated:** 10 days ago
+- **Recency Score:** 100/100
 - **Has Unreleased Section:** Yes
 
 ### API Documentation
@@ -675,8 +680,7 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 
 ### Documentation Recommendations
 
-- Add JSDoc comments to 85 files with <50% documentation coverage
-- Update CHANGELOG (last updated 223 days ago)
+- Add JSDoc comments to 109 files with <50% documentation coverage
 
 ## Technology Stack
 
@@ -688,4 +692,4 @@ AI-generated priorities based on complexity, dependencies, and test gaps:
 
 ## Generated
 
-2026-04-28T22:40:56.381Z
+2026-05-15T17:28:43.564Z

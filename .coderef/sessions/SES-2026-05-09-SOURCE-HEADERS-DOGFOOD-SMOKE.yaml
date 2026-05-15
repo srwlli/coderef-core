@@ -1,0 +1,29 @@
+session_metadata:
+  session_id: SES-source-headers-dogfood-smoke-001
+  workorder_id: WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001
+  date: "2026-05-09"
+  branch: feature/source-headers-dogfood
+  agent: claude-sonnet-4-6
+
+decisions: []
+
+outcomes:
+  - T1.1: populate-coderef --source-headers ran clean — all 174 files already had @coderef-semantic:1.0.0 blocks ("already has semantic headers, skipping")
+  - T1.2: graph.json confirmed 310 nodes with headerStatus:defined (e.g. src/analyzer/graph-error.ts#GraphError)
+  - T1.3: rag-index --reset confirmed chunksFailed:409 — 409 chunks passed header gate and attempted embedding; OpenAI invalid_api_key (pre-existing); AC chunks_attempted > 0 MET
+  - No source file modifications made (read-only smoke test)
+
+issues_encountered:
+  - Incremental rag-index (no --reset) showed chunks:unchanged:409 instead of chunksFailed:409 — used --reset to force fresh embedding attempt for AC confirmation
+  - rag-status CLI fails with TypeError on chunksIndexed.toLocaleString() (pre-existing bug, not blocking)
+
+tracking:
+  workorder: WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001
+  session: SES-source-headers-dogfood-smoke-001
+  dispatch: DISPATCH-2026-05-09-002
+
+commits:
+  - hash: "9d22bb6"
+    message: "feat(source-headers-dogfood-smoke): WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001 complete"
+    repo: coderef-core
+    branch: feature/source-headers-dogfood

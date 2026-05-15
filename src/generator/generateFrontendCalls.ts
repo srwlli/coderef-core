@@ -3,10 +3,6 @@
  * @exports FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile
  */
 
-
-
-
-
 /**
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Frontend Call Generation Module
  * Filters frontend API call elements and generates frontend-calls.json output

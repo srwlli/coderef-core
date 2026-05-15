@@ -4,10 +4,6 @@
  * @used_by src/analyzer/project-classifier.ts, src/pipeline/generators/context-generator.ts
  */
 
-
-
-
-
 /**
  * EntryPointDetector - Detect application entry points and bootstrap files
  *

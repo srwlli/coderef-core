@@ -3,10 +3,6 @@
  * @exports ScanError
  */
 
-
-
-
-
 /**
  * ScanError - Scanner failures
  * @module errors

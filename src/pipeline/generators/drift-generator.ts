@@ -4,10 +4,6 @@
  * @used_by src/cli/populate.ts
  */
 
-
-
-
-
 /**
  * DriftGenerator - Detect drift between source files and the indexed snapshot.
  *

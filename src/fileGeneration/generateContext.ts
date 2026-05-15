@@ -3,10 +3,6 @@
  * @exports generateContext
  */
 
-
-
-
-
 /**
  * Generate Context - Create AI-readable project context
  *

@@ -1,0 +1,48 @@
+{
+  "workorder_id": "WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001",
+  "feature_name": "code-intelligence-leverage-audit",
+  "created": "2026-05-12T17:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-12-004"],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/code-intelligence-leverage-audit/plan.json",
+  "context_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/code-intelligence-leverage-audit/context.json",
+  "analysis_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/code-intelligence-leverage-audit/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored. 7 phases ready for sequential execution starting with source-headers coverage flood."
+  },
+  "execution_rules": {
+    "phase_order": "sequential",
+    "hard_stops": [1, 2],
+    "gate_behavior": "Phases 1 and 2 require explicit approval before continuing. Phases 3-7 may run without gate."
+  },
+  "hard_constraints": [
+    "No breaking changes to public ElementData or GraphData interfaces",
+    "Each phase must pass vitest before commit",
+    "Source-headers phase runs first — RAG coverage is the unlock for all semantic work"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-12T17:00:00Z",
+      "event": "workorder_created",
+      "actor": "create-workorder",
+      "note": "7-phase phased plan created from DISPATCH-2026-05-12-004. Phases: source-headers, tree-sitter-verify, export-edges, what-imports-fix, rag-search-constraint, viz-fields, ai-truncation."
+    },
+    {
+      "timestamp": "2026-05-15T13:00:00Z",
+      "event": "phase_1_complete",
+      "actor": "execute-workorder",
+      "note": "Phase 1 Source-Headers Coverage Flood complete. Before: defined=278 (11%), stale=1782, partial=20, missing=343. After --source-headers --overwrite-headers + de-dup: header_present (defined+stale+partial)=2080/2423=86%, missing=343/2423=14%. Note: 1782 stale elements have correct headers but rawExports mismatch on interfaces/type aliases — this is a Phase 2 scanner gap (extractRawExports doesn't capture export interface/type). Source files repaired: 3 files (header-generator.ts, header-fact.ts, semantic-header-parser.ts) were truncated by prior --source-headers run and restored from git. 173 duplicate header blocks de-duped across src/. Hard stop: awaiting Phase 1 approval before Phase 2."
+    }
+  ]
+}

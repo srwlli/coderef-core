@@ -3,10 +3,6 @@
  * @exports ScanErrorType, ScanErrorSeverity, ScanError, ScanStats, ScanResult, createScanError, createScanErrorWithContext, formatScanError, printScanErrors, initScanStats, finalizeScanStats
  */
 
-
-
-
-
 // coderef-core/scanner/error-reporter.ts
 
 /**

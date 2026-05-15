@@ -4,10 +4,6 @@
  * @used_by src/cli/semantic-integration-cli.ts, src/cli/semantic-integration.test.ts
  */
 
-
-
-
-
 /**
  * Semantic CLI integration wrapper
  * Coordinates SemanticOrchestrator invocation with dry-run mode and safety guards

@@ -1,3 +1,38 @@
+- workorder_id: WO-SCANNER-AST-COVERAGE-001
+  feature_name: scanner-ast-coverage
+  archived_at: 2026-05-12T16:45:00Z
+  archive_path: coderef/ARCHIVED/scanner-ast-coverage/
+  status: PASS
+- workorder_id: WO-SEMANTIC-INTEGRATION-FS-RESTORE-001
+  feature_name: semantic-integration-fs-restore
+  archived_at: 2026-05-12T15:45:00Z
+  archive_path: coderef/ARCHIVED/semantic-integration-fs-restore/
+  status: PASS
+- workorder_id: WO-CODEREF-UI-RAG-SEARCH-FIX-001
+  feature_name: coderef-ui-rag-search-fix
+  archived_at: 2026-05-12T14:45:00Z
+  archive_path: coderef/ARCHIVED/coderef-ui-rag-search-fix/
+  status: PASS
+- workorder_id: WO-CODEREF-TKINTER-UI-001
+  feature_name: coderef-tkinter-ui
+  archived_at: 2026-05-12T13:50:00Z
+  archive_path: coderef/ARCHIVED/coderef-tkinter-ui/
+  status: PASS
+- workorder_id: WO-CLI-DOCS-GAP-FILL-001
+  feature_name: cli-docs-gap-fill
+  archived_at: 2026-05-11T21:10:00Z
+  archive_path: coderef/ARCHIVED/cli-docs-gap-fill/
+  status: PASS
+- workorder_id: WO-MERGE-SOURCE-HEADERS-DOGFOOD-001
+  feature_name: merge-source-headers-dogfood
+  archived_at: 2026-05-09T20:46:00Z
+  archive_path: coderef/ARCHIVED/merge-source-headers-dogfood/
+  status: PASS
+- workorder_id: WO-SOURCE-HEADERS-RESTAMP-001
+  feature_name: source-headers-restamp
+  archived_at: 2026-05-09T05:00:00Z
+  archive_path: coderef/ARCHIVED/source-headers-restamp/
+  status: WARNING
 - workorder_id: WO-PIPELINE-GRAPH-GROUND-TRUTH-TESTS-001
   feature_name: pipeline-graph-ground-truth-tests
   archived_at: 2026-05-02T19:55:00Z
@@ -29,3 +64,8 @@
   status: PASS
   closing_domain: SKILLS
   cross_project: true
+- workorder_id: WO-SOURCE-HEADERS-DOGFOOD-SMOKE-001
+  feature_name: source-headers-dogfood-smoke
+  archived_at: '2026-05-09T18:28:00Z'
+  archive_path: coderef/ARCHIVED/source-headers-dogfood-smoke/
+  status: PASS

@@ -4,10 +4,6 @@
  * @used_by src/analyzer/analyzer-service.ts, src/context/multi-hop-traversal.ts
  */
 
-
-
-
-
 /**
  * Graph Analyzer - Query and traverse the dependency graph
  * Phase 3, Task P3-T4: Relationship Detection & Analysis

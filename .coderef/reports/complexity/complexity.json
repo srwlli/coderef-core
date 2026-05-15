@@ -1,5 +1,13 @@
 [
   {
+    "element": "scanCurrentElements",
+    "file": "src/scanner/scanner.ts",
+    "type": "function",
+    "complexity": 109,
+    "loc": 553,
+    "parameters": 3
+  },
+  {
     "element": "ContextGenerator.generateMarkdown",
     "file": "src/pipeline/generators/context-generator.ts",
     "type": "method",
@@ -8,20 +16,20 @@
     "parameters": 2
   },
   {
-    "element": "scanCurrentElements",
-    "file": "src/scanner/scanner.ts",
-    "type": "function",
-    "complexity": 98,
-    "loc": 512,
-    "parameters": 3
-  },
-  {
     "element": "ASTElementScanner.visitNode",
     "file": "src/analyzer/ast-element-scanner.ts",
     "type": "method",
-    "complexity": 63,
-    "loc": 245,
-    "parameters": 6
+    "complexity": 65,
+    "loc": 277,
+    "parameters": 7
+  },
+  {
+    "element": "currentScopeCodeRefId",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 65,
+    "loc": 169,
+    "parameters": 0
   },
   {
     "element": "extractExportsFromAST",
@@ -30,6 +38,22 @@
     "complexity": 55,
     "loc": 101,
     "parameters": 2
+  },
+  {
+    "element": "main",
+    "file": "src/cli/rag-index.ts",
+    "type": "function",
+    "complexity": 54,
+    "loc": 314,
+    "parameters": 0
+  },
+  {
+    "element": "expectAmbiguous",
+    "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+    "type": "function",
+    "complexity": 54,
+    "loc": 173,
+    "parameters": 1
   },
   {
     "element": "extractElementsFromAST",
@@ -48,11 +72,27 @@
     "parameters": 0
   },
   {
+    "element": "run",
+    "file": "src/cli/populate.ts",
+    "type": "function",
+    "complexity": 41,
+    "loc": 204,
+    "parameters": 1
+  },
+  {
     "element": "scanCurrentElements",
     "file": "scanner.js",
     "type": "function",
     "complexity": 40,
     "loc": 152,
+    "parameters": 1
+  },
+  {
+    "element": "parseArgs",
+    "file": "src/cli/rag-search.ts",
+    "type": "function",
+    "complexity": 39,
+    "loc": 104,
     "parameters": 1
   },
   {
@@ -62,14 +102,6 @@
     "complexity": 37,
     "loc": 86,
     "parameters": 2
-  },
-  {
-    "element": "main",
-    "file": "src/cli/rag-index.ts",
-    "type": "function",
-    "complexity": 37,
-    "loc": 250,
-    "parameters": 0
   },
   {
     "element": "CodeRefValidator.validateMetadata",
@@ -104,6 +136,30 @@
     "parameters": 2
   },
   {
+    "element": "classifyMethodCall",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 34,
+    "loc": 127,
+    "parameters": 5
+  },
+  {
+    "element": "traverse",
+    "file": "src/pipeline/extractors/element-extractor.ts",
+    "type": "function",
+    "complexity": 34,
+    "loc": 173,
+    "parameters": 3
+  },
+  {
+    "element": "RelationshipExtractor.walkRawTsExports",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
+    "complexity": 34,
+    "loc": 143,
+    "parameters": 4
+  },
+  {
     "element": "SearchIndex.search",
     "file": "src/search/search-engine.ts",
     "type": "method",
@@ -112,12 +168,20 @@
     "parameters": 2
   },
   {
-    "element": "parseArgs",
-    "file": "src/cli/rag-search.ts",
+    "element": "ChunkConverter.convertNode",
+    "file": "src/integration/rag/chunk-converter.ts",
+    "type": "method",
+    "complexity": 33,
+    "loc": 104,
+    "parameters": 4
+  },
+  {
+    "element": "buildEdges",
+    "file": "src/pipeline/graph-builder.ts",
     "type": "function",
     "complexity": 33,
-    "loc": 95,
-    "parameters": 1
+    "loc": 254,
+    "parameters": 2
   },
   {
     "element": "ContractDetector.parseOpenApi",
@@ -134,6 +198,14 @@
     "complexity": 32,
     "loc": 72,
     "parameters": 4
+  },
+  {
+    "element": "reportProgress",
+    "file": "src/integration/rag/indexing-orchestrator.ts",
+    "type": "function",
+    "complexity": 32,
+    "loc": 390,
+    "parameters": 5
   },
   {
     "element": "ContextGenerator.detectTechStack",
@@ -208,12 +280,36 @@
     "parameters": 1
   },
   {
+    "element": "PipelineOrchestrator.run",
+    "file": "src/pipeline/orchestrator.ts",
+    "type": "method",
+    "complexity": 29,
+    "loc": 263,
+    "parameters": 2
+  },
+  {
     "element": "convertGraphToElements",
     "file": "src/adapter/graph-to-elements.ts",
     "type": "function",
     "complexity": 28,
-    "loc": 93,
+    "loc": 94,
     "parameters": 2
+  },
+  {
+    "element": "parseArgs",
+    "file": "src/cli/populate.ts",
+    "type": "function",
+    "complexity": 28,
+    "loc": 107,
+    "parameters": 1
+  },
+  {
+    "element": "main",
+    "file": "src/cli/rag-search.ts",
+    "type": "function",
+    "complexity": 28,
+    "loc": 164,
+    "parameters": 0
   },
   {
     "element": "GraphReRanker.rerank",
@@ -280,7 +376,23 @@
     "parameters": 2
   },
   {
-    "element": "checkValue",
+    "element": "checkGraphIntegrity",
+    "file": "src/pipeline/output-validator.ts",
+    "type": "function",
+    "complexity": 26,
+    "loc": 131,
+    "parameters": 1
+  },
+  {
+    "element": "ASTExtractor.extractFile",
+    "file": "src/semantic/ast-extractor.ts",
+    "type": "method",
+    "complexity": 26,
+    "loc": 116,
+    "parameters": 1
+  },
+  {
+    "element": "validateAgainstSchema.checkValue",
     "file": "scripts/doc-gen/generate-meta-json.js",
     "type": "function",
     "complexity": 26,
@@ -328,20 +440,20 @@
     "parameters": 2
   },
   {
-    "element": "ChunkConverter.convertGraph",
-    "file": "src/integration/rag/chunk-converter.ts",
-    "type": "method",
+    "element": "buildGraphFromExportedJson",
+    "file": "src/integration/rag/indexing-orchestrator.ts",
+    "type": "function",
     "complexity": 25,
-    "loc": 77,
-    "parameters": 2
+    "loc": 53,
+    "parameters": 1
   },
   {
-    "element": "PipelineOrchestrator.run",
-    "file": "src/pipeline/orchestrator.ts",
-    "type": "method",
+    "element": "resolveAstImportsInternal",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
     "complexity": 25,
-    "loc": 155,
-    "parameters": 2
+    "loc": 131,
+    "parameters": 5
   },
   {
     "element": "extractParametersFromAST",
@@ -352,11 +464,11 @@
     "parameters": 4
   },
   {
-    "element": "main",
-    "file": "src/cli/rag-search.ts",
+    "element": "printHelp",
+    "file": "src/cli/semantic-integration-cli.ts",
     "type": "function",
     "complexity": 24,
-    "loc": 152,
+    "loc": 100,
     "parameters": 0
   },
   {
@@ -366,6 +478,14 @@
     "complexity": 24,
     "loc": 86,
     "parameters": 1
+  },
+  {
+    "element": "ChunkConverter.convertGraph",
+    "file": "src/integration/rag/chunk-converter.ts",
+    "type": "method",
+    "complexity": 24,
+    "loc": 70,
+    "parameters": 2
   },
   {
     "element": "ChunkConverter.extractDocumentation",
@@ -381,6 +501,14 @@
     "type": "method",
     "complexity": 23,
     "loc": 116,
+    "parameters": 2
+  },
+  {
+    "element": "traverse",
+    "file": "src/scanner/tree-sitter-scanner.ts",
+    "type": "function",
+    "complexity": 23,
+    "loc": 92,
     "parameters": 2
   },
   {
@@ -449,10 +577,10 @@
   },
   {
     "element": "parseArgs",
-    "file": "src/cli/populate.ts",
+    "file": "src/cli/coderef-pipeline.ts",
     "type": "function",
     "complexity": 21,
-    "loc": 76,
+    "loc": 75,
     "parameters": 1
   },
   {
@@ -478,6 +606,46 @@
     "complexity": 21,
     "loc": 79,
     "parameters": 2
+  },
+  {
+    "element": "createSemanticRegistryProjection",
+    "file": "src/semantic/projections.ts",
+    "type": "function",
+    "complexity": 21,
+    "loc": 60,
+    "parameters": 3
+  },
+  {
+    "element": "main.emit",
+    "file": "src/cli/coderef-analyze.ts",
+    "type": "function",
+    "complexity": 20,
+    "loc": 114,
+    "parameters": 1
+  },
+  {
+    "element": "main",
+    "file": "src/cli/coderef-query.ts",
+    "type": "function",
+    "complexity": 20,
+    "loc": 59,
+    "parameters": 0
+  },
+  {
+    "element": "RelationshipExtractor.walkRawTsImports",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
+    "complexity": 20,
+    "loc": 104,
+    "parameters": 4
+  },
+  {
+    "element": "HeaderGenerator.generateHeadersFromElements",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 20,
+    "loc": 50,
+    "parameters": 1
   },
   {
     "element": "CallDetector.visitNode",
@@ -512,12 +680,12 @@
     "parameters": 1
   },
   {
-    "element": "run",
-    "file": "src/cli/populate.ts",
+    "element": "main",
+    "file": "src/cli/coderef-search.ts",
     "type": "function",
     "complexity": 19,
-    "loc": 106,
-    "parameters": 1
+    "loc": 68,
+    "parameters": 0
   },
   {
     "element": "MultiHopTraversal.bfsTraversal",
@@ -536,12 +704,36 @@
     "parameters": 0
   },
   {
+    "element": "addEntry",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 19,
+    "loc": 121,
+    "parameters": 2
+  },
+  {
+    "element": "RelationshipExtractor.walkRawTsCalls",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
+    "complexity": 19,
+    "loc": 83,
+    "parameters": 6
+  },
+  {
     "element": "PluginRegistry.validatePlugin",
     "file": "src/plugins/plugin-registry.ts",
     "type": "method",
     "complexity": 19,
     "loc": 68,
     "parameters": 1
+  },
+  {
+    "element": "ASTExtractor.extractExportDeclaration",
+    "file": "src/semantic/ast-extractor.ts",
+    "type": "method",
+    "complexity": 19,
+    "loc": 39,
+    "parameters": 2
   },
   {
     "element": "createTestFile",
@@ -592,14 +784,6 @@
     "parameters": 3
   },
   {
-    "element": "parseArgs",
-    "file": "src/cli/coderef-pipeline.ts",
-    "type": "function",
-    "complexity": 18,
-    "loc": 60,
-    "parameters": 1
-  },
-  {
     "element": "next",
     "file": "src/cli/coderef-watch.ts",
     "type": "function",
@@ -624,6 +808,14 @@
     "parameters": 3
   },
   {
+    "element": "checkSemanticHeaders",
+    "file": "src/pipeline/output-validator.ts",
+    "type": "function",
+    "complexity": 18,
+    "loc": 86,
+    "parameters": 3
+  },
+  {
     "element": "QueryExecutor.executeQuery",
     "file": "src/query/query-executor.ts",
     "type": "method",
@@ -640,11 +832,11 @@
     "parameters": 5
   },
   {
-    "element": "main",
-    "file": "autoresearch/scanner-quality/06-test-gap-precision/apply_iteration_1.py",
-    "type": "function",
+    "element": "SemanticOrchestrator.processProject",
+    "file": "src/semantic/orchestrator.ts",
+    "type": "method",
     "complexity": 18,
-    "loc": 113,
+    "loc": 108,
     "parameters": 0
   },
   {
@@ -680,11 +872,51 @@
     "parameters": 2
   },
   {
+    "element": "classifyBareCall",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 17,
+    "loc": 69,
+    "parameters": 3
+  },
+  {
+    "element": "deriveCallerCodeRefId",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 17,
+    "loc": 36,
+    "parameters": 3
+  },
+  {
     "element": "PatternGenerator.detectDependencyInjection",
     "file": "src/pipeline/generators/pattern-generator.ts",
     "type": "method",
     "complexity": 17,
     "loc": 91,
+    "parameters": 2
+  },
+  {
+    "element": "detectHeaderBlock",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 17,
+    "loc": 30,
+    "parameters": 1
+  },
+  {
+    "element": "traverse",
+    "file": "src/scanner/tree-sitter-scanner.ts",
+    "type": "function",
+    "complexity": 17,
+    "loc": 107,
+    "parameters": 2
+  },
+  {
+    "element": "traverse",
+    "file": "src/scanner/tree-sitter-scanner.ts",
+    "type": "function",
+    "complexity": 17,
+    "loc": 129,
     "parameters": 2
   },
   {
@@ -720,6 +952,14 @@
     "parameters": 0
   },
   {
+    "element": "validateIdempotency",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "function",
+    "complexity": 16,
+    "loc": 37,
+    "parameters": 1
+  },
+  {
     "element": "calculateConfidence",
     "file": "src/context/breaking-change-detector/impact-assessor.ts",
     "type": "function",
@@ -736,11 +976,35 @@
     "parameters": 1
   },
   {
+    "element": "ElementExtractor.extract",
+    "file": "src/pipeline/extractors/element-extractor.ts",
+    "type": "method",
+    "complexity": 16,
+    "loc": 50,
+    "parameters": 4
+  },
+  {
     "element": "RelationshipExtractor.extractTypeScriptImports",
     "file": "src/pipeline/extractors/relationship-extractor.ts",
     "type": "method",
     "complexity": 16,
     "loc": 76,
+    "parameters": 4
+  },
+  {
+    "element": "parseHeader",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 16,
+    "loc": 99,
+    "parameters": 2
+  },
+  {
+    "element": "RegistrySyncer.syncEntry",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "method",
+    "complexity": 16,
+    "loc": 56,
     "parameters": 4
   },
   {
@@ -752,7 +1016,7 @@
     "parameters": 0
   },
   {
-    "element": "checkObj",
+    "element": "validateAgainstSchema.checkObj",
     "file": "scripts/doc-gen/generate-meta-json.js",
     "type": "function",
     "complexity": 16,
@@ -824,14 +1088,6 @@
     "parameters": 1
   },
   {
-    "element": "ChunkConverter.convertNode",
-    "file": "src/integration/rag/chunk-converter.ts",
-    "type": "method",
-    "complexity": 15,
-    "loc": 73,
-    "parameters": 4
-  },
-  {
     "element": "GraphReRanker.calculateQueryBoost",
     "file": "src/integration/rag/graph-reranker.ts",
     "type": "method",
@@ -848,12 +1104,20 @@
     "parameters": 2
   },
   {
-    "element": "ElementExtractor.extract",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "method",
+    "element": "isTestFile",
+    "file": "src/pipeline/generators/context-generator.ts",
+    "type": "function",
     "complexity": 15,
-    "loc": 47,
-    "parameters": 4
+    "loc": 63,
+    "parameters": 1
+  },
+  {
+    "element": "buildNodes",
+    "file": "src/pipeline/graph-builder.ts",
+    "type": "function",
+    "complexity": 15,
+    "loc": 77,
+    "parameters": 1
   },
   {
     "element": "scanFilesInParallel",
@@ -862,6 +1126,22 @@
     "complexity": 15,
     "loc": 104,
     "parameters": 3
+  },
+  {
+    "element": "buildSemanticRelationships",
+    "file": "src/scanner/semantic-analyzer.ts",
+    "type": "function",
+    "complexity": 15,
+    "loc": 73,
+    "parameters": 2
+  },
+  {
+    "element": "traverse",
+    "file": "src/scanner/tree-sitter-scanner.ts",
+    "type": "function",
+    "complexity": 15,
+    "loc": 89,
+    "parameters": 2
   },
   {
     "element": "createTestProject",
@@ -878,6 +1158,22 @@
     "complexity": 14,
     "loc": 37,
     "parameters": 2
+  },
+  {
+    "element": "main",
+    "file": "src/cli/scan.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 55,
+    "parameters": 0
+  },
+  {
+    "element": "findImpactedCallSites",
+    "file": "src/context/breaking-change-detector/diff-analyzer.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 59,
+    "parameters": 3
   },
   {
     "element": "BreakingChangeDetector.detectChanges",
@@ -932,7 +1228,7 @@
     "file": "src/pipeline/extractors/relationship-extractor.ts",
     "type": "method",
     "complexity": 14,
-    "loc": 43,
+    "loc": 46,
     "parameters": 5
   },
   {
@@ -944,12 +1240,60 @@
     "parameters": 5
   },
   {
+    "element": "isEntryPoint",
+    "file": "src/pipeline/generators/context-generator.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 26,
+    "parameters": 1
+  },
+  {
+    "element": "isOrchestrator",
+    "file": "src/pipeline/generators/context-generator.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 80,
+    "parameters": 1
+  },
+  {
     "element": "ContextGenerator.generateRiskHeatMap",
     "file": "src/pipeline/generators/context-generator.ts",
     "type": "method",
     "complexity": 14,
     "loc": 62,
     "parameters": 4
+  },
+  {
+    "element": "buildEdgeRecord",
+    "file": "src/pipeline/graph-builder.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 45,
+    "parameters": 1
+  },
+  {
+    "element": "buildExportTables",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 62,
+    "parameters": 1
+  },
+  {
+    "element": "resolveTransitiveReExport",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 52,
+    "parameters": 4
+  },
+  {
+    "element": "detectionResultToElement",
+    "file": "src/plugins/plugin-scanner.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 43,
+    "parameters": 3
   },
   {
     "element": "isLineCommented",
@@ -960,11 +1304,11 @@
     "parameters": 3
   },
   {
-    "element": "buildSemanticRelationships",
-    "file": "src/scanner/semantic-analyzer.ts",
+    "element": "traverse",
+    "file": "src/scanner/tree-sitter-scanner.ts",
     "type": "function",
     "complexity": 14,
-    "loc": 66,
+    "loc": 95,
     "parameters": 2
   },
   {
@@ -982,6 +1326,14 @@
     "complexity": 14,
     "loc": 89,
     "parameters": 5
+  },
+  {
+    "element": "header",
+    "file": "__tests__/pipeline/header-tag-validation.test.ts",
+    "type": "function",
+    "complexity": 14,
+    "loc": 75,
+    "parameters": 1
   },
   {
     "element": "enhanceArchitectureMd",
@@ -1080,14 +1432,6 @@
     "parameters": 3
   },
   {
-    "element": "main",
-    "file": "src/cli/scan.ts",
-    "type": "function",
-    "complexity": 13,
-    "loc": 49,
-    "parameters": 0
-  },
-  {
     "element": "FuzzyResolver.calculateJaroDistance",
     "file": "src/context/fuzzy-resolver.ts",
     "type": "method",
@@ -1128,6 +1472,14 @@
     "parameters": 1
   },
   {
+    "element": "hasCycle",
+    "file": "src/indexer/relationship-index.ts",
+    "type": "function",
+    "complexity": 13,
+    "loc": 63,
+    "parameters": 2
+  },
+  {
     "element": "AIPromptGenerator.synthesizeContext",
     "file": "src/integration/ai-prompt-generator.ts",
     "type": "method",
@@ -1152,11 +1504,11 @@
     "parameters": 1
   },
   {
-    "element": "createMockGraph",
+    "element": "writeGraphJson",
     "file": "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts",
     "type": "function",
     "complexity": 13,
-    "loc": 453,
+    "loc": 436,
     "parameters": 1
   },
   {
@@ -1384,6 +1736,30 @@
     "parameters": 1
   },
   {
+    "element": "traverse",
+    "file": "src/pipeline/extractors/element-extractor.ts",
+    "type": "function",
+    "complexity": 12,
+    "loc": 56,
+    "parameters": 2
+  },
+  {
+    "element": "traverse",
+    "file": "src/pipeline/extractors/element-extractor.ts",
+    "type": "function",
+    "complexity": 12,
+    "loc": 64,
+    "parameters": 2
+  },
+  {
+    "element": "RelationshipExtractor.walkRawPyCalls",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
+    "complexity": 12,
+    "loc": 55,
+    "parameters": 6
+  },
+  {
     "element": "RelationshipExtractor.extractGoCalls",
     "file": "src/pipeline/extractors/relationship-extractor.ts",
     "type": "method",
@@ -1416,12 +1792,44 @@
     "parameters": 2
   },
   {
+    "element": "isTestFile",
+    "file": "src/pipeline/generators/pattern-generator.ts",
+    "type": "function",
+    "complexity": 12,
+    "loc": 24,
+    "parameters": 1
+  },
+  {
+    "element": "loadExternalSet",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 12,
+    "loc": 46,
+    "parameters": 1
+  },
+  {
     "element": "IncrementalCache.checkFiles",
     "file": "src/pipeline/incremental-cache.ts",
     "type": "method",
     "complexity": 12,
     "loc": 68,
     "parameters": 1
+  },
+  {
+    "element": "PipelineOrchestrator.processFile",
+    "file": "src/pipeline/orchestrator.ts",
+    "type": "method",
+    "complexity": 12,
+    "loc": 93,
+    "parameters": 3
+  },
+  {
+    "element": "buildReport",
+    "file": "src/pipeline/output-validator.ts",
+    "type": "function",
+    "complexity": 12,
+    "loc": 87,
+    "parameters": 2
   },
   {
     "element": "addCustomEdge",
@@ -1464,12 +1872,28 @@
     "parameters": 1
   },
   {
+    "element": "SemanticOrchestrator.createExtractionsFromState",
+    "file": "src/semantic/orchestrator.ts",
+    "type": "method",
+    "complexity": 12,
+    "loc": 65,
+    "parameters": 1
+  },
+  {
     "element": "applyModifications",
     "file": "src/validator/frontend-update-generator.ts",
     "type": "function",
     "complexity": 12,
     "loc": 64,
     "parameters": 2
+  },
+  {
+    "element": "findEdge",
+    "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+    "type": "function",
+    "complexity": 12,
+    "loc": 27,
+    "parameters": 3
   },
   {
     "element": "validateScanRequest",
@@ -1632,6 +2056,14 @@
     "parameters": 1
   },
   {
+    "element": "traverse",
+    "file": "src/pipeline/extractors/element-extractor.ts",
+    "type": "function",
+    "complexity": 11,
+    "loc": 73,
+    "parameters": 1
+  },
+  {
     "element": "RelationshipExtractor.extractRustCalls",
     "file": "src/pipeline/extractors/relationship-extractor.ts",
     "type": "method",
@@ -1672,6 +2104,22 @@
     "parameters": 3
   },
   {
+    "element": "resolveModuleSpecifier",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 11,
+    "loc": 39,
+    "parameters": 5
+  },
+  {
+    "element": "normalizeRelatedField",
+    "file": "src/pipeline/semantic-elements.ts",
+    "type": "function",
+    "complexity": 11,
+    "loc": 34,
+    "parameters": 1
+  },
+  {
     "element": "discoverLocalPlugins",
     "file": "src/plugins/loaders/local-loader.ts",
     "type": "function",
@@ -1696,6 +2144,14 @@
     "parameters": 1
   },
   {
+    "element": "traverse",
+    "file": "src/scanner/tree-sitter-scanner.ts",
+    "type": "function",
+    "complexity": 11,
+    "loc": 69,
+    "parameters": 2
+  },
+  {
     "element": "createSampleReferences",
     "file": "__tests__/indexer.test.ts",
     "type": "function",
@@ -1704,12 +2160,12 @@
     "parameters": 1
   },
   {
-    "element": "main",
-    "file": "autoresearch/scanner-quality/03-test-coverage-linkage/apply_iteration_1.py",
+    "element": "makeOrchestrator",
+    "file": "__tests__/integration/rag/indexing-orchestrator.test.ts",
     "type": "function",
     "complexity": 11,
-    "loc": 50,
-    "parameters": 0
+    "loc": 141,
+    "parameters": 1
   },
   {
     "element": "DatabaseDetector.parseMongooseSchema",
@@ -1744,6 +2200,14 @@
     "parameters": 2
   },
   {
+    "element": "dfs",
+    "file": "src/analyzer/graph-analyzer.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 53,
+    "parameters": 2
+  },
+  {
     "element": "MiddlewareDetector.detectFlaskMiddlewareMappings",
     "file": "src/analyzer/middleware-detector.ts",
     "type": "method",
@@ -1760,20 +2224,20 @@
     "parameters": 2
   },
   {
+    "element": "main",
+    "file": "src/cli/coderef-analyze.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 29,
+    "parameters": 0
+  },
+  {
     "element": "probeOllama",
     "file": "src/cli/coderef-rag-server.ts",
     "type": "function",
     "complexity": 10,
     "loc": 42,
     "parameters": 1
-  },
-  {
-    "element": "findImpactedCallSites",
-    "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-    "type": "function",
-    "complexity": 10,
-    "loc": 59,
-    "parameters": 3
   },
   {
     "element": "ContextTracker.mergeContext",
@@ -1848,6 +2312,30 @@
     "parameters": 2
   },
   {
+    "element": "buildNewInitializerMap",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 30,
+    "parameters": 3
+  },
+  {
+    "element": "traverse",
+    "file": "src/pipeline/extractors/element-extractor.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 61,
+    "parameters": 2
+  },
+  {
+    "element": "traverse",
+    "file": "src/pipeline/extractors/element-extractor.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 64,
+    "parameters": 2
+  },
+  {
     "element": "RelationshipExtractor.extractJavaCalls",
     "file": "src/pipeline/extractors/relationship-extractor.ts",
     "type": "method",
@@ -1861,6 +2349,22 @@
     "type": "method",
     "complexity": 10,
     "loc": 45,
+    "parameters": 1
+  },
+  {
+    "element": "estimateComplexity",
+    "file": "src/pipeline/generators/pattern-generator.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 18,
+    "parameters": 1
+  },
+  {
+    "element": "loadTsconfigPaths",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 31,
     "parameters": 1
   },
   {
@@ -1885,14 +2389,6 @@
     "type": "function",
     "complexity": 10,
     "loc": 45,
-    "parameters": 3
-  },
-  {
-    "element": "detectionResultToElement",
-    "file": "src/plugins/plugin-scanner.ts",
-    "type": "function",
-    "complexity": 10,
-    "loc": 25,
     "parameters": 3
   },
   {
@@ -1928,12 +2424,28 @@
     "parameters": 2
   },
   {
+    "element": "traverse",
+    "file": "src/scanner/tree-sitter-scanner.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 34,
+    "parameters": 2
+  },
+  {
     "element": "SearchEngine.getStatistics",
     "file": "src/search/search-engine.ts",
     "type": "method",
     "complexity": 10,
     "loc": 74,
     "parameters": 0
+  },
+  {
+    "element": "SemanticOrchestrator.processFile",
+    "file": "src/semantic/orchestrator.ts",
+    "type": "method",
+    "complexity": 10,
+    "loc": 52,
+    "parameters": 1
   },
   {
     "element": "SemanticParameterMapper.detectFromPattern",
@@ -1958,6 +2470,14 @@
     "complexity": 10,
     "loc": 72,
     "parameters": 3
+  },
+  {
+    "element": "expectUnresolved",
+    "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+    "type": "function",
+    "complexity": 10,
+    "loc": 10,
+    "parameters": 1
   },
   {
     "element": "mapErrorToResponse",
@@ -2136,6 +2656,14 @@
     "parameters": 1
   },
   {
+    "element": "runSemanticIntegration",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "function",
+    "complexity": 9,
+    "loc": 56,
+    "parameters": 1
+  },
+  {
     "element": "generateMigrationHints",
     "file": "src/context/breaking-change-detector/hint-generator.ts",
     "type": "function",
@@ -2190,6 +2718,14 @@
     "complexity": 9,
     "loc": 71,
     "parameters": 2
+  },
+  {
+    "element": "walk",
+    "file": "src/indexer/relationship-index.ts",
+    "type": "function",
+    "complexity": 9,
+    "loc": 29,
+    "parameters": 1
   },
   {
     "element": "AnswerGenerationService.validateAnswer",
@@ -2256,12 +2792,36 @@
     "parameters": 1
   },
   {
+    "element": "calculatePriority",
+    "file": "src/pipeline/generators/pattern-generator.ts",
+    "type": "function",
+    "complexity": 9,
+    "loc": 81,
+    "parameters": 1
+  },
+  {
+    "element": "resolveHeaderImportsInternal",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 9,
+    "loc": 63,
+    "parameters": 5
+  },
+  {
     "element": "PipelineOrchestrator.scanDirectory",
     "file": "src/pipeline/orchestrator.ts",
     "type": "method",
     "complexity": 9,
     "loc": 53,
     "parameters": 5
+  },
+  {
+    "element": "normalizeRulesField",
+    "file": "src/pipeline/semantic-elements.ts",
+    "type": "function",
+    "complexity": 9,
+    "loc": 32,
+    "parameters": 1
   },
   {
     "element": "getRelevantDetectors",
@@ -2280,20 +2840,20 @@
     "parameters": 1
   },
   {
-    "element": "resolveImportPath",
-    "file": "src/scanner/semantic-analyzer.ts",
-    "type": "function",
-    "complexity": 9,
-    "loc": 37,
-    "parameters": 3
-  },
-  {
     "element": "TreeSitterScanner.extractJavaParameters",
     "file": "src/scanner/tree-sitter-scanner.ts",
     "type": "method",
     "complexity": 9,
     "loc": 29,
     "parameters": 2
+  },
+  {
+    "element": "LLMEnricher.callLLM",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "method",
+    "complexity": 9,
+    "loc": 38,
+    "parameters": 1
   },
   {
     "element": "generateUpdateReport",
@@ -2328,12 +2888,28 @@
     "parameters": 2
   },
   {
-    "element": "main",
-    "file": "autoresearch/scanner-quality/01-element-classification/apply_iteration_5.py",
+    "element": "walk",
+    "file": "__tests__/pipeline/graph-construction-legacy-builders.test.ts",
     "type": "function",
     "complexity": 9,
-    "loc": 82,
-    "parameters": 0
+    "loc": 32,
+    "parameters": 1
+  },
+  {
+    "element": "copyDir",
+    "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+    "type": "function",
+    "complexity": 9,
+    "loc": 109,
+    "parameters": 2
+  },
+  {
+    "element": "findCallByCallee",
+    "file": "__tests__/pipeline-integration.test.ts",
+    "type": "function",
+    "complexity": 9,
+    "loc": 208,
+    "parameters": 1
   },
   {
     "element": "ASTElementScanner.scanFiles",
@@ -2360,6 +2936,14 @@
     "parameters": 2
   },
   {
+    "element": "traverse",
+    "file": "src/analyzer/design-pattern-detector.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 28,
+    "parameters": 1
+  },
+  {
     "element": "DocsAnalyzer.calculateOverallScore",
     "file": "src/analyzer/docs-analyzer.ts",
     "type": "method",
@@ -2382,6 +2966,14 @@
     "complexity": 8,
     "loc": 46,
     "parameters": 2
+  },
+  {
+    "element": "dfs",
+    "file": "src/analyzer/graph-analyzer.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 48,
+    "parameters": 6
   },
   {
     "element": "buildCallEdges",
@@ -2429,6 +3021,14 @@
     "type": "function",
     "complexity": 8,
     "loc": 37,
+    "parameters": 2
+  },
+  {
+    "element": "scanProject",
+    "file": "src/cli/scan.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 52,
     "parameters": 2
   },
   {
@@ -2560,6 +3160,14 @@
     "parameters": 4
   },
   {
+    "element": "isTestFile",
+    "file": "src/pipeline/generators/context-generator.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 12,
+    "parameters": 1
+  },
+  {
     "element": "ContextGenerator.buildDependentCounts",
     "file": "src/pipeline/generators/context-generator.ts",
     "type": "method",
@@ -2584,20 +3192,36 @@
     "parameters": 2
   },
   {
-    "element": "IndexGenerator.transformElements",
-    "file": "src/pipeline/generators/index-generator.ts",
-    "type": "method",
-    "complexity": 8,
-    "loc": 34,
-    "parameters": 2
-  },
-  {
     "element": "PatternGenerator.calculateFileCoverage",
     "file": "src/pipeline/generators/pattern-generator.ts",
     "type": "method",
     "complexity": 8,
     "loc": 35,
     "parameters": 1
+  },
+  {
+    "element": "constructGraph",
+    "file": "src/pipeline/graph-builder.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 57,
+    "parameters": 1
+  },
+  {
+    "element": "buildFileHeaderStatusMap",
+    "file": "src/pipeline/output-validator.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 18,
+    "parameters": 1
+  },
+  {
+    "element": "extractTagValue",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 19,
+    "parameters": 2
   },
   {
     "element": "printScanErrors",
@@ -2614,6 +3238,14 @@
     "complexity": 8,
     "loc": 32,
     "parameters": 2
+  },
+  {
+    "element": "attachFileImportsToElements",
+    "file": "src/scanner/semantic-analyzer.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 40,
+    "parameters": 3
   },
   {
     "element": "GrammarLoader.loadGrammar",
@@ -2640,6 +3272,30 @@
     "parameters": 2
   },
   {
+    "element": "LLMEnricher.parseResponse",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "method",
+    "complexity": 8,
+    "loc": 29,
+    "parameters": 1
+  },
+  {
+    "element": "LLMEnricher.enrichElementData",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "method",
+    "complexity": 8,
+    "loc": 28,
+    "parameters": 1
+  },
+  {
+    "element": "RegistrySyncer.validateEntry",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "method",
+    "complexity": 8,
+    "loc": 20,
+    "parameters": 1
+  },
+  {
     "element": "calculatePathConfidence",
     "file": "src/validator/frontend-update-generator.ts",
     "type": "function",
@@ -2656,27 +3312,19 @@
     "parameters": 1
   },
   {
+    "element": "expectResolvedEndpointIds",
+    "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+    "type": "function",
+    "complexity": 8,
+    "loc": 15,
+    "parameters": 2
+  },
+  {
     "element": "enhanceAPIMd",
     "file": "scripts/doc-gen/enhance-existing-docs.js",
     "type": "function",
     "complexity": 8,
     "loc": 47,
-    "parameters": 0
-  },
-  {
-    "element": "main",
-    "file": "autoresearch/scanner-quality/04-async-pattern-detection/apply_iteration_1.py",
-    "type": "function",
-    "complexity": 8,
-    "loc": 46,
-    "parameters": 0
-  },
-  {
-    "element": "main",
-    "file": "autoresearch/scanner-quality/05-context-summary-signal/apply_iteration_1.py",
-    "type": "function",
-    "complexity": 8,
-    "loc": 55,
     "parameters": 0
   },
   {
@@ -2816,11 +3464,27 @@
     "parameters": 0
   },
   {
+    "element": "printHelp",
+    "file": "src/cli/coderef-query.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 32,
+    "parameters": 0
+  },
+  {
     "element": "next",
     "file": "src/cli/coderef-rag-server.ts",
     "type": "function",
     "complexity": 7,
     "loc": 12,
+    "parameters": 0
+  },
+  {
+    "element": "printHelp",
+    "file": "src/cli/detect-languages-cli.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 56,
     "parameters": 0
   },
   {
@@ -2830,14 +3494,6 @@
     "complexity": 7,
     "loc": 27,
     "parameters": 1
-  },
-  {
-    "element": "scanProject",
-    "file": "src/cli/scan.ts",
-    "type": "function",
-    "complexity": 7,
-    "loc": 51,
-    "parameters": 2
   },
   {
     "element": "resolveFilePaths",
@@ -2920,6 +3576,14 @@
     "parameters": 4
   },
   {
+    "element": "walk",
+    "file": "src/indexer/relationship-index.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 32,
+    "parameters": 2
+  },
+  {
     "element": "OpenAIProvider.getEmbeddingDimensions",
     "file": "src/integration/llm/openai-provider.ts",
     "type": "method",
@@ -3000,6 +3664,14 @@
     "parameters": 1
   },
   {
+    "element": "ElementExtractor.createFunctionElement",
+    "file": "src/pipeline/extractors/element-extractor.ts",
+    "type": "method",
+    "complexity": 7,
+    "loc": 34,
+    "parameters": 5
+  },
+  {
     "element": "ElementExtractor.extractParameters",
     "file": "src/pipeline/extractors/element-extractor.ts",
     "type": "method",
@@ -3008,11 +3680,27 @@
     "parameters": 1
   },
   {
+    "element": "RelationshipExtractor.walkRawPyImports",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
+    "complexity": 7,
+    "loc": 50,
+    "parameters": 4
+  },
+  {
     "element": "ContextGenerator.loadComplexityData",
     "file": "src/pipeline/generators/context-generator.ts",
     "type": "method",
     "complexity": 7,
     "loc": 22,
+    "parameters": 1
+  },
+  {
+    "element": "dfs",
+    "file": "src/pipeline/generators/context-generator.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 40,
     "parameters": 1
   },
   {
@@ -3072,6 +3760,22 @@
     "parameters": 0
   },
   {
+    "element": "normalizeElementForOutput",
+    "file": "src/pipeline/semantic-elements.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 17,
+    "parameters": 2
+  },
+  {
+    "element": "parseImportsArray",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 42,
+    "parameters": 4
+  },
+  {
     "element": "findFiles",
     "file": "src/scanner/frontend-scanner.ts",
     "type": "function",
@@ -3096,12 +3800,52 @@
     "parameters": 1
   },
   {
+    "element": "deduplicateImports",
+    "file": "src/scanner/semantic-analyzer.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 28,
+    "parameters": 1
+  },
+  {
+    "element": "resolveImportPath",
+    "file": "src/scanner/semantic-analyzer.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 33,
+    "parameters": 4
+  },
+  {
     "element": "TreeSitterScanner.extractRustDocstring",
     "file": "src/scanner/tree-sitter-scanner.ts",
     "type": "method",
     "complexity": 7,
     "loc": 29,
     "parameters": 2
+  },
+  {
+    "element": "ASTExtractor.getDeclarationType",
+    "file": "src/semantic/ast-extractor.ts",
+    "type": "method",
+    "complexity": 7,
+    "loc": 13,
+    "parameters": 1
+  },
+  {
+    "element": "HeaderGenerator.insertHeaders",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 7,
+    "loc": 34,
+    "parameters": 2
+  },
+  {
+    "element": "RegistrySyncer.syncBatch",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "method",
+    "complexity": 7,
+    "loc": 47,
+    "parameters": 1
   },
   {
     "element": "generateUpdateSuggestions",
@@ -3184,6 +3928,14 @@
     "parameters": 0
   },
   {
+    "element": "stripComments",
+    "file": "__tests__/pipeline/output-validation-chokepoint.test.ts",
+    "type": "function",
+    "complexity": 7,
+    "loc": 36,
+    "parameters": 1
+  },
+  {
     "element": "enhanceComponentsMd",
     "file": "scripts/doc-gen/enhance-existing-docs.js",
     "type": "function",
@@ -3216,6 +3968,14 @@
     "parameters": 1
   },
   {
+    "element": "visit",
+    "file": "src/analyzer/ast-element-scanner.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 27,
+    "parameters": 1
+  },
+  {
     "element": "ConfigAnalyzer.analyzeTsConfig",
     "file": "src/analyzer/config-analyzer.ts",
     "type": "method",
@@ -3230,6 +3990,14 @@
     "complexity": 6,
     "loc": 39,
     "parameters": 4
+  },
+  {
+    "element": "traverse",
+    "file": "src/analyzer/database-detector.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 25,
+    "parameters": 1
   },
   {
     "element": "DependencyAnalyzer.calculateSeverity",
@@ -3648,6 +4416,22 @@
     "parameters": 2
   },
   {
+    "element": "qualifierPathMatchesScope",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 18,
+    "parameters": 2
+  },
+  {
+    "element": "loadLayerEnum",
+    "file": "src/pipeline/element-taxonomy.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 21,
+    "parameters": 1
+  },
+  {
     "element": "ElementExtractor.extractPythonParameters",
     "file": "src/pipeline/extractors/element-extractor.ts",
     "type": "method",
@@ -3662,6 +4446,22 @@
     "complexity": 6,
     "loc": 22,
     "parameters": 1
+  },
+  {
+    "element": "RelationshipExtractor.extractRawImports",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
+    "complexity": 6,
+    "loc": 26,
+    "parameters": 4
+  },
+  {
+    "element": "RelationshipExtractor.extractRawCalls",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
+    "complexity": 6,
+    "loc": 24,
+    "parameters": 4
   },
   {
     "element": "ComplexityGenerator.generate",
@@ -3704,6 +4504,14 @@
     "parameters": 2
   },
   {
+    "element": "isInternalFunction",
+    "file": "src/pipeline/generators/pattern-generator.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 14,
+    "parameters": 2
+  },
+  {
     "element": "PatternGenerator.generateTestGapReason",
     "file": "src/pipeline/generators/pattern-generator.ts",
     "type": "method",
@@ -3712,11 +4520,51 @@
     "parameters": 3
   },
   {
+    "element": "probeRelative",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 26,
+    "parameters": 2
+  },
+  {
+    "element": "matchTsconfigPaths",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 24,
+    "parameters": 2
+  },
+  {
     "element": "PipelineOrchestrator.buildGraph",
     "file": "src/pipeline/orchestrator.ts",
     "type": "method",
     "complexity": 6,
-    "loc": 82,
+    "loc": 87,
+    "parameters": 4
+  },
+  {
+    "element": "validatePipelineState",
+    "file": "src/pipeline/output-validator.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 73,
+    "parameters": 3
+  },
+  {
+    "element": "buildSemanticElementsFromState",
+    "file": "src/pipeline/semantic-elements.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 23,
+    "parameters": 1
+  },
+  {
+    "element": "parseConstraintArray",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 31,
     "parameters": 3
   },
   {
@@ -3788,7 +4636,7 @@
     "file": "src/scanner/scanner.ts",
     "type": "function",
     "complexity": 6,
-    "loc": 58,
+    "loc": 59,
     "parameters": 1
   },
   {
@@ -3798,6 +4646,38 @@
     "complexity": 6,
     "loc": 32,
     "parameters": 2
+  },
+  {
+    "element": "HeaderGenerator.deriveRules",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 6,
+    "loc": 29,
+    "parameters": 2
+  },
+  {
+    "element": "LLMEnricher.fallbackEnrichment",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "method",
+    "complexity": 6,
+    "loc": 46,
+    "parameters": 1
+  },
+  {
+    "element": "traverse",
+    "file": "src/semantic/orchestrator.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 21,
+    "parameters": 1
+  },
+  {
+    "element": "RegistrySyncer.loadRegistry",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "method",
+    "complexity": 6,
+    "loc": 20,
+    "parameters": 0
   },
   {
     "element": "partialMatch",
@@ -3830,6 +4710,14 @@
     "complexity": 6,
     "loc": 306,
     "parameters": 2
+  },
+  {
+    "element": "makeMinimalFixture",
+    "file": "__tests__/pipeline/output-validation-report.test.ts",
+    "type": "function",
+    "complexity": 6,
+    "loc": 107,
+    "parameters": 0
   },
   {
     "element": "isEntirelyCommented",
@@ -3984,6 +4872,14 @@
     "parameters": 2
   },
   {
+    "element": "collectTsFiles",
+    "file": "src/cli/coderef-analyze.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 11,
+    "parameters": 1
+  },
+  {
     "element": "runOnce",
     "file": "src/cli/coderef-watch.ts",
     "type": "function",
@@ -3998,6 +4894,14 @@
     "complexity": 5,
     "loc": 19,
     "parameters": 1
+  },
+  {
+    "element": "DryRunSemanticOrchestrator.interceptFileWrites",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "method",
+    "complexity": 5,
+    "loc": 32,
+    "parameters": 0
   },
   {
     "element": "scoreCallType",
@@ -4320,12 +5224,12 @@
     "parameters": 2
   },
   {
-    "element": "ElementExtractor.createFunctionElement",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "method",
+    "element": "findEnclosingClassName",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
     "complexity": 5,
-    "loc": 33,
-    "parameters": 5
+    "loc": 17,
+    "parameters": 1
   },
   {
     "element": "ElementExtractor.extractGoParameters",
@@ -4358,6 +5262,14 @@
     "complexity": 5,
     "loc": 13,
     "parameters": 1
+  },
+  {
+    "element": "RelationshipExtractor.extractRawExports",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
+    "complexity": 5,
+    "loc": 28,
+    "parameters": 4
   },
   {
     "element": "RelationshipExtractor.extractRustImports",
@@ -4432,6 +5344,22 @@
     "parameters": 2
   },
   {
+    "element": "computeEdgeId",
+    "file": "src/pipeline/graph-builder.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 31,
+    "parameters": 1
+  },
+  {
+    "element": "isHeaderDerived",
+    "file": "src/pipeline/graph-builder.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 34,
+    "parameters": 2
+  },
+  {
     "element": "shouldIgnorePath",
     "file": "src/pipeline/ignore-rules.ts",
     "type": "function",
@@ -4440,12 +5368,44 @@
     "parameters": 5
   },
   {
+    "element": "lookupExport",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 17,
+    "parameters": 3
+  },
+  {
+    "element": "indexElementsByFileAndLocalName",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 13,
+    "parameters": 2
+  },
+  {
+    "element": "indexImporterByFile",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 14,
+    "parameters": 2
+  },
+  {
     "element": "PipelineOrchestrator.resolveElementId",
     "file": "src/pipeline/orchestrator.ts",
     "type": "method",
     "complexity": 5,
-    "loc": 21,
-    "parameters": 3
+    "loc": 22,
+    "parameters": 4
+  },
+  {
+    "element": "cleanElement",
+    "file": "src/pipeline/semantic-elements.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 11,
+    "parameters": 1
   },
   {
     "element": "QueryExecutor.flattenPaths",
@@ -4541,6 +5501,38 @@
     "type": "method",
     "complexity": 5,
     "loc": 20,
+    "parameters": 1
+  },
+  {
+    "element": "HeaderGenerator.generateHeaders",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 5,
+    "loc": 60,
+    "parameters": 4
+  },
+  {
+    "element": "HeaderGenerator.formatAsComments",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 5,
+    "loc": 27,
+    "parameters": 1
+  },
+  {
+    "element": "getRelatedPath",
+    "file": "src/semantic/header-generator.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 7,
+    "parameters": 1
+  },
+  {
+    "element": "LLMEnricher.enrich",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "method",
+    "complexity": 5,
+    "loc": 17,
     "parameters": 1
   },
   {
@@ -4640,6 +5632,14 @@
     "parameters": 0
   },
   {
+    "element": "loadBnfLayers",
+    "file": "__tests__/pipeline/element-taxonomy.test.ts",
+    "type": "function",
+    "complexity": 5,
+    "loc": 53,
+    "parameters": 0
+  },
+  {
     "element": "handleScanRequest",
     "file": "__tests__/scanner-standalone.test.ts",
     "type": "function",
@@ -4704,6 +5704,14 @@
     "parameters": 1
   },
   {
+    "element": "visit",
+    "file": "src/analyzer/ast-element-scanner.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 15,
+    "parameters": 1
+  },
+  {
     "element": "CallDetector.isNestedCall",
     "file": "src/analyzer/call-detector.ts",
     "type": "method",
@@ -4742,6 +5750,14 @@
     "complexity": 4,
     "loc": 23,
     "parameters": 0
+  },
+  {
+    "element": "traverse",
+    "file": "src/analyzer/contract-detector.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 24,
+    "parameters": 1
   },
   {
     "element": "DatabaseDetector.detectTypeorm",
@@ -4958,6 +5974,22 @@
     "complexity": 4,
     "loc": 22,
     "parameters": 0
+  },
+  {
+    "element": "DryRunSemanticOrchestrator.restore",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "method",
+    "complexity": 4,
+    "loc": 19,
+    "parameters": 0
+  },
+  {
+    "element": "DryRunSemanticOrchestrator.shouldCapture",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "method",
+    "complexity": 4,
+    "loc": 7,
+    "parameters": 1
   },
   {
     "element": "isCompatibleCall",
@@ -5288,6 +6320,22 @@
     "parameters": 1
   },
   {
+    "element": "resolveCallsAgainstTable",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 77,
+    "parameters": 2
+  },
+  {
+    "element": "indexElementsByFile",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 13,
+    "parameters": 1
+  },
+  {
     "element": "ElementExtractor.extractCppFunctionName",
     "file": "src/pipeline/extractors/element-extractor.ts",
     "type": "method",
@@ -5384,6 +6432,14 @@
     "parameters": 1
   },
   {
+    "element": "buildFileHeaderFactMap",
+    "file": "src/pipeline/output-validator.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 33,
+    "parameters": 1
+  },
+  {
     "element": "loadConfigPlugins",
     "file": "src/plugins/loaders/config-loader.ts",
     "type": "function",
@@ -5469,7 +6525,7 @@
     "type": "function",
     "complexity": 4,
     "loc": 15,
-    "parameters": 2
+    "parameters": 3
   },
   {
     "element": "TreeSitterScanner.extractGoDocstring",
@@ -5504,12 +6560,52 @@
     "parameters": 3
   },
   {
+    "element": "HeaderGenerator.deriveRelated",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 4,
+    "loc": 26,
+    "parameters": 2
+  },
+  {
+    "element": "HeaderGenerator.hasSemanticHeader",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 4,
+    "loc": 6,
+    "parameters": 1
+  },
+  {
+    "element": "groupBySourceFile",
+    "file": "src/semantic/projections.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 15,
+    "parameters": 2
+  },
+  {
+    "element": "RegistrySyncer.saveRegistry",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "method",
+    "complexity": 4,
+    "loc": 30,
+    "parameters": 0
+  },
+  {
     "element": "isValidTypeDesignator",
     "file": "src/types/types.ts",
     "type": "function",
     "complexity": 4,
     "loc": 8,
     "parameters": 1
+  },
+  {
+    "element": "createCodeRefId",
+    "file": "src/utils/coderef-id.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 14,
+    "parameters": 3
   },
   {
     "element": "Logger.log",
@@ -5560,7 +6656,7 @@
     "parameters": 1
   },
   {
-    "element": "walk",
+    "element": "collectFiles.walk",
     "file": "utils/fs.ts",
     "type": "function",
     "complexity": 4,
@@ -5616,6 +6712,22 @@
     "parameters": 0
   },
   {
+    "element": "buildHeader",
+    "file": "__tests__/pipeline/header-exports-cross-check.test.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 60,
+    "parameters": 1
+  },
+  {
+    "element": "createProject",
+    "file": "__tests__/pipeline/header-fact-shape.test.ts",
+    "type": "function",
+    "complexity": 4,
+    "loc": 70,
+    "parameters": 1
+  },
+  {
     "element": "complexityBadge",
     "file": "scripts/doc-gen/enhance-existing-docs.js",
     "type": "function",
@@ -5640,7 +6752,7 @@
     "parameters": 1
   },
   {
-    "element": "walk",
+    "element": "collectFiles.walk",
     "file": "utils/fs.js",
     "type": "function",
     "complexity": 4,
@@ -6436,7 +7548,7 @@
     "file": "src/integration/rag/chunk-converter.ts",
     "type": "method",
     "complexity": 3,
-    "loc": 15,
+    "loc": 16,
     "parameters": 1
   },
   {
@@ -6520,20 +7632,28 @@
     "parameters": 1
   },
   {
-    "element": "IncrementalIndexer.hashFile",
-    "file": "src/integration/rag/incremental-indexer.ts",
-    "type": "method",
-    "complexity": 3,
-    "loc": 16,
-    "parameters": 1
-  },
-  {
     "element": "IncrementalIndexer.clearState",
     "file": "src/integration/rag/incremental-indexer.ts",
     "type": "method",
     "complexity": 3,
     "loc": 14,
     "parameters": 0
+  },
+  {
+    "element": "normalizeChunkFileForGraphJoin",
+    "file": "src/integration/rag/indexing-orchestrator.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 29,
+    "parameters": 2
+  },
+  {
+    "element": "IndexingOrchestrator.indexCodebase",
+    "file": "src/integration/rag/indexing-orchestrator.ts",
+    "type": "method",
+    "complexity": 3,
+    "loc": 44,
+    "parameters": 1
   },
   {
     "element": "RAGConfigLoader.getGenerationSettings",
@@ -6549,6 +7669,30 @@
     "type": "method",
     "complexity": 3,
     "loc": 37,
+    "parameters": 1
+  },
+  {
+    "element": "resolveCalls",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 24,
+    "parameters": 1
+  },
+  {
+    "element": "isValidLayer",
+    "file": "src/pipeline/element-taxonomy.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 4,
+    "parameters": 2
+  },
+  {
+    "element": "isKebabCase",
+    "file": "src/pipeline/element-taxonomy.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 5,
     "parameters": 1
   },
   {
@@ -6632,20 +7776,20 @@
     "parameters": 1
   },
   {
-    "element": "IndexGenerator.generate",
-    "file": "src/pipeline/generators/index-generator.ts",
-    "type": "method",
-    "complexity": 3,
-    "loc": 40,
-    "parameters": 2
-  },
-  {
     "element": "PatternGenerator.detectDecorators",
     "file": "src/pipeline/generators/pattern-generator.ts",
     "type": "method",
     "complexity": 3,
     "loc": 16,
     "parameters": 2
+  },
+  {
+    "element": "isPipelineOrchestrator",
+    "file": "src/pipeline/generators/pattern-generator.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 44,
+    "parameters": 1
   },
   {
     "element": "normalizePattern",
@@ -6656,6 +7800,46 @@
     "parameters": 1
   },
   {
+    "element": "indexElementsByFile",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 10,
+    "parameters": 1
+  },
+  {
+    "element": "collectProjectFiles",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 12,
+    "parameters": 1
+  },
+  {
+    "element": "isBareSpecifier",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 4,
+    "parameters": 1
+  },
+  {
+    "element": "extractPackageName",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 14,
+    "parameters": 1
+  },
+  {
+    "element": "projectFilesCanonical",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 9,
+    "parameters": 2
+  },
+  {
     "element": "IncrementalCache.save",
     "file": "src/pipeline/incremental-cache.ts",
     "type": "method",
@@ -6664,12 +7848,28 @@
     "parameters": 0
   },
   {
-    "element": "PipelineOrchestrator.processFile",
-    "file": "src/pipeline/orchestrator.ts",
-    "type": "method",
+    "element": "normalizeImportsField",
+    "file": "src/pipeline/semantic-elements.ts",
+    "type": "function",
     "complexity": 3,
-    "loc": 41,
-    "parameters": 3
+    "loc": 9,
+    "parameters": 1
+  },
+  {
+    "element": "normalizePathArray",
+    "file": "src/pipeline/semantic-elements.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 5,
+    "parameters": 1
+  },
+  {
+    "element": "countLines",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 9,
+    "parameters": 1
   },
   {
     "element": "loadConfigPlugin",
@@ -6800,11 +8000,59 @@
     "parameters": 1
   },
   {
+    "element": "extractBatch",
+    "file": "src/semantic/ast-extractor.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 15,
+    "parameters": 2
+  },
+  {
+    "element": "HeaderGenerator.skipSingleNewline",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 3,
+    "loc": 10,
+    "parameters": 2
+  },
+  {
+    "element": "uniqueObjects",
+    "file": "src/semantic/header-generator.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 11,
+    "parameters": 2
+  },
+  {
+    "element": "enrichBatch",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 15,
+    "parameters": 2
+  },
+  {
+    "element": "RegistrySyncer.getStatus",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "method",
+    "complexity": 3,
+    "loc": 16,
+    "parameters": 0
+  },
+  {
     "element": "getTypePriority",
     "file": "src/types/types.ts",
     "type": "function",
     "complexity": 3,
     "loc": 8,
+    "parameters": 1
+  },
+  {
+    "element": "codeRefDesignatorForType",
+    "file": "src/utils/coderef-id.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 4,
     "parameters": 1
   },
   {
@@ -6888,6 +8136,14 @@
     "parameters": 2
   },
   {
+    "element": "makeOrchestrator",
+    "file": "__tests__/integration/rag/indexing-orchestrator-graph-source.test.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 148,
+    "parameters": 1
+  },
+  {
     "element": "testParserWithBlockReferences",
     "file": "__tests__/integration.test.ts",
     "type": "function",
@@ -6910,6 +8166,62 @@
     "complexity": 3,
     "loc": 25,
     "parameters": 0
+  },
+  {
+    "element": "fixture",
+    "file": "__tests__/pipeline/header-layer-runtime-validation.test.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 61,
+    "parameters": 1
+  },
+  {
+    "element": "assertNoForbiddenKeys",
+    "file": "__tests__/pipeline/no-graph-edge-claim.test.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 52,
+    "parameters": 1
+  },
+  {
+    "element": "assertNoForbidden",
+    "file": "__tests__/pipeline/no-import-resolution.test.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 46,
+    "parameters": 1
+  },
+  {
+    "element": "shuffle",
+    "file": "__tests__/pipeline/output-validation-determinism.test.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 23,
+    "parameters": 2
+  },
+  {
+    "element": "makeGraph",
+    "file": "__tests__/pipeline/output-validation-graph-integrity.test.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 177,
+    "parameters": 2
+  },
+  {
+    "element": "makeFixtureWithStaleExports",
+    "file": "__tests__/pipeline/output-validation-strict-headers.test.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 56,
+    "parameters": 0
+  },
+  {
+    "element": "findBySpec",
+    "file": "__tests__/pipeline-integration.test.ts",
+    "type": "function",
+    "complexity": 3,
+    "loc": 20,
+    "parameters": 1
   },
   {
     "element": "Scanner.processLine",
@@ -7196,7 +8508,7 @@
     "file": "src/cli/rag-search.ts",
     "type": "function",
     "complexity": 2,
-    "loc": 51,
+    "loc": 53,
     "parameters": 0
   },
   {
@@ -7624,22 +8936,6 @@
     "parameters": 1
   },
   {
-    "element": "ChunkConverter.readFile",
-    "file": "src/integration/rag/chunk-converter.ts",
-    "type": "method",
-    "complexity": 2,
-    "loc": 16,
-    "parameters": 1
-  },
-  {
-    "element": "ChunkConverter.fileExists",
-    "file": "src/integration/rag/chunk-converter.ts",
-    "type": "method",
-    "complexity": 2,
-    "loc": 17,
-    "parameters": 1
-  },
-  {
     "element": "ChunkConverter.extractElementName",
     "file": "src/integration/rag/chunk-converter.ts",
     "type": "method",
@@ -7784,6 +9080,14 @@
     "parameters": 1
   },
   {
+    "element": "IncrementalIndexer.hashFile",
+    "file": "src/integration/rag/incremental-indexer.ts",
+    "type": "method",
+    "complexity": 2,
+    "loc": 16,
+    "parameters": 1
+  },
+  {
     "element": "IndexingOrchestrator.clearIndex",
     "file": "src/integration/rag/indexing-orchestrator.ts",
     "type": "method",
@@ -7880,44 +9184,20 @@
     "parameters": 2
   },
   {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
+    "element": "isBuiltinReceiver",
+    "file": "src/pipeline/call-resolver.ts",
     "type": "function",
     "complexity": 2,
-    "loc": 1,
-    "parameters": 2
+    "loc": 30,
+    "parameters": 1
   },
   {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
+    "element": "resolveLayersPath",
+    "file": "src/pipeline/element-taxonomy.ts",
     "type": "function",
     "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
+    "loc": 14,
+    "parameters": 0
   },
   {
     "element": "ElementExtractor.extractGoReceiverType",
@@ -7926,46 +9206,6 @@
     "complexity": 2,
     "loc": 8,
     "parameters": 1
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
   },
   {
     "element": "ComplexityGenerator.average",
@@ -7989,6 +9229,14 @@
     "type": "method",
     "complexity": 2,
     "loc": 8,
+    "parameters": 1
+  },
+  {
+    "element": "isPipelineOrchestrator",
+    "file": "src/pipeline/generators/context-generator.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 28,
     "parameters": 1
   },
   {
@@ -8040,6 +9288,14 @@
     "parameters": 2
   },
   {
+    "element": "DriftGenerator.getElementId",
+    "file": "src/pipeline/generators/drift-generator.ts",
+    "type": "method",
+    "complexity": 2,
+    "loc": 4,
+    "parameters": 2
+  },
+  {
     "element": "DriftGenerator.normalizeFilePath",
     "file": "src/pipeline/generators/drift-generator.ts",
     "type": "method",
@@ -8088,6 +9344,14 @@
     "parameters": 2
   },
   {
+    "element": "IndexGenerator.generate",
+    "file": "src/pipeline/generators/index-generator.ts",
+    "type": "method",
+    "complexity": 2,
+    "loc": 13,
+    "parameters": 2
+  },
+  {
     "element": "PatternGenerator.generate",
     "file": "src/pipeline/generators/pattern-generator.ts",
     "type": "method",
@@ -8116,7 +9380,7 @@
     "file": "src/pipeline/generators/registry-generator.ts",
     "type": "method",
     "complexity": 2,
-    "loc": 22,
+    "loc": 41,
     "parameters": 2
   },
   {
@@ -8152,12 +9416,36 @@
     "parameters": 1
   },
   {
+    "element": "fileGrainNodeId",
+    "file": "src/pipeline/graph-builder.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 43,
+    "parameters": 2
+  },
+  {
     "element": "buildCandidates",
     "file": "src/pipeline/ignore-rules.ts",
     "type": "function",
     "complexity": 2,
     "loc": 15,
     "parameters": 4
+  },
+  {
+    "element": "classifyBareSpecifier",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 17,
+    "parameters": 2
+  },
+  {
+    "element": "stripJsonComments",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 6,
+    "parameters": 1
   },
   {
     "element": "IncrementalCache.removeDeletedFiles",
@@ -8188,8 +9476,8 @@
     "file": "src/pipeline/orchestrator.ts",
     "type": "method",
     "complexity": 2,
-    "loc": 7,
-    "parameters": 1
+    "loc": 8,
+    "parameters": 2
   },
   {
     "element": "loadAllLocalPlugins",
@@ -8344,20 +9632,12 @@
     "parameters": 1
   },
   {
-    "element": "traverse",
+    "element": "normalizeElement",
     "file": "src/scanner/tree-sitter-scanner.ts",
     "type": "function",
     "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
+    "loc": 15,
+    "parameters": 1
   },
   {
     "element": "TreeSitterScanner.isPythonAsync",
@@ -8376,28 +9656,12 @@
     "parameters": 2
   },
   {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
     "element": "TreeSitterScanner.isGoExported",
     "file": "src/scanner/tree-sitter-scanner.ts",
     "type": "method",
     "complexity": 2,
     "loc": 8,
     "parameters": 1
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
   },
   {
     "element": "TreeSitterScanner.isRustAsync",
@@ -8416,27 +9680,11 @@
     "parameters": 2
   },
   {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
     "element": "TreeSitterScanner.extractJavaReturnType",
     "file": "src/scanner/tree-sitter-scanner.ts",
     "type": "method",
     "complexity": 2,
     "loc": 9,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
     "parameters": 2
   },
   {
@@ -8462,54 +9710,6 @@
     "complexity": 2,
     "loc": 11,
     "parameters": 1
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 1,
-    "parameters": 2
   },
   {
     "element": "createTestFile",
@@ -8540,7 +9740,7 @@
     "file": "src/scanner/__tests__/parallel-path-behavior.test.ts",
     "type": "function",
     "complexity": 2,
-    "loc": 126,
+    "loc": 127,
     "parameters": 0
   },
   {
@@ -8568,12 +9768,84 @@
     "parameters": 1
   },
   {
+    "element": "ASTExtractor.extractDirectory",
+    "file": "src/semantic/ast-extractor.ts",
+    "type": "method",
+    "complexity": 2,
+    "loc": 17,
+    "parameters": 2
+  },
+  {
+    "element": "astExtractor",
+    "file": "src/semantic/ast-extractor.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 8,
+    "parameters": 2
+  },
+  {
+    "element": "generateHeaders",
+    "file": "src/semantic/header-generator.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 11,
+    "parameters": 4
+  },
+  {
+    "element": "LLMEnricher.isAvailable",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "method",
+    "complexity": 2,
+    "loc": 4,
+    "parameters": 0
+  },
+  {
+    "element": "enrichMetadata",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 11,
+    "parameters": 2
+  },
+  {
+    "element": "normalizeFilePath",
+    "file": "src/semantic/projections.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 9,
+    "parameters": 2
+  },
+  {
+    "element": "syncEntry",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 14,
+    "parameters": 5
+  },
+  {
+    "element": "refreshSync",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 13,
+    "parameters": 2
+  },
+  {
     "element": "getTypeMetadata",
     "file": "src/types/types.ts",
     "type": "function",
     "complexity": 2,
     "loc": 8,
     "parameters": 1
+  },
+  {
+    "element": "normalizeProjectPath",
+    "file": "src/utils/coderef-id.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 8,
+    "parameters": 2
   },
   {
     "element": "Logger.error",
@@ -8752,20 +10024,20 @@
     "parameters": 2
   },
   {
-    "element": "validateCredentials",
-    "file": "__tests__/.test-integration-project/src/auth.ts",
-    "type": "function",
-    "complexity": 2,
-    "loc": 4,
-    "parameters": 2
-  },
-  {
     "element": "isWindowsAbsolutePath",
     "file": "__tests__/generators/root-cause-alignment.test.ts",
     "type": "function",
     "complexity": 2,
     "loc": 4,
     "parameters": 1
+  },
+  {
+    "element": "makeStore",
+    "file": "__tests__/integration/rag/facet-filter.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 141,
+    "parameters": 0
   },
   {
     "element": "testParserInvalidReferences",
@@ -8822,6 +10094,70 @@
     "complexity": 2,
     "loc": 9,
     "parameters": 2
+  },
+  {
+    "element": "makeState",
+    "file": "__tests__/pipeline/call-resolution-determinism.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 68,
+    "parameters": 0
+  },
+  {
+    "element": "stripExportedAt",
+    "file": "__tests__/pipeline/graph-construction-determinism.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 26,
+    "parameters": 1
+  },
+  {
+    "element": "runProject",
+    "file": "__tests__/pipeline/import-resolution-relative.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 48,
+    "parameters": 1
+  },
+  {
+    "element": "mask",
+    "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 40,
+    "parameters": 1
+  },
+  {
+    "element": "fileOf",
+    "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 17,
+    "parameters": 1
+  },
+  {
+    "element": "elem",
+    "file": "__tests__/pipeline/output-validation-determinism.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 16,
+    "parameters": 5
+  },
+  {
+    "element": "makeState",
+    "file": "__tests__/pipeline/output-validation-determinism.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 76,
+    "parameters": 1
+  },
+  {
+    "element": "stampedElement",
+    "file": "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+    "type": "function",
+    "complexity": 2,
+    "loc": 16,
+    "parameters": 3
   },
   {
     "element": "main",
@@ -8928,14 +10264,6 @@
     "parameters": 0
   },
   {
-    "element": "create_structure",
-    "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
-    "type": "function",
-    "complexity": 2,
-    "loc": 62,
-    "parameters": 0
-  },
-  {
     "element": "section",
     "file": "demo-all-modules.ts",
     "type": "function",
@@ -9000,27 +10328,11 @@
     "parameters": 1
   },
   {
-    "element": "visit",
-    "file": "src/analyzer/ast-element-scanner.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
     "element": "ASTElementScanner.hasJsxInClass",
     "file": "src/analyzer/ast-element-scanner.ts",
     "type": "method",
     "complexity": 1,
     "loc": 3,
-    "parameters": 1
-  },
-  {
-    "element": "visit",
-    "file": "src/analyzer/ast-element-scanner.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
     "parameters": 1
   },
   {
@@ -9038,22 +10350,6 @@
     "complexity": 1,
     "loc": 11,
     "parameters": 0
-  },
-  {
-    "element": "visit",
-    "file": "src/analyzer/ast-element-scanner.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "visit",
-    "file": "src/analyzer/ast-element-scanner.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
   },
   {
     "element": "scanFileWithAST",
@@ -9104,22 +10400,6 @@
     "parameters": 1
   },
   {
-    "element": "traverse",
-    "file": "src/analyzer/contract-detector.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "traverse",
-    "file": "src/analyzer/contract-detector.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
     "element": "analyzeContracts",
     "file": "src/analyzer/contract-detector.ts",
     "type": "function",
@@ -9133,22 +10413,6 @@
     "type": "method",
     "complexity": 1,
     "loc": 4,
-    "parameters": 1
-  },
-  {
-    "element": "traverse",
-    "file": "src/analyzer/database-detector.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "traverse",
-    "file": "src/analyzer/database-detector.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
     "parameters": 1
   },
   {
@@ -9200,27 +10464,11 @@
     "parameters": 0
   },
   {
-    "element": "traverse",
-    "file": "src/analyzer/design-pattern-detector.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
     "element": "DesignPatternDetector.analyzeFile",
     "file": "src/analyzer/design-pattern-detector.ts",
     "type": "method",
     "complexity": 1,
     "loc": 24,
-    "parameters": 1
-  },
-  {
-    "element": "traverse",
-    "file": "src/analyzer/design-pattern-detector.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
     "parameters": 1
   },
   {
@@ -9296,44 +10544,12 @@
     "parameters": 0
   },
   {
-    "element": "dfs",
-    "file": "src/analyzer/graph-analyzer.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
     "element": "GraphAnalyzer.findAllPaths",
     "file": "src/analyzer/graph-analyzer.ts",
     "type": "method",
     "complexity": 1,
     "loc": 7,
     "parameters": 3
-  },
-  {
-    "element": "dfs",
-    "file": "src/analyzer/graph-analyzer.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 6
-  },
-  {
-    "element": "dfs",
-    "file": "src/analyzer/graph-analyzer.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "dfs",
-    "file": "src/analyzer/graph-analyzer.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 6
   },
   {
     "element": "GraphBuilder.createNodeId",
@@ -9561,10 +10777,18 @@
   },
   {
     "element": "printHelp",
+    "file": "src/cli/coderef-analyze.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 35,
+    "parameters": 0
+  },
+  {
+    "element": "printHelp",
     "file": "src/cli/coderef-pipeline.ts",
     "type": "function",
     "complexity": 1,
-    "loc": 34,
+    "loc": 37,
     "parameters": 0
   },
   {
@@ -9622,6 +10846,14 @@
     "complexity": 1,
     "loc": 5,
     "parameters": 2
+  },
+  {
+    "element": "printHelp",
+    "file": "src/cli/coderef-search.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 24,
+    "parameters": 0
   },
   {
     "element": "printHelp",
@@ -9692,7 +10924,7 @@
     "file": "src/cli/populate.ts",
     "type": "function",
     "complexity": 1,
-    "loc": 45,
+    "loc": 50,
     "parameters": 0
   },
   {
@@ -9724,7 +10956,47 @@
     "file": "src/cli/scan.ts",
     "type": "function",
     "complexity": 1,
-    "loc": 23,
+    "loc": 25,
+    "parameters": 0
+  },
+  {
+    "element": "makeMockOrchestrator",
+    "file": "src/cli/semantic-integration.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 69,
+    "parameters": 0
+  },
+  {
+    "element": "DryRunSemanticOrchestrator.processProject",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 8,
+    "parameters": 0
+  },
+  {
+    "element": "DryRunSemanticOrchestrator.processFile",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 8,
+    "parameters": 1
+  },
+  {
+    "element": "DryRunSemanticOrchestrator.getCapturedWrites",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 4,
+    "parameters": 0
+  },
+  {
+    "element": "DryRunSemanticOrchestrator.getWriteSummary",
+    "file": "src/cli/semantic-integration.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 12,
     "parameters": 0
   },
   {
@@ -10736,27 +12008,11 @@
     "parameters": 3
   },
   {
-    "element": "walk",
-    "file": "src/indexer/relationship-index.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
     "element": "RelationshipIndex.getTransitiveDependents",
     "file": "src/indexer/relationship-index.ts",
     "type": "method",
     "complexity": 1,
     "loc": 4,
-    "parameters": 1
-  },
-  {
-    "element": "walk",
-    "file": "src/indexer/relationship-index.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
     "parameters": 1
   },
   {
@@ -10766,14 +12022,6 @@
     "complexity": 1,
     "loc": 8,
     "parameters": 0
-  },
-  {
-    "element": "hasCycle",
-    "file": "src/indexer/relationship-index.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
   },
   {
     "element": "RelationshipIndex.clear",
@@ -10806,30 +12054,6 @@
     "complexity": 1,
     "loc": 15,
     "parameters": 1
-  },
-  {
-    "element": "walk",
-    "file": "src/indexer/relationship-index.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "walk",
-    "file": "src/indexer/relationship-index.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "hasCycle",
-    "file": "src/indexer/relationship-index.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
   },
   {
     "element": "createRelationshipIndex",
@@ -11016,6 +12240,14 @@
     "parameters": 2
   },
   {
+    "element": "ChunkConverter.readFile",
+    "file": "src/integration/rag/chunk-converter.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 12,
+    "parameters": 1
+  },
+  {
     "element": "ConfidenceScorer.getPerformanceStats",
     "file": "src/integration/rag/confidence-scorer.ts",
     "type": "method",
@@ -11168,22 +12400,6 @@
     "parameters": 3
   },
   {
-    "element": "IndexingOrchestrator.indexCodebase",
-    "file": "src/integration/rag/indexing-orchestrator.ts",
-    "type": "method",
-    "complexity": 1,
-    "loc": 4,
-    "parameters": 1
-  },
-  {
-    "element": "reportProgress",
-    "file": "src/integration/rag/indexing-orchestrator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 5
-  },
-  {
     "element": "IndexingOrchestrator.getIndexStats",
     "file": "src/integration/rag/indexing-orchestrator.ts",
     "type": "method",
@@ -11192,12 +12408,28 @@
     "parameters": 0
   },
   {
-    "element": "reportProgress",
-    "file": "src/integration/rag/indexing-orchestrator.ts",
+    "element": "toAbsolute",
+    "file": "src/integration/rag/path-types.ts",
     "type": "function",
     "complexity": 1,
-    "loc": 1,
-    "parameters": 5
+    "loc": 8,
+    "parameters": 1
+  },
+  {
+    "element": "toRelative",
+    "file": "src/integration/rag/path-types.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 11,
+    "parameters": 1
+  },
+  {
+    "element": "isAbsolutePath",
+    "file": "src/integration/rag/path-types.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 4,
+    "parameters": 1
   },
   {
     "element": "PromptTemplateBuilder.buildExplanationPrompt",
@@ -11280,6 +12512,30 @@
     "parameters": 1
   },
   {
+    "element": "fn0",
+    "file": "src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod0.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 1,
+    "parameters": 0
+  },
+  {
+    "element": "fn1",
+    "file": "src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod1.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 1,
+    "parameters": 0
+  },
+  {
+    "element": "fn2",
+    "file": "src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod2.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 1,
+    "parameters": 0
+  },
+  {
     "element": "ChromaStore.getProviderName",
     "file": "src/integration/vector/chroma-store.ts",
     "type": "method",
@@ -11344,11 +12600,19 @@
     "parameters": 0
   },
   {
+    "element": "buildSymbolTable",
+    "file": "src/pipeline/call-resolver.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 4,
+    "parameters": 1
+  },
+  {
     "element": "ElementExtractor.extractTypeScriptElements",
     "file": "src/pipeline/extractors/element-extractor.ts",
     "type": "method",
     "complexity": 1,
-    "loc": 6,
+    "loc": 11,
     "parameters": 4
   },
   {
@@ -11366,14 +12630,6 @@
     "complexity": 1,
     "loc": 6,
     "parameters": 4
-  },
-  {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
   },
   {
     "element": "ElementExtractor.extractRustElements",
@@ -11416,19 +12672,19 @@
     "parameters": 2
   },
   {
-    "element": "traverse",
-    "file": "src/pipeline/extractors/element-extractor.ts",
-    "type": "function",
+    "element": "RelationshipExtractor.extractHeaderFact",
+    "file": "src/pipeline/extractors/relationship-extractor.ts",
+    "type": "method",
     "complexity": 1,
-    "loc": 1,
-    "parameters": 1
+    "loc": 13,
+    "parameters": 4
   },
   {
     "element": "RelationshipExtractor.extractStringLiteral",
     "file": "src/pipeline/extractors/relationship-extractor.ts",
     "type": "method",
     "complexity": 1,
-    "loc": 7,
+    "loc": 9,
     "parameters": 2
   },
   {
@@ -11464,14 +12720,6 @@
     "parameters": 3
   },
   {
-    "element": "isTestFile",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
     "element": "ContextGenerator.findCriticalFunctions",
     "file": "src/pipeline/generators/context-generator.ts",
     "type": "method",
@@ -11480,100 +12728,12 @@
     "parameters": 4
   },
   {
-    "element": "isTestFile",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isEntryPoint",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isPipelineOrchestrator",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isOrchestrator",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
     "element": "ContextGenerator.getFileAndNameKey",
     "file": "src/pipeline/generators/context-generator.ts",
     "type": "method",
     "complexity": 1,
     "loc": 4,
     "parameters": 2
-  },
-  {
-    "element": "dfs",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isTestFile",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isTestFile",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isEntryPoint",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isPipelineOrchestrator",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isOrchestrator",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "dfs",
-    "file": "src/pipeline/generators/context-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
   },
   {
     "element": "DiagramGenerator.generateDependencyDiagram",
@@ -11613,14 +12773,6 @@
     "type": "method",
     "complexity": 1,
     "loc": 5,
-    "parameters": 1
-  },
-  {
-    "element": "DriftGenerator.getElementId",
-    "file": "src/pipeline/generators/drift-generator.ts",
-    "type": "method",
-    "complexity": 1,
-    "loc": 4,
     "parameters": 1
   },
   {
@@ -11696,92 +12848,28 @@
     "parameters": 0
   },
   {
+    "element": "IndexGenerator.normalizeRelatedField",
+    "file": "src/pipeline/generators/index-generator.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 4,
+    "parameters": 1
+  },
+  {
+    "element": "IndexGenerator.normalizeRulesField",
+    "file": "src/pipeline/generators/index-generator.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 5,
+    "parameters": 1
+  },
+  {
     "element": "PatternGenerator.detectAsyncPatterns",
     "file": "src/pipeline/generators/pattern-generator.ts",
     "type": "method",
     "complexity": 1,
     "loc": 19,
     "parameters": 2
-  },
-  {
-    "element": "isTestFile",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isPipelineOrchestrator",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "estimateComplexity",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isInternalFunction",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "calculatePriority",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isTestFile",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isPipelineOrchestrator",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "estimateComplexity",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
-  },
-  {
-    "element": "isInternalFunction",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "calculatePriority",
-    "file": "src/pipeline/generators/pattern-generator.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 1
   },
   {
     "element": "GrammarRegistry.getSupportedExtensions",
@@ -11806,6 +12894,46 @@
     "complexity": 1,
     "loc": 8,
     "parameters": 0
+  },
+  {
+    "element": "resolveImports",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 37,
+    "parameters": 1
+  },
+  {
+    "element": "resolveAstImports",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 15,
+    "parameters": 2
+  },
+  {
+    "element": "resolveHeaderImports",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 19,
+    "parameters": 2
+  },
+  {
+    "element": "elementKey",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 4,
+    "parameters": 2
+  },
+  {
+    "element": "toPosix",
+    "file": "src/pipeline/import-resolver.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 4,
+    "parameters": 1
   },
   {
     "element": "IncrementalCache.computeFileHash",
@@ -11846,6 +12974,30 @@
     "complexity": 1,
     "loc": 6,
     "parameters": 0
+  },
+  {
+    "element": "tagLineInSource",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 12,
+    "parameters": 3
+  },
+  {
+    "element": "pushError",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 9,
+    "parameters": 4
+  },
+  {
+    "element": "parseExportsList",
+    "file": "src/pipeline/semantic-header-parser.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 7,
+    "parameters": 1
   },
   {
     "element": "pathExists",
@@ -12176,14 +13328,6 @@
     "parameters": 0
   },
   {
-    "element": "normalizeElement",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 14,
-    "parameters": 1
-  },
-  {
     "element": "GrammarLoader.isSupported",
     "file": "src/scanner/tree-sitter-scanner.ts",
     "type": "method",
@@ -12270,22 +13414,6 @@
     "complexity": 1,
     "loc": 5,
     "parameters": 1
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
-  },
-  {
-    "element": "traverse",
-    "file": "src/scanner/tree-sitter-scanner.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 1,
-    "parameters": 2
   },
   {
     "element": "SearchIndex.addDocument",
@@ -12416,6 +13544,70 @@
     "parameters": 0
   },
   {
+    "element": "HeaderGenerator.generateHeadersFromElement",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 7,
+    "parameters": 1
+  },
+  {
+    "element": "HeaderGenerator.normalizePath",
+    "file": "src/semantic/header-generator.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 8,
+    "parameters": 1
+  },
+  {
+    "element": "uniqueStrings",
+    "file": "src/semantic/header-generator.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 4,
+    "parameters": 1
+  },
+  {
+    "element": "LLMEnricher.buildPrompt",
+    "file": "src/semantic/llm-enricher.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 27,
+    "parameters": 1
+  },
+  {
+    "element": "SemanticOrchestrator.findSourceFiles",
+    "file": "src/semantic/orchestrator.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 4,
+    "parameters": 1
+  },
+  {
+    "element": "runSemanticPipeline",
+    "file": "src/semantic/orchestrator.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 5,
+    "parameters": 1
+  },
+  {
+    "element": "RegistrySyncer.mergeEntries",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 13,
+    "parameters": 2
+  },
+  {
+    "element": "RegistrySyncer.generateId",
+    "file": "src/semantic/registry-sync.ts",
+    "type": "method",
+    "complexity": 1,
+    "loc": 7,
+    "parameters": 1
+  },
+  {
     "element": "getHighPriorityTypes",
     "file": "src/types/types.ts",
     "type": "function",
@@ -12544,35 +13736,11 @@
     "parameters": 2
   },
   {
-    "element": "isExcluded",
+    "element": "collectFiles.isExcluded",
     "file": "utils/fs.ts",
     "type": "function",
     "complexity": 1,
     "loc": 4,
-    "parameters": 1
-  },
-  {
-    "element": "authenticateUser",
-    "file": "__tests__/.test-integration-project/src/auth.ts",
-    "type": "function",
-    "complexity": 1,
-    "loc": 4,
-    "parameters": 2
-  },
-  {
-    "element": "AuthService.login",
-    "file": "__tests__/.test-integration-project/src/auth.ts",
-    "type": "method",
-    "complexity": 1,
-    "loc": 4,
-    "parameters": 2
-  },
-  {
-    "element": "UserService.findUser",
-    "file": "__tests__/.test-integration-project/src/user.ts",
-    "type": "method",
-    "complexity": 1,
-    "loc": 6,
     "parameters": 1
   },
   {
@@ -12629,6 +13797,198 @@
     "type": "function",
     "complexity": 1,
     "loc": 10,
+    "parameters": 0
+  },
+  {
+    "element": "makeStateWithoutImportResolutions",
+    "file": "__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 41,
+    "parameters": 0
+  },
+  {
+    "element": "makeState",
+    "file": "__tests__/pipeline/call-resolution-two-pass-ordering.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 77,
+    "parameters": 0
+  },
+  {
+    "element": "makeState",
+    "file": "__tests__/pipeline/graph-construction-determinism.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 66,
+    "parameters": 0
+  },
+  {
+    "element": "createProject",
+    "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 15,
+    "parameters": 1
+  },
+  {
+    "element": "runGraph",
+    "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 10,
+    "parameters": 1
+  },
+  {
+    "element": "nodeIds",
+    "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 11,
+    "parameters": 1
+  },
+  {
+    "element": "project",
+    "file": "__tests__/pipeline/header-exports-cross-check.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 13,
+    "parameters": 1
+  },
+  {
+    "element": "createProject",
+    "file": "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 13,
+    "parameters": 1
+  },
+  {
+    "element": "runHeaderImports",
+    "file": "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 67,
+    "parameters": 1
+  },
+  {
+    "element": "makeOrchestrator",
+    "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 51,
+    "parameters": 0
+  },
+  {
+    "element": "createProject",
+    "file": "__tests__/pipeline/no-graph-edge-claim.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 13,
+    "parameters": 1
+  },
+  {
+    "element": "runState",
+    "file": "__tests__/pipeline/no-graph-edge-claim.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 10,
+    "parameters": 1
+  },
+  {
+    "element": "emptyGraph",
+    "file": "__tests__/pipeline/output-validation-determinism.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 7,
+    "parameters": 0
+  },
+  {
+    "element": "makeState",
+    "file": "__tests__/pipeline/output-validation-graph-integrity.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 27,
+    "parameters": 0
+  },
+  {
+    "element": "emptyGraph",
+    "file": "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 7,
+    "parameters": 0
+  },
+  {
+    "element": "graphWithFileGrain",
+    "file": "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 16,
+    "parameters": 1
+  },
+  {
+    "element": "makeState",
+    "file": "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 150,
+    "parameters": 2
+  },
+  {
+    "element": "createProject",
+    "file": "__tests__/pipeline/raw-call-facts.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 13,
+    "parameters": 1
+  },
+  {
+    "element": "runRawCalls",
+    "file": "__tests__/pipeline/raw-call-facts.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 84,
+    "parameters": 1
+  },
+  {
+    "element": "createProject",
+    "file": "__tests__/pipeline/raw-export-facts.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 13,
+    "parameters": 1
+  },
+  {
+    "element": "runRawExports",
+    "file": "__tests__/pipeline/raw-export-facts.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 69,
+    "parameters": 1
+  },
+  {
+    "element": "createProject",
+    "file": "__tests__/pipeline/raw-import-facts.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 13,
+    "parameters": 1
+  },
+  {
+    "element": "runRawImports",
+    "file": "__tests__/pipeline/raw-import-facts.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 83,
+    "parameters": 1
+  },
+  {
+    "element": "createState",
+    "file": "__tests__/pipeline/single-scanner.test.ts",
+    "type": "function",
+    "complexity": 1,
+    "loc": 74,
     "parameters": 0
   },
   {
@@ -12776,7 +14136,7 @@
     "parameters": 2
   },
   {
-    "element": "isExcluded",
+    "element": "collectFiles.isExcluded",
     "file": "utils/fs.js",
     "type": "function",
     "complexity": 1,
@@ -13237,94 +14597,6 @@
     "type": "function",
     "complexity": 1,
     "loc": 64,
-    "parameters": 0
-  },
-  {
-    "element": "create",
-    "file": "create_wo.py",
-    "type": "function",
-    "complexity": 1,
-    "loc": 117,
-    "parameters": 0
-  },
-  {
-    "element": "_create_dir",
-    "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
-    "type": "function",
-    "complexity": 1,
-    "loc": 21,
-    "parameters": 0
-  },
-  {
-    "element": "_serialize_placeholder",
-    "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
-    "type": "function",
-    "complexity": 1,
-    "loc": 6,
-    "parameters": 0
-  },
-  {
-    "element": "_create_placeholder_file",
-    "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
-    "type": "function",
-    "complexity": 1,
-    "loc": 23,
-    "parameters": 0
-  },
-  {
-    "element": "TestSetupCoderefDirs.setUp",
-    "file": "scripts/setup-coderef-dir/test_setup_coderef_dirs.py",
-    "type": "method",
-    "complexity": 1,
-    "loc": 4,
-    "parameters": 0
-  },
-  {
-    "element": "TestSetupCoderefDirs.tearDown",
-    "file": "scripts/setup-coderef-dir/test_setup_coderef_dirs.py",
-    "type": "method",
-    "complexity": 1,
-    "loc": 3,
-    "parameters": 0
-  },
-  {
-    "element": "TestSetupCoderefDirs.test_create_structure_creates_all_dirs_and_files",
-    "file": "scripts/setup-coderef-dir/test_setup_coderef_dirs.py",
-    "type": "method",
-    "complexity": 1,
-    "loc": 43,
-    "parameters": 0
-  },
-  {
-    "element": "TestSetupCoderefDirs.test_dry_run_does_not_create_dirs_or_files",
-    "file": "scripts/setup-coderef-dir/test_setup_coderef_dirs.py",
-    "type": "method",
-    "complexity": 1,
-    "loc": 11,
-    "parameters": 0
-  },
-  {
-    "element": "TestSetupCoderefDirs.test_idempotency_skips_existing_dirs_and_files",
-    "file": "scripts/setup-coderef-dir/test_setup_coderef_dirs.py",
-    "type": "method",
-    "complexity": 1,
-    "loc": 23,
-    "parameters": 0
-  },
-  {
-    "element": "main",
-    "file": "__tests__/.test-venv-fixtures/src/app.py",
-    "type": "function",
-    "complexity": 1,
-    "loc": 3,
-    "parameters": 0
-  },
-  {
-    "element": "Application.run",
-    "file": "__tests__/.test-venv-fixtures/src/app.py",
-    "type": "method",
-    "complexity": 1,
-    "loc": 2,
     "parameters": 0
   }
 ]

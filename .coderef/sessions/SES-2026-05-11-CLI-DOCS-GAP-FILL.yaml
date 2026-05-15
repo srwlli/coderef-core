@@ -1,0 +1,56 @@
+session_metadata:
+  session_id: SES-2026-05-11-CLI-DOCS-GAP-FILL
+  workorder_id: WO-CLI-DOCS-GAP-FILL-001
+  feature_name: cli-docs-gap-fill
+  date: "2026-05-11"
+  agent_domain: CODEREF-CORE
+  dispatch_id: DISPATCH-2026-05-11-013
+  plan_type: light
+  phases: 1
+  status: complete
+
+tools_used:
+  - Read
+  - Edit
+  - Bash
+  - Write
+  - TaskCreate
+  - TaskUpdate
+
+files_modified:
+  created:
+    - coderef/workorder/cli-docs-gap-fill/context.json
+    - coderef/workorder/cli-docs-gap-fill/analysis.json
+    - coderef/workorder/cli-docs-gap-fill/plan.json
+    - coderef/workorder/cli-docs-gap-fill/communication.json
+  modified:
+    - docs/CLI.md
+  deleted: []
+
+decisions:
+  - id: DR-01
+    description: Bin names in docs match package.json (coderef-detect-languages, coderef-semantic-integration)
+    rationale: dispatch-012 added these bin entries; old CLI.md 'detect-languages' section was a pre-existing unrelated CLI
+  - id: DR-02
+    description: All 4 CLI sections inserted as a single Edit at the Environment Variables anchor
+    rationale: Sequential sections at one insertion point; single edit minimizes diff noise
+
+outcomes:
+  - Added coderef-analyze section (12 analysis types, 7 flags, examples, exit codes)
+  - Added coderef-query section (8 query types, 5 flags, examples, exit codes)
+  - Added coderef-detect-languages section (3 flags, examples, exit codes)
+  - Added coderef-semantic-integration section (8 flags, examples, exit codes)
+  - Updated Command Overview table with 4 new rows
+
+issues_encountered:
+  - tracking-validator FAIL: pre-existing schema drift (STUB-044), not introduced by this workorder
+  - foundation-docs: 8 invalid UUID anchors pre-existing, validator exit 0
+
+tracking:
+  workorders_json: status=complete, completed=2026-05-11
+  sessions_json: status=complete
+
+commits:
+  - hash: bc400a1
+    message: "docs(cli-docs-gap-fill): WO-CLI-DOCS-GAP-FILL-001 — add 4 CLI sections to CLI.md"
+    files: [docs/CLI.md, coderef/workorder/cli-docs-gap-fill/]

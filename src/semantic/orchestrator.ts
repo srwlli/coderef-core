@@ -4,10 +4,6 @@
  * @used_by src/cli/semantic-integration.test.ts, src/cli/semantic-integration.ts, __tests__/pipeline/single-scanner.test.ts
  */
 
-
-
-
-
 /**
  * Semantic orchestrator - coordinates full workflow
  *

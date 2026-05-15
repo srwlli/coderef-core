@@ -4,10 +4,6 @@
  * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */
 
-
-
-
-
 /**
  * GraphGenerator - Generate graph.json from PipelineState
  *

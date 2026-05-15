@@ -1,0 +1,74 @@
+session_metadata:
+  session_id: SES-pipeline-output-validation
+  date: 2026-05-04
+  agent_domain: SKILLS
+  closing_domain: SKILLS
+  implementing_domain: CODEREF-CORE
+  workorder_id: WO-PIPELINE-OUTPUT-VALIDATION-001
+  feature_name: pipeline-output-validation
+  status: closed
+  source_dispatch: DISPATCH-2026-05-02-031
+  implementation_dispatch: DISPATCH-2026-05-02-016
+  plan_type: phased
+  phases: 1
+  phase_label: "Phase 6 of 9-phase pipeline rebuild (sequence 8/10)"
+  cross_project_close: true
+  session_pinning: daily-agent-session-2026-05-02 (CORE Phase 6 close documented exception to 5-4 routing)
+  closer_working_dir: C:\Users\willh\Desktop\CODEREF\CODEREF-CORE
+  ledger_writes_dir: C:\Users\willh\Desktop\CODEREF\ASSISTANT\TRACKING
+
+tools_used:
+  - /align-coderef-culture (scope-mode + session-date 2026-05-02)
+  - /close-workorder --force-warning-ok
+  - /log-session
+  - /log-skill
+  - tracking-validator (scope-mode + full)
+  - validate-coderef-culture (scope-mode)
+
+decisions:
+  - id: DEC-CLOSE-01
+    summary: Cross-project close pattern (5th of the rebuild; same as Phase 0/1/2/2.5/3/4/5). SKILLS retained as closing domain; close ritual ran from CODEREF-CORE worktree; tracking writes land in ASSISTANT/TRACKING.
+  - id: DEC-CLOSE-02
+    summary: --force-warning-ok pre-authorized in dispatch (DISPATCH-031 known-issue clause for STUB-254 cross-day session pinning). Scope-mode validators with explicit session-date 2026-05-02 returned clean — STUB-254 did not trigger because date arg matched pinned session.
+  - id: DEC-CLOSE-03
+    summary: One Phase 1 piggyback fix included in Phase 6 close (8b5965f, src/pipeline/extractors/element-extractor.ts:188 added early return after class_body recursion). ORCHESTRATOR pre-authorized as Option A. Documented in execution-notes.md and ARCHIVED marker; STUB-254 priority bump to HIGH queued in DISPATCH-030.
+
+outcomes:
+  - WO-PIPELINE-OUTPUT-VALIDATION-001 closed and archived
+  - All 6 Phase 0 graph-ground-truth.test.ts assertions remain PASS (no regression)
+  - Pipeline test suite 54 files / 140 tests / 0 failures
+  - 7 new Phase 6 tests PASS (chokepoint INVARIANT 3/3, determinism, graph-integrity, semantic-headers, strict-headers, report, real-world-noregress)
+  - Phase 7 boundary enforcer (no-rag-indexing.test.ts) in place; Phase 5 boundary enforcer deleted (now obsolete)
+  - .coderef/validation-report.json emitted with all 11 numeric fields; valid_edge_count=3450
+  - Real-world AC-01 clean (0 GI-1 + 0 GI-6 violations on 2295 elements / 2623 graph nodes)
+  - --strict-headers CLI flag default-false preserves pre-Phase-6 behavior
+  - Implementation commit chain 0d7cfa9..971eec0 (6 commits) on origin/main, push 39ff088..971eec0 confirmed
+  - Cultural validator scope-mode 11/11 PASS; tracking-validator scope-mode 15/15 PASS
+
+issues_encountered:
+  - STUB-254 (validator-cross-day-session-pinning) anticipated to trigger because session is pinned to 2026-05-02 while calendar is 2026-05-04. Workaround: passed explicit session-date arg to validate-coderef-culture.py + scope-mode kept the gate green. No --force-warning-ok bypass actually required at validator runtime. Priority-bump to HIGH queued in DISPATCH-030.
+
+tracking:
+  workorders_json: status=archived (in ASSISTANT/TRACKING)
+  sessions_json: status=closed (in ASSISTANT/TRACKING)
+  active_work: not registered (close-only ritual)
+
+commits_implementation:
+  - "0d7cfa9 feat(pipeline-output-validation): 1.3-1.5c structural foundation"
+  - "74ed5ee feat(pipeline-output-validation): 1.7-1.10 implement 6 GI + 3 SH checks + buildReport"
+  - "89682b0 fix(graph-integrity): reframe GI-6 to name+file+line tuple"
+  - "8b5965f fix(element-extractor): add early return after class_body recursion (Phase 1 piggyback)"
+  - "8e7ccaf feat(pipeline): add Phase 6 output-validator test suite + workorder docs"
+  - "971eec0 docs(roadmap): mark Phase 6 ARCHIVED, mark Phase 7 NEXT"
+
+dispatch_acceptance:
+  cultural_validator_scope_mode: PASS (11/11)
+  tracking_validator_scope_mode: PASS (15/15)
+  force_warning_ok_used: pre-authorized by dispatch (defensive; not required at runtime)
+  stub_254_workaround: scope-mode + explicit session-date 2026-05-02 arg
+
+post_close_state:
+  phase_6_status: ARCHIVED
+  phase_7_status: NEXT (indexing/RAG with @layer + @capability as first-class facets)
+  phase_7_gate: Phase 6 validation must pass before Phase 7 indexing runs
+  phase_8_status: documentation sync (after Phase 7)

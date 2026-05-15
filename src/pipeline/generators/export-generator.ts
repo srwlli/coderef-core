@@ -4,10 +4,6 @@
  * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */
 
-
-
-
-
 /**
  * ExportGenerator - Export graph in various formats
  *

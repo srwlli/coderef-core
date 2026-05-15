@@ -4,10 +4,6 @@
  * @used_by src/cli/populate.ts
  */
 
-
-
-
-
 /**
  * ValidationGenerator - Validate CodeRef2 references in source files
  *

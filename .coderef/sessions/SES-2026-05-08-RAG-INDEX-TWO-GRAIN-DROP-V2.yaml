@@ -1,0 +1,54 @@
+session_metadata:
+  session_id: SES-2026-05-08-RAG-INDEX-TWO-GRAIN-DROP-V2
+  workorder_id: WO-RAG-INDEX-TWO-GRAIN-DROP-002
+  feature_name: rag-index-two-grain-drop-v2
+  date: "2026-05-08"
+  agent: Claude Sonnet 4.6
+  domain: CODEREF-CORE
+  dispatch: DISPATCH-2026-05-08-005
+
+tools_used:
+  - Read
+  - Edit
+  - Write
+  - Grep
+  - Bash (tsc, vitest, git)
+
+files_modified:
+  modified:
+    - src/pipeline/output-validator.ts (buildFileHeaderStatusMap + call sites in checkSemanticHeaders and buildReport)
+    - __tests__/pipeline/output-validation-semantic-headers.test.ts (graphWithFileGrain helper + 9 test updates)
+    - coderef/workorder/rag-index-two-grain-drop-v2/communication.json
+
+decisions:
+  - id: DR-001-APPLIED
+    summary: "buildFileHeaderStatusMap source changed: state.elements → graph.nodes (fileGrain filter). graph:ExportedGraph param added. checkSemanticHeaders also receives graph and passes it through."
+  - id: DR-002-CONFIRMED
+    summary: "buildFileHeaderFactMap left unchanged — headerFact has no graph-node equivalent (confirmed by v1 audit commit 6587dca)"
+  - id: SH-TEST-UPDATE
+    summary: "SH-* tests updated to supply file-grain graph nodes via graphWithFileGrain() helper — tests now exercise the actual code path instead of implicitly producing zeros from an empty graph"
+
+outcomes:
+  - buildFileHeaderStatusMap now iterates graph.nodes (fileGrain=true nodes) instead of state.elements
+  - checkSemanticHeaders and buildReport call sites updated to pass graph
+  - SH-1/SH-2/SH-3 tests updated with graphWithFileGrain fixture helper (9 test calls updated)
+  - 154 pipeline tests PASS (56 test files)
+  - AC-05a 4 tests PASS (frozen-fixture invariants unchanged)
+  - tsc clean: tsconfig.json + tsconfig.cli.json
+  - Foundation-docs gate: PASS (validator_exit=0, 4 pre-existing UUID warnings)
+  - Bulletproof concept #6 complete
+
+issues_encountered:
+  - SH-* tests used emptyGraph() which produced all-zero counts after the change — updated with graphWithFileGrain() helper to supply real file-grain node data
+  - Pre-existing 73 test failures (chroma-store, ollama-unreachable, scanner, generator tests) — not caused by this WO
+  - Tracking-validator 6 FAIL pre-existing (STUB-044 drift) — not caused by this WO
+  - doc-discovery.mjs path differs from coderef-core CWD — used absolute ASSISTANT path
+
+tracking:
+  workorders_json: status=complete, completed=2026-05-08
+  sessions_json: status=complete, agent_domain=CODEREF-CORE
+  active_work: SES-rag-index-two-grain-drop-v2 to be removed in Step 5.7
+
+commits:
+  - hash: 4f165a2
+    message: "refactor(WO-RAG-INDEX-TWO-GRAIN-DROP-002): replace element-grain iteration in buildFileHeaderStatusMap with file-grain graph nodes"

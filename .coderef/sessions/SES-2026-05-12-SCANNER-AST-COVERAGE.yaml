@@ -1,0 +1,93 @@
+session_metadata:
+  session_id: SES-2026-05-12-SCANNER-AST-COVERAGE
+  workorder_id: WO-SCANNER-AST-COVERAGE-001
+  feature_name: scanner-ast-coverage
+  date: 2026-05-12
+  agent_domain: CODEREF-CORE
+  outcome: complete
+  dispatch_id: DISPATCH-2026-05-12-003
+
+tools_used:
+  - Read
+  - Edit
+  - Write
+  - Bash (vitest --run, node doc-gen scripts, git add, git commit, git push)
+  - Agent (Explore x2 — pre-execution discovery)
+
+files_modified:
+  created:
+    - path: coderef/workorder/scanner-ast-coverage/plan.json
+      note: Rewrote original plan — TreeSitterScanner already existed; revised scope
+    - path: coderef/workorder/scanner-ast-coverage/communication.json
+  modified:
+    - path: src/scanner/scanner.ts
+      commit: 65a1e46
+    - path: src/scanner/scanner-worker.ts
+      commit: 65a1e46
+    - path: src/scanner/__tests__/ast-mode.test.ts
+      commit: 65a1e46
+    - path: src/scanner/__tests__/parallel-path-behavior.test.ts
+      commit: 65a1e46
+    - path: docs/CLI.md
+      commit: (close-out commit)
+    - path: improvements.json
+      commit: (close-out commit)
+  deleted: []
+
+documents_generated:
+  - coderef/foundation-docs/INDEX.md (regenerated, 2425 elements)
+  - coderef/foundation-docs/EXPORTS.md (regenerated, 931 APIs)
+  - coderef/foundation-docs/HOTSPOTS.md (regenerated)
+  - coderef/foundation-docs/RELATIONSHIPS.md (regenerated, 28872 edges)
+
+decisions:
+  - id: ADJ-01
+    summary: >
+      Plan rewritten before execution. Original WO assumed tree-sitter needed to be installed
+      and new scanner files created. Exploration revealed TreeSitterScanner already existed with
+      all 7 grammars installed. Revised scope: flip useTreeSitter to default, wire JSCallDetector,
+      fix worker parity.
+
+  - id: ADJ-02
+    summary: >
+      JSCallDetector wired into tree-sitter path by mutating already-added elements.
+      scanner.getElements() returns live array by reference — slicing elementsBefore..end
+      gives exactly the elements just added by treeSitterScanner.scanFile(). This avoids
+      re-adding elements and matches the useAST branch's enrichment approach.
+
+  - id: ADJ-03
+    summary: >
+      Two test fixes required. (1) ast-mode: 'should skip file when AST fails and fallback
+      disabled' — added useTreeSitter: false because the test specifically targets the useAST
+      path; tree-sitter (now default) succeeded on the malformed code before AST ran. (2)
+      parallel-path: dedup expectation updated — tree-sitter correctly finds 2 distinct myFunc
+      declarations at different lines; dedup only collapses same file:line:name, so 2 is accurate.
+
+outcomes:
+  - "src/scanner/scanner.ts: useTreeSitter defaults to true (options.useTreeSitter !== false)"
+  - "src/scanner/scanner.ts: JSCallDetector wired into tree-sitter path for ts/tsx/js/jsx"
+  - "src/scanner/scanner-worker.ts: tree-sitter path added (matches main scanner default)"
+  - "src/scanner/scanner-worker.ts: useAST TS branch fixed to use ASTElementScanner + JSCallDetector"
+  - "docs/CLI.md: --useTreeSitter default updated from false to true"
+  - "improvements.json: IMP-CORE-052 status=done, IMP-CORE-078 status=done"
+  - "Test suite: 23 failed / 116 passed (was 24 failed / 115 passed — net improvement)"
+  - "Foundation docs gate: PASS (exit 0, 28872 edges in RELATIONSHIPS.md)"
+
+issues_encountered:
+  - description: "Two scanner tests failed after useTreeSitter default change"
+    resolution: "ADJ-03 — see decisions above"
+
+tracking:
+  workorders_json: "WO-SCANNER-AST-COVERAGE-001 -> status: complete, completed: 2026-05-12"
+  improvements_json: "IMP-CORE-052 -> done, IMP-CORE-078 -> done"
+
+commits:
+  - hash: 65a1e46
+    message: "feat(scanner): promote tree-sitter to default path + fix worker parity (IMP-CORE-052, IMP-CORE-078)"
+    files:
+      - src/scanner/scanner.ts
+      - src/scanner/scanner-worker.ts
+      - src/scanner/__tests__/ast-mode.test.ts
+      - src/scanner/__tests__/parallel-path-behavior.test.ts
+      - coderef/workorder/scanner-ast-coverage/communication.json
+      - coderef/workorder/scanner-ast-coverage/plan.json

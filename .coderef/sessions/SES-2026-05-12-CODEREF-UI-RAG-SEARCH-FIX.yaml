@@ -1,0 +1,48 @@
+session_metadata:
+  session_id: SES-2026-05-12-CODEREF-UI-RAG-SEARCH-FIX
+  workorder_id: WO-CODEREF-UI-RAG-SEARCH-FIX-001
+  feature_name: coderef-ui-rag-search-fix
+  date: 2026-05-12
+  agent_domain: CODEREF-CORE
+  outcome: complete
+
+tools_used:
+  - Read
+  - Edit
+  - Bash (smoke test, syntax check)
+  - git (add, commit)
+
+files_modified:
+  created: []
+  modified:
+    - path: tools/coderef_ui.py
+      commit: 6e2472a
+  deleted: []
+
+documents_generated: []
+
+decisions:
+  - id: DEC-01
+    summary: >
+      Removed the ('entry', '--project-dir', ...) tuple from CMD_OPTIONS['rag-search']
+      rather than removing rag-search from PROJECT_DIR_FLAG_CMDS, because the top-level
+      Project Dir field is the canonical UX entry point for project directory. Per-command
+      override widgets are redundant when routing set already handles injection.
+
+outcomes:
+  - "tools/coderef_ui.py: 1-line deletion (line 105), 603 lines remaining"
+  - "Smoke test: _build_args() for rag-search with project_dir='test/path' emits --project-dir exactly once"
+  - "Syntax check: ast.parse PASS"
+  - "IMP-CORE-089 closed: duplicate --project-dir arg bug fixed"
+
+issues_encountered: []
+
+tracking:
+  workorders_json: "WO-CODEREF-UI-RAG-SEARCH-FIX-001 -> status: complete, completed: 2026-05-12"
+  improvements_json: "IMP-CORE-089 -> status: done, closed: 2026-05-12"
+
+commits:
+  - hash: 6e2472a
+    message: "fix(coderef-ui): remove duplicate --project-dir from rag-search CMD_OPTIONS (IMP-CORE-089)"
+    files:
+      - tools/coderef_ui.py

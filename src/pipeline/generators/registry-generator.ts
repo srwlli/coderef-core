@@ -4,10 +4,6 @@
  * @used_by src/cli/populate.ts, __tests__/pipeline/single-scanner.test.ts
  */
 
-
-
-
-
 /**
  * RegistryGenerator - Persist the entity registry to disk
  *

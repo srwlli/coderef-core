@@ -4,10 +4,6 @@
  * @used_by src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts
  */
 
-
-
-
-
 /**
  * Model Registry
  * P1-T1: Single source of truth for LLM provider specifications

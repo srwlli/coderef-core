@@ -4,10 +4,6 @@
  * @used_by src/cli/scan.ts, src/pipeline/orchestrator.ts, src/scanner/file-watcher.ts, src/scanner/scanner.ts, src/scanner/__tests__/incremental-cache-recursive.test.ts, src/scanner/__tests__/parallel-path-behavior.test.ts, src/types/types.ts
  */
 
-
-
-
-
 /**
  * IncrementalCache - File change tracking for performance optimization
  *

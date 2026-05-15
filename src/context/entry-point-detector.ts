@@ -4,10 +4,6 @@
  * @used_by src/context/context-generator.ts
  */
 
-
-
-
-
 /**
  * Entry Point Detector
  * Detects entry points in code via naming and file patterns

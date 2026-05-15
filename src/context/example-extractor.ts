@@ -3,10 +3,6 @@
  * @exports ExampleExtractor
  */
 
-
-
-
-
 /**
  * Example Extractor
  *

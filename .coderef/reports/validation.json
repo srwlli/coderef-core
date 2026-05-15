@@ -4,19 +4,19 @@
   "brokenReferences": [
     {
       "file": "src/pipeline/generators/validation-generator.ts",
-      "line": 62,
+      "line": 68,
       "reference": "@coderef{file:element}",
       "reason": "Element 'element' not found in 'file'"
     },
     {
       "file": "__tests__/generators/helpers.ts",
-      "line": 33,
+      "line": 49,
       "reference": "@coderef{src/example.ts:alpha}",
       "reason": "Element 'alpha' not found in 'src/example.ts'"
     },
     {
       "file": "__tests__/generators/helpers.ts",
-      "line": 34,
+      "line": 50,
       "reference": "@coderef{src/example.ts:missing}",
       "reason": "Element 'missing' not found in 'src/example.ts'"
     },

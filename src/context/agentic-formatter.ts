@@ -3,10 +3,6 @@
  * @exports AgenticFormatter
  */
 
-
-
-
-
 /**
  * Agentic Formatter
  *

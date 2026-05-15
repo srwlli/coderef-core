@@ -4,10 +4,6 @@
  * @used_by src/cli/detect-languages-cli.ts, src/cli/populate.ts, src/cli/rag-index.ts
  */
 
-
-
-
-
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { loadIgnorePatterns, shouldIgnorePath } from '../pipeline/ignore-rules.js';

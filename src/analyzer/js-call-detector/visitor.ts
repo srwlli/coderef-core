@@ -4,10 +4,6 @@
  * @used_by src/analyzer/js-call-detector/index.ts
  */
 
-
-
-
-
 /**
  * IMP-CORE-035: JavaScript AST Visitor
  * Recursively traverses AST to find call expressions and context

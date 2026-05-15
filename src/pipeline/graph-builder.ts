@@ -4,10 +4,6 @@
  * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
  */
 
-
-
-
-
 /**
  * Phase 5 Graph Builder
  *

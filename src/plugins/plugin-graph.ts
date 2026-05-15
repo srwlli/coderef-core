@@ -3,10 +3,6 @@
  * @exports PluginGraphOptions, applyPluginGraphHooks, getPluginGraphStats
  */
 
-
-
-
-
 /**
  * @legacy
  * @deprecated Use src/pipeline/graph-builder.ts (canonical Phase 5

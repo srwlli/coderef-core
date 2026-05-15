@@ -4,10 +4,6 @@
  * @used_by src/analyzer/js-call-detector/visitor.ts
  */
 
-
-
-
-
 /**
  * IMP-CORE-035: JavaScript Call Parser
  * Extracts call expressions from AST nodes

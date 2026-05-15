@@ -1,12 +1,60 @@
 /**
  * @coderef-semantic: 1.0.0
  * @exports ParseHeaderResult, parseHeader
- * @used_by src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts
+ * @used_by src/pipeline/extractors/relationship-extractor.ts
  */
 
+/**
+ * Phase 2.5 semantic header parser
+ *
+ * WO-PIPELINE-SEMANTIC-HEADER-PARSER-001
+ *
+ * Pure function: `parseHeader(sourceText, sourceFile)` returns a
+ * `HeaderFact`, a tentative `HeaderStatus`, and a list of `HeaderImportFact`
+ * records. The parser does not perform any file IO, does not mutate its
+ * inputs, and never throws — every malformed value is captured as a
+ * structured `HeaderParseError`.
+ *
+ * Cross-check against AST exports happens in the orchestrator, NOT here:
+ * this module returns `headerStatus = 'defined'` when validation passes
+ * for the tags it can see, `'partial'` when the header is present but has
+ * parse errors, and `'missing'` when no header block is detected. The
+ * orchestrator may downgrade `'defined'` → `'stale'` based on the AST
+ * cross-check.
+ *
+ * Grammar reference:
+ * `ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md` (BNF).
+ */
 
+import type { HeaderStatus } from './element-taxonomy.js';
+import { isKebabCase, isValidLayer } from './element-taxonomy.js';
+import type {
+  HeaderFact,
+  HeaderImportFact,
+  HeaderParseError,
+} from './header-fact.js';
 
+export interface ParseHeaderResult {
+  headerFact: HeaderFact;
+  headerStatus: HeaderStatus;
+  importFacts: HeaderImportFact[];
+}
 
+const SEMANTIC_MARKER_RE = /@coderef-semantic\s*:\s*([0-9]+\.[0-9]+\.[0-9]+)/;
+const ISO_8601_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
+const IDENTIFIER_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
+const KEBAB_CASE_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
+
+/**
+ * Detect the leading semantic-header block. Accepts:
+ *   - A `/** ... *\/` block comment that contains `@coderef-semantic:`.
+ *   - A leading run of `// ...` line comments containing `@coderef-semantic:`.
+ *   - A Python `""" ... """` docstring containing `@coderef-semantic:`.
+ *
+ * Returns the block text (without comment delimiters) plus the absolute
+ * line number on which the block began (1-indexed). Returns `null` when
+ * no semantic-marker block is present in the file's leading comment span.
+ */
 function detectHeaderBlock(
   sourceText: string,
 ): { body: string; startLine: number } | null {

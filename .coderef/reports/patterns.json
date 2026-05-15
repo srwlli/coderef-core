@@ -28,77 +28,77 @@
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 93,
+      "line": 94,
       "pattern": "try-catch"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 103,
+      "line": 104,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 166,
+      "line": 167,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 195,
+      "line": 196,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 204,
+      "line": 205,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 213,
+      "line": 214,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 228,
+      "line": 229,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 239,
+      "line": 240,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 255,
+      "line": 256,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 271,
+      "line": 272,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 377,
+      "line": 378,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 386,
+      "line": 387,
       "pattern": "try-catch"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 413,
+      "line": 414,
       "pattern": "error-handling"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 459,
+      "line": 460,
       "pattern": "try-catch"
     },
     {
       "file": "examples/nextjs-api-route.ts",
-      "line": 493,
+      "line": 494,
       "pattern": "error-handling"
     },
     {
@@ -208,192 +208,187 @@
     },
     {
       "file": "src/analyzer/analyzer-service.ts",
-      "line": 281,
+      "line": 287,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/analyzer-service.ts",
-      "line": 288,
+      "line": 294,
       "pattern": "error-handling"
     },
     {
       "file": "src/analyzer/analyzer-service.ts",
-      "line": 311,
+      "line": 317,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/ast-element-scanner.ts",
-      "line": 56,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/ast-element-scanner.ts",
-      "line": 84,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/call-detector.ts",
       "line": 62,
       "pattern": "try-catch"
     },
     {
-      "file": "src/analyzer/config-analyzer.ts",
-      "line": 198,
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "line": 90,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/ast-element-scanner.ts",
+      "line": 205,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/call-detector.ts",
+      "line": 68,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/config-analyzer.ts",
-      "line": 230,
+      "line": 204,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/config-analyzer.ts",
-      "line": 276,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/config-analyzer.ts",
-      "line": 349,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/config-analyzer.ts",
-      "line": 398,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/config-analyzer.ts",
-      "line": 466,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/contract-detector.ts",
-      "line": 206,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/contract-detector.ts",
-      "line": 291,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/contract-detector.ts",
-      "line": 407,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/contract-detector.ts",
-      "line": 538,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/contract-detector.ts",
-      "line": 566,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/contract-detector.ts",
-      "line": 568,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/contract-detector.ts",
-      "line": 576,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/database-detector.ts",
-      "line": 193,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/database-detector.ts",
-      "line": 329,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/database-detector.ts",
-      "line": 427,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/database-detector.ts",
-      "line": 520,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/database-detector.ts",
-      "line": 611,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/database-detector.ts",
-      "line": 613,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/database-detector.ts",
-      "line": 615,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/database-detector.ts",
-      "line": 616,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 99,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 112,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 122,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 125,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 200,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/dependency-analyzer.ts",
       "line": 236,
       "pattern": "try-catch"
     },
     {
-      "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 252,
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 282,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 355,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 404,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/config-analyzer.ts",
+      "line": 472,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 212,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 297,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 413,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 544,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 572,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 574,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/contract-detector.ts",
+      "line": 582,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 199,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 335,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 433,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 526,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 617,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 619,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 621,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/database-detector.ts",
+      "line": 622,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 475,
+      "line": 105,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 118,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 128,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 131,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 206,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 242,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 258,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dependency-analyzer.ts",
+      "line": 481,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/design-pattern-detector.ts",
-      "line": 84,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/design-pattern-detector.ts",
-      "line": 86,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/design-pattern-detector.ts",
-      "line": 88,
+      "line": 90,
       "pattern": "try-catch"
     },
     {
@@ -403,62 +398,62 @@
     },
     {
       "file": "src/analyzer/design-pattern-detector.ts",
-      "line": 95,
+      "line": 94,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/design-pattern-detector.ts",
-      "line": 112,
+      "line": 98,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "line": 101,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/design-pattern-detector.ts",
+      "line": 118,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 174,
+      "line": 180,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 280,
+      "line": 286,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 378,
+      "line": 384,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 461,
+      "line": 467,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 498,
+      "line": 504,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 556,
+      "line": 562,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 559,
+      "line": 565,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 560,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/docs-analyzer.ts",
-      "line": 588,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/docs-analyzer.ts",
-      "line": 591,
+      "line": 566,
       "pattern": "try-catch"
     },
     {
@@ -467,23 +462,28 @@
       "pattern": "try-catch"
     },
     {
-      "file": "src/analyzer/dynamic-import-detector.ts",
-      "line": 73,
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 597,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/docs-analyzer.ts",
+      "line": 600,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/dynamic-import-detector.ts",
-      "line": 353,
+      "line": 79,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/dynamic-import-detector.ts",
+      "line": 359,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/entry-detector.ts",
-      "line": 33,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/entry-detector.ts",
-      "line": 57,
+      "line": 39,
       "pattern": "try-catch"
     },
     {
@@ -493,32 +493,37 @@
     },
     {
       "file": "src/analyzer/entry-detector.ts",
-      "line": 296,
+      "line": 69,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/entry-detector.ts",
-      "line": 327,
+      "line": 302,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/entry-detector.ts",
-      "line": 376,
+      "line": 333,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/entry-detector.ts",
-      "line": 389,
+      "line": 382,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/entry-detector.ts",
-      "line": 390,
+      "line": 395,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/entry-detector.ts",
-      "line": 401,
+      "line": 396,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/entry-detector.ts",
+      "line": 407,
       "pattern": "try-catch"
     },
     {
@@ -563,37 +568,37 @@
     },
     {
       "file": "src/analyzer/frontend-call-parsers.ts",
-      "line": 31,
+      "line": 37,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/frontend-call-parsers.ts",
-      "line": 90,
+      "line": 96,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/frontend-call-parsers.ts",
-      "line": 151,
+      "line": 157,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/frontend-call-parsers.ts",
-      "line": 222,
+      "line": 228,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/import-parser.ts",
-      "line": 58,
+      "line": 64,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/import-parser.ts",
-      "line": 272,
+      "line": 278,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/import-parser.ts",
-      "line": 284,
+      "line": 290,
       "pattern": "try-catch"
     },
     {
@@ -608,93 +613,188 @@
     },
     {
       "file": "src/analyzer/js-parser.ts",
-      "line": 95,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/analyzer/js-parser.ts",
       "line": 101,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/js-parser.ts",
-      "line": 121,
+      "line": 107,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/js-parser.ts",
-      "line": 138,
+      "line": 127,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/analyzer/js-parser.ts",
+      "line": 144,
       "pattern": "error-handling"
     },
     {
       "file": "src/analyzer/js-parser.ts",
-      "line": 146,
+      "line": 152,
       "pattern": "error-handling"
     },
     {
       "file": "src/analyzer/migration-route-analyzer.ts",
-      "line": 554,
+      "line": 560,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/project-classifier.ts",
-      "line": 22,
+      "line": 28,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/project-classifier.ts",
-      "line": 169,
+      "line": 175,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/project-classifier.ts",
-      "line": 222,
+      "line": 228,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/project-classifier.ts",
-      "line": 298,
+      "line": 304,
       "pattern": "try-catch"
     },
     {
       "file": "src/analyzer/project-classifier.ts",
-      "line": 575,
+      "line": 581,
       "pattern": "try-catch"
     },
     {
       "file": "src/cache/incremental-cache.ts",
-      "line": 18,
+      "line": 24,
       "pattern": "try-catch"
     },
     {
       "file": "src/cache/incremental-cache.ts",
-      "line": 90,
+      "line": 96,
       "pattern": "try-catch"
     },
     {
       "file": "src/cache/incremental-cache.ts",
-      "line": 122,
+      "line": 128,
       "pattern": "try-catch"
     },
     {
       "file": "src/cache/incremental-cache.ts",
-      "line": 171,
+      "line": 177,
       "pattern": "try-catch"
     },
     {
       "file": "src/cache/incremental-cache.ts",
-      "line": 218,
+      "line": 224,
       "pattern": "try-catch"
     },
     {
       "file": "src/cache/incremental-cache.ts",
-      "line": 276,
+      "line": 282,
       "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 63,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 64,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 91,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 93,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 146,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 166,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 174,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 187,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 209,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 210,
+      "pattern": "error-handling"
     },
     {
       "file": "src/cli/coderef-pipeline.ts",
-      "line": 187,
+      "line": 147,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-pipeline.ts",
+      "line": 206,
       "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
+      "line": 64,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
+      "line": 65,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
+      "line": 67,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
+      "line": 70,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
+      "line": 73,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
+      "line": 92,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
+      "line": 99,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-query.ts",
+      "line": 100,
+      "pattern": "error-handling"
     },
     {
       "file": "src/cli/coderef-rag-server.ts",
@@ -792,6 +892,46 @@
       "pattern": "error-handling"
     },
     {
+      "file": "src/cli/coderef-search.ts",
+      "line": 5,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-search.ts",
+      "line": 50,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-search.ts",
+      "line": 51,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-search.ts",
+      "line": 56,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-search.ts",
+      "line": 61,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-search.ts",
+      "line": 68,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/coderef-search.ts",
+      "line": 94,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/coderef-search.ts",
+      "line": 95,
+      "pattern": "error-handling"
+    },
+    {
       "file": "src/cli/coderef-watch.ts",
       "line": 230,
       "pattern": "try-catch"
@@ -817,9 +957,19 @@
       "pattern": "try-catch"
     },
     {
-      "file": "src/cli/detect-languages.ts",
-      "line": 84,
+      "file": "src/cli/detect-languages-cli.ts",
+      "line": 39,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/detect-languages-cli.ts",
+      "line": 44,
       "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/detect-languages-cli.ts",
+      "line": 56,
+      "pattern": "error-handling"
     },
     {
       "file": "src/cli/detect-languages.ts",
@@ -828,37 +978,67 @@
     },
     {
       "file": "src/cli/detect-languages.ts",
-      "line": 94,
+      "line": 96,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/detect-languages.ts",
-      "line": 106,
+      "line": 100,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/detect-languages.ts",
+      "line": 112,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/populate.ts",
-      "line": 21,
+      "line": 23,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/populate.ts",
-      "line": 188,
+      "line": 233,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/populate.ts",
-      "line": 213,
+      "line": 258,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/populate.ts",
-      "line": 245,
+      "line": 296,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/populate.ts",
-      "line": 308,
+      "line": 327,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 381,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 385,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 414,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 415,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/populate.ts",
+      "line": 451,
       "pattern": "error-handling"
     },
     {
@@ -903,38 +1083,53 @@
     },
     {
       "file": "src/cli/rag-index.ts",
-      "line": 525,
+      "line": 474,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 489,
       "pattern": "error-handling"
     },
     {
-      "file": "src/cli/rag-search.ts",
-      "line": 356,
+      "file": "src/cli/rag-index.ts",
+      "line": 496,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 577,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 597,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-index.ts",
+      "line": 601,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 361,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/cli/rag-search.ts",
-      "line": 368,
+      "line": 370,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 371,
+      "line": 375,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 381,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/cli/rag-search.ts",
-      "line": 392,
+      "line": 382,
       "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 385,
+      "pattern": "error-handling"
     },
     {
       "file": "src/cli/rag-search.ts",
@@ -943,12 +1138,22 @@
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 401,
+      "line": 406,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/rag-search.ts",
-      "line": 404,
+      "line": 409,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 415,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/rag-search.ts",
+      "line": 418,
       "pattern": "error-handling"
     },
     {
@@ -983,27 +1188,122 @@
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 62,
+      "line": 65,
       "pattern": "try-catch"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 105,
+      "line": 109,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 110,
+      "line": 114,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 122,
+      "line": 126,
       "pattern": "error-handling"
     },
     {
       "file": "src/cli/scan.ts",
-      "line": 175,
+      "line": 185,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 36,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 40,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 51,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 54,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 68,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 77,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 85,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 95,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration-cli.ts",
+      "line": 100,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/semantic-integration.test.ts",
+      "line": 56,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration.test.ts",
+      "line": 69,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "line": 107,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "line": 115,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "line": 144,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "line": 186,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "line": 200,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "line": 205,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "line": 210,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/cli/semantic-integration.ts",
+      "line": 226,
       "pattern": "error-handling"
     },
     {
@@ -1088,137 +1388,127 @@
     },
     {
       "file": "src/config/presets.ts",
-      "line": 196,
+      "line": 202,
       "pattern": "try-catch"
     },
     {
       "file": "src/config/presets.ts",
-      "line": 237,
+      "line": 243,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-      "line": 19,
+      "line": 25,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-      "line": 28,
+      "line": 34,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-      "line": 77,
+      "line": 83,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/breaking-change-detector/impact-assessor.ts",
-      "line": 38,
+      "line": 44,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/breaking-change-detector/index.ts",
+      "line": 110,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-generator.ts",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-generator.ts",
       "line": 105,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/context-generator.ts",
-      "line": 10,
+      "line": 222,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/context-generator.ts",
-      "line": 100,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-generator.ts",
-      "line": 217,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-generator.ts",
-      "line": 224,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 15,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 54,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 77,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 82,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 93,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 96,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 101,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 122,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 124,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 140,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 142,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 205,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
-      "line": 212,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/context/context-tracker.ts",
       "line": 229,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/context-tracker.ts",
-      "line": 244,
+      "line": 21,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/context-tracker.ts",
-      "line": 249,
+      "line": 60,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 83,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 88,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 99,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 102,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 107,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 128,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 130,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 146,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 148,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 211,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 218,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 235,
       "pattern": "try-catch"
     },
     {
@@ -1228,22 +1518,27 @@
     },
     {
       "file": "src/context/context-tracker.ts",
-      "line": 284,
+      "line": 255,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/context-tracker.ts",
-      "line": 285,
+      "line": 256,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/context-tracker.ts",
-      "line": 298,
+      "line": 290,
       "pattern": "try-catch"
     },
     {
-      "file": "src/context/entry-point-detector.ts",
-      "line": 44,
+      "file": "src/context/context-tracker.ts",
+      "line": 291,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/context-tracker.ts",
+      "line": 304,
       "pattern": "try-catch"
     },
     {
@@ -1253,32 +1548,37 @@
     },
     {
       "file": "src/context/entry-point-detector.ts",
-      "line": 54,
+      "line": 56,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/entry-point-detector.ts",
-      "line": 67,
+      "line": 60,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/entry-point-detector.ts",
-      "line": 101,
+      "line": 73,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/entry-point-detector.ts",
-      "line": 113,
+      "line": 107,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/context/entry-point-detector.ts",
+      "line": 119,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/example-extractor.ts",
-      "line": 38,
+      "line": 43,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/fuzzy-resolver.ts",
-      "line": 257,
+      "line": 262,
       "pattern": "try-catch"
     },
     {
@@ -1288,22 +1588,22 @@
     },
     {
       "file": "src/context/markdown-formatter.ts",
-      "line": 91,
+      "line": 97,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/markdown-formatter.ts",
-      "line": 92,
+      "line": 98,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/markdown-formatter.ts",
-      "line": 147,
+      "line": 153,
       "pattern": "try-catch"
     },
     {
       "file": "src/context/task-context-generator.ts",
-      "line": 249,
+      "line": 254,
       "pattern": "try-catch"
     },
     {
@@ -1313,22 +1613,22 @@
     },
     {
       "file": "src/export/graph-exporter.ts",
-      "line": 498,
+      "line": 557,
       "pattern": "try-catch"
     },
     {
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 98,
+      "line": 103,
       "pattern": "try-catch"
     },
     {
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 102,
+      "line": 107,
       "pattern": "error-handling"
     },
     {
       "file": "src/fileGeneration/index-storage.ts",
-      "line": 217,
+      "line": 223,
       "pattern": "try-catch"
     },
     {
@@ -1383,7 +1683,7 @@
     },
     {
       "file": "src/formatter/formatter.ts",
-      "line": 94,
+      "line": 100,
       "pattern": "try-catch"
     },
     {
@@ -1398,23 +1698,18 @@
     },
     {
       "file": "src/indexer/indexer-service.ts",
-      "line": 56,
+      "line": 62,
       "pattern": "error-handling"
     },
     {
       "file": "src/indexer/indexer-service.ts",
-      "line": 87,
+      "line": 93,
       "pattern": "error-handling"
     },
     {
       "file": "src/indexer/indexer-service.ts",
-      "line": 106,
+      "line": 112,
       "pattern": "try-catch"
-    },
-    {
-      "file": "src/indexer/indexer-service.ts",
-      "line": 140,
-      "pattern": "error-handling"
     },
     {
       "file": "src/indexer/indexer-service.ts",
@@ -1423,83 +1718,78 @@
     },
     {
       "file": "src/indexer/indexer-service.ts",
-      "line": 300,
+      "line": 152,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/indexer/indexer-service.ts",
+      "line": 306,
       "pattern": "error-handling"
     },
     {
       "file": "src/indexer/metadata-index.ts",
-      "line": 44,
+      "line": 50,
       "pattern": "try-catch"
     },
     {
       "file": "src/indexer/metadata-index.ts",
-      "line": 218,
+      "line": 224,
       "pattern": "try-catch"
     },
     {
       "file": "src/indexer/metadata-index.ts",
-      "line": 308,
+      "line": 314,
       "pattern": "try-catch"
     },
     {
       "file": "src/indexer/metadata-index.ts",
-      "line": 309,
+      "line": 315,
       "pattern": "try-catch"
     },
     {
       "file": "src/indexer/metadata-index.ts",
-      "line": 319,
+      "line": 325,
       "pattern": "try-catch"
     },
     {
       "file": "src/indexer/query-engine.ts",
-      "line": 41,
+      "line": 47,
       "pattern": "try-catch"
     },
     {
       "file": "src/indexer/query-engine.ts",
-      "line": 366,
+      "line": 372,
       "pattern": "try-catch"
     },
     {
       "file": "src/indexer/query-engine.ts",
-      "line": 383,
+      "line": 389,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 14,
+      "line": 20,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 87,
+      "line": 93,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 88,
+      "line": 94,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 131,
+      "line": 137,
       "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 188,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 192,
-      "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
       "line": 194,
-      "pattern": "error-handling"
+      "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
@@ -1508,68 +1798,68 @@
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 236,
+      "line": 200,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 280,
+      "line": 204,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 242,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 300,
+      "line": 286,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/anthropic-provider.ts",
+      "line": 306,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/model-registry.ts",
-      "line": 207,
+      "line": 213,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 112,
+      "line": 118,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 116,
+      "line": 122,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 167,
+      "line": 173,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 207,
+      "line": 213,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 211,
+      "line": 217,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 249,
+      "line": 255,
       "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/ollama-provider.ts",
-      "line": 304,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/ollama-provider.ts",
-      "line": 308,
-      "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
       "line": 310,
-      "pattern": "error-handling"
+      "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
@@ -1578,73 +1868,73 @@
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 363,
+      "line": 316,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 402,
+      "line": 320,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 369,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/ollama-provider.ts",
+      "line": 408,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 15,
+      "line": 21,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 65,
+      "line": 71,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 66,
+      "line": 72,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 106,
+      "line": 112,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 120,
+      "line": 126,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 121,
+      "line": 127,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 131,
+      "line": 137,
       "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 141,
-      "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
       "line": 147,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 153,
       "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 197,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/llm/openai-provider.ts",
-      "line": 201,
-      "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
       "line": 203,
-      "pattern": "error-handling"
+      "pattern": "try-catch"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
@@ -1653,37 +1943,47 @@
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 244,
+      "line": 209,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 288,
+      "line": 213,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 250,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 308,
+      "line": 294,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/llm/openai-provider.ts",
+      "line": 314,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 147,
+      "line": 153,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 230,
+      "line": 236,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/rag/chunk-converter.ts",
-      "line": 65,
+      "line": 64,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/chunk-converter.ts",
-      "line": 67,
+      "line": 66,
       "pattern": "error-handling"
     },
     {
@@ -1697,134 +1997,154 @@
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 219,
+      "file": "src/integration/rag/embedding-service.ts",
+      "line": 186,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/embedding-service.ts",
-      "line": 180,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/rag/embedding-service.ts",
-      "line": 207,
+      "line": 213,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 113,
+      "line": 120,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 131,
+      "line": 138,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 144,
+      "line": 151,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 160,
+      "line": 167,
       "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 353,
-      "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/incremental-indexer.ts",
       "line": 360,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 369,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 372,
+      "line": 367,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 430,
+      "line": 376,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 379,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "line": 437,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/indexing-orchestrator.ts",
-      "line": 205,
+      "line": 254,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/rag/indexing-orchestrator.ts",
-      "line": 431,
+      "line": 264,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 405,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/rag/indexing-orchestrator.ts",
-      "line": 434,
+      "line": 461,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 484,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 489,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 523,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 819,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "line": 822,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 72,
+      "line": 78,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 80,
+      "line": 86,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 100,
+      "line": 106,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 122,
+      "line": 128,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 138,
+      "line": 144,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 195,
+      "line": 201,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 215,
+      "line": 221,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 226,
+      "line": 232,
       "pattern": "error-handling"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 242,
+      "line": 248,
       "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 255,
+      "line": 261,
       "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 271,
-      "pattern": "try-catch"
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
@@ -1833,402 +2153,522 @@
     },
     {
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 296,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 312,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 339,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 354,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/chroma-store.ts",
-      "line": 386,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 72,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 99,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 111,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 144,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 167,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 183,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 219,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 239,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 245,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 261,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 267,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/integration/vector/pinecone-store.ts",
       "line": 283,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 294,
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 302,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 310,
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 318,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 326,
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 345,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/pinecone-store.ts",
-      "line": 356,
+      "file": "src/integration/vector/chroma-store.ts",
+      "line": 360,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/pinecone-store.ts",
+      "file": "src/integration/vector/chroma-store.ts",
       "line": 392,
       "pattern": "error-handling"
     },
     {
-      "file": "src/integration/vector/sqlite-store.ts",
-      "line": 174,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 78,
       "pattern": "try-catch"
     },
     {
-      "file": "src/integration/vector/sqlite-store.ts",
-      "line": 228,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/sqlite-store.ts",
-      "line": 258,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/sqlite-store.ts",
-      "line": 299,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/sqlite-store.ts",
-      "line": 379,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/sqlite-store.ts",
-      "line": 407,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/integration/vector/sqlite-store.ts",
-      "line": 457,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.ts",
-      "line": 62,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.ts",
-      "line": 166,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.ts",
-      "line": 209,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.ts",
-      "line": 238,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 105,
       "pattern": "error-handling"
     },
     {
-      "file": "src/parser/parser.ts",
-      "line": 311,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.ts",
-      "line": 321,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.ts",
-      "line": 329,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/parser/parser.ts",
-      "line": 404,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 14,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 185,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 251,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 278,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 283,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 405,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 1148,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 1584,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 1914,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 1916,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/context-generator.ts",
-      "line": 2035,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 76,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 118,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/export-generator.ts",
+      "file": "src/integration/vector/pinecone-store.ts",
       "line": 117,
       "pattern": "try-catch"
     },
     {
-      "file": "src/pipeline/generators/graph-output.ts",
-      "line": 3,
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 150,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 173,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 189,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 225,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 245,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 251,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 267,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 273,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 289,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 300,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 316,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 332,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 362,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/pinecone-store.ts",
+      "line": 398,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 180,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 234,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 264,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 305,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 385,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 413,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/integration/vector/sqlite-store.ts",
+      "line": 463,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 68,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 172,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 215,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 244,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 317,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 327,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 335,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/parser/parser.ts",
+      "line": 410,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 138,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 248,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 265,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 273,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 281,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 292,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 309,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 316,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 324,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 337,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "line": 352,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 20,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 191,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 257,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 284,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 289,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 411,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1154,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1590,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1920,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 1922,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/context-generator.ts",
+      "line": 2041,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/drift-generator.ts",
+      "line": 83,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/drift-generator.ts",
+      "line": 125,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/export-generator.ts",
+      "line": 123,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/graph-output.ts",
-      "line": 67,
+      "line": 9,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/graph-output.ts",
+      "line": 73,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/health-generator.ts",
-      "line": 238,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/index-generator.ts",
-      "line": 14,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/generators/index-generator.ts",
-      "line": 76,
+      "line": 243,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 147,
+      "line": 153,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 388,
+      "line": 394,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 627,
+      "line": 633,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/registry-generator.ts",
-      "line": 13,
+      "line": 19,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/registry-generator.ts",
-      "line": 18,
+      "line": 21,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/registry-generator.ts",
-      "line": 30,
+      "line": 26,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/generators/registry-generator.ts",
-      "line": 41,
+      "line": 39,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "line": 53,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/generators/registry-generator.ts",
+      "line": 67,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 27,
+      "line": 33,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 42,
+      "line": 48,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 43,
+      "line": 49,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 59,
+      "line": 65,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 81,
+      "line": 87,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 93,
+      "line": 99,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 115,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/grammar-registry.ts",
-      "line": 120,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/grammar-registry.ts",
-      "line": 135,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/ignore-rules.ts",
-      "line": 51,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/ignore-rules.ts",
-      "line": 74,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/incremental-cache.ts",
-      "line": 17,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/incremental-cache.ts",
-      "line": 89,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/pipeline/incremental-cache.ts",
       "line": 121,
       "pattern": "try-catch"
     },
     {
-      "file": "src/pipeline/incremental-cache.ts",
-      "line": 170,
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 126,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/grammar-registry.ts",
+      "line": 141,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/graph-builder.ts",
+      "line": 61,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/graph-builder.ts",
+      "line": 261,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/ignore-rules.ts",
+      "line": 61,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/ignore-rules.ts",
+      "line": 84,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 149,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 327,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 526,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 586,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 611,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 760,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 792,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 806,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 808,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "line": 814,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/incremental-cache.ts",
-      "line": 217,
+      "line": 22,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/incremental-cache.ts",
-      "line": 275,
+      "line": 94,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 126,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 175,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 222,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/incremental-cache.ts",
+      "line": 280,
       "pattern": "try-catch"
     },
     {
@@ -2238,148 +2678,168 @@
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 21,
+      "line": 27,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 25,
+      "line": 31,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 131,
+      "line": 156,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 245,
+      "line": 372,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 252,
+      "line": 379,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 262,
+      "line": 389,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 267,
+      "line": 394,
       "pattern": "try-catch"
     },
     {
       "file": "src/pipeline/orchestrator.ts",
-      "line": 339,
+      "line": 519,
       "pattern": "try-catch"
     },
     {
-      "file": "src/plugins/loaders/config-loader.ts",
-      "line": 17,
+      "file": "src/pipeline/semantic-elements.ts",
+      "line": 9,
       "pattern": "try-catch"
     },
     {
-      "file": "src/plugins/loaders/config-loader.ts",
+      "file": "src/pipeline/semantic-elements.ts",
       "line": 48,
       "pattern": "try-catch"
     },
     {
-      "file": "src/plugins/loaders/config-loader.ts",
-      "line": 50,
+      "file": "src/pipeline/semantic-header-parser.ts",
+      "line": 143,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/semantic-header-parser.ts",
+      "line": 182,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/pipeline/types.ts",
+      "line": 44,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 52,
+      "line": 22,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 90,
+      "line": 53,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 101,
+      "line": 55,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 114,
-      "pattern": "error-handling"
+      "line": 57,
+      "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 124,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/loaders/config-loader.ts",
-      "line": 139,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/loaders/config-loader.ts",
-      "line": 160,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/loaders/config-loader.ts",
-      "line": 170,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/loaders/config-loader.ts",
-      "line": 186,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
-      "line": 45,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
-      "line": 48,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
-      "line": 49,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
-      "line": 56,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
-      "line": 60,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
-      "line": 86,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
       "line": 95,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
-      "line": 105,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/loaders/local-loader.ts",
-      "line": 115,
       "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 106,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 119,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 129,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 144,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 165,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 175,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/config-loader.ts",
+      "line": 191,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 51,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 54,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 55,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 62,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 66,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 92,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 101,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 111,
+      "pattern": "error-handling"
     },
     {
       "file": "src/plugins/loaders/local-loader.ts",
@@ -2388,78 +2848,78 @@
     },
     {
       "file": "src/plugins/loaders/local-loader.ts",
-      "line": 128,
+      "line": 127,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/local-loader.ts",
+      "line": 134,
       "pattern": "error-handling"
     },
     {
       "file": "src/plugins/loaders/local-loader.ts",
-      "line": 138,
+      "line": 144,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/local-loader.ts",
-      "line": 140,
+      "line": 146,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/local-loader.ts",
-      "line": 174,
+      "line": 180,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/local-loader.ts",
-      "line": 176,
+      "line": 182,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/local-loader.ts",
-      "line": 225,
+      "line": 231,
       "pattern": "error-handling"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 12,
+      "line": 18,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 58,
+      "line": 64,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 61,
+      "line": 67,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 62,
+      "line": 68,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 69,
+      "line": 75,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 95,
+      "line": 101,
       "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 104,
+      "line": 110,
       "pattern": "error-handling"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 114,
+      "line": 120,
       "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 124,
-      "pattern": "try-catch"
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
@@ -2468,252 +2928,257 @@
     },
     {
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 139,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 149,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 152,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 190,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 192,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 244,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/manifest-schema.ts",
-      "line": 67,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/manifest-schema.ts",
-      "line": 94,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/manifest-schema.ts",
-      "line": 230,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/plugin-graph.ts",
-      "line": 11,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/plugin-graph.ts",
-      "line": 55,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/plugin-registry.ts",
-      "line": 28,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/plugin-scanner.ts",
-      "line": 11,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/plugin-scanner.ts",
-      "line": 56,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/plugin-scanner.ts",
-      "line": 123,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/plugin-scanner.ts",
-      "line": 138,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/plugins/plugin-scanner.ts",
-      "line": 230,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/plugin-scanner.ts",
-      "line": 255,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/plugins/types.ts",
-      "line": 9,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/query/query-executor.ts",
-      "line": 104,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/query/query-executor.ts",
-      "line": 106,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/query/query-executor.ts",
-      "line": 108,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/query/query-executor.ts",
-      "line": 329,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/registry/entity-registry.ts",
-      "line": 2,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/registry/entity-registry.ts",
-      "line": 9,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/registry/entity-registry.ts",
-      "line": 10,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/registry/entity-registry.ts",
-      "line": 89,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/registry/types.ts",
-      "line": 24,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/scanner/error-reporter.ts",
-      "line": 127,
-      "pattern": "try-catch"
-    },
-    {
-      "file": "src/scanner/error-reporter.ts",
       "line": 136,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/scanner/error-reporter.ts",
-      "line": 208,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/scanner/error-reporter.ts",
-      "line": 235,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/scanner/error-reporter.ts",
-      "line": 239,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/scanner/file-watcher.ts",
-      "line": 115,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "src/scanner/file-watcher.ts",
-      "line": 150,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/framework-registry.ts",
-      "line": 38,
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 145,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 155,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/frontend-scanner.ts",
-      "line": 19,
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 158,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/frontend-scanner.ts",
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 196,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/loaders/npm-loader.ts",
       "line": 198,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/frontend-scanner.ts",
-      "line": 201,
+      "file": "src/plugins/loaders/npm-loader.ts",
+      "line": 250,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/manifest-schema.ts",
+      "line": 73,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/frontend-scanner.ts",
-      "line": 205,
+      "file": "src/plugins/manifest-schema.ts",
+      "line": 100,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/frontend-scanner.ts",
-      "line": 209,
+      "file": "src/plugins/manifest-schema.ts",
+      "line": 236,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/frontend-scanner.ts",
-      "line": 212,
+      "file": "src/plugins/plugin-graph.ts",
+      "line": 32,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/lru-cache.ts",
-      "line": 13,
+      "file": "src/plugins/plugin-graph.ts",
+      "line": 76,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/lru-cache.ts",
-      "line": 43,
+      "file": "src/plugins/plugin-registry.ts",
+      "line": 34,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/lru-cache.ts",
-      "line": 93,
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 16,
       "pattern": "try-catch"
     },
     {
-      "file": "src/scanner/lru-cache.ts",
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 62,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 129,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 144,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 254,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/plugin-scanner.ts",
+      "line": 279,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/plugins/types.ts",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "line": 110,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "line": 112,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "line": 114,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "line": 335,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "line": 8,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "line": 16,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/entity-registry.ts",
+      "line": 95,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/registry/types.ts",
+      "line": 31,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 132,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
       "line": 141,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 213,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 240,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/error-reporter.ts",
+      "line": 244,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/file-watcher.ts",
+      "line": 120,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/scanner/file-watcher.ts",
+      "line": 155,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/framework-registry.ts",
+      "line": 44,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 25,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 204,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 207,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 211,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 215,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/frontend-scanner.ts",
+      "line": 218,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/lru-cache.ts",
-      "line": 142,
+      "line": 19,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/lru-cache.ts",
-      "line": 201,
+      "line": 49,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/lru-cache.ts",
-      "line": 209,
+      "line": 99,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 147,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 148,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 207,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/lru-cache.ts",
+      "line": 215,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/register-frameworks.ts",
-      "line": 9,
+      "line": 15,
       "pattern": "try-catch"
     },
     {
@@ -2728,102 +3193,117 @@
     },
     {
       "file": "src/scanner/scanner-worker.ts",
-      "line": 59,
+      "line": 60,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner-worker.ts",
-      "line": 117,
+      "line": 70,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner-worker.ts",
+      "line": 111,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner-worker.ts",
+      "line": 185,
       "pattern": "error-handling"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 10,
+      "line": 17,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 24,
+      "line": 32,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 762,
+      "line": 774,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 796,
+      "line": 808,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 799,
+      "line": 811,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 802,
+      "line": 814,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 822,
+      "line": 834,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 941,
+      "line": 953,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 999,
+      "line": 1011,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1017,
+      "line": 1029,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1051,
+      "line": 1063,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1109,
+      "line": 1123,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1195,
+      "line": 1144,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1355,
+      "line": 1245,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/scanner.ts",
-      "line": 1578,
+      "line": 1405,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/scanner/scanner.ts",
+      "line": 1631,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/semantic-analyzer.ts",
-      "line": 160,
+      "line": 239,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/semantic-analyzer.ts",
-      "line": 161,
+      "line": 240,
       "pattern": "try-catch"
     },
     {
       "file": "src/scanner/tree-sitter-scanner.ts",
-      "line": 97,
+      "line": 101,
       "pattern": "try-catch"
     },
     {
@@ -2848,97 +3328,597 @@
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 16,
+      "line": 22,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 76,
+      "line": 82,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 96,
+      "line": 102,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 113,
+      "line": 119,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 122,
+      "line": 128,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 139,
+      "line": 145,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 541,
+      "line": 547,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 590,
+      "line": 596,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 609,
+      "line": 615,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 652,
+      "line": 658,
       "pattern": "try-catch"
     },
     {
       "file": "src/search/search-engine.ts",
-      "line": 706,
+      "line": 712,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/ast-extractor.ts",
+      "line": 80,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/header-generator.ts",
+      "line": 120,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/header-generator.ts",
+      "line": 154,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/header-generator.ts",
+      "line": 192,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/header-generator.ts",
+      "line": 319,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/index.ts",
+      "line": 14,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/index.ts",
+      "line": 15,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/index.ts",
+      "line": 20,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/index.ts",
+      "line": 21,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 54,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 71,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 89,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 104,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 149,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.test.ts",
+      "line": 188,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.test.ts",
+      "line": 189,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.test.ts",
+      "line": 205,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 18,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 40,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 64,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 84,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 97,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 131,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 140,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 146,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 153,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 161,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 167,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 170,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 182,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 206,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 239,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 245,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/orchestrator.ts",
+      "line": 248,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/projections.ts",
+      "line": 18,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/projections.ts",
+      "line": 32,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/projections.ts",
+      "line": 39,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/projections.ts",
+      "line": 108,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/projections.ts",
+      "line": 125,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/projections.ts",
+      "line": 146,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 8,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 12,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 30,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 31,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 32,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 41,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 42,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 60,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 80,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 81,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 92,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 102,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 120,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 121,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 129,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 134,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 145,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 146,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 154,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 159,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 170,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 171,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 180,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 185,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 198,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 199,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 209,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 227,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 228,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 246,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 247,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 256,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 262,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 276,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 277,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.test.ts",
+      "line": 287,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 19,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 36,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 48,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 54,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 58,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 72,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 73,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 74,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 79,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 85,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 100,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 127,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 164,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 165,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 179,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 195,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 202,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 215,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 235,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 236,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 256,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 258,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 288,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "src/semantic/registry-sync.ts",
+      "line": 304,
       "pattern": "try-catch"
     },
     {
       "file": "src/validator/frontend-update-generator.ts",
-      "line": 417,
+      "line": 422,
       "pattern": "try-catch"
     },
     {
       "file": "src/validator/migration-mapper.ts",
-      "line": 107,
+      "line": 113,
       "pattern": "try-catch"
     },
     {
       "file": "src/validator/migration-mapper.ts",
-      "line": 194,
+      "line": 200,
       "pattern": "try-catch"
     },
     {
       "file": "src/validator/route-validator.ts",
-      "line": 27,
+      "line": 33,
       "pattern": "try-catch"
     },
     {
       "file": "src/validator/route-validator.ts",
-      "line": 68,
+      "line": 74,
       "pattern": "try-catch"
     },
     {
       "file": "src/validator/route-validator.ts",
-      "line": 342,
+      "line": 348,
       "pattern": "try-catch"
     },
     {
       "file": "utils/fs.ts",
-      "line": 45,
+      "line": 60,
       "pattern": "try-catch"
     },
     {
       "file": "utils/fs.ts",
-      "line": 61,
+      "line": 76,
       "pattern": "try-catch"
     },
     {
@@ -2973,7 +3953,7 @@
     },
     {
       "file": "__tests__/generators/helpers.ts",
-      "line": 37,
+      "line": 53,
       "pattern": "try-catch"
     },
     {
@@ -3032,13 +4012,123 @@
       "pattern": "try-catch"
     },
     {
+      "file": "__tests__/pipeline/call-resolution-ambiguous.test.ts",
+      "line": 32,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/call-resolution-imported-symbol.test.ts",
+      "line": 28,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/call-resolution-nested-scope.test.ts",
+      "line": 25,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/graph-construction-edge-schema.test.ts",
+      "line": 34,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "line": 136,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "line": 152,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "line": 167,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "line": 204,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "line": 236,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/import-resolution-two-pass-ordering.test.ts",
+      "line": 47,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+      "line": 110,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+      "line": 113,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/raw-call-facts.test.ts",
+      "line": 43,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/raw-call-facts.test.ts",
+      "line": 96,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/raw-import-facts.test.ts",
+      "line": 41,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/raw-import-facts.test.ts",
+      "line": 53,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/raw-import-facts.test.ts",
+      "line": 63,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/raw-import-facts.test.ts",
+      "line": 93,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/single-scanner.test.ts",
+      "line": 4,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/single-scanner.test.ts",
+      "line": 45,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/single-scanner.test.ts",
+      "line": 65,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "__tests__/pipeline/single-scanner.test.ts",
+      "line": 70,
+      "pattern": "try-catch"
+    },
+    {
       "file": "__tests__/pipeline-integration.test.ts",
-      "line": 308,
+      "line": 316,
       "pattern": "try-catch"
     },
     {
       "file": "__tests__/populate-cli.test.ts",
-      "line": 19,
+      "line": 18,
       "pattern": "try-catch"
     },
     {
@@ -3057,13 +4147,13 @@
       "pattern": "error-handling"
     },
     {
-      "file": "scanner.js",
-      "line": 157,
+      "file": "__tests__/semantic-canonical.test.ts",
+      "line": 3,
       "pattern": "try-catch"
     },
     {
-      "file": "scanner.js",
-      "line": 170,
+      "file": "__tests__/semantic-canonical.test.ts",
+      "line": 111,
       "pattern": "try-catch"
     },
     {
@@ -3073,32 +4163,42 @@
     },
     {
       "file": "scanner.js",
-      "line": 191,
+      "line": 185,
       "pattern": "try-catch"
     },
     {
       "file": "scanner.js",
-      "line": 193,
+      "line": 187,
       "pattern": "try-catch"
     },
     {
       "file": "scanner.js",
-      "line": 199,
+      "line": 206,
       "pattern": "try-catch"
     },
     {
       "file": "scanner.js",
-      "line": 219,
+      "line": 208,
       "pattern": "try-catch"
     },
     {
       "file": "scanner.js",
-      "line": 227,
+      "line": 214,
       "pattern": "try-catch"
     },
     {
       "file": "scanner.js",
-      "line": 289,
+      "line": 234,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 242,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "scanner.js",
+      "line": 304,
       "pattern": "try-catch"
     },
     {
@@ -3173,282 +4273,297 @@
     },
     {
       "file": "utils/fs.js",
-      "line": 40,
+      "line": 55,
       "pattern": "try-catch"
     },
     {
       "file": "utils/fs.js",
-      "line": 56,
+      "line": 71,
       "pattern": "try-catch"
     },
     {
       "file": "autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py",
-      "line": 191,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
-      "line": 100,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
-      "line": 112,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
-      "line": 354,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
-      "line": 58,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
-      "line": 68,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
-      "line": 267,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/01-element-classification/apply_iteration_5.py",
-      "line": 79,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/03-test-coverage-linkage/apply_iteration_1.py",
-      "line": 47,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/04-async-pattern-detection/apply_iteration_1.py",
-      "line": 44,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/05-context-summary-signal/apply_iteration_1.py",
-      "line": 55,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/06-test-gap-precision/apply_iteration_1.py",
-      "line": 112,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
-      "line": 54,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
-      "line": 65,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
-      "line": 76,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
-      "line": 85,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
-      "line": 88,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
-      "line": 198,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
-      "line": 202,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
-      "line": 52,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
-      "line": 63,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
-      "line": 74,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
-      "line": 83,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
-      "line": 207,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
-      "line": 211,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
-      "line": 63,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
-      "line": 67,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
-      "line": 79,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
-      "line": 90,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
-      "line": 99,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
-      "line": 102,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
-      "line": 219,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
-      "line": 223,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
-      "line": 56,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
-      "line": 68,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
-      "line": 79,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
-      "line": 88,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
-      "line": 91,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
-      "line": 160,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
-      "line": 164,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
-      "line": 43,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
-      "line": 54,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
-      "line": 94,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
-      "line": 165,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
-      "line": 169,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
-      "line": 56,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
-      "line": 68,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
-      "line": 79,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
-      "line": 88,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
-      "line": 91,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
-      "line": 202,
-      "pattern": "error-handling"
-    },
-    {
-      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
       "line": 206,
       "pattern": "error-handling"
     },
     {
-      "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
-      "line": 112,
+      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+      "line": 115,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+      "line": 127,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py",
+      "line": 369,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+      "line": 73,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+      "line": 83,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py",
+      "line": 282,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/01-element-classification/apply_iteration_5.py",
+      "line": 90,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/03-test-coverage-linkage/apply_iteration_1.py",
+      "line": 58,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/04-async-pattern-detection/apply_iteration_1.py",
+      "line": 55,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/05-context-summary-signal/apply_iteration_1.py",
+      "line": 66,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/06-test-gap-precision/apply_iteration_1.py",
+      "line": 123,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 69,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 80,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 91,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 100,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 103,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 213,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_async_patterns.py",
+      "line": 217,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 67,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 78,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 89,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 98,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 222,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_context_signal.py",
+      "line": 226,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 78,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 82,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 94,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 105,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 114,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 117,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 234,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_element_classification.py",
+      "line": 238,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 71,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 83,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 94,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 103,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 106,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 175,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_export_relationships.py",
+      "line": 179,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 58,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 69,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 109,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 180,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_gap_precision.py",
+      "line": 184,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 71,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 83,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 94,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 103,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 106,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 217,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "autoresearch/scanner-quality/scripts/verify_test_linkage.py",
+      "line": 221,
       "pattern": "error-handling"
     },
     {
       "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
-      "line": 141,
+      "line": 123,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "scripts/setup-coderef-dir/setup_coderef_dirs.py",
+      "line": 152,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "tools/coderef_ui.py",
+      "line": 432,
+      "pattern": "try-catch"
+    },
+    {
+      "file": "tools/coderef_ui.py",
+      "line": 554,
+      "pattern": "error-handling"
+    },
+    {
+      "file": "tools/coderef_ui.py",
+      "line": 559,
       "pattern": "error-handling"
     }
   ],
@@ -3461,172 +4576,187 @@
     {
       "name": "POST",
       "file": "examples/nextjs-api-route.ts",
-      "line": 90
+      "line": 91
     },
     {
       "name": "GET",
       "file": "examples/nextjs-api-route.ts",
-      "line": 371
+      "line": 372
     },
     {
       "name": "AnalyzerService.analyze",
       "file": "src/analyzer/analyzer-service.ts",
-      "line": 67
+      "line": 73
     },
     {
       "name": "AnalyzerService.saveGraph",
       "file": "src/analyzer/analyzer-service.ts",
-      "line": 249
+      "line": 255
     },
     {
       "name": "AnalyzerService.loadGraph",
       "file": "src/analyzer/analyzer-service.ts",
-      "line": 269
+      "line": 275
     },
     {
       "name": "AnalyzerService.findFiles",
       "file": "src/analyzer/analyzer-service.ts",
-      "line": 306
+      "line": 312
     },
     {
       "name": "DependencyAnalyzer.analyze",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 78
+      "line": 84
     },
     {
       "name": "DependencyAnalyzer.loadPackageJson",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 98
+      "line": 104
     },
     {
       "name": "DependencyAnalyzer.runNpmAudit",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 111
+      "line": 117
     },
     {
       "name": "DependencyAnalyzer.analyzeDependency",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 151
+      "line": 157
     },
     {
       "name": "DependencyAnalyzer.checkIfOutdated",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 187
+      "line": 193
     },
     {
       "name": "DependencyAnalyzer.getLatestVersion",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 199
+      "line": 205
     },
     {
       "name": "DependencyAnalyzer.checkIfUsed",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 235
+      "line": 241
     },
     {
       "name": "DependencyAnalyzer.getLicenseInfo",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 251
+      "line": 257
     },
     {
       "name": "analyzeDependencyHealth",
       "file": "src/analyzer/dependency-analyzer.ts",
-      "line": 472
+      "line": 478
     },
     {
       "name": "DocsAnalyzer.analyze",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 121
+      "line": 127
     },
     {
       "name": "DocsAnalyzer.analyzeReadme",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 167
+      "line": 173
     },
     {
       "name": "DocsAnalyzer.analyzeJSDocCoverage",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 275
+      "line": 281
     },
     {
       "name": "DocsAnalyzer.analyzeChangelog",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 361
+      "line": 367
     },
     {
       "name": "DocsAnalyzer.analyzeApiDocs",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 452
+      "line": 458
     },
     {
       "name": "DocsAnalyzer.analyzeCommentDensity",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 493
+      "line": 499
     },
     {
       "name": "DocsAnalyzer.findSourceFiles",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 552
+      "line": 558
     },
     {
       "name": "DocsAnalyzer.findSourceFilesRecursive",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 584
+      "line": 590
     },
     {
       "name": "analyzeDocs",
       "file": "src/analyzer/docs-analyzer.ts",
-      "line": 744
+      "line": 750
     },
     {
       "name": "ProjectClassifier.classify",
       "file": "src/analyzer/project-classifier.ts",
-      "line": 90
+      "line": 96
     },
     {
       "name": "ProjectClassifier.loadPackageJson",
       "file": "src/analyzer/project-classifier.ts",
-      "line": 574
+      "line": 580
     },
     {
       "name": "IncrementalCache.load",
       "file": "src/cache/incremental-cache.ts",
-      "line": 87
+      "line": 93
     },
     {
       "name": "IncrementalCache.save",
       "file": "src/cache/incremental-cache.ts",
-      "line": 119
+      "line": 125
     },
     {
       "name": "IncrementalCache.checkFiles",
       "file": "src/cache/incremental-cache.ts",
-      "line": 146
+      "line": 152
     },
     {
       "name": "IncrementalCache.updateCache",
       "file": "src/cache/incremental-cache.ts",
-      "line": 214
+      "line": 220
     },
     {
       "name": "IncrementalCache.computeFileHash",
       "file": "src/cache/incremental-cache.ts",
-      "line": 250
+      "line": 256
     },
     {
       "name": "IncrementalCache.clear",
       "file": "src/cache/incremental-cache.ts",
-      "line": 271
+      "line": 277
+    },
+    {
+      "name": "collectTsFiles",
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 60
+    },
+    {
+      "name": "main",
+      "file": "src/cli/coderef-analyze.ts",
+      "line": 71
     },
     {
       "name": "runLeg",
       "file": "src/cli/coderef-pipeline.ts",
-      "line": 181
+      "line": 200
     },
     {
       "name": "main",
       "file": "src/cli/coderef-pipeline.ts",
-      "line": 276
+      "line": 295
+    },
+    {
+      "name": "main",
+      "file": "src/cli/coderef-query.ts",
+      "line": 45
     },
     {
       "name": "loadRagModules",
@@ -3679,6 +4809,11 @@
       "line": 448
     },
     {
+      "name": "main",
+      "file": "src/cli/coderef-search.ts",
+      "line": 31
+    },
+    {
       "name": "runOnce",
       "file": "src/cli/coderef-watch.ts",
       "line": 344
@@ -3706,27 +4841,27 @@
     {
       "name": "scanDirectory",
       "file": "src/cli/detect-languages.ts",
-      "line": 77
+      "line": 83
     },
     {
       "name": "detectProjectLanguages",
       "file": "src/cli/detect-languages.ts",
-      "line": 120
+      "line": 126
     },
     {
       "name": "runGenerator",
       "file": "src/cli/populate.ts",
-      "line": 177
+      "line": 222
     },
     {
       "name": "run",
       "file": "src/cli/populate.ts",
-      "line": 210
+      "line": 255
     },
     {
       "name": "main",
       "file": "src/cli/populate.ts",
-      "line": 316
+      "line": 459
     },
     {
       "name": "loadRAGDependencies",
@@ -3751,12 +4886,12 @@
     {
       "name": "createVectorStore",
       "file": "src/cli/rag-search.ts",
-      "line": 270
+      "line": 284
     },
     {
       "name": "main",
       "file": "src/cli/rag-search.ts",
-      "line": 355
+      "line": 369
     },
     {
       "name": "main",
@@ -3771,12 +4906,32 @@
     {
       "name": "scanProject",
       "file": "src/cli/scan.ts",
-      "line": 50
+      "line": 53
     },
     {
       "name": "main",
       "file": "src/cli/scan.ts",
-      "line": 130
+      "line": 134
+    },
+    {
+      "name": "DryRunSemanticOrchestrator.processProject",
+      "file": "src/cli/semantic-integration.ts",
+      "line": 106
+    },
+    {
+      "name": "DryRunSemanticOrchestrator.processFile",
+      "file": "src/cli/semantic-integration.ts",
+      "line": 114
+    },
+    {
+      "name": "runSemanticIntegration",
+      "file": "src/cli/semantic-integration.ts",
+      "line": 138
+    },
+    {
+      "name": "validateIdempotency",
+      "file": "src/cli/semantic-integration.ts",
+      "line": 194
     },
     {
       "name": "resolveFilePaths",
@@ -3791,202 +4946,202 @@
     {
       "name": "findImpactedCallSites",
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-      "line": 12
+      "line": 18
     },
     {
       "name": "getChangedElements",
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-      "line": 119
+      "line": 125
     },
     {
       "name": "extractSignaturesFromRef",
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-      "line": 131
+      "line": 137
     },
     {
       "name": "extractSignaturesFromWorktree",
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-      "line": 143
+      "line": 149
     },
     {
       "name": "BreakingChangeDetector.detectChanges",
       "file": "src/context/breaking-change-detector/index.ts",
-      "line": 97
+      "line": 102
     },
     {
       "name": "ContextGenerator.generate",
       "file": "src/context/context-generator.ts",
-      "line": 64
+      "line": 69
     },
     {
       "name": "ContextGenerator.detectPatterns",
       "file": "src/context/context-generator.ts",
-      "line": 195
+      "line": 200
     },
     {
       "name": "analyzeCoverage",
       "file": "src/fileGeneration/analyzeCoverage.ts",
-      "line": 34
+      "line": 39
     },
     {
       "name": "buildDependencyGraph",
       "file": "src/fileGeneration/buildDependencyGraph.ts",
-      "line": 59
+      "line": 64
     },
     {
       "name": "detectDrift",
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 40
+      "line": 45
     },
     {
       "name": "loadPreviousScan",
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 97
+      "line": 102
     },
     {
       "name": "writeReport",
       "file": "src/fileGeneration/detectDrift.ts",
-      "line": 163
+      "line": 168
     },
     {
       "name": "detectPatterns",
       "file": "src/fileGeneration/detectPatterns.ts",
-      "line": 71
+      "line": 76
     },
     {
       "name": "generateContext",
       "file": "src/fileGeneration/generateContext.ts",
-      "line": 43
+      "line": 48
     },
     {
       "name": "generateDiagrams",
       "file": "src/fileGeneration/generateDiagrams.ts",
-      "line": 24
+      "line": 29
     },
     {
       "name": "writeIndexVariants",
       "file": "src/fileGeneration/index-storage.ts",
-      "line": 129
+      "line": 135
     },
     {
       "name": "readJsonMaybeGz",
       "file": "src/fileGeneration/index-storage.ts",
-      "line": 166
+      "line": 172
     },
     {
       "name": "loadIndexFromCoderefDir",
       "file": "src/fileGeneration/index-storage.ts",
-      "line": 208
+      "line": 214
     },
     {
       "name": "saveFrontendCalls",
       "file": "src/fileGeneration/saveFrontendCalls.ts",
-      "line": 139
+      "line": 145
     },
     {
       "name": "generateFrontendCallsOutput",
       "file": "src/fileGeneration/saveFrontendCalls.ts",
-      "line": 176
+      "line": 182
     },
     {
       "name": "countFrontendCalls",
       "file": "src/fileGeneration/saveFrontendCalls.ts",
-      "line": 196
+      "line": 202
     },
     {
       "name": "saveIndex",
       "file": "src/fileGeneration/saveIndex.ts",
-      "line": 28
+      "line": 33
     },
     {
       "name": "validateReferences",
       "file": "src/fileGeneration/validateReferences.ts",
-      "line": 43
+      "line": 48
     },
     {
       "name": "saveFrontendCallsToFile",
       "file": "src/generator/generateFrontendCalls.ts",
-      "line": 178
+      "line": 183
     },
     {
       "name": "saveRoutesToFile",
       "file": "src/generator/generateRoutes.ts",
-      "line": 179
+      "line": 185
     },
     {
       "name": "saveFrontendCallsToFile",
       "file": "src/generator/generateRoutes.ts",
-      "line": 379
+      "line": 385
     },
     {
       "name": "AnthropicProvider.complete",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 86
+      "line": 92
     },
     {
       "name": "AnthropicProvider.embed",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 142
+      "line": 148
     },
     {
       "name": "AnthropicProvider.withRetry",
       "file": "src/integration/llm/anthropic-provider.ts",
-      "line": 188
+      "line": 194
     },
     {
       "name": "OllamaProvider.complete",
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 111
+      "line": 117
     },
     {
       "name": "OllamaProvider.embed",
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 180
+      "line": 186
     },
     {
       "name": "OllamaProvider.embedSingle",
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 206
+      "line": 212
     },
     {
       "name": "OllamaProvider.withRetry",
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 304
+      "line": 310
     },
     {
       "name": "OllamaProvider.handleHttpError",
       "file": "src/integration/llm/ollama-provider.ts",
-      "line": 340
+      "line": 346
     },
     {
       "name": "OpenAIProvider.complete",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 64
+      "line": 70
     },
     {
       "name": "OpenAIProvider.embed",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 115
+      "line": 121
     },
     {
       "name": "OpenAIProvider.withRetry",
       "file": "src/integration/llm/openai-provider.ts",
-      "line": 197
+      "line": 203
     },
     {
       "name": "AnswerGenerationService.generateAnswer",
       "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 140
+      "line": 146
     },
     {
       "name": "AnswerGenerationService.generateVariations",
       "file": "src/integration/rag/answer-generation-service.ts",
-      "line": 360
+      "line": 366
     },
     {
       "name": "ChunkConverter.convertGraph",
       "file": "src/integration/rag/chunk-converter.ts",
-      "line": 33
+      "line": 40
     },
     {
       "name": "ChunkConverter.convertNode",
@@ -3996,667 +5151,742 @@
     {
       "name": "ChunkConverter.readFile",
       "file": "src/integration/rag/chunk-converter.ts",
-      "line": 198
-    },
-    {
-      "name": "ChunkConverter.fileExists",
-      "file": "src/integration/rag/chunk-converter.ts",
-      "line": 214
+      "line": 230
     },
     {
       "name": "EmbeddingService.embedChunks",
       "file": "src/integration/rag/embedding-service.ts",
-      "line": 150
+      "line": 156
     },
     {
       "name": "EmbeddingService.embedChunk",
       "file": "src/integration/rag/embedding-service.ts",
-      "line": 266
+      "line": 272
     },
     {
       "name": "EmbeddingService.embedText",
       "file": "src/integration/rag/embedding-service.ts",
-      "line": 284
+      "line": 290
     },
     {
       "name": "IncrementalIndexer.loadState",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 112
+      "line": 119
     },
     {
       "name": "IncrementalIndexer.saveState",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 143
+      "line": 150
     },
     {
       "name": "IncrementalIndexer.analyzeChanges",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 168
+      "line": 175
     },
     {
       "name": "IncrementalIndexer.filterChangedChunks",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 254
+      "line": 261
     },
     {
       "name": "IncrementalIndexer.updateState",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 300
+      "line": 307
     },
     {
       "name": "IncrementalIndexer.hashFile",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 352
+      "line": 359
     },
     {
       "name": "IncrementalIndexer.clearState",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 368
+      "line": 375
     },
     {
       "name": "IncrementalIndexer.getStatistics",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 382
+      "line": 389
     },
     {
       "name": "IncrementalIndexer.needsReindexing",
       "file": "src/integration/rag/incremental-indexer.ts",
-      "line": 417
+      "line": 424
     },
     {
       "name": "IndexingOrchestrator.indexCodebase",
       "file": "src/integration/rag/indexing-orchestrator.ts",
-      "line": 183
+      "line": 399
     },
     {
       "name": "IndexingOrchestrator.getIndexStats",
       "file": "src/integration/rag/indexing-orchestrator.ts",
-      "line": 445
+      "line": 833
     },
     {
       "name": "IndexingOrchestrator.clearIndex",
       "file": "src/integration/rag/indexing-orchestrator.ts",
-      "line": 463
+      "line": 851
     },
     {
       "name": "SemanticSearchService.search",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 122
+      "line": 128
     },
     {
       "name": "SemanticSearchService.multiQuerySearch",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 203
+      "line": 209
     },
     {
       "name": "SemanticSearchService.findSimilar",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 242
+      "line": 248
     },
     {
       "name": "SemanticSearchService.searchByExample",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 254
+      "line": 260
     },
     {
       "name": "SemanticSearchService.getRelated",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 290
+      "line": 296
     },
     {
       "name": "SemanticSearchService.getGraphNeighbors",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 337
+      "line": 343
     },
     {
       "name": "SemanticSearchService.embedQuery",
       "file": "src/integration/rag/semantic-search.ts",
-      "line": 382
+      "line": 388
     },
     {
       "name": "ChromaStore.initialize",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 71
+      "line": 77
     },
     {
       "name": "ChromaStore.upsert",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 88
+      "line": 94
     },
     {
       "name": "ChromaStore.query",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 130
+      "line": 136
     },
     {
       "name": "ChromaStore.delete",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 203
+      "line": 209
     },
     {
       "name": "ChromaStore.clear",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 234
+      "line": 240
     },
     {
       "name": "ChromaStore.stats",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 263
+      "line": 269
     },
     {
       "name": "ChromaStore.fetchById",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 304
+      "line": 310
     },
     {
       "name": "createChromaStore",
       "file": "src/integration/vector/chroma-store.ts",
-      "line": 396
+      "line": 402
     },
     {
       "name": "PineconeStore.initialize",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 71
+      "line": 77
     },
     {
       "name": "PineconeStore.waitForIndexReady",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 107
+      "line": 113
     },
     {
       "name": "PineconeStore.upsert",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 132
+      "line": 138
     },
     {
       "name": "PineconeStore.query",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 175
+      "line": 181
     },
     {
       "name": "PineconeStore.delete",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 227
+      "line": 233
     },
     {
       "name": "PineconeStore.clear",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 253
+      "line": 259
     },
     {
       "name": "PineconeStore.stats",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 275
+      "line": 281
     },
     {
       "name": "PineconeStore.fetchById",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 302
+      "line": 308
     },
     {
       "name": "createPineconeStore",
       "file": "src/integration/vector/pinecone-store.ts",
-      "line": 402
+      "line": 408
     },
     {
       "name": "SQLiteVectorStore.initialize",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 173
+      "line": 179
     },
     {
       "name": "SQLiteVectorStore.save",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 227
+      "line": 233
     },
     {
       "name": "SQLiteVectorStore.upsert",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 255
+      "line": 261
     },
     {
       "name": "SQLiteVectorStore.query",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 296
+      "line": 302
     },
     {
       "name": "SQLiteVectorStore.delete",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 376
+      "line": 382
     },
     {
       "name": "SQLiteVectorStore.clear",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 404
+      "line": 410
     },
     {
       "name": "SQLiteVectorStore.stats",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 437
+      "line": 443
     },
     {
       "name": "SQLiteVectorStore.fetchById",
       "file": "src/integration/vector/sqlite-store.ts",
-      "line": 454
+      "line": 460
     },
     {
       "name": "ComplexityGenerator.generate",
       "file": "src/pipeline/generators/complexity-generator.ts",
-      "line": 34
+      "line": 40
     },
     {
       "name": "ContextGenerator.generate",
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 169
+      "line": 175
     },
     {
       "name": "ContextGenerator.buildContext",
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 189
+      "line": 195
     },
     {
       "name": "ContextGenerator.loadComplexityData",
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 248
+      "line": 254
     },
     {
       "name": "ContextGenerator.analyzeDependencyRisks",
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 1095
+      "line": 1101
     },
     {
       "name": "ContextGenerator.loadPackageJson",
       "file": "src/pipeline/generators/context-generator.ts",
-      "line": 1147
+      "line": 1153
     },
     {
       "name": "CoverageGenerator.generate",
       "file": "src/pipeline/generators/coverage-generator.ts",
-      "line": 32
+      "line": 38
     },
     {
       "name": "DiagramGenerator.generate",
       "file": "src/pipeline/generators/diagram-generator.ts",
-      "line": 18
+      "line": 24
     },
     {
       "name": "DriftGenerator.generate",
       "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 52
+      "line": 59
     },
     {
       "name": "DriftGenerator.detectDrift",
       "file": "src/pipeline/generators/drift-generator.ts",
-      "line": 70
+      "line": 77
     },
     {
       "name": "ExportGenerator.generate",
       "file": "src/pipeline/generators/export-generator.ts",
-      "line": 19
+      "line": 25
     },
     {
       "name": "ExportGenerator.generateJSONExport",
       "file": "src/pipeline/generators/export-generator.ts",
-      "line": 38
+      "line": 44
     },
     {
       "name": "ExportGenerator.generateJSONLD",
       "file": "src/pipeline/generators/export-generator.ts",
-      "line": 46
+      "line": 52
     },
     {
       "name": "ExportGenerator.generateWrappedDiagram",
       "file": "src/pipeline/generators/export-generator.ts",
-      "line": 79
+      "line": 85
     },
     {
       "name": "ExportGenerator.readDependencyDiagram",
       "file": "src/pipeline/generators/export-generator.ts",
-      "line": 114
+      "line": 120
     },
     {
       "name": "GraphGenerator.generate",
       "file": "src/pipeline/generators/graph-generator.ts",
-      "line": 26
+      "line": 32
     },
     {
       "name": "HealthGenerator.generate",
       "file": "src/pipeline/generators/health-generator.ts",
-      "line": 35
+      "line": 40
     },
     {
       "name": "HealthGenerator.analyzeDependencies",
       "file": "src/pipeline/generators/health-generator.ts",
-      "line": 55
+      "line": 60
     },
     {
       "name": "generateHealthReport",
       "file": "src/pipeline/generators/health-generator.ts",
-      "line": 234
+      "line": 239
     },
     {
       "name": "IndexGenerator.generate",
       "file": "src/pipeline/generators/index-generator.ts",
-      "line": 28
+      "line": 32
     },
     {
       "name": "PatternGenerator.generate",
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 95
+      "line": 101
     },
     {
       "name": "PatternGenerator.detectTestGaps",
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 188
+      "line": 194
     },
     {
       "name": "PatternGenerator.loadComplexityData",
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 386
+      "line": 392
     },
     {
       "name": "PatternGenerator.loadCoverageData",
       "file": "src/pipeline/generators/pattern-generator.ts",
-      "line": 618
+      "line": 624
     },
     {
       "name": "RegistryGenerator.generate",
       "file": "src/pipeline/generators/registry-generator.ts",
-      "line": 25
+      "line": 33
     },
     {
       "name": "ValidationGenerator.generate",
       "file": "src/pipeline/generators/validation-generator.ts",
-      "line": 29
+      "line": 35
     },
     {
       "name": "GrammarRegistry.getParser",
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 56
+      "line": 62
     },
     {
       "name": "GrammarRegistry.loadGrammar",
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 107
+      "line": 113
     },
     {
       "name": "GrammarRegistry.preloadGrammars",
       "file": "src/pipeline/grammar-registry.ts",
-      "line": 183
+      "line": 189
     },
     {
       "name": "loadIgnorePatterns",
       "file": "src/pipeline/ignore-rules.ts",
-      "line": 37
+      "line": 47
     },
     {
       "name": "IncrementalCache.load",
       "file": "src/pipeline/incremental-cache.ts",
-      "line": 86
+      "line": 91
     },
     {
       "name": "IncrementalCache.save",
       "file": "src/pipeline/incremental-cache.ts",
-      "line": 118
+      "line": 123
     },
     {
       "name": "IncrementalCache.checkFiles",
       "file": "src/pipeline/incremental-cache.ts",
-      "line": 145
+      "line": 150
     },
     {
       "name": "IncrementalCache.updateCache",
       "file": "src/pipeline/incremental-cache.ts",
-      "line": 213
+      "line": 218
     },
     {
       "name": "IncrementalCache.computeFileHash",
       "file": "src/pipeline/incremental-cache.ts",
-      "line": 249
+      "line": 254
     },
     {
       "name": "IncrementalCache.clear",
       "file": "src/pipeline/incremental-cache.ts",
-      "line": 270
+      "line": 275
     },
     {
       "name": "PipelineOrchestrator.run",
       "file": "src/pipeline/orchestrator.ts",
-      "line": 57
+      "line": 76
     },
     {
       "name": "PipelineOrchestrator.discoverFiles",
       "file": "src/pipeline/orchestrator.ts",
-      "line": 212
+      "line": 339
     },
     {
       "name": "PipelineOrchestrator.scanDirectory",
       "file": "src/pipeline/orchestrator.ts",
-      "line": 237
+      "line": 364
     },
     {
       "name": "PipelineOrchestrator.processFile",
       "file": "src/pipeline/orchestrator.ts",
-      "line": 290
+      "line": 417
     },
     {
       "name": "loadConfigPlugins",
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 43
+      "line": 48
     },
     {
       "name": "loadConfigPlugin",
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 70
+      "line": 75
     },
     {
       "name": "tryLoadNpmPackage",
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 97
+      "line": 102
     },
     {
       "name": "tryLoadLocalPath",
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 147
+      "line": 152
     },
     {
       "name": "pathExists",
       "file": "src/plugins/loaders/config-loader.ts",
-      "line": 185
+      "line": 190
     },
     {
       "name": "loadLocalPlugin",
       "file": "src/plugins/loaders/local-loader.ts",
-      "line": 80
+      "line": 86
     },
     {
       "name": "loadAllLocalPlugins",
       "file": "src/plugins/loaders/local-loader.ts",
-      "line": 235
+      "line": 241
     },
     {
       "name": "loadNpmPlugin",
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 89
+      "line": 95
     },
     {
       "name": "loadAllNpmPlugins",
       "file": "src/plugins/loaders/npm-loader.ts",
-      "line": 254
+      "line": 260
     },
     {
       "name": "scanWithPlugins",
       "file": "src/plugins/plugin-scanner.ts",
-      "line": 35
+      "line": 41
     },
     {
       "name": "runDetector",
       "file": "src/plugins/plugin-scanner.ts",
-      "line": 117
+      "line": 123
     },
     {
       "name": "initializePluginScanning",
       "file": "src/plugins/plugin-scanner.ts",
-      "line": 209
+      "line": 233
     },
     {
       "name": "QueryExecutor.execute",
       "file": "src/query/query-executor.ts",
-      "line": 89
+      "line": 95
     },
     {
       "name": "QueryExecutor.executeQuery",
       "file": "src/query/query-executor.ts",
-      "line": 139
+      "line": 145
     },
     {
       "name": "QueryExecutor.executeBatch",
       "file": "src/query/query-executor.ts",
-      "line": 297
+      "line": 303
     },
     {
       "name": "QueryExecutor.queryWithFilter",
       "file": "src/query/query-executor.ts",
-      "line": 311
+      "line": 317
     },
     {
       "name": "QueryExecutor.healthCheck",
       "file": "src/query/query-executor.ts",
-      "line": 328
+      "line": 334
     },
     {
       "name": "FileWatcher.start",
       "file": "src/scanner/file-watcher.ts",
-      "line": 71
+      "line": 76
     },
     {
       "name": "FileWatcher.stop",
       "file": "src/scanner/file-watcher.ts",
-      "line": 122
+      "line": 127
     },
     {
       "name": "FileWatcher.handleFileChange",
       "file": "src/scanner/file-watcher.ts",
-      "line": 142
+      "line": 147
     },
     {
       "name": "FileWatcher.handleFileDelete",
       "file": "src/scanner/file-watcher.ts",
-      "line": 184
+      "line": 189
     },
     {
       "name": "scanFileForFrontendCalls",
       "file": "src/scanner/frontend-scanner.ts",
-      "line": 18
+      "line": 24
     },
     {
       "name": "attachFrontendCalls",
       "file": "src/scanner/frontend-scanner.ts",
-      "line": 62
+      "line": 68
     },
     {
       "name": "scanProjectForFrontendCalls",
       "file": "src/scanner/frontend-scanner.ts",
-      "line": 131
+      "line": 137
     },
     {
       "name": "findFiles",
       "file": "src/scanner/frontend-scanner.ts",
-      "line": 195
+      "line": 201
     },
     {
       "name": "scanFilesInParallel",
       "file": "src/scanner/scanner.ts",
-      "line": 682
+      "line": 694
     },
     {
       "name": "collectFiles",
       "file": "src/scanner/scanner.ts",
-      "line": 786
+      "line": 798
     },
     {
       "name": "scanCurrentElements",
       "file": "src/scanner/scanner.ts",
-      "line": 872
+      "line": 884
     },
     {
       "name": "GrammarLoader.loadGrammar",
       "file": "src/scanner/tree-sitter-scanner.ts",
-      "line": 85
+      "line": 89
     },
     {
       "name": "TreeSitterScanner.scanFile",
       "file": "src/scanner/tree-sitter-scanner.ts",
-      "line": 160
+      "line": 164
+    },
+    {
+      "name": "ASTExtractor.extractFile",
+      "file": "src/semantic/ast-extractor.ts",
+      "line": 69
+    },
+    {
+      "name": "ASTExtractor.extractDirectory",
+      "file": "src/semantic/ast-extractor.ts",
+      "line": 185
+    },
+    {
+      "name": "astExtractor",
+      "file": "src/semantic/ast-extractor.ts",
+      "line": 254
+    },
+    {
+      "name": "extractBatch",
+      "file": "src/semantic/ast-extractor.ts",
+      "line": 262
+    },
+    {
+      "name": "HeaderGenerator.insertHeaders",
+      "file": "src/semantic/header-generator.ts",
+      "line": 191
+    },
+    {
+      "name": "generateHeaders",
+      "file": "src/semantic/header-generator.ts",
+      "line": 326
+    },
+    {
+      "name": "LLMEnricher.enrich",
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 66
+    },
+    {
+      "name": "LLMEnricher.callLLM",
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 83
+    },
+    {
+      "name": "LLMEnricher.enrichElementData",
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 227
+    },
+    {
+      "name": "enrichMetadata",
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 255
+    },
+    {
+      "name": "enrichBatch",
+      "file": "src/semantic/llm-enricher.ts",
+      "line": 266
+    },
+    {
+      "name": "SemanticOrchestrator.processProject",
+      "file": "src/semantic/orchestrator.ts",
+      "line": 73
+    },
+    {
+      "name": "SemanticOrchestrator.processFile",
+      "file": "src/semantic/orchestrator.ts",
+      "line": 181
+    },
+    {
+      "name": "runSemanticPipeline",
+      "file": "src/semantic/orchestrator.ts",
+      "line": 323
+    },
+    {
+      "name": "RegistrySyncer.syncEntry",
+      "file": "src/semantic/registry-sync.ts",
+      "line": 92
+    },
+    {
+      "name": "RegistrySyncer.syncBatch",
+      "file": "src/semantic/registry-sync.ts",
+      "line": 148
+    },
+    {
+      "name": "syncEntry",
+      "file": "src/semantic/registry-sync.ts",
+      "line": 281
+    },
+    {
+      "name": "refreshSync",
+      "file": "src/semantic/registry-sync.ts",
+      "line": 295
     },
     {
       "name": "applyModifications",
       "file": "src/validator/frontend-update-generator.ts",
-      "line": 398
+      "line": 403
     },
     {
       "name": "saveMarkdownReport",
       "file": "src/validator/report-generator.ts",
-      "line": 274
+      "line": 280
     },
     {
       "name": "loadFrontendCalls",
       "file": "src/validator/route-validator.ts",
-      "line": 26
+      "line": 32
     },
     {
       "name": "loadServerRoutes",
       "file": "src/validator/route-validator.ts",
-      "line": 65
+      "line": 71
     },
     {
       "name": "generateValidationReport",
       "file": "src/validator/route-validator.ts",
-      "line": 268
+      "line": 274
     },
     {
       "name": "saveValidationReport",
       "file": "src/validator/route-validator.ts",
-      "line": 322
+      "line": 328
     },
     {
       "name": "loadMigrationMapping",
       "file": "src/validator/route-validator.ts",
-      "line": 341
+      "line": 347
     },
     {
       "name": "validateMigration",
       "file": "src/validator/route-validator.ts",
-      "line": 369
-    },
-    {
-      "name": "AuthService.login",
-      "file": "__tests__/.test-integration-project/src/auth.ts",
-      "line": 10
-    },
-    {
-      "name": "UserService.findUser",
-      "file": "__tests__/.test-integration-project/src/user.ts",
-      "line": 4
+      "line": 375
     },
     {
       "name": "createMockEnvironment",
       "file": "__tests__/generators/helpers.ts",
-      "line": 19
+      "line": 35
     },
     {
       "name": "cleanupEnvironment",
       "file": "__tests__/generators/helpers.ts",
-      "line": 212
+      "line": 228
     },
     {
       "name": "readJson",
       "file": "__tests__/generators/helpers.ts",
-      "line": 216
+      "line": 232
     },
     {
       "name": "readText",
       "file": "__tests__/generators/helpers.ts",
-      "line": 221
+      "line": 237
     },
     {
       "name": "createContextDiagnosticEnvironment",
@@ -4669,9 +5899,109 @@
       "line": 99
     },
     {
+      "name": "makeStore",
+      "file": "__tests__/integration/rag/facet-filter.test.ts",
+      "line": 25
+    },
+    {
       "name": "runAllTests",
       "file": "__tests__/integration.test.ts",
       "line": 471
+    },
+    {
+      "name": "walk",
+      "file": "__tests__/pipeline/graph-construction-legacy-builders.test.ts",
+      "line": 30
+    },
+    {
+      "name": "createProject",
+      "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "line": 12
+    },
+    {
+      "name": "runGraph",
+      "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "line": 27
+    },
+    {
+      "name": "project",
+      "file": "__tests__/pipeline/header-exports-cross-check.test.ts",
+      "line": 9
+    },
+    {
+      "name": "createProject",
+      "file": "__tests__/pipeline/header-fact-shape.test.ts",
+      "line": 9
+    },
+    {
+      "name": "createProject",
+      "file": "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+      "line": 18
+    },
+    {
+      "name": "runHeaderImports",
+      "file": "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+      "line": 31
+    },
+    {
+      "name": "runProject",
+      "file": "__tests__/pipeline/import-resolution-relative.test.ts",
+      "line": 12
+    },
+    {
+      "name": "copyDir",
+      "file": "__tests__/pipeline/indexing-gate-invariant.test.ts",
+      "line": 107
+    },
+    {
+      "name": "createProject",
+      "file": "__tests__/pipeline/no-graph-edge-claim.test.ts",
+      "line": 10
+    },
+    {
+      "name": "runState",
+      "file": "__tests__/pipeline/no-graph-edge-claim.test.ts",
+      "line": 23
+    },
+    {
+      "name": "makeMinimalFixture",
+      "file": "__tests__/pipeline/output-validation-report.test.ts",
+      "line": 44
+    },
+    {
+      "name": "makeFixtureWithStaleExports",
+      "file": "__tests__/pipeline/output-validation-strict-headers.test.ts",
+      "line": 40
+    },
+    {
+      "name": "createProject",
+      "file": "__tests__/pipeline/raw-call-facts.test.ts",
+      "line": 10
+    },
+    {
+      "name": "runRawCalls",
+      "file": "__tests__/pipeline/raw-call-facts.test.ts",
+      "line": 23
+    },
+    {
+      "name": "createProject",
+      "file": "__tests__/pipeline/raw-export-facts.test.ts",
+      "line": 10
+    },
+    {
+      "name": "runRawExports",
+      "file": "__tests__/pipeline/raw-export-facts.test.ts",
+      "line": 23
+    },
+    {
+      "name": "createProject",
+      "file": "__tests__/pipeline/raw-import-facts.test.ts",
+      "line": 10
+    },
+    {
+      "name": "runRawImports",
+      "file": "__tests__/pipeline/raw-import-facts.test.ts",
+      "line": 23
     },
     {
       "name": "handleScanRequest",
@@ -4681,12 +6011,7 @@
     {
       "name": "scanCurrentElements",
       "file": "scanner.js",
-      "line": 115
-    },
-    {
-      "name": "create",
-      "file": "create_wo.py",
-      "line": 11
+      "line": 130
     }
   ],
   "testGaps": [
@@ -4721,6 +6046,26 @@
       "reason": "High complexity (24), Core pipeline function"
     },
     {
+      "name": "buildNodes",
+      "file": "src/pipeline/graph-builder.ts",
+      "reason": "High complexity (15), Core pipeline function"
+    },
+    {
+      "name": "buildEdges",
+      "file": "src/pipeline/graph-builder.ts",
+      "reason": "High complexity (33), Core pipeline function"
+    },
+    {
+      "name": "buildExportTables",
+      "file": "src/pipeline/import-resolver.ts",
+      "reason": "High complexity (14), Core pipeline function"
+    },
+    {
+      "name": "normalizeRelatedField",
+      "file": "src/pipeline/semantic-elements.ts",
+      "reason": "High complexity (11), Core pipeline function"
+    },
+    {
       "name": "validateManifest",
       "file": "src/plugins/manifest-schema.ts",
       "reason": "High complexity (32), Core pipeline function"
@@ -4738,7 +6083,12 @@
     {
       "name": "buildSemanticRelationships",
       "file": "src/scanner/semantic-analyzer.ts",
-      "reason": "High complexity (14), Core pipeline function"
+      "reason": "High complexity (15), Core pipeline function"
+    },
+    {
+      "name": "createSemanticRegistryProjection",
+      "file": "src/semantic/projections.ts",
+      "reason": "High complexity (21), Core pipeline function"
     },
     {
       "name": "generateMigrationHints",
@@ -4746,9 +6096,19 @@
       "reason": "Medium complexity (9), Core pipeline function"
     },
     {
+      "name": "normalizeRulesField",
+      "file": "src/pipeline/semantic-elements.ts",
+      "reason": "Medium complexity (9), Core pipeline function"
+    },
+    {
       "name": "analyzeCoverage",
       "file": "src/fileGeneration/analyzeCoverage.ts",
       "reason": "Medium complexity (6), Core pipeline function, Async function with edge cases"
+    },
+    {
+      "name": "buildFileHeaderStatusMap",
+      "file": "src/pipeline/output-validator.ts",
+      "reason": "Medium complexity (8), Core pipeline function"
     },
     {
       "name": "printScanErrors",
@@ -4763,6 +6123,21 @@
     {
       "name": "getConversionStats",
       "file": "src/adapter/graph-to-elements.ts",
+      "reason": "Medium complexity (6), Core pipeline function"
+    },
+    {
+      "name": "hasCycle",
+      "file": "src/indexer/relationship-index.ts",
+      "reason": "High complexity (13)"
+    },
+    {
+      "name": "validatePipelineState",
+      "file": "src/pipeline/output-validator.ts",
+      "reason": "Medium complexity (6), Core pipeline function"
+    },
+    {
+      "name": "buildSemanticElementsFromState",
+      "file": "src/pipeline/semantic-elements.ts",
       "reason": "Medium complexity (6), Core pipeline function"
     },
     {
@@ -4808,61 +6183,11 @@
     {
       "name": "findImpactedCallSites",
       "file": "src/context/breaking-change-detector/diff-analyzer.ts",
-      "reason": "Medium complexity (10), Async function with edge cases"
+      "reason": "High complexity (14), Async function with edge cases"
     },
     {
       "name": "detectDrift",
       "file": "src/fileGeneration/detectDrift.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "sortFrontendCalls",
-      "file": "src/generator/generateFrontendCalls.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "saveFrontendCallsToFile",
-      "file": "src/generator/generateFrontendCalls.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "validateRegistry",
-      "file": "src/integration/llm/model-registry.ts",
-      "reason": "Core pipeline function"
-    },
-    {
-      "name": "generateHealthReport",
-      "file": "src/pipeline/generators/health-generator.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "loadAllLocalPlugins",
-      "file": "src/plugins/loaders/local-loader.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "loadAllNpmPlugins",
-      "file": "src/plugins/loaders/npm-loader.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "scanWithPlugins",
-      "file": "src/plugins/plugin-scanner.ts",
-      "reason": "Medium complexity (10), Async function with edge cases"
-    },
-    {
-      "name": "initializePluginScanning",
-      "file": "src/plugins/plugin-scanner.ts",
-      "reason": "High complexity (21), Async function with edge cases"
-    },
-    {
-      "name": "analyzeDocs",
-      "file": "src/analyzer/docs-analyzer.ts",
-      "reason": "Core pipeline function, Async function with edge cases"
-    },
-    {
-      "name": "detectProjectLanguages",
-      "file": "src/cli/detect-languages.ts",
       "reason": "Core pipeline function, Async function with edge cases"
     }
   ],
@@ -4870,7 +6195,7 @@
     {
       "name": "anonymous",
       "file": "src/analyzer/middleware-detector.ts",
-      "line": 338,
+      "line": 344,
       "framework": "express",
       "type": "middleware",
       "path": "auth",
@@ -4879,7 +6204,7 @@
     {
       "name": "anonymous",
       "file": "src/analyzer/middleware-detector.ts",
-      "line": 361,
+      "line": 367,
       "framework": "express",
       "type": "middleware",
       "path": "rateLimit",
@@ -5014,7 +6339,7 @@
     {
       "name": "anonymous",
       "file": "src/analyzer/route-parsers.ts",
-      "line": 45,
+      "line": 51,
       "framework": "express",
       "type": "handler",
       "path": "/path",
@@ -5023,7 +6348,7 @@
     {
       "name": "anonymous",
       "file": "src/analyzer/route-parsers.ts",
-      "line": 52,
+      "line": 58,
       "framework": "express",
       "type": "handler",
       "path": "/items/{item_id}",
@@ -5032,7 +6357,7 @@
     {
       "name": "anonymous",
       "file": "src/analyzer/route-parsers.ts",
-      "line": 73,
+      "line": 79,
       "framework": "express",
       "type": "handler",
       "path": "/path",
@@ -5041,7 +6366,7 @@
     {
       "name": "anonymous",
       "file": "src/analyzer/route-parsers.ts",
-      "line": 73,
+      "line": 79,
       "framework": "express",
       "type": "router",
       "path": "/path",
@@ -5050,7 +6375,7 @@
     {
       "name": "anonymous",
       "file": "src/analyzer/route-parsers.ts",
-      "line": 81,
+      "line": 87,
       "framework": "express",
       "type": "handler",
       "path": "/api/users",
@@ -5059,7 +6384,7 @@
     {
       "name": "anonymous",
       "file": "src/analyzer/route-parsers.ts",
-      "line": 84,
+      "line": 90,
       "framework": "express",
       "type": "router",
       "path": "/login",
@@ -5068,7 +6393,7 @@
     {
       "name": "anonymous",
       "file": "src/scanner/scanner.ts",
-      "line": 199,
+      "line": 207,
       "framework": "express",
       "type": "handler",
       "path": "/path",

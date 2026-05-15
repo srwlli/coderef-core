@@ -1,0 +1,55 @@
+session_metadata:
+  session_id: SES-2026-05-11-SEMANTIC-CONTEXT-WIRING-DEEP-DIVE
+  workorder_id: WO-SEMANTIC-CONTEXT-WIRING-DEEP-DIVE-001
+  feature_name: semantic-context-wiring-deep-dive
+  date: "2026-05-11"
+  agent_domain: CODEREF-CORE
+  target_project: assistant
+  plan_type: light
+
+tools_used:
+  - Read (dispatch_seed_assembler.py, discovery_rag.py, semantic-scan-extractor.js, discovery.py)
+  - Write (implementation-plan.md, workorder files)
+  - Agent (Explore subagent for deep code search)
+  - Bash (classifier, git, session events)
+
+files_modified:
+  created:
+    - path: coderef/workorder/semantic-context-wiring-deep-dive/context.json
+    - path: coderef/workorder/semantic-context-wiring-deep-dive/analysis.json
+    - path: coderef/workorder/semantic-context-wiring-deep-dive/plan.json
+    - path: coderef/workorder/semantic-context-wiring-deep-dive/communication.json
+    - path: coderef/workorder/semantic-context-wiring-deep-dive/implementation-plan.md
+  modified:
+    - path: TRACKING/workorders.json
+  deleted: []
+
+decisions:
+  - id: DR-001
+    decision: Option B (extend discovery_rag.py cached_hits param) for Gap 1
+    rationale: >
+      Cleanest separation — discovery_rag.py owns the passthrough contract;
+      create-workorder reads dispatch and passes hits. No new files needed.
+  - id: DR-002
+    decision: Gap 3 (env defaults) implemented first
+    rationale: Smallest change, activates existing infrastructure immediately.
+
+outcomes:
+  - 3 semantic wiring gaps confirmed with exact file paths and line numbers
+  - implementation-plan.md: 4 follow-on workorders scoped (light/phased)
+  - Gap 3: 4 LOC change in SKILL.md/WORKFLOW-SPEC.md
+  - Gap 1: ~35 LOC across discovery_rag.py + create-workorder docs
+  - Gap 2: ~45 LOC across semantic-scan-extractor.js + discovery.py
+
+issues_encountered:
+  - none
+
+tracking:
+  workorders_json: complete
+  sessions_json: no entry (light plan)
+  stubs_json: no stub
+
+commits:
+  - repo: ASSISTANT
+    hash: "1e66296"
+    message: "feat(semantic-context-wiring-deep-dive): WO-SEMANTIC-CONTEXT-WIRING-DEEP-DIVE-001 complete"

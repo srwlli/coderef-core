@@ -3,10 +3,6 @@
  * @exports ApiEndpoint, detectPatterns, getApiEndpointStats
  */
 
-
-
-
-
 /**
  * Detect Patterns - Find common code patterns
  *

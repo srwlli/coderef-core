@@ -3,10 +3,6 @@
  * @exports ScanPreset, loadPreset, detectPreset, mergePresets, applyPreset
  */
 
-
-
-
-
 // coderef-core/config/presets.ts
 
 import * as fs from 'fs';

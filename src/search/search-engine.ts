@@ -4,10 +4,6 @@
  * @used_by src/cli/coderef-search.ts
  */
 
-
-
-
-
 /**
  * Advanced Search Engine
  *

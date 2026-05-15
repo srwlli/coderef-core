@@ -4,10 +4,6 @@
  * @used_by src/pipeline/semantic-elements.ts
  */
 
-
-
-
-
 /**
  * Semantic Analyzer - Build exports and used_by relationships
  * WO-CODEREF-SEMANTIC-INTEGRATION-001: Phase 1
