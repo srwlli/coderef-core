@@ -1,0 +1,47 @@
+{
+  "workorder_id": "WO-CORE-QUALITY-DEPTH-PASS-001",
+  "feature_name": "core-quality-depth-pass",
+  "created": "2026-05-15T22:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-15-006",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Four-part quality depth pass: (1) fix orchestrator.ts:477 rawExports/exports mismatch causing false staleness positives, (2) push semantic header coverage toward 100% via populate-coderef --source-headers, (3) audit RAG query hit quality, (4) validate self-improving loop end-to-end"
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Four ordered work items with a hard dependency chain (bug fix before header fill, header fill before RAG audit, RAG audit before loop validation). Medium scope touching orchestrator.ts, header pipeline, and RAG query path. No architectural overhaul.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "src/pipeline/orchestrator.ts:477 — rawExports vs exports mismatch in staleness check",
+      "populate-coderef --source-headers flood pass on src/",
+      "RAG query audit via http://localhost:52849/api/rag/query",
+      "End-to-end self-improving loop validation"
+    ],
+    "out_of_scope": [
+      "New scanner grammar changes",
+      "Cloud vector store migration",
+      "Breaking API changes to public CLI surface",
+      "Test suite changes (must stay green)"
+    ]
+  },
+  "constraints": [
+    "Test suite must remain green (1495 passing) at all times",
+    "Fix rawExports bug BEFORE stamping headers — otherwise stale headers get re-stamped with wrong exports",
+    "RAG server must be running for phases 3-4",
+    "No blind widening of staleness check — understand both extraction paths first"
+  ],
+  "pre_existing_drift": true
+}

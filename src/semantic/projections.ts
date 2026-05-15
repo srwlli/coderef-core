@@ -4,6 +4,8 @@
  * @used_by src/pipeline/generators/registry-generator.ts
  */
 
+
+
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
 import type {

@@ -4,6 +4,8 @@
  * @used_by src/errors/FileNotFoundError.ts, src/errors/IndexError.ts, src/errors/ParseError.ts, src/errors/ScanError.ts, src/errors/ValidationError.ts
  */
 
+
+
 /**
  * CodeRefError - Base error class for all CodeRef system errors
  * @module errors

@@ -4,6 +4,8 @@
  * @used_by src/scanner/scanner-worker.ts, src/scanner/scanner.ts
  */
 
+
+
 /**
  * TreeSitterScanner - AST-based code element scanner
  *

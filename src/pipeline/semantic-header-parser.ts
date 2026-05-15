@@ -1,8 +1,10 @@
 /**
  * @coderef-semantic: 1.0.0
  * @exports ParseHeaderResult, parseHeader
- * @used_by src/pipeline/extractors/relationship-extractor.ts
+ * @used_by src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts
  */
+
+
 
 /**
  * Phase 2.5 semantic header parser

@@ -3,6 +3,8 @@
  * @exports OpenAI, Anthropic, ChromaClient, Collection, Pinecone
  */
 
+
+
 /**
  * Type declarations for optional external dependencies
  * These modules are loaded dynamically and may not be installed

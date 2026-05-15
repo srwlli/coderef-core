@@ -4,6 +4,8 @@
  * @used_by src/semantic/orchestrator.ts, src/semantic/registry-sync.ts
  */
 
+
+
 /**
  * LLM-based semantic enrichment for CodeRef-Semantics
  *

@@ -3,6 +3,8 @@
  * @exports IndexError
  */
 
+
+
 /**
  * IndexError - Index file issues
  * @module errors

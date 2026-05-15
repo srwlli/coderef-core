@@ -4,6 +4,8 @@
  * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts
  */
 
+
+
 /**
  * Chroma Vector Store Implementation
  * P1-T6: Implements VectorStore interface using Chroma (self-hosted option)

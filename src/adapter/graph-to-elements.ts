@@ -4,6 +4,8 @@
  * @used_by src/cli/coderef-analyze.ts
  */
 
+
+
 /**
  * Graph to Elements Adapter
  * Converts AST DependencyGraph to ElementData[] format

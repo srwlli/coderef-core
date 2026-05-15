@@ -4,6 +4,8 @@
  * @used_by src/registry/entity-registry.ts
  */
 
+
+
 /**
  * Represents a unique code entity (function, class, component, etc.)
  */

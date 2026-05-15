@@ -4,6 +4,8 @@
  * @used_by src/validator/frontend-update-generator.ts, src/validator/route-validator.ts
  */
 
+
+
 /**
  * WO-MIGRATION-VALIDATION-001: Migration Mapper
  * Handles migration config validation and path transformation

@@ -4,6 +4,8 @@
  * @used_by src/cli/populate.ts, src/pipeline/call-resolver.ts, src/pipeline/extractors/relationship-extractor.ts, src/pipeline/generators/complexity-generator.ts, src/pipeline/generators/context-generator.ts, src/pipeline/generators/coverage-generator.ts, src/pipeline/generators/diagram-generator.ts, src/pipeline/generators/drift-generator.ts, src/pipeline/generators/export-generator.ts, src/pipeline/generators/graph-generator.ts, src/pipeline/generators/health-generator.ts, src/pipeline/generators/index-generator.ts, src/pipeline/generators/pattern-generator.ts, src/pipeline/generators/registry-generator.ts, src/pipeline/generators/validation-generator.ts, src/pipeline/grammar-registry.ts, src/pipeline/graph-builder.ts, src/pipeline/import-resolver.ts, src/pipeline/orchestrator.ts, src/pipeline/output-validator.ts, src/pipeline/semantic-elements.ts, src/scanner/semantic-analyzer.ts, src/semantic/orchestrator.ts, src/semantic/projections.ts, __tests__/generators/helpers.ts, __tests__/generators/root-cause-alignment.test.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts, __tests__/pipeline/graph-construction-determinism.test.ts, __tests__/pipeline/no-graph-edge-claim.test.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts, __tests__/pipeline/raw-call-facts.test.ts, __tests__/pipeline/raw-export-facts.test.ts, __tests__/pipeline/raw-import-facts.test.ts, __tests__/pipeline/single-scanner.test.ts, __tests__/pipeline-integration.test.ts
  */
 
+
+
 /**
  * Pipeline Types
  *

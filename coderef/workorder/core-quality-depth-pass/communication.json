@@ -1,0 +1,45 @@
+{
+  "workorder_id": "WO-CORE-QUALITY-DEPTH-PASS-001",
+  "feature_name": "core-quality-depth-pass",
+  "created": "2026-05-15T22:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-15-006"],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated. Phase 1 (rawExports fix) ready for execution."
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "hard_stops": [1, 2],
+    "on_hard_stop": "Pause execution, report phase results, await explicit approval before advancing",
+    "test_suite_gate": "npx vitest run must remain 1495 passing at all phase boundaries",
+    "constraint": "Fix rawExports bug (Phase 1) BEFORE running header stamp (Phase 2)"
+  },
+  "hard_constraints": [
+    "Test suite must remain green (1495 passing) at all times",
+    "rawExports fix before header stamp — mandatory phase ordering",
+    "No blind widening of staleness check in orchestrator.ts",
+    "RAG server required for phases 3-4 — check before executing"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "timestamp": "2026-05-15T22:15:00Z",
+      "agent": "claude-sonnet-4-6",
+      "message": "WO-CORE-QUALITY-DEPTH-PASS-001 created. 4-phase phased plan. Hard stops at phases 1 and 2. Header baseline: 343 missing, 1782 stale, 278 defined. Phase 1 targets orchestrator.ts:477 rawExports/exports mismatch."
+    }
+  ]
+}

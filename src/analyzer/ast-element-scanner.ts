@@ -4,6 +4,8 @@
  * @used_by src/scanner/scanner-worker.ts, src/scanner/scanner.ts
  */
 
+
+
 /**
  * AST Element Scanner - Detects code elements using TypeScript Compiler API
  * WO-AST-ELEMENT-SCANNER-001
