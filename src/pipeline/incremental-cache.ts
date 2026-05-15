@@ -3,6 +3,10 @@
  * @exports FileCacheEntry, CacheState, CacheCheckResult, IncrementalCache
  */
 
+
+
+
+
 /**
  * IncrementalCache - File change tracking for performance optimization
  *

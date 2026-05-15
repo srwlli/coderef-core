@@ -1,7 +1,12 @@
 /**
  * @coderef-semantic: 1.0.0
  * @exports SearchIndexEntry, SearchResult, SearchOptions, SearchIndex, TagCloudEntry, SearchStatistics, SearchEngine
+ * @used_by src/cli/coderef-search.ts
  */
+
+
+
+
 
 /**
  * Advanced Search Engine

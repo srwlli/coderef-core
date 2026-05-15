@@ -4,6 +4,10 @@
  * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts, __tests__/integration/rag/facet-filter.test.ts
  */
 
+
+
+
+
 /**
  * SQLite/File-based Vector Store
  * WO-SQLITE-VECTOR-STORE-001

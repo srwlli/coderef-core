@@ -3,6 +3,10 @@
  * @exports FileWatcherOptions, WatcherStats, FileWatcher
  */
 
+
+
+
+
 /**
  * FileWatcher - Real-time file monitoring for incremental scanning
  *

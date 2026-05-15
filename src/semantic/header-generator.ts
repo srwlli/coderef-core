@@ -1,173 +1,12 @@
 /**
- * CodeRef-Semantics header generator
- *
- * Generates semantic headers (exports, used_by, rules, related) as code comments
- * from extracted AST information and semantic metadata.
+ * @coderef-semantic: 1.0.0
+ * @exports SemanticHeader, HeaderGenerationOptions, HeaderGenerator, generateHeaders
+ * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-import type { ExportInfo, ImportInfo } from './ast-extractor.js';
-import type { ElementData } from '../types/types.js';
 
-export interface SemanticHeader {
-  file: string;
-  line: number;
-  type: 'exports' | 'used_by' | 'rules' | 'related';
-  content: string[];
-}
 
-export interface HeaderGenerationOptions {
-  preserveExisting?: boolean;
-  commentStyle?: 'block' | 'line'; // /* */ or //
-  includeMetadata?: boolean;
-}
-
-export class HeaderGenerator {
-  private options: HeaderGenerationOptions;
-
-  constructor(options: HeaderGenerationOptions = {}) {
-    this.options = {
-      preserveExisting: true,
-      commentStyle: 'block',
-      includeMetadata: true,
-      ...options,
-    };
-  }
-
-  /**
-   * Generate semantic headers for exports and dependencies
-   */
-  generateHeaders(
-    exports: ExportInfo[],
-    imports: ImportInfo[],
-    internalDeps: string[] = [],
-    externalDeps: string[] = [],
-  ): SemanticHeader[] {
-    const headers: SemanticHeader[] = [];
-
-    // Generate exports header
-    if (exports.length > 0) {
-      const exportNames = exports.map((e) => e.name).join(', ');
-      headers.push({
-        file: '',
-        line: 1,
-        type: 'exports',
-        content: [`[${exportNames}]`],
-      });
-    }
-
-    // Generate used_by header (internal dependencies)
-    if (internalDeps.length > 0) {
-      const depList = internalDeps.map((d) => this.normalizePath(d)).join(', ');
-      headers.push({
-        file: '',
-        line: 1,
-        type: 'used_by',
-        content: [`[${depList}]`],
-      });
-    }
-
-    // Generate rules header (constraints derived from structure)
-    const rules = this.deriveRules(exports, imports);
-    if (rules.length > 0) {
-      headers.push({
-        file: '',
-        line: 1,
-        type: 'rules',
-        content: [JSON.stringify(rules)],
-      });
-    }
-
-    // Generate related header (related modules)
-    const related = this.deriveRelated(imports, externalDeps);
-    if (related.length > 0) {
-      headers.push({
-        file: '',
-        line: 1,
-        type: 'related',
-        content: [`[${related.join(', ')}]`],
-      });
-    }
-
-    return headers;
-  }
-
-  /**
-   * Generate semantic headers from canonical ElementData.
-   *
-   * This is projection-only: callers decide whether to write the headers.
-   */
-  generateHeadersFromElement(element: ElementData): SemanticHeader[] {
-    return this.generateHeadersFromElements([element]);
-  }
-
-  /**
-   * Generate one deduplicated semantic header set for a file's elements.
-   */
-  generateHeadersFromElements(elements: ElementData[]): SemanticHeader[] {
-    const headers: SemanticHeader[] = [];
-    const file = elements[0]?.file || '';
-    const exports = uniqueStrings(elements.flatMap(element => element.exports?.map(exp => exp.name) || []));
-    const usedBy = uniqueStrings(elements.flatMap(element => element.usedBy?.map(entry => entry.file) || []));
-    const rules = uniqueObjects(elements.flatMap(element => element.rules || []), rule => `${rule.rule}:${rule.description || ''}:${rule.severity || ''}`);
-    const related = uniqueObjects(elements.flatMap(element => element.related || []), entry => `${getRelatedPath(entry)}:${entry.reason || ''}:${entry.confidence ?? (entry as any).confidence_score ?? ''}`);
-
-    if (exports.length > 0) {
-      headers.push({
-        file,
-        line: 1,
-        type: 'exports',
-        content: [`[${exports.join(', ')}]`],
-      });
-    }
-
-    if (usedBy.length > 0) {
-      headers.push({
-        file,
-        line: 1,
-        type: 'used_by',
-        content: [`[${usedBy.join(', ')}]`],
-      });
-    }
-
-    if (rules.length > 0) {
-      headers.push({
-        file,
-        line: 1,
-        type: 'rules',
-        content: [JSON.stringify(rules)],
-      });
-    }
-
-    if (related.length > 0) {
-      headers.push({
-        file,
-        line: 1,
-        type: 'related',
-        content: [`[${related.map(entry => getRelatedPath(entry)).filter(Boolean).join(', ')}]`],
-      });
-    }
-
-    return headers;
-  }
-
-  /**
-   * Format headers as code comments
-   */
-  formatAsComments(headers: SemanticHeader[]): string[] {
-    const comments: string[] = [];
-
-    if (this.options.commentStyle === 'block') {
-      if (headers.length === 0) return comments;
-
-      comments.push(`/**`);
-      comments.push(` * @coderef-semantic: 1.0.0`);
-      for (const header of headers) {
-        const value = header.content.join(', ').replace(/^\[|\]$/g, '');
-        comments.push(` * @${header.type} ${value}`);
-      }
-      comments.push(` */`);
+`);
       return comments;
     }
 
@@ -190,6 +29,11 @@ export class HeaderGenerator {
       if (this.options.preserveExisting && this.hasSemanticHeader(content)) {
         console.warn(`[header-generator] ${filePath} already has semantic headers, skipping`);
         return;
+      }
+
+      // When overwriting, remove all existing semantic header blocks first
+      if (!this.options.preserveExisting && this.hasSemanticHeader(content)) {
+        content = this.removeExistingHeaders(content);
       }
 
       const comments = this.formatAsComments(headers);
@@ -287,6 +131,16 @@ export class HeaderGenerator {
       return index + 1;
     }
     return index;
+  }
+
+  private removeExistingHeaders(content: string): string {
+    // Remove block-style /** @coderef-semantic */ headers
+    let result = content.replace(/\/\*\*[\s\S]*?@coderef-semantic\s*:[\s\S]*?\*\/\n?/g, '');
+    // Remove line-style // @coderef-semantic headers (one line at a time)
+    result = result.replace(/^\/\/\s*@coderef-semantic\s*:.*\n?/gm, '');
+    // Collapse runs of 3+ blank lines down to 2 (cleanup from removed blocks)
+    result = result.replace(/\n{3,}/g, '\n\n');
+    return result;
   }
 
   private hasSemanticHeader(content: string): boolean {

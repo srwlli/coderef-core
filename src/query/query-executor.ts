@@ -1,7 +1,12 @@
 /**
  * @coderef-semantic: 1.0.0
  * @exports QueryType, QueryRequest, QueryResult, QueryExecutor
+ * @used_by src/cli/coderef-query.ts
  */
+
+
+
+
 
 /**
  * Query Executor - Multi-dimensional query engine for relationship analysis

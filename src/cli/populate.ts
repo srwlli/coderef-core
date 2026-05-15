@@ -42,6 +42,7 @@ interface CliArgs {
   select?: string[];
   semanticRegistry: boolean;
   sourceHeaders: boolean;
+  overwriteHeaders: boolean;
   llmEnrich: boolean;
   strictHeaders: boolean;
 }
@@ -71,6 +72,7 @@ function parseArgs(argv: string[]): CliArgs {
     mode: 'full',
     semanticRegistry: true,
     sourceHeaders: false,
+    overwriteHeaders: false,
     llmEnrich: false,
     strictHeaders: false,
   };
@@ -141,6 +143,11 @@ function parseArgs(argv: string[]): CliArgs {
         args.sourceHeaders = true;
         break;
 
+      case '--overwrite-headers':
+        args.sourceHeaders = true;
+        args.overwriteHeaders = true;
+        break;
+
       case '--llm-enrich':
         args.llmEnrich = true;
         break;
@@ -181,6 +188,7 @@ OPTIONS:
   --semantic-registry          Generate semantic-registry.json projection (default: on)
   --no-semantic-registry       Skip semantic-registry.json projection
   --source-headers             Write optional CodeRef-Semantics headers into source files (default: off)
+  --overwrite-headers          Re-write headers even if file already has them (refreshes stale headers)
   --llm-enrich                 Reserved for opt-in projection enrichment; never runs by default
   -h, --help                   Show this help message
 
@@ -408,7 +416,9 @@ async function run(args: CliArgs): Promise<void> {
     }
 
     if (args.sourceHeaders) {
-      const headerGenerator = new HeaderGenerator();
+      const headerGenerator = new HeaderGenerator({
+        preserveExisting: !args.overwriteHeaders,
+      });
       const semanticElements = buildSemanticElementsFromState(state);
       const elementsByFile = new Map<string, typeof semanticElements>();
 

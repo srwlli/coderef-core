@@ -1,7 +1,12 @@
 /**
  * @coderef-semantic: 1.0.0
  * @exports TraversalResult, MultiHopResult, MultiHopTraversal
+ * @used_by src/cli/coderef-analyze.ts
  */
+
+
+
+
 
 /**
  * Multi-Hop Traversal - Query relationships at 2-5 levels deep
