@@ -1,0 +1,47 @@
+=============================================================
+WORKORDER: WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001  |  code-intelligence-leverage-audit  |  PHASE 2 HARD STOP
+Session: daily-agent-session-2026-05-15  |  Phases: 7  |  Commits: 3  |  Pushes: 0
+Parent stub: n/a
+
+FILES MODIFIED:
+  ~ src/scanner/tree-sitter-scanner.ts — Rust attributes + Java class complexity  (fcc5869)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Source-Headers Coverage Flood  (a2ab45b)
+  [x] Phase 2: Tree-Sitter Field Verification  (fcc5869)
+  [ ] Phase 3: Export Edges
+  [ ] Phase 4: Fix what-imports vs what-depends-on Divergence
+  [ ] Phase 5: rag-search --constraint Filter
+  [ ] Phase 6: Graph Visualization Fields
+  [ ] Phase 7: ai-prompt-generator Smart Truncation
+
+PHASE 2 AUDIT RESULTS:
+  Languages audited: TypeScript, Python, Go, Rust, Java, C++
+  Gaps found: 2
+
+  GAP 1 — Rust: decorators/attributes not extracted
+    Root cause: No code walked attribute_item siblings (preceding #[...] nodes)
+    Fix: Added extractRustAttributes() — walks previousSibling chain for attribute_item
+         nodes, extracts inner identifier text (e.g. "derive", "cfg", "test")
+    Wired into: function_item, struct_item, enum_item, trait_item
+
+  GAP 2 — Java: class/interface/enum missing complexity
+    Root cause: estimateComplexity(node) only called on method_declaration
+    Fix: Added complexity: this.estimateComplexity(node) to class_declaration,
+         interface_declaration, enum_declaration element creation blocks
+
+  No gaps found in: TypeScript (all fields present), Python (all fields present),
+                    Go (all fields present), C++ (all fields present)
+
+VITEST RESULTS:
+  Total: 1525  |  Passed: 1457  |  Failed: 68
+  New regressions: 0 (all 68 failures confirmed pre-existing via git stash)
+  Pre-existing failures: chroma-store, pinecone-store, ollama-provider-unreachable,
+                         accuracy-validation, scanner-standalone, generators/helpers
+
+Session: updated  |  Registry: n/a  |  Validator: n/a
+
+HARD STOP — Phase 2 complete. Approve to continue to Phase 3 (Export Edges).
+NOTE: Phases 3-7 may run without gate per execution_rules.gate_behavior.
+APPROVE -> /execute-workorder WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001  (phase 3)
+=============================================================
