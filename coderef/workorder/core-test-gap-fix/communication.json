@@ -6,10 +6,12 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-15-004"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 3,
   "phase_status": "complete",
   "completed_at": "2026-05-15T19:22:00Z",
+  "closed_at": "2026-05-15T19:30:00Z",
+  "updated": "2026-05-15T19:30:00Z",
   "plan_file": "coderef/workorder/core-test-gap-fix/plan.json",
   "context_file": "coderef/workorder/core-test-gap-fix/context.json",
   "analysis_file": "coderef/workorder/core-test-gap-fix/analysis.json",
@@ -31,6 +33,12 @@
   "decisions_log": [],
   "phase_transitions": [],
   "plan_adjustments": [],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/core-test-gap-fix/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — validate-coderef-culture 11/11 PASS",
+    "warnings": []
+  },
   "communication_log": [
     {
       "event": "workorder_created",
@@ -50,6 +58,11 @@
         "__tests__/scanner-standalone.test.ts: fixed absolute path test and non-existent dir expectation",
         "__tests__/accuracy-validation.test.ts: fixed call-edge count assertion to use metadata.calls sum"
       ]
+    },
+    {
+      "timestamp": "2026-05-15T19:30:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (11/11 cultural checks, tracking-validator scoped PASS, dependency audit 0 vulns). All 3 phases complete. Commits 554018b, 4cb628c pushed to main. Archive pending."
     }
   ]
 }
