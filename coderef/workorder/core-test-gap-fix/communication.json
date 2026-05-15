@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-15-004"],
   "predecessor_for": null,
-  "status": "implementing",
-  "current_phase": 1,
-  "phase_status": "in_progress",
+  "status": "complete",
+  "current_phase": 3,
+  "phase_status": "complete",
+  "completed_at": "2026-05-15T19:22:00Z",
   "plan_file": "coderef/workorder/core-test-gap-fix/plan.json",
   "context_file": "coderef/workorder/core-test-gap-fix/context.json",
   "analysis_file": "coderef/workorder/core-test-gap-fix/analysis.json",
@@ -36,6 +37,19 @@
       "at": "2026-05-15T19:14:30Z",
       "by": "create-workorder",
       "note": "Plan created from DISPATCH-2026-05-15-004. 3 phases, 7 tasks. Light plan."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-15T19:22:00Z",
+      "by": "execute-workorder",
+      "phases_closed": [1, 2, 3],
+      "commits": ["554018b"],
+      "test_result": "28/28 target tests passing, 1462/1525 total (no regressions)",
+      "fixes_applied": [
+        "src/index.ts: added clearScanCache, getScanCacheStats to public exports",
+        "__tests__/scanner-standalone.test.ts: fixed absolute path test and non-existent dir expectation",
+        "__tests__/accuracy-validation.test.ts: fixed call-edge count assertion to use metadata.calls sum"
+      ]
     }
   ]
 }
