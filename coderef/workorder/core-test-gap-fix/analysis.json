@@ -1,0 +1,61 @@
+{
+  "workorder_id": "WO-CORE-TEST-GAP-FIX-001",
+  "feature_name": "core-test-gap-fix",
+  "analysis_authored_at": "2026-05-15T19:14:30Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/index.ts",
+      "__tests__/scanner-standalone.test.ts",
+      "__tests__/accuracy-validation.test.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "Any package importing clearScanCache/getScanCacheStats from @coderef/core (will now work where previously broken)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Absolute path test fix changes expected behavior",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Use __dirname-relative path that actually exists in the test fixtures directory"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Non-existent dir fix might break callers that expect empty array",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Only fix the test expectation to match current silent behavior — do not change scanner.ts to throw"
+    },
+    {
+      "id": "RISK-003",
+      "title": "Call-edge fix changes test assertion method",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Count individual calls in metadata.calls array, which is well-defined in the graph builder"
+    }
+  ],
+  "candidates": [
+    { "file": "src/index.ts", "change": "Add clearScanCache and getScanCacheStats to scanner exports on line 156" },
+    { "file": "__tests__/scanner-standalone.test.ts", "change": "Fix absolute path (line 189) and non-existent dir expectation (line 246-248)" },
+    { "file": "__tests__/accuracy-validation.test.ts", "change": "Fix callEdges.length assertion to count individual calls (line 108)" }
+  ],
+  "dependencies": [],
+  "public_api_hits": [
+    { "file": "src/index.ts", "symbol": "clearScanCache", "action": "add to exports" },
+    { "file": "src/index.ts", "symbol": "getScanCacheStats", "action": "add to exports" }
+  ],
+  "decision_records": [
+    {
+      "id": "DEC-01",
+      "decision": "Fix non-existent dir test by updating test expectation to match actual behavior (silent empty array), not by throwing in scanner.ts",
+      "rationale": "Changing scanner.ts to throw would be a behavior change with unknown downstream effects; the test expectation is what's wrong here per the dispatch scope"
+    },
+    {
+      "id": "DEC-02",
+      "decision": "Fix call-edge accuracy test by counting calls within edge metadata, not by changing graph builder aggregation",
+      "rationale": "The graph builder's per-file-pair aggregation is intentional design; the test expectation was written expecting per-call-site edges which is not how the builder works"
+    }
+  ]
+}

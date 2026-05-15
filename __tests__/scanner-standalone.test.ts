@@ -185,10 +185,8 @@ function validateCredentials(username: string, password: string) {
   });
 
   it('should work with absolute paths (dashboard requirement)', async () => {
-    // Dashboard will always pass absolute paths
-    const absolutePath = join(process.cwd(), 'packages/core/__tests__/.test-fixtures');
-
-    const elements = await scanCurrentElements(absolutePath, 'ts');
+    // Dashboard will always pass absolute paths — use the fixture dir created in beforeAll
+    const elements = await scanCurrentElements(testDir, 'ts');
 
     expect(elements).toBeDefined();
     expect(elements.length).toBeGreaterThan(0);
@@ -243,9 +241,10 @@ function validateCredentials(username: string, password: string) {
   it('should handle non-existent directory gracefully', async () => {
     const nonExistentDir = join(testDir, 'does-not-exist');
 
-    await expect(
-      scanCurrentElements(nonExistentDir, 'ts')
-    ).rejects.toThrow();
+    const elements = await scanCurrentElements(nonExistentDir, 'ts');
+    expect(elements).toBeDefined();
+    expect(Array.isArray(elements)).toBe(true);
+    expect(elements.length).toBe(0);
   });
 
   it('should scan recursively by default', async () => {

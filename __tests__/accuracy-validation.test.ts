@@ -101,11 +101,12 @@ export function complexFunction() {
 
       const callEdges = graph.edges.filter(e => e.type === 'calls');
 
-      // With proper elementMap, we should detect all 7 call edges (100% accuracy)
+      // buildGraph aggregates by (sourceFile, targetFile) pair — count individual calls in metadata
       // processData calls: helper, formatter (2)
       // validateInput calls: validator (1)
       // complexFunction calls: helper, formatter, validator, processData (4)
-      expect(callEdges.length).toBeGreaterThanOrEqual(7); // All 7 calls detected (100%)
+      const totalCallSites = callEdges.reduce((n, e) => n + ((e.metadata as any)?.calls?.length ?? 0), 0);
+      expect(totalCallSites).toBeGreaterThanOrEqual(7); // All 7 call sites detected (100%)
     });
 
     it('should detect method calls on imported objects', () => {

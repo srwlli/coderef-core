@@ -1,0 +1,41 @@
+{
+  "workorder_id": "WO-CORE-TEST-GAP-FIX-001",
+  "feature_name": "core-test-gap-fix",
+  "created": "2026-05-15T19:14:30Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-15-004"],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "coderef/workorder/core-test-gap-fix/plan.json",
+  "context_file": "coderef/workorder/core-test-gap-fix/context.json",
+  "analysis_file": "coderef/workorder/core-test-gap-fix/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored; ready for implementation"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "inter_phase_halts": false,
+    "terminal_hard_stop": true
+  },
+  "hard_constraints": [
+    "Do not change scanner.ts call detection logic",
+    "Do not break previously-passing tests"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-15T19:14:30Z",
+      "by": "create-workorder",
+      "note": "Plan created from DISPATCH-2026-05-15-004. 3 phases, 7 tasks. Light plan."
+    }
+  ]
+}

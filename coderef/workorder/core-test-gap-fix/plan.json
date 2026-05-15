@@ -1,0 +1,83 @@
+{
+  "workorder_id": "WO-CORE-TEST-GAP-FIX-001",
+  "feature_name": "core-test-gap-fix",
+  "created": "2026-05-15T19:14:30Z",
+  "plan_type": "light",
+  "plan_type_rationale": "3 targeted fixes in 3 known files. No discovery, no architecture changes.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Fix cache API exports",
+      "tasks": [
+        {
+          "id": "T1.1",
+          "verb": "READ",
+          "description": "Read src/index.ts scanner export line (~line 156) to confirm current export surface",
+          "success_criteria": "Confirm clearScanCache and getScanCacheStats are absent from the export"
+        },
+        {
+          "id": "T1.2",
+          "verb": "EDIT",
+          "description": "Add clearScanCache and getScanCacheStats to the scanner export in src/index.ts",
+          "success_criteria": "src/index.ts exports clearScanCache and getScanCacheStats alongside scanCurrentElements"
+        },
+        {
+          "id": "T1.3",
+          "verb": "TEST",
+          "description": "Run scanner-standalone.test.ts cache tests to confirm they pass",
+          "success_criteria": "'should cache results for performance' and 'should clear cache when requested' both PASS"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Fix test expectation bugs",
+      "tasks": [
+        {
+          "id": "T2.1",
+          "verb": "EDIT",
+          "description": "Fix absolute path test: change join(process.cwd(), 'packages/core/__tests__/.test-fixtures') to use testDir (the fixture created in beforeAll)",
+          "success_criteria": "'should work with absolute paths' passes"
+        },
+        {
+          "id": "T2.2",
+          "verb": "EDIT",
+          "description": "Fix non-existent dir test: change .rejects.toThrow() expectation to expect an empty array (matching actual silent behavior)",
+          "success_criteria": "'should handle non-existent directory gracefully' passes"
+        },
+        {
+          "id": "T2.3",
+          "verb": "EDIT",
+          "description": "Fix call-edge accuracy test: change callEdges.length assertion to count individual calls in metadata: callEdges.reduce((n,e) => n + (e.metadata?.calls?.length ?? 0), 0) >= 7",
+          "success_criteria": "'should detect direct function calls with >95% accuracy' passes"
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Verify and commit",
+      "tasks": [
+        {
+          "id": "T3.1",
+          "verb": "TEST",
+          "description": "Run full scanner-standalone.test.ts and accuracy-validation.test.ts — all 28 tests must pass",
+          "success_criteria": "0 failures in both test files"
+        },
+        {
+          "id": "T3.2",
+          "verb": "TEST",
+          "description": "Run full test suite to confirm no regressions in the 1457 previously-passing tests",
+          "success_criteria": "Total passing >= 1525, failures = 0 (excluding intentionally skipped cloud-service tests)"
+        },
+        {
+          "id": "T3.3",
+          "verb": "COMMIT",
+          "description": "Stage and commit all changes",
+          "success_criteria": "Commit created with descriptive message referencing WO-CORE-TEST-GAP-FIX-001"
+        }
+      ]
+    }
+  ],
+  "hard_stops": []
+}

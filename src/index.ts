@@ -153,7 +153,7 @@ export { convertGraphToElements, getConversionStats } from './adapter/graph-to-e
  * @see {@link LANGUAGE_PATTERNS} - Pattern definitions by language
  * @see {@link DEFAULT_EXCLUDE_PATTERNS} - Default directory exclusions
  */
-export { scanCurrentElements, LANGUAGE_PATTERNS, DEFAULT_EXCLUDE_PATTERNS } from './scanner/scanner.js';
+export { scanCurrentElements, clearScanCache, getScanCacheStats, LANGUAGE_PATTERNS, DEFAULT_EXCLUDE_PATTERNS } from './scanner/scanner.js';
 
 /**
  * Error Reporting module - Structured error handling for scanner
