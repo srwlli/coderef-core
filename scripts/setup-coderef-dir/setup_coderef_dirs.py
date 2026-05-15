@@ -1,4 +1,15 @@
 #!/usr/bin/env python3
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports create_structure
+ */
+
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports: [create_structure]
+ */
+
 """
 ---
 resource_sheet: coderef/reference/Setup-Coderef-Dir-RESOURCE-SHEET.md

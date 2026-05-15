@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports log, rescan_corpus, load_coverage, build_known_test_links, check_test_linkage, check_coverage_summary, calculate_score, main
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports log, rescan_corpus, load_coverage, build_known_test_links, check_test_linkage, check_coverage_summary, calculate_score, main
+ */
+
+
+
+
+
+
 """
 Loop 3 Verification: Test Discovery and Coverage Linkage
 

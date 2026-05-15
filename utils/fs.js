@@ -1,4 +1,19 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports normalizeCoderefPath, ensureDir, readLines, writeLines, loadJsonFile, saveJsonFile, collectFiles, collectFiles.isExcluded, collectFiles.walk, getRelativePath
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports normalizeCoderefPath, ensureDir, readLines, writeLines, loadJsonFile, saveJsonFile, collectFiles, collectFiles.isExcluded, collectFiles.walk, getRelativePath
+ */
+
+
+
 // coderef-core/utils/fs.ts
+
+
+
 import fs from 'fs';
 import path from 'path';
 /**

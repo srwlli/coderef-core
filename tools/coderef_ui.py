@@ -1,3 +1,13 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports load_prefs, save_prefs, CodeRefUI, main
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports load_prefs, save_prefs, CodeRefUI, main
+ */
+
 """
 CodeRef Control Panel — tkinter GUI wrapping all 15 coderef-core CLI bins.
 Run: python tools/coderef_ui.py

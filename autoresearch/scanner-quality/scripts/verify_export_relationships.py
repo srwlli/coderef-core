@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports log, rescan_corpus, load_index, check_export_precision, main
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports log, rescan_corpus, load_index, check_export_precision, main
+ */
+
+
+
+
+
+
 """
 Loop 2 Verification: Export and Relationship Accuracy
 

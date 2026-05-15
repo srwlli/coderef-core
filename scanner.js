@@ -1,4 +1,19 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports scanCurrentElements, isLineCommented
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports scanCurrentElements, isLineCommented
+ */
+
+
+
 // coderef-core/scanner.ts
+
+
+
 import * as fs from 'fs';
 import * as path from 'path';
 /**

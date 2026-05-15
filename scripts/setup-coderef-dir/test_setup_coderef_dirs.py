@@ -1,3 +1,8 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports: [TestSetupCoderefDirs]
+ */
+
 """
 ---
 resource_sheet: coderef/reference/Setup-Coderef-Dir-RESOURCE-SHEET.md

@@ -1,0 +1,78 @@
+{
+  "workorder_id": "WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001",
+  "feature_name": "code-intelligence-leverage-audit",
+  "analysis_authored_at": "2026-05-12T17:00:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/cli/populate-coderef.ts",
+      "src/graph/graph-builder.ts",
+      "src/cli/rag-search.ts",
+      "src/analyzer/ai-prompt-generator.ts",
+      "src/cli/coderef-query.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      ".coderef/index.json (re-populated by source-headers run)",
+      ".coderef/graph.json (export edges add new edge type)",
+      ".coderef/rag-index.json (RAG coverage improves from 15% to ~85%)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Source-headers run rewrites large portion of .coderef index",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Run on CODEREF-CORE only; commit .coderef/ snapshot before and after for diff review"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Export edge addition changes graph schema consumers expect",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Additive only — new edge type; existing consumers ignore unknown edge types"
+    },
+    {
+      "id": "RISK-003",
+      "title": "what-imports fix may silently change CLI output format",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Add test snapshot before fix; compare output before and after"
+    },
+    {
+      "id": "RISK-004",
+      "title": "ai-prompt-generator truncation may drop tokens that downstream tools rely on",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Structure-preserving truncation — preserve function signatures, truncate bodies only"
+    }
+  ],
+  "candidates": [
+    "src/cli/populate-coderef.ts",
+    "src/scanner/tree-sitter-scanner.ts",
+    "src/graph/graph-builder.ts",
+    "src/cli/rag-search.ts",
+    "src/analyzer/ai-prompt-generator.ts",
+    "src/cli/coderef-query.ts"
+  ],
+  "dependencies": [
+    "populate-coderef CLI (--source-headers flag)",
+    "tree-sitter-scanner.ts (field output verification)",
+    "graph-builder.ts (EdgeRelationship.export type)",
+    "rag-search CLI (--constraint filter argument)",
+    "ai-prompt-generator.ts (truncation logic)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Phase sequencing: source-headers → tree-sitter verify → export edges → what-imports → rag-search → viz fields → ai-truncation",
+      "rationale": "Source-headers unblocks RAG (highest leverage). Tree-sitter verify is read-only (safe). Remaining phases are independent and ordered by downstream impact."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Tree-sitter field verification is a READ-only audit phase — no code changes unless gaps found",
+      "rationale": "Avoid scope creep. Verification may reveal that enrichment fields already populate; fix only what is confirmed missing."
+    }
+  ]
+}

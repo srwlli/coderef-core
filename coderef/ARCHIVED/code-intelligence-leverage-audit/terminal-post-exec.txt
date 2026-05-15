@@ -1,0 +1,55 @@
+=============================================================
+WORKORDER: WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001  |  code-intelligence-leverage-audit  |  COMPLETE
+Session: daily-agent-session-2026-05-15  |  Phases: 7  |  Commits: 7  |  Pushes: 2
+Parent stub: n/a
+
+FILES CREATED:
+  + coderef/workorder/code-intelligence-leverage-audit/communication.json  (a2ab45b)
+  + coderef/workorder/code-intelligence-leverage-audit/terminal-post-exec.txt  (38f7764)
+
+FILES MODIFIED:
+  ~ src/ (173 files) — @coderef-semantic headers de-duped  (a2ab45b)
+  ~ src/semantic/header-generator.ts — restored from truncation  (a2ab45b)
+  ~ src/pipeline/header-fact.ts — restored from truncation  (a2ab45b)
+  ~ src/pipeline/semantic-header-parser.ts — restored from truncation  (a2ab45b)
+  ~ src/scanner/tree-sitter-scanner.ts — Rust attributes + Java class complexity  (fcc5869)
+  ~ src/pipeline/graph-builder.ts — export edge emission in buildEdges()  (54a6620)
+  ~ src/query/query-executor.ts — what-imports/what-depends-on divergence  (54a6620)
+  ~ src/cli/coderef-query.ts — updated help text  (54a6620)
+  ~ src/cli/rag-search.ts — --constraint key:value filter  (54a6620)
+  ~ src/integration/ai-prompt-generator.ts — structure-preserving smart truncation  (54a6620)
+  ~ .gitignore — gitignore .coderef/ entirely  (bcbfb56)
+  ~ coderef/foundation-docs/ (6 docs regenerated)  (7c80ccc)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Source-Headers Coverage Flood  (a2ab45b)
+      Before: defined=278 (11%), stale=1782, partial=20, missing=343
+      After:  header_present=2080/2423=86%, missing=343/2423=14%
+  [x] Phase 2: Tree-Sitter Field Verification  (fcc5869)
+      Rust: extractRustAttributes() added; Java: class/interface/enum complexity added
+  [x] Phase 3: Export Edges  (54a6620)
+      Export edges emitted in buildEdges() for all elem.exported=true elements
+  [x] Phase 4: Fix what-imports vs what-depends-on Divergence  (54a6620)
+      what-imports=outbound getDependencies; what-depends-on=inbound getDependents
+  [x] Phase 5: rag-search --constraint Filter  (54a6620)
+      --constraint key:value with 6 recognized keys; unknown key exits with error
+  [x] Phase 6: Graph Visualization Fields  (no change needed)
+      GraphExporter.includeVisualization already defaulted true with all methods implemented
+  [x] Phase 7: ai-prompt-generator Smart Truncation  (54a6620)
+      Two-pass: signature-preserving first, then section-boundary hard fallback
+
+VITEST RESULTS:
+  Total: 1525  |  Passed: 1457  |  Failed: 68
+  New regressions: 0 (all 68 pre-existing)
+
+FOUNDATION DOCS GATE:
+  Generator: PASS  |  Validator: PASS (exit 0, warnings are pre-existing UUID anchors)
+
+TRACKING:
+  workorders.json: complete  |  sessions.json: complete
+  Validator: PASS (scope=WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001)
+
+Session: updated  |  Registry: n/a  |  Validator: PASS
+
+APPROVE -> /close-workorder WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001
+=============================================================

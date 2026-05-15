@@ -1,0 +1,252 @@
+{
+  "workorder_id": "WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001",
+  "feature_name": "code-intelligence-leverage-audit",
+  "created": "2026-05-12T17:00:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Multiple independent improvement areas each with its own verification gate. Sequential delivery; each phase ships independently.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Source-Headers Coverage Flood",
+      "goal": "Run --source-headers on CODEREF-CORE to populate the 2382 missing element headers and raise RAG coverage from 15% to ~85%+",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run populate-coderef --source-headers on CODEREF-CORE project root",
+          "success": "CLI exits 0; .coderef/index.json shows headerStatus:present for majority of elements"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify RAG-indexable element count — run rag-index and compare before/after coverage numbers",
+          "success": "Coverage rises from ~15% to >=80%"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit updated .coderef/ artifacts",
+          "success": "Git commit clean; message: 'feat(source-headers): populate element headers for CODEREF-CORE — RAG coverage <before>% → <after>%'"
+        }
+      ],
+      "acceptance_criteria": [
+        "headerStatus:missing count drops from 2382 to <200",
+        "RAG index coverage >= 80%",
+        ".coderef/ snapshot committed"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Tree-Sitter Field Verification",
+      "goal": "Confirm that returnType, decorators, docstring, and complexity fields now populate in scanner output for TS/JS/Go/Rust/Java/C++ after tree-sitter promotion (WO-SCANNER-AST-COVERAGE-001)",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/scanner/tree-sitter-scanner.ts — check field extraction for each language grammar (returnType, decorators, docstring, complexity)",
+          "success": "Know which fields each grammar currently extracts"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Run coderef-scan on a known TS/Go/Rust/Java/C++ fixture and inspect output for enrichment fields",
+          "success": "Audit table: per-language, per-field populated/missing"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Fix any grammar extractors that are confirmed missing fields (only if gaps found in task above)",
+          "success": "All 6 languages populate returnType, decorators, docstring where language supports them"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run vitest — 0 regressions",
+          "success": "npx vitest --run exits 0"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit enrichment field fixes if any were made (skip if no gaps found)",
+          "success": "Commit message: 'fix(scanner): fill enrichment field gaps in tree-sitter grammars (IMP-CORE-052 followup)'"
+        }
+      ],
+      "acceptance_criteria": [
+        "returnType populated for TS/JS function elements",
+        "decorators populated for TS class/method elements where present",
+        "complexity populated for all 6 languages",
+        "0 vitest regressions"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Export Edges",
+      "goal": "Emit export-type edges in graph-builder.ts so the graph reflects which elements are exported from each file",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/graph/graph-builder.ts — find where EdgeRelationship types are constructed; confirm export type is defined but skipped",
+          "success": "Exact line(s) where export edges are suppressed identified"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Wire export edge emission: for each element with exported=true, emit EdgeRelationship{type:'export', from:file, to:element}",
+          "success": "Export edges appear in graph output for known exported elements"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run vitest — 0 regressions; spot-check graph output for a known TS file with exports",
+          "success": "npx vitest --run exits 0; graph.json contains export edges"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit export edge wiring",
+          "success": "Commit message: 'feat(graph): emit export edges for exported elements'"
+        }
+      ],
+      "acceptance_criteria": [
+        "graph.json contains EdgeRelationship entries with type='export'",
+        "Only elements with exported=true receive export edges",
+        "0 vitest regressions"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Fix what-imports vs what-depends-on Divergence",
+      "goal": "Make what-imports and what-depends-on return different, correct results — currently both call getDependencies() and return identical output",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/cli/coderef-query.ts — find what-imports and what-depends-on handler implementations; confirm they both call getDependencies()",
+          "success": "Root cause confirmed: identical implementations"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Fix what-imports to return import-graph edges (what files does this file import); fix what-depends-on to return dependency-graph edges (what files depend on this file's exports)",
+          "success": "what-imports returns outbound imports; what-depends-on returns inbound dependents"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run vitest + manual spot-check: what-imports <file> and what-depends-on <file> return different results for a file with known importers",
+          "success": "Results differ; both are semantically correct"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit what-imports/what-depends-on divergence fix",
+          "success": "Commit message: 'fix(query): diverge what-imports (outbound) from what-depends-on (inbound)'"
+        }
+      ],
+      "acceptance_criteria": [
+        "what-imports returns files this module imports from",
+        "what-depends-on returns files that import this module",
+        "The two commands return different result sets for any non-trivial file",
+        "0 vitest regressions"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "rag-search --constraint Filter",
+      "goal": "Implement the deferred --constraint filter for rag-search CLI (DR-PHASE-7-D)",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/cli/rag-search.ts — find where --constraint was deferred; understand current filter chain",
+          "success": "Know where to inject constraint filtering"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add --constraint <type:value> argument: filter RAG results by element type, file pattern, or tag before returning",
+          "success": "--constraint type:function filters to function elements only; --constraint file:src/scanner/* filters to scanner files"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run vitest + manual: rag-search 'scanner element' --constraint type:function returns only function results",
+          "success": "Constraint filtering works; 0 regressions"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit --constraint filter implementation",
+          "success": "Commit message: 'feat(rag-search): implement --constraint filter (closes DR-PHASE-7-D)'"
+        }
+      ],
+      "acceptance_criteria": [
+        "--constraint type:<value> filters results to matching element types",
+        "--constraint file:<glob> filters results to matching file paths",
+        "Unrecognized constraint key returns helpful error",
+        "0 vitest regressions"
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Graph Visualization Fields",
+      "goal": "Populate nodePositions, nodeColors, edgeWeights, and layoutHints fields in graph output (currently defined but never set)",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/graph/graph-builder.ts — locate nodePositions, nodeColors, edgeWeights, layoutHints field declarations; confirm none are populated",
+          "success": "Know which fields need wiring and what data sources to use"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Populate visualization fields: nodeColors by element type, edgeWeights by call frequency, layoutHints from file directory depth",
+          "success": "graph.json output contains non-empty visualization fields for a real project scan"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run vitest — 0 regressions; verify graph.json has visualization fields populated",
+          "success": "npx vitest --run exits 0; graph.json.nodeColors is non-empty"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit visualization field population",
+          "success": "Commit message: 'feat(graph): populate visualization metadata fields (nodeColors, edgeWeights, layoutHints)'"
+        }
+      ],
+      "acceptance_criteria": [
+        "graph.json.nodeColors maps element type to color token",
+        "graph.json.edgeWeights reflects call frequency",
+        "graph.json.layoutHints provides depth hints from directory structure",
+        "0 vitest regressions"
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "ai-prompt-generator Smart Truncation",
+      "goal": "Replace hard token-count truncation in ai-prompt-generator.ts with structure-preserving truncation that keeps signatures and drops bodies when needed",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/analyzer/ai-prompt-generator.ts — find TODO for smart truncation; understand current truncation strategy",
+          "success": "Know exact truncation point and what structure is lost"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Implement structure-preserving truncation: keep function/class signatures + first-line bodies, drop full implementations when over token budget; append truncation marker",
+          "success": "Truncated output preserves all top-level signatures; bodies drop gracefully"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run vitest — 0 regressions; spot-check truncated output for a large TS file",
+          "success": "Signatures visible; no runaway token consumption"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit smart truncation implementation",
+          "success": "Commit message: 'feat(ai-prompt-generator): structure-preserving smart truncation'"
+        }
+      ],
+      "acceptance_criteria": [
+        "Truncated output always includes all function/class signatures",
+        "Token budget is respected (no over-budget outputs)",
+        "Truncation marker present in output when truncation occurred",
+        "0 vitest regressions"
+      ]
+    }
+  ],
+  "hard_stops": [1, 2],
+  "out_of_scope": [
+    "close-workorder collision check",
+    "dispatch --auto-seed default change",
+    "Scanner structural changes"
+  ]
+}

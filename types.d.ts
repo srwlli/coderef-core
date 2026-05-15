@@ -1,6 +1,17 @@
 /**
- * Represents a code element (function, class, etc.) found in the codebase
+ * @coderef-semantic: 1.0.0
+ * @exports ElementData, IndexedCoderef, DriftStatus, DriftReport, DriftDetectionOptions, ScanOptions, ParsedCoderef
  */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ElementData, IndexedCoderef, DriftStatus, DriftReport, DriftDetectionOptions, ScanOptions, ParsedCoderef
+ */
+
+
+
+
+
 export interface ElementData {
     type: 'function' | 'class' | 'component' | 'hook' | 'method' | 'unknown';
     name: string;

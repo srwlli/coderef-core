@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports log, rescan_corpus, load_context_md, extract_critical_functions, check_test_contamination, calculate_score, main
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports log, rescan_corpus, load_context_md, extract_critical_functions, check_test_contamination, calculate_score, main
+ */
+
+
+
+
+
+
 """
 Loop 5 Verification: Context Summary Signal Quality
 

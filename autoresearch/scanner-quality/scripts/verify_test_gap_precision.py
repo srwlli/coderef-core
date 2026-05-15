@@ -1,4 +1,19 @@
 #!/usr/bin/env python3
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports log, rescan_corpus, is_test_file, calculate_score, main
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports log, rescan_corpus, is_test_file, calculate_score, main
+ */
+
+
+
+
+
+
 """
 Verification script for Loop 6: Test Gap Precision
 

@@ -1,15 +1,16 @@
 /**
- * Next.js API Route Integration Example
- *
- * Purpose: Demonstrate how to integrate @coderef/core scanner in Next.js API routes
- * Context: WO-CORE-DASHBOARD-INTEGRATION-001 (PKG-006)
- *
- * This example shows:
- * 1. How to create a POST /api/scan endpoint using @coderef/core
- * 2. Proper error handling and validation
- * 3. Type-safe request/response patterns
- * 4. Integration with existing API patterns (ApiResponse<T>)
+ * @coderef-semantic: 1.0.0
+ * @exports POST, GET
  */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports POST, GET
+ */
+
+
+
+
 
 import { NextRequest, NextResponse } from 'next/server';
 import { scanCurrentElements, type ElementData, type ScanOptions } from '@coderef/core';

@@ -1,0 +1,67 @@
+{
+  "workorder_id": "WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001",
+  "feature_name": "code-intelligence-leverage-audit",
+  "created": "2026-05-12T17:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-12-004",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Code intelligence leverage audit and wiring plan for CODEREF-CORE. Tree-sitter now default (WO-SCANNER-AST-COVERAGE-001 closed). Priority gaps: foundation-docs coverage (2382/2791 elements missing headers, RAG at 15%), deferred features (export edges, what-imports/what-depends-on divergence, rag-search --constraint, graph visualization fields, ai-prompt-generator smart truncation), and workflow wiring."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Multiple independent improvement areas (source-headers coverage, tree-sitter field verification, 5 deferred features) each requiring its own verification gate. No single risky system boundary change — sequential delivery reduces blast radius and allows each phase to ship independently.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        "src/cli/populate-coderef.ts",
+        "src/scanner/tree-sitter-scanner.ts",
+        "src/graph/graph-builder.ts",
+        "src/cli/rag-search.ts",
+        "src/analyzer/ai-prompt-generator.ts",
+        "src/cli/coderef-query.ts"
+      ],
+      "blast_radius": [
+        "src/cli/populate-coderef.ts",
+        "src/cli/rag-search.ts",
+        "src/graph/graph-builder.ts",
+        "src/analyzer/ai-prompt-generator.ts",
+        "src/scanner/tree-sitter-scanner.ts",
+        "src/cli/coderef-query.ts"
+      ],
+      "public_api_hits": [],
+      "warnings": []
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "Run --source-headers on CODEREF-CORE and commit (2382/2791 elements missing)",
+      "Verify tree-sitter enrichment fields (returnType, decorators, docstring, complexity) for TS/JS/Go/Rust/Java/C++",
+      "Fix export edges never emitted in graph-builder.ts",
+      "Fix what-imports vs what-depends-on divergence (both call getDependencies())",
+      "Implement rag-search --constraint filter (deferred DR-PHASE-7-D)",
+      "Populate graph visualization fields (nodePositions, nodeColors, edgeWeights, layoutHints)",
+      "Add ai-prompt-generator.ts smart truncation that preserves structure"
+    ],
+    "out_of_scope": [
+      "close-workorder collision check (workflow wiring — separate concern)",
+      "dispatch --auto-seed default change (DISPATCH-002 scope)",
+      "Any scanner structural changes (WO-SCANNER-AST-COVERAGE-001 closed)"
+    ]
+  },
+  "constraints": [
+    "Each phase must be independently shippable with passing tests",
+    "RAG coverage improvement is the highest-leverage item — source-headers runs first",
+    "Tree-sitter field verification is read-only audit before any fix work",
+    "No breaking changes to public ElementData or GraphData interfaces"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}
