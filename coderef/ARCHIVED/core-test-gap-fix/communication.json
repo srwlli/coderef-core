@@ -1,0 +1,74 @@
+{
+  "workorder_id": "WO-CORE-TEST-GAP-FIX-001",
+  "feature_name": "core-test-gap-fix",
+  "created": "2026-05-15T19:14:30Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-15-004"],
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 3,
+  "phase_status": "complete",
+  "completed_at": "2026-05-15T19:22:00Z",
+  "closed_at": "2026-05-15T19:30:00Z",
+  "updated": "2026-05-15T19:30:00Z",
+  "plan_file": "coderef/workorder/core-test-gap-fix/plan.json",
+  "context_file": "coderef/workorder/core-test-gap-fix/context.json",
+  "analysis_file": "coderef/workorder/core-test-gap-fix/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored; ready for implementation"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "inter_phase_halts": false,
+    "terminal_hard_stop": true
+  },
+  "hard_constraints": [
+    "Do not change scanner.ts call detection logic",
+    "Do not break previously-passing tests"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/core-test-gap-fix/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — validate-coderef-culture 11/11 PASS",
+    "warnings": []
+  },
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-15T19:14:30Z",
+      "by": "create-workorder",
+      "note": "Plan created from DISPATCH-2026-05-15-004. 3 phases, 7 tasks. Light plan."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-15T19:22:00Z",
+      "by": "execute-workorder",
+      "phases_closed": [1, 2, 3],
+      "commits": ["554018b"],
+      "test_result": "28/28 target tests passing, 1462/1525 total (no regressions)",
+      "fixes_applied": [
+        "src/index.ts: added clearScanCache, getScanCacheStats to public exports",
+        "__tests__/scanner-standalone.test.ts: fixed absolute path test and non-existent dir expectation",
+        "__tests__/accuracy-validation.test.ts: fixed call-edge count assertion to use metadata.calls sum"
+      ]
+    },
+    {
+      "timestamp": "2026-05-15T19:30:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (11/11 cultural checks, tracking-validator scoped PASS, dependency audit 0 vulns). All 3 phases complete. Commits 554018b, 4cb628c pushed to main. Archive pending."
+    },
+    {
+      "event": "phase_d_post_archive_validator",
+      "outcome": "pass",
+      "validator_exit": 0,
+      "at": "2026-05-15T19:30:00Z"
+    }
+  ]
+}

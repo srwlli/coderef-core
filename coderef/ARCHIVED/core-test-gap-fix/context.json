@@ -1,0 +1,50 @@
+{
+  "workorder_id": "WO-CORE-TEST-GAP-FIX-001",
+  "feature_name": "core-test-gap-fix",
+  "created": "2026-05-15T19:14:30Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-15-004",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Fix 3 real test gaps introduced during WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001: (1) clearScanCache/getScanCacheStats not exported from scanner public API, (2) absolute-path scan returning 0 elements, (3) call-edge detection accuracy regression from 95% to 43%"
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "All 3 gaps are precisely scoped to known files with clear fixes. No discovery needed. Estimated 4-8 lines of code total.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "Export clearScanCache and getScanCacheStats from src/index.ts",
+      "Fix absolute path test (wrong path construction in scanner-standalone.test.ts line 189)",
+      "Fix non-existent dir test to expect rejection instead of empty array",
+      "Fix call-edge accuracy test to count individual calls within edges (not edge objects)"
+    ],
+    "out_of_scope": [
+      "chroma-store, pinecone-store, ollama-provider tests (cloud-service mocks — gate/skip, not regression fixes)",
+      "Any scanner behavior changes beyond the minimal export fix",
+      "Architectural refactors"
+    ]
+  },
+  "constraints": [
+    "Do not change scanner.ts logic — only add exports",
+    "Test fixes must match the actual scanner behavior, not change expectations arbitrarily",
+    "All 1525 previously-passing tests must still pass after fix"
+  ],
+  "source_context": {
+    "failing_tests": 5,
+    "test_files": [
+      "__tests__/scanner-standalone.test.ts",
+      "__tests__/accuracy-validation.test.ts"
+    ],
+    "root_causes": {
+      "gap_1_cache_api": "clearScanCache and getScanCacheStats defined in src/scanner/scanner.ts but not re-exported from src/index.ts",
+      "gap_2_absolute_path": "Test constructs path join(process.cwd(), 'packages/core/__tests__/.test-fixtures') which assumes monorepo layout; actual fixture is at __tests__/.test-fixtures in cwd",
+      "gap_3_nonexistent_dir": "collectFiles() silently swallows ENOENT into empty array; test expects rejection",
+      "gap_4_call_edge_accuracy": "Test expects callEdges.length >= 7 (one per individual call site), but buildCallEdges deduplicates by (sourceFile, targetFile) pair; fix by counting calls within edges: callEdges.reduce((n,e) => n + e.metadata.calls.length, 0)"
+    }
+  }
+}

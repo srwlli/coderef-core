@@ -1,0 +1,25 @@
+=============================================================
+WORKORDER: WO-CORE-TEST-GAP-FIX-001  |  core-test-gap-fix  |  COMPLETE
+Session: SES-2026-05-15-CORE-TEST-GAP-FIX  |  Phases: 3  |  Commits: 2  |  Pushes: 1
+Parent stub: none
+
+FILES CREATED:
+  + coderef/workorder/core-test-gap-fix/context.json    (554018b)
+  + coderef/workorder/core-test-gap-fix/analysis.json   (554018b)
+  + coderef/workorder/core-test-gap-fix/plan.json       (554018b)
+  + coderef/workorder/core-test-gap-fix/communication.json (554018b)
+
+FILES MODIFIED:
+  ~ src/index.ts                          (554018b)
+  ~ __tests__/scanner-standalone.test.ts  (554018b)
+  ~ __tests__/accuracy-validation.test.ts (554018b)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Fix cache API exports        (554018b)
+  [x] Phase 2: Fix test expectation bugs    (554018b)
+  [x] Phase 3: Verify and commit            (4cb628c)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift — 4 files, not introduced by this WO)
+
+APPROVE -> /close-workorder WO-CORE-TEST-GAP-FIX-001
+=============================================================
