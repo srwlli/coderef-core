@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-12  
+**Generated:** 2026-05-15  
 <!-- coderef:uuid=hotspots-root -->
 
 ---
@@ -21,9 +21,9 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 390 |
-| **Total Elements** | 2,425 |
-| **Total Lines** | 103,186 |
+| **Total Files** | 394 |
+| **Total Elements** | 2,423 |
+| **Total Lines** | 104,763 |
 | **Entry Points** | 84 |
 | **Critical Functions** | 20 |
 
@@ -85,10 +85,10 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `index.ts` | library | `src/pipeline/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/search/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/semantic/index.ts` |
+| <!-- coderef:uuid= --> `detect-languages-cli.ts` | cli | `src/cli/detect-languages-cli.ts` |
+| <!-- coderef:uuid= --> `semantic-integration-cli.ts` | cli | `src/cli/semantic-integration-cli.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `demo-all-modules.ts` |
-| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-pipeline.ts` |
-| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-rag-server.ts` |
-| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-watch.ts` |
+| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-analyze.ts` |
 
 *... and 59 more entry points.*
 

@@ -6,8 +6,9 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-12-004"],
   "predecessor_for": null,
-  "status": "implementing",
-  "current_phase": 2,
+  "status": "complete",
+  "completed_at": "2026-05-15T19:00:00Z",
+  "current_phase": 7,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/code-intelligence-leverage-audit/plan.json",
   "context_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/code-intelligence-leverage-audit/context.json",
@@ -49,6 +50,12 @@
       "event": "phase_2_complete",
       "actor": "execute-workorder",
       "note": "Phase 2 Tree-Sitter Field Verification complete. Audited all 6 language extractors (TS, Python, Go, Rust, Java, C++). Found 2 real gaps: (1) Rust: #[derive], #[cfg] attributes not captured — added extractRustAttributes() method walking previousSibling attribute_item nodes; wired into function_item, struct_item, enum_item, trait_item. (2) Java: class_declaration, interface_declaration, enum_declaration missing complexity field — added estimateComplexity(node) call (method_declaration already had it). Build clean. vitest: 68 failed/1457 passed — all 68 are pre-existing failures (confirmed via git stash). Zero new regressions. Commit: fcc5869. Hard stop: awaiting Phase 2 approval before Phase 3."
+    },
+    {
+      "timestamp": "2026-05-15T19:00:00Z",
+      "event": "phases_3_to_7_complete",
+      "actor": "execute-workorder",
+      "note": "Phases 3-7 complete in single execution run (no gates per gate_behavior). Phase 3: export edges wired in src/pipeline/graph-builder.ts buildEdges() — emits relationship='export' for every elem.exported=true element, source=file-grain node, target=element codeRefId. Phase 4: query-executor.ts diverged what-imports (outbound getDependencies) from what-depends-on (inbound getDependents); same fix for what-imports-me/what-depends-on-me pair. Phase 5: rag-search.ts --constraint key:value added; recognized keys: type, file, lang, layer, capability, exported; invalid key exits with error. Phase 6: GraphExporter.includeVisualization already defaulted true with all viz methods implemented — no source changes needed. Phase 7: AIPromptGenerator.optimizePromptForTokens replaced hard char-ratio truncation with structure-preserving truncation (keeps signature/heading lines, drops indented body lines, falls back to section-boundary cut). All changes in commit 54a6620. vitest: 68 failed/1457 passed — 0 new regressions."
     }
   ]
 }
