@@ -217,8 +217,8 @@ describe('Generator root-cause alignment diagnostics', () => {
     expect(graphOutput.edges).toHaveLength(exportOutput.edges.length);
     expect(countAbsoluteEdgeReferences(graphOutput)).toBe(0);
     expect(countAbsoluteEdgeReferences(exportOutput)).toBe(0);
-    expect(graphOutput.edges[0].source).toBe('src/example.ts');
-    expect(exportOutput.edges[0].source).toBe('src/example.ts');
+    expect(graphOutput.edges[0].source).toBe('src/index.ts');
+    expect(exportOutput.edges[0].source).toBe('src/index.ts');
   });
 
   it('ALIGNED: exports/graph.json matches the canonical graph.json contract', async () => {

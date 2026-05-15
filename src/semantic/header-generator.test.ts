@@ -131,7 +131,12 @@ describe('HeaderGenerator', () => {
 
     test('should preserve existing semantic headers', async () => {
       const file = path.join(tempDir, 'test.ts');
-      const originalContent = `
+      const originalContent = `/**
+ * @coderef-semantic: 1.0.0
+ * @exports myFunc
+ * @rules "no_circular_deps"
+ */
+
 export function myFunc() {}`;
       fs.writeFileSync(file, originalContent);
 
@@ -139,7 +144,7 @@ export function myFunc() {}`;
       await generateHeaders(file, exports, []);
 
       const content = fs.readFileSync(file, 'utf-8');
-      expect(content).toBe(originalContent); // Unchanged
+      expect(content).toBe(originalContent); // Unchanged — generator skips files with existing header
     });
 
     test('should not skip files that only mention @coderef-semantic in code', async () => {

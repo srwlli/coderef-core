@@ -18,8 +18,8 @@ describe('GraphGenerator', () => {
 
     const output = await readJson<any>(path.join(env.outputDir, 'graph.json'));
     expect(output.version).toBe('1.0.0');
-    expect(output.nodes[0].file).toBe('src/example.ts');
-    expect(output.edges[0].metadata.file).toBe('src/example.ts');
+    expect(output.nodes[0].file).toBe('src/index.ts');
+    expect(output.edges[0].metadata.file).toBe('src/index.ts');
     expect(output.statistics.nodeCount).toBe(3);
   });
 });

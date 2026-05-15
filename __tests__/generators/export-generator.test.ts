@@ -25,8 +25,8 @@ describe('ExportGenerator', () => {
     const dependencyDiagram = await readText(path.join(env.outputDir, 'diagrams', 'dependencies.mmd'));
 
     expect(graph.version).toBe('1.0.0');
-    expect(graph.nodes[0].file).toBe('src/example.ts');
-    expect(graph.edges[0].source).toBe('src/example.ts');
+    expect(graph.nodes[0].file).toBe('src/index.ts');
+    expect(graph.edges[0].source).toBe('src/index.ts');
     expect(jsonld['@context']).toBeDefined();
     expect(wrapped).toContain('```mermaid');
     expect(wrapped).toContain('Dependency Diagram');

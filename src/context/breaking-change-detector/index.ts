@@ -74,8 +74,8 @@ import {
   BlastRadius,
 } from './types.js';
 import { compareSignatures, isBreakingChange } from './signature-comparator.js';
-import { calculateSeverity, calculateReportConfidence } from './impact-assessor.js';
-import { findImpactedCallSites, getChangedElements, extractSignaturesFromRef, extractSignaturesFromWorktree } from './diff-analyzer.js';
+import { calculateSeverity, calculateReportConfidence, calculateConfidence, isCompatibleCall } from './impact-assessor.js';
+import { findImpactedCallSites, extractCallContext, getChangedElements, extractSignaturesFromRef, extractSignaturesFromWorktree } from './diff-analyzer.js';
 import { generateMigrationHints } from './hint-generator.js';
 
 /**
@@ -94,6 +94,34 @@ export class BreakingChangeDetector {
   constructor(analyzerService: AnalyzerService, impactSimulator: ImpactSimulator) {
     this.analyzerService = analyzerService;
     this.impactSimulator = impactSimulator;
+  }
+
+  private compareSignatures(before: any, after: any) {
+    return compareSignatures(before, after);
+  }
+
+  private extractCallContext(file: string, line: number) {
+    return extractCallContext(file, line);
+  }
+
+  private isCompatibleCall(callSite: any, change: any) {
+    return isCompatibleCall(callSite, change);
+  }
+
+  private calculateConfidence(callSite: any, change: any) {
+    return calculateConfidence(callSite, change);
+  }
+
+  private async findImpactedCallSites(element: any, change: any, analyzerService?: any) {
+    return findImpactedCallSites(element, change, analyzerService || this.analyzerService);
+  }
+
+  private generateMigrationHints(change: any, callSites: any[]) {
+    return generateMigrationHints(change, callSites);
+  }
+
+  private calculateReportConfidence(changes: any[]) {
+    return calculateReportConfidence(changes);
   }
 
   /**

@@ -19,7 +19,7 @@ describe('ComplexityGenerator', () => {
     const output = await readJson<any>(path.join(env.outputDir, 'reports', 'complexity', 'summary.json'));
     const alpha = output.elements.find((item: any) => item.element === 'alpha');
 
-    expect(output.totalElements).toBe(3);
+    expect(output.totalElements).toBe(4);
     expect(alpha.parameters).toBe(2);
     expect(alpha.loc).toBeGreaterThan(0);
     expect(alpha.complexity).toBeGreaterThan(1);

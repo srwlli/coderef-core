@@ -8,7 +8,8 @@ export default defineConfig({
       '**/node_modules/**',
       '**/dist/**',
       '**/__tests__/integration.test.ts',
-      '**/__tests__/fixtures/**'
+      '**/__tests__/fixtures/**',
+      '**/__tests__/generators/helpers.ts'
     ],
     coverage: {
       provider: 'v8',

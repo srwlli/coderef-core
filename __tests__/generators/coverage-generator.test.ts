@@ -18,12 +18,12 @@ describe('CoverageGenerator', () => {
 
     const output = await readJson<any>(path.join(env.outputDir, 'reports', 'coverage.json'));
 
-    expect(output.summary.totalFiles).toBe(2);
+    expect(output.summary.totalFiles).toBe(3);
     expect(output.summary.testedFiles).toBe(1);
-    expect(output.untested).toContain('src/untested.ts');
+    expect(output.untested).toContain('src/utils.ts');
     expect(output.files).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ file: 'src/example.ts', tested: true }),
+        expect.objectContaining({ file: 'src/index.ts', tested: true }),
       ])
     );
   });

@@ -215,11 +215,10 @@ describe('populate-coderef CLI', () => {
     );
 
     const providerContent = await fs.readFile(path.join(srcDir, 'provider.ts'), 'utf-8');
-    const semanticCount = (providerContent.match(/@semantic/g) || []).length;
+    const semanticCount = (providerContent.match(/@coderef-semantic/g) || []).length;
     expect(semanticCount).toBe(1);
-    expect(providerContent).toContain('exports: [one, two]');
-    expect(providerContent).toContain('used_by: [src/consumer.ts]');
-    expect(providerContent).not.toContain('exports: exports:');
+    expect(providerContent).toMatch(/@exports\s+one[,\s]+two|@exports\s+two[,\s]+one/);
+    expect(providerContent).toContain('@used_by src/consumer.ts');
     expect(providerContent).not.toContain('*//**');
     expect(providerContent).toContain('*/\r\n\r\n/**');
   });

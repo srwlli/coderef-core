@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { describe, expect, it, vi } from 'vitest';
 import { IndexingOrchestrator } from '../../../src/integration/rag/indexing-orchestrator.js';
 import type { IndexingResult } from '../../../src/integration/rag/indexing-orchestrator.js';
@@ -12,6 +15,7 @@ import type { CodeChunkMetadata } from '../../../src/integration/vector/vector-s
 function makeOrchestrator(opts?: {
   embedFails?: number;
   embedSucceeds?: number;
+  withEmptyGraph?: boolean;
 }) {
   const fails = opts?.embedFails ?? 0;
   const succeeds = opts?.embedSucceeds ?? 0;
@@ -22,12 +26,24 @@ function makeOrchestrator(opts?: {
     stats: vi.fn().mockResolvedValue({}),
     clear: vi.fn().mockResolvedValue(undefined),
   } as any;
-  const orch = new IndexingOrchestrator(
-    llmProvider,
-    vectorStore,
-    process.cwd(),
-  );
-  return { orch, llmProvider, vectorStore };
+
+  let basePath: string;
+  if (opts?.withEmptyGraph) {
+    // Create a temp dir with an empty graph.json so the orchestrator's
+    // pre-check passes without touching real project source files.
+    basePath = fs.mkdtempSync(path.join(os.tmpdir(), 'orch-test-'));
+    fs.mkdirSync(path.join(basePath, '.coderef'), { recursive: true });
+    fs.writeFileSync(
+      path.join(basePath, '.coderef', 'graph.json'),
+      JSON.stringify({ nodes: [], edges: [] }),
+    );
+  } else {
+    // AC-01 tests use validation gate (fires before graph read) — no graph needed.
+    basePath = os.tmpdir();
+  }
+
+  const orch = new IndexingOrchestrator(llmProvider, vectorStore, basePath);
+  return { orch, llmProvider, vectorStore, basePath };
 }
 
 describe('Phase 7 AC-01 — validation gate refuses ok=false', () => {
@@ -55,9 +71,9 @@ describe('Phase 7 AC-01 — validation gate refuses ok=false', () => {
 
 describe('Phase 7 AC-02 — status field thresholds (DR-PHASE-7-C)', () => {
   it('chunksIndexed===0 + validation ok → status=failed reason=no_chunks_produced', async () => {
-    const { orch } = makeOrchestrator();
-    // No fixture files in cwd that match pattern, so the analyzer
-    // returns an empty graph → zero chunks → status=failed.
+    // withEmptyGraph seeds a temp dir with an empty graph.json so the
+    // orchestrator's pre-check passes; zero nodes → zero chunks → status=failed.
+    const { orch } = makeOrchestrator({ withEmptyGraph: true });
     const result = await orch.indexCodebase({
       sourceDir: '/__non_existent_dir_for_phase7_test__',
       useAnalyzer: true,

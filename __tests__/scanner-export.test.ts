@@ -100,7 +100,7 @@ describe('Scanner Module Exports', () => {
 
       expect(Array.isArray(elements)).toBe(true);
       expect(elements.length).toBeGreaterThan(0);
-    });
+    }, 15000);
 
     it('should return ElementData with correct structure', async () => {
       const elements = await scanCurrentElements(__dirname, 'ts', {

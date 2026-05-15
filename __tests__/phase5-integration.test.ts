@@ -84,7 +84,10 @@ describe('Phase 5 - AI Integration & Knowledge Graph', () => {
       const result1 = traversal.dependsOn('func1');
       const result2 = traversal.dependsOn('func1');
 
-      expect(result1).toEqual(result2);
+      // traversalTime may differ by 1ms between calls; compare structural fields only
+      const { traversalTime: _t1, ...r1 } = result1 as any;
+      const { traversalTime: _t2, ...r2 } = result2 as any;
+      expect(r1).toEqual(r2);
       expect(traversal.getCacheStats().cacheSize).toBeGreaterThan(0);
     });
   });

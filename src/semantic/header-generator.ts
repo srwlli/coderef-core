@@ -201,18 +201,29 @@ export class HeaderGenerator {
       const comments = this.formatAsComments(headers);
       const headerBlock = comments.join('\n');
 
-      // Insert at file start so the parser's /^\s*\/\*\*/ anchor finds it first.
-      // Only skip a shebang line — everything else (existing JSDoc, license
-      // headers) stays below the semantic block.
+      // Insert after shebang and after any leading non-semantic block comment
+      // (e.g. license headers), so semantic block follows existing file preamble.
       let insertPoint = 0;
       if (content.startsWith('#!/')) {
         insertPoint = content.indexOf('\n') + 1;
+      }
+      // Skip a leading non-semantic block comment (/* ... */ or /** ... */) to
+      // insert the semantic block after it, preserving license headers at top.
+      const leadingBlockComment = /^(\/\*(?!\*)[\s\S]*?\*\/|\/\*\*(?![\s\S]*?@coderef-semantic)[\s\S]*?\*\/)/.exec(
+        content.slice(insertPoint)
+      );
+      if (leadingBlockComment) {
+        insertPoint += leadingBlockComment[0].length;
+        // Consume trailing newline so we place the blank line cleanly after the comment
+        if (content.slice(insertPoint, insertPoint + 2) === '\r\n') insertPoint += 2;
+        else if (content[insertPoint] === '\n') insertPoint += 1;
       }
 
       const lineEnding = content.includes('\r\n') ? '\r\n' : '\n';
       const prefix = content.slice(0, insertPoint);
       const suffix = content.slice(insertPoint);
-      const newContent = prefix + headerBlock.replace(/\n/g, lineEnding) + lineEnding + lineEnding + suffix;
+      const separator = leadingBlockComment ? lineEnding : '';
+      const newContent = prefix + separator + headerBlock.replace(/\n/g, lineEnding) + lineEnding + lineEnding + suffix;
       fs.writeFileSync(filePath, newContent, 'utf-8');
     } catch (error) {
       console.error(`Error inserting headers into ${filePath}:`, error instanceof Error ? error.message : error);

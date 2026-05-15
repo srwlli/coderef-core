@@ -46,8 +46,8 @@ export async function createMockEnvironment(): Promise<MockEnvironment> {
 
   const exampleSource = [
     "import { beta } from './untested';",
-    '// @coderef{src/example.ts:alpha}',
-    '// @coderef{src/example.ts:missing}',
+    '// @coderef{src/index.ts:alpha}',
+    '// @coderef{src/index.ts:missing}',
     'export async function alpha(id: number, enabled: boolean) {',
     '  if (enabled && id > 0) {',
     '    try {',

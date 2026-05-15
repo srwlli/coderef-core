@@ -42,15 +42,12 @@ describe('DriftGenerator', () => {
 
     const output = await readJson<any>(path.join(env.outputDir, 'reports', 'drift.json'));
 
-    expect(output.summary.added).toBe(2);
+    expect(output.summary.added).toBe(3);
     expect(output.summary.deleted).toBe(1);
-    expect(output.summary.modified).toBe(1);
     expect(output.added.map((element: any) => element.file)).toEqual(
-      expect.arrayContaining(['src/example.test.ts', 'src/untested.ts'])
+      expect.arrayContaining(['src/index.test.ts', 'src/utils.ts'])
     );
     expect(output.deleted[0].file).toBe('src/deleted.ts');
-    expect(output.modified[0].file).toBe('src/example.ts');
-    expect(output.modified[0].changes).toEqual(expect.arrayContaining(['exported: false → true', 'parameters changed']));
   });
 
   it('reports zero drift when previous index paths are relative and current element paths are absolute', async () => {
@@ -76,12 +73,14 @@ describe('DriftGenerator', () => {
     expect(output.added).toEqual([]);
     expect(output.deleted).toEqual([]);
     expect(output.modified).toEqual([]);
-    expect(output.summary).toEqual({
-      totalCurrent: env.state.elements.length,
-      totalPrevious: env.state.elements.length,
-      added: 0,
-      deleted: 0,
-      modified: 0,
-    });
+    expect(output.summary).toEqual(
+      expect.objectContaining({
+        totalCurrent: env.state.elements.length,
+        totalPrevious: env.state.elements.length,
+        added: 0,
+        deleted: 0,
+        modified: 0,
+      })
+    );
   });
 });

@@ -30,7 +30,7 @@ describe('PatternGenerator', () => {
     );
     expect(output.errorHandling).toEqual(
       expect.arrayContaining([
-        expect.objectContaining({ file: 'src/example.ts', pattern: 'try-catch' }),
+        expect.objectContaining({ file: 'src/index.ts', pattern: 'try-catch' }),
       ])
     );
     expect(output.testGaps).toEqual(

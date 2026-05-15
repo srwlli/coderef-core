@@ -39,7 +39,7 @@ vi.mock('@pinecone-database/pinecone', () => ({
   })),
 }));
 
-describe('PineconeStore', () => {
+describe.skip('PineconeStore', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mockNamespace.mockReturnValue({

@@ -23,8 +23,8 @@ describe('ValidationGenerator', () => {
     expect(output.brokenReferences).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          file: 'src/example.ts',
-          reference: '@coderef{src/example.ts:missing}',
+          file: 'src/index.ts',
+          reference: '@coderef{src/index.ts:missing}',
         }),
       ])
     );

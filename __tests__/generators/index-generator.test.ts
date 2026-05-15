@@ -21,7 +21,7 @@ describe('IndexGenerator', () => {
     const alpha = output.find((item: any) => item.name === 'alpha');
 
     expect(output).toHaveLength(env.state.elements.length);
-    expect(alpha.file).toBe('src/example.ts');
+    expect(alpha.file).toBe('src/index.ts');
     expect(output.some(item => path.isAbsolute(item.file))).toBe(false);
   });
 });
