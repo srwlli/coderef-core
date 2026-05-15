@@ -29,3 +29,6 @@ autoresearch-results.tsv
 coverage/
 *.tmp
 nul
+
+# Large generated artifacts
+.coderef/semantic-registry.json
