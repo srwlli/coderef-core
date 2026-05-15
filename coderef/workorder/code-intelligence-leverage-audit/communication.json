@@ -6,8 +6,20 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-12-004"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-15T19:00:00Z",
+  "closed_at": "2026-05-15T20:00:00Z",
+  "closed_via": "close-workorder v2.0.0",
+  "review_result": "PASS",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/code-intelligence-leverage-audit/ARCHIVED",
+    "review_verdict_source": "Step 3 cultural-alignment audit — PASS (all 11 checks green, scope=WO-CODE-INTELLIGENCE-LEVERAGE-AUDIT-001)",
+    "warnings": ["vault_migration_skipped: migrate-sessions-to-vault.py not found in project", "uncommitted_changes: pre-existing unrelated files (test fixtures, autoresearch scripts) — not staged", "dependency_audit_skipped: coderef-analyze returned no output"],
+    "cultural_validator": "PASS",
+    "tracking_validator": "PASS (scope mode, 15/15)",
+    "git_push": "PASS (pushed at bcbfb56)"
+  },
   "current_phase": 7,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/code-intelligence-leverage-audit/plan.json",
@@ -56,6 +68,11 @@
       "event": "phases_3_to_7_complete",
       "actor": "execute-workorder",
       "note": "Phases 3-7 complete in single execution run (no gates per gate_behavior). Phase 3: export edges wired in src/pipeline/graph-builder.ts buildEdges() — emits relationship='export' for every elem.exported=true element, source=file-grain node, target=element codeRefId. Phase 4: query-executor.ts diverged what-imports (outbound getDependencies) from what-depends-on (inbound getDependents); same fix for what-imports-me/what-depends-on-me pair. Phase 5: rag-search.ts --constraint key:value added; recognized keys: type, file, lang, layer, capability, exported; invalid key exits with error. Phase 6: GraphExporter.includeVisualization already defaulted true with all viz methods implemented — no source changes needed. Phase 7: AIPromptGenerator.optimizePromptForTokens replaced hard char-ratio truncation with structure-preserving truncation (keeps signature/heading lines, drops indented body lines, falls back to section-boundary cut). All changes in commit 54a6620. vitest: 68 failed/1457 passed — 0 new regressions."
+    },
+    {
+      "timestamp": "2026-05-15T20:00:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (cultural validator PASS all 11 checks, tracking validator PASS scope mode 15/15, git push PASS). Phase B finalized. Phase C commit+push pending. Archive pending."
     }
   ]
 }
