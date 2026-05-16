@@ -1,0 +1,30 @@
+=============================================================
+WORKORDER: WO-CODEREF-INTELLIGENCE-DATA-API-001  |  coderef-intelligence-data-api  |  COMPLETE
+Session: daily-agent-session-2026-05-16  |  Phases: 3  |  Commits: 2  |  Pushes: 1
+Parent stub: STUB-282 (will be closed on archive)
+
+FILES CREATED:
+  + src/cli/coderef-intelligence-server.ts  (55088ac)
+  + docs/intelligence-api.md  (55088ac)
+  + coderef/workorder/coderef-intelligence-data-api/context.json  (55088ac)
+  + coderef/workorder/coderef-intelligence-data-api/analysis.json  (55088ac)
+  + coderef/workorder/coderef-intelligence-data-api/plan.json  (55088ac)
+  + coderef/workorder/coderef-intelligence-data-api/communication.json  (e7356d2)
+
+FILES MODIFIED:
+  ~ package.json  (55088ac)
+  ~ coderef/foundation-docs/INDEX.md  (55088ac)
+  ~ coderef/foundation-docs/EXPORTS.md  (55088ac)
+  ~ coderef/foundation-docs/HOTSPOTS.md  (55088ac)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md  (55088ac)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Server Scaffold + Data Loading  (55088ac)
+  [x] Phase 2: Intelligence Endpoints Implementation  (55088ac)
+  [x] Phase 3: Documentation + Tests + Commit  (55088ac)
+
+Tests: 1540/1570 passing (above 1524/1554 baseline)
+Session: updated  |  Registry: synced  |  Validator: PASS (scoped; 4 pre-existing FAIL unrelated to this WO)
+
+APPROVE -> /close-workorder WO-CODEREF-INTELLIGENCE-DATA-API-001
+=============================================================

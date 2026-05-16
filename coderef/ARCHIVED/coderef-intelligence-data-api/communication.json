@@ -6,10 +6,18 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-009"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 3,
   "phase_status": "complete",
   "completed_at": "2026-05-16T09:55:00Z",
+  "closed_at": "2026-05-16T10:00:00Z",
+  "updated": "2026-05-16T10:00:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/coderef-intelligence-data-api/ARCHIVED",
+    "review_verdict_source": "Step 3 validate-coderef-culture (11/11 checks green)",
+    "warnings": []
+  },
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\analysis.json",
@@ -70,6 +78,11 @@
       "phase": 3,
       "commit": "55088ac",
       "note": "docs/intelligence-api.md written. Foundation docs regenerated and validated (exit 0). Final commit 55088ac."
+    },
+    {
+      "timestamp": "2026-05-16T10:00:00Z",
+      "agent": "close-workorder v2.1.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (cultural validation 11/11, tracking-validator 15/15). Committed and archived."
     }
   ]
 }
