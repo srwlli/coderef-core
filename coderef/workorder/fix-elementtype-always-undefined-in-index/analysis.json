@@ -1,0 +1,29 @@
+{
+  "workorder_id": "WO-FIX-ELEMENTTYPE-ALWAYS-UNDEFINED-IN-INDEX-001",
+  "feature_name": "fix-elementtype-always-undefined-in-index",
+  "analysis_authored_at": "2026-05-16T06:00:00Z",
+  "blast_radius": {
+    "files_modified": ["src/pipeline/generators/graph-output.ts"],
+    "files_created": [],
+    "downstream_consumers": ["src/integration/rag/indexing-orchestrator.ts", "src/fileGeneration/buildDependencyGraph.ts"]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "elementType duplicates type — no data divergence possible",
+      "likelihood": "low",
+      "impact": "none",
+      "mitigation": "elementType is always set to node.type at serialization time, guaranteed same value"
+    }
+  ],
+  "candidates": ["src/pipeline/generators/graph-output.ts"],
+  "dependencies": ["src/export/graph-exporter.ts", "src/analyzer/graph-builder.ts"],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Add elementType as alias rather than renaming type",
+      "rationale": "type is the canonical field in ExportedGraph/GraphNode; elementType is legacy compat. Both must exist."
+    }
+  ]
+}

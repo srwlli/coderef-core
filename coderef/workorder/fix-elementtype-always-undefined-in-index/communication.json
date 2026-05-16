@@ -1,0 +1,55 @@
+{
+  "workorder_id": "WO-FIX-ELEMENTTYPE-ALWAYS-UNDEFINED-IN-INDEX-001",
+  "feature_name": "fix-elementtype-always-undefined-in-index",
+  "created": "2026-05-16T06:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-004"],
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "coderef/workorder/fix-elementtype-always-undefined-in-index/plan.json",
+  "context_file": "coderef/workorder/fix-elementtype-always-undefined-in-index/context.json",
+  "analysis_file": "coderef/workorder/fix-elementtype-always-undefined-in-index/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Workorder created from dispatch DISPATCH-2026-05-16-004"
+  },
+  "execution_rules": { "plan_type": "light", "hard_stops": [] },
+  "hard_constraints": [],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [
+    { "phase": 1, "from": "ready", "to": "complete", "at": "2026-05-16T06:10:00Z" }
+  ],
+  "plan_adjustments": [],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/fix-elementtype-always-undefined-in-index/ARCHIVED",
+    "warnings": [],
+    "dependency_audit": "ok",
+    "quality_check": "ok",
+    "route_check": "ok"
+  },
+  "closed_at": "2026-05-16T06:15:00Z",
+  "closed_via": "close-workorder v2.1.0",
+  "review_result": "PASS",
+  "reviewed_at": "2026-05-16T06:15:00Z",
+  "updated": "2026-05-16T06:15:00Z",
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-16T06:00:00Z",
+      "by": "create-workorder",
+      "summary": "Created from DISPATCH-2026-05-16-004"
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-05-16T06:15:00Z",
+      "by": "close-workorder",
+      "summary": "Fix implemented and committed (4480761). 1-line graph-output.ts patch. 2795/2795 nodes now have elementType. Tests pass."
+    }
+  ]
+}
