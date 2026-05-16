@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-coderef-analyze
+ */
 import { parseArgs } from 'node:util';
 import { ConfigAnalyzer } from '../analyzer/config-analyzer.js';
 import { ContractDetector } from '../analyzer/contract-detector.js';

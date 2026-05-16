@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-rag-server
+ */
+/**
  * coderef-rag-server - Always-on HTTP RAG server for cross-runtime callers.
  *
  * WO-RAG-HTTP-SERVER-V1-001.

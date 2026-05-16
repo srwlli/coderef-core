@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-validate-routes
+ */
+/**
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Route Validation CLI
  * Command-line interface for validating frontend API calls against server routes
  *

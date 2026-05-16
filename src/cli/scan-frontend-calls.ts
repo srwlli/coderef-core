@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-scan-frontend-calls
+ */
+/**
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Frontend Calls Scanner CLI
  * Scans project for frontend API calls and generates frontend-calls.json
  */

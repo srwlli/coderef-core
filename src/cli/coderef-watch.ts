@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-coderef-watch
+ */
+/**
  * coderef-watch - Workspace file-watcher daemon for foundation-docs freshness.
  *
  * WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001.

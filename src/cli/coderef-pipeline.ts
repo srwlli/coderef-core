@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-coderef-pipeline
+ */
+/**
  * coderef-pipeline - Unified CodeRef orchestration CLI.
  *
  * Chains the four standard legs in order against a target project:
