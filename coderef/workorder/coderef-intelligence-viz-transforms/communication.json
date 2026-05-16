@@ -7,9 +7,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-010"],
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
+  "completed_at": "2026-05-16T10:00:00Z",
   "plan_file": "coderef/workorder/coderef-intelligence-viz-transforms/plan.json",
   "context_file": "coderef/workorder/coderef-intelligence-viz-transforms/context.json",
   "analysis_file": "coderef/workorder/coderef-intelligence-viz-transforms/analysis.json",
@@ -45,6 +46,29 @@
       "phase": 1,
       "at": "2026-05-16T09:45:00Z",
       "note": "Phase 1 executing: Write generate-intelligence.js script"
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": ["coderef/foundation-docs/API.md","coderef/foundation-docs/ARCHITECTURE.md","coderef/foundation-docs/COMPONENTS.md","coderef/foundation-docs/SCHEMA.md"],
+      "note": "16 pre-existing UUID anchor warnings — not caused by this WO"
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-16T10:00:00Z",
+      "phases_closed": [1],
+      "commit": "fb1212a",
+      "plan_deviations": ["Sankey regex fix: [A-Z]+ → [A-Za-z]+ to handle mixed-case coderef IDs (@File, @Fn, @Cl)"],
+      "deliverables": [
+        "scripts/generate-intelligence.js",
+        ".coderef/intelligence/treemap.json (2431 elements, 7 dirs)",
+        ".coderef/intelligence/scatter.json (2431 elements)",
+        ".coderef/intelligence/sankey.json (8 nodes, 13 links)",
+        ".coderef/intelligence/umap.json (1153 PCA-projected vectors)",
+        ".coderef/intelligence/hotspots.json (50 top by in-degree)"
+      ]
     }
   ]
 }
