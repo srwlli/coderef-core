@@ -1,0 +1,25 @@
+{
+  "workorder_id": "WO-PARSE-CAPABILITY-LAYER-INTO-ELEMENT-METADATA-001",
+  "feature_name": "parse-capability-layer-into-element-metadata",
+  "created": "2026-05-16T05:40:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single localized fix — 2 lines added to orchestrator.ts header-stamp loop",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Fix and verify",
+      "tasks": [
+        { "verb": "EDIT", "description": "In orchestrator.ts header-stamp loop, add: if (headerFact.capability !== undefined) elem.capability = headerFact.capability; if (headerFact.layer !== undefined) elem.layer = headerFact.layer;" },
+        { "verb": "TEST", "description": "Run header-fact-shape.test.ts — assert elem.layer === 'utility' and elem.capability === 'foo-bar' for elements from a file with those header tags" },
+        { "verb": "COMMIT", "description": "Commit the fix with message: fix(orchestrator): propagate capability/layer from headerFact into element fields" }
+      ]
+    }
+  ],
+  "hard_stops": [],
+  "acceptance_criteria": [
+    "After fix: elements from files with @capability/@layer in their semantic headers have those fields populated in element data",
+    "header-fact-shape.test.ts new assertion passes",
+    "1495/1495 tests still passing"
+  ]
+}

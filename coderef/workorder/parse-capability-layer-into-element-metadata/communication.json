@@ -1,0 +1,55 @@
+{
+  "workorder_id": "WO-PARSE-CAPABILITY-LAYER-INTO-ELEMENT-METADATA-001",
+  "feature_name": "parse-capability-layer-into-element-metadata",
+  "created": "2026-05-16T05:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-002"],
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "coderef/workorder/parse-capability-layer-into-element-metadata/plan.json",
+  "context_file": "coderef/workorder/parse-capability-layer-into-element-metadata/context.json",
+  "analysis_file": "coderef/workorder/parse-capability-layer-into-element-metadata/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Workorder created from dispatch DISPATCH-2026-05-16-002"
+  },
+  "execution_rules": { "plan_type": "light", "hard_stops": [] },
+  "hard_constraints": [],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [
+    { "phase": 1, "from": "ready", "to": "complete", "at": "2026-05-16T05:45:00Z" }
+  ],
+  "plan_adjustments": [],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/parse-capability-layer-into-element-metadata/ARCHIVED",
+    "warnings": [],
+    "dependency_audit": "ok",
+    "quality_check": "ok",
+    "route_check": "ok"
+  },
+  "closed_at": "2026-05-16T05:45:00Z",
+  "closed_via": "close-workorder v2.1.0",
+  "review_result": "PASS",
+  "reviewed_at": "2026-05-16T05:45:00Z",
+  "updated": "2026-05-16T05:50:00Z",
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-16T05:40:00Z",
+      "by": "create-workorder",
+      "summary": "Created from DISPATCH-2026-05-16-002"
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-05-16T05:45:00Z",
+      "by": "close-workorder",
+      "summary": "Fix implemented and committed (0b7aff8). 2-line orchestrator patch. Tests pass."
+    }
+  ]
+}

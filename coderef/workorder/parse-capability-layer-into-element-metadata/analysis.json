@@ -1,0 +1,22 @@
+{
+  "workorder_id": "WO-PARSE-CAPABILITY-LAYER-INTO-ELEMENT-METADATA-001",
+  "feature_name": "parse-capability-layer-into-element-metadata",
+  "analysis_authored_at": "2026-05-16T05:40:00Z",
+  "blast_radius": {
+    "files_modified": ["src/pipeline/orchestrator.ts", "__tests__/pipeline/header-fact-shape.test.ts"],
+    "files_created": [],
+    "downstream_consumers": ["src/pipeline/graph-builder.ts", "src/semantic/projections.ts"]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "No files currently have @layer/@capability in headers",
+      "likelihood": "confirmed",
+      "impact": "low",
+      "mitigation": "Fix is still correct and will activate when any file has these tags. Test verifies end-to-end with a synthetic fixture."
+    }
+  ],
+  "candidates": ["src/pipeline/orchestrator.ts"],
+  "dependencies": ["src/pipeline/header-fact.ts", "src/pipeline/semantic-header-parser.ts"],
+  "public_api_hits": []
+}

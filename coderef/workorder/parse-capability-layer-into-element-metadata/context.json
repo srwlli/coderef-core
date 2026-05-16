@@ -1,0 +1,27 @@
+{
+  "workorder_id": "WO-PARSE-CAPABILITY-LAYER-INTO-ELEMENT-METADATA-001",
+  "feature_name": "parse-capability-layer-into-element-metadata",
+  "created": "2026-05-16T05:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-002",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Fix the populate pipeline to extract @capability and @layer fields from semantic headers into element.capability and element.metadata.layer in the index. Currently 0/2431 elements have these fields populated despite headers being written to 198 src/ files."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single localized fix in orchestrator.ts — add 2 lines to the header-stamping loop. No new abstractions, no new files, blast radius is 1 file.",
+    "plan_type_decided_by": "create-workorder@2.4.0"
+  },
+  "scope": {
+    "in_scope": [
+      "src/pipeline/orchestrator.ts — add capability/layer propagation in header-stamp loop",
+      "__tests__/pipeline/header-fact-shape.test.ts — add assertion confirming propagation"
+    ],
+    "out_of_scope": [
+      "Writing @layer/@capability into source file headers (header-generator.ts)",
+      "RAG vector chunk layer propagation (dispatch-003)"
+    ]
+  }
+}
