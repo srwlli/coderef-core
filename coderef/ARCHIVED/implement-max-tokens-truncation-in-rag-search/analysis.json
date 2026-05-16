@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001",
+  "feature_name": "implement-max-tokens-truncation-in-rag-search",
+  "analysis_authored_at": "2026-05-16T08:05:00Z",
+  "blast_radius": {
+    "files_modified": ["src/cli/rag-search.ts"],
+    "files_created": [],
+    "downstream_consumers": ["rag-search CLI binary (compiled output)"]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Token count estimation vs actual token count",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Use character-based approximation (chars/4) for token estimation — standard heuristic for LLM context budgeting. No tiktoken dependency required."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Regression in existing rag-search tests",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Flag is additive — no existing code path changes when --max-tokens is absent. Run full test suite after edit."
+    }
+  ],
+  "candidates": ["src/cli/rag-search.ts"],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "what": "Use character/4 approximation for token count, not tiktoken",
+      "rationale": "tiktoken is an optional peer dep; adding a hard dep for a rough truncation budget is over-engineering. chars/4 is standard and sufficient for context-window management.",
+      "outcome": "No new imports needed"
+    },
+    {
+      "id": "DEC-002",
+      "what": "Truncate per-result content field, not the entire output string",
+      "rationale": "Per-result truncation gives cleaner output — each result displays proportionally rather than getting cut off mid-result.",
+      "outcome": "Truncation applied in formatResult() or at result iteration, not to final stdout"
+    }
+  ]
+}
