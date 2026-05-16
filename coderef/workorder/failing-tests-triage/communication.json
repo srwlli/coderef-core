@@ -1,0 +1,56 @@
+{
+  "workorder_id": "WO-FAILING-TESTS-TRIAGE-001",
+  "feature_name": "failing-tests-triage",
+  "created": "2026-05-16T21:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "coderef/workorder/failing-tests-triage/plan.json",
+  "context_file": "coderef/workorder/failing-tests-triage/context.json",
+  "analysis_file": "coderef/workorder/failing-tests-triage/analysis.json",
+  "handoff": {
+    "from": "create-workorder@2.4.0",
+    "to": "execute-workorder",
+    "reason": "Workorder created from STUB-FAILING-TESTS-TRIAGE-001. Triage complete at create-time: 30 skips are all known-gap describe.skip blocks (chroma/pinecone/ollama), 1 flaky test (scanner-export recursive). Plan: fix flaky test, add skip comments where missing, confirm 0 failures."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "gate_between_phases": false,
+    "rollback_on_gate_fail": false,
+    "validate_after_each_phase": true
+  },
+  "hard_constraints": [
+    "Do not remove describe.skip without providing the infrastructure the tests require",
+    "Do not weaken assertions to fix the flaky test — fix the race condition",
+    "Total skip count must remain 30 after fix (no new skips added)"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_decided",
+      "plan_type": "light",
+      "rationale": "Stub category: test → light. Single-phase triage + targeted fix.",
+      "decided_by": "create-workorder@2.4.0",
+      "at": "2026-05-16T21:00:00Z"
+    },
+    {
+      "event": "triage_complete_at_create_time",
+      "finding": "30 'failures' are describe.skip blocks (known-gap, all pre-existing). 1 flaky test: scanner-export > should support recursive option (ERR_MODULE_NOT_FOUND parallel worker race).",
+      "at": "2026-05-16T21:00:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "by": "create-workorder@2.4.0",
+      "at": "2026-05-16T21:00:00Z",
+      "note": "WO-FAILING-TESTS-TRIAGE-001 created from STUB-FAILING-TESTS-TRIAGE-001. Triage performed during workorder creation: 30 skips = describe.skip on chroma-store (13), pinecone-store (12), ollama-provider-unreachable (5) — all intentional infrastructure gaps. 1 flaky: scanner-export > should support recursive option. Plan: 1 light phase — verify skip comments, fix flaky, full suite green."
+    }
+  ]
+}
