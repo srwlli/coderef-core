@@ -6,9 +6,12 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 2,
   "phase_status": "complete",
+  "completed_at": "2026-05-17T00:15:00Z",
+  "closed_at": "2026-05-17T01:00:00Z",
+  "updated": "2026-05-17T01:00:00Z",
   "plan_file": "coderef/workorder/header-coverage-remaining-15pct/plan.json",
   "context_file": "coderef/workorder/header-coverage-remaining-15pct/context.json",
   "analysis_file": "coderef/workorder/header-coverage-remaining-15pct/analysis.json",
@@ -58,6 +61,14 @@
       "applied": true
     }
   ],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/header-coverage-remaining-15pct/ARCHIVED",
+    "review_verdict_source": "Step 3 cultural validator (scope=WO-HEADER-COVERAGE-REMAINING-15PCT-001, session_date=2026-05-16)",
+    "warnings": [
+      "stubs.json STUB-HEADER-COVERAGE-REMAINING-15PCT-001 fails pattern ^STUB-\\d+$ — pre-existing schema/practice mismatch affecting all descriptive stub IDs in this project; not introduced by this WO"
+    ]
+  },
   "communication_log": [
     {
       "event": "workorder_created",
@@ -99,6 +110,12 @@
       "by": "execute-workorder@1.6.0",
       "at": "2026-05-17T00:15:00Z",
       "note": "WO-HEADER-COVERAGE-REMAINING-15PCT-001 complete. Target was <50 missing; achieved 9 missing (98.2% improvement). Foundation-docs gate: exit 0 (warnings only for manually-maintained API.md/COMPONENTS.md/ARCHITECTURE.md/SCHEMA.md stale UUIDs). Ready for /close-workorder."
+    },
+    {
+      "event": "workorder_closed",
+      "by": "close-workorder@2.1.0",
+      "at": "2026-05-17T01:00:00Z",
+      "note": "Workorder closed via /close-workorder. Audit PASS (cultural validator PASS, dependency audit 0 vulns, tracking validator PASS for WO rows). Committed, archived to coderef/ARCHIVED/header-coverage-remaining-15pct/. Stub STUB-HEADER-COVERAGE-REMAINING-15PCT-001 closed. Session log: SES-2026-05-17-HEADER-COVERAGE-REMAINING-15PCT.yaml."
     }
   ]
 }
