@@ -6,10 +6,12 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-007"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "completed_at": "2026-05-16T08:30:00Z",
+  "closed_at": "2026-05-16T08:45:00Z",
+  "updated": "2026-05-16T08:45:00Z",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/implement-max-tokens-truncation-in-rag-search/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/implement-max-tokens-truncation-in-rag-search/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/implement-max-tokens-truncation-in-rag-search/analysis.json",
@@ -53,6 +55,20 @@
       "commit": "7618af6",
       "tests": "1524/1554 passing",
       "note": "Phase 1 complete. --max-tokens flag added to rag-search CLI. docs/CLI.md updated."
+    },
+    {
+      "timestamp": "2026-05-16T08:45:00Z",
+      "agent": "close-workorder v2.1.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (validate-coderef-culture 11/11, tracking-validator 15/15 scoped). Finalized, committed, archiving."
     }
-  ]
+  ],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/implement-max-tokens-truncation-in-rag-search/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — validate-coderef-culture scope mode",
+    "warnings": [
+      "dependency_audit skipped (timeout/parse error) — non-blocking",
+      "Working directory has ambient uncommitted changes from source-header campaign — unrelated to this WO, already pushed"
+    ]
+  }
 }
