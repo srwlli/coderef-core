@@ -1,0 +1,40 @@
+=============================================================
+WORKORDER: WO-CODEREF-CORE-SELF-SCAN-IDEATION-001  |  coderef-core-self-scan-ideation  |  COMPLETE
+Session: daily-agent-session-2026-05-16  |  Phases: 5  |  Commits: 1  |  Pushes: 1
+Parent stub: none (dispatch-originated)
+
+FILES CREATED:
+  + coderef/workorder/coderef-core-self-scan-ideation/context.json    (eae14e0)
+  + coderef/workorder/coderef-core-self-scan-ideation/analysis.json   (eae14e0)
+  + coderef/workorder/coderef-core-self-scan-ideation/plan.json       (eae14e0)
+  + coderef/workorder/coderef-core-self-scan-ideation/communication.json (eae14e0)
+  + coderef/workorder/coderef-core-self-scan-ideation/self-scan-report.md (eae14e0)
+
+FILES MODIFIED:
+  ~ src/ (173 files): @coderef-semantic headers refreshed via --overwrite-headers  (eae14e0)
+  ~ coderef/foundation-docs/INDEX.md     (eae14e0)
+  ~ coderef/foundation-docs/EXPORTS.md   (eae14e0)
+  ~ coderef/foundation-docs/HOTSPOTS.md  (eae14e0)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md (eae14e0)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Current State Audit — baseline 956 defined / 1112 stale / 343 missing / 0 capability / 0 layer  (eae14e0)
+  [x] Phase 2: Header Refresh — --overwrite-headers wrote to 198 src/ files; stale count unchanged (exports_match_ast gap)  (eae14e0)
+  [x] Phase 3: RAG Rebuild — Ollama --reset triggered; required second populate for graph staleness  (eae14e0)
+  [x] Phase 4: Self-Query Pass — direct index/graph analysis (ADJ-001: RAG unavailable during rebuild)  (eae14e0)
+  [x] Phase 5: Synthesis — self-scan-report.md: 7 improvement opportunities, cadence documented  (eae14e0)
+
+SELF-SCAN KEY FINDINGS:
+  [CRITICAL] capability/layer parse gap — 0/2431 fields populated despite headers written
+  [CRITICAL] elementType always 'undefined' in index
+  [HIGH]     CLI triple-gap: populate/rag-index/rag-search/rag-status — complex + untested + undocumented
+  [MEDIUM]   exports_match_ast stale on 1112 elements — cannot fix via --overwrite-headers alone
+  [MEDIUM]   RAG rebuild requires fresh graph — workflow gap after --overwrite-headers
+
+TEST RESULTS: pre-existing flakiness (3 tests intermittent, confirmed pre-WO via git stash)
+FOUNDATION DOCS GATE: PASS (validator exit 0)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift)
+
+APPROVE -> /close-workorder WO-CODEREF-CORE-SELF-SCAN-IDEATION-001
+=============================================================

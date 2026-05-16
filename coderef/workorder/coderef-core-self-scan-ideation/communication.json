@@ -6,10 +6,15 @@
   "target_project": "C:/Users/willh/desktop/coderef/coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-001"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 5,
   "phase_status": "complete",
   "completed_at": "2026-05-16T05:00:00Z",
+  "closed_at": "2026-05-16T05:15:00Z",
+  "updated": "2026-05-16T05:15:00Z",
+  "closed_via": "close-workorder v2.1.0",
+  "review_result": "PASS",
+  "reviewed_at": "2026-05-16T05:15:00Z",
   "plan_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/coderef-core-self-scan-ideation/plan.json",
   "context_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/coderef-core-self-scan-ideation/context.json",
   "analysis_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/coderef-core-self-scan-ideation/analysis.json",
@@ -32,6 +37,31 @@
   ],
   "blockers": [],
   "decisions_log": [],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/coderef-core-self-scan-ideation/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — validate-coderef-culture PASS (11/11 checks green, scope=WO-CODEREF-CORE-SELF-SCAN-IDEATION-001)",
+    "warnings": [
+      "Pre-existing uncommitted changes in coderef-core and ASSISTANT repos (unrelated to this WO — from prior sessions)"
+    ],
+    "dependency_audit": {
+      "skipped": true,
+      "reason": "coderef-analyze bin present but --type=dependency not supported"
+    },
+    "quality_check": {
+      "outcome": "skip",
+      "reason": "quality.json absent from .coderef/"
+    },
+    "route_check": {
+      "outcome": "skip",
+      "reason": "no route files changed"
+    },
+    "tracking_fixes": [
+      "workorders.json: type 'ideation' corrected to 'chore' (schema compliance)",
+      "sessions.json: 'agent_domain' corrected to 'owner_domain' (schema compliance)",
+      "projects.json: entity-primary-sources status 'retired' corrected to 'archived' (schema compliance, pre-existing drift)"
+    ]
+  },
   "phase_transitions": [
     { "from_phase": 1, "to_phase": 2, "timestamp": "2026-05-16T04:20:00Z", "trigger": "phase_complete", "note": "Phase 1: Baseline captured. defined=956, stale=1112, missing=343, capability=0/2431, layer=0/2431, RAG vectors=~627." },
     { "from_phase": 2, "to_phase": 3, "timestamp": "2026-05-16T04:30:00Z", "trigger": "phase_complete", "note": "Phase 2: --overwrite-headers wrote headers to 198 src/ files (+2916 insertions). Index unchanged — stale reflects exports_match_ast validation, not header presence. Parse gap confirmed: capability/layer not extracted by populate pipeline." },
@@ -54,6 +84,12 @@
       "timestamp": "2026-05-16T05:00:00Z",
       "agent": "claude-sonnet-4-6",
       "message": "All 5 phases complete. self-scan-report.md produced with 7 improvement opportunities. Key findings: (1) capability/layer parse gap — 0/2431 populated; (2) elementType always undefined; (3) CLI entry points triple-gap (complex + untested + undocumented); (4) RAG rebuild required populate re-run after --overwrite-headers; (5) test flakiness is pre-existing (confirmed via stash test). Foundation-docs gate: PASS (validator exit 0). Pre-existing test flakiness: 3 tests fail intermittently (confirmed pre-WO)."
+    },
+    {
+      "event": "workorder_closed",
+      "timestamp": "2026-05-16T05:15:00Z",
+      "agent": "close-workorder v2.1.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (11/11 cultural checks, 15/15 tracking validator). Tracking fixes: type ideation->chore, agent_domain->owner_domain, entity-primary-sources retired->archived. Archive pending (Phase D). Session log: SES-2026-05-16-CODEREF-CORE-SELF-SCAN-IDEATION.yaml. Skills logged: create-workorder, execute-workorder, close-workorder."
     }
   ]
 }
