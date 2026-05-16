@@ -1,0 +1,33 @@
+=============================================================
+WORKORDER: WO-SELF-SCAN-GAP-REMEDIATION-001  |  self-scan-gap-remediation  |  COMPLETE
+Session: SES-2026-05-16-SELF-SCAN-GAP-REMEDIATION  |  Phases: 3  |  Commits: 3  |  Pushes: 3
+Parent stub: none
+
+FILES CREATED:
+  + scripts/deduplicate-headers.mjs  (e3c38eb)
+  + scripts/fix-stale-exports.mjs  (e3c38eb)
+  + scripts/fix-stale-exports-v2.mjs  (e3c38eb)
+  + scripts/fix-stale-exports-v3.mjs  (e3c38eb)
+  + coderef/workorder/self-scan-gap-remediation/{plan,communication,context,analysis}.json  (e3c38eb)
+  + ... and 200+ source files deduplicated + @exports corrected  (e3c38eb)
+
+FILES MODIFIED:
+  ~ src/pipeline/semantic-header-parser.ts  (47df550)
+  ~ coderef/working/coderef-core-self-scan-post-improvements/self-scan-report.md  (e3c38eb)
+  ~ coderef/foundation-docs/*.md (8 files)  (7a52256)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Capability/Layer Parse Gap Fix  (47df550)
+  [x] Phase 2: Stale Count Reduction 797→0  (e3c38eb)
+  [x] Phase 3: Validate + Close-Out  (7a52256)
+
+KEY METRICS:
+  capability_populated: 0 → 60
+  stale_count: 797 → 0  (target: <100)
+  defined: 1271 (51.2%) → 2128 (85.5%)
+  tests: 1540/1570 passing (no regressions)
+
+Session: updated  |  Registry: synced  |  Validator: PASS (4 pre-existing failures, not introduced)
+
+APPROVE -> /close-workorder WO-SELF-SCAN-GAP-REMEDIATION-001
+=============================================================

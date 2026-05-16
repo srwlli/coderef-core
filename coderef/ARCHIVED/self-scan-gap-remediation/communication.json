@@ -43,7 +43,7 @@
     "dependency_audit": { "vulnerable_count": 0, "skipped": false },
     "phase6_quality_check": { "outcome": "skip", "reason": "missing_artifacts" },
     "phase6_route_check": { "outcome": "skip", "reason": "no_route_files_changed" },
-    "phase_d_post_archive_validator": null
+    "phase_d_post_archive_validator": { "outcome": "pass", "validator_exit": 0 }
   },
   "decisions_log": [
     {
