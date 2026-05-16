@@ -1,0 +1,88 @@
+{
+  "workorder_id": "WO-CODEREF-INTELLIGENCE-VIZ-TRANSFORMS-001",
+  "feature_name": "coderef-intelligence-viz-transforms",
+  "created": "2026-05-16T09:30:00Z",
+  "updated": "2026-05-16T09:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-010"],
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "completed_at": "2026-05-16T10:00:00Z",
+  "closed_at": "2026-05-16T10:15:00Z",
+  "updated": "2026-05-16T10:15:00Z",
+  "plan_file": "coderef/workorder/coderef-intelligence-viz-transforms/plan.json",
+  "context_file": "coderef/workorder/coderef-intelligence-viz-transforms/context.json",
+  "analysis_file": "coderef/workorder/coderef-intelligence-viz-transforms/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan created. Light plan, 1 phase, 4 tasks. Ready for execution."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "hard_stops": false,
+    "gate_between_phases": false,
+    "requires_user_approval": false
+  },
+  "hard_constraints": [
+    "Output only to .coderef/intelligence/ — no other filesystem writes",
+    "No npm installs — use only Node.js built-ins",
+    "PCA fallback is acceptable for umap.json (umap-js not available)"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-16T09:30:00Z",
+      "by": "create-workorder@2.4.0",
+      "note": "Light plan created for DISPATCH-2026-05-16-010. 1 phase, 4 tasks. PCA fallback confirmed for umap.json. Layer proxy: element.type."
+    },
+    {
+      "event": "phase_started",
+      "phase": 1,
+      "at": "2026-05-16T09:45:00Z",
+      "note": "Phase 1 executing: Write generate-intelligence.js script"
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": ["coderef/foundation-docs/API.md","coderef/foundation-docs/ARCHITECTURE.md","coderef/foundation-docs/COMPONENTS.md","coderef/foundation-docs/SCHEMA.md"],
+      "note": "16 pre-existing UUID anchor warnings — not caused by this WO"
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-16T10:00:00Z",
+      "phases_closed": [1],
+      "commit": "fb1212a",
+      "plan_deviations": ["Sankey regex fix: [A-Z]+ → [A-Za-z]+ to handle mixed-case coderef IDs (@File, @Fn, @Cl)"],
+      "deliverables": [
+        "scripts/generate-intelligence.js",
+        ".coderef/intelligence/treemap.json (2431 elements, 7 dirs)",
+        ".coderef/intelligence/scatter.json (2431 elements)",
+        ".coderef/intelligence/sankey.json (8 nodes, 13 links)",
+        ".coderef/intelligence/umap.json (1153 PCA-projected vectors)",
+        ".coderef/intelligence/hotspots.json (50 top by in-degree)"
+      ]
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-05-16T10:15:00Z",
+      "by": "close-workorder@2.1.0",
+      "note": "Closed via /close-workorder. Audit PASS (11/11 culture scope, 15/15 tracking scope, 0 vulns). Phase 1 complete, commit fb1212a pushed."
+    }
+  ],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/coderef-intelligence-viz-transforms/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — validate-coderef-culture PASS (11/11 scope mode)",
+    "warnings": []
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "workorder_id": "WO-CODEREF-INTELLIGENCE-VIZ-TRANSFORMS-001",
+  "feature_name": "coderef-intelligence-viz-transforms",
+  "created": "2026-05-16T09:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-010",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Build computed visualization datasets from index.json and graph.json for the dashboard Intelligence tab. Produce treemap hierarchy, scatter coordinates (complexity vs coverage), sankey layer-flow aggregations, and UMAP 2D projection of RAG vectors. Output as static JSON files the dashboard can fetch and render directly."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Pure data-transform task: read existing .coderef artifacts, compute derived JSON, write 5 output files. No new APIs, no schema changes, no blast-radius risk. Deterministic classifier: single-bounded output scope → light.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": ["No layer data present in current index.json — elements lack layer/capability fields. Viz transforms will use file-path heuristics as layer proxy."]
+  },
+  "scope": {
+    "in_scope": [
+      "Write treemap.json — nested hierarchy by file/element, value=complexity from complexity summary, color=element.type, coverage=tested boolean from coverage.json",
+      "Write scatter.json — flat array per element with complexity + tested fields",
+      "Write sankey.json — edge aggregations by source-file-dir → target-file-dir from graph.json edges",
+      "Write umap.json — PCA 2D projection of coderef-vectors.json (768-dim), fallback since umap-js unavailable on server",
+      "Write hotspots.json — top 50 elements by usedBy count (in-degree from index.json)",
+      "All 5 files written to .coderef/intelligence/"
+    ],
+    "out_of_scope": [
+      "Dashboard UI code (owned by Instance 1 / dispatch-009)",
+      "Building an HTTP server or data API (dispatch-009)",
+      "Adding layer/capability fields to the scanner",
+      "RAG re-indexing or vector regeneration"
+    ]
+  },
+  "constraints": [
+    "No layer field in current index.json — use element type as color dimension proxy",
+    "umap-js not available — use PCA fallback for 2D projection",
+    "1153 of 2431 elements have RAG vectors — umap.json covers vectorized elements only",
+    "Output must be static JSON files, not an HTTP endpoint"
+  ],
+  "data_sources": {
+    "index_json": ".coderef/index.json",
+    "graph_json": ".coderef/graph.json",
+    "complexity_summary": ".coderef/reports/complexity/summary.json",
+    "coverage_json": ".coderef/reports/coverage.json",
+    "vectors_json": ".coderef/coderef-vectors.json",
+    "output_dir": ".coderef/intelligence/"
+  },
+  "observed_data_shape": {
+    "total_elements": 2431,
+    "total_nodes": 2795,
+    "total_edges": 30256,
+    "edge_types": {"import": 2367, "export": 922, "call": 26967},
+    "vector_records": 1153,
+    "vector_dimension": 768,
+    "covered_files": 86,
+    "total_files": 249,
+    "coverage_pct": 35,
+    "has_layer_field": false,
+    "has_capability_field": false
+  }
+}

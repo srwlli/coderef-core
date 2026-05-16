@@ -1,0 +1,82 @@
+{
+  "workorder_id": "WO-CODEREF-INTELLIGENCE-VIZ-TRANSFORMS-001",
+  "feature_name": "coderef-intelligence-viz-transforms",
+  "analysis_authored_at": "2026-05-16T09:30:00Z",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [
+      ".coderef/intelligence/treemap.json",
+      ".coderef/intelligence/scatter.json",
+      ".coderef/intelligence/sankey.json",
+      ".coderef/intelligence/umap.json",
+      ".coderef/intelligence/hotspots.json"
+    ],
+    "downstream_consumers": [
+      "Dashboard Intelligence tab (dispatch-009 data API server serves these files)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "No layer/capability field in index.json",
+      "likelihood": "certain",
+      "impact": "low",
+      "mitigation": "Use element.type as the color/grouping dimension for treemap and scatter. Dispatch context confirms this is acceptable for the first iteration."
+    },
+    {
+      "id": "RISK-002",
+      "title": "umap-js not available — PCA fallback produces linear projection",
+      "likelihood": "certain",
+      "impact": "low",
+      "mitigation": "PCA on 768-dim vectors still produces meaningful 2D structure. Dispatch allows 'fallback to PCA if umap unavailable'. Note in output file metadata."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Complexity data in summary.json not keyed by codeRefId",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Join on element name + file path. Some elements may have zero complexity if join misses — treat as complexity=1 (baseline)."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Large files (~5MB index, ~24MB graph) may be slow to parse",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Parse once, compute all 5 datasets in a single Node.js script pass. No streaming required."
+    }
+  ],
+  "candidates": [
+    ".coderef/index.json",
+    ".coderef/graph.json",
+    ".coderef/reports/complexity/summary.json",
+    ".coderef/reports/coverage.json",
+    ".coderef/coderef-vectors.json"
+  ],
+  "dependencies": [
+    "Node.js built-in (no npm installs needed)",
+    "Math.js PCA implementation (inline, no dependency)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Implement all 5 datasets in a single generator script: scripts/generate-intelligence.js",
+      "rationale": "Single pass over large JSON files. Reusable after populate runs. No dependency on the dashboard server (dispatch-009)."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Use element.type as the color/layer dimension for treemap and scatter",
+      "rationale": "No layer field in current index. Type (function, class, method, interface, type) provides meaningful grouping visible in the viz."
+    },
+    {
+      "id": "DR-003",
+      "decision": "PCA implemented inline using covariance matrix decomposition",
+      "rationale": "Avoids npm dependency for umap-js. Pure math produces 2D projection from 768-dim vectors. Fully deterministic for reproducible output."
+    },
+    {
+      "id": "DR-004",
+      "decision": "Sankey aggregates at directory level (top-level src/ subdirectory)",
+      "rationale": "Element-to-element sankey would have 2431 nodes — too large for D3 rendering. Directory-level aggregation produces a readable flow diagram."
+    }
+  ]
+}
