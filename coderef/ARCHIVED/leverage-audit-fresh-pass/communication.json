@@ -6,7 +6,7 @@
   "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-15-011"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 7,
   "phase_status": "complete",
   "completed_at": "2026-05-15T23:35:00Z",
@@ -66,6 +66,16 @@
       "action": "File stub: implement --max-tokens truncation in rag-search CLI, preserve top-scored results under limit."
     }
   ],
+  "closed_at": "2026-05-16T00:05:00Z",
+  "close_metadata": {
+    "closed_by": "close-workorder@unified-close-flow",
+    "session_log": ".coderef/sessions/SES-2026-05-15-LEVERAGE-AUDIT-FRESH-PASS.yaml",
+    "tests_at_close": "1495/1495 passing",
+    "commit": "85c3139",
+    "archive_path": "coderef/archived/leverage-audit-fresh-pass/",
+    "dispatch": "DISPATCH-2026-05-15-011",
+    "validator_note": "tracking-validator FAIL — pre-existing cross-project drift, not this WO"
+  },
   "communication_log": [
     {
       "event": "workorder_created",

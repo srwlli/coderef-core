@@ -1,0 +1,38 @@
+=============================================================
+WORKORDER: WO-LEVERAGE-AUDIT-FRESH-PASS-001  |  leverage-audit-fresh-pass  |  COMPLETE
+Session: daily-agent-session-2026-05-15  |  Phases: 7  |  Commits: 1  |  Pushes: 1
+Parent stub: none (dispatch-originated)
+
+FILES CREATED:
+  + coderef/workorder/leverage-audit-fresh-pass/context.json    (85c3139)
+  + coderef/workorder/leverage-audit-fresh-pass/analysis.json   (85c3139)
+  + coderef/workorder/leverage-audit-fresh-pass/plan.json       (85c3139)
+  + coderef/workorder/leverage-audit-fresh-pass/communication.json (85c3139)
+
+FILES MODIFIED:
+  ~ coderef/foundation-docs/EXPORTS.md      (85c3139)
+  ~ coderef/foundation-docs/HOTSPOTS.md     (85c3139)
+  ~ coderef/foundation-docs/INDEX.md        (85c3139)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md (85c3139)
+
+PHASE CHECKLIST:
+  [x] Phase 1: source-headers — gap-fill at floor (343 unfillable, stale=1112 unchanged)  (85c3139)
+  [x] Phase 2: tree-sitter-verify — interface=400, type=60 confirmed; ConversionOptions exported:true  (85c3139)
+  [x] Phase 3: export-edges — 922 edges, 0 duplicates, spot-checks pass  (85c3139)
+  [x] Phase 4: what-imports-fix — 48 resolved / 2319 unresolved-by-design; no broken paths  (85c3139)
+  [x] Phase 5: rag-search-constraint — type filter works; layer filter returns 0 (not in vector metadata)  (85c3139)
+  [x] Phase 6: viz-fields — nodes use name/metadata.layer not label/layer at top level  (85c3139)
+  [x] Phase 7: ai-truncation — no --max-tokens in rag-search CLI; stub to be filed  (85c3139)
+
+AUDIT FINDINGS:
+  [INFO]   Ph1: source-headers at floor — 343 missing cannot be stamped
+  [MEDIUM] Ph5: layer not in vector metadata — --constraint layer:<x> always returns 0
+  [INFO]   Ph6: graph uses name+metadata.layer schema (not label+layer)
+  [MEDIUM] Ph7: no smart truncation — --max-tokens not implemented in rag-search CLI
+
+TEST RESULTS: 1495/1495 passing
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift, not this WO)
+
+APPROVE -> /close-workorder WO-LEVERAGE-AUDIT-FRESH-PASS-001
+=============================================================
