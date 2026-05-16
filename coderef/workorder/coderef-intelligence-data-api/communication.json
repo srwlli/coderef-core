@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-009"],
   "predecessor_for": null,
-  "status": "plan_created",
-  "current_phase": 1,
-  "phase_status": "ready",
+  "status": "complete",
+  "current_phase": 3,
+  "phase_status": "complete",
+  "completed_at": "2026-05-16T09:55:00Z",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\analysis.json",
@@ -31,8 +32,18 @@
     "Test suite must stay at 1524/1554 or better"
   ],
   "blockers": [],
-  "decisions_log": [],
-  "phase_transitions": [],
+  "decisions_log": [
+    {
+      "id": "DEC-001",
+      "note": "New server binary on :52850 (not extending rag-server). Separation of concerns per dispatch.",
+      "at": "2026-05-16T09:30:00Z"
+    }
+  ],
+  "phase_transitions": [
+    { "phase": 1, "status": "complete", "at": "2026-05-16T09:45:00Z" },
+    { "phase": 2, "status": "complete", "at": "2026-05-16T09:50:00Z" },
+    { "phase": 3, "status": "complete", "at": "2026-05-16T09:55:00Z" }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
@@ -40,6 +51,25 @@
       "event": "workorder_created",
       "by": "create-workorder@2.4.0",
       "note": "Plan authored. 3 phases, phased plan type. DISPATCH-2026-05-16-009."
+    },
+    {
+      "at": "2026-05-16T09:45:00Z",
+      "event": "phase_complete",
+      "phase": 1,
+      "note": "Server scaffold done: loadArtifacts(), /api/health, /readyz, CORS headers. TypeScript checks pass, build succeeds."
+    },
+    {
+      "at": "2026-05-16T09:50:00Z",
+      "event": "phase_complete",
+      "phase": 2,
+      "note": "All 5 endpoints implemented and tested: summary, elements, edges, hotspots, coverage-gaps. CORS headers confirmed. 1540/1570 tests pass."
+    },
+    {
+      "at": "2026-05-16T09:55:00Z",
+      "event": "workorder_complete",
+      "phase": 3,
+      "commit": "55088ac",
+      "note": "docs/intelligence-api.md written. Foundation docs regenerated and validated (exit 0). Final commit 55088ac."
     }
   ]
 }
