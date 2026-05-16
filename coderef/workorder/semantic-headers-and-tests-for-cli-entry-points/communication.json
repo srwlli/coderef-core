@@ -6,8 +6,16 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-008"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-16T09:00:00Z",
+  "closed_at": "2026-05-16T09:10:00Z",
+  "updated": "2026-05-16T09:10:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/semantic-headers-and-tests-for-cli-entry-points/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — validate-coderef-culture PASS (11/11 scope mode)",
+    "warnings": []
+  },
   "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/semantic-headers-and-tests-for-cli-entry-points/plan.json",
@@ -52,6 +60,27 @@
       "phases_closed": [1, 2],
       "commit": "7618af6",
       "note": "All 4 headers added + 38 tests passing. Changes were included in commit 7618af6 (co-committed with WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001 in same session push)."
+    },
+    {
+      "timestamp": "2026-05-16T09:10:00Z",
+      "agent": "close-workorder v2.1.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (validate-coderef-culture 11/11, tracking-validator 15/15, dependency audit 0 vulnerabilities). Finalized, committed bc02d63, archive pending."
+    },
+    {
+      "event": "dependency_audit",
+      "vulnerable_count": 0,
+      "skipped": false,
+      "note": "coderef-analyze ran; healthScore=60 (fair); 0 vulnerabilities"
+    },
+    {
+      "event": "phase6_quality_check",
+      "outcome": "skip",
+      "reason": "missing_artifacts (.coderef/quality.json not present)"
+    },
+    {
+      "event": "phase6_route_check",
+      "outcome": "skip",
+      "reason": "no_route_files_changed (only CLI headers + test files modified)"
     }
   ]
 }
