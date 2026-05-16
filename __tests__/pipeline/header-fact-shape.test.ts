@@ -56,6 +56,15 @@ describe('Phase 2.5 header-fact shape (AC-01)', () => {
       expect(['defined', 'stale', 'missing', 'partial']).toContain(elem.headerStatus);
       expect(elem.headerFact).toBeDefined();
     }
+
+    // Verify orchestrator propagates capability and layer from headerFact into element fields.
+    const hasHeaderElems = state.elements.filter(e => e.headerStatus === 'defined');
+    for (const elem of hasHeaderElems) {
+      if (elem.file.endsWith('has-header.ts')) {
+        expect(elem.layer).toBe('utility');
+        expect(elem.capability).toBe('foo-bar');
+      }
+    }
   });
 
   it('returns missing status (not undefined) when no header is present', async () => {

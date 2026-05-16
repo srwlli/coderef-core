@@ -488,9 +488,12 @@ export class PipelineOrchestrator {
     }
 
     // Stamp headerStatus + headerFact reference onto every element of this file.
+    // Also propagate capability and layer so graph-builder / projections can read them.
     for (const elem of elements) {
       elem.headerStatus = headerStatus;
       elem.headerFact = headerFact;
+      if (headerFact.capability !== undefined) elem.capability = headerFact.capability;
+      if (headerFact.layer !== undefined) elem.layer = headerFact.layer;
     }
 
     return {
