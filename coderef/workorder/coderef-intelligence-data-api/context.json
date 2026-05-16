@@ -1,0 +1,68 @@
+{
+  "workorder_id": "WO-CODEREF-INTELLIGENCE-DATA-API-001",
+  "feature_name": "coderef-intelligence-data-api",
+  "created": "2026-05-16T09:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-009",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Build a read-only data API that serves index.json, graph.json, and RAG vector metadata in normalized formats the dashboard Intelligence tab can consume. Expose layer distribution, complexity scores, edge lists, coverage metrics, in-degree rankings, and element search."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "New HTTP server module with 5 endpoints reading from .coderef artifacts. Multi-phase: server setup → endpoint implementation → integration. No invasive pipeline changes — read-only consumers. Fits phased: concrete deliverables per phase, milestone gates between.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        "src/cli/coderef-rag-server.ts",
+        "src/cli/rag-index.ts",
+        "src/cli/rag-search.ts",
+        "src/cli/rag-status.ts"
+      ],
+      "blast_radius": [
+        "src/cli/coderef-intelligence-server.ts (NEW)",
+        "package.json (bin entry)",
+        "docs/intelligence-api.md (NEW)"
+      ],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "warnings": []
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "GET /api/intelligence/summary — layer distribution, coverage %, complexity histogram, stale count",
+      "GET /api/intelligence/elements — paginated element list with complexity, layer, capability, elementType, test coverage",
+      "GET /api/intelligence/edges — edge list for call graph rendering",
+      "GET /api/intelligence/hotspots — top 20 by in-degree",
+      "GET /api/intelligence/coverage-gaps — elements sorted by complexity desc where tested=false",
+      "New server binary: src/cli/coderef-intelligence-server.ts",
+      "CORS headers for dashboard consumption",
+      "bin entry in package.json"
+    ],
+    "out_of_scope": [
+      "Modifying any pipeline code",
+      "Write endpoints (read-only consumers only)",
+      "Authentication/TLS",
+      "Visualization data transforms (Instance 2 owns those)",
+      "Existing rag-server modification (new server, not extension)"
+    ]
+  },
+  "constraints": [
+    "Read-only access to .coderef/ artifacts — no pipeline code changes",
+    "Must start cleanly alongside existing rag-server on :52849",
+    "CORS must allow dashboard origin",
+    "All endpoints must return valid JSON",
+    "Instance 1 of 2 on STUB-282 — Instance 2 owns scatter/treemap/sankey/UMAP"
+  ],
+  "pre_existing_drift": false
+}

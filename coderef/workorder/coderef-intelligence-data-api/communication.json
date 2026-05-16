@@ -1,0 +1,45 @@
+{
+  "workorder_id": "WO-CODEREF-INTELLIGENCE-DATA-API-001",
+  "feature_name": "coderef-intelligence-data-api",
+  "created": "2026-05-16T09:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-009"],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\coderef\\workorder\\coderef-intelligence-data-api\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated. Ready for Phase 1 execution: server scaffold + data loading."
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_gates": "Each phase requires gate check before proceeding. Phase 2 is a hard stop.",
+    "hard_stops": ["Phase 2"],
+    "rollback": "If Phase 2 fails, revert src/cli/coderef-intelligence-server.ts and package.json changes."
+  },
+  "hard_constraints": [
+    "No pipeline code modifications — read-only consumers only",
+    "Must not break existing rag-server on :52849",
+    "All 5 endpoints must return valid JSON before Phase 3 commit",
+    "CORS headers required on all responses",
+    "Test suite must stay at 1524/1554 or better"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-16T09:30:00Z",
+      "event": "workorder_created",
+      "by": "create-workorder@2.4.0",
+      "note": "Plan authored. 3 phases, phased plan type. DISPATCH-2026-05-16-009."
+    }
+  ]
+}

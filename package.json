@@ -19,7 +19,8 @@
     "coderef-query": "./dist/src/cli/coderef-query.js",
     "coderef-search": "./dist/src/cli/coderef-search.js",
     "coderef-detect-languages": "./dist/src/cli/detect-languages-cli.js",
-    "coderef-semantic-integration": "./dist/src/cli/semantic-integration-cli.js"
+    "coderef-semantic-integration": "./dist/src/cli/semantic-integration-cli.js",
+    "coderef-intelligence-server": "./dist/src/cli/coderef-intelligence-server.js"
   },
   "exports": {
     ".": {

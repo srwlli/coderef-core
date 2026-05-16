@@ -1,0 +1,160 @@
+{
+  "workorder_id": "WO-CODEREF-INTELLIGENCE-DATA-API-001",
+  "feature_name": "coderef-intelligence-data-api",
+  "created": "2026-05-16T09:30:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "New HTTP server with 5 endpoints reading .coderef artifacts. Multi-phase with gates between phases: server scaffold → endpoint implementation → integration validation.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": ["Phase 2"],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Server Scaffold + Data Loading",
+      "description": "Create coderef-intelligence-server.ts with HTTP server boilerplate, .coderef artifact loading (index.json, graph.json, complexity summary), in-memory cache, and /api/health endpoint.",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/cli/coderef-rag-server.ts lines 1-160 to internalize the HTTP server pattern used in this codebase"
+        },
+        {
+          "verb": "READ",
+          "description": "Read .coderef/index.json structure to understand element shape (elementType, layer, capability, complexity, testCoverage)"
+        },
+        {
+          "verb": "READ",
+          "description": "Read .coderef/graph.json structure to understand edge shape (source, target, type)"
+        },
+        {
+          "verb": "WRITE",
+          "description": "Create src/cli/coderef-intelligence-server.ts: HTTP server on port :52850 (CODEREF_INTELLIGENCE_HTTP_PORT), load+cache index.json + graph.json + complexity/summary.json at startup, implement /api/health and /readyz endpoints, CORS headers on all responses",
+          "success_criteria": [
+            "Server starts without errors",
+            "GET /api/health returns 200 JSON with status, version, uptime",
+            "GET /readyz returns 200 OK"
+          ]
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add bin entry to package.json: 'coderef-intelligence-server': 'dist/cli/coderef-intelligence-server.js'",
+          "success_criteria": [
+            "package.json bin section updated"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "title": "Intelligence Endpoints Implementation",
+      "description": "Implement all 5 intelligence endpoints: summary, elements (paginated), edges, hotspots, coverage-gaps.",
+      "gate": "Phase 1 complete: server starts, /api/health and /readyz return 200",
+      "tasks": [
+        {
+          "verb": "EDIT",
+          "description": "Implement GET /api/intelligence/summary: reads cached index.json, computes layer distribution (count per layer), coverage % (elements with testCoverage=true / total), complexity histogram (buckets: 0-10, 11-20, 21-30, 31+), stale element count (elementType undefined). Returns JSON object.",
+          "success_criteria": [
+            "Returns {layer_distribution: {...}, coverage_pct: N, complexity_histogram: {...}, stale_count: N}",
+            "layer_distribution sums to total element count"
+          ]
+        },
+        {
+          "verb": "EDIT",
+          "description": "Implement GET /api/intelligence/elements: paginated list from cached index.json. Query params: ?offset=0&limit=100&layer=&capability=&elementType=. Returns {total, offset, limit, items: [{id, name, file, elementType, layer, capability, complexity, testCoverage}]}.",
+          "success_criteria": [
+            "Default limit=100 returns first 100 elements",
+            "?offset=100&limit=100 returns next page",
+            "Filter by layer= works correctly"
+          ]
+        },
+        {
+          "verb": "EDIT",
+          "description": "Implement GET /api/intelligence/edges: return full edge list from cached graph.json. Format: {total: N, edges: [{source, target, type}]}. No pagination (edge count manageable).",
+          "success_criteria": [
+            "Returns array of edges from graph.json",
+            "source and target are element IDs or file paths as in graph.json"
+          ]
+        },
+        {
+          "verb": "EDIT",
+          "description": "Implement GET /api/intelligence/hotspots: compute in-degree for each element from graph.json edges, sort descending, return top 20. Format: {items: [{id, name, file, in_degree, layer, complexity}]}.",
+          "success_criteria": [
+            "Returns exactly 20 items (or fewer if <20 elements)",
+            "Items sorted by in_degree descending",
+            "in_degree counts reflect actual edge targets in graph.json"
+          ]
+        },
+        {
+          "verb": "EDIT",
+          "description": "Implement GET /api/intelligence/coverage-gaps: filter elements where testCoverage is false/null, sort by complexity descending, return all. Format: {total: N, items: [{id, name, file, elementType, layer, complexity}]}.",
+          "success_criteria": [
+            "Returns only elements where testCoverage is falsy",
+            "Items sorted by complexity descending",
+            "High-complexity untested elements appear first"
+          ]
+        },
+        {
+          "verb": "TEST",
+          "description": "Start the server locally and curl each endpoint. Verify all 5 return valid JSON with expected shapes. Check CORS headers present on responses.",
+          "success_criteria": [
+            "All 5 endpoints return 200 with valid JSON",
+            "Access-Control-Allow-Origin header present on all responses",
+            "No 500 errors on any endpoint"
+          ]
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "title": "Documentation + Tests + Commit",
+      "description": "Write API documentation, add unit tests, run full test suite, commit.",
+      "gate": "Phase 2 complete: all 5 endpoints return valid JSON",
+      "tasks": [
+        {
+          "verb": "WRITE",
+          "description": "Create docs/intelligence-api.md: document all 5 endpoints with request/response shapes, query parameters, example curl commands, port/env var configuration.",
+          "success_criteria": [
+            "All 5 endpoints documented",
+            "Example responses included"
+          ]
+        },
+        {
+          "verb": "TEST",
+          "description": "Run full test suite: npx jest. Verify no regressions (baseline: 1524/1554 passing).",
+          "success_criteria": [
+            "1524/1554 or more tests passing",
+            "0 new failures"
+          ]
+        },
+        {
+          "verb": "RUN",
+          "description": "Run foundation-docs generators: node scripts/doc-gen/generate-index-md.js && node scripts/doc-gen/generate-exports-md.js && node scripts/doc-gen/generate-hotspots-md.js && node scripts/doc-gen/generate-relationships-md.js",
+          "success_criteria": [
+            "All generators exit 0",
+            "Foundation docs updated"
+          ]
+        },
+        {
+          "verb": "RUN",
+          "description": "Run foundation-docs validator: node scripts/doc-gen/validate-docs.js",
+          "success_criteria": [
+            "Exit 0"
+          ]
+        },
+        {
+          "verb": "COMMIT",
+          "description": "git add src/cli/coderef-intelligence-server.ts package.json docs/intelligence-api.md coderef/foundation-docs/ && git commit -m 'feat(intelligence-api): add read-only data API server (WO-CODEREF-INTELLIGENCE-DATA-API-001)'",
+          "success_criteria": [
+            "Commit succeeds",
+            "pre-commit hook passes"
+          ]
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    "All 5 endpoints return valid JSON",
+    "GET /api/intelligence/summary returns layer_distribution and coverage_pct correctly",
+    "Dashboard can fetch data without CORS issues (Access-Control-Allow-Origin header present)",
+    "Server starts on :52850 cleanly alongside existing rag-server on :52849",
+    "No test regressions (1524/1554 baseline maintained)"
+  ]
+}

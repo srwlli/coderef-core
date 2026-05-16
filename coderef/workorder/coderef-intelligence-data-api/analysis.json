@@ -1,0 +1,93 @@
+{
+  "workorder_id": "WO-CODEREF-INTELLIGENCE-DATA-API-001",
+  "feature_name": "coderef-intelligence-data-api",
+  "analysis_authored_at": "2026-05-16T09:30:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "package.json — add bin entry for coderef-intelligence-server"
+    ],
+    "files_created": [
+      "src/cli/coderef-intelligence-server.ts — new server binary (5 endpoints)",
+      "docs/intelligence-api.md — endpoint contract documentation"
+    ],
+    "downstream_consumers": [
+      "CODEREF-DASHBOARD Intelligence tab — primary consumer",
+      "Any agent querying intelligence data via HTTP"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "index.json parse performance at 2431 elements",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Load index.json once at startup, cache in memory, serve from cache on each request. Add Last-Modified check to detect file rotation."
+    },
+    {
+      "id": "RISK-002",
+      "title": "CORS misconfiguration blocks dashboard",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Add explicit CORS headers (Access-Control-Allow-Origin: *) on all responses. Test with dashboard URL before close."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Port conflict with existing rag-server (:52849)",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Use a different default port (e.g. :52850). Make configurable via env var CODEREF_INTELLIGENCE_HTTP_PORT."
+    },
+    {
+      "id": "RISK-004",
+      "title": "elementType undefined for many elements (pre-existing)",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "API returns elementType as-is (may be null/undefined). Dashboard must handle missing field gracefully. Document in API spec."
+    },
+    {
+      "id": "RISK-005",
+      "title": "coverage-gaps endpoint may over-report (test data incomplete)",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Derive tested status from index.json testCoverage field. If field absent, treat as untested=true. Document assumption."
+    }
+  ],
+  "candidates": [
+    "src/cli/coderef-rag-server.ts — reference pattern for HTTP server structure",
+    "src/cli/rag-status.ts — reference for index.json loading",
+    ".coderef/index.json — primary data source (2431 elements)",
+    ".coderef/graph.json — edge data source",
+    ".coderef/reports/complexity/summary.json — complexity histogram source"
+  ],
+  "dependencies": [
+    "Node.js http module (built-in)",
+    "Node.js fs module (built-in)",
+    ".coderef/index.json",
+    ".coderef/graph.json",
+    ".coderef/reports/complexity/summary.json",
+    ".coderef/reports/coverage.json"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "title": "New server binary, not extend rag-server",
+      "rationale": "Dispatch explicitly scopes this as a separate server. rag-server owns RAG query lifecycle; intelligence server owns static .coderef artifact reads. Separation of concerns prevents coupling."
+    },
+    {
+      "id": "DEC-002",
+      "title": "Default port :52850",
+      "rationale": "rag-server occupies :52849. Intelligence server uses :52850 as next sequential port. Configurable via CODEREF_INTELLIGENCE_HTTP_PORT env var."
+    },
+    {
+      "id": "DEC-003",
+      "title": "In-memory cache of index.json + graph.json at startup",
+      "rationale": "index.json is ~2431 elements; re-reading on every request adds unnecessary I/O. Cache at startup with lazy reload on file mtime change."
+    },
+    {
+      "id": "DEC-004",
+      "title": "Pagination via ?offset=&limit= on /elements",
+      "rationale": "2431 elements unbounded in one response would overwhelm dashboard. Default limit=100, max limit=500."
+    }
+  ]
+}
