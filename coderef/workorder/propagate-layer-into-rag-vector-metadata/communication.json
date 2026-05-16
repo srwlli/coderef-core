@@ -6,8 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-003"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-16T06:10:00Z",
+  "closed_at": "2026-05-16T06:15:00Z",
+  "updated": "2026-05-16T06:15:00Z",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/propagate-layer-into-rag-vector-metadata/plan.json",
@@ -59,6 +61,21 @@
       "phases_closed": [1],
       "commit": "5fbb379",
       "summary": "Added DISPATCH-003 AC test: layer propagates from node.metadata.layer to VectorRecord.metadata.layer through indexCodebase(). 1496/1526 tests passing."
+    },
+    {
+      "event": "close_metadata_set",
+      "timestamp": "2026-05-16T06:15:00Z",
+      "agent": "close-workorder v2.1.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (scope mode), tracking validator 15/15, cultural validator PASS, dependency audit 0 vulns, 1496 tests passing."
     }
-  ]
+  ],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/propagate-layer-into-rag-vector-metadata/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (scope mode)",
+    "warnings": [
+      "pre-existing uncommitted changes in repo unrelated to this WO",
+      "quality.json missing — quality regression check skipped"
+    ]
+  }
 }
