@@ -6,9 +6,20 @@
   "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-15-006"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 4,
   "phase_status": "complete",
+  "completed_at": "2026-05-16T01:00:00Z",
+  "closed_at": "2026-05-16T01:50:00Z",
+  "updated": "2026-05-16T01:50:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/core-quality-depth-pass/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (align-coderef-culture PASS)",
+    "warnings": [
+      "projects.json pre-existing drift: entity-primary-sources status=retired not in enum — pre-existing, not introduced by this WO"
+    ]
+  },
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/analysis.json",
@@ -88,6 +99,12 @@
       "timestamp": "2026-05-16T01:00:00Z",
       "agent": "claude-sonnet-4-6",
       "message": "BLK-001 resolved: re-indexed with --provider ollama --reset. nomic-embed-text (768 dim). 1153 chunks indexed, 0 failed (1642 skipped: missing/stale headers). Phase 3: 8 RAG queries executed. Query 2 (header generator) top hit: src/semantic/header-generator.ts:164 at 70.7%. Query 5 (graph adapter) top hit: src/adapter/graph-to-elements.ts:143 at 70.2%. Phase 4: loop validated — trivial change to graph-to-elements.ts → populate → rag-index → re-query confirmed updated hits (file appeared at positions 1+2). Test change reverted. All 4 phases complete."
+    },
+    {
+      "event": "workorder_closed",
+      "timestamp": "2026-05-16T01:50:00Z",
+      "agent": "close-workorder v2.0.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS: cultural alignment PASS, dependency audit 0 vulns, tracking validator 14/14 PASS (pre-existing projects.json drift documented). Tracking fixes: workorders.json type quality→audit, sessions.json agent_domain→owner_domain, active-work.json double-Z fixed + WO row removed. 4 phases complete, 3 commits (6a28e62, 74e178f, 3416b19). Archive pending Step 14."
     }
   ]
 }
