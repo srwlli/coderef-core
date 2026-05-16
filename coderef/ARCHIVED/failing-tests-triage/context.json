@@ -1,0 +1,81 @@
+{
+  "workorder_id": "WO-FAILING-TESTS-TRIAGE-001",
+  "feature_name": "failing-tests-triage",
+  "created": "2026-05-16T21:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": null,
+  "intake": {
+    "trigger": "stub",
+    "stub_id": "STUB-FAILING-TESTS-TRIAGE-001",
+    "user_request": "Triage the 30 failing/skipped tests: distinguish flaky from known-gap from regression. Fix regressions; document known-gaps."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Triage and targeted fix — no architectural change, no new features. Single investigation pass + targeted fixes. Stub category: test → light.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "triage_findings": {
+    "total_count": 1570,
+    "passing": 1540,
+    "skipped": 30,
+    "failing": 0,
+    "note": "The stub premise '30 failures' was a misread of the vitest summary. The 30 are describe.skip blocks — all intentional, pre-existing infrastructure skips. There is 1 flaky test that appears occasionally."
+  },
+  "skip_inventory": {
+    "chroma-store": {
+      "file": "__tests__/chroma-store.test.ts",
+      "count": 13,
+      "reason": "describe.skip — Chroma requires a live Chroma server; intentional infrastructure skip",
+      "classification": "known-gap"
+    },
+    "pinecone-store": {
+      "file": "__tests__/pinecone-store.test.ts",
+      "count": 12,
+      "reason": "describe.skip — Pinecone requires API key and live index; intentional infrastructure skip",
+      "classification": "known-gap"
+    },
+    "ollama-provider-unreachable": {
+      "file": "src/integration/llm/__tests__/ollama-provider-unreachable.test.ts",
+      "count": 5,
+      "reason": "describe.skip — Ollama daemon required; intentional; second block is marked 'Manual' test",
+      "classification": "known-gap"
+    }
+  },
+  "flaky_inventory": {
+    "scanner-export-recursive": {
+      "file": "__tests__/scanner-export.test.ts",
+      "test": "should support recursive option",
+      "error": "ERR_MODULE_NOT_FOUND: Cannot find module scanner.js imported from scanner-worker.ts",
+      "classification": "flaky",
+      "pattern": "Parallel worker race — scanner-worker.ts tries to import scanner.js from src/ but the worker spawns before the module resolves in a parallel test run. Passes when run in isolation."
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "Diagnose and fix the 1 flaky scanner-export test (parallel worker race condition)",
+      "Verify all 30 skipped tests have accurate skip comments referencing why they are skipped",
+      "Add a stub or comment to each skip block if none exists, so future readers understand the gate condition",
+      "Update STUB-FAILING-TESTS-TRIAGE-001 to reflect corrected understanding"
+    ],
+    "out_of_scope": [
+      "Enabling Chroma/Pinecone/Ollama tests — they require external infrastructure not in scope",
+      "Writing new test coverage beyond fixing the flaky test",
+      "Header coverage improvements (separate stub)"
+    ]
+  },
+  "constraints": [
+    "Do not remove describe.skip without providing the infrastructure that the tests require",
+    "Do not weaken the flaky test's assertions — fix the race condition",
+    "Do not increase total skip count — 30 is the baseline"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "workorder_id": "WO-FAILING-TESTS-TRIAGE-001",
+  "feature_name": "failing-tests-triage",
+  "created": "2026-05-16T21:00:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single investigation pass + targeted fix. Stub category: test → light. No phases needed.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Triage, Fix Flaky Test, and Document Skips",
+      "goal": "Confirm the 30 skipped tests are all intentional describe.skip blocks with accurate comments. Fix the 1 flaky scanner-export parallel worker race. Run the full test suite to confirm 0 failures and 30 intentional skips.",
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run: npm test -- --reporter=verbose 2>&1 | grep '↓' — capture all 30 skip names to confirm they match the triage inventory (chroma-store x13, pinecone-store x12, ollama-provider-unreachable x5)."
+        },
+        {
+          "verb": "READ",
+          "description": "Read __tests__/chroma-store.test.ts, __tests__/pinecone-store.test.ts, src/integration/llm/__tests__/ollama-provider-unreachable.test.ts — verify each describe.skip has an inline comment explaining the infrastructure dependency and referencing this workorder."
+        },
+        {
+          "verb": "EDIT",
+          "description": "For any skip block without an accurate comment, add a one-line comment above describe.skip explaining the gate condition (e.g., '// Requires live Chroma server — skip in CI. See WO-FAILING-TESTS-TRIAGE-001.')."
+        },
+        {
+          "verb": "READ",
+          "description": "Read __tests__/scanner-export.test.ts lines around 'should support recursive option'. Read src/scanner/scanner-worker.ts to understand the parallel worker module resolution path that causes ERR_MODULE_NOT_FOUND."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Fix the flaky scanner-export test. Options: (a) add { pool: 'forks' } or sequential pool option to isolate this test from parallel workers, OR (b) mock the worker import so scanner.js is not resolved at test time. Choose the option that requires minimal change and doesn't affect other tests."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: npm test __tests__/scanner-export.test.ts 3 times consecutively. Confirm the flaky test passes on all 3 runs."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: npm test — full suite. Verify: Tests N pass | 30 skipped | 0 failed. Record actual pass count."
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit: skip comments added to 3 test files (if needed), flaky test fix in scanner-export.test.ts."
+        }
+      ]
+    }
+  ]
+}

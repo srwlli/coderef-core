@@ -1,0 +1,74 @@
+{
+  "workorder_id": "WO-FAILING-TESTS-TRIAGE-001",
+  "feature_name": "failing-tests-triage",
+  "analysis_authored_at": "2026-05-16T21:00:00Z",
+  "blast_radius": {
+    "files_to_modify": [
+      "__tests__/scanner-export.test.ts",
+      "__tests__/chroma-store.test.ts",
+      "__tests__/pinecone-store.test.ts",
+      "src/integration/llm/__tests__/ollama-provider-unreachable.test.ts"
+    ],
+    "files_to_create": [],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Flaky fix introduces a new race condition",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Verify the fix passes 3+ consecutive runs. The fix should be structural (e.g., mock the worker import) not a timing workaround."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Skip comments are inaccurate or misleading",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Read the existing skip comment before deciding to add one. Don't add if already accurate."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "__tests__/scanner-export.test.ts",
+      "element": "should support recursive option",
+      "issue": "Flaky — ERR_MODULE_NOT_FOUND on scanner.js when worker spawns in parallel test run",
+      "action": "Fix: isolate from parallel worker interference (mock or sequential)"
+    },
+    {
+      "file": "__tests__/chroma-store.test.ts",
+      "element": "describe.skip ChromaStore",
+      "issue": "13 tests skipped — Chroma server dependency",
+      "action": "Verify skip comment is accurate; add if missing"
+    },
+    {
+      "file": "__tests__/pinecone-store.test.ts",
+      "element": "describe.skip PineconeStore",
+      "issue": "12 tests skipped — Pinecone API key dependency",
+      "action": "Verify skip comment is accurate; add if missing"
+    },
+    {
+      "file": "src/integration/llm/__tests__/ollama-provider-unreachable.test.ts",
+      "element": "describe.skip Ollama Provider",
+      "issue": "5 tests skipped — Ollama daemon dependency",
+      "action": "Verify skip comment is accurate; add if missing"
+    }
+  ],
+  "dependencies": [
+    "src/scanner/scanner.ts — scanCurrentElements function used in flaky test",
+    "src/scanner/scanner-worker.ts — parallel worker that fails to resolve scanner.js in test env"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Treat all 30 describe.skip tests as known-gap, not failures",
+      "rationale": "All 3 skip blocks are describe.skip with clear infrastructure dependencies (Chroma, Pinecone, Ollama). They were intentionally skipped before WO-SELF-SCAN-GAP-REMEDIATION-001 and remain unchanged."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Target the 1 flaky test as the only fixable failure",
+      "rationale": "scanner-export.test.ts > should support recursive option fails intermittently due to a module resolution race in the parallel test runner. This is the only test that is not intentionally skipped."
+    }
+  ]
+}
