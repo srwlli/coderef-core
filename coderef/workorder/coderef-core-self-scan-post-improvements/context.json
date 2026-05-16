@@ -1,0 +1,64 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-SELF-SCAN-POST-IMPROVEMENTS-001",
+  "feature_name": "coderef-core-self-scan-post-improvements",
+  "created": "2026-05-16T10:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-011",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Re-run the CODEREF-CORE self-scan loop after today's 7 improvement fixes. Produce an updated self-scan-report.md showing the new baseline: capability/layer coverage, elementType population, stale count, test coverage, and RAG index health. Compare against the prior report from WO-CODEREF-CORE-SELF-SCAN-IDEATION-001."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Self-scan with multiple sequential pipeline stages (populate → rag-index → rag-search × 4 queries) then report authoring. Phased is correct: each stage gates the next, output report is the deliverable.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "Run populate.js to refresh index.json and graph.json",
+      "Run rag-index.js --provider ollama --reset to rebuild RAG vectors",
+      "Run 4 rag-search.js queries with --max-tokens 4000",
+      "Measure and compare: capability/layer coverage, elementType population, stale count, test coverage, header coverage, RAG index health",
+      "Write updated self-scan-report.md comparing against prior baseline",
+      "Compare against WO-CODEREF-CORE-SELF-SCAN-IDEATION-001 baseline"
+    ],
+    "out_of_scope": [
+      "Making any code fixes or improvements (read-only scan pass)",
+      "Filing new workorders or stubs based on findings",
+      "Modifying pipeline code",
+      "Running tests (jest test suite)"
+    ]
+  },
+  "constraints": [
+    "Read-only scan pass — no code modifications",
+    "Use --max-tokens 4000 for all rag-search queries",
+    "Must compare against prior_baseline: total_elements=2431, capability_populated=0, layer_populated=0, element_type_undefined=2431, stale_count=1112, test_coverage_pct=35, header_coverage_pct=39"
+  ],
+  "prior_baseline": {
+    "total_elements": 2431,
+    "capability_populated": 0,
+    "layer_populated": 0,
+    "element_type_undefined": 2431,
+    "stale_count": 1112,
+    "test_coverage_pct": 35,
+    "header_coverage_pct": 39
+  },
+  "expected_improvements": [
+    "capability/layer > 0 (fix #1 landed)",
+    "elementType populated in graph.json (fix #3 landed)",
+    "stale count < 100 (fix #4 landed)",
+    "test coverage > 35% (fixes #5 and #7 added tests)",
+    "header coverage > 39% (fix #7 added headers to 4 CLI files)",
+    "--max-tokens flag working (fix #6 landed)"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

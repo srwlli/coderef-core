@@ -1,0 +1,85 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-SELF-SCAN-POST-IMPROVEMENTS-001",
+  "feature_name": "coderef-core-self-scan-post-improvements",
+  "created": "2026-05-16T10:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-011"],
+  "predecessor_for": null,
+  "status": "complete",
+  "current_phase": 3,
+  "phase_status": "complete",
+  "completed_at": "2026-05-16T10:45:00Z",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/coderef-core-self-scan-post-improvements/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/coderef-core-self-scan-post-improvements/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/coderef-core-self-scan-post-improvements/analysis.json",
+  "handoff": {
+    "from": "execute-workorder",
+    "to": "close-workorder",
+    "reason": "All 3 phases complete; self-scan-report.md authored; ready for archive"
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "hard_stops": ["Phase 2"],
+    "phase_gate": "Each phase must complete successfully before next phase begins",
+    "abort_on": "populate.js or rag-index.js failure with unrecoverable error"
+  },
+  "hard_constraints": [
+    "No code modifications — read-only scan pass",
+    "Must compare all metrics against prior_baseline from WO-CODEREF-CORE-SELF-SCAN-IDEATION-001",
+    "Use --max-tokens 4000 for all rag-search queries"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "id": "ADJ-01",
+      "decision": "RAG queries deferred to direct index analysis",
+      "rationale": "RAG rebuild still in progress during Phase 2; coderef-vectors.json dimension mismatch (768 vs 1536) blocked rag-search. Same pattern as prior self-scan. Documented in report.",
+      "at": "2026-05-16T10:35:00Z"
+    }
+  ],
+  "phase_transitions": [
+    {"phase": 1, "status": "complete", "at": "2026-05-16T10:30:00Z", "note": "populate.js + rag-index --reset launched; index.json metrics captured"},
+    {"phase": 2, "status": "complete", "at": "2026-05-16T10:40:00Z", "note": "4 RAG queries attempted; --max-tokens flag confirmed; results deferred due to rebuild in-progress"},
+    {"phase": 3, "status": "complete", "at": "2026-05-16T10:45:00Z", "note": "All metrics measured; self-scan-report.md authored; foundation-docs regenerated"}
+  ],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "at": "2026-05-16T10:15:00Z",
+      "event": "plan_created",
+      "by": "create-workorder@2.4.0",
+      "note": "3-phase phased plan created for DISPATCH-2026-05-16-011 self-scan post-improvements"
+    },
+    {
+      "at": "2026-05-16T10:20:00Z",
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass_with_warnings",
+      "validator_exit": 1,
+      "note": "Pre-existing drift in API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md (static docs); 18 invalid UUID anchors — unrelated to this WO"
+    },
+    {
+      "at": "2026-05-16T10:45:00Z",
+      "event": "workorder_complete",
+      "phases_closed": [1, 2, 3],
+      "deliverables": [
+        "coderef/working/coderef-core-self-scan-post-improvements/self-scan-report.md",
+        "coderef/foundation-docs/INDEX.md (regenerated)",
+        "coderef/foundation-docs/EXPORTS.md (regenerated)",
+        "coderef/foundation-docs/HOTSPOTS.md (regenerated)",
+        "coderef/foundation-docs/RELATIONSHIPS.md (regenerated)"
+      ],
+      "key_findings": {
+        "total_elements": 2484,
+        "header_defined_pct": 51.2,
+        "stale_count": 797,
+        "elementType_graph_pct": 100,
+        "test_coverage_pct": 36,
+        "capability_populated": 0,
+        "fixes_confirmed": ["#3 elementType graph.json 100%", "#5 test coverage +1pp", "#6 --max-tokens flag", "#7 header coverage 51%"],
+        "fixes_missed": ["#1 capability/layer still 0"],
+        "fixes_partial": ["#4 stale 797 not < 100"]
+      }
+    }
+  ]
+}

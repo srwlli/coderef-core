@@ -1,0 +1,97 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-SELF-SCAN-POST-IMPROVEMENTS-001",
+  "feature_name": "coderef-core-self-scan-post-improvements",
+  "created": "2026-05-16T10:15:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Sequential pipeline stages — populate feeds rag-index, rag-index feeds rag-search queries, all outputs feed report authoring. Each phase gates the next.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": ["Phase 2"],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Refresh Pipeline Artifacts",
+      "description": "Run populate.js to rebuild index.json and graph.json from latest source, then rebuild RAG vectors",
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Build dist/ from source to ensure all 7 fixes are compiled: cd C:/Users/willh/Desktop/CODEREF/coderef-core && npx tsc --noEmit 2>&1 | tail -5",
+          "success_criteria": "Zero TypeScript errors"
+        },
+        {
+          "verb": "RUN",
+          "description": "Refresh index.json and graph.json: node dist/src/cli/populate.js (run from coderef-core project root)",
+          "success_criteria": "populate.js exits 0; .coderef/index.json and .coderef/graph.json updated timestamps"
+        },
+        {
+          "verb": "RUN",
+          "description": "Rebuild RAG vectors: node dist/src/cli/rag-index.js --provider ollama --reset",
+          "success_criteria": "rag-index.js exits 0; rag-vectors.sqlite populated with vector records"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Confirm .coderef/index.json totalElements, elementType distribution, stale count, header coverage from fresh index",
+          "success_criteria": "Can read and parse .coderef/index.json; totalElements present"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Run RAG Search Queries",
+      "description": "Execute the 4 prescribed rag-search queries with --max-tokens 4000",
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Query 1: node dist/src/cli/rag-search.js \"module without capability metadata\" --top-k 10 --max-tokens 4000",
+          "success_criteria": "Returns JSON with top-k results; --max-tokens flag accepted without error"
+        },
+        {
+          "verb": "RUN",
+          "description": "Query 2: node dist/src/cli/rag-search.js \"complex function untested\" --top-k 10 --max-tokens 4000",
+          "success_criteria": "Returns JSON with top-k results"
+        },
+        {
+          "verb": "RUN",
+          "description": "Query 3: node dist/src/cli/rag-search.js \"pipeline orchestration architecture\" --top-k 10 --max-tokens 4000",
+          "success_criteria": "Returns JSON with top-k results"
+        },
+        {
+          "verb": "RUN",
+          "description": "Query 4: node dist/src/cli/rag-search.js \"CLI entry points\" --top-k 10 --max-tokens 4000",
+          "success_criteria": "Returns JSON with top-k results"
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Measure Metrics and Author Report",
+      "description": "Extract all baseline metrics from fresh index/graph/coverage artifacts, compare against prior baseline, write self-scan-report.md",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Parse .coderef/index.json: totalElements, capability_populated, layer_populated, elementType != undefined count, stale count (headerStatus=stale), header coverage (headerStatus=defined)",
+          "success_criteria": "All 7 metrics measured from fresh index"
+        },
+        {
+          "verb": "READ",
+          "description": "Parse .coderef/reports/coverage.json for test_coverage_pct (tested files / total files)",
+          "success_criteria": "test_coverage_pct extracted"
+        },
+        {
+          "verb": "READ",
+          "description": "Check .coderef/rag-vectors.sqlite or rag-index.json for RAG vector count and health",
+          "success_criteria": "Vector count and provider info extracted"
+        },
+        {
+          "verb": "WRITE",
+          "description": "Author coderef/working/coderef-core-self-scan-post-improvements/self-scan-report.md with all metrics, comparison table against prior baseline, RAG query results, and remaining gap analysis",
+          "success_criteria": "Report file exists with all sections: Executive Summary, Metric Comparison Table, RAG Health, Query Results, Remaining Gaps"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit self-scan-report.md and workorder files to main",
+          "success_criteria": "git commit exits 0; pushed to origin/main"
+        }
+      ]
+    }
+  ]
+}

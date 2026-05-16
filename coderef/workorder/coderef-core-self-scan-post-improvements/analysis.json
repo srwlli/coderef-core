@@ -1,0 +1,73 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-SELF-SCAN-POST-IMPROVEMENTS-001",
+  "feature_name": "coderef-core-self-scan-post-improvements",
+  "analysis_authored_at": "2026-05-16T10:15:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "coderef/working/coderef-core-self-scan-post-improvements/self-scan-report.md"
+    ],
+    "files_created": [
+      "coderef/working/coderef-core-self-scan-post-improvements/self-scan-report.md"
+    ],
+    "downstream_consumers": [
+      "ORCHESTRATOR session review",
+      "DISPATCH-2026-05-16-011 result"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Ollama RAG rebuild may be slow or fail",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "If RAG rebuild fails or times out, document in report with failure reason; proceed with direct index/graph analysis for remaining metrics"
+    },
+    {
+      "id": "RISK-002",
+      "title": "populate.js may hit Windows path normalization issues",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Run from coderef-core project root; if STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 issues surface, note in report and proceed with existing artifacts"
+    },
+    {
+      "id": "RISK-003",
+      "title": "Expected improvements may not be reflected yet (fixes not built/deployed)",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Check dist/ is built from latest source before running; if metrics don't show improvement, investigate and document root cause in report"
+    },
+    {
+      "id": "RISK-004",
+      "title": "rag-search --max-tokens may not be implemented yet",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Fix #6 is expected to have landed; if flag is rejected, document in report as remaining gap"
+    }
+  ],
+  "candidates": [
+    "dist/src/cli/populate.js",
+    "dist/src/cli/rag-index.js",
+    "dist/src/cli/rag-search.js",
+    ".coderef/index.json",
+    ".coderef/graph.json",
+    ".coderef/reports/complexity/summary.json"
+  ],
+  "dependencies": [
+    "Ollama (nomic-embed-text) — must be running for RAG rebuild",
+    "Node.js dist/ build — must reflect all 7 fix commits",
+    "coderef-core project root at C:/Users/willh/Desktop/CODEREF/coderef-core"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Use phased plan type",
+      "rationale": "Sequential pipeline stages (populate → rag-index → rag-search × 4 → report) require ordered execution; each stage's output feeds the next"
+    },
+    {
+      "id": "DR-002",
+      "decision": "Write report to coderef/working/ not coderef/archived/",
+      "rationale": "Report is a live scan artifact, not a final archived deliverable; /close-workorder will archive it"
+    }
+  ]
+}
