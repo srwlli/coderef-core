@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-05-16 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-05-16 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -38,6 +38,7 @@
 <!-- coderef:uuid=d16bafa3-0444-516b-b2de-828655f713f4 -->
 <!-- coderef:uuid=fdcbd632-a27a-5fb7-8884-9e54d53e5d43 -->
 <!-- coderef:uuid=0435c371-f26c-5684-ab12-c2a77893642e -->
+<!-- coderef:uuid=c7af62fe-4fb5-54e5-8dcb-030d919f2cae -->
 ### `scanCurrentElements()`
 
 Scan code elements from a directory using regex patterns.
@@ -82,6 +83,7 @@ interface ScanOptions {
 <!-- coderef:uuid=a45c84a8-0668-55bf-abca-eae95d49b663 -->
 <!-- coderef:uuid=fb5e9f98-aea9-5a24-8dfc-3956e7091ac5 -->
 <!-- coderef:uuid=2c2d5e4a-3bf8-5e1e-9569-0e12ca3cf703 -->
+<!-- coderef:uuid=c0bd137a-1155-5fb8-a62d-e6fcb184a562 -->
 ### `scanFilesWithAST()`
 
 Scan files using AST-based analysis for accurate element detection.

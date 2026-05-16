@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-ADD-TESTS-FOR-CURRENT-SCOPE-CODEREF-ID-001",
+  "feature_name": "add-tests-for-current-scope-coderef-id",
+  "created": "2026-05-16T07:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-006",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Add unit tests for currentScopeCodeRefId in src/pipeline/call-resolver.ts — complexity=65, 169 LOC, zero test coverage. Highest-risk untested function in the codebase. No production code changes."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Test-only addition to an existing file. No production code changes. Single function under test, accessed indirectly via resolveCallsAgainstTable.",
+    "plan_type_decided_by": "create-workorder@2.5.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Write __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts",
+      "Cover currentScopeCodeRefId behavior via resolveCallsAgainstTable/buildNewInitializerMap",
+      "Cover: returns null at module scope, returns codeRefId from innermost scope, falls through empty scopeStack"
+    ],
+    "out_of_scope": [
+      "Production code changes",
+      "Changes to call-resolver.ts",
+      "Refactoring buildNewInitializerMap"
+    ]
+  },
+  "constraints": [
+    "No changes to src/ files",
+    "Test must pass alongside 1496/1526 baseline",
+    "currentScopeCodeRefId is a private closure — test via pipeline entry points only"
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-ADD-TESTS-FOR-CURRENT-SCOPE-CODEREF-ID-001",
+  "feature_name": "add-tests-for-current-scope-coderef-id",
+  "created": "2026-05-16T07:00:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Test-only addition. No production code changes. Single execution phase.",
+  "plan_type_decided_by": "create-workorder@2.5.0",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Write and verify unit tests for currentScopeCodeRefId",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Review existing call-resolution test patterns in __tests__/pipeline/call-resolution-determinism.test.ts and call-resolution-two-pass-ordering.test.ts for PipelineState construction patterns"
+        },
+        {
+          "verb": "WRITE",
+          "description": "Create __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts covering: (1) null returned at module scope (empty scopeStack), (2) codeRefId from innermost matching scope frame, (3) fallthrough when scopeStack has no matching elements, (4) obj.method() resolves to ClassName.method() via newInitMap when const obj = new ClassName() in enclosing scope"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run npx vitest run __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts and verify all new tests pass"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run full suite npx vitest run and verify baseline 1496/1526 not regressed (+ new tests)"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit: test(call-resolver): add unit tests for currentScopeCodeRefId via buildNewInitializerMap pipeline"
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    "New test file exists at __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts",
+    "All main code paths of currentScopeCodeRefId covered: null at module scope, codeRefId from innermost scope, fallthrough",
+    "obj.method() resolution via newInitMap verified when const obj = new ClassName() in enclosing scope",
+    "Baseline 1496/1526 not regressed",
+    "No production code changes"
+  ]
+}

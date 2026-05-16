@@ -1,0 +1,63 @@
+{
+  "workorder_id": "WO-ADD-TESTS-FOR-CURRENT-SCOPE-CODEREF-ID-001",
+  "feature_name": "add-tests-for-current-scope-coderef-id",
+  "analysis_authored_at": "2026-05-16T07:00:00Z",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [
+      "__tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts"
+    ],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "currentScopeCodeRefId is a private closure — cannot import directly",
+      "likelihood": "certain",
+      "impact": "low",
+      "mitigation": "Exercise via resolveCallsAgainstTable with inputs shaped to trigger the const X = new Y() branch (line 937 of call-resolver.ts)"
+    },
+    {
+      "id": "RISK-002",
+      "title": "PipelineState shape is complex — test setup may be brittle",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Use minimal synthetic state: only rawCalls + elements + sourceFiles needed. Match existing test patterns in call-resolution-determinism.test.ts"
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "element": "currentScopeCodeRefId",
+      "note": "Inner closure at lines 799-809, called at line 937 when const X = new Y() pattern detected"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "element": "buildNewInitializerMap",
+      "note": "Outer function (169 LOC) that owns currentScopeCodeRefId; character-level brace-tracking parser"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "element": "resolveCallsAgainstTable",
+      "note": "Public entry point that calls buildNewInitializerMap"
+    }
+  ],
+  "dependencies": [
+    "__tests__/pipeline/call-resolution-determinism.test.ts",
+    "__tests__/pipeline/call-resolution-two-pass-ordering.test.ts",
+    "src/pipeline/call-resolver.ts"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "what": "Test via resolveCallsAgainstTable pipeline, not direct import",
+      "rationale": "currentScopeCodeRefId is defined inside buildNewInitializerMap as a closure — not exported, not importable"
+    },
+    {
+      "id": "DEC-002",
+      "what": "Trigger const X = new Y() branch by providing source text with that exact pattern",
+      "rationale": "buildNewInitializerMap walks source character-by-character and only invokes currentScopeCodeRefId when it matches the new-initializer regex at line 937"
+    }
+  ]
+}

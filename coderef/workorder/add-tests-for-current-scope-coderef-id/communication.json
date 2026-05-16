@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-ADD-TESTS-FOR-CURRENT-SCOPE-CODEREF-ID-001",
+  "feature_name": "add-tests-for-current-scope-coderef-id",
+  "created": "2026-05-16T07:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-006"],
+  "predecessor_for": null,
+  "status": "complete",
+  "completed_at": "2026-05-16T07:30:00Z",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "coderef/workorder/add-tests-for-current-scope-coderef-id/plan.json",
+  "context_file": "coderef/workorder/add-tests-for-current-scope-coderef-id/context.json",
+  "analysis_file": "coderef/workorder/add-tests-for-current-scope-coderef-id/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan created and ready for execution"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "phase_count": 1,
+    "commit_per_phase": true,
+    "no_production_changes": true
+  },
+  "hard_constraints": [
+    "No changes to src/ files",
+    "Tests must cover currentScopeCodeRefId indirectly via resolveCallsAgainstTable",
+    "Baseline 1496/1526 must not regress"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-16T07:00:00Z",
+      "event": "workorder_created",
+      "agent": "create-workorder",
+      "note": "Workorder created from DISPATCH-2026-05-16-006. Light plan, 1 phase, test-only."
+    },
+    {
+      "timestamp": "2026-05-16T07:15:00Z",
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": ["coderef/foundation-docs/INDEX.md", "coderef/foundation-docs/EXPORTS.md", "coderef/foundation-docs/HOTSPOTS.md", "coderef/foundation-docs/RELATIONSHIPS.md"]
+    },
+    {
+      "timestamp": "2026-05-16T07:30:00Z",
+      "event": "workorder_complete",
+      "phases_closed": [1],
+      "commit": "d236212",
+      "note": "6 new tests pass. 1501/1532 total (30 skips + 1 pre-existing timing flake in scanner-standalone). No production code changes."
+    }
+  ]
+}
