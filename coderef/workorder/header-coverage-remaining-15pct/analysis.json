@@ -1,0 +1,164 @@
+{
+  "workorder_id": "WO-HEADER-COVERAGE-REMAINING-15PCT-001",
+  "feature_name": "header-coverage-remaining-15pct",
+  "analysis_authored_at": "2026-05-16T23:00:00Z",
+  "blast_radius": {
+    "files_to_modify": [
+      "src/cli/coderef-rag-server.ts",
+      "src/cli/coderef-watch.ts",
+      "src/cli/coderef-pipeline.ts",
+      "src/cli/scan.ts",
+      "src/cli/validate-routes.ts",
+      "src/cli/coderef-analyze.ts",
+      "src/cli/scan-frontend-calls.ts",
+      "scripts/doc-gen/generate-meta-json.js",
+      "scripts/doc-gen/utils.js",
+      "scripts/doc-gen/enhance-existing-docs.js",
+      "scripts/generate-intelligence.js",
+      "__tests__/integration.test.ts",
+      "__tests__/pipeline/graph-ground-truth.test.ts",
+      "... up to 76 files total"
+    ],
+    "files_to_create": [],
+    "downstream_consumers": [
+      ".coderef/index.json (headerStatus field updated per element)",
+      ".coderef/semantic-registry.json (header data propagated)",
+      "RAG index (semantic header content queryable after re-index)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Duplicate header blocks created by --source-headers",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Run deduplicate-headers.mjs after every --source-headers batch. The deduplication script was written specifically for this scenario (post WO-SELF-SCAN-GAP-REMEDIATION-001)."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Invalid @layer value on annotated files",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Check layer assignment before running populate: cli→src/cli/, tooling→scripts/, test→__tests__/. Validate with populate-coderef after each batch."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Fixture test files accidentally annotated",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Manually exclude __tests__/fixtures/ and any test file that embeds @coderef-semantic as string literals in test data. Review diff before committing."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Coverage target not met after Phase 2 (>50 missing)",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Phase 2 includes a full-suite populate run + manual annotation loop for long-tail files. If target not met, extend Phase 2 rather than accepting the gap."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/cli/coderef-rag-server.ts",
+      "missing_count": 27,
+      "priority": "P1 — user-facing CLI, RAG-queryable",
+      "layer": "cli"
+    },
+    {
+      "file": "src/cli/coderef-watch.ts",
+      "missing_count": 21,
+      "priority": "P1 — user-facing CLI",
+      "layer": "cli"
+    },
+    {
+      "file": "src/cli/coderef-pipeline.ts",
+      "missing_count": 11,
+      "priority": "P1 — user-facing CLI",
+      "layer": "cli"
+    },
+    {
+      "file": "src/cli/scan.ts",
+      "missing_count": 6,
+      "priority": "P1 — user-facing CLI",
+      "layer": "cli"
+    },
+    {
+      "file": "src/cli/validate-routes.ts",
+      "missing_count": 6,
+      "priority": "P1 — user-facing CLI",
+      "layer": "cli"
+    },
+    {
+      "file": "src/cli/coderef-analyze.ts",
+      "missing_count": 5,
+      "priority": "P1 — user-facing CLI",
+      "layer": "cli"
+    },
+    {
+      "file": "src/cli/scan-frontend-calls.ts",
+      "missing_count": 4,
+      "priority": "P1 — user-facing CLI",
+      "layer": "cli"
+    },
+    {
+      "file": "scripts/doc-gen/generate-meta-json.js",
+      "missing_count": 15,
+      "priority": "P2 — doc pipeline tooling",
+      "layer": "tooling"
+    },
+    {
+      "file": "scripts/doc-gen/utils.js",
+      "missing_count": 13,
+      "priority": "P2 — doc pipeline tooling",
+      "layer": "tooling"
+    },
+    {
+      "file": "scripts/generate-intelligence.js",
+      "missing_count": 12,
+      "priority": "P2 — doc pipeline tooling",
+      "layer": "tooling"
+    },
+    {
+      "file": "scripts/doc-gen/enhance-existing-docs.js",
+      "missing_count": 9,
+      "priority": "P2 — doc pipeline tooling",
+      "layer": "tooling"
+    },
+    {
+      "file": "__tests__/integration.test.ts",
+      "missing_count": 20,
+      "priority": "P2 — test infrastructure",
+      "layer": "test"
+    },
+    {
+      "file": "__tests__/pipeline/graph-ground-truth.test.ts",
+      "missing_count": 8,
+      "priority": "P2 — test infrastructure",
+      "layer": "test"
+    }
+  ],
+  "dependencies": [
+    "npx populate-coderef --source-headers — primary annotation tool",
+    "npx populate-coderef --source-headers --overwrite-headers — refresh stale/partial headers",
+    "scripts/deduplicate-headers.mjs — safety check for duplicate blocks post-annotation",
+    "src/pipeline/semantic-header-parser.ts — parser that detects new headers",
+    ".coderef/index.json — headerStatus source of truth"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Use populate-coderef --source-headers as primary annotation mechanism",
+      "rationale": "populate-coderef already knows element boundaries and layer assignments. Manual annotation would be error-prone at 76 files. The CLI handles the header format correctly."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Phase 1 targets src/cli/ only (7 files, ~80 elements)",
+      "rationale": "CLI files are user-facing and directly RAG-queryable. They provide the highest intelligence value per annotation effort. Phase 2 handles scripts/ and __tests__/ which are less frequently queried."
+    },
+    {
+      "id": "DR-003",
+      "decision": "Skip fixture test files that embed @coderef-semantic as string data",
+      "rationale": "These files contain the header string as test input, not as a real semantic header. Annotating them would create duplicate/conflicting blocks."
+    }
+  ]
+}

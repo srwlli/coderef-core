@@ -1,0 +1,84 @@
+{
+  "workorder_id": "WO-HEADER-COVERAGE-REMAINING-15PCT-001",
+  "feature_name": "header-coverage-remaining-15pct",
+  "created": "2026-05-16T23:00:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Enhancement stub with two distinct batch phases: CLI-first annotation, then scripts+tests long tail. Gate between phases: verify headerStatus transitions after Phase 1 before proceeding.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Annotate CLI entry points (src/cli/)",
+      "goal": "Add @coderef-semantic headers to all src/cli/ files with missing elements. Run populate-coderef to confirm headerStatus transitions. Commit Phase 1 changes.",
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run: node -e \"...\" on .coderef/index.json to get the current exact list of src/cli/ files with missing headers and their element counts. Confirm the 7 CLI files identified in analysis.json are still the top priority."
+        },
+        {
+          "verb": "READ",
+          "description": "Read each src/cli/ file with missing elements (coderef-rag-server.ts, coderef-watch.ts, coderef-pipeline.ts, scan.ts, validate-routes.ts, coderef-analyze.ts, scan-frontend-calls.ts) to understand existing header structure and identify which elements are missing."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: npx populate-coderef --source-headers --select=source-headers src/cli/ to annotate all CLI files. Capture output."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: node scripts/deduplicate-headers.mjs to check for any duplicate header blocks created by the populate run."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: npx populate-coderef --select=index to regenerate .coderef/index.json. Verify: missing count for src/cli/ files drops to 0 (or near 0). Record new total missing count."
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit: Phase 1 CLI header annotations. Message: 'feat(headers): annotate src/cli/ entry points — WO-HEADER-COVERAGE-REMAINING-15PCT-001 Phase 1'"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Annotate scripts/ and __tests__/ long tail",
+      "goal": "Add @coderef-semantic headers to scripts/doc-gen/, scripts/generate-intelligence.js, and __tests__/ files (excluding fixture files). Reach <50 total missing elements. Validate and commit.",
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run: node -e on .coderef/index.json to get the updated missing list after Phase 1. Confirm the remaining missing files and update target list."
+        },
+        {
+          "verb": "READ",
+          "description": "Read scripts/doc-gen/generate-meta-json.js, scripts/doc-gen/utils.js, scripts/doc-gen/enhance-existing-docs.js, scripts/generate-intelligence.js to identify element structure and confirm layer=tooling is appropriate."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: npx populate-coderef --source-headers on scripts/ files (generate-meta-json.js, utils.js, enhance-existing-docs.js, generate-intelligence.js). Capture output."
+        },
+        {
+          "verb": "READ",
+          "description": "Read __tests__/integration.test.ts and __tests__/pipeline/*.test.ts to check if any embed @coderef-semantic as string literals in test data. Mark those files as skip. Annotate the rest with layer=test."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: npx populate-coderef --source-headers on annotatable __tests__/ files (those not embedding @coderef-semantic as test string data)."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: node scripts/deduplicate-headers.mjs after each batch to confirm no duplicate blocks."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: npx populate-coderef --select=index to regenerate .coderef/index.json. Verify: total missing drops below 50. Record final coverage: X/2488 defined (Y%)."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run the full test suite (npm test) to confirm no regressions from header additions."
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit: Phase 2 scripts/ and __tests__/ header annotations + final index regeneration. Message: 'feat(headers): annotate scripts/ and tests/ — WO-HEADER-COVERAGE-REMAINING-15PCT-001 Phase 2 — coverage Y%'"
+        }
+      ]
+    }
+  ]
+}

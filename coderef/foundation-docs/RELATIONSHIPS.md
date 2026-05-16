@@ -4,7 +4,7 @@
 **Version:** 2.0.0  
 **Generated:** 2026-05-16  
 **Nodes:** 2,861 elements  
-**Edges:** 30,921 dependencies  
+**Edges:** 30,917 dependencies  
 <!-- coderef:uuid=relationships-root -->
 
 ---
@@ -25,10 +25,10 @@ This document visualizes the dependency graph between code elements. Understandi
 | Metric | Value |
 |--------|-------|
 | **Total Elements** | 2,861 |
-| **Total Dependencies** | 30,921 |
+| **Total Dependencies** | 30,917 |
 | **Avg Dependencies/Element** | (edges.length / nodes.length).toFixed(2) |
 | **Entry Points** | 15 |
-| **Most Referenced** | 26298 refs |
+| **Most Referenced** | 26294 refs |
 
 ---
 
@@ -40,22 +40,22 @@ This document visualizes the dependency graph between code elements. Understandi
 |------|---------|------------|------|------|
 | 2 | <!-- coderef:uuid=c5de70bb-cb71-5242-92a9-506eabf20b63 --> `log` | **51** | function | `autoresearch/pipeline-quality/scripts/verify_critical_function_pipeline.py` |
 | 3 | <!-- coderef:uuid=24cf94b8-8e37-5d19-aff4-471e9cfd793d --> `log` | **43** | function | `autoresearch/pipeline-quality/scripts/verify_test_gap_pipeline.py` |
-| 4 | <!-- coderef:uuid=268f2964-85c1-5006-8439-fe9ac9d294b6 --> `info` | **41** | function | `demo-all-modules.ts` |
+| 4 | <!-- coderef:uuid=97509b5e-89b1-5eba-bb09-ed50a35e3e1f --> `info` | **41** | function | `demo-all-modules.ts` |
 | 5 | <!-- coderef:uuid=d7406361-a48b-5f86-aef1-c779cdf216b5 --> `log` | **34** | function | `autoresearch/pipeline-quality/scripts/verify_async_pattern_pipeline.py` |
 | 6 | <!-- coderef:uuid=288a65d9-ed12-575a-b921-931ad168acdf --> `validatePipelineState` | **32** | function | `src/pipeline/output-validator.ts` |
 | 7 | <!-- coderef:uuid=d3637116-82ff-5bf5-89d4-1377140abb71 --> `createCodeRefId` | **31** | function | `src/utils/coderef-id.ts` |
 | 8 | <!-- coderef:uuid=4452a057-5793-5521-8eab-cc3a0baab82f --> `log` | **31** | function | `autoresearch/scanner-quality/scripts/verify_test_linkage.py` |
-| 9 | <!-- coderef:uuid=da20236b-578e-5de3-a020-d295c2cddc52 --> `createSearchResult` | **29** | function | `src/integration/rag/__tests__/graph-reranker.test.ts` |
-| 10 | <!-- coderef:uuid=847dd226-ec33-567b-b5bd-ecb4f2787956 --> `createSampleReferences` | **29** | function | `__tests__/indexer.test.ts` |
+| 9 | <!-- coderef:uuid=acbe6d80-5fce-5fce-9bce-f6bd2f921909 --> `createSearchResult` | **29** | function | `src/integration/rag/__tests__/graph-reranker.test.ts` |
+| 10 | <!-- coderef:uuid=69137b9f-8780-5aa9-b158-f282415ee96c --> `createSampleReferences` | **29** | function | `__tests__/indexer.test.ts` |
 | 11 | <!-- coderef:uuid=080857f0-524e-5216-81ea-b14a6bae0726 --> `log` | **28** | function | `autoresearch/scanner-quality/scripts/verify_async_patterns.py` |
 | 12 | <!-- coderef:uuid=00c5c25c-648a-51d6-a259-32fac64cdce2 --> `log` | **27** | function | `autoresearch/scanner-quality/scripts/verify_context_signal.py` |
-| 13 | <!-- coderef:uuid=9b9b0043-87e1-546e-86eb-98334c48d117 --> `createTestFile` | **26** | function | `__tests__/js-call-detector.test.ts` |
+| 13 | <!-- coderef:uuid=b9276710-56a9-5db2-9bbf-57d55eac5b56 --> `createTestFile` | **26** | function | `__tests__/js-call-detector.test.ts` |
 | 14 | <!-- coderef:uuid=ffdc2645-841e-5953-867b-d068c32bf38d --> `log` | **25** | function | `autoresearch/scanner-quality/scripts/verify_element_classification.py` |
 | 15 | <!-- coderef:uuid=5fa3fa78-cace-50ef-b235-53df10da4058 --> `log` | **25** | function | `autoresearch/scanner-quality/scripts/verify_export_relationships.py` |
-| 16 | <!-- coderef:uuid=afee92f1-cbe4-5328-8581-b8cfaf62cad9 --> `success` | **25** | function | `demo-all-modules.ts` |
-| 17 | <!-- coderef:uuid=39930b31-b3d1-5adb-bdc0-14ea9aa4748c --> `recordTest` | **24** | function | `__tests__/integration.test.ts` |
-| 18 | <!-- coderef:uuid=c4d64d54-1437-55e1-8c7a-dca8a4630f31 --> `createMockSource` | **23** | function | `src/integration/rag/__tests__/confidence-scorer.test.ts` |
-| 19 | <!-- coderef:uuid=99bead25-97e5-5ab8-8fe9-ab931636db19 --> `createSampleRef` | **23** | function | `__tests__/indexer.test.ts` |
+| 16 | <!-- coderef:uuid=a824495b-0036-5ce3-b941-e4e9559349a9 --> `success` | **25** | function | `demo-all-modules.ts` |
+| 17 | <!-- coderef:uuid=4f024077-4652-5f96-b35a-636f436f2134 --> `recordTest` | **24** | function | `__tests__/integration.test.ts` |
+| 18 | <!-- coderef:uuid=3cd0c778-a6c8-5418-ac76-54d45a0e66ef --> `createMockSource` | **23** | function | `src/integration/rag/__tests__/confidence-scorer.test.ts` |
+| 19 | <!-- coderef:uuid=8ab11988-c6e5-5d32-b3b5-60e8020d8f7b --> `createSampleRef` | **23** | function | `__tests__/indexer.test.ts` |
 | 20 | <!-- coderef:uuid=56caa3c4-7dba-5ec5-977f-437fc88a3889 --> `buildDependencyGraph` | **22** | function | `src/fileGeneration/buildDependencyGraph.ts` |
 
 ---

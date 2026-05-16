@@ -1,0 +1,77 @@
+{
+  "workorder_id": "WO-HEADER-COVERAGE-REMAINING-15PCT-001",
+  "feature_name": "header-coverage-remaining-15pct",
+  "created": "2026-05-16T23:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": null,
+  "intake": {
+    "trigger": "stub",
+    "stub_id": "STUB-HEADER-COVERAGE-REMAINING-15PCT-001",
+    "user_request": "Add @coderef-semantic headers to the remaining 271 elements (15% of 2,488) that are missing them, targeting <50 missing (90%+ coverage). Priority: CLI entry points first."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Stub category: enhancement → phased. Two phases: Phase 1 annotates the top missing files (CLI entry points + scripts), Phase 2 handles the long tail and validates final coverage.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "triage_findings": {
+    "total_elements": 2488,
+    "defined": 2217,
+    "missing": 271,
+    "missing_files": 76,
+    "coverage_pct": 89.1,
+    "target_missing": 50,
+    "target_coverage_pct": 98.0
+  },
+  "missing_header_inventory": {
+    "top_files": [
+      { "file": "src/cli/coderef-rag-server.ts", "count": 27 },
+      { "file": "src/cli/coderef-watch.ts", "count": 21 },
+      { "file": "__tests__/integration.test.ts", "count": 20 },
+      { "file": "scripts/doc-gen/generate-meta-json.js", "count": 15 },
+      { "file": "scripts/doc-gen/utils.js", "count": 13 },
+      { "file": "scripts/generate-intelligence.js", "count": 12 },
+      { "file": "src/cli/coderef-pipeline.ts", "count": 11 },
+      { "file": "scripts/doc-gen/enhance-existing-docs.js", "count": 9 },
+      { "file": "__tests__/pipeline/graph-ground-truth.test.ts", "count": 8 },
+      { "file": "src/cli/scan.ts", "count": 6 },
+      { "file": "src/cli/validate-routes.ts", "count": 6 },
+      { "file": "src/cli/coderef-analyze.ts", "count": 5 }
+    ],
+    "total_top12_elements": 153
+  },
+  "scope": {
+    "in_scope": [
+      "Add @coderef-semantic headers to all 76 files with missing-status elements",
+      "Prioritize src/cli/ files (directly user-facing, RAG-queryable)",
+      "Annotate scripts/doc-gen/ files (tooling layer)",
+      "Annotate __tests__/ files with layer: test (not fixture files with embedded string literals)",
+      "Run populate-coderef after each phase to validate headerStatus transitions",
+      "Run deduplicate-headers.mjs after any --overwrite-headers run",
+      "Target: <50 missing elements after Phase 2"
+    ],
+    "out_of_scope": [
+      "Annotating __tests__/ fixture files that embed @coderef-semantic as test data strings",
+      "Changing existing defined headers (this WO is additive only)",
+      "Adding new tests or features",
+      "Header coverage for non-TypeScript/non-JavaScript files"
+    ]
+  },
+  "constraints": [
+    "Headers must not create duplicate blocks — run deduplicate-headers.mjs after --source-headers runs",
+    "@layer values must be valid: cli for src/cli/, tooling for scripts/, test for __tests__/",
+    "@capability values must be kebab-case",
+    "After adding headers, run populate-coderef and confirm headerStatus transitions from missing → defined",
+    "Do not annotate fixture files that embed @coderef-semantic as string literals in test data"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

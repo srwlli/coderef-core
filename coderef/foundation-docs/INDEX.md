@@ -13,7 +13,7 @@
 |--------|-------|
 | **Total Elements** | 2,488 |
 | **Total Files** | 399 |
-| **Total Lines** | 106,849 |
+| **Total Lines** | 107,105 |
 | **Languages** | ts, js, py |
 
 ---
