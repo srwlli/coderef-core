@@ -1,0 +1,58 @@
+{
+  "workorder_id": "WO-PROPAGATE-LAYER-INTO-RAG-VECTOR-METADATA-001",
+  "feature_name": "propagate-layer-into-rag-vector-metadata",
+  "created": "2026-05-16T06:00:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single test addition. Orchestrator already correct. No prod code changes.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Add layer-propagation integration test",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "READ",
+          "description": "Read __tests__/integration/rag/indexing-orchestrator.test.ts to understand existing fixture patterns (mock LLM provider, mock vector store, graph.json fixture shape)",
+          "success_criteria": "Understand how existing AC-05/AC-06 describe blocks are structured; identify where to add new describe block"
+        },
+        {
+          "id": "1.2",
+          "verb": "READ",
+          "description": "Read src/integration/rag/indexing-orchestrator.ts lines 720-755 to confirm exact conditional spread for layer (lines 748-749) and the full vectorRecords mapping",
+          "success_criteria": "Confirm layer is already in the conditional spread at the correct location"
+        },
+        {
+          "id": "1.3",
+          "verb": "EDIT",
+          "description": "Add describe block 'layer propagates from chunk to VectorRecord.metadata' to __tests__/integration/rag/indexing-orchestrator.test.ts. The test must: (1) build a graph fixture with node.metadata.layer='infrastructure', (2) write fixture graph.json to temp dir, (3) call indexCodebase({useAnalyzer: true, validation: {ok: true}}), (4) capture the upserted VectorRecord and assert record.metadata.layer === 'infrastructure'",
+          "success_criteria": "New test file compiles; test asserts layer is present in VectorRecord.metadata when chunk.layer is populated"
+        },
+        {
+          "id": "1.4",
+          "verb": "RUN",
+          "description": "npx jest __tests__/integration/rag/indexing-orchestrator.test.ts --no-coverage to verify new test passes",
+          "success_criteria": "All tests in file pass including new layer-propagation test"
+        },
+        {
+          "id": "1.5",
+          "verb": "RUN",
+          "description": "npx jest --no-coverage to verify full suite still passes (1495+ tests)",
+          "success_criteria": "No regressions; all previously passing tests still pass"
+        },
+        {
+          "id": "1.6",
+          "verb": "COMMIT",
+          "description": "Commit: test(rag): verify layer propagates from chunk.layer to VectorRecord.metadata in indexCodebase",
+          "success_criteria": "Clean commit on main branch"
+        }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    "New test passes: layer='infrastructure' on graph node → VectorRecord.metadata.layer='infrastructure' after indexCodebase()",
+    "All 1495+ existing tests continue passing",
+    "No prod code changes (orchestrator already correct)"
+  ]
+}

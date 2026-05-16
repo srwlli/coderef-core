@@ -23,7 +23,7 @@ This document identifies high-risk areas in the codebase based on complexity ana
 |--------|-------|
 | **Total Files** | 394 |
 | **Total Elements** | 2,431 |
-| **Total Lines** | 106,516 |
+| **Total Lines** | 106,519 |
 | **Entry Points** | 84 |
 | **Critical Functions** | 20 |
 

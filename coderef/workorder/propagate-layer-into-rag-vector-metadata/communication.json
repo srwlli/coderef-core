@@ -1,0 +1,64 @@
+{
+  "workorder_id": "WO-PROPAGATE-LAYER-INTO-RAG-VECTOR-METADATA-001",
+  "feature_name": "propagate-layer-into-rag-vector-metadata",
+  "created": "2026-05-16T06:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-003"],
+  "predecessor_for": null,
+  "status": "complete",
+  "completed_at": "2026-05-16T06:10:00Z",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/propagate-layer-into-rag-vector-metadata/plan.json",
+  "context_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/propagate-layer-into-rag-vector-metadata/context.json",
+  "analysis_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/propagate-layer-into-rag-vector-metadata/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan created. Ready for Phase 1 execution: add layer-propagation integration test."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "hard_stops": false,
+    "phase_gates": false,
+    "test_required_before_commit": true
+  },
+  "hard_constraints": [
+    "No prod code changes — orchestrator already correct",
+    "All 1495+ existing tests must pass after edit",
+    "New test must use useAnalyzer: true path (graph.json → indexCodebase)"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "analysis_finding",
+      "detail": "orchestrator already propagates layer at lines 748-749; root gap is upstream node.metadata.layer (dispatch-002 domain)",
+      "timestamp": "2026-05-16T06:00:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "timestamp": "2026-05-16T06:00:00Z",
+      "source": "create-workorder",
+      "detail": "WO-PROPAGATE-LAYER-INTO-RAG-VECTOR-METADATA-001 created (light, 1 phase). Orchestrator already correct — adding integration test to lock the behavior."
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": ["coderef/foundation-docs/INDEX.md","coderef/foundation-docs/EXPORTS.md","coderef/foundation-docs/HOTSPOTS.md","coderef/foundation-docs/RELATIONSHIPS.md","coderef/foundation-docs/SCHEMA.md"]
+    },
+    {
+      "event": "workorder_complete",
+      "timestamp": "2026-05-16T06:10:00Z",
+      "phases_closed": [1],
+      "commit": "5fbb379",
+      "summary": "Added DISPATCH-003 AC test: layer propagates from node.metadata.layer to VectorRecord.metadata.layer through indexCodebase(). 1496/1526 tests passing."
+    }
+  ]
+}
