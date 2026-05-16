@@ -6,9 +6,10 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-008"],
   "predecessor_for": null,
-  "status": "implementing",
-  "current_phase": 1,
-  "phase_status": "ready",
+  "status": "complete",
+  "completed_at": "2026-05-16T09:00:00Z",
+  "current_phase": 2,
+  "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/semantic-headers-and-tests-for-cli-entry-points/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/semantic-headers-and-tests-for-cli-entry-points/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/semantic-headers-and-tests-for-cli-entry-points/analysis.json",
@@ -37,6 +38,20 @@
       "at": "2026-05-16T08:30:00Z",
       "by": "create-workorder@2.4.0",
       "note": "Plan created. Light plan: 4 header edits + 2 test files. DISPATCH-2026-05-16-008."
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 1,
+      "note": "Validator warnings only (16 pre-existing invalid UUID anchors). Not introduced by this WO. Proceeding."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-16T09:00:00Z",
+      "phases_closed": [1, 2],
+      "commit": "7618af6",
+      "note": "All 4 headers added + 38 tests passing. Changes were included in commit 7618af6 (co-committed with WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001 in same session push)."
     }
   ]
 }
