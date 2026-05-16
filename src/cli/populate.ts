@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-populate
+ * @exports main, parseArgs, printHelp, run, runGenerator
+ */
+
+/**
  * WO-UNIFIED-CODEREF-PIPELINE-001: Populate CLI Command
  * Generates all .coderef/ output files using unified pipeline
  */

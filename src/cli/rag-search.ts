@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-rag-search
+ * @exports main, parseArgs, printHelp, createLLMProvider, createVectorStore, formatResult, loadRAGDependencies
+ */
+
+/**
  * RAG Search CLI Command
  * Semantic code search using natural language queries
  *
@@ -74,6 +81,7 @@ interface CliArgs {
   capability?: string;
   // --constraint key:value generalized filter (DR-PHASE-7-D followup).
   constraint?: string;
+  maxTokens?: number;
   json: boolean;
   help: boolean;
 }
@@ -174,6 +182,10 @@ function parseArgs(argv: string[]): CliArgs {
         break;
       }
 
+      case '--max-tokens':
+        args.maxTokens = parseInt(value ?? argv[++i], 10);
+        break;
+
       case '--json':
       case '-j':
         args.json = true;
@@ -212,6 +224,7 @@ OPTIONS:
   --layer <value>              Filter by semantic layer (e.g. service, ui_component, cli)
   --capability <value>         Filter by semantic capability slug (kebab-case)
   --constraint <key:value>     Generalized filter shorthand. Keys: type, file, lang, layer, capability, exported
+  --max-tokens <number>        Truncate output to approximately this many tokens (chars/4 estimate)
   -j, --json                   Output results as JSON
   -h, --help                   Show this help message
 
@@ -374,6 +387,14 @@ function formatResult(result: any, index: number): string {
 }
 
 /**
+ * Estimate token count for a string using the chars/4 heuristic.
+ * Returns approximate token count; not exact but sufficient for context budgeting.
+ */
+function estimateTokens(text: string): number {
+  return Math.ceil(text.length / 4);
+}
+
+/**
  * Main CLI function
  */
 async function main(): Promise<void> {
@@ -511,11 +532,25 @@ async function main(): Promise<void> {
 
     // Output results
     if (args.json) {
+      let jsonResults = response.results;
+      let jsonTruncated = false;
+      if (args.maxTokens !== undefined) {
+        let tokensUsed = 0;
+        const kept: any[] = [];
+        for (const result of response.results) {
+          const cost = estimateTokens(JSON.stringify(result));
+          if (tokensUsed + cost > args.maxTokens) { jsonTruncated = true; break; }
+          tokensUsed += cost;
+          kept.push(result);
+        }
+        jsonResults = kept;
+      }
       console.log(JSON.stringify({
         query: args.query,
-        results: response.results,
+        results: jsonResults,
         totalResults: response.totalResults,
         searchTimeMs: searchTime,
+        truncated: jsonTruncated,
         filters: {
           language: args.lang,
           type: args.type,
@@ -535,12 +570,26 @@ async function main(): Promise<void> {
         console.log('  - Re-indexing with rag-index');
         console.log();
       } else {
-        response.results.forEach((result: any, i: number) => {
-          console.log(formatResult(result, i));
+        let tokensUsed = 0;
+        let truncatedAt = -1;
+        for (let i = 0; i < response.results.length; i++) {
+          const formatted = formatResult(response.results[i], i);
+          if (args.maxTokens !== undefined) {
+            const cost = estimateTokens(formatted);
+            if (tokensUsed + cost > args.maxTokens) {
+              truncatedAt = i;
+              break;
+            }
+            tokensUsed += cost;
+          }
+          console.log(formatted);
           console.log();
-        });
+        }
 
-        if (response.totalResults > args.topK) {
+        if (truncatedAt !== -1) {
+          console.log(`[--max-tokens] Output truncated at result ${truncatedAt + 1} (~${tokensUsed} tokens used of ${args.maxTokens} budget)`);
+          console.log();
+        } else if (response.totalResults > args.topK) {
           console.log(`... and ${response.totalResults - args.topK} more results`);
           console.log(`Use --top-k ${response.totalResults} to see all results`);
           console.log();

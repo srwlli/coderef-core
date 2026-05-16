@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-05-16 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-05-16 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 

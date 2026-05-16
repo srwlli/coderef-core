@@ -1,0 +1,42 @@
+{
+  "workorder_id": "WO-SEMANTIC-HEADERS-AND-TESTS-FOR-CLI-ENTRY-POINTS-001",
+  "feature_name": "semantic-headers-and-tests-for-cli-entry-points",
+  "created": "2026-05-16T08:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-008"],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/semantic-headers-and-tests-for-cli-entry-points/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/semantic-headers-and-tests-for-cli-entry-points/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/semantic-headers-and-tests-for-cli-entry-points/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan complete. Phase 1 (headers) and Phase 2 (tests) ready for execution."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "phase_gate": false,
+    "require_tests_before_commit": true
+  },
+  "hard_constraints": [
+    "No changes to CLI logic or behavior",
+    "No new external dependencies",
+    "Test suite must pass with 1496+ tests"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-16T08:30:00Z",
+      "by": "create-workorder@2.4.0",
+      "note": "Plan created. Light plan: 4 header edits + 2 test files. DISPATCH-2026-05-16-008."
+    }
+  ]
+}

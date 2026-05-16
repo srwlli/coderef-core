@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-rag-status
+ * @exports main, parseArgs, printHelp, formatBytes, formatDuration, formatRelativeTime
+ */
+
+/**
  * RAG Status CLI Command
  * Check the status of the RAG index for a project
  *

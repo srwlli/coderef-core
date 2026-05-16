@@ -1,5 +1,12 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-rag-index
+ * @exports main, parseArgs, printHelp, createLLMProvider, createVectorStore, loadRAGDependencies
+ */
+
+/**
  * RAG Index CLI Command
  * Creates semantic search index for codebase using vector embeddings
  *
