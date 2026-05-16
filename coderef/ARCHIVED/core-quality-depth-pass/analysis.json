@@ -1,0 +1,80 @@
+{
+  "workorder_id": "WO-CORE-QUALITY-DEPTH-PASS-001",
+  "feature_name": "core-quality-depth-pass",
+  "analysis_authored_at": "2026-05-15T22:15:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/orchestrator.ts",
+      "src/ (header stamp pass — up to ~343 missing-header files)"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "rag-index CLI (reads semantic headers)",
+      "coderef-rag-server (serves indexed vectors)",
+      "LLOYD dispatch auto-seed (queries RAG at :52849)"
+    ]
+  },
+  "header_coverage_baseline": {
+    "total_elements": 2423,
+    "missing": 343,
+    "stale": 1782,
+    "defined": 278,
+    "partial": 20,
+    "defined_pct": "11.5%",
+    "note": "Stale headers are present but exports list has drifted — rawExports bug must be fixed before re-stamping to avoid writing wrong exports"
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "title": "rawExports fix breaks test assertions",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Run full test suite after each change; keep change surgical to staleness-check normalization only"
+    },
+    {
+      "id": "R2",
+      "title": "Header stamp overwrites hand-curated @used_by or @constraints fields",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Use preserveExisting:true (default) so --source-headers only fills missing/stale; verify a sample file after stamp"
+    },
+    {
+      "id": "R3",
+      "title": "RAG server not running during phases 3-4",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Check server health via rag-status before each RAG phase; start with coderef-rag-server if needed"
+    },
+    {
+      "id": "R4",
+      "title": "1782 stale headers re-stamped with wrong exports if rawExports bug not fixed first",
+      "likelihood": "high",
+      "impact": "high",
+      "mitigation": "Phase 1 (rawExports fix) is a hard gate before Phase 2 (header stamp)"
+    }
+  ],
+  "candidates": [
+    "src/pipeline/orchestrator.ts (staleness check at line ~477)",
+    "src/semantic/header-generator.ts (stamp pipeline)",
+    "src/pipeline/semantic-elements.ts (buildSemanticElementsFromState)"
+  ],
+  "dependencies": [
+    "node dist/src/cli/populate.js --source-headers",
+    "node dist/src/cli/rag-index.js",
+    "node dist/src/cli/rag-status.js",
+    "http://localhost:52849/api/rag/query (RAG HTTP endpoint)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR1",
+      "decision": "Fix rawExports/exports mismatch before any header stamp pass",
+      "rationale": "1782 elements have stale headers — if we stamp without fixing the comparison, we'll write headers with wrong exports derived from the incorrect path"
+    },
+    {
+      "id": "DR2",
+      "decision": "Phase 2 targets missing+stale elements only (343+1782); skip defined+partial",
+      "rationale": "preserveExisting:true default behavior; avoids touching the 278 correctly-defined headers"
+    }
+  ]
+}

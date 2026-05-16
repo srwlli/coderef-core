@@ -1,0 +1,146 @@
+{
+  "workorder_id": "WO-CORE-QUALITY-DEPTH-PASS-001",
+  "feature_name": "core-quality-depth-pass",
+  "created": "2026-05-15T22:15:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Four ordered work items with hard dependency chain. Medium scope. No architectural overhaul.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Fix rawExports/exports mismatch in orchestrator.ts",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/pipeline/orchestrator.ts around line 477 — understand the staleness check: what is `rawExports`, what is `exports`, and which code path produces each"
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/pipeline/semantic-elements.ts (buildSemanticElementsFromState) and src/scanner/ to understand both export extraction paths"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Determine if the fix is: (A) normalize both to the same extractor, or (B) make the comparison tolerance-aware. Do not widen blindly."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Apply surgical fix to orchestrator.ts staleness check — normalize rawExports and exports to the same representation before comparison"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run full test suite (npx vitest run) — must remain 1495 passing, 0 real failures"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit: fix(orchestrator): normalize rawExports/exports comparison to eliminate false staleness positives"
+        },
+        {
+          "verb": "STOP",
+          "description": "Phase 1 hard stop — report the fix applied, before/after staleness count on a sample file, and test suite status. Await approval before Phase 2."
+        }
+      ],
+      "acceptance_criteria": [
+        "orchestrator.ts staleness check no longer produces false positives for ConversionOptions, convertGraphToElements, getConversionStats",
+        "Test suite remains 1495 passing"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Header coverage flood — push toward 100%",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "npm run build — ensure dist/ is current before invoking CLI"
+        },
+        {
+          "verb": "RUN",
+          "description": "Count missing+stale headers before stamp: node -e \"const fs=require('fs'); const idx=JSON.parse(fs.readFileSync('.coderef/index.json')); const e=idx.elements||[]; console.log('missing:',e.filter(x=>x.headerStatus==='missing').length,'stale:',e.filter(x=>x.headerStatus==='stale').length);\""
+        },
+        {
+          "verb": "RUN",
+          "description": "node dist/src/cli/populate.js --source-headers (fills missing headers; --overwrite-headers if stale headers need re-stamp)"
+        },
+        {
+          "verb": "RUN",
+          "description": "Count missing+stale headers after stamp — compare to before"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx vitest run — test suite must remain green"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "git add src/ .coderef/ && commit: feat(source-headers): flood stamp @coderef-semantic headers — coverage <before>% → <after>%"
+        },
+        {
+          "verb": "STOP",
+          "description": "Phase 2 hard stop — report before/after header counts and coverage percentage. Await approval before Phase 3."
+        }
+      ],
+      "acceptance_criteria": [
+        "missing+stale header count drops materially from 343+1782 baseline",
+        "No hand-curated @used_by or @constraints fields overwritten",
+        "Test suite remains green"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "RAG query hit quality audit",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "npx rag-status (or node dist/src/cli/rag-status.js) — confirm RAG server is reachable at :52849"
+        },
+        {
+          "verb": "RUN",
+          "description": "Re-index after header flood: node dist/src/cli/rag-index.js (gated on validation-report.json.ok)"
+        },
+        {
+          "verb": "RUN",
+          "description": "Run 5-10 representative RAG queries via POST http://localhost:52849/api/rag/query — same queries dispatch auto-seed uses. Record: query, top-3 hits, scores"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Evaluate hit quality: are header-enriched files ranking higher? Are the right files surfaced for each query type?"
+        }
+      ],
+      "acceptance_criteria": [
+        "RAG server reachable and index up to date",
+        "5-10 sample queries executed and results recorded",
+        "Header-enriched files appear in top results for relevant queries"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Self-improving loop validation",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "CHECK",
+          "description": "Confirm end-to-end loop: code change → populate-coderef --source-headers → headers written → rag-index → better RAG hits"
+        },
+        {
+          "verb": "RUN",
+          "description": "Make a trivial, reversible change to a src/ file (add/remove a comment), run --source-headers, re-index, re-query — confirm the loop produces updated results"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Confirm query hit count or relevance improves after header fill pass vs before"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Revert trivial test change (if any); commit .coderef/ snapshot"
+        }
+      ],
+      "acceptance_criteria": [
+        "Self-improving loop confirmed working end-to-end",
+        "RAG hit quality demonstrably better after header flood than before"
+      ]
+    }
+  ],
+  "hard_stops": [1, 2],
+  "total_phases": 4
+}

@@ -1,0 +1,31 @@
+=============================================================
+WORKORDER: WO-CORE-QUALITY-DEPTH-PASS-001  |  core-quality-depth-pass  |  CHECKPOINT_READY
+Session: SES-2026-05-15-CORE-QUALITY-DEPTH-PASS  |  Phases: 4  |  Commits: 2  |  Pushes: 0
+Parent stub: none
+
+FILES CREATED:
+  + coderef/workorder/core-quality-depth-pass/analysis.json  (74e178f)
+  + coderef/workorder/core-quality-depth-pass/communication.json  (74e178f)
+  + coderef/workorder/core-quality-depth-pass/context.json  (74e178f)
+  + coderef/workorder/core-quality-depth-pass/plan.json  (74e178f)
+  + docs/AGENT-CONTRACT.md  (74e178f)
+
+FILES MODIFIED:
+  ~ src/pipeline/extractors/relationship-extractor.ts  (6a28e62)
+  ~ src/semantic/header-generator.ts  (74e178f)
+  ~ src/semantic/header-generator.test.ts  (74e178f)
+  ~ AGENTS.md  (74e178f)
+  ~ ... and 171 more src/ files with @coderef-semantic header stamps  (74e178f)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Fix rawExports/exports mismatch in orchestrator.ts  (6a28e62)
+  [x] Phase 2: Header coverage flood — push toward 100%  (74e178f)
+  [~] Phase 3: RAG query hit quality audit  (BLOCKED — BLK-001: OpenAI API key required)
+  [~] Phase 4: Self-improving loop validation  (BLOCKED — depends on Phase 3)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift, not introduced by this WO)
+
+BLOCKER: BLK-001 — Set OPENAI_API_KEY and run "node dist/src/cli/rag-index.js --reset" to unblock Phases 3-4.
+
+APPROVE -> /close-workorder WO-CORE-QUALITY-DEPTH-PASS-001
+=============================================================
