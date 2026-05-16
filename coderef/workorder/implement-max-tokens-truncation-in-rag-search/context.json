@@ -1,0 +1,52 @@
+{
+  "workorder_id": "WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001",
+  "feature_name": "implement-max-tokens-truncation-in-rag-search",
+  "created": "2026-05-16T08:05:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-007",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Implement --max-tokens truncation in the rag-search CLI. Currently --top-k 50 produces unbounded output (~30KB). Add a --max-tokens flag that truncates result text to the specified token budget before printing."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single file edit (src/cli/rag-search.ts): add one CLI flag, one truncation helper, wire into output path. No architectural changes, no new files required.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [
+      {
+        "file": "src/cli/rag-search.ts",
+        "complexity": 48,
+        "reason": "194 LOC main function; WO-LEVERAGE-AUDIT-FRESH-PASS-001 Ph7 MEDIUM finding"
+      }
+    ],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Add --max-tokens CLI flag to parseArgs()",
+      "Add maxTokens field to CliArgs interface",
+      "Add truncateToTokenBudget() helper function",
+      "Wire truncation into non-JSON output path before printing",
+      "Wire truncation into JSON output path (truncate result text fields)",
+      "Document flag in printHelp()"
+    ],
+    "out_of_scope": [
+      "Changes to SemanticSearchService or vector store",
+      "New test files (dispatch does not require new tests)",
+      "Changes to rag-index.ts or any other CLI"
+    ]
+  },
+  "constraints": [
+    "No production code changes outside src/cli/rag-search.ts",
+    "rag-search without --max-tokens must behave identically to current",
+    "Baseline test count 1496/1526 must be maintained"
+  ]
+}

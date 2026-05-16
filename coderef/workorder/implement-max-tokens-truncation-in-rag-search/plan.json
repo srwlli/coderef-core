@@ -1,0 +1,62 @@
+{
+  "workorder_id": "WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001",
+  "feature_name": "implement-max-tokens-truncation-in-rag-search",
+  "created": "2026-05-16T08:05:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single file edit; additive CLI flag; no cross-cutting changes.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Implement --max-tokens flag in rag-search.ts",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/cli/rag-search.ts to understand current parseArgs(), CliArgs interface, formatResult(), and output paths",
+          "success_criteria": "Full file contents known; insertion points for flag + truncation identified"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add maxTokens?: number to CliArgs interface",
+          "success_criteria": "Interface has maxTokens optional field"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add --max-tokens flag parsing in parseArgs() switch block",
+          "success_criteria": "parseArgs returns args.maxTokens when flag is passed; undefined when absent"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add truncateToTokenBudget(text: string, maxTokens: number): string helper that trims text to approx maxTokens using chars/4 heuristic",
+          "success_criteria": "Helper exists; returns original string when maxTokens is undefined/0; truncates with '...' suffix when over budget"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Wire truncation into non-JSON output: track running token total across results, stop printing when budget exceeded",
+          "success_criteria": "rag-search --max-tokens 4000 stops output within budget; prints truncation notice"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Wire truncation into JSON output: truncate result text/content fields before JSON.stringify",
+          "success_criteria": "rag-search --json --max-tokens 4000 output fits within budget"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add --max-tokens to printHelp() OPTIONS section",
+          "success_criteria": "rag-search --help shows --max-tokens flag with description"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run full test suite: npm test",
+          "success_criteria": ">=1496 tests passing; 0 new failures"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit: feat(rag-search): add --max-tokens truncation flag to bound stdout output",
+          "success_criteria": "Clean commit on main branch"
+        }
+      ]
+    }
+  ]
+}

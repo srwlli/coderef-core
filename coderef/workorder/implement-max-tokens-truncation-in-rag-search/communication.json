@@ -1,0 +1,58 @@
+{
+  "workorder_id": "WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001",
+  "feature_name": "implement-max-tokens-truncation-in-rag-search",
+  "created": "2026-05-16T08:05:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-16-007"],
+  "predecessor_for": null,
+  "status": "complete",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "completed_at": "2026-05-16T08:30:00Z",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/implement-max-tokens-truncation-in-rag-search/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/implement-max-tokens-truncation-in-rag-search/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/implement-max-tokens-truncation-in-rag-search/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored and validated; ready for Phase 1 execution"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "hard_stops": [],
+    "approval_required": false
+  },
+  "hard_constraints": [
+    "No production code changes outside src/cli/rag-search.ts",
+    "rag-search without --max-tokens must behave identically to current",
+    "Test suite must remain at >=1496 passing"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-16T08:05:00Z",
+      "by": "create-workorder",
+      "note": "WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001 created from DISPATCH-2026-05-16-007. Light plan, 1 phase, 9 tasks."
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": ["coderef/foundation-docs/INDEX.md", "coderef/foundation-docs/EXPORTS.md", "coderef/foundation-docs/HOTSPOTS.md", "coderef/foundation-docs/RELATIONSHIPS.md"]
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-16T08:30:00Z",
+      "phases_closed": [1],
+      "commit": "7618af6",
+      "tests": "1524/1554 passing",
+      "note": "Phase 1 complete. --max-tokens flag added to rag-search CLI. docs/CLI.md updated."
+    }
+  ]
+}

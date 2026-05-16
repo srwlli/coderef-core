@@ -1,0 +1,28 @@
+=============================================================
+WORKORDER: WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001  |  implement-max-tokens-truncation-in-rag-search  |  COMPLETE
+Session: SES-2026-05-16-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH  |  Phases: 1  |  Commits: 1  |  Pushes: 1
+Parent stub: none
+
+FILES CREATED:
+  + coderef/workorder/implement-max-tokens-truncation-in-rag-search/context.json   (7618af6)
+  + coderef/workorder/implement-max-tokens-truncation-in-rag-search/analysis.json  (7618af6)
+  + coderef/workorder/implement-max-tokens-truncation-in-rag-search/plan.json      (7618af6)
+  + coderef/workorder/implement-max-tokens-truncation-in-rag-search/communication.json (7618af6)
+
+FILES MODIFIED:
+  ~ src/cli/rag-search.ts  (7618af6)
+  ~ docs/CLI.md  (close-out commit)
+  ~ coderef/foundation-docs/INDEX.md  (7618af6)
+  ~ coderef/foundation-docs/EXPORTS.md  (7618af6)
+  ~ coderef/foundation-docs/HOTSPOTS.md  (7618af6)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md  (7618af6)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Implement --max-tokens flag in rag-search.ts  (7618af6)
+
+Session: updated  |  Registry: synced  |  Validator: PASS (pre-existing 4 FAIL from path case drift, unrelated to this WO)
+
+Test results: 1524/1554 passing, 30 skips, 0 new failures (baseline 1496)
+
+APPROVE -> /close-workorder WO-IMPLEMENT-MAX-TOKENS-TRUNCATION-IN-RAG-SEARCH-001
+=============================================================

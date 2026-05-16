@@ -457,6 +457,7 @@ npx rag-search --query "authentication middleware" --type function
 | `--chroma-url <url>` | ChromaDB server URL | `http://localhost:8000` |
 | `--ollama-url <url>` | Ollama server URL | `http://localhost:11434` |
 | `--model <name>` | Embedding model | `nomic-embed-text` |
+| `--max-tokens <n>` | Truncate output to approximately N tokens (chars/4 estimate). Applies to both human-readable and `--json` modes. Omit for unbounded output. | None |
 | `--json` | Output as JSON | `false` |
 
 `--layer` and `--capability` map to the `CodeChunk.{layer, capability}` facets propagated from `ElementData` via `GraphNode.metadata` (Phase 5 → Phase 7). They pass through to the vector-store metadata filter — only chunks with matching values are returned. Layer values come from `ASSISTANT/STANDARDS/layers.json` (the 13-value `LayerEnum`); capability values are free-form kebab-case slugs declared in source headers.
