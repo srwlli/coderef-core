@@ -10,8 +10,6 @@
  * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts, __tests__/pipeline/graph-ground-truth.test.ts, __tests__/pipeline/header-exports-cross-check.test.ts, __tests__/pipeline/header-fact-shape.test.ts, __tests__/pipeline/header-import-facts-cardinality.test.ts, __tests__/pipeline/import-resolution-relative.test.ts, __tests__/pipeline/no-graph-edge-claim.test.ts, __tests__/pipeline/no-import-resolution.test.ts, __tests__/pipeline/raw-call-facts.test.ts, __tests__/pipeline/raw-export-facts.test.ts, __tests__/pipeline/raw-import-facts.test.ts, __tests__/pipeline-integration.test.ts
  */
 
-
-
 /**
  * PipelineOrchestrator - Single-pass codebase analysis pipeline
  *
@@ -481,6 +479,7 @@ export class PipelineOrchestrator {
     if (headerStatus === 'defined' && headerFact.exports !== undefined) {
       const headerSet = new Set(headerFact.exports);
       const astSet = new Set(rawExports.map(e => e.exportedName));
+      astSet.delete('default'); // tree-sitter emits 'default' for export default X; @exports headers never declare it
       let mismatch = false;
       for (const name of headerSet) if (!astSet.has(name)) { mismatch = true; break; }
       if (!mismatch) for (const name of astSet) if (!headerSet.has(name)) { mismatch = true; break; }
