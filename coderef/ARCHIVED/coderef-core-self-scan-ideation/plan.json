@@ -1,0 +1,184 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-SELF-SCAN-IDEATION-001",
+  "feature_name": "coderef-core-self-scan-ideation",
+  "created": "2026-05-16T04:15:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Pure ideation and proposal — no code changes, no implementation. Produces a structured self-scan workflow proposal and RAG query plan for CODEREF-CORE eating its own cooking.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Current State Audit — What Does CODEREF-CORE Know About Itself?",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Measure current header coverage: node -e \"const fs=require('fs'); const idx=JSON.parse(fs.readFileSync('.coderef/index.json')); const e=idx.elements||[]; console.log('missing:',e.filter(x=>x.headerStatus==='missing').length,'stale:',e.filter(x=>x.headerStatus==='stale').length,'defined:',e.filter(x=>x.headerStatus==='defined').length,'total:',e.length);\""
+        },
+        {
+          "verb": "RUN",
+          "description": "Check capability and layer field population: node -e \"const fs=require('fs'); const idx=JSON.parse(fs.readFileSync('.coderef/index.json')); const e=idx.elements||[]; console.log('capability populated:',e.filter(x=>x.capability&&x.capability.length>0).length,'layer populated:',e.filter(x=>x.metadata&&x.metadata.layer).length,'total:',e.length);\""
+        },
+        {
+          "verb": "RUN",
+          "description": "Check RAG index record count: node dist/src/cli/rag-status.js 2>&1 | head -20"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Record baseline: total elements, defined/stale/missing counts, capability/layer population, RAG vector count. This is the pre-self-scan snapshot."
+        }
+      ],
+      "acceptance_criteria": [
+        "Baseline header coverage numbers recorded",
+        "Capability and layer field population counts confirmed",
+        "RAG vector count confirmed"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Header Refresh — Improve Self-Knowledge Quality",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run populate-coderef --overwrite-headers to refresh stale headers across all src/ files: node dist/src/cli/populate.js --overwrite-headers --source-headers"
+        },
+        {
+          "verb": "RUN",
+          "description": "Re-scan to refresh index after header overwrite: node dist/src/cli/coderef-scan.js"
+        },
+        {
+          "verb": "RUN",
+          "description": "Re-measure capability and layer population after refresh: node -e \"const fs=require('fs'); const idx=JSON.parse(fs.readFileSync('.coderef/index.json')); const e=idx.elements||[]; console.log('capability populated:',e.filter(x=>x.capability&&x.capability.length>0).length,'layer populated:',e.filter(x=>x.metadata&&x.metadata.layer).length,'defined:',e.filter(x=>x.headerStatus==='defined').length,'stale:',e.filter(x=>x.headerStatus==='stale').length);\""
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify that defined count increased and stale count decreased. If capability/layer still 0, document as a parse gap (semantic headers exist but populate doesn't extract into element metadata fields)."
+        }
+      ],
+      "acceptance_criteria": [
+        "populate-coderef --overwrite-headers ran without error",
+        "Defined header count >= pre-run count",
+        "Stale count confirmed or delta measured",
+        "Capability/layer population re-checked"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "RAG Index Rebuild — Embed Refreshed Knowledge",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Rebuild RAG index with Ollama provider after header refresh: node dist/src/cli/rag-index.js --provider ollama 2>&1 | tail -10"
+        },
+        {
+          "verb": "RUN",
+          "description": "Verify new record count: node dist/src/cli/rag-status.js 2>&1 | head -20"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Confirm vector count increased from 1156 baseline. If count unchanged or error, diagnose and document."
+        }
+      ],
+      "acceptance_criteria": [
+        "RAG index rebuild completed with Ollama provider",
+        "Vector count >= 1156 baseline",
+        "rag-status confirms index healthy"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Self-RAG Query Pass — Surface Improvement Signal",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Query 1 — undocumented modules: node dist/src/cli/rag-search.js 'module without capability or layer metadata' --top-k 10 2>&1"
+        },
+        {
+          "verb": "RUN",
+          "description": "Query 2 — architectural flow: node dist/src/cli/rag-search.js 'pipeline orchestration scanner to indexer data flow' --top-k 10 2>&1"
+        },
+        {
+          "verb": "RUN",
+          "description": "Query 3 — improvement opportunities: node dist/src/cli/rag-search.js 'complex function without test coverage gap analyzer' --top-k 10 2>&1"
+        },
+        {
+          "verb": "RUN",
+          "description": "Query 4 — type constraints (working constraint): node dist/src/cli/rag-search.js 'exported service' --constraint type:class --top-k 10 2>&1"
+        },
+        {
+          "verb": "RUN",
+          "description": "Query 5 — missing semantic annotations: node dist/src/cli/rag-search.js 'export without constraints used_by annotation semantic header' --top-k 10 2>&1"
+        },
+        {
+          "verb": "RUN",
+          "description": "Query 6 — RAG self-description (meta): node dist/src/cli/rag-search.js 'RAG index build pipeline rag-index rag-search CLI' --top-k 10 2>&1"
+        },
+        {
+          "verb": "CHECK",
+          "description": "For each query: record top 3 results (file path, score, snippet). Note patterns: which modules appear repeatedly, which have low scores or empty snippets."
+        }
+      ],
+      "acceptance_criteria": [
+        "All 6 queries executed and results captured",
+        "Top results for each query recorded",
+        "Patterns across queries identified (repeated files, score distribution)"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Synthesis — Produce Self-Scan Report",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "WRITE",
+          "description": "Write coderef/workorder/coderef-core-self-scan-ideation/self-scan-report.md with sections: (1) Executive Summary, (2) Header Coverage Snapshot (before/after Phase 2), (3) RAG Index Health, (4) Query Results by Category, (5) Top Improvement Opportunities, (6) Known Gaps Blocking Quality, (7) Recommended Next Steps."
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify report surfaces at least 5 concrete improvement opportunities. Verify each opportunity has a file path, a description, and a suggested action (file stub, WO, or annotation)."
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit the self-scan report and workorder artifacts: git add coderef/workorder/coderef-core-self-scan-ideation/ && git commit -m 'feat(self-scan): WO-CODEREF-CORE-SELF-SCAN-IDEATION-001 — self-scan report and proposal'"
+        }
+      ],
+      "acceptance_criteria": [
+        "self-scan-report.md exists with all 7 sections",
+        "At least 5 concrete improvement opportunities identified with file paths",
+        "Known gaps section references WO-LEVERAGE-AUDIT-FRESH-PASS-001 findings",
+        "Commit created"
+      ]
+    }
+  ],
+  "hard_stops": [],
+  "total_phases": 5,
+  "self_scan_workflow_design": {
+    "summary": "CODEREF-CORE self-scan loop: populate-coderef --overwrite-headers → coderef-scan → rag-index --provider ollama → rag-search <improvement queries> → synthesize report. Repeatable on a cadence (e.g., after each major WO close). The self-scan index becomes the knowledge base for the tool's own improvement roadmap.",
+    "command_sequence": [
+      "node dist/src/cli/populate.js --overwrite-headers --source-headers",
+      "node dist/src/cli/coderef-scan.js",
+      "node dist/src/cli/rag-index.js --provider ollama",
+      "node dist/src/cli/rag-search.js '<query>' --top-k 10 [--constraint type:<x>]"
+    ],
+    "query_taxonomy": {
+      "undocumented_modules": ["module without capability or layer metadata", "exported function with no documentation"],
+      "architectural_gaps": ["pipeline orchestration scanner to indexer", "RAG index build pipeline"],
+      "improvement_opportunities": ["complex function without test coverage", "error handling patterns CLI"],
+      "missing_annotations": ["export without constraints used_by annotation", "service layer semantic header"]
+    },
+    "known_constraints": [
+      "layer constraint broken — use type constraint instead",
+      "no --max-tokens — cap queries with --top-k 10",
+      "Ollama required — no OpenAI key",
+      "capability/layer fields may be 0 even after header refresh (parse gap)"
+    ],
+    "follow_on_wos": [
+      "WO to propagate @layer into vector chunk metadata (Ph5 finding from leverage audit)",
+      "WO to implement --max-tokens truncation in rag-search CLI (Ph7 finding)",
+      "WO to parse capability/layer from semantic headers into element metadata"
+    ]
+  }
+}

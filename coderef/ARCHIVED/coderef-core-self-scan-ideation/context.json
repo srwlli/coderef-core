@@ -1,0 +1,75 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-SELF-SCAN-IDEATION-001",
+  "feature_name": "coderef-core-self-scan-ideation",
+  "created": "2026-05-16T04:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/desktop/coderef/coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-001",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Ideate how to use CODEREF-CORE to scan and document itself — a self-improving loop where the tool analyzes its own codebase, generates semantic headers, builds a RAG index of itself, and uses that index to surface improvement opportunities. Report a concrete plan before implementing anything."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Pure ideation and proposal task — no code changes, no implementation. Goal is structured analysis output: what commands to run, what queries to ask, what output to produce, and what a self-documenting workflow looks like for CODEREF-CORE specifically.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [
+      { "file": "src/pipeline/generators/context-generator.ts", "element_count": 59 },
+      { "file": "src/scanner/tree-sitter-scanner.ts", "element_count": 57 },
+      { "file": "src/indexer/indexer-service.ts", "element_count": 31 },
+      { "file": "src/search/search-engine.ts", "element_count": 31 }
+    ],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": ["layer_distribution empty: layer not propagated to element metadata (known gap from WO-LEVERAGE-AUDIT-FRESH-PASS-001 Ph5)"]
+  },
+  "current_state": {
+    "total_elements": 2431,
+    "source_headers": {
+      "defined": 956,
+      "stale": 1112,
+      "missing": 343,
+      "coverage_pct": 41
+    },
+    "rag_index": {
+      "provider": "ollama",
+      "model": "nomic-embed-text",
+      "dimension": 768,
+      "records": 1156
+    },
+    "capability_populated": 0,
+    "layer_populated": 0,
+    "tests": "1495/1495",
+    "known_gaps": [
+      "--constraint layer broken — layer not in vector metadata",
+      "no --max-tokens in rag-search CLI",
+      "stale headers: 1112 elements need --overwrite-headers to refresh",
+      "0 capability fields in element metadata — semantic headers exist but not parsed into index"
+    ]
+  },
+  "scope": {
+    "in_scope": [
+      "Identify what populate-coderef commands to run for self-scan",
+      "Design RAG query set to surface undocumented modules, architectural gaps, improvement opportunities, missing semantic annotations",
+      "Define what self-documenting workflow looks like for CODEREF-CORE specifically",
+      "Produce structured proposal with concrete command sequences and expected outputs",
+      "Identify which known gaps block or degrade self-scan quality"
+    ],
+    "out_of_scope": [
+      "Implementing any code changes",
+      "Actually running the self-scan (execution is a follow-on WO)",
+      "Fixing known gaps (--constraint layer, --max-tokens) — those are separate stubs",
+      "Enabling CODEREF_LLOYD_DISCOVERY_RAG (blocked on self-scan completion per dispatch note)"
+    ]
+  },
+  "constraints": [
+    "Proposal only — no code changes in this WO",
+    "Must account for current known gaps in design (e.g., layer constraint broken)",
+    "Self-scan commands must work with Ollama provider (no OpenAI key)"
+  ]
+}

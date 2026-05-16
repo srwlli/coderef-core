@@ -1,0 +1,122 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-SELF-SCAN-IDEATION-001",
+  "feature_name": "coderef-core-self-scan-ideation",
+  "analysis_authored_at": "2026-05-16T04:15:00Z",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [
+      "coderef/workorder/coderef-core-self-scan-ideation/context.json",
+      "coderef/workorder/coderef-core-self-scan-ideation/analysis.json",
+      "coderef/workorder/coderef-core-self-scan-ideation/plan.json",
+      "coderef/workorder/coderef-core-self-scan-ideation/communication.json"
+    ],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Stale semantic headers degrade RAG quality",
+      "likelihood": "high",
+      "impact": "medium",
+      "mitigation": "Run populate-coderef --overwrite-headers before RAG index rebuild to reduce stale=1112"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Layer constraint broken — rag-search --constraint layer always returns 0",
+      "likelihood": "confirmed",
+      "impact": "medium",
+      "mitigation": "Use --constraint type:<x> instead of layer for filtered queries; file stub for layer propagation fix"
+    },
+    {
+      "id": "RISK-003",
+      "title": "0 capability/layer in element metadata — semantic headers exist but not parsed",
+      "likelihood": "confirmed",
+      "impact": "high",
+      "mitigation": "After overwrite-headers pass, re-run coderef-scan to populate metadata fields; verify capability/layer counts > 0 before RAG query phase"
+    },
+    {
+      "id": "RISK-004",
+      "title": "RAG index only 1156 records vs 2431 elements — low coverage ratio",
+      "likelihood": "confirmed",
+      "impact": "medium",
+      "mitigation": "Rebuild RAG index after header refresh to increase vector coverage"
+    }
+  ],
+  "candidates": [
+    "src/cli/populate.ts",
+    "src/cli/scan.ts",
+    "src/cli/rag-index.ts",
+    "src/cli/rag-search.ts",
+    "src/pipeline/generators/context-generator.ts",
+    "src/scanner/tree-sitter-scanner.ts",
+    "src/indexer/indexer-service.ts",
+    "src/search/search-engine.ts"
+  ],
+  "dependencies": [
+    "node dist/src/cli/populate.js (populate-coderef)",
+    "node dist/src/cli/coderef-scan.js (scan)",
+    "node dist/src/cli/rag-index.js --provider ollama (RAG index rebuild)",
+    "node dist/src/cli/rag-search.js (RAG query)"
+  ],
+  "public_api_hits": [],
+  "self_scan_query_design": {
+    "rationale": "These RAG queries are designed to surface self-improvement signal from CODEREF-CORE's own index. Each targets a distinct gap category.",
+    "query_categories": [
+      {
+        "category": "undocumented_modules",
+        "queries": [
+          "missing semantic header annotation",
+          "module without capability or layer metadata",
+          "exported function with no documentation"
+        ],
+        "expected_signal": "Files/elements with defined=false or stale headers; modules that lack @layer or @capability"
+      },
+      {
+        "category": "architectural_gaps",
+        "queries": [
+          "pipeline orchestration flow",
+          "indexer service dependencies",
+          "scanner to indexer data flow",
+          "RAG index build pipeline"
+        ],
+        "expected_signal": "Central orchestration files, high-element-count modules, import chains between scanner and indexer"
+      },
+      {
+        "category": "improvement_opportunities",
+        "queries": [
+          "error handling patterns in CLI",
+          "async pattern in pipeline",
+          "test coverage gap in analyzer",
+          "complex function without test"
+        ],
+        "expected_signal": "High-complexity, low-coverage files surfaced by hotspot analysis"
+      },
+      {
+        "category": "missing_semantic_annotations",
+        "queries": [
+          "export without constraints annotation",
+          "service layer without used_by",
+          "utility function without capability tag"
+        ],
+        "expected_signal": "Elements with headerStatus=stale or defined but capability=null"
+      }
+    ]
+  },
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Use --provider ollama for all RAG operations — no OpenAI key available",
+      "rationale": "Ollama nomic-embed-text already indexed and active (1156 records). OpenAI would require API key and incur cost."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Run --overwrite-headers before RAG index rebuild",
+      "rationale": "1112 stale headers means semantic content is old. Fresh headers → better embeddings → better self-scan signal."
+    },
+    {
+      "id": "DR-003",
+      "decision": "Self-scan produces a markdown report, not a new workorder",
+      "rationale": "Output is human-readable signal for the operator to review. A structured WO creation step follows only if actionable items are found."
+    }
+  ]
+}
