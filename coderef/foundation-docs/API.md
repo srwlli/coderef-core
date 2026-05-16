@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-05-16 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-05-16 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -39,6 +39,7 @@
 <!-- coderef:uuid=fdcbd632-a27a-5fb7-8884-9e54d53e5d43 -->
 <!-- coderef:uuid=0435c371-f26c-5684-ab12-c2a77893642e -->
 <!-- coderef:uuid=c7af62fe-4fb5-54e5-8dcb-030d919f2cae -->
+<!-- coderef:uuid=135ed5b6-87fb-50ac-b5f1-0457d2bbd585 -->
 ### `scanCurrentElements()`
 
 Scan code elements from a directory using regex patterns.
