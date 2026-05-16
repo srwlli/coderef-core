@@ -4,6 +4,12 @@
  * @used_by src/indexer/indexer-service.ts, __tests__/indexer.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports QueryResult, QueryFilter, QueryEngineConfig, QueryEngine, createQueryEngine
+ * @used_by src/indexer/indexer-service.ts, __tests__/indexer.test.ts
+ */
+
 
 
 /**

@@ -3,6 +3,11 @@
  * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
+ */
+
 
 
 /**

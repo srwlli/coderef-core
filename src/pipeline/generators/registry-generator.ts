@@ -4,6 +4,12 @@
  * @used_by src/cli/populate.ts, __tests__/pipeline/single-scanner.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports RegistryGenerator
+ * @used_by src/cli/populate.ts, __tests__/pipeline/single-scanner.test.ts
+ */
+
 
 
 /**

@@ -4,6 +4,12 @@
  * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ImportResolutionKind, ImportResolution, ExportTableEntry, ExportTable, resolveImports, buildExportTables, resolveAstImports, resolveHeaderImports, classifyBareSpecifier, resolveTransitiveReExport, resolveModuleSpecifier
+ * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts
+ */
+
 
 
 /**

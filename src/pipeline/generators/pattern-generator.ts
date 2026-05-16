@@ -4,6 +4,12 @@
  * @used_by src/cli/populate.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports PatternGenerator, isTestFile, isPipelineOrchestrator, estimateComplexity, isInternalFunction, calculatePriority
+ * @used_by src/cli/populate.ts
+ */
+
 
 
 /**

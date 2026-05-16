@@ -3,6 +3,11 @@
  * @exports OpenAI, Anthropic, ChromaClient, Collection, Pinecone
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports OpenAI, Anthropic, ChromaClient, Collection, Pinecone
+ */
+
 
 
 /**

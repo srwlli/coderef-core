@@ -3,6 +3,11 @@
  * @exports ApiEndpoint, detectPatterns, getApiEndpointStats
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ApiEndpoint, detectPatterns, getApiEndpointStats
+ */
+
 
 
 /**

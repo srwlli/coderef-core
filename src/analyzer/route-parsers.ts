@@ -4,6 +4,12 @@
  * @used_by src/scanner/scanner.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports parseFlaskRoute, parseFastAPIRoute, parseExpressRoute, parseNextJsRoute, parseNextJsPagesRoute, parseSvelteKitRoute, parseNuxtRoute, parseRemixRoute, extractRouteMetadata
+ * @used_by src/scanner/scanner.ts
+ */
+
 
 
 // coderef-core/analyzer/route-parsers.ts

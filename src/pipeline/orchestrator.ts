@@ -4,6 +4,12 @@
  * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts, __tests__/pipeline/graph-ground-truth.test.ts, __tests__/pipeline/header-exports-cross-check.test.ts, __tests__/pipeline/header-fact-shape.test.ts, __tests__/pipeline/header-import-facts-cardinality.test.ts, __tests__/pipeline/import-resolution-relative.test.ts, __tests__/pipeline/no-graph-edge-claim.test.ts, __tests__/pipeline/no-import-resolution.test.ts, __tests__/pipeline/raw-call-facts.test.ts, __tests__/pipeline/raw-export-facts.test.ts, __tests__/pipeline/raw-import-facts.test.ts, __tests__/pipeline-integration.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports PipelineOrchestrator
+ * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts, __tests__/pipeline/graph-ground-truth.test.ts, __tests__/pipeline/header-exports-cross-check.test.ts, __tests__/pipeline/header-fact-shape.test.ts, __tests__/pipeline/header-import-facts-cardinality.test.ts, __tests__/pipeline/import-resolution-relative.test.ts, __tests__/pipeline/no-graph-edge-claim.test.ts, __tests__/pipeline/no-import-resolution.test.ts, __tests__/pipeline/raw-call-facts.test.ts, __tests__/pipeline/raw-export-facts.test.ts, __tests__/pipeline/raw-import-facts.test.ts, __tests__/pipeline-integration.test.ts
+ */
+
 
 
 /**

@@ -4,6 +4,12 @@
  * @used_by src/integration/rag/chunk-converter.ts, src/integration/rag/embedding-service.ts, src/integration/rag/embedding-text-generator.ts, src/integration/rag/incremental-indexer.ts, src/integration/rag/indexing-orchestrator.ts, src/integration/rag/__tests__/chunk-converter.test.ts, __tests__/integration/rag/indexing-orchestrator.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports CodeChunk, ChunkOptions, ChunkGenerationResult, ChunkGenerationError, ChunkStatistics
+ * @used_by src/integration/rag/chunk-converter.ts, src/integration/rag/embedding-service.ts, src/integration/rag/embedding-text-generator.ts, src/integration/rag/incremental-indexer.ts, src/integration/rag/indexing-orchestrator.ts, src/integration/rag/__tests__/chunk-converter.test.ts, __tests__/integration/rag/indexing-orchestrator.test.ts
+ */
+
 
 
 /**

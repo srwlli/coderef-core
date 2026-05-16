@@ -4,6 +4,12 @@
  * @used_by src/analyzer/project-classifier.ts, src/pipeline/generators/context-generator.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports EntryPointType, EntryPoint, EntryPointDetector
+ * @used_by src/analyzer/project-classifier.ts, src/pipeline/generators/context-generator.ts
+ */
+
 
 
 /**

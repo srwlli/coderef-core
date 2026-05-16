@@ -8,6 +8,21 @@
  * @exports scanCurrentElements, isLineCommented
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports scanCurrentElements, isLineCommented
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports scanCurrentElements, isLineCommented
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports scanCurrentElements, isLineCommented
+ */
+
 
 
 // coderef-core/scanner.ts

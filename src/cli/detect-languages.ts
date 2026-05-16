@@ -4,6 +4,12 @@
  * @used_by src/cli/detect-languages-cli.ts, src/cli/populate.ts, src/cli/rag-index.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports SupportedCliLanguage, formatSupportedLanguages, validateCliLanguages, detectProjectLanguages
+ * @used_by src/cli/detect-languages-cli.ts, src/cli/populate.ts, src/cli/rag-index.ts
+ */
+
 
 
 import * as fs from 'fs/promises';

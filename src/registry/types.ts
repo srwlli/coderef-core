@@ -4,6 +4,12 @@
  * @used_by src/registry/entity-registry.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports EntityRecord, RegistryState, EntityLookup
+ * @used_by src/registry/entity-registry.ts
+ */
+
 
 
 /**

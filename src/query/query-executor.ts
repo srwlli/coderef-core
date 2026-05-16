@@ -4,6 +4,12 @@
  * @used_by src/cli/coderef-query.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports QueryType, QueryRequest, QueryResult, QueryExecutor
+ * @used_by src/cli/coderef-query.ts
+ */
+
 
 
 /**

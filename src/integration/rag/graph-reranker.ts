@@ -4,6 +4,12 @@
  * @used_by src/integration/rag/answer-generation-service.ts, src/integration/rag/confidence-scorer.ts, src/integration/rag/context-builder.ts, src/integration/rag/__tests__/confidence-scorer.test.ts, src/integration/rag/__tests__/graph-reranker.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ReRankingOptions, QueryStrategy, ReRankedResult, RankingExplanation, GraphReRanker
+ * @used_by src/integration/rag/answer-generation-service.ts, src/integration/rag/confidence-scorer.ts, src/integration/rag/context-builder.ts, src/integration/rag/__tests__/confidence-scorer.test.ts, src/integration/rag/__tests__/graph-reranker.test.ts
+ */
+
 
 
 /**

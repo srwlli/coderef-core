@@ -4,6 +4,12 @@
  * @used_by src/cli/populate.ts, src/pipeline/types.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ValidationError, ValidationWarning, ValidationReport, ValidationResult, ValidatePipelineStateOptions, validatePipelineState, buildFileHeaderStatusMap
+ * @used_by src/cli/populate.ts, src/pipeline/types.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
+ */
+
 
 
 /**

@@ -4,6 +4,12 @@
  * @used_by src/integration/rag/indexing-orchestrator.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports EmbeddedChunk, ProgressCallback, EmbeddingProgress, EmbeddingServiceOptions, EmbeddingResult, EmbeddingError, EmbeddingStatistics, EmbeddingService
+ * @used_by src/integration/rag/indexing-orchestrator.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts
+ */
+
 
 
 /**

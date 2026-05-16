@@ -3,6 +3,11 @@
  * @exports DependencyGraph, GraphNode, GraphEdge, buildDependencyGraph
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports DependencyGraph, GraphNode, GraphEdge, buildDependencyGraph
+ */
+
 
 
 /**

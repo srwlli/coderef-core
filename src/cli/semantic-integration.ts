@@ -4,6 +4,12 @@
  * @used_by src/cli/semantic-integration-cli.ts, src/cli/semantic-integration.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports SemanticIntegrationOptions, DryRunSemanticOrchestrator, runSemanticIntegration, validateIdempotency
+ * @used_by src/cli/semantic-integration-cli.ts, src/cli/semantic-integration.test.ts
+ */
+
 
 
 /**

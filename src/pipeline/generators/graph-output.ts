@@ -4,6 +4,12 @@
  * @used_by src/pipeline/generators/export-generator.ts, src/pipeline/generators/graph-generator.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports normalizeGraphForOutput
+ * @used_by src/pipeline/generators/export-generator.ts, src/pipeline/generators/graph-generator.ts
+ */
+
 
 
 import * as path from 'path';

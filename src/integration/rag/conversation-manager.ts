@@ -3,6 +3,11 @@
  * @exports ConversationMessage, ConversationSession, ConversationOptions, ConversationManager
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ConversationMessage, ConversationSession, ConversationOptions, ConversationManager
+ */
+
 
 
 /**

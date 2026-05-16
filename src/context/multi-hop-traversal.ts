@@ -4,6 +4,12 @@
  * @used_by src/cli/coderef-analyze.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports TraversalResult, MultiHopResult, MultiHopTraversal
+ * @used_by src/cli/coderef-analyze.ts
+ */
+
 
 
 /**

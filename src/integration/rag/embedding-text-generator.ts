@@ -4,6 +4,12 @@
  * @used_by src/integration/rag/embedding-service.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports TextGenerationOptions, EmbeddingTextGenerator
+ * @used_by src/integration/rag/embedding-service.ts, src/integration/rag/semantic-search.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts
+ */
+
 
 
 /**

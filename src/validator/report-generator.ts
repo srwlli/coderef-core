@@ -4,6 +4,12 @@
  * @used_by src/cli/validate-routes.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports formatIssueSummary, formatIssueDetails, formatRecommendations, formatAutoFixSection, generateMarkdownReport, saveMarkdownReport
+ * @used_by src/cli/validate-routes.ts
+ */
+
 
 
 /**

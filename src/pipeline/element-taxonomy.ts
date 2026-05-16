@@ -4,6 +4,12 @@
  * @used_by src/adapter/graph-to-elements.ts, src/cli/populate.ts, src/pipeline/extractors/element-extractor.ts, src/pipeline/extractors/relationship-extractor.ts, src/pipeline/header-fact.ts, src/pipeline/orchestrator.ts, src/pipeline/output-validator.ts, src/pipeline/semantic-elements.ts, src/pipeline/semantic-header-parser.ts, src/pipeline/types.ts, src/plugins/plugin-scanner.ts, src/scanner/scanner.ts, src/scanner/tree-sitter-scanner.ts, src/semantic/projections.ts, src/types/types.ts, __tests__/pipeline/element-taxonomy.test.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports LayerEnum, HeaderStatus, DEFAULT_HEADER_STATUS, resolveLayersPath, loadLayerEnum, isValidLayer, isKebabCase
+ * @used_by src/adapter/graph-to-elements.ts, src/cli/populate.ts, src/pipeline/extractors/element-extractor.ts, src/pipeline/extractors/relationship-extractor.ts, src/pipeline/header-fact.ts, src/pipeline/orchestrator.ts, src/pipeline/output-validator.ts, src/pipeline/semantic-elements.ts, src/pipeline/semantic-header-parser.ts, src/pipeline/types.ts, src/plugins/plugin-scanner.ts, src/scanner/scanner.ts, src/scanner/tree-sitter-scanner.ts, src/semantic/projections.ts, src/types/types.ts, __tests__/pipeline/element-taxonomy.test.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
+ */
+
 
 
 import * as fs from 'fs';

@@ -3,6 +3,11 @@
  * @exports HealthMetrics, HealthGenerator, generateHealthReport
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports HealthMetrics, HealthGenerator, generateHealthReport
+ */
+
 
 
 /**

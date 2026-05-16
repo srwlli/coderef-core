@@ -4,6 +4,12 @@
  * @used_by src/analyzer/js-call-detector/index.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports extractImportsFromAST, extractExportsFromAST
+ * @used_by src/analyzer/js-call-detector/index.ts
+ */
+
 
 
 /**

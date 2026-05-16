@@ -5,6 +5,12 @@
  */
 
 /**
+ * @coderef-semantic: 1.0.0
+ * @exports SemanticHeader, HeaderGenerationOptions, HeaderGenerator, generateHeaders
+ * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts
+ */
+
+/**
  * CodeRef-Semantics header generator
  *
  * Generates semantic headers (exports, used_by, rules, related) as code comments

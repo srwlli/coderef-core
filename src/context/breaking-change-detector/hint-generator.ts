@@ -4,6 +4,12 @@
  * @used_by src/context/breaking-change-detector/index.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports generateMigrationHints, suggestWrapPattern, suggestRenamePattern, suggestAdapterPattern, suggestDefaultParamPattern, suggestOptionsObjectPattern
+ * @used_by src/context/breaking-change-detector/index.ts
+ */
+
 
 
 /**

@@ -4,6 +4,12 @@
  * @used_by src/plugins/types.ts, src/scanner/register-frameworks.ts, src/scanner/scanner.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports FrameworkDetectionResult, FrameworkDetector
+ * @used_by src/plugins/types.ts, src/scanner/register-frameworks.ts, src/scanner/scanner.ts
+ */
+
 
 
 /**

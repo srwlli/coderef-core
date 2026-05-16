@@ -3,6 +3,11 @@
  * @exports validateReferences
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports validateReferences
+ */
+
 
 
 /**

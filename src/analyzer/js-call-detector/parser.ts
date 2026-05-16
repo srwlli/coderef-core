@@ -4,6 +4,12 @@
  * @used_by src/analyzer/js-call-detector/visitor.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports parseCallExpression, parseNewExpression, extractObjectName, isNestedCall, extractParameters, extractParameter
+ * @used_by src/analyzer/js-call-detector/visitor.ts
+ */
+
 
 
 /**

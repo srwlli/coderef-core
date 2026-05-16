@@ -4,6 +4,12 @@
  * @used_by src/semantic/orchestrator.ts, src/semantic/registry-sync.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports EnrichmentRequest, EnrichedMetadata, LLMEnricherOptions, LLMEnricher, enrichMetadata, enrichBatch
+ * @used_by src/semantic/orchestrator.ts, src/semantic/registry-sync.ts
+ */
+
 
 
 /**

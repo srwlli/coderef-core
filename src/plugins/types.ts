@@ -4,6 +4,12 @@
  * @used_by src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts, src/plugins/manifest-schema.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-registry.ts, src/plugins/plugin-scanner.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports PluginManifest, DetectorDefinition, HookDefinition, CodeDetector, DetectionResult, GraphHook, CustomEdge, GraphBuilderContext, Plugin, PluginSource, PluginRegistration
+ * @used_by src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts, src/plugins/manifest-schema.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-registry.ts, src/plugins/plugin-scanner.ts
+ */
+
 
 
 /**

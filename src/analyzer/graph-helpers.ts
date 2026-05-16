@@ -3,6 +3,11 @@
  * @exports ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate
+ */
+
 
 
 /**

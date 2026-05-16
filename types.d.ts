@@ -8,6 +8,21 @@
  * @exports ElementData, IndexedCoderef, DriftStatus, DriftReport, DriftDetectionOptions, ScanOptions, ParsedCoderef
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ElementData, IndexedCoderef, DriftStatus, DriftReport, DriftDetectionOptions, ScanOptions, ParsedCoderef
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ElementData, IndexedCoderef, DriftStatus, DriftReport, DriftDetectionOptions, ScanOptions, ParsedCoderef
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ElementData, IndexedCoderef, DriftStatus, DriftReport, DriftDetectionOptions, ScanOptions, ParsedCoderef
+ */
+
 
 
 

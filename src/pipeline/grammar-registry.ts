@@ -4,6 +4,12 @@
  * @used_by src/pipeline/orchestrator.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports GrammarRegistry
+ * @used_by src/pipeline/orchestrator.ts
+ */
+
 
 
 /**

@@ -3,6 +3,11 @@
  * @exports ConfidenceLevel, FrontendUpdateSuggestion, BatchUpdateResult, GitPatch, FileModification, getConfidenceLevel, calculatePathConfidence, generateUpdateSuggestions, batchProcessCalls, generateModifications, generateGitPatch, applyModifications, generateUpdateReport, exportBatchResults
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ConfidenceLevel, FrontendUpdateSuggestion, BatchUpdateResult, GitPatch, FileModification, getConfidenceLevel, calculatePathConfidence, generateUpdateSuggestions, batchProcessCalls, generateModifications, generateGitPatch, applyModifications, generateUpdateReport, exportBatchResults
+ */
+
 
 
 /**

@@ -3,6 +3,11 @@
  * @exports fn2, Cls2, C2
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports fn2, Cls2, C2
+ */
+
 
 
 export function fn2() { return 2; }

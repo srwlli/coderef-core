@@ -4,6 +4,12 @@
  * @used_by src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports validateManifest, parseManifest, MANIFEST_FILENAME, getManifestPath
+ * @used_by src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts
+ */
+
 
 
 /**

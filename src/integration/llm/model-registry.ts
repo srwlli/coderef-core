@@ -4,6 +4,12 @@
  * @used_by src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ProviderSpec, getProviderSpec, getEmbeddingDimensions, supportsEmbeddings, ProviderDoesNotSupportEmbeddings, validateRegistry
+ * @used_by src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts
+ */
+
 
 
 /**

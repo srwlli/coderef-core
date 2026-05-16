@@ -4,6 +4,12 @@
  * @used_by src/scanner/scanner.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports registerDefaultFrameworks
+ * @used_by src/scanner/scanner.ts
+ */
+
 
 
 /**

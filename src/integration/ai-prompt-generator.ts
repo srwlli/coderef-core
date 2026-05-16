@@ -3,6 +3,11 @@
  * @exports AIQueryType, GeneratedPrompt, AIPromptGenerator
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports AIQueryType, GeneratedPrompt, AIPromptGenerator
+ */
+
 
 
 /**

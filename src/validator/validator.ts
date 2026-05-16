@@ -4,6 +4,12 @@
  * @used_by __tests__/integration.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ValidationResult, ValidatorOptions, CodeRefValidator, validateCodeRef, validateCodeRefs
+ * @used_by __tests__/integration.test.ts
+ */
+
 
 
 /**

@@ -4,6 +4,12 @@
  * @used_by src/cli/coderef-analyze.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
+ * @used_by src/cli/coderef-analyze.ts
+ */
+
 
 
 /**

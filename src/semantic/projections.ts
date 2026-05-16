@@ -4,6 +4,12 @@
  * @used_by src/pipeline/generators/registry-generator.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports SemanticRegistryProjection, SemanticRegistryRawFacts, SemanticRegistryProjectionEntry, RawFactsBundle, createSemanticRegistryProjection
+ * @used_by src/pipeline/generators/registry-generator.ts
+ */
+
 
 
 import * as path from 'path';

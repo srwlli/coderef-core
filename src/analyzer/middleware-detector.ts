@@ -4,6 +4,12 @@
  * @used_by src/cli/coderef-analyze.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports MiddlewareMapping, MiddlewareChain, MiddlewareHandler, DIContainer, DIProvider, DIImport, MiddlewareAnalysis, MiddlewareDetector, analyzeMiddlewareAndDI
+ * @used_by src/cli/coderef-analyze.ts
+ */
+
 
 
 /**

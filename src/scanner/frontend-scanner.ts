@@ -4,6 +4,12 @@
  * @used_by src/fileGeneration/saveFrontendCalls.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports scanFileForFrontendCalls, attachFrontendCalls, scanProjectForFrontendCalls
+ * @used_by src/fileGeneration/saveFrontendCalls.ts
+ */
+
 
 
 /**

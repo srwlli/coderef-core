@@ -3,6 +3,11 @@
  * @exports ContextOptions, ContextResult, ContextGenerator
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ContextOptions, ContextResult, ContextGenerator
+ */
+
 
 
 /**
