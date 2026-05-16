@@ -1,0 +1,38 @@
+{
+  "workorder_id": "WO-CODEREF-INTELLIGENCE-VIZ-TRANSFORMS-001",
+  "feature_name": "coderef-intelligence-viz-transforms",
+  "created": "2026-05-16T09:30:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Pure data-transform: read existing .coderef artifacts, compute 5 derived JSON files. No API changes, no blast radius.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Write generate-intelligence.js script",
+      "description": "Author a single Node.js script that reads index.json, graph.json, complexity summary, coverage.json, and coderef-vectors.json, then writes all 5 intelligence JSON files to .coderef/intelligence/.",
+      "tasks": [
+        {
+          "verb": "WRITE",
+          "description": "Create scripts/generate-intelligence.js that loads all 5 source artifacts and computes treemap.json, scatter.json, sankey.json, umap.json (PCA fallback), and hotspots.json",
+          "success_criteria": "Script exists at scripts/generate-intelligence.js and runs without error via `node scripts/generate-intelligence.js`"
+        },
+        {
+          "verb": "RUN",
+          "description": "Execute `node scripts/generate-intelligence.js` from the project root to produce the 5 output files",
+          "success_criteria": "All 5 files written to .coderef/intelligence/ with non-empty content"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Validate output files: treemap.json has children array, scatter.json array length >= 2000, sankey.json has nodes+links, umap.json has x+y per record, hotspots.json has exactly 50 entries",
+          "success_criteria": "All 5 structural checks pass"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit generate-intelligence.js and all 5 .coderef/intelligence/*.json files",
+          "success_criteria": "Commit hash recorded in communication.json"
+        }
+      ]
+    }
+  ]
+}
