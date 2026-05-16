@@ -6,9 +6,9 @@
   "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-15-006"],
   "predecessor_for": null,
-  "status": "implementing",
-  "current_phase": 1,
-  "phase_status": "in_progress",
+  "status": "complete",
+  "current_phase": 4,
+  "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/core-quality-depth-pass/analysis.json",
@@ -30,9 +30,33 @@
     "No blind widening of staleness check in orchestrator.ts",
     "RAG server required for phases 3-4 — check before executing"
   ],
-  "blockers": [],
+  "blockers": [
+    {
+      "phase": 3,
+      "blocker_id": "BLK-001",
+      "description": "OpenAI API key not configured initially. RAG index failed on first attempt.",
+      "resolution": "Resolved: used --provider ollama with nomic-embed-text (768 dim). Re-indexed with --reset. 1153 chunks indexed, 0 failed.",
+      "timestamp": "2026-05-16T00:10:00Z",
+      "resolved_at": "2026-05-16T01:00:00Z"
+    }
+  ],
   "decisions_log": [],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "from_phase": 1,
+      "to_phase": 2,
+      "timestamp": "2026-05-15T23:30:00Z",
+      "trigger": "hard_stop_approved",
+      "note": "Phase 1 complete: walkRawTsExports fix committed (6a28e62). 1495 tests passing."
+    },
+    {
+      "from_phase": 2,
+      "to_phase": null,
+      "timestamp": "2026-05-15T23:55:00Z",
+      "trigger": "hard_stop",
+      "note": "Phase 2 complete: header flood committed (74e178f). defined 278→956, stale 1782→1112. 1495 tests passing. Awaiting approval for Phase 3."
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
@@ -40,6 +64,30 @@
       "timestamp": "2026-05-15T22:15:00Z",
       "agent": "claude-sonnet-4-6",
       "message": "WO-CORE-QUALITY-DEPTH-PASS-001 created. 4-phase phased plan. Hard stops at phases 1 and 2. Header baseline: 343 missing, 1782 stale, 278 defined. Phase 1 targets orchestrator.ts:477 rawExports/exports mismatch."
+    },
+    {
+      "event": "phase_1_complete",
+      "timestamp": "2026-05-15T23:30:00Z",
+      "agent": "claude-sonnet-4-6",
+      "message": "Phase 1 complete. Fixed walkRawTsExports in relationship-extractor.ts to include interface_declaration and type_alias_declaration. Commit 6a28e62. graph-to-elements.ts ConversionOptions now correctly detected (no false staleness). 1495 tests passing."
+    },
+    {
+      "event": "phase_2_hard_stop",
+      "timestamp": "2026-05-15T23:55:00Z",
+      "agent": "claude-sonnet-4-6",
+      "message": "Phase 2 complete. --source-headers --overwrite-headers flood applied to all src/ files. Deduped 171 files with duplicate header blocks. Restored header-generator.ts (stamp pass corrupted formatAsComments body). Before: missing=343, stale=1782, defined=278 (11.5%). After: missing=343, stale=1112, defined=956 (41% of src). Commit 74e178f. 1495 tests passing. HARD STOP — awaiting approval for Phase 3 (RAG audit, requires server at :52849)."
+    },
+    {
+      "event": "phase_3_blocked",
+      "timestamp": "2026-05-16T00:10:00Z",
+      "agent": "claude-sonnet-4-6",
+      "message": "Phase 3 BLOCKED. RAG server started at :52849 (pid 17700, healthy). rag-index run: status=failed — all 1071 chunks failed with 'Invalid OpenAI API key'. Existing index dimension mismatch (1536 vs 768). No working vector store. Phases 3-4 cannot execute. BLK-001 filed. Workorder status set to checkpoint_ready."
+    },
+    {
+      "event": "phase_3_4_complete",
+      "timestamp": "2026-05-16T01:00:00Z",
+      "agent": "claude-sonnet-4-6",
+      "message": "BLK-001 resolved: re-indexed with --provider ollama --reset. nomic-embed-text (768 dim). 1153 chunks indexed, 0 failed (1642 skipped: missing/stale headers). Phase 3: 8 RAG queries executed. Query 2 (header generator) top hit: src/semantic/header-generator.ts:164 at 70.7%. Query 5 (graph adapter) top hit: src/adapter/graph-to-elements.ts:143 at 70.2%. Phase 4: loop validated — trivial change to graph-to-elements.ts → populate → rag-index → re-query confirmed updated hits (file appeared at positions 1+2). Test change reverted. All 4 phases complete."
     }
   ]
 }
