@@ -10,6 +10,24 @@
  * @used_by src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts
  */
 
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ParseHeaderResult, parseHeader
+ * @used_by src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ParseHeaderResult, parseHeader
+ * @used_by src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts
+ */
+
+/**
+ * @coderef-semantic: 1.0.0
+ * @exports ParseHeaderResult, parseHeader
+ * @used_by src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts
+ */
+
 
 
 /**
@@ -66,27 +84,38 @@ const KEBAB_CASE_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 function detectHeaderBlock(
   sourceText: string,
 ): { body: string; startLine: number } | null {
-  const blockMatch = sourceText.match(/^\s*\/\*\*([\s\S]*?)\*\//);
+  // Strip shebang line so CLI files with #!/usr/bin/env node are handled correctly.
+  let text = sourceText;
+  let shebangLines = 0;
+  if (text.startsWith('#!')) {
+    const nl = text.indexOf('\n');
+    if (nl >= 0) {
+      text = text.slice(nl + 1);
+      shebangLines = 1;
+    }
+  }
+
+  const blockMatch = text.match(/^\s*\/\*\*([\s\S]*?)\*\//);
   if (blockMatch && SEMANTIC_MARKER_RE.test(blockMatch[1])) {
-    const startLine = countLines(sourceText.slice(0, blockMatch.index ?? 0)) + 1;
+    const startLine = shebangLines + countLines(text.slice(0, blockMatch.index ?? 0)) + 1;
     return { body: blockMatch[1], startLine };
   }
 
-  const lineMatch = sourceText.match(/^\s*((?:\/\/.*\n)+)/);
+  const lineMatch = text.match(/^\s*((?:\/\/.*\n)+)/);
   if (lineMatch) {
     const stripped = lineMatch[1]
       .split('\n')
       .map(line => line.replace(/^\s*\/\/\s?/, ''))
       .join('\n');
     if (SEMANTIC_MARKER_RE.test(stripped)) {
-      const startLine = countLines(sourceText.slice(0, lineMatch.index ?? 0)) + 1;
+      const startLine = shebangLines + countLines(text.slice(0, lineMatch.index ?? 0)) + 1;
       return { body: stripped, startLine };
     }
   }
 
-  const docstringMatch = sourceText.match(/^\s*"""([\s\S]*?)"""/);
+  const docstringMatch = text.match(/^\s*"""([\s\S]*?)"""/);
   if (docstringMatch && SEMANTIC_MARKER_RE.test(docstringMatch[1])) {
-    const startLine = countLines(sourceText.slice(0, docstringMatch.index ?? 0)) + 1;
+    const startLine = shebangLines + countLines(text.slice(0, docstringMatch.index ?? 0)) + 1;
     return { body: docstringMatch[1], startLine };
   }
 
@@ -130,6 +159,8 @@ function extractTagValue(body: string, tag: string): { value: string; offset: nu
     .map((line, idx) => (idx === 0 ? line : line.replace(/^\s*\*\s?/, '')))
     .join('\n')
     .trim();
+  // Support colon-suffix syntax: `@tag: value` — strip the leading colon+whitespace.
+  if (raw.startsWith(':')) raw = raw.slice(1).trimStart();
   return { value: raw, offset: m.index };
 }
 
