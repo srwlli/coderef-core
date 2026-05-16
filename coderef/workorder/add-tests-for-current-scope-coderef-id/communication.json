@@ -6,8 +6,16 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-006"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-16T07:30:00Z",
+  "closed_at": "2026-05-16T07:45:00Z",
+  "updated": "2026-05-16T07:45:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/add-tests-for-current-scope-coderef-id/ARCHIVED",
+    "review_verdict_source": "Step 3 audit (scoped to WO-ADD-TESTS-FOR-CURRENT-SCOPE-CODEREF-ID-001)",
+    "warnings": []
+  },
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "coderef/workorder/add-tests-for-current-scope-coderef-id/plan.json",
@@ -54,6 +62,11 @@
       "phases_closed": [1],
       "commit": "d236212",
       "note": "6 new tests pass. 1501/1532 total (30 skips + 1 pre-existing timing flake in scanner-standalone). No production code changes."
+    },
+    {
+      "timestamp": "2026-05-16T07:45:00Z",
+      "agent": "close-workorder v2.1.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (scoped), finalized, committed d236212+34ddefe, archived."
     }
   ]
 }
