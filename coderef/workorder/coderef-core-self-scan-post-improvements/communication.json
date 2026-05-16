@@ -6,10 +6,20 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-011"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 3,
   "phase_status": "complete",
   "completed_at": "2026-05-16T10:45:00Z",
+  "closed_at": "2026-05-16T10:52:00Z",
+  "closed_via": "close-workorder",
+  "review_result": "PASS",
+  "reviewed_at": "2026-05-16T10:52:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/coderef-core-self-scan-post-improvements/ARCHIVED",
+    "review_verdict_source": "validate-coderef-culture --scope=WO-CODEREF-CORE-SELF-SCAN-POST-IMPROVEMENTS-001 — 11/11 PASS",
+    "warnings": []
+  },
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/coderef-core-self-scan-post-improvements/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/coderef-core-self-scan-post-improvements/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/coderef-core-self-scan-post-improvements/analysis.json",
@@ -57,6 +67,12 @@
       "outcome": "pass_with_warnings",
       "validator_exit": 1,
       "note": "Pre-existing drift in API.md, COMPONENTS.md, ARCHITECTURE.md, SCHEMA.md (static docs); 18 invalid UUID anchors — unrelated to this WO"
+    },
+    {
+      "at": "2026-05-16T10:52:00Z",
+      "event": "workorder_closed",
+      "by": "close-workorder v2.1.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (11/11 cultural checks). Finalized, committed 68a970c, archive pending."
     },
     {
       "at": "2026-05-16T10:45:00Z",
