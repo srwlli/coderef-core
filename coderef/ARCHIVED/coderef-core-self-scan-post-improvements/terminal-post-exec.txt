@@ -1,0 +1,32 @@
+=============================================================
+WORKORDER: WO-CODEREF-CORE-SELF-SCAN-POST-IMPROVEMENTS-001  |  coderef-core-self-scan-post-improvements  |  COMPLETE
+Session: daily-agent-session-2026-05-16  |  Phases: 3  |  Commits: 1  |  Pushes: 1
+Parent stub: DISPATCH-2026-05-16-011
+
+FILES CREATED:
+  + coderef/workorder/coderef-core-self-scan-post-improvements/context.json  (68a970c)
+  + coderef/workorder/coderef-core-self-scan-post-improvements/analysis.json  (68a970c)
+  + coderef/workorder/coderef-core-self-scan-post-improvements/plan.json  (68a970c)
+  + coderef/workorder/coderef-core-self-scan-post-improvements/communication.json  (68a970c)
+  + coderef/working/coderef-core-self-scan-post-improvements/self-scan-report.md  (68a970c)
+
+FILES MODIFIED:
+  ~ coderef/foundation-docs/INDEX.md  (68a970c)
+  ~ coderef/foundation-docs/EXPORTS.md  (68a970c)
+  ~ coderef/foundation-docs/HOTSPOTS.md  (68a970c)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md  (68a970c)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Refresh Pipeline Artifacts (populate.js + rag-index --reset + index metrics)  (68a970c)
+  [x] Phase 2: Run RAG Search Queries (4 queries; --max-tokens flag confirmed; results deferred - rebuild in-progress)  (68a970c)
+  [x] Phase 3: Measure Metrics + Author Report + Commit  (68a970c)
+
+KEY FINDINGS:
+  total_elements: 2484 (was 2431)  |  header_defined: 51.2% (was 39%)
+  stale: 797 (was 1112, -28%)  |  elementType graph.json: 100% (was 0%)
+  test_coverage: 36% (was 35%)  |  capability/layer: STILL 0 (fix #1 not reflected)
+
+Session: updated  |  Registry: synced  |  Validator: PASS (4 pre-existing FAIL unrelated to this WO)
+
+APPROVE -> /close-workorder WO-CODEREF-CORE-SELF-SCAN-POST-IMPROVEMENTS-001
+=============================================================
