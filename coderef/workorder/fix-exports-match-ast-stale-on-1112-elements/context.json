@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-FIX-EXPORTS-MATCH-AST-STALE-ON-1112-ELEMENTS-001",
+  "feature_name": "fix-exports-match-ast-stale-on-1112-elements",
+  "created": "2026-05-16T06:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-005",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Investigate and fix why 1,112 elements have headerStatus=stale due to exports_match_ast mismatch."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single surgical line change: filter 'default' from astSet before bidirectional Set comparison in orchestrator.ts:483. Investigation complete — root cause confirmed via graph.json (1191 stale nodes) and source file inspection. No new abstractions needed.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "root_cause": {
+    "summary": "tree-sitter AST emits 'default' as an exportedName for 'export default X' statements. The bidirectional Set comparison at orchestrator.ts:482-487 includes 'default' in astSet but @exports headers never declare 'default' — causing permanent mismatch on any file with a default export.",
+    "confirmed_at": "src/analyzer/analyzer-service.ts:359 (export default AnalyzerService) — AST yields {'AnalysisResult','AnalyzerService','default'}, header has {'AnalysisResult','AnalyzerService'}",
+    "stale_count_before_fix": 1191,
+    "fix": "Filter 'default' from astSet at orchestrator.ts line 483 before the bidirectional comparison"
+  },
+  "scope": {
+    "in_scope": [
+      "Filter 'default' from astSet in orchestrator.ts bidirectional comparison (line 483)",
+      "Run populate-coderef to verify stale count drops below 100",
+      "Add regression test: file with 'export default X' must not produce headerStatus=stale"
+    ],
+    "out_of_scope": [
+      "Changing the @exports header format",
+      "Modifying relationship-extractor.ts AST extraction",
+      "Changing the stale definition itself"
+    ]
+  },
+  "constraints": [
+    "1496/1526 tests must still pass",
+    "stale count after re-populate must drop below 100",
+    "Fix must not change the stale definition, only fix the mismatch source"
+  ],
+  "pre_existing_drift": true
+}

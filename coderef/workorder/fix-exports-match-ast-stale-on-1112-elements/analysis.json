@@ -1,0 +1,53 @@
+{
+  "workorder_id": "WO-FIX-EXPORTS-MATCH-AST-STALE-ON-1112-ELEMENTS-001",
+  "feature_name": "fix-exports-match-ast-stale-on-1112-elements",
+  "analysis_authored_at": "2026-05-16T06:30:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/orchestrator.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "headerStatus propagated to all elements of each file",
+      "RAG vector metadata (layer, headerStatus)",
+      "graph.json node.metadata.headerStatus",
+      "rag-index skip filter (header_status_stale)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Filtering 'default' may hide genuine header mismatches",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "The fix is directional: 'default' is ONLY filtered from astSet, not from headerSet. If a header mistakenly declares 'default', that would still surface as headerSet-has but astSet-lacks mismatch. Only the reverse (astSet has 'default', header doesn't) is suppressed."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Re-exports ('export { X as default }') may also emit 'default'",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Same fix applies — 'default' as a re-export alias is also not declared in @exports headers. Filtering is correct for all forms."
+    }
+  ],
+  "candidates": [
+    "src/pipeline/orchestrator.ts:483"
+  ],
+  "dependencies": [
+    "src/pipeline/relationship-extractor.ts — provides rawExports / extractHeaderFact",
+    "src/pipeline/semantic-header-parser.ts — writes @exports to source headers"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Filter 'default' from astSet only (not from headerSet)",
+      "rationale": "Preserves ability to detect genuine mismatches where a header incorrectly claims 'default'. Only suppresses the one-directional false positive where AST has 'default' but header doesn't."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Do not modify relationship-extractor.ts to stop emitting 'default'",
+      "rationale": "The extractor may be used by other consumers that legitimately want to know about default exports. The fix belongs at the comparison boundary, not the extraction layer."
+    }
+  ]
+}
