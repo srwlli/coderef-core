@@ -77,10 +77,12 @@ export function normalizeGraphForOutput(
     nodes: graph.nodes.map(node => ({
       ...node,
       // Lookup UUID for the node which corresponds to an element (WO-CODEREF-CORE-REGISTRY-001)
-      uuid: node.file && node.name && typeof node.line === 'number' 
+      uuid: node.file && node.name && typeof node.line === 'number'
         ? globalRegistry.lookup({ name: node.name, file: node.file, line: node.line })
         : undefined,
       file: node.file ? toPortablePath(projectPath, node.file) : undefined,
+      // elementType mirrors type so legacy consumers (buildDependencyGraph.ts interface) can read it
+      elementType: node.type,
     })),
     edges: graph.edges.map(edge => ({
       ...edge,
