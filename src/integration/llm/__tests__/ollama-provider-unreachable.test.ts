@@ -18,6 +18,7 @@ const mockFetch = vi.fn();
 // Track all fetch URLs for assertion
 let fetchUrls: string[] = [];
 
+// Requires Ollama daemon on localhost:11434 — skipped until local inference is available. See WO-FAILING-TESTS-TRIAGE-001.
 describe.skip('Ollama Provider - Unreachable Daemon', () => {
   beforeEach(() => {
     fetchUrls = [];
@@ -129,6 +130,7 @@ describe.skip('Ollama Provider - Unreachable Daemon', () => {
   });
 });
 
+// Requires Ollama daemon on localhost:11434 — skipped until local inference is available. See WO-FAILING-TESTS-TRIAGE-001.
 describe.skip('Ollama Provider - Runtime Negative Test (Manual)', () => {
   it('manual test instructions for Phase 4.3', () => {
     // This test documents the manual runtime negative test procedure

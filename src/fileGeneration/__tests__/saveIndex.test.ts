@@ -19,6 +19,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { mkdir, rm, readFile, access } from 'fs/promises';
 import { constants } from 'fs';
+import { randomUUID } from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,8 +29,8 @@ describe('saveIndex() - File Generation', () => {
   let testElements: ElementData[];
 
   beforeEach(async () => {
-    // Create temporary project directory
-    testProjectDir = join(__dirname, '.test-project');
+    // Unique dir per test to avoid parallel-runner collisions
+    testProjectDir = join(__dirname, `.test-project-${randomUUID()}`);
     await mkdir(testProjectDir, { recursive: true });
 
     // Create sample elements

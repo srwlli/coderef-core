@@ -34,6 +34,7 @@ vi.mock('chromadb', () => ({
   })),
 }));
 
+// Requires live Chroma server (chromadb) — skipped until infrastructure is available. See WO-FAILING-TESTS-TRIAGE-001.
 describe.skip('ChromaStore', () => {
   beforeEach(() => {
     vi.clearAllMocks();

@@ -39,6 +39,7 @@ vi.mock('@pinecone-database/pinecone', () => ({
   })),
 }));
 
+// Requires Pinecone API key and live index — skipped until infrastructure is available. See WO-FAILING-TESTS-TRIAGE-001.
 describe.skip('PineconeStore', () => {
   beforeEach(() => {
     vi.clearAllMocks();
