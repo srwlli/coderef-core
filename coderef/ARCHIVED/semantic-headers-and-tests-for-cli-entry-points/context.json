@@ -1,0 +1,54 @@
+{
+  "workorder_id": "WO-SEMANTIC-HEADERS-AND-TESTS-FOR-CLI-ENTRY-POINTS-001",
+  "feature_name": "semantic-headers-and-tests-for-cli-entry-points",
+  "created": "2026-05-16T08:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-008",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Add semantic headers and unit tests to the 4 CLI entry points: populate.ts, rag-index.ts, rag-search.ts, rag-status.ts. Triple-gap: complex, untested, undocumented at the semantic layer."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Targeted additions to 4 known files — semantic headers and test stubs. No architectural changes, no new modules, no cross-cutting blast radius. Classic light scope: add docs + targeted tests to specific files.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [
+      { "file": "src/cli/rag-index.ts", "complexity": 54, "reason": "multi-provider dynamic-import orchestration + validation gate" },
+      { "file": "src/cli/rag-search.ts", "complexity": 48, "reason": "facet filter resolution + multi-provider search path" },
+      { "file": "src/cli/rag-status.ts", "complexity": 35, "reason": "dual-store status aggregation" },
+      { "file": "src/cli/populate.ts", "complexity": 0, "reason": "complexity unknown from dispatch; large orchestration file" }
+    ],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Add @coderef-semantic header block to src/cli/populate.ts",
+      "Add @coderef-semantic header block to src/cli/rag-index.ts",
+      "Add @coderef-semantic header block to src/cli/rag-search.ts",
+      "Add @coderef-semantic header block to src/cli/rag-status.ts",
+      "Add unit tests for rag-index.ts main paths (argument parsing, local-only enforcement, validation gate refusal)",
+      "Add unit tests for rag-status.ts main paths (no-index, JSON output, human output)"
+    ],
+    "out_of_scope": [
+      "Modifying CLI logic or behavior",
+      "Integration tests requiring live vector stores or LLM providers",
+      "Changes to populate-cli.test.ts (existing tests cover populate.ts)",
+      "rag-search.ts tests (requires live embedding provider; pure unit coverage is limited)",
+      "Any changes to orchestrator, pipeline, or generator code"
+    ]
+  },
+  "constraints": [
+    "Semantic headers must conform to the @coderef-semantic block format already in use across the codebase",
+    "Tests must not require live API keys or external services (mock or unit-only)",
+    "Test suite must still pass 1496+ tests after additions",
+    "Header coverage % must increase from 39% baseline"
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "workorder_id": "WO-SEMANTIC-HEADERS-AND-TESTS-FOR-CLI-ENTRY-POINTS-001",
+  "feature_name": "semantic-headers-and-tests-for-cli-entry-points",
+  "created": "2026-05-16T08:30:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "4 targeted file edits (headers) + 2 new test files. No architectural changes. Classic light scope.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "id": 1,
+      "name": "Add semantic headers to all 4 CLI entry points",
+      "tasks": [
+        {
+          "id": "1.1",
+          "verb": "EDIT",
+          "description": "Add @coderef-semantic header block to src/cli/populate.ts. Header: @capability cli-populate, @layer cli, @exports main, parseArgs, printHelp, run, runGenerator"
+        },
+        {
+          "id": "1.2",
+          "verb": "EDIT",
+          "description": "Add @coderef-semantic header block to src/cli/rag-index.ts. Header: @capability cli-rag-index, @layer cli, @exports main, parseArgs, printHelp, createLLMProvider, createVectorStore, loadRAGDependencies"
+        },
+        {
+          "id": "1.3",
+          "verb": "EDIT",
+          "description": "Add @coderef-semantic header block to src/cli/rag-search.ts. Header: @capability cli-rag-search, @layer cli, @exports main, parseArgs, printHelp, createLLMProvider, createVectorStore, formatResult, loadRAGDependencies"
+        },
+        {
+          "id": "1.4",
+          "verb": "EDIT",
+          "description": "Add @coderef-semantic header block to src/cli/rag-status.ts. Header: @capability cli-rag-status, @layer cli, @exports main, parseArgs, printHelp, formatBytes, formatDuration, formatRelativeTime"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Add unit tests for rag-index.ts and rag-status.ts",
+      "tasks": [
+        {
+          "id": "2.1",
+          "verb": "WRITE",
+          "description": "Create __tests__/rag-index-cli.test.ts. Tests: parseArgs defaults, --provider flag, --store flag, --reset flag, --lang flag, CODEREF_RAG_LOCAL_ONLY rejection for cloud providers when set."
+        },
+        {
+          "id": "2.2",
+          "verb": "WRITE",
+          "description": "Create __tests__/rag-status-cli.test.ts. Tests: parseArgs defaults, --json flag, --project-dir flag, formatBytes output, formatDuration output, formatRelativeTime output."
+        },
+        {
+          "id": "2.3",
+          "verb": "TEST",
+          "description": "Run npx vitest run --no-coverage. Verify 1496+ tests pass + new tests pass. AC: zero new failures."
+        },
+        {
+          "id": "2.4",
+          "verb": "COMMIT",
+          "description": "Commit: feat(cli): add semantic headers to 4 CLI entry points + unit tests for rag-index and rag-status"
+        }
+      ]
+    }
+  ],
+  "hard_stops": [],
+  "acceptance_criteria": [
+    "All 4 CLI files have @capability, @layer, @exports semantic headers written",
+    "Tests added for rag-index.ts parseArgs and local-only enforcement",
+    "Tests added for rag-status.ts parseArgs and utility formatting functions",
+    "Test suite passes with 1496+ tests (no regressions, plus new tests)",
+    "Header coverage % increases from 39% baseline"
+  ]
+}

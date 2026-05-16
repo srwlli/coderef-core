@@ -1,0 +1,72 @@
+{
+  "workorder_id": "WO-SEMANTIC-HEADERS-AND-TESTS-FOR-CLI-ENTRY-POINTS-001",
+  "feature_name": "semantic-headers-and-tests-for-cli-entry-points",
+  "analysis_authored_at": "2026-05-16T08:30:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/cli/populate.ts",
+      "src/cli/rag-index.ts",
+      "src/cli/rag-search.ts",
+      "src/cli/rag-status.ts"
+    ],
+    "files_created": [
+      "__tests__/rag-index-cli.test.ts",
+      "__tests__/rag-status-cli.test.ts"
+    ],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Header block placement disrupts file parsing",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Place header in the file-level JSDoc block position (after shebang + file-level comment, before imports). Verify existing tests still pass after header insertion."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Test mocking of dynamic imports is fragile",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Avoid testing dynamic import paths; test parseArgs() and static logic in isolation using argument arrays. This pattern mirrors populate-cli.test.ts."
+    },
+    {
+      "id": "RISK-003",
+      "title": "rag-status vectorsPath uses legacy sqlite name for what is now a JSON file",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Test against actual path constant (CODEREF_SQLITE_PATH env var path). No behavior change needed — this is a known naming mismatch documented in comments."
+    }
+  ],
+  "candidates": [
+    { "file": "src/cli/populate.ts", "reason": "Public CLI entry point — zero semantic header coverage" },
+    { "file": "src/cli/rag-index.ts", "reason": "Public CLI, complexity=54, zero header + zero tests" },
+    { "file": "src/cli/rag-search.ts", "reason": "Public CLI, complexity=48, zero header + zero tests" },
+    { "file": "src/cli/rag-status.ts", "reason": "Public CLI, complexity=35, zero header + zero tests" }
+  ],
+  "dependencies": [
+    { "type": "test-framework", "name": "vitest", "version": "^1.x" },
+    { "type": "test-runner", "script": "npx vitest run --no-coverage" }
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Skip rag-search.ts unit tests",
+      "rationale": "rag-search.ts main() requires a live embedding provider for any meaningful test. The parseArgs() function is nearly identical to rag-index.ts. Adding fragile mocked tests for nearly-duplicate code is low value. Header coverage is the high-leverage item here.",
+      "outcome": "Only rag-index-cli.test.ts and rag-status-cli.test.ts are created. rag-search header is added."
+    },
+    {
+      "id": "DR-002",
+      "decision": "populate.ts gets header only, no new tests",
+      "rationale": "populate-cli.test.ts already has 5 meaningful test cases covering the main execution paths. Adding redundant tests would violate the 'no over-engineering' constraint.",
+      "outcome": "populate.ts receives @coderef-semantic header block only"
+    },
+    {
+      "id": "DR-003",
+      "decision": "Header block format: @capability, @layer, @exports inline in file-level JSDoc",
+      "rationale": "Matches existing header format in well-documented files across the codebase. The semantic header is a JSDoc block at the file level.",
+      "outcome": "Headers placed after the shebang + existing file-level JSDoc comment at line 1-10"
+    }
+  ]
+}

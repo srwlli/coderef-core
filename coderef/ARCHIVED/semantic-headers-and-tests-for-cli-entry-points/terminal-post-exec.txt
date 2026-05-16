@@ -1,0 +1,34 @@
+=============================================================
+WORKORDER: WO-SEMANTIC-HEADERS-AND-TESTS-FOR-CLI-ENTRY-POINTS-001  |  semantic-headers-and-tests-for-cli-entry-points  |  COMPLETE
+Session: daily-agent-session-2026-05-16  |  Phases: 2  |  Commits: 1  |  Pushes: 1
+Parent stub: none
+
+FILES CREATED:
+  + __tests__/rag-index-cli.test.ts  (7618af6)
+  + __tests__/rag-status-cli.test.ts  (7618af6)
+
+FILES MODIFIED:
+  ~ src/cli/populate.ts — @coderef-semantic header block added  (7618af6)
+  ~ src/cli/rag-index.ts — @coderef-semantic header block added  (7618af6)
+  ~ src/cli/rag-search.ts — @coderef-semantic header block added  (7618af6)
+  ~ src/cli/rag-status.ts — @coderef-semantic header block added  (7618af6)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Add semantic headers to all 4 CLI entry points  (7618af6)
+  [x] Phase 2: Unit tests for rag-index-cli + rag-status-cli, test run, commit  (7618af6)
+
+TEST RESULTS:
+  vitest: 1539 passed / 30 skipped / 1 pre-existing failed (saveIndex ENOENT — unrelated)
+  new: rag-index-cli.test.ts 22/22, rag-status-cli.test.ts 16/16
+
+ACCEPTANCE CRITERIA:
+  [PASS] All 4 CLI files have @capability, @layer, @exports semantic headers
+  [PASS] Tests added for rag-index.ts parseArgs and local-only enforcement (22 tests)
+  [PASS] Tests added for rag-status.ts parseArgs and utility formatting (16 tests)
+  [PASS] Test suite passes 1539+ tests with no regressions
+  [PASS] Header coverage increases — 4 previously uncovered CLI files now have headers
+
+Session: updated  |  Registry: synced  |  Validator: PASS (15/15 tracking checks)
+
+APPROVE -> /close-workorder WO-SEMANTIC-HEADERS-AND-TESTS-FOR-CLI-ENTRY-POINTS-001
+=============================================================
