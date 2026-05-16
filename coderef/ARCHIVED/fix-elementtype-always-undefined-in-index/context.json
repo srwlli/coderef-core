@@ -1,0 +1,27 @@
+{
+  "workorder_id": "WO-FIX-ELEMENTTYPE-ALWAYS-UNDEFINED-IN-INDEX-001",
+  "feature_name": "fix-elementtype-always-undefined-in-index",
+  "created": "2026-05-16T06:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-004",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Fix elementType always showing undefined in index.json for all 2431 elements. Trace why tree-sitter outputs element type information but it never flows into the index."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single-file fix in graph-output.ts — add 1 field to node serialization. No new abstractions.",
+    "plan_type_decided_by": "create-workorder@2.4.0"
+  },
+  "scope": {
+    "in_scope": [
+      "src/pipeline/generators/graph-output.ts — add elementType: node.type to normalizeGraphForOutput node map"
+    ],
+    "out_of_scope": [
+      "index.json — already has type field populated correctly",
+      "tree-sitter-scanner.ts — type extraction was correct, not the issue"
+    ]
+  },
+  "investigation_notes": "Root cause traced: graph.json nodes use type='function' etc. (correct) but buildDependencyGraph.ts GraphNode interface defines elementType as the semantic type field. The pipeline graph-builder.ts writes type directly, never elementType. Fix: add elementType as alias in graph-output.ts normalizeGraphForOutput. index.json already had type=2431/2431 populated — the 'undefined' observation in self-scan was from querying graph.json nodes for elementType."
+}

@@ -1,0 +1,27 @@
+{
+  "workorder_id": "WO-FIX-ELEMENTTYPE-ALWAYS-UNDEFINED-IN-INDEX-001",
+  "feature_name": "fix-elementtype-always-undefined-in-index",
+  "created": "2026-05-16T06:00:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single-file fix — 1 line added to graph-output.ts node serialization",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Trace, fix, verify",
+      "tasks": [
+        { "verb": "READ", "description": "Trace elementType through graph.json, buildDependencyGraph.ts, graph-output.ts, graph-builder.ts to find where type flows and elementType is absent" },
+        { "verb": "EDIT", "description": "In graph-output.ts normalizeGraphForOutput node map, add: elementType: node.type" },
+        { "verb": "RUN", "description": "populate re-run — verify graph.json now has 2795/2795 nodes with elementType" },
+        { "verb": "TEST", "description": "npm test — 1496/1526 still passing" },
+        { "verb": "COMMIT", "description": "fix(graph-output): add elementType alias field to serialized graph nodes" }
+      ]
+    }
+  ],
+  "hard_stops": [],
+  "acceptance_criteria": [
+    "graph.json nodes have elementType field matching type (2795/2795)",
+    "1496/1526 tests passing",
+    "element.type in index.json confirmed already populated (2431/2431)"
+  ]
+}
