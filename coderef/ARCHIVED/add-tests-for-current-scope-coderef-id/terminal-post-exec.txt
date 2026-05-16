@@ -1,0 +1,25 @@
+=============================================================
+WORKORDER: WO-ADD-TESTS-FOR-CURRENT-SCOPE-CODEREF-ID-001  |  add-tests-for-current-scope-coderef-id  |  COMPLETE
+Session: SES-add-tests-for-current-scope-coderef-id  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: (none — dispatch-originated)
+
+FILES CREATED:
+  + __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts  (d236212)
+  + coderef/workorder/add-tests-for-current-scope-coderef-id/context.json  (34ddefe)
+  + coderef/workorder/add-tests-for-current-scope-coderef-id/analysis.json  (34ddefe)
+  + coderef/workorder/add-tests-for-current-scope-coderef-id/plan.json  (34ddefe)
+  + coderef/workorder/add-tests-for-current-scope-coderef-id/communication.json  (34ddefe)
+
+FILES MODIFIED:
+  ~ coderef/foundation-docs/INDEX.md  (34ddefe)
+  ~ coderef/foundation-docs/EXPORTS.md  (34ddefe)
+  ~ coderef/foundation-docs/HOTSPOTS.md  (34ddefe)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md  (34ddefe)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Write and verify unit tests for currentScopeCodeRefId  (d236212)
+
+Session: updated  |  Registry: synced  |  Validator: PASS
+
+APPROVE -> /close-workorder WO-ADD-TESTS-FOR-CURRENT-SCOPE-CODEREF-ID-001
+=============================================================
