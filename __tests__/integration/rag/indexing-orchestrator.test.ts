@@ -165,3 +165,75 @@ describe('Phase 7 AC-06 — CodeChunkMetadata supports filter-by-facet', () => {
     expect(meta.headerStatus).toBe('defined');
   });
 });
+
+describe('DISPATCH-003 AC — layer propagates from node.metadata to VectorRecord.metadata', () => {
+  // End-to-end flow test: graph.json node with metadata.layer='infrastructure'
+  // must appear as VectorRecord.metadata.layer='infrastructure' after indexCodebase().
+  // This locks the conditional spread at indexing-orchestrator.ts:748-749 so
+  // no future refactor can silently drop layer from the vector payload.
+  it('layer on graph node metadata flows through to VectorRecord.metadata.layer', async () => {
+    const basePath = fs.mkdtempSync(path.join(os.tmpdir(), 'orch-layer-test-'));
+    fs.mkdirSync(path.join(basePath, '.coderef'), { recursive: true });
+
+    // Source file the node references — must exist for ChunkConverter to produce a chunk.
+    const srcDir = path.join(basePath, 'src');
+    fs.mkdirSync(srcDir, { recursive: true });
+    fs.writeFileSync(path.join(srcDir, 'infra.ts'), 'export function connect() {}');
+
+    // Graph node with layer='infrastructure' and headerStatus='defined' so
+    // the header-status filter passes the chunk through.
+    fs.writeFileSync(
+      path.join(basePath, '.coderef', 'graph.json'),
+      JSON.stringify({
+        nodes: [
+          {
+            id: '@Fn/src/infra.ts#connect:1',
+            name: 'connect',
+            type: 'function',
+            file: 'src/infra.ts',
+            line: 1,
+            metadata: {
+              layer: 'infrastructure',
+              headerStatus: 'defined',
+            },
+          },
+        ],
+        edges: [],
+      }),
+    );
+
+    // Capture upserted VectorRecords from the mock.
+    const capturedRecords: any[] = [];
+    const vectorStore = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      upsert: vi.fn().mockImplementation(async (records: any[]) => {
+        capturedRecords.push(...records);
+      }),
+      stats: vi.fn().mockResolvedValue({}),
+      clear: vi.fn().mockResolvedValue(undefined),
+    } as any;
+
+    // LLM provider that returns a minimal fake embedding for any input.
+    const llmProvider = {
+      getEmbeddingDimensions: () => 4,
+      embed: vi.fn().mockResolvedValue([[0.1, 0.2, 0.3, 0.4]]),
+    } as any;
+
+    const orch = new IndexingOrchestrator(llmProvider, vectorStore, basePath);
+    const result = await orch.indexCodebase({
+      sourceDir: '.',
+      useAnalyzer: true,
+      validation: { ok: true },
+    });
+
+    // At least one chunk must have been indexed for layer to appear.
+    expect(result.chunksIndexed).toBeGreaterThan(0);
+
+    // The upserted record for our node must carry layer='infrastructure'.
+    const record = capturedRecords.find(
+      (r) => r.id === '@Fn/src/infra.ts#connect:1',
+    );
+    expect(record).toBeDefined();
+    expect(record.metadata.layer).toBe('infrastructure');
+  });
+});
