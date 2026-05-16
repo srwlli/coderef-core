@@ -7,10 +7,12 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-010"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "completed_at": "2026-05-16T10:00:00Z",
+  "closed_at": "2026-05-16T10:15:00Z",
+  "updated": "2026-05-16T10:15:00Z",
   "plan_file": "coderef/workorder/coderef-intelligence-viz-transforms/plan.json",
   "context_file": "coderef/workorder/coderef-intelligence-viz-transforms/context.json",
   "analysis_file": "coderef/workorder/coderef-intelligence-viz-transforms/analysis.json",
@@ -69,6 +71,18 @@
         ".coderef/intelligence/umap.json (1153 PCA-projected vectors)",
         ".coderef/intelligence/hotspots.json (50 top by in-degree)"
       ]
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-05-16T10:15:00Z",
+      "by": "close-workorder@2.1.0",
+      "note": "Closed via /close-workorder. Audit PASS (11/11 culture scope, 15/15 tracking scope, 0 vulns). Phase 1 complete, commit fb1212a pushed."
     }
-  ]
+  ],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/coderef-intelligence-viz-transforms/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — validate-coderef-culture PASS (11/11 scope mode)",
+    "warnings": []
+  }
 }
