@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-output-validation-semantic-headers-test
+ */
+/**
  * Phase 6 — output-validation-semantic-headers integration test (AC-03).
  *
  * Three sub-tests, one per SH-* check. Each runs the validator twice — once

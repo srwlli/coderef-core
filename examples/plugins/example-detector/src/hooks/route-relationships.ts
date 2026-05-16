@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability plugin-route-relationships-hook
+ */
+/**
  * Route Relationships Hook
  * Example plugin hook for CodeRef
  *

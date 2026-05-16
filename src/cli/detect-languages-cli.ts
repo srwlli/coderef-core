@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-detect-languages
+ */
 import { parseArgs } from 'node:util';
 import { detectProjectLanguages, formatSupportedLanguages } from './detect-languages.js';
 

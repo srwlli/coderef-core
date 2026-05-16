@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability doc-gen-generate-intelligence
+ */
+/**
  * generate-intelligence.js
  * Computes 5 visualization datasets from .coderef artifacts.
  * Output: .coderef/intelligence/{treemap,scatter,sankey,umap,hotspots}.json

@@ -1,3 +1,8 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-element-taxonomy-test
+ */
 import * as fs from 'fs';
 import * as path from 'path';
 import { describe, expect, it } from 'vitest';

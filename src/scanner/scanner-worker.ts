@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability scanner-worker
+ */
+/**
  * Scanner Worker - Phase 2: Parallel Processing
  *
  * Worker thread for parallel file processing

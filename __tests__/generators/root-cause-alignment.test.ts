@@ -1,3 +1,8 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability generators-root-cause-alignment-test
+ */
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';

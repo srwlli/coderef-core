@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability doc-gen-index-md
+ */
+/**
  * Generate INDEX.md - Master Element Registry
  * Workorder: WO-FOUNDATION-DOCS-001
  * 

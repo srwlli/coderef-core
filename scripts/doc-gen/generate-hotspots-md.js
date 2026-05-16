@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability doc-gen-hotspots-md
+ */
+/**
  * Generate HOTSPOTS.md - Complexity & Risk Analysis
  * Workorder: WO-FOUNDATION-DOCS-001
  * 

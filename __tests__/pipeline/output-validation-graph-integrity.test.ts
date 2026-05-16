@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-output-validation-graph-integrity-test
+ */
+/**
  * Phase 6 — output-validation-graph-integrity unit test (AC-01, AC-02,
  * AC-07, AC-10).
  *

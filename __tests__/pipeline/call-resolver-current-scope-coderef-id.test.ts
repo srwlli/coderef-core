@@ -1,7 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports (test file — no exports)
- * @used_by (test runner only)
+ * @layer test_support
+ * @capability pipeline-call-resolver-scope-test
  */
 
 import { describe, expect, it } from 'vitest';

@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability doc-gen-validate-docs
+ */
+/**
  * Validate foundation docs against .coderef data
  * CI Gate Script - Workorder: WO-FOUNDATION-DOCS-001
  * 

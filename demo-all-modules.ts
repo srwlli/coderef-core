@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability demo-all-modules
+ */
+/**
  * CodeRef Core System - Complete Module Test
  *
  * Demonstrates all 10 modules working together:

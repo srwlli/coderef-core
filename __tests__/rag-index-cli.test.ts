@@ -1,3 +1,8 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability rag-index-cli-test
+ */
 import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 
 // ─── parseArgs extracted for unit testing ──────────────────────────────────

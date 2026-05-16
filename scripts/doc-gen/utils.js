@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability doc-gen-utils
+ */
+/**
  * Shared utilities for .coderef doc generation scripts
  * Workorder: WO-FOUNDATION-DOCS-001
  */

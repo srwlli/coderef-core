@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability scanner-standalone-test
+ */
+/**
  * Standalone Scanner Test
  *
  * Purpose: Verify @coderef/core scanner works independently without CLI dependencies

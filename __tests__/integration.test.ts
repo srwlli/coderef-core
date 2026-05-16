@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability integration-test-suite
+ */
+/**
  * CodeRef2 Integration Test Suite
  *
  * Tests parser, validator, and formatter with 281 baseline elements

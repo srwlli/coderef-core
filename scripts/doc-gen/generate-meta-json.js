@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability doc-gen-meta-json
+ */
+/**
  * generate-meta-json.js - emit .coderef/foundation-docs-meta.json
  *
  * WO-FOUNDATION-DOCS-META-WRITER-001.

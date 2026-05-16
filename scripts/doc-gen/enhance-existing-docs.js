@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability doc-gen-enhance-existing-docs
+ */
+/**
  * Enhance existing foundation docs with UUID anchors and live data
  * Workorder: WO-FOUNDATION-DOCS-001 - Phase 3
  * 

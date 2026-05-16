@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability plugin-fastapi-detector
+ */
+/**
  * FastAPI Route Detector
  * Example plugin detector for CodeRef
  *

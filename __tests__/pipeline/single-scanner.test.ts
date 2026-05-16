@@ -1,3 +1,8 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-single-scanner-test
+ */
 import { describe, expect, it, vi } from 'vitest';
 import * as fs from 'fs/promises';
 import * as path from 'path';

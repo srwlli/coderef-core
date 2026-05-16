@@ -1,3 +1,8 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-graph-construction-legacy-builders-test
+ */
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { describe, expect, it } from 'vitest';

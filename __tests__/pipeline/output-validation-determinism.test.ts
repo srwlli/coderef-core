@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-output-validation-determinism-test
+ */
+/**
  * Phase 6 — output-validation-determinism INVARIANT (AC-08).
  *
  * Three invariants:

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-integration-test
+ */
+/**
  * Pipeline Integration Tests
  *
  * Purpose: Verify end-to-end pipeline functionality with real file processing

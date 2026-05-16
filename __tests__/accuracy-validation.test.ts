@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability accuracy-validation-test
+ */
+/**
  * Accuracy Validation Tests
  * WO-SCANNER-ACCURACY-IMPROVEMENTS-001: TEST-002
  *

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-output-validation-chokepoint-test
+ */
+/**
  * Phase 6 — output-validation-chokepoint INVARIANT (R-PHASE-6-A).
  *
  * Asserts validatePipelineState is the SOLE validation chokepoint in

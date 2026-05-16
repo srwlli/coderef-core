@@ -1,3 +1,8 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-graph-construction-determinism-test
+ */
 import { describe, expect, it } from 'vitest';
 import { constructGraph } from '../../src/pipeline/graph-builder.js';
 import type { PipelineState } from '../../src/pipeline/types.js';

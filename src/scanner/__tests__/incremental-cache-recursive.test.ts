@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability scanner-incremental-cache-recursive-test
+ */
+/**
  * IMP-CORE-076: Recursive incremental cache tests
  * Tests for proper cache behavior with nested directory structures
  */

@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability scanner-parallel-path-behavior-test
+ */
+/**
  * IMP-CORE-077: Parallel path behavior tests
  * Tests that parallel mode goes through shared deduplication and cache update
  */

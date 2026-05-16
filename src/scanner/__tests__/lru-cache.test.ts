@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability scanner-lru-cache-test
+ */
+/**
  * LRU Cache Tests - Phase 3: Memory-Capped Caching
  *
  * Tests the Least Recently Used cache implementation

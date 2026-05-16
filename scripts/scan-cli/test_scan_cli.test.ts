@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability scan-cli-test
+ */
+/**
  * Scan CLI Test Suite
  *
  * Tests for the scan-cli command-line wrapper.

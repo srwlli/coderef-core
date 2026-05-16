@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability scanner-parallel-processing-test
+ */
+/**
  * Parallel Processing Tests - Phase 2: Worker Thread Integration
  *
  * Tests the parallel file processing with worker threads

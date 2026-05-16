@@ -1,3 +1,8 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability pipeline-call-resolution-two-pass-ordering-test
+ */
 import { describe, expect, it } from 'vitest';
 import { resolveCalls, buildSymbolTable, resolveCallsAgainstTable } from '../../src/pipeline/call-resolver.js';
 import type { PipelineState } from '../../src/pipeline/types.js';

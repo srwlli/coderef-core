@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability orphan-detection-test
+ */
+/**
  * Orphan Detection Tests
  * WO-SCANNER-ACCURACY-IMPROVEMENTS-001: TEST-003
  *

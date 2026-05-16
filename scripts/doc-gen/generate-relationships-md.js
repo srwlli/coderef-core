@@ -1,5 +1,10 @@
 #!/usr/bin/env node
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability doc-gen-relationships-md
+ */
+/**
  * Generate RELATIONSHIPS.md - Dependency Visualizer
  * Workorder: WO-FOUNDATION-DOCS-001
  * 

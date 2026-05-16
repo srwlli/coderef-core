@@ -1,7 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports 
- * @used_by src/pipeline/orchestrator.ts
+ * @layer service
+ * @capability pipeline-relationship-extractor
  */
 
 /**

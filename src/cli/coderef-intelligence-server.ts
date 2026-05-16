@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 /**
  * @coderef-semantic: 1.0.0
- * @capability: intelligence-data-api
- * @layer: cli
- * @exports: main
- *
+ * @layer cli
+ * @capability intelligence-data-api
+ */
+/**
  * coderef-intelligence-server - Read-only HTTP API over .coderef/ artifacts.
  *
  * WO-CODEREF-INTELLIGENCE-DATA-API-001.

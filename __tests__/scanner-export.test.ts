@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability scanner-export-test
+ */
+/**
  * Scanner Export Tests
  *
  * Tests that scanner functionality is properly exported from @coderef/core

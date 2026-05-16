@@ -1,4 +1,9 @@
 #!/usr/bin/env node
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability cli-semantic-integration
+ */
 import { parseArgs } from 'node:util';
 import { runSemanticIntegration, validateIdempotency } from './semantic-integration.js';
 

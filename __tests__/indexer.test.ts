@@ -1,4 +1,9 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability indexer-integration-test
+ */
+/**
  * CodeRef2 Indexer Integration Tests
  *
  * Comprehensive test suite covering:
