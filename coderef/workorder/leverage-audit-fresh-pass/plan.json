@@ -1,0 +1,204 @@
+{
+  "workorder_id": "WO-LEVERAGE-AUDIT-FRESH-PASS-001",
+  "feature_name": "leverage-audit-fresh-pass",
+  "created": "2026-05-15T22:50:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "7 ordered audit phases with light dependency chain. Each is a discrete verification/measurement task.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "source-headers — coverage delta measurement",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Count current missing+stale headers: node -e \"const fs=require('fs'); const idx=JSON.parse(fs.readFileSync('.coderef/index.json')); const e=idx.elements||[]; console.log('missing:',e.filter(x=>x.headerStatus==='missing').length,'stale:',e.filter(x=>x.headerStatus==='stale').length,'defined:',e.filter(x=>x.headerStatus==='defined').length);\""
+        },
+        {
+          "verb": "RUN",
+          "description": "Run populate-coderef --source-headers (fills gaps only, preserveExisting:true): node dist/src/cli/populate.js --source-headers"
+        },
+        {
+          "verb": "RUN",
+          "description": "Re-scan to refresh index: node dist/src/cli/coderef-scan.js (or npm run scan if available)"
+        },
+        {
+          "verb": "RUN",
+          "description": "Count missing+stale headers AFTER stamp — record before/after delta"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit any newly-stamped headers: git add src/ && git commit -m 'feat(source-headers): phase 1 fresh-pass — fill remaining gaps'"
+        }
+      ],
+      "acceptance_criteria": [
+        "Before/after header counts recorded",
+        "Missing header count reduced or confirmed at floor",
+        "No hand-curated fields overwritten"
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "tree-sitter-verify — field extraction correctness",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run coderef-scan on a representative sample: node dist/src/cli/coderef-scan.js --verbose 2>&1 | head -50"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify all element types are captured: interface_declaration, type_alias_declaration, function_declaration, class_declaration, variable_declaration. Check .coderef/index.json element type distribution."
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify walkRawTsExports includes interface + type alias (committed in 6a28e62). Spot-check: grep for ConversionOptions in index.json — should have exported:true"
+        },
+        {
+          "verb": "RUN",
+          "description": "Count element types: node -e \"const fs=require('fs'); const idx=JSON.parse(fs.readFileSync('.coderef/index.json')); const e=idx.elements||[]; const types={}; e.forEach(x=>{types[x.elementType]=(types[x.elementType]||0)+1;}); console.log(JSON.stringify(types,null,2));\""
+        }
+      ],
+      "acceptance_criteria": [
+        "interface_declaration and type_alias_declaration present in element type distribution",
+        "ConversionOptions correctly flagged exported:true (no false staleness)",
+        "No missing element types in a representative src/ file"
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "export-edges — relationship accuracy audit",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Check export edge count in graph.json: node -e \"const fs=require('fs'); const g=JSON.parse(fs.readFileSync('.coderef/graph.json')); const edges=g.edges||[]; const exports=edges.filter(e=>e.type==='exports'); console.log('export edges:',exports.length,'total edges:',edges.length);\""
+        },
+        {
+          "verb": "CHECK",
+          "description": "Spot-check 3 files with known exports (e.g. graph-to-elements.ts, types.ts, utils/fs.ts): verify their exported symbols appear as edges in graph.json"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify no duplicate export edges for the same symbol: count distinct source+target pairs"
+        }
+      ],
+      "acceptance_criteria": [
+        "Export edge count is non-zero and plausible (> 100 for this codebase)",
+        "Spot-checked files have correct export edges",
+        "No duplicate export edges detected"
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "what-imports-fix — import resolution audit",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run coderef-query --type=what-imports for a known file: node dist/src/cli/coderef-query.js --type=what-imports --file=src/pipeline/orchestrator.ts 2>&1 | head -30"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify import edges resolve correctly — no broken relative paths, no missing importee elements"
+        },
+        {
+          "verb": "RUN",
+          "description": "Check import edge count in graph.json: node -e \"const fs=require('fs'); const g=JSON.parse(fs.readFileSync('.coderef/graph.json')); const edges=g.edges||[]; console.log('import edges:',edges.filter(e=>e.type==='imports').length,'calls edges:',edges.filter(e=>e.type==='calls').length);\""
+        },
+        {
+          "verb": "CHECK",
+          "description": "If broken imports found: fix the scanner path normalization (Windows path separator issue from STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 if still open)"
+        }
+      ],
+      "acceptance_criteria": [
+        "coderef-query --type=what-imports returns results for orchestrator.ts",
+        "Import edges count is non-zero",
+        "No broken relative path references in edge targets"
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "rag-search-constraint — constraint flag test",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Test rag-search with --constraint flag: node dist/src/cli/rag-search.js --constraint=service 'orchestrator pipeline' 2>&1 | head -20"
+        },
+        {
+          "verb": "RUN",
+          "description": "Test rag-search without constraint for comparison: node dist/src/cli/rag-search.js 'orchestrator pipeline' 2>&1 | head -20"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify --constraint filters results to the specified layer (service layer elements only). Compare constrained vs unconstrained result sets."
+        },
+        {
+          "verb": "RUN",
+          "description": "Test via HTTP POST to RAG server: curl -s -X POST http://localhost:52849/api/rag/query -H 'Content-Type: application/json' -d '{\"query\":\"export relationship scanner\",\"constraint\":\"service\",\"topK\":5}' 2>&1"
+        }
+      ],
+      "acceptance_criteria": [
+        "--constraint flag reduces result set to matching layer",
+        "RAG server responds to constrained HTTP query",
+        "Constrained results differ from unconstrained (filter is active)"
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "viz-fields — visualization field output validation",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run graph export for visualization: node dist/src/cli/coderef-query.js --type=graph-export 2>&1 | head -30 (or equivalent viz command)"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify graph nodes have required viz fields: id, label, layer, elementType. Check that edges have: source, target, type."
+        },
+        {
+          "verb": "RUN",
+          "description": "Check .coderef/graph.json node field coverage: node -e \"const fs=require('fs'); const g=JSON.parse(fs.readFileSync('.coderef/graph.json')); const nodes=g.nodes||[]; const sample=nodes.slice(0,3); console.log(JSON.stringify(sample,null,2));\""
+        }
+      ],
+      "acceptance_criteria": [
+        "Graph nodes contain id, label, layer, elementType fields",
+        "Graph edges contain source, target, type fields",
+        "No null/undefined required fields in sample"
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "ai-truncation — smart truncation behavior verification",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Test context output with a large query: node dist/src/cli/rag-search.js --max-tokens=2000 'full pipeline orchestration export relationship staleness' 2>&1 | tail -10"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify smart truncation kicks in for large result sets: output should be bounded, not overflow. Check that truncation preserves highest-scored results."
+        },
+        {
+          "verb": "CHECK",
+          "description": "If --max-tokens flag not supported: test via agentic-context.json output size — verify it stays within bounds for a representative query"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit .coderef/ snapshot and any minor fixes found during audit: git add .coderef/ && git commit -m 'audit(leverage-audit-fresh-pass): all 7 phases complete — header delta, tree-sitter, export-edges, imports, rag-constraint, viz-fields, ai-truncation'"
+        }
+      ],
+      "acceptance_criteria": [
+        "Truncation is active for large result sets (output bounded)",
+        "Highest-scored results preserved under truncation",
+        "All 7 audit phases recorded with findings"
+      ]
+    }
+  ],
+  "hard_stops": [],
+  "total_phases": 7
+}

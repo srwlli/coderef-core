@@ -1,0 +1,67 @@
+{
+  "workorder_id": "WO-LEVERAGE-AUDIT-FRESH-PASS-001",
+  "feature_name": "leverage-audit-fresh-pass",
+  "analysis_authored_at": "2026-05-15T22:50:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/ (source-headers stamp — many files, preserveExisting:true skips already-stamped)",
+      ".coderef/index.json (after scan refresh)",
+      ".coderef/graph.json (after scan refresh)"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "RAG index (consumes source-headers for semantic enrichment)",
+      "foundation-docs (consumes index.json)",
+      "dispatch auto-seed (consumes RAG hits)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "source-headers stamp may overwrite hand-curated fields",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Use --source-headers without --overwrite-headers for phase 1 (fills gaps only, preserves existing)"
+    },
+    {
+      "id": "RISK-002",
+      "title": "rag-search-constraint test requires live RAG index",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Instance 1 (dispatch-009) is rebuilding the index with Ollama — coordinate or test against existing sqlite store"
+    },
+    {
+      "id": "RISK-003",
+      "title": "what-imports-fix changes may break test suite",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Run npx vitest run after any scanner fix"
+    }
+  ],
+  "candidates": [
+    "src/pipeline/orchestrator.ts",
+    "src/scanner/relationship-extractor.ts",
+    "src/cli/populate.js",
+    "src/cli/rag-search.js",
+    "src/pipeline/graph-builder.ts"
+  ],
+  "dependencies": [
+    "dist/src/cli/populate.js (populate-coderef --source-headers)",
+    "dist/src/cli/rag-search.js (rag-search --constraint)",
+    "dist/src/cli/coderef-query.js (what-imports queries)",
+    "http://localhost:52849/api/rag/query (RAG server)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "Use --source-headers (not --overwrite-headers) for Phase 1 gap fill",
+      "rationale": "preserveExisting:true — only fills missing headers, does not re-stamp already-defined ones"
+    },
+    {
+      "id": "DEC-002",
+      "decision": "Phase 5 RAG constraint test uses existing sqlite index if Ollama rebuild incomplete",
+      "rationale": "Coordination boundary — Instance 1 owns the Ollama rebuild; this instance tests what is available"
+    }
+  ]
+}

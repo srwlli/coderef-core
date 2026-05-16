@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-15  
+**Generated:** 2026-05-16  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,423 |
+| **Total Elements** | 2,431 |
 | **Total Files** | 394 |
-| **Total Lines** | 104,763 |
+| **Total Lines** | 105,442 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,10 +22,10 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 761 | 31.4% |
-| method | 1,064 | 43.9% |
+| function | 761 | 31.3% |
+| method | 1,072 | 44.1% |
 | interface | 400 | 16.5% |
-| class | 120 | 5.0% |
+| class | 120 | 4.9% |
 | type | 60 | 2.5% |
 | component | 2 | 0.1% |
 | constant | 16 | 0.7% |
@@ -37,7 +37,7 @@
 | Rank | File | Elements | Density |
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
-| 2 | `src/scanner/tree-sitter-scanner.ts` | 56 | 🔴 Very High |
+| 2 | `src/scanner/tree-sitter-scanner.ts` | 57 | 🔴 Very High |
 | 3 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
 | 4 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
 | 5 | `src/search/search-engine.ts` | 31 | 🟡 High |
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,423 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,431 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

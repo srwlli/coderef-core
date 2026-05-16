@@ -1,0 +1,83 @@
+{
+  "workorder_id": "WO-LEVERAGE-AUDIT-FRESH-PASS-001",
+  "feature_name": "leverage-audit-fresh-pass",
+  "created": "2026-05-15T22:50:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-15-011"],
+  "predecessor_for": null,
+  "status": "complete",
+  "current_phase": 7,
+  "phase_status": "complete",
+  "completed_at": "2026-05-15T23:35:00Z",
+  "plan_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/leverage-audit-fresh-pass/plan.json",
+  "context_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/leverage-audit-fresh-pass/context.json",
+  "analysis_file": "C:/Users/willh/desktop/coderef/coderef-core/coderef/workorder/leverage-audit-fresh-pass/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "7-phase audit plan authored and validated. Phase 1 (source-headers fresh pass) ready for execution."
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "hard_stops": [],
+    "on_hard_stop": "N/A — no hard stops in this audit plan",
+    "test_suite_gate": "npx vitest run must remain 1495 passing if any code changes are made",
+    "constraint": "Do not touch dispatch-008/009/007 — owned by Instance 1"
+  },
+  "hard_constraints": [
+    "Test suite must remain green (1495 passing) if any fixes applied",
+    "Do not overwrite hand-curated @used_by or @constraints fields",
+    "Do not touch Phase 3-4 of WO-CORE-QUALITY-DEPTH-PASS-001 (Instance 1 owns)"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [
+    { "from_phase": 1, "to_phase": 2, "timestamp": "2026-05-15T23:05:00Z", "trigger": "phase_complete", "note": "Phase 1: --source-headers gap-fill run. Baseline: missing=343 stale=1112 defined=956. After: unchanged — all fillable files already stamped. No new delta." },
+    { "from_phase": 2, "to_phase": 3, "timestamp": "2026-05-15T23:10:00Z", "trigger": "phase_complete", "note": "Phase 2: type distribution confirmed. interface=400, type=60 present. ConversionOptions exported:true. convertGraphToElements exported:true. tree-sitter fix (6a28e62) verified." },
+    { "from_phase": 3, "to_phase": 4, "timestamp": "2026-05-15T23:15:00Z", "trigger": "phase_complete", "note": "Phase 3: 922 export edges. graph-to-elements=3, types=100, utils/fs=20. Spot-checks pass. Zero duplicate export edges." },
+    { "from_phase": 4, "to_phase": 5, "timestamp": "2026-05-15T23:20:00Z", "trigger": "phase_complete", "note": "Phase 4: 2367 import edges. resolved=48, unresolved=1344, external=556, typeOnly=341, dynamic=78. Empty targets for unresolved/external are by design (resolutionStatus field documents them). No broken paths." },
+    { "from_phase": 5, "to_phase": 6, "timestamp": "2026-05-15T23:25:00Z", "trigger": "phase_complete", "note": "Phase 5: --constraint type:class returns 2 results (class-only), unfiltered returns 10 — filter active. --constraint layer:service returns 0 — layer not in vector metadata (finding: layer field not propagated to vector chunks)." },
+    { "from_phase": 6, "to_phase": 7, "timestamp": "2026-05-15T23:30:00Z", "trigger": "phase_complete", "note": "Phase 6: nodes have id+type+name but missing label+layer at top level (uses metadata.layer pattern). 25728/30216 edge targets empty for unresolved/external imports — by design. No null id or type fields." },
+    { "from_phase": 7, "to_phase": null, "timestamp": "2026-05-15T23:35:00Z", "trigger": "phase_complete", "note": "Phase 7: --top-k 50 returns all 50 results, no truncation. --max-tokens not implemented. agentic-context.json has no truncation fields. Finding: no active smart truncation at rag-search CLI layer." }
+  ],
+  "plan_adjustments": [],
+  "audit_findings": [
+    {
+      "phase": 1,
+      "finding": "source-headers gap-fill at floor — 343 missing files cannot be stamped (non-TS/non-JS or design exclusions). Stale=1112 requires --overwrite-headers to reduce further.",
+      "severity": "info"
+    },
+    {
+      "phase": 5,
+      "finding": "layer field not propagated to RAG vector chunk metadata. --constraint layer:<value> always returns 0. Only type, file, lang, exported, capability constraints are functional.",
+      "severity": "medium",
+      "action": "File stub or improvement: propagate @layer from semantic header into vector chunk metadata at index time."
+    },
+    {
+      "phase": 6,
+      "finding": "Graph node schema uses 'name' not 'label'. 'layer' not in top-level node fields — in metadata.layer if semantic headers present. Viz consumers must map name→label and metadata.layer→layer.",
+      "severity": "info"
+    },
+    {
+      "phase": 7,
+      "finding": "No smart truncation at rag-search CLI level. --max-tokens flag not implemented. Large --top-k queries return unbounded output.",
+      "severity": "medium",
+      "action": "File stub: implement --max-tokens truncation in rag-search CLI, preserve top-scored results under limit."
+    }
+  ],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "timestamp": "2026-05-15T22:50:00Z",
+      "agent": "claude-sonnet-4-6",
+      "message": "WO-LEVERAGE-AUDIT-FRESH-PASS-001 created. 7-phase phased audit plan. No hard stops. Instance 2 scope per DISPATCH-2026-05-15-011."
+    },
+    {
+      "event": "all_phases_complete",
+      "timestamp": "2026-05-15T23:35:00Z",
+      "agent": "claude-sonnet-4-6",
+      "message": "All 7 audit phases complete. 1495 tests passing. Key findings: (1) source-headers at floor — 343 missing unfillable; (2) tree-sitter fix confirmed; (3) export edges 922, no dupes; (4) import resolution working (unresolved/external by design); (5) --constraint type works, layer does not (not in vector metadata); (6) graph node label/layer field naming gap; (7) no rag-search truncation implemented."
+    }
+  ]
+}

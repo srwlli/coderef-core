@@ -1,0 +1,49 @@
+{
+  "workorder_id": "WO-LEVERAGE-AUDIT-FRESH-PASS-001",
+  "feature_name": "leverage-audit-fresh-pass",
+  "created": "2026-05-15T22:50:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-15-011",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Execute all 7 leverage audit phases as a fresh active pass: source-headers, tree-sitter-verify, export-edges, what-imports-fix, rag-search-constraint, viz-fields, ai-truncation."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "7 ordered audit phases with light dependency chain. Each phase is a discrete verification/measurement task. Medium scope, no architectural overhaul, no schema changes.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Phase 1: source-headers — re-run populate-coderef --source-headers, measure coverage delta",
+      "Phase 2: tree-sitter-verify — verify field extraction correctness for all element types",
+      "Phase 3: export-edges — audit export relationship accuracy in graph.json",
+      "Phase 4: what-imports-fix — fix any broken import resolution in scanner output",
+      "Phase 5: rag-search-constraint — test RAG search with --constraint flag",
+      "Phase 6: viz-fields — validate visualization field output from graph",
+      "Phase 7: ai-truncation — verify smart truncation behavior in context output"
+    ],
+    "out_of_scope": [
+      "RAG index rebuild with Ollama (owned by Instance 1 / dispatch-009)",
+      "Phase 3-4 of WO-CORE-QUALITY-DEPTH-PASS-001 (owned by Instance 1)",
+      "Breaking API changes",
+      "New scanner grammar"
+    ]
+  },
+  "constraints": [
+    "Test suite must remain green (1495 passing) at all phase boundaries",
+    "Do not touch dispatch-008, dispatch-007, dispatch-009 — those belong to Instance 1",
+    "Phases are audits/measurements — commit only if fixes are required"
+  ],
+  "pre_existing_drift": true
+}

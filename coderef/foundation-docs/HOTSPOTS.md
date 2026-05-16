@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-15  
+**Generated:** 2026-05-16  
 <!-- coderef:uuid=hotspots-root -->
 
 ---
@@ -22,8 +22,8 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | Metric | Value |
 |--------|-------|
 | **Total Files** | 394 |
-| **Total Elements** | 2,423 |
-| **Total Lines** | 104,763 |
+| **Total Elements** | 2,431 |
+| **Total Lines** | 105,442 |
 | **Entry Points** | 84 |
 | **Critical Functions** | 20 |
 
@@ -41,20 +41,20 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | 4 | <!-- coderef:uuid= --> `extractExportsFromAST` | 🔴 55 (Critical) | `src/analyzer/js-call-detector/module-analyzer.ts` | 0 dependents |
 | 5 | <!-- coderef:uuid= --> `extractElementsFromAST` | 🔴 51 (Critical) | `src/analyzer/js-call-detector/visitor.ts` | 0 dependents |
 | 6 | <!-- coderef:uuid= --> `run` | 🟡 41 (High) | `src/cli/populate.ts` | 0 dependents |
-| 7 | <!-- coderef:uuid= --> `scanCurrentElements` | 🟡 40 (High) | `src/scanner/scanner.ts` | 0 dependents |
-| 8 | <!-- coderef:uuid= --> `EmbeddingTextGenerator.generate` | 🟡 30 (High) | `src/integration/rag/embedding-text-generator.ts` | 0 dependents |
-| 9 | <!-- coderef:uuid= --> `DatabaseDetector.detect` | ⚪ 9 (Low) | `src/analyzer/database-detector.ts` | 0 dependents |
-| 10 | <!-- coderef:uuid= --> `buildDependencyGraph` | ⚪ 8 (Low) | `src/fileGeneration/buildDependencyGraph.ts` | 0 dependents |
-| 11 | <!-- coderef:uuid= --> `ConfigAnalyzer.analyze` | ⚪ 7 (Low) | `src/analyzer/config-analyzer.ts` | 0 dependents |
-| 12 | <!-- coderef:uuid= --> `analyzeCoverage` | ⚪ 6 (Low) | `src/fileGeneration/analyzeCoverage.ts` | 0 dependents |
-| 13 | <!-- coderef:uuid= --> `ComplexityGenerator.generate` | ⚪ 6 (Low) | `src/pipeline/generators/complexity-generator.ts` | 0 dependents |
-| 14 | <!-- coderef:uuid= --> `AnalyzerService.analyze` | ⚪ 5 (Low) | `src/analyzer/analyzer-service.ts` | 0 dependents |
-| 15 | <!-- coderef:uuid= --> `QueryExecutor.execute` | ⚪ 4 (Low) | `src/query/query-executor.ts` | 0 dependents |
-| 16 | <!-- coderef:uuid= --> `FrameworkRegistry.detect` | ⚪ 3 (Low) | `src/scanner/framework-registry.ts` | 0 dependents |
-| 17 | <!-- coderef:uuid= --> `DependencyAnalyzer.analyze` | ⚪ 2 (Low) | `src/analyzer/dependency-analyzer.ts` | 0 dependents |
-| 18 | <!-- coderef:uuid= --> `DesignPatternDetector.analyze` | ⚪ 2 (Low) | `src/analyzer/design-pattern-detector.ts` | 0 dependents |
-| 19 | <!-- coderef:uuid= --> `DocsAnalyzer.analyze` | ⚪ 2 (Low) | `src/analyzer/docs-analyzer.ts` | 0 dependents |
-| 20 | <!-- coderef:uuid= --> `EntryPointDetector.detect` | ⚪ 2 (Low) | `src/analyzer/entry-detector.ts` | 0 dependents |
+| 7 | <!-- coderef:uuid= --> `buildEdges` | 🟡 41 (High) | `src/pipeline/graph-builder.ts` | 0 dependents |
+| 8 | <!-- coderef:uuid= --> `scanCurrentElements` | 🟡 40 (High) | `src/scanner/scanner.ts` | 0 dependents |
+| 9 | <!-- coderef:uuid= --> `EmbeddingTextGenerator.generate` | 🟡 30 (High) | `src/integration/rag/embedding-text-generator.ts` | 0 dependents |
+| 10 | <!-- coderef:uuid= --> `DatabaseDetector.detect` | ⚪ 9 (Low) | `src/analyzer/database-detector.ts` | 0 dependents |
+| 11 | <!-- coderef:uuid= --> `buildDependencyGraph` | ⚪ 8 (Low) | `src/fileGeneration/buildDependencyGraph.ts` | 0 dependents |
+| 12 | <!-- coderef:uuid= --> `ConfigAnalyzer.analyze` | ⚪ 7 (Low) | `src/analyzer/config-analyzer.ts` | 0 dependents |
+| 13 | <!-- coderef:uuid= --> `analyzeCoverage` | ⚪ 6 (Low) | `src/fileGeneration/analyzeCoverage.ts` | 0 dependents |
+| 14 | <!-- coderef:uuid= --> `ComplexityGenerator.generate` | ⚪ 6 (Low) | `src/pipeline/generators/complexity-generator.ts` | 0 dependents |
+| 15 | <!-- coderef:uuid= --> `AnalyzerService.analyze` | ⚪ 5 (Low) | `src/analyzer/analyzer-service.ts` | 0 dependents |
+| 16 | <!-- coderef:uuid= --> `QueryExecutor.execute` | ⚪ 4 (Low) | `src/query/query-executor.ts` | 0 dependents |
+| 17 | <!-- coderef:uuid= --> `FrameworkRegistry.detect` | ⚪ 3 (Low) | `src/scanner/framework-registry.ts` | 0 dependents |
+| 18 | <!-- coderef:uuid= --> `DependencyAnalyzer.analyze` | ⚪ 2 (Low) | `src/analyzer/dependency-analyzer.ts` | 0 dependents |
+| 19 | <!-- coderef:uuid= --> `DesignPatternDetector.analyze` | ⚪ 2 (Low) | `src/analyzer/design-pattern-detector.ts` | 0 dependents |
+| 20 | <!-- coderef:uuid= --> `DocsAnalyzer.analyze` | ⚪ 2 (Low) | `src/analyzer/docs-analyzer.ts` | 0 dependents |
 
 ---
 
