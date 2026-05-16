@@ -1,0 +1,45 @@
+{
+  "workorder_id": "WO-PROPAGATE-LAYER-INTO-RAG-VECTOR-METADATA-001",
+  "feature_name": "propagate-layer-into-rag-vector-metadata",
+  "analysis_authored_at": "2026-05-16T06:00:00Z",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [
+      "__tests__/integration/rag/indexing-orchestrator-layer-propagation.test.ts"
+    ],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Test fixture must mock graph.json + embedding service correctly",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Follow existing indexing-orchestrator.test.ts fixture patterns"
+    }
+  ],
+  "candidates": [
+    "__tests__/integration/rag/indexing-orchestrator.test.ts",
+    "src/integration/rag/indexing-orchestrator.ts",
+    "src/integration/rag/code-chunk.ts",
+    "src/integration/vector/vector-store.ts"
+  ],
+  "dependencies": [
+    "src/integration/rag/indexing-orchestrator.ts",
+    "src/integration/rag/chunk-converter.ts",
+    "src/integration/vector/sqlite-store.ts"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "No prod code change — orchestrator already correct",
+      "rationale": "indexing-orchestrator.ts:748-749 already conditionally spreads layer into VectorRecord.metadata. Adding a test is the correct action; changing prod code would be a no-op or regression."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Use existing test file __tests__/integration/rag/indexing-orchestrator.test.ts rather than creating a new file",
+      "rationale": "The AC-05/AC-06 describe blocks already test facet surfaces. A new describe block for layer-propagation-e2e fits naturally in the same file and avoids test infrastructure duplication."
+    }
+  ]
+}

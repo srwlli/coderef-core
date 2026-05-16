@@ -1,0 +1,42 @@
+{
+  "workorder_id": "WO-PROPAGATE-LAYER-INTO-RAG-VECTOR-METADATA-001",
+  "feature_name": "propagate-layer-into-rag-vector-metadata",
+  "created": "2026-05-16T06:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-003",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Fix indexing-orchestrator.ts to include layer in RAG vector chunk metadata so --constraint layer returns results."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Dispatch-003 analysis shows orchestrator already propagates layer conditionally at lines 748-749. The root gap (node.metadata.layer unpopulated) is dispatch-002's domain. This WO confirms orchestrator correctness via a targeted integration test — single file addition, no blast radius.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "findings": {
+    "orchestrator_status": "CORRECT — layer already propagated at indexing-orchestrator.ts:748-749 via conditional spread",
+    "root_cause": "0/2795 graph.json nodes have node.metadata.layer populated — dispatch-002 (semantic-header-parser parse gap) is the upstream fix",
+    "gap": "No integration test verifies layer flows from chunk.layer → VectorRecord.metadata.layer through indexCodebase(). Type-only tests exist (AC-05, AC-06) but no end-to-end flow test.",
+    "code_confirmed": "src/integration/rag/indexing-orchestrator.ts:748 — ...(item.chunk.layer !== undefined && { layer: item.chunk.layer })"
+  },
+  "scope": {
+    "in_scope": [
+      "Add integration test: chunk.layer → vectorRecord.metadata.layer via indexCodebase()",
+      "Test confirms layer is present in vector record metadata when chunk carries layer"
+    ],
+    "out_of_scope": [
+      "Fixing node.metadata.layer population (dispatch-002)",
+      "Modifying indexing-orchestrator.ts logic (already correct)",
+      "Modifying rag-search.ts or semantic-search.ts"
+    ]
+  },
+  "constraints": [
+    "Existing 1495 tests must continue passing",
+    "Test must use the graph.json → indexCodebase path (useAnalyzer: true)",
+    "No new prod code changes — test addition only"
+  ],
+  "pre_existing_drift": true
+}
