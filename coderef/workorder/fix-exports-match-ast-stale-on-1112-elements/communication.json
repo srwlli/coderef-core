@@ -6,10 +6,12 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-005"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "completed_at": "2026-05-16T07:30:00Z",
+  "closed_at": "2026-05-16T07:45:00Z",
+  "updated": "2026-05-16T07:45:00Z",
   "plan_file": "coderef/workorder/fix-exports-match-ast-stale-on-1112-elements/plan.json",
   "context_file": "coderef/workorder/fix-exports-match-ast-stale-on-1112-elements/context.json",
   "analysis_file": "coderef/workorder/fix-exports-match-ast-stale-on-1112-elements/analysis.json",
@@ -47,6 +49,13 @@
   ],
   "phase_transitions": [],
   "plan_adjustments": [],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/fix-exports-match-ast-stale-on-1112-elements/ARCHIVED",
+    "review_verdict_source": "Step 3 cultural validator — all 11 checks green, scope mode",
+    "dependency_audit": {"vulnerable_count": 0, "critical": 0, "high": 0},
+    "warnings": []
+  },
   "communication_log": [
     {
       "event": "workorder_created",
@@ -66,6 +75,12 @@
       "stale_files_after_with_overwrite_headers": 49,
       "tests": "1496/1526 passing",
       "note": "Remaining 49 stale files are genuine header/AST mismatches (wrong exports in header text), not false-positives from 'default'. Separate issue."
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-05-16T07:45:00Z",
+      "by": "close-workorder@2.1.0",
+      "detail": "WO-FIX-EXPORTS-MATCH-AST-STALE-ON-1112-ELEMENTS-001 closed via /close-workorder. Audit PASS (all 11 cultural checks green, scope mode). 1 phase, 2 commits, pushed to origin/main."
     }
   ]
 }

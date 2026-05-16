@@ -1,0 +1,30 @@
+=============================================================
+WORKORDER: WO-FIX-EXPORTS-MATCH-AST-STALE-ON-1112-ELEMENTS-001  |  fix-exports-match-ast-stale-on-1112-elements  |  COMPLETE
+Session: SES-2026-05-16-FIX-EXPORTS-MATCH-AST-STALE  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: none
+
+FILES CREATED:
+  + coderef/workorder/fix-exports-match-ast-stale-on-1112-elements/context.json    (6dff627)
+  + coderef/workorder/fix-exports-match-ast-stale-on-1112-elements/analysis.json   (6dff627)
+  + coderef/workorder/fix-exports-match-ast-stale-on-1112-elements/plan.json       (6dff627)
+  + coderef/workorder/fix-exports-match-ast-stale-on-1112-elements/communication.json  (6dff627)
+
+FILES MODIFIED:
+  ~ src/pipeline/orchestrator.ts  (a8885a6) — astSet.delete('default') added at line 484
+
+PHASE CHECKLIST:
+  [x] Phase 1: Fix default-export false-stale in orchestrator and verify  (a8885a6)
+
+TEST RESULTS:
+  1496/1526 passing (30 skipped) — no regressions
+
+ACCEPTANCE CRITERIA:
+  [PASS] 'default' false-positive eliminated — analyzer-service.ts stale=0 (was stale)
+  [PASS] 1496/1526 tests still passing
+  [PARTIAL] Stale count reduced 79→49 files (AC was <100 from 1191; residual 49 are genuine mismatches, separate issue)
+  [PASS] Fix is directional — headerSet→astSet mismatch still fires if header declares 'default'
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (4 pre-existing drift files — out of scope)
+
+APPROVE -> /close-workorder WO-FIX-EXPORTS-MATCH-AST-STALE-ON-1112-ELEMENTS-001
+=============================================================
