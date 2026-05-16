@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports EnrichedElementData, TreeSitterScanner, traverse
+ * @exports EnrichedElementData, GrammarLoader, TreeSitterScanner
  * @used_by src/scanner/scanner-worker.ts, src/scanner/scanner.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports EnrichedElementData, TreeSitterScanner, traverse
- * @used_by src/scanner/scanner-worker.ts, src/scanner/scanner.ts
- */
-
-
 
 /**
  * TreeSitterScanner - AST-based code element scanner

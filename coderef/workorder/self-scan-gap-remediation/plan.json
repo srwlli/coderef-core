@@ -1,0 +1,123 @@
+{
+  "workorder_id": "WO-SELF-SCAN-GAP-REMEDIATION-001",
+  "feature_name": "self-scan-gap-remediation",
+  "created": "2026-05-16T11:05:00Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Two distinct root-cause gaps each requiring investigation + implementation + validation. Phased keeps them independently gated so capability/layer fix can be confirmed before stale remediation begins.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Investigate and Fix Capability/Layer Parse Gap",
+      "goal": "Determine why element.capability and element.layer are 0/2484 in index.json despite @capability/@layer being written to source headers by the populate pipeline, and implement the extraction.",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read coderef/ARCHIVED/parse-capability-layer-into-element-metadata/communication.json to understand what the prior WO actually implemented — confirms whether extraction code was written or only header writing was done."
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/pipeline/semantic-header-parser.ts — locate parseSemanticHeader or equivalent function; check whether capability/layer extraction is present and returning values."
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/integration/indexing-orchestrator.ts (or populate entry point) — check whether capability/layer fields from the parsed header are being written into element records before index.json is serialized."
+        },
+        {
+          "verb": "CHECK",
+          "description": "Run: node populate.js --dry-run (or equivalent) on a file with @capability/@layer in its header. Inspect the element output to confirm whether the fields are extracted but not persisted, or never extracted at all."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Implement the fix: if extraction is missing, add capability/layer field extraction in semantic-header-parser.ts; if mapping is missing, wire extracted values into the element record in the indexing-orchestrator populate path."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: node populate.js from the coderef-core root. Capture output."
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify .coderef/index.json capability_populated > 0 and layer_populated > 0. Target: any non-zero value confirms the extraction pipeline is working. Record actual count."
+        },
+        {
+          "verb": "STOP",
+          "description": "GATE: capability_populated == 0 after fix and populate run → halt Phase 1. Investigate parser output vs. indexer input mismatch before proceeding."
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Investigate and Reduce exports_match_ast Stale Count",
+      "goal": "Reduce stale count from 797 toward < 100 by auditing and correcting @exports declarations in the top stale files. Root cause: @exports in semantic header doesn't match what tree-sitter AST actually finds.",
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run: node populate.js 2>&1 | grep 'exports_match_ast' | sort | uniq -c | sort -rn | head -20 — identify the top stale files by element count."
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/pipeline/output-validator.ts — locate exports_match_ast validation logic. Confirm exact mismatch condition: what the @exports header declares vs. what tree-sitter AST reports."
+        },
+        {
+          "verb": "READ",
+          "description": "Read top-3 stale files (expected: src/pipeline/generators/context-generator.ts ~59 stale, src/scanner/tree-sitter-scanner.ts ~57 stale, src/search/search-engine.ts ~31 stale). Inspect @exports blocks in their semantic headers."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: node populate.js --file=src/pipeline/generators/context-generator.ts (or equivalent single-file mode) to see exact stale element names for the highest-count file."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Fix @exports declarations in context-generator.ts to match tree-sitter AST output. Correct: missing exports added, surplus exports removed, name mismatches fixed."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: node populate.js — capture new stale count. Verify delta improvement from fixing context-generator.ts."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Fix @exports declarations in tree-sitter-scanner.ts to match AST."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Fix @exports declarations in search-engine.ts and any remaining top-stale files until stale count approaches < 100 or rate of improvement flattens."
+        },
+        {
+          "verb": "RUN",
+          "description": "Run: node populate.js — capture final stale count after all batched @exports fixes."
+        },
+        {
+          "verb": "CHECK",
+          "description": "Verify stale count < 100. If still > 100, identify next batch of high-count stale files and continue fixing or document residual gap with root cause."
+        },
+        {
+          "verb": "STOP",
+          "description": "GATE: stale count did not decrease after @exports fixes → halt Phase 2. A different root cause is active; escalate before continuing."
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Validate, Report, and Commit",
+      "goal": "Run a final populate pass, capture updated metrics, update self-scan-report.md, and commit all changes.",
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "Run: node populate.js — final authoritative populate run. Capture: total_elements, capability_populated, layer_populated, stale_count."
+        },
+        {
+          "verb": "CHECK",
+          "description": "Confirm all targets met: capability_populated > 0, layer_populated > 0, stale_count < 100. Document actual values."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Update coderef/working/coderef-core-self-scan-post-improvements/self-scan-report.md with Phase 2 metrics row — capability/layer actual count, stale count final, improvement delta."
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit all changes: semantic-header-parser.ts, indexing-orchestrator.ts (or equivalent), output-validator.ts if touched, all @exports-fixed source files, updated self-scan-report.md."
+        }
+      ]
+    }
+  ]
+}

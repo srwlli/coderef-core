@@ -1,14 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports JSCallDetector
+ * @exports CallEdge, CallExpression, CallPatternAnalysis, DetectedElement, JSCallDetector, ModuleExport, ModuleImport, Parameter, TraversalContext, analyzeCallPatterns, buildCallEdges, extractElementsFromAST, extractExportsFromAST, extractImportsFromAST, extractObjectName, extractParameter, extractParameters, extractParametersFromAST, isNestedCall, parseCallExpression, parseNewExpression, visitNode
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports JSCallDetector
- */
-
-
 
 /**
  * IMP-CORE-035: JavaScript Call Detector - Modular Architecture

@@ -4,11 +4,6 @@
  * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts
  */
 
-/**
- * @coderef-semantic: 1.0.0
- * @exports SemanticHeader, HeaderGenerationOptions, HeaderGenerator, generateHeaders
- * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts
- */
 
 /**
  * CodeRef-Semantics header generator

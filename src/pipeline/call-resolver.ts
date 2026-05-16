@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports CallResolutionKind, CallResolution, SymbolTableEntry, SymbolTable, resolveCalls, buildSymbolTable, addEntry, resolveCallsAgainstTable, isBuiltinReceiver, classifyMethodCall, deriveCallerCodeRefId
- * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts
+ * @exports BUILTIN_RECEIVERS, CallResolution, CallResolutionKind, SymbolTable, SymbolTableEntry, buildSymbolTable, classifyMethodCall, deriveCallerCodeRefId, isBuiltinReceiver, resolveCalls, resolveCallsAgainstTable
+ * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts, __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports CallResolutionKind, CallResolution, SymbolTableEntry, SymbolTable, resolveCalls, buildSymbolTable, addEntry, resolveCallsAgainstTable, isBuiltinReceiver, classifyMethodCall, deriveCallerCodeRefId
- * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts
- */
-
-
 
 /**
  * Phase 4 Call Resolver

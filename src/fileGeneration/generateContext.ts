@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports generateContext
- */
-
-
-
-/**
  * Generate Context - Create AI-readable project context
  *
  * Outputs:

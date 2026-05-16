@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports HealthMetrics, HealthGenerator, generateHealthReport
- */
-
-
-
-/**
  * IMP-CORE-023: Health Generator
  * 
  * Generates comprehensive health reports including:

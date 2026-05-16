@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports ParseError
- */
-
-
-
-/**
  * ParseError - Tag parsing failures
  * @module errors
  *

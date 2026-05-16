@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports ExampleExtractor
- */
-
-
-
-/**
  * Example Extractor
  *
  * Extracts code examples and groups by pattern:

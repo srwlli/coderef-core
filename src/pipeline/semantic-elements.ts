@@ -4,14 +4,6 @@
  * @used_by src/cli/populate.ts, src/pipeline/generators/index-generator.ts, src/pipeline/generators/registry-generator.ts, src/semantic/orchestrator.ts
  */
 
-/**
- * @coderef-semantic: 1.0.0
- * @exports buildSemanticElementsFromState, normalizeRelatedField, normalizeRulesField
- * @used_by src/cli/populate.ts, src/pipeline/generators/index-generator.ts, src/pipeline/generators/registry-generator.ts, src/semantic/orchestrator.ts
- */
-
-
-
 import type { ElementData } from '../types/types.js';
 import type { PipelineState } from './types.js';
 import { globalRegistry } from '../registry/entity-registry.js';

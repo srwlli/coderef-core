@@ -1,0 +1,75 @@
+{
+  "workorder_id": "WO-SELF-SCAN-GAP-REMEDIATION-001",
+  "feature_name": "self-scan-gap-remediation",
+  "analysis_authored_at": "2026-05-16T11:05:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/semantic-header-parser.ts (capability/layer extraction)",
+      "src/integration/indexing-orchestrator.ts or equivalent populate path (wire extraction into index write)",
+      "src/pipeline/output-validator.ts (exports_match_ast stale logic)"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      ".coderef/index.json (all consumers of element.capability / element.layer)",
+      "coderef-intelligence-server.ts /api/intelligence/elements endpoint",
+      "RAG vector metadata propagation (WO-PROPAGATE-LAYER-INTO-RAG-VECTOR-METADATA-001)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Capability/layer extraction may require schema change in index.json",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "index.json elements already have optional fields — adding capability/layer is additive and non-breaking"
+    },
+    {
+      "id": "RISK-002",
+      "title": "exports_match_ast stale reduction may require @exports header template audit across 797 elements",
+      "likelihood": "high",
+      "impact": "high",
+      "mitigation": "Scope to top-10 stale files first (context-generator: 59 elements, tree-sitter-scanner: 57); batch fix @exports declarations to match AST"
+    },
+    {
+      "id": "RISK-003",
+      "title": "Stale fix may involve regenerating many semantic headers — risk of header regressions",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Run populate.js after each batch; compare stale count delta; stop if regressions appear"
+    },
+    {
+      "id": "RISK-004",
+      "title": "WO-PARSE-CAPABILITY-LAYER-INTO-ELEMENT-METADATA-001 may already contain partial implementation",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "READ the prior WO's communication.json to understand what was done before implementing anything new"
+    }
+  ],
+  "candidates": [
+    "src/pipeline/semantic-header-parser.ts",
+    "src/pipeline/output-validator.ts",
+    "src/pipeline/generators/context-generator.ts",
+    "src/scanner/tree-sitter-scanner.ts",
+    "src/search/search-engine.ts",
+    "src/analyzer/contract-detector.ts",
+    "src/pipeline/import-resolver.ts"
+  ],
+  "dependencies": [
+    "WO-PARSE-CAPABILITY-LAYER-INTO-ELEMENT-METADATA-001 (prior attempt — read before starting)",
+    "populate.js for validation runs",
+    ".coderef/index.json (measure before/after)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Address both gaps in one phased WO (capability/layer + stale count)",
+      "rationale": "Both stem from populate pipeline behavior; testing one validates the other; single populate run validates both"
+    },
+    {
+      "id": "DR-002",
+      "decision": "Stale reduction approach: fix @exports in top stale files, not @overwrite-headers run",
+      "rationale": "Prior scan confirmed --overwrite-headers alone doesn't reduce stale count; the issue is @exports mismatch with tree-sitter AST, not header absence"
+    }
+  ]
+}

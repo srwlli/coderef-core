@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports DiagramGenerator
- * @used_by src/cli/populate.ts
- */
-
-
-
-/**
  * DiagramGenerator - Generate visual dependency diagrams
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 3, Task GEN-008

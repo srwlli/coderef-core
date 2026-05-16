@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports AIQueryType, GeneratedPrompt, AIPromptGenerator
- */
-
-
-
-/**
  * AI Prompt Generator - Create context-aware prompts for LLM understanding
  * Phase 5, Task P5-T6: AI Agent Prompt Generation System
  *

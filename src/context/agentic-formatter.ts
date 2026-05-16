@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports AgenticFormatter
- */
-
-
-
-/**
  * Agentic Formatter
  *
  * Formats comprehensive context for AI agent consumption:

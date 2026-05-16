@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate
- */
-
-
-
-/**
  * Graph Query Helpers - Utility functions for querying DependencyGraph
  *
  * Provides 4 core query functions for resource sheet auto-population:

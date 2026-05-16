@@ -1,14 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ConfidenceLevel, FrontendUpdateSuggestion, BatchUpdateResult, GitPatch, FileModification, getConfidenceLevel, calculatePathConfidence, generateUpdateSuggestions, batchProcessCalls, generateModifications, generateGitPatch, applyModifications, generateUpdateReport, exportBatchResults
+ * @exports BatchUpdateResult, CONFIDENCE_THRESHOLDS, ConfidenceLevel, FileModification, FrontendUpdateSuggestion, GitPatch, applyModifications, batchProcessCalls, calculatePathConfidence, exportBatchResults, generateGitPatch, generateModifications, generateUpdateReport, generateUpdateSuggestions, getConfidenceLevel
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ConfidenceLevel, FrontendUpdateSuggestion, BatchUpdateResult, GitPatch, FileModification, getConfidenceLevel, calculatePathConfidence, generateUpdateSuggestions, batchProcessCalls, generateModifications, generateGitPatch, applyModifications, generateUpdateReport, exportBatchResults
- */
-
-
 
 /**
  * IMP-CORE-044: Frontend Update Generator

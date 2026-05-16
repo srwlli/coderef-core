@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls, extractHttpMethod, extractCallLocation
+ * @exports FrontendCall, extractCallLocation, extractHttpMethod, parseAxiosCalls, parseCustomApiCalls, parseFetchCalls, parseReactQueryCalls
  * @used_by src/fileGeneration/saveFrontendCalls.ts, src/generator/generateFrontendCalls.ts, src/scanner/frontend-scanner.ts, src/scanner/scanner.ts, src/types/types.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls, extractHttpMethod, extractCallLocation
- * @used_by src/fileGeneration/saveFrontendCalls.ts, src/generator/generateFrontendCalls.ts, src/scanner/frontend-scanner.ts, src/scanner/scanner.ts, src/types/types.ts
- */
-
-
 
 // coderef-core/analyzer/frontend-call-parsers.ts
 // WO-ROUTE-VALIDATION-ENHANCEMENT-001: Frontend API call detection parsers

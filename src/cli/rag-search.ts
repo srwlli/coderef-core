@@ -3,7 +3,7 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability cli-rag-search
- * @exports main, parseArgs, printHelp, createLLMProvider, createVectorStore, formatResult, loadRAGDependencies
+ * @exports 
  */
 
 /**

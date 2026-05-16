@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports JSParseOptions, JSParseResult, parseJavaScript, parseJavaScriptFile, isJavaScriptFile, isTypeScriptFile, getSourceTypeFromExtension, parseJavaScriptFileAuto
- * @used_by src/analyzer/js-call-detector/index.ts
- */
-
-
-
-/**
  * JavaScript Parser - Utility for parsing JavaScript files with Acorn
  * Phase 2, Task JS-005: Install and configure chosen parser library
  *

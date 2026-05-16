@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports ContextData, MarkdownFormatter
- * @used_by src/context/context-generator.ts
- */
-
-
-
-/**
  * Markdown Formatter
  * Converts context data to human-readable markdown
  *

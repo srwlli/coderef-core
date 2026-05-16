@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
  * @exports ExportFormat, ExportedGraphEdgeRelationship, ExportedGraphEdgeResolutionStatus, ExportedGraph, ProtobufSchema, GraphExporter
- * @used_by src/pipeline/generators/graph-output.ts, src/pipeline/graph-builder.ts, src/pipeline/orchestrator.ts, src/pipeline/output-validator.ts, src/pipeline/types.ts, __tests__/generators/helpers.ts, __tests__/generators/root-cause-alignment.test.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts, __tests__/pipeline/graph-construction-determinism.test.ts, __tests__/pipeline/graph-ground-truth.test.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
+ * @used_by src/pipeline/generators/graph-output.ts, src/pipeline/graph-builder.ts, src/pipeline/orchestrator.ts, src/pipeline/output-validator.ts, src/pipeline/types.ts, __tests__/generators/helpers.ts, __tests__/generators/root-cause-alignment.test.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts, __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts, __tests__/pipeline/graph-construction-determinism.test.ts, __tests__/pipeline/graph-ground-truth.test.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ExportFormat, ExportedGraphEdgeRelationship, ExportedGraphEdgeResolutionStatus, ExportedGraph, ProtobufSchema, GraphExporter
- * @used_by src/pipeline/generators/graph-output.ts, src/pipeline/graph-builder.ts, src/pipeline/orchestrator.ts, src/pipeline/output-validator.ts, src/pipeline/types.ts, __tests__/generators/helpers.ts, __tests__/generators/root-cause-alignment.test.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts, __tests__/pipeline/graph-construction-determinism.test.ts, __tests__/pipeline/graph-ground-truth.test.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
- */
-
-
 
 /**
  * Graph Exporter - Serialize dependency graph to multiple formats

@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports loadIgnorePatterns, shouldIgnorePath
+ * @exports DEFAULT_PIPELINE_IGNORE_PATTERNS, loadIgnorePatterns, shouldIgnorePath
  * @used_by src/cli/detect-languages.ts, src/pipeline/orchestrator.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports loadIgnorePatterns, shouldIgnorePath
- * @used_by src/cli/detect-languages.ts, src/pipeline/orchestrator.ts
- */
-
-
 
 import * as fs from 'fs/promises';
 import * as path from 'path';

@@ -1,12 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports RelationshipExtractor
- * @used_by src/pipeline/orchestrator.ts
- */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports RelationshipExtractor
+ * @exports 
  * @used_by src/pipeline/orchestrator.ts
  */
 

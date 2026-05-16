@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports AnthropicProvider, createAnthropicProvider
- * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts
- */
-
-
-
-/**
  * Anthropic LLM Provider Implementation
  * P1-T3: Implements LLMProvider interface using Anthropic Claude API
  */

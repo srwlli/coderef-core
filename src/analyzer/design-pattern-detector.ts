@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
+ * @exports DesignPatternDetector, DesignPatternInstance, DesignPatternType, PatternAnalysis, analyzeDesignPatterns
  * @used_by src/cli/coderef-analyze.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
- * @used_by src/cli/coderef-analyze.ts
- */
-
-
 
 /**
  * IMP-CORE-027: Design Pattern Detector

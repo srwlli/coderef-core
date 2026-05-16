@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports MetadataCategory, MetadataIndexEntry, MetadataIndex, createMetadataIndex
+ * @exports CATEGORY_VALUES, MetadataCategory, MetadataIndex, MetadataIndexEntry, createMetadataIndex
  * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports MetadataCategory, MetadataIndexEntry, MetadataIndex, createMetadataIndex
- * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
- */
-
-
 
 /**
  * CodeRef2 Metadata Index

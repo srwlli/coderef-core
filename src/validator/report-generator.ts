@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports formatIssueSummary, formatIssueDetails, formatRecommendations, formatAutoFixSection, generateMarkdownReport, saveMarkdownReport
- * @used_by src/cli/validate-routes.ts
- */
-
-
-
-/**
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Report Generation Module
  * Generates human-readable markdown reports from validation results
  */

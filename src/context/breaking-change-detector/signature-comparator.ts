@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports compareSignatures, compareParameters, isBreakingChange, analyzeDifference
- * @used_by src/context/breaking-change-detector/index.ts
- */
-
-
-
-/**
  * IMP-CORE-035: Signature Comparator
  * Compares function signatures and detects incompatibilities
  */

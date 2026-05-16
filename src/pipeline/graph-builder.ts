@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived
+ * @exports CallResolution, EdgeEvidence, EdgeRelationship, EdgeResolutionStatus, ElementData, GraphEdgeV2, ImportResolution, buildEdges, buildNodes, computeEdgeId, constructGraph, fileGrainNodeId, isHeaderDerived
  * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived
- * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
- */
-
-
 
 /**
  * Phase 5 Graph Builder

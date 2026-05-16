@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports PluginError, PluginRegistry
+ * @exports PluginError, PluginRegistry, pluginRegistry
  * @used_by src/plugins/loaders/npm-loader.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-scanner.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports PluginError, PluginRegistry
- * @used_by src/plugins/loaders/npm-loader.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-scanner.ts
- */
-
-
 
 /**
  * Plugin Registry

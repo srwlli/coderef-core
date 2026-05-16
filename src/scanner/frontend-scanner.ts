@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports scanFileForFrontendCalls, attachFrontendCalls, scanProjectForFrontendCalls
- * @used_by src/fileGeneration/saveFrontendCalls.ts
- */
-
-
-
-/**
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Frontend Call Scanner
  * Scans files for frontend API calls and attaches metadata to elements
  */

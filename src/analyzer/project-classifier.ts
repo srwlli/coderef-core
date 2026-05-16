@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports ProjectCategory, ApiServiceType, WebAppType, ProjectClassification, ProjectClassifier
- * @used_by src/pipeline/generators/context-generator.ts
- */
-
-
-
-/**
  * ProjectClassifier - Detect project type and intent
  *
  * IMP-CORE-016: Add project type and intent detection

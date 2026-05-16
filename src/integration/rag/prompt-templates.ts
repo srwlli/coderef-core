@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports PromptVariables, PromptTemplateBuilder, PromptValidator
+ * @exports BEST_PRACTICES_PROMPT, CODE_COMPARISON_PROMPT, CODE_EXPLANATION_PROMPT, CONVERSATIONAL_PROMPT_TEMPLATE, PromptTemplateBuilder, PromptValidator, PromptVariables, QA_PROMPT_TEMPLATE, SYSTEM_PROMPT
  * @used_by src/integration/rag/answer-generation-service.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports PromptVariables, PromptTemplateBuilder, PromptValidator
- * @used_by src/integration/rag/answer-generation-service.ts
- */
-
-
 
 /**
  * Prompt Templates

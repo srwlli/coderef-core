@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports CodeRefFormatter, formatCodeRef, formatCodeRefs
+ * @exports CodeRefFormatter, formatCodeRef, formatCodeRefs, formatter
  * @used_by __tests__/integration.test.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports CodeRefFormatter, formatCodeRef, formatCodeRefs
- * @used_by __tests__/integration.test.ts
- */
-
-
 
 /**
  * CodeRef2 Reference Formatter

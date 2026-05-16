@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ValidationError, ValidationWarning, ValidationReport, ValidationResult, ValidatePipelineStateOptions, validatePipelineState, buildFileHeaderStatusMap
+ * @exports VALID_EDGE_RELATIONSHIPS, VALID_EDGE_RESOLUTION_STATUSES, ValidatePipelineStateOptions, ValidationError, ValidationReport, ValidationResult, ValidationWarning, buildFileHeaderStatusMap, validatePipelineState
  * @used_by src/cli/populate.ts, src/pipeline/types.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ValidationError, ValidationWarning, ValidationReport, ValidationResult, ValidatePipelineStateOptions, validatePipelineState, buildFileHeaderStatusMap
- * @used_by src/cli/populate.ts, src/pipeline/types.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
- */
-
-
 
 /**
  * Phase 6 Output Validator

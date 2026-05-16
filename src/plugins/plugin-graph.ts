@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports PluginGraphOptions, applyPluginGraphHooks, getPluginGraphStats
- */
-
-
-
-/**
  * @legacy
  * @deprecated Use src/pipeline/graph-builder.ts (canonical Phase 5
  *             ExportedGraph builder) instead. Plugin hook surface for

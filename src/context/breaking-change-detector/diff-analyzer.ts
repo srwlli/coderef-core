@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports findImpactedCallSites, extractCallContext, getChangedElements, extractSignaturesFromRef, extractSignaturesFromWorktree
- * @used_by src/context/breaking-change-detector/index.ts
- */
-
-
-
-/**
  * IMP-CORE-035: Diff Analyzer
  * Finds impacted call sites and extracts call context
  */

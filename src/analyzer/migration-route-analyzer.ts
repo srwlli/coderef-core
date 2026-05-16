@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports MigrationRouteElement, AffectedCaller, BreakingChange, OrphanedCall, FrameworkStats, MigrationRouteAnalyzer, extractAllRoutes, findOrphanedCalls, detectBreakingChanges
- * @used_by src/fileGeneration/detectPatterns.ts
- */
-
-
-
-/**
  * IMP-CORE-039: Migration Route Analyzer
  *
  * Unifies route metadata extraction for migration analysis.

@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports GrammarRegistry
- * @used_by src/pipeline/orchestrator.ts
- */
-
-
-
-/**
  * GrammarRegistry - Lazy tree-sitter grammar loader for unified pipeline
  *
  * WO-UNIFIED-CODEREF-PIPELINE-001 - Phase 1, Task IMPL-001

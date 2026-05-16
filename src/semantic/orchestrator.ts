@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports SemanticPipelineOptions, PipelineResult, SemanticOrchestrator, traverse, runSemanticPipeline
+ * @exports PipelineResult, SemanticOrchestrator, SemanticPipelineOptions, runSemanticPipeline
  * @used_by src/cli/semantic-integration.test.ts, src/cli/semantic-integration.ts, __tests__/pipeline/single-scanner.test.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports SemanticPipelineOptions, PipelineResult, SemanticOrchestrator, traverse, runSemanticPipeline
- * @used_by src/cli/semantic-integration.test.ts, src/cli/semantic-integration.ts, __tests__/pipeline/single-scanner.test.ts
- */
-
-
 
 /**
  * Semantic orchestrator - coordinates full workflow

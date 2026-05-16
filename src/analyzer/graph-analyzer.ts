@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports TraversalPath, CircularDependency, GraphAnalyzer, dfs
+ * @exports CircularDependency, GraphAnalyzer, TraversalPath
  * @used_by src/analyzer/analyzer-service.ts, src/context/multi-hop-traversal.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports TraversalPath, CircularDependency, GraphAnalyzer, dfs
- * @used_by src/analyzer/analyzer-service.ts, src/context/multi-hop-traversal.ts
- */
-
-
 
 /**
  * Graph Analyzer - Query and traverse the dependency graph

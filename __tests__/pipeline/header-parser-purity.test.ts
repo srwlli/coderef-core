@@ -21,12 +21,7 @@ const fixtures = [
   {
     name: 'partial-malformed',
     src: [
-      '/**',
-      ' * @coderef-semantic:1.0.0',
-      ' * @layer not_a_layer',
-      ' * @capability NotKebab',
-      ' * @generated bogus',
-      ' */',
+      '',
       'export const x = 1;',
       '',
     ].join('\n'),

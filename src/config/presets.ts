@@ -1,14 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ScanPreset, loadPreset, detectPreset, mergePresets, applyPreset
+ * @exports SCAN_PRESETS, ScanPreset, applyPreset, detectPreset, loadPreset, mergePresets
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports ScanPreset, loadPreset, detectPreset, mergePresets, applyPreset
- */
-
-
 
 // coderef-core/config/presets.ts
 

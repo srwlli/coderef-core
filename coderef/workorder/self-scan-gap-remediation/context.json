@@ -1,0 +1,53 @@
+{
+  "workorder_id": "WO-SELF-SCAN-GAP-REMEDIATION-001",
+  "feature_name": "self-scan-gap-remediation",
+  "created": "2026-05-16T11:05:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": null,
+  "intake": {
+    "trigger": "user",
+    "user_request": "Address the remaining gaps from the post-improvement self-scan: capability/layer still 0 in index.json (parse gap in populate pipeline), stale count 797 (target < 100, exports_match_ast still fires on complex pipeline files)."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Two distinct root-cause investigations + fixes. Each fix requires its own research, implementation, and validation phase. Phased keeps them independently gated.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "Fix populate pipeline to extract @capability/@layer from semantic header blocks into element.capability and element.layer fields in index.json",
+      "Investigate and reduce exports_match_ast stale count from 797 toward < 100 — audit why @exports headers don't match tree-sitter AST output on complex pipeline files",
+      "Validate both fixes by running populate.js and checking metrics"
+    ],
+    "out_of_scope": [
+      "capability/layer in RAG vector metadata (separate WO: WO-PROPAGATE-LAYER-INTO-RAG-VECTOR-METADATA-001)",
+      "elementType in index.json (separate investigation needed)",
+      "New test authoring for unrelated elements",
+      "Scanner changes beyond what's needed for stale fix"
+    ]
+  },
+  "constraints": [
+    "Must validate with populate.js run after each fix",
+    "Stale count target: < 100 (from 797)",
+    "capability populated target: > 0 (from 0)",
+    "No breaking changes to existing index.json schema"
+  ],
+  "prior_scan_baseline": {
+    "total_elements": 2484,
+    "capability_populated": 0,
+    "layer_populated": 0,
+    "stale_count": 797,
+    "header_defined_pct": 51.2,
+    "test_coverage_pct": 36
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

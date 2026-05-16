@@ -1,14 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
+ * @exports ConfigError, DEFAULT_CONFIG, ENV_VARS, LLMProviderName, RAGConfig, RAGConfigLoader, isLocalOnly
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
- */
-
-
 
 /**
  * RAG Configuration Loader

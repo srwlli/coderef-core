@@ -4,13 +4,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports ApiEndpoint, detectPatterns, getApiEndpointStats
- */
-
-
-
-/**
  * Detect Patterns - Find common code patterns
  *
  * Outputs: .coderef/reports/patterns.json

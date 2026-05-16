@@ -1,14 +1,8 @@
 #!/usr/bin/env python3
 /**
  * @coderef-semantic: 1.0.0
- * @exports main
- */
+ * */
 
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports: [main]
- */
 
 """
 Iteration 1: Add async field to Python function elements

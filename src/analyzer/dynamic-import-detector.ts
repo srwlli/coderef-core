@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports DynamicImport, DynamicCallEdge, DynamicImportDetector
- * @used_by __tests__/dynamic-imports.test.ts
- */
-
-
-
-/**
  * Dynamic Import Detector - Detects dynamic import() expressions
  * WO-SCANNER-ACCURACY-IMPROVEMENTS-001: SCAN-001
  *

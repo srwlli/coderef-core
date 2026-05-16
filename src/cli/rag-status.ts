@@ -3,7 +3,7 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability cli-rag-status
- * @exports main, parseArgs, printHelp, formatBytes, formatDuration, formatRelativeTime
+ * @exports 
  */
 
 /**

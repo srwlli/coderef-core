@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports RelationshipType, RelationshipEdge, GraphNode, RelationshipIndex, walk, hasCycle, createRelationshipIndex
+ * @exports ALL_RELATIONSHIP_TYPES, GraphNode, RelationshipEdge, RelationshipIndex, RelationshipType, createRelationshipIndex
  * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports RelationshipType, RelationshipEdge, GraphNode, RelationshipIndex, walk, hasCycle, createRelationshipIndex
- * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
- */
-
-
 
 /**
  * CodeRef2 Relationship Index

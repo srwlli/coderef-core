@@ -1,14 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports BreakingChangeDetector
+ * @exports BlastRadius, BreakingChangeDetector, BreakingChangeReport, ContextualFactor, ImpactedCallSite, MigrationHint, ParameterDiff, SignatureChange, adjustForContextualFactors, analyzeDifference, calculateConfidence, calculateReportConfidence, calculateSeverity, compareParameters, compareSignatures, extractCallContext, extractSignaturesFromRef, extractSignaturesFromWorktree, findImpactedCallSites, generateMigrationHints, getChangedElements, isBreakingChange, isCompatibleCall, scoreCallType, suggestAdapterPattern, suggestDefaultParamPattern, suggestOptionsObjectPattern, suggestRenamePattern, suggestWrapPattern
  */
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports BreakingChangeDetector
- */
-
-
 
 /**
  * IMP-CORE-035: Breaking Change Detector - Modular Architecture

@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports EntryPointDetector
- * @used_by src/context/context-generator.ts
- */
-
-
-
-/**
  * Entry Point Detector
  * Detects entry points in code via naming and file patterns
  *

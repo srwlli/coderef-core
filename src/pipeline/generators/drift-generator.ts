@@ -5,14 +5,6 @@
  */
 
 /**
- * @coderef-semantic: 1.0.0
- * @exports DriftGenerator
- * @used_by src/cli/populate.ts
- */
-
-
-
-/**
  * DriftGenerator - Detect drift between source files and the indexed snapshot.
  *
  * Produces: .coderef/reports/drift.json
