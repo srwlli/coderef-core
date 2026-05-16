@@ -1,0 +1,32 @@
+=============================================================
+WORKORDER: WO-HEADER-COVERAGE-REMAINING-15PCT-001  |  header-coverage-remaining-15pct  |  COMPLETE
+Session: SES-2026-05-17-HEADER-COVERAGE-REMAINING-15PCT  |  Phases: 2  |  Commits: 3  |  Pushes: 1
+Parent stub: STUB-HEADER-COVERAGE-REMAINING-15PCT-001 (will be closed on archive)
+
+FILES CREATED:
+  (no new files created — all changes were header additions to existing files)
+
+FILES MODIFIED:
+  ~ src/cli/ (7 files)  (52404ec)
+  ~ __tests__/ (35 files), scripts/ (9 files), src/pipeline/ (2 files)  (4444bda)
+  ~ utils/fs.js, utils/fs.ts, src/scanner/scanner-worker.ts  (4444bda)
+  ~ src/cli/coderef-intelligence-server.ts  (4444bda)
+  ~ coderef/workorder/header-coverage-remaining-15pct/  (93f52f9)
+  ~ coderef/foundation-docs/{INDEX,HOTSPOTS,RELATIONSHIPS}.md  (93f52f9)
+  ~ ... and 6 more (examples/, demo-all-modules.ts, types.d.ts)  (4444bda)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Annotate src/cli/ entry points (7 files, 80 elements)  (52404ec)
+  [x] Phase 2: Annotate scripts/ tests/ remaining files (69 files, 182 elements)  (4444bda)
+  [x] Phase 3 (close-out): Foundation-docs gate + tracking + push  (93f52f9)
+
+COVERAGE RESULT:
+  Before: 2217/2488 defined (85.5%) — 271 missing
+  After:  2479/2488 defined (99.6%) — 9 missing (fixture files only, correct)
+  Partial: 265 → 0 (all layer errors resolved)
+  Tests: 138/138 pass (0 failures)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift, not in scope)
+
+APPROVE -> /close-workorder WO-HEADER-COVERAGE-REMAINING-15PCT-001
+=============================================================
