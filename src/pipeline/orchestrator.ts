@@ -472,8 +472,12 @@ export class PipelineOrchestrator {
 
     if (headerStatus === 'defined' && headerFact.exports !== undefined) {
       const headerSet = new Set(headerFact.exports);
-      const astSet = new Set(rawExports.map(e => e.exportedName));
-      astSet.delete('default'); // tree-sitter emits 'default' for export default X; @exports headers never declare it
+      // Use exported-element names (same derivation as header-generator's buildExportsForFile) instead
+      // of rawExports (a separate tree-sitter pass). rawExports captures export enum, re-exports, and
+      // 'default' which the element extractor does not track, causing false-stale positives when a
+      // correct @exports header omits those symbols. Filtering elements by .exported matches exactly
+      // what would appear in the generated header.
+      const astSet = new Set(elements.filter(e => e.exported).map(e => e.name));
       let mismatch = false;
       for (const name of headerSet) if (!astSet.has(name)) { mismatch = true; break; }
       if (!mismatch) for (const name of astSet) if (!headerSet.has(name)) { mismatch = true; break; }

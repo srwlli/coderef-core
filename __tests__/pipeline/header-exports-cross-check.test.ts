@@ -77,4 +77,27 @@ describe('Phase 2.5 header @exports vs AST cross-check (AC-05)', () => {
     const elem = state.elements.find(e => e.name === 'alpha');
     expect(elem?.headerStatus).toBe('stale');
   });
+
+  // Regression: WO-FIX-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH-001
+  // rawExports (tree-sitter pass) captures `export enum` declarations; the element extractor
+  // does not. Before the fix, the staleness check used rawExports and would flag
+  // headerStatus=stale for files whose @exports header correctly omits enum names.
+  // After the fix, astSet comes from element.exports (same source as header-generator),
+  // so a file with only function exports listed in @exports is correctly headerStatus=defined.
+  it('false-stale fix: enum export not in @exports -> headerStatus=defined (not stale)', async () => {
+    const dir = await project({
+      'src/m.ts':
+        buildHeader('alpha') +
+        'export function alpha() {}\nexport enum Mode { A, B }\n',
+    });
+    const state = await new PipelineOrchestrator().run(dir, {
+      outputDir: path.join(dir, '.coderef'),
+      languages: ['ts'],
+      mode: 'minimal',
+    });
+    // alpha is in @exports; Mode (enum) is not tracked by element extractor.
+    // With fix: astSet = element.exports = [alpha] → matches headerSet → defined.
+    const elem = state.elements.find(e => e.name === 'alpha');
+    expect(elem?.headerStatus).toBe('defined');
+  });
 });
