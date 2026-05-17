@@ -1,0 +1,172 @@
+{
+  "workorder_id": "WO-MIGRATE-GRAPH-BUILDER-IMPORTERS-001",
+  "feature_name": "migrate-graph-builder-importers",
+  "created": "2026-05-17T07:35:00Z",
+  "plan_type": "strict",
+  "plan_type_rationale": "14 active consumers across 5 layers; incompatible schemas; requires phased migration with per-batch type-check and regression gate.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Migrate low-complexity single-import consumers (GraphNode-only)",
+      "hard_stop": true,
+      "goal": "Migrate fuzzy-resolver.ts, ai-prompt-generator.ts, and query-executor.ts off analyzer/graph-builder — these each import only GraphNode. Read pipeline/graph-builder.ts to find or define an equivalent, update the three files, verify tsc --noEmit passes.",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/pipeline/graph-builder.ts exports fully — identify which exported types can replace GraphNode, GraphEdge, DependencyGraph from the legacy module"
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/context/fuzzy-resolver.ts, src/integration/ai-prompt-generator.ts, src/query/query-executor.ts — understand how GraphNode is used in each"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Update imports in fuzzy-resolver.ts, ai-prompt-generator.ts, query-executor.ts to use pipeline/graph-builder.ts (or a defined shim if GraphNode has no direct equivalent)"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx tsc --noEmit — confirm Phase 1 files compile cleanly, no new type errors"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run npx vitest — confirm no regressions in existing test suite"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit Phase 1 migrations"
+        }
+      ],
+      "acceptance_criteria": [
+        "fuzzy-resolver.ts, ai-prompt-generator.ts, query-executor.ts have zero imports from analyzer/graph-builder",
+        "tsc --noEmit exits 0",
+        "vitest: 0 new failures"
+      ]
+    },
+    {
+      "phase": 2,
+      "title": "Migrate medium-complexity RAG consumers (type-only DependencyGraph imports)",
+      "hard_stop": true,
+      "goal": "Migrate answer-generation-service.ts, chunk-converter.ts, graph-reranker.ts, incremental-indexer.ts, semantic-search.ts — these import DependencyGraph type-only. Determine if ExportedGraph is a compatible substitute or if a shim type alias is needed.",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read each of the 5 RAG consumer files — understand how DependencyGraph is used (parameter types, property access patterns)"
+        },
+        {
+          "verb": "CHECK",
+          "description": "Determine whether ExportedGraph from pipeline/graph-builder.ts covers the DependencyGraph usage surface in each file, or whether a compatibility shim is required"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Update imports in answer-generation-service.ts, chunk-converter.ts, graph-reranker.ts, incremental-indexer.ts, semantic-search.ts"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx tsc --noEmit — confirm Phase 2 files compile cleanly"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run npx vitest src/integration/rag/ — targeted regression check on RAG layer"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit Phase 2 migrations"
+        }
+      ],
+      "acceptance_criteria": [
+        "5 RAG consumer files have zero imports from analyzer/graph-builder",
+        "tsc --noEmit exits 0",
+        "vitest RAG tests: 0 new failures"
+      ]
+    },
+    {
+      "phase": 3,
+      "title": "Migrate high-complexity consumers (multi-type structural usage)",
+      "hard_stop": true,
+      "goal": "Migrate graph-to-elements.ts, impact-simulator.ts, multi-hop-traversal.ts, graph-exporter.ts, plugin-graph.ts, and indexing-orchestrator.ts — these use DependencyGraph + GraphNode + GraphEdge structurally and require deeper adaptation.",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read each of the 6 high-complexity files — map all usages of DependencyGraph.nodes (Map), GraphNode, GraphEdge to their pipeline equivalents"
+        },
+        {
+          "verb": "CHECK",
+          "description": "For each file, determine: (A) full type replacement is viable, (B) a shim/adapter function is needed, or (C) the consumer must keep legacy types and receive an adapter-wrapped ExportedGraph at call boundaries"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Implement the migration for each of the 6 files per the (A)/(B)/(C) ruling — update imports, adapt type usage, add shims where needed"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx tsc --noEmit — confirm all files compile cleanly"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run npx vitest — full regression gate"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit Phase 3 migrations"
+        }
+      ],
+      "acceptance_criteria": [
+        "All 6 high-complexity files have zero imports from analyzer/graph-builder",
+        "tsc --noEmit exits 0",
+        "vitest: 0 new failures"
+      ]
+    },
+    {
+      "phase": 4,
+      "title": "Delete src/analyzer/graph-builder.ts and final verification",
+      "hard_stop": false,
+      "goal": "Confirm no remaining imports of analyzer/graph-builder across the entire src/ tree, delete the file, run final tsc and vitest gate.",
+      "tasks": [
+        {
+          "verb": "RUN",
+          "description": "grep -rn 'analyzer/graph-builder' src/ — confirm zero remaining imports"
+        },
+        {
+          "verb": "DELETE",
+          "description": "Delete src/analyzer/graph-builder.ts"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx tsc --noEmit — final type-check with legacy file absent"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run npx vitest — final full regression gate"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit deletion of src/analyzer/graph-builder.ts"
+        }
+      ],
+      "acceptance_criteria": [
+        "grep -rn 'analyzer/graph-builder' src/ returns no results",
+        "src/analyzer/graph-builder.ts deleted",
+        "tsc --noEmit exits 0",
+        "vitest: 0 new failures"
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "after_phase": 1,
+      "condition": "tsc --noEmit failure or vitest regression",
+      "action": "Halt. Do not proceed to Phase 2 until Phase 1 compilation and tests are clean."
+    },
+    {
+      "after_phase": 2,
+      "condition": "tsc --noEmit failure or vitest regression",
+      "action": "Halt. Do not proceed to Phase 3 until Phase 2 compilation and tests are clean."
+    },
+    {
+      "after_phase": 3,
+      "condition": "tsc --noEmit failure or vitest regression",
+      "action": "Halt. Do not proceed to Phase 4 (deletion) until Phase 3 is fully clean."
+    }
+  ]
+}

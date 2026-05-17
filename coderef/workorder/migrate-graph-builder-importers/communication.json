@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-MIGRATE-GRAPH-BUILDER-IMPORTERS-001",
+  "feature_name": "migrate-graph-builder-importers",
+  "created": "2026-05-17T07:35:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Strict plan ready for phased execution"
+  },
+  "execution_rules": {
+    "phase_gate": "hard-stop after each phase — tsc --noEmit and vitest must both pass before advancing",
+    "rollback": "git checkout HEAD -- src/ to revert any phase if compilation fails"
+  },
+  "hard_constraints": [
+    "Do not change src/pipeline/graph-builder.ts implementation",
+    "Delete src/analyzer/graph-builder.ts only after ALL imports are cleared (Phase 4)",
+    "All 14 consumers must compile cleanly before proceeding to deletion",
+    "vitest must pass after each phase"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "required_skills": ["/execute-workorder", "/close-workorder", "/log-session"],
+  "communication_log": [
+    {
+      "timestamp": "2026-05-17T07:35:00Z",
+      "event": "workorder_created",
+      "source": "create-workorder@2.4.0",
+      "summary": "Strict 4-phase plan created from STUB-309 / IMP-CORE-094. 14 consumers across 5 layers migrated off deprecated analyzer/graph-builder.ts in complexity-ordered phases."
+    }
+  ]
+}

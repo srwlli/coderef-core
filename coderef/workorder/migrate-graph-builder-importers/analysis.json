@@ -1,0 +1,161 @@
+{
+  "workorder_id": "WO-MIGRATE-GRAPH-BUILDER-IMPORTERS-001",
+  "feature_name": "migrate-graph-builder-importers",
+  "analysis_authored_at": "2026-05-17T07:35:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/adapter/graph-to-elements.ts",
+      "src/context/fuzzy-resolver.ts",
+      "src/context/impact-simulator.ts",
+      "src/context/multi-hop-traversal.ts",
+      "src/export/graph-exporter.ts",
+      "src/integration/ai-prompt-generator.ts",
+      "src/integration/rag/answer-generation-service.ts",
+      "src/integration/rag/chunk-converter.ts",
+      "src/integration/rag/graph-reranker.ts",
+      "src/integration/rag/incremental-indexer.ts",
+      "src/integration/rag/indexing-orchestrator.ts",
+      "src/integration/rag/semantic-search.ts",
+      "src/plugins/plugin-graph.ts",
+      "src/query/query-executor.ts"
+    ],
+    "files_deleted": [
+      "src/analyzer/graph-builder.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "Any code that imports types from the 14 consumer files above may be indirectly affected if type signatures change"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Schema incompatibility — Map-based vs ExportedGraph",
+      "likelihood": "high",
+      "impact": "high",
+      "mitigation": "Read pipeline/graph-builder.ts exports before each migration. Introduce adapter shims where full type replacement is not tractable within one phase."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Compilation breaks in dependent tests",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Run tsc --noEmit after each phase's batch of migrations. Fix test import updates before proceeding to next phase."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Runtime behavior change from schema differences",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Run vitest full suite after each phase. Pay special attention to RAG pipeline consumers (chunk-converter, indexing-orchestrator) which have integration tests."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Some consumers may need the legacy DependencyGraph type indefinitely",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "If a consumer cannot be migrated, extract the needed type interface to a shared shim rather than keeping the legacy import. Document in decisions_log."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/adapter/graph-to-elements.ts",
+      "imports": ["DependencyGraph"],
+      "migration_complexity": "medium"
+    },
+    {
+      "file": "src/context/fuzzy-resolver.ts",
+      "imports": ["GraphNode"],
+      "migration_complexity": "low"
+    },
+    {
+      "file": "src/context/impact-simulator.ts",
+      "imports": ["DependencyGraph", "GraphNode", "GraphEdge"],
+      "migration_complexity": "high"
+    },
+    {
+      "file": "src/context/multi-hop-traversal.ts",
+      "imports": ["DependencyGraph", "GraphNode", "GraphEdge"],
+      "migration_complexity": "high"
+    },
+    {
+      "file": "src/export/graph-exporter.ts",
+      "imports": ["DependencyGraph", "GraphNode", "GraphEdge"],
+      "migration_complexity": "high"
+    },
+    {
+      "file": "src/integration/ai-prompt-generator.ts",
+      "imports": ["GraphNode"],
+      "migration_complexity": "low"
+    },
+    {
+      "file": "src/integration/rag/answer-generation-service.ts",
+      "imports": ["DependencyGraph"],
+      "migration_complexity": "medium"
+    },
+    {
+      "file": "src/integration/rag/chunk-converter.ts",
+      "imports": ["DependencyGraph", "GraphNode"],
+      "migration_complexity": "medium"
+    },
+    {
+      "file": "src/integration/rag/graph-reranker.ts",
+      "imports": ["DependencyGraph"],
+      "migration_complexity": "medium"
+    },
+    {
+      "file": "src/integration/rag/incremental-indexer.ts",
+      "imports": ["DependencyGraph"],
+      "migration_complexity": "medium"
+    },
+    {
+      "file": "src/integration/rag/indexing-orchestrator.ts",
+      "imports": ["DependencyGraph", "GraphNode", "GraphEdge"],
+      "migration_complexity": "high"
+    },
+    {
+      "file": "src/integration/rag/semantic-search.ts",
+      "imports": ["DependencyGraph"],
+      "migration_complexity": "medium"
+    },
+    {
+      "file": "src/plugins/plugin-graph.ts",
+      "imports": ["DependencyGraph", "GraphEdge"],
+      "migration_complexity": "medium"
+    },
+    {
+      "file": "src/query/query-executor.ts",
+      "imports": ["GraphNode"],
+      "migration_complexity": "low"
+    }
+  ],
+  "dependencies": [
+    "src/pipeline/graph-builder.ts (migration target)",
+    "src/analyzer/graph-builder.ts (source under migration)",
+    "vitest (test runner for regression gate)",
+    "TypeScript compiler (tsc --noEmit for type-check gate)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Phase 1 migrates low-complexity single-import consumers first",
+      "rationale": "fuzzy-resolver.ts, ai-prompt-generator.ts, query-executor.ts each import only GraphNode — smallest blast radius, build confidence before tackling multi-type consumers."
+    },
+    {
+      "id": "DR-002",
+      "decision": "Phase 2 migrates medium-complexity RAG-layer consumers",
+      "rationale": "answer-generation-service, chunk-converter, graph-reranker, incremental-indexer, semantic-search import DependencyGraph type-only — likely replaceable with ExportedGraph or a targeted shim."
+    },
+    {
+      "id": "DR-003",
+      "decision": "Phase 3 migrates high-complexity consumers (context layer + export + RAG orchestrator)",
+      "rationale": "impact-simulator, multi-hop-traversal, graph-exporter, indexing-orchestrator all import DependencyGraph + GraphNode + GraphEdge and use them structurally — require deeper adaptation."
+    },
+    {
+      "id": "DR-004",
+      "decision": "Phase 4 deletes src/analyzer/graph-builder.ts after all imports cleared + tests pass",
+      "rationale": "Deletion is the final acceptance criterion. Do not delete until tsc --noEmit and vitest both pass cleanly."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "workorder_id": "WO-MIGRATE-GRAPH-BUILDER-IMPORTERS-001",
+  "feature_name": "migrate-graph-builder-importers",
+  "created": "2026-05-17T07:35:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "intake": {
+    "trigger": "stub-promotion",
+    "stub_id": "STUB-309",
+    "improvement_id": "IMP-CORE-094",
+    "user_request": "Migrate 10+ active importers off deprecated src/analyzer/graph-builder.ts to src/pipeline/graph-builder.ts (IMP-CORE-094, STUB-309)"
+  },
+  "classification": {
+    "plan_type": "strict",
+    "plan_type_rationale": "Stub category=refactor maps to strict plan. 14 active importers across 5 layers; structurally incompatible schemas (Map-based DependencyGraph vs ExportedGraph); requires phased migration with per-consumer adaptation and regression testing.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        "src/adapter/graph-to-elements.ts",
+        "src/context/fuzzy-resolver.ts",
+        "src/context/impact-simulator.ts",
+        "src/context/multi-hop-traversal.ts",
+        "src/export/graph-exporter.ts",
+        "src/integration/ai-prompt-generator.ts",
+        "src/integration/rag/answer-generation-service.ts",
+        "src/integration/rag/chunk-converter.ts",
+        "src/integration/rag/graph-reranker.ts",
+        "src/integration/rag/incremental-indexer.ts",
+        "src/integration/rag/indexing-orchestrator.ts",
+        "src/integration/rag/semantic-search.ts",
+        "src/plugins/plugin-graph.ts",
+        "src/query/query-executor.ts"
+      ],
+      "blast_radius": 14,
+      "public_api_hits": [],
+      "warnings": [
+        "Legacy schema (Map-based DependencyGraph) incompatible with pipeline ExportedGraph — consumers cannot be trivially switched; each requires individual adaptation"
+      ]
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": ["skipped: using discovery grep output instead of .coderef scan"]
+  },
+  "scope": {
+    "in_scope": [
+      "src/analyzer/graph-builder.ts — source under migration (to be deleted at end)",
+      "14 active importer files across adapter, context, export, integration/rag, plugins, query layers",
+      "src/pipeline/graph-builder.ts — migration target"
+    ],
+    "out_of_scope": [
+      "Changes to src/pipeline/graph-builder.ts implementation",
+      "Test files (update imports only if tests break)",
+      "src/analyzer/analyzer-service.ts, graph-analyzer.ts, graph-helpers.ts (internal analyzer users)"
+    ]
+  },
+  "constraints": [
+    "All 14 consumers must compile cleanly after migration",
+    "Existing vitest test suite must pass (no new failures)",
+    "src/analyzer/graph-builder.ts must be deleted only after all imports are cleared",
+    "Do not change pipeline/graph-builder.ts implementation — only route consumers to it or to appropriate adapter shims"
+  ],
+  "pre_existing_drift": false
+}
