@@ -2,10 +2,10 @@
   "$schema": "https://schemas.coderef.com/improvements/v1",
   "schema_version": "1.0",
   "project": "coderef-core",
-  "scope": "scanner",
-  "counter": 91,
-  "last_updated": "2026-05-12",
-  "last_pruned": "2026-05-11",
+  "scope": "root",
+  "counter": 94,
+  "last_updated": "2026-05-17",
+  "last_pruned": "2026-05-17",
   "archived": [
     "IMP-CORE-003",
     "IMP-CORE-004",
@@ -37,11 +37,15 @@
     "IMP-CORE-039",
     "IMP-CORE-042",
     "IMP-CORE-044",
+    "IMP-CORE-052",
     "IMP-CORE-057",
     "IMP-CORE-076",
     "IMP-CORE-077",
+    "IMP-CORE-078",
     "IMP-CORE-080",
-    "IMP-CORE-081"
+    "IMP-CORE-081",
+    "IMP-CORE-087",
+    "IMP-CORE-089"
   ],
   "items": [
     {
@@ -60,27 +64,9 @@
       ]
     },
     {
-      "id": "IMP-CORE-052",
-      "title": "Replace regex parsing with AST for all languages",
-      "category": "accuracy",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-04-21",
-      "closed": "2026-05-12",
-      "resolution": "Promoted tree-sitter to default scanner path (useTreeSitter now defaults to true). JSCallDetector pass wired into tree-sitter path for TS/JS. Commit: 65a1e46.",
-      "body": "External review identified regex-based parsing as primary accuracy limitation (score 6.5/10). Currently only Python uses tree-sitter AST (100% accuracy). TypeScript, JavaScript, Go, Rust, Java, C#, PHP all use regex patterns. Expanding tree-sitter coverage would boost accuracy rating +1.5 points and match CodeQL-level precision. See scanner-quality autoresearch baselines for comparison.",
-      "files": [
-        "src/scanner/scanner.ts",
-        "src/scanner/pattern-loader.ts"
-      ],
-      "related": [
-        "IMP-CORE-036"
-      ]
-    },
-    {
       "id": "IMP-CORE-053",
       "title": "Add data-flow and type-flow analysis",
-      "category": "technical-depth",
+      "category": "architecture",
       "severity": "major",
       "status": "open",
       "logged": "2026-04-21",
@@ -93,11 +79,11 @@
     {
       "id": "IMP-CORE-056",
       "title": "Add minimal UI layer for graph exploration to my-code tenant",
-      "category": "developer-experience",
+      "category": "ux",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-21",
-      "body": "Build interactive graph explorer for CodeRef data targeting Entity monorepo's my-code tenant (Entity/apps/web/app/my-code/). Consumes CODEREF-CORE .coderef/graph.json via API endpoint. Features: visualize dependency graphs, navigate element relationships, inspect API routes. Integration point: my-code/page.tsx currently shows ProjectViewPage - add graph visualization tab. Will differentiate from static foundation-docs markdown output.",
+      "body": "Build interactive graph explorer for CodeRef data targeting Entity monorepo's my-code tenant (Entity/apps/web/app/my-code/). Consumes CODEREF-CORE .coderef/graph.json via API endpoint. Features: visualize dependency graphs, navigate element relationships, inspect API routes. Integration point: my-code/page.tsx currently shows ProjectViewPage - add graph visualization tab.",
       "files": [
         "coderef/foundation-docs/diagrams/",
         "Entity/apps/web/app/my-code/page.tsx"
@@ -105,10 +91,7 @@
       "related": [
         "WO-FOUNDATION-DOCS-001",
         "IMP-CORE-063"
-      ],
-      "target_tenant": "my-code",
-      "target_repo": "Entity",
-      "integration_path": "Entity/apps/web/app/my-code/"
+      ]
     },
     {
       "id": "IMP-CORE-061",
@@ -137,7 +120,7 @@
     {
       "id": "IMP-CORE-063",
       "title": "Make cache size limit configurable instead of hardcoded 50MB",
-      "category": "configuration",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -149,7 +132,7 @@
     {
       "id": "IMP-CORE-064",
       "title": "Add error handling for fs.statSync cache check",
-      "category": "robustness",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -161,7 +144,7 @@
     {
       "id": "IMP-CORE-065",
       "title": "Prevent global LANGUAGE_PATTERNS mutation for custom patterns",
-      "category": "thread-safety",
+      "category": "architecture",
       "severity": "major",
       "status": "open",
       "logged": "2026-04-23",
@@ -173,7 +156,7 @@
     {
       "id": "IMP-CORE-066",
       "title": "Make Next.js API route path configurable",
-      "category": "configuration",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -185,7 +168,7 @@
     {
       "id": "IMP-CORE-067",
       "title": "Add regex pattern validation for custom patterns",
-      "category": "robustness",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -197,7 +180,7 @@
     {
       "id": "IMP-CORE-068",
       "title": "Fix sortPatternsByPriority type signature mismatch",
-      "category": "type-safety",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -221,7 +204,7 @@
     {
       "id": "IMP-CORE-070",
       "title": "Add maxDepth tracking to prevent infinite recursion on circular symlinks",
-      "category": "robustness",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -232,8 +215,8 @@
     },
     {
       "id": "IMP-CORE-071",
-      "title": "Replace console.error with logger for consistent error handling",
-      "category": "logging",
+      "title": "Replace console.error with logger in scanner.ts",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -257,7 +240,7 @@
     {
       "id": "IMP-CORE-073",
       "title": "Make isEntirelyCommented threshold configurable",
-      "category": "configuration",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -269,7 +252,7 @@
     {
       "id": "IMP-CORE-074",
       "title": "Improve worker file path validation in scanFilesInParallel",
-      "category": "robustness",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
@@ -281,28 +264,13 @@
     {
       "id": "IMP-CORE-075",
       "title": "Add input validation for scanCurrentElements parameters",
-      "category": "robustness",
+      "category": "code-quality",
       "severity": "minor",
       "status": "open",
       "logged": "2026-04-23",
       "body": "scanCurrentElements (line 782) doesn't validate input parameters. Invalid dir (non-existent), empty lang array, or malformed options cause confusing errors downstream. Add validation at function start: check dir exists, langs is non-empty array, options has valid structure. Throw clear errors for invalid inputs.",
       "files": [
         "src/scanner/scanner.ts:782-799"
-      ]
-    },
-    {
-      "id": "IMP-CORE-078",
-      "title": "Fix parallel AST scans to match sequential AST accuracy",
-      "category": "accuracy",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-04-23",
-      "closed": "2026-05-12",
-      "resolution": "scanner-worker.ts: added tree-sitter path matching main scanner default; fixed useAST TS branch to use ASTElementScanner + JSCallDetector (was JSCallDetector-only). Commit: 65a1e46.",
-      "body": "Parallel AST scans for TypeScript are not equivalent to sequential AST scans. The worker implementation in scanner-worker.ts (line 58) uses JSCallDetector for TS, while the main path in scanner.ts (line 1164) uses ASTElementScanner and attaches imports/calls. If worker mode actually runs, callers asking for AST accuracy get a downgraded result set.",
-      "files": [
-        "src/scanner/scanner-worker.ts:58",
-        "src/scanner/scanner.ts:1164"
       ]
     },
     {
@@ -327,8 +295,7 @@
       "body": "Integrate real-time hardware check into _decide_escalation function. If detect_vram() returns less than 4000MB, trigger automatic escalation for medium complexity tasks that would normally stay local. Prevents Out of Memory (OOM) crashes on 4GB VRAM host machine during heavy agentic workflows.",
       "files": [
         "src/routing/smartrouter.ts"
-      ],
-      "related": []
+      ]
     },
     {
       "id": "IMP-CORE-083",
@@ -348,7 +315,7 @@
     {
       "id": "IMP-CORE-084",
       "title": "Hieroglyph-as-Code Classifier for SmartRouter",
-      "category": "accuracy",
+      "category": "architecture",
       "severity": "major",
       "status": "open",
       "logged": "2026-04-29",
@@ -378,7 +345,7 @@
     {
       "id": "IMP-CORE-086",
       "title": "Automated Model Pull Trigger for SmartRouter",
-      "category": "reliability",
+      "category": "architecture",
       "severity": "major",
       "status": "open",
       "logged": "2026-04-29",
@@ -391,20 +358,6 @@
       ]
     },
     {
-      "id": "IMP-CORE-087",
-      "title": "DryRunSemanticOrchestrator never restores patched fs module",
-      "category": "security",
-      "severity": "major",
-      "status": "done",
-      "logged": "2026-05-11",
-      "body": "interceptFileWrites() (line 44) monkey-patches the global fs.writeFileSync and fs.promises.writeFile but never restores the originals. Any subsequent call in the same process — including test suites and back-to-back CLI invocations — runs with the patched fs, silently suppressing writes that should succeed. Add a restore() method and call it after processProject()/processFile() completes, or replace the global-patch strategy with a dependency-injected fs adapter.",
-      "files": [
-        "src/cli/semantic-integration.ts:44-67"
-      ],
-      "closed": "2026-05-12",
-      "resolution": "Added restore() method with _restored idempotency guard. Wrapped processProject()/processFile() in try/finally. Used Object.defineProperty for fs patch (ESM-safe). 5 unit tests. Commit 7178f03."
-    },
-    {
       "id": "IMP-CORE-088",
       "title": "Add tests for detect-languages-cli and semantic-integration-cli",
       "category": "testing",
@@ -415,21 +368,6 @@
       "files": [
         "src/cli/detect-languages-cli.ts",
         "src/cli/semantic-integration-cli.ts"
-      ]
-    },
-    {
-      "id": "IMP-CORE-089",
-      "title": "Fix rag-search duplicate --project-dir emission in UI",
-      "category": "ux",
-      "severity": "minor",
-      "status": "done",
-      "logged": "2026-05-12",
-      "closed": "2026-05-12",
-      "resolution": "Removed redundant --project-dir entry from CMD_OPTIONS['rag-search']; PROJECT_DIR_FLAG_CMDS auto-injection is the sole source. Commit 6e2472a.",
-      "body": "tools/coderef_ui.py line 105 adds an explicit --project-dir entry widget for rag-search inside CMD_OPTIONS, while rag-search is also in PROJECT_DIR_FLAG_CMDS which causes _build_args() to auto-inject --project-dir from the top-level Project Dir field. If both fields are populated, --project-dir appears twice in the argv list, causing a yargs parse error. Either remove the CMD_OPTIONS entry or remove rag-search from PROJECT_DIR_FLAG_CMDS and rely solely on the CMD_OPTIONS widget.",
-      "files": [
-        "tools/coderef_ui.py:105",
-        "tools/coderef_ui.py:217"
       ]
     },
     {
@@ -456,7 +394,51 @@
       "files": [
         "src/integration/ai-prompt-generator.ts:271"
       ]
+    },
+    {
+      "id": "IMP-CORE-092",
+      "title": "Add unit tests for inferLayerFromPath and inferCapabilityFromPath",
+      "category": "testing",
+      "severity": "major",
+      "status": "done",
+      "logged": "2026-05-17",
+      "resolved": "2026-05-17",
+      "workorder_id": "WO-INFER-LAYER-PATH-UNIT-TESTS-001",
+      "body": "inferLayerFromPath() and inferCapabilityFromPath() were added in WO-DOGFOOD-HEADER-COVERAGE-AND-LAYER-SEEDING-001 with 50+ path patterns and are exported from header-generator.ts, but have zero unit tests. A regression in pattern ordering or regex would silently downgrade layer coverage from 99% with no failing test to catch it.",
+      "files": [
+        "src/semantic/header-generator.ts:86-119"
+      ],
+      "related": [
+        "WO-DOGFOOD-HEADER-COVERAGE-AND-LAYER-SEEDING-001"
+      ]
+    },
+    {
+      "id": "IMP-CORE-093",
+      "title": "Replace 15+ console.log/error calls in pipeline/orchestrator.ts with logger",
+      "category": "code-quality",
+      "severity": "minor",
+      "status": "open",
+      "logged": "2026-05-17",
+      "body": "src/pipeline/orchestrator.ts uses 15+ raw console.log and console.error calls (lines 88-301). It is the highest-churn file in the project (28 commits in 3 months) yet bypasses src/utils/logger.ts entirely. This breaks log aggregation and makes pipeline diagnostics invisible to any tooling that intercepts the logger.",
+      "files": [
+        "src/pipeline/orchestrator.ts:88-301"
+      ]
+    },
+    {
+      "id": "IMP-CORE-094",
+      "title": "Migrate 10 active importers off deprecated analyzer/graph-builder.ts",
+      "category": "architecture",
+      "severity": "major",
+      "status": "open",
+      "logged": "2026-05-17",
+      "body": "src/analyzer/graph-builder.ts is marked @deprecated ('Use src/pipeline/graph-builder.ts instead') but is still imported by 10 active source files including graph-to-elements.ts, chunk-converter.ts, indexing-orchestrator.ts, and ai-prompt-generator.ts. The two graph-builder schemas are structurally incompatible (Map-based vs ExportedGraph), meaning consumers cannot be trivially switched — but the migration is necessary to remove the legacy schema dependency before it accretes further.",
+      "files": [
+        "src/analyzer/graph-builder.ts:10-15",
+        "src/adapter/graph-to-elements.ts:18",
+        "src/integration/rag/chunk-converter.ts:21",
+        "src/integration/rag/indexing-orchestrator.ts",
+        "src/integration/ai-prompt-generator.ts:21"
+      ]
     }
-  ],
-  "_note": "Pruned 5 done/completed entries (057, 076, 077, 080, 081) on 2026-05-11. Appended IMP-CORE-087 (DryRunSemanticOrchestrator fs leak) and IMP-CORE-088 (missing CLI tests). Counter advanced to 88. Appended IMP-CORE-089 (rag-search duplicate --project-dir), IMP-CORE-090 (console.log in adapter/cache), IMP-CORE-091 (missing smart truncation). Counter advanced to 91."
+  ]
 }
