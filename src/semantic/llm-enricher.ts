@@ -15,6 +15,7 @@
 
 
 
+import logger from '../utils/logger.js';
 import type { ElementData } from '../types/types.js';
 
 export interface EnrichmentRequest {
@@ -59,7 +60,7 @@ export class LLMEnricher {
       const apiKey = options.apiKey || process.env.ANTHROPIC_API_KEY;
       this.enabled = false;
     } catch (error) {
-      console.warn('[llm-enricher] Failed to initialize Anthropic client, falling back to offline mode');
+      logger.warn('[llm-enricher] Failed to initialize Anthropic client, falling back to offline mode');
       this.enabled = false;
     }
   }
@@ -76,7 +77,7 @@ export class LLMEnricher {
       const response = await this.callLLM(request);
       return response;
     } catch (error) {
-      console.warn(`[llm-enricher] LLM call failed: ${error instanceof Error ? error.message : error}`);
+      logger.warn(`[llm-enricher] LLM call failed: ${error instanceof Error ? error.message : error}`);
       return this.fallbackEnrichment(request);
     }
   }
@@ -165,7 +166,7 @@ Focus on:
         confidence: parsed.confidence || 0.5,
       };
     } catch (error) {
-      console.warn('[llm-enricher] Failed to parse LLM response:', error instanceof Error ? error.message : error);
+      logger.warn('[llm-enricher] Failed to parse LLM response:', error instanceof Error ? error.message : error);
       return {
         rules: [],
         related: [],

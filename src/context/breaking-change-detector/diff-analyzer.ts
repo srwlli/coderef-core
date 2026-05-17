@@ -13,6 +13,7 @@
 
 
 
+import logger from '../../utils/logger.js';
 import { SignatureChange, ImpactedCallSite } from './types.js';
 import { calculateConfidence, isCompatibleCall } from './impact-assessor.js';
 
@@ -61,7 +62,7 @@ export async function findImpactedCallSites(
           callType: callContext.type,
         });
       } catch (err) {
-        console.debug(
+        logger.debug(
           `Failed to analyze call site at ${caller.file}:${caller.line}: ${err}`
         );
         continue;
@@ -70,7 +71,7 @@ export async function findImpactedCallSites(
 
     return impactedSites;
   } catch (error) {
-    console.warn(`Failed to find impacted call sites for ${element.name}: ${error}`);
+    logger.warn(`Failed to find impacted call sites for ${element.name}: ${error}`);
     return [];
   }
 }
@@ -131,7 +132,7 @@ export async function getChangedElements(
   headRef?: string
 ): Promise<Array<{ name: string; file: string; type: string; line: number }>> {
   // Placeholder implementation - would integrate with git and scanner
-  console.log(`Getting changed elements between ${baseRef} and ${headRef || 'worktree'}`);
+  logger.info(`Getting changed elements between ${baseRef} and ${headRef || 'worktree'}`);
   return [];
 }
 
@@ -143,7 +144,7 @@ export async function extractSignaturesFromRef(
   filePath: string
 ): Promise<Map<string, any>> {
   // Placeholder implementation
-  console.log(`Extracting signatures from ${ref}:${filePath}`);
+  logger.info(`Extracting signatures from ${ref}:${filePath}`);
   return new Map();
 }
 
@@ -154,6 +155,6 @@ export async function extractSignaturesFromWorktree(
   filePath: string
 ): Promise<Map<string, any>> {
   // Placeholder implementation
-  console.log(`Extracting signatures from worktree:${filePath}`);
+  logger.info(`Extracting signatures from worktree:${filePath}`);
   return new Map();
 }

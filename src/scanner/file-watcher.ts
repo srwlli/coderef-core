@@ -16,6 +16,7 @@
 
 
 
+import logger from '../utils/logger.js';
 import chokidar from 'chokidar';
 import * as path from 'path';
 import { IncrementalCache } from '../cache/incremental-cache.js';
@@ -121,7 +122,7 @@ export class FileWatcher {
       .on('change', (filePath) => this.handleFileChange(filePath, 'change'))
       .on('unlink', (filePath) => this.handleFileDelete(filePath))
       .on('error', (error) => {
-        console.error('[FileWatcher] Error:', error);
+        logger.error('[FileWatcher] Error:', error);
       });
   }
 
@@ -183,7 +184,7 @@ export class FileWatcher {
         this.onChange(elements, [fullPath]);
       }
     } catch (error) {
-      console.error(`[FileWatcher] Failed to scan ${filePath}:`, error);
+      logger.error(`[FileWatcher] Failed to scan ${filePath}:`, error);
     }
   }
 
@@ -227,7 +228,7 @@ export class FileWatcher {
     if (this.onStatus) {
       this.onStatus(message);
     } else {
-      console.log(`[FileWatcher] ${message}`);
+      logger.info(`[FileWatcher] ${message}`);
     }
   }
 }

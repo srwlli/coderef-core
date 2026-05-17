@@ -24,6 +24,7 @@
 
 
 
+import logger from '../utils/logger.js';
 import Parser from 'tree-sitter';
 import {
   GRAMMAR_PACKAGES,
@@ -66,7 +67,7 @@ export class GrammarRegistry {
   async getParser(extension: string): Promise<Parser | null> {
     const language = EXTENSION_TO_LANGUAGE[extension as LanguageExtension];
     if (!language) {
-      console.warn(`[GrammarRegistry] No language mapping for extension: ${extension}`);
+      logger.warn(`[GrammarRegistry] No language mapping for extension: ${extension}`);
       return null;
     }
 
@@ -100,7 +101,7 @@ export class GrammarRegistry {
       this.parsers.set(cacheKey, parser);
       return parser;
     } catch (error) {
-      console.error(`[GrammarRegistry] Failed to load grammar for ${language}:`, error);
+      logger.error(`[GrammarRegistry] Failed to load grammar for ${language}:`, error);
       this.grammars.set(cacheKey, null); // Cache failure
       return null;
     }
@@ -122,7 +123,7 @@ export class GrammarRegistry {
 
     const packageName = GRAMMAR_PACKAGES[language];
     if (!packageName) {
-      console.warn(`[GrammarRegistry] No grammar package for language: ${language}`);
+      logger.warn(`[GrammarRegistry] No grammar package for language: ${language}`);
       return null;
     }
 
@@ -142,7 +143,7 @@ export class GrammarRegistry {
         this.grammars.set(language, grammar);
         return grammar;
       } catch (error) {
-        console.error(`[GrammarRegistry] Failed to import ${packageName}:`, error);
+        logger.error(`[GrammarRegistry] Failed to import ${packageName}:`, error);
         this.grammars.set(language, null);
         return null;
       } finally {
