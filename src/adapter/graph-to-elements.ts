@@ -15,7 +15,9 @@
 
 
 
-import { DependencyGraph } from '../analyzer/graph-builder.js';
+interface _GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface _GraphEdge { source: string; target: string; type: string; weight?: number; metadata?: Record<string, unknown>; }
+interface DependencyGraph { nodes: Map<string, _GraphNode>; edges: _GraphEdge[]; edgesBySource?: Map<string, _GraphEdge[]>; edgesByTarget?: Map<string, _GraphEdge[]>; }
 import { ElementData } from '../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 // import { ConversionOptions } from './types.js';

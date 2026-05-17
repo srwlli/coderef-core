@@ -20,7 +20,9 @@
 
 
 
-import { DependencyGraph, GraphNode, GraphEdge } from '../analyzer/graph-builder.js';
+interface GraphNode { id: string; uuid?: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface GraphEdge { source: string; target: string; type: 'imports' | 'calls' | 'depends-on' | 'implements' | 'tests' | 'reexports'; weight?: number; metadata?: Record<string, unknown>; }
+interface DependencyGraph { nodes: Map<string, GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 import protobuf from 'protobufjs';
 
 /**

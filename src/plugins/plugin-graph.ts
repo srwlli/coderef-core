@@ -31,7 +31,9 @@
 
 
 
-import { DependencyGraph, GraphEdge } from '../analyzer/graph-builder.js';
+interface _GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface GraphEdge { source: string; target: string; type: 'imports' | 'calls' | 'depends-on' | 'implements' | 'tests' | 'reexports'; weight?: number; metadata?: Record<string, unknown>; }
+interface DependencyGraph { nodes: Map<string, _GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 import { CodeElement } from '../types/types.js';
 import { pluginRegistry } from './plugin-registry.js';
 import { GraphHook, GraphBuilderContext, CustomEdge } from './types.js';

@@ -19,7 +19,9 @@
 
 
 
-import { DependencyGraph, GraphNode, GraphEdge } from '../analyzer/graph-builder.js';
+interface GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface GraphEdge { source: string; target: string; type: string; weight?: number; metadata?: Record<string, unknown>; }
+interface DependencyGraph { nodes: Map<string, GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 
 /**
  * Represents impact for a single element

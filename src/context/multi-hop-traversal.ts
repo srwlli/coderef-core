@@ -20,7 +20,9 @@
 
 
 
-import { DependencyGraph, GraphNode, GraphEdge } from '../analyzer/graph-builder.js';
+interface GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface GraphEdge { source: string; target: string; type: string; weight?: number; metadata?: Record<string, unknown>; }
+interface DependencyGraph { nodes: Map<string, GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 import GraphAnalyzer from '../analyzer/graph-analyzer.js';
 
 /**
@@ -55,7 +57,7 @@ export class MultiHopTraversal {
 
   constructor(graph: DependencyGraph, maxDepth: number = 5, maxResults: number = 100) {
     this.graph = graph;
-    this.analyzer = new GraphAnalyzer(graph);
+    this.analyzer = new GraphAnalyzer(graph as any);
     this.maxDepth = maxDepth;
     this.maxResults = maxResults;
   }
