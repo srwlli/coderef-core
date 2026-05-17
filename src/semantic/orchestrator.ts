@@ -16,6 +16,7 @@
 
 
 import * as fs from 'fs';
+import logger from '../utils/logger.js';
 import * as path from 'path';
 import { HeaderGenerator } from './header-generator.js';
 import { LLMEnricher } from './llm-enricher.js';
@@ -159,16 +160,16 @@ export class SemanticOrchestrator {
         }
       }
 
-      console.log(`[orchestrator] Processed ${result.filesProcessed} files`);
-      console.log(`[orchestrator] Generated ${result.headersGenerated} headers`);
-      console.log(`[orchestrator] Enriched ${result.entriesEnriched} entries`);
-      console.log(`[orchestrator] Updated ${result.registryUpdated} registry entries`);
+      logger.info(`[orchestrator] Processed ${result.filesProcessed} files`);
+      logger.info(`[orchestrator] Generated ${result.headersGenerated} headers`);
+      logger.info(`[orchestrator] Enriched ${result.entriesEnriched} entries`);
+      logger.info(`[orchestrator] Updated ${result.registryUpdated} registry entries`);
 
       if (result.errors.length > 0) {
-        console.warn(`[orchestrator] ${result.errors.length} errors encountered`);
+        logger.warn(`[orchestrator] ${result.errors.length} errors encountered`);
       }
     } catch (error) {
-      console.error(`[orchestrator] Fatal error: ${error instanceof Error ? error.message : error}`);
+      logger.error(`[orchestrator] Fatal error: ${error instanceof Error ? error.message : error}`);
       result.errors.push({
         file: 'project-level',
         error: error instanceof Error ? error.message : String(error),
@@ -227,7 +228,7 @@ export class SemanticOrchestrator {
         );
       }
     } catch (error) {
-      console.error(`Error processing ${filePath}:`, error instanceof Error ? error.message : error);
+      logger.error(`Error processing ${filePath}:`, error instanceof Error ? error.message : error);
     }
   }
 

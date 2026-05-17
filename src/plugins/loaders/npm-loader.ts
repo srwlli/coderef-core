@@ -16,6 +16,7 @@
 
 
 import * as fs from 'fs';
+import logger from '../../utils/logger.js';
 import * as path from 'path';
 import { Plugin, PluginManifest, CodeDetector, GraphHook } from '../types.js';
 import { parseManifest, validateManifest, MANIFEST_FILENAME } from '../manifest-schema.js';
@@ -58,7 +59,7 @@ export function discoverNpmPlugins(options: NpmLoaderOptions): string[] {
 
   if (!fs.existsSync(scopePath)) {
     if (options.debug) {
-      console.log(`[npm-loader] Scope ${scope} not found at ${scopePath}`);
+      logger.info(`[npm-loader] Scope ${scope} not found at ${scopePath}`);
     }
     return [];
   }
@@ -76,14 +77,14 @@ export function discoverNpmPlugins(options: NpmLoaderOptions): string[] {
         if (fs.existsSync(manifestPath)) {
           packages.push(packagePath);
           if (options.debug) {
-            console.log(`[npm-loader] Found plugin: ${scope}/${entry.name}`);
+            logger.info(`[npm-loader] Found plugin: ${scope}/${entry.name}`);
           }
         }
       }
     }
   } catch (error) {
     if (options.debug) {
-      console.error(`[npm-loader] Error reading scope ${scope}:`, error);
+      logger.error(`[npm-loader] Error reading scope ${scope}:`, error);
     }
   }
 
@@ -164,7 +165,7 @@ export async function loadNpmPlugin(
             detector = detectorModule.default || detectorModule.detector || detectorModule;
           } catch (error) {
             if (options.debug) {
-              console.error(`[npm-loader] Failed to load detector ${detectorDef.name}:`, error);
+              logger.error(`[npm-loader] Failed to load detector ${detectorDef.name}:`, error);
             }
           }
         }
@@ -185,7 +186,7 @@ export async function loadNpmPlugin(
           detectors.push(detector);
         } else {
           if (options.debug) {
-            console.log(`[npm-loader] Detector ${detectorDef.name} not found in plugin ${manifest.name}`);
+            logger.info(`[npm-loader] Detector ${detectorDef.name} not found in plugin ${manifest.name}`);
           }
         }
       }
@@ -204,7 +205,7 @@ export async function loadNpmPlugin(
             hook = hookModule.default || hookModule.hook || hookModule;
           } catch (error) {
             if (options.debug) {
-              console.error(`[npm-loader] Failed to load hook ${hookDef.name}:`, error);
+              logger.error(`[npm-loader] Failed to load hook ${hookDef.name}:`, error);
             }
           }
         }
@@ -220,7 +221,7 @@ export async function loadNpmPlugin(
           hooks.push(hook);
         } else {
           if (options.debug) {
-            console.log(`[npm-loader] Hook ${hookDef.name} not found in plugin ${manifest.name}`);
+            logger.info(`[npm-loader] Hook ${hookDef.name} not found in plugin ${manifest.name}`);
           }
         }
       }
@@ -236,9 +237,9 @@ export async function loadNpmPlugin(
     };
 
     if (options.debug) {
-      console.log(`[npm-loader] Successfully loaded plugin: ${manifest.name}`);
-      console.log(`  - Detectors: ${detectors.length}`);
-      console.log(`  - Hooks: ${hooks.length}`);
+      logger.info(`[npm-loader] Successfully loaded plugin: ${manifest.name}`);
+      logger.info(`  - Detectors: ${detectors.length}`);
+      logger.info(`  - Hooks: ${hooks.length}`);
     }
 
     return {

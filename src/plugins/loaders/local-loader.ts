@@ -17,6 +17,7 @@
 
 
 import * as fs from 'fs';
+import logger from '../../utils/logger.js';
 import * as path from 'path';
 import { Plugin, PluginManifest, CodeDetector, GraphHook } from '../types.js';
 import { parseManifest, validateManifest, MANIFEST_FILENAME } from '../manifest-schema.js';
@@ -45,7 +46,7 @@ export function discoverLocalPlugins(options: LocalLoaderOptions): string[] {
 
   if (!fs.existsSync(pluginsPath)) {
     if (options.debug) {
-      console.log(`[local-loader] Plugins directory not found: ${pluginsPath}`);
+      logger.info(`[local-loader] Plugins directory not found: ${pluginsPath}`);
     }
     return [];
   }
@@ -63,18 +64,18 @@ export function discoverLocalPlugins(options: LocalLoaderOptions): string[] {
         if (fs.existsSync(manifestPath)) {
           plugins.push(pluginPath);
           if (options.debug) {
-            console.log(`[local-loader] Found plugin: ${entry.name}`);
+            logger.info(`[local-loader] Found plugin: ${entry.name}`);
           }
         } else {
           if (options.debug) {
-            console.log(`[local-loader] Skipping ${entry.name} - no ${MANIFEST_FILENAME}`);
+            logger.info(`[local-loader] Skipping ${entry.name} - no ${MANIFEST_FILENAME}`);
           }
         }
       }
     }
   } catch (error) {
     if (options.debug) {
-      console.error(`[local-loader] Error reading plugins directory:`, error);
+      logger.error(`[local-loader] Error reading plugins directory:`, error);
     }
   }
 
@@ -152,7 +153,7 @@ export async function loadLocalPlugin(
             detector = detectorModule.default || detectorModule.detector || detectorModule;
           } catch (error) {
             if (options.debug) {
-              console.error(`[local-loader] Failed to load detector ${detectorDef.name}:`, error);
+              logger.error(`[local-loader] Failed to load detector ${detectorDef.name}:`, error);
             }
           }
         }
@@ -170,7 +171,7 @@ export async function loadLocalPlugin(
           }
           detectors.push(detector);
         } else if (options.debug) {
-          console.log(`[local-loader] Detector ${detectorDef.name} not found in plugin ${manifest.name}`);
+          logger.info(`[local-loader] Detector ${detectorDef.name} not found in plugin ${manifest.name}`);
         }
       }
     }
@@ -188,7 +189,7 @@ export async function loadLocalPlugin(
             hook = hookModule.default || hookModule.hook || hookModule;
           } catch (error) {
             if (options.debug) {
-              console.error(`[local-loader] Failed to load hook ${hookDef.name}:`, error);
+              logger.error(`[local-loader] Failed to load hook ${hookDef.name}:`, error);
             }
           }
         }
@@ -203,7 +204,7 @@ export async function loadLocalPlugin(
           }
           hooks.push(hook);
         } else if (options.debug) {
-          console.log(`[local-loader] Hook ${hookDef.name} not found in plugin ${manifest.name}`);
+          logger.info(`[local-loader] Hook ${hookDef.name} not found in plugin ${manifest.name}`);
         }
       }
     }
@@ -217,9 +218,9 @@ export async function loadLocalPlugin(
     };
 
     if (options.debug) {
-      console.log(`[local-loader] Successfully loaded plugin: ${manifest.name}`);
-      console.log(`  - Detectors: ${detectors.length}`);
-      console.log(`  - Hooks: ${hooks.length}`);
+      logger.info(`[local-loader] Successfully loaded plugin: ${manifest.name}`);
+      logger.info(`  - Detectors: ${detectors.length}`);
+      logger.info(`  - Hooks: ${hooks.length}`);
     }
 
     return {

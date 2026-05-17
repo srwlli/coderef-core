@@ -17,6 +17,7 @@
 
 
 import * as fs from 'fs/promises';
+import logger from '../utils/logger.js';
 import * as path from 'path';
 import { createHash } from 'crypto';
 
@@ -101,7 +102,7 @@ export class IncrementalCache {
 
       // Version check for migrations
       if (data.version !== IncrementalCache.CACHE_VERSION) {
-        console.log(`[IncrementalCache] Cache version mismatch (${data.version} vs ${IncrementalCache.CACHE_VERSION}), resetting`);
+        logger.info(`[IncrementalCache] Cache version mismatch (${data.version} vs ${IncrementalCache.CACHE_VERSION}), resetting`);
         return;
       }
 
@@ -114,10 +115,10 @@ export class IncrementalCache {
         projectPath: data.projectPath || this.cache.projectPath,
       };
 
-      console.log(`[IncrementalCache] Loaded ${this.cache.files.size} cached files`);
+      logger.info(`[IncrementalCache] Loaded ${this.cache.files.size} cached files`);
     } catch (error) {
       // Cache doesn't exist or is corrupt - start fresh
-      console.log('[IncrementalCache] No existing cache found, starting fresh');
+      logger.info('[IncrementalCache] No existing cache found, starting fresh');
     }
   }
 
@@ -142,9 +143,9 @@ export class IncrementalCache {
       };
 
       await fs.writeFile(this.cachePath, JSON.stringify(serialized, null, 2), 'utf-8');
-      console.log(`[IncrementalCache] Saved ${this.cache.files.size} files to cache`);
+      logger.info(`[IncrementalCache] Saved ${this.cache.files.size} files to cache`);
     } catch (error) {
-      console.error('[IncrementalCache] Failed to save cache:', error);
+      logger.error('[IncrementalCache] Failed to save cache:', error);
     }
   }
 
@@ -206,7 +207,7 @@ export class IncrementalCache {
       ? filesUnchanged.length / filePaths.length
       : 0;
 
-    console.log(`[IncrementalCache] ${filesToScan.length} to scan, ${filesUnchanged.length} unchanged, ${filesDeleted.length} deleted (hit ratio: ${(hitRatio * 100).toFixed(1)}%)`);
+    logger.info(`[IncrementalCache] ${filesToScan.length} to scan, ${filesUnchanged.length} unchanged, ${filesDeleted.length} deleted (hit ratio: ${(hitRatio * 100).toFixed(1)}%)`);
 
     return {
       filesToScan,
@@ -236,7 +237,7 @@ export class IncrementalCache {
         });
       } catch (error) {
         // Skip files that can't be read
-        console.warn(`[IncrementalCache] Failed to cache ${filePath}:`, error);
+        logger.warn(`[IncrementalCache] Failed to cache ${filePath}:`, error);
       }
     }
 

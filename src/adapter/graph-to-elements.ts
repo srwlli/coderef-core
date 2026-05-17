@@ -19,6 +19,7 @@ interface _GraphNode { id: string; name?: string; type: string; file: string; li
 interface _GraphEdge { source: string; target: string; type: string; weight?: number; metadata?: Record<string, unknown>; }
 interface DependencyGraph { nodes: Map<string, _GraphNode>; edges: _GraphEdge[]; edgesBySource?: Map<string, _GraphEdge[]>; edgesByTarget?: Map<string, _GraphEdge[]>; }
 import { ElementData } from '../types/types.js';
+import logger from '../utils/logger.js';
 import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 // import { ConversionOptions } from './types.js';
 
@@ -61,9 +62,9 @@ export function convertGraphToElements(
   let skippedCount = 0;
 
   if (verbose) {
-    console.log(`\n🔄 Converting graph to elements...`);
-    console.log(`   Nodes: ${graph.nodes.size}`);
-    console.log(`   Edges: ${graph.edges.length}`);
+    logger.info(`\n🔄 Converting graph to elements...`);
+    logger.info(`   Nodes: ${graph.nodes.size}`);
+    logger.info(`   Edges: ${graph.edges.length}`);
   }
 
   // Process each node in the graph
@@ -132,10 +133,10 @@ export function convertGraphToElements(
   }
 
   if (verbose) {
-    console.log(`   Processed: ${processedCount}`);
-    console.log(`   Skipped: ${skippedCount}`);
-    console.log(`   Elements with parameters: ${elements.filter((e) => e.parameters).length}`);
-    console.log(`   Elements with calls: ${elements.filter((e) => e.calls).length}`);
+    logger.info(`   Processed: ${processedCount}`);
+    logger.info(`   Skipped: ${skippedCount}`);
+    logger.info(`   Elements with parameters: ${elements.filter((e) => e.parameters).length}`);
+    logger.info(`   Elements with calls: ${elements.filter((e) => e.calls).length}`);
   }
 
   return elements;

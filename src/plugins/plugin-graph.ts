@@ -35,6 +35,7 @@ interface _GraphNode { id: string; name?: string; type: string; file: string; li
 interface GraphEdge { source: string; target: string; type: 'imports' | 'calls' | 'depends-on' | 'implements' | 'tests' | 'reexports'; weight?: number; metadata?: Record<string, unknown>; }
 interface DependencyGraph { nodes: Map<string, _GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 import { CodeElement } from '../types/types.js';
+import logger from '../utils/logger.js';
 import { pluginRegistry } from './plugin-registry.js';
 import { GraphHook, GraphBuilderContext, CustomEdge } from './types.js';
 
@@ -73,7 +74,7 @@ export function applyPluginGraphHooks(
   }
 
   if (options.debug) {
-    console.log(`[plugin-graph] Running ${hooks.length} graph hooks`);
+    logger.info(`[plugin-graph] Running ${hooks.length} graph hooks`);
   }
 
   const context = createGraphContext(graph, elements);
@@ -87,11 +88,11 @@ export function applyPluginGraphHooks(
       }
 
       if (options.debug && customEdges.length > 0) {
-        console.log(`[plugin-graph] Hook ${hook.name} added ${customEdges.length} edges`);
+        logger.info(`[plugin-graph] Hook ${hook.name} added ${customEdges.length} edges`);
       }
     } catch (error) {
       if (options.debug) {
-        console.error(`[plugin-graph] Hook ${hook.name} failed:`, error);
+        logger.error(`[plugin-graph] Hook ${hook.name} failed:`, error);
       }
     }
   }
@@ -181,7 +182,7 @@ function addCustomEdge(
 
   if (exists) {
     if (debug) {
-      console.log(`[plugin-graph] Skipping duplicate edge: ${edge.from} -> ${edge.to}`);
+      logger.info(`[plugin-graph] Skipping duplicate edge: ${edge.from} -> ${edge.to}`);
     }
     return;
   }
@@ -189,7 +190,7 @@ function addCustomEdge(
   // Ensure nodes exist
   if (!graph.nodes.has(edge.from)) {
     if (debug) {
-      console.log(`[plugin-graph] Creating missing node: ${edge.from}`);
+      logger.info(`[plugin-graph] Creating missing node: ${edge.from}`);
     }
     graph.nodes.set(edge.from, {
       id: edge.from,
@@ -201,7 +202,7 @@ function addCustomEdge(
 
   if (!graph.nodes.has(edge.to)) {
     if (debug) {
-      console.log(`[plugin-graph] Creating missing node: ${edge.to}`);
+      logger.info(`[plugin-graph] Creating missing node: ${edge.to}`);
     }
     graph.nodes.set(edge.to, {
       id: edge.to,

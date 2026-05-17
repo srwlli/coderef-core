@@ -16,6 +16,7 @@
 
 
 import { minimatch } from 'minimatch';
+import logger from '../utils/logger.js';
 import { ElementData, ScanOptions } from '../types/types.js';
 import { pluginRegistry } from './plugin-registry.js';
 import { CodeDetector, DetectionResult } from './types.js';
@@ -59,7 +60,7 @@ export async function scanWithPlugins(
   }
 
   if (options.debug) {
-    console.log(`[plugin-scanner] Scanning ${filePath} with ${detectors.length} detectors`);
+    logger.info(`[plugin-scanner] Scanning ${filePath} with ${detectors.length} detectors`);
   }
 
   for (const detector of detectors) {
@@ -72,11 +73,11 @@ export async function scanWithPlugins(
       }
 
       if (options.debug && results.length > 0) {
-        console.log(`[plugin-scanner] Detector ${detector.name} found ${results.length} elements`);
+        logger.info(`[plugin-scanner] Detector ${detector.name} found ${results.length} elements`);
       }
     } catch (error) {
       if (options.debug) {
-        console.error(`[plugin-scanner] Detector ${detector.name} failed:`, error);
+        logger.error(`[plugin-scanner] Detector ${detector.name} failed:`, error);
       }
     }
   }
@@ -145,7 +146,7 @@ async function runDetector(
     return [result];
   } catch (error) {
     if (debug) {
-      console.error(`[plugin-scanner] Detector ${detector.name} error:`, error);
+      logger.error(`[plugin-scanner] Detector ${detector.name} error:`, error);
     }
     return [];
   }
@@ -304,9 +305,9 @@ export async function initializePluginScanning(
   }
 
   if (options.debug) {
-    console.log(`[plugin-scanner] Initialized: ${results.loaded} plugins loaded, ${results.failed} failed`);
+    logger.info(`[plugin-scanner] Initialized: ${results.loaded} plugins loaded, ${results.failed} failed`);
     if (results.errors.length > 0) {
-      console.log('[plugin-scanner] Errors:', results.errors);
+      logger.info('[plugin-scanner] Errors:', results.errors);
     }
   }
 
