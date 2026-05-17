@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-DOGFOOD-HEADER-COVERAGE-AND-LAYER-SEEDING-001",
+  "feature_name": "dogfood-header-coverage-and-layer-seeding",
+  "created": "2026-05-17T01:00:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
+  "intake": {
+    "trigger": "dogfood-scan",
+    "user_request": "Dogfood scan of coderef-core revealed two gaps: 1) 1,883 elements have missing headers (files that never had --source-headers written); 2) only 14% layer coverage (347/2,426 elements) because layer/capability are self-referential — the scanner reads @layer from headers but headers with no @layer stay empty indefinitely without an external seed."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Two independent deliverables: Phase 1 is a mechanical first-time header pass (low risk, no logic changes); Phase 2 is a seeding strategy decision (path-inference or annotation tooling). No public API changes. Hard stop between phases to review layer coverage results.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        "src/semantic/header-generator.ts",
+        "src/cli/populate.ts",
+        "src/pipeline/semantic-header-parser.ts"
+      ],
+      "blast_radius": ["src/semantic/", "src/cli/populate.ts"],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "warnings": []
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {
+      "test_support": 114,
+      "cli": 212,
+      "service": 1,
+      "utility": 20,
+      "none": 2079
+    },
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Run populate-coderef --source-headers (no --overwrite) to write first-time headers for the 1,883 missing-header elements",
+      "Verify header count reaches near-full coverage after the pass",
+      "Assess and implement a path-inference strategy to seed @layer/@capability for files with no prior annotation",
+      "Verify layer coverage improves measurably after seeding"
+    ],
+    "out_of_scope": [
+      "LLM enrichment via Lloyd (separate concern, separate WO)",
+      "Changes to the staleness detection logic (shipped in WO-FIX-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH-001)",
+      "Any changes to the scanner's element-extraction logic"
+    ]
+  },
+  "constraints": [
+    "Phase 1 (first-time header write) must not use --overwrite-headers — only write files that have no existing header",
+    "Path-inference rules must derive from file path patterns only (no LLM calls)",
+    "Layer enum must come from STANDARDS/layers.json — no hardcoded values"
+  ]
+}
