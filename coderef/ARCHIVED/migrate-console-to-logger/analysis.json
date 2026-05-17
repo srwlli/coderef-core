@@ -1,0 +1,110 @@
+{
+  "workorder_id": "WO-MIGRATE-CONSOLE-TO-LOGGER-001",
+  "feature_name": "migrate-console-to-logger",
+  "analysis_authored_at": "2026-05-17T09:15:00Z",
+  "blast_radius": {
+    "files_modified": 47,
+    "files_created": 0,
+    "downstream_consumers": ["src/utils/logger.ts (imported by 47 new files after migration)"]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Wrong relative import path for logger",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Compute import depth per file before editing. Run tsc after each phase — a bad path is caught immediately as a module-not-found error."
+    },
+    {
+      "id": "RISK-002",
+      "title": "console.log in CLI files accidentally touched",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Phase scope is strictly non-CLI. Verify each phase's file list against src/cli/ exclusion before editing."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Verbose debug output suppressed unexpectedly",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Map console.log used for diagnostic/debug output to logger.debug (gated by verbose flag). console.log used for informational progress → logger.info. Document mapping decision in plan."
+    },
+    {
+      "id": "RISK-004",
+      "title": "scanner.ts (41 calls) has mixed log levels — some are errors, some are info",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Read each call site before migrating. console.error → logger.error, console.warn → logger.warn, console.log → logger.info or logger.debug based on context."
+    }
+  ],
+  "candidates": [
+    { "file": "src/scanner/scanner.ts", "count": 41, "phase": 1 },
+    { "file": "src/pipeline/orchestrator.ts", "count": 21, "phase": 1 },
+    { "file": "src/scanner/error-reporter.ts", "count": 14, "phase": 1 },
+    { "file": "src/plugins/loaders/local-loader.ts", "count": 11, "phase": 2 },
+    { "file": "src/plugins/loaders/npm-loader.ts", "count": 10, "phase": 2 },
+    { "file": "src/semantic/orchestrator.ts", "count": 7, "phase": 2 },
+    { "file": "src/pipeline/incremental-cache.ts", "count": 7, "phase": 2 },
+    { "file": "src/cache/incremental-cache.ts", "count": 7, "phase": 2 },
+    { "file": "src/adapter/graph-to-elements.ts", "count": 7, "phase": 2 },
+    { "file": "src/plugins/plugin-scanner.ts", "count": 6, "phase": 2 },
+    { "file": "src/plugins/plugin-graph.ts", "count": 6, "phase": 2 },
+    { "file": "src/pipeline/grammar-registry.ts", "count": 4, "phase": 3 },
+    { "file": "src/integration/vector/vector-store.ts", "count": 4, "phase": 3 },
+    { "file": "src/context/breaking-change-detector/diff-analyzer.ts", "count": 4, "phase": 3 },
+    { "file": "src/semantic/llm-enricher.ts", "count": 3, "phase": 3 },
+    { "file": "src/scanner/file-watcher.ts", "count": 3, "phase": 3 },
+    { "file": "src/index.ts", "count": 3, "phase": 3 },
+    { "file": "src/fileGeneration/saveFrontendCalls.ts", "count": 3, "phase": 3 },
+    { "file": "src/validator/migration-mapper.ts", "count": 2, "phase": 4 },
+    { "file": "src/semantic/registry-sync.ts", "count": 2, "phase": 4 },
+    { "file": "src/semantic/header-generator.ts", "count": 2, "phase": 4 },
+    { "file": "src/semantic/ast-extractor.ts", "count": 2, "phase": 4 },
+    { "file": "src/scanner/tree-sitter-scanner.ts", "count": 2, "phase": 4 },
+    { "file": "src/pipeline/generators/registry-generator.ts", "count": 2, "phase": 4 },
+    { "file": "src/pipeline/extractors/relationship-extractor.ts", "count": 2, "phase": 4 },
+    { "file": "src/config/presets.ts", "count": 2, "phase": 4 },
+    { "file": "src/validator/route-validator.ts", "count": 1, "phase": 4 },
+    { "file": "src/scanner/frontend-scanner.ts", "count": 1, "phase": 4 },
+    { "file": "src/query/query-executor.ts", "count": 1, "phase": 4 },
+    { "file": "src/plugins/loaders/config-loader.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/validation-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/pattern-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/index-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/health-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/graph-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/export-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/drift-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/diagram-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/coverage-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/context-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/generators/complexity-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/pipeline/extractors/element-extractor.ts", "count": 1, "phase": 4 },
+    { "file": "src/integration/llm/llm-provider.ts", "count": 1, "phase": 4 },
+    { "file": "src/indexer/index-store.ts", "count": 1, "phase": 4 },
+    { "file": "src/context/context-generator.ts", "count": 1, "phase": 4 },
+    { "file": "src/analyzer/dependency-analyzer.ts", "count": 1, "phase": 4 },
+    { "file": "src/analyzer/analyzer-service.ts", "count": 1, "phase": 4 }
+  ],
+  "dependencies": [
+    "src/utils/logger.ts — singleton logger, already exports .info() .warn() .error() .debug()"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "CLI files excluded from scope",
+      "rationale": "src/cli/*.ts uses console.log for user-facing terminal output (progress, results, errors). This is intentional UX, not internal logging. Replacing with logger would suppress output or require logger verbose-mode to be on by default — a behavior change. CLI files are a separate, follow-on concern."
+    },
+    {
+      "id": "DEC-002",
+      "decision": "Call-level mapping: console.log → logger.info, console.error → logger.error, console.warn → logger.warn",
+      "rationale": "Diagnostic/debug console.log calls in hot paths (scanner, pipeline) should map to logger.debug so they are suppressed by default and only visible in verbose mode. Progress/status console.log → logger.info. Each file must be read before editing to apply the correct level."
+    },
+    {
+      "id": "DEC-003",
+      "decision": "Phase split by call density (high-count → Phase 1/2, long-tail → Phase 3/4)",
+      "rationale": "Phases 1 and 2 cover the high-density files (76 calls in 11 files). Phases 3 and 4 sweep the long tail (122 calls in 36 files). This ensures early phases provide the most impact and tsc gates catch import-path errors before the long tail is touched."
+    }
+  ]
+}

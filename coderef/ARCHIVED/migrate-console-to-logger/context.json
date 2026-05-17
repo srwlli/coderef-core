@@ -1,0 +1,102 @@
+{
+  "workorder_id": "WO-MIGRATE-CONSOLE-TO-LOGGER-001",
+  "feature_name": "migrate-console-to-logger",
+  "created": "2026-05-17T09:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": null,
+  "intake": {
+    "trigger": "user",
+    "user_request": "Create a workorder to fix the console.log → logger migration problem."
+  },
+  "classification": {
+    "plan_type": "strict",
+    "plan_type_rationale": "Rule 3: touches_hint spans 47 files across >1 top-level module directory (scanner/, pipeline/, plugins/, adapter/, semantic/, etc.). Also Rule 1 candidate: logger utility is a public utility module.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        "src/scanner/scanner.ts",
+        "src/pipeline/orchestrator.ts",
+        "src/scanner/error-reporter.ts",
+        "src/plugins/loaders/local-loader.ts",
+        "src/plugins/loaders/npm-loader.ts",
+        "src/semantic/orchestrator.ts",
+        "src/pipeline/incremental-cache.ts",
+        "src/cache/incremental-cache.ts",
+        "src/adapter/graph-to-elements.ts",
+        "src/plugins/plugin-scanner.ts",
+        "src/plugins/plugin-graph.ts",
+        "src/pipeline/grammar-registry.ts",
+        "src/integration/vector/vector-store.ts",
+        "src/context/breaking-change-detector/diff-analyzer.ts",
+        "src/semantic/llm-enricher.ts",
+        "src/scanner/file-watcher.ts",
+        "src/index.ts",
+        "src/fileGeneration/saveFrontendCalls.ts",
+        "src/validator/migration-mapper.ts",
+        "src/semantic/registry-sync.ts",
+        "src/semantic/header-generator.ts",
+        "src/semantic/ast-extractor.ts",
+        "src/scanner/tree-sitter-scanner.ts",
+        "src/pipeline/generators/registry-generator.ts",
+        "src/pipeline/extractors/relationship-extractor.ts",
+        "src/config/presets.ts",
+        "src/validator/route-validator.ts",
+        "src/scanner/frontend-scanner.ts",
+        "src/query/query-executor.ts",
+        "src/plugins/loaders/config-loader.ts",
+        "src/pipeline/generators/validation-generator.ts",
+        "src/pipeline/generators/pattern-generator.ts",
+        "src/pipeline/generators/index-generator.ts",
+        "src/pipeline/generators/health-generator.ts",
+        "src/pipeline/generators/graph-generator.ts",
+        "src/pipeline/generators/export-generator.ts",
+        "src/pipeline/generators/drift-generator.ts",
+        "src/pipeline/generators/diagram-generator.ts",
+        "src/pipeline/generators/coverage-generator.ts",
+        "src/pipeline/generators/context-generator.ts",
+        "src/pipeline/generators/complexity-generator.ts",
+        "src/pipeline/extractors/element-extractor.ts",
+        "src/integration/llm/llm-provider.ts",
+        "src/indexer/index-store.ts",
+        "src/context/context-generator.ts",
+        "src/analyzer/dependency-analyzer.ts",
+        "src/analyzer/analyzer-service.ts"
+      ],
+      "blast_radius": 47,
+      "public_api_hits": ["src/utils/logger.ts"],
+      "hotspot_files": ["src/scanner/scanner.ts", "src/pipeline/orchestrator.ts"],
+      "warnings": [
+        "CLI files (src/cli/*.ts) intentionally excluded from scope — console.log in CLI entry points is user-facing output, not internal logging."
+      ]
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "All non-CLI src/**/*.ts files that use console.log, console.error, or console.warn (47 files, 198 calls)",
+      "src/utils/logger.ts — verify API surface is sufficient (info, warn, error, debug)",
+      "tsc --noEmit after each phase to verify no type regressions"
+    ],
+    "out_of_scope": [
+      "src/cli/*.ts — console output in CLI entry points is intentional user-facing UX, not internal logging. Separate workorder required if CLI logging standardization is desired.",
+      "src/**/__tests__/*.ts — test files may use console.log for debug output; not in scope",
+      "Changing logger API surface or adding new log levels",
+      "Log aggregation tooling or runtime log configuration changes"
+    ]
+  },
+  "constraints": [
+    "tsc --noEmit must pass after every phase (zero errors)",
+    "vitest must pass (1567+ tests) after every phase",
+    "No functional behavior change — only import + call-site substitution",
+    "logger import path must be correct relative to each file's depth",
+    "console.log calls in CLI files must NOT be touched"
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": ["semantic_scan: skipped — not required for strict migration workorder with enumerated candidates"]
+  }
+}

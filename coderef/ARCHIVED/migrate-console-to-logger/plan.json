@@ -1,0 +1,262 @@
+{
+  "workorder_id": "WO-MIGRATE-CONSOLE-TO-LOGGER-001",
+  "feature_name": "migrate-console-to-logger",
+  "created": "2026-05-17T09:15:00Z",
+  "plan_type": "strict",
+  "plan_type_rationale": "47 files across >1 top-level module directory. Strict gates after every phase enforce tsc + vitest before proceeding.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "objective": "Replace all console.log, console.error, and console.warn calls in non-CLI src/ files with structured logger calls from src/utils/logger.ts. Baseline: 560 total calls (198 non-CLI). Target: 0 non-CLI console calls. CLI files (362 calls) are out of scope.",
+  "acceptance_criteria": [
+    "grep -r 'console\\.log\\|console\\.error\\|console\\.warn' src --include='*.ts' | grep -v '__tests__\\|\\.test\\.ts\\|src/cli/' produces 0 matches",
+    "npx tsc --noEmit exits 0 after every phase",
+    "vitest passes (all tests) after every phase",
+    "No CLI file (src/cli/*.ts) was modified",
+    "Every migrated file imports logger from the correct relative path to src/utils/logger.ts"
+  ],
+  "hard_stops": ["phase_1", "phase_2", "phase_3", "phase_4"],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "High-density scanner + pipeline files",
+      "description": "Migrate the 3 highest-count non-CLI files: scanner.ts (41), orchestrator.ts (21), error-reporter.ts (14). Total: 76 calls.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/utils/logger.ts to confirm API surface: info(), warn(), error(), debug(). Note singleton export pattern."
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/scanner/scanner.ts fully. Categorize each console call: error → logger.error, warn → logger.warn, diagnostic debug → logger.debug, progress/status → logger.info."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add 'import logger from \"../utils/logger\";' to src/scanner/scanner.ts. Replace all 41 console calls with logger equivalents per categorization."
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/pipeline/orchestrator.ts fully. Categorize each of the 21 console calls."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add logger import to src/pipeline/orchestrator.ts (path: '../../utils/logger' from src/pipeline/). Replace all 21 console calls."
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/scanner/error-reporter.ts fully. Categorize each of the 14 console calls."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add logger import to src/scanner/error-reporter.ts. Replace all 14 console calls."
+        },
+        {
+          "verb": "RUN",
+          "description": "npx tsc --noEmit — must exit 0. Fix any import-path errors before continuing.",
+          "success_criteria": "Exit code 0, zero type errors"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx vitest run — must pass all tests.",
+          "success_criteria": "All tests pass"
+        },
+        {
+          "verb": "RUN",
+          "description": "Verify: grep -r 'console\\.log\\|console\\.error\\|console\\.warn' src/scanner/scanner.ts src/pipeline/orchestrator.ts src/scanner/error-reporter.ts | wc -l must equal 0.",
+          "success_criteria": "Output is 0"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "git commit: 'refactor(logging): migrate scanner.ts, orchestrator.ts, error-reporter.ts to logger'"
+        },
+        {
+          "verb": "STOP",
+          "description": "Phase 1 hard stop. Confirm: tsc clean, vitest pass, 76 console calls eliminated. Proceed to Phase 2."
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Medium-density plugin, cache, adapter, semantic files",
+      "description": "Migrate 8 files: local-loader.ts (11), npm-loader.ts (10), semantic/orchestrator.ts (7), pipeline/incremental-cache.ts (7), cache/incremental-cache.ts (7), adapter/graph-to-elements.ts (7), plugin-scanner.ts (6), plugin-graph.ts (6). Total: 61 calls.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read each of the 8 files in turn. Note import depth relative to src/utils/logger.ts for each."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/plugins/loaders/local-loader.ts (11 calls). Import path: '../../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/plugins/loaders/npm-loader.ts (10 calls). Import path: '../../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/semantic/orchestrator.ts (7 calls). Import path: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/pipeline/incremental-cache.ts (7 calls). Import path: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/cache/incremental-cache.ts (7 calls). Import path: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/adapter/graph-to-elements.ts (7 calls). Import path: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/plugins/plugin-scanner.ts (6 calls). Import path: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/plugins/plugin-graph.ts (6 calls). Import path: '../../utils/logger'."
+        },
+        {
+          "verb": "RUN",
+          "description": "npx tsc --noEmit — exit 0 required.",
+          "success_criteria": "Zero type errors"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx vitest run — all tests pass.",
+          "success_criteria": "All tests pass"
+        },
+        {
+          "verb": "RUN",
+          "description": "Spot-check: grep console Phase 2 files, count must equal 0.",
+          "success_criteria": "Output is 0"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "git commit: 'refactor(logging): migrate plugins, cache, adapter, semantic files to logger'"
+        },
+        {
+          "verb": "STOP",
+          "description": "Phase 2 hard stop. 137 of 198 non-CLI console calls eliminated. Proceed to Phase 3."
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Mid-tier files (3–4 calls each)",
+      "description": "Migrate 8 files: pipeline/grammar-registry.ts (4), integration/vector/vector-store.ts (4), context/breaking-change-detector/diff-analyzer.ts (4), semantic/llm-enricher.ts (3), scanner/file-watcher.ts (3), index.ts (3), fileGeneration/saveFrontendCalls.ts (3). Total: 24 calls.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read each file in turn. Note depth for import path calculation."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/pipeline/grammar-registry.ts (4 calls). Import: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/integration/vector/vector-store.ts (4 calls). Import: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/context/breaking-change-detector/diff-analyzer.ts (4 calls). Import: '../../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/semantic/llm-enricher.ts (3 calls). Import: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/scanner/file-watcher.ts (3 calls). Import: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/index.ts (3 calls). Import: './utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/fileGeneration/saveFrontendCalls.ts (3 calls). Import: '../../utils/logger'."
+        },
+        {
+          "verb": "RUN",
+          "description": "npx tsc --noEmit — exit 0.",
+          "success_criteria": "Zero type errors"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx vitest run — all tests pass.",
+          "success_criteria": "All tests pass"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "git commit: 'refactor(logging): migrate mid-tier files to logger (grammar-registry, vector-store, diff-analyzer, llm-enricher, file-watcher, index, saveFrontendCalls)'"
+        },
+        {
+          "verb": "STOP",
+          "description": "Phase 3 hard stop. 161 of 198 non-CLI calls eliminated. Proceed to Phase 4."
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Long-tail sweep (1–2 calls each)",
+      "description": "Migrate remaining 36 files with 1–2 console calls each. Total: 37 calls. Final verification that non-CLI count reaches 0.",
+      "hard_stop": true,
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read each of the 36 long-tail files. Group by directory to batch import-path computation."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/validator/ files (migration-mapper.ts 2, route-validator.ts 1). Import: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/semantic/ remaining files (registry-sync.ts 2, header-generator.ts 2, ast-extractor.ts 2). Import: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/scanner/ remaining files (tree-sitter-scanner.ts 2, frontend-scanner.ts 1). Import: '../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/pipeline/generators/ files (registry-generator.ts 2, validation-generator.ts 1, pattern-generator.ts 1, index-generator.ts 1, health-generator.ts 1, graph-generator.ts 1, export-generator.ts 1, drift-generator.ts 1, diagram-generator.ts 1, coverage-generator.ts 1, context-generator.ts 1, complexity-generator.ts 1). Import: '../../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate src/pipeline/extractors/ files (relationship-extractor.ts 2, element-extractor.ts 1). Import: '../../../utils/logger'."
+        },
+        {
+          "verb": "EDIT",
+          "description": "Migrate remaining isolated files: config/presets.ts (2, '../utils/logger'), integration/llm/llm-provider.ts (1, '../../utils/logger'), indexer/index-store.ts (1, '../../utils/logger'), context/context-generator.ts (1, '../../utils/logger'), analyzer/dependency-analyzer.ts (1, '../../utils/logger'), analyzer/analyzer-service.ts (1, '../../utils/logger'), query/query-executor.ts (1, '../../utils/logger')."
+        },
+        {
+          "verb": "RUN",
+          "description": "npx tsc --noEmit — exit 0.",
+          "success_criteria": "Zero type errors"
+        },
+        {
+          "verb": "RUN",
+          "description": "npx vitest run — all tests pass.",
+          "success_criteria": "All tests pass"
+        },
+        {
+          "verb": "RUN",
+          "description": "Final acceptance check: grep -r 'console\\.log\\|console\\.error\\|console\\.warn' src --include='*.ts' | grep -v '__tests__\\|\\.test\\.ts\\|src/cli/' | wc -l must equal 0.",
+          "success_criteria": "Output is 0"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "git commit: 'refactor(logging): complete console→logger migration — 198 non-CLI calls eliminated'"
+        },
+        {
+          "verb": "STOP",
+          "description": "Phase 4 complete. All 198 non-CLI console calls eliminated. Run /close-workorder WO-MIGRATE-CONSOLE-TO-LOGGER-001."
+        }
+      ]
+    }
+  ]
+}
