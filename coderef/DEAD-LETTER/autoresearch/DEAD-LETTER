@@ -1,0 +1,5 @@
+Archived: 2026-05-17T02:15:00Z
+Reason: Stale research campaign (Loops 1-9, completed 2026-04-10). Not aligned with current scanner state.
+Original location: autoresearch/
+Last commit: e3c38eb (fix(self-scan-gap-remediation): capability/layer populated + stale count 797→0)
+Contents: pipeline-quality/ (loops 7-9), scanner-quality/ (loops 1-6), verify scripts, ground-truth JSON, campaign docs
