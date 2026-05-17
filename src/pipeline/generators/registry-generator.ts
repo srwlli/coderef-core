@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability registry-generator
  * @exports RegistryGenerator
  * @used_by src/cli/populate.ts, __tests__/pipeline/single-scanner.test.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability plugin-graph-plugin-graph-options
  * @exports PluginGraphOptions, applyPluginGraphHooks, getPluginGraphStats
  */
 

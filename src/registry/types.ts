@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability types-entity-record
  * @exports EntityRecord, RegistryState, EntityLookup
  * @used_by src/registry/entity-registry.ts
  */

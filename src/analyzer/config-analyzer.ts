@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability config-analyzer-package-json-analysis
  * @exports PackageJsonAnalysis, TsConfigAnalysis, DockerfileStage, DockerfileAnalysis, DockerComposeService, DockerComposeAnalysis, GitHubActionStep, GitHubActionJob, GitHubActionWorkflow, EnvFileAnalysis, ConfigAnalysis, ConfigAnalyzer, analyzeProjectConfig
  * @used_by src/cli/coderef-analyze.ts, src/pipeline/generators/context-generator.ts
  */

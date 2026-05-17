@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability incremental-cache-file-cache-entry
  * @exports FileCacheEntry, CacheState, CacheCheckResult, IncrementalCache
  */
 

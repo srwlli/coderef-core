@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability middleware-detector-middleware-mapping
  * @exports MiddlewareMapping, MiddlewareChain, MiddlewareHandler, DIContainer, DIProvider, DIImport, MiddlewareAnalysis, MiddlewareDetector, analyzeMiddlewareAndDI
  * @used_by src/cli/coderef-analyze.ts
  */

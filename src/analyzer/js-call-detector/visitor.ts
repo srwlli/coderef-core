@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability visitor-visit-node
  * @exports visitNode, extractParametersFromAST, extractElementsFromAST
  * @used_by src/analyzer/js-call-detector/index.ts
  */

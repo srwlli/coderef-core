@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability model-registry-provider-spec
  * @exports ProviderSpec, getProviderSpec, getEmbeddingDimensions, supportsEmbeddings, ProviderDoesNotSupportEmbeddings, validateRegistry
  * @used_by src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts
  */

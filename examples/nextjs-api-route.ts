@@ -1,5 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @capability nextjs-api-route-api-response
  * @exports POST, GET
  */
 

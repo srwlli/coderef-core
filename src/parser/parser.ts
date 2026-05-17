@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer parser
+ * @capability parser-parsed-code-ref
  * @exports ParsedCodeRef, ParserOptions, CodeRefParser, parseCodeRef, parseCodeRefs
  * @used_by src/formatter/formatter.ts, src/indexer/index-store.ts, src/indexer/indexer-service.ts, src/indexer/metadata-index.ts, src/indexer/query-engine.ts, src/indexer/relationship-index.ts, src/validator/validator.ts, __tests__/indexer.test.ts, __tests__/integration.test.ts
  */

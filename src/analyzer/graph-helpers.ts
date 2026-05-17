@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability graph-helpers-element-reference
  * @exports ElementReference, parseNodeId, getImportsForElement, getExportsForElement, getConsumersForElement, getDependenciesForElement, getElementCharacteristics, calculateAutoFillRate
  */
 

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability incremental-cache-file-cache-entry
  * @exports FileCacheEntry, CacheState, CacheCheckResult, IncrementalCache
  * @used_by src/cli/scan.ts, src/pipeline/orchestrator.ts, src/scanner/file-watcher.ts, src/scanner/scanner.ts, src/scanner/__tests__/incremental-cache-recursive.test.ts, src/scanner/__tests__/parallel-path-behavior.test.ts, src/types/types.ts
  */

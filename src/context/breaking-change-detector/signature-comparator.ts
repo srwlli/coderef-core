@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability signature-comparator-compare-signatures
  * @exports compareSignatures, compareParameters, isBreakingChange, analyzeDifference
  * @used_by src/context/breaking-change-detector/index.ts
  */

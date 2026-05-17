@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability route-parsers-parse-flask-route
  * @exports parseFlaskRoute, parseFastAPIRoute, parseExpressRoute, parseNextJsRoute, parseNextJsPagesRoute, parseSvelteKitRoute, parseNuxtRoute, parseRemixRoute, extractRouteMetadata
  * @used_by src/scanner/scanner.ts
  */

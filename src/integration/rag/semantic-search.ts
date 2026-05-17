@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability semantic-search-search-result
  * @exports SearchResult, SearchOptions, QueryContext, SearchResponse, SemanticSearchService
  * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-search.ts, src/integration/rag/answer-generation-service.ts, src/integration/rag/context-builder.ts, src/integration/rag/graph-reranker.ts, src/integration/rag/__tests__/graph-reranker.test.ts
  */

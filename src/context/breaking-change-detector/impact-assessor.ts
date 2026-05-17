@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability impact-assessor-calculate-severity
  * @exports calculateSeverity, calculateConfidence, scoreCallType, adjustForContextualFactors, calculateReportConfidence, isCompatibleCall
  * @used_by src/context/breaking-change-detector/diff-analyzer.ts, src/context/breaking-change-detector/index.ts
  */

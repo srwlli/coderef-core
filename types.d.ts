@@ -1,5 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @capability types-d-element-data
  * @exports ElementData, IndexedCoderef, DriftStatus, DriftReport, DriftDetectionOptions, ScanOptions, ParsedCoderef
  */
 

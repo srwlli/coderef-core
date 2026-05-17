@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer validation
+ * @capability route-validator-load-frontend-calls
  * @exports loadFrontendCalls, loadServerRoutes, detectMissingRoutes, detectUnusedRoutes, detectMethodMismatches, classifyIssue, generateValidationReport, saveValidationReport, loadMigrationMapping, validateMigration
  * @used_by src/cli/validate-routes.ts
  */

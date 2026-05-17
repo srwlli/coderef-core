@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability complexity-scorer
  * @exports ComplexityScorer
  * @used_by src/cli/coderef-analyze.ts, src/context/task-context-generator.ts
  */

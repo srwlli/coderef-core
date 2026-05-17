@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer domain
+ * @capability code-ref-error-code-ref-error-options
  * @exports CodeRefErrorOptions, CodeRefError
  * @used_by src/errors/FileNotFoundError.ts, src/errors/IndexError.ts, src/errors/ParseError.ts, src/errors/ScanError.ts, src/errors/ValidationError.ts
  */

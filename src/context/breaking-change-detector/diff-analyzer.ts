@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability diff-analyzer-find-impacted-call-sites
  * @exports findImpactedCallSites, extractCallContext, getChangedElements, extractSignaturesFromRef, extractSignaturesFromWorktree
  * @used_by src/context/breaking-change-detector/index.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability error-reporter-scan-error-type
  * @exports ScanErrorType, ScanErrorSeverity, ScanError, ScanStats, ScanResult, createScanError, createScanErrorWithContext, formatScanError, printScanErrors, initScanStats, finalizeScanStats
  */
 

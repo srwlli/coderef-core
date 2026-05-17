@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability entry-detector-entry-point-type
  * @exports EntryPointType, EntryPoint, EntryPointDetector
  * @used_by src/analyzer/project-classifier.ts, src/pipeline/generators/context-generator.ts
  */

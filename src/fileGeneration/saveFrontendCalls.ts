@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability save-frontend-calls-frontend-call-element
  * @exports FrontendCallElement, FrontendCallsOutput, formatFrontendCallsOutput, saveFrontendCalls, generateFrontendCallsOutput, countFrontendCalls
  * @used_by src/cli/scan-frontend-calls.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability generate-routes-route-element
  * @exports RouteElement, RoutesOutput, filterRouteElements, formatRoutesJson, sortRoutes, generateRoutes, saveRoutesToFile, FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile
  * @used_by src/fileGeneration/saveIndex.ts
  */

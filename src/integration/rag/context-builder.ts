@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability context-builder-context-builder-options
  * @exports ContextBuilderOptions, BuiltContext, ContextBuilder
  * @used_by src/integration/rag/answer-generation-service.ts, src/integration/rag/confidence-scorer.ts, src/integration/rag/__tests__/confidence-scorer.test.ts
  */

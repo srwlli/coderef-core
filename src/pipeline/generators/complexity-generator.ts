@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability complexity-generator-complexity-metrics
  * @exports ComplexityGenerator
  * @used_by src/cli/populate.ts
  */

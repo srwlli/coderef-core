@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability export-generator
  * @exports ExportGenerator
  * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */

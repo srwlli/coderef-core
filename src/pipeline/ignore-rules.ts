@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability ignore-rules-normalize-pattern
  * @exports loadIgnorePatterns, shouldIgnorePath
  * @used_by src/cli/detect-languages.ts, src/pipeline/orchestrator.ts
  */

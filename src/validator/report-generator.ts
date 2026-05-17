@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer validation
+ * @capability report-generator-format-issue-summary
  * @exports formatIssueSummary, formatIssueDetails, formatRecommendations, formatAutoFixSection, generateMarkdownReport, saveMarkdownReport
  * @used_by src/cli/validate-routes.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability search-engine-search-index-entry
  * @exports SearchIndexEntry, SearchResult, SearchOptions, SearchIndex, TagCloudEntry, SearchStatistics, SearchEngine
  * @used_by src/cli/coderef-search.ts
  */

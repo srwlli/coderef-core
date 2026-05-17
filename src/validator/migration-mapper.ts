@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer validation
+ * @capability migration-mapper-validate-migration-config
  * @exports validateMigrationConfig, checkRequiredFields, validateRegexPatterns, detectPathConflicts, checkDeprecatedAddedOverlap, applyExplicitMapping, applyPatternMapping, applyMappings, calculateMigrationCoverage, findUnmappedCalls, findDeprecatedCalls, groupCoverageByApiPrefix, SemanticParameterMapping, SemanticParameterMapper
  * @used_by src/validator/frontend-update-generator.ts, src/validator/route-validator.ts
  */

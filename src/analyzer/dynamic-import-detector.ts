@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability dynamic-import-detector-dynamic-import
  * @exports DynamicImport, DynamicCallEdge, DynamicImportDetector
  * @used_by __tests__/dynamic-imports.test.ts
  */

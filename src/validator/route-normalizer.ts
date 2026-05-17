@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer validation
+ * @capability route-normalizer-normalized-route
  * @exports NormalizedRoute, normalizeFlaskRoute, normalizeFastAPIRoute, normalizeExpressRoute, normalizeNextJsRoute, extractDynamicSegments, normalizeRoutePath
  * @used_by src/validator/route-matcher.ts, src/validator/route-validator.ts
  */

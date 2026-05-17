@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability rag-config-llmprovider-name
  * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
  */
 

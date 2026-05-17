@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability frontend-call-parsers-parse-fetch-calls
  * @exports parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls, extractHttpMethod, extractCallLocation
  * @used_by src/fileGeneration/saveFrontendCalls.ts, src/generator/generateFrontendCalls.ts, src/scanner/frontend-scanner.ts, src/scanner/scanner.ts, src/types/types.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability module-analyzer-extract-imports-from-ast
  * @exports extractImportsFromAST, extractExportsFromAST
  * @used_by src/analyzer/js-call-detector/index.ts
  */

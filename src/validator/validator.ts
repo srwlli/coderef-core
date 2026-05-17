@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer validation
+ * @capability validator-validation-result
  * @exports ValidationResult, ValidatorOptions, CodeRefValidator, validateCodeRef, validateCodeRefs
  * @used_by __tests__/integration.test.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability semantic-analyzer-attach-file-imports-to-elements
  * @exports attachFileImportsToElements, buildSemanticRelationships, deduplicateUsedBy
  * @used_by src/pipeline/semantic-elements.ts
  */

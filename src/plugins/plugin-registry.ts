@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability plugin-registry-plugin-error
  * @exports PluginError, PluginRegistry
  * @used_by src/plugins/loaders/npm-loader.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-scanner.ts
  */

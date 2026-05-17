@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability ai-prompt-generator-aiquery-type
  * @exports AIQueryType, GeneratedPrompt, AIPromptGenerator
  */
 

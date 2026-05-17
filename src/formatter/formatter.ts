@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer formatter
+ * @capability formatter-code-ref-formatter
  * @exports CodeRefFormatter, formatCodeRef, formatCodeRefs
  * @used_by __tests__/integration.test.ts
  */

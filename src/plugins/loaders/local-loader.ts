@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability local-loader-local-loader-options
  * @exports LocalLoaderOptions, discoverLocalPlugins, loadLocalPlugin, loadAllLocalPlugins
  * @used_by src/plugins/loaders/config-loader.ts, src/plugins/plugin-scanner.ts
  */

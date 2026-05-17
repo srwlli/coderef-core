@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability docs-analyzer-readme-section
  * @exports ReadmeSection, ReadmeAnalysis, JSDocCoverage, ChangelogAnalysis, CommentDensity, ApiDocsAnalysis, DocumentationQuality, DocsAnalyzer, analyzeDocs
  * @used_by src/cli/coderef-analyze.ts, src/pipeline/generators/context-generator.ts
  */

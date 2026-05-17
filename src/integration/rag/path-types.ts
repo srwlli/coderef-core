@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability path-types-absolute-path
  * @exports AbsolutePath, RelativePath, toAbsolute, toRelative, isAbsolutePath
  * @used_by src/cli/rag-index.ts, src/integration/rag/chunk-converter.ts, src/integration/rag/incremental-indexer.ts, src/integration/rag/indexing-orchestrator.ts
  */

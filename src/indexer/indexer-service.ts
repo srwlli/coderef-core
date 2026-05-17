@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability indexer-service-indexing-stage
  * @exports IndexingStage, IndexingResult, BatchIndexingResult, IndexerStats, IndexerService, createIndexerService
  * @used_by __tests__/indexer.test.ts
  */

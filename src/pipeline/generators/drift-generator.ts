@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability drift-generator-drift-report
  * @exports DriftGenerator
  * @used_by src/cli/populate.ts
  */

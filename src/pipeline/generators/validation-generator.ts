@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability validation-generator-validation-report
  * @exports ValidationGenerator
  * @used_by src/cli/populate.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability dependency-analyzer-dependency-health
  * @exports DependencyHealth, SecurityVulnerability, DependencyHealthReport, DependencyAnalyzer, analyzeDependencyHealth
  * @used_by src/cli/coderef-analyze.ts, src/pipeline/generators/health-generator.ts
  */

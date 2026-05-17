@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability analyzer-build-call-edges
  * @exports buildCallEdges, analyzeCallPatterns
  * @used_by src/analyzer/js-call-detector/index.ts
  */

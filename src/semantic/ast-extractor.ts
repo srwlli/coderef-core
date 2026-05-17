@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability ast-extractor-export-info
  * @exports ExportInfo, ImportInfo, SemanticExtractionResult, ASTExtractorOptions, ASTExtractor, astExtractor, extractBatch
  * @used_by src/semantic/header-generator.ts, src/semantic/orchestrator.ts, src/semantic/registry-sync.ts, __tests__/pipeline/single-scanner.test.ts
  */

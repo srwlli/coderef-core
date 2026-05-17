@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability call-detector-call-expression
  * @exports CallExpression, CallEdge, CallDetector
  * @used_by src/analyzer/graph-builder.ts
  */

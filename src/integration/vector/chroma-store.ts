@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability chroma-store
  * @exports ChromaStore, createChromaStore
  * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts
  */

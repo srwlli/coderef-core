@@ -1,7 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
  * @capability from
- * @exports SemanticHeader, HeaderGenerationOptions, HeaderGenerator, generateHeaders
+ * @exports inferLayerFromPath, inferCapabilityFromPath, SemanticHeader, HeaderGenerationOptions, HeaderGenerator, generateHeaders
  * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts
  */
 
@@ -17,6 +18,88 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { ExportInfo, ImportInfo } from './ast-extractor.js';
 import type { ElementData } from '../types/types.js';
+
+// Ordered path-pattern → layer inference table.
+// Patterns are tested with String.includes(); first match wins.
+// Layer values must be valid entries from STANDARDS/layers.json.
+const LAYER_PATTERNS: Array<{ pattern: string; layer: string }> = [
+  { pattern: '__tests__', layer: 'test_support' },
+  { pattern: '__test__', layer: 'test_support' },
+  { pattern: '.test.', layer: 'test_support' },
+  { pattern: '.spec.', layer: 'test_support' },
+  { pattern: 'src/cli/', layer: 'cli' },
+  { pattern: 'src\\cli\\', layer: 'cli' },
+  { pattern: 'scripts/', layer: 'cli' },
+  { pattern: 'scripts\\', layer: 'cli' },
+  { pattern: 'src/integration/', layer: 'integration' },
+  { pattern: 'src\\integration\\', layer: 'integration' },
+  { pattern: 'src/utils/', layer: 'utility' },
+  { pattern: 'src\\utils\\', layer: 'utility' },
+  { pattern: 'src/config/', layer: 'configuration' },
+  { pattern: 'src\\config\\', layer: 'configuration' },
+  { pattern: 'src/pipeline/', layer: 'service' },
+  { pattern: 'src\\pipeline\\', layer: 'service' },
+  { pattern: 'src/scanner/', layer: 'service' },
+  { pattern: 'src\\scanner\\', layer: 'service' },
+  { pattern: 'src/semantic/', layer: 'service' },
+  { pattern: 'src\\semantic\\', layer: 'service' },
+  { pattern: 'src/adapter/', layer: 'service' },
+  { pattern: 'src\\adapter\\', layer: 'service' },
+  { pattern: 'src/analyzer/', layer: 'service' },
+  { pattern: 'src\\analyzer\\', layer: 'service' },
+  { pattern: 'src/indexer/', layer: 'service' },
+  { pattern: 'src\\indexer\\', layer: 'service' },
+  { pattern: 'src/search/', layer: 'service' },
+  { pattern: 'src\\search\\', layer: 'service' },
+  { pattern: 'src/context/', layer: 'service' },
+  { pattern: 'src\\context\\', layer: 'service' },
+  { pattern: 'src/export/', layer: 'service' },
+  { pattern: 'src\\export\\', layer: 'service' },
+  { pattern: 'src/cache/', layer: 'service' },
+  { pattern: 'src\\cache\\', layer: 'service' },
+  { pattern: 'src/registry/', layer: 'service' },
+  { pattern: 'src\\registry\\', layer: 'service' },
+  { pattern: 'src/query/', layer: 'service' },
+  { pattern: 'src\\query\\', layer: 'service' },
+  { pattern: 'src/errors/', layer: 'domain' },
+  { pattern: 'src\\errors\\', layer: 'domain' },
+  { pattern: 'src/types/', layer: 'domain' },
+  { pattern: 'src\\types\\', layer: 'domain' },
+  { pattern: 'src/plugins/', layer: 'integration' },
+  { pattern: 'src\\plugins\\', layer: 'integration' },
+  { pattern: 'src/parser/', layer: 'parser' },
+  { pattern: 'src\\parser\\', layer: 'parser' },
+  { pattern: 'src/formatter/', layer: 'formatter' },
+  { pattern: 'src\\formatter\\', layer: 'formatter' },
+  { pattern: 'src/validator/', layer: 'validation' },
+  { pattern: 'src\\validator\\', layer: 'validation' },
+  { pattern: 'src/generator/', layer: 'service' },
+  { pattern: 'src\\generator\\', layer: 'service' },
+  { pattern: 'src/fileGeneration/', layer: 'service' },
+  { pattern: 'src\\fileGeneration\\', layer: 'service' },
+  { pattern: 'utils/', layer: 'utility' },
+  { pattern: 'utils\\', layer: 'utility' },
+  { pattern: 'src/', layer: 'service' },
+  { pattern: 'src\\', layer: 'service' },
+];
+
+export function inferLayerFromPath(filePath: string): string | undefined {
+  const normalized = filePath.replace(/\\/g, '/');
+  for (const { pattern, layer } of LAYER_PATTERNS) {
+    const normalizedPattern = pattern.replace(/\\/g, '/');
+    if (normalized.includes(normalizedPattern)) return layer;
+  }
+  return undefined;
+}
+
+export function inferCapabilityFromPath(filePath: string, elementName: string): string | undefined {
+  const stem = path.basename(filePath).replace(/\.[^.]+$/, '');
+  const stemSlug = stem.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  const nameSlug = elementName.replace(/([a-z])([A-Z])/g, '$1-$2').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+  if (!stemSlug) return undefined;
+  const capability = stemSlug === nameSlug ? stemSlug : `${stemSlug}-${nameSlug}`;
+  return /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/.test(capability) ? capability : undefined;
+}
 
 export interface SemanticHeader {
   file: string;
@@ -122,8 +205,11 @@ export class HeaderGenerator {
     const usedBy = uniqueStrings(elements.flatMap(element => element.usedBy?.map(entry => entry.file) || []));
     const rules = uniqueObjects(elements.flatMap(element => element.rules || []), rule => `${rule.rule}:${rule.description || ''}:${rule.severity || ''}`);
     const related = uniqueObjects(elements.flatMap(element => element.related || []), entry => `${getRelatedPath(entry)}:${entry.reason || ''}:${entry.confidence ?? (entry as any).confidence_score ?? ''}`);
-    const layer = elements.map(e => e.layer).find(l => l != null);
-    const capability = elements.map(e => e.capability).find(c => c != null);
+    const layer = elements.map(e => e.layer).find(l => l != null)
+      ?? inferLayerFromPath(file);
+    const firstElement = elements[0];
+    const capability = elements.map(e => e.capability).find(c => c != null)
+      ?? (firstElement ? inferCapabilityFromPath(file, firstElement.name) : undefined);
 
     // Always emit at least one header entry so files with no exports still get a
     // @coderef-semantic block (enabling @layer/@capability and defined headerStatus).

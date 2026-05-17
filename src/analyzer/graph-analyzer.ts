@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability graph-analyzer-traversal-path
  * @exports TraversalPath, CircularDependency, GraphAnalyzer, dfs
  * @used_by src/analyzer/analyzer-service.ts, src/context/multi-hop-traversal.ts
  */

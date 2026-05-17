@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability projections-semantic-registry-projection
  * @exports SemanticRegistryProjection, SemanticRegistryRawFacts, SemanticRegistryProjectionEntry, RawFactsBundle, createSemanticRegistryProjection
  * @used_by src/pipeline/generators/registry-generator.ts
  */

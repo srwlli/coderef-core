@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability entry-point-detector
  * @exports EntryPointDetector
  * @used_by src/context/context-generator.ts
  */

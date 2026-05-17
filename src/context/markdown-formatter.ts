@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability markdown-formatter-context-data
  * @exports ContextData, MarkdownFormatter
  * @used_by src/context/context-generator.ts
  */

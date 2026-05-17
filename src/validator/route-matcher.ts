@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer validation
+ * @capability route-matcher-route-match
  * @exports RouteMatch, exactMatch, dynamicMatch, partialMatch, calculateMatchConfidence, matchHttpMethods, findBestMatch
  * @used_by src/validator/route-validator.ts
  */

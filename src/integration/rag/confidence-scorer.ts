@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability confidence-scorer-confidence-breakdown
  * @exports ConfidenceBreakdown, ConfidenceScoringOptions, ConfidenceScorer
  * @used_by src/integration/rag/__tests__/confidence-scorer.test.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability helpers-mock-environment
  * @exports MockEnvironment, createMockEnvironment, cleanupEnvironment, readJson, readText
  * @used_by __tests__/generators/root-cause-alignment.test.ts
  */

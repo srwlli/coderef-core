@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability analyze-coverage-coverage-report
  * @exports analyzeCoverage
  */
 

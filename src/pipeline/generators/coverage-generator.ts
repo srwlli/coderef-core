@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability coverage-generator-coverage-report
  * @exports CoverageGenerator
  * @used_by src/cli/populate.ts
  */

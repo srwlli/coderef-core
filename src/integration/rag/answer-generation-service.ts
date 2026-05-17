@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability answer-generation-service-answer-options
  * @exports AnswerOptions, Answer, AnswerGenerationService
  * @used_by src/integration/rag/confidence-scorer.ts, src/integration/rag/conversation-manager.ts, src/integration/rag/__tests__/confidence-scorer.test.ts
  */

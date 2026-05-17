@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability file-watcher-file-watcher-options
  * @exports FileWatcherOptions, WatcherStats, FileWatcher
  */
 

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability index-jscall-detector
  * @exports JSCallDetector
  */
 

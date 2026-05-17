@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability generate-frontend-calls-frontend-call-element
  * @exports FrontendCallElement, FrontendCallsOutput, filterFrontendCallElements, formatFrontendCallsJson, sortFrontendCalls, generateFrontendCalls, saveFrontendCallsToFile
  */
 

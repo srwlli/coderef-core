@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability frontend-scanner-scan-file-for-frontend-calls
  * @exports scanFileForFrontendCalls, attachFrontendCalls, scanProjectForFrontendCalls
  * @used_by src/fileGeneration/saveFrontendCalls.ts
  */

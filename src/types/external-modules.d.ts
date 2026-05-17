@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer domain
+ * @capability external-modules-d-open-ai
  * @exports OpenAI, Anthropic, ChromaClient, Collection, Pinecone
  */
 

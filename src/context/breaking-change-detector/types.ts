@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability types-signature-change
  * @exports SignatureChange, ImpactedCallSite, MigrationHint, BreakingChangeReport, BlastRadius, ParameterDiff, ContextualFactor
  * @used_by src/context/breaking-change-detector/diff-analyzer.ts, src/context/breaking-change-detector/hint-generator.ts, src/context/breaking-change-detector/impact-assessor.ts, src/context/breaking-change-detector/index.ts, src/context/breaking-change-detector/signature-comparator.ts
  */

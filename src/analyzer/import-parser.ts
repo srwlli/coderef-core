@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability import-parser-import-statement
  * @exports ImportStatement, ImportEdge, ImportParser
  * @used_by src/analyzer/graph-builder.ts
  */

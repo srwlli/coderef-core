@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability index-storage-index-schema-version
  * @exports IndexSchemaVersion, IndexFormat, VerboseIndexFile, CompactElement, CompactIndexFile, LoadedIndex, toCompactElements, fromCompactElements, createVerboseIndexFile, createCompactIndexFile, writeIndexVariants, loadIndexFromCoderefDir
  * @used_by src/fileGeneration/detectDrift.ts, src/fileGeneration/saveIndex.ts, src/pipeline/generators/drift-generator.ts, src/pipeline/generators/index-generator.ts
  */

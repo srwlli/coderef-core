@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability multi-hop-traversal-traversal-result
  * @exports TraversalResult, MultiHopResult, MultiHopTraversal
  * @used_by src/cli/coderef-analyze.ts
  */

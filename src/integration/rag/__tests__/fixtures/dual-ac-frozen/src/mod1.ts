@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability mod1-fn1
  * @exports fn1, Cls1, C1
  */
 

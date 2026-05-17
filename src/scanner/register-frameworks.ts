@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability register-frameworks-register-default-frameworks
  * @exports registerDefaultFrameworks
  * @used_by src/scanner/scanner.ts
  */

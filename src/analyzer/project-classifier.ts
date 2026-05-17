@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability project-classifier-project-category
  * @exports ProjectCategory, ApiServiceType, WebAppType, ProjectClassification, ProjectClassifier
  * @used_by src/pipeline/generators/context-generator.ts
  */

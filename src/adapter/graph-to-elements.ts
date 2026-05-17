@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability graph-to-elements-conversion-options
  * @exports ConversionOptions, convertGraphToElements, getConversionStats
  * @used_by src/cli/coderef-analyze.ts
  */

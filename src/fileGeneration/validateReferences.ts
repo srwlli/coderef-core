@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability validate-references-validation-report
  * @exports validateReferences
  */
 

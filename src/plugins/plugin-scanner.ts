@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability plugin-scanner-plugin-scan-options
  * @exports PluginScanOptions, scanWithPlugins, getPluginScannerStats, initializePluginScanning
  */
 

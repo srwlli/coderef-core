@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability graph-builder-edge-relationship
  * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived
  * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
  */

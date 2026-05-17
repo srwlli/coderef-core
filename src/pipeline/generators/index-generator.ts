@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability index-generator
  * @exports IndexGenerator
  * @used_by src/cli/populate.ts
  */

@@ -1,5 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @capability scanner
  * @exports scanCurrentElements, isLineCommented
  */
 

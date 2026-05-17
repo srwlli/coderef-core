@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability graph-error
  * @exports GraphError
  * @used_by src/analyzer/analyzer-service.ts, src/analyzer/graph-builder.ts
  */

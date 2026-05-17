@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability graph-output-to-portable-path
  * @exports normalizeGraphForOutput
  * @used_by src/pipeline/generators/export-generator.ts, src/pipeline/generators/graph-generator.ts
  */

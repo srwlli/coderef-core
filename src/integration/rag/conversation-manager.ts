@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability conversation-manager-conversation-message
  * @exports ConversationMessage, ConversationSession, ConversationOptions, ConversationManager
  */
 

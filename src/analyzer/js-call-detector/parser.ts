@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability parser-parse-call-expression
  * @exports parseCallExpression, parseNewExpression, extractObjectName, isNestedCall, extractParameters, extractParameter
  * @used_by src/analyzer/js-call-detector/visitor.ts
  */

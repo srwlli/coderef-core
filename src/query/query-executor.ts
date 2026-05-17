@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability query-executor-query-type
  * @exports QueryType, QueryRequest, QueryResult, QueryExecutor
  * @used_by src/cli/coderef-query.ts
  */

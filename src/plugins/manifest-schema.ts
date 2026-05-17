@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer integration
+ * @capability manifest-schema-validate-manifest
  * @exports validateManifest, parseManifest, MANIFEST_FILENAME, getManifestPath
  * @used_by src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts
  */

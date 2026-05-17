@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability migration-route-analyzer-migration-route-element
  * @exports MigrationRouteElement, AffectedCaller, BreakingChange, OrphanedCall, FrameworkStats, MigrationRouteAnalyzer, extractAllRoutes, findOrphanedCalls, detectBreakingChanges
  * @used_by src/fileGeneration/detectPatterns.ts
  */

@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability semantic-integration-semantic-integration-options
  * @exports SemanticIntegrationOptions, DryRunSemanticOrchestrator, runSemanticIntegration, validateIdempotency
  * @used_by src/cli/semantic-integration-cli.ts, src/cli/semantic-integration.test.ts
  */

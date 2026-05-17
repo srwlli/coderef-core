@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer validation
+ * @capability frontend-update-generator-confidence-level
  * @exports ConfidenceLevel, FrontendUpdateSuggestion, BatchUpdateResult, GitPatch, FileModification, getConfidenceLevel, calculatePathConfidence, generateUpdateSuggestions, batchProcessCalls, generateModifications, generateGitPatch, applyModifications, generateUpdateReport, exportBatchResults
  */
 

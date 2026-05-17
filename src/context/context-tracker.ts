@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability context-tracker-context-entry
  * @exports ContextEntry, ContextHistory, ContextTracker
  * @used_by src/integration/ai-prompt-generator.ts
  */

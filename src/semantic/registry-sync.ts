@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability registry-sync-registry-entry
  * @exports RegistryEntry, RegistrySyncOptions, SyncResult, RegistrySyncer, syncEntry, refreshSync
  * @used_by src/semantic/orchestrator.ts
  */

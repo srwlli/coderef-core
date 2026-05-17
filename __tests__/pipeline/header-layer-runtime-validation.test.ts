@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @layer values
+ * @layer test_support
  * @capability foo
  */
 

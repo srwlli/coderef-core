@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability design-pattern-detector-design-pattern-type
  * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
  * @used_by src/cli/coderef-analyze.ts
  */

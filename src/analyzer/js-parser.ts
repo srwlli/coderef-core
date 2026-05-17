@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability js-parser-jsparse-options
  * @exports JSParseOptions, JSParseResult, parseJavaScript, parseJavaScriptFile, isJavaScriptFile, isTypeScriptFile, getSourceTypeFromExtension, parseJavaScriptFileAuto
  * @used_by src/analyzer/js-call-detector/index.ts
  */
