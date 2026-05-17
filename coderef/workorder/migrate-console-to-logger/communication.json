@@ -2,20 +2,45 @@
   "workorder_id": "WO-MIGRATE-CONSOLE-TO-LOGGER-001",
   "feature_name": "migrate-console-to-logger",
   "created": "2026-05-17T09:15:00Z",
+  "completed_at": "2026-05-17T16:40:00Z",
+  "closed_at": "2026-05-17T20:45:00Z",
+  "updated": "2026-05-17T20:45:00Z",
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
+  "closed_via": "close-workorder",
+  "review_result": "WARNING",
   "current_phase": 4,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-console-to-logger/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-console-to-logger/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-console-to-logger/analysis.json",
   "handoff": {
-    "from": "execute-workorder",
-    "to": "close-workorder",
-    "reason": "All 4 phases complete. Acceptance criteria met. Ready for close."
+    "from": "close-workorder",
+    "to": null,
+    "reason": "Workorder fully closed and archived."
+  },
+  "close_metadata": {
+    "review_status": "WARNING",
+    "archive_marker": "coderef/ARCHIVED/migrate-console-to-logger/ARCHIVED",
+    "review_verdict_source": "Step 3 cultural-alignment validator (scope mode)",
+    "warnings": [
+      "mapping_coverage: mapping-table.json not present for CODEREF-CORE domain (no /align-coderef-culture run today)",
+      "tool_canonicity: no mapping-table.json to check"
+    ],
+    "dependency_audit": {
+      "vulnerable_count": 0,
+      "skipped": false
+    },
+    "semantic_validation": { "passed": true },
+    "phase6_quality_check": { "outcome": "skip", "reason": "missing_artifacts" },
+    "phase6_route_check": { "outcome": "skip", "reason": "no_route_files_changed" },
+    "session_log_gate": {
+      "outcome": "pass",
+      "session_log_path": "C:/Users/willh/Desktop/CODEREF/coderef-core/.coderef/sessions/SES-2026-05-17-MIGRATE-CONSOLE-TO-LOGGER.yaml"
+    }
   },
   "execution_rules": {
     "plan_type": "strict",
@@ -105,6 +130,12 @@
       "at": "2026-05-17T16:40:00Z",
       "by": "execute-workorder",
       "note": "All 4 phases complete. 0 non-CLI console calls remain. All acceptance criteria met. Handing off to close-workorder."
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-05-17T20:45:00Z",
+      "by": "close-workorder v2.1.0",
+      "note": "Workorder closed via /close-workorder. Audit WARNING (mapping_coverage, tool_canonicity — pre-existing session conditions). All acceptance criteria met. Finalized, committed, archived."
     }
   ]
 }
