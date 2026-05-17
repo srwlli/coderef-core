@@ -1,5 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @capability from
  * @exports SemanticHeader, HeaderGenerationOptions, HeaderGenerator, generateHeaders
  * @used_by src/cli/populate.ts, src/semantic/orchestrator.ts
  */
@@ -22,6 +23,8 @@ export interface SemanticHeader {
   line: number;
   type: 'exports' | 'used_by' | 'rules' | 'related';
   content: string[];
+  layer?: string;
+  capability?: string;
 }
 
 export interface HeaderGenerationOptions {
@@ -119,6 +122,8 @@ export class HeaderGenerator {
     const usedBy = uniqueStrings(elements.flatMap(element => element.usedBy?.map(entry => entry.file) || []));
     const rules = uniqueObjects(elements.flatMap(element => element.rules || []), rule => `${rule.rule}:${rule.description || ''}:${rule.severity || ''}`);
     const related = uniqueObjects(elements.flatMap(element => element.related || []), entry => `${getRelatedPath(entry)}:${entry.reason || ''}:${entry.confidence ?? (entry as any).confidence_score ?? ''}`);
+    const layer = elements.map(e => e.layer).find(l => l != null);
+    const capability = elements.map(e => e.capability).find(c => c != null);
 
     if (exports.length > 0) {
       headers.push({
@@ -126,6 +131,8 @@ export class HeaderGenerator {
         line: 1,
         type: 'exports',
         content: [`[${exports.join(', ')}]`],
+        layer,
+        capability,
       });
     }
 
@@ -170,6 +177,9 @@ export class HeaderGenerator {
 
       comments.push(`/**`);
       comments.push(` * @coderef-semantic: 1.0.0`);
+      const meta = headers.find(h => h.layer ?? h.capability);
+      if (meta?.layer) comments.push(` * @layer ${meta.layer}`);
+      if (meta?.capability) comments.push(` * @capability ${meta.capability}`);
       for (const header of headers) {
         const value = header.content.join(', ').replace(/^\[|\]$/g, '');
         comments.push(` * @${header.type} ${value}`);
@@ -194,9 +204,19 @@ export class HeaderGenerator {
       let content = fs.readFileSync(filePath, 'utf-8');
 
       // Skip if file already has semantic headers (unless overwrite enabled)
-      if (this.options.preserveExisting && this.hasSemanticHeader(content)) {
-        console.warn(`[header-generator] ${filePath} already has semantic headers, skipping`);
-        return;
+      if (this.hasSemanticHeader(content)) {
+        if (this.options.preserveExisting) {
+          console.warn(`[header-generator] ${filePath} already has semantic headers, skipping`);
+          return;
+        }
+        // Overwrite: preserve @layer/@capability from existing header so LLM-annotated
+        // tags survive pure export-refresh runs, then strip the old block cleanly.
+        const preserved = this.extractLayerCapability(content);
+        for (const header of headers) {
+          if (!header.layer && preserved.layer) header.layer = preserved.layer;
+          if (!header.capability && preserved.capability) header.capability = preserved.capability;
+        }
+        content = this.stripSemanticHeaders(content);
       }
 
       const comments = this.formatAsComments(headers);
@@ -310,6 +330,40 @@ export class HeaderGenerator {
   private hasSemanticHeader(content: string): boolean {
     return /\/\*\*[\s\S]*?@coderef-semantic\s*:[\s\S]*?\*\//.test(content)
       || /^\/\/\s*@coderef-semantic\s*:/m.test(content);
+  }
+
+  private extractLayerCapability(content: string): { layer?: string; capability?: string } {
+    const layerMatch = content.match(/@layer\s+([a-z][a-z0-9_-]*)/);
+    const capMatch = content.match(/@capability\s+([a-z][a-z0-9-]*)/);
+    return { layer: layerMatch?.[1], capability: capMatch?.[1] };
+  }
+
+  // Strip all semantic header blocks line-by-line to avoid regex eating source code.
+  private stripSemanticHeaders(content: string): string {
+    const lineEnding = content.includes('\r\n') ? '\r\n' : '\n';
+    const lines = content.split(/\r?\n/);
+    const out: string[] = [];
+    let i = 0;
+    while (i < lines.length) {
+      if (lines[i].trimStart() === '/**') {
+        const blockLines: string[] = [lines[i++]];
+        while (i < lines.length && !lines[i].trimStart().startsWith('*/')) {
+          blockLines.push(lines[i++]);
+        }
+        if (i < lines.length) blockLines.push(lines[i++]); // closing */
+        if (blockLines.some(l => /@coderef-semantic/.test(l))) {
+          // Discard semantic block; also drop a following blank line
+          if (i < lines.length && lines[i].trim() === '') i++;
+        } else {
+          out.push(...blockLines);
+        }
+      } else if (/^\/\/\s*@coderef-semantic\s*:/.test(lines[i])) {
+        i++;
+      } else {
+        out.push(lines[i++]);
+      }
+    }
+    return out.join(lineEnding);
   }
 }
 
