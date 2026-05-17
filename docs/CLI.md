@@ -310,6 +310,7 @@ npx populate-coderef ./my-project --mode full
 | `--semantic` | Legacy alias for `--semantic-registry` | `true` |
 | `--no-semantic-registry` | Remove/skip `semantic-registry.json` projection | `false` |
 | `--source-headers` | Write optional CodeRef-Semantics headers into source files | `false` |
+| `--overwrite-headers` | Re-write headers even if the file already has them (refreshes stale headers). Requires `--source-headers`. | `false` |
 | `--strict-headers` | Promote semantic-header drift (SH-1, SH-2, SH-3) from warnings to hard errors at the Phase 6 validator. `populate-coderef` exits non-zero on header drift. | `false` |
 | `-j, --json` | Output JSON summary | `false` |
 | `-v, --verbose` | Verbose output | `false` |
@@ -335,6 +336,9 @@ npx populate-coderef ./my-project --mode minimal
 
 # Generate optional human-facing source headers
 npx populate-coderef ./my-project --source-headers
+
+# Refresh stale headers (re-write all existing headers)
+npx populate-coderef ./my-project --source-headers --overwrite-headers
 
 # Hard-fail on any semantic header drift (CI mode)
 npx populate-coderef ./my-project --strict-headers
