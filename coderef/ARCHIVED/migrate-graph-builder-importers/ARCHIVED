@@ -1,0 +1,7 @@
+Archived: 2026-05-17T08:20:00Z
+Reviewed by: close-workorder v2.0.0
+Status: WARNING
+Original location: coderef/workorder/migrate-graph-builder-importers/
+Final commit: 3b17ae5
+Archive timestamp: 2026-05-17T08:20:00Z
+Notes: Phase 4 (deletion of src/analyzer/graph-builder.ts) deferred to STUB-311. Phases 1-3 complete: all 14 plan-listed external consumers migrated.
