@@ -6,8 +6,10 @@
   "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "completed_at": "2026-05-17T02:00:00Z",
+  "closed_at": "2026-05-17T06:05:00Z",
+  "updated": "2026-05-17T06:05:00Z",
   "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/dogfood-header-coverage-and-layer-seeding/plan.json",
@@ -57,6 +59,16 @@
   ],
   "plan_adjustments": [],
   "required_skills": ["/execute-workorder", "/close-workorder", "/log-session"],
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/dogfood-header-coverage-and-layer-seeding/ARCHIVED",
+    "review_verdict_source": "Step 3 audit — align-coderef-culture PASS, tracking-validator 15/15 PASS",
+    "dependency_audit": { "vulnerable_count": 0, "skipped": false },
+    "quality_check": { "outcome": "skip", "reason": "missing_artifacts" },
+    "route_check": { "outcome": "skip", "reason": "no_route_files_changed" },
+    "session_log_gate": { "outcome": "pass", "session_log_path": ".coderef/sessions/SES-2026-05-17-DOGFOOD-HEADER-COVERAGE-AND-LAYER-SEEDING.yaml" },
+    "warnings": []
+  },
   "communication_log": [
     {
       "timestamp": "2026-05-17T01:00:00Z",
@@ -79,6 +91,11 @@
       "plan_deviations": ["ADJ-01: Phase 1 needed --overwrite-headers due to insertHeaders position bug", "ADJ-02: 3 bugs fixed before Phase 1 could succeed"],
       "phase1_commit": "23e65c4",
       "phase2_commit": "7a388c4"
+    },
+    {
+      "timestamp": "2026-05-17T06:05:00Z",
+      "agent": "close-workorder v2.1.0",
+      "message": "Workorder closed via /close-workorder. Audit PASS (cultural gate PASS, tracking 15/15 PASS, dependency vulnerableCount=0). Both phases verified complete. Archive pending."
     }
   ]
 }
