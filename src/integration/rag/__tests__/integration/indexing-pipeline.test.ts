@@ -15,7 +15,9 @@ import { EmbeddingTextGenerator } from '../../embedding-text-generator.js';
 import { EmbeddingService } from '../../embedding-service.js';
 import { IncrementalIndexer } from '../../incremental-indexer.js';
 import { IndexingOrchestrator } from '../../indexing-orchestrator.js';
-import type { DependencyGraph, GraphNode, GraphEdge } from '../../../../analyzer/graph-builder.js';
+interface GraphNode { id: string; uuid?: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface GraphEdge { source: string; target: string; type: string; weight?: number; metadata?: Record<string, unknown>; }
+interface DependencyGraph { nodes: Map<string, GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 import type { LLMProvider } from '../../../llm/llm-provider.js';
 import type { VectorStore, VectorRecord } from '../../../vector/vector-store.js';
 import * as fs from 'fs';

@@ -6,9 +6,10 @@
   "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "plan_created",
-  "current_phase": 1,
-  "phase_status": "ready",
+  "status": "complete",
+  "current_phase": 4,
+  "phase_status": "deferred",
+  "completed_at": "2026-05-17T03:57:00Z",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/analysis.json",
@@ -27,7 +28,29 @@
     "All 14 consumers must compile cleanly before proceeding to deletion",
     "vitest must pass after each phase"
   ],
-  "blockers": [],
+  "blockers": [
+    {
+      "id": "BLOCK-001",
+      "description": "Phase 4 deletion blocked: internal src/analyzer/ files and __tests__/ files still import from graph-builder.ts. Deleting would break compilation.",
+      "affected_files": [
+        "src/analyzer/analyzer-service.ts",
+        "src/analyzer/graph-analyzer.ts",
+        "src/analyzer/graph-helpers.ts",
+        "src/analyzer/index.ts",
+        "__tests__/accuracy-validation.test.ts",
+        "__tests__/analyzer.test.ts",
+        "__tests__/graph-helpers.test.ts",
+        "__tests__/orphan-detection.test.ts",
+        "__tests__/phase5-integration.test.ts"
+      ],
+      "options": [
+        "(A) Expand scope: migrate internal analyzer/ files and test files — larger blast radius, requires a new plan phase",
+        "(B) Defer deletion: treat Phase 4 as out-of-scope for this workorder, close with 14 consumers migrated, file a follow-on stub for the deletion",
+        "(C) Partial deletion: replace graph-builder.ts with a re-export shim that re-exports only what internal files need, preserving internal compatibility"
+      ],
+      "raised_at": "2026-05-17T03:53:00Z"
+    }
+  ],
   "decisions_log": [],
   "phase_transitions": [],
   "plan_adjustments": [],
@@ -38,6 +61,39 @@
       "event": "workorder_created",
       "source": "create-workorder@2.4.0",
       "summary": "Strict 4-phase plan created from STUB-309 / IMP-CORE-094. 14 consumers across 5 layers migrated off deprecated analyzer/graph-builder.ts in complexity-ordered phases."
+    },
+    {
+      "timestamp": "2026-05-17T03:42:00Z",
+      "event": "phase_complete",
+      "phase": 1,
+      "summary": "fuzzy-resolver.ts, ai-prompt-generator.ts, query-executor.ts migrated to ExportedGraph['nodes'][number] type alias. tsc: 0 errors. vitest: 1567/1567. Commit: 36b5b13."
+    },
+    {
+      "timestamp": "2026-05-17T03:47:00Z",
+      "event": "phase_complete",
+      "phase": 2,
+      "summary": "5 RAG consumers migrated: answer-generation-service + incremental-indexer via ExportedGraph alias; chunk-converter, graph-reranker, semantic-search via local shim (Map-based surface). tsc: 0 errors. vitest: 1567/1567. Commit: fa2b584."
+    },
+    {
+      "timestamp": "2026-05-17T03:52:00Z",
+      "event": "phase_complete",
+      "phase": 3,
+      "summary": "6 high-complexity consumers migrated via local shim: graph-to-elements, impact-simulator, multi-hop-traversal (with GraphAnalyzer cast), graph-exporter, plugin-graph, indexing-orchestrator. 3 test files in src/integration/rag/__tests__/ also migrated. tsc: 0 errors. vitest: 1567/1567. Commit: 9105483."
+    },
+    {
+      "timestamp": "2026-05-17T03:53:00Z",
+      "event": "phase_blocked",
+      "phase": 4,
+      "summary": "BLOCK-001: deletion blocked by internal src/analyzer/ files and __tests__/ root test files. Awaiting user ruling: (A) expand scope, (B) defer deletion, (C) re-export shim."
+    },
+    {
+      "timestamp": "2026-05-17T03:57:00Z",
+      "event": "workorder_complete",
+      "summary": "User chose (B) defer deletion. STUB-311 filed for delete-analyzer-graph-builder. All 14 external consumers migrated across phases 1-3. Phase 4 deletion deferred to STUB-311. Workorder complete with deferred phase 4.",
+      "phases_completed": [1, 2, 3],
+      "phases_deferred": [4],
+      "follow_on_stub": "STUB-311",
+      "plan_deviation": "ADJ-01: Phase 4 deletion deferred — 9 internal src/analyzer/ files and root __tests__/ files remain as consumers. Filed STUB-311 for follow-on work."
     }
   ]
 }

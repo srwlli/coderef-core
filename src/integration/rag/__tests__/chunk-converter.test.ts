@@ -10,7 +10,9 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ChunkConverter } from '../chunk-converter.js';
-import type { DependencyGraph, GraphNode, GraphEdge } from '../../../analyzer/graph-builder.js';
+interface GraphNode { id: string; uuid?: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface GraphEdge { source: string; target: string; type: string; weight?: number; metadata?: Record<string, unknown>; }
+interface DependencyGraph { nodes: Map<string, GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 import type { CodeChunk } from '../code-chunk.js';
 
 describe('ChunkConverter', () => {

@@ -12,7 +12,9 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { GraphReRanker, type QueryStrategy } from '../graph-reranker.js';
 import type { SearchResult } from '../semantic-search.js';
 import type { CodeChunkMetadata } from '../../vector/vector-store.js';
-import type { DependencyGraph, GraphNode, GraphEdge } from '../../../analyzer/graph-builder.js';
+interface GraphNode { id: string; uuid?: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface GraphEdge { source: string; target: string; type: string; weight?: number; metadata?: Record<string, unknown>; }
+interface DependencyGraph { nodes: Map<string, GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 
 describe('GraphReRanker', () => {
   let reranker: GraphReRanker;

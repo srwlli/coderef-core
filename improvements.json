@@ -429,8 +429,11 @@
       "title": "Migrate 10 active importers off deprecated analyzer/graph-builder.ts",
       "category": "architecture",
       "severity": "major",
-      "status": "open",
+      "status": "done",
       "logged": "2026-05-17",
+      "resolved": "2026-05-17",
+      "workorder_id": "WO-MIGRATE-GRAPH-BUILDER-IMPORTERS-001",
+      "resolution": "All 14 external consumer imports migrated across 3 phases. Deletion of src/analyzer/graph-builder.ts deferred to STUB-311 (internal src/analyzer/ infrastructure still consumes it).",
       "body": "src/analyzer/graph-builder.ts is marked @deprecated ('Use src/pipeline/graph-builder.ts instead') but is still imported by 10 active source files including graph-to-elements.ts, chunk-converter.ts, indexing-orchestrator.ts, and ai-prompt-generator.ts. The two graph-builder schemas are structurally incompatible (Map-based vs ExportedGraph), meaning consumers cannot be trivially switched — but the migration is necessary to remove the legacy schema dependency before it accretes further.",
       "files": [
         "src/analyzer/graph-builder.ts:10-15",

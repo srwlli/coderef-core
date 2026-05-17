@@ -1,0 +1,13 @@
+{
+  "stub_id": "STUB-311",
+  "feature_name": "delete-analyzer-graph-builder",
+  "category": "refactor",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-17T03:55:00Z",
+  "related_improvement": "IMP-CORE-094",
+  "predecessor_workorder": "WO-MIGRATE-GRAPH-BUILDER-IMPORTERS-001",
+  "description": "Delete src/analyzer/graph-builder.ts (the legacy @deprecated Map-based DependencyGraph builder) after migrating its remaining internal consumers.\n\nWO-MIGRATE-GRAPH-BUILDER-IMPORTERS-001 cleared all 14 external consumer imports. Deletion was deferred because 9 internal files still import from this module:\n\nInternal src/analyzer/ files (relative imports):\n  - src/analyzer/analyzer-service.ts — imports GraphBuilder, DependencyGraph, GraphNode\n  - src/analyzer/graph-analyzer.ts — imports DependencyGraph, GraphNode, GraphEdge\n  - src/analyzer/graph-helpers.ts — imports DependencyGraph, GraphNode, GraphEdge\n  - src/analyzer/index.ts — re-exports GraphBuilder, GraphNode, GraphEdge, DependencyGraph\n\nRoot test files:\n  - __tests__/accuracy-validation.test.ts\n  - __tests__/analyzer.test.ts\n  - __tests__/graph-helpers.test.ts\n  - __tests__/orphan-detection.test.ts\n  - __tests__/phase5-integration.test.ts\n\nThese are the legacy analyzer infrastructure (AnalyzerService, GraphAnalyzer, graph-helpers) that predates the canonical pipeline. They are still exercised by root-level tests and used by CLI commands via analyzer-service.\n\nApproach options (decide at create-workorder time):\n(A) Full migration: refactor analyzer-service, graph-analyzer, graph-helpers to use ExportedGraph — requires architectural decision about deprecating the entire legacy analyzer path.\n(B) Shim: replace graph-builder.ts with a minimal re-export stub so it still compiles, then migrate internal files incrementally.\n(C) Test-only: migrate the 5 root __tests__/ files first, then assess whether the src/analyzer/ files can be consolidated."
+}
