@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports PluginError, PluginRegistry, pluginRegistry
+ * @exports PluginError, PluginRegistry
  * @used_by src/plugins/loaders/npm-loader.ts, src/plugins/plugin-graph.ts, src/plugins/plugin-scanner.ts
  */
 
@@ -11,6 +11,8 @@
  * Central registry for loading, managing, and executing plugins.
  * Provides plugin discovery, lifecycle management, and integration hooks.
  */
+
+
 
 import { Plugin, PluginRegistration, CodeDetector, GraphHook, PluginSource } from './types.js';
 

@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability rag-confidence-scorer-test
  */
+
 /**
  * Unit tests for ConfidenceScorer
  */

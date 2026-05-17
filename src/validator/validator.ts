@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports CodeRefValidator, ValidationResult, ValidatorOptions, validateCodeRef, validateCodeRefs, validator
+ * @exports ValidationResult, ValidatorOptions, CodeRefValidator, validateCodeRef, validateCodeRefs
  * @used_by __tests__/integration.test.ts
  */
 
@@ -16,6 +16,8 @@
  *
  * Implementation follows specification canonical format rules (lines 464-471)
  */
+
+
 
 import { ParsedCodeRef } from '../parser/parser.js';
 

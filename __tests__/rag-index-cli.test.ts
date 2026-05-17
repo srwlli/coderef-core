@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability rag-index-cli-test
  */
+
 import { describe, expect, it, beforeEach, afterEach } from 'vitest';
 
 // ─── parseArgs extracted for unit testing ──────────────────────────────────

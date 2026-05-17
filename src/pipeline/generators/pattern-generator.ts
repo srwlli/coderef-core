@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports PatternGenerator
+ * @exports PatternGenerator, isTestFile, isPipelineOrchestrator, estimateComplexity, isInternalFunction, calculatePriority
  * @used_by src/cli/populate.ts
  */
 
@@ -12,6 +12,8 @@
  * Produces: .coderef/reports/patterns.json
  * Patterns: Decorators, error handling, async patterns, test gaps
  */
+
+
 
 import * as fs from 'fs/promises';
 import * as path from 'path';

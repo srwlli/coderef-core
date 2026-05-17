@@ -4,6 +4,7 @@
  * @layer cli
  * @capability cli-coderef-query
  */
+
 import { parseArgs } from 'node:util';
 import AnalyzerService from '../analyzer/analyzer-service.js';
 import { QueryExecutor, QueryType } from '../query/query-executor.js';

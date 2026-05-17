@@ -11,6 +11,8 @@
  * Runs plugin detectors alongside built-in patterns for extensible code analysis.
  */
 
+
+
 import { minimatch } from 'minimatch';
 import { ElementData, ScanOptions } from '../types/types.js';
 import { pluginRegistry } from './plugin-registry.js';

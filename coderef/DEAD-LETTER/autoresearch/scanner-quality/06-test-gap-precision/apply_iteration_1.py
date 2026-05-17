@@ -1,38 +1,9 @@
 #!/usr/bin/env python3
 /**
  * @coderef-semantic: 1.0.0
- * */
+ * @exports main
+ */
 
-
-"""
-Iteration 1: Filter test files from testGaps detection
-
-Root cause: pattern-generator.ts detectTestGaps() processes all elements
-without filtering out functions that are themselves from test files.
-
-Fix: Add isTestFile() helper and filter elements before processing,
-similar to Loop 5's context-generator.ts fix.
-"""
-import sys
-from pathlib import Path
-
-def main():
-    # Path to pattern-generator.ts
-    # From: autoresearch/scanner-quality/06-test-gap-precision/apply_iteration_1.py
-    # To: src/pipeline/generators/pattern-generator.ts
-    # Up 4 levels to coderef-core root
-    generator_path = Path(__file__).parent.parent.parent.parent / "src" / "pipeline" / "generators" / "pattern-generator.ts"
-
-    print(f"Modifying {generator_path}", file=sys.stderr)
-
-    # Read the file
-    with open(generator_path, 'r', encoding='utf-8') as f:
-        content = f.read()
-
-    # Find and replace the detectTestGaps method
-    old_code = """  /**
-   * Detect test coverage gaps
-   */
   private detectTestGaps(
     elements: ElementData[],
     files: Map<string, string[]>,

@@ -2,7 +2,9 @@
  * @coderef-semantic: 1.0.0
  * @layer utility
  * @capability utils-fs
+ * @exports normalizeCoderefPath, ensureDir, readLines, writeLines, loadJsonFile, saveJsonFile, collectFiles, collectFiles.isExcluded, collectFiles.walk, getRelativePath
  */
+
 // coderef-core/utils/fs.ts
 
 

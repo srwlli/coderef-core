@@ -4,6 +4,7 @@
  * @layer cli
  * @capability intelligence-data-api
  */
+
 /**
  * coderef-intelligence-server - Read-only HTTP API over .coderef/ artifacts.
  *

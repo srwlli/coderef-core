@@ -12,6 +12,8 @@
  * context for semantic search while optimizing for embedding model performance.
  */
 
+
+
 import type { CodeChunk } from './code-chunk.js';
 
 /**

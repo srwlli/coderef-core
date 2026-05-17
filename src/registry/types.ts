@@ -8,6 +8,8 @@
  * Represents a unique code entity (function, class, component, etc.)
  */
 
+
+
 export interface EntityRecord {
   /** Deterministic UUID5 based on file, name, and line */
   uuid: string;

@@ -10,6 +10,8 @@
  * Thrown when code scanning operations fail
  */
 
+
+
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';
 
 /**

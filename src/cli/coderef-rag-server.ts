@@ -4,6 +4,7 @@
  * @layer cli
  * @capability cli-rag-server
  */
+
 /**
  * coderef-rag-server - Always-on HTTP RAG server for cross-runtime callers.
  *

@@ -11,6 +11,8 @@
  * @module fileGeneration/detectPatterns
  */
 
+
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData, RouteMetadata } from '../types/types.js';

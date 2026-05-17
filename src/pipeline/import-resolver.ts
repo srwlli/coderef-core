@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ExportTable, ExportTableEntry, ImportResolution, ImportResolutionKind, classifyBareSpecifier, resolveAstImports, resolveHeaderImports, resolveImports, resolveModuleSpecifier, resolveTransitiveReExport
+ * @exports ImportResolutionKind, ImportResolution, ExportTableEntry, ExportTable, resolveImports, buildExportTables, resolveAstImports, resolveHeaderImports, classifyBareSpecifier, resolveTransitiveReExport, resolveModuleSpecifier
  * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts
  */
 
@@ -35,6 +35,8 @@
  *     export set.
  *   AC-14: NO call resolution work in Phase 3 (Phase 4 boundary).
  */
+
+
 
 import * as fs from 'fs';
 import * as path from 'path';

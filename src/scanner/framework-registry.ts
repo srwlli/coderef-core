@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports FrameworkDetectionResult, FrameworkDetector, frameworkRegistry
+ * @exports FrameworkDetectionResult, FrameworkDetector
  * @used_by src/plugins/types.ts, src/scanner/register-frameworks.ts, src/scanner/scanner.ts
  */
 
@@ -13,6 +13,8 @@
  * - Registration of framework-specific route detectors
  * - Open/closed principle for adding new frameworks
  */
+
+
 
 import { RouteMetadata } from '../types/types.js';
 

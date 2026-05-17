@@ -4,6 +4,7 @@
  * @layer cli
  * @capability cli-coderef-pipeline
  */
+
 /**
  * coderef-pipeline - Unified CodeRef orchestration CLI.
  *

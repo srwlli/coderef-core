@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability scanner-standalone-test
  */
+
 /**
  * Standalone Scanner Test
  *

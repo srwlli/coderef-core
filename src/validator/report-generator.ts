@@ -9,6 +9,8 @@
  * Generates human-readable markdown reports from validation results
  */
 
+
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { RouteValidation, ValidationIssue } from '../types/types.js';

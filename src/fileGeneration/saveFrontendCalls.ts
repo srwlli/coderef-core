@@ -9,6 +9,8 @@
  * Generates frontend-calls.json by scanning project files for API calls
  */
 
+
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { scanProjectForFrontendCalls } from '../scanner/frontend-scanner.js';

@@ -20,6 +20,8 @@
  * - Subsequent calls return cached parser instantly
  */
 
+
+
 import Parser from 'tree-sitter';
 import {
   GRAMMAR_PACKAGES,

@@ -4,6 +4,7 @@
  * @layer cli
  * @capability cli-coderef-watch
  */
+
 /**
  * coderef-watch - Workspace file-watcher daemon for foundation-docs freshness.
  *

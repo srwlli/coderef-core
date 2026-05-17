@@ -4,6 +4,7 @@
  * @layer cli
  * @capability doc-gen-enhance-existing-docs
  */
+
 /**
  * Enhance existing foundation docs with UUID anchors and live data
  * Workorder: WO-FOUNDATION-DOCS-001 - Phase 3

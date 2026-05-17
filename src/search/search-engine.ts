@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports SearchEngine, SearchIndex, SearchIndexEntry, SearchOptions, SearchResult, SearchStatistics, TagCloudEntry, searchEngine
+ * @exports SearchIndexEntry, SearchResult, SearchOptions, SearchIndex, TagCloudEntry, SearchStatistics, SearchEngine
  * @used_by src/cli/coderef-search.ts
  */
 
@@ -15,6 +15,8 @@
  * - Tag-based filtering
  * - Relevance scoring
  */
+
+
 
 /**
  * Search index entry

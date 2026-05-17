@@ -4,6 +4,7 @@
  * @layer cli
  * @capability doc-gen-hotspots-md
  */
+
 /**
  * Generate HOTSPOTS.md - Complexity & Risk Analysis
  * Workorder: WO-FOUNDATION-DOCS-001

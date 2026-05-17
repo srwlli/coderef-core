@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports MODEL_REGISTRY, ProviderDoesNotSupportEmbeddings, ProviderSpec, getEmbeddingDimensions, getProviderSpec, supportsEmbeddings, validateRegistry
+ * @exports ProviderSpec, getProviderSpec, getEmbeddingDimensions, supportsEmbeddings, ProviderDoesNotSupportEmbeddings, validateRegistry
  * @used_by src/integration/llm/anthropic-provider.ts, src/integration/llm/ollama-provider.ts, src/integration/llm/openai-provider.ts
  */
 
@@ -17,6 +17,8 @@
  * ALL dimension values must come from this registry. No hardcoded
  * dimension literals allowed in provider implementations.
  */
+
+
 
 /**
  * Specification for a single LLM provider's models and capabilities

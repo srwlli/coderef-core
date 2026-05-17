@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ArchitectureAnalysis, ArchitecturePattern, CallGraph, CallGraphEdge, CallGraphNode, ContextGenerator, DependencyRisk, DependencyRiskAnalysis, ExecutiveSummary, ProjectContext, RiskHeatMap, WorkOrderPriority
+ * @exports CallGraphNode, CallGraphEdge, CallGraph, ExecutiveSummary, RiskHeatMap, WorkOrderPriority, DependencyRisk, DependencyRiskAnalysis, ArchitecturePattern, ArchitectureAnalysis, ProjectContext, ContextGenerator, isTestFile, isEntryPoint, isPipelineOrchestrator, isOrchestrator, MAX_DEPTH, dfs
  * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */
 
@@ -12,6 +12,8 @@
  * Produces: .coderef/context.json, context.md
  * Content: Project stats, entry points, critical functions, architecture overview
  */
+
+
 
 import * as fs from 'fs/promises';
 import * as path from 'path';

@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports BatchUpdateResult, CONFIDENCE_THRESHOLDS, ConfidenceLevel, FileModification, FrontendUpdateSuggestion, GitPatch, applyModifications, batchProcessCalls, calculatePathConfidence, exportBatchResults, generateGitPatch, generateModifications, generateUpdateReport, generateUpdateSuggestions, getConfidenceLevel
+ * @exports ConfidenceLevel, FrontendUpdateSuggestion, BatchUpdateResult, GitPatch, FileModification, getConfidenceLevel, calculatePathConfidence, generateUpdateSuggestions, batchProcessCalls, generateModifications, generateGitPatch, applyModifications, generateUpdateReport, exportBatchResults
  */
 
 /**
@@ -17,6 +17,8 @@
  *
  * @module validator/frontend-update-generator
  */
+
+
 
 import type { FrontendCall, MigrationMapping } from '../types/types.js';
 import { applyMappings } from './migration-mapper.js';

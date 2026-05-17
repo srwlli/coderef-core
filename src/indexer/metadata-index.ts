@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports CATEGORY_VALUES, MetadataCategory, MetadataIndex, MetadataIndexEntry, createMetadataIndex
+ * @exports MetadataCategory, MetadataIndexEntry, MetadataIndex, createMetadataIndex
  * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
  */
 
@@ -13,6 +13,8 @@
  *
  * Per specification lines 575-621
  */
+
+
 
 import { ParsedCodeRef } from '../parser/parser.js';
 import { IndexRecord, IndexStorage } from './index-store.js';

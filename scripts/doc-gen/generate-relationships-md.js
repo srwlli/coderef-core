@@ -4,6 +4,7 @@
  * @layer cli
  * @capability doc-gen-relationships-md
  */
+
 /**
  * Generate RELATIONSHIPS.md - Dependency Visualizer
  * Workorder: WO-FOUNDATION-DOCS-001

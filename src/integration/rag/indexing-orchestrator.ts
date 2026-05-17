@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports FailEntry, FailReason, IndexingError, IndexingOptions, IndexingOrchestrator, IndexingProgress, IndexingProgressCallback, IndexingResult, IndexingStatistics, IndexingStatus, SkipEntry, SkipReason, ValidationGateInput, buildGraphFromExportedJson, normalizeChunkFileForGraphJoin
+ * @exports normalizeChunkFileForGraphJoin, buildGraphFromExportedJson, IndexingProgressCallback, IndexingProgress, ValidationGateInput, IndexingOptions, SkipReason, FailReason, SkipEntry, FailEntry, IndexingStatus, IndexingResult, IndexingStatistics, IndexingError, IndexingOrchestrator, reportProgress
  * @used_by src/cli/rag-index.ts, src/integration/rag/__tests__/integration/indexing-pipeline.test.ts, __tests__/integration/rag/indexing-orchestrator-graph-source.test.ts, __tests__/integration/rag/indexing-orchestrator.test.ts, __tests__/pipeline/indexing-gate-invariant.test.ts
  */
 
@@ -15,6 +15,8 @@
  * 4. Vector storage
  * 5. Incremental indexing
  */
+
+
 
 import type {
   DependencyGraph,

@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ALL_RELATIONSHIP_TYPES, GraphNode, RelationshipEdge, RelationshipIndex, RelationshipType, createRelationshipIndex
+ * @exports RelationshipType, RelationshipEdge, GraphNode, RelationshipIndex, walk, hasCycle, createRelationshipIndex
  * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
  */
 
@@ -12,6 +12,8 @@
  *
  * Per specification lines 173-186
  */
+
+
 
 import { ParsedCodeRef } from '../parser/parser.js';
 import { IndexRecord } from './index-store.js';

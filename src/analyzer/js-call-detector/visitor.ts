@@ -9,6 +9,8 @@
  * Recursively traverses AST to find call expressions and context
  */
 
+
+
 import { CallExpression, Parameter, TraversalContext, DetectedElement } from './types.js';
 import { parseCallExpression, parseNewExpression, extractParameters } from './parser.js';
 

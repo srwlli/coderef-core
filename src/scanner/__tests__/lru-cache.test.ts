@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability scanner-lru-cache-test
  */
+
 /**
  * LRU Cache Tests - Phase 3: Memory-Capped Caching
  *

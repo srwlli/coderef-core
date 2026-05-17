@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports HeaderFact, HeaderImportFact, HeaderParseError, HeaderStatus, LayerEnum
+ * @exports HeaderImportFact, HeaderParseError, HeaderFact
  * @used_by src/pipeline/extractors/relationship-extractor.ts, src/pipeline/semantic-header-parser.ts, src/pipeline/types.ts, src/semantic/projections.ts, src/types/types.ts, __tests__/pipeline/header-import-facts-cardinality.test.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
  */
 
@@ -46,17 +46,6 @@ export interface HeaderImportFact {
  * `partial` when present.
  */
 export interface HeaderParseError {
-  /**
-   * Tag the error pertains to. Examples:
-   *   - `'@layer'` for unknown layer values
-   *   - `'@capability'` for non-kebab-case strings
-   *   - `'@constraint'` for malformed JSON or non-kebab items
-   *   - `'@generated'` for non-ISO-8601 timestamps
-   *   - `'@imports'` for malformed `module:symbol` literals
-   *   - `'@coderef-semantic'` for missing or wrong-version markers
-   *   - `'header'` for structural issues (e.g. block detected but no
-   *     parsable content)
-   */
   tag: string;
   /** Short human-readable explanation. Stable enough for dashboards. */
   message: string;

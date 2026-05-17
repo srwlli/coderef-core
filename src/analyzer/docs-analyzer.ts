@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ApiDocsAnalysis, ChangelogAnalysis, CommentDensity, DocumentationQuality, JSDocCoverage, ReadmeAnalysis, ReadmeSection, analyzeDocs
+ * @exports ReadmeSection, ReadmeAnalysis, JSDocCoverage, ChangelogAnalysis, CommentDensity, ApiDocsAnalysis, DocumentationQuality, DocsAnalyzer, analyzeDocs
  * @used_by src/cli/coderef-analyze.ts, src/pipeline/generators/context-generator.ts
  */
 
@@ -16,6 +16,8 @@
  * - API documentation completeness
  * - Code comment density
  */
+
+
 
 import * as fs from 'fs/promises';
 import * as path from 'path';

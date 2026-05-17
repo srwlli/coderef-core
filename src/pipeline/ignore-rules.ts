@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports DEFAULT_PIPELINE_IGNORE_PATTERNS, loadIgnorePatterns, shouldIgnorePath
+ * @exports loadIgnorePatterns, shouldIgnorePath
  * @used_by src/cli/detect-languages.ts, src/pipeline/orchestrator.ts
  */
 

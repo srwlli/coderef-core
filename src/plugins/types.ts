@@ -12,6 +12,8 @@
  * custom pattern definitions, and domain-specific analysis without modifying core code.
  */
 
+
+
 import { FrameworkDetectionResult } from '../scanner/framework-registry.js';
 import { CodeElement } from '../types/types.js';
 

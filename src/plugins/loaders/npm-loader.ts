@@ -11,6 +11,8 @@
  * Discovers and loads plugins from @coderef/* npm packages in node_modules.
  */
 
+
+
 import * as fs from 'fs';
 import * as path from 'path';
 import { Plugin, PluginManifest, CodeDetector, GraphHook } from '../types.js';

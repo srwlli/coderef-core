@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports EnrichedElementData, GrammarLoader, TreeSitterScanner
+ * @exports EnrichedElementData, TreeSitterScanner, traverse
  * @used_by src/scanner/scanner-worker.ts, src/scanner/scanner.ts
  */
 
@@ -23,6 +23,8 @@
  * - Grammar loading overhead: ~50-100ms per language (one-time cost)
  * - Parse overhead: ~10-20ms per file (vs ~5ms for regex)
  */
+
+
 
 import * as fs from 'fs';
 import * as path from 'path';

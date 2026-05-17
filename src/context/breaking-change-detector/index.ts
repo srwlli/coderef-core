@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports BlastRadius, BreakingChangeDetector, BreakingChangeReport, ContextualFactor, ImpactedCallSite, MigrationHint, ParameterDiff, SignatureChange, adjustForContextualFactors, analyzeDifference, calculateConfidence, calculateReportConfidence, calculateSeverity, compareParameters, compareSignatures, extractCallContext, extractSignaturesFromRef, extractSignaturesFromWorktree, findImpactedCallSites, generateMigrationHints, getChangedElements, isBreakingChange, isCompatibleCall, scoreCallType, suggestAdapterPattern, suggestDefaultParamPattern, suggestOptionsObjectPattern, suggestRenamePattern, suggestWrapPattern
+ * @exports BreakingChangeDetector
  */
 
 /**
@@ -15,6 +15,8 @@
  * - diff-analyzer.ts: AST diff detection and call site analysis
  * - hint-generator.ts: Migration hint generation
  */
+
+
 
 // Re-export all types
 export type {

@@ -14,6 +14,8 @@
  * - Graceful error handling for invalid syntax
  */
 
+
+
 import { parse, Options, Node } from 'acorn';
 import * as fs from 'fs';
 

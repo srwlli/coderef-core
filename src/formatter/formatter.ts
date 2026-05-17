@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports CodeRefFormatter, formatCodeRef, formatCodeRefs, formatter
+ * @exports CodeRefFormatter, formatCodeRef, formatCodeRefs
  * @used_by __tests__/integration.test.ts
  */
 
@@ -17,6 +17,8 @@
  * - Boolean values lowercase (true, false)
  * - Consistent quoting in metadata strings
  */
+
+
 
 import { ParsedCodeRef } from '../parser/parser.js';
 

@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer utility
+ * @capability stale-exports-test
+ */
+
+/**
  * Phase 6 — output-validation-strict-headers behavioral test (AC-06).
  *
  * Exercises the --strict-headers CLI flag end-to-end via subprocess. Uses a

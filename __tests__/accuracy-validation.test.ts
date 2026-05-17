@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability accuracy-validation-test
  */
+
 /**
  * Accuracy Validation Tests
  * WO-SCANNER-ACCURACY-IMPROVEMENTS-001: TEST-002

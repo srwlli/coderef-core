@@ -9,6 +9,8 @@
  * P1-T5: Implements VectorStore interface using Pinecone cloud service
  */
 
+
+
 import { Pinecone } from '@pinecone-database/pinecone';
 import type {
   VectorStore,

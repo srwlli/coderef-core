@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports CallEdge, CallExpression, CallPatternAnalysis, DetectedElement, JSCallDetector, ModuleExport, ModuleImport, Parameter, TraversalContext, analyzeCallPatterns, buildCallEdges, extractElementsFromAST, extractExportsFromAST, extractImportsFromAST, extractObjectName, extractParameter, extractParameters, extractParametersFromAST, isNestedCall, parseCallExpression, parseNewExpression, visitNode
+ * @exports JSCallDetector
  */
 
 /**
@@ -15,6 +15,8 @@
  * - module-analyzer.ts: Import/export extraction
  * - analyzer.ts: Call graph building and pattern analysis
  */
+
+
 
 // Re-export all types
 export type {

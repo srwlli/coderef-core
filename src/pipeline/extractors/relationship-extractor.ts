@@ -2,6 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability pipeline-relationship-extractor
+ * @exports RelationshipExtractor
+ * @used_by src/pipeline/orchestrator.ts
  */
 
 /**
@@ -26,6 +28,8 @@
  * - Every RawCallFact has a populated scopePath (may be empty array at
  *   module top level).
  */
+
+
 
 import type Parser from 'tree-sitter';
 import type {

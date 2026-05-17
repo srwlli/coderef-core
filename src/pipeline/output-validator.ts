@@ -1,6 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports VALID_EDGE_RELATIONSHIPS, VALID_EDGE_RESOLUTION_STATUSES, ValidatePipelineStateOptions, ValidationError, ValidationReport, ValidationResult, ValidationWarning, buildFileHeaderStatusMap, validatePipelineState
+ * @layer in
+ * @exports ValidationError, ValidationWarning, ValidationReport, ValidationResult, ValidatePipelineStateOptions, validatePipelineState, buildFileHeaderStatusMap
  * @used_by src/cli/populate.ts, src/pipeline/types.ts, __tests__/pipeline/output-validation-determinism.test.ts, __tests__/pipeline/output-validation-graph-integrity.test.ts, __tests__/pipeline/output-validation-semantic-headers.test.ts
  */
 
@@ -57,6 +58,8 @@
  * 2 header_*_mismatch_count fields are FILE-grain — built via
  * Map<file, HeaderStatus> taking the canonical status per file.
  */
+
+
 
 import type { PipelineState } from './types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';

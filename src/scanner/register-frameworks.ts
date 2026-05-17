@@ -12,6 +12,8 @@
  * with the global framework registry.
  */
 
+
+
 import { frameworkRegistry } from './framework-registry.js';
 import {
   nextjsDetector,

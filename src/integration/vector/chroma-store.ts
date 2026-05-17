@@ -9,6 +9,8 @@
  * P1-T6: Implements VectorStore interface using Chroma (self-hosted option)
  */
 
+
+
 import { ChromaClient, Collection } from 'chromadb';
 import type {
   VectorStore,

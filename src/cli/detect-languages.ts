@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports SUPPORTED_CLI_LANGUAGES, SupportedCliLanguage, detectProjectLanguages, formatSupportedLanguages, validateCliLanguages
+ * @exports SupportedCliLanguage, formatSupportedLanguages, validateCliLanguages, detectProjectLanguages
  * @used_by src/cli/detect-languages-cli.ts, src/cli/populate.ts, src/cli/rag-index.ts
  */
 

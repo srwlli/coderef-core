@@ -180,7 +180,10 @@ export function myFunc() {}`;
       await generateHeaders(file, exports, []);
 
       const content = fs.readFileSync(file, 'utf-8');
-      expect(content).toContain('/* License */\r\n\r\n/**');
+      // Coderef header is inserted first so detectHeaderBlock() finds it.
+      // The original /* License */ comment follows below.
+      expect(content).toMatch(/^\/\*\*\r?\n \* @coderef-semantic/);
+      expect(content).toContain('/* License */');
       expect(content).not.toContain('*//**');
     });
 

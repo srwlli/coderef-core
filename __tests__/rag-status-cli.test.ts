@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability rag-status-cli-test
  */
+
 import { describe, expect, it } from 'vitest';
 
 // ─── Utility functions extracted for unit testing ──────────────────────────

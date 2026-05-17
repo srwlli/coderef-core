@@ -10,6 +10,8 @@
  * Thrown when index file operations fail
  */
 
+
+
 import { CodeRefError, CodeRefErrorOptions } from './CodeRefError.js';
 
 /**

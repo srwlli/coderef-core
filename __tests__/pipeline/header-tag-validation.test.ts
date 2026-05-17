@@ -1,3 +1,9 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer utility
+ * @capability kebab-case
+ */
+
 import { describe, expect, it } from 'vitest';
 import { parseHeader } from '../../src/pipeline/semantic-header-parser.js';
 

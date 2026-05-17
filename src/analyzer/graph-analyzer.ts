@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports CircularDependency, GraphAnalyzer, TraversalPath
+ * @exports TraversalPath, CircularDependency, GraphAnalyzer, dfs
  * @used_by src/analyzer/analyzer-service.ts, src/context/multi-hop-traversal.ts
  */
 
@@ -16,6 +16,8 @@
  * - traverse(startNode, depth) - Multi-hop traversal
  * - detectCircularDependencies() - Find cycles in graph
  */
+
+
 
 import { DependencyGraph, GraphNode, GraphEdge } from './graph-builder.js';
 

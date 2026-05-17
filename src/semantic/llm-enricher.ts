@@ -11,6 +11,8 @@
  * for offline operation and rate limit resilience.
  */
 
+
+
 import type { ElementData } from '../types/types.js';
 
 export interface EnrichmentRequest {

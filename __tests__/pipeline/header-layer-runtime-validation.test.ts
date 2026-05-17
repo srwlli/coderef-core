@@ -1,3 +1,9 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer values
+ * @capability foo
+ */
+
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';

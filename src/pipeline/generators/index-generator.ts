@@ -14,6 +14,8 @@
  * Schema: Backward-compatible with existing index.json, additive-only changes
  */
 
+
+
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import { writeIndexVariants } from '../../fileGeneration/index-storage.js';

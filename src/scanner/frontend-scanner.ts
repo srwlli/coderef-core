@@ -9,6 +9,8 @@
  * Scans files for frontend API calls and attaches metadata to elements
  */
 
+
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls } from '../analyzer/frontend-call-parsers.js';

@@ -4,6 +4,7 @@
  * @layer cli
  * @capability doc-gen-generate-intelligence
  */
+
 /**
  * generate-intelligence.js
  * Computes 5 visualization datasets from .coderef artifacts.

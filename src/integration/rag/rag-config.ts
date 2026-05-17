@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ConfigError, DEFAULT_CONFIG, ENV_VARS, LLMProviderName, RAGConfig, RAGConfigLoader, isLocalOnly
+ * @exports LLMProviderName, RAGConfig, ConfigError, isLocalOnly, RAGConfigLoader
  */
 
 /**
@@ -12,6 +12,8 @@
  * - Vector stores (Pinecone, Chroma)
  * - RAG behavior settings
  */
+
+
 
 import type { LLMProviderConfig } from '../llm/llm-provider.js';
 import type { VectorStoreConfig } from '../vector/vector-store.js';

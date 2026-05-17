@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability pipeline-output-validation-semantic-headers-test
  */
+
 /**
  * Phase 6 — output-validation-semantic-headers integration test (AC-03).
  *

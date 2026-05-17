@@ -12,6 +12,8 @@
  * Targets < 100ms query performance
  */
 
+
+
 import { ParsedCodeRef } from '../parser/parser.js';
 import { IndexStore } from './index-store.js';
 import { MetadataIndex, MetadataCategory } from './metadata-index.js';

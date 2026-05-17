@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ElementExtractor
+ * @exports ElementExtractor, traverse
  * @used_by src/pipeline/orchestrator.ts
  */
 
@@ -21,6 +21,8 @@
  * const elements = extractor.extract(tree.rootNode, filePath, content, 'ts');
  * ```
  */
+
+
 
 import type Parser from 'tree-sitter';
 import type { ElementData } from '../../types/types.js';

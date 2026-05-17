@@ -4,6 +4,7 @@
  * @layer cli
  * @capability doc-gen-meta-json
  */
+
 /**
  * generate-meta-json.js - emit .coderef/foundation-docs-meta.json
  *

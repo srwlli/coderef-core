@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports CallResolution, EdgeEvidence, EdgeRelationship, EdgeResolutionStatus, ElementData, GraphEdgeV2, ImportResolution, buildEdges, buildNodes, computeEdgeId, constructGraph, fileGrainNodeId, isHeaderDerived
+ * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived
  * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
  */
 
@@ -52,6 +52,8 @@
  *   DR-PHASE-5-D: deterministic sha1 hash for edge ids (16 hex chars
  *                 over sourceId+relationship+target+location).
  */
+
+
 
 import * as crypto from 'crypto';
 import type { PipelineState, CallResolution, ImportResolution } from './types.js';

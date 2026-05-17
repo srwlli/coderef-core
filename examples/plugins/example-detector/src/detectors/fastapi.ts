@@ -3,6 +3,7 @@
  * @layer cli
  * @capability plugin-fastapi-detector
  */
+
 /**
  * FastAPI Route Detector
  * Example plugin detector for CodeRef

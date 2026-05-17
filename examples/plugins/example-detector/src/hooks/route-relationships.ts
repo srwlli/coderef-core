@@ -3,6 +3,7 @@
  * @layer cli
  * @capability plugin-route-relationships-hook
  */
+
 /**
  * Route Relationships Hook
  * Example plugin hook for CodeRef

@@ -220,6 +220,8 @@ describe('populate-coderef CLI', () => {
     expect(providerContent).toMatch(/@exports\s+one[,\s]+two|@exports\s+two[,\s]+one/);
     expect(providerContent).toContain('@used_by src/consumer.ts');
     expect(providerContent).not.toContain('*//**');
-    expect(providerContent).toContain('*/\r\n\r\n/**');
+    // Coderef header is inserted first; the original /* License header */ follows below.
+    expect(providerContent).toMatch(/^\/\*\*\r?\n \* @coderef-semantic/);
+    expect(providerContent).toContain('/* License header */');
   });
 });

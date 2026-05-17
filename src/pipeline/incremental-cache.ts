@@ -12,6 +12,8 @@
  * Reduces scan time for large projects by only processing modified files.
  */
 
+
+
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { createHash } from 'crypto';

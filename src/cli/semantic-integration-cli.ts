@@ -4,6 +4,7 @@
  * @layer cli
  * @capability cli-semantic-integration
  */
+
 import { parseArgs } from 'node:util';
 import { runSemanticIntegration, validateIdempotency } from './semantic-integration.js';
 

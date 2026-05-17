@@ -16,6 +16,8 @@
  * Provides unified indexing pipeline and public API
  */
 
+
+
 import { ParsedCodeRef } from '../parser/parser.js';
 import { IndexStore, IndexRecord, IndexStats } from './index-store.js';
 import { MetadataIndex, MetadataCategory } from './metadata-index.js';

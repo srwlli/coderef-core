@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability indexer-integration-test
  */
+
 /**
  * CodeRef2 Indexer Integration Tests
  *

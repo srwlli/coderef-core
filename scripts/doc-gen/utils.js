@@ -3,6 +3,7 @@
  * @layer cli
  * @capability doc-gen-utils
  */
+
 /**
  * Shared utilities for .coderef doc generation scripts
  * Workorder: WO-FOUNDATION-DOCS-001

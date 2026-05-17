@@ -125,16 +125,16 @@ export class HeaderGenerator {
     const layer = elements.map(e => e.layer).find(l => l != null);
     const capability = elements.map(e => e.capability).find(c => c != null);
 
-    if (exports.length > 0) {
-      headers.push({
-        file,
-        line: 1,
-        type: 'exports',
-        content: [`[${exports.join(', ')}]`],
-        layer,
-        capability,
-      });
-    }
+    // Always emit at least one header entry so files with no exports still get a
+    // @coderef-semantic block (enabling @layer/@capability and defined headerStatus).
+    headers.push({
+      file,
+      line: 1,
+      type: 'exports',
+      content: exports.length > 0 ? [`[${exports.join(', ')}]`] : [],
+      layer,
+      capability,
+    });
 
     if (usedBy.length > 0) {
       headers.push({
@@ -181,6 +181,7 @@ export class HeaderGenerator {
       if (meta?.layer) comments.push(` * @layer ${meta.layer}`);
       if (meta?.capability) comments.push(` * @capability ${meta.capability}`);
       for (const header of headers) {
+        if (header.content.length === 0) continue; // sentinel with no content — skip the @type line
         const value = header.content.join(', ').replace(/^\[|\]$/g, '');
         comments.push(` * @${header.type} ${value}`);
       }
@@ -222,29 +223,18 @@ export class HeaderGenerator {
       const comments = this.formatAsComments(headers);
       const headerBlock = comments.join('\n');
 
-      // Insert after shebang and after any leading non-semantic block comment
-      // (e.g. license headers), so semantic block follows existing file preamble.
+      // Insert at file top (after shebang only). The coderef header must be the
+      // first /** block so detectHeaderBlock() in the parser can find it.
+      // Any existing JSDoc (license headers, module docs) stays in place below.
       let insertPoint = 0;
       if (content.startsWith('#!/')) {
         insertPoint = content.indexOf('\n') + 1;
-      }
-      // Skip a leading non-semantic block comment (/* ... */ or /** ... */) to
-      // insert the semantic block after it, preserving license headers at top.
-      const leadingBlockComment = /^(\/\*(?!\*)[\s\S]*?\*\/|\/\*\*(?![\s\S]*?@coderef-semantic)[\s\S]*?\*\/)/.exec(
-        content.slice(insertPoint)
-      );
-      if (leadingBlockComment) {
-        insertPoint += leadingBlockComment[0].length;
-        // Consume trailing newline so we place the blank line cleanly after the comment
-        if (content.slice(insertPoint, insertPoint + 2) === '\r\n') insertPoint += 2;
-        else if (content[insertPoint] === '\n') insertPoint += 1;
       }
 
       const lineEnding = content.includes('\r\n') ? '\r\n' : '\n';
       const prefix = content.slice(0, insertPoint);
       const suffix = content.slice(insertPoint);
-      const separator = leadingBlockComment ? lineEnding : '';
-      const newContent = prefix + separator + headerBlock.replace(/\n/g, lineEnding) + lineEnding + lineEnding + suffix;
+      const newContent = prefix + headerBlock.replace(/\n/g, lineEnding) + lineEnding + lineEnding + suffix;
       fs.writeFileSync(filePath, newContent, 'utf-8');
     } catch (error) {
       console.error(`Error inserting headers into ${filePath}:`, error instanceof Error ? error.message : error);
@@ -328,8 +318,10 @@ export class HeaderGenerator {
   }
 
   private hasSemanticHeader(content: string): boolean {
-    return /\/\*\*[\s\S]*?@coderef-semantic\s*:[\s\S]*?\*\//.test(content)
-      || /^\/\/\s*@coderef-semantic\s*:/m.test(content);
+    // Match the canonical form we write: `@coderef-semantic: ` (space before version).
+    // Test files may contain `@coderef-semantic:1.0.0` (no space) as string literals — excluded.
+    return /^\s*\*\s*@coderef-semantic:\s+\d/m.test(content)
+      || /^\/\/\s*@coderef-semantic:\s+\d/m.test(content);
   }
 
   private extractLayerCapability(content: string): { layer?: string; capability?: string } {

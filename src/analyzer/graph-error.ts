@@ -9,6 +9,8 @@
  * Used for validation and error handling in graph loading/saving
  */
 
+
+
 export class GraphError extends Error {
   constructor(
     message: string,

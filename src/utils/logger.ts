@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports LogLevel, logger
+ * @exports LogLevel
  * @used_by src/integration/rag/conversation-manager.ts
  */
 
@@ -10,6 +10,8 @@
  *
  * Provides structured logging with severity levels and configurable verbosity
  */
+
+
 
 /**
  * Log severity levels

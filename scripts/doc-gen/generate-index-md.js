@@ -4,6 +4,7 @@
  * @layer cli
  * @capability doc-gen-index-md
  */
+
 /**
  * Generate INDEX.md - Master Element Registry
  * Workorder: WO-FOUNDATION-DOCS-001

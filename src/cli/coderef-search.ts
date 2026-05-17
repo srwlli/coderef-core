@@ -4,6 +4,7 @@
  * @layer cli
  * @capability cli-coderef-search
  */
+
 import { parseArgs } from 'node:util';
 import { readFile } from 'node:fs/promises';
 import { resolve, join } from 'node:path';

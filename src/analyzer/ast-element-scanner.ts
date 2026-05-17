@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ASTScanResult, scanFileWithAST, scanFilesWithAST
+ * @exports ASTScanResult, ASTElementScanner, visit, scanFileWithAST, scanFilesWithAST
  * @used_by src/scanner/scanner-worker.ts, src/scanner/scanner.ts
  */
 
@@ -19,6 +19,8 @@
  * - Method definitions: class { method() {} }
  * - Export status for all elements
  */
+
+
 
 import * as fs from 'fs';
 import * as ts from 'typescript';

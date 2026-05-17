@@ -1,5 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
+ * @layer const
+ * @capability const
  * @exports ParseHeaderResult, parseHeader
  * @used_by src/pipeline/extractors/relationship-extractor.ts, __tests__/pipeline/header-layer-runtime-validation.test.ts, __tests__/pipeline/header-tag-validation.test.ts
  */
@@ -51,16 +53,6 @@ const ISO_8601_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/;
 const IDENTIFIER_RE = /^[A-Za-z_][A-Za-z0-9_]*$/;
 const KEBAB_CASE_RE = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/;
 
-/**
- * Detect the leading semantic-header block. Accepts:
- *   - A `/** ... *\/` block comment that contains `@coderef-semantic:`.
- *   - A leading run of `// ...` line comments containing `@coderef-semantic:`.
- *   - A Python `""" ... """` docstring containing `@coderef-semantic:`.
- *
- * Returns the block text (without comment delimiters) plus the absolute
- * line number on which the block began (1-indexed). Returns `null` when
- * no semantic-marker block is present in the file's leading comment span.
- */
 function detectHeaderBlock(
   sourceText: string,
 ): { body: string; startLine: number } | null {

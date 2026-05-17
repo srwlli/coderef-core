@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports DesignPatternDetector, DesignPatternInstance, DesignPatternType, PatternAnalysis, analyzeDesignPatterns
+ * @exports DesignPatternType, DesignPatternInstance, PatternAnalysis, DesignPatternDetector, traverse, analyzeDesignPatterns
  * @used_by src/cli/coderef-analyze.ts
  */
 
@@ -14,6 +14,8 @@
  * - Strategy: Strategy interface, context with interchangeable algorithms
  * - Decorator: Component interface, concrete decorator wrapping
  */
+
+
 
 import * as fs from 'fs';
 import * as path from 'path';

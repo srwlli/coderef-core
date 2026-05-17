@@ -12,6 +12,8 @@
  * Enables real-time code indexing for IDE integration.
  */
 
+
+
 import chokidar from 'chokidar';
 import * as path from 'path';
 import { IncrementalCache } from '../cache/incremental-cache.js';

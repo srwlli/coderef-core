@@ -17,6 +17,8 @@
  * - Middleware pattern mapping for framework migrations
  */
 
+
+
 import type { ElementData } from '../types/types.js';
 
 /**

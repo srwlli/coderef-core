@@ -4,6 +4,7 @@
  * @layer cli
  * @capability doc-gen-validate-docs
  */
+
 /**
  * Validate foundation docs against .coderef data
  * CI Gate Script - Workorder: WO-FOUNDATION-DOCS-001

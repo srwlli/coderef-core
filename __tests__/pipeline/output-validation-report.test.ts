@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability pipeline-output-validation-report-test
  */
+
 /**
  * Phase 6 — output-validation-report integration test (AC-04, AC-05, AC-08).
  *

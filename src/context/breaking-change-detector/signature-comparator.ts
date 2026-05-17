@@ -9,6 +9,8 @@
  * Compares function signatures and detects incompatibilities
  */
 
+
+
 import { SignatureChange, ParameterDiff } from './types.js';
 
 /**

@@ -1,16 +1,8 @@
 /**
  * @coderef-semantic: 1.0.0
- * */
-
-// coderef-core/scanner.ts
-
-
-
-import * as fs from 'fs';
-import * as path from 'path';
-/**
- * Pattern configurations by language
+ * @exports scanCurrentElements, isLineCommented
  */
+
 export const LANGUAGE_PATTERNS = {
     // TypeScript/JavaScript patterns
     ts: [

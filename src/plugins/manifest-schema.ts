@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ExampleManifest, MANIFEST_FILENAME, ManifestSchema, getManifestPath, parseManifest, validateManifest
+ * @exports validateManifest, parseManifest, MANIFEST_FILENAME, getManifestPath
  * @used_by src/plugins/loaders/config-loader.ts, src/plugins/loaders/local-loader.ts, src/plugins/loaders/npm-loader.ts
  */
 
@@ -11,6 +11,8 @@
  * JSON Schema and validation for coderef-plugin.json manifest files.
  * Plugins must include this file in their root directory.
  */
+
+
 
 import { PluginManifest, DetectorDefinition, HookDefinition } from './types.js';
 

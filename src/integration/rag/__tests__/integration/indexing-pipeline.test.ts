@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability rag-indexing-pipeline-test
  */
+
 /**
  * Integration tests for full indexing pipeline
  * Tests the complete flow from graph analysis to vector storage

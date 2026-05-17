@@ -3,6 +3,7 @@
  * @layer test_support
  * @capability pipeline-output-validation-chokepoint-test
  */
+
 /**
  * Phase 6 — output-validation-chokepoint INVARIANT (R-PHASE-6-A).
  *

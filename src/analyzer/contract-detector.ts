@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports ContractAnalysis, ContractDetector, GraphqlOperation, GraphqlSchema, GraphqlType, JsonSchema, OpenApiComponent, OpenApiPath, OpenApiSpec, ProtobufDefinition, ProtobufEnum, ProtobufField, ProtobufMessage, ProtobufMethod, ProtobufService, analyzeContracts
+ * @exports OpenApiSpec, OpenApiPath, OpenApiComponent, GraphqlSchema, GraphqlType, GraphqlOperation, ProtobufDefinition, ProtobufMessage, ProtobufField, ProtobufService, ProtobufMethod, ProtobufEnum, JsonSchema, ContractAnalysis, ContractDetector, traverse, analyzeContracts
  * @used_by src/cli/coderef-analyze.ts
  */
 
@@ -14,6 +14,8 @@
  * - gRPC service definitions
  * - JSON Schema files
  */
+
+
 
 import * as fs from 'fs';
 import * as path from 'path';

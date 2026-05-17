@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @exports DatabaseAnalysis, DatabaseDetection, DatabaseDetector, MongooseField, MongooseSchema, PrismaField, PrismaModel, PrismaRelation, PrismaSchema, SequelizeAssociation, SequelizeColumn, SequelizeModel, TypeormColumn, TypeormEntity, TypeormRelation, analyzeDatabase
+ * @exports PrismaModel, PrismaField, PrismaRelation, PrismaSchema, TypeormEntity, TypeormColumn, TypeormRelation, SequelizeModel, SequelizeColumn, SequelizeAssociation, MongooseSchema, MongooseField, DatabaseAnalysis, DatabaseDetection, DatabaseDetector, traverse, analyzeDatabase
  * @used_by src/cli/coderef-analyze.ts
  */
 
@@ -14,6 +14,8 @@
  * - Mongoose schemas
  * - Database configurations
  */
+
+
 
 import * as fs from 'fs';
 import * as path from 'path';
