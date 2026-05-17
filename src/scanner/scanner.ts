@@ -33,6 +33,7 @@ import {
 import { parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiCalls } from '../analyzer/frontend-call-parsers.js';
 import { frameworkRegistry, type FrameworkDetectionResult } from './framework-registry.js';
 import './register-frameworks.js'; // Auto-register default frameworks
+import logger from '../utils/logger.js';
 
 /**
  * Pattern configuration with optional route metadata extraction
@@ -782,7 +783,7 @@ async function scanFilesInParallel(
   } catch (error) {
     // If parallel processing fails, return empty array
     // Caller will fall back to sequential mode
-    console.error('Parallel processing failed:', error);
+    logger.error('Parallel processing failed:', error);
     return [];
   }
 }
@@ -817,14 +818,14 @@ async function collectFiles(
         // Check if directory should be excluded
         if (shouldExcludePath(fullPath, exclude)) {
           if (verbose) {
-            console.log(`Excluding directory: ${fullPath}`);
+            logger.debug(`Excluding directory: ${fullPath}`);
           }
           continue;
         }
 
         if (recursive) {
           if (verbose) {
-            console.log(`Recursively collecting from directory: ${fullPath}`);
+            logger.debug(`Recursively collecting from directory: ${fullPath}`);
           }
           // Recursively collect files from subdirectory
           const subFiles = await collectFiles(fullPath, allLangs, exclude, recursive, verbose);
@@ -856,20 +857,20 @@ async function collectFiles(
         // Check if file should be excluded
         if (shouldExcludePath(normalizedPath, exclude)) {
           if (verbose) {
-            console.log(`Excluding file: ${normalizedPath}`);
+            logger.debug(`Excluding file: ${normalizedPath}`);
           }
           continue;
         }
 
         files.push(normalizedPath);
         if (verbose) {
-          console.log(`Including file: ${normalizedPath} (mapped to language: ${currentLang})`);
+          logger.debug(`Including file: ${normalizedPath} (mapped to language: ${currentLang})`);
         }
       }
     }
   } catch (error) {
     if (verbose) {
-      console.error(`Error collecting files from ${dir}:`, error);
+      logger.error(`Error collecting files from ${dir}:`, error);
     }
   }
 
@@ -913,7 +914,7 @@ export async function scanCurrentElements(
   const allLangs = [...new Set([...langs, ...optionLangs])];
   
   if (verbose) {
-    console.log('Scanner config:', {
+    logger.debug('Scanner config:', {
       dir,
       langs: allLangs,
       include,
@@ -926,13 +927,13 @@ export async function scanCurrentElements(
   const resolvedDir = path.resolve(dir);
   
   if (verbose) {
-    console.log(`Resolved directory: ${resolvedDir}`);
+    logger.debug(`Resolved directory: ${resolvedDir}`);
   }
   
   // Validate languages
   for (const currentLang of allLangs) {
     if (!LANGUAGE_PATTERNS[currentLang] && !DEFAULT_SUPPORTED_LANGS.includes(currentLang)) {
-      console.warn(`Warning: Language '${currentLang}' is not officially supported. Using generic patterns.`);
+      logger.warn(`Warning: Language '${currentLang}' is not officially supported. Using generic patterns.`);
       LANGUAGE_PATTERNS[currentLang] = [
         { type: 'function', pattern: /function\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 },
         { type: 'class', pattern: /class\s+([a-zA-Z0-9_$]+)/g, nameGroup: 1 }
@@ -955,13 +956,13 @@ export async function scanCurrentElements(
   try {
     // IMP-CORE-076: Collect all files from the full subtree first
     if (verbose) {
-      console.log(`Collecting files from: ${resolvedDir} (recursive=${recursive})`);
+      logger.debug(`Collecting files from: ${resolvedDir} (recursive=${recursive})`);
     }
     
     const files = await collectFiles(resolvedDir, allLangs, exclude, recursive, verbose);
     
     if (verbose) {
-      console.log(`Found ${files.length} files to process:`, files);
+      logger.debug(`Found ${files.length} files to process:`, files);
     }
 
     // IMP-CORE-076: Incremental scanning with IncrementalCache - now runs on full recursive file set
@@ -975,14 +976,14 @@ export async function scanCurrentElements(
       filesSkipped = cacheCheck.filesUnchanged.length;
       
       if (verbose) {
-        console.log(`[IncrementalCache] ${filesToScan.length} files to scan, ${filesSkipped} files skipped (hit ratio: ${(cacheCheck.hitRatio * 100).toFixed(1)}%)`);
+        logger.debug(`[IncrementalCache] ${filesToScan.length} files to scan, ${filesSkipped} files skipped (hit ratio: ${(cacheCheck.hitRatio * 100).toFixed(1)}%)`);
       }
       
       // Remove deleted files from cache
       if (cacheCheck.filesDeleted.length > 0) {
         cache.removeDeletedFiles(cacheCheck.filesDeleted);
         if (verbose) {
-          console.log(`[IncrementalCache] Removed ${cacheCheck.filesDeleted.length} deleted files from cache`);
+          logger.debug(`[IncrementalCache] Removed ${cacheCheck.filesDeleted.length} deleted files from cache`);
         }
       }
       
@@ -994,7 +995,7 @@ export async function scanCurrentElements(
             scanner.addElement(element);
           }
           if (verbose) {
-            console.log(`[IncrementalCache] Loaded ${cached.elements.length} cached elements from SCAN_CACHE for: ${unchangedFile}`);
+            logger.debug(`[IncrementalCache] Loaded ${cached.elements.length} cached elements from SCAN_CACHE for: ${unchangedFile}`);
           }
         }
       }
@@ -1007,7 +1008,7 @@ export async function scanCurrentElements(
       const currentLang = allLangs[0];
 
       if (verbose) {
-        console.log(`Attempting parallel processing for ${filesToScan.length} ${currentLang} files`);
+        logger.debug(`Attempting parallel processing for ${filesToScan.length} ${currentLang} files`);
       }
 
       try {
@@ -1016,7 +1017,7 @@ export async function scanCurrentElements(
         if (parallelElements.length > 0) {
           // Parallel processing succeeded
           if (verbose) {
-            console.log(`Parallel processing completed: ${parallelElements.length} elements found`);
+            logger.debug(`Parallel processing completed: ${parallelElements.length} elements found`);
           }
 
           // Add all elements from parallel scan
@@ -1043,11 +1044,11 @@ export async function scanCurrentElements(
           // IMP-CORE-077: Set flag to skip sequential loop, but continue to shared cleanup
           parallelSucceeded = true;
         } else if (verbose) {
-          console.log('Parallel processing returned no results, falling back to sequential mode');
+          logger.debug('Parallel processing returned no results, falling back to sequential mode');
         }
       } catch (error) {
         if (verbose) {
-          console.log('Parallel processing failed, falling back to sequential mode:', error);
+          logger.debug('Parallel processing failed, falling back to sequential mode:', error);
         }
         // Fall through to sequential processing
       }
@@ -1071,7 +1072,7 @@ export async function scanCurrentElements(
           if (cached && cached.mtime === currentMtime) {
             // File hasn't changed, use cached results
             if (verbose) {
-              console.log(`Using cached results for: ${file}`);
+              logger.debug(`Using cached results for: ${file}`);
             }
             for (const element of cached.elements) {
               scanner.addElement(element);
@@ -1095,9 +1096,9 @@ export async function scanCurrentElements(
 
           // File is new or has been modified, scan it
           if (verbose && cached) {
-            console.log(`Cache miss (file modified): ${file}`);
+            logger.debug(`Cache miss (file modified): ${file}`);
           } else if (verbose) {
-            console.log(`Cache miss (new file): ${file}`);
+            logger.debug(`Cache miss (new file): ${file}`);
           }
 
           const content = fs.readFileSync(file, 'utf-8');
@@ -1109,7 +1110,7 @@ export async function scanCurrentElements(
           }
 
           if (verbose) {
-            console.log(`Processing file: ${file} with language: ${currentLang}`);
+            logger.debug(`Processing file: ${file} with language: ${currentLang}`);
           }
 
           // Track elements before processing this file
@@ -1124,7 +1125,7 @@ export async function scanCurrentElements(
           if (useTreeSitterMode) {
             try {
               if (verbose) {
-                console.log(`Using tree-sitter mode for: ${file}`);
+                logger.debug(`Using tree-sitter mode for: ${file}`);
               }
 
               // Import TreeSitterScanner
@@ -1169,14 +1170,14 @@ export async function scanCurrentElements(
                   }
                 } catch (callDetectorError) {
                   if (verbose) {
-                    console.warn(`JSCallDetector failed for ${file} in tree-sitter mode:`, callDetectorError);
+                    logger.warn(`JSCallDetector failed for ${file} in tree-sitter mode:`, callDetectorError);
                   }
                   // Non-fatal: structural elements already added; call data is best-effort
                 }
               }
 
               if (verbose) {
-                console.log(`Tree-sitter mode detected ${treeSitterElements.length} elements in: ${file}`);
+                logger.debug(`Tree-sitter mode detected ${treeSitterElements.length} elements in: ${file}`);
               }
 
               // If tree-sitter succeeded and we only want tree-sitter results, skip regex
@@ -1192,7 +1193,7 @@ export async function scanCurrentElements(
                 });
 
                 if (verbose) {
-                  console.log(`Cached ${fileElements.length} tree-sitter elements for: ${file}`);
+                  logger.debug(`Cached ${fileElements.length} tree-sitter elements for: ${file}`);
                 }
 
                 // PHASE 5: Report progress
@@ -1212,13 +1213,13 @@ export async function scanCurrentElements(
               }
             } catch (treeSitterError) {
               if (verbose) {
-                console.warn(`Tree-sitter parsing failed for ${file}, falling back to regex:`, treeSitterError);
+                logger.warn(`Tree-sitter parsing failed for ${file}, falling back to regex:`, treeSitterError);
               }
 
               if (!fallbackEnabled) {
                 // Tree-sitter failed and no fallback - skip file
                 if (verbose) {
-                  console.error(`Skipping file ${file} - tree-sitter failed and fallback disabled`);
+                  logger.error(`Skipping file ${file} - tree-sitter failed and fallback disabled`);
                 }
 
                 // PHASE 5: Report progress even on error
@@ -1246,7 +1247,7 @@ export async function scanCurrentElements(
           if (useASTMode) {
             try {
               if (verbose) {
-                console.log(`Using AST mode for: ${file}`);
+                logger.debug(`Using AST mode for: ${file}`);
               }
 
               // FIX-AST: Use TypeScript parser for .ts/.tsx files, Acorn for .js files
@@ -1299,7 +1300,7 @@ export async function scanCurrentElements(
               }
 
               if (verbose) {
-                console.log(`AST mode detected ${astElements.length} elements, ${fileImports.length} imports, and ${fileCalls.length} calls in: ${file}`);
+                logger.debug(`AST mode detected ${astElements.length} elements, ${fileImports.length} imports, and ${fileCalls.length} calls in: ${file}`);
               }
 
               // If AST succeeded and we only want AST results, skip regex
@@ -1315,19 +1316,19 @@ export async function scanCurrentElements(
                 });
 
                 if (verbose) {
-                  console.log(`Cached ${fileElements.length} AST elements for: ${file}`);
+                  logger.debug(`Cached ${fileElements.length} AST elements for: ${file}`);
                 }
                 continue;
               }
             } catch (astError) {
               if (verbose) {
-                console.warn(`AST parsing failed for ${file}, falling back to regex:`, astError);
+                logger.warn(`AST parsing failed for ${file}, falling back to regex:`, astError);
               }
 
               if (!fallbackEnabled) {
                 // AST failed and no fallback - skip file
                 if (verbose) {
-                  console.error(`Skipping file ${file} - AST failed and fallback disabled`);
+                  logger.error(`Skipping file ${file} - AST failed and fallback disabled`);
                 }
                 continue;
               }
@@ -1340,14 +1341,14 @@ export async function scanCurrentElements(
 
           if (patterns.length === 0) {
             if (verbose) {
-              console.log(`No patterns found for language: ${currentLang}`);
+              logger.debug(`No patterns found for language: ${currentLang}`);
             }
             continue;
           }
 
           if (!includeComments && isEntirelyCommented(content)) {
             if (verbose) {
-              console.log(`Skipping entirely commented file: ${file}`);
+              logger.debug(`Skipping entirely commented file: ${file}`);
             }
             continue;
           }
@@ -1365,7 +1366,7 @@ export async function scanCurrentElements(
           });
 
           if (verbose) {
-            console.log(`Cached ${fileElements.length} elements for: ${file}`);
+            logger.debug(`Cached ${fileElements.length} elements for: ${file}`);
           }
 
           // PHASE 5: Report progress after successful file processing
@@ -1383,7 +1384,7 @@ export async function scanCurrentElements(
           }
         } catch (error) {
           if (verbose) {
-            console.error(`Error processing file ${file}:`, error);
+            logger.error(`Error processing file ${file}:`, error);
           }
           // PHASE 5: Report progress even on error
           filesProcessed++;
@@ -1408,14 +1409,14 @@ export async function scanCurrentElements(
         await cache.updateCache(filesToScan);
         await cache.save();
         if (verbose) {
-          console.log(`[IncrementalCache] Updated cache with ${filesToScan.length} scanned files`);
+          logger.debug(`[IncrementalCache] Updated cache with ${filesToScan.length} scanned files`);
         }
       } catch (error) {
-        console.error(`Error updating cache:`, error);
+        logger.error(`Error updating cache:`, error);
       }
     }
   } catch (error) {
-    console.error(`Error scanning directory ${dir}:`, error);
+    logger.error(`Error scanning directory ${dir}:`, error);
   }
 
   // Deduplicate elements before returning
@@ -1423,7 +1424,7 @@ export async function scanCurrentElements(
   const deduplicated = deduplicateElements(elements);
 
   if (verbose) {
-    console.log(`Deduplication: ${elements.length} elements → ${deduplicated.length} unique elements`);
+    logger.debug(`Deduplication: ${elements.length} elements → ${deduplicated.length} unique elements`);
   }
 
   return deduplicated.map(element => ({

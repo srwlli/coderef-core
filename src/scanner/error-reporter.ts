@@ -6,6 +6,7 @@
  */
 
 // coderef-core/scanner/error-reporter.ts
+import logger from '../utils/logger.js';
 
 /**
  * Type of scanning error
@@ -278,33 +279,33 @@ export function printScanErrors(
   verbose: boolean = false
 ): void {
   if (result.errors.length > 0) {
-    console.error(`\n${result.errors.length} error(s) encountered:\n`);
+    logger.error(`\n${result.errors.length} error(s) encountered:\n`);
     for (const error of result.errors) {
-      console.error(formatScanError(error));
+      logger.error(formatScanError(error));
       if (verbose && error.stack) {
-        console.error(`Stack: ${error.stack}`);
+        logger.error(`Stack: ${error.stack}`);
       }
-      console.error(''); // Empty line
+      logger.error(''); // Empty line
     }
   }
 
   if (result.warnings.length > 0) {
-    console.warn(`\n${result.warnings.length} warning(s):\n`);
+    logger.warn(`\n${result.warnings.length} warning(s):\n`);
     for (const warning of result.warnings) {
-      console.warn(formatScanError(warning));
-      console.warn(''); // Empty line
+      logger.warn(formatScanError(warning));
+      logger.warn(''); // Empty line
     }
   }
 
   // Print summary
   const { stats } = result;
-  console.log(`\nScan Summary:`);
-  console.log(`  Files scanned: ${stats.filesScanned}/${stats.filesAttempted}`);
-  console.log(`  Elements found: ${stats.elementsFound}`);
-  console.log(`  Duration: ${stats.durationMs}ms`);
+  logger.info(`\nScan Summary:`);
+  logger.info(`  Files scanned: ${stats.filesScanned}/${stats.filesAttempted}`);
+  logger.info(`  Elements found: ${stats.elementsFound}`);
+  logger.info(`  Duration: ${stats.durationMs}ms`);
 
   if (stats.filesFailed > 0) {
-    console.log(`  Failed: ${stats.filesFailed} files`);
+    logger.info(`  Failed: ${stats.filesFailed} files`);
   }
 }
 

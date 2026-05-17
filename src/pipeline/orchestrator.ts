@@ -28,6 +28,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import logger from '../utils/logger.js';
 import { GrammarRegistry } from './grammar-registry.js';
 import { ElementExtractor } from './extractors/element-extractor.js';
 import { RelationshipExtractor } from './extractors/relationship-extractor.js';
@@ -85,20 +86,20 @@ export class PipelineOrchestrator {
     const verbose = options.verbose ?? false;
 
     if (verbose) {
-      console.log(`[PipelineOrchestrator] Starting scan of ${projectPath}`);
-      console.log(`[PipelineOrchestrator] Languages: ${languages.join(', ')}`);
+      logger.info(`[PipelineOrchestrator] Starting scan of ${projectPath}`);
+      logger.info(`[PipelineOrchestrator] Languages: ${languages.join(', ')}`);
     }
 
     // Reset global registry for this run (WO-CODEREF-CORE-REGISTRY-001)
     globalRegistry.clear();
 
     // Step 1: Discover files
-    if (verbose) console.log('[PipelineOrchestrator] Discovering files...');
+    if (verbose) logger.info('[PipelineOrchestrator] Discovering files...');
     const files = await this.discoverFiles(projectPath, languages, options);
     const totalFiles = Array.from(files.values()).reduce((sum, arr) => sum + arr.length, 0);
 
     if (verbose) {
-      console.log(`[PipelineOrchestrator] Found ${totalFiles} files across ${files.size} languages`);
+      logger.info(`[PipelineOrchestrator] Found ${totalFiles} files across ${files.size} languages`);
     }
 
     // IMP-CORE-028: Initialize incremental cache
@@ -132,7 +133,7 @@ export class PipelineOrchestrator {
       cache.removeDeletedFiles(cacheCheck.filesDeleted);
 
       if (verbose) {
-        console.log(`[PipelineOrchestrator] Incremental mode: ${cacheCheck.filesToScan.length} to scan, ${cacheCheck.filesUnchanged.length} cached`);
+        logger.info(`[PipelineOrchestrator] Incremental mode: ${cacheCheck.filesToScan.length} to scan, ${cacheCheck.filesUnchanged.length} cached`);
       }
     }
 
@@ -141,7 +142,7 @@ export class PipelineOrchestrator {
     await this.registry.preloadGrammars(detectedLanguages);
 
     // Step 3: Process files in single pass
-    if (verbose) console.log('[PipelineOrchestrator] Processing files...');
+    if (verbose) logger.info('[PipelineOrchestrator] Processing files...');
     const allElements: ElementData[] = [];
     const allImports: ImportRelationship[] = [];
     const allCalls: CallRelationship[] = [];
@@ -180,17 +181,17 @@ export class PipelineOrchestrator {
           filesScanned++;
 
           if (verbose && filesScanned % 10 === 0) {
-            console.log(`[PipelineOrchestrator] Processed ${filesScanned}/${totalFiles} files`);
+            logger.info(`[PipelineOrchestrator] Processed ${filesScanned}/${totalFiles} files`);
           }
         } catch (error) {
-          console.error(`[PipelineOrchestrator] Error processing ${filePath}:`, error);
+          logger.error(`[PipelineOrchestrator] Error processing ${filePath}:`, error);
           // Continue processing other files
         }
       }
     }
 
     // Step 4: Build dependency graph
-    if (verbose) console.log('[PipelineOrchestrator] Building dependency graph...');
+    if (verbose) logger.info('[PipelineOrchestrator] Building dependency graph...');
     const graph = this.buildGraph(allElements, allImports, allCalls, projectPath);
 
     // Step 4.5: Phase 3 — resolve imports against export tables and emit
@@ -200,7 +201,7 @@ export class PipelineOrchestrator {
     // files before pass 2 (resolution) begins for ANY file. Only kind ===
     // 'resolved' resolutions emit graph edges; the rest stay as explicit
     // facts on state.importResolutions.
-    if (verbose) console.log('[PipelineOrchestrator] Resolving imports (Phase 3)...');
+    if (verbose) logger.info('[PipelineOrchestrator] Resolving imports (Phase 3)...');
     const preResolveState: PipelineState = {
       projectPath,
       files,
@@ -244,7 +245,7 @@ export class PipelineOrchestrator {
     // state.callResolutions. Phase 4 does NOT modify endpoint format on
     // legacy 'calls'-type edges — Phase 5 owns codeRefId-as-endpoint
     // promotion across legacy edges.
-    if (verbose) console.log('[PipelineOrchestrator] Resolving calls (Phase 4)...');
+    if (verbose) logger.info('[PipelineOrchestrator] Resolving calls (Phase 4)...');
     const preResolveCallsState: PipelineState = {
       ...preResolveState,
       importResolutions,
@@ -270,7 +271,7 @@ export class PipelineOrchestrator {
     // the constructGraph result; the legacy buildGraph() output
     // (basic file-grain nodes + 'imports'/'calls' edges with
     // path/specifier endpoints) is superseded.
-    if (verbose) console.log('[PipelineOrchestrator] Constructing canonical graph (Phase 5)...');
+    if (verbose) logger.info('[PipelineOrchestrator] Constructing canonical graph (Phase 5)...');
     const preGraphState: PipelineState = {
       ...preResolveState,
       importResolutions,
@@ -291,14 +292,14 @@ export class PipelineOrchestrator {
     const endTime = Date.now();
 
     if (verbose) {
-      console.log(`[PipelineOrchestrator] Pipeline complete in ${endTime - startTime}ms`);
-      console.log(`[PipelineOrchestrator] Elements: ${allElements.length}`);
-      console.log(`[PipelineOrchestrator] Imports: ${allImports.length}`);
-      console.log(`[PipelineOrchestrator] Calls: ${allCalls.length}`);
-      console.log(`[PipelineOrchestrator] Import resolutions: ${importResolutions.length}`);
-      console.log(`[PipelineOrchestrator] Call resolutions: ${callResolutions.length}`);
-      console.log(`[PipelineOrchestrator] Graph nodes: ${graph.nodes.length}`);
-      console.log(`[PipelineOrchestrator] Graph edges: ${graph.edges.length}`);
+      logger.info(`[PipelineOrchestrator] Pipeline complete in ${endTime - startTime}ms`);
+      logger.info(`[PipelineOrchestrator] Elements: ${allElements.length}`);
+      logger.info(`[PipelineOrchestrator] Imports: ${allImports.length}`);
+      logger.info(`[PipelineOrchestrator] Calls: ${allCalls.length}`);
+      logger.info(`[PipelineOrchestrator] Import resolutions: ${importResolutions.length}`);
+      logger.info(`[PipelineOrchestrator] Call resolutions: ${callResolutions.length}`);
+      logger.info(`[PipelineOrchestrator] Graph nodes: ${graph.nodes.length}`);
+      logger.info(`[PipelineOrchestrator] Graph edges: ${graph.edges.length}`);
     }
 
     // Step 5: Update cache with newly scanned files
@@ -441,7 +442,7 @@ export class PipelineOrchestrator {
     const parser = await this.registry.getParser(language);
     if (!parser) {
       if (verbose) {
-        console.warn(`[PipelineOrchestrator] No parser available for ${language}`);
+        logger.warn(`[PipelineOrchestrator] No parser available for ${language}`);
       }
       return {
         elements: [],
