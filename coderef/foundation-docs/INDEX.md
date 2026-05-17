@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-16  
+**Generated:** 2026-05-17  
 <!-- coderef:uuid=index-root -->
 
 ---

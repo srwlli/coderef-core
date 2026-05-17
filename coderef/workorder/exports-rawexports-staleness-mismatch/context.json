@@ -1,0 +1,66 @@
+{
+  "workorder_id": "WO-FIX-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH-001",
+  "feature_name": "exports-rawexports-staleness-mismatch",
+  "created": "2026-05-16T23:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-16-013",
+  "intake": {
+    "trigger": "stub-promotion",
+    "stub_id": "STUB-299",
+    "user_request": "Fix false staleness positives at orchestrator.ts lines 473-480. The @exports tag written by --source-headers uses element.exports from buildSemanticElementsFromState (semantic/header-generator.ts:118); the staleness check at orchestrator.ts:473-480 compares against rawExports from extractRawExports (a different tree-sitter traversal). These two paths can produce different symbol sets, causing valid headers to be flagged stale."
+  },
+  "classification": {
+    "plan_type": "strict",
+    "plan_type_rationale": "Category=fix on core pipeline path; touches orchestrator.ts (high-blast-radius), requires test verification before merge.",
+    "plan_type_decided_by": "create-workorder@2.4.0 stub-promotion rule (fix → strict)",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [
+        "src/pipeline/orchestrator.ts",
+        "src/semantic/header-generator.ts",
+        "src/pipeline/semantic-elements.ts",
+        "src/pipeline/extractors/relationship-extractor.ts"
+      ],
+      "blast_radius": [
+        "src/pipeline/orchestrator.ts",
+        "src/integration/rag/indexing-orchestrator.ts",
+        "__tests__/pipeline/output-validation-semantic-headers.test.ts"
+      ],
+      "public_api_hits": [],
+      "hotspot_hits": ["src/pipeline/orchestrator.ts"],
+      "warnings": []
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [{"file": "src/pipeline/orchestrator.ts", "reason": "central pipeline coordinator"}],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "discovery_rag": {
+    "hits": [],
+    "fallback_used": true,
+    "error": "dispatch-013 has no semantic_context field",
+    "discovery_rag_enabled": true,
+    "discovery_rag_timestamp": "2026-05-16T23:30:00Z"
+  },
+  "scope": {
+    "in_scope": [
+      "Fix the staleness comparison at orchestrator.ts:473-480 to normalize rawExports against the same symbol set that header-generator uses",
+      "Add/extend test covering the false-stale case",
+      "Verify --source-headers + re-scan produces headerStatus=current for previously-stale files"
+    ],
+    "out_of_scope": [
+      "Changing the header format or @exports grammar",
+      "Refactoring header-generator.ts beyond the normalization fix",
+      "Changing extractRawExports traversal logic"
+    ]
+  },
+  "constraints": [
+    "Must not break existing stale detection for genuinely stale files",
+    "Fix must survive npm test (1495+ tests passing)",
+    "Build must compile clean (npm run build)"
+  ]
+}
