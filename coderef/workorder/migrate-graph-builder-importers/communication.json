@@ -6,10 +6,23 @@
   "target_project": "C:/Users/willh/Desktop/CODEREF/coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 4,
   "phase_status": "deferred",
   "completed_at": "2026-05-17T03:57:00Z",
+  "closed_at": "2026-05-17T08:15:00Z",
+  "closed_via": "close-workorder v2.0.0",
+  "review_result": "WARNING",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "review_verdict_source": "Step 3 validate-coderef-culture — 2 warn-severity checks (mapping_coverage, tool_canonicity: no mapping-table.json)",
+    "archive_marker": "coderef/ARCHIVED/migrate-graph-builder-importers/ARCHIVED",
+    "warnings": [
+      "mapping_coverage: mapping-table.json not present for CODEREF-CORE domain",
+      "tool_canonicity: no mapping-table.json to check",
+      "dependency_audit: subprocess timeout/error, skipped"
+    ]
+  },
   "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-graph-builder-importers/analysis.json",
@@ -94,6 +107,24 @@
       "phases_deferred": [4],
       "follow_on_stub": "STUB-311",
       "plan_deviation": "ADJ-01: Phase 4 deletion deferred — 9 internal src/analyzer/ files and root __tests__/ files remain as consumers. Filed STUB-311 for follow-on work."
+    },
+    {
+      "timestamp": "2026-05-17T08:15:00Z",
+      "agent": "close-workorder v2.0.0",
+      "event": "workorder_closed",
+      "message": "Workorder closed via /close-workorder. Audit: validate-coderef-culture WARNING (2 warn-severity checks only), tracking-validator 15/15 PASS (after fixing agent_domain→owner_domain on session row). Phases 1-3 complete, Phase 4 deferred to STUB-311. Archive pending."
+    },
+    {
+      "timestamp": "2026-05-17T08:15:00Z",
+      "event": "session_log_gate",
+      "outcome": "pass",
+      "session_log_path": "C:/Users/willh/Desktop/CODEREF/coderef-core/.coderef/sessions/SES-2026-05-17-MIGRATE-GRAPH-BUILDER-IMPORTERS.yaml"
+    },
+    {
+      "timestamp": "2026-05-17T08:15:00Z",
+      "event": "dependency_audit",
+      "skipped": true,
+      "error": "coderef-analyze subprocess returned no parseable output for --type=dependency flag"
     }
   ]
 }
