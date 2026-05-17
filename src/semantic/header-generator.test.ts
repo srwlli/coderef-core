@@ -4,7 +4,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { HeaderGenerator, generateHeaders } from './header-generator';
+import { HeaderGenerator, generateHeaders, inferLayerFromPath, inferCapabilityFromPath } from './header-generator';
 import type { ExportInfo, ImportInfo } from './ast-extractor';
 
 describe('HeaderGenerator', () => {
@@ -232,3 +232,118 @@ export function myFunc() {}`;
     });
   });
 });
+
+describe('inferLayerFromPath', () => {
+  test('__tests__/ path → test_support', () => {
+    expect(inferLayerFromPath('__tests__/pipeline/foo.test.ts')).toBe('test_support');
+  });
+
+  test('.test. in filename → test_support (higher priority than src/ fallback)', () => {
+    expect(inferLayerFromPath('src/semantic/header-generator.test.ts')).toBe('test_support');
+  });
+
+  test('src/cli/ → cli', () => {
+    expect(inferLayerFromPath('src/cli/populate.ts')).toBe('cli');
+  });
+
+  test('scripts/ → cli', () => {
+    expect(inferLayerFromPath('scripts/doc-gen/generate-index-md.js')).toBe('cli');
+  });
+
+  test('src/integration/ → integration', () => {
+    expect(inferLayerFromPath('src/integration/llm/model-registry.ts')).toBe('integration');
+  });
+
+  test('src/utils/ → utility', () => {
+    expect(inferLayerFromPath('src/utils/logger.ts')).toBe('utility');
+  });
+
+  test('src/pipeline/ → service', () => {
+    expect(inferLayerFromPath('src/pipeline/orchestrator.ts')).toBe('service');
+  });
+
+  test('src/scanner/ → service', () => {
+    expect(inferLayerFromPath('src/scanner/scanner.ts')).toBe('service');
+  });
+
+  test('src/semantic/ → service', () => {
+    expect(inferLayerFromPath('src/semantic/header-generator.ts')).toBe('service');
+  });
+
+  test('src/analyzer/ → service', () => {
+    expect(inferLayerFromPath('src/analyzer/dependency-analyzer.ts')).toBe('service');
+  });
+
+  test('src/query/ → service', () => {
+    expect(inferLayerFromPath('src/query/query-executor.ts')).toBe('service');
+  });
+
+  test('src/types/ → domain', () => {
+    expect(inferLayerFromPath('src/types/types.ts')).toBe('domain');
+  });
+
+  test('src/plugins/ → integration', () => {
+    expect(inferLayerFromPath('src/plugins/plugin-graph.ts')).toBe('integration');
+  });
+
+  test('src/validator/ → validation', () => {
+    expect(inferLayerFromPath('src/validator/report-generator.ts')).toBe('validation');
+  });
+
+  test('src/config/ → configuration', () => {
+    expect(inferLayerFromPath('src/config/defaults.ts')).toBe('configuration');
+  });
+
+  test('src/ fallback → service for unrecognized subdirectory', () => {
+    expect(inferLayerFromPath('src/unknown-subdir/foo.ts')).toBe('service');
+  });
+
+  test('unknown root-level path → undefined', () => {
+    expect(inferLayerFromPath('scanner.js')).toBeUndefined();
+  });
+
+  test('empty string → undefined', () => {
+    expect(inferLayerFromPath('')).toBeUndefined();
+  });
+
+  test('normalizes Windows backslash paths', () => {
+    expect(inferLayerFromPath('src\\cli\\populate.ts')).toBe('cli');
+  });
+});
+
+describe('inferCapabilityFromPath', () => {
+  test('single-word stem with matching element name → stem slug only', () => {
+    // stem='orchestrator', name='orchestrator' → 'orchestrator' (same, no duplication)
+    expect(inferCapabilityFromPath('src/pipeline/orchestrator.ts', 'orchestrator')).toBe('orchestrator');
+  });
+
+  test('camelCase stem + camelCase element → kebab-case combined slug', () => {
+    // stem='headerGenerator' → 'header-generator'; name='generateHeaders' → 'generate-headers'
+    expect(inferCapabilityFromPath('src/semantic/headerGenerator.ts', 'generateHeaders')).toBe('header-generator-generate-headers');
+  });
+
+  test('stem with hyphens already in filename', () => {
+    // stem='header-generator' (already kebab); name='inferLayerFromPath' → 'infer-layer-from-path'
+    expect(inferCapabilityFromPath('src/semantic/header-generator.ts', 'inferLayerFromPath')).toBe('header-generator-infer-layer-from-path');
+  });
+
+  test('multi-segment path uses only filename stem', () => {
+    // stem='indexing-orchestrator', name='IndexingOrchestrator' → nameSlug='indexing-orchestrator' === stemSlug → deduplicated
+    expect(inferCapabilityFromPath('src/integration/rag/indexing-orchestrator.ts', 'IndexingOrchestrator')).toBe('indexing-orchestrator');
+  });
+
+  test('same stem and element slug → deduplication returns stem only', () => {
+    // stem='orchestrator', name='Orchestrator' → nameSlug='orchestrator' === stemSlug → deduplicated
+    expect(inferCapabilityFromPath('src/pipeline/orchestrator.ts', 'Orchestrator')).toBe('orchestrator');
+  });
+
+  test('empty element name → stem slug only when stem exists', () => {
+    // nameSlug='' → capability = stemSlug + '-' + '' which fails the regex → undefined
+    expect(inferCapabilityFromPath('src/cli/populate.ts', '')).toBeUndefined();
+  });
+
+  test('stem with numbers preserves them in slug', () => {
+    expect(inferCapabilityFromPath('src/pipeline/phase2runner.ts', 'run')).toBe('phase2runner-run');
+  });
+});
+
