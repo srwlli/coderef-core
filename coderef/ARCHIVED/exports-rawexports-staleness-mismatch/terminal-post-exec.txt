@@ -1,0 +1,33 @@
+=============================================================
+WORKORDER: WO-FIX-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH-001  |  exports-rawexports-staleness-mismatch  |  COMPLETE
+Session: SES-2026-05-17-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH  |  Phases: 3  |  Commits: 2  |  Pushes: 3
+Parent stub: STUB-299 (will be closed on archive)
+
+FILES CREATED:
+  (none)
+
+FILES MODIFIED:
+  ~ src/pipeline/orchestrator.ts  (1fd6861)
+  ~ __tests__/pipeline/header-exports-cross-check.test.ts  (1fd6861)
+  ~ coderef/workorder/exports-rawexports-staleness-mismatch/communication.json  (19552c1)
+  ~ coderef/foundation-docs/INDEX.md  (19552c1)
+  ~ coderef/foundation-docs/EXPORTS.md  (19552c1)
+  ~ coderef/foundation-docs/HOTSPOTS.md  (19552c1)
+  ~ coderef/foundation-docs/RELATIONSHIPS.md  (19552c1)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Understand and reproduce the false-stale case  (19552c1 — analysis in communication.json)
+  [x] Phase 2: Apply fix and add regression test  (1fd6861)
+  [x] Phase 3: Verify end-to-end  (19552c1)
+
+ADJ-001: initial fix used element.exports?.map(ex => ex.name) — corrected to elements.filter(e => e.exported).map(e => e.name)
+
+TEST RESULTS:
+  header-exports-cross-check: 4/4 passed (incl. new false-stale regression)
+  output-validation-semantic-headers: 10/10 passed
+  full suite: 1540/1541 passed (1 pre-existing flaky timeout in scanner-export — unrelated)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift — not introduced by this WO)
+
+APPROVE -> /close-workorder WO-FIX-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH-001
+=============================================================

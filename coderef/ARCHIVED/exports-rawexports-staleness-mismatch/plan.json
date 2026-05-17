@@ -1,0 +1,136 @@
+{
+  "workorder_id": "WO-FIX-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH-001",
+  "feature_name": "exports-rawexports-staleness-mismatch",
+  "created": "2026-05-16T23:30:00Z",
+  "plan_type": "strict",
+  "plan_type_rationale": "Fix on core pipeline path (orchestrator.ts) with test requirement; strict gates ensure correctness before close.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Understand and reproduce the false-stale case",
+      "hard_stop": false,
+      "description": "Read the two diverging extractors to understand the exact symbol-set difference and identify a concrete reproducer.",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Read src/pipeline/orchestrator.ts lines 460-504 (staleness check) and src/semantic/header-generator.ts lines 110-135 (element.exports aggregation)",
+          "touches": ["src/pipeline/orchestrator.ts", "src/semantic/header-generator.ts"],
+          "success_criteria": "Understand exactly which symbol sets each path produces and why they diverge"
+        },
+        {
+          "id": "P1-T2",
+          "verb": "READ",
+          "description": "Read src/pipeline/extractors/relationship-extractor.ts extractRawExports method and src/pipeline/semantic-elements.ts buildSemanticElementsFromState to map both export derivation paths",
+          "touches": ["src/pipeline/extractors/relationship-extractor.ts", "src/pipeline/semantic-elements.ts"],
+          "success_criteria": "Both extraction paths fully understood; divergence documented"
+        },
+        {
+          "id": "P1-T3",
+          "verb": "CHECK",
+          "description": "Identify a concrete file in src/ that exhibits the false-stale condition (has a valid @exports header but gets headerStatus=stale). Verify by reading its @exports line and comparing to rawExports output.",
+          "touches": ["src/integration/rag/"],
+          "success_criteria": "At least one concrete false-stale file identified with proof"
+        },
+        {
+          "id": "P1-T4",
+          "verb": "COMMIT",
+          "description": "Commit analysis notes to analysis.json (update with specific diverging symbols)",
+          "touches": ["coderef/workorder/exports-rawexports-staleness-mismatch/analysis.json"],
+          "success_criteria": "analysis.json updated with concrete divergence example"
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Apply fix and add regression test",
+      "hard_stop": false,
+      "description": "Replace rawExports-based astSet with element.exports-derived set in the staleness check. Add a test that covers both the true-stale and false-stale cases.",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "EDIT",
+          "description": "In orchestrator.ts lines 473-480: replace `const astSet = new Set(rawExports.map(e => e.exportedName))` with a set derived from the same element.exports source that header-generator uses. The elements array is already available in scope (line 460). Build the astSet from elements.flatMap(e => e.exports?.map(ex => ex.name) || []).",
+          "touches": ["src/pipeline/orchestrator.ts"],
+          "success_criteria": "astSet is derived from element.exports, not rawExports. The `astSet.delete('default')` line can be removed (element.exports never contains 'default')."
+        },
+        {
+          "id": "P2-T2",
+          "verb": "RUN",
+          "description": "npm run build — verify TypeScript compiles clean after the edit",
+          "touches": [],
+          "success_criteria": "Exit 0, no TypeScript errors"
+        },
+        {
+          "id": "P2-T3",
+          "verb": "TEST",
+          "description": "Run npm test -- --testPathPattern='output-validation-semantic-headers|orchestrator' to verify existing header-status tests still pass",
+          "touches": [],
+          "success_criteria": "All targeted tests pass; no regressions"
+        },
+        {
+          "id": "P2-T4",
+          "verb": "WRITE",
+          "description": "Add test case in __tests__/pipeline/output-validation-semantic-headers.test.ts: create a fixture file with @exports matching element.exports but containing symbols not in rawExports (e.g. a type-only export). Assert headerStatus=current after the fix.",
+          "touches": ["__tests__/pipeline/output-validation-semantic-headers.test.ts"],
+          "success_criteria": "New test passes, documents the false-stale case"
+        },
+        {
+          "id": "P2-T5",
+          "verb": "TEST",
+          "description": "Run full npm test to verify no regressions across all 1495+ tests",
+          "touches": [],
+          "success_criteria": "All tests pass"
+        },
+        {
+          "id": "P2-T6",
+          "verb": "COMMIT",
+          "description": "Stage and commit the orchestrator.ts fix and new test",
+          "touches": ["src/pipeline/orchestrator.ts", "__tests__/pipeline/output-validation-semantic-headers.test.ts"],
+          "success_criteria": "Clean commit with descriptive message"
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Verify end-to-end: --source-headers produces headerStatus=current",
+      "hard_stop": true,
+      "description": "Run populate-coderef --source-headers on a file that was previously false-stale and confirm headerStatus=current in the re-scan.",
+      "tasks": [
+        {
+          "id": "P3-T1",
+          "verb": "RUN",
+          "description": "Run: node dist/src/cli/populate.js --source-headers --overwrite-headers --select index on the coderef-core project itself (dog-food pass). Capture the headerStatus of the previously-false-stale file.",
+          "touches": [],
+          "success_criteria": "The previously false-stale file now shows headerStatus=current in .coderef/index.json"
+        },
+        {
+          "id": "P3-T2",
+          "verb": "CHECK",
+          "description": "Verify that a genuinely stale file (one whose @exports header does NOT match its actual exports) still shows headerStatus=stale. This confirms the fix didn't mask real staleness.",
+          "touches": [],
+          "success_criteria": "A file with a genuinely wrong @exports header shows headerStatus=stale"
+        },
+        {
+          "id": "P3-T3",
+          "verb": "COMMIT",
+          "description": "Final commit: update communication.json with verification results and push",
+          "touches": ["coderef/workorder/exports-rawexports-staleness-mismatch/communication.json"],
+          "success_criteria": "Clean commit, pushed to origin"
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 3,
+      "approved": false,
+      "reason": "Terminal gate — requires end-to-end verification before close"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": false,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "RUN", "TEST", "COMMIT", "CHECK", "STOP", "DELETE"]
+}

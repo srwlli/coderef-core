@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-FIX-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH-001",
+  "feature_name": "exports-rawexports-staleness-mismatch",
+  "analysis_authored_at": "2026-05-16T23:30:00Z",
+  "root_cause": {
+    "summary": "Two independent extractors produce the @exports symbol list with different traversal logic. --source-headers writes @exports using element.exports from buildSemanticElementsFromState (semantic/header-generator.ts:118), which aggregates element-level exports collected by the element extractor. The staleness checker at orchestrator.ts:473-480 uses rawExports from extractRawExports, a separate tree-sitter traversal that walks export declarations. The two paths produce different symbol sets for the same file, causing headerStatus='stale' for files whose @exports header is actually correct.",
+    "divergence_examples": [
+      "ConversionOptions — exported as a type alias; element extractor may see it, rawExports may emit it under a different name form",
+      "convertGraphToElements, getConversionStats — function exports; one path may include re-exports the other misses"
+    ],
+    "fix_approach": "Normalize astSet in the staleness check to exclude symbols that rawExports captures but element.exports does not: type-only exports, re-exports, and namespace re-exports. Alternatively: derive the astSet from the same element.exports path the header-generator uses, bypassing rawExports entirely for the staleness check."
+  },
+  "blast_radius": {
+    "files_modified": ["src/pipeline/orchestrator.ts"],
+    "files_created": [],
+    "downstream_consumers": [
+      "src/integration/rag/indexing-orchestrator.ts (reads headerStatus)",
+      "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+      "__tests__/pipeline/output-validation-strict-headers.test.ts"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Masking genuine staleness",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Add a test with a file whose @exports header IS genuinely stale and verify headerStatus=stale is still emitted after the fix."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Build breakage from type change",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Run npm run build after the edit; TypeScript will catch any type errors immediately."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "lines": "473-480",
+      "change": "Replace astSet construction from rawExports with element.exports-derived set (same source header-generator uses), OR add normalization to strip type-only and re-exported names from astSet before comparison"
+    },
+    {
+      "file": "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+      "lines": "new test case",
+      "change": "Add test: file with @exports matching element.exports but not rawExports → must yield headerStatus=current after fix"
+    }
+  ],
+  "dependencies": ["tree-sitter", "src/pipeline/extractors/relationship-extractor.ts", "src/pipeline/semantic-elements.ts"],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Use element.exports as the astSet source instead of rawExports for the staleness check",
+      "rationale": "This ensures both sides of the comparison (header @exports and astSet) come from the same extractor, eliminating the divergence by construction. rawExports serves import-resolution purposes and should not gate header staleness."
+    }
+  ]
+}
