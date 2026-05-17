@@ -20,7 +20,9 @@
 
 import type { LLMProvider } from '../llm/llm-provider.js';
 import type { VectorStore, QueryOptions as VectorQueryOptions } from '../vector/vector-store.js';
-import type { DependencyGraph } from '../../analyzer/graph-builder.js';
+interface _GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface _GraphEdge { source: string; target: string; type: string; }
+interface DependencyGraph { nodes: Map<string, _GraphNode>; edges: _GraphEdge[]; edgesBySource: Map<string, _GraphEdge[]>; edgesByTarget: Map<string, _GraphEdge[]>; }
 import {
   EmbeddingTextGenerator,
   type TextGenerationOptions

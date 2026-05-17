@@ -18,7 +18,9 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
-import type { DependencyGraph, GraphNode } from '../../analyzer/graph-builder.js';
+interface GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface _GraphEdge { source: string; target: string; type: string; }
+interface DependencyGraph { nodes: Map<string, GraphNode>; edges: _GraphEdge[]; edgesBySource: Map<string, _GraphEdge[]>; edgesByTarget: Map<string, _GraphEdge[]>; }
 import type {
   CodeChunk,
   ChunkOptions,

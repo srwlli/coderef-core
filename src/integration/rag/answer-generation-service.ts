@@ -22,7 +22,9 @@
 
 import type { LLMProvider } from '../llm/llm-provider.js';
 import type { VectorStore } from '../vector/vector-store.js';
-import type { DependencyGraph } from '../../analyzer/graph-builder.js';
+import type { ExportedGraph } from '../../export/graph-exporter.js';
+
+type DependencyGraph = ExportedGraph;
 import {
   SemanticSearchService,
   type SearchOptions,

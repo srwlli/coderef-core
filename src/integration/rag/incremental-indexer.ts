@@ -20,7 +20,9 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as crypto from 'crypto';
 import type { CodeChunk } from './code-chunk.js';
-import type { DependencyGraph } from '../../analyzer/graph-builder.js';
+import type { ExportedGraph } from '../../export/graph-exporter.js';
+
+type DependencyGraph = ExportedGraph;
 import { type AbsolutePath, type RelativePath, toAbsolute, toRelative } from './path-types.js';
 
 /**

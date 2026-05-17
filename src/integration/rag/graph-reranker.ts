@@ -17,7 +17,9 @@
 
 
 
-import type { DependencyGraph } from '../../analyzer/graph-builder.js';
+interface _GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface _GraphEdge { source: string; target: string; type: string; }
+interface DependencyGraph { nodes: Map<string, _GraphNode>; edges: _GraphEdge[]; edgesBySource: Map<string, _GraphEdge[]>; edgesByTarget: Map<string, _GraphEdge[]>; }
 import type { SearchResult } from './semantic-search.js';
 
 /**
