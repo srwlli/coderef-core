@@ -6,10 +6,18 @@
   "target_project": "coderef-core",
   "originating_dispatches": ["DISPATCH-2026-05-16-013"],
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 3,
   "phase_status": "complete",
   "completed_at": "2026-05-17T01:55:00Z",
+  "closed_at": "2026-05-17T02:05:00Z",
+  "updated": "2026-05-17T02:05:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_marker": "coderef/ARCHIVED/exports-rawexports-staleness-mismatch/ARCHIVED",
+    "review_verdict_source": "Step 3 cultural validator (scope=WO-FIX-EXPORTS-RAWEXPORTS-STALENESS-MISMATCH-001, session_date=2026-05-16)",
+    "warnings": []
+  },
   "plan_file": "coderef/workorder/exports-rawexports-staleness-mismatch/plan.json",
   "context_file": "coderef/workorder/exports-rawexports-staleness-mismatch/context.json",
   "analysis_file": "coderef/workorder/exports-rawexports-staleness-mismatch/analysis.json",
@@ -51,6 +59,12 @@
   "plan_adjustments": [],
   "required_skills": ["/execute-workorder", "/close-workorder", "/log-session"],
   "communication_log": [
+    {
+      "event": "workorder_closed",
+      "agent": "close-workorder v2.1.0",
+      "at": "2026-05-17T02:05:00Z",
+      "message": "Workorder closed via /close-workorder. Audit PASS (cultural validator scope-mode 2026-05-16, tracking-validator scoped PASS). Finalized, committed 1fd6861+19552c1, archive pending."
+    },
     {
       "event": "workorder_complete",
       "at": "2026-05-17T01:55:00Z",
