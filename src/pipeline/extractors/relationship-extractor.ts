@@ -46,6 +46,7 @@ import type {
 } from '../header-fact.js';
 import type { HeaderStatus } from '../element-taxonomy.js';
 import { parseHeader } from '../semantic-header-parser.js';
+import logger from '../../utils/logger.js';
 
 /**
  * RelationshipExtractor - Extract import and call relationships from AST
@@ -94,7 +95,7 @@ export class RelationshipExtractor {
         this.extractCppImports(rootNode, filePath, content, imports);
         break;
       default:
-        console.warn(`[RelationshipExtractor] Unsupported language for imports: ${language}`);
+        logger.warn(`[RelationshipExtractor] Unsupported language for imports: ${language}`);
     }
 
     return imports;
@@ -145,7 +146,7 @@ export class RelationshipExtractor {
         this.extractCppCalls(rootNode, filePath, content, calls, currentScope);
         break;
       default:
-        console.warn(`[RelationshipExtractor] Unsupported language for calls: ${language}`);
+        logger.warn(`[RelationshipExtractor] Unsupported language for calls: ${language}`);
     }
 
     return calls;

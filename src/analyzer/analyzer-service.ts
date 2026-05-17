@@ -30,6 +30,7 @@ import { GraphError, GraphErrorCode } from './graph-error.js';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as glob from 'glob';
+import logger from '../utils/logger.js';
 
 /**
  * Analysis result containing graph and statistics
@@ -330,7 +331,7 @@ export class AnalyzerService {
         }
       } catch (error) {
         // Skip patterns that fail
-        console.warn(`Failed to match pattern: ${pattern}`);
+        logger.warn(`Failed to match pattern: ${pattern}`);
       }
     }
 

@@ -20,6 +20,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as parser from '@babel/parser';
 import traverse from '@babel/traverse';
+import logger from '../utils/logger.js';
 
 export interface ExportInfo {
   name: string;
@@ -85,7 +86,7 @@ export class ASTExtractor {
       // Check file size
       const stats = fs.statSync(filePath);
       if (stats.size > (this.options.maxFileSize || 1024 * 1024)) {
-        console.warn(`File ${filePath} exceeds max size, skipping`);
+        logger.warn(`File ${filePath} exceeds max size, skipping`);
         result.executionTime = Date.now() - startTime;
         return result;
       }
@@ -173,7 +174,7 @@ export class ASTExtractor {
         },
       });
     } catch (error) {
-      console.error(`Error extracting ${filePath}:`, error instanceof Error ? error.message : error);
+      logger.error(`Error extracting ${filePath}:`, error instanceof Error ? error.message : error);
     }
 
     result.executionTime = Date.now() - startTime;

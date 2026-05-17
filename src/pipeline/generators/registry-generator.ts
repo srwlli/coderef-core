@@ -23,6 +23,7 @@ import type { PipelineState } from '../types.js';
 import { globalRegistry } from '../../registry/entity-registry.js';
 import { buildSemanticElementsFromState } from '../semantic-elements.js';
 import { createSemanticRegistryProjection } from '../../semantic/projections.js';
+import logger from '../../utils/logger.js';
 
 /**
  * RegistryGenerator - Produce entities.json from the global registry
@@ -67,10 +68,10 @@ export class RegistryGenerator {
     );
 
     if (state.options.verbose) {
-      console.log(
+      logger.debug(
         `[RegistryGenerator] Generated entities.json with ${registryState.stats.totalEntities} entities across ${registryState.stats.distinctFiles} files`
       );
-      console.log(`[RegistryGenerator] Generated semantic-registry.json as an index projection`);
+      logger.debug(`[RegistryGenerator] Generated semantic-registry.json as an index projection`);
     }
   }
 }

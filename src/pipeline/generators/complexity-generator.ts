@@ -21,6 +21,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
+import logger from '../../utils/logger.js';
 
 interface ComplexityMetrics {
   element: string;
@@ -79,7 +80,7 @@ export class ComplexityGenerator {
     }
 
     if (state.options.verbose) {
-      console.log(
+      logger.debug(
         `[ComplexityGenerator] Generated complexity metrics (${isSlim ? 'slim' : 'full'}) for ${metrics.length} elements`
       );
     }

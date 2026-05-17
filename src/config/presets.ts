@@ -9,6 +9,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import logger from '../utils/logger.js';
 
 /**
  * Configuration preset for scanning specific framework/project types
@@ -264,7 +265,7 @@ export function detectPreset(projectDir: string): string[] {
 
   } catch (error) {
     // If directory doesn't exist or can't be read, return default
-    console.warn(`Could not detect preset for ${projectDir}:`, error);
+    logger.warn(`Could not detect preset for ${projectDir}:`, error);
     detectedPresets.push('react');
   }
 

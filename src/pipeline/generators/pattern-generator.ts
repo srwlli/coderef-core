@@ -21,6 +21,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
+import logger from '../../utils/logger.js';
 
 // IMP-CORE-007: Coverage data interface
 interface CoverageData {
@@ -123,7 +124,7 @@ export class PatternGenerator {
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf-8');
 
     if (state.options.verbose) {
-      console.log(`[PatternGenerator] Detected ${report.decorators.length} decorators, ${report.asyncPatterns.length} async patterns, ${report.middleware.length} middleware, ${report.dependencyInjection.length} DI components`);
+      logger.debug(`[PatternGenerator] Detected ${report.decorators.length} decorators, ${report.asyncPatterns.length} async patterns, ${report.middleware.length} middleware, ${report.dependencyInjection.length} DI components`);
     }
   }
 

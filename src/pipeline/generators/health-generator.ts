@@ -23,6 +23,7 @@ import {
   DependencyHealthReport,
   analyzeDependencyHealth,
 } from '../../analyzer/dependency-analyzer.js';
+import logger from '../../utils/logger.js';
 
 export interface HealthMetrics {
   dependencyHealth: DependencyHealthReport | null;
@@ -250,7 +251,7 @@ export async function generateHealthReport(
     const markdown = generator.generateMarkdown(metrics);
     return { metrics, markdown };
   } catch (error) {
-    console.error('Health report generation failed:', error);
+    logger.error('Health report generation failed:', error);
     return null;
   }
 }

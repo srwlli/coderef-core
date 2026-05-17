@@ -33,6 +33,7 @@ import * as path from 'path';
 import Parser from 'tree-sitter';
 import { ElementData } from '../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
+import logger from '../utils/logger.js';
 
 /**
  * Type alias for ElementData with tree-sitter enriched fields
@@ -98,7 +99,7 @@ class GrammarLoader {
 
     const packageName = this.GRAMMAR_PACKAGES[lang];
     if (!packageName) {
-      console.warn(`No tree-sitter grammar available for language: ${lang}`);
+      logger.warn(`No tree-sitter grammar available for language: ${lang}`);
       return null;
     }
 
@@ -121,7 +122,7 @@ class GrammarLoader {
 
       return grammar;
     } catch (error) {
-      console.error(`Failed to load tree-sitter grammar for ${lang}:`, error);
+      logger.error(`Failed to load tree-sitter grammar for ${lang}:`, error);
       this.grammars.set(lang, null); // Cache failure to avoid repeated attempts
       return null;
     }

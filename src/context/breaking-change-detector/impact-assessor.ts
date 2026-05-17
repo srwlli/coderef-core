@@ -14,6 +14,7 @@
 
 
 import { SignatureChange, ImpactedCallSite, BlastRadius } from './types.js';
+import logger from '../../utils/logger.js';
 
 /**
  * Integrate with ImpactSimulator to boost severity for risky changes
@@ -61,7 +62,7 @@ export function calculateSeverity(
       }
     } catch (err) {
       // If blast radius calculation fails, continue with baseline severity
-      console.debug(`Blast radius calculation failed: ${err}`);
+      logger.debug(`Blast radius calculation failed: ${err}`);
     }
   }
 

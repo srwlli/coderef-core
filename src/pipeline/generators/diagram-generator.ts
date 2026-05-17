@@ -20,6 +20,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
+import logger from '../../utils/logger.js';
 
 /**
  * DiagramGenerator - Generate Mermaid and DOT diagrams
@@ -46,7 +47,7 @@ export class DiagramGenerator {
     await fs.writeFile(path.join(diagramsDir, 'dependencies.dot'), dot, 'utf-8');
 
     if (state.options.verbose) {
-      console.log('[DiagramGenerator] Generated 4 diagram files');
+      logger.info('[DiagramGenerator] Generated 4 diagram files');
     }
   }
 

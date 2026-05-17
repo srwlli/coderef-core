@@ -29,6 +29,7 @@
 import type Parser from 'tree-sitter';
 import type { ElementData } from '../../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../element-taxonomy.js';
+import logger from '../../utils/logger.js';
 
 /**
  * ElementExtractor - Extracts code elements from tree-sitter AST
@@ -80,7 +81,7 @@ export class ElementExtractor {
         this.extractCppElements(rootNode, filePath, content, elements);
         break;
       default:
-        console.warn(`[ElementExtractor] No extractor for language: ${language}`);
+        logger.warn(`[ElementExtractor] No extractor for language: ${language}`);
     }
 
     return elements.map(element => ({

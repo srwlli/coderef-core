@@ -21,6 +21,7 @@
 
 import AnalyzerService from '../analyzer/analyzer-service.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
+import logger from '../utils/logger.js';
 
 type GraphNode = ExportedGraph['nodes'][number];
 
@@ -119,7 +120,7 @@ export class QueryExecutor {
       results = await this.executeQuery(request);
     } catch (err: any) {
       error = err.message || 'Unknown error';
-      console.error(`Query error (${request.type}):`, error);
+      logger.error(`Query error (${request.type}):`, error);
     }
 
     const executionTime = Date.now() - startTime;

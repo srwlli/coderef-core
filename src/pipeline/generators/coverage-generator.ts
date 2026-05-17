@@ -20,6 +20,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
+import logger from '../../utils/logger.js';
 
 interface CoverageReport {
   summary: {
@@ -49,7 +50,7 @@ export class CoverageGenerator {
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf-8');
 
     if (state.options.verbose) {
-      console.log(`[CoverageGenerator] Coverage: ${report.summary.coveragePercentage}% (${report.summary.testedFiles}/${report.summary.totalFiles} files)`);
+      logger.info(`[CoverageGenerator] Coverage: ${report.summary.coveragePercentage}% (${report.summary.testedFiles}/${report.summary.totalFiles} files)`);
     }
   }
 

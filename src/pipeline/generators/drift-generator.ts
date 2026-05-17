@@ -37,6 +37,7 @@ import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import { loadIndexFromCoderefDir } from '../../fileGeneration/index-storage.js';
 import { createCodeRefId } from '../../utils/coderef-id.js';
+import logger from '../../utils/logger.js';
 
 interface DriftReport {
   driftPercentage: number;
@@ -70,7 +71,7 @@ export class DriftGenerator {
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf-8');
 
     if (state.options.verbose) {
-      console.log(
+      logger.debug(
         `[DriftGenerator] Drift: ${report.driftPercentage}% ` +
         `(${report.summary.staleFiles}/${report.summary.totalFiles} files stale, ` +
         `${report.summary.added} added, ${report.summary.deleted} deleted)`

@@ -19,6 +19,7 @@ import * as path from 'path';
 import { Plugin, CodeDetector, GraphHook } from '../types.js';
 import { validateManifest, MANIFEST_FILENAME } from '../manifest-schema.js';
 import { LoadResult } from './npm-loader.js';
+import logger from '../../utils/logger.js';
 
 /**
  * Plugin configuration entry
@@ -58,7 +59,7 @@ export async function loadConfigPlugins(
     // Skip disabled plugins
     if (entry.enabled === false) {
       if (options.debug) {
-        console.log(`[config-loader] Skipping disabled plugin: ${entry.name}`);
+        logger.info(`[config-loader] Skipping disabled plugin: ${entry.name}`);
       }
       continue;
     }

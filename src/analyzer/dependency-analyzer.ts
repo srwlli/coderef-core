@@ -23,6 +23,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { exec } from 'child_process';
 import { promisify } from 'util';
+import logger from '../utils/logger.js';
 
 const execAsync = promisify(exec);
 
@@ -486,7 +487,7 @@ export async function analyzeDependencyHealth(
     const analyzer = new DependencyAnalyzer(projectPath);
     return await analyzer.analyze();
   } catch (error) {
-    console.error('Dependency health analysis failed:', error);
+    logger.error('Dependency health analysis failed:', error);
     return null;
   }
 }

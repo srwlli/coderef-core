@@ -21,6 +21,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import { normalizeGraphForOutput } from './graph-output.js';
+import logger from '../../utils/logger.js';
 
 /**
  * ExportGenerator - Export graph data in multiple formats
@@ -41,7 +42,7 @@ export class ExportGenerator {
     await this.generateWrappedDiagram(state, outputDir, exportsDir, normalizedGraph);
 
     if (state.options.verbose) {
-      console.log('[ExportGenerator] Generated 3 export files');
+      logger.info('[ExportGenerator] Generated 3 export files');
     }
   }
 

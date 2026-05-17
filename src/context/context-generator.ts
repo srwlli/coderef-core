@@ -19,6 +19,7 @@ import { AnalyzerService } from '../analyzer/analyzer-service.js';
 import { EntryPointDetector } from './entry-point-detector.js';
 import { MarkdownFormatter, type ContextData } from './markdown-formatter.js';
 import type { ElementData, ScanOptions } from '../types/types.js';
+import logger from '../utils/logger.js';
 
 /**
  * Options for context generation
@@ -119,7 +120,7 @@ export class ContextGenerator {
         };
       } catch (error) {
         // Gracefully handle analyzer failures
-        console.warn('Dependency analysis failed, continuing with basic context');
+        logger.warn('Dependency analysis failed, continuing with basic context');
       }
     }
 

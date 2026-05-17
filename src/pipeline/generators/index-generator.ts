@@ -22,6 +22,7 @@ import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import { writeIndexVariants } from '../../fileGeneration/index-storage.js';
 import { buildSemanticElementsFromState, normalizeRelatedField, normalizeRulesField } from '../semantic-elements.js';
+import logger from '../../utils/logger.js';
 
 /**
  * IndexGenerator - Produce index.json from extracted elements
@@ -42,7 +43,7 @@ export class IndexGenerator {
     await writeIndexVariants(outputDir, outputElements as ElementData[], { projectPath: state.projectPath });
 
     if (state.options.verbose) {
-      console.log(`[IndexGenerator] Generated index.json with ${outputElements.length} elements (semantic fields enabled)`);
+      logger.info(`[IndexGenerator] Generated index.json with ${outputElements.length} elements (semantic fields enabled)`);
     }
   }
 

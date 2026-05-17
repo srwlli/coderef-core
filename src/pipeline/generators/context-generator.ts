@@ -27,6 +27,7 @@ import ProjectClassifier, { type ProjectClassification } from '../../analyzer/pr
 import { analyzeProjectConfig, type ConfigAnalysis } from '../../analyzer/config-analyzer.js';
 // IMP-CORE-022: Documentation quality analysis
 import { analyzeDocs, type DocumentationQuality } from '../../analyzer/docs-analyzer.js';
+import logger from '../../utils/logger.js';
 
 // IMP-CORE-025: Call graph relationship types
 export interface CallGraphNode {
@@ -192,7 +193,7 @@ export class ContextGenerator {
     await fs.writeFile(mdPath, markdown, 'utf-8');
 
     if (state.options.verbose) {
-      console.log(`[ContextGenerator] Generated context (${context.stats.totalElements} elements, ${context.entryPoints.length} entry points)`);
+      logger.info(`[ContextGenerator] Generated context (${context.stats.totalElements} elements, ${context.entryPoints.length} entry points)`);
     }
   }
 

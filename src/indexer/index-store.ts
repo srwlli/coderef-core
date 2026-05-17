@@ -21,6 +21,7 @@
 
 
 import { ParsedCodeRef } from '../parser/parser.js';
+import logger from '../utils/logger.js';
 
 /**
  * Index record wraps a parsed reference with metadata
@@ -112,7 +113,7 @@ export class IndexStore {
 
     // Check if already indexed
     if (this.recordMap.has(id)) {
-      console.warn(`Reference already indexed: ${id}`);
+      logger.warn(`Reference already indexed: ${id}`);
       return this.recordMap.get(id)!;
     }
 

@@ -19,6 +19,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { ExportInfo } from './ast-extractor.js';
 import type { EnrichedMetadata } from './llm-enricher.js';
+import logger from '../utils/logger.js';
 
 export interface RegistryEntry {
   id: string;
@@ -86,7 +87,7 @@ export class RegistrySyncer {
         }
       }
     } catch (error) {
-      console.error(`Error loading registry: ${error instanceof Error ? error.message : error}`);
+      logger.error(`Error loading registry: ${error instanceof Error ? error.message : error}`);
     }
   }
 
@@ -257,7 +258,7 @@ export class RegistrySyncer {
         'utf-8',
       );
 
-      console.log(`[registry-sync] Saved ${entries.length} entries to ${this.options.registryPath}`);
+      logger.info(`[registry-sync] Saved ${entries.length} entries to ${this.options.registryPath}`);
     } catch (error) {
       throw new Error(`Failed to save registry: ${error instanceof Error ? error.message : error}`);
     }

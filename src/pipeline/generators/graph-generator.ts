@@ -22,6 +22,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import { normalizeGraphForOutput } from './graph-output.js';
+import logger from '../../utils/logger.js';
 
 /**
  * GraphGenerator - Produce graph.json from dependency graph
@@ -42,7 +43,7 @@ export class GraphGenerator {
     await fs.writeFile(graphPath, content, 'utf-8');
 
     if (state.options.verbose) {
-      console.log(
+      logger.debug(
         `[GraphGenerator] Generated graph.json with ${outputGraph.nodes.length} nodes, ${outputGraph.edges.length} edges`
       );
     }

@@ -20,6 +20,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
+import logger from '../../utils/logger.js';
 
 interface ValidationReport {
   totalReferences: number;
@@ -46,7 +47,7 @@ export class ValidationGenerator {
     await fs.writeFile(reportPath, JSON.stringify(report, null, 2), 'utf-8');
 
     if (state.options.verbose) {
-      console.log(`[ValidationGenerator] Validated ${report.totalReferences} references (${report.brokenReferences.length} broken)`);
+      logger.info(`[ValidationGenerator] Validated ${report.totalReferences} references (${report.brokenReferences.length} broken)`);
     }
   }
 

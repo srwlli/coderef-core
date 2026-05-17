@@ -18,6 +18,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { ExportInfo, ImportInfo } from './ast-extractor.js';
 import type { ElementData } from '../types/types.js';
+import logger from '../utils/logger.js';
 
 // Ordered path-pattern → layer inference table.
 // Patterns are tested with String.includes(); first match wins.
@@ -293,7 +294,7 @@ export class HeaderGenerator {
       // Skip if file already has semantic headers (unless overwrite enabled)
       if (this.hasSemanticHeader(content)) {
         if (this.options.preserveExisting) {
-          console.warn(`[header-generator] ${filePath} already has semantic headers, skipping`);
+          logger.warn(`[header-generator] ${filePath} already has semantic headers, skipping`);
           return;
         }
         // Overwrite: preserve @layer/@capability from existing header so LLM-annotated
@@ -323,7 +324,7 @@ export class HeaderGenerator {
       const newContent = prefix + headerBlock.replace(/\n/g, lineEnding) + lineEnding + lineEnding + suffix;
       fs.writeFileSync(filePath, newContent, 'utf-8');
     } catch (error) {
-      console.error(`Error inserting headers into ${filePath}:`, error instanceof Error ? error.message : error);
+      logger.error(`Error inserting headers into ${filePath}:`, error instanceof Error ? error.message : error);
     }
   }
 
