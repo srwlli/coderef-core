@@ -1,0 +1,46 @@
+{
+  "workorder_id": "WO-INFER-LAYER-PATH-UNIT-TESTS-001",
+  "feature_name": "infer-layer-path-unit-tests",
+  "analysis_authored_at": "2026-05-17T06:35:00Z",
+  "blast_radius": {
+    "files_modified": ["src/semantic/header-generator.test.ts"],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Pattern table may drift from implementation",
+      "likelihood": "low",
+      "impact": "minor",
+      "mitigation": "Import inferLayerFromPath directly from compiled output; test actual export, not a local copy."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Windows path separators in test inputs",
+      "likelihood": "medium",
+      "impact": "minor",
+      "mitigation": "Use forward-slash paths in test inputs — the function normalizes with .replace(/\\\\/g, '/'). Confirm normalization in test assertions."
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/semantic/header-generator.ts",
+      "functions": ["inferLayerFromPath", "inferCapabilityFromPath"],
+      "lines": "86-119",
+      "note": "Both functions are exported; test via the compiled header-generator.test.ts describe block"
+    }
+  ],
+  "dependencies": [
+    "vitest (existing)",
+    "src/semantic/header-generator.ts (subject under test)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "Add tests in the existing header-generator.test.ts rather than a new file",
+      "rationale": "inferLayerFromPath and inferCapabilityFromPath are part of the header-generator module. Co-locating tests keeps the test surface coherent and avoids a new test file discovery entry."
+    }
+  ]
+}

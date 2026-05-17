@@ -1,0 +1,50 @@
+{
+  "workorder_id": "WO-INFER-LAYER-PATH-UNIT-TESTS-001",
+  "feature_name": "infer-layer-path-unit-tests",
+  "created": "2026-05-17T06:35:00Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Stub category=test. Single-file test addition with no architecture impact.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "title": "Write unit tests for inferLayerFromPath and inferCapabilityFromPath",
+      "hard_stop": false,
+      "goal": "Add describe blocks to header-generator.test.ts covering all canonical path-pattern branches of inferLayerFromPath and the slug-formation logic of inferCapabilityFromPath. Vitest suite must pass with no new failures.",
+      "tasks": [
+        {
+          "verb": "READ",
+          "description": "Read src/semantic/header-generator.ts lines 86-119 to understand the full LAYER_PATTERNS table and inferCapabilityFromPath slug logic"
+        },
+        {
+          "verb": "READ",
+          "description": "Read src/semantic/header-generator.test.ts to find the correct import path and existing describe structure"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add describe('inferLayerFromPath') block: test each canonical prefix (src/cli/, src/pipeline/, src/scanner/, src/semantic/, src/integration/, src/rag/, src/query/, src/analyzer/, src/adapter/, src/context/, src/export/, src/plugins/, src/types/, src/utils/, src/cache/, src/validator/, __tests__/, scripts/, src/ root) returns the expected layer string; test unknown path returns undefined"
+        },
+        {
+          "verb": "EDIT",
+          "description": "Add describe('inferCapabilityFromPath') block: test that the function returns a kebab-case slug from filename stem + element name, test multi-word filenames produce correct slugs, test empty element name falls back gracefully"
+        },
+        {
+          "verb": "TEST",
+          "description": "Run npx vitest src/semantic/header-generator.test.ts — confirm all new tests pass and no existing tests regress"
+        },
+        {
+          "verb": "COMMIT",
+          "description": "Commit the test additions to main"
+        }
+      ],
+      "acceptance_criteria": [
+        "inferLayerFromPath: at least 8 canonical path prefixes have an explicit test case",
+        "inferLayerFromPath: unknown path → undefined is tested",
+        "inferCapabilityFromPath: kebab-case slug formation verified for at least 3 distinct filename/element combinations",
+        "vitest run: 0 new failures, all new tests green",
+        "No changes to inferLayerFromPath or inferCapabilityFromPath implementation"
+      ]
+    }
+  ],
+  "hard_stops": []
+}

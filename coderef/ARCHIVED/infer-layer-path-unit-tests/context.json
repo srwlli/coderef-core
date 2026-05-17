@@ -1,0 +1,44 @@
+{
+  "workorder_id": "WO-INFER-LAYER-PATH-UNIT-TESTS-001",
+  "feature_name": "infer-layer-path-unit-tests",
+  "created": "2026-05-17T06:35:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub-promotion",
+    "stub_id": "STUB-308",
+    "improvement_id": "IMP-CORE-092",
+    "user_request": "Add unit tests for inferLayerFromPath and inferCapabilityFromPath (IMP-CORE-092, STUB-308)"
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Stub category=test maps to light plan. Single-file test addition with no blast radius; no .coderef discovery needed.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": ["skipped: light plan"]
+  },
+  "scope": {
+    "in_scope": [
+      "src/semantic/header-generator.ts — inferLayerFromPath() and inferCapabilityFromPath() exported functions",
+      "src/semantic/header-generator.test.ts — add describe blocks for both functions"
+    ],
+    "out_of_scope": [
+      "Changes to inferLayerFromPath or inferCapabilityFromPath logic",
+      "Integration tests or E2E coverage",
+      "Other header-generator functions"
+    ]
+  },
+  "constraints": [
+    "Tests must use vitest (existing test runner)",
+    "No new dependencies",
+    "Pattern table coverage: test at least src/cli/, src/pipeline/, src/scanner/, src/semantic/, src/integration/, __tests__/, scripts/, src/ root — 8+ canonical path prefixes",
+    "inferCapabilityFromPath: test kebab-case slug formation from filename + element name"
+  ]
+}
