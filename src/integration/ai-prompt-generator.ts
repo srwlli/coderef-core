@@ -18,7 +18,9 @@
 
 
 
-import { GraphNode } from '../analyzer/graph-builder.js';
+import type { ExportedGraph } from '../export/graph-exporter.js';
+
+type GraphNode = ExportedGraph['nodes'][number];
 import { ContextTracker } from '../context/context-tracker.js';
 
 /**

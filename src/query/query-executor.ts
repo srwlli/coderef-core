@@ -20,7 +20,9 @@
 
 
 import AnalyzerService from '../analyzer/analyzer-service.js';
-import { GraphNode } from '../analyzer/graph-builder.js';
+import type { ExportedGraph } from '../export/graph-exporter.js';
+
+type GraphNode = ExportedGraph['nodes'][number];
 
 /**
  * Query types supported by the executor
