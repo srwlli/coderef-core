@@ -22,9 +22,9 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | Metric | Value |
 |--------|-------|
 | **Total Files** | 399 |
-| **Total Elements** | 2,488 |
-| **Total Lines** | 107,105 |
-| **Entry Points** | 92 |
+| **Total Elements** | 2,428 |
+| **Total Lines** | 105,101 |
+| **Entry Points** | 75 |
 | **Critical Functions** | 20 |
 
 ---
@@ -90,7 +90,7 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `main` | cli | `demo-all-modules.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-analyze.ts` |
 
-*... and 67 more entry points.*
+*... and 50 more entry points.*
 
 ---
 

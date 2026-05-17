@@ -309,7 +309,7 @@ npx populate-coderef ./my-project --mode full
 | `--semantic-registry` | Generate `semantic-registry.json` projection | `true` |
 | `--semantic` | Legacy alias for `--semantic-registry` | `true` |
 | `--no-semantic-registry` | Remove/skip `semantic-registry.json` projection | `false` |
-| `--source-headers` | Write optional CodeRef-Semantics headers into source files | `false` |
+| `--source-headers` | Write optional CodeRef-Semantics headers into source files. Infers `@layer` from file path patterns automatically (e.g. `src/cli/` → `cli`, `__tests__/` → `test_support`). | `false` |
 | `--overwrite-headers` | Re-write headers even if the file already has them (refreshes stale headers). Requires `--source-headers`. | `false` |
 | `--strict-headers` | Promote semantic-header drift (SH-1, SH-2, SH-3) from warnings to hard errors at the Phase 6 validator. `populate-coderef` exits non-zero on header drift. | `false` |
 | `-j, --json` | Output JSON summary | `false` |
