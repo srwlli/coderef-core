@@ -1,0 +1,110 @@
+{
+  "workorder_id": "WO-MIGRATE-CONSOLE-TO-LOGGER-001",
+  "feature_name": "migrate-console-to-logger",
+  "created": "2026-05-17T09:15:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "complete",
+  "current_phase": 4,
+  "phase_status": "complete",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-console-to-logger/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-console-to-logger/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/coderef-core/coderef/workorder/migrate-console-to-logger/analysis.json",
+  "handoff": {
+    "from": "execute-workorder",
+    "to": "close-workorder",
+    "reason": "All 4 phases complete. Acceptance criteria met. Ready for close."
+  },
+  "execution_rules": {
+    "plan_type": "strict",
+    "hard_stop_on_phase_completion": true,
+    "tsc_gate": "npx tsc --noEmit must exit 0 after every phase",
+    "test_gate": "npx vitest run must pass after every phase",
+    "cli_exclusion": "src/cli/*.ts must never be modified"
+  },
+  "hard_constraints": [
+    "tsc --noEmit must pass after every phase",
+    "vitest must pass after every phase",
+    "No CLI file modified",
+    "No functional behavior change — import + call-site substitution only"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "decision": "JSDoc comment console calls excluded from migration",
+      "rationale": "console.log appearing inside /* * comment blocks are docstring examples, not live code"
+    },
+    {
+      "decision": "verbose-gated console.log mapped to logger.debug",
+      "rationale": "These are diagnostic-only paths already gated behind state.options.verbose; debug() matches semantics and is verbose-gated in logger itself"
+    },
+    {
+      "decision": "Pre-existing flaky timeout in scanner-export.test.ts accepted",
+      "rationale": "Test timed out on first vitest run in Phases 2 and 4, passed clean on second run; pre-existing condition unrelated to logger migration"
+    }
+  ],
+  "phase_transitions": [
+    { "phase": 1, "status": "complete", "commit": "363eecf", "at": "2026-05-17T09:30:00Z" },
+    { "phase": 2, "status": "complete", "commit": "483b812", "at": "2026-05-17T09:45:00Z" },
+    { "phase": 3, "status": "complete", "commit": "1e79da1", "at": "2026-05-17T10:00:00Z" },
+    { "phase": 4, "status": "complete", "commit": "0aedb4f", "at": "2026-05-17T16:37:00Z" }
+  ],
+  "plan_adjustments": [],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "acceptance_results": {
+    "grep_non_cli_console_count": 0,
+    "tsc_exit_code": 0,
+    "vitest_result": "1567/1567 passed",
+    "cli_files_modified": false
+  },
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-17T09:15:00Z",
+      "by": "create-workorder@2.4.0",
+      "note": "Strict 4-phase plan authored. 198 non-CLI console calls across 47 files. CLI files (362 calls) explicitly out of scope."
+    },
+    {
+      "event": "execution_started",
+      "at": "2026-05-17T09:20:00Z",
+      "by": "execute-workorder",
+      "note": "Phase 1 started. Reading scanner.ts, orchestrator.ts, error-reporter.ts."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 1,
+      "at": "2026-05-17T09:30:00Z",
+      "note": "76 calls migrated (scanner.ts 41, orchestrator.ts 21, error-reporter.ts 14). tsc clean, vitest 1567/1567. Commit 363eecf."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 2,
+      "at": "2026-05-17T09:45:00Z",
+      "note": "48 calls migrated across 8 files (loaders, semantic, cache, adapter, plugin files). Import path corrections: 3 files needed ../utils not ../../utils. tsc clean, vitest clean. Commit 483b812."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 3,
+      "at": "2026-05-17T10:00:00Z",
+      "note": "grammar-registry, diff-analyzer (incl console.debug), llm-enricher, file-watcher migrated. 3 files were JSDoc-only (no edits). Import path corrections applied. tsc clean, vitest clean. Commit 1e79da1."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 4,
+      "at": "2026-05-17T16:37:00Z",
+      "note": "33 calls migrated across 26 files (long-tail sweep). Import path fix: pipeline/extractors needed ../../ not ../../../. Acceptance grep=0, tsc clean, vitest 1567/1567. Commit 0aedb4f."
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-05-17T16:40:00Z",
+      "by": "execute-workorder",
+      "note": "All 4 phases complete. 0 non-CLI console calls remain. All acceptance criteria met. Handing off to close-workorder."
+    }
+  ]
+}
