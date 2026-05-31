@@ -17,10 +17,26 @@
 
 
 
-interface _GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
-interface _GraphEdge { source: string; target: string; type: string; }
-interface DependencyGraph { nodes: Map<string, _GraphNode>; edges: _GraphEdge[]; edgesBySource: Map<string, _GraphEdge[]>; edgesByTarget: Map<string, _GraphEdge[]>; }
+import type { ExportedGraph } from '../../export/graph-exporter.js';
 import type { SearchResult } from './semantic-search.js';
+
+/**
+ * Lightweight centrality index derived from an ExportedGraph. The re-ranker
+ * only needs (a) the count of dependents per target node and (b) the total
+ * node count for its simplified-PageRank centrality. We precompute both at
+ * set-graph time so the hot rerank() path stays O(1) per node.
+ *
+ * WO-FIX-BUILD-CLI-GRAPH-BUILDER-RESIDUE-001: completes the graph-builder ->
+ * ExportedGraph migration (fa2b584) on this RAG consumer. Previously this
+ * class took a Map-based DependencyGraph; callers now pass the canonical
+ * ExportedGraph (flat node/edge arrays), and the Map-shaped reverse index is
+ * built internally here instead of by the (now-deleted-path) analyzer graph
+ * builder. Behavior is unchanged — same dependents/total-nodes ratio.
+ */
+interface CentralityIndex {
+  dependentsByTarget: Map<string, number>;
+  nodeCount: number;
+}
 
 /**
  * Options for re-ranking
@@ -116,17 +132,33 @@ interface NodeGraphStats {
  * Re-ranks search results using dependency graph
  */
 export class GraphReRanker {
-  private graph?: DependencyGraph;
+  private index?: CentralityIndex;
 
-  constructor(graph?: DependencyGraph) {
-    this.graph = graph;
+  constructor(graph?: ExportedGraph) {
+    this.index = graph ? GraphReRanker.buildIndex(graph) : undefined;
   }
 
   /**
-   * Set or update the dependency graph
+   * Set or update the dependency graph (canonical ExportedGraph shape).
    */
-  setGraph(graph: DependencyGraph): void {
-    this.graph = graph;
+  setGraph(graph: ExportedGraph): void {
+    this.index = GraphReRanker.buildIndex(graph);
+  }
+
+  /**
+   * Build the centrality index from an ExportedGraph. Counts dependents per
+   * target node using the canonical `targetId` (falling back to the legacy
+   * `target` field, which Phase 5 still populates). Pure + static so it is
+   * trivially testable and has no instance state dependency.
+   */
+  private static buildIndex(graph: ExportedGraph): CentralityIndex {
+    const dependentsByTarget = new Map<string, number>();
+    for (const edge of graph.edges ?? []) {
+      const target = edge.targetId ?? edge.target;
+      if (!target) continue;
+      dependentsByTarget.set(target, (dependentsByTarget.get(target) ?? 0) + 1);
+    }
+    return { dependentsByTarget, nodeCount: graph.nodes?.length ?? 0 };
   }
 
   /**
@@ -136,7 +168,7 @@ export class GraphReRanker {
     results: SearchResult[],
     options?: ReRankingOptions
   ): ReRankedResult[] {
-    if (!this.graph) {
+    if (!this.index) {
       // No graph available, return results as-is
       return results.map((r) => this.toReRankedResult(r, 1.0, {}));
     }
@@ -324,13 +356,15 @@ export class GraphReRanker {
    * Calculate node centrality (simplified PageRank)
    */
   private calculateCentrality(nodeId: string): number {
-    if (!this.graph) {
+    if (!this.index || this.index.nodeCount === 0) {
       return 0;
     }
 
-    // Simple centrality: ratio of dependents to total nodes
-    const dependents = this.graph.edgesByTarget.get(nodeId) || [];
-    return dependents.length / this.graph.nodes.size;
+    // Simple centrality: ratio of dependents to total nodes. Identical
+    // formula to the pre-migration Map-based version; the dependent count
+    // now comes from the precomputed index instead of edgesByTarget.get().
+    const dependentCount = this.index.dependentsByTarget.get(nodeId) ?? 0;
+    return dependentCount / this.index.nodeCount;
   }
 
   /**

@@ -20,7 +20,7 @@
 
 
 
-interface GraphNode { id: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
+interface GraphNode { id: string; uuid?: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
 interface GraphEdge { source: string; target: string; type: string; weight?: number; metadata?: Record<string, unknown>; }
 interface DependencyGraph { nodes: Map<string, GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 import type { LLMProvider } from '../llm/llm-provider.js';
