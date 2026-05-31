@@ -312,8 +312,14 @@ npx populate-coderef ./my-project --mode full
 | `--source-headers` | Write optional CodeRef-Semantics headers into source files. Infers `@layer` from file path patterns automatically (e.g. `src/cli/` → `cli`, `__tests__/` → `test_support`). | `false` |
 | `--overwrite-headers` | Re-write headers even if the file already has them (refreshes stale headers). Requires `--source-headers`. | `false` |
 | `--strict-headers` | Promote semantic-header drift (SH-1, SH-2, SH-3) from warnings to hard errors at the Phase 6 validator. `populate-coderef` exits non-zero on header drift. | `false` |
+| `--enforce-headers` | Fail (exit 1) if header coverage is below `--coverage-floor`. Prevention layer: a header-less codebase can no longer produce a green scan, so new files added without a `@coderef-semantic` header are caught at scan time instead of being silently excluded from the RAG index. | `false` |
+| `--coverage-floor <0-100>` | Minimum `header_coverage_pct` required by `--enforce-headers`. | `100` |
 | `-j, --json` | Output JSON summary | `false` |
 | `-v, --verbose` | Verbose output | `false` |
+
+Every `populate-coderef` run now also prints a `[header coverage] N% (defined X / total Y)` line plus, when files are header-less, a `missing/stale/partial` breakdown — these files are the ones `rag-index` will exclude from the vector index. The number comes from `validation-report.json.header_coverage_pct` (added by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001).
+
+**Stamp-on-write hook.** `scripts/check-header-coverage.mjs` is a pre-commit-hook backend: pipe staged source files to it and it fails the commit if any lacks a header. Example hook body: `git diff --cached --name-only --diff-filter=ACM | xargs node scripts/check-header-coverage.mjs`. Bypassable via `git commit --no-verify`; the `rag-index --coverage-floor` gate is the backstop for anything that slips through.
 
 **Phase 6 chokepoint behavior.** `populate-coderef` runs `validatePipelineState` after the pipeline finishes and writes the resulting 11-field `ValidationReport` to `.coderef/validation-report.json`. The CLI's exit code reflects `ValidationResult.ok`:
 
@@ -384,9 +390,11 @@ npx rag-index --dir ./src --chroma-url http://localhost:8000
 | `--model <name>` | Embedding model | `nomic-embed-text` |
 | `--batch-size <n>` | Batch size for indexing | `100` |
 | `--skip-existing` | Skip already-indexed files | `false` |
+| `--coverage-floor <0-100>` | Warn (or refuse, with `--strict-coverage`) when `header_coverage_pct` is below this floor. Below-floor coverage means chunks from header-less files are silently excluded from the index. `0` disables the check. | `0` |
+| `--strict-coverage` | Make a `--coverage-floor` breach REFUSE indexing (`status='failed'`, `coverageGateRefused=true`) instead of warning. | `false` |
 | `-v, --verbose` | Verbose output | `false` |
 
-(There are no Phase 7 flags on `rag-index` — DR-PHASE-7-D capped new flags at two, both on `rag-search`.)
+`rag-index` now prints `Header coverage: X%` and a `by reason:` breakdown of skipped chunks (e.g. `header_status_missing: N`), so a run that drops most of the codebase for missing headers is no longer indistinguishable from a clean no-op. Coverage flags added by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001.
 
 ### Validation gate (Phase 6 → Phase 7 contract)
 

@@ -51,6 +51,16 @@ interface CliArgs {
   overwriteHeaders: boolean;
   llmEnrich: boolean;
   strictHeaders: boolean;
+  /**
+   * When true, fail (exit 1) if header coverage is below `coverageFloor`.
+   * This is the scan-time prevention layer of
+   * WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001 (P3): a header-less
+   * codebase can no longer produce a "green" populate run. Off by default
+   * (non-breaking); opt in via --enforce-headers.
+   */
+  enforceHeaders: boolean;
+  /** Coverage floor (0-100) for --enforce-headers. Default 100. */
+  coverageFloor: number;
 }
 
 interface GeneratorRunner {
@@ -81,12 +91,20 @@ function parseArgs(argv: string[]): CliArgs {
     overwriteHeaders: false,
     llmEnrich: false,
     strictHeaders: false,
+    enforceHeaders: false,
+    coverageFloor: 100,
   };
 
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
 
-    switch (arg) {
+    // Support --flag=value for the coverage floor.
+    let inlineValue: string | undefined;
+    if (arg.startsWith('--') && arg.includes('=')) {
+      inlineValue = arg.split('=', 2)[1];
+    }
+
+    switch (arg.includes('=') ? arg.split('=', 2)[0] : arg) {
       case '--help':
       case '-h':
         args.help = true;
@@ -161,6 +179,24 @@ function parseArgs(argv: string[]): CliArgs {
       case '--strict-headers':
         args.strictHeaders = true;
         break;
+
+      case '--enforce-headers':
+        args.enforceHeaders = true;
+        break;
+
+      case '--coverage-floor': {
+        const raw = inlineValue ?? argv[++i];
+        const n = Number(raw);
+        if (Number.isFinite(n) && n >= 0 && n <= 100) {
+          args.coverageFloor = n;
+        } else {
+          console.error(
+            `[populate-coderef] Invalid --coverage-floor: ${raw}. Expected 0-100.`,
+          );
+          process.exit(1);
+        }
+        break;
+      }
 
       default:
         if (!arg.startsWith('-')) {
@@ -351,6 +387,24 @@ async function run(args: CliArgs): Promise<void> {
             `missing ${r.header_missing_count}, stale ${r.header_stale_count}, ` +
             `partial ${r.header_partial_count}`,
         );
+      }
+
+      // Stamp-on-write prevention gate (P3, option A). When --enforce-headers
+      // is set, coverage below the floor is a HARD failure — a header-less
+      // codebase can no longer produce a green populate run, so new files
+      // added without a header are caught at scan time rather than silently
+      // dropped from the RAG index later. Off by default (non-breaking);
+      // floor defaults to 100 when enabled.
+      if (args.enforceHeaders && r.header_coverage_pct < args.coverageFloor) {
+        console.error(
+          `[populate-coderef] --enforce-headers: header coverage ` +
+            `${r.header_coverage_pct}% is below the required floor of ` +
+            `${args.coverageFloor}%. ${r.header_missing_count} missing, ` +
+            `${r.header_stale_count} stale, ${r.header_partial_count} partial. ` +
+            `Run \`populate-coderef ${args.projectDir} --source-headers\` to ` +
+            `stamp @coderef-semantic headers, then retry.`,
+        );
+        process.exit(1);
       }
     }
 
