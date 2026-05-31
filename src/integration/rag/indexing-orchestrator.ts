@@ -178,6 +178,27 @@ export interface ValidationGateInput {
   ok: boolean;
   /** Optional path to the validation-report.json that gated the run. */
   reportPath?: string;
+  /**
+   * Header coverage percentage (0-100) from
+   * validation-report.json.header_coverage_pct. Optional so legacy
+   * report shapes (pre-WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001)
+   * keep working — absent coverage disables the floor check entirely.
+   */
+  coveragePct?: number;
+  /**
+   * Minimum acceptable header coverage. When `coveragePct` is below this
+   * floor, indexing either warns (default) or refuses (when
+   * `strictCoverage` is true). Absent floor (or absent coveragePct)
+   * disables the check. The CLI default is supplied by rag-index.
+   */
+  coverageFloor?: number;
+  /**
+   * When true, a coverage-floor breach REFUSES indexing (status='failed',
+   * coverageGateRefused=true) instead of merely warning. Mirrors the
+   * existing strict-headers escalation pattern. Default false (warn only),
+   * so under-covered projects keep indexing on day one (RISK-01).
+   */
+  strictCoverage?: boolean;
 }
 
 /**
@@ -332,6 +353,23 @@ export interface IndexingResult {
 
   /** Optional path to the validation-report.json that gated this run. */
   validationReportPath?: string;
+
+  /**
+   * True when status='failed' because the header-coverage floor was
+   * breached AND strictCoverage was set. When the floor is breached but
+   * strictCoverage is false, this stays falsy and the breach is reported
+   * via `coverageWarning` instead (non-blocking). Additive per DR-PHASE-7-B.
+   * WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001 P1 (B).
+   */
+  coverageGateRefused?: boolean;
+
+  /**
+   * Human-readable coverage-floor breach message, set whenever
+   * `coveragePct < coverageFloor` regardless of strictCoverage. The CLI
+   * surfaces this (Phase 2). Absent when coverage is at/above the floor or
+   * the floor check was disabled.
+   */
+  coverageWarning?: string;
 }
 
 /**
@@ -440,6 +478,57 @@ export class IndexingOrchestrator {
         validationGateRefused: true,
         validationReportPath: options.validation.reportPath,
       };
+    }
+
+    // Coverage-floor gate (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001
+    // P1, option B). Distinct from the ok===false graph-integrity gate
+    // above: a project can have a perfectly valid graph yet silently shed
+    // most of its chunks because they lack @coderef-semantic headers (the
+    // header-status skip filter further down drops every missing/stale/
+    // partial chunk). The floor makes that degradation observable and,
+    // under strictCoverage, refusable. Default is WARN-only (RISK-01): an
+    // under-covered project keeps indexing rather than hard-failing on day
+    // one. The check is disabled when either coveragePct or coverageFloor
+    // is absent (legacy report shapes / floor opt-out).
+    let coverageWarning: string | undefined;
+    const { coveragePct, coverageFloor, strictCoverage } = options.validation;
+    if (
+      typeof coveragePct === 'number' &&
+      typeof coverageFloor === 'number' &&
+      coveragePct < coverageFloor
+    ) {
+      coverageWarning =
+        `Header coverage ${coveragePct}% is below the floor of ${coverageFloor}%. ` +
+        `Chunks from header-less files are excluded from the index; coverage ` +
+        `should be raised (run populate-coderef --source-headers).`;
+      if (strictCoverage) {
+        return {
+          chunksIndexed: 0,
+          chunksSkipped: 0,
+          chunksFailed: 0,
+          stats: {
+            tokensUsed: 0,
+            avgEmbeddingTimeMs: 0,
+            byType: {},
+            byLanguage: {},
+          },
+          errors: [
+            {
+              stage: IndexingStage.ANALYZING,
+              message:
+                `Header-coverage gate refused indexing: ${coverageWarning} ` +
+                `(strict-coverage mode). Re-run without --strict-coverage to ` +
+                `index anyway with a warning.`,
+            },
+          ],
+          status: 'failed',
+          chunksSkippedDetails: [],
+          chunksFailedDetails: [],
+          coverageGateRefused: true,
+          coverageWarning,
+          validationReportPath: options.validation.reportPath,
+        };
+      }
     }
 
     const reportProgress = (
@@ -817,6 +906,7 @@ export class IndexingOrchestrator {
         chunksSkippedDetails,
         chunksFailedDetails,
         validationReportPath: options.validation?.reportPath,
+        ...(coverageWarning ? { coverageWarning } : {}),
       };
     } catch (error: any) {
       errors.push({

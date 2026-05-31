@@ -105,17 +105,20 @@ export interface ValidationWarning {
 }
 
 /**
- * Locked 11-field validation report (R-PHASE-6-C).
+ * Locked validation report (R-PHASE-6-C). Originally 11 fields; extended
+ * to 12 by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001 P1 (added
+ * header_coverage_pct, additive-only per the stability rule below).
  *
  * SCHEMA STABILITY: these field names are now a public artifact contract
  * (CI dashboards, downstream tools). Field names are LOCKED — additive-only
  * future changes; no rename, no drop, without an explicit ORCHESTRATOR
  * sign-off. All fields are required numbers (use 0 for empty categories,
- * never undefined / null / string).
+ * never undefined / null / string). header_coverage_pct was added under this
+ * additive-only allowance.
  *
- * File-grain header counts (R-PHASE-6-F): the 6 header_* fields count
+ * File-grain header counts (R-PHASE-6-F): the 6 header_* count fields count
  * FILES, not elements (one element per multi-element file would otherwise
- * triple-count).
+ * triple-count). header_coverage_pct is derived from those file-grain counts.
  */
 export interface ValidationReport {
   /** Edges with resolutionStatus='resolved' that pass GI-2 and GI-3. */
@@ -140,6 +143,20 @@ export interface ValidationReport {
   header_layer_mismatch_count: number;
   /** Unique files with headerStatus='stale' (SH-2; export drift). */
   header_export_mismatch_count: number;
+  /**
+   * Header coverage as a 0-100 percentage of unique files that carry a
+   * usable @coderef-semantic header. Numerator = header_defined_count;
+   * denominator = defined + missing + stale + partial (every file the graph
+   * knows about that could carry a header). 100 when the denominator is 0
+   * (an empty/header-less project is vacuously fully covered).
+   *
+   * WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001 Phase 1 (B): coverage was
+   * already implicit in the header_*_count fields but never expressed as a
+   * single gate-able number. The rag-index coverage floor (indexing-
+   * orchestrator) reads THIS field. Additive — the existing fields are
+   * unchanged. Mirrors coderef-intelligence-server's header_coverage.pct.
+   */
+  header_coverage_pct: number;
 }
 
 /**
@@ -156,7 +173,7 @@ export interface ValidationResult {
   errors: ValidationError[];
   /** Default-mode header drift surfaces; caller logs and continues. */
   warnings: ValidationWarning[];
-  /** 11-field locked report. Always populated, even on ok=false. */
+  /** 12-field locked report. Always populated, even on ok=false. */
   report: ValidationReport;
 }
 
@@ -583,6 +600,21 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
   const fileToHeaderFact = buildFileHeaderFactMap(state);
   // header_export_mismatch_count == header_stale_count by SH-2 definition.
   const header_export_mismatch_count = header_stale_count;
+
+  // header_coverage_pct (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001 P1).
+  // Denominator = every file the graph knows about that could carry a header
+  // (defined + missing + stale + partial). An empty denominator is vacuously
+  // 100% covered. Rounded to two decimals so the surfaced CLI number is
+  // stable and the gate compares cleanly against an integer floor.
+  const header_total_count =
+    header_defined_count +
+    header_missing_count +
+    header_stale_count +
+    header_partial_count;
+  const header_coverage_pct =
+    header_total_count === 0
+      ? 100
+      : Math.round((header_defined_count / header_total_count) * 10000) / 100;
   // header_layer_mismatch_count: defined-but-not-in-enum (SH-1).
   let header_layer_mismatch_count = 0;
   // Note: the validator caller supplies layerEnum to checkSemanticHeaders
@@ -603,6 +635,7 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
     header_partial_count,
     header_layer_mismatch_count,
     header_export_mismatch_count,
+    header_coverage_pct,
   };
 }
 

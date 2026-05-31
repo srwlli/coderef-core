@@ -222,3 +222,65 @@ describe('Phase 6 SH-3: imports_non_unresolved', () => {
     expect(r.errors.filter(e => e.check === 'imports_non_unresolved')).toEqual([]);
   });
 });
+
+describe('header_coverage_pct (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001 P1)', () => {
+  it('is 100 when every file is defined', () => {
+    const state = makeState([
+      stampedElement('src/a.ts', 'defined'),
+      stampedElement('src/b.ts', 'defined'),
+    ]);
+    const graph = graphWithFileGrain([
+      { file: 'src/a.ts', status: 'defined' },
+      { file: 'src/b.ts', status: 'defined' },
+    ]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
+    expect(r.report.header_coverage_pct).toBe(100);
+  });
+
+  it('is 0 when no file is defined', () => {
+    const state = makeState([stampedElement('src/a.ts', 'missing')]);
+    const graph = graphWithFileGrain([{ file: 'src/a.ts', status: 'missing' }]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
+    expect(r.report.header_coverage_pct).toBe(0);
+  });
+
+  it('counts defined / (defined+missing+stale+partial) across all statuses', () => {
+    // 1 defined of 4 total files => 25%.
+    const state = makeState([
+      stampedElement('src/a.ts', 'defined'),
+      stampedElement('src/b.ts', 'missing'),
+      stampedElement('src/c.ts', 'stale'),
+      stampedElement('src/d.ts', 'partial'),
+    ]);
+    const graph = graphWithFileGrain([
+      { file: 'src/a.ts', status: 'defined' },
+      { file: 'src/b.ts', status: 'missing' },
+      { file: 'src/c.ts', status: 'stale' },
+      { file: 'src/d.ts', status: 'partial' },
+    ]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
+    expect(r.report.header_defined_count).toBe(1);
+    expect(r.report.header_coverage_pct).toBe(25);
+  });
+
+  it('rounds to two decimals (1 of 3 => 33.33)', () => {
+    const state = makeState([
+      stampedElement('src/a.ts', 'defined'),
+      stampedElement('src/b.ts', 'missing'),
+      stampedElement('src/c.ts', 'missing'),
+    ]);
+    const graph = graphWithFileGrain([
+      { file: 'src/a.ts', status: 'defined' },
+      { file: 'src/b.ts', status: 'missing' },
+      { file: 'src/c.ts', status: 'missing' },
+    ]);
+    const r = validatePipelineState(state, graph, { layerEnum, strictHeaders: false });
+    expect(r.report.header_coverage_pct).toBe(33.33);
+  });
+
+  it('is 100 (vacuous) for an empty graph with no file-grain nodes', () => {
+    const state = makeState([]);
+    const r = validatePipelineState(state, emptyGraph(), { layerEnum, strictHeaders: false });
+    expect(r.report.header_coverage_pct).toBe(100);
+  });
+});
