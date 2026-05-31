@@ -326,6 +326,34 @@ async function run(args: CliArgs): Promise<void> {
       );
     }
 
+    // Header-coverage summary (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001
+    // P2, option C). The coverage number already lives in
+    // validation.report.header_coverage_pct (Phase 1) but was previously
+    // only written to validation-report.json on disk, so silent coverage
+    // degradation was invisible to anyone running populate-coderef. Print it
+    // — plus a one-line breakdown of the header-less files that the RAG
+    // indexer will later EXCLUDE — so the degradation is observable at scan
+    // time, not just on a manual audit.
+    {
+      const r = validation.report;
+      const total =
+        r.header_defined_count +
+        r.header_missing_count +
+        r.header_stale_count +
+        r.header_partial_count;
+      console.log(
+        `[header coverage] ${r.header_coverage_pct}% ` +
+          `(defined ${r.header_defined_count} / total ${total})`,
+      );
+      if (r.header_missing_count + r.header_stale_count + r.header_partial_count > 0) {
+        console.log(
+          `[header coverage] header-less files (excluded from RAG index): ` +
+            `missing ${r.header_missing_count}, stale ${r.header_stale_count}, ` +
+            `partial ${r.header_partial_count}`,
+        );
+      }
+    }
+
     // Initialize all generators
     const generators: GeneratorRunner[] = [
       { name: 'index', instance: new IndexGenerator() },

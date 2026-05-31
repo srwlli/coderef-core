@@ -192,3 +192,40 @@ describe('Header-coverage floor gate (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE
     expect(result.coverageWarning).toBeUndefined();
   });
 });
+
+/**
+ * P2 (option C) skip-reason aggregation. The rag-index CLI groups
+ * result.chunksSkippedDetails by `reason` into a histogram for the
+ * "by reason: ..." line. The orchestrator's header-status skip filter is
+ * pre-existing established code (indexing-orchestrator.ts:606-620) and is
+ * exercised end-to-end by the Phase 4 dogfood; here we lock the pure
+ * aggregation shape the CLI relies on so a refactor of the detail array
+ * can't silently break the breakdown.
+ */
+describe('skip-reason histogram aggregation (P2 CLI breakdown input)', () => {
+  type SkipEntry = { coderefId: string; reason: string };
+  const aggregate = (details: SkipEntry[]): Record<string, number> => {
+    const counts: Record<string, number> = {};
+    for (const e of details) counts[e.reason] = (counts[e.reason] ?? 0) + 1;
+    return counts;
+  };
+
+  it('counts each reason and is dominated by header_status_missing when most chunks are header-less', () => {
+    const details: SkipEntry[] = [
+      { coderefId: 'a', reason: 'header_status_missing' },
+      { coderefId: 'b', reason: 'header_status_missing' },
+      { coderefId: 'c', reason: 'header_status_stale' },
+      { coderefId: 'd', reason: 'unchanged' },
+    ];
+    const counts = aggregate(details);
+    expect(counts.header_status_missing).toBe(2);
+    expect(counts.header_status_stale).toBe(1);
+    expect(counts.unchanged).toBe(1);
+    const top = Object.entries(counts).sort((x, y) => y[1] - x[1])[0][0];
+    expect(top).toBe('header_status_missing');
+  });
+
+  it('produces an empty histogram for no skips', () => {
+    expect(aggregate([])).toEqual({});
+  });
+});

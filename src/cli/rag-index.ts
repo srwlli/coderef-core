@@ -75,6 +75,10 @@ interface CliArgs {
   verbose: boolean;
   json: boolean;
   help: boolean;
+  /** Header-coverage floor (0-100). Below it, warn (default) or refuse. */
+  coverageFloor: number;
+  /** When set, a coverage-floor breach REFUSES indexing instead of warning. */
+  strictCoverage: boolean;
 }
 
 /**
@@ -92,6 +96,12 @@ function parseArgs(argv: string[]): CliArgs {
     verbose: false,
     json: false,
     help: false,
+    // Default coverage floor. Warn-only by default (RISK-01): an under-
+    // covered project keeps indexing but the breach is surfaced. 0 floor
+    // effectively disables the warning; we default to 0 so existing runs
+    // are unchanged until an operator opts into a real floor.
+    coverageFloor: 0,
+    strictCoverage: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -133,6 +143,23 @@ function parseArgs(argv: string[]): CliArgs {
 
       case '--reset':
         args.reset = true;
+        break;
+
+      case '--coverage-floor': {
+        const raw = value ?? argv[++i];
+        const n = Number(raw);
+        if (Number.isFinite(n) && n >= 0 && n <= 100) {
+          args.coverageFloor = n;
+        } else {
+          console.warn(
+            `[rag-index] Invalid --coverage-floor: ${raw}. Expected 0-100. Ignoring.`,
+          );
+        }
+        break;
+      }
+
+      case '--strict-coverage':
+        args.strictCoverage = true;
         break;
 
       case '--lang':
@@ -476,13 +503,19 @@ async function main(): Promise<void> {
     // presence + parseable shape as ok=true; absence/parse-failure as
     // refuse-with-error.
     const validationReportPath = path.join(coderefDir, 'validation-report.json');
-    let validation: { ok: boolean; reportPath?: string };
+    let validation: {
+      ok: boolean;
+      reportPath?: string;
+      coveragePct?: number;
+      coverageFloor?: number;
+      strictCoverage?: boolean;
+    };
     try {
       const raw = await fs.readFile(validationReportPath, 'utf-8');
       const parsed = JSON.parse(raw);
       // Accept either: (a) full ValidationResult with explicit ok flag
-      // (programmatic test fixtures), or (b) the 11-field report-only
-      // shape that populate-coderef writes after validation succeeded.
+      // (programmatic test fixtures), or (b) the report-only shape that
+      // populate-coderef writes after validation succeeded.
       const ok =
         typeof parsed.ok === 'boolean'
           ? parsed.ok
@@ -491,7 +524,23 @@ async function main(): Promise<void> {
             : Array.isArray(parsed.errors)
               ? parsed.errors.length === 0
               : false;
-      validation = { ok, reportPath: validationReportPath };
+      // header_coverage_pct may live at the top level (report-only shape)
+      // or under .report (full ValidationResult). Absent in legacy reports
+      // (pre-WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001) — the floor
+      // check disables itself when undefined.
+      const coveragePct =
+        typeof parsed.header_coverage_pct === 'number'
+          ? parsed.header_coverage_pct
+          : typeof parsed.report?.header_coverage_pct === 'number'
+            ? parsed.report.header_coverage_pct
+            : undefined;
+      validation = {
+        ok,
+        reportPath: validationReportPath,
+        coveragePct,
+        coverageFloor: args.coverageFloor > 0 ? args.coverageFloor : undefined,
+        strictCoverage: args.strictCoverage,
+      };
     } catch (err: any) {
       console.error(
         `\n❌ Phase 6 validation gate refused: cannot read ${validationReportPath}.`,
@@ -549,6 +598,10 @@ async function main(): Promise<void> {
       chunksFailedDetails: result.chunksFailedDetails,
       validationGateRefused: result.validationGateRefused ?? false,
       validationReportPath: result.validationReportPath,
+      headerCoveragePct: validation.coveragePct,
+      coverageFloor: validation.coverageFloor,
+      coverageGateRefused: result.coverageGateRefused ?? false,
+      coverageWarning: result.coverageWarning,
     };
 
     const indexPath = path.join(coderefDir, 'rag-index.json');
@@ -567,9 +620,34 @@ async function main(): Promise<void> {
       console.log(`  Chunks indexed: ${result.chunksIndexed}`);
       if (result.chunksSkipped > 0) {
         console.log(`  Chunks skipped: ${result.chunksSkipped}`);
+        // Skip-reason breakdown (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001
+        // P2, option C). The per-chunk reasons were already captured in
+        // chunksSkippedDetails (written to .coderef/rag-index.json) but never
+        // surfaced — so a run that silently dropped most of the codebase for
+        // missing headers looked identical to a clean incremental no-op.
+        // Aggregate + print the reason histogram so the cause is visible.
+        const reasonCounts: Record<string, number> = {};
+        for (const entry of result.chunksSkippedDetails) {
+          reasonCounts[entry.reason] = (reasonCounts[entry.reason] ?? 0) + 1;
+        }
+        const reasonLine = Object.entries(reasonCounts)
+          .sort((a, b) => b[1] - a[1])
+          .map(([reason, count]) => `${reason}: ${count}`)
+          .join(', ');
+        if (reasonLine) {
+          console.log(`    by reason: ${reasonLine}`);
+        }
       }
       if (result.chunksFailed > 0) {
         console.log(`  Chunks failed: ${result.chunksFailed}`);
+      }
+      // Header-coverage line + floor-breach warning (option C). coveragePct
+      // is undefined for legacy validation reports; only print when present.
+      if (typeof validation.coveragePct === 'number') {
+        console.log(`  Header coverage: ${validation.coveragePct}%`);
+      }
+      if (result.coverageWarning) {
+        console.log(`  ⚠️  ${result.coverageWarning}`);
       }
       console.log(`  Processing time: ${(totalTime / 1000).toFixed(2)}s`);
       console.log();
