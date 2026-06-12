@@ -1,0 +1,323 @@
+{
+  "success": true,
+  "version": "1.0",
+  "createdAt": "2026-06-12T20:56:22.013Z",
+  "projectDir": ".",
+  "languages": [
+    "ts",
+    "js",
+    "py"
+  ],
+  "provider": "ollama",
+  "store": "sqlite",
+  "includeHeaderless": false,
+  "stats": {
+    "tokensUsed": 402878,
+    "estimatedCost": 0.00805756,
+    "avgEmbeddingTimeMs": 1248700.892857143,
+    "byType": {
+      "function": 723,
+      "file": 358,
+      "type": 62,
+      "component": 2,
+      "interface": 442,
+      "class": 119,
+      "method": 1071,
+      "constant": 18
+    },
+    "byLanguage": {
+      "typescript": 2729,
+      "javascript": 65,
+      "python": 1
+    }
+  },
+  "chunksIndexed": 2795,
+  "chunksSkipped": 22,
+  "chunksFailed": 0,
+  "processingTimeMs": 34977182,
+  "status": "partial",
+  "chunksSkippedDetails": [
+    {
+      "coderefId": "@Fn/utils/fs.ts#normalizeCoderefPath:19",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#ensureDir:29",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#readLines:38",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#writeLines:46",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#loadJsonFile:54",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#saveJsonFile:70",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#collectFiles:84",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#collectFiles.isExcluded:92",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#collectFiles.walk:96",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.ts#getRelativePath:121",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@File/utils/fs.ts",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#normalizeCoderefPath:18",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#ensureDir:27",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#readLines:35",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#writeLines:42",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#loadJsonFile:49",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#saveJsonFile:65",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#collectFiles:79",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#collectFiles.isExcluded:82",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#collectFiles.walk:85",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@Fn/utils/fs.js#getRelativePath:108",
+      "reason": "header_status_partial"
+    },
+    {
+      "coderefId": "@File/utils/fs.js",
+      "reason": "header_status_partial"
+    }
+  ],
+  "chunksFailedDetails": [],
+  "validationGateRefused": false,
+  "validationReportPath": ".coderef\\validation-report.json",
+  "headerCoveragePct": 99.24,
+  "coverageGateRefused": false,
+  "errors": [
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts'",
+      "context": "@I/types.d.ts#ElementData:11",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts'",
+      "context": "@I/types.d.ts#IndexedCoderef:20",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts'",
+      "context": "@I/types.d.ts#DriftStatus:31",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts'",
+      "context": "@I/types.d.ts#DriftReport:35",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts'",
+      "context": "@I/types.d.ts#DriftDetectionOptions:48",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts'",
+      "context": "@I/types.d.ts#ScanOptions:57",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts'",
+      "context": "@I/types.d.ts#ParsedCoderef:81",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts'",
+      "context": "@File/types.d.ts",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\types.d.ts"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@Cl/scanner.js#Scanner:61",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@M/scanner.js#Scanner.addElement:69",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@M/scanner.js#Scanner.processLine:72",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@M/scanner.js#Scanner.processFile:89",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@M/scanner.js#Scanner.getElements:102",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@Fn/scanner.js#scanCurrentElements:115",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@Fn/scanner.js#isLineCommented:267",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@Fn/scanner.js#isEntirelyCommented:276",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    },
+    {
+      "stage": "converting",
+      "message": "Failed to read file: ENOENT: no such file or directory, open 'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js'",
+      "context": "@File/scanner.js",
+      "originalError": {
+        "errno": -4058,
+        "code": "ENOENT",
+        "syscall": "open",
+        "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\scanner.js"
+      }
+    }
+  ]
+}

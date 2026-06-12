@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-DF3PBN",
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 4,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\plan.json",
@@ -111,7 +111,7 @@
       "id": "ADJ-04",
       "timestamp": "2026-06-12T12:00:40.373Z",
       "type": "adjustment",
-      "summary": "Docs pass while dogfood runs: CLI.md rag-index/rag-search tables were badly drifted (documented --dir/--chroma-url/--model/--query/--threshold which do not exist; --constraint marked deferred but shipped) — rewrote both to actual flag surface, added coderef-mcp-server section + overview row. README rebuild-status bullets updated (11-field -> 12-field ValidationReport drift fix, local-first + MCP bullets). CHANGELOG dated entry added. rag-index printHelp gap fixed: --coverage-floor/--strict-coverage existed in parseArgs but not help; stale ollama-when-implemented example fixed. Also live stdio smoke test of dist MCP server: initialize + tools/list + codebase_summary + what_calls all correct (serverInfo coderef-core v1.0.0, 6 tools, real artifact data, graceful element_not_found)."
+      "summary": "Docs pass while dogfood runs: CLI.md rag-index/rag-search tables were badly drifted (documented --dir/--chroma-url/--model/--query/--threshold which do not exist; --constraint marked deferred but shipped) \u2014 rewrote both to actual flag surface, added coderef-mcp-server section + overview row. README rebuild-status bullets updated (11-field -> 12-field ValidationReport drift fix, local-first + MCP bullets). CHANGELOG dated entry added. rag-index printHelp gap fixed: --coverage-floor/--strict-coverage existed in parseArgs but not help; stale ollama-when-implemented example fixed. Also live stdio smoke test of dist MCP server: initialize + tools/list + codebase_summary + what_calls all correct (serverInfo coderef-core v1.0.0, 6 tools, real artifact data, graceful element_not_found)."
     },
     {
       "id": "ADJ-05",
@@ -130,6 +130,18 @@
       "timestamp": "2026-06-12T13:16:14.295Z",
       "type": "evidence",
       "summary": "Test gate under ollama contention (full-repo dogfood saturating ~6 cores): full-suite run1 5 files/7 tests failed incl. an explicit <100ms perf assertion measuring 131ms; run2 failed ONLY scanner-export (different set -> non-deterministic -> contention, not regression). Isolated rerun of all three victim files (scanner-export, populate-cli, ast-extractor) 40/40 PASS even under ollama load. Suite totals 1635 tests incl. 17 MCP server tests; 1598-1600 pass in full runs with only contention victims failing. Gate accepted as PASS-with-contention-note per prior flaky_test_note precedent; optional clean full run post-dogfood as supplementary."
+    },
+    {
+      "id": "NOTE-KAIZEN",
+      "timestamp": "2026-06-12T13:37:04.132Z",
+      "type": "note",
+      "summary": "Kaizen step attempted; kaizen-log runner FAILS with registry-db IntegrityError (kaizen_entries.status NOT NULL \u2014 runner omits status field; exit 3). Three intended entries recorded here instead: (1) observability/rag-index: buffers ALL output until exit, no per-chunk progress signal \u2014 5h run indistinguishable from hang without CPU probes; (2) performance/rag-index: CPU ollama embedding ~8s/KB, full-repo ~5h vs 40-80min envelope, scoped-fixture dogfood proved provider default in 5min \u2014 prefer scoped evidence runs; (3) correctness/populate-coderef: out-of-tree project dirs fail on ASSISTANT/STANDARDS/layers.json upward-walk \u2014 needs env/flag override. Plus the kaizen-log bug itself (correctness/kaizen-log) \u2014 candidate stub for SKILLS domain."
+    },
+    {
+      "id": "NOTE-DOGFOOD-FULL",
+      "timestamp": "2026-06-12T20:56:22.013Z",
+      "type": "evidence",
+      "summary": "Supplementary full-repo dogfood COMPLETED (operator believed it was killed mid-run, but the buffered result flushed at exit \u2014 createdAt 2026-06-12T20:56:22Z, processingTimeMs 34,977,182 \u2248 9.7h, confirming the buffers-until-exit kaizen note). Result: success=true, provider=ollama (key-aware default confirmed at full-repo scale), store=sqlite (persisted at .coderef/coderef-vectors.json per sqlite-store legacy path, 63.8MB; manifest .coderef/rag-index.json), chunksIndexed=2795, chunksFailed=0, chunksSkipped=22 (all header_status_partial in utils/fs.{ts,js} \u2014 DR-PHASE-7-E default preserved, includeHeaderless=false), headerCoveragePct=99.24, both gates passed. status=partial due to 17 converting-stage ENOENT errors on root-level types.d.ts and scanner.js \u2014 ghost entries in index.json for files that do not exist on disk (stale-index artifact, candidate cleanup item; matches the membership/staleness theme in the unresolved-edge audit). Full output archived at coderef/workorder/coderef-core-mcp-server-and-intelligence-fixes/full-dogfood-result.json. Rides with /close-workorder commit alongside NOTE-KAIZEN."
     }
   ],
   "phase_transitions": [
@@ -186,6 +198,11 @@
       "at": "2026-06-12T10:36:11Z",
       "from": "discover",
       "message": "Post-plan discovery complete: 8 findings (2 critical), plan amended on 4 tasks."
+    },
+    {
+      "at": "2026-06-12T21:38:00Z",
+      "from": "close-workorder",
+      "message": "WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 closed (close-only). Audit PASS: culture 13/13, tracking 17/17 scoped, deps 0 vulns, semantic validation via live MCP validation_status. Evidence riders: NOTE-KAIZEN, NOTE-DOGFOOD-FULL, full-dogfood-result.json."
     }
   ],
   "required_skills": [
@@ -255,5 +272,22 @@
       }
     }
   ],
-  "completed_at": "2026-06-12T13:28:47.003Z"
+  "completed_at": "2026-06-12T13:28:47.003Z",
+  "closed_at": "2026-06-12T21:38:00Z",
+  "close_metadata": {
+    "closed_via": "/close-workorder",
+    "close_mode": "close-only (default v2.8.0; not archived)",
+    "review_status": "PASS",
+    "audit": {
+      "phased_terminal_guard": "PASS (plan_type=strict, guard inert)",
+      "culture_validator": "PASS 13/13 (after align-coderef-culture remediation: mapping-table.json written for CODEREF-CORE)",
+      "tracking_validator_scoped": "17/17 PASS",
+      "dependency_audit": "vulnerabilities=0, critical=0 (advisory: 17 outdated, 26 unused, 3 license)",
+      "quality_diagrams": "N/A (.coderef/reports/quality.json absent)",
+      "route_validation": "skipped (no route-pattern globs matched WO diff)",
+      "semantic_validation": "live MCP validation_status returned locked 12-field report incl header_coverage_pct=99.24 (validated via the WO deliverable itself)"
+    },
+    "what_shipped": "Commit 79605fa6 (main, pushed) - 13 files, +580/-120. Landing commit for WO; preceded by de17dcd/3c6a069 (P1 stabilize), 60d09e3 (P2 local-first RAG), ef68c3c (P3 coderef-mcp-server), 43ee4c5 (docs sweep). Validation: MCP server 17/17 tests + live stdio smoke PASS; scoped dogfood provider=ollama 49/49 chunks; full-repo dogfood 2795/2795 indexed, 0 failed.",
+    "supplementary_evidence": "full-dogfood-result.json (9.7h full-repo ollama run, status=partial due to 17 ghost-entry ENOENT errors on stale index rows for root types.d.ts/scanner.js - cleanup candidate)"
+  }
 }

@@ -1,0 +1,32 @@
+=============================================================
+WORKORDER: WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001  |  coderef-core-mcp-server-and-intelligence-fixes  |  COMPLETE
+Session: SES-coderef-core-mcp-server-and-intelligence-fixes  |  Phases: 4  |  Commits: 7  |  Pushes: 5
+Parent stub: STUB-DF3PBN (closed via ledger; archive confirms)
+
+FILES CREATED:
+  + src/cli/coderef-mcp-server.ts  (ef68c3c)
+  + __tests__/mcp-server.test.ts  (ef68c3c)
+  + .mcp.json  (ef68c3c)
+  + ASSISTANT/.mcp.json  (335f8141)
+  + coderef/workorder/.../scoped-dogfood-result.json  (60d09e3)
+  + coderef/working/coderef-core/coderef-core-next/{roadmap,audit}  (79605fa)
+
+FILES MODIFIED:
+  ~ src/cli/rag-index.ts  (60d09e3)
+  ~ src/cli/rag-search.ts  (60d09e3)
+  ~ src/integration/rag/indexing-orchestrator.ts  (60d09e3)
+  ~ src/integration/vector/vector-store.ts  (60d09e3)
+  ~ docs/{CLI,SCHEMA,API,ARCHITECTURE,AGENT-CONTRACT}.md + README + CHANGELOG  (43ee4c5)
+  ~ ASSISTANT SKILLS/CORE/{rag-index,rag-search} v1.1.0  (ac5066e1)
+  ~ ... and package.json, foundation-docs, CONTEXT.md
+
+PHASE CHECKLIST:
+  [x] Phase 1: Stabilize (tests/CI/hygiene)  (de17dcd + 3c6a069)
+  [x] Phase 2: Local-first RAG + headerless fallback  (60d09e3)
+  [x] Phase 3: coderef-mcp-server + tests + registration  (ef68c3c)
+  [x] Phase 4: Skills/docs/landing/notify  (43ee4c5, e3854df, 79605fa)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (documented pre-existing 6-file drift; identical at HEAD via stash test — outside WO scope)
+
+APPROVE -> /close-workorder WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001
+=============================================================
