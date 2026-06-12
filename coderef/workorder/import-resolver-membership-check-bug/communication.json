@@ -7,9 +7,9 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-XK82Z2",
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 4,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\analysis.json",
@@ -150,6 +150,13 @@
       "commit": "7975e08",
       "verdict": "PASS",
       "at": "2026-06-12T23:40:12.712Z"
+    },
+    {
+      "phase": 4,
+      "to_status": "complete",
+      "commit": "fe7920a",
+      "verdict": "PASS",
+      "at": "2026-06-12T23:45:07.716Z"
     }
   ],
   "plan_adjustments": [
@@ -210,6 +217,12 @@
       "at": "2026-06-13T00:50:00Z",
       "from": "execute-workorder",
       "message": "Phase 4 COMPLETE - final phase of rolling plan reached (close_after_phase=4). Proceeding to full Step 5 close-out per rolling contract."
+    },
+    {
+      "at": "2026-06-13T00:55:00Z",
+      "from": "execute-workorder",
+      "event": "workorder_complete",
+      "message": "All 4 rolling phases complete and pushed: P1 91d8ac7 (membership fix, 833->21 false unresolved), P2 4dcb742 (builtin classification, builtin_count 1186->4622), P3 7975e08 (testOrigin tag + 14-field report, 66.6% of unresolved is test-origin), P4 fe7920a (probableBuiltinMember flag, 5869 flagged). Net: unresolved_count 20701->17551 total / 5854 src-only; valid_edge_count 4293->5266. Stubs XK82Z2/QT400D/K5YBFN/XX4JBC all closed via ledger. Evidence: ADJ-01..ADJ-05. Collateral stubs filed: STUB-Z1ETZD, STUB-5WVGHD."
     }
   ],
   "required_skills": [
@@ -218,5 +231,6 @@
     "/log-session"
   ],
   "inter_phase_results": {},
-  "history": []
+  "history": [],
+  "completed_at": "2026-06-13T00:55:00Z"
 }

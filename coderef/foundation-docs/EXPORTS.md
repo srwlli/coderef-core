@@ -2,8 +2,8 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-31  
-**Total Exported:** 864 elements  
+**Generated:** 2026-06-12  
+**Total Exported:** 859 elements  
 <!-- coderef:uuid=exports-root -->
 
 ---
@@ -18,16 +18,16 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **346** | 400 | 746 |
-| interface | **346** | 99 | 445 |
-| type | **49** | 17 | 66 |
+| function | **347** | 412 | 759 |
+| interface | **344** | 104 | 448 |
+| type | **45** | 19 | 64 |
 | component | **2** | 0 | 2 |
-| class | **115** | 5 | 120 |
-| constant | **6** | 12 | 18 |
+| constant | **6** | 16 | 22 |
+| class | **115** | 4 | 119 |
 
 ---
 
-## Exported Functions (346)
+## Exported Functions (347)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
@@ -35,8 +35,6 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=93a80247-9b51-57ff-ac24-5e1dc206155c --> `cleanupEnvironment` | `__tests__/generators/helpers.ts` | ✅ | projectDir | `93a80247...` |
 | <!-- coderef:uuid=ccc97368-6a6a-5da6-8f77-3525e41b2c88 --> `readJson` | `__tests__/generators/helpers.ts` | ✅ | filePath | `ccc97368...` |
 | <!-- coderef:uuid=829daa03-7ddc-5b7e-9ebb-b7ee8b00bbaa --> `readText` | `__tests__/generators/helpers.ts` | ✅ | filePath | `829daa03...` |
-| <!-- coderef:uuid=39693cc3-b2c1-5b99-a14d-ead77728400e --> `scanCurrentElements` | `scanner.js` | ✅ | dir | `39693cc3...` |
-| <!-- coderef:uuid=5d367891-b9ca-505b-9ee3-79d713432525 --> `isLineCommented` | `scanner.js` | ❌ | line | `5d367891...` |
 | <!-- coderef:uuid=86674bf5-7783-5733-915b-4be3e59600bc --> `convertGraphToElements` | `src/adapter/graph-to-elements.ts` | ❌ | graph, options | `86674bf5...` |
 | <!-- coderef:uuid=6dfb05f7-e3f5-5d1e-9c59-e0876312b67b --> `getConversionStats` | `src/adapter/graph-to-elements.ts` | ❌ | elements | `6dfb05f7...` |
 | <!-- coderef:uuid=311c8034-aeb6-5ed6-88be-9f747412996b --> `visit` | `src/analyzer/ast-element-scanner.ts` | ❌ | node | `311c8034...` |
@@ -81,8 +79,10 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=6a5126c2-fa2f-56a3-8898-35ea29cd5758 --> `extractParametersFromAST` | `src/analyzer/js-call-detector/visitor.ts` | ❌ | ast, filePath, result, context | `6a5126c2...` |
 | <!-- coderef:uuid=4825a2df-7254-5cea-8c04-3964f6d9afae --> `extractElementsFromAST` | `src/analyzer/js-call-detector/visitor.ts` | ❌ | ast, filePath, elements, parentExported | `4825a2df...` |
 | <!-- coderef:uuid=9e1f1bf0-4f12-5c4c-985f-4f607f434348 --> `parseJavaScript` | `src/analyzer/js-parser.ts` | ❌ | code, options | `9e1f1bf0...` |
+| <!-- coderef:uuid=2e5ac029-9ee9-5228-9204-14d765bef2d3 --> `parseJavaScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath, options | `2e5ac029...` |
+| <!-- coderef:uuid=26a6a5cc-0ad1-572c-8b5f-69c9e0d1252e --> `isJavaScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath | `26a6a5cc...` |
 
-*... and 296 more functions. See index.json for complete list.*
+*... and 297 more functions. See index.json for complete list.*
 
 ---
 
@@ -156,7 +156,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=6fdf8568-2170-50ca-8223-7f3093e57db5 --> `EmbeddingTextGenerator` | `src/integration/rag/embedding-text-generator.ts` | `6fdf8568...` |
 | <!-- coderef:uuid=0d0225f9-300e-506d-a0d6-837898da9453 --> `GraphReRanker` | `src/integration/rag/graph-reranker.ts` | `0d0225f9...` |
 | <!-- coderef:uuid=f5c5c197-c021-5c2a-96fa-28630b430f67 --> `IncrementalIndexer` | `src/integration/rag/incremental-indexer.ts` | `f5c5c197...` |
-| <!-- coderef:uuid=f45f8686-fd97-546f-b42c-eb2c8b47f8e3 --> `IndexingOrchestrator` | `src/integration/rag/indexing-orchestrator.ts` | `f45f8686...` |
+| <!-- coderef:uuid=37106727-7895-5ced-b9fd-6c4b12249fa9 --> `IndexingOrchestrator` | `src/integration/rag/indexing-orchestrator.ts` | `37106727...` |
 | <!-- coderef:uuid=2608ef6c-1e5a-5ecc-8721-2f54bc272ade --> `PromptTemplateBuilder` | `src/integration/rag/prompt-templates.ts` | `2608ef6c...` |
 | <!-- coderef:uuid=1ff1abdc-a0c0-5292-a64b-e280c911b8d1 --> `PromptValidator` | `src/integration/rag/prompt-templates.ts` | `1ff1abdc...` |
 | <!-- coderef:uuid=383d815e-6305-562a-9be9-015b438a1007 --> `ConfigError` | `src/integration/rag/rag-config.ts` | `383d815e...` |
@@ -165,7 +165,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=432b7608-b48f-5851-97f4-c4e8abb3fc8c --> `ChromaStore` | `src/integration/vector/chroma-store.ts` | `432b7608...` |
 | <!-- coderef:uuid=07d0d87f-abaf-55f5-a6da-845057590842 --> `PineconeStore` | `src/integration/vector/pinecone-store.ts` | `07d0d87f...` |
 | <!-- coderef:uuid=1d462e28-e64a-5d32-9773-71a84153feb7 --> `SQLiteVectorStore` | `src/integration/vector/sqlite-store.ts` | `1d462e28...` |
-| <!-- coderef:uuid=7daf0ec4-c68b-5fb3-8c5a-5c6209bdb5e0 --> `VectorStoreError` | `src/integration/vector/vector-store.ts` | `7daf0ec4...` |
+| <!-- coderef:uuid=9d758077-704d-5d18-9e92-3fa7fd50373f --> `VectorStoreError` | `src/integration/vector/vector-store.ts` | `9d758077...` |
 | <!-- coderef:uuid=91fc9af0-04f4-5461-82e8-7dcc8d4ec1cf --> `CodeRefParser` | `src/parser/parser.ts` | `91fc9af0...` |
 | <!-- coderef:uuid=cd64cc90-d639-5f55-ab43-7334beda4261 --> `ElementExtractor` | `src/pipeline/extractors/element-extractor.ts` | `cd64cc90...` |
 | <!-- coderef:uuid=e9593c19-256a-5f05-9e84-bf814e73afe7 --> `RelationshipExtractor` | `src/pipeline/extractors/relationship-extractor.ts` | `e9593c19...` |
@@ -208,7 +208,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 ---
 
-## Exported Interfaces (346)
+## Exported Interfaces (344)
 
 | Interface | File | UUID |
 |-----------|------|------|
@@ -243,11 +243,11 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=7b63f1f8-cfc0-561a-89b9-7f10e38a2e0b --> `ProtobufEnum` | `src/analyzer/contract-detector.ts` | `7b63f1f8...` |
 | <!-- coderef:uuid=1b4add4c-0178-53c5-96ca-a8d7590df925 --> `JsonSchema` | `src/analyzer/contract-detector.ts` | `1b4add4c...` |
 
-*... and 316 more interfaces. See index.json for complete list.*
+*... and 314 more interfaces. See index.json for complete list.*
 
 ---
 
-## Exported Type Aliases (49)
+## Exported Type Aliases (45)
 
 | Type | File | UUID |
 |------|------|------|
@@ -271,22 +271,22 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=1498662a-d241-58a3-b719-c90b9bd300da --> `ProgressCallback` | `src/integration/rag/embedding-service.ts` | `1498662a...` |
 | <!-- coderef:uuid=0b5ae7e0-6f23-504f-9adc-baa7296a3078 --> `QueryStrategy` | `src/integration/rag/graph-reranker.ts` | `0b5ae7e0...` |
 | <!-- coderef:uuid=e843f5c5-450c-5aaf-a133-398e36da664a --> `IndexingProgressCallback` | `src/integration/rag/indexing-orchestrator.ts` | `e843f5c5...` |
-| <!-- coderef:uuid=3c77cf0b-b9b5-5588-a79c-d730e8c503f1 --> `SkipReason` | `src/integration/rag/indexing-orchestrator.ts` | `3c77cf0b...` |
-| <!-- coderef:uuid=5bae9ea6-b90a-58db-8f04-df821fb58462 --> `FailReason` | `src/integration/rag/indexing-orchestrator.ts` | `5bae9ea6...` |
-| <!-- coderef:uuid=be811b58-cd31-5349-be1f-b2858be8a692 --> `IndexingStatus` | `src/integration/rag/indexing-orchestrator.ts` | `be811b58...` |
+| <!-- coderef:uuid=9f78125d-9d6e-57c7-b9f9-73e784f10c20 --> `SkipReason` | `src/integration/rag/indexing-orchestrator.ts` | `9f78125d...` |
+| <!-- coderef:uuid=6e029b02-9982-5ee9-acd4-802ea3e2f087 --> `FailReason` | `src/integration/rag/indexing-orchestrator.ts` | `6e029b02...` |
+| <!-- coderef:uuid=ba8fd074-e773-54be-b21e-d733cb01dc30 --> `IndexingStatus` | `src/integration/rag/indexing-orchestrator.ts` | `ba8fd074...` |
 | <!-- coderef:uuid=7972fbab-6cc4-5871-898f-57e006c702a0 --> `AbsolutePath` | `src/integration/rag/path-types.ts` | `7972fbab...` |
 | <!-- coderef:uuid=b13881a2-4b1c-59ef-be28-2f84e858373f --> `RelativePath` | `src/integration/rag/path-types.ts` | `b13881a2...` |
 | <!-- coderef:uuid=154c715f-ee64-54ef-8406-5daafd3bcc29 --> `LLMProviderName` | `src/integration/rag/rag-config.ts` | `154c715f...` |
-| <!-- coderef:uuid=c7581417-7919-5157-84cf-8722ff951371 --> `VectorStoreFactory` | `src/integration/vector/vector-store.ts` | `c7581417...` |
+| <!-- coderef:uuid=af0cc787-7724-5e16-a86e-97a7f303d1a4 --> `VectorStoreFactory` | `src/integration/vector/vector-store.ts` | `af0cc787...` |
 | <!-- coderef:uuid=8e0680b5-bd0b-5d50-957f-6671d4b470cc --> `CallResolutionKind` | `src/pipeline/call-resolver.ts` | `8e0680b5...` |
 | <!-- coderef:uuid=15fa6d0e-7f4b-5d23-af28-e2918ff28c5e --> `SymbolTable` | `src/pipeline/call-resolver.ts` | `15fa6d0e...` |
 | <!-- coderef:uuid=af779a4b-3059-515f-b0d8-369a44f87f0b --> `LayerEnum` | `src/pipeline/element-taxonomy.ts` | `af779a4b...` |
 | <!-- coderef:uuid=8e8053a4-c91a-5317-b907-31f186654bae --> `HeaderStatus` | `src/pipeline/element-taxonomy.ts` | `8e8053a4...` |
-| <!-- coderef:uuid=891c7eff-ba9a-513e-ad48-60d0e6c19afe --> `EdgeRelationship` | `src/pipeline/graph-builder.ts` | `891c7eff...` |
-| <!-- coderef:uuid=ee14055d-6f4a-5c17-9486-63f7dee44b84 --> `EdgeResolutionStatus` | `src/pipeline/graph-builder.ts` | `ee14055d...` |
-| <!-- coderef:uuid=f9d2b008-b0bc-5cb3-9493-de194372eb72 --> `EdgeEvidence` | `src/pipeline/graph-builder.ts` | `f9d2b008...` |
-| <!-- coderef:uuid=7ae25b96-1660-51fa-a142-04adba8f6e64 --> `ImportResolutionKind` | `src/pipeline/import-resolver.ts` | `7ae25b96...` |
-| <!-- coderef:uuid=144305b3-f18d-5cb5-8362-5566b8063177 --> `ExportTable` | `src/pipeline/import-resolver.ts` | `144305b3...` |
+| <!-- coderef:uuid=3fe68c67-a8df-559f-9675-8e22662a285d --> `EdgeRelationship` | `src/pipeline/graph-builder.ts` | `3fe68c67...` |
+| <!-- coderef:uuid=c49c0aa3-0941-520f-8048-7e7982a0d5ab --> `EdgeResolutionStatus` | `src/pipeline/graph-builder.ts` | `c49c0aa3...` |
+| <!-- coderef:uuid=a8fe75a7-606b-5c89-a180-fa0b182d2ce9 --> `EdgeEvidence` | `src/pipeline/graph-builder.ts` | `a8fe75a7...` |
+| <!-- coderef:uuid=237d872f-fd4f-569c-a4b3-9702209ed135 --> `ImportResolutionKind` | `src/pipeline/import-resolver.ts` | `237d872f...` |
+| <!-- coderef:uuid=289b571c-2cab-5004-bceb-77b3ee64b2b8 --> `ExportTable` | `src/pipeline/import-resolver.ts` | `289b571c...` |
 | <!-- coderef:uuid=093cc304-7535-5ee0-9a5e-0246727f7104 --> `LanguageExtension` | `src/pipeline/types.ts` | `093cc304...` |
 | <!-- coderef:uuid=a497508e-08b1-51d1-81ce-6704d5740ab5 --> `RawExportKind` | `src/pipeline/types.ts` | `a497508e...` |
 | <!-- coderef:uuid=43cc591d-cb23-51ce-9fcd-f3c9841e488a --> `PluginSource` | `src/plugins/types.ts` | `43cc591d...` |
@@ -296,10 +296,6 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=0203c58e-c6af-5468-8bc7-360b688e6291 --> `EnrichedElementData` | `src/scanner/tree-sitter-scanner.ts` | `0203c58e...` |
 | <!-- coderef:uuid=1e7e0dec-1d31-5e50-905c-41c34eb4bea7 --> `LogLevel` | `src/utils/logger.ts` | `1e7e0dec...` |
 | <!-- coderef:uuid=ee166bf3-3b64-5d84-9b85-00ddf3e4f64e --> `ConfidenceLevel` | `src/validator/frontend-update-generator.ts` | `ee166bf3...` |
-| <!-- coderef:uuid=06ad52a8-4d45-5348-aac3-37d03e99f035 --> `IndexedCoderef` | `types.d.ts` | `06ad52a8...` |
-| <!-- coderef:uuid=79d5161b-f359-5eed-9006-84784f559713 --> `DriftStatus` | `types.d.ts` | `79d5161b...` |
-| <!-- coderef:uuid=38b6bbd4-0635-5f2b-9f0b-428f044a990b --> `DriftReport` | `types.d.ts` | `38b6bbd4...` |
-| <!-- coderef:uuid=1cf572c0-542a-5ae4-82b5-692cd15bfadb --> `DriftDetectionOptions` | `types.d.ts` | `1cf572c0...` |
 
 ---
 

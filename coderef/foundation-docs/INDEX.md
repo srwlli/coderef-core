@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-31  
+**Generated:** 2026-06-12  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,472 |
-| **Total Files** | 401 |
-| **Total Lines** | 106,340 |
+| **Total Elements** | 2,485 |
+| **Total Files** | 404 |
+| **Total Lines** | 107,712 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,13 +22,13 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 746 | 30.2% |
-| method | 1,075 | 43.5% |
-| interface | 445 | 18.0% |
-| class | 120 | 4.9% |
-| type | 66 | 2.7% |
+| function | 759 | 30.5% |
+| method | 1,071 | 43.1% |
+| interface | 448 | 18.0% |
+| class | 119 | 4.8% |
+| type | 64 | 2.6% |
 | component | 2 | 0.1% |
-| constant | 18 | 0.7% |
+| constant | 22 | 0.9% |
 
 ---
 
@@ -50,17 +50,17 @@
 | 12 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
 | 13 | `src/cli/coderef-rag-server.ts` | 27 | 🟢 Medium |
 | 14 | `src/indexer/relationship-index.ts` | 27 | 🟢 Medium |
-| 15 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
-| 16 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
-| 17 | `src/pipeline/extractors/relationship-extractor.ts` | 25 | 🟢 Medium |
-| 18 | `src/scanner/scanner.ts` | 24 | 🟢 Medium |
-| 19 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
-| 20 | `src/types/types.ts` | 23 | 🟢 Medium |
-| 21 | `src/analyzer/dependency-analyzer.ts` | 22 | 🟢 Medium |
-| 22 | `src/analyzer/design-pattern-detector.ts` | 22 | 🟢 Medium |
-| 23 | `src/indexer/metadata-index.ts` | 22 | 🟢 Medium |
-| 24 | `src/integration/rag/conversation-manager.ts` | 22 | 🟢 Medium |
-| 25 | `src/integration/rag/indexing-orchestrator.ts` | 22 | 🟢 Medium |
+| 15 | `src/cli/coderef-mcp-server.ts` | 25 | 🟢 Medium |
+| 16 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
+| 17 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
+| 18 | `src/pipeline/extractors/relationship-extractor.ts` | 25 | 🟢 Medium |
+| 19 | `src/scanner/scanner.ts` | 24 | 🟢 Medium |
+| 20 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
+| 21 | `src/types/types.ts` | 23 | 🟢 Medium |
+| 22 | `src/analyzer/dependency-analyzer.ts` | 22 | 🟢 Medium |
+| 23 | `src/analyzer/design-pattern-detector.ts` | 22 | 🟢 Medium |
+| 24 | `src/indexer/metadata-index.ts` | 22 | 🟢 Medium |
+| 25 | `src/integration/rag/conversation-manager.ts` | 22 | 🟢 Medium |
 
 ---
 
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,472 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,485 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 
