@@ -26,9 +26,10 @@ node dist/src/cli/index.js <command>
 |---------|---------|-----------|
 | [`coderef-scan`](#coderef-scan) | Scan code for elements | `--dir`, `--lang`, `--recursive`, `--useAST` |
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
-| [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--dir`, `--chroma-url`, `--ollama-url` |
-| [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--query`, `--type`, `--layer`, `--capability` |
-| [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--dir`, `--chroma-url` |
+| [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
+| [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
+| [`coderef-mcp-server`](#coderef-mcp-server) | MCP stdio server exposing `.coderef` intelligence as 6 read-only tools | `--project-dir` |
+| [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
 | [`coderef-watch`](#coderef-watch) | Workspace file-watcher daemon for foundation-docs freshness | `--project-dir`, `--debounce-ms`, `--once`, `--no-pipeline`, `--json` |
 | [`coderef-rag-server`](rag-http-api.md) | Always-on HTTP RAG server for cross-runtime callers (port 52849) | `--port`, `--help` |
@@ -321,7 +322,7 @@ Every `populate-coderef` run now also prints a `[header coverage] N% (defined X 
 
 **Stamp-on-write hook.** `scripts/check-header-coverage.mjs` is a pre-commit-hook backend: pipe staged source files to it and it fails the commit if any lacks a header. Example hook body: `git diff --cached --name-only --diff-filter=ACM | xargs node scripts/check-header-coverage.mjs`. Bypassable via `git commit --no-verify`; the `rag-index --coverage-floor` gate is the backstop for anything that slips through.
 
-**Phase 6 chokepoint behavior.** `populate-coderef` runs `validatePipelineState` after the pipeline finishes and writes the resulting 11-field `ValidationReport` to `.coderef/validation-report.json`. The CLI's exit code reflects `ValidationResult.ok`:
+**Phase 6 chokepoint behavior.** `populate-coderef` runs `validatePipelineState` after the pipeline finishes and writes the resulting 12-field `ValidationReport` to `.coderef/validation-report.json`. The CLI's exit code reflects `ValidationResult.ok`:
 
 | `ValidationResult` | Exit code | Stderr |
 |---|---:|---|
@@ -377,22 +378,25 @@ The CLI binary is `rag-index` (registered in `package.json`). `coderef-rag-index
 ### Usage
 
 ```bash
-npx rag-index --dir ./src --chroma-url http://localhost:8000
+npx rag-index --project-dir ./my-project
 ```
 
 ### Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-d, --dir <path>` | Directory to index | Current directory |
-| `--chroma-url <url>` | ChromaDB server URL | `http://localhost:8000` |
-| `--ollama-url <url>` | Ollama server URL | `http://localhost:11434` |
-| `--model <name>` | Embedding model | `nomic-embed-text` |
-| `--batch-size <n>` | Batch size for indexing | `100` |
-| `--skip-existing` | Skip already-indexed files | `false` |
+| `-p, --project-dir <path>` | Project directory to index (also accepts first positional argument) | Current directory |
+| `--provider <provider>` | Embedding provider: `openai`, `anthropic`, `ollama` | Key-aware: `openai` if `OPENAI_API_KEY` is set, else `ollama` (local-first; cloud is opt-in) |
+| `--store <store>` | Vector store: `sqlite`, `pinecone`, `chroma` | `sqlite` |
+| `--reset` | Reset existing index before indexing | `false` |
+| `--include-headerless` | Embed chunks from header-less elements (`headerStatus` ∈ {missing, stale, partial}) with `header:false` provenance instead of skipping them — enables RAG on repos that were never header-annotated. Default behavior (skip-with-reason) preserves DR-PHASE-7-E. | `false` |
 | `--coverage-floor <0-100>` | Warn (or refuse, with `--strict-coverage`) when `header_coverage_pct` is below this floor. Below-floor coverage means chunks from header-less files are silently excluded from the index. `0` disables the check. | `0` |
 | `--strict-coverage` | Make a `--coverage-floor` breach REFUSE indexing (`status='failed'`, `coverageGateRefused=true`) instead of warning. | `false` |
+| `-l, --lang <languages>` | Comma-separated language filter | All languages |
+| `-j, --json` | Output results as JSON | `false` |
 | `-v, --verbose` | Verbose output | `false` |
+
+**Provider default is key-aware** (WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001): with no `--provider` flag, the CLI selects `openai` only when `OPENAI_API_KEY` is present in the environment, otherwise `ollama` with `nomic-embed-text` (768-dim, fully local). `rag-search` applies the same rule, so index and query embeddings stay on the same model. Cloud embedding is never a silent default.
 
 `rag-index` now prints `Header coverage: X%` and a `by reason:` breakdown of skipped chunks (e.g. `header_status_missing: N`), so a run that drops most of the codebase for missing headers is no longer indistinguishable from a clean no-op. Coverage flags added by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001.
 
@@ -416,31 +420,34 @@ This is the load-bearing Phase 6 → Phase 7 gate (DR-PHASE-7-A). Programmatic c
 |---------|-----------|----------:|--------|
 | `success` | `chunksIndexed > 0` AND `chunksSkipped === 0` AND `chunksFailed === 0` | `0` | quiet |
 | `partial` | `chunksIndexed > 0` AND (`chunksSkipped > 0` OR `chunksFailed > 0`) | `0` | warning summary with skipped/failed counts and per-entry reasons |
-| `failed`  | `chunksIndexed === 0` OR `validationGateRefused === true` | non-zero | error detail |
+| `failed`  | `chunksIndexed === 0` OR `validationGateRefused === true` OR `coverageGateRefused === true` | non-zero | error detail |
 
 `chunksSkippedDetails[]` and `chunksFailedDetails[]` carry one entry per skipped/failed chunk with a `reason` enum (see [docs/SCHEMA.md § 6](./SCHEMA.md) for `SkipReason` / `FailReason`). Header-drift (`headerStatus` ∈ {missing, stale, partial}) skips with the corresponding `header_status_*` reason rather than failing — DR-PHASE-7-E.
 
 ### Examples
 
 ```bash
-# Index with local ChromaDB
-npx rag-index --dir ./src
+# Index current project (local ollama unless OPENAI_API_KEY is set)
+npx rag-index
 
-# Index with remote ChromaDB
-npx rag-index --dir ./src --chroma-url https://chroma.example.com
+# Index a specific project with OpenAI embeddings
+npx rag-index --project-dir ./my-project --provider openai
 
-# Use specific embedding model
-npx rag-index --dir ./src --model all-minilm
+# Index a repo that was never header-annotated
+npx rag-index --project-dir ./legacy-repo --include-headerless
 
-# Incremental indexing
-npx rag-index --dir ./src --skip-existing
+# Enforce a header-coverage floor (refuse below 80%)
+npx rag-index --coverage-floor 80 --strict-coverage
+
+# Reset and re-index TypeScript only
+npx rag-index --reset --lang ts,tsx
 ```
 
 ### Prerequisites
 
 - `.coderef/validation-report.json` present and `ok=true` — run `populate-coderef` first.
-- ChromaDB server running (local or remote).
-- Ollama server running (for embeddings).
+- For the `ollama` provider (the local-first default): Ollama server running at `http://localhost:11434` with `nomic-embed-text` pulled.
+- For `--store chroma`: ChromaDB server running. The default `sqlite` store needs no server.
 
 ---
 
@@ -453,52 +460,55 @@ The CLI binary is `rag-search` (registered in `package.json`). `coderef-rag-sear
 ### Usage
 
 ```bash
-npx rag-search --query "authentication middleware" --type function
+npx rag-search "authentication middleware" --type function
 ```
+
+The query is a positional argument (natural language works best).
 
 ### Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-q, --query <text>` | Search query (required) | - |
+| `-p, --project-dir <path>` | Project directory to search | Current directory |
+| `--provider <provider>` | Embedding provider: `openai`, `anthropic`, `ollama`. **Must match the provider the index was built with** — mismatched models produce empty or garbage results. | Key-aware: `openai` if `OPENAI_API_KEY` is set, else `ollama` (same rule as `rag-index`) |
+| `--store <store>` | Vector store: `sqlite`, `pinecone`, `chroma` | `sqlite` |
+| `-k, --top-k <n>` | Number of results to return | `10` |
+| `--min-score <n>` | Minimum relevance score 0–1 | None |
 | `-t, --type <type>` | Filter by element type (`function`, `class`, `method`, ...) | All types |
+| `-f, --file <pattern>` | Filter by file path pattern | None |
+| `-l, --lang <language>` | Filter by programming language | All languages |
+| `--exported` | Only show exported elements | `false` |
 | `--layer <value>` | Filter by semantic `@layer` (e.g. `service`, `ui_component`, `cli`). Phase 7. | None |
 | `--capability <value>` | Filter by semantic `@capability` slug (kebab-case). Phase 7. | None |
-| `--max-results <n>` | Maximum results | `10` |
-| `--threshold <score>` | Minimum similarity score | `0.7` |
-| `--chroma-url <url>` | ChromaDB server URL | `http://localhost:8000` |
-| `--ollama-url <url>` | Ollama server URL | `http://localhost:11434` |
-| `--model <name>` | Embedding model | `nomic-embed-text` |
+| `--constraint <key:value>` | Generalized filter shorthand. Keys: `type`, `file`, `lang`, `layer`, `capability`, `exported`. | None |
 | `--max-tokens <n>` | Truncate output to approximately N tokens (chars/4 estimate). Applies to both human-readable and `--json` modes. Omit for unbounded output. | None |
-| `--json` | Output as JSON | `false` |
+| `-j, --json` | Output as JSON | `false` |
 
 `--layer` and `--capability` map to the `CodeChunk.{layer, capability}` facets propagated from `ElementData` via `GraphNode.metadata` (Phase 5 → Phase 7). They pass through to the vector-store metadata filter — only chunks with matching values are returned. Layer values come from `ASSISTANT/STANDARDS/layers.json` (the 13-value `LayerEnum`); capability values are free-form kebab-case slugs declared in source headers.
-
-`--constraint` is **deferred** (DR-PHASE-7-D capped new flags at two on `rag-search`). Filtering by constraint can be achieved post-query with JSON output.
 
 ### Examples
 
 ```bash
 # Basic search
-npx rag-search --query "user login function"
+npx rag-search "user login function"
 
 # Filter by element type
-npx rag-search --query "database connection" --type class
+npx rag-search "database connection" --type class
 
 # Filter by semantic layer (Phase 7)
-npx rag-search --query "queue worker" --layer service
+npx rag-search "queue worker" --layer service
 
 # Filter by capability slug (Phase 7)
-npx rag-search --query "embedding" --capability rag-indexing
+npx rag-search "embedding" --capability rag-indexing
 
 # Combine filters
-npx rag-search --query "validate" --layer validation --capability output-validation
+npx rag-search "validate" --layer validation --capability output-validation
 
-# Higher threshold for precision
-npx rag-search --query "error handling" --threshold 0.85
+# Higher score floor for precision
+npx rag-search "error handling" --min-score 0.85
 
 # JSON output for piping
-npx rag-search --query "API routes" --json | jq '.results[]'
+npx rag-search "API routes" --json | jq '.results[]'
 ```
 
 ### Output Format
@@ -527,28 +537,29 @@ npx rag-search --query "API routes" --json | jq '.results[]'
 
 Check the status of the RAG index.
 
+The CLI binary is `rag-status` (registered in `package.json`). `coderef-rag-status` is the historical name.
+
 ### Usage
 
 ```bash
-npx coderef-rag-status --dir ./src
+npx rag-status --project-dir ./my-project
 ```
 
 ### Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-d, --dir <path>` | Project directory | Current directory |
-| `--chroma-url <url>` | ChromaDB server URL | `http://localhost:8000` |
-| `--json` | Output as JSON | `false` |
+| `-p, --project-dir <path>` | Project directory (also accepts first positional argument) | Current directory |
+| `-j, --json` | Output as JSON | `false` |
 
 ### Examples
 
 ```bash
 # Check status
-npx coderef-rag-status --dir ./src
+npx rag-status --project-dir ./my-project
 
 # JSON output
-npx coderef-rag-status --dir ./src --json
+npx rag-status --project-dir ./my-project --json
 ```
 
 ### Output
@@ -561,6 +572,65 @@ Documents: 1,247
 Last Updated: 2026-04-23T18:30:00Z
 Status: ✓ Connected
 ```
+
+---
+
+## coderef-mcp-server
+
+MCP (Model Context Protocol) stdio server that exposes a project's `.coderef/` intelligence artifacts as 6 read-only tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+
+Built inside coderef-core and typed against `ExportedGraph` — schema drift between the graph exporter and the MCP surface is a compile error, not a runtime mystery (the failure mode that killed the previous external Python server).
+
+### Usage
+
+```bash
+npx coderef-mcp-server --project-dir ./my-project
+```
+
+The server speaks JSON-RPC over stdio; all diagnostics go to stderr. It is meant to be launched by an MCP client, not used interactively.
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `-p, --project-dir <path>` | Project root containing `.coderef/` (also accepts first positional argument) | Current directory |
+
+### Tools
+
+| Tool | Question it answers |
+|------|---------------------|
+| `what_calls` | Which resolved call sites invoke this element? (inbound call edges, with `file:line` locations) |
+| `what_imports` | Which modules/elements import this element? (inbound resolved import edges) |
+| `impact_of` | What breaks if this changes? Transitive inbound dependents via reverse BFS (depth 1–10, default 3), with dependents-by-depth and affected files |
+| `find_element` | Look up elements in `index.json` by name, codeRefId, or file substring; optional type filter; returns layer/capability when annotated |
+| `codebase_summary` | Project totals: elements by type, header coverage, graph node/edge counts by relationship |
+| `validation_status` | The 12-field locked `ValidationReport` verbatim, plus a pass/fail summary |
+
+Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
+
+### Registration (Claude Code)
+
+`.mcp.json` at the repo root registers the server under the domain name `coderef-core`:
+
+```json
+{
+  "mcpServers": {
+    "coderef-core": {
+      "command": "node",
+      "args": [
+        "<repo>/dist/src/cli/coderef-mcp-server.js",
+        "--project-dir", "<project-to-analyze>"
+      ]
+    }
+  }
+}
+```
+
+### Prerequisites
+
+- `.coderef/graph.json` and `.coderef/index.json` present — run the pipeline (`populate-coderef` or `coderef-pipeline`) first.
+- `.coderef/validation-report.json` for `validation_status` (the tool degrades gracefully with `error: 'validation_report_missing'` if absent).
+- Artifacts are cached with mtime invalidation — re-running the pipeline is picked up automatically without restarting the server.
 
 ---
 

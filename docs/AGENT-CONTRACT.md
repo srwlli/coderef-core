@@ -1,6 +1,6 @@
 # Agent Usage Contract — `@coderef/core`
 
-**Last updated:** 2026-05-05 (Phase 8 — pipeline rebuild close)
+**Last updated:** 2026-06-12 (MCP server + local-first RAG)
 **Status:** post-rebuild canonical agent contract
 
 This is the canonical contract for **LLM agents and downstream automation** that consume `@coderef/core` artifacts. It tells you what to read, what to ignore, what the gates mean, and how to interpret exit codes — without requiring you to read the source.
@@ -15,27 +15,28 @@ Agents should consume the **exported artifacts**, not the internal pipeline stat
 
 ### `.coderef/validation-report.json` (Phase 6)
 
-Public artifact. Locked 11-field shape (R-PHASE-6-C). Field names are additive-only — no rename, no drop, without explicit ORCHESTRATOR sign-off.
+Public artifact. Locked 12-field shape (R-PHASE-6-C; `header_coverage_pct` added additively by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001). Field names are additive-only — no rename, no drop, without explicit ORCHESTRATOR sign-off.
 
 ```json
 {
-  "valid_edge_count": 3464,
-  "unresolved_count": 0,
-  "ambiguous_count": 0,
-  "external_count": 0,
-  "builtin_count": 0,
-  "header_defined_count": 0,
-  "header_missing_count": 262,
+  "valid_edge_count": 4293,
+  "unresolved_count": 20701,
+  "ambiguous_count": 3366,
+  "external_count": 576,
+  "builtin_count": 1169,
+  "header_defined_count": 261,
+  "header_missing_count": 0,
   "header_stale_count": 0,
-  "header_partial_count": 0,
+  "header_partial_count": 2,
   "header_layer_mismatch_count": 0,
-  "header_export_mismatch_count": 0
+  "header_export_mismatch_count": 0,
+  "header_coverage_pct": 99.24
 }
 ```
 
 The CLI also emits an inferred `ok` flag alongside the report: `ok=true` iff the validator returned `errors.length === 0`. Agents that gate downstream work on validation should read this `ok` flag (or recompute from `errors[]` if they consume the in-process `ValidationResult`).
 
-**The above numbers are the actual post-Phase-7 baseline from coderef-core's own scan.** Treat them as illustrative of a healthy state, not as fixed expectations.
+**The above numbers are the actual baseline from coderef-core's own scan (post header-stamping, 2026-05-31).** Treat them as illustrative of a healthy state, not as fixed expectations.
 
 ### `.coderef/rag-index.json` and `IndexingResult` (Phase 7)
 
@@ -47,6 +48,8 @@ The Phase 7 indexer returns an `IndexingResult`. The shape is **strictly additiv
 - `chunksFailedDetails: FailEntry[]` — one entry per failed chunk. `length === chunksFailed` (Phase 7 invariant). Each entry has `coderefId`, `reason: FailReason`, optional `message`.
 - `validationGateRefused?: boolean` — `true` iff `status='failed'` because the Phase 6 validation gate refused the run.
 - `validationReportPath?: string` — path to the `validation-report.json` that gated this run.
+- `coverageGateRefused?: boolean` — `true` iff `status='failed'` because `header_coverage_pct` breached `--coverage-floor` with `--strict-coverage` set.
+- `coverageWarning?: string` — set on any floor breach (strict or not); non-blocking in default mode.
 
 ### `ExportedGraph` (Phase 5)
 
@@ -57,6 +60,12 @@ The canonical graph artifact. 8-field edges, 10-variant `EdgeEvidence` discrimin
 ### `CodeChunk` (Phase 7 RAG)
 
 Each indexed chunk carries optional semantic facets propagated from `ElementData.{layer, capability, constraints, headerStatus}` via `GraphNode.metadata`. These facets are filterable via `rag-search --layer <value>` and `rag-search --capability <value>`.
+
+Header-less elements are skipped with `header_status_*` reasons by default (DR-PHASE-7-E). With `rag-index --include-headerless` they are embedded instead, tagged `header: false` in the vector-store chunk metadata — agents consuming search results from such an index should treat `header: false` chunks as lower-provenance.
+
+### Prefer the MCP tools over parsing artifacts by hand
+
+`coderef-mcp-server` (MCP domain `coderef-core`, registered via `.mcp.json`) exposes the artifacts above as 6 read-only tools: `what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`. If your runtime is MCP-capable, use these instead of reading `graph.json`/`index.json` directly — the server is typed against `ExportedGraph`, traverses only `resolved` edges, and returns ambiguity envelopes (≤5 candidates) rather than guessing. `validation_status` returns the 12-field report verbatim. See [docs/CLI.md § coderef-mcp-server](./CLI.md#coderef-mcp-server).
 
 ---
 

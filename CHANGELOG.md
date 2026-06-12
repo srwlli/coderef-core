@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-12] — MCP Server + Local-First RAG
+
+WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 (with header-coverage groundwork from WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001).
+
+### Added
+- **`coderef-mcp-server`** — MCP stdio server exposing `.coderef/` intelligence as 6 read-only tools (`what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`). Registered as the `coderef-core` MCP domain via `.mcp.json`; new bin entry in `package.json`. Typed against `ExportedGraph` so graph-schema drift fails at compile time. Artifact cache with mtime invalidation; resolved-edges-only traversal; ambiguity envelope returns ≤5 candidates instead of guessing.
+- `rag-index --include-headerless` — embed chunks from header-less elements (`headerStatus` ∈ {missing, stale, partial}) with `header:false` provenance instead of skipping them, enabling RAG on repos that were never header-annotated. Skip-with-reason (DR-PHASE-7-E) remains the default. `CodeChunkMetadata` gains an optional `header` boolean.
+- `rag-index --coverage-floor <0-100>` / `--strict-coverage` — header-coverage gate (warn or refuse below floor), surfaced in `--help` (flags shipped earlier via WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001).
+- `header_coverage_pct` — 12th field of the locked `ValidationReport` (additive), surfaced by `populate-coderef` and `rag-index` output.
+
+### Changed
+- **Embedding provider default is now key-aware**: `openai` only when `OPENAI_API_KEY` is set, otherwise `ollama`/`nomic-embed-text` (local-first). Applies identically to `rag-index` and `rag-search` so query embeddings always match the index model. Cloud embedding is opt-in, never a silent default.
+- `docs/CLI.md` — rewrote `rag-index`/`rag-search` option tables to match the shipped flag surface (stale `--dir`/`--chroma-url`/`--model`/`--query`/`--threshold` flags removed; `--constraint` documented as shipped, not deferred); added `coderef-mcp-server` section.
+
+---
+
 ## [2026-05-05] — Phase 8: Documentation Update
 
 ### Documentation

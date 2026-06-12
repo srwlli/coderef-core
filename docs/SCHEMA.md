@@ -429,7 +429,7 @@ interface ExportedGraph {
 
 Truth source: `src/pipeline/output-validator.ts` lines 110–151.
 
-The 11-field locked `ValidationReport` is a public artifact contract — field names are LOCKED additive-only (no rename, no drop, without explicit ORCHESTRATOR sign-off). All fields are required numbers (use 0 for empty categories, never undefined / null / string).
+The 12-field locked `ValidationReport` is a public artifact contract — field names are LOCKED additive-only (no rename, no drop, without explicit ORCHESTRATOR sign-off). All fields are required numbers (use 0 for empty categories, never undefined / null / string). Originally 11 fields; `header_coverage_pct` was added as the 12th under the additive-only allowance (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001).
 
 ```typescript
 interface ValidationReport {
@@ -444,6 +444,9 @@ interface ValidationReport {
   header_partial_count: number;
   header_layer_mismatch_count: number; // SH-1
   header_export_mismatch_count: number; // SH-2 export drift
+  header_coverage_pct: number;         // derived: defined / (defined+missing+stale+partial) × 100,
+                                       // file-grain, 2-decimal; vacuously 100 on empty denominator.
+                                       // Read by the rag-index --coverage-floor gate.
 }
 
 interface ValidationResult {
@@ -456,15 +459,18 @@ interface ValidationResult {
 
 `validatePipelineState(state, graph, options)` is **pure**: no fs, no `process.exit`, no console. The CLI plumbs `ValidatePipelineStateOptions.layerEnum` (loaded from `ASSISTANT/STANDARDS/layers.json`) and `strictHeaders` directly per DR-PHASE-6-D.
 
-Real-world post-Phase-7 baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`):
+Real-world baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`; post header-stamping, 2026-05-31):
 
 | Field | Value |
 |-------|------:|
-| `valid_edge_count` | 3464 |
-| `header_missing_count` | 262 |
-| `header_defined_count` | 0 |
-| `header_stale_count` | 0 |
-| `header_partial_count` | 0 |
+| `valid_edge_count` | 4293 |
+| `unresolved_count` | 20701 |
+| `ambiguous_count` | 3366 |
+| `external_count` | 576 |
+| `builtin_count` | 1169 |
+| `header_defined_count` | 261 |
+| `header_partial_count` | 2 |
+| `header_coverage_pct` | 99.24 |
 | (other counts) | 0 |
 | (inferred `ok`) | true |
 
@@ -474,7 +480,7 @@ Real-world post-Phase-7 baseline (from coderef-core's own scan, committed at `.c
 
 Truth source: `src/integration/rag/indexing-orchestrator.ts` lines 138–224 and `src/integration/rag/code-chunk.ts` lines 17–143.
 
-The Phase 7 `IndexingResult` shape is **strictly additive** over the pre-Phase-7 contract (DR-PHASE-7-B): numeric counts keep their original types; the new fields (`status`, `*Details`, `validationGateRefused`, `validationReportPath`) are additive.
+The Phase 7 `IndexingResult` shape is **strictly additive** over the pre-Phase-7 contract (DR-PHASE-7-B): numeric counts keep their original types; the new fields (`status`, `*Details`, `validationGateRefused`, `validationReportPath`, and the coverage-gate pair `coverageGateRefused` / `coverageWarning`) are additive.
 
 ```typescript
 type IndexingStatus = 'success' | 'partial' | 'failed';
@@ -507,6 +513,9 @@ interface IndexingResult {
   chunksFailedDetails: FailEntry[];         // length === chunksFailed (invariant)
   validationGateRefused?: boolean;          // true when status='failed' due to refused validation gate
   validationReportPath?: string;            // path to the validation-report.json that gated this run
+  coverageGateRefused?: boolean;            // true when status='failed' because header_coverage_pct
+                                            // breached --coverage-floor AND --strict-coverage was set
+  coverageWarning?: string;                 // breach message, set on ANY floor breach (strict or not)
 }
 ```
 
@@ -516,9 +525,11 @@ interface IndexingResult {
 |---------|-----------|
 | `success` | `chunksIndexed > 0` AND `chunksSkipped === 0` AND `chunksFailed === 0` |
 | `partial` | `chunksIndexed > 0` AND (`chunksSkipped > 0` OR `chunksFailed > 0`) |
-| `failed`  | `chunksIndexed === 0` OR `validationGateRefused === true` |
+| `failed`  | `chunksIndexed === 0` OR `validationGateRefused === true` OR `coverageGateRefused === true` |
 
-The orchestrator **refuses to run** when the gating `ValidationResult.ok === false` (DR-PHASE-7-A): `IndexingResult` is returned with `status='failed'` and `validationGateRefused=true`. This eliminates the pre-Phase-7 `chunksIndexed=0` silent-success anti-pattern.
+The orchestrator **refuses to run** when the gating `ValidationResult.ok === false` (DR-PHASE-7-A): `IndexingResult` is returned with `status='failed'` and `validationGateRefused=true`. This eliminates the pre-Phase-7 `chunksIndexed=0` silent-success anti-pattern. The header-coverage floor behaves analogously: below `--coverage-floor` with `--strict-coverage` set, the run refuses with `coverageGateRefused=true`; without strict mode the breach is surfaced via `coverageWarning` and indexing proceeds.
+
+**Header-less elements** (`headerStatus` ∈ {missing, stale, partial}) skip with the corresponding `header_status_*` `SkipReason` by default (DR-PHASE-7-E). With `IndexingOptions.includeHeaderless` (CLI: `rag-index --include-headerless`) they are embedded instead, tagged `header: false` in the vector-store chunk metadata (`CodeChunkMetadata.header`); fully header-defined chunks carry `header: true`.
 
 ### `CodeChunk` (Phase 7 facets)
 
