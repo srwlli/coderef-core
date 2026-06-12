@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "coderef-core": {
+      "command": "node",
+      "args": [
+        "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/dist/src/cli/coderef-mcp-server.js",
+        "--project-dir",
+        "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE"
+      ]
+    }
+  }
+}

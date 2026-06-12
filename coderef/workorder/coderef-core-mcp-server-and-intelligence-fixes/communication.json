@@ -8,7 +8,7 @@
   "parent_stub_id": "STUB-DF3PBN",
   "predecessor_for": null,
   "status": "plan_created",
-  "current_phase": 2,
+  "current_phase": 3,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\context.json",
@@ -124,6 +124,12 @@
       "timestamp": "2026-06-12T13:11:52.163Z",
       "type": "evidence",
       "summary": "P2-T4 dogfood evidence via operator-approved parallel scoped run: full-repo dogfood measured at ~8s/KB CPU embedding (1KB probe 7.9s, 4KB probe 34s x2) -> ~5h total, ~36% done at 105min; killing loses buffered progress. Operator chose parallel scoped run. Fixture: 3 src files -> populate minimal (12-field report, header_coverage_pct=100) -> rag-index with OPENAI_API_KEY stripped, no --provider: provider=ollama (key-aware default PROVEN), status=success, chunksIndexed=49/49, skipped=0, failed=0, includeHeaderless=false default preserved, EXIT=0. Evidence: scoped-dogfood-result.json. Full-repo run (PID 18040) left running; completion ~12:00-12:30 local as supplementary evidence. Scoped-run throughput 6.2s/chunk independently confirms ETA. Note: populate on out-of-tree project requires ASSISTANT/STANDARDS/layers.json discoverable by upward walk - satisfied via temp copy."
+    },
+    {
+      "id": "ADJ-07",
+      "timestamp": "2026-06-12T13:16:14.295Z",
+      "type": "evidence",
+      "summary": "Test gate under ollama contention (full-repo dogfood saturating ~6 cores): full-suite run1 5 files/7 tests failed incl. an explicit <100ms perf assertion measuring 131ms; run2 failed ONLY scanner-export (different set -> non-deterministic -> contention, not regression). Isolated rerun of all three victim files (scanner-export, populate-cli, ast-extractor) 40/40 PASS even under ollama load. Suite totals 1635 tests incl. 17 MCP server tests; 1598-1600 pass in full runs with only contention victims failing. Gate accepted as PASS-with-contention-note per prior flaky_test_note precedent; optional clean full run post-dogfood as supplementary."
     }
   ],
   "phase_transitions": [
@@ -133,6 +139,13 @@
       "commit": "de17dcd",
       "verdict": "PASS",
       "at": "2026-06-12T10:44:38.187Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "60d09e3",
+      "verdict": "PASS",
+      "at": "2026-06-12T13:12:28.026Z"
     }
   ],
   "plan_adjustments": [
