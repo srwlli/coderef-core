@@ -1,0 +1,81 @@
+{
+  "workorder_id": "WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001",
+  "feature_name": "import-resolver-membership-check-bug",
+  "analysis_authored_at": "2026-06-12T21:58:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/import-resolver.ts"
+    ],
+    "files_created": [
+      "__tests__/pipeline/import-resolver-membership.test.ts"
+    ],
+    "downstream_consumers": [
+      "src/pipeline/graph-builder.ts (consumes resolver classifications)",
+      "src/pipeline/output-validator.ts (validation-report counts)",
+      ".coderef/graph.json + validation-report.json consumers (MCP server tools, rag-index gate, LLOYD)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Over-resolution: membership fix maps a specifier to a file that is not actually the import target",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "Extension-mapping restricted to exact basename match (.js -> .ts/.tsx in same resolved dir); failing-test-first with positive and negative cases"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Validation-report count churn breaks locked-schema tests/baselines",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Counts are data not schema; refresh docs/SCHEMA.md baseline table in the same phase; 12-field shape untouched"
+    },
+    {
+      "id": "RISK-003",
+      "title": "Rolling phases stall after Phase 1 (deferred plans never authored)",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "hard_stops approved=false force explicit per-phase planning; stubs carry full evidence + operator rulings"
+    }
+  ],
+  "candidates": [
+    "__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts",
+    "__tests__/pipeline/graph-ground-truth.test.ts",
+    "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+    "__tests__/pipeline/raw-import-facts.test.ts",
+    "scripts/doc-gen/generate-meta-json.js",
+    "scripts/doc-gen/utils.js",
+    "src/analyzer/ast-element-scanner.ts",
+    "src/analyzer/call-detector.ts",
+    "src/analyzer/dependency-analyzer.ts",
+    "src/analyzer/dynamic-import-detector.ts",
+    "src/analyzer/graph-builder.ts",
+    "src/analyzer/graph-helpers.ts",
+    "src/analyzer/import-parser.ts",
+    "src/analyzer/js-call-detector/analyzer.ts",
+    "src/analyzer/js-call-detector/index.ts",
+    "src/analyzer/js-call-detector/module-analyzer.ts",
+    "src/analyzer/js-call-detector/types.ts",
+    "src/analyzer/js-parser.ts",
+    "src/analyzer/middleware-detector.ts",
+    "src/cache/incremental-cache.ts",
+    "src/cli/coderef-intelligence-server.ts",
+    "src/cli/coderef-pipeline.ts",
+    "src/cli/rag-status.ts",
+    "src/cli/validate-routes.ts",
+    "src/context/breaking-change-detector/impact-assessor.ts"
+  ],
+  "dependencies": [
+    "registry_db canonical writer (TRACKING flips)",
+    "populate-coderef rebuild for evidence diff",
+    "coderef-mcp-server what_imports for spot-checks"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "Rolling plan (1 planned + 3 deferred phases) instead of 4 separate WOs",
+      "rationale": "All four stubs share the PHASE-2.UNRESOLVED-EDGE-AUDIT roadmap node and the same evidence base; one program WO keeps the audit context and close ceremony unified"
+    }
+  ]
+}

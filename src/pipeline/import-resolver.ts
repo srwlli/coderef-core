@@ -696,9 +696,22 @@ function extractPackageName(specifier: string): string {
 }
 
 /**
+ * NodeNext/ESM emitted-extension mapping: a `./x.js` specifier in TS source
+ * refers to the on-disk `x.ts`/`x.tsx` (likewise .mjs→.mts, .cjs→.cts,
+ * .jsx→.tsx). Exact on-disk matches take precedence (STUB-XK82Z2).
+ */
+const JS_TO_TS_EXTS: ReadonlyMap<string, readonly string[]> = new Map([
+  ['.js', ['.ts', '.tsx']],
+  ['.mjs', ['.mts']],
+  ['.cjs', ['.cts']],
+  ['.jsx', ['.tsx']],
+]);
+
+/**
  * Probe a relative-resolved path against the project file set. Tries the
- * exact path first, then extensionless probing (.ts/.tsx/.js/.jsx), then
- * index-file probing.
+ * exact path first, then the NodeNext emitted-extension mapping
+ * (`./x.js` → `x.ts`/`x.tsx`), then extensionless probing
+ * (.ts/.tsx/.js/.jsx), then index-file probing.
  */
 function probeRelative(
   candidatePosix: string,
@@ -706,6 +719,16 @@ function probeRelative(
 ): string | undefined {
   // Exact match (already has extension).
   if (projectFiles.has(candidatePosix)) return projectFilesCanonical(projectFiles, candidatePosix);
+  // NodeNext mapping: .js/.mjs/.cjs/.jsx specifier whose source is a TS file.
+  const candidateExt = path.posix.extname(candidatePosix);
+  const tsExts = JS_TO_TS_EXTS.get(candidateExt);
+  if (tsExts) {
+    const stem = candidatePosix.slice(0, -candidateExt.length);
+    for (const ext of tsExts) {
+      const probe = `${stem}${ext}`;
+      if (projectFiles.has(probe)) return projectFilesCanonical(projectFiles, probe);
+    }
+  }
   // Try with each known source extension.
   for (const ext of SOURCE_EXTS) {
     const probe = `${candidatePosix}${ext}`;

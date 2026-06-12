@@ -459,20 +459,24 @@ interface ValidationResult {
 
 `validatePipelineState(state, graph, options)` is **pure**: no fs, no `process.exit`, no console. The CLI plumbs `ValidatePipelineStateOptions.layerEnum` (loaded from `ASSISTANT/STANDARDS/layers.json`) and `strictHeaders` directly per DR-PHASE-6-D.
 
-Real-world baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`; post header-stamping, 2026-05-31):
+Real-world baseline (from coderef-core's own scan at `.coderef/validation-report.json`; post import-resolver membership fix, 2026-06-12 — WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P1 resolved 812 false `relative_target_not_in_project` edges via NodeNext `.js`→`.ts` mapping):
 
 | Field | Value |
 |-------|------:|
-| `valid_edge_count` | 4293 |
-| `unresolved_count` | 20701 |
-| `ambiguous_count` | 3366 |
-| `external_count` | 576 |
-| `builtin_count` | 1169 |
-| `header_defined_count` | 261 |
+| `valid_edge_count` | 5226 |
+| `unresolved_count` | 20243 |
+| `ambiguous_count` | 3204 |
+| `external_count` | 657 |
+| `builtin_count` | 1186 |
+| `header_defined_count` | 259 |
 | `header_partial_count` | 2 |
-| `header_coverage_pct` | 99.24 |
+| `header_stale_count` | 1 |
+| `header_export_mismatch_count` | 1 |
+| `header_coverage_pct` | 98.85 |
 | (other counts) | 0 |
 | (inferred `ok`) | true |
+
+The single `header_stale_count`/`header_export_mismatch_count` entry is `src/cli/coderef-mcp-server.ts`, a known scanner artifact (nested function inherits the parent's `exported` flag — STUB-5WVGHD), not genuine header drift.
 
 ---
 

@@ -1,0 +1,128 @@
+{
+  "workorder_id": "WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001",
+  "feature_name": "import-resolver-membership-check-bug",
+  "created": "2026-06-12T21:58:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-XK82Z2",
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Rolling Phase-2 program promoted from STUB-XK82Z2 with deferred phases bound to STUB-QT400D, STUB-K5YBFN, STUB-XX4JBC"
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_gates": true,
+    "notes": "Rolling plan: Phase 1 fully planned; Phases 2-4 plan_deferred=true with hard_stops approved=false \u2014 each requires explicit planning + approval after the prior phase is COMPLETED + REVIEWED. Integrator lane: land to main + push per phase."
+  },
+  "hard_constraints": [
+    "Locked 12-field ValidationReport schema: additive evidence fields only, no enum/required-field breaks",
+    "All 833 relative_target_not_in_project targets verified existing on disk (812 via .js->.ts) \u2014 fix is membership logic, not data",
+    "Operator rulings 2026-06-12 baked into deferred stubs: K5YBFN option A (tag + src-only counts), XX4JBC option A (evidence-level flag)",
+    "Integrator lane: commit to main + push per phase"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_forced",
+      "from": "strict",
+      "to": "phased",
+      "reason": "--phased-stubs implies phased (rolling plan)",
+      "at": "2026-06-12T21:58:00Z"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 7,
+      "source": "inline (operator-approved Phase-2 lead-fix task list)",
+      "at": "2026-06-12T21:58:00Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "phased",
+      "phase_count": 4,
+      "source": "default",
+      "at": "2026-06-12T21:58:00Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "phased",
+      "source": "default",
+      "at": "2026-06-12T21:58:00Z"
+    },
+    {
+      "event": "rolling_plan_authored",
+      "close_after_phase": 4,
+      "phased_stubs": [
+        "STUB-QT400D",
+        "STUB-K5YBFN",
+        "STUB-XX4JBC"
+      ],
+      "at": "2026-06-12T21:58:00Z"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "note": "integrator single-checkout lane; commits land straight on main per WO constraint",
+      "at": "2026-06-12T22:10:00Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 1,
+      "reason": "rolling_plan.mode=rolling -> single-phase default",
+      "at": "2026-06-12T22:10:00Z"
+    },
+    {
+      "event": "semantic_validation_gate",
+      "outcome": "pass",
+      "note": "no semantic-validator runtime in executor dir; constraints checked manually: locked 12-field report untouched, additive-only fix, integrator lane honored",
+      "at": "2026-06-12T22:10:00Z"
+    },
+    {
+      "event": "pre_phase_hook",
+      "phase": 1,
+      "hook": "/discover import-resolver-membership-check-bug phase 1@quick",
+      "outcome": "inline-quick",
+      "note": "quick discovery executed inline: import-resolver.ts read end-to-end; bug localized to probeRelative (no .js->.ts NodeNext mapping); repo's own imports use .js suffixes",
+      "at": "2026-06-12T22:10:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [
+    {
+      "id": "ADJ-01",
+      "at": "2026-06-12T22:25:00Z",
+      "type": "evidence",
+      "summary": "P1-T5 gate: 1600/1600 collected tests PASS (incl. 5 new membership tests). One test FILE uncollectable (check-header-coverage.test.ts, SyntaxError at collection) - PROVEN PRE-EXISTING via stash test (fails identically without the resolver fix); minimal repro: any vitest test importing scripts/check-header-coverage.mjs fails collection while plain node import works. Filed STUB-Z1ETZD (CODEREF-CORE). Gate accepted as PASS-with-pre-existing-note per flaky/contention-note precedent."
+    },
+    {
+      "id": "ADJ-02",
+      "at": "2026-06-12T22:25:00Z",
+      "type": "evidence",
+      "summary": "P1-T4 repopulate surfaced exports_match_ast stale on coderef-mcp-server.ts: scanner marks nested fn buildToolHandlers.inboundByKind exported:true (inherits parent flag); header is honest (2 real exports). Latent finding - first full populate since MCP server landed; resolver fix does not touch export extraction. Filed STUB-5WVGHD (CODEREF-CORE). header_coverage 99.24->98.85, header_stale 0->1, header_export_mismatch 0->1 in refreshed baseline are explained by this, not by the membership fix."
+    }
+  ],
+  "git_branch": "wo/import-resolver-membership-check-bug",
+  "communication_log": [
+    {
+      "at": "2026-06-12T21:58:00Z",
+      "from": "create-workorder",
+      "message": "WO created from STUB-XK82Z2 (roadmap PHASE-2.UNRESOLVED-EDGE-AUDIT). Rolling plan: P1 membership-check fix planned (7 tasks); P2-P4 deferred to STUB-QT400D/K5YBFN/XX4JBC. Discovery: 64 candidates; RAG fallback (server down)."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {},
+  "history": []
+}

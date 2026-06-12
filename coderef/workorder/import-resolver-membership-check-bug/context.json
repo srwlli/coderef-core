@@ -1,0 +1,237 @@
+{
+  "workorder_id": "WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001",
+  "feature_name": "import-resolver-membership-check-bug",
+  "created": "2026-06-12T21:58:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub-promotion",
+    "user_request": "Roadmap Phase 2 (PHASE-2.UNRESOLVED-EDGE-AUDIT): resolver bugs. Lead: STUB-XK82Z2 membership-check bug; rolling follow-ons STUB-QT400D, STUB-K5YBFN, STUB-XX4JBC."
+  },
+  "promotion_metadata": {
+    "parent_stub_id": "STUB-XK82Z2",
+    "origin": "unresolved-edge audit 2026-06-12 (coderef/working/coderef-core/coderef-core-next/unresolved-edge-audit.md)",
+    "phased_stubs": [
+      "STUB-QT400D",
+      "STUB-K5YBFN",
+      "STUB-XX4JBC"
+    ],
+    "roadmap_ref": {
+      "roadmap_path": "coderef/working/coderef-core/coderef-core-next/roadmap.md",
+      "node_id": "PHASE-2.UNRESOLVED-EDGE-AUDIT"
+    }
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Stub category 'fix' maps to strict, FORCED to phased: --phased-stubs rolling plan (Phase 1 planned, Phases 2-4 deferred to follow-on stubs).",
+    "plan_type_decided_by": "create-workorder@2.15.1",
+    "discovery_ref": "planning-discovery-20260612T215646Z",
+    "discovery": {
+      "candidates": [
+        "__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts",
+        "__tests__/pipeline/graph-ground-truth.test.ts",
+        "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+        "__tests__/pipeline/raw-import-facts.test.ts",
+        "scripts/doc-gen/generate-meta-json.js",
+        "scripts/doc-gen/utils.js",
+        "src/analyzer/ast-element-scanner.ts",
+        "src/analyzer/call-detector.ts",
+        "src/analyzer/dependency-analyzer.ts",
+        "src/analyzer/dynamic-import-detector.ts",
+        "src/analyzer/graph-builder.ts",
+        "src/analyzer/graph-helpers.ts",
+        "src/analyzer/import-parser.ts",
+        "src/analyzer/js-call-detector/analyzer.ts",
+        "src/analyzer/js-call-detector/index.ts",
+        "src/analyzer/js-call-detector/module-analyzer.ts",
+        "src/analyzer/js-call-detector/types.ts",
+        "src/analyzer/js-parser.ts",
+        "src/analyzer/middleware-detector.ts",
+        "src/cache/incremental-cache.ts",
+        "src/cli/coderef-intelligence-server.ts",
+        "src/cli/coderef-pipeline.ts",
+        "src/cli/rag-status.ts",
+        "src/cli/validate-routes.ts",
+        "src/context/breaking-change-detector/impact-assessor.ts",
+        "src/context/breaking-change-detector/index.ts",
+        "src/context/context-generator.ts",
+        "src/context/context-tracker.ts",
+        "src/context/fuzzy-resolver.ts",
+        "src/context/impact-simulator.ts",
+        "src/export/graph-exporter.ts",
+        "src/fileGeneration/generateDiagrams.ts",
+        "src/fileGeneration/index-storage.ts",
+        "src/indexer/index-store.ts",
+        "src/indexer/indexer-service.ts",
+        "src/integration/rag/context-builder.ts",
+        "src/integration/rag/conversation-manager.ts",
+        "src/integration/rag/graph-reranker.ts",
+        "src/integration/rag/path-types.ts",
+        "src/integration/vector/sqlite-store.ts",
+        "src/pipeline/call-resolver.ts",
+        "src/pipeline/element-taxonomy.ts",
+        "src/pipeline/extractors/relationship-extractor.ts",
+        "src/pipeline/generators/context-generator.ts",
+        "src/pipeline/generators/diagram-generator.ts",
+        "src/pipeline/grammar-registry.ts",
+        "src/pipeline/graph-builder.ts",
+        "src/pipeline/header-fact.ts",
+        "src/pipeline/import-resolver.ts",
+        "src/pipeline/incremental-cache.ts",
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/output-validator.ts",
+        "src/pipeline/semantic-elements.ts",
+        "src/pipeline/semantic-header-parser.ts",
+        "src/pipeline/types.ts",
+        "src/plugins/loaders/config-loader.ts",
+        "src/query/query-executor.ts",
+        "src/scanner/semantic-analyzer.ts",
+        "src/semantic/ast-extractor.ts",
+        "src/types/types.ts",
+        "src/validator/migration-mapper.ts",
+        "src/validator/route-validator.ts",
+        "utils/fs.js",
+        "utils/fs.ts"
+      ],
+      "blast_radius": [],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "call_chain_hits": [],
+      "warnings": [
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260612T215646Z"
+    }
+  },
+  "semantic_scan": {
+    "extracted_at": "2026-06-12T21:54:45.884Z",
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {
+      "decorators": 0,
+      "errorHandling": 880,
+      "functionExports": 0,
+      "imports": 0
+    },
+    "dependency_cycles": [],
+    "edge_metrics": {
+      "top_in_degree": [
+        {
+          "file": "@Fn/demo-all-modules.ts#info:80",
+          "count": 41
+        },
+        {
+          "file": "@Fn/src/pipeline/output-validator.ts#validatePipelineState:225",
+          "count": 37
+        },
+        {
+          "file": "@Fn/src/utils/coderef-id.ts#createCodeRefId:48",
+          "count": 31
+        },
+        {
+          "file": "@Fn/src/integration/rag/__tests__/graph-reranker.test.ts#createSearchResult:322",
+          "count": 29
+        },
+        {
+          "file": "@Fn/__tests__/indexer.test.ts#createSampleReferences:77",
+          "count": 29
+        },
+        {
+          "file": "@Fn/__tests__/js-call-detector.test.ts#createTestFile:23",
+          "count": 26
+        },
+        {
+          "file": "@Fn/demo-all-modules.ts#success:76",
+          "count": 25
+        },
+        {
+          "file": "@Fn/__tests__/integration.test.ts#recordTest:40",
+          "count": 24
+        },
+        {
+          "file": "@Fn/src/integration/rag/__tests__/confidence-scorer.test.ts#createMockSource:294",
+          "count": 23
+        },
+        {
+          "file": "@Fn/__tests__/indexer.test.ts#createSampleRef:56",
+          "count": 23
+        }
+      ],
+      "top_out_degree": [
+        {
+          "file": "@File/__tests__/indexer.test.ts",
+          "count": 655
+        },
+        {
+          "file": "@File/__tests__/analyzer.test.ts",
+          "count": 615
+        },
+        {
+          "file": "@File/src/fileGeneration/__tests__/index-storage.test.ts",
+          "count": 360
+        },
+        {
+          "file": "@File/src/validator/migration-mapper.test.ts",
+          "count": 329
+        },
+        {
+          "file": "@File/__tests__/errors.test.ts",
+          "count": 299
+        },
+        {
+          "file": "@File/__tests__/relationship-extractor.test.ts",
+          "count": 283
+        },
+        {
+          "file": "@File/src/context/__tests__/breaking-change-detector.test.ts",
+          "count": 281
+        },
+        {
+          "file": "@File/__tests__/js-call-detector.test.ts",
+          "count": 271
+        },
+        {
+          "file": "@File/scripts/scan-cli/test_scan_cli.test.ts",
+          "count": 264
+        },
+        {
+          "file": "@File/src/semantic/header-generator.test.ts",
+          "count": 264
+        }
+      ]
+    },
+    "errors": []
+  },
+  "discovery_rag": {
+    "hits": [],
+    "rewrote_query": false,
+    "lloyd_provenance": null,
+    "fallback_used": true,
+    "error": "rag_server_error: HTTPConnectionPool(host='127.0.0.1', port=52849): Max retries exceeded with url: /api/rag/query (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=52849): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "ms": 2028,
+    "discovery_rag_timestamp": "2026-06-12T21:58:00Z",
+    "discovery_rag_enabled": true
+  },
+  "scope": {
+    "in_scope": [
+      "Phase 1: extension-aware project-membership check in import-resolver (.js->.ts/.tsx mapping); failing test first",
+      "Phase 1: rebuild .coderef and verify relative_target_not_in_project 833 -> ~0 with valid_edge_count gain",
+      "Phase 2 (deferred, STUB-QT400D): Node builtin classification fix",
+      "Phase 3 (deferred, STUB-K5YBFN): test-origin edge tagging + src-only counts",
+      "Phase 4 (deferred, STUB-XX4JBC): probableBuiltinMember evidence flag"
+    ],
+    "out_of_scope": [
+      "Resolving prototype-method calls beyond the evidence flag (no graph semantics change per operator ruling)",
+      "Locked unresolved-reason enum changes (additive evidence fields only)",
+      "Scanner rewrite / tree-sitter work",
+      "Ghost index entries cleanup (types.d.ts/scanner.js stale rows - separate stub)"
+    ]
+  },
+  "constraints": [
+    "Locked 12-field ValidationReport schema: changes must be additive evidence fields, never enum/required-field breaks",
+    "All 833 targets verified existing on disk (812 via .js->.ts) - fix is membership logic, not data",
+    "Operator rulings 2026-06-12 baked into deferred stubs: K5YBFN option A (tag + src-only counts), XX4JBC option A (evidence-level flag)",
+    "Integrator lane: land to main + push per phase"
+  ]
+}

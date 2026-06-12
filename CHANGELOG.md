@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-12] — Import-Resolver Membership Fix (NodeNext `.js` → `.ts`)
+
+WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 Phase 1 (STUB-XK82Z2, from the unresolved-edge audit).
+
+### Fixed
+- **`probeRelative` now maps NodeNext emitted-extension specifiers onto TS sources** (`./x.js` → `x.ts`/`x.tsx`, `.mjs` → `.mts`, `.cjs` → `.cts`, `.jsx` → `.tsx`), with exact on-disk matches still taking precedence. Previously every relative import written NodeNext-style (`import ... from './x.js'` referring to `x.ts`) was misclassified `unresolved`/`relative_target_not_in_project` — 833 false unresolved edges on coderef-core's own graph, of which 812 now resolve (the remaining 21 point at genuinely-unscanned files like `dist/` output). Self-scan baseline: `valid_edge_count` 4293 → 5226, `unresolved_count` 20701 → 20243.
+
+---
+
 ## [2026-06-12] — MCP Server + Local-First RAG
 
 WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 (with header-coverage groundwork from WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001).
