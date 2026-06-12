@@ -9,10 +9,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2026-06-12] — Import-Resolver Membership Fix (NodeNext `.js` → `.ts`)
 
-WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 Phase 1 (STUB-XK82Z2, from the unresolved-edge audit).
+WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 Phases 1–2 (STUB-XK82Z2 + STUB-QT400D, from the unresolved-edge audit).
 
 ### Fixed
 - **`probeRelative` now maps NodeNext emitted-extension specifiers onto TS sources** (`./x.js` → `x.ts`/`x.tsx`, `.mjs` → `.mts`, `.cjs` → `.cts`, `.jsx` → `.tsx`), with exact on-disk matches still taking precedence. Previously every relative import written NodeNext-style (`import ... from './x.js'` referring to `x.ts`) was misclassified `unresolved`/`relative_target_not_in_project` — 833 false unresolved edges on coderef-core's own graph, of which 812 now resolve (the remaining 21 point at genuinely-unscanned files like `dist/` output). Self-scan baseline: `valid_edge_count` 4293 → 5226, `unresolved_count` 20701 → 20243.
+- **Node builtins now classify `builtin` instead of `unresolved`/`ambiguous`** (Phase 2, STUB-QT400D — no locked-enum changes):
+  - Bare and `node:`-prefixed builtin imports (`path`, `node:fs/promises`, …) classify `external` with `reason='node_builtin'`; graph-builder maps the pair onto `resolutionStatus='builtin'` (`not_in_manifest_or_node_modules` 487 → 21).
+  - Calls on receivers bound to builtin-module imports (`import * as path from 'path'; path.join()`) classify `builtin` with `reason='builtin_module_receiver'`.
+  - Bare calls to JS/Node globals (`parseInt`, `setTimeout`, …) classify `builtin` with `reason='js_global_callee'` — only when nothing in the project shadows the name (symbol table always wins).
+  - `BUILTIN_RECEIVERS` grew per DR-PHASE-4-A with paired tests: `console`, `process`, `globalThis`, `Buffer`, `WeakMap`, `WeakSet`, `Proxy`, `BigInt`, `Intl`, `Atomics`.
+  - Self-scan: `builtin_count` 1186 → 4622, `unresolved_count` 20243 → 17484, `ambiguous_count` 3204 → 2620.
 
 ---
 

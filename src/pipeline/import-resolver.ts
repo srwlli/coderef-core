@@ -41,6 +41,7 @@
 
 
 import * as fs from 'fs';
+import { isBuiltin } from 'module';
 import * as path from 'path';
 import type {
   PipelineState,
@@ -490,8 +491,16 @@ function resolveAstImportsInternal(
       if (!moduleFile) {
         // Bare or unresolved specifier.
         if (isBareSpecifier(fact.moduleSpecifier)) {
-          base.kind = classifyBareSpecifier(fact.moduleSpecifier, externalSet);
-          if (base.kind === 'unresolved') base.reason = 'not_in_manifest_or_node_modules';
+          // Node builtins (bare or node:-prefixed) classify external with
+          // reason='node_builtin'; graph-builder maps the pair onto
+          // resolutionStatus='builtin' (STUB-QT400D — no enum changes).
+          if (isBuiltin(fact.moduleSpecifier)) {
+            base.kind = 'external';
+            base.reason = 'node_builtin';
+          } else {
+            base.kind = classifyBareSpecifier(fact.moduleSpecifier, externalSet);
+            if (base.kind === 'unresolved') base.reason = 'not_in_manifest_or_node_modules';
+          }
         } else {
           base.kind = 'unresolved';
           base.reason = 'relative_target_not_in_project';
@@ -575,8 +584,14 @@ function resolveHeaderImportsInternal(
 
     if (!moduleFile) {
       if (isBareSpecifier(fact.module)) {
-        base.kind = classifyBareSpecifier(fact.module, externalSet);
-        if (base.kind === 'unresolved') base.reason = 'not_in_manifest_or_node_modules';
+        // Same node-builtin disposition as the AST path (STUB-QT400D).
+        if (isBuiltin(fact.module)) {
+          base.kind = 'external';
+          base.reason = 'node_builtin';
+        } else {
+          base.kind = classifyBareSpecifier(fact.module, externalSet);
+          if (base.kind === 'unresolved') base.reason = 'not_in_manifest_or_node_modules';
+        }
       } else {
         base.kind = 'unresolved';
         base.reason = 'relative_target_not_in_project';

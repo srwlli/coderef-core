@@ -206,6 +206,67 @@ export const BUILTIN_RECEIVERS = new Set<string>([
   'Math',
   'Reflect',
   'Symbol',
+  // STUB-QT400D additions (paired tests in builtin-classification.test.ts):
+  // Node/JS globals routinely used as receivers in this ecosystem.
+  'console',
+  'process',
+  'globalThis',
+  'Buffer',
+  'WeakMap',
+  'WeakSet',
+  'Proxy',
+  'BigInt',
+  'Intl',
+  'Atomics',
+]);
+
+/**
+ * JS/Node global functions callable bare (no receiver). A bare call whose
+ * callee has NO symbol-table entry (nothing in the project shadows the
+ * name) and is in this set classifies kind='builtin' with
+ * reason='js_global_callee' (STUB-QT400D). Project symbols always win —
+ * the symbol-table lookup runs first, so shadowing is preserved.
+ */
+export const JS_GLOBAL_CALLEES = new Set<string>([
+  'parseInt',
+  'parseFloat',
+  'isNaN',
+  'isFinite',
+  'String',
+  'Number',
+  'Boolean',
+  'Symbol',
+  'BigInt',
+  'Array',
+  'Object',
+  'Error',
+  'TypeError',
+  'RangeError',
+  'SyntaxError',
+  'RegExp',
+  'Date',
+  'Promise',
+  'Map',
+  'Set',
+  'WeakMap',
+  'WeakSet',
+  'Proxy',
+  'setTimeout',
+  'setInterval',
+  'setImmediate',
+  'clearTimeout',
+  'clearInterval',
+  'clearImmediate',
+  'queueMicrotask',
+  'structuredClone',
+  'fetch',
+  'encodeURIComponent',
+  'decodeURIComponent',
+  'encodeURI',
+  'decodeURI',
+  'atob',
+  'btoa',
+  'require',
 ]);
 
 /**
@@ -544,6 +605,21 @@ export function classifyMethodCall(
     }
   }
 
+  // (3.5) localName.X() where localName is bound to a Node builtin module
+  //     import (`import * as fs from 'fs'` → fs.readFile()). The Phase 3
+  //     resolution carries reason='node_builtin' (STUB-QT400D); the call
+  //     is honestly a builtin-module member call, not a project edge.
+  if (receiver !== null) {
+    const builtinBinding = importResolutions.find(
+      ir => ir.sourceFile === fact.sourceFile
+        && ir.localName === receiver
+        && ir.reason === 'node_builtin',
+    );
+    if (builtinBinding) {
+      return { kind: 'builtin', reason: 'builtin_module_receiver' };
+    }
+  }
+
   // (4) localName.X() bound by Phase 3 ImportResolution. We know the
   //     receiver is an imported namespace / default, but we don't know
   //     what X is on it without walking module exports. Emit ambiguous
@@ -618,6 +694,11 @@ function classifyBareCall(
   const callee = fact.calleeName;
   const entries = symbolTable.get(callee) ?? [];
   if (entries.length === 0) {
+    // Nothing in the project shadows the name — JS/Node globals classify
+    // builtin (STUB-QT400D). Symbol-table entries always take precedence.
+    if (JS_GLOBAL_CALLEES.has(callee)) {
+      return { kind: 'builtin', reason: 'js_global_callee' };
+    }
     return { kind: 'unresolved', reason: 'callee_not_in_symbol_table' };
   }
 
@@ -665,6 +746,11 @@ function classifyBareCall(
   }
   if (projectWide.length >= 2) {
     return { kind: 'ambiguous', candidates: projectWide.map(e => e.codeRefId) };
+  }
+  // Only method-scope entries matched — a bare call cannot target a class
+  // method, so a JS/Node global of the same name is the honest disposition.
+  if (JS_GLOBAL_CALLEES.has(callee)) {
+    return { kind: 'builtin', reason: 'js_global_callee' };
   }
   return { kind: 'unresolved', reason: 'callee_not_in_symbol_table' };
 }

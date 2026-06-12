@@ -459,20 +459,20 @@ interface ValidationResult {
 
 `validatePipelineState(state, graph, options)` is **pure**: no fs, no `process.exit`, no console. The CLI plumbs `ValidatePipelineStateOptions.layerEnum` (loaded from `ASSISTANT/STANDARDS/layers.json`) and `strictHeaders` directly per DR-PHASE-6-D.
 
-Real-world baseline (from coderef-core's own scan at `.coderef/validation-report.json`; post import-resolver membership fix, 2026-06-12 — WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P1 resolved 812 false `relative_target_not_in_project` edges via NodeNext `.js`→`.ts` mapping):
+Real-world baseline (from coderef-core's own scan at `.coderef/validation-report.json`; 2026-06-12, post WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P1+P2 — P1 resolved 812 false `relative_target_not_in_project` edges via NodeNext `.js`→`.ts` mapping; P2 reclassified Node-builtin imports, builtin-module receivers, and JS-global callees from `unresolved`/`ambiguous` to `builtin`):
 
 | Field | Value |
 |-------|------:|
-| `valid_edge_count` | 5226 |
-| `unresolved_count` | 20243 |
-| `ambiguous_count` | 3204 |
-| `external_count` | 657 |
-| `builtin_count` | 1186 |
-| `header_defined_count` | 259 |
+| `valid_edge_count` | 5252 |
+| `unresolved_count` | 17484 |
+| `ambiguous_count` | 2620 |
+| `external_count` | 662 |
+| `builtin_count` | 4622 |
+| `header_defined_count` | 260 |
 | `header_partial_count` | 2 |
 | `header_stale_count` | 1 |
 | `header_export_mismatch_count` | 1 |
-| `header_coverage_pct` | 98.85 |
+| `header_coverage_pct` | 98.86 |
 | (other counts) | 0 |
 | (inferred `ok`) | true |
 

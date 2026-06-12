@@ -536,7 +536,11 @@ export function buildEdges(
     }
     edges.push(buildEdgeRecord({
       id, sourceId, relationship,
-      resolutionStatus: ir.kind,
+      // Node-builtin imports (kind='external' + reason='node_builtin',
+      // STUB-QT400D) belong in builtin_count, not external_count.
+      resolutionStatus: ir.kind === 'external' && ir.reason === 'node_builtin'
+        ? 'builtin'
+        : ir.kind,
       evidence,
       sourceLocation: { file: sourceFile, line },
       candidates: ir.candidates,
