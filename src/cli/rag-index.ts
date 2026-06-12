@@ -79,6 +79,11 @@ interface CliArgs {
   coverageFloor: number;
   /** When set, a coverage-floor breach REFUSES indexing instead of warning. */
   strictCoverage: boolean;
+  /**
+   * Headerless fallback: embed header_status_missing/stale/partial chunks
+   * with header:false provenance instead of skipping them.
+   */
+  includeHeaderless: boolean;
 }
 
 /**
@@ -86,11 +91,14 @@ interface CliArgs {
  */
 function parseArgs(argv: string[]): CliArgs {
   // Honor CODEREF_LLM_PROVIDER as the default provider when --provider isn't
-  // passed. Falls back to 'openai' for back-compat.
+  // passed. Without it, default is key-aware: openai only when a cloud key is
+  // actually present, otherwise ollama (local-first — embeddings must not
+  // require an API key; WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001
+  // P2-T1). --provider still overrides everything.
   const envProvider = process.env.CODEREF_LLM_PROVIDER?.toLowerCase();
   const args: CliArgs = {
     projectDir: process.cwd(),
-    provider: envProvider || 'openai',
+    provider: envProvider || (process.env.OPENAI_API_KEY ? 'openai' : 'ollama'),
     store: 'sqlite',
     reset: false,
     verbose: false,
@@ -102,6 +110,7 @@ function parseArgs(argv: string[]): CliArgs {
     // are unchanged until an operator opts into a real floor.
     coverageFloor: 0,
     strictCoverage: false,
+    includeHeaderless: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -162,6 +171,10 @@ function parseArgs(argv: string[]): CliArgs {
         args.strictCoverage = true;
         break;
 
+      case '--include-headerless':
+        args.includeHeaderless = true;
+        break;
+
       case '--lang':
       case '-l':
         args.languages = (value ?? argv[++i]).split(',');
@@ -199,9 +212,16 @@ USAGE:
 
 OPTIONS:
   -p, --project-dir <path>     Project directory to index (default: current directory)
-  --provider <provider>        LLM provider: openai, anthropic, or custom (default: openai)
+  --provider <provider>        LLM provider: openai, anthropic, ollama (default: openai if OPENAI_API_KEY set, else ollama)
   --store <store>              Vector store: sqlite, pinecone, chroma (default: sqlite)
   --reset                      Reset existing index before indexing
+  --include-headerless         Embed chunks from header-less elements (missing/stale/partial)
+                               with header:false provenance instead of skipping them —
+                               enables RAG on repos that were never header-annotated
+  --coverage-floor <0-100>     Warn when header_coverage_pct is below this floor
+                               (0 disables the check; default 0)
+  --strict-coverage            Make a coverage-floor breach REFUSE indexing
+                               (status='failed') instead of warning
   -l, --lang <languages>       Comma-separated languages to index
   -v, --verbose                Enable verbose logging
   -j, --json                   Output results as JSON
@@ -226,11 +246,7 @@ EXAMPLES:
   # Index specific project with OpenAI
   rag-index --project-dir ./my-project --provider openai
 
-  # Index with local Ollama (when implemented)
-  export CODEREF_LLM_PROVIDER=ollama
-  export CODEREF_LLM_BASE_URL=http://localhost:11434
-  export CODEREF_LLM_MODEL=nomic-embed-text
-  export CODEREF_LLM_API_KEY=ollama
+  # Index with local Ollama (the default when OPENAI_API_KEY is not set)
   rag-index --project-dir ./my-project --provider ollama
 
   # Reset and re-index
@@ -569,6 +585,7 @@ async function main(): Promise<void> {
       onProgress,
       useAnalyzer: true,
       validation,
+      includeHeaderless: args.includeHeaderless,
     });
 
     const totalTime = Date.now() - startTime;
@@ -588,6 +605,7 @@ async function main(): Promise<void> {
       languages,
       provider: args.provider,
       store: args.store,
+      includeHeaderless: args.includeHeaderless,
       stats: result.stats,
       chunksIndexed: result.chunksIndexed,
       chunksSkipped: result.chunksSkipped,

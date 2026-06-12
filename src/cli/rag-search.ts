@@ -89,13 +89,16 @@ interface CliArgs {
  * Parse command line arguments
  */
 function parseArgs(argv: string[]): CliArgs {
-  // Honor CODEREF_LLM_PROVIDER env when --provider is omitted; falls back
-  // to 'openai' for back-compat with users who never set the env var.
+  // Honor CODEREF_LLM_PROVIDER env when --provider is omitted. Without it,
+  // default is key-aware: openai only when a cloud key is actually present,
+  // otherwise ollama (local-first; must match rag-index so search embeds
+  // queries with the same model the index was built with —
+  // WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 P2-T1).
   const envProvider = process.env.CODEREF_LLM_PROVIDER?.toLowerCase();
   const args: CliArgs = {
     projectDir: process.cwd(),
     query: '',
-    provider: envProvider || 'openai',
+    provider: envProvider || (process.env.OPENAI_API_KEY ? 'openai' : 'ollama'),
     store: 'sqlite',
     topK: 10,
     json: false,
@@ -212,7 +215,7 @@ USAGE:
 
 OPTIONS:
   -p, --project-dir <path>     Project directory to search (default: current directory)
-  --provider <provider>        LLM provider: openai, anthropic, ollama (default: openai)
+  --provider <provider>        LLM provider: openai, anthropic, ollama (default: openai if OPENAI_API_KEY set, else ollama)
   --store <store>              Vector store: sqlite, pinecone, chroma (default: sqlite)
   -k, --top-k <number>         Number of results to return (default: 10)
   --min-score <number>         Minimum relevance score 0-1 (default: none)

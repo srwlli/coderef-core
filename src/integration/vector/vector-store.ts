@@ -74,6 +74,14 @@ export interface CodeChunkMetadata {
   /** Header parser status: 'defined' | 'missing' | 'stale' | 'partial'. */
   headerStatus?: string;
 
+  /**
+   * Header provenance: true when the chunk came from a fully header-defined
+   * element, false when it was indexed via the --include-headerless fallback
+   * (headerStatus missing/stale/partial). Lets consumers down-rank or filter
+   * fallback-quality chunks without string-matching headerStatus.
+   */
+  header?: boolean;
+
   /** Additional custom metadata */
   [key: string]: any;
 }

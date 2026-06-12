@@ -1,0 +1,41 @@
+{
+  "success": true,
+  "version": "1.0",
+  "createdAt": "2026-06-12T13:11:18.978Z",
+  "projectDir": ".",
+  "languages": [
+    "ts"
+  ],
+  "provider": "ollama",
+  "store": "sqlite",
+  "includeHeaderless": false,
+  "stats": {
+    "tokensUsed": 7016,
+    "estimatedCost": 0.00014031999999999998,
+    "avgEmbeddingTimeMs": 304862,
+    "byType": {
+      "type": 6,
+      "constant": 1,
+      "interface": 14,
+      "function": 4,
+      "file": 3,
+      "class": 2,
+      "method": 19
+    },
+    "byLanguage": {
+      "typescript": 49
+    }
+  },
+  "chunksIndexed": 49,
+  "chunksSkipped": 0,
+  "chunksFailed": 0,
+  "processingTimeMs": 304893,
+  "status": "success",
+  "chunksSkippedDetails": [],
+  "chunksFailedDetails": [],
+  "validationGateRefused": false,
+  "validationReportPath": ".coderef\\validation-report.json",
+  "headerCoveragePct": 100,
+  "coverageGateRefused": false,
+  "errors": []
+}

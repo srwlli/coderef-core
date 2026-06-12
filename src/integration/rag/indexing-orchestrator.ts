@@ -230,6 +230,16 @@ export interface IndexingOptions {
   useAnalyzer?: boolean;
 
   /**
+   * Headerless fallback mode (WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-
+   * FIXES-001 P2-T2). When true, chunks whose headerStatus is missing/
+   * stale/partial are EMBEDDED with provenance metadata `header: false`
+   * instead of being skipped, so RAG works on repos that were never
+   * header-annotated (PS-rescan follow-up). Default false preserves the
+   * Phase 7 skip-with-reason behavior (DR-PHASE-7-E).
+   */
+  includeHeaderless?: boolean;
+
+  /**
    * REQUIRED at the call site: Phase 6 validation gate input
    * (DR-PHASE-7-A). The orchestrator throws if undefined — callers
    * must read .coderef/validation-report.json and pass the result.
@@ -690,13 +700,16 @@ export class IndexingOrchestrator {
       // whose source ElementData has headerStatus in {missing, stale,
       // partial} (DR-PHASE-7-E). Filter BEFORE the incremental indexer
       // so unchanged-but-skipped never gets re-counted as unchanged.
+      // With options.includeHeaderless (P2-T2 fallback), these chunks
+      // are kept and embedded with `header: false` provenance instead.
       const headerStatusSkipDetails: SkipEntry[] = [];
       const chunksAfterHeaderFilter: CodeChunk[] = [];
       for (const chunk of chunks) {
         if (
-          chunk.headerStatus === 'missing' ||
-          chunk.headerStatus === 'stale' ||
-          chunk.headerStatus === 'partial'
+          !options.includeHeaderless &&
+          (chunk.headerStatus === 'missing' ||
+            chunk.headerStatus === 'stale' ||
+            chunk.headerStatus === 'partial')
         ) {
           headerStatusSkipDetails.push({
             coderefId: chunk.coderef,
@@ -832,6 +845,10 @@ export class IndexingOrchestrator {
             ...(item.chunk.capability !== undefined && { capability: item.chunk.capability }),
             ...(item.chunk.constraints !== undefined && { constraints: item.chunk.constraints }),
             ...(item.chunk.headerStatus !== undefined && { headerStatus: item.chunk.headerStatus }),
+            // Header provenance (P2-T2): false marks a chunk embedded via
+            // the --include-headerless fallback rather than from a fully
+            // header-defined element.
+            header: item.chunk.headerStatus === undefined || item.chunk.headerStatus === 'defined',
           }
         })
       );

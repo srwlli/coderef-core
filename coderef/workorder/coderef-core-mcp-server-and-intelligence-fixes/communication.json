@@ -8,7 +8,7 @@
   "parent_stub_id": "STUB-DF3PBN",
   "predecessor_for": null,
   "status": "plan_created",
-  "current_phase": 1,
+  "current_phase": 2,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\context.json",
@@ -56,9 +56,85 @@
       "mode": "worktree",
       "note": "branched from wo/rag-header-coverage-enforce-and-surface-001 (6 commits ahead of main, this WO depends on its 12-field report); pre-existing uncommitted ARCHIVED deletions left unstaged",
       "at": "2026-06-12T10:39:28Z"
+    },
+    {
+      "event": "phase1_fixup_commit",
+      "commit": "3c6a069",
+      "note": "artifact deletions (9 tracked files) + roadmap.json/md staged in fixup after atomic git-rm pathspec failure (nul untracked) dropped them from de17dcd",
+      "at": "2026-06-12T11:05:00Z"
+    },
+    {
+      "event": "plan_adjustment",
+      "id": "ADJ-02",
+      "task": "P2-T3",
+      "note": "registry bloat CHECK measured: 118MB, 98% = per-element duplication of file-grain rawFacts (projections.ts L148) + pretty-print inflation. Sharding NOT the right fix; filed STUB-BQDXJ0 (rawFacts dedup design) per the otherwise-file-stub clause",
+      "at": "2026-06-12T11:18:00Z"
+    },
+    {
+      "event": "flaky_test_note",
+      "note": "one full-suite run had 1 transient failure that did not reproduce in two subsequent clean runs (1588/0 both); not traced to P2 edits",
+      "at": "2026-06-12T11:15:00Z"
+    },
+    {
+      "event": "plan_adjustment",
+      "id": "ADJ-03",
+      "task": "P3-T2",
+      "note": "@modelcontextprotocol/sdk@1.29.0 installed with --legacy-peer-deps: openai@4 peerOptional zod@^3 conflicts with project zod@4 (pre-existing tension); SDK itself accepts zod 3||4",
+      "at": "2026-06-12T11:23:00Z"
+    },
+    {
+      "event": "enhancement",
+      "task": "P3-T1",
+      "note": "resolveNodes: file-path queries resolve to ALL elements of the file (byFile mode, not ambiguity-refused) so impact_of/what_calls aggregate file-level",
+      "at": "2026-06-12T11:33:00Z"
+    },
+    {
+      "event": "p4t1_skill_drift_review",
+      "drifted": [
+        "rag-index (missing --include-headerless)",
+        "rag-search (stale unconditional openai default)"
+      ],
+      "clean_count": 8,
+      "at": "2026-06-12T11:40:00Z"
+    },
+    {
+      "event": "p4t2_skills_updated",
+      "skills": [
+        "CORE/rag-index@1.1.0",
+        "CORE/rag-search@1.1.0"
+      ],
+      "validator": "PASS (scoped)",
+      "note": "thin wrappers are pointers, no wrapper edits needed; ASSISTANT repo commit pending Phase 4 landing",
+      "at": "2026-06-12T11:45:00Z"
+    },
+    {
+      "id": "ADJ-04",
+      "timestamp": "2026-06-12T12:00:40.373Z",
+      "type": "adjustment",
+      "summary": "Docs pass while dogfood runs: CLI.md rag-index/rag-search tables were badly drifted (documented --dir/--chroma-url/--model/--query/--threshold which do not exist; --constraint marked deferred but shipped) — rewrote both to actual flag surface, added coderef-mcp-server section + overview row. README rebuild-status bullets updated (11-field -> 12-field ValidationReport drift fix, local-first + MCP bullets). CHANGELOG dated entry added. rag-index printHelp gap fixed: --coverage-floor/--strict-coverage existed in parseArgs but not help; stale ollama-when-implemented example fixed. Also live stdio smoke test of dist MCP server: initialize + tools/list + codebase_summary + what_calls all correct (serverInfo coderef-core v1.0.0, 6 tools, real artifact data, graceful element_not_found)."
+    },
+    {
+      "id": "ADJ-05",
+      "timestamp": "2026-06-12T12:16:30.629Z",
+      "type": "adjustment",
+      "summary": "Second docs pass (operator-requested while dogfood runs): 11-field -> 12-field ValidationReport sweep across SCHEMA.md (interface + header_coverage_pct entry + baseline table refreshed to committed 2026-05-31 report), ARCHITECTURE.md (3 spots), API.md (3 spots), AGENT-CONTRACT.md (header + JSON example + IndexingResult coverage-gate bullets + headerless provenance note + new prefer-MCP-tools section), CLI.md (chokepoint line + failed-status row + rag-status section rewritten to real flags -p/--project-dir,-j/--json). SCHEMA.md section 6 gains coverageGateRefused/coverageWarning additive fields + include-headerless paragraph. AGENTS.md and rag-http-api.md verified clean (latter is deliberately ollama-only). Verified rag-status + coderef-mcp-server bin names against package.json."
+    },
+    {
+      "id": "ADJ-06",
+      "timestamp": "2026-06-12T13:11:52.163Z",
+      "type": "evidence",
+      "summary": "P2-T4 dogfood evidence via operator-approved parallel scoped run: full-repo dogfood measured at ~8s/KB CPU embedding (1KB probe 7.9s, 4KB probe 34s x2) -> ~5h total, ~36% done at 105min; killing loses buffered progress. Operator chose parallel scoped run. Fixture: 3 src files -> populate minimal (12-field report, header_coverage_pct=100) -> rag-index with OPENAI_API_KEY stripped, no --provider: provider=ollama (key-aware default PROVEN), status=success, chunksIndexed=49/49, skipped=0, failed=0, includeHeaderless=false default preserved, EXIT=0. Evidence: scoped-dogfood-result.json. Full-repo run (PID 18040) left running; completion ~12:00-12:30 local as supplementary evidence. Scoped-run throughput 6.2s/chunk independently confirms ETA. Note: populate on out-of-tree project requires ASSISTANT/STANDARDS/layers.json discoverable by upward walk - satisfied via temp copy."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "de17dcd",
+      "verdict": "PASS",
+      "at": "2026-06-12T10:44:38.187Z"
+    }
+  ],
   "plan_adjustments": [
     {
       "at": "2026-06-12T10:36:11Z",
