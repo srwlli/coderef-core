@@ -1,0 +1,215 @@
+{
+  "project": "coderef-core-next",
+  "owner": "CODEREF-CORE",
+  "created": "2026-06-12T12:20:00Z",
+  "updated": "2026-06-12T12:20:00Z",
+  "current_phase": 1,
+  "status": "active",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Native intelligence surface (in flight)",
+      "hard_stop": true,
+      "status": "active",
+      "gating_predicate": "WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 lands on main and is pushed; team notified; ASSISTANT registers MCP domain coderef-core",
+      "shipped_commit": null,
+      "items": [
+        {
+          "id": "STABILIZE",
+          "description": "Test/CI/hygiene stabilization (8 tasks): suite green, artifact cleanup, roadmap minted",
+          "status": "complete",
+          "shipped_commit": "de17dcd",
+          "depends_on": []
+        },
+        {
+          "id": "LOCAL-FIRST-RAG",
+          "description": "Key-aware embedding provider default (openai only when OPENAI_API_KEY set, else ollama/nomic-embed-text) + rag-index --include-headerless with header:false provenance; ollama dogfood run is the closing evidence",
+          "status": "active",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "MCP-SERVER-V1",
+          "description": "coderef-mcp-server: stdio MCP server typed against ExportedGraph; 6 read-only tools (what_calls, what_imports, impact_of, find_element, codebase_summary, validation_status); 17 unit tests; .mcp.json registers domain coderef-core; live stdio smoke verified",
+          "status": "active",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "DOCS-DRIFT-SWEEP",
+          "description": "CLI.md/README/CHANGELOG/SCHEMA/ARCHITECTURE/API/AGENT-CONTRACT drift sweep: real flag surfaces, 12-field ValidationReport everywhere, coverage-gate fields, MCP server documented, agent contract points to MCP tools",
+          "status": "active",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "LAND-NOTIFY",
+          "description": "Fast-forward merge to main + push; ASSISTANT-side skill updates (rag-index/rag-search v1.1.0) committed; team notification sent from prepared draft",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        }
+      ],
+      "depends_on": []
+    },
+    {
+      "phase": 2,
+      "name": "Correctness debt",
+      "hard_stop": false,
+      "status": "not_started",
+      "gating_predicate": "Phase 1 landed on main",
+      "shipped_commit": null,
+      "items": [
+        {
+          "id": "INTEL-SERVER-SCHEMA",
+          "description": "coderef-intelligence-server still reads legacy edge fields (e.source/e.target/e.type) internally — port it to the canonical 8-field ExportedGraph schema, or retire endpoints superseded by MCP tools (ruling needed: port vs retire)",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "UNRESOLVED-EDGE-AUDIT",
+          "description": "Self-scan shows unresolved_count=20701 vs valid_edge_count=4293 — characterize unresolved edges by evidence/reason variant, separate expected externals from resolver gaps, file targeted resolver-fix stubs with measured counts",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "WIN-PATH-NORMALIZATION",
+          "description": "Close STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001: indexing-orchestrator path normalization fails on Windows (drive-letter casing / separator mismatch at the orchestrator seam); caught by DISPATCH-003 E2E smoke",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        }
+      ],
+      "depends_on": []
+    },
+    {
+      "phase": 3,
+      "name": "Storage and footprint",
+      "hard_stop": false,
+      "status": "not_started",
+      "gating_predicate": "Phase 1 landed; STUB-BQDXJ0 design accepted",
+      "shipped_commit": null,
+      "items": [
+        {
+          "id": "REGISTRY-RAWFACTS-DEDUP",
+          "description": "STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) — move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "VECTOR-STORE-PATH-FIX",
+          "description": "Fallback JSON vector store writes .coderef/rag-vectors.sqlite as a DIRECTORY containing coderef-vectors.json — make the fallback path honest (name reflects store type) and document store resolution in rag-status",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        }
+      ],
+      "depends_on": []
+    },
+    {
+      "phase": 4,
+      "name": "MCP server v2 tools",
+      "hard_stop": false,
+      "status": "not_started",
+      "gating_predicate": "MCP-SERVER-V1 shipped; INTEL-SERVER-SCHEMA ruling made (hotspots tool replaces or wraps intelligence-server)",
+      "shipped_commit": null,
+      "items": [
+        {
+          "id": "TOOL-HOTSPOTS",
+          "description": "hotspots tool: fan-in/fan-out ranking over resolved edges (canonical replacement for intelligence-server handleHotspots, which is drifted to legacy schema)",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "TOOL-CYCLES",
+          "description": "cycles tool: strongly-connected-component detection over import+call resolved edges; surface cycle membership and smallest back-edge per cycle",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "TOOL-WHAT-EXPORTS",
+          "description": "what_exports tool: file-to-exported-elements lookup over export edges (complements what_imports; closes the export-edge blind spot in the v1 toolset)",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "TOOL-DIFF-IMPACT",
+          "description": "diff_impact tool: map a git diff (or staged changes) to changed elements via index.json line ranges, then union impact_of over the set — PR blast-radius in one call",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "TOOL-RAG-SEARCH",
+          "description": "rag_search tool: expose semantic search over MCP when an index exists, reading provider/store from index metadata so query embeddings always match the index",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        }
+      ],
+      "depends_on": ["PHASE-1.MCP-SERVER-V1"]
+    },
+    {
+      "phase": 5,
+      "name": "RAG quality",
+      "hard_stop": false,
+      "status": "not_started",
+      "gating_predicate": "Local-first RAG shipped; a golden-query eval harness exists before any ranking change lands",
+      "shipped_commit": null,
+      "items": [
+        {
+          "id": "EVAL-HARNESS",
+          "description": "Golden-query eval harness on coderef-core's own index (query -> expected elements) so ranking changes are measured, not vibed",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "CHUNK-ENRICHMENT",
+          "description": "Embed header semantics (layer/capability/constraints) and leading docstring in the chunk text, not just raw code — measured against EVAL-HARNESS",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "PROVENANCE-RANKING",
+          "description": "Downweight header:false chunks at query time (post-score multiplier) instead of hard-filtering — headerless repos stay searchable but annotated code ranks first",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        },
+        {
+          "id": "INDEX-FRESHNESS",
+          "description": "rag-status surfaces staleness: files changed since indexedAt, with incremental-vs--reset recommendation",
+          "status": "not_started",
+          "shipped_commit": null,
+          "depends_on": []
+        }
+      ],
+      "depends_on": []
+    }
+  ],
+  "chronology_callouts": [
+    {
+      "id": "P1-P4-DEP",
+      "description": "MCP v2 tools extend buildToolHandlers shipped in Phase 1 (true dependency, not pure sequencing)",
+      "depends_on": ["PHASE-1.MCP-SERVER-V1"]
+    },
+    {
+      "id": "P2-P4-DEP",
+      "description": "TOOL-HOTSPOTS is the replacement path for intelligence-server's drifted handleHotspots — needs the INTEL-SERVER-SCHEMA port-vs-retire ruling first",
+      "depends_on": ["PHASE-2.INTEL-SERVER-SCHEMA"]
+    },
+    {
+      "id": "P1-P5-DEP",
+      "description": "PROVENANCE-RANKING consumes the header:false chunk metadata shipped in Phase 1 (LOCAL-FIRST-RAG)",
+      "depends_on": ["PHASE-1.LOCAL-FIRST-RAG"]
+    }
+  ]
+}

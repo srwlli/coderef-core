@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-17  
+**Generated:** 2026-06-12  
 <!-- coderef:uuid=hotspots-root -->
 
 ---
@@ -21,9 +21,9 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 399 |
-| **Total Elements** | 2,428 |
-| **Total Lines** | 105,101 |
+| **Total Files** | 401 |
+| **Total Elements** | 2,472 |
+| **Total Lines** | 106,340 |
 | **Entry Points** | 75 |
 | **Critical Functions** | 20 |
 
@@ -40,7 +40,7 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | 3 | <!-- coderef:uuid= --> `currentScopeCodeRefId` | 🔴 65 (Critical) | `src/pipeline/call-resolver.ts` | 0 dependents |
 | 4 | <!-- coderef:uuid= --> `extractExportsFromAST` | 🔴 55 (Critical) | `src/analyzer/js-call-detector/module-analyzer.ts` | 0 dependents |
 | 5 | <!-- coderef:uuid= --> `extractElementsFromAST` | 🔴 51 (Critical) | `src/analyzer/js-call-detector/visitor.ts` | 0 dependents |
-| 6 | <!-- coderef:uuid= --> `run` | 🟡 41 (High) | `src/cli/populate.ts` | 0 dependents |
+| 6 | <!-- coderef:uuid= --> `run` | 🟡 44 (High) | `src/cli/populate.ts` | 0 dependents |
 | 7 | <!-- coderef:uuid= --> `buildEdges` | 🟡 41 (High) | `src/pipeline/graph-builder.ts` | 0 dependents |
 | 8 | <!-- coderef:uuid= --> `main.fileToDir` | 🟡 41 (High) | `scripts/generate-intelligence.js` | 0 dependents |
 | 9 | <!-- coderef:uuid= --> `scanCurrentElements` | 🟡 40 (High) | `src/scanner/scanner.ts` | 0 dependents |

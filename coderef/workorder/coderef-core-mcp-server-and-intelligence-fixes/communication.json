@@ -7,9 +7,9 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-DF3PBN",
   "predecessor_for": null,
-  "status": "plan_created",
+  "status": "complete",
   "current_phase": 4,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\analysis.json",
@@ -153,6 +153,13 @@
       "commit": "ef68c3c",
       "verdict": "PASS",
       "at": "2026-06-12T13:16:15.036Z"
+    },
+    {
+      "phase": 4,
+      "to_status": "complete",
+      "commit": "e3854df",
+      "verdict": "PASS",
+      "at": "2026-06-12T13:23:41.717Z"
     }
   ],
   "plan_adjustments": [
@@ -198,5 +205,55 @@
       ],
       "post": []
     }
-  }
+  },
+  "history": [
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "timestamp": "2026-06-12T13:24:44.019Z",
+      "artifact_paths": [
+        "coderef/foundation-docs/INDEX.md",
+        "coderef/foundation-docs/EXPORTS.md",
+        "coderef/foundation-docs/HOTSPOTS.md",
+        "coderef/foundation-docs/RELATIONSHIPS.md"
+      ],
+      "note": "18 invalid UUID anchors warned (pre-existing drift class); validator exit 0"
+    },
+    {
+      "event": "workorder_complete",
+      "timestamp": "2026-06-12T13:28:47.004Z",
+      "phases_closed": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "commits": {
+        "coderef-core": [
+          "de17dcd (P1 stabilize)",
+          "3c6a069 (P1 fixup)",
+          "60d09e3 (P2 local-first RAG)",
+          "ef68c3c (P3 mcp-server)",
+          "43ee4c5 (docs sweep)",
+          "e3854df (transitions; main landing tip, pushed 607ee1c..e3854df)"
+        ],
+        "assistant": [
+          "ac5066e1 (skills rag-index/rag-search v1.1.0)",
+          "335f8141 (.mcp.json coderef-core registration)"
+        ]
+      },
+      "plan_deviations": "ADJ-01..ADJ-07 in decisions_log (registry measurements, legacy-peer-deps, byFile enhancement, docs passes, parallel scoped dogfood, contention test-gate)",
+      "evidence": {
+        "p2_dogfood": "scoped-dogfood-result.json (provider=ollama with key stripped, status=success 49/49); full-repo run continuing in background as supplementary",
+        "p3_tests": "17/17 mcp-server.test.ts; live stdio smoke (initialize/tools list+call vs real artifacts)",
+        "test_gate": "full suite 1635 tests; failures contention-only, 40/40 isolated rerun PASS (ADJ-07)",
+        "notification": "DISPATCH-2026-06-12-ASSISTANT-050 -> daily-session",
+        "foundation_docs_gate": "pass, validator_exit=0",
+        "tracking_validator": "FAIL pre-existing drift: identical 6-file failure set at HEAD before this WO ledger updates (workorders/sessions/stubs/improvement-index/active-work.archive/dispatches); verified via stash test; outside WO scope"
+      }
+    }
+  ],
+  "completed_at": "2026-06-12T13:28:47.003Z"
 }

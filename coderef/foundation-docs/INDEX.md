@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-05-17  
+**Generated:** 2026-05-31  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,428 |
-| **Total Files** | 399 |
-| **Total Lines** | 105,101 |
+| **Total Elements** | 2,472 |
+| **Total Files** | 401 |
+| **Total Lines** | 106,340 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,11 +22,11 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 743 | 30.6% |
-| method | 1,074 | 44.2% |
-| interface | 411 | 16.9% |
+| function | 746 | 30.2% |
+| method | 1,075 | 43.5% |
+| interface | 445 | 18.0% |
 | class | 120 | 4.9% |
-| type | 60 | 2.5% |
+| type | 66 | 2.7% |
 | component | 2 | 0.1% |
 | constant | 18 | 0.7% |
 
@@ -46,11 +46,11 @@
 | 8 | `src/pipeline/import-resolver.ts` | 29 | 🟢 Medium |
 | 9 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
 | 10 | `src/cli/coderef-intelligence-server.ts` | 28 | 🟢 Medium |
-| 11 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
-| 12 | `src/cli/coderef-rag-server.ts` | 27 | 🟢 Medium |
-| 13 | `src/indexer/relationship-index.ts` | 27 | 🟢 Medium |
-| 14 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
-| 15 | `src/export/graph-exporter.ts` | 25 | 🟢 Medium |
+| 11 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
+| 12 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
+| 13 | `src/cli/coderef-rag-server.ts` | 27 | 🟢 Medium |
+| 14 | `src/indexer/relationship-index.ts` | 27 | 🟢 Medium |
+| 15 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
 | 16 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
 | 17 | `src/pipeline/extractors/relationship-extractor.ts` | 25 | 🟢 Medium |
 | 18 | `src/scanner/scanner.ts` | 24 | 🟢 Medium |
@@ -60,7 +60,7 @@
 | 22 | `src/analyzer/design-pattern-detector.ts` | 22 | 🟢 Medium |
 | 23 | `src/indexer/metadata-index.ts` | 22 | 🟢 Medium |
 | 24 | `src/integration/rag/conversation-manager.ts` | 22 | 🟢 Medium |
-| 25 | `src/pipeline/generators/pattern-generator.ts` | 22 | 🟢 Medium |
+| 25 | `src/integration/rag/indexing-orchestrator.ts` | 22 | 🟢 Medium |
 
 ---
 
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,428 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,472 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 
