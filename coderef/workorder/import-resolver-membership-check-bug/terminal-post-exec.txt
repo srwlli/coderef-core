@@ -1,33 +1,35 @@
 =============================================================
-WORKORDER: WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001  |  import-resolver-membership-check-bug  |  PHASE 1/4 COMPLETE (HOLDING)
-Session: SES-import-resolver-membership-check-bug  |  Phases: 1 of 4 executed (rolling)  |  Commits: 1  |  Pushes: 1
-Parent stub: STUB-XK82Z2 (promoted)  |  Deferred: STUB-QT400D (P2), STUB-K5YBFN (P3), STUB-XX4JBC (P4)
+WORKORDER: WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001  |  import-resolver-membership-check-bug  |  COMPLETE (4/4 phases)
+Session: SES-import-resolver-membership-check-bug  |  Phases: 4  |  Commits: 5  |  Pushes: 5
+Parent stub: STUB-XK82Z2 (closed)  |  Phase stubs: STUB-QT400D, STUB-K5YBFN, STUB-XX4JBC (all closed)
 
 FILES CREATED:
   + __tests__/pipeline/import-resolver-membership.test.ts  (91d8ac7)
+  + __tests__/pipeline/builtin-classification.test.ts  (4dcb742)
+  + __tests__/pipeline/graph-test-origin-tagging.test.ts  (7975e08)
+  + __tests__/pipeline/prototype-method-flag.test.ts  (fe7920a)
   + coderef/workorder/import-resolver-membership-check-bug/{plan,context,analysis,communication}.json  (91d8ac7)
 
 FILES MODIFIED:
-  ~ src/pipeline/import-resolver.ts  (91d8ac7)  — probeRelative NodeNext .js->.ts mapping
-  ~ docs/SCHEMA.md  (91d8ac7)  — baseline table refreshed (5226/20243/98.85)
-  ~ CHANGELOG.md  (91d8ac7)  — dated Fixed entry
+  ~ src/pipeline/import-resolver.ts  (91d8ac7, 4dcb742)
+  ~ src/pipeline/call-resolver.ts  (4dcb742, fe7920a)
+  ~ src/pipeline/graph-builder.ts  (7975e08, fe7920a)
+  ~ src/pipeline/output-validator.ts  (7975e08)
+  ~ src/cli/coderef-mcp-server.ts  (7975e08)
+  ~ docs/{SCHEMA,CLI,API,ARCHITECTURE,AGENT-CONTRACT}.md + README + CHANGELOG  (per phase)
+  ~ coderef/foundation-docs/*  (57e6ddd, Step 5.0 gate)
 
 PHASE CHECKLIST:
-  [x] Phase 1: membership-check fix — 7/7 tasks  (91d8ac7)
-        relative_target_not_in_project 833 -> 21 (812 resolved; honest dist/.mjs tail)
-        valid_edge_count 4293 -> 5226  |  12-field report shape unchanged
-        suite 1600/1600 collected green  |  MCP what_imports spot-checks 3/3
-  [ ] Phase 2: resolver-builtin-classification-fix — DEFERRED (STUB-QT400D, plan not authored)
-  [ ] Phase 3: graph-test-origin-edge-tagging — DEFERRED (STUB-K5YBFN)
-  [ ] Phase 4: prototype-method-probable-builtin-flag — DEFERRED (STUB-XX4JBC)
+  [x] Phase 1: NodeNext .js->.ts membership fix — 833->21 false unresolved  (91d8ac7)
+  [x] Phase 2: builtin classification — builtin_count 1186->4622, no enum changes  (4dcb742)
+  [x] Phase 3: testOrigin tag + 14-field report — 66.6% of unresolved is test noise  (7975e08)
+  [x] Phase 4: probableBuiltinMember flag — 5,869 flagged, status untouched  (fe7920a)
 
-Collateral findings stubbed: STUB-Z1ETZD (vitest cannot collect tests importing
-scripts/check-header-coverage.mjs — pre-existing, stash-proven), STUB-5WVGHD
-(scanner marks nested fns exported:true — mcp-server header false-stale).
+NET SELF-SCAN: valid_edge_count 4293 -> 5266  |  unresolved 20701 -> 17551
+(src-only 5,854)  |  builtin 1186 -> 4636  |  suite 1611/1611 collected green
 
-Session: updated  |  Registry: synced (implementing)  |  Validator: PASS (scoped)
+Session: updated  |  Registry: synced  |  Validator: PASS (scoped 17/17; culture 13/13)
 
-HOLDING per rolling-plan report-back. Full close REFUSED until phase 4
-(phased-terminal guard). NEXT: author Phase 2 plan against STUB-QT400D, then
-/execute-workorder WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 --phase=2
+CLOSED via /close-workorder under operator standing approval 2026-06-12
+(auto-close gates verified: terminal phase, no blockers, no bypassed inputs)
 =============================================================

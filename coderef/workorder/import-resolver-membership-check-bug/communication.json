@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-XK82Z2",
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 4,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\plan.json",
@@ -223,6 +223,11 @@
       "from": "execute-workorder",
       "event": "workorder_complete",
       "message": "All 4 rolling phases complete and pushed: P1 91d8ac7 (membership fix, 833->21 false unresolved), P2 4dcb742 (builtin classification, builtin_count 1186->4622), P3 7975e08 (testOrigin tag + 14-field report, 66.6% of unresolved is test-origin), P4 fe7920a (probableBuiltinMember flag, 5869 flagged). Net: unresolved_count 20701->17551 total / 5854 src-only; valid_edge_count 4293->5266. Stubs XK82Z2/QT400D/K5YBFN/XX4JBC all closed via ledger. Evidence: ADJ-01..ADJ-05. Collateral stubs filed: STUB-Z1ETZD, STUB-5WVGHD."
+    },
+    {
+      "at": "2026-06-13T01:15:00Z",
+      "from": "close-workorder",
+      "message": "WO closed (close-only). All 4 audit stubs closed; roadmap PHASE-2.UNRESOLVED-EDGE-AUDIT item shipped."
     }
   ],
   "required_skills": [
@@ -232,5 +237,21 @@
   ],
   "inter_phase_results": {},
   "history": [],
-  "completed_at": "2026-06-13T00:55:00Z"
+  "completed_at": "2026-06-13T00:55:00Z",
+  "closed_at": "2026-06-13T01:15:00Z",
+  "close_metadata": {
+    "closed_via": "/close-workorder",
+    "close_mode": "close-only (default v2.8.0; not archived)",
+    "review_status": "PASS",
+    "operator_authorization": "standing approval 2026-06-12 (\"we dont need to wait for my approval\" / \"thats the roadmap we want to follow for now\"); auto-close gates verified: final phase of rolling plan, no unresolved blockers, no bypassed operator-input tasks, no parent WO",
+    "audit": {
+      "phased_terminal_guard": "PASS (WO terminal at phase 4/4)",
+      "culture_validator": "PASS 13/13 (after inventory regen cleared the single freshness warning)",
+      "tracking_validator_scoped": "17/17 PASS",
+      "foundation_docs_gate": "PASS (validator exit 0; regenerated docs committed in 57e6ddd)",
+      "follow_up_capture": "0 candidates",
+      "semantic_validation": "live MCP validation_status returns the 14-field report incl. both new src-only counts"
+    },
+    "what_shipped": "Commits 91d8ac7 (P1 membership fix), 4dcb742 (P2 builtin classification), 7975e08 (P3 testOrigin + 14-field report), fe7920a (P4 probableBuiltinMember), 57e6ddd (close-out). Net self-scan: valid_edge_count 4293->5266, unresolved 20701->17551 (src-only 5854), builtin 1186->4636. Validation: suite 1611/1611 collected green; scoped tracking 17/17."
+  }
 }
