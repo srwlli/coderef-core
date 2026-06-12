@@ -8,8 +8,13 @@
  * Phase 6 — output-validation-report integration test (AC-04, AC-05, AC-08).
  *
  * Runs populate-coderef on a small fixture, then asserts:
- *   AC-04: validation-report.json contains all 11 fields with EXACT names
+ *   AC-04: validation-report.json contains all 12 fields with EXACT names
  *          and number types (never undefined / null / string)
+ *
+ * Schema bump 11 -> 12 (WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001):
+ * header_coverage_pct was added additive-only under the stability rule
+ * documented in src/pipeline/output-validator.ts (WO-RAG-HEADER-COVERAGE-
+ * ENFORCE-AND-SURFACE-001 P1). The locked set below is the new contract.
  *   AC-05: report destination is .coderef/validation-report.json AND
  *          .coderef/index.json carries a validation pointer field
  *   AC-08: validatePipelineState is pure — does NOT call any fs.* function
@@ -40,6 +45,7 @@ const REQUIRED_REPORT_FIELDS = [
   'header_partial_count',
   'header_layer_mismatch_count',
   'header_export_mismatch_count',
+  'header_coverage_pct',
 ] as const;
 
 const created: string[] = [];
@@ -61,7 +67,7 @@ async function makeMinimalFixture(): Promise<string> {
 }
 
 describe('Phase 6 validation-report.json contract (AC-04, AC-05)', () => {
-  it('writes .coderef/validation-report.json with all 11 fields as numbers', async () => {
+  it('writes .coderef/validation-report.json with all 12 fields as numbers', async () => {
     const dir = await makeMinimalFixture();
     const result = spawnSync('node', [POPULATE_CLI, dir, '--mode', 'minimal'], {
       encoding: 'utf-8',
@@ -75,7 +81,7 @@ describe('Phase 6 validation-report.json contract (AC-04, AC-05)', () => {
       expect(report).toHaveProperty(field);
       expect(typeof report[field]).toBe('number');
     }
-    // No extra fields beyond the 11 — schema is locked.
+    // No extra fields beyond the 12 — schema is locked.
     expect(Object.keys(report).sort()).toEqual([...REQUIRED_REPORT_FIELDS].sort());
   });
 

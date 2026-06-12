@@ -2,6 +2,15 @@
   "name": "@coderef/CODEREF-CORE",
   "version": "2.0.0",
   "description": "Core scanning and parsing library for CodeRef system",
+  "license": "MIT",
+  "author": "srwlli",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/srwlli/coderef-core.git"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {

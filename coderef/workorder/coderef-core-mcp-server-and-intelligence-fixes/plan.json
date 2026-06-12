@@ -1,0 +1,285 @@
+{
+  "plan_type": "strict",
+  "goal": "Fix coderef-core review findings and build coderef-mcp-server: fix failing locked-schema and populate-cli tests, add CI, repo hygiene cleanup, dead dep removal, ollama/nomic-embed-text default embeddings, headerless RAG fallback, registry bloat check, build thin TS stdio MCP server over query-executor and artifact readers wired as new bin, update coderef skills, land to main with push, register MCP domain 'coderef-core', notify team",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "RUN",
+          "description": "Run full vitest suite to confirm baseline: 3 failing tests (output-validation-report locked-schema 12th field; populate-cli Phase 3 output files; populate-cli python auto-detect), 30 skipped",
+          "touches": [
+            "vitest.config.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "Update __tests__/pipeline/output-validation-report.test.ts locked-schema contract from 11 to 12 fields (header_coverage_pct) as a DELIBERATE contract change; document the schema bump in the test header comment DISCOVER REC-002: also fix stale \"all 11 fields\" comment/assertions in output-validation-real-world-noregress.test.ts:78 in the SAME commit; cite output-validator.ts:110 stability rule (change was documented additive - only tests lagged).",
+          "touches": [
+            "__tests__/pipeline/output-validation-report.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "EDIT",
+          "description": "Fix __tests__/populate-cli.test.ts failures: 'generates the expected Phase 3 output files' and 'auto-detects python repos when --lang is omitted' (same 12-field report root cause or fixture drift) DISCOVER REC-001: tests exec dist/ - run npm run build FIRST and rerun; if green, root cause was stale dist and the durable fix is CI build-then-test ordering (P1-T5).",
+          "touches": [
+            "__tests__/populate-cli.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "TEST",
+          "description": "Full suite green: 1618 tests, 0 failures, only infrastructure-dependent skips (pinecone/chroma) remain",
+          "touches": []
+        },
+        {
+          "id": "P1-T5",
+          "verb": "WRITE",
+          "description": "Add .github/workflows/ci.yml: npm ci, npm run build, npx vitest run on push + pull_request \u2014 first CI enforcement for this repo",
+          "touches": [
+            ".github/workflows/ci.yml"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "DELETE",
+          "description": "Repo hygiene: remove committed root build artifacts (scanner.js, scanner.js.map, scanner.d.ts.map, types.js, types.js.map, types.d.ts.map), nul file, AGENTS.md.backup, pnpm-lock.yaml (npm canonical); add *.log to .gitignore",
+          "touches": [
+            "scanner.js",
+            "types.js",
+            "nul",
+            "AGENTS.md.backup",
+            "pnpm-lock.yaml",
+            ".gitignore"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "EDIT",
+          "description": "package.json: remove dead deps (@babel/parser, @babel/traverse, @babel/types, acorn; protobufjs if npm ls confirms unused); add engines (node>=20), license, repository fields",
+          "touches": [
+            "package.json"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1: fix(tests+ci+hygiene) stabilize coderef-core - tests green, CI live, root clean",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover coderef-core-mcp-server-and-intelligence-fixes@quick"
+        ],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "EDIT",
+          "description": "rag-index + rag-search: default provider to ollama with nomic-embed-text embedding model when no cloud API key present; cloud providers become explicit opt-in (no more OPENAI_API_KEY-required default) DISCOVER REC-003: exact sites are rag-index.ts:93 (envProvider || openai) and the rag-search.ts equivalent; new logic: envProvider || (cloud key present ? openai : ollama); --provider override unchanged.",
+          "touches": [
+            "src/cli/rag-index.ts",
+            "src/cli/rag-search.ts"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "EDIT",
+          "description": "indexing-orchestrator: add --include-headerless fallback mode - embed chunks from header_status_missing files with provenance metadata header:false instead of skipping, so RAG works on un-annotated repos (PS-rescan follow-up)",
+          "touches": [
+            "src/integration/rag/indexing-orchestrator.ts",
+            "src/cli/rag-index.ts"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "CHECK",
+          "description": "Measure semantic-registry.json write path (113MB on coderef-core); if sharding (per-file or SQLite) fits in scope implement v1, otherwise file follow-up stub with measurements and design notes",
+          "touches": [
+            "src/semantic/registry-sync.ts"
+          ]
+        },
+        {
+          "id": "P2-T4",
+          "verb": "TEST",
+          "description": "Suite green plus rag-index dogfood run on coderef-core with ollama/nomic-embed-text completes with status success or documented partial",
+          "touches": []
+        },
+        {
+          "id": "P2-T5",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2: feat(rag): local-first embeddings default + headerless fallback",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 3,
+      "name": "Phase 3",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P3-T1",
+          "verb": "WRITE",
+          "description": "Create src/cli/coderef-mcp-server.ts: stdio MCP server via @modelcontextprotocol/sdk exposing 6 read-only tools (what_calls, what_imports, impact_of, find_element, codebase_summary, validation_status) as thin wrappers over src/query/query-executor.ts and the intelligence-server artifact readers; compact pre-summarized JSON responses, never raw graph dumps",
+          "touches": [
+            "src/cli/coderef-mcp-server.ts"
+          ]
+        },
+        {
+          "id": "P3-T2",
+          "verb": "EDIT",
+          "description": "package.json: add coderef-mcp-server bin entry + @modelcontextprotocol/sdk dependency; build green via npm run build:cli",
+          "touches": [
+            "package.json",
+            "tsconfig.cli.json"
+          ]
+        },
+        {
+          "id": "P3-T3",
+          "verb": "RUN",
+          "description": "Manual stdio smoke test: initialize, tools/list returns 6 tools, tools/call what_calls + codebase_summary return real data from .coderef/ artifacts",
+          "touches": []
+        },
+        {
+          "id": "P3-T4",
+          "verb": "WRITE",
+          "description": "Add __tests__/mcp-server.test.ts: behavioral tests over the tool handlers against fixture .coderef/ artifacts (schema-locked responses so future ExportedGraph changes fail the build, not the consumer)",
+          "touches": [
+            "__tests__/mcp-server.test.ts"
+          ]
+        },
+        {
+          "id": "P3-T5",
+          "verb": "WRITE",
+          "description": "Write .mcp.json in CODEREF-CORE registering the server under name 'coderef-core' (stdio, node dist/src/cli/coderef-mcp-server.js)",
+          "touches": [
+            ".mcp.json"
+          ]
+        },
+        {
+          "id": "P3-T6",
+          "verb": "COMMIT",
+          "description": "Commit Phase 3: feat(mcp): coderef-mcp-server - native MCP surface over .coderef intelligence",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 4,
+      "name": "Phase 4",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P4-T1",
+          "verb": "CHECK",
+          "description": "Review ASSISTANT coderef skills for drift vs new reality: rag-index, rag-search, rag-status, coderef-scan, populate-coderef, coderef-pipeline, coderef-rag-server SKILL.md files DISCOVER REC-004: 10 CORE skills reference CORE CLIs (coderef-pipeline, coderef-rag-server, coderef-scan, coderef-watch, generate-foundation-docs, populate-coderef, rag-index, rag-search, rag-status, scan-frontend-calls); UPDATE only contract-drifted ones.",
+          "touches": []
+        },
+        {
+          "id": "P4-T2",
+          "verb": "RUN",
+          "description": "Update affected skills via /new-coderef-skill UPDATE: document the MCP server surface, ollama-default embeddings, headerless fallback flag, and 12-field validation report",
+          "touches": []
+        },
+        {
+          "id": "P4-T3",
+          "verb": "RUN",
+          "description": "Land all work to main: merge wo branch (or commit direct per operator instruction 'commit all to main'), push to origin",
+          "touches": []
+        },
+        {
+          "id": "P4-T4",
+          "verb": "RUN",
+          "description": "ASSISTANT registers the new MCP domain as 'coderef-core': .mcp.json registration verified in Claude Code, ecosystem tracking updated (TRACKING registries as applicable)",
+          "touches": []
+        },
+        {
+          "id": "P4-T5",
+          "verb": "RUN",
+          "description": "Notify team on the new tool: send-chat/Discord status update describing coderef-mcp-server tools and how sessions consume them",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      }
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 3,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 4,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260612T103318Z",
+  "plan_type_decided_by": "create-workorder@2.15.0",
+  "workorder_id": "WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001",
+  "feature_name": "coderef-core-mcp-server-and-intelligence-fixes",
+  "created": "2026-06-12T10:33:17Z",
+  "plan_type_rationale": "Stub category 'feature' maps to strict per category-rules.json: clear acceptance criteria, needs discovery + phase planning, .coderef enrichment.",
+  "workorder_hooks": {
+    "post_plan": [
+      "/discover coderef-core-mcp-server-and-intelligence-fixes@quick --output-dest=stub:WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001"
+    ],
+    "post_execute": [
+      "/discover coderef-core-mcp-server-and-intelligence-fixes post-execute@quick --output-dest=stub:WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001"
+    ],
+    "plan_gaps": []
+  }
+}

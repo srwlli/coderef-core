@@ -377,12 +377,15 @@ async function run(args: CliArgs): Promise<void> {
         r.header_missing_count +
         r.header_stale_count +
         r.header_partial_count;
-      console.log(
+      // Diagnostics go to stderr — stdout must stay machine-parseable for
+      // --json consumers (populate-cli.test.ts JSON.parse regression,
+      // WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 P1-T3).
+      console.error(
         `[header coverage] ${r.header_coverage_pct}% ` +
           `(defined ${r.header_defined_count} / total ${total})`,
       );
       if (r.header_missing_count + r.header_stale_count + r.header_partial_count > 0) {
-        console.log(
+        console.error(
           `[header coverage] header-less files (excluded from RAG index): ` +
             `missing ${r.header_missing_count}, stale ${r.header_stale_count}, ` +
             `partial ${r.header_partial_count}`,

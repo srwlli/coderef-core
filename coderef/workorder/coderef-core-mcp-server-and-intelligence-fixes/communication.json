@@ -1,0 +1,106 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001",
+  "feature_name": "coderef-core-mcp-server-and-intelligence-fixes",
+  "created": "2026-06-12T10:33:17Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-DF3PBN",
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "plan authored from STUB-DF3PBN; operator-approved task list injected"
+  },
+  "execution_rules": {
+    "plan_type": "strict",
+    "phase_gates": true,
+    "notes": "P4-T3 lands to main + git push per operator instruction; CI must be green first"
+  },
+  "hard_constraints": [
+    "MCP server must import the same modules that write .coderef/ artifacts (no second implementation - the coderef-context Python server died of schema drift)",
+    "Tool responses must be compact pre-summarized JSON, never raw graph.json dumps",
+    "Operator instruction: commit all to main and push (integrator lane)",
+    "MCP registration name MUST be 'coderef-core'"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "approved_tasks_injected",
+      "count": 24,
+      "source": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-mcp-server-and-intelligence-fixes\\approved-tasks.json",
+      "at": "2026-06-12T10:33:17Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "strict",
+      "phase_count": 4,
+      "source": "default",
+      "at": "2026-06-12T10:33:17Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "strict",
+      "source": "default",
+      "at": "2026-06-12T10:33:17Z"
+    },
+    {
+      "event": "branch_context",
+      "branch": "wo/coderef-core-mcp-server-and-intelligence-fixes",
+      "mode": "worktree",
+      "note": "branched from wo/rag-header-coverage-enforce-and-surface-001 (6 commits ahead of main, this WO depends on its 12-field report); pre-existing uncommitted ARCHIVED deletions left unstaged",
+      "at": "2026-06-12T10:39:28Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [
+    {
+      "at": "2026-06-12T10:36:11Z",
+      "source": "discover-post-plan.md (medium)",
+      "tasks_amended": [
+        "P1-T2",
+        "P1-T3",
+        "P2-T1",
+        "P4-T1"
+      ],
+      "summary": "Folded DISCOVER REC-001..REC-004 into task descriptions: dist-staleness check first for populate-cli, dual-test schema fix, exact provider-default line cites, 10-skill drift scope."
+    }
+  ],
+  "git_branch": "wo/coderef-core-mcp-server-and-intelligence-fixes",
+  "communication_log": [
+    {
+      "at": "2026-06-12T10:33:17Z",
+      "from": "create-workorder",
+      "message": "Workorder created from STUB-DF3PBN (category=feature, plan_type=strict). 24 approved tasks across 4 phases."
+    },
+    {
+      "at": "2026-06-12T10:36:11Z",
+      "from": "discover",
+      "message": "Post-plan discovery complete: 8 findings (2 critical), plan amended on 4 tasks."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {
+    "1": {
+      "pre": [
+        {
+          "hook": "/discover coderef-core-mcp-server-and-intelligence-fixes@quick",
+          "outcome": "satisfied-by-superset",
+          "artifact": "discover-post-plan.md (medium, 2026-06-12T10:39:28Z)",
+          "severity": "info"
+        }
+      ],
+      "post": []
+    }
+  }
+}

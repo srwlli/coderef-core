@@ -75,12 +75,15 @@ describe('Phase 6 real-world no-regression (AC-01, AC-10)', () => {
     // tolerate source drift.
     expect(resolvedEdgeCount).toBeGreaterThan(500);
 
-    // Validation report has all 11 fields populated as numbers.
+    // Validation report has all 12 fields populated as numbers
+    // (header_coverage_pct added under the additive stability rule, see
+    // src/pipeline/output-validator.ts).
     for (const field of [
       'valid_edge_count', 'unresolved_count', 'ambiguous_count',
       'external_count', 'builtin_count', 'header_defined_count',
       'header_missing_count', 'header_stale_count', 'header_partial_count',
       'header_layer_mismatch_count', 'header_export_mismatch_count',
+      'header_coverage_pct',
     ] as const) {
       expect(typeof result.report[field]).toBe('number');
     }
