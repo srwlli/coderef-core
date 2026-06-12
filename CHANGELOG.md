@@ -20,6 +20,9 @@ WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 Phases 1–2 (STUB-XK82Z2 + STUB-QT4
   - `BUILTIN_RECEIVERS` grew per DR-PHASE-4-A with paired tests: `console`, `process`, `globalThis`, `Buffer`, `WeakMap`, `WeakSet`, `Proxy`, `BigInt`, `Intl`, `Atomics`.
   - Self-scan: `builtin_count` 1186 → 4622, `unresolved_count` 20243 → 17484, `ambiguous_count` 3204 → 2620.
 
+### Added
+- **Test-origin edge tagging + src-only validation counts** (Phase 3, STUB-K5YBFN, operator-ruled option A): graph-builder stamps an additive `evidence.testOrigin: true` on every edge whose `sourceLocation.file` matches `__tests__|.test.|.spec.` — graph semantics unchanged (statuses, ids, and totals untouched). `ValidationReport` grew additively 12 → 14 fields: `unresolved_src_count` + `ambiguous_src_count` count edges NOT tagged test-origin, separating test-framework noise from src truth. Self-scan: 66.6% of unresolved is test-origin; src-only unresolved is 5,854 (vs 17,526 total). Locked-schema test, MCP server, and docs swept 12 → 14.
+
 ---
 
 ## [2026-06-12] — MCP Server + Local-First RAG

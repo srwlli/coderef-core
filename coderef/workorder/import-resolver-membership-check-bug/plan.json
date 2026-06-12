@@ -129,15 +129,54 @@
     },
     {
       "phase": 3,
-      "name": "graph-test-origin-edge-tagging \u2014 DEFERRED",
+      "name": "graph-test-origin-edge-tagging",
       "hard_stop": true,
       "stub_ref": "STUB-K5YBFN",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P3-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 3 tasks not yet authored. Pre-condition: Phase 2 must be COMPLETED + REVIEWED before this phase plan is authored."
+          "id": "P3-T1",
+          "verb": "READ",
+          "description": "Confirm chokepoints: buildEdgeRecord is the single edge-record site (tag there); output-validator buildReport for the two src-only counts; locked 12-field test at output-validation-report.test.ts; consumer sweep list (mcp-server ValidationReport + 12-field doc mentions)"
+        },
+        {
+          "id": "P3-T2",
+          "verb": "WRITE",
+          "description": "Failing tests: graph-test-origin-tagging.test.ts (edges from __tests__/x.test.ts carry evidence.testOrigin=true; src edges carry no tag; report unresolved_src_count/ambiguous_src_count arithmetic correct) + bump REQUIRED_REPORT_FIELDS 12->14 in output-validation-report.test.ts with paired stability note",
+          "touches": [
+            "__tests__/pipeline/graph-test-origin-tagging.test.ts",
+            "__tests__/pipeline/output-validation-report.test.ts"
+          ]
+        },
+        {
+          "id": "P3-T3",
+          "verb": "EDIT",
+          "description": "Implement: graph-builder isTestOriginFile (__tests__|.test.|.spec. regex) + evidence.testOrigin tag in buildEdgeRecord + EdgeEvidence intersection type; output-validator ValidationReport + buildReport gains unresolved_src_count/ambiguous_src_count (counts edges NOT tagged testOrigin); mcp-server ValidationReport interface + locked-schema description strings; graph semantics unchanged (no edge dropped, statuses untouched)",
+          "touches": [
+            "src/pipeline/graph-builder.ts",
+            "src/pipeline/output-validator.ts",
+            "src/cli/coderef-mcp-server.ts"
+          ]
+        },
+        {
+          "id": "P3-T4",
+          "verb": "RUN",
+          "description": "npm run build && repopulate; record src-only numbers (test-origin noise separated from src truth); 14-field shape verified"
+        },
+        {
+          "id": "P3-T5",
+          "verb": "TEST",
+          "description": "npx vitest run - full suite green (locked-schema test now asserts 14)"
+        },
+        {
+          "id": "P3-T6",
+          "verb": "CHECK",
+          "description": "MCP validation_status returns 14 fields; 12-field doc sweep -> 14 (SCHEMA.md interface+baseline, AGENT-CONTRACT, API/ARCHITECTURE mentions); CHANGELOG entry"
+        },
+        {
+          "id": "P3-T7",
+          "verb": "COMMIT",
+          "description": "Commit Phase 3 + push to main; phase transition complete"
         }
       ],
       "inter_phase_hooks": {
@@ -180,8 +219,8 @@
     },
     {
       "phase": 3,
-      "approved": false,
-      "reason": "Phase 3 plan_deferred=true. Hard stop fires at phase planning gate."
+      "approved": true,
+      "reason": "Phase 3 plan authored 2026-06-13; operator standing approval (2026-06-12) covers rolling-phase advancement"
     },
     {
       "phase": 4,

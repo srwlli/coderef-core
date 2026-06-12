@@ -15,7 +15,7 @@ Agents should consume the **exported artifacts**, not the internal pipeline stat
 
 ### `.coderef/validation-report.json` (Phase 6)
 
-Public artifact. Locked 12-field shape (R-PHASE-6-C; `header_coverage_pct` added additively by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001). Field names are additive-only — no rename, no drop, without explicit ORCHESTRATOR sign-off.
+Public artifact. Locked 14-field shape (R-PHASE-6-C; `header_coverage_pct` added additively by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001; `unresolved_src_count` + `ambiguous_src_count` added additively by WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P3). Field names are additive-only — no rename, no drop, without explicit ORCHESTRATOR sign-off.
 
 ```json
 {
@@ -65,7 +65,7 @@ Header-less elements are skipped with `header_status_*` reasons by default (DR-P
 
 ### Prefer the MCP tools over parsing artifacts by hand
 
-`coderef-mcp-server` (MCP domain `coderef-core`, registered via `.mcp.json`) exposes the artifacts above as 6 read-only tools: `what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`. If your runtime is MCP-capable, use these instead of reading `graph.json`/`index.json` directly — the server is typed against `ExportedGraph`, traverses only `resolved` edges, and returns ambiguity envelopes (≤5 candidates) rather than guessing. `validation_status` returns the 12-field report verbatim. See [docs/CLI.md § coderef-mcp-server](./CLI.md#coderef-mcp-server).
+`coderef-mcp-server` (MCP domain `coderef-core`, registered via `.mcp.json`) exposes the artifacts above as 6 read-only tools: `what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`. If your runtime is MCP-capable, use these instead of reading `graph.json`/`index.json` directly — the server is typed against `ExportedGraph`, traverses only `resolved` edges, and returns ambiguity envelopes (≤5 candidates) rather than guessing. `validation_status` returns the 14-field report verbatim. See [docs/CLI.md § coderef-mcp-server](./CLI.md#coderef-mcp-server).
 
 ---
 

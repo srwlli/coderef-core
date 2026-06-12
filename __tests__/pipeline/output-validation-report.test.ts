@@ -33,12 +33,18 @@ import { afterEach, describe, expect, it } from 'vitest';
 const REPO_ROOT = path.resolve(__dirname, '..', '..');
 const POPULATE_CLI = path.join(REPO_ROOT, 'dist', 'src', 'cli', 'populate.js');
 
+// Schema bump 12 -> 14 (WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P3,
+// STUB-K5YBFN): unresolved_src_count + ambiguous_src_count added
+// additive-only under the same stability rule as the 11 -> 12 bump
+// (header_coverage_pct). The locked set below is the new contract.
 const REQUIRED_REPORT_FIELDS = [
   'valid_edge_count',
   'unresolved_count',
   'ambiguous_count',
   'external_count',
   'builtin_count',
+  'unresolved_src_count',
+  'ambiguous_src_count',
   'header_defined_count',
   'header_missing_count',
   'header_stale_count',
@@ -67,7 +73,7 @@ async function makeMinimalFixture(): Promise<string> {
 }
 
 describe('Phase 6 validation-report.json contract (AC-04, AC-05)', () => {
-  it('writes .coderef/validation-report.json with all 12 fields as numbers', async () => {
+  it('writes .coderef/validation-report.json with all 14 fields as numbers', async () => {
     const dir = await makeMinimalFixture();
     const result = spawnSync('node', [POPULATE_CLI, dir, '--mode', 'minimal'], {
       encoding: 'utf-8',
@@ -81,7 +87,7 @@ describe('Phase 6 validation-report.json contract (AC-04, AC-05)', () => {
       expect(report).toHaveProperty(field);
       expect(typeof report[field]).toBe('number');
     }
-    // No extra fields beyond the 12 — schema is locked.
+    // No extra fields beyond the 14 — schema is locked.
     expect(Object.keys(report).sort()).toEqual([...REQUIRED_REPORT_FIELDS].sort());
   });
 

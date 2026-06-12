@@ -322,7 +322,7 @@ Every `populate-coderef` run now also prints a `[header coverage] N% (defined X 
 
 **Stamp-on-write hook.** `scripts/check-header-coverage.mjs` is a pre-commit-hook backend: pipe staged source files to it and it fails the commit if any lacks a header. Example hook body: `git diff --cached --name-only --diff-filter=ACM | xargs node scripts/check-header-coverage.mjs`. Bypassable via `git commit --no-verify`; the `rag-index --coverage-floor` gate is the backstop for anything that slips through.
 
-**Phase 6 chokepoint behavior.** `populate-coderef` runs `validatePipelineState` after the pipeline finishes and writes the resulting 12-field `ValidationReport` to `.coderef/validation-report.json`. The CLI's exit code reflects `ValidationResult.ok`:
+**Phase 6 chokepoint behavior.** `populate-coderef` runs `validatePipelineState` after the pipeline finishes and writes the resulting 14-field `ValidationReport` to `.coderef/validation-report.json`. The CLI's exit code reflects `ValidationResult.ok`:
 
 | `ValidationResult` | Exit code | Stderr |
 |---|---:|---|
@@ -604,7 +604,7 @@ The server speaks JSON-RPC over stdio; all diagnostics go to stderr. It is meant
 | `impact_of` | What breaks if this changes? Transitive inbound dependents via reverse BFS (depth 1–10, default 3), with dependents-by-depth and affected files |
 | `find_element` | Look up elements in `index.json` by name, codeRefId, or file substring; optional type filter; returns layer/capability when annotated |
 | `codebase_summary` | Project totals: elements by type, header coverage, graph node/edge counts by relationship |
-| `validation_status` | The 12-field locked `ValidationReport` verbatim, plus a pass/fail summary |
+| `validation_status` | The 14-field locked `ValidationReport` verbatim, plus a pass/fail summary |
 
 Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
 

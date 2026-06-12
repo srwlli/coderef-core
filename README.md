@@ -58,7 +58,7 @@ The 9-phase pipeline rebuild (Phase 0 through Phase 7) is complete and archived.
 - Canonical `codeRefId` per element + a Phase 1 identity taxonomy on `ElementData` (`layer`, `capability`, `constraints`, `headerStatus`).
 - Single-pass `PipelineOrchestrator` with deterministic phase ordering: discovery → scanner → raw facts → semantic header parser → import resolution → call resolution → graph construction.
 - An 8-field canonical graph edge schema with a 10-variant discriminated `EdgeEvidence` union and `GraphNode.metadata` carrying semantic facets (Phase 5 + Phase 7 propagation).
-- A pure Phase 6 `validatePipelineState` chokepoint that emits a 12-field locked `ValidationReport` to `.coderef/validation-report.json` (`header_coverage_pct` added additively by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001).
+- A pure Phase 6 `validatePipelineState` chokepoint that emits a 14-field locked `ValidationReport` to `.coderef/validation-report.json` (`header_coverage_pct` added additively by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001).
 - A Phase 7 `rag-index` that **refuses to run** when the validation report's `ok=false` (no more silent `chunksIndexed=0`). `IndexingResult` carries top-level `status: 'success' | 'partial' | 'failed'` plus per-entry `SkipReason` / `FailReason`.
 - `rag-search --layer` and `--capability` filter flags for facet-scoped semantic search.
 - **Local-first embeddings**: `rag-index` / `rag-search` default to `ollama`/`nomic-embed-text` unless `OPENAI_API_KEY` is set — cloud embedding is opt-in, never a silent default. `rag-index --include-headerless` indexes repos that were never header-annotated, tagging those chunks `header:false`.

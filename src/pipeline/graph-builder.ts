@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability graph-builder-edge-relationship
- * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived
+ * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived, isTestOriginFile
  * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
  */
 
@@ -111,7 +111,7 @@ export type EdgeResolutionStatus =
  * Phase 5 maps them to that variant rather than introducing more
  * variants — Phase 6 can split later if needed.
  */
-export type EdgeEvidence =
+export type EdgeEvidence = (
   | { kind: 'resolved-import'; resolvedModuleFile: string; originSpecifier: string; localName: string }
   | { kind: 'unresolved-import'; originSpecifier: string; reason: string }
   | { kind: 'ambiguous-import'; originSpecifier: string; candidates: string[] }
@@ -121,7 +121,17 @@ export type EdgeEvidence =
   | { kind: 'ambiguous-call'; calleeName: string; receiverText: string; candidates: string[] }
   | { kind: 'builtin-call'; calleeName: string; receiverText: string }
   | { kind: 'header-import'; module: string; symbol: string; resolvedModuleFile?: string }
-  | { kind: 'stale-header-import'; module: string; symbol: string; reason: string };
+  | { kind: 'stale-header-import'; module: string; symbol: string; reason: string }
+) & {
+  /**
+   * Additive evidence-level tag (STUB-K5YBFN, operator ruling option A):
+   * present and true when the edge's sourceLocation.file is a test file
+   * (`__tests__|.test.|.spec.`). Lets validation reporting surface
+   * src-only counts alongside totals WITHOUT changing graph semantics —
+   * test-origin edges keep their status, ids, and totals membership.
+   */
+  testOrigin?: boolean;
+};
 
 /**
  * 8-field canonical graph edge schema (DR-PHASE-5-D).
@@ -645,6 +655,17 @@ export function buildEdges(
  * metadata fields for backwards-compat consumers during the Phase
  * 5 transition window.
  */
+/**
+ * Test-origin detection for the evidence-level testOrigin tag
+ * (STUB-K5YBFN). Canonical regex matches __tests__ directories and
+ * .test./.spec. file infixes on either path-separator convention.
+ */
+const TEST_ORIGIN_RE = /__tests__|\.test\.|\.spec\./;
+
+export function isTestOriginFile(file: string): boolean {
+  return TEST_ORIGIN_RE.test(file.split('\\').join('/'));
+}
+
 function buildEdgeRecord(args: {
   id: string;
   sourceId: string;
@@ -656,13 +677,19 @@ function buildEdgeRecord(args: {
   candidates?: string[];
   reason?: string;
 }): ExportedGraph['edges'][number] {
+  // Evidence-level test-origin tag (STUB-K5YBFN): single chokepoint —
+  // every edge with evidence and a test-file sourceLocation gets tagged.
+  let evidence = args.evidence;
+  if (evidence && args.sourceLocation && isTestOriginFile(args.sourceLocation.file)) {
+    evidence = { ...evidence, testOrigin: true };
+  }
   const record: ExportedGraph['edges'][number] = {
     id: args.id,
     sourceId: args.sourceId,
     targetId: args.targetId,
     relationship: args.relationship,
     resolutionStatus: args.resolutionStatus,
-    evidence: args.evidence as Record<string, unknown> | undefined,
+    evidence: evidence as Record<string, unknown> | undefined,
     sourceLocation: args.sourceLocation,
     candidates: args.candidates,
     reason: args.reason,

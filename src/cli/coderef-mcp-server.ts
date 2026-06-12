@@ -25,7 +25,7 @@
  *   impact_of         - transitive inbound dependents (reverse BFS)
  *   find_element      - element lookup in .coderef/index.json
  *   codebase_summary  - totals, type distribution, header coverage, edges
- *   validation_status - the locked 12-field validation report verbatim
+ *   validation_status - the locked 14-field validation report verbatim
  *
  * Protocol discipline: stdout belongs to the MCP transport. ALL diagnostics
  * go to stderr (same rule as populate --json; see populate.ts P1-T3 fix).
@@ -73,13 +73,19 @@ interface IndexData {
   elements: IndexElement[];
 }
 
-/** The locked 12-field validation report (output-validator.ts additive rule). */
+/**
+ * The locked 14-field validation report (output-validator.ts additive rule).
+ * The two *_src_count fields (STUB-K5YBFN) are optional so the server stays
+ * compatible with pre-bump 12-field artifacts on disk.
+ */
 interface ValidationReport {
   valid_edge_count: number;
   unresolved_count: number;
   ambiguous_count: number;
   external_count: number;
   builtin_count: number;
+  unresolved_src_count?: number;
+  ambiguous_src_count?: number;
   header_defined_count: number;
   header_missing_count: number;
   header_stale_count: number;
@@ -431,7 +437,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         };
       }
       return {
-        // The locked 12-field report, verbatim (additive stability rule —
+        // The locked 14-field report, verbatim (additive stability rule —
         // src/pipeline/output-validator.ts).
         report,
         summary: {
@@ -545,7 +551,7 @@ async function main(): Promise<void> {
     {
       title: 'Validation status',
       description:
-        'The pipeline validation report (locked 12-field schema) from .coderef/validation-report.json, plus a compact summary.',
+        'The pipeline validation report (locked 14-field schema) from .coderef/validation-report.json, plus a compact summary.',
       inputSchema: {},
     },
     async () => toContent(handlers.validation_status()),

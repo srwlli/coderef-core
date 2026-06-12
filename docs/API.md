@@ -15,7 +15,7 @@ For schema types referenced below (`ElementData`, `PipelineState`, `ImportResolu
 | Surface | Stability |
 |---------|-----------|
 | Pipeline types (`PipelineState`, `ElementData`, raw fact types, resolution types, `GraphEdgeV2`, `EdgeEvidence`, `ExportedGraph`) | **stable** — locked at Phase 5 (DR-PHASE-5-D); additive-only changes only |
-| `ValidationReport` (12 fields; `header_coverage_pct` added additively) | **stable** — locked at Phase 6 (R-PHASE-6-C); field names additive-only with explicit ORCHESTRATOR sign-off |
+| `ValidationReport` (14 fields; `header_coverage_pct`, `unresolved_src_count`, `ambiguous_src_count` added additively) | **stable** — locked at Phase 6 (R-PHASE-6-C); field names additive-only with explicit ORCHESTRATOR sign-off |
 | `IndexingResult` (with Phase 7 additive fields) | **stable** — locked at Phase 7 (DR-PHASE-7-B); shape strictly additive over pre-Phase-7 contract |
 | `IndexingStatus`, `SkipReason`, `FailReason`, status thresholds | **stable** — Phase 7 (DR-PHASE-7-C, DR-PHASE-7-E) |
 | Header grammar (BNF) | **stable** — canonical at `ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md`; CORE mirrors |
@@ -105,7 +105,7 @@ if (!result.ok) {
 for (const warn of result.warnings) {
   // header_drift in default mode (SH-1, SH-2, SH-3); promoted to errors when strictHeaders=true
 }
-// result.report is the 12-field ValidationReport — always populated, even on ok=false
+// result.report is the 14-field ValidationReport — always populated, even on ok=false
 ```
 
 **Purity guarantee.** `validatePipelineState` is **pure**: no fs, no `process.exit`, no console. Callers own:
@@ -115,7 +115,7 @@ for (const warn of result.warnings) {
 
 The CLI entry `populate-coderef` (in `src/cli/populate.ts`) is the canonical wiring; downstream callers can copy that pattern.
 
-**Public artifact:** `.coderef/validation-report.json` — the 12-field `ValidationReport` plus an inferred `ok` flag — is consumable by external automation. The Phase 7 indexing orchestrator gates on it, and `rag-index --coverage-floor` reads its `header_coverage_pct` field.
+**Public artifact:** `.coderef/validation-report.json` — the 14-field `ValidationReport` plus an inferred `ok` flag — is consumable by external automation. The Phase 7 indexing orchestrator gates on it, and `rag-index --coverage-floor` reads its `header_coverage_pct` field.
 
 ---
 

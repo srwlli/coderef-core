@@ -429,7 +429,7 @@ interface ExportedGraph {
 
 Truth source: `src/pipeline/output-validator.ts` lines 110–151.
 
-The 12-field locked `ValidationReport` is a public artifact contract — field names are LOCKED additive-only (no rename, no drop, without explicit ORCHESTRATOR sign-off). All fields are required numbers (use 0 for empty categories, never undefined / null / string). Originally 11 fields; `header_coverage_pct` was added as the 12th under the additive-only allowance (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001).
+The 14-field locked `ValidationReport` is a public artifact contract — field names are LOCKED additive-only (no rename, no drop, without explicit ORCHESTRATOR sign-off). All fields are required numbers (use 0 for empty categories, never undefined / null / string). Originally 11 fields; `header_coverage_pct` was added as the 12th (WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001) and `unresolved_src_count` + `ambiguous_src_count` as 13th/14th (WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P3, STUB-K5YBFN) under the same additive-only allowance.
 
 ```typescript
 interface ValidationReport {
@@ -438,6 +438,9 @@ interface ValidationReport {
   ambiguous_count: number;
   external_count: number;
   builtin_count: number;
+  unresolved_src_count: number;        // unresolved edges NOT tagged evidence.testOrigin (src-only;
+                                       // STUB-K5YBFN — test-origin noise separated from src truth)
+  ambiguous_src_count: number;         // ambiguous edges NOT tagged evidence.testOrigin (src-only)
   header_defined_count: number;        // unique files (R-PHASE-6-F file-grain)
   header_missing_count: number;
   header_stale_count: number;
@@ -459,16 +462,18 @@ interface ValidationResult {
 
 `validatePipelineState(state, graph, options)` is **pure**: no fs, no `process.exit`, no console. The CLI plumbs `ValidatePipelineStateOptions.layerEnum` (loaded from `ASSISTANT/STANDARDS/layers.json`) and `strictHeaders` directly per DR-PHASE-6-D.
 
-Real-world baseline (from coderef-core's own scan at `.coderef/validation-report.json`; 2026-06-12, post WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P1+P2 — P1 resolved 812 false `relative_target_not_in_project` edges via NodeNext `.js`→`.ts` mapping; P2 reclassified Node-builtin imports, builtin-module receivers, and JS-global callees from `unresolved`/`ambiguous` to `builtin`):
+Real-world baseline (from coderef-core's own scan at `.coderef/validation-report.json`; 2026-06-12, post WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P1–P3 — P1 resolved 812 false `relative_target_not_in_project` edges via NodeNext `.js`→`.ts` mapping; P2 reclassified Node-builtin imports, builtin-module receivers, and JS-global callees from `unresolved`/`ambiguous` to `builtin`; P3 added the src-only sub-counts, showing 66.6% of remaining unresolved is test-origin noise):
 
 | Field | Value |
 |-------|------:|
-| `valid_edge_count` | 5252 |
-| `unresolved_count` | 17484 |
-| `ambiguous_count` | 2620 |
-| `external_count` | 662 |
-| `builtin_count` | 4622 |
-| `header_defined_count` | 260 |
+| `valid_edge_count` | 5266 |
+| `unresolved_count` | 17526 |
+| `ambiguous_count` | 2621 |
+| `external_count` | 666 |
+| `builtin_count` | 4636 |
+| `unresolved_src_count` | 5854 |
+| `ambiguous_src_count` | 1290 |
+| `header_defined_count` | 261 |
 | `header_partial_count` | 2 |
 | `header_stale_count` | 1 |
 | `header_export_mismatch_count` | 1 |

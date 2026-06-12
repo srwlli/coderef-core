@@ -107,7 +107,9 @@ export interface ValidationWarning {
 /**
  * Locked validation report (R-PHASE-6-C). Originally 11 fields; extended
  * to 12 by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001 P1 (added
- * header_coverage_pct, additive-only per the stability rule below).
+ * header_coverage_pct), then to 14 by WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-
+ * BUG-001 P3 / STUB-K5YBFN (added unresolved_src_count +
+ * ambiguous_src_count) — both additive-only per the stability rule below.
  *
  * SCHEMA STABILITY: these field names are now a public artifact contract
  * (CI dashboards, downstream tools). Field names are LOCKED — additive-only
@@ -131,6 +133,16 @@ export interface ValidationReport {
   external_count: number;
   /** Edges with resolutionStatus='builtin'. */
   builtin_count: number;
+  /**
+   * Edges with resolutionStatus='unresolved' NOT carrying the evidence-level
+   * testOrigin tag (STUB-K5YBFN, operator ruling option A): the src-only
+   * unresolved population. Test-origin edges remain in unresolved_count —
+   * totals are unchanged; this field separates test-framework noise from
+   * src truth. unresolved_src_count <= unresolved_count always.
+   */
+  unresolved_src_count: number;
+  /** Edges with resolutionStatus='ambiguous' NOT tagged testOrigin (src-only). */
+  ambiguous_src_count: number;
   /** Unique files with headerStatus='defined'. */
   header_defined_count: number;
   /** Unique files with headerStatus='missing'. */
@@ -173,7 +185,7 @@ export interface ValidationResult {
   errors: ValidationError[];
   /** Default-mode header drift surfaces; caller logs and continues. */
   warnings: ValidationWarning[];
-  /** 12-field locked report. Always populated, even on ok=false. */
+  /** 14-field locked report. Always populated, even on ok=false. */
   report: ValidationReport;
 }
 
@@ -534,6 +546,8 @@ function buildFileHeaderFactMap(state: PipelineState): Map<string, NonNullable<t
  *   ambiguous_count          — edges with resolutionStatus='ambiguous'
  *   external_count           — edges with resolutionStatus='external'
  *   builtin_count            — edges with resolutionStatus='builtin'
+ *   unresolved_src_count     — unresolved edges NOT tagged testOrigin
+ *   ambiguous_src_count      — ambiguous edges NOT tagged testOrigin
  *   header_defined_count     — files with headerStatus='defined'
  *   header_missing_count     — files with headerStatus='missing'
  *   header_stale_count       — files with headerStatus='stale'
@@ -551,16 +565,23 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
   let ambiguous_count = 0;
   let external_count = 0;
   let builtin_count = 0;
+  // src-only sub-counts (STUB-K5YBFN): edges NOT carrying the evidence-level
+  // testOrigin tag stamped by graph-builder. Totals above include both.
+  let unresolved_src_count = 0;
+  let ambiguous_src_count = 0;
   for (const edge of graph.edges) {
+    const testOrigin = (edge.evidence as { testOrigin?: boolean } | undefined)?.testOrigin === true;
     switch (edge.resolutionStatus) {
       case 'resolved':
         valid_edge_count++;
         break;
       case 'unresolved':
         unresolved_count++;
+        if (!testOrigin) unresolved_src_count++;
         break;
       case 'ambiguous':
         ambiguous_count++;
+        if (!testOrigin) ambiguous_src_count++;
         break;
       case 'external':
         external_count++;
@@ -629,6 +650,8 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
     ambiguous_count,
     external_count,
     builtin_count,
+    unresolved_src_count,
+    ambiguous_src_count,
     header_defined_count,
     header_missing_count,
     header_stale_count,

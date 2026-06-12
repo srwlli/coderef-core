@@ -8,7 +8,7 @@
   "parent_stub_id": "STUB-XK82Z2",
   "predecessor_for": null,
   "status": "implementing",
-  "current_phase": 2,
+  "current_phase": 3,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\context.json",
@@ -113,6 +113,13 @@
       "stub_ref": "STUB-QT400D",
       "at": "2026-06-12T23:35:00Z",
       "note": "P2 tasks authored from discovery; additive path locked: no ImportResolutionKind/EdgeResolutionStatus enum changes; reason=node_builtin carries the disposition"
+    },
+    {
+      "event": "phase_plan_authored",
+      "phase": 3,
+      "stub_ref": "STUB-K5YBFN",
+      "at": "2026-06-13T00:05:00Z",
+      "note": "Option-A ruling implemented as: evidence-level testOrigin tag (single buildEdgeRecord chokepoint) + additive ValidationReport 12->14 bump (unresolved_src_count, ambiguous_src_count) per the documented 11->12 stability precedent. Graph semantics unchanged."
     }
   ],
   "phase_transitions": [
@@ -122,6 +129,13 @@
       "commit": "91d8ac7",
       "verdict": "PASS",
       "at": "2026-06-12T22:22:00.687Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "4dcb742",
+      "verdict": "PASS",
+      "at": "2026-06-12T23:30:22.322Z"
     }
   ],
   "plan_adjustments": [
@@ -142,6 +156,12 @@
       "at": "2026-06-12T23:55:00Z",
       "type": "evidence",
       "summary": "P2 impact larger than stub estimate (~1,100): builtin_count 1186->4622 (+3436), unresolved 20243->17484 (-2759), ambiguous 3204->2620 (-584). Receiver-allowlist additions (console/process/globalThis/Buffer/...) honestly drew from populations the audit had bucketed under prototype-method/ambiguous noise. not_in_manifest 487->21 (audit predicted ~34). Shadow-safety proven by test (project symbol beats global). No frozen-fixture updates needed - suite 1607/1607 collected green. New test files stamped with @coderef-semantic headers after a transient header_missing_count=1."
+    },
+    {
+      "id": "ADJ-04",
+      "at": "2026-06-13T00:30:00Z",
+      "type": "evidence",
+      "summary": "P3 shipped: evidence.testOrigin tag at the single buildEdgeRecord chokepoint + ValidationReport 12->14 additive bump (unresolved_src_count 5854, ambiguous_src_count 1290). Self-scan: 66.6% of unresolved is test-origin (audit estimated 65%). Collateral header drift caught and fixed in-phase (isTestOriginFile added to graph-builder @exports). Suite 1610/1610 collected green; locked-schema test bumped with paired stability note; MCP server tolerates pre-bump 12-field artifacts via optional fields; docs swept 12->14 across 6 files."
     }
   ],
   "git_branch": "wo/import-resolver-membership-check-bug",
@@ -160,6 +180,11 @@
       "at": "2026-06-12T23:55:00Z",
       "from": "execute-workorder",
       "message": "Phase 2 COMPLETE: builtin classification fix (3 sub-populations: builtin imports, builtin-module receivers, JS-global callees). Continuing directly to Phase 3 (STUB-K5YBFN) per operator standing approval."
+    },
+    {
+      "at": "2026-06-13T00:30:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 3 COMPLETE: test-origin tagging + src-only counts live (MCP validation_status returns 14 fields). Continuing to Phase 4 (STUB-XX4JBC) per operator standing approval."
     }
   ],
   "required_skills": [
