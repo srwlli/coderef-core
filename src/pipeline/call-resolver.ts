@@ -270,6 +270,39 @@ export const JS_GLOBAL_CALLEES = new Set<string>([
 ]);
 
 /**
+ * JS prototype-method vocabulary (STUB-XX4JBC). Member-call callees that
+ * are overwhelmingly likely to be Array/String/Object/Map/Set/Promise/
+ * RegExp/Function prototype methods when the receiver is unknown. Used by
+ * graph-builder to stamp the additive `evidence.probableBuiltinMember`
+ * flag on receiver_not_in_symbol_table call edges — a probabilistic
+ * sub-classification hint, never a status change (operator ruling
+ * option A, 2026-06-12).
+ */
+export const JS_PROTOTYPE_METHODS = new Set<string>([
+  // Array.prototype
+  'push', 'pop', 'shift', 'unshift', 'slice', 'splice', 'map', 'filter',
+  'reduce', 'reduceRight', 'forEach', 'find', 'findIndex', 'findLast',
+  'findLastIndex', 'some', 'every', 'includes', 'indexOf', 'lastIndexOf',
+  'join', 'concat', 'flat', 'flatMap', 'fill', 'sort', 'reverse', 'at',
+  'keys', 'values', 'entries',
+  // String.prototype
+  'split', 'replace', 'replaceAll', 'trim', 'trimStart', 'trimEnd',
+  'toLowerCase', 'toUpperCase', 'startsWith', 'endsWith', 'charAt',
+  'charCodeAt', 'codePointAt', 'padStart', 'padEnd', 'repeat', 'substring',
+  'substr', 'match', 'matchAll', 'search', 'localeCompare', 'normalize',
+  // Object.prototype + conversions
+  'toString', 'valueOf', 'hasOwnProperty', 'toJSON', 'toFixed', 'toPrecision',
+  // Map/Set.prototype
+  'get', 'set', 'has', 'delete', 'add', 'clear',
+  // Promise.prototype
+  'then', 'catch', 'finally',
+  // RegExp.prototype
+  'test', 'exec',
+  // Function.prototype
+  'bind', 'call', 'apply',
+]);
+
+/**
  * Entry point. Drives pass 1 then pass 2 and returns every CallResolution
  * the RawCallFact set produced. Caller is responsible for writing the
  * result onto state.callResolutions and emitting graph edges for

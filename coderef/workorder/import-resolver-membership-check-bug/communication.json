@@ -8,7 +8,7 @@
   "parent_stub_id": "STUB-XK82Z2",
   "predecessor_for": null,
   "status": "implementing",
-  "current_phase": 3,
+  "current_phase": 4,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\import-resolver-membership-check-bug\\context.json",
@@ -120,6 +120,13 @@
       "stub_ref": "STUB-K5YBFN",
       "at": "2026-06-13T00:05:00Z",
       "note": "Option-A ruling implemented as: evidence-level testOrigin tag (single buildEdgeRecord chokepoint) + additive ValidationReport 12->14 bump (unresolved_src_count, ambiguous_src_count) per the documented 11->12 stability precedent. Graph semantics unchanged."
+    },
+    {
+      "event": "phase_plan_authored",
+      "phase": 4,
+      "stub_ref": "STUB-XX4JBC",
+      "at": "2026-06-13T00:40:00Z",
+      "note": "Evidence-level probableBuiltinMember flag only - no EdgeResolutionStatus change, no report change, per operator ruling option A baked into the stub."
     }
   ],
   "phase_transitions": [
@@ -136,6 +143,13 @@
       "commit": "4dcb742",
       "verdict": "PASS",
       "at": "2026-06-12T23:30:22.322Z"
+    },
+    {
+      "phase": 3,
+      "to_status": "complete",
+      "commit": "7975e08",
+      "verdict": "PASS",
+      "at": "2026-06-12T23:40:12.712Z"
     }
   ],
   "plan_adjustments": [
@@ -162,6 +176,12 @@
       "at": "2026-06-13T00:30:00Z",
       "type": "evidence",
       "summary": "P3 shipped: evidence.testOrigin tag at the single buildEdgeRecord chokepoint + ValidationReport 12->14 additive bump (unresolved_src_count 5854, ambiguous_src_count 1290). Self-scan: 66.6% of unresolved is test-origin (audit estimated 65%). Collateral header drift caught and fixed in-phase (isTestOriginFile added to graph-builder @exports). Suite 1610/1610 collected green; locked-schema test bumped with paired stability note; MCP server tolerates pre-bump 12-field artifacts via optional fields; docs swept 12->14 across 6 files."
+    },
+    {
+      "id": "ADJ-05",
+      "at": "2026-06-13T00:50:00Z",
+      "type": "evidence",
+      "summary": "P4 shipped: probableBuiltinMember evidence flag on receiver_not_in_symbol_table calls with JS-prototype callees. Self-scan: 5,869 flagged (4,735 src-only vs audit estimate 4,863). Edge status/ids/totals untouched. Collateral lesson: scanner does not extract export-const Set declarations as exported elements, so listing them in @exports headers trips exports_match_ast - header reverted to mirror AST ground truth; gap noted under the STUB-5WVGHD scanner-classification family. Suite 1611/1611 collected green."
     }
   ],
   "git_branch": "wo/import-resolver-membership-check-bug",
@@ -185,6 +205,11 @@
       "at": "2026-06-13T00:30:00Z",
       "from": "execute-workorder",
       "message": "Phase 3 COMPLETE: test-origin tagging + src-only counts live (MCP validation_status returns 14 fields). Continuing to Phase 4 (STUB-XX4JBC) per operator standing approval."
+    },
+    {
+      "at": "2026-06-13T00:50:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 4 COMPLETE - final phase of rolling plan reached (close_after_phase=4). Proceeding to full Step 5 close-out per rolling contract."
     }
   ],
   "required_skills": [

@@ -190,15 +190,52 @@
     },
     {
       "phase": 4,
-      "name": "prototype-method-probable-builtin-flag \u2014 DEFERRED",
+      "name": "prototype-method-probable-builtin-flag",
       "hard_stop": true,
       "stub_ref": "STUB-XX4JBC",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P4-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 4 tasks not yet authored. Pre-condition: Phase 3 must be COMPLETED + REVIEWED before this phase plan is authored."
+          "id": "P4-T1",
+          "verb": "READ",
+          "description": "Confirm flag site: graph-builder unresolved-call evidence assembly (reason=receiver_not_in_symbol_table); vocabulary set lives in call-resolver (exported) alongside BUILTIN_RECEIVERS/JS_GLOBAL_CALLEES"
+        },
+        {
+          "id": "P4-T2",
+          "verb": "WRITE",
+          "description": "Failing test prototype-method-flag.test.ts: x.push(1) on unknown receiver -> edge stays unresolved/receiver_not_in_symbol_table AND evidence.probableBuiltinMember=true; x.customWeirdMethod() gets no flag; status/ids unchanged",
+          "touches": [
+            "__tests__/pipeline/prototype-method-flag.test.ts"
+          ]
+        },
+        {
+          "id": "P4-T3",
+          "verb": "EDIT",
+          "description": "Implement: JS_PROTOTYPE_METHODS exported set in call-resolver (Array/String/Object/Map/Set/Promise/RegExp/Function prototype vocabulary); EdgeEvidence intersection gains probableBuiltinMember?: boolean; graph-builder stamps the flag on unresolved-call evidence when reason=receiver_not_in_symbol_table and calleeName in set. NO status change, NO report change (evidence-level only per operator ruling option A)",
+          "touches": [
+            "src/pipeline/call-resolver.ts",
+            "src/pipeline/graph-builder.ts"
+          ]
+        },
+        {
+          "id": "P4-T4",
+          "verb": "RUN",
+          "description": "npm run build && repopulate; count flagged edges (audit predicted ~4,863 pre-P2; P2 reclassifications shifted the pool); 14-field report unchanged"
+        },
+        {
+          "id": "P4-T5",
+          "verb": "TEST",
+          "description": "npx vitest run - full suite green"
+        },
+        {
+          "id": "P4-T6",
+          "verb": "CHECK",
+          "description": "SCHEMA.md EdgeEvidence note + CHANGELOG entry; MCP unaffected (evidence passes through verbatim)"
+        },
+        {
+          "id": "P4-T7",
+          "verb": "COMMIT",
+          "description": "Commit Phase 4 + push; terminal phase reached -> full Step 5 close-out + Step 6 render"
         }
       ],
       "inter_phase_hooks": {
@@ -224,8 +261,8 @@
     },
     {
       "phase": 4,
-      "approved": false,
-      "reason": "Phase 4 plan_deferred=true. Hard stop fires at phase planning gate."
+      "approved": true,
+      "reason": "Phase 4 plan authored 2026-06-13; operator standing approval (2026-06-12) covers rolling-phase advancement"
     }
   ],
   "plan_adjustments_needed": [],

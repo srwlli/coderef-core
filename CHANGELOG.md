@@ -22,6 +22,7 @@ WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 Phases 1–2 (STUB-XK82Z2 + STUB-QT4
 
 ### Added
 - **Test-origin edge tagging + src-only validation counts** (Phase 3, STUB-K5YBFN, operator-ruled option A): graph-builder stamps an additive `evidence.testOrigin: true` on every edge whose `sourceLocation.file` matches `__tests__|.test.|.spec.` — graph semantics unchanged (statuses, ids, and totals untouched). `ValidationReport` grew additively 12 → 14 fields: `unresolved_src_count` + `ambiguous_src_count` count edges NOT tagged test-origin, separating test-framework noise from src truth. Self-scan: 66.6% of unresolved is test-origin; src-only unresolved is 5,854 (vs 17,526 total). Locked-schema test, MCP server, and docs swept 12 → 14.
+- **`evidence.probableBuiltinMember` flag** (Phase 4, STUB-XX4JBC, operator-ruled option A): `receiver_not_in_symbol_table` call edges whose callee is JS prototype vocabulary (`push`/`map`/`join`/`split`/… — `JS_PROTOTYPE_METHODS` in call-resolver) carry an additive `probableBuiltinMember: true` evidence hint so consumers can sub-count probable builtin member calls. The edge stays `unresolved` — no `EdgeResolutionStatus` enum change. Self-scan: 5,869 flagged (4,735 src-only, vs the audit's 4,863 estimate).
 
 ---
 

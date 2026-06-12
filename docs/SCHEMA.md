@@ -363,7 +363,7 @@ type EdgeResolutionStatus =
 Truth source: `src/pipeline/graph-builder.ts` lines 104–114.
 
 ```typescript
-type EdgeEvidence =
+type EdgeEvidence = (
   | { kind: 'resolved-import';     resolvedModuleFile: string; originSpecifier: string; localName: string }
   | { kind: 'unresolved-import';   originSpecifier: string;    reason: string }
   | { kind: 'ambiguous-import';    originSpecifier: string;    candidates: string[] }
@@ -373,10 +373,17 @@ type EdgeEvidence =
   | { kind: 'ambiguous-call';      calleeName: string; receiverText: string; candidates: string[] }
   | { kind: 'builtin-call';        calleeName: string; receiverText: string }
   | { kind: 'header-import';       module: string; symbol: string; resolvedModuleFile?: string }
-  | { kind: 'stale-header-import'; module: string; symbol: string; reason: string };
+  | { kind: 'stale-header-import'; module: string; symbol: string; reason: string }
+) & {
+  testOrigin?: boolean;            // additive (STUB-K5YBFN): edge's source file is a test file
+                                   // (__tests__|.test.|.spec.); feeds the *_src_count report fields
+  probableBuiltinMember?: boolean; // additive (STUB-XX4JBC): receiver_not_in_symbol_table call whose
+                                   // callee is JS prototype vocabulary (JS_PROTOTYPE_METHODS) —
+                                   // probabilistic hint; the edge stays unresolved
+};
 ```
 
-Phase 6's validator reads `edge.evidence.{field}` for invariant checks; the discriminator lets TypeScript enforce the shape per `(relationship, resolutionStatus)` combination at the validator boundary.
+Phase 6's validator reads `edge.evidence.{field}` for invariant checks; the discriminator lets TypeScript enforce the shape per `(relationship, resolutionStatus)` combination at the validator boundary. The two cross-variant flags (`testOrigin`, `probableBuiltinMember`) are additive evidence-level tags — they never change `resolutionStatus`, edge ids, or totals.
 
 `dynamic` / `typeOnly` / `stale` (non-header) imports use the `unresolved-import` variant with appropriate `reason` strings (Phase 5 maps them to that variant rather than introducing more variants).
 
