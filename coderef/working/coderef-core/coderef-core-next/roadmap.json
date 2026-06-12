@@ -2,17 +2,17 @@
   "project": "coderef-core-next",
   "owner": "CODEREF-CORE",
   "created": "2026-06-12T12:20:00Z",
-  "updated": "2026-06-12T12:20:00Z",
-  "current_phase": 1,
+  "updated": "2026-06-12T23:49:46Z",
+  "current_phase": 2,
   "status": "active",
   "phases": [
     {
       "phase": 1,
       "name": "Native intelligence surface (in flight)",
       "hard_stop": true,
-      "status": "active",
+      "status": "complete",
       "gating_predicate": "WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 lands on main and is pushed; team notified; ASSISTANT registers MCP domain coderef-core",
-      "shipped_commit": null,
+      "shipped_commit": "79605fa",
       "items": [
         {
           "id": "STABILIZE",
@@ -56,7 +56,7 @@
       "phase": 2,
       "name": "Correctness debt",
       "hard_stop": false,
-      "status": "not_started",
+      "status": "active",
       "gating_predicate": "Phase 1 landed on main",
       "shipped_commit": null,
       "items": [
@@ -153,7 +153,9 @@
           "depends_on": []
         }
       ],
-      "depends_on": ["PHASE-1.MCP-SERVER-V1"]
+      "depends_on": [
+        "PHASE-1.MCP-SERVER-V1"
+      ]
     },
     {
       "phase": 5,
@@ -199,17 +201,27 @@
     {
       "id": "P1-P4-DEP",
       "description": "MCP v2 tools extend buildToolHandlers shipped in Phase 1 (true dependency, not pure sequencing)",
-      "depends_on": ["PHASE-1.MCP-SERVER-V1"]
+      "depends_on": [
+        "PHASE-1.MCP-SERVER-V1"
+      ]
     },
     {
       "id": "P2-P4-DEP",
       "description": "TOOL-HOTSPOTS is the replacement path for intelligence-server's drifted handleHotspots — needs the INTEL-SERVER-SCHEMA port-vs-retire ruling first",
-      "depends_on": ["PHASE-2.INTEL-SERVER-SCHEMA"]
+      "depends_on": [
+        "PHASE-2.INTEL-SERVER-SCHEMA"
+      ]
     },
     {
       "id": "P1-P5-DEP",
       "description": "PROVENANCE-RANKING consumes the header:false chunk metadata shipped in Phase 1 (LOCAL-FIRST-RAG)",
-      "depends_on": ["PHASE-1.LOCAL-FIRST-RAG"]
+      "depends_on": [
+        "PHASE-1.LOCAL-FIRST-RAG"
+      ]
+    },
+    {
+      "id": "P2-AUDIT-SHIPPED",
+      "text": "UNRESOLVED-EDGE-AUDIT item shipped via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 (rolling 4-phase: 91d8ac7/4dcb742/7975e08/fe7920a; closed 35df9bc). unresolved 20701->17551 with src-only truth 5854; all 4 audit stubs closed. Phase 2 stays active: INTEL-SERVER-SCHEMA + WIN-PATH-NORMALIZATION remain."
     }
   ]
 }
