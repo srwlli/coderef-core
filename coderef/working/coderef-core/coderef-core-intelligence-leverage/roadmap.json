@@ -1,0 +1,75 @@
+{
+  "project": "coderef-core-intelligence-leverage",
+  "owner": "CODEREF-CORE",
+  "created": "2026-06-12T11:00:00Z",
+  "updated": "2026-06-12T11:00:00Z",
+  "current_phase": 1,
+  "status": "active",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Stabilize — tests green, CI live, repo clean",
+      "hard_stop": true,
+      "status": "not_started",
+      "gating_predicate": "WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 Phase 1 executes; suite 1618/0 failures; CI workflow enforcing build-then-test",
+      "shipped_commit": null,
+      "items": [
+        { "id": "FIX-LOCKED-SCHEMA-TEST", "description": "Update 11-field locked validation-report contract to 12 fields (header_coverage_pct) in output-validation-report.test.ts AND noregress comment, same commit", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "FIX-POPULATE-CLI-TESTS", "description": "Rebuild dist first (stale-dist prime suspect), then fix populate-cli Phase 3 output + python auto-detect tests", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "CI-WORKFLOW", "description": "Add .github/workflows/ci.yml (npm ci, build, vitest run) — first CI for this repo", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "HYGIENE-CLEANUP", "description": "Remove root build artifacts, nul, AGENTS.md.backup, pnpm-lock.yaml; .gitignore *.log", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "DEAD-DEPS", "description": "Remove @babel/*, acorn (+protobufjs if unused); add engines/license/repository to package.json", "status": "not_started", "shipped_commit": null, "depends_on": [] }
+      ],
+      "depends_on": []
+    },
+    {
+      "phase": 2,
+      "name": "Local-first RAG — no API key required, headerless repos indexable",
+      "hard_stop": true,
+      "status": "not_started",
+      "gating_predicate": "Phase 1 complete (suite green + CI live)",
+      "shipped_commit": null,
+      "items": [
+        { "id": "OLLAMA-DEFAULT", "description": "rag-index.ts:93 + rag-search.ts: default provider ollama/nomic-embed-text when no cloud key; cloud opt-in", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "HEADERLESS-FALLBACK", "description": "--include-headerless: embed header_status_missing chunks with header:false provenance instead of skipping", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "REGISTRY-BLOAT-CHECK", "description": "Measure 113MB semantic-registry.json write path; shard v1 or file follow-up stub with design", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "REINDEX-DOGFOOD", "description": "rag-index dogfood on coderef-core with local stack; cures 27-day vector staleness", "status": "not_started", "shipped_commit": null, "depends_on": [] }
+      ],
+      "depends_on": ["PHASE-1"]
+    },
+    {
+      "phase": 3,
+      "name": "coderef-mcp-server — native MCP surface over .coderef intelligence",
+      "hard_stop": true,
+      "status": "not_started",
+      "gating_predicate": "Phase 2 complete; @modelcontextprotocol/sdk pinned and stdio smoke test passes",
+      "shipped_commit": null,
+      "items": [
+        { "id": "MCP-SERVER-BIN", "description": "src/cli/coderef-mcp-server.ts: 6 read-only tools (what_calls, what_imports, impact_of, find_element, codebase_summary, validation_status) wrapping QueryExecutor + artifact readers; compact responses", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "MCP-TESTS", "description": "__tests__/mcp-server.test.ts behavioral tests against fixture artifacts; schema drift = build error", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "MCP-JSON-REGISTRATION", "description": "Write CODEREF-CORE/.mcp.json registering server under name coderef-core (absent today, clean create)", "status": "not_started", "shipped_commit": null, "depends_on": [] }
+      ],
+      "depends_on": ["PHASE-2"]
+    },
+    {
+      "phase": 4,
+      "name": "Integration — skills updated, landed on main, team notified",
+      "hard_stop": true,
+      "status": "not_started",
+      "gating_predicate": "Phase 3 complete (server builds, tests pass, smoke verified)",
+      "shipped_commit": null,
+      "items": [
+        { "id": "SKILLS-UPDATE", "description": "Review 10 CORE skills referencing CORE CLIs; /new-coderef-skill UPDATE for contract-drifted ones (rag-index, rag-search, rag-status, coderef-rag-server most likely)", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "MAIN-LANDING-PUSH", "description": "Land all work to main and git push origin (operator instruction: proper git push)", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "MCP-DOMAIN-REGISTRATION", "description": "ASSISTANT registers the MCP domain as coderef-core; verify tools visible in a fresh Claude Code session", "status": "not_started", "shipped_commit": null, "depends_on": [] },
+        { "id": "TEAM-NOTIFICATION", "description": "Notify team on the new tool (send-chat / Discord status): tool list + how sessions consume them", "status": "not_started", "shipped_commit": null, "depends_on": [] }
+      ],
+      "depends_on": ["PHASE-3"]
+    }
+  ],
+  "chronology_callouts": [
+    { "id": "P1-P4-CI-GATE", "description": "Phase 4 main landing requires Phase 1's CI to be live and green — true dependency, not pure sequencing", "depends_on": ["PHASE-1"] },
+    { "id": "P3-P4-REGISTRATION", "description": "Phase 4 MCP domain registration requires Phase 3's built server bin and .mcp.json — true dependency", "depends_on": ["PHASE-3"] },
+    { "id": "P2-P3-INDEPENDENCE", "description": "Phase 3 MCP server does not technically require Phase 2 RAG changes (graph/index tools only); sequenced for single-WO discipline, could parallelize if needed", "depends_on": [] }
+  ]
+}
