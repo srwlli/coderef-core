@@ -1,0 +1,133 @@
+{
+  "plan_type": "phased",
+  "goal": "Fix three coderef-scan resolver gaps that leave 75.9% of edges unresolved on Primary-Sources (13.3% resolution on resolvable edges): (1) add a Python stdlib builtin list so pathlib/json/re/csv/psycopg2 imports classify builtin/external not unresolved (~550 edges); (2) make the EXISTING loadTsconfigPaths actually resolve @/ alias imports (it's wired but missing PS's @/* patterns, ~400 edges); (3) populate receiverText + track receiver types so member/method calls (.join/.map, imported-symbol methods) resolve instead of callee_not_in_symbol_table (~15,269 unresolved calls). #1+#2 are cheap deterministic wins that should lift resolution past 50%; #3 is the large structural one.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "WRITE",
+          "description": "Failing tests: resolver-python-stdlib.test.ts (import pathlib/json/re/psycopg2 from a .py -> external/builtin, not unresolved) + resolver-tsconfig-paths.test.ts (@/lib/x and @/components/ui/* resolve to local files given a tsconfig paths fixture)",
+          "touches": [
+            "__tests__/pipeline/resolver-python-stdlib.test.ts",
+            "__tests__/pipeline/resolver-tsconfig-paths.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "Gap #1: add PYTHON_STDLIB set in import-resolver; bare Python imports matching it classify external reason=python_stdlib (graph-builder maps to builtin like node_builtin). Gap #2: debug + fix loadTsconfigPaths so @/* aliases resolve (baseUrl/glob handling)",
+          "touches": [
+            "src/pipeline/import-resolver.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "RUN",
+          "description": "Build; re-scan PS + coderef-core; record resolution-rate delta (target: past 50% on PS from #1+#2)",
+          "touches": []
+        },
+        {
+          "id": "P1-T4",
+          "verb": "TEST",
+          "description": "Full suite green",
+          "touches": []
+        },
+        {
+          "id": "P1-T5",
+          "verb": "COMMIT",
+          "description": "Commit P1 + push; CHANGELOG",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover scanner-resolver-three-gaps phase 1@quick"
+        ],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "WRITE",
+          "description": "Failing test resolver-receiver-tracking.test.ts: member call obj.method() populates receiverText; imported-symbol method resolves; bare prototype method (.join/.map on unknown) carries probableBuiltinMember",
+          "touches": [
+            "__tests__/pipeline/resolver-receiver-tracking.test.ts"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "EDIT",
+          "description": "Gap #3: populate receiverText on member-call RawCallFacts at extraction; resolve imported-symbol methods via the import binding; reclassify JS prototype-method calls (extend probableBuiltinMember path)",
+          "touches": [
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "RUN",
+          "description": "Build; re-scan PS + coderef-core; record final resolution-rate delta vs the 13.3% baseline",
+          "touches": []
+        },
+        {
+          "id": "P2-T4",
+          "verb": "TEST",
+          "description": "Full suite green (call-resolution suite especially)",
+          "touches": []
+        },
+        {
+          "id": "P2-T5",
+          "verb": "COMMIT",
+          "description": "Commit P2 + push; CHANGELOG; roadmap update",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover scanner-resolver-three-gaps phase 2@quick"
+        ],
+        "post_phase": []
+      }
+    }
+  ],
+  "hard_stops": [],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260613T072419Z",
+  "plan_type_decided_by": "create-workorder@2.15.1",
+  "workorder_id": "WO-SCANNER-RESOLVER-THREE-GAPS-001",
+  "feature_name": "scanner-resolver-three-gaps",
+  "created": "2026-06-13T07:40:00Z",
+  "plan_type_rationale": "Three independent resolver fixes with measurable per-fix payoff; phase by gap so resolution-rate evidence is captured incrementally. P1 = cheap deterministic wins (#1+#2), P2 = structural receiver tracking (#3).",
+  "workorder_hooks": {
+    "post_plan": [
+      "/discover scanner-resolver-three-gaps@medium --output-dest=working:coderef/workorder/scanner-resolver-three-gaps/discover-post-plan.md"
+    ],
+    "post_execute": [
+      "/discover scanner-resolver-three-gaps post-execute@medium --output-dest=working:coderef/workorder/scanner-resolver-three-gaps/discover-post-execute.md"
+    ],
+    "plan_gaps": []
+  }
+}

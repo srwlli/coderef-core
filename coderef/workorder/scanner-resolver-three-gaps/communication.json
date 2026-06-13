@@ -1,0 +1,99 @@
+{
+  "workorder_id": "WO-SCANNER-RESOLVER-THREE-GAPS-001",
+  "feature_name": "scanner-resolver-three-gaps",
+  "created": "2026-06-13T07:40:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [
+    "DISPATCH-2026-06-12-CODEREF-CORE-003"
+  ],
+  "parent_stub_id": "STUB-G5E6EA",
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 2,
+  "phase_status": "complete",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-resolver-three-gaps\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-resolver-three-gaps\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-resolver-three-gaps\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "PS-reported scanner resolver gaps; promoted from STUB-G5E6EA"
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_gates": true,
+    "notes": "P1 cheap wins (#1+#2), P2 structural (#3). Integrator lane: main + push per phase. PS is the resolution-rate validation case."
+  },
+  "hard_constraints": [
+    "No locked-enum changes",
+    "Same-language-family guard preserved (STUB-M3GE4S)",
+    "Integrator lane: main + push per phase"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_forced",
+      "from": "strict",
+      "to": "phased",
+      "reason": "three independent resolver fixes, phase by payoff",
+      "at": "2026-06-13T07:40:00Z"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 10,
+      "source": "inline",
+      "at": "2026-06-13T07:40:00Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "phased",
+      "phase_count": 2,
+      "source": "default",
+      "at": "2026-06-13T07:40:00Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "phased",
+      "source": "default",
+      "at": "2026-06-13T07:40:00Z"
+    },
+    {
+      "event": "finding",
+      "at": "2026-06-13T07:40:00Z",
+      "note": "loadTsconfigPaths ALREADY EXISTS in import-resolver (line 181) - gap #2 is a debug of why @/ aliases miss, not a new build. Cheaper than the stub assumed."
+    }
+  ],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "43cbe1a",
+      "verdict": "PASS",
+      "at": "2026-06-13T08:10:53.470Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "b19cfe6",
+      "verdict": "PASS",
+      "at": "2026-06-13T08:16:28.953Z"
+    }
+  ],
+  "plan_adjustments": [],
+  "git_branch": "wo/scanner-resolver-three-gaps",
+  "communication_log": [
+    {
+      "at": "2026-06-13T07:40:00Z",
+      "from": "create-workorder",
+      "message": "WO from STUB-G5E6EA (PS dispatch-003). Phased: P1 Python stdlib + tsconfig paths (cheap, target >50%); P2 receiver tracking (structural). PS = validation case."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {},
+  "history": []
+}

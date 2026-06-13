@@ -1,0 +1,32 @@
+=============================================================
+WORKORDER: WO-SCANNER-RESOLVER-THREE-GAPS-001  |  scanner-resolver-three-gaps  |  COMPLETE
+Session: daily-agent-session-2026-06-13 (CODEREF-CORE)  |  Phases: 2  |  Commits: 2  |  Pushes: 2
+Parent stub: STUB-G5E6EA (will be closed on archive)
+
+FILES CREATED:
+  + __tests__/pipeline/resolver-python-stdlib.test.ts      (43cbe1a)
+  + __tests__/pipeline/resolver-tsconfig-paths.test.ts     (43cbe1a)
+  + __tests__/pipeline/resolver-receiver-tracking.test.ts  (b19cfe6)
+
+FILES MODIFIED:
+  ~ src/pipeline/import-resolver.ts  (43cbe1a)
+  ~ src/pipeline/graph-builder.ts    (43cbe1a)
+  ~ src/pipeline/call-resolver.ts    (b19cfe6)
+  ~ CHANGELOG.md                     (43cbe1a, b19cfe6)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Python stdlib + tsconfig @/ paths   (43cbe1a)
+  [x] Phase 2: Python builtin + stdlib-receiver    (b19cfe6)
+
+RESOLUTION-RATE EVIDENCE (Primary-Sources, 22,416 edges):
+  resolved+builtin+external: 18.1%  ->  21.0% (P1)  ->  43.0% (P2)
+  unresolved:                16,955 -> 16,300 (P1) -> 11,365 (P2)   (-5,590, 33% cut)
+  Gap #1 python_stdlib:       +764 import edges
+  Gap #2 @/ tsconfig paths:   +655 import edges resolved
+  Gap #3 python_builtin_callee: +3,927  | python_stdlib_receiver: +1,008
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing file-level drift, outside WO scope; this WO's row is clean)
+Tests: 195 pipeline tests green (8 new resolver tests)
+
+APPROVE -> /close-workorder WO-SCANNER-RESOLVER-THREE-GAPS-001
+=============================================================
