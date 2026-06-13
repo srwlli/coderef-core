@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-13] — Scanner Resolver Gaps: Python stdlib + tsconfig `@/` paths (Phase 1)
+
+WO-SCANNER-RESOLVER-THREE-GAPS-001 Phase 1 (STUB-G5E6EA, from Primary-Sources DISPATCH-003). PS's scan resolved only ~12.5% of its 22,416 edges. Two of the three reported resolver gaps were import-side false-unresolveds, both deterministic to fix.
+
+### Fixed
+- **Gap #1 — Python stdlib imports were `unresolved`.** `module.isBuiltin` only knows Node.js builtins, so `import json` / `import pathlib` / `from re import match` fell through to `classifyBareSpecifier` and landed `unresolved` (reason `not_in_manifest_or_node_modules`). A curated `PYTHON_STDLIB` allowlist (3.8+ common modules) now classifies these `external` with reason `python_stdlib`, which graph-builder maps onto `resolutionStatus: builtin` — mirroring the `node_builtin` disposition (STUB-QT400D), **no `EdgeResolutionStatus` enum change.** Dotted modules (`urllib.parse`, `os.path`) resolve via their top-level package. Unknown modules correctly stay unresolved. On PS: **764 edges reclassified** (builtin 700 → 1464).
+- **Gap #2 — tsconfig `paths` aliases (`"@/*": ["./*"]`, the Next.js default) never resolved.** Two compounding bugs: (a) `loadTsconfigPaths` ran `path.resolve(baseAbs, './*')` then `path.relative`, collapsing the glob to a bare `*` segment that `matchTsconfigPaths` no longer recognized as a glob (`endsWith('/*')` failed) — so the import tail was dropped and every `@/...` mapped to a literal `*`; (b) the alias target was probed as an absolute path against a project-relative file set. Fixed: `loadTsconfigPaths` preserves the glob; `matchTsconfigPaths` recognizes a bare `*` target and substitutes the import tail; `resolveModuleSpecifier` probes both the relative and projectPath-joined-absolute candidate forms. On PS: **655 `@/...` imports now resolve** (`not_in_manifest_or_node_modules` 1677 → 1022).
+- **Net (PS):** unresolved 16,955 → 16,300 (−655 import edges resolved); overall resolved+builtin+external 18.1% → 21.0%. Gap #3 (receiver/callee tracking, ~15,254 edges) is the remaining dominant bucket — Phase 2. New `__tests__/pipeline/resolver-python-stdlib.test.ts` + `resolver-tsconfig-paths.test.ts` lock both fixes (5 tests). Full pipeline suite green (192 tests).
+
+---
+
 ## [2026-06-13] - Header Generator: Language-Aware Comment Syntax
 
 STUB-TGBBRG. The semantic-header sweep (`populate-coderef --source-headers`) stamped JavaScript block comments onto Python files - a SyntaxError on line 1 of a .py - breaking ~197 Primary-Sources Python files and blocking the indexer.

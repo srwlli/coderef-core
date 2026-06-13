@@ -384,13 +384,33 @@ export function resolveModuleSpecifier(
   projectPath?: string,
 ): string | undefined {
   // 1. tsconfig paths take precedence (DR-PHASE-3-B). Targets are
-  // project-relative POSIX (resolved at load time via baseUrl); join with
-  // projectPath to get absolute candidates the projectFiles set carries.
+  // project-relative POSIX (resolved at load time via baseUrl). The
+  // projectFiles set is keyed by PROJECT-RELATIVE paths (collectProjectFiles
+  // indexes the same project-relative file keys the scanner emits), so the
+  // alias target must be probed AS A RELATIVE path — not joined with
+  // projectPath into an absolute one. The earlier `path.resolve(projectPath,
+  // candidate)` produced an absolute candidate that never matched a relative
+  // key, so EVERY tsconfig-alias import (e.g. Next.js's `"@/*": ["./*"]`)
+  // fell through to `unresolved` even when the target existed on disk
+  // (STUB-G5E6EA gap #2: 605 false-unresolved `@/...` imports on
+  // Primary-Sources). Probe the relative target directly.
   const aliasMatch = matchTsconfigPaths(specifier, pathsMap);
-  if (aliasMatch && projectPath) {
+  if (aliasMatch) {
     for (const candidate of aliasMatch) {
-      const absCandidate = path.resolve(projectPath, candidate);
-      const resolved = probeRelative(toPosix(absCandidate), projectFiles);
+      // `candidate` is project-relative POSIX (the import tail substituted into
+      // the alias target). probeRelative compares against the projectFiles
+      // keys, which collectProjectFiles double-indexes as both the scanner's
+      // emitted form AND its POSIX normalization. Those keys may be
+      // project-relative OR absolute depending on how the scanner was invoked,
+      // so probe BOTH the relative candidate and its projectPath-joined
+      // absolute form — mirroring the relative-specifier branch below, which
+      // produces absolute-POSIX candidates from an absolute importerFile.
+      const relCandidate = path.posix.normalize(candidate);
+      let resolved = probeRelative(relCandidate, projectFiles);
+      if (!resolved && projectPath) {
+        const absCandidate = toPosix(path.resolve(projectPath, candidate));
+        resolved = probeRelative(absCandidate, projectFiles);
+      }
       if (resolved) return resolved;
     }
   }
@@ -497,6 +517,11 @@ function resolveAstImportsInternal(
           if (isBuiltin(fact.moduleSpecifier)) {
             base.kind = 'external';
             base.reason = 'node_builtin';
+          } else if (isPythonStdlib(fact.moduleSpecifier)) {
+            // Python stdlib (STUB-G5E6EA gap #1) — same external/builtin
+            // disposition as node_builtin, distinct reason for observability.
+            base.kind = 'external';
+            base.reason = 'python_stdlib';
           } else {
             base.kind = classifyBareSpecifier(fact.moduleSpecifier, externalSet);
             if (base.kind === 'unresolved') base.reason = 'not_in_manifest_or_node_modules';
@@ -588,6 +613,9 @@ function resolveHeaderImportsInternal(
         if (isBuiltin(fact.module)) {
           base.kind = 'external';
           base.reason = 'node_builtin';
+        } else if (isPythonStdlib(fact.module)) {
+          base.kind = 'external';
+          base.reason = 'python_stdlib';
         } else {
           base.kind = classifyBareSpecifier(fact.module, externalSet);
           if (base.kind === 'unresolved') base.reason = 'not_in_manifest_or_node_modules';
@@ -701,6 +729,51 @@ function isBareSpecifier(specifier: string): boolean {
   return !specifier.startsWith('./') && !specifier.startsWith('../') && !path.isAbsolute(specifier);
 }
 
+/**
+ * Curated Python standard-library top-level module names (3.8+ common set).
+ * Python imports reach the resolver as bare specifiers (`import json`,
+ * `from pathlib import Path`, `import urllib.parse`), but `module.isBuiltin`
+ * only knows Node.js builtins — so stdlib imports were mis-classified
+ * `unresolved` (STUB-G5E6EA gap #1). A specifier whose TOP-LEVEL package is in
+ * this set classifies `external` with reason `python_stdlib`, which
+ * graph-builder maps onto resolutionStatus `builtin` (mirrors the node_builtin
+ * disposition, STUB-QT400D — no EdgeResolutionStatus enum changes). This is an
+ * allowlist, not an exhaustive registry: unknown modules correctly stay
+ * unresolved (a missing third-party dep is a real signal, not noise).
+ */
+const PYTHON_STDLIB: ReadonlySet<string> = new Set([
+  'abc', 'argparse', 'array', 'ast', 'asyncio', 'base64', 'bisect', 'builtins',
+  'bz2', 'calendar', 'cmath', 'codecs', 'collections', 'colorsys', 'concurrent',
+  'configparser', 'contextlib', 'contextvars', 'copy', 'copyreg', 'csv',
+  'ctypes', 'dataclasses', 'datetime', 'decimal', 'difflib', 'dis', 'email',
+  'enum', 'errno', 'faulthandler', 'fcntl', 'filecmp', 'fileinput', 'fnmatch',
+  'fractions', 'ftplib', 'functools', 'gc', 'getpass', 'gettext', 'glob',
+  'graphlib', 'gzip', 'hashlib', 'heapq', 'hmac', 'html', 'http', 'imaplib',
+  'importlib', 'inspect', 'io', 'ipaddress', 'itertools', 'json', 'keyword',
+  'linecache', 'locale', 'logging', 'lzma', 'mailbox', 'math', 'mimetypes',
+  'mmap', 'multiprocessing', 'numbers', 'operator', 'os', 'pathlib', 'pickle',
+  'pickletools', 'pkgutil', 'platform', 'plistlib', 'poplib', 'posixpath',
+  'pprint', 'profile', 'pstats', 'pty', 'pwd', 'queue', 'random', 're',
+  'reprlib', 'resource', 'sched', 'secrets', 'select', 'selectors', 'shelve',
+  'shlex', 'shutil', 'signal', 'site', 'smtplib', 'socket', 'socketserver',
+  'sqlite3', 'ssl', 'stat', 'statistics', 'string', 'stringprep', 'struct',
+  'subprocess', 'symtable', 'sys', 'sysconfig', 'syslog', 'tarfile', 'tempfile',
+  'termios', 'textwrap', 'threading', 'time', 'timeit', 'tkinter', 'token',
+  'tokenize', 'tomllib', 'trace', 'traceback', 'tracemalloc', 'tty', 'types',
+  'typing', 'unicodedata', 'unittest', 'urllib', 'uuid', 'venv', 'warnings',
+  'wave', 'weakref', 'webbrowser', 'wsgiref', 'xml', 'xmlrpc', 'zipapp',
+  'zipfile', 'zipimport', 'zlib', 'zoneinfo', '__future__',
+]);
+
+/**
+ * True when a bare specifier's top-level package is a Python stdlib module.
+ * Dotted modules (`urllib.parse`, `os.path`) resolve via their first segment.
+ */
+function isPythonStdlib(specifier: string): boolean {
+  const top = specifier.split('.')[0];
+  return PYTHON_STDLIB.has(top);
+}
+
 function extractPackageName(specifier: string): string {
   if (specifier.startsWith('@')) {
     const parts = specifier.split('/');
@@ -782,7 +855,14 @@ function matchTsconfigPaths(
       const prefix = pattern.slice(0, -1); // keep trailing '/'
       if (specifier.startsWith(prefix)) {
         const tail = specifier.slice(prefix.length);
-        return targets.map(t => t.endsWith('/*') ? t.slice(0, -1) + tail : t);
+        return targets.map(t => {
+          // Glob target — substitute the import tail. Handles both `prefix/*`
+          // (root-relative subdir) and a BARE `*` (root-mapped target such as
+          // the resolved form of `"@/*": ["./*"]`, STUB-G5E6EA gap #2).
+          if (t === '*') return tail;
+          if (t.endsWith('/*')) return t.slice(0, -1) + tail;
+          return t;
+        });
       }
     } else if (pattern === specifier) {
       return [...targets];
@@ -809,9 +889,25 @@ function loadTsconfigPaths(projectPath: string): ReadonlyMap<string, string[]> {
     const out = new Map<string, string[]>();
     for (const [pattern, targets] of Object.entries(paths)) {
       const resolvedTargets = targets.map(t => {
-        const abs = path.resolve(baseAbs, t);
-        const rel = path.relative(projectPath, abs);
-        return toPosix(rel);
+        // Preserve the trailing glob (`*`) across resolution. A target like
+        // `./*` must keep its `*` so matchTsconfigPaths can substitute the
+        // import's tail. The previous code ran `path.resolve(baseAbs, './*')`
+        // → `<baseAbs>/*`, then `path.relative` yielded the bare segment `*`
+        // for a root target — but for a non-root target like `src/*` it
+        // yielded `src/*` correctly. The real defect was matchTsconfigPaths
+        // not recognizing a BARE `*` target as a glob, so root-mapped aliases
+        // (`"@/*": ["./*"]`, the Next.js default) dropped the import tail and
+        // every `@/...` import fell through to unresolved (STUB-G5E6EA gap #2).
+        // Split the glob off, resolve only the static prefix, re-append `*`.
+        const tPosix = toPosix(t);
+        const hasGlob = tPosix.endsWith('*');
+        const staticPart = hasGlob ? tPosix.replace(/\*$/, '') : tPosix;
+        const abs = path.resolve(baseAbs, staticPart || '.');
+        const rel = toPosix(path.relative(projectPath, abs));
+        if (!hasGlob) return rel;
+        const relStatic = rel === '.' || rel === '' ? '' : rel.replace(/\/$/, '');
+        // Root target → bare `*`; nested target → `prefix/*`.
+        return relStatic ? `${relStatic}/*` : '*';
       });
       out.set(pattern, resolvedTargets);
     }
