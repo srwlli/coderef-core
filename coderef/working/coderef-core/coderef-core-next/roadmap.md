@@ -2,7 +2,7 @@
 
 **Owner:** CODEREF-CORE
 **Created:** 2026-06-12T12:20:00Z
-**Updated:** 2026-06-13T01:45:00Z
+**Updated:** 2026-06-13T03:40:00Z
 **Current phase:** 2
 **Render slug:** `SURFACES/surfaces-html/renders/roadmap/coderef-core-next/` (stable, no ULID)
 
@@ -33,10 +33,10 @@
 
 ### Items
 
-- [not_started] **INTEL-SERVER-SCHEMA** — coderef-intelligence-server still reads legacy edge fields (e.source/e.target/e.type) internally — port it to the canonical 8-field ExportedGraph schema, or retire endpoints superseded by MCP tools (ruling needed: port vs retire)
+- [not_started] **INTEL-SERVER-SCHEMA** — RULED 2026-06-13 (operator-delegated): option A - RETIRE. coderef-intelligence-server endpoints superseded by coderef-mcp-server get deleted/410d (STUB-9F63EJ); hotspots replacement ships as MCP v2 TOOL-HOTSPOTS (Phase 4) before handleHotspots is removed. Original finding: server reads legacy edge fields (e.source/e.target/e.type) internally.
 - [complete] **UNRESOLVED-EDGE-AUDIT** (fe7920a) — Self-scan shows unresolved_count=20701 vs valid_edge_count=4293 — characterize unresolved edges by evidence/reason variant, separate expected externals from resolver gaps, file targeted resolver-fix stubs with measured counts [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed] [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed]
 - [not_started] **WIN-PATH-NORMALIZATION** — Close STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001: indexing-orchestrator path normalization fails on Windows (drive-letter casing / separator mismatch at the orchestrator seam); caught by DISPATCH-003 E2E smoke
-- [not_started] **SCANNER-EXPORT-CLASSIFICATION** — STUB-5WVGHD: scanner marks nested functions exported:true (parent flag inherited) and misses export-const Set declarations entirely - exports_match_ast false-stales honest headers (coderef-mcp-server.ts) and headers cannot list real const exports; fix exported-flag propagation + const-declaration extraction
+- [complete] **SCANNER-EXPORT-CLASSIFICATION** (5e73091) — STUB-5WVGHD: scanner marks nested functions exported:true (parent flag inherited) and misses export-const Set declarations entirely - exports_match_ast false-stales honest headers (coderef-mcp-server.ts) and headers cannot list real const exports; fix exported-flag propagation + const-declaration extraction
 - [not_started] **VITEST-MJS-COLLECTION** — STUB-Z1ETZD: any vitest test importing scripts/check-header-coverage.mjs dies at collection with SyntaxError (plain node import works) - check-header-coverage.test.ts has been uncollectable since at least 2026-06-12; stash-proven pre-existing with minimal repro
 - [not_started] **GHOST-INDEX-ENTRIES** — STUB-81XNNM: index.json carries elements for root-level types.d.ts and scanner.js that do not exist on disk (17 ENOENT errors in the full-repo rag dogfood) - add disk-existence reconciliation / stale-entry eviction to populate
 
@@ -90,7 +90,7 @@
 
 ## Chronology callouts
 
-- **P1-P4-DEP** —  *(depends on: PHASE-1.MCP-SERVER-V1)*
-- **P2-P4-DEP** —  *(depends on: PHASE-2.INTEL-SERVER-SCHEMA)*
-- **P1-P5-DEP** —  *(depends on: PHASE-1.LOCAL-FIRST-RAG)*
-- **P2-AUDIT-SHIPPED** — 
+- **P1-P4-DEP** — MCP v2 tools extend buildToolHandlers shipped in Phase 1 (true dependency, not pure sequencing) *(depends on: PHASE-1.MCP-SERVER-V1)*
+- **P2-P4-DEP** — TOOL-HOTSPOTS is the replacement path for intelligence-server's drifted handleHotspots — needs the INTEL-SERVER-SCHEMA port-vs-retire ruling first *(depends on: PHASE-2.INTEL-SERVER-SCHEMA)*
+- **P1-P5-DEP** — PROVENANCE-RANKING consumes the header:false chunk metadata shipped in Phase 1 (LOCAL-FIRST-RAG) *(depends on: PHASE-1.LOCAL-FIRST-RAG)*
+- **P2-AUDIT-SHIPPED** — UNRESOLVED-EDGE-AUDIT item shipped via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 (rolling 4-phase: 91d8ac7/4dcb742/7975e08/fe7920a; closed 35df9bc). unresolved 20701->17551 with src-only truth 5854; all 4 audit stubs closed. Phase 2 stays active: INTEL-SERVER-SCHEMA + WIN-PATH-NORMALIZATION remain.

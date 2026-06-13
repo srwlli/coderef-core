@@ -2,7 +2,7 @@
   "project": "coderef-core-next",
   "owner": "CODEREF-CORE",
   "created": "2026-06-12T12:20:00Z",
-  "updated": "2026-06-13T01:45:00Z",
+  "updated": "2026-06-13T03:40:00Z",
   "current_phase": 2,
   "status": "active",
   "phases": [
@@ -62,7 +62,7 @@
       "items": [
         {
           "id": "INTEL-SERVER-SCHEMA",
-          "description": "coderef-intelligence-server still reads legacy edge fields (e.source/e.target/e.type) internally \u2014 port it to the canonical 8-field ExportedGraph schema, or retire endpoints superseded by MCP tools (ruling needed: port vs retire)",
+          "description": "RULED 2026-06-13 (operator-delegated): option A - RETIRE. coderef-intelligence-server endpoints superseded by coderef-mcp-server get deleted/410d (STUB-9F63EJ); hotspots replacement ships as MCP v2 TOOL-HOTSPOTS (Phase 4) before handleHotspots is removed. Original finding: server reads legacy edge fields (e.source/e.target/e.type) internally.",
           "status": "not_started",
           "shipped_commit": null,
           "depends_on": []
@@ -84,8 +84,8 @@
         {
           "id": "SCANNER-EXPORT-CLASSIFICATION",
           "description": "STUB-5WVGHD: scanner marks nested functions exported:true (parent flag inherited) and misses export-const Set declarations entirely - exports_match_ast false-stales honest headers (coderef-mcp-server.ts) and headers cannot list real const exports; fix exported-flag propagation + const-declaration extraction",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "5e73091",
           "depends_on": []
         },
         {
