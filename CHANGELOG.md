@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-13] — Scanner Resolver Gaps: Python builtin + stdlib-receiver calls (Phase 2)
+
+WO-SCANNER-RESOLVER-THREE-GAPS-001 Phase 2 (STUB-G5E6EA). Gap #3 — the two dominant unresolved-call buckets on Primary-Sources (`callee_not_in_symbol_table` 5,009, `receiver_not_in_symbol_table` 10,245). The deterministic slice is Python builtins, the analog of the JS classifications that already existed.
+
+### Fixed
+- **Gap #3a — bare Python builtin calls were `unresolved`.** `print` (1697), `len` (959), `str`, `set`, `sorted`, `dict`, `list`, `sum`, `isinstance`, `int`, `open`, `range`, ... called bare from a `.py` file fell through to `callee_not_in_symbol_table`. A `PYTHON_BUILTIN_CALLEES` set (the analog of `JS_GLOBAL_CALLEES`) now classifies them `builtin` reason `python_builtin_callee`. **Language-guarded** (`isPythonFile`) so a JS/TS call to `open`/`set`/`len` is never reclassified, and project symbols still win (the same-language symbol-table lookup runs first). On PS: **+3,927 edges** (`callee_not_in_symbol_table` 5,009 → 1,082).
+- **Gap #3b — Python stdlib module-member calls were `unresolved`.** `json.dumps()`, `sys.exit()`, `re.match()` — calls on a receiver bound to a `python_stdlib` import (Phase 1) — were `receiver_not_in_symbol_table`. A new branch in `classifyMethodCall` mirrors the existing `node_builtin` receiver path: a receiver (or dotted root, e.g. `sys.path` → `sys`) bound to a `python_stdlib` import classifies `builtin` reason `python_stdlib_receiver`. On PS: **+1,008 edges** (`receiver_not_in_symbol_table` 10,245 → 9,237).
+- **Net across both phases (PS):** resolution rate (resolved+builtin+external) **18.1% → 43.0%**; unresolved **16,955 → 11,365 (−5,590, a 33% cut)**. Remaining unresolved is dominated by genuinely-hard cases (psycopg2 `cur`/`conn` cursors, dynamic Python expressions, cross-module intra-project Python imports). New `__tests__/pipeline/resolver-receiver-tracking.test.ts` locks both classifications + the JS guard. Full pipeline suite green (195 tests). No `EdgeResolutionStatus` enum change.
+
+---
+
 ## [2026-06-13] — Scanner Resolver Gaps: Python stdlib + tsconfig `@/` paths (Phase 1)
 
 WO-SCANNER-RESOLVER-THREE-GAPS-001 Phase 1 (STUB-G5E6EA, from Primary-Sources DISPATCH-003). PS's scan resolved only ~12.5% of its 22,416 edges. Two of the three reported resolver gaps were import-side false-unresolveds, both deterministic to fix.

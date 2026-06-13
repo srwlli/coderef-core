@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability call-resolver-call-resolution-kind
- * @exports CallResolutionKind, CallResolution, SymbolTableEntry, SymbolTable, BUILTIN_RECEIVERS, JS_GLOBAL_CALLEES, JS_PROTOTYPE_METHODS, resolveCalls, buildSymbolTable, resolveCallsAgainstTable, isBuiltinReceiver, classifyMethodCall, deriveCallerCodeRefId
+ * @exports CallResolutionKind, CallResolution, SymbolTableEntry, SymbolTable, BUILTIN_RECEIVERS, JS_GLOBAL_CALLEES, PYTHON_BUILTIN_CALLEES, JS_PROTOTYPE_METHODS, resolveCalls, buildSymbolTable, resolveCallsAgainstTable, isBuiltinReceiver, classifyMethodCall, deriveCallerCodeRefId
  * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts, __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts
  */
 
@@ -268,6 +268,42 @@ export const JS_GLOBAL_CALLEES = new Set<string>([
   'btoa',
   'require',
 ]);
+
+/**
+ * Python builtin functions (STUB-G5E6EA gap #3). A BARE call to one of these
+ * names from a PYTHON source file, with no project symbol shadowing it,
+ * classifies kind='builtin' reason='python_builtin_callee' — the analog of
+ * JS_GLOBAL_CALLEES. On Primary-Sources this is the dominant
+ * `callee_not_in_symbol_table` slice (print 1697, len 959, str 315, set 153,
+ * sorted 115, dict 87, list 74, sum 73, isinstance 50, int 50, open 50, ...).
+ * The classification is language-guarded at the call site (a JS call to
+ * `open`/`set`/`len` is never reclassified). Project symbols always win —
+ * the same-language symbol-table lookup runs first, so shadowing is preserved.
+ */
+export const PYTHON_BUILTIN_CALLEES = new Set<string>([
+  'abs', 'aiter', 'all', 'anext', 'any', 'ascii', 'bin', 'bool', 'breakpoint',
+  'bytearray', 'bytes', 'callable', 'chr', 'classmethod', 'compile', 'complex',
+  'delattr', 'dict', 'dir', 'divmod', 'enumerate', 'eval', 'exec', 'filter',
+  'float', 'format', 'frozenset', 'getattr', 'globals', 'hasattr', 'hash',
+  'help', 'hex', 'id', 'input', 'int', 'isinstance', 'issubclass', 'iter',
+  'len', 'list', 'locals', 'map', 'max', 'memoryview', 'min', 'next', 'object',
+  'oct', 'open', 'ord', 'pow', 'print', 'property', 'range', 'repr', 'reversed',
+  'round', 'set', 'setattr', 'slice', 'sorted', 'staticmethod', 'str', 'sum',
+  'super', 'tuple', 'type', 'vars', 'zip',
+  // Common builtin exceptions called as constructors.
+  'Exception', 'ValueError', 'TypeError', 'KeyError', 'IndexError',
+  'RuntimeError', 'StopIteration', 'SystemExit', 'NotImplementedError',
+  'FileNotFoundError', 'AttributeError', 'OSError', 'ImportError',
+]);
+
+/**
+ * Language family of a source file by extension, exposed for the call-site
+ * Python guard (gap #3). Kept in sync with the internal `languageFamily`.
+ */
+function isPythonFile(file: string): boolean {
+  const lower = file.toLowerCase();
+  return lower.endsWith('.py') || lower.endsWith('.pyi');
+}
 
 /**
  * JS prototype-method vocabulary (STUB-XX4JBC). Member-call callees that
@@ -653,6 +689,28 @@ export function classifyMethodCall(
     }
   }
 
+  // (3.6) localName.X() where localName is bound to a Python stdlib module
+  //     import (`import json` → json.dumps(), `import sys` → sys.exit()).
+  //     The Phase 3 resolution carries reason='python_stdlib' (STUB-G5E6EA
+  //     gap #3). On Primary-Sources `json`/`sys`/`re` receivers alone were
+  //     ~944 receiver_not_in_symbol_table edges. The receiver token may be a
+  //     bare module name (`json`) or a dotted root (`sys.path` → root `sys`).
+  if (receiver !== null) {
+    const receiverRoot = receiver.split('.')[0];
+    const pyStdlibBinding = importResolutions.find(
+      ir => ir.sourceFile === fact.sourceFile
+        && ir.reason === 'python_stdlib'
+        && (ir.localName === receiver
+          || ir.localName === receiverRoot
+          || ir.originSpecifier === receiver
+          || ir.originSpecifier === receiverRoot
+          || ir.originSpecifier.split('.')[0] === receiverRoot),
+    );
+    if (pyStdlibBinding) {
+      return { kind: 'builtin', reason: 'python_stdlib_receiver' };
+    }
+  }
+
   // (4) localName.X() bound by Phase 3 ImportResolution. We know the
   //     receiver is an imported namespace / default, but we don't know
   //     what X is on it without walking module exports. Emit ambiguous
@@ -736,6 +794,10 @@ function classifyBareCall(
     if (JS_GLOBAL_CALLEES.has(callee)) {
       return { kind: 'builtin', reason: 'js_global_callee' };
     }
+    // Python builtins, guarded to Python source (STUB-G5E6EA gap #3).
+    if (isPythonFile(fact.sourceFile) && PYTHON_BUILTIN_CALLEES.has(callee)) {
+      return { kind: 'builtin', reason: 'python_builtin_callee' };
+    }
     return { kind: 'unresolved', reason: 'callee_not_in_symbol_table' };
   }
 
@@ -788,6 +850,9 @@ function classifyBareCall(
   // method, so a JS/Node global of the same name is the honest disposition.
   if (JS_GLOBAL_CALLEES.has(callee)) {
     return { kind: 'builtin', reason: 'js_global_callee' };
+  }
+  if (isPythonFile(fact.sourceFile) && PYTHON_BUILTIN_CALLEES.has(callee)) {
+    return { kind: 'builtin', reason: 'python_builtin_callee' };
   }
   return { kind: 'unresolved', reason: 'callee_not_in_symbol_table' };
 }
