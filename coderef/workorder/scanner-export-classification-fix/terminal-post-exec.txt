@@ -1,32 +1,26 @@
 =============================================================
-WORKORDER: WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001  |  scanner-export-classification-fix  |  PHASE 1/3 COMPLETE (HOLDING)
-Session: SES-scanner-export-classification-fix  |  Phases: 1 of 3 executed (rolling)  |  Commits: 1  |  Pushes: 1
-Parent stub: STUB-5WVGHD (closed)  |  Deferred: STUB-Z1ETZD (P2), STUB-81XNNM (P3)
-
-FILES CREATED:
-  + __tests__/pipeline/scanner-export-classification.test.ts  (5e73091)
-
-FILES MODIFIED:
-  ~ src/pipeline/extractors/element-extractor.ts  (5e73091)  — isExported scope
-    boundaries + isConstantValue structured initializers (ALL_CAPS-gated)
-  ~ 25 @exports headers restamped to corrected AST truth + 9 files stamped
-  ~ docs/SCHEMA.md baseline + CHANGELOG  (5e73091)
+WORKORDER: WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001  |  scanner-export-classification-fix  |  COMPLETE + CLOSED (3/3 phases)
+Session: SES-scanner-export-classification-fix  |  Phases: 3  |  Commits: 5  |  Pushes: 5
+Stubs closed: STUB-5WVGHD (P1), STUB-Z1ETZD (P2), STUB-81XNNM (P3) — the whole ladder
 
 PHASE CHECKLIST:
-  [x] Phase 1: scanner export classification — 7/7 tasks  (5e73091)
-        nested exported:true count -> 0  |  +~80 constants (30 exported)
-        header baseline FULLY CLEAN for the first time:
-        stale 0, export_mismatch 0, coverage 99.27% (was 98.86% / stale 1)
-        suite 1613/1614 collected green (timeout = documented contention flake)
-  [ ] Phase 2: vitest-mjs-collection-failure — DEFERRED (STUB-Z1ETZD)
-  [ ] Phase 3: ghost-index-entries-eviction — DEFERRED (STUB-81XNNM)
+  [x] Phase 1: scanner export classification  (5e73091)
+        isExported stops at scope boundaries; structured const initializers
+        extracted (ALL_CAPS-gated); 25 headers restamped + 9 stamped
+        HEADER BASELINE FULLY CLEAN: stale 0, mismatch 0, coverage 99.27%
+  [x] Phase 2: vitest mjs collection failure  (2e90b55)
+        root cause: vitest shebang stripping leaves stray \r on CRLF shebang
+        LF-normalize + .gitattributes eol=lf pin; zero uncollectable files
+  [x] Phase 3: rag-index deletion sweep  (cb8fe53)
+        ghosts were staleness, not an index bug; staleIndexWarning surfaces
+        deleted-file staleness at minute zero (additive, warn-only)
 
-ALSO THIS TURN: INTEL-SERVER-SCHEMA ruled (A: RETIRE, operator-delegated) —
-STUB-9F63EJ minted with the ruling + hotspots-first sequencing baked in;
-roadmap updated (94f151a).
+CLOSE: comm closed (326a53d) | culture 13/13 | tracking 17/17 scoped |
+foundation-docs gate PASS (bd03391) | registry closed_via | ladder cleared
 
-Session: updated  |  Registry: synced (implementing)  |  Validator: PASS (scoped)
-
-HOLDING per rolling-plan report-back. NEXT: author Phase 2 plan against
-STUB-Z1ETZD, then /execute-workorder WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001 --phase=2
+ROADMAP coderef-core-next: Phase 2 actionable items ALL COMPLETE
+(UNRESOLVED-EDGE-AUDIT, SCANNER-EXPORT-CLASSIFICATION, VITEST-MJS-COLLECTION,
+GHOST-INDEX-ENTRIES). Remaining Phase 2: STUB-9F63EJ (retire intel-server,
+sequenced after Phase 4 TOOL-HOTSPOTS) + WIN-PATH-NORMALIZATION.
+NEXT: Phase 3 storage (STUB-BQDXJ0 dedup design) or Phase 4 MCP v2 tools.
 =============================================================
