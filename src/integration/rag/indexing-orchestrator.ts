@@ -380,6 +380,17 @@ export interface IndexingResult {
    * the floor check was disabled.
    */
   coverageWarning?: string;
+
+  /**
+   * Human-readable stale-index message, set when graph.json references
+   * source files that no longer exist on disk (deleted/renamed after the
+   * last populate). Detected by a full disk-existence sweep at graph load
+   * (STUB-81XNNM — the 2026-06-12 full-repo dogfood spent 9.7h against a
+   * stale index and only surfaced the ghosts as 17 mid-run ENOENT errors).
+   * Warn-only: missing files still produce per-chunk converting errors.
+   * Additive per DR-PHASE-7-B.
+   */
+  staleIndexWarning?: string;
 }
 
 /**
@@ -501,6 +512,7 @@ export class IndexingOrchestrator {
     // one. The check is disabled when either coveragePct or coverageFloor
     // is absent (legacy report shapes / floor opt-out).
     let coverageWarning: string | undefined;
+    let staleIndexWarning: string | undefined;
     const { coveragePct, coverageFloor, strictCoverage } = options.validation;
     if (
       typeof coveragePct === 'number' &&
@@ -624,7 +636,7 @@ export class IndexingOrchestrator {
           try {
             srcStat = await fs.stat(abs);
           } catch {
-            continue; // missing source files are ChunkConverter's concern, not ours
+            continue; // deletions are handled by the full sweep below
           }
           if (srcStat.mtimeMs > graphStat.mtimeMs) {
             throw new Error(
@@ -633,6 +645,36 @@ export class IndexingOrchestrator {
                 `graph mtime=${new Date(graphStat.mtimeMs).toISOString()}). ` +
                 'Re-run `coderef populate` to refresh.',
             );
+          }
+        }
+
+        // Deletion sweep (STUB-81XNNM): the mtime sample above cannot see
+        // files that were DELETED after the last populate — they fell into
+        // the catch/continue and only surfaced as per-chunk ENOENT errors
+        // hours into an embedding run. Full existsSync sweep over the
+        // graph's distinct files is cheap (hundreds of stats) and surfaces
+        // staleness at minute zero. Warn-only: per-chunk errors downstream
+        // are unchanged.
+        {
+          const distinctFiles = new Set<string>();
+          for (const n of graph.nodes.values()) distinctFiles.add(n.file);
+          const missingFiles: string[] = [];
+          for (const rel of Array.from(distinctFiles, toRelative)) {
+            const abs: AbsolutePath = toAbsolute(pathMod.join(this.basePath, rel));
+            try {
+              await fs.stat(abs);
+            } catch {
+              missingFiles.push(rel);
+            }
+          }
+          if (missingFiles.length > 0) {
+            const preview = missingFiles.slice(0, 5).join(', ');
+            const more = missingFiles.length > 5 ? ` (+${missingFiles.length - 5} more)` : '';
+            staleIndexWarning =
+              `Index is stale: ${missingFiles.length} file(s) in graph.json no longer ` +
+              `exist on disk (${preview}${more}). Chunks from them will error during ` +
+              'conversion. Re-run `populate-coderef` to refresh before indexing.';
+            console.warn(`[indexing-orchestrator] ⚠️  ${staleIndexWarning}`);
           }
         }
 
@@ -924,6 +966,7 @@ export class IndexingOrchestrator {
         chunksFailedDetails,
         validationReportPath: options.validation?.reportPath,
         ...(coverageWarning ? { coverageWarning } : {}),
+        ...(staleIndexWarning ? { staleIndexWarning } : {}),
       };
     } catch (error: any) {
       errors.push({

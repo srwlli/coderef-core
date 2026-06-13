@@ -9,7 +9,7 @@
   "predecessor_for": null,
   "status": "implementing",
   "current_phase": 2,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\analysis.json",
@@ -119,6 +119,13 @@
       "commit": "5e73091",
       "verdict": "PASS",
       "at": "2026-06-13T00:24:07.058Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "2e90b55",
+      "verdict": "PASS",
+      "at": "2026-06-13T00:38:32.650Z"
     }
   ],
   "plan_adjustments": [
@@ -139,6 +146,12 @@
       "at": "2026-06-13T03:55:00Z",
       "type": "evidence",
       "summary": "P2 root cause isolated by paired probes: vitest transform fails ONLY on shebang+CRLF combination (#!/usr/bin/env node\r\n leaves a stray \r after shebang stripping -> SyntaxError at collection). Shebang-only and CRLF-only copies both pass. Fix: LF-normalize scripts/check-header-coverage.mjs + .gitattributes rule (scripts/*.mjs text eol=lf) so Windows checkouts cannot regress it. check-header-coverage.test.ts collects + passes 10/10 for the first time since at least 2026-06-12. Full suite 1623 passed, zero uncollectable files; single failure is the documented scanner-export contention flake (isolated 25/25)."
+    },
+    {
+      "id": "ADJ-04",
+      "at": "2026-06-13T04:45:00Z",
+      "type": "evidence",
+      "summary": "P3 evidence: ghost entries already purged from current index (full existsSync sweep: 0 ghosts in 274 files) - root cause was staleness, not an index bug (types.d.ts/scanner.js deleted during the MCP WO hygiene phase AFTER the 2026-05-31 scan; populate rebuilds honestly). Fix shipped at the consuming seam: IndexingOrchestrator deletion sweep at graph load -> additive IndexingResult.staleIndexWarning + upfront console warning (warn-only; SkipReason locked enum untouched). CLI surfaces it in both json and human output. 2/2 new tests; suite 1625 passing (single failure = documented scanner-export contention flake)."
     }
   ],
   "git_branch": "wo/scanner-export-classification-fix",
@@ -157,6 +170,11 @@
       "at": "2026-06-13T03:55:00Z",
       "from": "execute-workorder",
       "message": "Phase 2 COMPLETE: vitest mjs collection failure fixed at root (shebang+CRLF). Proceeding to Phase 3 (STUB-81XNNM ghost index entries) per operator standing approval."
+    },
+    {
+      "at": "2026-06-13T04:45:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 3 COMPLETE - final phase of rolling plan (close_after_phase=3). Proceeding to full Step 5 close-out + close ceremony per operator standing approval."
     }
   ],
   "required_skills": [

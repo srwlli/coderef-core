@@ -620,6 +620,7 @@ async function main(): Promise<void> {
       coverageFloor: validation.coverageFloor,
       coverageGateRefused: result.coverageGateRefused ?? false,
       coverageWarning: result.coverageWarning,
+      staleIndexWarning: result.staleIndexWarning,
     };
 
     const indexPath = path.join(coderefDir, 'rag-index.json');
@@ -666,6 +667,9 @@ async function main(): Promise<void> {
       }
       if (result.coverageWarning) {
         console.log(`  ⚠️  ${result.coverageWarning}`);
+      }
+      if (result.staleIndexWarning) {
+        console.log(`  ⚠️  ${result.staleIndexWarning}`);
       }
       console.log(`  Processing time: ${(totalTime / 1000).toFixed(2)}s`);
       console.log();

@@ -494,7 +494,7 @@ Real-world baseline (from coderef-core's own scan at `.coderef/validation-report
 
 Truth source: `src/integration/rag/indexing-orchestrator.ts` lines 138–224 and `src/integration/rag/code-chunk.ts` lines 17–143.
 
-The Phase 7 `IndexingResult` shape is **strictly additive** over the pre-Phase-7 contract (DR-PHASE-7-B): numeric counts keep their original types; the new fields (`status`, `*Details`, `validationGateRefused`, `validationReportPath`, and the coverage-gate pair `coverageGateRefused` / `coverageWarning`) are additive.
+The Phase 7 `IndexingResult` shape is **strictly additive** over the pre-Phase-7 contract (DR-PHASE-7-B): numeric counts keep their original types; the new fields (`status`, `*Details`, `validationGateRefused`, `validationReportPath`, the coverage-gate pair `coverageGateRefused` / `coverageWarning`, and `staleIndexWarning` — set when graph.json references files deleted since the last populate, detected by a full disk-existence sweep at graph load, STUB-81XNNM) are additive.
 
 ```typescript
 type IndexingStatus = 'success' | 'partial' | 'failed';
