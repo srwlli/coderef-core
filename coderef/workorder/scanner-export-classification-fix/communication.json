@@ -7,8 +7,8 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-5WVGHD",
   "predecessor_for": null,
-  "status": "plan_created",
-  "current_phase": 1,
+  "status": "implementing",
+  "current_phase": 2,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\context.json",
@@ -95,9 +95,32 @@
       "outcome": "inline-quick",
       "note": "evidence sharpened: call-resolver has ZERO constant elements (multi-line export-const Sets not extracted at all; single-line consts elsewhere are) and nested closure addEntry carries exported:true (inherit bug) - its header lists it, so the flag fix requires same-phase header restamps wherever nested fns were codified into @exports",
       "at": "2026-06-13T02:20:00Z"
+    },
+    {
+      "event": "post_phase_hook",
+      "phase": 1,
+      "hook": "/discover scanner-export-classification-fix phase 1 post@quick",
+      "outcome": "inline-quick",
+      "note": "post-phase audit: fix additive (2 methods + 1 call site in element-extractor); header restamps mechanical from index truth; no API surface change; baseline cleaner than pre-fix",
+      "at": "2026-06-13T03:35:00Z"
+    },
+    {
+      "event": "phase_plan_authored",
+      "phase": 2,
+      "stub_ref": "STUB-Z1ETZD",
+      "at": "2026-06-13T03:50:00Z",
+      "note": "Time-boxed root-cause hunt; minimal repro already in hand (any vitest import of the .mjs fails collection; plain node import works)"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "5e73091",
+      "verdict": "PASS",
+      "at": "2026-06-13T00:24:07.058Z"
+    }
+  ],
   "plan_adjustments": [
     {
       "id": "ADJ-01",
@@ -110,6 +133,12 @@
       "at": "2026-06-13T03:30:00Z",
       "type": "evidence",
       "summary": "P1-T5 gate: 1613/1614 collected tests pass. scanner-export.test.ts recursive-option timeout in full run is the documented contention-flake victim (precedent 2026-06-12 morning) - isolated rerun 25/25 PASS. check-header-coverage.test.ts collection failure is STUB-Z1ETZD, THIS WO's Phase 2 target. Gate accepted PASS-with-notes."
+    },
+    {
+      "id": "ADJ-03",
+      "at": "2026-06-13T03:55:00Z",
+      "type": "evidence",
+      "summary": "P2 root cause isolated by paired probes: vitest transform fails ONLY on shebang+CRLF combination (#!/usr/bin/env node\r\n leaves a stray \r after shebang stripping -> SyntaxError at collection). Shebang-only and CRLF-only copies both pass. Fix: LF-normalize scripts/check-header-coverage.mjs + .gitattributes rule (scripts/*.mjs text eol=lf) so Windows checkouts cannot regress it. check-header-coverage.test.ts collects + passes 10/10 for the first time since at least 2026-06-12. Full suite 1623 passed, zero uncollectable files; single failure is the documented scanner-export contention flake (isolated 25/25)."
     }
   ],
   "git_branch": "wo/scanner-export-classification-fix",
@@ -123,6 +152,11 @@
       "at": "2026-06-13T03:30:00Z",
       "from": "execute-workorder",
       "message": "Phase 1 COMPLETE pending commit: scanner export classification fixed; header baseline fully clean for the first time (stale 0, mismatch 0, 99.27%)."
+    },
+    {
+      "at": "2026-06-13T03:55:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 2 COMPLETE: vitest mjs collection failure fixed at root (shebang+CRLF). Proceeding to Phase 3 (STUB-81XNNM ghost index entries) per operator standing approval."
     }
   ],
   "required_skills": [

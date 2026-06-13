@@ -1,0 +1,3 @@
+# Executable .mjs scripts must stay LF: vitest fails collection on shebang+CRLF
+# (stray  after the shebang line -> SyntaxError; STUB-Z1ETZD)
+scripts/*.mjs text eol=lf
