@@ -7,9 +7,9 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-M3GE4S",
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\python-export-edge-validation-fix\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\python-export-edge-validation-fix\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\python-export-edge-validation-fix\\analysis.json",
@@ -57,5 +57,17 @@
     "/log-session"
   ],
   "inter_phase_results": {},
-  "history": []
+  "history": [
+    {
+      "event": "workorder_complete",
+      "at": "2026-06-13T08:52:00Z",
+      "note": "Reconciliation close \u2014 fix shipped fd4f9ae (220 GI-2 -> 0). Closed instead of duplicating via /create-workorder. Closes STUB-M3GE4S.",
+      "commit": "fd4f9ae"
+    }
+  ],
+  "completed_at": "2026-06-13T08:52:00Z",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "review_note": "Cultural gate soft-warns only. Reconciliation close: no new code; fix already on main."
+  }
 }
