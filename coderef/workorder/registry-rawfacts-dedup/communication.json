@@ -8,7 +8,7 @@
   "parent_stub_id": "STUB-BQDXJ0",
   "predecessor_for": null,
   "status": "implementing",
-  "current_phase": 1,
+  "current_phase": 2,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\registry-rawfacts-dedup\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\registry-rawfacts-dedup\\context.json",
@@ -54,13 +54,27 @@
       "note": "Ruling A accepted verbatim: 'I accept your recomendation please.' Design: phase3-storage-design.md (RULED stamp). Self-scan registry measured 124MB at HEAD - duplication reproduces on core itself."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "fade035",
+      "verdict": "PASS",
+      "at": "2026-06-13T02:07:27.729Z"
+    }
+  ],
   "plan_adjustments": [
     {
       "id": "ADJ-01",
       "at": "2026-06-13T09:05:00Z",
       "type": "evidence",
       "summary": "P1 shipped: SemanticRegistryProjection 2.0.0 - top-level rawFactsByFile (one bundle per file), entry.rawFacts removed; registry-generator compacts stringify when serialized >10MB. Self-scan: semantic-registry.json 124,357,065 -> 14,910,149 bytes (88% cut). 4/4 v2 tests; suite 1646 passing, zero failures. Zero in-tree readers (sweep confirmed); version field is the external guard."
+    },
+    {
+      "id": "ADJ-02",
+      "at": "2026-06-13T09:25:00Z",
+      "type": "evidence",
+      "summary": "P2 shipped. PS re-ground under 2.0.0: semantic-registry.json 56.8MB -> 12.5MB (78% cut). [Note: the May '209MB' was a larger PS tree; tonight's PS measures 56.8MB pre-fix - the % reduction is the durable evidence, not the absolute.] VECTOR-STORE-PATH-FIX: rag-status defaulted vectorsPath to a never-written rag-vectors.sqlite while rag-index/rag-search/orchestrator all default to coderef-vectors.json - rag-status falsely reported 'vectors missing' against good indexes. Fixed to the real default; verified live on PS (Vectors: OK). Suite 1645 passing; 1 failure = documented scanner-export contention flake (isolated rerun 25/25)."
     }
   ],
   "git_branch": "wo/registry-rawfacts-dedup",
@@ -74,6 +88,12 @@
       "at": "2026-06-13T09:05:00Z",
       "from": "execute-workorder",
       "message": "Phase 1 COMPLETE pending commit. Continuing to Phase 2 (PS re-ground + vector-store naming) per operator standing approval."
+    },
+    {
+      "at": "2026-06-13T09:25:00Z",
+      "from": "execute-workorder",
+      "event": "workorder_complete",
+      "message": "Both phases complete: registry 2.0.0 (88% core / 78% PS) + rag-status vector-path fix. Full close-out next."
     }
   ],
   "required_skills": [

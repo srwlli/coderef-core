@@ -15,7 +15,10 @@ WO-REGISTRY-RAWFACTS-DEDUP-001 Phase 1 (STUB-BQDXJ0, roadmap Phase 3; operator r
 - **`semantic-registry.json` is now `version: "2.0.0"`** — file-grain raw facts (`imports`/`calls`/`exports`/`headerImports`) are stored ONCE in a top-level `rawFactsByFile` map keyed by file, instead of being duplicated onto every element of the file. Under 1.x this duplication was ~98% of the artifact's bytes. Entries reference their bundle via their `file` field; `rawFactsByFile` is omitted when the pipeline ran without a raw-facts bundle. **Self-scan: 124.4MB → 14.9MB (an 88% cut.)**
 - **Registries above 10MB serialize compact** (no pretty-print) — a machine-read-only artifact that size gains nothing from indentation.
 
-**Migration:** the only in-tree consumer is `projections.ts` itself (the writer); a consumer sweep found no in-tree reader of `semantic-registry.json`. External readers must branch on the `version` field — entries no longer carry a `rawFacts` field.
+**Migration:** the only in-tree consumer is `projections.ts` itself (the writer); a consumer sweep found no in-tree reader of `semantic-registry.json`. External readers must branch on the `version` field — entries no longer carry a `rawFacts` field. Primary-Sources re-ground: 56.8MB → 12.5MB (78% cut).
+
+### Fixed
+- **`rag-status` vector-store path** — it defaulted to a never-written `rag-vectors.sqlite` while `rag-index`/`rag-search`/the indexing orchestrator all default to `coderef-vectors.json`, so `rag-status` reported "vectors missing" against a perfectly good index. Now resolves the real default (the `CODEREF_SQLITE_PATH` env override is kept as a legacy alias).
 
 ---
 

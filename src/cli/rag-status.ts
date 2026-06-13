@@ -190,8 +190,14 @@ async function main(): Promise<void> {
     // Check for index
     const coderefDir = path.join(args.projectDir, '.coderef');
     const indexPath = path.join(coderefDir, 'rag-index.json');
+    // VECTOR-STORE-PATH-FIX (WO-REGISTRY-RAWFACTS-DEDUP-001 P2): the JSON-
+    // backed default store is `coderef-vectors.json` — the SAME default
+    // rag-index, rag-search, and the indexing orchestrator use. rag-status
+    // previously defaulted to a never-written `rag-vectors.sqlite`, so it
+    // reported "vectors missing" against a perfectly good index. The
+    // CODEREF_SQLITE_PATH env override is a legacy alias kept for parity.
     const vectorsPath = process.env.CODEREF_SQLITE_PATH
-      || path.join(coderefDir, 'rag-vectors.sqlite');
+      || path.join(coderefDir, 'coderef-vectors.json');
 
     let metadata: IndexMetadata | null = null;
     let indexExists = false;
