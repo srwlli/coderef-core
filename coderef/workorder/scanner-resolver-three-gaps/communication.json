@@ -9,7 +9,7 @@
   ],
   "parent_stub_id": "STUB-G5E6EA",
   "predecessor_for": null,
-  "status": "plan_created",
+  "status": "complete",
   "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-resolver-three-gaps\\plan.json",
@@ -95,5 +95,26 @@
     "/log-session"
   ],
   "inter_phase_results": {},
-  "history": []
+  "history": [
+    {
+      "event": "workorder_complete",
+      "at": "2026-06-13T08:35:00Z",
+      "phases_closed": [
+        1,
+        2
+      ],
+      "commits": {
+        "phase1": "43cbe1a",
+        "phase2": "b19cfe6",
+        "artifacts": "add5648"
+      },
+      "evidence": "PS resolution 18.1%->43.0%, unresolved 16955->11365; 195 tests green",
+      "note": "Close-only (no --archive). Cultural gate WARNING (soft); origin schema bug fixed; session status.json written."
+    }
+  ],
+  "completed_at": "2026-06-13T08:35:00Z",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "review_note": "Cultural-alignment gate soft-warns only (inventory_freshness window, stale promotion slots) \u2014 no FAILs. Tracking row schema-clean after origin->object fix."
+  }
 }
