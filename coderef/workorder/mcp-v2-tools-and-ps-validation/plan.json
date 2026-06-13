@@ -114,15 +114,42 @@
     },
     {
       "phase": 3,
-      "name": "retire-intelligence-server-superseded-endpoints \u2014 DEFERRED",
+      "name": "retire-intelligence-server-superseded-endpoints",
       "hard_stop": true,
       "stub_ref": "STUB-9F63EJ",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P3-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 3 tasks not yet authored. Pre-condition: Phase 2 must be COMPLETED + REVIEWED before this phase plan is authored."
+          "id": "P3-T1",
+          "verb": "READ",
+          "description": "Consumer sweep: LLOYD, ASSISTANT SKILLS/SURFACES, DASHBOARD for api/intelligence + coderef-intelligence-server references"
+        },
+        {
+          "id": "P3-T2",
+          "verb": "DELETE",
+          "description": "Remove src/cli/coderef-intelligence-server.ts + package.json bin entry (zero consumers found)",
+          "touches": [
+            "src/cli/coderef-intelligence-server.ts",
+            "package.json"
+          ]
+        },
+        {
+          "id": "P3-T3",
+          "verb": "WRITE",
+          "description": "Replace docs/intelligence-api.md with retirement tombstone + endpoint->MCP-tool replacement map",
+          "touches": [
+            "docs/intelligence-api.md"
+          ]
+        },
+        {
+          "id": "P3-T4",
+          "verb": "TEST",
+          "description": "Build + full suite green"
+        },
+        {
+          "id": "P3-T5",
+          "verb": "COMMIT",
+          "description": "Commit Phase 3 + push; terminal phase -> full close-out"
         }
       ],
       "inter_phase_hooks": {
@@ -143,8 +170,8 @@
     },
     {
       "phase": 3,
-      "approved": false,
-      "reason": "Phase 3 plan_deferred=true. Hard stop fires at phase planning gate."
+      "approved": true,
+      "reason": "Phase 3 plan authored 2026-06-13; operator-delegated ruling A + standing approval; hotspots-first sequencing satisfied (P1 shipped)"
     }
   ],
   "plan_adjustments_needed": [],

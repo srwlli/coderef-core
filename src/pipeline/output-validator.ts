@@ -166,7 +166,7 @@ export interface ValidationReport {
    * already implicit in the header_*_count fields but never expressed as a
    * single gate-able number. The rag-index coverage floor (indexing-
    * orchestrator) reads THIS field. Additive — the existing fields are
-   * unchanged. Mirrors coderef-intelligence-server's header_coverage.pct.
+   * unchanged.
    */
   header_coverage_pct: number;
 }

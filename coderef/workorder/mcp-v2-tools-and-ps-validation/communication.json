@@ -9,7 +9,7 @@
   "predecessor_for": null,
   "status": "implementing",
   "current_phase": 2,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\analysis.json",
@@ -89,6 +89,13 @@
       "commit": "1b40f1b",
       "verdict": "PASS",
       "at": "2026-06-13T01:20:10.819Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "b4c31a4",
+      "verdict": "PASS",
+      "at": "2026-06-13T01:30:07.331Z"
     }
   ],
   "plan_adjustments": [
@@ -103,6 +110,12 @@
       "at": "2026-06-13T06:45:00Z",
       "type": "evidence",
       "summary": "P2 shipped: diff_impact (git diff -U0 -> index line-range element mapping -> union reverse-BFS) + rag_search (provider/store from rag-index.json metadata; graceful rag_index_missing/embedding_unavailable envelopes). PS VALIDATION (operator directive): repopulated PS with new core (398 files, 19.9s) - 14-field report, builtin 107->665 at PS scale, src-only counts coherent (97% src - opposite noise profile from coderef-core, validating the testOrigin tag both ways); edge-count delta vs May baseline attributed to repo churn (896 commits since) NOT core regression; .mcp.json registered for PS; all 11 tools live-smoked against PS (diff_impact HEAD~5: 3 files -> 22 elements -> 8 dependents; cycles: 0 = clean architecture; rag_search: 3 results via ollama). Lesson: MCP smoke clients must sequence the initialize handshake before tools/call - async handlers expose the race. Suite 1635 passing, ZERO failures - first fully green full run of the session (even the contention flake passed)."
+    },
+    {
+      "id": "ADJ-03",
+      "at": "2026-06-13T07:10:00Z",
+      "type": "evidence",
+      "summary": "P3 shipped: coderef-intelligence-server retired (ruling A). Consumer sweep found ZERO callers (LLOYD, ASSISTANT SKILLS/SURFACES, DASHBOARD); only a bin entry, its own source, one doc, and a comment in output-validator referenced it. Source + bin deleted; docs/intelligence-api.md replaced with tombstone + endpoint->MCP replacement map; output-validator comment cleaned. Build green; suite 1634 passing (single failure = the documented scanner-export contention flake, which PASSED in the immediately prior run - textbook non-determinism)."
     }
   ],
   "git_branch": "wo/mcp-v2-tools-and-ps-validation",
@@ -121,6 +134,11 @@
       "at": "2026-06-13T06:45:00Z",
       "from": "execute-workorder",
       "message": "Phase 2 COMPLETE pending commit. Continuing to Phase 3 (intelligence-server retirement, ruling A) - hotspots replacement now shipped, sequencing satisfied."
+    },
+    {
+      "at": "2026-06-13T07:10:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 3 COMPLETE - final phase (close_after_phase=3). Full close-out next."
     }
   ],
   "required_skills": [

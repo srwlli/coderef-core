@@ -20,6 +20,14 @@ WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001 Phase 1 (STUB-ASC73J, roadmap Phase 4).
 ### Fixed
 - **`impact_of` export-edge hygiene** — reverse BFS now traverses call+import edges only; a file's export edge no longer counts the containing file as a "dependent" of its own element.
 
+### Added (Phase 2)
+- **`diff_impact` tool** — PR blast-radius in one call: maps a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then unions transitive inbound dependents. Validated live on Primary-Sources (`HEAD~5` → 3 files → 22 elements → 8 dependents).
+- **`rag_search` tool** — semantic search over MCP; provider/store read from `rag-index.json` metadata so query embeddings always match the index model; graceful `rag_index_missing` / `embedding_unavailable` envelopes. The surface is now **11 read-only tools**.
+- **Primary-Sources validation** — PS repopulated with this core (398 files, 19.9s; 14-field report; `builtin_count` 107 → 665), `.mcp.json` registered for PS, all 11 tools live-smoked there.
+
+### Removed (Phase 3)
+- **`coderef-intelligence-server` retired** (operator-delegated ruling A, STUB-9F63EJ): it read legacy edge fields (`e.source`/`e.target`/`e.type`) internally — the schema-drift class the MCP server was built to kill — and a consumer sweep across LLOYD/ASSISTANT/DASHBOARD found zero callers. Source + bin entry deleted; `docs/intelligence-api.md` replaced with a retirement tombstone and endpoint→MCP-tool replacement map.
+
 ---
 
 ## [2026-06-13] — Scanner Export Classification Fix
