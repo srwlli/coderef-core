@@ -1,0 +1,11 @@
+{
+  "stub_id": "STUB-284",
+  "feature_name": "rag-search-pagination",
+  "description": "Add phase-aware pagination to rag-search so agents can fetch subsequent result pages when a --max-tokens budget is exhausted, instead of hard-truncating. Enables multi-call workflows without re-issuing the full query.",
+  "category": "feature",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-16T13:15:00Z"
+}

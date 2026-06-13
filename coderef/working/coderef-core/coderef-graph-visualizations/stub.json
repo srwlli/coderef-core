@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-282",
+  "feature_name": "coderef-graph-visualizations",
+  "description": "Build a codebase intelligence dashboard with modern data visualizations from index.json, graph.json, and RAG vectors. Primary surface: (1) Treemap — repo→file→function sized by complexity/LOC, colored by test coverage or layer; (2) Scatter: complexity vs test coverage — top-right quadrant is danger zone, every dot is a function; (3) Sankey diagram — layer-to-layer call flow surfacing architectural violations as thick crossing flows; (4) Semantic cluster — UMAP/t-SNE projection of 768-dim RAG vectors to 2D, colored by layer, sized by complexity, revealing semantic neighborhoods without labeling. Traditional graph drill-downs (not primary views): (5) Layer violation graph — elements grouped by @layer with cross-layer dependency edges; (6) Blast radius graph — transitive call graph from any function; (7) Hotspot graph — in-degree ranked nodes; (8) Chord diagram — file-to-file coupling as circular arc layout; (9) Heatmap — file×metric grid (complexity/coverage/staleness/in-degree). Bonus if data allows: (10) Timeline/drift view — animate index snapshots across WO closes to watch codebase health improve. Architecture: dashboard UI (DASHBOARD domain) consuming a read-only API over index.json + graph.json + rag vectors. Data gap: 39% semantic header coverage means 61% of elements show as unknown layer — improves as headers grow.",
+  "category": "feature",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-16T06:50:00Z",
+  "updated": "2026-05-16T09:20:00Z"
+}

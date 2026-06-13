@@ -1,0 +1,11 @@
+{
+  "stub_id": "STUB-239",
+  "feature_name": "coderef-core-skill-gap-remediation",
+  "description": "Close gaps between CODEREF-CORE CLI bins and SKILLS/CORE thin wrappers. Three CLI bins have no wrapper skill (coderef-pipeline, coderef-watch, coderef-rag-server); two CLI output types have no analysis skill (quality.json + diagrams/, route validation output). scanner-quality-autoresearch archived (registry entry only, canonical SKILL.md never existed).",
+  "category": "improvement",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-04-29T23:58:00Z"
+}

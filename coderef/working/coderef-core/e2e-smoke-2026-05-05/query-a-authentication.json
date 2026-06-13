@@ -1,0 +1,148 @@
+{
+  "query": "authentication",
+  "results": [
+    {
+      "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\pipeline\\output-validator.ts",
+      "score": 0.5025258504468582,
+      "metadata": {
+        "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\pipeline\\output-validator.ts",
+        "type": "file",
+        "name": "C",
+        "file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\pipeline\\output-validator.ts",
+        "line": 1,
+        "language": "typescript",
+        "dependencyCount": 18,
+        "dependentCount": 0
+      }
+    },
+    {
+      "coderef": "file:dist\\src\\analyzer\\ast-element-scanner.js",
+      "score": 0.4977090276578279,
+      "metadata": {
+        "coderef": "file:dist\\src\\analyzer\\ast-element-scanner.js",
+        "type": "file",
+        "name": "dist\\src\\analyzer\\ast-element-scanner.js",
+        "file": "dist\\src\\analyzer\\ast-element-scanner.js",
+        "line": 1,
+        "language": "javascript",
+        "dependencyCount": 0,
+        "dependentCount": 1
+      }
+    },
+    {
+      "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\validator\\validator.ts",
+      "score": 0.4963319449016936,
+      "metadata": {
+        "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\validator\\validator.ts",
+        "type": "file",
+        "name": "C",
+        "file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\validator\\validator.ts",
+        "line": 1,
+        "language": "typescript",
+        "dependencyCount": 30,
+        "dependentCount": 0
+      }
+    },
+    {
+      "coderef": "file:src\\semantic\\registry-sync.ts",
+      "score": 0.4904900189149226,
+      "metadata": {
+        "coderef": "file:src\\semantic\\registry-sync.ts",
+        "type": "file",
+        "name": "src\\semantic\\registry-sync.ts",
+        "file": "src\\semantic\\registry-sync.ts",
+        "line": 1,
+        "language": "typescript",
+        "dependencyCount": 0,
+        "dependentCount": 1
+      }
+    },
+    {
+      "coderef": "file:src\\registry\\types.ts",
+      "score": 0.48988286427287586,
+      "metadata": {
+        "coderef": "file:src\\registry\\types.ts",
+        "type": "file",
+        "name": "src\\registry\\types.ts",
+        "file": "src\\registry\\types.ts",
+        "line": 1,
+        "language": "typescript",
+        "dependencyCount": 0,
+        "dependentCount": 1
+      }
+    },
+    {
+      "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\pipeline\\generators\\validation-generator.ts",
+      "score": 0.48399889409940555,
+      "metadata": {
+        "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\pipeline\\generators\\validation-generator.ts",
+        "type": "file",
+        "name": "C",
+        "file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\pipeline\\generators\\validation-generator.ts",
+        "line": 1,
+        "language": "typescript",
+        "dependencyCount": 16,
+        "dependentCount": 0
+      }
+    },
+    {
+      "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\autoresearch\\scanner-quality\\scripts\\verify_element_classification.py",
+      "score": 0.48007697177106007,
+      "metadata": {
+        "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\autoresearch\\scanner-quality\\scripts\\verify_element_classification.py",
+        "type": "file",
+        "name": "C",
+        "file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\autoresearch\\scanner-quality\\scripts\\verify_element_classification.py",
+        "line": 1,
+        "language": "python",
+        "dependencyCount": 32,
+        "dependentCount": 0
+      }
+    },
+    {
+      "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\cli\\validate-routes.ts",
+      "score": 0.4787398164640705,
+      "metadata": {
+        "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\cli\\validate-routes.ts",
+        "type": "file",
+        "name": "C",
+        "file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\cli\\validate-routes.ts",
+        "line": 1,
+        "language": "typescript",
+        "dependencyCount": 24,
+        "dependentCount": 0
+      }
+    },
+    {
+      "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\plugins\\manifest-schema.ts",
+      "score": 0.4773205983713104,
+      "metadata": {
+        "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\plugins\\manifest-schema.ts",
+        "type": "file",
+        "name": "C",
+        "file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\plugins\\manifest-schema.ts",
+        "line": 1,
+        "language": "typescript",
+        "dependencyCount": 10,
+        "dependentCount": 0
+      }
+    },
+    {
+      "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\registry\\entity-registry.ts",
+      "score": 0.47712548068960386,
+      "metadata": {
+        "coderef": "file:C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\registry\\entity-registry.ts",
+        "type": "file",
+        "name": "C",
+        "file": "C:\\Users\\willh\\Desktop\\CODEREF\\coderef-core\\src\\registry\\entity-registry.ts",
+        "line": 1,
+        "language": "typescript",
+        "dependencyCount": 12,
+        "dependentCount": 0
+      }
+    }
+  ],
+  "totalResults": 10,
+  "searchTimeMs": 128,
+  "filters": {}
+}

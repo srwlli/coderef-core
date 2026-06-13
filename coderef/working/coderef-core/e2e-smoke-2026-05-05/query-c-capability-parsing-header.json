@@ -1,0 +1,9 @@
+{
+  "query": "header",
+  "results": [],
+  "totalResults": 0,
+  "searchTimeMs": 126,
+  "filters": {
+    "capability": "parsing"
+  }
+}

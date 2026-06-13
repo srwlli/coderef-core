@@ -1,0 +1,11 @@
+{
+  "stub_id": "STUB-299",
+  "feature_name": "exports-rawexports-staleness-mismatch",
+  "description": "Fix false staleness positives in orchestrator.ts lines 473-480: @exports tag written by --source-headers uses scanner's exported-elements set; staleness check compares against rawExports (different TS/JS traversal, also filters default exports at line 476). Divergence causes files like ConversionOptions, convertGraphToElements, getConversionStats to be marked stale incorrectly. Fix: normalize both paths to the same extractor, or make the mismatch-check tolerance-aware.",
+  "category": "fix",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-16T23:45:00Z"
+}
