@@ -2,7 +2,7 @@
 
 **Owner:** CODEREF-CORE
 **Created:** 2026-06-12T12:20:00Z
-**Updated:** 2026-06-13T07:25:00Z
+**Updated:** 2026-06-13T07:50:00Z
 **Current phase:** 3
 **Render slug:** `SURFACES/surfaces-html/renders/roadmap/coderef-core-next/` (stable, no ULID)
 
@@ -27,15 +27,16 @@
 
 ## Phase 2: Correctness debt
 
-**Status:** active
+**Status:** complete
 **Hard-stop:** no
 **Gating predicate:** Phase 1 landed on main
+**Shipped commit:** 4777cff
 
 ### Items
 
 - [complete] **INTEL-SERVER-SCHEMA** (4777cff) — RULED 2026-06-13 (operator-delegated): option A - RETIRE. coderef-intelligence-server endpoints superseded by coderef-mcp-server get deleted/410d (STUB-9F63EJ); hotspots replacement ships as MCP v2 TOOL-HOTSPOTS (Phase 4) before handleHotspots is removed. Original finding: server reads legacy edge fields (e.source/e.target/e.type) internally.
 - [complete] **UNRESOLVED-EDGE-AUDIT** (fe7920a) — Self-scan shows unresolved_count=20701 vs valid_edge_count=4293 — characterize unresolved edges by evidence/reason variant, separate expected externals from resolver gaps, file targeted resolver-fix stubs with measured counts [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed] [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed]
-- [not_started] **WIN-PATH-NORMALIZATION** — Close STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001: indexing-orchestrator path normalization fails on Windows (drive-letter casing / separator mismatch at the orchestrator seam); caught by DISPATCH-003 E2E smoke
+- [complete] **WIN-PATH-NORMALIZATION** (ee1c1a7) — Close STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001: indexing-orchestrator path normalization fails on Windows (drive-letter casing / separator mismatch at the orchestrator seam); caught by DISPATCH-003 E2E smoke [VERIFIED ALREADY SHIPPED 2026-06-13: WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 closed this pre-roadmap (normalizeChunkFileForGraphJoin + dedicated test file); roadmap item was stale]
 - [complete] **SCANNER-EXPORT-CLASSIFICATION** (5e73091) — STUB-5WVGHD: scanner marks nested functions exported:true (parent flag inherited) and misses export-const Set declarations entirely - exports_match_ast false-stales honest headers (coderef-mcp-server.ts) and headers cannot list real const exports; fix exported-flag propagation + const-declaration extraction
 - [complete] **VITEST-MJS-COLLECTION** (2e90b55) — STUB-Z1ETZD: any vitest test importing scripts/check-header-coverage.mjs dies at collection with SyntaxError (plain node import works) - check-header-coverage.test.ts has been uncollectable since at least 2026-06-12; stash-proven pre-existing with minimal repro
 - [complete] **GHOST-INDEX-ENTRIES** (cb8fe53) — STUB-81XNNM: index.json carries elements for root-level types.d.ts and scanner.js that do not exist on disk (17 ENOENT errors in the full-repo rag dogfood) - add disk-existence reconciliation / stale-entry eviction to populate

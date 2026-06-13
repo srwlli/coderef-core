@@ -2,7 +2,7 @@
   "project": "coderef-core-next",
   "owner": "CODEREF-CORE",
   "created": "2026-06-12T12:20:00Z",
-  "updated": "2026-06-13T07:25:00Z",
+  "updated": "2026-06-13T07:50:00Z",
   "current_phase": 3,
   "status": "active",
   "phases": [
@@ -56,9 +56,9 @@
       "phase": 2,
       "name": "Correctness debt",
       "hard_stop": false,
-      "status": "active",
+      "status": "complete",
       "gating_predicate": "Phase 1 landed on main",
-      "shipped_commit": null,
+      "shipped_commit": "4777cff",
       "items": [
         {
           "id": "INTEL-SERVER-SCHEMA",
@@ -76,9 +76,9 @@
         },
         {
           "id": "WIN-PATH-NORMALIZATION",
-          "description": "Close STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001: indexing-orchestrator path normalization fails on Windows (drive-letter casing / separator mismatch at the orchestrator seam); caught by DISPATCH-003 E2E smoke",
-          "status": "not_started",
-          "shipped_commit": null,
+          "description": "Close STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001: indexing-orchestrator path normalization fails on Windows (drive-letter casing / separator mismatch at the orchestrator seam); caught by DISPATCH-003 E2E smoke [VERIFIED ALREADY SHIPPED 2026-06-13: WO-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 closed this pre-roadmap (normalizeChunkFileForGraphJoin + dedicated test file); roadmap item was stale]",
+          "status": "complete",
+          "shipped_commit": "ee1c1a7",
           "depends_on": []
         },
         {
