@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability orchestrator-semantic-pipeline-options
- * @exports SemanticPipelineOptions, PipelineResult, SemanticOrchestrator, traverse, runSemanticPipeline
+ * @exports SemanticPipelineOptions, PipelineResult, SemanticOrchestrator, runSemanticPipeline
  * @used_by src/cli/semantic-integration.test.ts, src/cli/semantic-integration.ts, __tests__/pipeline/single-scanner.test.ts
  */
 

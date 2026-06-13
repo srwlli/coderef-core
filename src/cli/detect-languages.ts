@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability detect-languages-supported-cli-language
- * @exports SupportedCliLanguage, formatSupportedLanguages, validateCliLanguages, detectProjectLanguages
+ * @exports SUPPORTED_CLI_LANGUAGES, SupportedCliLanguage, formatSupportedLanguages, validateCliLanguages, detectProjectLanguages
  * @used_by src/cli/detect-languages-cli.ts, src/cli/populate.ts, src/cli/rag-index.ts
  */
 

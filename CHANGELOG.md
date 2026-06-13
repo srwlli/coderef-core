@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-13] — Scanner Export Classification Fix
+
+WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001 Phase 1 (STUB-5WVGHD).
+
+### Fixed
+- **`isExported` no longer crosses scope boundaries** — the export check walked up through every ancestor, so any nested function/arrow inside an exported parent inherited `exported:true` (e.g. `buildToolHandlers.inboundByKind`), false-staling honest `@exports` headers via the `exports_match_ast` cross-check. The walk now stops at `statement_block`/`class_body`/function boundaries; nested elements are never exported themselves.
+- **Exported multi-line const declarations are now extracted** — `isConstantValue` accepted only primitive literals, so `export const X = new Set([...])` (and array/object/call/template/as-const initializers) produced no element at all; `@exports` headers could never list real const exports. The ALL_CAPS name gate keeps the widening flood-safe. Self-scan: +~80 constant elements (126 total, 30 exported).
+- **25 `@exports` headers restamped** to the corrected AST ground truth (under-listing const exports / listing nested closures like `addEntry`); 9 newly-visible files stamped. Header baseline is now fully clean: `header_stale_count` 0, `header_export_mismatch_count` 0, coverage 99.27%.
+
+---
+
 ## [2026-06-12] — Import-Resolver Membership Fix (NodeNext `.js` → `.ts`)
 
 WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 Phases 1–2 (STUB-XK82Z2 + STUB-QT400D, from the unresolved-edge audit).

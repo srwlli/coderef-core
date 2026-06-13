@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability tree-sitter-scanner-enriched-element-data
- * @exports EnrichedElementData, TreeSitterScanner, traverse
+ * @exports EnrichedElementData, TreeSitterScanner
  * @used_by src/scanner/scanner-worker.ts, src/scanner/scanner.ts
  */
 

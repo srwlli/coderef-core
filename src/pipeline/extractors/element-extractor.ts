@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability element-extractor
- * @exports ElementExtractor, traverse
+ * @exports ElementExtractor
  * @used_by src/pipeline/orchestrator.ts
  */
 
@@ -652,7 +652,11 @@ export class ElementExtractor {
       file: filePath,
       line: nameNode.startPosition.row + 1,
       parameters,
-      exported: this.isExported(funcNode.parent || funcNode),
+      // Pass the declaration node itself — isExported exempts the start
+      // node from its scope-boundary check (STUB-5WVGHD), so a top-level
+      // `export function f` still resolves true while nested declarations
+      // stop at the enclosing statement_block.
+      exported: this.isExported(funcNode),
       async: isAsync,
     };
   }
@@ -804,15 +808,38 @@ export class ElementExtractor {
   }
 
   /**
-   * Check if a node is exported (export keyword)
+   * Check if a node is exported (export keyword).
+   *
+   * STUB-5WVGHD: the walk MUST NOT cross a scope boundary — an
+   * export_statement only applies to the declaration it directly wraps.
+   * Crossing a function body / class body means the start node is NESTED;
+   * nested elements are never exported themselves (previously every nested
+   * function inside an exported parent inherited exported:true, false-
+   * staling honest @exports headers via the exports_match_ast cross-check).
+   * The start node itself is exempt from the boundary check so callers may
+   * pass the declaration node directly.
    */
+  private static readonly SCOPE_BOUNDARY_TYPES = new Set([
+    'statement_block',
+    'class_body',
+    'function_declaration',
+    'arrow_function',
+    'function',
+    'function_expression',
+    'method_definition',
+  ]);
+
   private isExported(node: Parser.SyntaxNode): boolean {
-    // Check if parent is export_statement
     let current: Parser.SyntaxNode | null = node;
+    let isStartNode = true;
     while (current) {
       if (current.type === 'export_statement') {
         return true;
       }
+      if (!isStartNode && ElementExtractor.SCOPE_BOUNDARY_TYPES.has(current.type)) {
+        return false;
+      }
+      isStartNode = false;
       current = current.parent;
     }
     return false;
@@ -826,7 +853,11 @@ export class ElementExtractor {
   }
 
   /**
-   * Check if a value node is a constant (primitive literal or simple expression)
+   * Check if a value node is a constant initializer. Primitive literals
+   * plus structured initializers (STUB-5WVGHD: `export const X = new
+   * Set([...])` and friends were invisible to the scanner, so @exports
+   * headers could never list real const exports). The ALL_CAPS name gate
+   * at the call site keeps this from flooding the index with locals.
    */
   private isConstantValue(node: Parser.SyntaxNode): boolean {
     return (
@@ -834,7 +865,14 @@ export class ElementExtractor {
       node.type === 'string' ||
       node.type === 'true' ||
       node.type === 'false' ||
-      node.type === 'null'
+      node.type === 'null' ||
+      node.type === 'new_expression' ||
+      node.type === 'array' ||
+      node.type === 'object' ||
+      node.type === 'call_expression' ||
+      node.type === 'template_string' ||
+      node.type === 'as_expression' ||
+      node.type === 'satisfies_expression'
     );
   }
 

@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer integration
  * @capability prompt-templates-prompt-variables
- * @exports PromptVariables, PromptTemplateBuilder, PromptValidator
+ * @exports PromptVariables, SYSTEM_PROMPT, QA_PROMPT_TEMPLATE, CONVERSATIONAL_PROMPT_TEMPLATE, CODE_EXPLANATION_PROMPT, CODE_COMPARISON_PROMPT, BEST_PRACTICES_PROMPT, PromptTemplateBuilder, PromptValidator
  * @used_by src/integration/rag/answer-generation-service.ts
  */
 

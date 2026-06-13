@@ -469,26 +469,24 @@ interface ValidationResult {
 
 `validatePipelineState(state, graph, options)` is **pure**: no fs, no `process.exit`, no console. The CLI plumbs `ValidatePipelineStateOptions.layerEnum` (loaded from `ASSISTANT/STANDARDS/layers.json`) and `strictHeaders` directly per DR-PHASE-6-D.
 
-Real-world baseline (from coderef-core's own scan at `.coderef/validation-report.json`; 2026-06-12, post WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P1–P3 — P1 resolved 812 false `relative_target_not_in_project` edges via NodeNext `.js`→`.ts` mapping; P2 reclassified Node-builtin imports, builtin-module receivers, and JS-global callees from `unresolved`/`ambiguous` to `builtin`; P3 added the src-only sub-counts, showing 66.6% of remaining unresolved is test-origin noise):
+Real-world baseline (from coderef-core's own scan at `.coderef/validation-report.json`; 2026-06-13, post WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 (resolver fixes: NodeNext `.js`→`.ts` membership, builtin classification, src-only sub-counts) and WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001 P1 (scanner export classification: nested elements no longer inherit the parent export flag; exported multi-line const declarations now extracted — 25 `@exports` headers restamped to the corrected AST truth)):
 
 | Field | Value |
 |-------|------:|
-| `valid_edge_count` | 5266 |
-| `unresolved_count` | 17526 |
-| `ambiguous_count` | 2621 |
+| `valid_edge_count` | 5268 |
+| `unresolved_count` | 17559 |
+| `ambiguous_count` | 2606 |
 | `external_count` | 666 |
-| `builtin_count` | 4636 |
-| `unresolved_src_count` | 5854 |
-| `ambiguous_src_count` | 1290 |
-| `header_defined_count` | 261 |
+| `builtin_count` | 4661 |
+| `unresolved_src_count` | 5802 |
+| `ambiguous_src_count` | 1273 |
+| `header_defined_count` | 272 |
 | `header_partial_count` | 2 |
-| `header_stale_count` | 1 |
-| `header_export_mismatch_count` | 1 |
-| `header_coverage_pct` | 98.86 |
+| `header_stale_count` | 0 |
+| `header_export_mismatch_count` | 0 |
+| `header_coverage_pct` | 99.27 |
 | (other counts) | 0 |
 | (inferred `ok`) | true |
-
-The single `header_stale_count`/`header_export_mismatch_count` entry is `src/cli/coderef-mcp-server.ts`, a known scanner artifact (nested function inherits the parent's `exported` flag — STUB-5WVGHD), not genuine header drift.
 
 ---
 

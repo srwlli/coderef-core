@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer configuration
  * @capability presets-scan-preset
- * @exports ScanPreset, loadPreset, detectPreset, mergePresets, applyPreset
+ * @exports ScanPreset, SCAN_PRESETS, loadPreset, detectPreset, mergePresets, applyPreset
  */
 
 // coderef-core/config/presets.ts

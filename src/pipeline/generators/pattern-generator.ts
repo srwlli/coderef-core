@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability pattern-generator-coverage-data
- * @exports PatternGenerator, isTestFile, isPipelineOrchestrator, estimateComplexity, isInternalFunction, calculatePriority
+ * @exports PatternGenerator
  * @used_by src/cli/populate.ts
  */
 

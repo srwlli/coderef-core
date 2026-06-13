@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability contract-detector-open-api-spec
- * @exports OpenApiSpec, OpenApiPath, OpenApiComponent, GraphqlSchema, GraphqlType, GraphqlOperation, ProtobufDefinition, ProtobufMessage, ProtobufField, ProtobufService, ProtobufMethod, ProtobufEnum, JsonSchema, ContractAnalysis, ContractDetector, traverse, analyzeContracts
+ * @exports OpenApiSpec, OpenApiPath, OpenApiComponent, GraphqlSchema, GraphqlType, GraphqlOperation, ProtobufDefinition, ProtobufMessage, ProtobufField, ProtobufService, ProtobufMethod, ProtobufEnum, JsonSchema, ContractAnalysis, ContractDetector, analyzeContracts
  * @used_by src/cli/coderef-analyze.ts
  */
 

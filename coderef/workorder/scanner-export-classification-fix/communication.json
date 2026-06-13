@@ -9,7 +9,7 @@
   "predecessor_for": null,
   "status": "plan_created",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\analysis.json",
@@ -69,16 +69,60 @@
       "event": "ladder_alignment",
       "at": "2026-06-13T02:10:00Z",
       "note": "fill-ladder self-pick (BQDXJ0) overridden per roadmap order: AT-BAT STUB-5WVGHD, ON-DECK STUB-Z1ETZD, IN-THE-HOLE STUB-81XNNM - mirrors this WO's phase order"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-06-13T02:20:00Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 1,
+      "reason": "rolling_plan.mode=rolling",
+      "at": "2026-06-13T02:20:00Z"
+    },
+    {
+      "event": "semantic_validation_gate",
+      "outcome": "pass",
+      "note": "manual constraint check: 14-field report untouched, additive-only scanner fix, integrator lane honored",
+      "at": "2026-06-13T02:20:00Z"
+    },
+    {
+      "event": "pre_phase_hook",
+      "phase": 1,
+      "hook": "/discover scanner-export-classification-fix phase 1@quick",
+      "outcome": "inline-quick",
+      "note": "evidence sharpened: call-resolver has ZERO constant elements (multi-line export-const Sets not extracted at all; single-line consts elsewhere are) and nested closure addEntry carries exported:true (inherit bug) - its header lists it, so the flag fix requires same-phase header restamps wherever nested fns were codified into @exports",
+      "at": "2026-06-13T02:20:00Z"
     }
   ],
   "phase_transitions": [],
-  "plan_adjustments": [],
+  "plan_adjustments": [
+    {
+      "id": "ADJ-01",
+      "at": "2026-06-13T03:30:00Z",
+      "type": "evidence",
+      "summary": "P1 shipped: isExported scope-boundary fix + isConstantValue widening (new_expression/array/object/call_expression/template_string/as_expression/satisfies_expression, ALL_CAPS-gated). Blast radius larger than estimated: const extraction surfaced 25 under-listing @exports headers + 9 newly-visible files (coverage transiently 86.86%). Remedied in-phase: surgical @exports restamp script (one line per file, derived from fresh index.json exported elements) + populate --source-headers for the 9. Final: stale 0, export_mismatch 0, coverage 99.27% (better than pre-fix 98.86%/stale-1). Element delta: +~80 constants (126 total, 30 exported); nested exported:true count now 0."
+    },
+    {
+      "id": "ADJ-02",
+      "at": "2026-06-13T03:30:00Z",
+      "type": "evidence",
+      "summary": "P1-T5 gate: 1613/1614 collected tests pass. scanner-export.test.ts recursive-option timeout in full run is the documented contention-flake victim (precedent 2026-06-12 morning) - isolated rerun 25/25 PASS. check-header-coverage.test.ts collection failure is STUB-Z1ETZD, THIS WO's Phase 2 target. Gate accepted PASS-with-notes."
+    }
+  ],
   "git_branch": "wo/scanner-export-classification-fix",
   "communication_log": [
     {
       "at": "2026-06-13T02:10:00Z",
       "from": "create-workorder",
       "message": "WO created from STUB-5WVGHD (roadmap PHASE-2.SCANNER-EXPORT-CLASSIFICATION). Rolling: P1 scanner export classification (7 tasks); P2 vitest mjs collection (STUB-Z1ETZD); P3 ghost index entries (STUB-81XNNM)."
+    },
+    {
+      "at": "2026-06-13T03:30:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 1 COMPLETE pending commit: scanner export classification fixed; header baseline fully clean for the first time (stale 0, mismatch 0, 99.27%)."
     }
   ],
   "required_skills": [

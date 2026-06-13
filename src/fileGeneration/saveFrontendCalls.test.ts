@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability save-frontend-calls-test-test-dir
+ */
+
+/**
  * WO-ROUTE-VALIDATION-ENHANCEMENT-001: Save Frontend Calls Tests
  */
 

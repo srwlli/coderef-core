@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability metadata-index-metadata-category
- * @exports MetadataCategory, MetadataIndexEntry, MetadataIndex, createMetadataIndex
+ * @exports MetadataCategory, CATEGORY_VALUES, MetadataIndexEntry, MetadataIndex, createMetadataIndex
  * @used_by src/indexer/indexer-service.ts, src/indexer/query-engine.ts, __tests__/indexer.test.ts
  */
 

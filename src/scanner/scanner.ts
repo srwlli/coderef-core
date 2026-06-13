@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability scanner-pattern-config
- * @exports PatternConfig, scanCurrentElements, clearScanCache, getScanCacheStats, isLineCommented
+ * @exports PatternConfig, LANGUAGE_PATTERNS, DEFAULT_EXCLUDE_PATTERNS, scanCurrentElements, clearScanCache, getScanCacheStats, isLineCommented
  * @used_by src/cli/scan.ts, src/context/context-generator.ts, src/scanner/file-watcher.ts, src/scanner/scanner-worker.ts, src/scanner/__tests__/incremental-cache-recursive.test.ts, src/scanner/__tests__/parallel-path-behavior.test.ts, src/scanner/__tests__/parallel-processing.test.ts, __tests__/accuracy-validation.test.ts
  */
 

@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability database-detector-prisma-model
- * @exports PrismaModel, PrismaField, PrismaRelation, PrismaSchema, TypeormEntity, TypeormColumn, TypeormRelation, SequelizeModel, SequelizeColumn, SequelizeAssociation, MongooseSchema, MongooseField, DatabaseAnalysis, DatabaseDetection, DatabaseDetector, traverse, analyzeDatabase
+ * @exports PrismaModel, PrismaField, PrismaRelation, PrismaSchema, TypeormEntity, TypeormColumn, TypeormRelation, SequelizeModel, SequelizeColumn, SequelizeAssociation, MongooseSchema, MongooseField, DatabaseAnalysis, DatabaseDetection, DatabaseDetector, analyzeDatabase
  * @used_by src/cli/coderef-analyze.ts
  */
 

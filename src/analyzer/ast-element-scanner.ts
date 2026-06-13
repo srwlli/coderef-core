@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability ast-element-scanner-astscan-result
- * @exports ASTScanResult, ASTElementScanner, visit, scanFileWithAST, scanFilesWithAST
+ * @exports ASTScanResult, ASTElementScanner, scanFileWithAST, scanFilesWithAST
  * @used_by src/scanner/scanner-worker.ts, src/scanner/scanner.ts
  */
 
