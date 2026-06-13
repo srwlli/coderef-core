@@ -251,6 +251,17 @@ export interface ToolHandlers {
   find_element(args: { query: string; type?: string; limit?: number }): Record<string, unknown>;
   codebase_summary(): Record<string, unknown>;
   validation_status(): Record<string, unknown>;
+  // v2 tools (WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001 P1)
+  hotspots(args: { limit?: number; src_only?: boolean }): Record<string, unknown>;
+  cycles(args: { limit?: number; relationship?: 'call' | 'import' }): Record<string, unknown>;
+  what_exports(args: { file: string; limit?: number }): Record<string, unknown>;
+}
+
+/** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
+const TEST_FILE_RE = /__tests__|\.test\.|\.spec\./;
+
+function isTestFile(file: string | undefined): boolean {
+  return TEST_FILE_RE.test((file ?? '').replace(/\\/g, '/'));
 }
 
 export function buildToolHandlers(projectDir: string): ToolHandlers {
@@ -310,7 +321,9 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       if (matches.length === 0) return notFound(element);
       if (!byFile && matches.length > 5) return ambiguous(element, matches);
 
-      // Reverse BFS over resolved edges: who (transitively) depends on this?
+      // Reverse BFS over resolved call+import edges: who (transitively)
+      // depends on this? Export edges are containment, not consumption —
+      // a file exporting X is not "impacted by" X (v2 hygiene).
       const visited = new Set<string>(matches.map(m => m.id));
       const byDepth: number[] = [];
       let frontier = matches.map(m => m.id);
@@ -319,6 +332,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         const next: string[] = [];
         for (const id of frontier) {
           for (const edge of cache.inbound.get(id) ?? []) {
+            if (edge.relationship !== 'call' && edge.relationship !== 'import') continue;
             const src = edge.sourceId!;
             if (visited.has(src)) continue;
             visited.add(src);
@@ -422,6 +436,206 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           edges: graph.statistics?.edgeCount ?? graph.edges.length,
           edges_by_type: graph.statistics?.edgesByType ?? {},
         },
+      };
+    },
+
+    hotspots({ limit, src_only }) {
+      const graph = loadGraph(projectDir, cache);
+      const cap = clampLimit(limit);
+      const srcOnly = src_only ?? true;
+
+      const fanIn = new Map<string, number>();
+      const fanOut = new Map<string, number>();
+      for (const edge of graph.edges) {
+        if (edge.resolutionStatus !== 'resolved' || !edge.targetId || !edge.sourceId) continue;
+        if (edge.relationship !== 'call' && edge.relationship !== 'import') continue;
+        if (srcOnly && (edge.evidence as { testOrigin?: boolean } | undefined)?.testOrigin === true) continue;
+        fanIn.set(edge.targetId, (fanIn.get(edge.targetId) ?? 0) + 1);
+        fanOut.set(edge.sourceId, (fanOut.get(edge.sourceId) ?? 0) + 1);
+      }
+
+      const ranked: Array<Record<string, unknown> & { score: number }> = [];
+      const ids = new Set<string>([...fanIn.keys(), ...fanOut.keys()]);
+      for (const id of ids) {
+        const node = cache.nodeById.get(id);
+        if (!node) continue;
+        if (srcOnly && isTestFile(node.file)) continue;
+        const fi = fanIn.get(id) ?? 0;
+        const fo = fanOut.get(id) ?? 0;
+        ranked.push({ ...nodeSummary(node), fan_in: fi, fan_out: fo, score: fi + fo });
+      }
+      ranked.sort((a, b) => b.score - a.score);
+
+      return {
+        src_only: srcOnly,
+        total_ranked: ranked.length,
+        returned: Math.min(cap, ranked.length),
+        truncated: ranked.length > cap,
+        hotspots: ranked.slice(0, cap),
+      };
+    },
+
+    cycles({ limit, relationship }) {
+      const graph = loadGraph(projectDir, cache);
+      const cap = clampLimit(limit);
+
+      // Forward adjacency over resolved call/import edges (export edges are
+      // containment and cannot form dependency cycles worth surfacing).
+      const adj = new Map<string, Array<{ to: string; edge: ExportedEdge }>>();
+      for (const edge of graph.edges) {
+        if (edge.resolutionStatus !== 'resolved' || !edge.targetId || !edge.sourceId) continue;
+        const rel = edge.relationship;
+        if (relationship ? rel !== relationship : rel !== 'call' && rel !== 'import') continue;
+        const list = adj.get(edge.sourceId);
+        const entry = { to: edge.targetId, edge };
+        if (list) list.push(entry);
+        else adj.set(edge.sourceId, [entry]);
+      }
+
+      // Iterative Tarjan SCC (explicit stack — graphs here can chain deep).
+      let counter = 0;
+      const index = new Map<string, number>();
+      const lowlink = new Map<string, number>();
+      const onStack = new Set<string>();
+      const stack: string[] = [];
+      const sccs: string[][] = [];
+
+      for (const start of adj.keys()) {
+        if (index.has(start)) continue;
+        const work: Array<{ id: string; childIdx: number }> = [{ id: start, childIdx: 0 }];
+        while (work.length > 0) {
+          const frame = work[work.length - 1];
+          const { id } = frame;
+          if (frame.childIdx === 0) {
+            index.set(id, counter);
+            lowlink.set(id, counter);
+            counter++;
+            stack.push(id);
+            onStack.add(id);
+          }
+          const children = adj.get(id) ?? [];
+          let recursed = false;
+          while (frame.childIdx < children.length) {
+            const child = children[frame.childIdx].to;
+            frame.childIdx++;
+            if (!index.has(child)) {
+              work.push({ id: child, childIdx: 0 });
+              recursed = true;
+              break;
+            }
+            if (onStack.has(child)) {
+              lowlink.set(id, Math.min(lowlink.get(id)!, index.get(child)!));
+            }
+          }
+          if (recursed) continue;
+          if (lowlink.get(id) === index.get(id)) {
+            const scc: string[] = [];
+            for (;;) {
+              const w = stack.pop()!;
+              onStack.delete(w);
+              scc.push(w);
+              if (w === id) break;
+            }
+            if (scc.length > 1) sccs.push(scc);
+          }
+          work.pop();
+          if (work.length > 0) {
+            const parent = work[work.length - 1];
+            lowlink.set(parent.id, Math.min(lowlink.get(parent.id)!, lowlink.get(id)!));
+          }
+        }
+      }
+
+      sccs.sort((a, b) => b.length - a.length);
+      const cycles = sccs.slice(0, cap).map(scc => {
+        const memberSet = new Set(scc);
+        let sample: ExportedEdge | undefined;
+        for (const id of scc) {
+          sample = (adj.get(id) ?? []).find(e => memberSet.has(e.to))?.edge;
+          if (sample) break;
+        }
+        return {
+          size: scc.length,
+          members: scc.slice(0, 10).map(id => {
+            const node = cache.nodeById.get(id);
+            return node ? nodeSummary(node) : { id };
+          }),
+          members_truncated: scc.length > 10,
+          sample_edge: sample
+            ? {
+                from: sample.sourceId,
+                to: sample.targetId,
+                at: sample.sourceLocation
+                  ? `${sample.sourceLocation.file}:${sample.sourceLocation.line}`
+                  : undefined,
+              }
+            : undefined,
+        };
+      });
+
+      return {
+        relationship: relationship ?? 'call+import',
+        total_cycles: sccs.length,
+        returned: cycles.length,
+        truncated: sccs.length > cycles.length,
+        cycles,
+      };
+    },
+
+    what_exports({ file, limit }) {
+      const graph = loadGraph(projectDir, cache);
+      const cap = clampLimit(limit);
+      const norm = (f: string | undefined) => (f ?? '').replace(/\\/g, '/');
+      const query = norm(file).replace(/^@File\//, '');
+
+      // Group export edges by their owning file.
+      const byFile = new Map<string, ExportedEdge[]>();
+      for (const edge of graph.edges) {
+        if (edge.relationship !== 'export' || edge.resolutionStatus !== 'resolved' || !edge.targetId) continue;
+        const owner =
+          norm(edge.sourceLocation?.file) ||
+          norm(edge.sourceId?.replace(/^@File\//, ''));
+        if (!owner) continue;
+        const list = byFile.get(owner);
+        if (list) list.push(edge);
+        else byFile.set(owner, [edge]);
+      }
+
+      let matchedFiles = byFile.has(query) ? [query] : [];
+      if (matchedFiles.length === 0) {
+        const q = query.toLowerCase();
+        matchedFiles = [...byFile.keys()].filter(f => f.toLowerCase().includes(q));
+      }
+      if (matchedFiles.length === 0) {
+        return {
+          error: 'file_not_found',
+          query: file,
+          hint: 'No export edges for that file. Pass a project-relative path; re-run the pipeline if the graph is stale.',
+        };
+      }
+      if (matchedFiles.length > 5) {
+        return {
+          error: 'ambiguous_file',
+          query: file,
+          match_count: matchedFiles.length,
+          hint: 'Narrow the file path — multiple files match.',
+          candidates: matchedFiles.slice(0, 5),
+        };
+      }
+
+      const exports: Array<Record<string, unknown>> = [];
+      for (const f of matchedFiles) {
+        for (const edge of byFile.get(f)!) {
+          const target = cache.nodeById.get(edge.targetId!);
+          exports.push(target ? nodeSummary(target) : { id: edge.targetId });
+        }
+      }
+      return {
+        file: matchedFiles.length === 1 ? matchedFiles[0] : matchedFiles,
+        total: exports.length,
+        returned: Math.min(cap, exports.length),
+        truncated: exports.length > cap,
+        exports: exports.slice(0, cap),
       };
     },
 
@@ -557,10 +771,58 @@ async function main(): Promise<void> {
     async () => toContent(handlers.validation_status()),
   );
 
+  server.registerTool(
+    'hotspots',
+    {
+      title: 'Hotspots',
+      description:
+        'Rank elements by fan-in + fan-out over resolved call/import edges. src_only (default true) excludes test-origin edges and test-file elements so architectural load-bearers rank first.',
+      inputSchema: {
+        limit: limitArg,
+        src_only: z
+          .boolean()
+          .optional()
+          .describe('Exclude test-origin edges + test-file elements (default true)'),
+      },
+    },
+    async ({ limit, src_only }) => toContent(handlers.hotspots({ limit, src_only })),
+  );
+
+  server.registerTool(
+    'cycles',
+    {
+      title: 'Dependency cycles',
+      description:
+        'Strongly-connected components over resolved call/import edges (Tarjan). Returns cycle membership and a sample in-cycle edge per cycle, largest first.',
+      inputSchema: {
+        limit: limitArg,
+        relationship: z
+          .enum(['call', 'import'])
+          .optional()
+          .describe('Restrict to one edge kind (default: both)'),
+      },
+    },
+    async ({ limit, relationship }) => toContent(handlers.cycles({ limit, relationship })),
+  );
+
+  server.registerTool(
+    'what_exports',
+    {
+      title: 'What a file exports',
+      description:
+        'List the exported elements of a file via resolved export edges. Accepts a project-relative path or a path fragment (ambiguity envelope when several files match).',
+      inputSchema: {
+        file: z.string().describe('Project-relative file path (or fragment), e.g. "src/pipeline/call-resolver.ts"'),
+        limit: limitArg,
+      },
+    },
+    async ({ file, limit }) => toContent(handlers.what_exports({ file, limit })),
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (6 read-only tools)`,
+    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (9 read-only tools)`,
   );
 }
 

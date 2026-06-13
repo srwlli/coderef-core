@@ -1,0 +1,108 @@
+{
+  "workorder_id": "WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001",
+  "feature_name": "mcp-v2-tools-and-ps-validation",
+  "created": "2026-06-13T05:30:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-ASC73J",
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Roadmap Phase 4 rolling program with Primary-Sources validation target (operator directive 2026-06-13)"
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_gates": true,
+    "notes": "Rolling: P1 planned; P2-P3 deferred with unapproved hard stops. Integrator lane."
+  },
+  "hard_constraints": [
+    "Same modules that write .coderef artifacts; compact JSON; resolved-edges-only; <=5 ambiguity candidates",
+    "Integrator lane: commit to main + push per phase"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_forced",
+      "from": "strict",
+      "to": "phased",
+      "reason": "--phased-stubs implies phased",
+      "at": "2026-06-13T05:30:00Z"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 6,
+      "source": "inline",
+      "at": "2026-06-13T05:30:00Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "phased",
+      "phase_count": 3,
+      "source": "default",
+      "at": "2026-06-13T05:30:00Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "phased",
+      "source": "default",
+      "at": "2026-06-13T05:30:00Z"
+    },
+    {
+      "event": "rolling_plan_authored",
+      "close_after_phase": 3,
+      "phased_stubs": [
+        "STUB-XF1EX0",
+        "STUB-9F63EJ"
+      ],
+      "at": "2026-06-13T05:30:00Z"
+    },
+    {
+      "event": "ps_target_directive",
+      "at": "2026-06-13T05:30:00Z",
+      "note": "Operator: target Primary-Sources (CODEREF/PROJECTS/primary-sources). P2 validates the full toolset there: repopulate with new core, diff report, register .mcp.json, live smoke."
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-06-13T06:00:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [
+    {
+      "id": "ADJ-01",
+      "at": "2026-06-13T06:00:00Z",
+      "type": "evidence",
+      "summary": "P1 shipped: hotspots (fan-in/out, src_only default true honoring evidence.testOrigin), cycles (iterative Tarjan SCC), what_exports (export edges + ambiguity envelope) + impact_of export-edge hygiene fix (BFS now call+import only - a file export edge no longer makes the file a dependent of its own element). 24/24 MCP tests (8 new); suite 1632 passing (single documented contention flake). Live stdio smoke: 9 tools listed; hotspots top = demo-all-modules#main (fan_out 92); cycles found a REAL 2-element cycle in coderef-core's graph; what_exports(call-resolver) = 13 exports matching the restamped header exactly."
+    }
+  ],
+  "git_branch": "wo/mcp-v2-tools-and-ps-validation",
+  "communication_log": [
+    {
+      "at": "2026-06-13T05:30:00Z",
+      "from": "create-workorder",
+      "message": "WO created from STUB-ASC73J (roadmap PHASE-4). Rolling: P1 graph tools (6 tasks); P2 flow tools + PS validation (STUB-XF1EX0); P3 intel-server retirement (STUB-9F63EJ, ruling A)."
+    },
+    {
+      "at": "2026-06-13T06:00:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 1 COMPLETE pending commit. Continuing to Phase 2 (flow tools + Primary-Sources validation) per operator standing approval + PS-target directive."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {},
+  "history": []
+}

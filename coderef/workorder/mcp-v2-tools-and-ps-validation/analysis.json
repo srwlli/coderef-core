@@ -1,0 +1,80 @@
+{
+  "workorder_id": "WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001",
+  "feature_name": "mcp-v2-tools-and-ps-validation",
+  "analysis_authored_at": "2026-06-13T05:30:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/cli/coderef-mcp-server.ts",
+      "__tests__/mcp-server.test.ts",
+      "docs/CLI.md",
+      "docs/AGENT-CONTRACT.md"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      ".mcp.json registrations (CODEREF-CORE + ASSISTANT + PS in P2)",
+      "agents using the coderef-core MCP domain"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Cycle detection cost on large graphs (30k+ edges)",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Tarjan SCC is O(V+E); resolved-edges-only keeps E ~5k; cap response to top-N cycles"
+    },
+    {
+      "id": "RISK-002",
+      "title": "PS graph predates tonight's resolver fixes (counts shift on repopulate)",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "P2 repopulates PS first and diffs the report as paired evidence - the shift IS the validation"
+    },
+    {
+      "id": "RISK-003",
+      "title": "Intelligence-server consumers unknown at retirement",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "P3 greps LLOYD + ASSISTANT for endpoint references before deleting; 410 stubs for anything ambiguous"
+    }
+  ],
+  "candidates": [
+    "__tests__/generators/helpers.ts",
+    "__tests__/integration.test.ts",
+    "__tests__/mcp-server.test.ts",
+    "__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts",
+    "__tests__/pipeline/graph-construction-edge-schema.test.ts",
+    "__tests__/pipeline/graph-ground-truth.test.ts",
+    "__tests__/pipeline/header-exports-cross-check.test.ts",
+    "__tests__/pipeline/header-fact-shape.test.ts",
+    "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+    "__tests__/pipeline/import-resolution-relative.test.ts",
+    "__tests__/pipeline/no-graph-edge-claim.test.ts",
+    "__tests__/pipeline/output-validation-report.test.ts",
+    "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+    "__tests__/pipeline/output-validation-strict-headers.test.ts",
+    "__tests__/pipeline/raw-call-facts.test.ts",
+    "__tests__/pipeline/raw-export-facts.test.ts",
+    "__tests__/pipeline/raw-import-facts.test.ts",
+    "examples/nextjs-api-route.ts",
+    "scripts/doc-gen/enhance-existing-docs.js",
+    "scripts/doc-gen/generate-exports-md.js",
+    "scripts/doc-gen/generate-hotspots-md.js",
+    "scripts/doc-gen/generate-index-md.js",
+    "scripts/doc-gen/generate-meta-json.js",
+    "scripts/doc-gen/generate-relationships-md.js",
+    "scripts/doc-gen/utils.js"
+  ],
+  "dependencies": [
+    "@modelcontextprotocol/sdk (already a dep)",
+    "Primary-Sources repo at CODEREF/PROJECTS/primary-sources"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "One rolling WO for Phase 4 + the sequenced Phase 2 retirement",
+      "rationale": "TOOL-HOTSPOTS unblocks STUB-9F63EJ per the operator ruling; folding retirement in as P3 keeps the dependency visible"
+    }
+  ]
+}

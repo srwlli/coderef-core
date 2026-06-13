@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-13] — MCP v2 Tools
+
+WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001 Phase 1 (STUB-ASC73J, roadmap Phase 4).
+
+### Added
+- **`hotspots` tool** — fan-in + fan-out ranking over resolved call/import edges; `src_only` (default true) excludes test-origin edges (the `evidence.testOrigin` tag) and test-file elements so architectural load-bearers rank first. Canonical replacement path for intelligence-server's drifted `handleHotspots`.
+- **`cycles` tool** — iterative Tarjan SCC over resolved call/import edges; returns cycle membership (largest first) and a sample in-cycle edge per cycle. First live run found a real 2-element cycle in coderef-core's own graph.
+- **`what_exports` tool** — file → exported elements via resolved export edges, with ambiguity envelope on path fragments. Closes the export-edge blind spot in the v1 toolset.
+- The MCP surface is now **9 read-only tools**; docs swept (CLI.md, AGENT-CONTRACT.md).
+
+### Fixed
+- **`impact_of` export-edge hygiene** — reverse BFS now traverses call+import edges only; a file's export edge no longer counts the containing file as a "dependent" of its own element.
+
+---
+
 ## [2026-06-13] — Scanner Export Classification Fix
 
 WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001 Phase 1 (STUB-5WVGHD).

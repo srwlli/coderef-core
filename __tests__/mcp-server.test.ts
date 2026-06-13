@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability mcp-server-test-fixture-graph
+ */
+
+/**
  * coderef-mcp-server behavioral tests
  * (WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 P3-T4).
  *
@@ -39,6 +45,13 @@ const FIXTURE_GRAPH: ExportedGraph = {
       line: 1,
       metadata: {},
     })),
+    // v2 fixture extensions (WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001 P1):
+    // file-grain node for export edges, a 2-node call cycle, and a
+    // test-file caller for the hotspots src_only filter.
+    { id: '@File/src/util.ts', type: 'file', name: '@File/src/util.ts', file: 'src/util.ts', line: 1, metadata: { fileGrain: true } },
+    { id: '@Fn/src/c1.ts#cyc1:1', type: 'function', name: 'cyc1', file: 'src/c1.ts', line: 1, metadata: {} },
+    { id: '@Fn/src/c2.ts#cyc2:1', type: 'function', name: 'cyc2', file: 'src/c2.ts', line: 1, metadata: {} },
+    { id: '@Fn/__tests__/t.test.ts#tcall:1', type: 'function', name: 'tcall', file: '__tests__/t.test.ts', line: 1, metadata: {} },
   ],
   edges: [
     // canonical 8-field schema + legacy compat fields (source/target/type)
@@ -71,6 +84,41 @@ const FIXTURE_GRAPH: ExportedGraph = {
       id: 'e5', sourceId: '@Fn/src/main.ts#main:1',
       relationship: 'call', resolutionStatus: 'unresolved', reason: 'dynamic call',
       source: '@Fn/src/main.ts#main:1', target: 'whatever', type: 'call',
+    },
+    // v2: export edges (file-grain -> element) — consumed by what_exports;
+    // must NOT count as impact_of dependents (call+import only).
+    {
+      id: 'ex1', sourceId: '@File/src/util.ts', targetId: '@Fn/src/util.ts#helper:10',
+      relationship: 'export', resolutionStatus: 'resolved',
+      sourceLocation: { file: 'src/util.ts', line: 10 },
+      source: '@File/src/util.ts', target: '@Fn/src/util.ts#helper:10', type: 'export',
+    },
+    {
+      id: 'ex2', sourceId: '@File/src/util.ts', targetId: '@I/src/util.ts#Helper:3',
+      relationship: 'export', resolutionStatus: 'resolved',
+      sourceLocation: { file: 'src/util.ts', line: 3 },
+      source: '@File/src/util.ts', target: '@I/src/util.ts#Helper:3', type: 'export',
+    },
+    // v2: 2-node call cycle — consumed by cycles.
+    {
+      id: 'cy1', sourceId: '@Fn/src/c1.ts#cyc1:1', targetId: '@Fn/src/c2.ts#cyc2:1',
+      relationship: 'call', resolutionStatus: 'resolved',
+      sourceLocation: { file: 'src/c1.ts', line: 2 },
+      source: '@Fn/src/c1.ts#cyc1:1', target: '@Fn/src/c2.ts#cyc2:1', type: 'call',
+    },
+    {
+      id: 'cy2', sourceId: '@Fn/src/c2.ts#cyc2:1', targetId: '@Fn/src/c1.ts#cyc1:1',
+      relationship: 'call', resolutionStatus: 'resolved',
+      sourceLocation: { file: 'src/c2.ts', line: 2 },
+      source: '@Fn/src/c2.ts#cyc2:1', target: '@Fn/src/c1.ts#cyc1:1', type: 'call',
+    },
+    // v2: test-origin call (evidence.testOrigin) — excluded by hotspots src_only.
+    {
+      id: 'te1', sourceId: '@Fn/__tests__/t.test.ts#tcall:1', targetId: '@Fn/src/c2.ts#cyc2:1',
+      relationship: 'call', resolutionStatus: 'resolved',
+      evidence: { kind: 'resolved-call', calleeName: 'cyc2', receiverText: '', scopePath: '', testOrigin: true } as any,
+      sourceLocation: { file: '__tests__/t.test.ts', line: 5 },
+      source: '@Fn/__tests__/t.test.ts#tcall:1', target: '@Fn/src/c2.ts#cyc2:1', type: 'call',
     },
   ],
   statistics: { nodeCount: 11, edgeCount: 5, edgesByType: { call: 4, import: 1 }, densityRatio: 0.04 },
@@ -289,5 +337,73 @@ describe('validation_status', () => {
     } finally {
       fs.rmSync(bare, { recursive: true, force: true });
     }
+  });
+});
+
+// ---- v2 tools (WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001 P1) --------------------------
+
+describe('hotspots', () => {
+  it('ranks elements by fan-in + fan-out over resolved call+import edges, src-only by default', () => {
+    const r = (handlers as any).hotspots({}) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.src_only).toBe(true);
+    const byId: Record<string, any> = {};
+    for (const h of r.hotspots) byId[h.id] = h;
+    // helper: called by alpha+beta (export edge does not count)
+    expect(byId['@Fn/src/util.ts#helper:10'].fan_in).toBe(2);
+    // cyc2: src_only excludes the test-origin call -> only cyc1's call counts
+    expect(byId['@Fn/src/c2.ts#cyc2:1'].fan_in).toBe(1);
+    // test-file elements are not ranked in src-only mode
+    expect(byId['@Fn/__tests__/t.test.ts#tcall:1']).toBeUndefined();
+    // sorted descending by score
+    const scores = r.hotspots.map((h: any) => h.score);
+    expect([...scores].sort((a: number, b: number) => b - a)).toEqual(scores);
+  });
+
+  it('src_only=false includes test-origin edges and test-file elements', () => {
+    const r = (handlers as any).hotspots({ src_only: false }) as any;
+    const byId: Record<string, any> = {};
+    for (const h of r.hotspots) byId[h.id] = h;
+    expect(byId['@Fn/src/c2.ts#cyc2:1'].fan_in).toBe(2);
+    expect(byId['@Fn/__tests__/t.test.ts#tcall:1'].fan_out).toBe(1);
+  });
+});
+
+describe('cycles', () => {
+  it('detects the 2-node call cycle with members and a sample edge', () => {
+    const r = (handlers as any).cycles({}) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.total_cycles).toBe(1);
+    expect(r.cycles[0].size).toBe(2);
+    const members = r.cycles[0].members.map((m: any) => m.id).sort();
+    expect(members).toEqual(['@Fn/src/c1.ts#cyc1:1', '@Fn/src/c2.ts#cyc2:1']);
+    expect(r.cycles[0].sample_edge).toBeDefined();
+  });
+
+  it('finds no cycles over import edges alone', () => {
+    const r = (handlers as any).cycles({ relationship: 'import' }) as any;
+    expect(r.total_cycles).toBe(0);
+  });
+});
+
+describe('what_exports', () => {
+  it('returns the exported elements of a file via export edges', () => {
+    const r = (handlers as any).what_exports({ file: 'src/util.ts' }) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.total).toBe(2);
+    const ids = r.exports.map((e: any) => e.id).sort();
+    expect(ids).toEqual(['@Fn/src/util.ts#helper:10', '@I/src/util.ts#Helper:3']);
+  });
+
+  it('errors cleanly on a file with no export edges', () => {
+    const r = (handlers as any).what_exports({ file: 'src/nope.ts' }) as any;
+    expect(r.error).toBe('file_not_found');
+  });
+});
+
+describe('impact_of export-edge hygiene (v2)', () => {
+  it('export edges do not count as dependents — helper impact stays {alpha, beta, main}', () => {
+    const r = handlers.impact_of({ element: 'helper', max_depth: 5 }) as any;
+    expect(r.transitive_dependents).toBe(3);
   });
 });
