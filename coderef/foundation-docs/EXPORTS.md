@@ -2,8 +2,8 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-06-12  
-**Total Exported:** 859 elements  
+**Generated:** 2026-06-13  
+**Total Exported:** 841 elements  
 <!-- coderef:uuid=exports-root -->
 
 ---
@@ -18,16 +18,16 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **347** | 412 | 759 |
+| function | **305** | 455 | 760 |
 | interface | **344** | 104 | 448 |
+| constant | **30** | 96 | 126 |
 | type | **45** | 19 | 64 |
 | component | **2** | 0 | 2 |
-| constant | **6** | 16 | 22 |
 | class | **115** | 4 | 119 |
 
 ---
 
-## Exported Functions (347)
+## Exported Functions (305)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
@@ -37,17 +37,12 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=829daa03-7ddc-5b7e-9ebb-b7ee8b00bbaa --> `readText` | `__tests__/generators/helpers.ts` | ✅ | filePath | `829daa03...` |
 | <!-- coderef:uuid=86674bf5-7783-5733-915b-4be3e59600bc --> `convertGraphToElements` | `src/adapter/graph-to-elements.ts` | ❌ | graph, options | `86674bf5...` |
 | <!-- coderef:uuid=6dfb05f7-e3f5-5d1e-9c59-e0876312b67b --> `getConversionStats` | `src/adapter/graph-to-elements.ts` | ❌ | elements | `6dfb05f7...` |
-| <!-- coderef:uuid=311c8034-aeb6-5ed6-88be-9f747412996b --> `visit` | `src/analyzer/ast-element-scanner.ts` | ❌ | node | `311c8034...` |
-| <!-- coderef:uuid=9690e345-8ee1-5d50-92e4-d937ca1dd1d1 --> `visit` | `src/analyzer/ast-element-scanner.ts` | ❌ | n | `9690e345...` |
 | <!-- coderef:uuid=943634bb-3bd1-533f-99ac-a4f309907198 --> `scanFileWithAST` | `src/analyzer/ast-element-scanner.ts` | ❌ | filePath | `943634bb...` |
 | <!-- coderef:uuid=e7fe444a-67bb-5ba7-9a53-592f4d6abaa7 --> `scanFilesWithAST` | `src/analyzer/ast-element-scanner.ts` | ❌ | filePaths | `e7fe444a...` |
 | <!-- coderef:uuid=98090ab0-912c-5d3e-b87f-dbe643aec9e9 --> `analyzeProjectConfig` | `src/analyzer/config-analyzer.ts` | ❌ | projectPath | `98090ab0...` |
-| <!-- coderef:uuid=3cd0515d-4d42-544b-b8fe-a9e4043920b1 --> `traverse` | `src/analyzer/contract-detector.ts` | ❌ | dir | `3cd0515d...` |
 | <!-- coderef:uuid=1c5806c2-e7d4-5ea8-8157-2a8324ac9141 --> `analyzeContracts` | `src/analyzer/contract-detector.ts` | ❌ | projectPath | `1c5806c2...` |
-| <!-- coderef:uuid=a8ea25e3-a923-50a3-a570-6b1a6c7f4a8d --> `traverse` | `src/analyzer/database-detector.ts` | ❌ | dir | `a8ea25e3...` |
 | <!-- coderef:uuid=ffd206d0-382a-5cc9-8ec9-035e304a2bf5 --> `analyzeDatabase` | `src/analyzer/database-detector.ts` | ❌ | projectPath | `ffd206d0...` |
 | <!-- coderef:uuid=9fd33e23-d049-5d98-a771-8754037c8dd0 --> `analyzeDependencyHealth` | `src/analyzer/dependency-analyzer.ts` | ✅ | projectPath | `9fd33e23...` |
-| <!-- coderef:uuid=ad0b8b5c-4f6c-5392-8c3b-704aacdf7405 --> `traverse` | `src/analyzer/design-pattern-detector.ts` | ❌ | dir | `ad0b8b5c...` |
 | <!-- coderef:uuid=91ccb2b8-4fcb-5038-9f93-43346bcb5679 --> `analyzeDesignPatterns` | `src/analyzer/design-pattern-detector.ts` | ❌ | projectPath | `91ccb2b8...` |
 | <!-- coderef:uuid=96e9e189-736c-5d21-a692-8e9a93f0ad7e --> `analyzeDocs` | `src/analyzer/docs-analyzer.ts` | ✅ | projectPath | `96e9e189...` |
 | <!-- coderef:uuid=761dea85-91ce-5553-8784-0fe4350ed985 --> `parseFetchCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `761dea85...` |
@@ -56,8 +51,6 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=283f59e5-9ff5-562d-bc65-8148539f0574 --> `parseCustomApiCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `283f59e5...` |
 | <!-- coderef:uuid=dfd18684-fcf0-52af-bd92-f8416bc09964 --> `extractHttpMethod` | `src/analyzer/frontend-call-parsers.ts` | ❌ | optionsArg | `dfd18684...` |
 | <!-- coderef:uuid=2b3c4a77-cf58-53c2-b67c-7b329941f45f --> `extractCallLocation` | `src/analyzer/frontend-call-parsers.ts` | ❌ | node, filePath | `2b3c4a77...` |
-| <!-- coderef:uuid=c5f1fd3e-be92-5bdd-a57f-d1328e228afd --> `dfs` | `src/analyzer/graph-analyzer.ts` | ❌ | nodeId, path | `c5f1fd3e...` |
-| <!-- coderef:uuid=f08e6f1e-152b-551f-86cf-a1176ba303d3 --> `dfs` | `src/analyzer/graph-analyzer.ts` | ❌ | currentNodeId, targetId, visited, path, edges, depth | `f08e6f1e...` |
 | <!-- coderef:uuid=d166ef21-b40f-5c95-b515-a667d6cc869e --> `parseNodeId` | `src/analyzer/graph-helpers.ts` | ❌ | nodeId | `d166ef21...` |
 | <!-- coderef:uuid=017e6f2b-7bb1-5c93-adf6-e28d38710b61 --> `getImportsForElement` | `src/analyzer/graph-helpers.ts` | ❌ | graph, nodeId | `017e6f2b...` |
 | <!-- coderef:uuid=bbb6ad65-24e1-5f77-b6a0-627993c55303 --> `getExportsForElement` | `src/analyzer/graph-helpers.ts` | ❌ | graph, nodeId | `bbb6ad65...` |
@@ -81,8 +74,15 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=9e1f1bf0-4f12-5c4c-985f-4f607f434348 --> `parseJavaScript` | `src/analyzer/js-parser.ts` | ❌ | code, options | `9e1f1bf0...` |
 | <!-- coderef:uuid=2e5ac029-9ee9-5228-9204-14d765bef2d3 --> `parseJavaScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath, options | `2e5ac029...` |
 | <!-- coderef:uuid=26a6a5cc-0ad1-572c-8b5f-69c9e0d1252e --> `isJavaScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath | `26a6a5cc...` |
+| <!-- coderef:uuid=e877fe7a-211e-58b1-9376-6ba7a6e537f8 --> `isTypeScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath | `e877fe7a...` |
+| <!-- coderef:uuid=79514e8d-17c9-5fad-a63e-2544de29fb92 --> `getSourceTypeFromExtension` | `src/analyzer/js-parser.ts` | ❌ | filePath | `79514e8d...` |
+| <!-- coderef:uuid=9e7ec783-0125-532b-a45b-7b5db949dbe5 --> `parseJavaScriptFileAuto` | `src/analyzer/js-parser.ts` | ❌ | filePath | `9e7ec783...` |
+| <!-- coderef:uuid=575bc8b2-ff4a-585d-8ec5-a808b4a0fb51 --> `analyzeMiddlewareAndDI` | `src/analyzer/middleware-detector.ts` | ❌ | elements, files | `575bc8b2...` |
+| <!-- coderef:uuid=feac0a76-fda8-5c18-8ff7-f24a63e0c6f2 --> `extractAllRoutes` | `src/analyzer/migration-route-analyzer.ts` | ❌ | elements | `feac0a76...` |
+| <!-- coderef:uuid=4f70008c-c1f8-56eb-b51d-49eec78c44e3 --> `findOrphanedCalls` | `src/analyzer/migration-route-analyzer.ts` | ❌ | elements, frontendCalls | `4f70008c...` |
+| <!-- coderef:uuid=1cb1c7d3-99a1-50d6-a088-0c4b2a47c1d6 --> `detectBreakingChanges` | `src/analyzer/migration-route-analyzer.ts` | ❌ | oldElements, newElements | `1cb1c7d3...` |
 
-*... and 297 more functions. See index.json for complete list.*
+*... and 255 more functions. See index.json for complete list.*
 
 ---
 

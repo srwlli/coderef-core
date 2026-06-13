@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-5WVGHD",
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\plan.json",
@@ -126,6 +126,13 @@
       "commit": "2e90b55",
       "verdict": "PASS",
       "at": "2026-06-13T00:38:32.650Z"
+    },
+    {
+      "phase": 3,
+      "to_status": "complete",
+      "commit": "cb8fe53",
+      "verdict": "PASS",
+      "at": "2026-06-13T00:46:17.416Z"
     }
   ],
   "plan_adjustments": [
@@ -175,6 +182,12 @@
       "at": "2026-06-13T04:45:00Z",
       "from": "execute-workorder",
       "message": "Phase 3 COMPLETE - final phase of rolling plan (close_after_phase=3). Proceeding to full Step 5 close-out + close ceremony per operator standing approval."
+    },
+    {
+      "at": "2026-06-13T05:00:00Z",
+      "from": "execute-workorder",
+      "event": "workorder_complete",
+      "message": "All 3 rolling phases complete + pushed: P1 5e73091 (scanner export classification, header baseline fully clean), P2 2e90b55 (vitest shebang+CRLF fix, zero uncollectable files), P3 cb8fe53 (rag-index deletion sweep, staleIndexWarning). Stubs 5WVGHD/Z1ETZD/81XNNM closed. Evidence ADJ-01..ADJ-04."
     }
   ],
   "required_skills": [
@@ -183,5 +196,6 @@
     "/log-session"
   ],
   "inter_phase_results": {},
-  "history": []
+  "history": [],
+  "completed_at": "2026-06-13T05:00:00Z"
 }

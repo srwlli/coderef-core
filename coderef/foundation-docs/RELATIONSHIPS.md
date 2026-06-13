@@ -2,9 +2,9 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-06-12  
-**Nodes:** 2,852 elements  
-**Edges:** 31,184 dependencies  
+**Generated:** 2026-06-13  
+**Nodes:** 2,957 elements  
+**Edges:** 31,178 dependencies  
 <!-- coderef:uuid=relationships-root -->
 
 ---
@@ -24,11 +24,11 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,852 |
-| **Total Dependencies** | 31,184 |
+| **Total Elements** | 2,957 |
+| **Total Dependencies** | 31,178 |
 | **Avg Dependencies/Element** | (edges.length / nodes.length).toFixed(2) |
 | **Entry Points** | 15 |
-| **Most Referenced** | 25911 refs |
+| **Most Referenced** | 25910 refs |
 
 ---
 
@@ -40,8 +40,8 @@ This document visualizes the dependency graph between code elements. Understandi
 |------|---------|------------|------|------|
 | 2 | <!-- coderef:uuid=8989852d-ebaa-52b4-852d-813d2a6d33be --> `scanCurrentElements` | **133** | function | `src/scanner/scanner.ts` |
 | 3 | <!-- coderef:uuid=459f8aac-d771-5118-936b-566861da9d47 --> `isLineCommented` | **49** | function | `src/scanner/scanner.ts` |
-| 4 | <!-- coderef:uuid=d4ecbbdd-eaf5-5039-be19-ebb3520b9bbf --> `createCodeRefId` | **46** | function | `src/utils/coderef-id.ts` |
-| 5 | <!-- coderef:uuid=5aa75d75-60d4-5adf-8b89-4fe661cb4033 --> `PipelineOrchestrator` | **45** | class | `src/pipeline/orchestrator.ts` |
+| 4 | <!-- coderef:uuid=5aa75d75-60d4-5adf-8b89-4fe661cb4033 --> `PipelineOrchestrator` | **46** | class | `src/pipeline/orchestrator.ts` |
+| 5 | <!-- coderef:uuid=d4ecbbdd-eaf5-5039-be19-ebb3520b9bbf --> `createCodeRefId` | **46** | function | `src/utils/coderef-id.ts` |
 | 6 | <!-- coderef:uuid=64f66db7-def7-5f76-939b-8e14580a722f --> `validatePipelineState` | **44** | function | `src/pipeline/output-validator.ts` |
 | 7 | <!-- coderef:uuid=0db07e0a-fca0-54f7-9b92-6f3ce8a91373 --> `info` | **41** | function | `demo-all-modules.ts` |
 | 8 | <!-- coderef:uuid=850a9178-4970-5168-9963-efc0ac4d5c42 --> `createSearchResult` | **29** | function | `src/integration/rag/__tests__/graph-reranker.test.ts` |

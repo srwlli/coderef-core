@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-06-12  
+**Generated:** 2026-06-13  
 <!-- coderef:uuid=hotspots-root -->
 
 ---
@@ -22,9 +22,9 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | Metric | Value |
 |--------|-------|
 | **Total Files** | 404 |
-| **Total Elements** | 2,485 |
-| **Total Lines** | 107,712 |
-| **Entry Points** | 80 |
+| **Total Elements** | 2,590 |
+| **Total Lines** | 107,687 |
+| **Entry Points** | 81 |
 | **Critical Functions** | 20 |
 
 ---
@@ -90,7 +90,7 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `main` | cli | `demo-all-modules.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-analyze.ts` |
 
-*... and 55 more entry points.*
+*... and 56 more entry points.*
 
 ---
 
