@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-5WVGHD",
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\plan.json",
@@ -188,6 +188,11 @@
       "from": "execute-workorder",
       "event": "workorder_complete",
       "message": "All 3 rolling phases complete + pushed: P1 5e73091 (scanner export classification, header baseline fully clean), P2 2e90b55 (vitest shebang+CRLF fix, zero uncollectable files), P3 cb8fe53 (rag-index deletion sweep, staleIndexWarning). Stubs 5WVGHD/Z1ETZD/81XNNM closed. Evidence ADJ-01..ADJ-04."
+    },
+    {
+      "at": "2026-06-13T05:05:00Z",
+      "from": "close-workorder",
+      "message": "WO closed (close-only). Ladder stubs 5WVGHD/Z1ETZD/81XNNM all shipped + closed; roadmap Phase 2 actionable items complete."
     }
   ],
   "required_skills": [
@@ -197,5 +202,20 @@
   ],
   "inter_phase_results": {},
   "history": [],
-  "completed_at": "2026-06-13T05:00:00Z"
+  "completed_at": "2026-06-13T05:00:00Z",
+  "closed_at": "2026-06-13T05:05:00Z",
+  "close_metadata": {
+    "closed_via": "/close-workorder",
+    "close_mode": "close-only (default v2.8.0; not archived)",
+    "review_status": "PASS",
+    "operator_authorization": "standing approval 2026-06-12/13; auto-close gates verified at terminal phase (3/3), no blockers, no bypassed inputs",
+    "audit": {
+      "phased_terminal_guard": "PASS (terminal at 3/3)",
+      "culture_validator": "PASS 13/13",
+      "tracking_validator_scoped": "17/17 PASS",
+      "foundation_docs_gate": "PASS (validator exit 0, regenerated docs in bd03391)",
+      "suite": "1625 passing; zero uncollectable files; single documented contention flake (isolated 25/25 x2)"
+    },
+    "what_shipped": "Commits 5e73091 (P1 scanner export classification), 2e90b55 (P2 vitest shebang+CRLF), cb8fe53 (P3 deletion sweep), bd03391 (close-out). Header baseline fully clean (stale 0, mismatch 0, 99.27%); zero uncollectable test files; staleIndexWarning at minute zero."
+  }
 }

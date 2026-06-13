@@ -2,7 +2,7 @@
   "project": "coderef-core-next",
   "owner": "CODEREF-CORE",
   "created": "2026-06-12T12:20:00Z",
-  "updated": "2026-06-13T03:40:00Z",
+  "updated": "2026-06-13T05:05:00Z",
   "current_phase": 2,
   "status": "active",
   "phases": [
@@ -91,15 +91,15 @@
         {
           "id": "VITEST-MJS-COLLECTION",
           "description": "STUB-Z1ETZD: any vitest test importing scripts/check-header-coverage.mjs dies at collection with SyntaxError (plain node import works) - check-header-coverage.test.ts has been uncollectable since at least 2026-06-12; stash-proven pre-existing with minimal repro",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "2e90b55",
           "depends_on": []
         },
         {
           "id": "GHOST-INDEX-ENTRIES",
           "description": "STUB-81XNNM: index.json carries elements for root-level types.d.ts and scanner.js that do not exist on disk (17 ENOENT errors in the full-repo rag dogfood) - add disk-existence reconciliation / stale-entry eviction to populate",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "cb8fe53",
           "depends_on": []
         }
       ],
