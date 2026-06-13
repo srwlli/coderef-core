@@ -2,7 +2,7 @@
 
 **Owner:** CODEREF-CORE
 **Created:** 2026-06-12T12:20:00Z
-**Updated:** 2026-06-13T07:50:00Z
+**Updated:** 2026-06-13T08:35:00Z
 **Current phase:** 3
 **Render slug:** `SURFACES/surfaces-html/renders/roadmap/coderef-core-next/` (stable, no ULID)
 
@@ -51,7 +51,7 @@
 
 ### Items
 
-- [not_started] **REGISTRY-RAWFACTS-DEDUP** — STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) — move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts
+- [not_started] **REGISTRY-RAWFACTS-DEDUP** — STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) — move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts [DESIGN AUTHORED 2026-06-13: phase3-storage-design.md awaiting operator (A)/(B) ruling; tracker STUB-JAH69F]
 - [not_started] **VECTOR-STORE-PATH-FIX** — Fallback JSON vector store writes .coderef/rag-vectors.sqlite as a DIRECTORY containing coderef-vectors.json — make the fallback path honest (name reflects store type) and document store resolution in rag-status
 
 ---
@@ -77,13 +77,13 @@
 
 ## Phase 5: RAG quality
 
-**Status:** not_started
+**Status:** active
 **Hard-stop:** no
 **Gating predicate:** Local-first RAG shipped; a golden-query eval harness exists before any ranking change lands
 
 ### Items
 
-- [not_started] **EVAL-HARNESS** — Golden-query eval harness on coderef-core's own index (query -> expected elements) so ranking changes are measured, not vibed
+- [complete] **EVAL-HARNESS** (09a3b85) — Golden-query eval harness on coderef-core's own index (query -> expected elements) so ranking changes are measured, not vibed [SHIPPED: rag-eval CLI + 12 golden queries + baseline hit@1 0.583 / hit@5 0.667 / MRR 0.639]
 - [not_started] **CHUNK-ENRICHMENT** — Embed header semantics (layer/capability/constraints) and leading docstring in the chunk text, not just raw code — measured against EVAL-HARNESS
 - [not_started] **PROVENANCE-RANKING** — Downweight header:false chunks at query time (post-score multiplier) instead of hard-filtering — headerless repos stay searchable but annotated code ranks first
 - [not_started] **INDEX-FRESHNESS** — rag-status surfaces staleness: files changed since indexedAt, with incremental-vs--reset recommendation

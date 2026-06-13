@@ -2,7 +2,7 @@
   "project": "coderef-core-next",
   "owner": "CODEREF-CORE",
   "created": "2026-06-12T12:20:00Z",
-  "updated": "2026-06-13T07:50:00Z",
+  "updated": "2026-06-13T08:35:00Z",
   "current_phase": 3,
   "status": "active",
   "phases": [
@@ -115,7 +115,7 @@
       "items": [
         {
           "id": "REGISTRY-RAWFACTS-DEDUP",
-          "description": "STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) \u2014 move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts",
+          "description": "STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) \u2014 move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts [DESIGN AUTHORED 2026-06-13: phase3-storage-design.md awaiting operator (A)/(B) ruling; tracker STUB-JAH69F]",
           "status": "not_started",
           "shipped_commit": null,
           "depends_on": []
@@ -182,15 +182,15 @@
       "phase": 5,
       "name": "RAG quality",
       "hard_stop": false,
-      "status": "not_started",
+      "status": "active",
       "gating_predicate": "Local-first RAG shipped; a golden-query eval harness exists before any ranking change lands",
       "shipped_commit": null,
       "items": [
         {
           "id": "EVAL-HARNESS",
-          "description": "Golden-query eval harness on coderef-core's own index (query -> expected elements) so ranking changes are measured, not vibed",
-          "status": "not_started",
-          "shipped_commit": null,
+          "description": "Golden-query eval harness on coderef-core's own index (query -> expected elements) so ranking changes are measured, not vibed [SHIPPED: rag-eval CLI + 12 golden queries + baseline hit@1 0.583 / hit@5 0.667 / MRR 0.639]",
+          "status": "complete",
+          "shipped_commit": "09a3b85",
           "depends_on": []
         },
         {
