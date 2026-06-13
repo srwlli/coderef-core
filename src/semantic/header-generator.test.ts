@@ -214,6 +214,59 @@ export function myFunc() {}`;
     });
   });
 
+  describe('Python comment syntax (STUB sweep root-cause: JS /** */ is a SyntaxError in .py)', () => {
+    test('Python files get # line comments, not a /** */ block', async () => {
+      const file = path.join(tempDir, 'script.py');
+      fs.writeFileSync(file, 'def my_func():\n    return 1\n');
+
+      const exports: ExportInfo[] = [{ name: 'my_func', type: 'named', line: 1 }];
+      await generateHeaders(file, exports, [], []);
+
+      const content = fs.readFileSync(file, 'utf-8');
+      expect(content).toContain('@coderef-semantic: 1.0.0');
+      // The header MUST be Python-comment syntax, never the JS block opener.
+      expect(content.startsWith('/**')).toBe(false);
+      expect(content).not.toContain('/**');
+      expect(content).not.toContain(' */');
+      // Every header line is a # comment.
+      const headerLines = content.split('\n').filter(l => l.includes('@coderef-semantic') || l.includes('@exports'));
+      for (const l of headerLines) {
+        expect(l.trimStart().startsWith('#')).toBe(true);
+      }
+    });
+
+    test('Python file with a shebang keeps the shebang on line 1, header below as # comments', async () => {
+      const file = path.join(tempDir, 'cli.py');
+      fs.writeFileSync(file, '#!/usr/bin/env python\ndef main():\n    pass\n');
+
+      const exports: ExportInfo[] = [{ name: 'main', type: 'named', line: 2 }];
+      await generateHeaders(file, exports, [], []);
+
+      const content = fs.readFileSync(file, 'utf-8');
+      const lines = content.split('\n');
+      expect(lines[0]).toBe('#!/usr/bin/env python'); // shebang stays first
+      expect(content).not.toContain('/**'); // no JS block anywhere
+      expect(content).toContain('# @coderef-semantic: 1.0.0');
+    });
+
+    test('re-stamping a Python file with a # header does not double-stamp', async () => {
+      const file = path.join(tempDir, 'redo.py');
+      fs.writeFileSync(file, 'def f():\n    return 1\n');
+      const exports: ExportInfo[] = [{ name: 'f', type: 'named', line: 1 }];
+
+      // First stamp (preserveExisting=false so a second run would re-stamp).
+      const gen = new HeaderGenerator({ preserveExisting: false });
+      const headers = gen.generateHeaders(exports, [], [], []);
+      await gen.insertHeaders(file, headers);
+      await gen.insertHeaders(file, headers);
+
+      const content = fs.readFileSync(file, 'utf-8');
+      const markerCount = (content.match(/@coderef-semantic: 1\.0\.0/g) || []).length;
+      expect(markerCount).toBe(1); // exactly one header, not two
+      expect(content).not.toContain('/**');
+    });
+  });
+
   describe('Edge Cases', () => {
     test('should handle empty exports and imports', () => {
       const headers = generator.generateHeaders([], [], [], []);

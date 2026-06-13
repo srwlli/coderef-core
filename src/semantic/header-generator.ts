@@ -254,33 +254,72 @@ export class HeaderGenerator {
   }
 
   /**
-   * Format headers as code comments
+   * Comment family for a file by extension. Languages using hash line comments
+   * (Python, Ruby, Shell, YAML, TOML, …) MUST NOT receive JS block comments —
+   * a JS block opener on line 1 of a .py file is a SyntaxError (the broken-
+   * sweep bug). C-family languages (ts/js/tsx/jsx/go/rust/java/c/cpp/…) use the
+   * JS block-comment style.
    */
-  formatAsComments(headers: SemanticHeader[]): string[] {
+  private hashCommentExt = new Set([
+    'py', 'pyi', 'rb', 'sh', 'bash', 'zsh', 'yaml', 'yml', 'toml',
+    'r', 'pl', 'pm', 'tcl', 'mk', 'cfg', 'conf', 'ini',
+  ]);
+
+  private commentFamilyForFile(filePath?: string): 'block' | 'hash' {
+    if (!filePath) return 'block';
+    const dot = filePath.lastIndexOf('.');
+    const ext = dot >= 0 ? filePath.slice(dot + 1).toLowerCase() : '';
+    return this.hashCommentExt.has(ext) ? 'hash' : 'block';
+  }
+
+  /**
+   * Format headers as code comments. `filePath` selects the comment family by
+   * extension: C-family block comments vs hash-comment languages (`#`). When
+   * omitted, falls back to the configured commentStyle (back-compat).
+   */
+  formatAsComments(headers: SemanticHeader[], filePath?: string): string[] {
     const comments: string[] = [];
+    if (headers.length === 0) return comments;
 
-    if (this.options.commentStyle === 'block') {
-      if (headers.length === 0) return comments;
-
-      comments.push(`/**`);
-      comments.push(` * @coderef-semantic: 1.0.0`);
-      const meta = headers.find(h => h.layer ?? h.capability);
-      if (meta?.layer) comments.push(` * @layer ${meta.layer}`);
-      if (meta?.capability) comments.push(` * @capability ${meta.capability}`);
+    // Legacy back-compat: no filePath + configured line style → `//` comments.
+    // (filePath-driven calls never hit this; it preserves older callers.)
+    if (filePath === undefined && this.options.commentStyle === 'line') {
       for (const header of headers) {
-        if (header.content.length === 0) continue; // sentinel with no content — skip the @type line
         const value = header.content.join(', ').replace(/^\[|\]$/g, '');
-        comments.push(` * @${header.type} ${value}`);
+        comments.push(`// @coderef-semantic: 1.0.0 @${header.type} ${value}`);
       }
-      comments.push(` */`);
       return comments;
     }
 
-    for (const header of headers) {
-      const value = header.content.join(', ').replace(/^\[|\]$/g, '');
-      comments.push(`// @coderef-semantic: 1.0.0 @${header.type} ${value}`);
+    const family = filePath !== undefined ? this.commentFamilyForFile(filePath) : 'block';
+
+    // Hash-comment languages (Python et al.): one `#` line per directive.
+    // Never emit a JS block comment — invalid syntax in these languages.
+    if (family === 'hash') {
+      comments.push(`# @coderef-semantic: 1.0.0`);
+      const meta = headers.find(h => h.layer ?? h.capability);
+      if (meta?.layer) comments.push(`# @layer ${meta.layer}`);
+      if (meta?.capability) comments.push(`# @capability ${meta.capability}`);
+      for (const header of headers) {
+        if (header.content.length === 0) continue;
+        const value = header.content.join(', ').replace(/^\[|\]$/g, '');
+        comments.push(`# @${header.type} ${value}`);
+      }
+      return comments;
     }
 
+    // C-family block comment.
+    comments.push(`/**`);
+    comments.push(` * @coderef-semantic: 1.0.0`);
+    const meta = headers.find(h => h.layer ?? h.capability);
+    if (meta?.layer) comments.push(` * @layer ${meta.layer}`);
+    if (meta?.capability) comments.push(` * @capability ${meta.capability}`);
+    for (const header of headers) {
+      if (header.content.length === 0) continue; // sentinel with no content — skip the @type line
+      const value = header.content.join(', ').replace(/^\[|\]$/g, '');
+      comments.push(` * @${header.type} ${value}`);
+    }
+    comments.push(` */`);
     return comments;
   }
 
@@ -307,11 +346,13 @@ export class HeaderGenerator {
         content = this.stripSemanticHeaders(content);
       }
 
-      const comments = this.formatAsComments(headers);
+      // Language-aware comment syntax (sweep root-cause fix): Python and other
+      // hash-comment files get `#` lines, never a JS `/** */` block.
+      const comments = this.formatAsComments(headers, filePath);
       const headerBlock = comments.join('\n');
 
       // Insert at file top (after shebang only). The coderef header must be the
-      // first /** block so detectHeaderBlock() in the parser can find it.
+      // first comment block so detectHeaderBlock() in the parser can find it.
       // Any existing JSDoc (license headers, module docs) stays in place below.
       let insertPoint = 0;
       if (content.startsWith('#!/')) {
@@ -405,10 +446,13 @@ export class HeaderGenerator {
   }
 
   private hasSemanticHeader(content: string): boolean {
-    // Match the canonical form we write: `@coderef-semantic: ` (space before version).
-    // Test files may contain `@coderef-semantic:1.0.0` (no space) as string literals — excluded.
+    // Match the canonical forms we write: `@coderef-semantic: ` (space before
+    // version). Test files may contain `@coderef-semantic:1.0.0` (no space) as
+    // string literals — excluded. Covers JS block (` * `), JS line (`// `),
+    // and hash-comment (`# `) styles so re-runs on Python detect + refresh.
     return /^\s*\*\s*@coderef-semantic:\s+\d/m.test(content)
-      || /^\/\/\s*@coderef-semantic:\s+\d/m.test(content);
+      || /^\/\/\s*@coderef-semantic:\s+\d/m.test(content)
+      || /^#\s*@coderef-semantic:\s+\d/m.test(content);
   }
 
   private extractLayerCapability(content: string): { layer?: string; capability?: string } {
@@ -438,6 +482,11 @@ export class HeaderGenerator {
         }
       } else if (/^\/\/\s*@coderef-semantic\s*:/.test(lines[i])) {
         i++;
+      } else if (/^#\s*@coderef-semantic\s*:/.test(lines[i])) {
+        // Hash-comment semantic header (Python et al.): strip the contiguous
+        // run of `# @...` lines plus one trailing blank line.
+        while (i < lines.length && /^#\s*@/.test(lines[i])) i++;
+        if (i < lines.length && lines[i].trim() === '') i++;
       } else {
         out.push(lines[i++]);
       }

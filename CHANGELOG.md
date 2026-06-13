@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-13] - Header Generator: Language-Aware Comment Syntax
+
+STUB-TGBBRG. The semantic-header sweep (`populate-coderef --source-headers`) stamped JavaScript block comments onto Python files - a SyntaxError on line 1 of a .py - breaking ~197 Primary-Sources Python files and blocking the indexer.
+
+### Fixed
+- **Header generator is now language-aware by file extension.** `HeaderGenerator.formatAsComments` hardcoded the JS block style (`/** ... */`) for every file. Hash-comment languages (`py`/`pyi`/`rb`/`sh`/`bash`/`zsh`/`yaml`/`yml`/`toml`/`r`/`pl`/`tcl`/`mk`/`cfg`/`conf`/`ini`) now receive `#` line comments; C-family files (ts/tsx/js/jsx/go/rust/java/c/cpp/...) keep the block style. Shebang handling unchanged (header inserts after `#!` line 1). Verified end-to-end: a real shebang-prefixed PS Python file stamps and compiles (`py_compile` clean).
+- **`hasSemanticHeader` + `stripSemanticHeaders` detect `#`-style headers** so re-stamping a Python file refreshes its header instead of double-stamping (idempotency test added).
+
+---
+
 ## [2026-06-13] — Python Call-Resolution Graph-Integrity Fix
 
 WO-PYTHON-EXPORT-EDGE-VALIDATION-FIX-001 (STUB-M3GE4S). Surfaced re-scanning Primary-Sources (a TS Next.js app with a ~110-file Python data-pipeline subtree): `populate-coderef` failed graph-integrity validation with 220 GI-2 `resolved_edge_endpoint_existence` errors — 100% on Python files — refusing to write artifacts.
