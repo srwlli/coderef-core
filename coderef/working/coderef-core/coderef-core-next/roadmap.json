@@ -2,8 +2,8 @@
   "project": "coderef-core-next",
   "owner": "CODEREF-CORE",
   "created": "2026-06-12T12:20:00Z",
-  "updated": "2026-06-13T08:35:00Z",
-  "current_phase": 3,
+  "updated": "2026-06-13T09:42:00Z",
+  "current_phase": 5,
   "status": "active",
   "phases": [
     {
@@ -109,22 +109,22 @@
       "phase": 3,
       "name": "Storage and footprint",
       "hard_stop": false,
-      "status": "not_started",
+      "status": "complete",
       "gating_predicate": "Phase 1 landed; STUB-BQDXJ0 design accepted",
-      "shipped_commit": null,
+      "shipped_commit": "ea4dc9b",
       "items": [
         {
           "id": "REGISTRY-RAWFACTS-DEDUP",
-          "description": "STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) \u2014 move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts [DESIGN AUTHORED 2026-06-13: phase3-storage-design.md awaiting operator (A)/(B) ruling; tracker STUB-JAH69F]",
-          "status": "not_started",
-          "shipped_commit": null,
+          "description": "STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) \u2014 move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts [DESIGN AUTHORED 2026-06-13: phase3-storage-design.md awaiting operator (A)/(B) ruling; tracker STUB-JAH69F] [SHIPPED 2026-06-13 ruling A: registry 2.0.0 rawFactsByFile; core 124.4MB->14.9MB (88%), PS 56.8MB->12.5MB (78%)]",
+          "status": "complete",
+          "shipped_commit": "fade035",
           "depends_on": []
         },
         {
           "id": "VECTOR-STORE-PATH-FIX",
-          "description": "Fallback JSON vector store writes .coderef/rag-vectors.sqlite as a DIRECTORY containing coderef-vectors.json \u2014 make the fallback path honest (name reflects store type) and document store resolution in rag-status",
-          "status": "not_started",
-          "shipped_commit": null,
+          "description": "Fallback JSON vector store writes .coderef/rag-vectors.sqlite as a DIRECTORY containing coderef-vectors.json \u2014 make the fallback path honest (name reflects store type) and document store resolution in rag-status [SHIPPED: rag-status defaulted to never-written rag-vectors.sqlite; fixed to coderef-vectors.json]",
+          "status": "complete",
+          "shipped_commit": "02f75bf",
           "depends_on": []
         }
       ],

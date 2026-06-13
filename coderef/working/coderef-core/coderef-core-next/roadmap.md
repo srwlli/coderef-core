@@ -2,8 +2,8 @@
 
 **Owner:** CODEREF-CORE
 **Created:** 2026-06-12T12:20:00Z
-**Updated:** 2026-06-13T08:35:00Z
-**Current phase:** 3
+**Updated:** 2026-06-13T09:42:00Z
+**Current phase:** 5
 **Render slug:** `SURFACES/surfaces-html/renders/roadmap/coderef-core-next/` (stable, no ULID)
 
 ---
@@ -45,14 +45,15 @@
 
 ## Phase 3: Storage and footprint
 
-**Status:** not_started
+**Status:** complete
 **Hard-stop:** no
 **Gating predicate:** Phase 1 landed; STUB-BQDXJ0 design accepted
+**Shipped commit:** ea4dc9b
 
 ### Items
 
-- [not_started] **REGISTRY-RAWFACTS-DEDUP** — STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) — move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts [DESIGN AUTHORED 2026-06-13: phase3-storage-design.md awaiting operator (A)/(B) ruling; tracker STUB-JAH69F]
-- [not_started] **VECTOR-STORE-PATH-FIX** — Fallback JSON vector store writes .coderef/rag-vectors.sqlite as a DIRECTORY containing coderef-vectors.json — make the fallback path honest (name reflects store type) and document store resolution in rag-status
+- [complete] **REGISTRY-RAWFACTS-DEDUP** (fade035) — STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) — move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts [DESIGN AUTHORED 2026-06-13: phase3-storage-design.md awaiting operator (A)/(B) ruling; tracker STUB-JAH69F] [SHIPPED 2026-06-13 ruling A: registry 2.0.0 rawFactsByFile; core 124.4MB->14.9MB (88%), PS 56.8MB->12.5MB (78%)]
+- [complete] **VECTOR-STORE-PATH-FIX** (02f75bf) — Fallback JSON vector store writes .coderef/rag-vectors.sqlite as a DIRECTORY containing coderef-vectors.json — make the fallback path honest (name reflects store type) and document store resolution in rag-status [SHIPPED: rag-status defaulted to never-written rag-vectors.sqlite; fixed to coderef-vectors.json]
 
 ---
 
