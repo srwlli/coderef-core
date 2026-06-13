@@ -1,0 +1,81 @@
+{
+  "workorder_id": "WO-PYTHON-EXPORT-EDGE-VALIDATION-FIX-001",
+  "feature_name": "python-export-edge-validation-fix",
+  "created": "2026-06-13T04:20:00Z",
+  "goal": "Fix Python graph-integrity failure in populate (220 GI-2 errors on Primary-Sources, 100% .py): two root causes - (1) call resolver matched calls cross-language (Python set() -> TS element named set), (2) buildNodes did not create file-grain nodes for call-resolution source files, so module-level Python calls produced resolved edges with dangling source nodes. Test-first; PS is the validation case.",
+  "plan_type": "strict",
+  "plan_type_rationale": "Stub category 'fix', clear acceptance (PS 220->0 errors, suite green), single-shot.",
+  "plan_type_decided_by": "create-workorder@2.15.1",
+  "plan_adjustments_needed": [],
+  "discovery_required": false,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "hard_stops": [],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Python call-resolution graph-integrity fix",
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      },
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "WRITE",
+          "description": "Failing test call-resolution-cross-language.test.ts: Python set() must not resolve to TS set; same-language project-wide call still resolves",
+          "touches": [
+            "__tests__/pipeline/call-resolution-cross-language.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "call-resolver: languageFamily/sameLanguageFamily helpers + guard on classifyBareCall entries, classifyMethodCall unknown-receiver + imported-receiver candidates",
+          "touches": [
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "EDIT",
+          "description": "graph-builder buildNodes: add state.callResolutions source files to seenFiles",
+          "touches": [
+            "src/pipeline/graph-builder.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "RUN",
+          "description": "Build; re-populate Primary-Sources; verify 220 -> 0 validation errors and clean exit"
+        },
+        {
+          "id": "P1-T5",
+          "verb": "TEST",
+          "description": "Full suite green (scanner-export flake isolated 25/25)"
+        },
+        {
+          "id": "P1-T6",
+          "verb": "COMMIT",
+          "description": "Commit + push; CHANGELOG entry"
+        }
+      ],
+      "hard_stop": false
+    }
+  ],
+  "workorder_hooks": {
+    "post_plan": [],
+    "post_execute": [],
+    "plan_gaps": []
+  }
+}

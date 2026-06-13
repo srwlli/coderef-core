@@ -1,0 +1,61 @@
+{
+  "workorder_id": "WO-PYTHON-EXPORT-EDGE-VALIDATION-FIX-001",
+  "feature_name": "python-export-edge-validation-fix",
+  "created": "2026-06-13T04:20:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-M3GE4S",
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\python-export-edge-validation-fix\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\python-export-edge-validation-fix\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\python-export-edge-validation-fix\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Python integrity fix; PS re-scan blocker"
+  },
+  "execution_rules": {
+    "plan_type": "strict",
+    "phase_gates": true,
+    "notes": "Single-phase; integrator lane. Fix already implemented + verified during diagnosis."
+  },
+  "hard_constraints": [
+    "No enum changes; validator stays strict",
+    "Integrator lane: main + push"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-06-13T04:20:00Z"
+    },
+    {
+      "event": "root_cause_confirmed",
+      "at": "2026-06-13T04:20:00Z",
+      "note": "Two root causes via CLI-instrumented validation: (1) cross-language false-resolution (Python set()->TS set, 53 edges), (2) missing file-grain node for module-level call source files (167 edges). NOT an export-edge bug as first hypothesized - all 220 were resolved CALL edges. CLI-only repro because the bug needs the full Python+TS element set; minimal fixtures under-reproduced until the set()/TS-set collision was isolated."
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "git_branch": "wo/python-export-edge-validation-fix",
+  "communication_log": [
+    {
+      "at": "2026-06-13T04:20:00Z",
+      "from": "create-workorder",
+      "message": "WO from STUB-M3GE4S. Two surgical fixes landed: call-resolver language guard + buildNodes call-source coverage. PS 220->0 errors."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {},
+  "history": []
+}

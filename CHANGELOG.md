@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-13] — Python Call-Resolution Graph-Integrity Fix
+
+WO-PYTHON-EXPORT-EDGE-VALIDATION-FIX-001 (STUB-M3GE4S). Surfaced re-scanning Primary-Sources (a TS Next.js app with a ~110-file Python data-pipeline subtree): `populate-coderef` failed graph-integrity validation with 220 GI-2 `resolved_edge_endpoint_existence` errors — 100% on Python files — refusing to write artifacts.
+
+### Fixed
+- **Cross-language call false-resolution** — the call resolver matched calls purely by callee name, with no language guard. A Python `set(...)` call resolved project-wide to a TypeScript element named `set` (and method-name collisions likewise), producing a `resolved` call edge with a Python-file source and a TS-file target — a dangling cross-language edge. Resolution is now constrained to the **same language family** (`js`/`jsx`/`ts`/`tsx`/`mjs`/`cjs`/`mts`/`cts` are one family; every other extension is its own). Fixed 53 of the 220 errors.
+- **Missing file-grain node for call source files** — a resolved call whose caller is a module-level statement (`callerCodeRefId === null`) uses the file-grain node `@File/<sourceFile>` as its edge source, but `buildNodes` only created file-grain nodes for files appearing in `state.elements` or `state.importResolutions` — not call-resolution source files. A Python module-level script calling another Python module thus produced a resolved edge whose source node never existed. `buildNodes` now guarantees a file-grain node for every call-resolution source file. Fixed the remaining 167 errors.
+- **Net:** Primary-Sources `populate-coderef` 220 errors → **0**; it scans clean and writes all artifacts (header coverage 93.45% after header stamping). New `__tests__/pipeline/call-resolution-cross-language.test.ts` locks both invariants — the integrity/determinism suite was TS-only, which is why this shipped.
+
+---
+
 ## [2026-06-13] — Semantic Registry 2.0.0 (rawFacts dedup)
 
 WO-REGISTRY-RAWFACTS-DEDUP-001 Phase 1 (STUB-BQDXJ0, roadmap Phase 3; operator ruling A).

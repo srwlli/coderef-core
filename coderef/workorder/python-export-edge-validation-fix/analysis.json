@@ -1,0 +1,47 @@
+{
+  "workorder_id": "WO-PYTHON-EXPORT-EDGE-VALIDATION-FIX-001",
+  "feature_name": "python-export-edge-validation-fix",
+  "analysis_authored_at": "2026-06-13T04:20:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/call-resolver.ts",
+      "src/pipeline/graph-builder.ts"
+    ],
+    "files_created": [
+      "__tests__/pipeline/call-resolution-cross-language.test.ts"
+    ],
+    "downstream_consumers": [
+      "any Python-containing project's .coderef build",
+      "graph integrity (GI-2)",
+      "RAG index for PS"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Language guard over-blocks legitimate JS<->TS resolution",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "js/jsx/ts/tsx/mjs/cjs/mts/cts share one family; same-language test asserts cross-file TS resolution still works"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Adding call source files to seenFiles inflates node count",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "file-grain nodes are cheap; they were always required for these edges - their absence WAS the bug"
+    }
+  ],
+  "candidates": [],
+  "dependencies": [
+    "PS as integration test case"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "Two surgical fixes at the two distinct root causes, not a validator relaxation",
+      "rationale": "The validator was correct; the graph was wrong. Fix construction (resolver + node emission), keep GI-2 strict."
+    }
+  ]
+}

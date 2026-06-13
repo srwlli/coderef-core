@@ -666,7 +666,7 @@ export function classifyMethodCall(
     );
     if (importBinding) {
       const candidates = (symbolTable.get(callee) ?? [])
-        .filter(e => e.scope === 'method')
+        .filter(e => e.scope === 'method' && sameLanguageFamily(fact.sourceFile, e.sourceFile))
         .map(e => e.codeRefId);
       if (candidates.length >= 2) {
         return { kind: 'ambiguous', candidates };
@@ -679,9 +679,9 @@ export function classifyMethodCall(
   }
 
   // (5)/(6)/(7) Unknown receiver — ambiguous-or-unresolved, never resolved
-  // (DR-PHASE-4-B + guardrail 4).
+  // (DR-PHASE-4-B + guardrail 4). Same-language-family only (STUB-M3GE4S).
   const calleeEntries = (symbolTable.get(callee) ?? [])
-    .filter(e => e.scope === 'method');
+    .filter(e => e.scope === 'method' && sameLanguageFamily(fact.sourceFile, e.sourceFile));
   if (calleeEntries.length >= 2) {
     return {
       kind: 'ambiguous',
@@ -725,7 +725,11 @@ function classifyBareCall(
 } {
   void importResolutions;
   const callee = fact.calleeName;
-  const entries = symbolTable.get(callee) ?? [];
+  // STUB-M3GE4S: only consider symbols in the same language family as the
+  // call site. A Python set() must never resolve to a TypeScript `set`.
+  const entries = (symbolTable.get(callee) ?? []).filter(e =>
+    sameLanguageFamily(fact.sourceFile, e.sourceFile),
+  );
   if (entries.length === 0) {
     // Nothing in the project shadows the name — JS/Node globals classify
     // builtin (STUB-QT400D). Symbol-table entries always take precedence.
@@ -791,6 +795,42 @@ function classifyBareCall(
 // ============================================================================
 // Helpers
 // ============================================================================
+
+/**
+ * Language family of a source file, by extension. A call site only resolves
+ * to a symbol-table entry in the SAME family (STUB-M3GE4S): the lived bug
+ * was a Python `set(...)` call resolving project-wide to a TypeScript
+ * element named `set`, producing a resolved call edge whose Python-file
+ * source node never existed (GI-2 failure, 220 errors on Primary-Sources).
+ * JS and TS share a family (TS imports JS and vice versa); every other
+ * language is its own family.
+ */
+function languageFamily(file: string): string {
+  const lower = file.toLowerCase();
+  const dot = lower.lastIndexOf('.');
+  const ext = dot >= 0 ? lower.slice(dot + 1) : '';
+  switch (ext) {
+    case 'ts':
+    case 'tsx':
+    case 'js':
+    case 'jsx':
+    case 'mjs':
+    case 'cjs':
+    case 'mts':
+    case 'cts':
+      return 'js-ts';
+    default:
+      return ext || 'unknown';
+  }
+}
+
+/**
+ * True when a call site in `callerFile` may legitimately resolve to a symbol
+ * defined in `targetFile`. Cross-language matches are rejected (STUB-M3GE4S).
+ */
+function sameLanguageFamily(callerFile: string, targetFile: string): boolean {
+  return languageFamily(callerFile) === languageFamily(targetFile);
+}
 
 function indexElementsByFile(elements: ElementData[]): Map<string, ElementData[]> {
   const map = new Map<string, ElementData[]>();

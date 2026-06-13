@@ -1,0 +1,51 @@
+{
+  "workorder_id": "WO-PYTHON-EXPORT-EDGE-VALIDATION-FIX-001",
+  "feature_name": "python-export-edge-validation-fix",
+  "created": "2026-06-13T04:20:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub-promotion",
+    "user_request": "Operator 2026-06-13: 'can we fix please' - the Python bug blocking the PS re-scan."
+  },
+  "promotion_metadata": {
+    "parent_stub_id": "STUB-M3GE4S",
+    "origin": "Surfaced re-scanning Primary-Sources with stamped headers (branch wo/coderef-semantic-headers)",
+    "roadmap_ref": {
+      "roadmap_path": "coderef/working/coderef-core/coderef-core-next/roadmap.md",
+      "node_id": "PHASE-2.PYTHON-EXPORT-EDGE-VALIDATION"
+    }
+  },
+  "classification": {
+    "plan_type": "strict",
+    "plan_type_rationale": "Stub category 'fix', clear acceptance (PS 220->0 errors, suite green), single-shot.",
+    "plan_type_decided_by": "create-workorder@2.15.1",
+    "discovery_ref": null,
+    "discovery": {
+      "candidates": [],
+      "warnings": []
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "call-resolver: same-language-family guard on cross-file/project-wide matches (classifyBareCall + classifyMethodCall unknown-receiver + imported-receiver candidates)",
+      "graph-builder buildNodes: add call-resolution source files to seenFiles so every resolved call edge has a backing file-grain source node",
+      "regression test: __tests__/pipeline/call-resolution-cross-language.test.ts (cross-lang blocked + same-lang preserved)"
+    ],
+    "out_of_scope": [
+      "Python resolver depth beyond the language guard (Python call resolution remains best-effort)",
+      "The 19 PS stale TS headers (header-restamp, separate from the integrity fix)"
+    ]
+  },
+  "constraints": [
+    "No EdgeResolutionStatus enum changes",
+    "Integrator lane: main + push"
+  ]
+}

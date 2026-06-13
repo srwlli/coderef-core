@@ -313,6 +313,16 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
   for (const ir of state.importResolutions) {
     seenFiles.add(ir.sourceFile);
   }
+  // STUB-M3GE4S: a RESOLVED call whose caller is a module-level statement
+  // (callerCodeRefId === null) uses the file-grain node `@File/<sourceFile>`
+  // as its edge source (buildEdges line ~601). If that file has no extracted
+  // elements and no import resolutions, its file-grain node would be absent —
+  // producing a resolved call edge with a dangling sourceId (GI-2 failure).
+  // This bit Python module-level scripts on Primary-Sources (167 of 220
+  // errors). Guarantee a file-grain node for every call source file.
+  for (const cr of state.callResolutions) {
+    if (cr.sourceFile) seenFiles.add(cr.sourceFile);
+  }
   for (const file of seenFiles) {
     const id = fileGrainNodeId(file, projectPath);
     const fileGrainMeta: Record<string, unknown> = { codeRefId: id, codeRefIdNoLine: id, fileGrain: true };
