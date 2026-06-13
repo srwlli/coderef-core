@@ -1,0 +1,173 @@
+{
+  "workorder_id": "WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001",
+  "feature_name": "scanner-export-classification-fix",
+  "created": "2026-06-13T02:10:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub-promotion",
+    "user_request": "Operator 2026-06-13: roadmap aligned, ladder filled (AT-BAT 5WVGHD / ON-DECK Z1ETZD / IN-THE-HOLE 81XNNM), one rolling workorder for the Phase 2 correctness batch."
+  },
+  "promotion_metadata": {
+    "parent_stub_id": "STUB-5WVGHD",
+    "origin": "WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 collateral findings (2026-06-12) + full-repo rag dogfood ENOENT evidence",
+    "phased_stubs": [
+      "STUB-Z1ETZD",
+      "STUB-81XNNM"
+    ],
+    "roadmap_ref": {
+      "roadmap_path": "coderef/working/coderef-core/coderef-core-next/roadmap.md",
+      "node_id": "PHASE-2.SCANNER-EXPORT-CLASSIFICATION"
+    }
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Stub category 'fix' maps to strict, FORCED to phased: --phased-stubs rolling plan (P1 planned; P2-P3 deferred to follow-on stubs).",
+    "plan_type_decided_by": "create-workorder@2.15.1",
+    "discovery_ref": "planning-discovery-20260613T000919Z",
+    "discovery": {
+      "candidates": [
+        "__tests__/integration.test.ts",
+        "__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts",
+        "__tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts",
+        "__tests__/pipeline/graph-construction-determinism.test.ts",
+        "__tests__/pipeline/header-exports-cross-check.test.ts",
+        "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+        "__tests__/pipeline/header-tag-validation.test.ts",
+        "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+        "__tests__/pipeline/output-validation-strict-headers.test.ts",
+        "__tests__/pipeline/raw-export-facts.test.ts",
+        "scripts/doc-gen/generate-exports-md.js",
+        "scripts/doc-gen/generate-index-md.js",
+        "src/adapter/graph-to-elements.ts",
+        "src/analyzer/analyzer-service.ts",
+        "src/analyzer/ast-element-scanner.ts",
+        "src/analyzer/call-detector.ts",
+        "src/analyzer/design-pattern-detector.ts",
+        "src/analyzer/docs-analyzer.ts",
+        "src/analyzer/graph-builder.ts",
+        "src/analyzer/graph-helpers.ts",
+        "src/analyzer/import-parser.ts",
+        "src/analyzer/js-call-detector/index.ts",
+        "src/analyzer/js-call-detector/module-analyzer.ts",
+        "src/analyzer/js-call-detector/parser.ts",
+        "src/analyzer/js-call-detector/types.ts",
+        "src/analyzer/js-call-detector/visitor.ts",
+        "src/analyzer/middleware-detector.ts",
+        "src/analyzer/migration-route-analyzer.ts",
+        "src/analyzer/project-classifier.ts",
+        "src/cli/coderef-intelligence-server.ts",
+        "src/cli/coderef-mcp-server.ts",
+        "src/cli/coderef-rag-server.ts",
+        "src/cli/populate.ts",
+        "src/cli/rag-status.ts",
+        "src/context/breaking-change-detector/diff-analyzer.ts",
+        "src/context/complexity-scorer.ts",
+        "src/context/context-tracker.ts",
+        "src/context/fuzzy-resolver.ts",
+        "src/context/markdown-formatter.ts",
+        "src/context/test-pattern-analyzer.ts",
+        "src/errors/IndexError.ts",
+        "src/export/graph-exporter.ts",
+        "src/fileGeneration/generateContext.ts",
+        "src/fileGeneration/index-storage.ts",
+        "src/fileGeneration/saveIndex.ts",
+        "src/generator/generateFrontendCalls.ts",
+        "src/generator/generateRoutes.ts",
+        "src/indexer/index-store.ts",
+        "src/indexer/indexer-service.ts",
+        "src/indexer/metadata-index.ts",
+        "src/indexer/relationship-index.ts",
+        "src/integration/llm/anthropic-provider.ts",
+        "src/integration/llm/ollama-provider.ts",
+        "src/integration/llm/openai-provider.ts",
+        "src/integration/rag/__tests__/confidence-scorer.test.ts",
+        "src/integration/rag/chunk-converter.ts",
+        "src/integration/rag/context-builder.ts",
+        "src/integration/rag/conversation-manager.ts",
+        "src/integration/rag/graph-reranker.ts",
+        "src/integration/rag/incremental-indexer.ts",
+        "src/integration/rag/indexing-orchestrator.ts",
+        "src/integration/rag/rag-config.ts",
+        "src/integration/vector/pinecone-store.ts",
+        "src/parser/parser.ts",
+        "src/pipeline/call-resolver.ts",
+        "src/pipeline/element-taxonomy.ts",
+        "src/pipeline/extractors/element-extractor.ts",
+        "src/pipeline/extractors/relationship-extractor.ts",
+        "src/pipeline/generators/context-generator.ts",
+        "src/pipeline/generators/export-generator.ts",
+        "src/pipeline/generators/index-generator.ts",
+        "src/pipeline/graph-builder.ts",
+        "src/pipeline/header-fact.ts",
+        "src/pipeline/import-resolver.ts",
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/output-validator.ts",
+        "src/pipeline/semantic-elements.ts",
+        "src/pipeline/semantic-header-parser.ts",
+        "src/pipeline/types.ts",
+        "src/plugins/plugin-scanner.ts",
+        "src/query/query-executor.ts",
+        "src/scanner/error-reporter.ts",
+        "src/scanner/lru-cache.ts",
+        "src/scanner/scanner.ts",
+        "src/scanner/semantic-analyzer.ts",
+        "src/scanner/tree-sitter-scanner.ts",
+        "src/search/search-engine.ts",
+        "src/semantic/ast-extractor.ts",
+        "src/semantic/header-generator.ts",
+        "src/semantic/registry-sync.ts",
+        "src/types/external-modules.d.ts",
+        "src/validator/frontend-update-generator.ts"
+      ],
+      "blast_radius": [],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "call_chain_hits": [],
+      "warnings": [
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260613T000919Z"
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": [
+      "extractor not re-run; prior-session scan current at HEAD"
+    ]
+  },
+  "discovery_rag": {
+    "hits": [],
+    "rewrote_query": false,
+    "lloyd_provenance": null,
+    "fallback_used": true,
+    "error": "rag_server_error: HTTPConnectionPool(host='127.0.0.1', port=52849): Max retries exceeded with url: /api/rag/query (Caused by NewConnectionError(\"HTTPConnection(host='127.0.0.1', port=52849): Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it\"))",
+    "ms": 2037,
+    "discovery_rag_timestamp": "2026-06-13T02:10:00Z",
+    "discovery_rag_enabled": true
+  },
+  "scope": {
+    "in_scope": [
+      "P1: exported-flag propagation fix (nested elements must not inherit parent exported flag)",
+      "P1: export-const declaration extraction (multi-line initializers) as exported elements",
+      "P1: clear the false-stale on coderef-mcp-server.ts; restore the 3 Set names to call-resolver @exports",
+      "P2 (deferred, STUB-Z1ETZD): vitest collection failure on tests importing scripts/check-header-coverage.mjs",
+      "P3 (deferred, STUB-81XNNM): ghost index entries eviction (root types.d.ts / scanner.js)"
+    ],
+    "out_of_scope": [
+      "Scanner rewrite / tree-sitter expansion",
+      "INTEL-SERVER-SCHEMA (awaiting operator port-vs-retire ruling)",
+      "WIN-PATH-NORMALIZATION (separate seam, no registry stub yet)"
+    ]
+  },
+  "constraints": [
+    "Locked 14-field ValidationReport untouched (counts shift honestly as the false-stale clears)",
+    "Headers mirror AST ground truth - after the const-extraction fix, @exports lists may grow and must be restamped in the same phase",
+    "Integrator lane: land to main + push per phase",
+    "Operator standing approval 2026-06-12/13 covers rolling-phase advancement"
+  ]
+}

@@ -1,0 +1,82 @@
+{
+  "workorder_id": "WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001",
+  "feature_name": "scanner-export-classification-fix",
+  "analysis_authored_at": "2026-06-13T02:10:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/analyzer/ast-element-scanner.ts (or the extractor seam discovery localizes)"
+    ],
+    "files_created": [
+      "__tests__/pipeline/scanner-export-classification.test.ts"
+    ],
+    "downstream_consumers": [
+      "exports_match_ast header cross-check (Phase 2.5)",
+      "export tables in import-resolver (named-export origin lookup)",
+      "index.json exported flags -> MCP find_element/codebase_summary",
+      "@exports header stamping (semantic-integration)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Const-declaration extraction floods index with trivial constants",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Extract EXPORTED const declarations only; element counts diffed before/after with paired evidence"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Exported-flag fix shifts export-table membership and import resolutions",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Full-suite + repopulate diff; valid_edge_count and header counts compared against the 2026-06-13 baseline"
+    },
+    {
+      "id": "RISK-003",
+      "title": "Rolling phases stall after P1",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "hard_stops approved=false on P2/P3 force explicit planning; stubs carry full repros"
+    }
+  ],
+  "candidates": [
+    "__tests__/integration.test.ts",
+    "__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts",
+    "__tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts",
+    "__tests__/pipeline/graph-construction-determinism.test.ts",
+    "__tests__/pipeline/header-exports-cross-check.test.ts",
+    "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+    "__tests__/pipeline/header-tag-validation.test.ts",
+    "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+    "__tests__/pipeline/output-validation-strict-headers.test.ts",
+    "__tests__/pipeline/raw-export-facts.test.ts",
+    "scripts/doc-gen/generate-exports-md.js",
+    "scripts/doc-gen/generate-index-md.js",
+    "src/adapter/graph-to-elements.ts",
+    "src/analyzer/analyzer-service.ts",
+    "src/analyzer/ast-element-scanner.ts",
+    "src/analyzer/call-detector.ts",
+    "src/analyzer/design-pattern-detector.ts",
+    "src/analyzer/docs-analyzer.ts",
+    "src/analyzer/graph-builder.ts",
+    "src/analyzer/graph-helpers.ts",
+    "src/analyzer/import-parser.ts",
+    "src/analyzer/js-call-detector/index.ts",
+    "src/analyzer/js-call-detector/module-analyzer.ts",
+    "src/analyzer/js-call-detector/parser.ts",
+    "src/analyzer/js-call-detector/types.ts"
+  ],
+  "dependencies": [
+    "registry_db canonical writer",
+    "populate-coderef rebuild for evidence diffs",
+    "coderef-mcp-server validation_status for live checks"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "One rolling WO for the three correctness fixes instead of three WOs",
+      "rationale": "Operator directive 2026-06-13 (fill-ladder then one workorder); items share the Phase 2 correctness theme and each is small + test-first"
+    }
+  ]
+}

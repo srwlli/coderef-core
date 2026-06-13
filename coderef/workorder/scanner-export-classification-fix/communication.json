@@ -1,0 +1,91 @@
+{
+  "workorder_id": "WO-SCANNER-EXPORT-CLASSIFICATION-FIX-001",
+  "feature_name": "scanner-export-classification-fix",
+  "created": "2026-06-13T02:10:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-5WVGHD",
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\scanner-export-classification-fix\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Rolling Phase-2 correctness batch promoted from STUB-5WVGHD with deferred phases bound to STUB-Z1ETZD, STUB-81XNNM"
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_gates": true,
+    "notes": "Rolling plan: P1 planned; P2-P3 plan_deferred with hard_stops approved=false. Integrator lane: land to main + push per phase."
+  },
+  "hard_constraints": [
+    "Locked 14-field ValidationReport untouched",
+    "Headers mirror AST ground truth; restamp @exports in the same phase as extraction changes",
+    "Integrator lane: commit to main + push per phase"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_forced",
+      "from": "strict",
+      "to": "phased",
+      "reason": "--phased-stubs implies phased (rolling plan)",
+      "at": "2026-06-13T02:10:00Z"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 7,
+      "source": "inline (operator-approved Phase-2 batch)",
+      "at": "2026-06-13T02:10:00Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "phased",
+      "phase_count": 3,
+      "source": "default",
+      "at": "2026-06-13T02:10:00Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "phased",
+      "source": "default",
+      "at": "2026-06-13T02:10:00Z"
+    },
+    {
+      "event": "rolling_plan_authored",
+      "close_after_phase": 3,
+      "phased_stubs": [
+        "STUB-Z1ETZD",
+        "STUB-81XNNM"
+      ],
+      "at": "2026-06-13T02:10:00Z"
+    },
+    {
+      "event": "ladder_alignment",
+      "at": "2026-06-13T02:10:00Z",
+      "note": "fill-ladder self-pick (BQDXJ0) overridden per roadmap order: AT-BAT STUB-5WVGHD, ON-DECK STUB-Z1ETZD, IN-THE-HOLE STUB-81XNNM - mirrors this WO's phase order"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "git_branch": "wo/scanner-export-classification-fix",
+  "communication_log": [
+    {
+      "at": "2026-06-13T02:10:00Z",
+      "from": "create-workorder",
+      "message": "WO created from STUB-5WVGHD (roadmap PHASE-2.SCANNER-EXPORT-CLASSIFICATION). Rolling: P1 scanner export classification (7 tasks); P2 vitest mjs collection (STUB-Z1ETZD); P3 ghost index entries (STUB-81XNNM)."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {},
+  "history": []
+}
