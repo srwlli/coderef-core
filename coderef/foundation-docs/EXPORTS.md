@@ -3,7 +3,7 @@
 **Project:** @coderef/core  
 **Version:** 2.0.0  
 **Generated:** 2026-06-13  
-**Total Exported:** 841 elements  
+**Total Exported:** 846 elements  
 <!-- coderef:uuid=exports-root -->
 
 ---
@@ -18,16 +18,16 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **305** | 455 | 760 |
-| interface | **344** | 104 | 448 |
-| constant | **30** | 96 | 126 |
+| function | **307** | 446 | 753 |
+| interface | **347** | 96 | 443 |
+| constant | **30** | 93 | 123 |
 | type | **45** | 19 | 64 |
 | component | **2** | 0 | 2 |
 | class | **115** | 4 | 119 |
 
 ---
 
-## Exported Functions (305)
+## Exported Functions (307)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
@@ -82,7 +82,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=4f70008c-c1f8-56eb-b51d-49eec78c44e3 --> `findOrphanedCalls` | `src/analyzer/migration-route-analyzer.ts` | ❌ | elements, frontendCalls | `4f70008c...` |
 | <!-- coderef:uuid=1cb1c7d3-99a1-50d6-a088-0c4b2a47c1d6 --> `detectBreakingChanges` | `src/analyzer/migration-route-analyzer.ts` | ❌ | oldElements, newElements | `1cb1c7d3...` |
 
-*... and 255 more functions. See index.json for complete list.*
+*... and 257 more functions. See index.json for complete list.*
 
 ---
 
@@ -156,7 +156,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=6fdf8568-2170-50ca-8223-7f3093e57db5 --> `EmbeddingTextGenerator` | `src/integration/rag/embedding-text-generator.ts` | `6fdf8568...` |
 | <!-- coderef:uuid=0d0225f9-300e-506d-a0d6-837898da9453 --> `GraphReRanker` | `src/integration/rag/graph-reranker.ts` | `0d0225f9...` |
 | <!-- coderef:uuid=f5c5c197-c021-5c2a-96fa-28630b430f67 --> `IncrementalIndexer` | `src/integration/rag/incremental-indexer.ts` | `f5c5c197...` |
-| <!-- coderef:uuid=37106727-7895-5ced-b9fd-6c4b12249fa9 --> `IndexingOrchestrator` | `src/integration/rag/indexing-orchestrator.ts` | `37106727...` |
+| <!-- coderef:uuid=cc584b2c-073d-5cf4-ac70-719a176afe95 --> `IndexingOrchestrator` | `src/integration/rag/indexing-orchestrator.ts` | `cc584b2c...` |
 | <!-- coderef:uuid=2608ef6c-1e5a-5ecc-8721-2f54bc272ade --> `PromptTemplateBuilder` | `src/integration/rag/prompt-templates.ts` | `2608ef6c...` |
 | <!-- coderef:uuid=1ff1abdc-a0c0-5292-a64b-e280c911b8d1 --> `PromptValidator` | `src/integration/rag/prompt-templates.ts` | `1ff1abdc...` |
 | <!-- coderef:uuid=383d815e-6305-562a-9be9-015b438a1007 --> `ConfigError` | `src/integration/rag/rag-config.ts` | `383d815e...` |
@@ -208,7 +208,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 ---
 
-## Exported Interfaces (344)
+## Exported Interfaces (347)
 
 | Interface | File | UUID |
 |-----------|------|------|
@@ -243,7 +243,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=7b63f1f8-cfc0-561a-89b9-7f10e38a2e0b --> `ProtobufEnum` | `src/analyzer/contract-detector.ts` | `7b63f1f8...` |
 | <!-- coderef:uuid=1b4add4c-0178-53c5-96ca-a8d7590df925 --> `JsonSchema` | `src/analyzer/contract-detector.ts` | `1b4add4c...` |
 
-*... and 314 more interfaces. See index.json for complete list.*
+*... and 317 more interfaces. See index.json for complete list.*
 
 ---
 

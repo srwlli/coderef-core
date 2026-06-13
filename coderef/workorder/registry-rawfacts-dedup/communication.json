@@ -7,9 +7,9 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-BQDXJ0",
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "closed",
   "current_phase": 2,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\registry-rawfacts-dedup\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\registry-rawfacts-dedup\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\registry-rawfacts-dedup\\analysis.json",
@@ -61,6 +61,13 @@
       "commit": "fade035",
       "verdict": "PASS",
       "at": "2026-06-13T02:07:27.729Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "02f75bf",
+      "verdict": "PASS",
+      "at": "2026-06-13T02:12:42.950Z"
     }
   ],
   "plan_adjustments": [
@@ -94,6 +101,11 @@
       "from": "execute-workorder",
       "event": "workorder_complete",
       "message": "Both phases complete: registry 2.0.0 (88% core / 78% PS) + rag-status vector-path fix. Full close-out next."
+    },
+    {
+      "at": "2026-06-13T09:40:00Z",
+      "from": "close-workorder",
+      "message": "WO closed (close-only). Roadmap Phase 3 storage complete; only Phase 5 ranking work remains (gated on the eval baseline)."
     }
   ],
   "required_skills": [
@@ -102,5 +114,20 @@
     "/log-session"
   ],
   "inter_phase_results": {},
-  "history": []
+  "history": [],
+  "completed_at": "2026-06-13T09:40:00Z",
+  "closed_at": "2026-06-13T09:40:00Z",
+  "close_metadata": {
+    "closed_via": "/close-workorder",
+    "close_mode": "close-only (default v2.8.0; not archived)",
+    "review_status": "PASS",
+    "operator_authorization": "Ruling A accepted verbatim ('I accept your recomendation please.') + standing approval",
+    "audit": {
+      "phased_terminal_guard": "terminal at 2/2",
+      "tracking_validator_scoped": "17/17 PASS (after correcting WO type improvement->refactor: improvement is not in the workorders schema type enum)",
+      "foundation_docs_gate": "PASS (exit 0)",
+      "suite": "1645 passing; sole failure is the documented scanner-export contention flake (isolated 25/25)"
+    },
+    "what_shipped": "Commits fade035 (P1 registry 2.0.0, 88% core cut) + 02f75bf (P2 PS re-ground 78% + rag-status vector-path fix). semantic-registry.json: core 124.4MB->14.9MB, PS 56.8MB->12.5MB."
+  }
 }
