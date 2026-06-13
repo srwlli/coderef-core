@@ -1,0 +1,99 @@
+{
+  "plan_type": "strict",
+  "goal": "Golden-query RAG eval harness (roadmap Phase 5 EVAL-HARNESS): eval/golden-queries.json with 10-15 natural-language queries mapped to expected element/file targets on coderef-core's own index; a rag-eval runner computing hit@1/hit@5/MRR per query and aggregate using the SAME SemanticSearchService modules as rag-search; a committed baseline.json so every future ranking change (chunk enrichment, provenance ranking) is measured, not vibed.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "WRITE",
+          "description": "Author eval/golden-queries.json: 12 queries from audit/docs intent language with expected file targets",
+          "touches": [
+            "eval/golden-queries.json"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "WRITE",
+          "description": "Failing unit tests for scoring math: hit@k and MRR over mocked result lists incl. tie and miss cases",
+          "touches": [
+            "__tests__/rag-eval.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "WRITE",
+          "description": "src/cli/rag-eval.ts: load golden file, search via SemanticSearchService (provider/store from rag-index.json metadata), score hit@1/hit@5/MRR, print table + --json; --min-mrr optional floor; package.json bin entry",
+          "touches": [
+            "src/cli/rag-eval.ts",
+            "package.json"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "RUN",
+          "description": "Live baseline run against coderef-core's index; commit eval/baseline.json; record aggregate numbers as evidence",
+          "touches": []
+        },
+        {
+          "id": "P1-T5",
+          "verb": "TEST",
+          "description": "npx vitest run - full suite green",
+          "touches": []
+        },
+        {
+          "id": "P1-T6",
+          "verb": "COMMIT",
+          "description": "Commit + push; docs touch (CLI.md row + CHANGELOG)",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover rag-eval-harness@quick"
+        ],
+        "post_phase": []
+      }
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260613T014638Z",
+  "plan_type_decided_by": "create-workorder@2.15.1",
+  "workorder_id": "WO-RAG-EVAL-HARNESS-001",
+  "feature_name": "rag-eval-harness",
+  "created": "2026-06-13T07:55:00Z",
+  "plan_type_rationale": "Stub category 'feature' maps to strict; single-shot complete planning.",
+  "workorder_hooks": {
+    "post_plan": [
+      "/discover rag-eval-harness@quick --output-dest=stub:WO-RAG-EVAL-HARNESS-001"
+    ],
+    "post_execute": [
+      "/discover rag-eval-harness post-execute@quick --output-dest=stub:WO-RAG-EVAL-HARNESS-001"
+    ],
+    "plan_gaps": []
+  }
+}

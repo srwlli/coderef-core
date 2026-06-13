@@ -1,0 +1,94 @@
+{
+  "workorder_id": "WO-RAG-EVAL-HARNESS-001",
+  "feature_name": "rag-eval-harness",
+  "created": "2026-06-13T07:55:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-4M3KQ9",
+  "predecessor_for": null,
+  "status": "complete",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-eval-harness\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-eval-harness\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\rag-eval-harness\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Phase 5 gate-opener picked under operator deferral"
+  },
+  "execution_rules": {
+    "plan_type": "strict",
+    "phase_gates": true,
+    "notes": "Single-phase strict; integrator lane."
+  },
+  "hard_constraints": [
+    "Same search modules as rag-search - no parallel implementation",
+    "Integrator lane: main + push"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "approved_tasks_injected",
+      "count": 6,
+      "source": "inline",
+      "at": "2026-06-13T07:55:00Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "strict",
+      "phase_count": 1,
+      "source": "default",
+      "at": "2026-06-13T07:55:00Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "strict",
+      "source": "default",
+      "at": "2026-06-13T07:55:00Z"
+    },
+    {
+      "event": "operator_deferral",
+      "at": "2026-06-13T07:55:00Z",
+      "note": "Operator: 'i defer this to you. we want a professional system' - eval harness picked per /advise; Phase-3 design doc authored alongside as the research deliverable (STUB-JAH69F tracks the ruling)"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-06-13T08:20:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [
+    {
+      "id": "ADJ-01",
+      "at": "2026-06-13T08:20:00Z",
+      "type": "evidence",
+      "summary": "Baseline: hit@1 0.583 / hit@5 0.667 / MRR 0.639 over 12 queries via ollama. Q05 miss explained (index predates tonight's MCP v2 code - staleness, annotated in baseline.json); Q03/Q10 are genuine ranking gaps now measured for CHUNK-ENRICHMENT. 7/7 scoring-math unit tests; suite 1642 passing, zero failures (second fully-green run tonight)."
+    }
+  ],
+  "git_branch": "wo/rag-eval-harness",
+  "communication_log": [
+    {
+      "at": "2026-06-13T07:55:00Z",
+      "from": "create-workorder",
+      "message": "WO created from STUB-4M3KQ9 (roadmap PHASE-5.EVAL-HARNESS). Strict single-phase, 6 tasks."
+    },
+    {
+      "at": "2026-06-13T08:20:00Z",
+      "from": "execute-workorder",
+      "event": "workorder_complete",
+      "message": "Single strict phase complete: rag-eval CLI + golden queries + annotated baseline committed."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {},
+  "history": [],
+  "completed_at": "2026-06-13T08:20:00Z"
+}

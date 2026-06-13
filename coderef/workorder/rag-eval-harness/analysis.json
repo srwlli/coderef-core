@@ -1,0 +1,75 @@
+{
+  "workorder_id": "WO-RAG-EVAL-HARNESS-001",
+  "feature_name": "rag-eval-harness",
+  "analysis_authored_at": "2026-06-13T07:55:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "package.json (bin entry)"
+    ],
+    "files_created": [
+      "src/cli/rag-eval.ts",
+      "eval/golden-queries.json",
+      "eval/baseline.json",
+      "__tests__/rag-eval.test.ts"
+    ],
+    "downstream_consumers": [
+      "future Phase 5 ranking WOs (CHUNK-ENRICHMENT, PROVENANCE-RANKING) gate on baseline deltas"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Golden queries overfit to current ranking (baseline looks artificially good)",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Author queries from the AUDIT/docs language (intent phrasing), not from chunk text; record file-level expected targets so element-grain ranking shifts do not flip hits"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Ollama unavailability makes the harness un-runnable in CI",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Scoring math unit-tested with mocks; live run is operator-invoked, baseline committed"
+    }
+  ],
+  "candidates": [
+    "__tests__/accuracy-validation.test.ts",
+    "__tests__/dynamic-imports.test.ts",
+    "__tests__/generators/helpers.ts",
+    "__tests__/integration.test.ts",
+    "__tests__/js-call-detector.test.ts",
+    "__tests__/mcp-server.test.ts",
+    "__tests__/orphan-detection.test.ts",
+    "__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts",
+    "__tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts",
+    "__tests__/pipeline/indexing-gate-invariant.test.ts",
+    "__tests__/pipeline/no-phase-8-docs-leak.test.ts",
+    "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+    "__tests__/pipeline/output-validation-strict-headers.test.ts",
+    "__tests__/scanner-export.test.ts",
+    "examples/plugins/example-detector/src/hooks/route-relationships.ts",
+    "scripts/doc-gen/enhance-existing-docs.js",
+    "scripts/doc-gen/generate-index-md.js",
+    "scripts/doc-gen/generate-meta-json.js",
+    "scripts/doc-gen/utils.js",
+    "scripts/doc-gen/validate-docs.js",
+    "scripts/generate-intelligence.js",
+    "src/adapter/graph-to-elements.ts",
+    "src/analyzer/analyzer-service.ts",
+    "src/analyzer/ast-element-scanner.ts",
+    "src/analyzer/config-analyzer.ts"
+  ],
+  "dependencies": [
+    "SemanticSearchService",
+    "rag-index.json metadata",
+    "live ollama for the baseline run"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "File-level hit scoring with element-level recording",
+      "rationale": "Chunk grain may change in Phase 5 work; file-level hits keep the metric stable across grain changes"
+    }
+  ]
+}

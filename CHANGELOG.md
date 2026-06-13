@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-13] — RAG Eval Harness
+
+WO-RAG-EVAL-HARNESS-001 (STUB-4M3KQ9, roadmap Phase 5 gate-opener).
+
+### Added
+- **`rag-eval`** — golden-query eval harness: 12 intent-phrased queries (`eval/golden-queries.json`) scored hit@1/hit@5/MRR through the SAME `SemanticSearchService` modules `rag-search` uses (provider/store from `rag-index.json` metadata). File-level scoring keeps the metric stable across chunk-grain changes. Committed baseline (`eval/baseline.json`): hit@1 0.583, hit@5 0.667, MRR 0.639 — every future ranking change (CHUNK-ENRICHMENT, PROVENANCE-RANKING) is now measured against it, not vibed.
+
+---
+
 ## [2026-06-13] — MCP v2 Tools
 
 WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001 Phase 1 (STUB-ASC73J, roadmap Phase 4).

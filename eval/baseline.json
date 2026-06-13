@@ -1,0 +1,168 @@
+{
+  "generated_with": {
+    "provider": "ollama",
+    "top_k": 10,
+    "golden": "golden-queries.json"
+  },
+  "aggregate": {
+    "queries": 12,
+    "hit_at_1": 0.583,
+    "hit_at_5": 0.667,
+    "mrr": 0.639
+  },
+  "per_query": [
+    {
+      "id": "Q01",
+      "query": "where are relative import specifiers resolved to project files",
+      "rank": 1,
+      "hit1": true,
+      "hit5": true,
+      "rr": 1,
+      "top_files": [
+        "src/pipeline/import-resolver.ts",
+        "src/scanner/semantic-analyzer.ts",
+        "__tests__/pipeline/import-resolution-relative.test.ts"
+      ]
+    },
+    {
+      "id": "Q02",
+      "query": "how are method calls with unknown receivers classified",
+      "rank": 6,
+      "hit1": false,
+      "hit5": false,
+      "rr": 0.167,
+      "top_files": [
+        "src/pipeline/extractors/element-extractor.ts",
+        "src/analyzer/call-detector.ts",
+        "src/analyzer/js-call-detector/types.ts"
+      ]
+    },
+    {
+      "id": "Q03",
+      "query": "what constructs the dependency graph edges from resolutions",
+      "rank": null,
+      "hit1": false,
+      "hit5": false,
+      "rr": 0,
+      "top_files": [
+        "src/analyzer/graph-builder.ts",
+        "src/integration/rag/graph-reranker.ts",
+        "src/context/context-generator.ts"
+      ]
+    },
+    {
+      "id": "Q04",
+      "query": "where is the locked validation report with edge counts produced",
+      "rank": 1,
+      "hit1": true,
+      "hit5": true,
+      "rr": 1,
+      "top_files": [
+        "src/pipeline/output-validator.ts",
+        "src/indexer/relationship-index.ts",
+        "__tests__/pipeline/output-validation-graph-integrity.test.ts"
+      ]
+    },
+    {
+      "id": "Q05",
+      "query": "fan-in fan-out hotspot ranking over the code graph",
+      "rank": null,
+      "hit1": false,
+      "hit5": false,
+      "rr": 0,
+      "top_files": [
+        "src/integration/rag/graph-reranker.ts",
+        "src/integration/rag/semantic-search.ts",
+        "src/pipeline/generators/context-generator.ts"
+      ]
+    },
+    {
+      "id": "Q06",
+      "query": "how do graph nodes get converted into chunks before embedding",
+      "rank": 1,
+      "hit1": true,
+      "hit5": true,
+      "rr": 1,
+      "top_files": [
+        "src/integration/rag/chunk-converter.ts",
+        "src/integration/rag/__tests__/chunk-converter.test.ts",
+        "src/analyzer/graph-analyzer.ts"
+      ]
+    },
+    {
+      "id": "Q07",
+      "query": "where is the header coverage floor enforced during indexing",
+      "rank": 1,
+      "hit1": true,
+      "hit5": true,
+      "rr": 1,
+      "top_files": [
+        "src/integration/rag/indexing-orchestrator.ts",
+        "src/integration/vector/vector-store.ts",
+        "src/indexer/index-store.ts"
+      ]
+    },
+    {
+      "id": "Q08",
+      "query": "parsing semantic header blocks from source comments",
+      "rank": 2,
+      "hit1": false,
+      "hit5": true,
+      "rr": 0.5,
+      "top_files": [
+        "src/semantic/header-generator.ts",
+        "src/pipeline/semantic-header-parser.ts"
+      ]
+    },
+    {
+      "id": "Q09",
+      "query": "extracting exported elements from the syntax tree",
+      "rank": 1,
+      "hit1": true,
+      "hit5": true,
+      "rr": 1,
+      "top_files": [
+        "src/pipeline/extractors/element-extractor.ts",
+        "src/semantic/ast-extractor.ts",
+        "src/scanner/semantic-analyzer.ts"
+      ]
+    },
+    {
+      "id": "Q10",
+      "query": "choosing between openai and ollama embedding providers",
+      "rank": null,
+      "hit1": false,
+      "hit5": false,
+      "rr": 0,
+      "top_files": [
+        "src/integration/llm/openai-provider.ts",
+        "src/integration/llm/ollama-provider.ts"
+      ]
+    },
+    {
+      "id": "Q11",
+      "query": "persisting vectors to the sqlite json storage backend",
+      "rank": 1,
+      "hit1": true,
+      "hit5": true,
+      "rr": 1,
+      "top_files": [
+        "src/integration/vector/sqlite-store.ts"
+      ]
+    },
+    {
+      "id": "Q12",
+      "query": "pipeline orchestration of scan phases end to end",
+      "rank": 1,
+      "hit1": true,
+      "hit5": true,
+      "rr": 1,
+      "top_files": [
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/incremental-cache.ts",
+        "src/pipeline/call-resolver.ts"
+      ]
+    }
+  ],
+  "note": "Baseline 2026-06-13 against the index built by the 2026-06-12 full-repo dogfood (PRE-dates the resolver fixes and MCP v2 tools - Q05 misses because hotspots code is not in that index). First reindex after a ranking change must re-baseline. Misses Q03/Q10 are genuine ranking gaps for CHUNK-ENRICHMENT, measured here."
+}
