@@ -28,7 +28,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | MCP stdio server exposing `.coderef` intelligence as 9 read-only tools | `--project-dir` |
+| [`coderef-mcp-server`](#coderef-mcp-server) | MCP stdio server exposing `.coderef` intelligence as 11 read-only tools | `--project-dir` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
 | [`coderef-watch`](#coderef-watch) | Workspace file-watcher daemon for foundation-docs freshness | `--project-dir`, `--debounce-ms`, `--once`, `--no-pipeline`, `--json` |
@@ -577,7 +577,7 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes a project's `.coderef/` intelligence artifacts as 9 read-only tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes a project's `.coderef/` intelligence artifacts as 11 read-only tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
 
 Built inside coderef-core and typed against `ExportedGraph` — schema drift between the graph exporter and the MCP surface is a compile error, not a runtime mystery (the failure mode that killed the previous external Python server).
 
@@ -608,6 +608,8 @@ The server speaks JSON-RPC over stdio; all diagnostics go to stderr. It is meant
 | `hotspots` | Which elements carry the most load? Fan-in + fan-out ranking over resolved call/import edges; `src_only` (default true) excludes test-origin edges and test-file elements |
 | `cycles` | Where are the dependency cycles? Tarjan SCC over resolved call/import edges, largest first, with a sample in-cycle edge per cycle |
 | `what_exports` | What does this file export? Exported elements via resolved export edges; path fragments get an ambiguity envelope |
+| `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
+| `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model |
 
 Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
 

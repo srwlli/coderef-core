@@ -61,15 +61,46 @@
     },
     {
       "phase": 2,
-      "name": "mcp-v2-flow-tools-ps-validation \u2014 DEFERRED",
+      "name": "mcp-v2-flow-tools-ps-validation",
       "hard_stop": true,
       "stub_ref": "STUB-XF1EX0",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P2-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 2 tasks not yet authored. Pre-condition: Phase 1 must be COMPLETED + REVIEWED before this phase plan is authored."
+          "id": "P2-T1",
+          "verb": "READ",
+          "description": "Read rag-search.ts search flow (provider resolution from index metadata, vector store query) + confirm index.json element line ordering for diff hunk -> element mapping"
+        },
+        {
+          "id": "P2-T2",
+          "verb": "WRITE",
+          "description": "Failing tests: diff_impact maps changed lines to enclosing elements and unions impact (fixture git repo); rag_search clean error envelope when rag-index.json absent (rag_index_missing)",
+          "touches": [
+            "__tests__/mcp-server.test.ts"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "EDIT",
+          "description": "Implement diff_impact (git diff -U0 parse -> element mapping -> union reverse-BFS) + rag_search (provider/store from rag-index.json metadata so query embeddings always match the index; graceful errors when index or embedder unavailable); register both (11 tools)",
+          "touches": [
+            "src/cli/coderef-mcp-server.ts"
+          ]
+        },
+        {
+          "id": "P2-T4",
+          "verb": "RUN",
+          "description": "Primary-Sources validation (CODEREF/PROJECTS/primary-sources): repopulate with the new core build, diff validation report vs the 2026-05 baseline (builtin/unresolved reclassification + 14-field shape expected), write PS .mcp.json registering coderef-core domain, live-smoke the 11-tool surface against PS artifacts"
+        },
+        {
+          "id": "P2-T5",
+          "verb": "TEST",
+          "description": "npx vitest run - full suite green"
+        },
+        {
+          "id": "P2-T6",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2 + push; phase transition complete"
         }
       ],
       "inter_phase_hooks": {
@@ -107,8 +138,8 @@
   "hard_stops": [
     {
       "phase": 2,
-      "approved": false,
-      "reason": "Phase 2 plan_deferred=true. Hard stop fires at phase planning gate."
+      "approved": true,
+      "reason": "Phase 2 plan authored 2026-06-13; operator standing approval + explicit PS-target directive"
     },
     {
       "phase": 3,

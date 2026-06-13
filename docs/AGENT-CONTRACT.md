@@ -65,7 +65,7 @@ Header-less elements are skipped with `header_status_*` reasons by default (DR-P
 
 ### Prefer the MCP tools over parsing artifacts by hand
 
-`coderef-mcp-server` (MCP domain `coderef-core`, registered via `.mcp.json`) exposes the artifacts above as 9 read-only tools: `what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`, `hotspots`, `cycles`, `what_exports`. If your runtime is MCP-capable, use these instead of reading `graph.json`/`index.json` directly — the server is typed against `ExportedGraph`, traverses only `resolved` edges, and returns ambiguity envelopes (≤5 candidates) rather than guessing. `validation_status` returns the 14-field report verbatim. See [docs/CLI.md § coderef-mcp-server](./CLI.md#coderef-mcp-server).
+`coderef-mcp-server` (MCP domain `coderef-core`, registered via `.mcp.json`) exposes the artifacts above as 11 read-only tools: `what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`, `hotspots`, `cycles`, `what_exports`, `diff_impact`, `rag_search`. If your runtime is MCP-capable, use these instead of reading `graph.json`/`index.json` directly — the server is typed against `ExportedGraph`, traverses only `resolved` edges, and returns ambiguity envelopes (≤5 candidates) rather than guessing. `validation_status` returns the 14-field report verbatim. See [docs/CLI.md § coderef-mcp-server](./CLI.md#coderef-mcp-server).
 
 ---
 

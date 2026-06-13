@@ -8,7 +8,7 @@
   "parent_stub_id": "STUB-ASC73J",
   "predecessor_for": null,
   "status": "implementing",
-  "current_phase": 1,
+  "current_phase": 2,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\context.json",
@@ -74,15 +74,35 @@
       "branch": "main",
       "mode": "main-direct",
       "at": "2026-06-13T06:00:00Z"
+    },
+    {
+      "event": "phase_plan_authored",
+      "phase": 2,
+      "stub_ref": "STUB-XF1EX0",
+      "at": "2026-06-13T06:05:00Z"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "1b40f1b",
+      "verdict": "PASS",
+      "at": "2026-06-13T01:20:10.819Z"
+    }
+  ],
   "plan_adjustments": [
     {
       "id": "ADJ-01",
       "at": "2026-06-13T06:00:00Z",
       "type": "evidence",
       "summary": "P1 shipped: hotspots (fan-in/out, src_only default true honoring evidence.testOrigin), cycles (iterative Tarjan SCC), what_exports (export edges + ambiguity envelope) + impact_of export-edge hygiene fix (BFS now call+import only - a file export edge no longer makes the file a dependent of its own element). 24/24 MCP tests (8 new); suite 1632 passing (single documented contention flake). Live stdio smoke: 9 tools listed; hotspots top = demo-all-modules#main (fan_out 92); cycles found a REAL 2-element cycle in coderef-core's graph; what_exports(call-resolver) = 13 exports matching the restamped header exactly."
+    },
+    {
+      "id": "ADJ-02",
+      "at": "2026-06-13T06:45:00Z",
+      "type": "evidence",
+      "summary": "P2 shipped: diff_impact (git diff -U0 -> index line-range element mapping -> union reverse-BFS) + rag_search (provider/store from rag-index.json metadata; graceful rag_index_missing/embedding_unavailable envelopes). PS VALIDATION (operator directive): repopulated PS with new core (398 files, 19.9s) - 14-field report, builtin 107->665 at PS scale, src-only counts coherent (97% src - opposite noise profile from coderef-core, validating the testOrigin tag both ways); edge-count delta vs May baseline attributed to repo churn (896 commits since) NOT core regression; .mcp.json registered for PS; all 11 tools live-smoked against PS (diff_impact HEAD~5: 3 files -> 22 elements -> 8 dependents; cycles: 0 = clean architecture; rag_search: 3 results via ollama). Lesson: MCP smoke clients must sequence the initialize handshake before tools/call - async handlers expose the race. Suite 1635 passing, ZERO failures - first fully green full run of the session (even the contention flake passed)."
     }
   ],
   "git_branch": "wo/mcp-v2-tools-and-ps-validation",
@@ -96,6 +116,11 @@
       "at": "2026-06-13T06:00:00Z",
       "from": "execute-workorder",
       "message": "Phase 1 COMPLETE pending commit. Continuing to Phase 2 (flow tools + Primary-Sources validation) per operator standing approval + PS-target directive."
+    },
+    {
+      "at": "2026-06-13T06:45:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 2 COMPLETE pending commit. Continuing to Phase 3 (intelligence-server retirement, ruling A) - hotspots replacement now shipped, sequencing satisfied."
     }
   ],
   "required_skills": [

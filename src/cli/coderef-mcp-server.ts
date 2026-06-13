@@ -31,6 +31,7 @@
  * go to stderr (same rule as populate --json; see populate.ts P1-T3 fix).
  */
 
+import { spawnSync } from 'child_process';
 import * as fs from 'fs';
 import * as path from 'path';
 // Standard subpath specifiers: TS (node10 resolution) finds types via the
@@ -255,6 +256,9 @@ export interface ToolHandlers {
   hotspots(args: { limit?: number; src_only?: boolean }): Record<string, unknown>;
   cycles(args: { limit?: number; relationship?: 'call' | 'import' }): Record<string, unknown>;
   what_exports(args: { file: string; limit?: number }): Record<string, unknown>;
+  // v2 flow tools (P2)
+  diff_impact(args: { ref?: string; max_depth?: number; limit?: number }): Record<string, unknown>;
+  rag_search(args: { query: string; limit?: number }): Promise<Record<string, unknown>>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -639,6 +643,195 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
+    diff_impact({ ref, max_depth, limit }) {
+      const graph = loadGraph(projectDir, cache);
+      const index = loadIndex(projectDir, cache);
+      const cap = clampLimit(limit);
+      const depthCap = Math.max(1, Math.min(10, max_depth ?? 3));
+      const gitRef = ref ?? 'HEAD';
+
+      // Read-only git: diff the working tree (or a ref range) with zero
+      // context so hunk headers map cleanly onto line ranges.
+      const gitArgs = ['diff', '-U0', '--no-color'];
+      if (gitRef !== 'WORKTREE') gitArgs.push(gitRef);
+      const res = spawnSync('git', [...gitArgs, '--'], {
+        cwd: projectDir,
+        encoding: 'utf8',
+        maxBuffer: 32 * 1024 * 1024,
+      });
+      if (res.error || res.status !== 0) {
+        return {
+          error: 'git_diff_failed',
+          ref: gitRef,
+          detail: String(res.error?.message ?? res.stderr ?? `exit ${res.status}`).slice(0, 300),
+          hint: 'Pass a valid git ref (default HEAD = working tree vs last commit).',
+        };
+      }
+
+      // Parse +++ b/<file> and @@ -a,b +c,d @@ new-side ranges.
+      const changedRanges = new Map<string, Array<[number, number]>>();
+      let currentFile: string | null = null;
+      for (const line of res.stdout.split('\n')) {
+        if (line.startsWith('+++ ')) {
+          const f = line.slice(4).trim();
+          currentFile = f === '/dev/null' ? null : f.replace(/^b\//, '').replace(/\\/g, '/');
+          continue;
+        }
+        const m = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/.exec(line);
+        if (m && currentFile) {
+          const start = parseInt(m[1], 10);
+          const count = m[2] !== undefined ? parseInt(m[2], 10) : 1;
+          const list = changedRanges.get(currentFile) ?? [];
+          list.push([start, start + Math.max(count, 1) - 1]);
+          changedRanges.set(currentFile, list);
+        }
+      }
+
+      // Map changed ranges to enclosing elements: per file, an element owns
+      // [its line, next element's line) — the closest preceding element.
+      const byFile = new Map<string, IndexElement[]>();
+      for (const e of index.elements) {
+        const f = (e.file ?? '').replace(/\\/g, '/');
+        const list = byFile.get(f);
+        if (list) list.push(e);
+        else byFile.set(f, [e]);
+      }
+      for (const list of byFile.values()) list.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
+
+      const changedElements = new Map<string, IndexElement>();
+      for (const [file, ranges] of changedRanges) {
+        const elements = byFile.get(file);
+        if (!elements) continue;
+        for (const [lo, hi] of ranges) {
+          for (let i = 0; i < elements.length; i++) {
+            const start = elements[i].line ?? 0;
+            const end = i + 1 < elements.length ? (elements[i + 1].line ?? Infinity) - 1 : Infinity;
+            if (start <= hi && end >= lo && elements[i].codeRefId) {
+              changedElements.set(elements[i].codeRefId!, elements[i]);
+            }
+          }
+        }
+      }
+
+      // Union reverse BFS over resolved call+import edges.
+      const seeds = [...changedElements.keys()].filter(id => cache.nodeById.has(id));
+      const visited = new Set<string>(seeds);
+      let frontier = seeds;
+      const dependents: ExportedNode[] = [];
+      for (let depth = 1; depth <= depthCap && frontier.length > 0; depth++) {
+        const next: string[] = [];
+        for (const id of frontier) {
+          for (const edge of cache.inbound.get(id) ?? []) {
+            if (edge.relationship !== 'call' && edge.relationship !== 'import') continue;
+            const src = edge.sourceId!;
+            if (visited.has(src)) continue;
+            visited.add(src);
+            next.push(src);
+            const node = cache.nodeById.get(src);
+            if (node) dependents.push(node);
+          }
+        }
+        frontier = next;
+      }
+      void graph;
+
+      const fileCounts = new Map<string, number>();
+      for (const dep of dependents) {
+        const f = dep.file ?? '(unknown)';
+        fileCounts.set(f, (fileCounts.get(f) ?? 0) + 1);
+      }
+      const files = [...fileCounts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([file, count]) => ({ file, elements: count }));
+
+      return {
+        ref: gitRef,
+        changed_files: changedRanges.size,
+        changed_elements: changedElements.size,
+        changed_element_sample: [...changedElements.values()].slice(0, Math.min(20, cap)).map(e => ({
+          id: e.codeRefId, name: e.name, type: e.type, file: e.file, line: e.line,
+        })),
+        max_depth: depthCap,
+        transitive_dependents: dependents.length,
+        affected_files: files.length,
+        files: files.slice(0, cap),
+        files_truncated: files.length > cap,
+      };
+    },
+
+    async rag_search({ query, limit }) {
+      const cap = clampLimit(limit);
+      const indexMetaPath = path.join(projectDir, '.coderef', 'rag-index.json');
+      let meta: { provider?: string; store?: string };
+      try {
+        meta = JSON.parse(fs.readFileSync(indexMetaPath, 'utf8'));
+      } catch {
+        return {
+          error: 'rag_index_missing',
+          hint: `No RAG index at ${indexMetaPath}. Run rag-index first; the tool reads provider/store from its metadata so query embeddings always match the index.`,
+        };
+      }
+      // Provider/store from index metadata — the key-aware invariant: query
+      // embeddings MUST come from the same model that built the index.
+      const provider = meta.provider ?? 'ollama';
+      const store = meta.store ?? 'sqlite';
+      try {
+        let llmProvider: any;
+        if (provider === 'openai') {
+          const { OpenAIProvider } = await import('../integration/llm/openai-provider.js');
+          const apiKey = process.env.OPENAI_API_KEY;
+          if (!apiKey) {
+            return { error: 'embedding_unavailable', detail: 'index was built with openai but OPENAI_API_KEY is not set' };
+          }
+          llmProvider = new OpenAIProvider({ apiKey, model: process.env.CODEREF_OPENAI_MODEL || 'gpt-4-turbo-preview' });
+        } else {
+          const { OllamaProvider } = await import('../integration/llm/ollama-provider.js');
+          llmProvider = new OllamaProvider({
+            apiKey: process.env.CODEREF_LLM_API_KEY || 'ollama',
+            baseUrl: process.env.CODEREF_LLM_BASE_URL || 'http://localhost:11434',
+            model: process.env.CODEREF_LLM_MODEL || 'qwen2.5:7b-instruct',
+          });
+        }
+        const { SQLiteVectorStore } = await import('../integration/vector/sqlite-store.js');
+        const storagePath =
+          process.env.CODEREF_SQLITE_PATH || path.join(projectDir, '.coderef', 'coderef-vectors.json');
+        const vectorStore = new SQLiteVectorStore({
+          storagePath,
+          dimension: llmProvider.getEmbeddingDimensions(),
+        });
+        await vectorStore.initialize();
+        const { SemanticSearchService } = await import('../integration/rag/semantic-search.js');
+        const searchService = new SemanticSearchService(llmProvider, vectorStore);
+        const response = await searchService.search(query, { topK: cap });
+        const results = (response?.results ?? response ?? []) as any[];
+        return {
+          query,
+          provider,
+          store,
+          total: results.length,
+          results: results.slice(0, cap).map((r: any) => ({
+            id: r.metadata?.coderefId ?? r.id,
+            name: r.metadata?.name,
+            file: r.metadata?.file,
+            line: r.metadata?.line,
+            score: typeof r.score === 'number' ? Math.round(r.score * 1000) / 1000 : r.score,
+            snippet: typeof r.metadata?.sourceCode === 'string'
+              ? r.metadata.sourceCode.slice(0, 200)
+              : (typeof r.content === 'string' ? r.content.slice(0, 200) : undefined),
+          })),
+        };
+      } catch (e: any) {
+        return {
+          error: 'embedding_unavailable',
+          provider,
+          detail: String(e?.message ?? e).slice(0, 300),
+          hint: provider === 'ollama'
+            ? 'Is Ollama running with the embedding model pulled? (ollama serve; ollama pull nomic-embed-text)'
+            : 'Check provider credentials and network.',
+        };
+      }
+    },
+
     validation_status() {
       let report: ValidationReport;
       try {
@@ -819,10 +1012,39 @@ async function main(): Promise<void> {
     async ({ file, limit }) => toContent(handlers.what_exports({ file, limit })),
   );
 
+  server.registerTool(
+    'diff_impact',
+    {
+      title: 'Diff impact',
+      description:
+        'PR blast-radius in one call: map a git diff (default: working tree vs HEAD) to changed elements via index.json line ranges, then union transitive inbound dependents over resolved call/import edges.',
+      inputSchema: {
+        ref: z.string().optional().describe('Git ref to diff against (default HEAD; e.g. "main", "HEAD~3")'),
+        max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 3)'),
+        limit: limitArg,
+      },
+    },
+    async ({ ref, max_depth, limit }) => toContent(handlers.diff_impact({ ref, max_depth, limit })),
+  );
+
+  server.registerTool(
+    'rag_search',
+    {
+      title: 'Semantic code search',
+      description:
+        'Semantic search over the RAG index. Reads provider/store from .coderef/rag-index.json metadata so query embeddings always match the index model. Errors cleanly when no index exists or the embedder is unavailable.',
+      inputSchema: {
+        query: z.string().describe('Natural-language query, e.g. "where are import specifiers resolved"'),
+        limit: limitArg,
+      },
+    },
+    async ({ query, limit }) => toContent(await handlers.rag_search({ query, limit })),
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (9 read-only tools)`,
+    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (11 read-only tools)`,
   );
 }
 

@@ -407,3 +407,20 @@ describe('impact_of export-edge hygiene (v2)', () => {
     expect(r.transitive_dependents).toBe(3);
   });
 });
+
+// ---- v2 flow tools (P2) -----------------------------------------------------------
+
+describe('rag_search', () => {
+  it('errors cleanly when no rag-index.json exists', async () => {
+    const r = (await (handlers as any).rag_search({ query: 'anything' })) as any;
+    expect(r.error).toBe('rag_index_missing');
+  });
+});
+
+describe('diff_impact', () => {
+  it('errors cleanly when the project dir is not a git repo', () => {
+    const r = (handlers as any).diff_impact({}) as any;
+    expect(r.error).toBe('git_diff_failed');
+    expect(r.hint).toContain('git ref');
+  });
+});
