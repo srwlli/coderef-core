@@ -34,5 +34,4 @@ file in-tree, and the version field + dual-shape reader covers the migration.
 (B) treats the symptom. Pre-work either way: re-ground the 209MB measurement
 against PS's fresh artifacts (896 commits of churn since it was taken).
 
-**Ruling requested:** (A) restructure to 2.0.0, or (B) compress-only?
-On (A): STUB-JAH69F converts to the implementation stub and a rolling WO follows.
+**RULED 2026-06-13: (A) — operator accepted the recommendation** ("I accept your recomendation please."). STUB-JAH69F closes with this design delivered; STUB-BQDXJ0 (the canonical dedup stub) promotes into the implementation WO.

@@ -22,6 +22,15 @@ export interface SemanticRegistryProjection {
   generated_from: '.coderef/index.json';
   generated_at: string;
   entries: SemanticRegistryProjectionEntry[];
+  /**
+   * Registry 2.0.0 (WO-REGISTRY-RAWFACTS-DEDUP-001, operator ruling A):
+   * file-grain raw facts stored ONCE per file. Under 1.x every element of a
+   * file duplicated the full per-file bundle (98% of bytes on large repos —
+   * 124MB self-scan / 209MB on Primary-Sources). Entries reference their
+   * bundle via their `file` field. Omitted when the pipeline ran without a
+   * raw-facts bundle.
+   */
+  rawFactsByFile?: Record<string, SemanticRegistryRawFacts>;
 }
 
 /**
@@ -55,11 +64,6 @@ export interface SemanticRegistryProjectionEntry {
   usedBy: ElementData['usedBy'];
   related: ElementData['related'];
   rules: ElementData['rules'];
-  /**
-   * Phase 2 raw facts (additive). Optional — older snapshots and consumers
-   * that haven't migrated yet will not see this field.
-   */
-  rawFacts?: SemanticRegistryRawFacts;
   /**
    * Phase 2.5 parsed semantic header (additive). Optional. Mirrors
    * ElementData.headerFact for the entry's source file.
@@ -119,10 +123,27 @@ export function createSemanticRegistryProjection(
       headerImportsByFile.size >
     0;
 
+  // 2.0.0 dedup: one bundle per file that has elements, stored once.
+  let rawFactsByFile: Record<string, SemanticRegistryRawFacts> | undefined;
+  if (hasAnyRawFacts) {
+    rawFactsByFile = {};
+    for (const element of elements) {
+      const key = normalizeFilePath(element.file, projectPath);
+      if (rawFactsByFile[key]) continue;
+      rawFactsByFile[key] = {
+        imports: importsByFile.get(key) || [],
+        calls: callsByFile.get(key) || [],
+        exports: exportsByFile.get(key) || [],
+        headerImports: headerImportsByFile.get(key) || [],
+      };
+    }
+  }
+
   return {
-    version: '1.0.0',
+    version: '2.0.0',
     generated_from: '.coderef/index.json',
     generated_at: new Date().toISOString(),
+    ...(rawFactsByFile ? { rawFactsByFile } : {}),
     entries: elements.map(element => {
       const entry: SemanticRegistryProjectionEntry = {
         id: element.codeRefId || createCodeRefId(element, projectPath, { includeLine: true }),
@@ -142,16 +163,6 @@ export function createSemanticRegistryProjection(
         related: element.related || [],
         rules: element.rules || [],
       };
-
-      if (hasAnyRawFacts) {
-        const lookupKey = normalizeFilePath(element.file, projectPath);
-        entry.rawFacts = {
-          imports: importsByFile.get(lookupKey) || [],
-          calls: callsByFile.get(lookupKey) || [],
-          exports: exportsByFile.get(lookupKey) || [],
-          headerImports: headerImportsByFile.get(lookupKey) || [],
-        };
-      }
 
       if (element.headerFact) {
         entry.headerFact = element.headerFact;

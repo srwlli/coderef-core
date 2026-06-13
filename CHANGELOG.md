@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-06-13] — Semantic Registry 2.0.0 (rawFacts dedup)
+
+WO-REGISTRY-RAWFACTS-DEDUP-001 Phase 1 (STUB-BQDXJ0, roadmap Phase 3; operator ruling A).
+
+### Changed
+- **`semantic-registry.json` is now `version: "2.0.0"`** — file-grain raw facts (`imports`/`calls`/`exports`/`headerImports`) are stored ONCE in a top-level `rawFactsByFile` map keyed by file, instead of being duplicated onto every element of the file. Under 1.x this duplication was ~98% of the artifact's bytes. Entries reference their bundle via their `file` field; `rawFactsByFile` is omitted when the pipeline ran without a raw-facts bundle. **Self-scan: 124.4MB → 14.9MB (an 88% cut.)**
+- **Registries above 10MB serialize compact** (no pretty-print) — a machine-read-only artifact that size gains nothing from indentation.
+
+**Migration:** the only in-tree consumer is `projections.ts` itself (the writer); a consumer sweep found no in-tree reader of `semantic-registry.json`. External readers must branch on the `version` field — entries no longer carry a `rawFacts` field.
+
+---
+
 ## [2026-06-13] — RAG Eval Harness
 
 WO-RAG-EVAL-HARNESS-001 (STUB-4M3KQ9, roadmap Phase 5 gate-opener).

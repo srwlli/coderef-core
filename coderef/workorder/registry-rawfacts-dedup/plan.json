@@ -1,0 +1,125 @@
+{
+  "plan_type": "phased",
+  "goal": "Registry 2.0.0 (operator-ruled option A, phase3-storage-design.md): move duplicated per-element file-grain rawFacts to a single file-keyed rawFactsByFile map on the semantic-registry projection; drop pretty-print above 10MB at the write site. coderef-core's own registry measures 124MB at HEAD; PS measured 209MB in May. P2 re-grounds measurements + fixes the vector-store fallback naming.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "WRITE",
+          "description": "Failing tests __tests__/semantic-registry-v2.test.ts: version 2.0.0; entries carry NO rawFacts; rawFactsByFile keyed by file holds each file's facts exactly once; empty-bundle case omits the map",
+          "touches": [
+            "__tests__/semantic-registry-v2.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "projections.ts: 2.0.0 shape (top-level rawFactsByFile, entry.rawFacts removed); registry-generator.ts: compact stringify when serialized size > 10MB",
+          "touches": [
+            "src/semantic/projections.ts",
+            "src/pipeline/generators/registry-generator.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "RUN",
+          "description": "Rebuild + repopulate coderef-core; record semantic-registry.json size delta (124MB baseline) as paired evidence",
+          "touches": []
+        },
+        {
+          "id": "P1-T4",
+          "verb": "TEST",
+          "description": "Full suite green",
+          "touches": []
+        },
+        {
+          "id": "P1-T5",
+          "verb": "COMMIT",
+          "description": "Commit + push; CHANGELOG + SCHEMA note",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover registry-rawfacts-dedup phase 1@quick"
+        ],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "RUN",
+          "description": "Repopulate Primary-Sources; record its registry size under 2.0.0 vs the May 209MB observation",
+          "touches": []
+        },
+        {
+          "id": "P2-T2",
+          "verb": "EDIT",
+          "description": "VECTOR-STORE-PATH-FIX: honest fallback naming - default storagePath stays coderef-vectors.json but rag-status/docs stop calling it sqlite; CODEREF_SQLITE_PATH env documented as legacy alias",
+          "touches": [
+            "src/cli/rag-status.ts"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "TEST",
+          "description": "Full suite green",
+          "touches": []
+        },
+        {
+          "id": "P2-T4",
+          "verb": "COMMIT",
+          "description": "Commit + push; roadmap Phase 3 complete",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover registry-rawfacts-dedup phase 2@quick"
+        ],
+        "post_phase": []
+      }
+    }
+  ],
+  "hard_stops": [],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260613T015523Z",
+  "plan_type_decided_by": "create-workorder@2.15.1",
+  "workorder_id": "WO-REGISTRY-RAWFACTS-DEDUP-001",
+  "feature_name": "registry-rawfacts-dedup",
+  "created": "2026-06-13T08:50:00Z",
+  "plan_type_rationale": "Two sequential phases: format change (writer-side, no in-tree reader exists), then measurement re-ground + the sibling vector-store naming fix.",
+  "workorder_hooks": {
+    "post_plan": [
+      "/discover registry-rawfacts-dedup@medium --output-dest=working:coderef/workorder/registry-rawfacts-dedup/discover-post-plan.md"
+    ],
+    "post_execute": [
+      "/discover registry-rawfacts-dedup post-execute@medium --output-dest=working:coderef/workorder/registry-rawfacts-dedup/discover-post-execute.md"
+    ],
+    "plan_gaps": []
+  }
+}

@@ -52,20 +52,18 @@ export class RegistryGenerator {
 
     const semanticElements = buildSemanticElementsFromState(state);
 
-    await fs.writeFile(
-      semanticRegistryPath,
-      JSON.stringify(
-        createSemanticRegistryProjection(semanticElements, state.projectPath, {
-          rawImports: state.rawImports,
-          rawCalls: state.rawCalls,
-          rawExports: state.rawExports,
-          headerImportFacts: state.headerImportFacts,
-        }),
-        null,
-        2,
-      ),
-      'utf-8',
-    );
+    // Registry 2.0.0: drop pretty-print above 10MB (operator ruling A) —
+    // a registry that size is machine-read only; compaction is free space.
+    const projection = createSemanticRegistryProjection(semanticElements, state.projectPath, {
+      rawImports: state.rawImports,
+      rawCalls: state.rawCalls,
+      rawExports: state.rawExports,
+      headerImportFacts: state.headerImportFacts,
+    });
+    const compact = JSON.stringify(projection);
+    const registryContent =
+      compact.length > 10 * 1024 * 1024 ? compact : JSON.stringify(projection, null, 2);
+    await fs.writeFile(semanticRegistryPath, registryContent, 'utf-8');
 
     if (state.options.verbose) {
       logger.debug(

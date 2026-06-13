@@ -1,0 +1,150 @@
+{
+  "workorder_id": "WO-REGISTRY-RAWFACTS-DEDUP-001",
+  "feature_name": "registry-rawfacts-dedup",
+  "created": "2026-06-13T08:50:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub-promotion",
+    "user_request": "Operator 2026-06-13: 'I accept your recomendation please.' - ruling A on phase3-storage-design.md."
+  },
+  "promotion_metadata": {
+    "parent_stub_id": "STUB-BQDXJ0",
+    "origin": "phase3-storage-design.md RULED (A) 2026-06-13; STUB-JAH69F (design) closed delivered",
+    "phased_stubs": [],
+    "roadmap_ref": {
+      "roadmap_path": "coderef/working/coderef-core/coderef-core-next/roadmap.md",
+      "node_id": "PHASE-3.REGISTRY-RAWFACTS-DEDUP"
+    }
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Two sequential phases: format change (writer-side, no in-tree reader exists), then measurement re-ground + the sibling vector-store naming fix.",
+    "plan_type_decided_by": "create-workorder@2.15.1",
+    "discovery_ref": "planning-discovery-20260613T015523Z",
+    "discovery": {
+      "candidates": [
+        "__tests__/pipeline/header-exports-cross-check.test.ts",
+        "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+        "__tests__/pipeline/header-tag-validation.test.ts",
+        "__tests__/scanner-export.test.ts",
+        "scripts/doc-gen/generate-meta-json.js",
+        "scripts/doc-gen/utils.js",
+        "scripts/generate-intelligence.js",
+        "src/adapter/graph-to-elements.ts",
+        "src/analyzer/design-pattern-detector.ts",
+        "src/analyzer/js-parser.ts",
+        "src/cache/incremental-cache.ts",
+        "src/cli/coderef-intelligence-server.ts",
+        "src/cli/coderef-rag-server.ts",
+        "src/cli/coderef-watch.ts",
+        "src/cli/scan.ts",
+        "src/cli/semantic-integration.ts",
+        "src/context/__tests__/breaking-change-detector.test.ts",
+        "src/context/breaking-change-detector/diff-analyzer.ts",
+        "src/context/breaking-change-detector/hint-generator.ts",
+        "src/context/breaking-change-detector/index.ts",
+        "src/context/breaking-change-detector/types.ts",
+        "src/context/context-generator.ts",
+        "src/context/fuzzy-resolver.ts",
+        "src/context/markdown-formatter.ts",
+        "src/context/types.ts",
+        "src/errors/CodeRefError.ts",
+        "src/fileGeneration/detectDrift.ts",
+        "src/fileGeneration/index-storage.ts",
+        "src/integration/llm/llm-provider.ts",
+        "src/integration/llm/model-registry.ts",
+        "src/integration/llm/ollama-provider.ts",
+        "src/integration/rag/__tests__/coverage-floor-gate.test.ts",
+        "src/integration/rag/__tests__/integration/indexing-pipeline.test.ts",
+        "src/integration/rag/answer-generation-service.ts",
+        "src/integration/rag/code-chunk.ts",
+        "src/integration/rag/confidence-scorer.ts",
+        "src/integration/rag/context-builder.ts",
+        "src/integration/rag/conversation-manager.ts",
+        "src/integration/rag/embedding-service.ts",
+        "src/integration/rag/embedding-text-generator.ts",
+        "src/integration/rag/graph-reranker.ts",
+        "src/integration/rag/incremental-indexer.ts",
+        "src/integration/rag/indexing-orchestrator.ts",
+        "src/integration/rag/semantic-search.ts",
+        "src/integration/vector/vector-store.ts",
+        "src/parser/parser.ts",
+        "src/pipeline/element-taxonomy.ts",
+        "src/pipeline/extractors/relationship-extractor.ts",
+        "src/pipeline/generators/registry-generator.ts",
+        "src/pipeline/grammar-registry.ts",
+        "src/pipeline/graph-builder.ts",
+        "src/pipeline/header-fact.ts",
+        "src/pipeline/import-resolver.ts",
+        "src/pipeline/incremental-cache.ts",
+        "src/pipeline/output-validator.ts",
+        "src/pipeline/semantic-header-parser.ts",
+        "src/pipeline/types.ts",
+        "src/plugins/loaders/config-loader.ts",
+        "src/plugins/loaders/local-loader.ts",
+        "src/plugins/loaders/npm-loader.ts",
+        "src/plugins/plugin-graph.ts",
+        "src/plugins/plugin-registry.ts",
+        "src/plugins/plugin-scanner.ts",
+        "src/registry/entity-registry.ts",
+        "src/registry/types.ts",
+        "src/scanner/file-watcher.ts",
+        "src/scanner/framework-registry.ts",
+        "src/search/search-engine.ts",
+        "src/semantic/ast-extractor.ts",
+        "src/semantic/header-generator.ts",
+        "src/semantic/llm-enricher.ts",
+        "src/semantic/orchestrator.ts",
+        "src/semantic/projections.ts",
+        "src/semantic/registry-sync.ts",
+        "src/types/types.ts",
+        "src/utils/coderef-id.ts",
+        "src/validator/report-generator.ts",
+        "src/validator/validator.ts",
+        "utils/fs.js",
+        "utils/fs.ts"
+      ],
+      "blast_radius": [],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "call_chain_hits": [],
+      "warnings": [
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260613T015523Z"
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": [
+      "prior-session scan current at HEAD"
+    ]
+  },
+  "discovery_rag": {
+    "hits": [],
+    "fallback_used": true,
+    "error": "rag server not running",
+    "ms": 0,
+    "discovery_rag_timestamp": "2026-06-13T08:50:00Z",
+    "discovery_rag_enabled": true
+  },
+  "scope": {
+    "in_scope": [
+      "P1: SemanticRegistryProjection 2.0.0 - rawFactsByFile map, entries drop per-element rawFacts; compact stringify >10MB; tests; self-scan size evidence (124MB baseline)",
+      "P2: PS re-ground (repopulate -> registry size old-shape-equivalent vs new); VECTOR-STORE-PATH-FIX honest naming"
+    ],
+    "out_of_scope": [
+      "Out-of-tree 1.x registry readers (none known; version field guards)",
+      "entities.json (separate artifact, untouched)"
+    ]
+  },
+  "constraints": [
+    "No in-tree reader of semantic-registry.json exists - writer-side change with version bump",
+    "Integrator lane: main + push per phase"
+  ]
+}

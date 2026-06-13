@@ -1,0 +1,86 @@
+{
+  "workorder_id": "WO-REGISTRY-RAWFACTS-DEDUP-001",
+  "feature_name": "registry-rawfacts-dedup",
+  "created": "2026-06-13T08:50:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-BQDXJ0",
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\registry-rawfacts-dedup\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\registry-rawfacts-dedup\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\registry-rawfacts-dedup\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Ruling A implementation (phase3-storage-design.md)"
+  },
+  "execution_rules": {
+    "plan_type": "phased",
+    "phase_gates": true,
+    "notes": "Two sequential phases, no deferred placeholders. Integrator lane."
+  },
+  "hard_constraints": [
+    "Version field flips to 2.0.0 in the same commit as the shape change",
+    "Integrator lane: main + push per phase"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "approved_tasks_injected",
+      "count": 9,
+      "source": "inline",
+      "at": "2026-06-13T08:50:00Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "phased",
+      "phase_count": 2,
+      "source": "default",
+      "at": "2026-06-13T08:50:00Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "phased",
+      "source": "default",
+      "at": "2026-06-13T08:50:00Z"
+    },
+    {
+      "event": "operator_ruling",
+      "at": "2026-06-13T08:50:00Z",
+      "note": "Ruling A accepted verbatim: 'I accept your recomendation please.' Design: phase3-storage-design.md (RULED stamp). Self-scan registry measured 124MB at HEAD - duplication reproduces on core itself."
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [
+    {
+      "id": "ADJ-01",
+      "at": "2026-06-13T09:05:00Z",
+      "type": "evidence",
+      "summary": "P1 shipped: SemanticRegistryProjection 2.0.0 - top-level rawFactsByFile (one bundle per file), entry.rawFacts removed; registry-generator compacts stringify when serialized >10MB. Self-scan: semantic-registry.json 124,357,065 -> 14,910,149 bytes (88% cut). 4/4 v2 tests; suite 1646 passing, zero failures. Zero in-tree readers (sweep confirmed); version field is the external guard."
+    }
+  ],
+  "git_branch": "wo/registry-rawfacts-dedup",
+  "communication_log": [
+    {
+      "at": "2026-06-13T08:50:00Z",
+      "from": "create-workorder",
+      "message": "WO created from STUB-BQDXJ0 under ruling A. P1 format change (5 tasks); P2 measurements + vector-store naming (4 tasks)."
+    },
+    {
+      "at": "2026-06-13T09:05:00Z",
+      "from": "execute-workorder",
+      "message": "Phase 1 COMPLETE pending commit. Continuing to Phase 2 (PS re-ground + vector-store naming) per operator standing approval."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {},
+  "history": []
+}

@@ -1,0 +1,72 @@
+{
+  "workorder_id": "WO-REGISTRY-RAWFACTS-DEDUP-001",
+  "feature_name": "registry-rawfacts-dedup",
+  "analysis_authored_at": "2026-06-13T08:50:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/semantic/projections.ts",
+      "src/pipeline/generators/registry-generator.ts"
+    ],
+    "files_created": [
+      "__tests__/semantic-registry-v2.test.ts"
+    ],
+    "downstream_consumers": [
+      "external semantic-registry.json readers (version-guarded; none in-tree)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Unknown out-of-tree reader of 1.x registries",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "version field flips to 2.0.0; design doc names the migration; tombstone note in CHANGELOG"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Tests asserting entry.rawFacts shape",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "grep found zero __tests__ references to rawFacts; suite verifies"
+    }
+  ],
+  "candidates": [
+    "__tests__/pipeline/header-exports-cross-check.test.ts",
+    "__tests__/pipeline/header-import-facts-cardinality.test.ts",
+    "__tests__/pipeline/header-tag-validation.test.ts",
+    "__tests__/scanner-export.test.ts",
+    "scripts/doc-gen/generate-meta-json.js",
+    "scripts/doc-gen/utils.js",
+    "scripts/generate-intelligence.js",
+    "src/adapter/graph-to-elements.ts",
+    "src/analyzer/design-pattern-detector.ts",
+    "src/analyzer/js-parser.ts",
+    "src/cache/incremental-cache.ts",
+    "src/cli/coderef-intelligence-server.ts",
+    "src/cli/coderef-rag-server.ts",
+    "src/cli/coderef-watch.ts",
+    "src/cli/scan.ts",
+    "src/cli/semantic-integration.ts",
+    "src/context/__tests__/breaking-change-detector.test.ts",
+    "src/context/breaking-change-detector/diff-analyzer.ts",
+    "src/context/breaking-change-detector/hint-generator.ts",
+    "src/context/breaking-change-detector/index.ts",
+    "src/context/breaking-change-detector/types.ts",
+    "src/context/context-generator.ts",
+    "src/context/fuzzy-resolver.ts",
+    "src/context/markdown-formatter.ts",
+    "src/context/types.ts"
+  ],
+  "dependencies": [
+    "semantic-canonical test suite",
+    "populate runs for size evidence"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DEC-001",
+      "decision": "Writer-side only change (no dual-shape reader)",
+      "rationale": "Sweep found no in-tree reader of semantic-registry.json; the version field is the external guard"
+    }
+  ]
+}
