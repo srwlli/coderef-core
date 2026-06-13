@@ -2,8 +2,8 @@
 
 **Owner:** CODEREF-CORE
 **Created:** 2026-06-12T12:20:00Z
-**Updated:** 2026-06-13T05:05:00Z
-**Current phase:** 2
+**Updated:** 2026-06-13T07:25:00Z
+**Current phase:** 3
 **Render slug:** `SURFACES/surfaces-html/renders/roadmap/coderef-core-next/` (stable, no ULID)
 
 ---
@@ -33,7 +33,7 @@
 
 ### Items
 
-- [not_started] **INTEL-SERVER-SCHEMA** — RULED 2026-06-13 (operator-delegated): option A - RETIRE. coderef-intelligence-server endpoints superseded by coderef-mcp-server get deleted/410d (STUB-9F63EJ); hotspots replacement ships as MCP v2 TOOL-HOTSPOTS (Phase 4) before handleHotspots is removed. Original finding: server reads legacy edge fields (e.source/e.target/e.type) internally.
+- [complete] **INTEL-SERVER-SCHEMA** (4777cff) — RULED 2026-06-13 (operator-delegated): option A - RETIRE. coderef-intelligence-server endpoints superseded by coderef-mcp-server get deleted/410d (STUB-9F63EJ); hotspots replacement ships as MCP v2 TOOL-HOTSPOTS (Phase 4) before handleHotspots is removed. Original finding: server reads legacy edge fields (e.source/e.target/e.type) internally.
 - [complete] **UNRESOLVED-EDGE-AUDIT** (fe7920a) — Self-scan shows unresolved_count=20701 vs valid_edge_count=4293 — characterize unresolved edges by evidence/reason variant, separate expected externals from resolver gaps, file targeted resolver-fix stubs with measured counts [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed] [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed]
 - [not_started] **WIN-PATH-NORMALIZATION** — Close STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001: indexing-orchestrator path normalization fails on Windows (drive-letter casing / separator mismatch at the orchestrator seam); caught by DISPATCH-003 E2E smoke
 - [complete] **SCANNER-EXPORT-CLASSIFICATION** (5e73091) — STUB-5WVGHD: scanner marks nested functions exported:true (parent flag inherited) and misses export-const Set declarations entirely - exports_match_ast false-stales honest headers (coderef-mcp-server.ts) and headers cannot list real const exports; fix exported-flag propagation + const-declaration extraction
@@ -57,17 +57,18 @@
 
 ## Phase 4: MCP server v2 tools
 
-**Status:** not_started
+**Status:** complete
 **Hard-stop:** no
 **Gating predicate:** MCP-SERVER-V1 shipped; INTEL-SERVER-SCHEMA ruling made (hotspots tool replaces or wraps intelligence-server)
+**Shipped commit:** 4777cff
 
 ### Items
 
-- [not_started] **TOOL-HOTSPOTS** — hotspots tool: fan-in/fan-out ranking over resolved edges (canonical replacement for intelligence-server handleHotspots, which is drifted to legacy schema)
-- [not_started] **TOOL-CYCLES** — cycles tool: strongly-connected-component detection over import+call resolved edges; surface cycle membership and smallest back-edge per cycle
-- [not_started] **TOOL-WHAT-EXPORTS** — what_exports tool: file-to-exported-elements lookup over export edges (complements what_imports; closes the export-edge blind spot in the v1 toolset)
-- [not_started] **TOOL-DIFF-IMPACT** — diff_impact tool: map a git diff (or staged changes) to changed elements via index.json line ranges, then union impact_of over the set — PR blast-radius in one call
-- [not_started] **TOOL-RAG-SEARCH** — rag_search tool: expose semantic search over MCP when an index exists, reading provider/store from index metadata so query embeddings always match the index
+- [complete] **TOOL-HOTSPOTS** (1b40f1b) — hotspots tool: fan-in/fan-out ranking over resolved edges (canonical replacement for intelligence-server handleHotspots, which is drifted to legacy schema)
+- [complete] **TOOL-CYCLES** (1b40f1b) — cycles tool: strongly-connected-component detection over import+call resolved edges; surface cycle membership and smallest back-edge per cycle
+- [complete] **TOOL-WHAT-EXPORTS** (1b40f1b) — what_exports tool: file-to-exported-elements lookup over export edges (complements what_imports; closes the export-edge blind spot in the v1 toolset)
+- [complete] **TOOL-DIFF-IMPACT** (b4c31a4) — diff_impact tool: map a git diff (or staged changes) to changed elements via index.json line ranges, then union impact_of over the set — PR blast-radius in one call
+- [complete] **TOOL-RAG-SEARCH** (b4c31a4) — rag_search tool: expose semantic search over MCP when an index exists, reading provider/store from index metadata so query embeddings always match the index
 
 <!-- depends_on: PHASE-1.MCP-SERVER-V1 -->
 

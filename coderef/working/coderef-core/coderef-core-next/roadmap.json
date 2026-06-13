@@ -2,8 +2,8 @@
   "project": "coderef-core-next",
   "owner": "CODEREF-CORE",
   "created": "2026-06-12T12:20:00Z",
-  "updated": "2026-06-13T05:05:00Z",
-  "current_phase": 2,
+  "updated": "2026-06-13T07:25:00Z",
+  "current_phase": 3,
   "status": "active",
   "phases": [
     {
@@ -63,8 +63,8 @@
         {
           "id": "INTEL-SERVER-SCHEMA",
           "description": "RULED 2026-06-13 (operator-delegated): option A - RETIRE. coderef-intelligence-server endpoints superseded by coderef-mcp-server get deleted/410d (STUB-9F63EJ); hotspots replacement ships as MCP v2 TOOL-HOTSPOTS (Phase 4) before handleHotspots is removed. Original finding: server reads legacy edge fields (e.source/e.target/e.type) internally.",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "4777cff",
           "depends_on": []
         },
         {
@@ -134,43 +134,43 @@
       "phase": 4,
       "name": "MCP server v2 tools",
       "hard_stop": false,
-      "status": "not_started",
+      "status": "complete",
       "gating_predicate": "MCP-SERVER-V1 shipped; INTEL-SERVER-SCHEMA ruling made (hotspots tool replaces or wraps intelligence-server)",
-      "shipped_commit": null,
+      "shipped_commit": "4777cff",
       "items": [
         {
           "id": "TOOL-HOTSPOTS",
           "description": "hotspots tool: fan-in/fan-out ranking over resolved edges (canonical replacement for intelligence-server handleHotspots, which is drifted to legacy schema)",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "1b40f1b",
           "depends_on": []
         },
         {
           "id": "TOOL-CYCLES",
           "description": "cycles tool: strongly-connected-component detection over import+call resolved edges; surface cycle membership and smallest back-edge per cycle",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "1b40f1b",
           "depends_on": []
         },
         {
           "id": "TOOL-WHAT-EXPORTS",
           "description": "what_exports tool: file-to-exported-elements lookup over export edges (complements what_imports; closes the export-edge blind spot in the v1 toolset)",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "1b40f1b",
           "depends_on": []
         },
         {
           "id": "TOOL-DIFF-IMPACT",
           "description": "diff_impact tool: map a git diff (or staged changes) to changed elements via index.json line ranges, then union impact_of over the set \u2014 PR blast-radius in one call",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "b4c31a4",
           "depends_on": []
         },
         {
           "id": "TOOL-RAG-SEARCH",
           "description": "rag_search tool: expose semantic search over MCP when an index exists, reading provider/store from index metadata so query embeddings always match the index",
-          "status": "not_started",
-          "shipped_commit": null,
+          "status": "complete",
+          "shipped_commit": "b4c31a4",
           "depends_on": []
         }
       ],

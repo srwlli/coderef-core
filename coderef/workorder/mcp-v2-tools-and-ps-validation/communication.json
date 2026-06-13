@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-ASC73J",
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "closed",
   "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\mcp-v2-tools-and-ps-validation\\plan.json",
@@ -96,6 +96,13 @@
       "commit": "b4c31a4",
       "verdict": "PASS",
       "at": "2026-06-13T01:30:07.331Z"
+    },
+    {
+      "phase": 3,
+      "to_status": "complete",
+      "commit": "4777cff",
+      "verdict": "PASS",
+      "at": "2026-06-13T01:37:35.624Z"
     }
   ],
   "plan_adjustments": [
@@ -139,6 +146,11 @@
       "at": "2026-06-13T07:10:00Z",
       "from": "execute-workorder",
       "message": "Phase 3 COMPLETE - final phase (close_after_phase=3). Full close-out next."
+    },
+    {
+      "at": "2026-06-13T07:25:00Z",
+      "from": "close-workorder",
+      "message": "WO closed (close-only). Roadmap Phases 2 and 4 now fully complete."
     }
   ],
   "required_skills": [
@@ -147,5 +159,20 @@
     "/log-session"
   ],
   "inter_phase_results": {},
-  "history": []
+  "history": [],
+  "completed_at": "2026-06-13T07:25:00Z",
+  "closed_at": "2026-06-13T07:25:00Z",
+  "close_metadata": {
+    "closed_via": "/close-workorder",
+    "close_mode": "close-only (default v2.8.0; not archived)",
+    "review_status": "PASS",
+    "operator_authorization": "standing approval + \"Please continue through all. can we target the Primary-Sources project please.\" (2026-06-13)",
+    "audit": {
+      "phased_terminal_guard": "terminal at 3/3",
+      "tracking_validator_scoped": "17/17 PASS",
+      "foundation_docs_gate": "PASS (exit 0)",
+      "suite": "P2 run fully green (1635, zero failures); P3 run 1634 + the documented scanner-export contention flake"
+    },
+    "what_shipped": "Commits 1b40f1b (P1 graph tools), b4c31a4 (P2 flow tools + PS validation), 4777cff (P3 intelligence-server retirement). MCP surface 6 -> 11 tools; PS registered + validated; -735 lines of drifted server code removed."
+  }
 }
