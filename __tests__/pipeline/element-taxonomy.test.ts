@@ -6,8 +6,8 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { describe, expect, it } from 'vitest';
-import { isKebabCase, isValidLayer, loadLayerEnum } from '../../src/pipeline/element-taxonomy.js';
+import { afterEach, describe, expect, it } from 'vitest';
+import { isKebabCase, isValidLayer, loadLayerEnum, resolveLayersPath } from '../../src/pipeline/element-taxonomy.js';
 
 const standardsLayersPath = path.resolve(
   process.cwd(),
@@ -76,6 +76,52 @@ describe('element taxonomy', () => {
 
   it('matches the canonical header grammar BNF layer enum', () => {
     expect(new Set(loadLayerEnum(standardsLayersPath))).toEqual(new Set(loadBnfLayers()));
+  });
+
+  describe('resolveLayersPath cwd-independence (STUB-W8S124)', () => {
+    const originalCwd = process.cwd();
+    const originalLayersEnv = process.env.CODEREF_LAYERS_PATH;
+    const originalAssistantRootEnv = process.env.CODEREF_ASSISTANT_ROOT;
+
+    afterEach(() => {
+      process.chdir(originalCwd);
+      if (originalLayersEnv === undefined) {
+        delete process.env.CODEREF_LAYERS_PATH;
+      } else {
+        process.env.CODEREF_LAYERS_PATH = originalLayersEnv;
+      }
+      if (originalAssistantRootEnv === undefined) {
+        delete process.env.CODEREF_ASSISTANT_ROOT;
+      } else {
+        process.env.CODEREF_ASSISTANT_ROOT = originalAssistantRootEnv;
+      }
+    });
+
+    it('honors CODEREF_LAYERS_PATH override', () => {
+      process.env.CODEREF_LAYERS_PATH = standardsLayersPath;
+      expect(resolveLayersPath()).toBe(standardsLayersPath);
+    });
+
+    it('honors CODEREF_ASSISTANT_ROOT override', () => {
+      delete process.env.CODEREF_LAYERS_PATH;
+      process.env.CODEREF_ASSISTANT_ROOT = path.resolve(process.cwd(), '..', 'ASSISTANT');
+      expect(resolveLayersPath()).toBe(standardsLayersPath);
+    });
+
+    it('resolves an existing layers.json from a nested subdirectory (no env)', () => {
+      delete process.env.CODEREF_LAYERS_PATH;
+      delete process.env.CODEREF_ASSISTANT_ROOT;
+
+      // Simulate running populate-coderef from deep inside the repo. The old
+      // cwd/.. fallback produced <nested>/../ASSISTANT/... (ENOENT); the
+      // install-dir anchor must still locate the real layers.json.
+      const nested = path.resolve(originalCwd, '__tests__', 'pipeline');
+      process.chdir(nested);
+
+      const resolved = resolveLayersPath();
+      expect(fs.existsSync(resolved)).toBe(true);
+      expect(loadLayerEnum(resolved)).toHaveLength(13);
+    });
   });
 });
 
