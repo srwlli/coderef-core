@@ -134,11 +134,14 @@ export class QueryExecutor {
       error,
     };
 
-    // Cache result
-    this.resultCache.set(cacheKey, {
-      result,
-      timestamp: Date.now(),
-    });
+    // Cache result — but never cache errored results: a transient failure
+    // (e.g. graph not yet built) would otherwise be replayed for the full TTL.
+    if (!error) {
+      this.resultCache.set(cacheKey, {
+        result,
+        timestamp: Date.now(),
+      });
+    }
 
     // Track performance
     this.recordPerformance(request.type, executionTime);

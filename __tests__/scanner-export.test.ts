@@ -17,6 +17,9 @@
  */
 
 import { describe, it, expect } from 'vitest';
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
 import { scanCurrentElements, LANGUAGE_PATTERNS } from '../src/index.js';
 import type { ScanOptions, ElementData } from '../src/index.js';
 
@@ -168,20 +171,43 @@ describe('Scanner Module Exports', () => {
     });
 
     it('should support recursive option', async () => {
-      const nonRecursive = await scanCurrentElements(__dirname, 'ts', {
-        recursive: false,
-        verbose: false
-      });
+      // Deterministic fixture: one element top-level, one in a subdir.
+      // Scanning the live repo tree here raced with concurrent processes
+      // (the two scans could see different file sets — flaked in the
+      // 2026-07-02 review run).
+      const fixtureDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-recursive-test-'));
+      try {
+        fs.writeFileSync(
+          path.join(fixtureDir, 'top.ts'),
+          'export function topLevel() { return 1; }\n'
+        );
+        fs.mkdirSync(path.join(fixtureDir, 'nested'));
+        fs.writeFileSync(
+          path.join(fixtureDir, 'nested', 'deep.ts'),
+          'export function nestedFn() { return 2; }\n'
+        );
 
-      const recursive = await scanCurrentElements(__dirname, 'ts', {
-        recursive: true,
-        verbose: false
-      });
+        const nonRecursive = await scanCurrentElements(fixtureDir, 'ts', {
+          recursive: false,
+          verbose: false
+        });
 
-      expect(Array.isArray(nonRecursive)).toBe(true);
-      expect(Array.isArray(recursive)).toBe(true);
-      // Recursive should find same or more files
-      expect(recursive.length).toBeGreaterThanOrEqual(nonRecursive.length);
+        const recursive = await scanCurrentElements(fixtureDir, 'ts', {
+          recursive: true,
+          verbose: false
+        });
+
+        expect(Array.isArray(nonRecursive)).toBe(true);
+        expect(Array.isArray(recursive)).toBe(true);
+        // Non-recursive sees only the top-level element; recursive sees both.
+        expect(nonRecursive.map(e => e.name)).toContain('topLevel');
+        expect(nonRecursive.map(e => e.name)).not.toContain('nestedFn');
+        expect(recursive.map(e => e.name)).toContain('topLevel');
+        expect(recursive.map(e => e.name)).toContain('nestedFn');
+        expect(recursive.length).toBeGreaterThan(nonRecursive.length);
+      } finally {
+        fs.rmSync(fixtureDir, { recursive: true, force: true });
+      }
     });
   });
 
@@ -265,15 +291,29 @@ describe('Scanner Module Exports', () => {
     });
 
     it('should work without options parameter', async () => {
-      // Options should be optional
-      const result = await scanCurrentElements(__dirname, 'ts');
-      expect(Array.isArray(result)).toBe(true);
+      // Options should be optional. Small fixture instead of the live repo
+      // tree — a full-tree scan under whole-suite load blew the default
+      // per-test timeout (flaked in the 2026-07-02 review run).
+      const fixtureDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-noopts-test-'));
+      try {
+        fs.writeFileSync(path.join(fixtureDir, 'x.ts'), 'export function x() { return 1; }\n');
+        const result = await scanCurrentElements(fixtureDir, 'ts');
+        expect(Array.isArray(result)).toBe(true);
+      } finally {
+        fs.rmSync(fixtureDir, { recursive: true, force: true });
+      }
     });
 
     it('should work with default language', async () => {
       // Language defaults to 'ts'
-      const result = await scanCurrentElements(__dirname);
-      expect(Array.isArray(result)).toBe(true);
+      const fixtureDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-deflang-test-'));
+      try {
+        fs.writeFileSync(path.join(fixtureDir, 'y.ts'), 'export function y() { return 1; }\n');
+        const result = await scanCurrentElements(fixtureDir);
+        expect(Array.isArray(result)).toBe(true);
+      } finally {
+        fs.rmSync(fixtureDir, { recursive: true, force: true });
+      }
     });
   });
 });

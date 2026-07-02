@@ -18,22 +18,21 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { buildDependencyGraph } from '../buildDependencyGraph.js';
 import type { ElementData } from '../../types/types.js';
 import type { DependencyGraph, GraphNode, GraphEdge } from '../buildDependencyGraph.js';
-import { fileURLToPath } from 'url';
-import { dirname, join } from 'path';
-import { mkdir, rm, readFile, access } from 'fs/promises';
+import { join } from 'path';
+import { mkdtemp, rm, readFile, access } from 'fs/promises';
 import { constants } from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+import { tmpdir } from 'os';
 
 describe('buildDependencyGraph() - File Generation', () => {
   let testProjectDir: string;
   let testElements: ElementData[];
 
   beforeEach(async () => {
-    // Create temporary project directory
-    testProjectDir = join(__dirname, '.test-project');
-    await mkdir(testProjectDir, { recursive: true });
+    // Unique temp dir per test. Reusing one fixture path caused a Windows
+    // delete-pending race under I/O load: afterEach's rm of the SAME path
+    // the next test re-creates left mkdir inside buildDependencyGraph
+    // hitting ENOENT (observed in the 2026-07-02 review run).
+    testProjectDir = await mkdtemp(join(tmpdir(), 'coderef-bdg-test-'));
 
     // Create sample elements with call relationships
     testElements = [

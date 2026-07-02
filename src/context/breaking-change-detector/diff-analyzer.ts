@@ -131,9 +131,10 @@ export async function getChangedElements(
   baseRef: string,
   headRef?: string
 ): Promise<Array<{ name: string; file: string; type: string; line: number }>> {
-  // Placeholder implementation - would integrate with git and scanner
-  logger.info(`Getting changed elements between ${baseRef} and ${headRef || 'worktree'}`);
-  return [];
+  throw new Error(
+    `getChangedElements is NOT IMPLEMENTED (requested ${baseRef}..${headRef || 'worktree'}). ` +
+    'Returning an empty list here would make breaking-change reports silent false negatives.'
+  );
 }
 
 /**
@@ -143,9 +144,10 @@ export async function extractSignaturesFromRef(
   ref: string,
   filePath: string
 ): Promise<Map<string, any>> {
-  // Placeholder implementation
-  logger.info(`Extracting signatures from ${ref}:${filePath}`);
-  return new Map();
+  throw new Error(
+    `extractSignaturesFromRef is NOT IMPLEMENTED (requested ${ref}:${filePath}). ` +
+    'Returning an empty map here would make breaking-change reports silent false negatives.'
+  );
 }
 
 /**
@@ -154,7 +156,8 @@ export async function extractSignaturesFromRef(
 export async function extractSignaturesFromWorktree(
   filePath: string
 ): Promise<Map<string, any>> {
-  // Placeholder implementation
-  logger.info(`Extracting signatures from worktree:${filePath}`);
-  return new Map();
+  throw new Error(
+    `extractSignaturesFromWorktree is NOT IMPLEMENTED (requested ${filePath}). ` +
+    'Returning an empty map here would make breaking-change reports silent false negatives.'
+  );
 }

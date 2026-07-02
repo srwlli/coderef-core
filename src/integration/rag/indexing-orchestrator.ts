@@ -769,7 +769,7 @@ export class IndexingOrchestrator {
         options.incrementalOptions?.stateFile
       );
 
-      const { chunksToIndex, chunksToKeep } =
+      const { chunksToIndex, chunksToKeep, chunksToDelete, deletedFiles } =
         await incrementalIndexer.filterChangedChunks(
           chunks,
           options.incrementalOptions
@@ -898,6 +898,15 @@ export class IndexingOrchestrator {
       // Upsert vectors
       await this.vectorStore.upsert(vectorRecords, options.namespace);
 
+      // P0-3b (repo-review-2026-07): remove vectors whose source chunks are
+      // gone — deleted/renamed files and elements dropped from modified
+      // files. Never delete an id that was just re-upserted.
+      const upsertedIds = new Set(vectorRecords.map((r) => r.id));
+      const staleIds = chunksToDelete.filter((id) => !upsertedIds.has(id));
+      if (staleIds.length > 0) {
+        await this.vectorStore.delete(staleIds, options.namespace);
+      }
+
       reportProgress(
         IndexingStage.STORING,
         'Vectors stored',
@@ -916,7 +925,21 @@ export class IndexingOrchestrator {
         97
       );
 
-      await incrementalIndexer.updateState(chunksToIndex);
+      // P0-3a (repo-review-2026-07): record indexed-state ONLY for chunks
+      // whose embedding succeeded — and skip any file that had a failed
+      // chunk, because recording its new hash would mark it "unchanged" and
+      // the failed chunks would never be retried. Deleted files leave the
+      // state entirely (see updateState removeFiles).
+      const failedCoderefs = new Set(embeddingResult.failed.map((f) => f.coderef));
+      const filesWithFailures = new Set(
+        chunksToIndex
+          .filter((c) => failedCoderefs.has(c.coderef))
+          .map((c) => c.file)
+      );
+      const chunksToRecord = embeddingResult.embedded
+        .map((item) => item.chunk)
+        .filter((chunk) => !filesWithFailures.has(chunk.file));
+      await incrementalIndexer.updateState(chunksToRecord, true, deletedFiles);
 
       reportProgress(
         IndexingStage.COMPLETE,

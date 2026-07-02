@@ -270,6 +270,8 @@ export class IncrementalIndexer {
   ): Promise<{
     chunksToIndex: CodeChunk[];
     chunksToKeep: string[];
+    chunksToDelete: string[];
+    deletedFiles: string[];
   }> {
     // chunk.file values are graph.json node.file keys — always relative.
     const files = new Set(allChunks.map(chunk => toRelative(chunk.file)));
@@ -303,7 +305,11 @@ export class IncrementalIndexer {
 
     return {
       chunksToIndex,
-      chunksToKeep
+      chunksToKeep,
+      // Stale vector ids (deleted files + old chunks of modified files) —
+      // the caller is responsible for wiring these to vectorStore.delete().
+      chunksToDelete: analysis.chunksToDelete,
+      deletedFiles: analysis.deletedFiles
     };
   }
 
@@ -312,7 +318,8 @@ export class IncrementalIndexer {
    */
   async updateState(
     indexedChunks: CodeChunk[],
-    preserveUnchanged: boolean = true
+    preserveUnchanged: boolean = true,
+    removeFiles: string[] = []
   ): Promise<IndexState> {
     // Load existing state or create new one
     let state = await this.loadState();
@@ -348,6 +355,14 @@ export class IncrementalIndexer {
         chunks: chunks.map(c => c.coderef),
         chunkCount: chunks.length
       });
+    }
+
+    // Drop state entries for files deleted from the source tree. Keeping
+    // them would re-mark their chunks for deletion on every run, and a file
+    // that later returns with an unchanged hash would be treated as
+    // "unchanged" even though its vectors were deleted.
+    for (const file of removeFiles) {
+      state.files.delete(file);
     }
 
     // Update last indexed timestamp

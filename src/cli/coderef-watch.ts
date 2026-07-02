@@ -230,8 +230,10 @@ function forwardSessionEvent(args: {
   summary: string;
   payload: Record<string, unknown>;
 }): void {
+  // Env override, else cwd-relative (resolves when the daemon runs from a
+  // repo that ships scripts/log-session-event.mjs). Missing script = skip.
   const assistantScript = process.env.CODEREF_LOG_SESSION_EVENT_SCRIPT
-    || 'C:\\Users\\willh\\Desktop\\CODEREF\\ASSISTANT\\scripts\\log-session-event.mjs';
+    || path.join(process.cwd(), 'scripts', 'log-session-event.mjs');
   if (!fs.existsSync(assistantScript)) return;
   try {
     spawnSync('node', [
@@ -270,11 +272,9 @@ function runPipeline(opts: {
   });
 
   if (result.error || (result.status !== 0 && result.status !== null)) {
-    // Fallback to direct invocation.
-    const distPath = path.join(
-      'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE',
-      'dist', 'src', 'cli', 'coderef-pipeline.js'
-    );
+    // Fallback to direct invocation of the sibling bin in this package's
+    // own dist tree (this file compiles to dist/src/cli/coderef-watch.js).
+    const distPath = path.join(__dirname, 'coderef-pipeline.js');
     if (fs.existsSync(distPath)) {
       const fallbackArgs = [
         distPath,

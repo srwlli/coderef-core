@@ -7,7 +7,7 @@
 
 import { parseArgs } from 'node:util';
 import AnalyzerService from '../analyzer/analyzer-service.js';
-import { QueryExecutor, QueryType } from '../query/query-executor.js';
+import { QueryExecutor, QueryType, QueryResult } from '../query/query-executor.js';
 
 const QUERY_TYPES: QueryType[] = [
   'what-calls', 'what-calls-me',
@@ -32,6 +32,7 @@ Options:
   --source=<element> Source element for path queries (required for: shortest-path, all-paths)
   --depth=<N>        Max traversal depth (default: 5)
   --format=<fmt>     Result format: raw | summary | full  (default: summary)
+  --patterns=<globs> Comma-separated file globs to analyze (default: "src/**/*.ts,packages/**/*.ts")
   --help             Print this help
 
 Query types:
@@ -57,6 +58,7 @@ async function main(): Promise<void> {
       source:  { type: 'string' },
       depth:   { type: 'string' },
       format:  { type: 'string' },
+      patterns: { type: 'string' },
       help:    { type: 'boolean', default: false },
     },
     strict: false,
@@ -86,20 +88,83 @@ async function main(): Promise<void> {
   const analyzer = new AnalyzerService(project as string);
   const executor = new QueryExecutor(analyzer);
 
-  const result = await executor.execute({
-    type,
-    target:   values.target as string,
-    source:   values.source as string | undefined ?? undefined,
-    maxDepth: depth,
-    format,
-  });
+  // Build the dependency graph before querying — every query type throws
+  // "No graph available" otherwise. Default globs cover src/ and packages/
+  // layouts; AnalyzerService's own default only matches packages/.
+  const patterns = typeof values.patterns === 'string' && values.patterns.length > 0
+    ? values.patterns.split(',').map(p => p.trim()).filter(Boolean)
+    : ['src/**/*.ts', 'packages/**/*.ts'];
+  const analysis = await analyzer.analyze(patterns);
 
-  if (result.error) {
-    console.error('Query error:', result.error);
-    process.exit(1);
+  // Graph node ids are exact strings ("file:" + a mix of absolute and
+  // relative backslash-separated paths), and the same file can be keyed under
+  // more than one spelling. Resolve a friendly --target/--source path to every
+  // matching node id so queries don't silently return empty.
+  const resolveNodeIds = (raw: string): string[] => {
+    const nodes = analysis.graph.nodes;
+    const found = new Set<string>();
+    if (nodes.has(raw)) found.add(raw);
+    // A file's outbound edges hang off its source-node spelling while its
+    // inbound (import-target) edges hang off the raw module-specifier
+    // spelling (usually ".js" for a ".ts" source, relative vs absolute), so
+    // collect EVERY spelling — never stop at the first hit.
+    const backslashed = raw.replace(/\//g, '\\');
+    const suffixes = [backslashed];
+    if (backslashed.endsWith('.ts')) suffixes.push(backslashed.slice(0, -3) + '.js');
+    else if (backslashed.endsWith('.js')) suffixes.push(backslashed.slice(0, -3) + '.ts');
+    for (const id of nodes.keys()) {
+      if (!id.startsWith('file:')) continue;
+      const normalized = id.replace(/\//g, '\\');
+      if (suffixes.some(s => normalized.endsWith(s))) {
+        found.add(id);
+      }
+    }
+    return found.size > 0 ? Array.from(found) : [raw];
+  };
+
+  const targetIds = resolveNodeIds(values.target as string);
+  const sourceIds = values.source ? resolveNodeIds(values.source as string) : [undefined];
+  const isPathQuery = type === 'shortest-path' || type === 'all-paths';
+
+  // Execute against every resolved spelling pair. Relationship queries union
+  // their results; path queries keep the best (shortest non-empty) path,
+  // since a path only exists between one specific spelling pair.
+  let merged: QueryResult | undefined;
+  for (const sourceId of sourceIds) {
+    for (const targetId of targetIds) {
+      const result = await executor.execute({
+        type,
+        target:   targetId,
+        source:   sourceId,
+        maxDepth: depth,
+        format,
+      });
+
+      if (result.error) {
+        console.error('Query error:', result.error);
+        process.exit(1);
+      }
+
+      if (!merged) {
+        merged = result;
+      } else if (isPathQuery) {
+        if (result.count > 0 && (merged.count === 0 || result.count < merged.count)) {
+          merged = result;
+        }
+      } else {
+        const seen = new Set(merged.results.map(n => n.id));
+        for (const node of result.results) {
+          if (!seen.has(node.id)) {
+            merged.results.push(node);
+            seen.add(node.id);
+          }
+        }
+        merged.count = merged.results.length;
+      }
+    }
   }
 
-  console.log(JSON.stringify(result, null, 2));
+  console.log(JSON.stringify(merged, null, 2));
 }
 
 main().catch((err: unknown) => {

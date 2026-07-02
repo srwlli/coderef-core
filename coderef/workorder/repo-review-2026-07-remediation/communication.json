@@ -9,7 +9,7 @@
   "predecessor_for": null,
   "status": "plan_created",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\analysis.json",
@@ -20,12 +20,13 @@
   },
   "execution_rules": [
     "Rolling plan: execute phase-by-phase; report back after EVERY phase (rolling_plan.report_back_required_after_each_phase=true)",
-    "Phases 2-3 are plan_deferred placeholders \u2014 author their tasks only after the prior phase is completed + reviewed (ad-hoc plan.json edit until /plan-next-phase ships; flip the bound stub deferred_phase->promoted when authored)",
+    "Phases 2-3 are plan_deferred placeholders — author their tasks only after the prior phase is completed + reviewed (ad-hoc plan.json edit until /plan-next-phase ships; flip the bound stub deferred_phase->promoted when authored)",
     "Hard stop at the end of every phase; hard_stops[].approved flips only on operator review",
     "Commit on main by EXPLICIT path (main-only git model; never git add -A)",
     "Do not regress the canonical pipeline: locked index.json/validation schemas and invariant tests must keep passing"
   ],
   "hard_constraints": [
+    "LLM/embedding work is Ollama LOCAL-ONLY: no cloud API keys exist in this environment (operator directive 2026-07-02). RAG tests mock or use ollama; rag-server/provider defaults must not require OpenAI/Anthropic keys",
     "Windows-first path testing on every path-related change",
     "layers.json resolves from the sibling ASSISTANT repo, never a bundled copy",
     "Reconcile STUB-9F63EJ overlap before authoring Phase 2 tasks",
@@ -64,10 +65,59 @@
       "plan_type": "phased",
       "source": "default",
       "at": "2026-07-02T07:26:34Z"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-07-02T07:45:18Z"
+    },
+    {
+      "event": "active_work_registration_degraded",
+      "reason": "register-active-work.cjs refused: archive shrink guard 5384->1466 (pre-existing transient-DB wart, kaizen-logged at create time); registry DB row is canonical",
+      "at": "2026-07-02T07:45:18Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 1,
+      "reason": "rolling_plan.mode=rolling with report_back_required_after_each_phase=true; executing Phase 1 only, halt at terminal surface",
+      "at": "2026-07-02T07:45:18Z"
+    },
+    {
+      "event": "semantic_validation_gate",
+      "outcome": "pass_with_overridden_false_positive",
+      "detail": "validator flagged critical constraint-cloud-rag; root cause is JSON.stringify(context).includes('anthropic'|'openai') matching discovery-candidate FILENAMES (src/integration/llm/anthropic-provider.ts, openai-provider.ts) enumerated from the existing repo tree. No Phase 1 task touches src/integration/llm/. Determined false positive by reading semantic-validator.js:333-354; proceeding. Kaizen logged (correctness).",
+      "violations_summary": {
+        "critical": 1,
+        "warning": 1,
+        "info": 0
+      },
+      "at": "2026-07-02T07:47:00Z"
     }
   ],
   "phase_transitions": [],
-  "plan_adjustments": [],
+  "inter_phase_results": {
+    "1": {
+      "pre": [
+        {
+          "hook": "/discover repo-review-2026-07-remediation phase 1@quick",
+          "severity": "info",
+          "summary": "rg pass: 6 hits, all expected WO/stub artifacts; no stray refs in src/; phase clear to start",
+          "at": "2026-07-02T07:50:00Z"
+        }
+      ],
+      "post": []
+    }
+  },
+  "plan_adjustments": [
+    {
+      "id": "ADJ-01",
+      "task": "P1-T2/P1-T10",
+      "applied": true,
+      "detail": "Baseline vitest is ALREADY GREEN (1662 pass / 30 skip / 0 fail; review baseline was 1660/2/30). Both review-time failures are load-dependent flakes, reproducible only under concurrent I/O: (a) buildDependencyGraph ENOENT = Windows delete-pending race on the reused .test-project dir (source mkdir already recursive:true); (b) the 'recursive-mode' failure is __tests__/scanner-export.test.ts:170 'should support recursive option' (scans live __dirname twice, count comparison races with concurrent scans) - NOT src/scanner/__tests__/ast-mode.test.ts as the plan cited (citation drift). P1-T10 re-scoped to: harden both flaky tests deterministically (unique temp dirs; fixture-based recursive comparison).",
+      "at": "2026-07-02T07:58:00Z"
+    }
+  ],
   "git_branch": "wo/repo-review-2026-07-remediation",
   "communication_log": [
     {

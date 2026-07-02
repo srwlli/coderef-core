@@ -32,3 +32,9 @@ nul
 
 # Generated coderef artifacts directory (all scanner/RAG/index output)
 .coderef/
+
+# RAG incremental-index state file (written next to the indexed tree)
+.coderef-rag-index.json
+
+# Declaration-map build artifacts belong in dist/, never the source tree
+*.d.ts.map

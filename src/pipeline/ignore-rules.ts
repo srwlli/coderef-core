@@ -13,6 +13,10 @@ import { minimatch } from 'minimatch';
 export const DEFAULT_PIPELINE_IGNORE_PATTERNS = [
   'node_modules/',
   '.git/',
+  // CodeRef's own artifacts — scanning them re-ingests prior scan output
+  // (ghost index entries).
+  '.coderef/',
+  '.coderef-rag-index.json',
   'dist/',
   'build/',
   'coverage/',

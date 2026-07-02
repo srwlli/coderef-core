@@ -3,6 +3,7 @@
  */
 
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { HeaderGenerator, generateHeaders, inferLayerFromPath, inferCapabilityFromPath } from './header-generator';
 import type { ExportInfo, ImportInfo } from './ast-extractor';
@@ -12,10 +13,10 @@ describe('HeaderGenerator', () => {
   let generator: HeaderGenerator;
 
   beforeEach(() => {
-    tempDir = path.join(__dirname, '.test-temp');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
+    // Unique temp dir per test — this file used to share __dirname/.test-temp
+    // with registry-sync.test.ts, and the two files' afterEach rm raced each
+    // other's tests when vitest ran them in parallel (ENOENT flakes).
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-headergen-test-'));
     generator = new HeaderGenerator();
   });
 

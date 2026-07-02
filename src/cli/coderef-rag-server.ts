@@ -382,12 +382,14 @@ async function handleIndex(req: http.IncomingMessage, res: http.ServerResponse):
   // Spawn rag-index CLI as subprocess. Reuses the canonical incremental indexer
   // and --rag-reset semantics. Local-only: pin CODEREF_LLM_PROVIDER=ollama and
   // CODEREF_RAG_LOCAL_ONLY=1 in the child env.
-  const distPath = path.resolve(__dirname, '..', '..', 'src', 'cli', 'rag-index.js');
-  const fallback = path.join(
-    'C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE',
-    'dist', 'src', 'cli', 'rag-index.js',
-  );
-  const ragIndexBin = fs.existsSync(distPath) ? distPath : fallback;
+  // Sibling bin in this package's own dist tree (this file compiles to
+  // dist/src/cli/coderef-rag-server.js). No machine-specific fallback.
+  const ragIndexBin = path.join(__dirname, 'rag-index.js');
+  if (!fs.existsSync(ragIndexBin)) {
+    indexInFlight.delete(body.project_dir);
+    send(res, 500, { error: 'rag_index_bin_missing', path: ragIndexBin });
+    return;
+  }
 
   const args = ['--project-dir', body.project_dir, '--provider', 'ollama', '--store', 'sqlite'];
   if (body.reset) args.push('--reset');

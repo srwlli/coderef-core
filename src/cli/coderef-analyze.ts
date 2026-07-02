@@ -18,7 +18,6 @@ import { convertGraphToElements } from '../adapter/graph-to-elements.js';
 import { ComplexityScorer } from '../context/complexity-scorer.js';
 import { ImpactSimulator } from '../context/impact-simulator.js';
 import { MultiHopTraversal } from '../context/multi-hop-traversal.js';
-import { BreakingChangeDetector } from '../context/breaking-change-detector.js';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, extname } from 'node:path';
 
@@ -59,7 +58,10 @@ Analysis types:
   complexity         Score element complexity (requires project scan)
   impact             Simulate blast radius for a changed element (requires --element)
   multi-hop          Traverse multi-hop relationships (requires --element)
-  breaking-changes   Detect breaking API changes (requires --from; --to optional)
+  breaking-changes   NOT IMPLEMENTED — exits with an error. The git-diff /
+                     signature extractors are placeholder stubs; this type is
+                     gated until they are implemented so it cannot emit
+                     confident-looking empty reports.
 `.trim());
 }
 
@@ -189,19 +191,17 @@ async function main(): Promise<void> {
       break;
     }
     case 'breaking-changes': {
-      if (!values.from) {
-        console.error('Error: --from is required for --type=breaking-changes');
-        process.exit(1);
-      }
-      const service   = new AnalyzerService(project);
-      const result    = await service.analyze();
-      const simulator = new ImpactSimulator(result.graph);
-      const detector  = new BreakingChangeDetector(service, simulator);
-      emit(await detector.detectChanges(
-        values.from as string,
-        values.to as string | undefined,
-        !values.to
-      ));
+      // Gated until the diff/signature extractors are real (they are
+      // placeholder stubs returning empty — see diff-analyzer.ts). Running
+      // them would emit a confident-looking report that found nothing.
+      console.error(
+        'Error: --type=breaking-changes is NOT IMPLEMENTED.\n' +
+        'The underlying git-diff and signature extractors (getChangedElements, ' +
+        'extractSignaturesFromRef/FromWorktree) are placeholder stubs that return ' +
+        'empty results, so any report would be a false negative. ' +
+        'This type is disabled until they are implemented.'
+      );
+      process.exit(1);
       break;
     }
     default: {

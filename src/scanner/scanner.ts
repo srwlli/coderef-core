@@ -293,9 +293,13 @@ const DEFAULT_SUPPORTED_LANGS = ['ts', 'js', 'tsx', 'jsx', 'svelte', 'vue', 'py'
  * - Build outputs: dist, build, .next, .nuxt
  * - Python virtual environments: .venv, venv, env, __pycache__
  * - Version control: .git
+ * - CodeRef's own artifacts: .coderef, .coderef-rag-index.json (self-ingestion
+ *   creates ghost index entries on rescan)
  */
 export const DEFAULT_EXCLUDE_PATTERNS = [
   '**/node_modules/**',
+  '**/.coderef/**',
+  '**/.coderef-rag-index.json',
   '**/dist/**',
   '**/build/**',
   '**/.venv/**',

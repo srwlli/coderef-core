@@ -4,6 +4,7 @@
  */
 
 import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { RegistrySyncer, syncEntry, refreshSync } from './registry-sync';
 import type { ExportInfo } from './ast-extractor';
@@ -14,11 +15,11 @@ describe('RegistrySyncer', () => {
   let registryPath: string;
 
   beforeEach(() => {
-    tempDir = path.join(__dirname, '.test-temp');
+    // Unique temp dir per test — this file used to share __dirname/.test-temp
+    // with header-generator.test.ts, and the two files' afterEach rm raced
+    // each other's tests when vitest ran them in parallel (ENOENT flakes).
+    tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-regsync-test-'));
     registryPath = path.join(tempDir, 'test-registry.json');
-    if (!fs.existsSync(tempDir)) {
-      fs.mkdirSync(tempDir, { recursive: true });
-    }
   });
 
   afterEach(() => {

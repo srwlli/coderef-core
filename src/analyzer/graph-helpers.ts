@@ -16,7 +16,7 @@
  *
  * Purpose: Enable 60-80% auto-fill rate for resource sheet generation
  * Context: WO-RESOURCE-SHEET-GRAPH-INTEGRATION-001
- * @see C:\Users\willh\.mcp-servers\coderef\sessions\reference-sheet-reconciliation\coderef-system-output.md
+ * (session notes: reference-sheet-reconciliation / coderef-system-output.md)
  */
 
 
