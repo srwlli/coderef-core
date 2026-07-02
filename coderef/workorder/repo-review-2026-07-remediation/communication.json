@@ -1,0 +1,84 @@
+{
+  "workorder_id": "WO-REPO-REVIEW-2026-07-REMEDIATION-001",
+  "feature_name": "repo-review-2026-07-remediation",
+  "created": "2026-07-02T07:26:34Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-W45PTN",
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "plan_created; Phase 1 (P0 correctness & trust) fully authored and ready; Phases 2-3 deferred (rolling plan)"
+  },
+  "execution_rules": [
+    "Rolling plan: execute phase-by-phase; report back after EVERY phase (rolling_plan.report_back_required_after_each_phase=true)",
+    "Phases 2-3 are plan_deferred placeholders \u2014 author their tasks only after the prior phase is completed + reviewed (ad-hoc plan.json edit until /plan-next-phase ships; flip the bound stub deferred_phase->promoted when authored)",
+    "Hard stop at the end of every phase; hard_stops[].approved flips only on operator review",
+    "Commit on main by EXPLICIT path (main-only git model; never git add -A)",
+    "Do not regress the canonical pipeline: locked index.json/validation schemas and invariant tests must keep passing"
+  ],
+  "hard_constraints": [
+    "Windows-first path testing on every path-related change",
+    "layers.json resolves from the sibling ASSISTANT repo, never a bundled copy",
+    "Reconcile STUB-9F63EJ overlap before authoring Phase 2 tasks",
+    "Element-count re-baseline after scanner exclude change must be an explicit, reviewed commit"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_forced",
+      "from": "strict",
+      "to": "phased",
+      "reason": "--phased-stubs implies phased (ROLLING-PLAN.md: a strict rolling plan defeats the purpose); user's --plan-type=strict and category-fix mapping both overridden",
+      "at": "2026-07-02T07:26:34Z"
+    },
+    {
+      "event": "operator_ruling",
+      "question": "bare --phased-stubs with no follow-on stubs vs single stub covering three tiers",
+      "ruling": "(A) rolling plan: minted STUB-XG7DSB (P1 structural) + STUB-01DW28 (P2 perf/hygiene) as deferred-phase bindings; STUB-W45PTN remains the tracking parent",
+      "at": "2026-07-02T07:26:34Z"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 14,
+      "source": "inline-authored from stub context.md items P0-1..P0-6 (no --tasks-file)",
+      "at": "2026-07-02T07:26:34Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "phased",
+      "phase_count": 3,
+      "source": "default",
+      "at": "2026-07-02T07:26:34Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "phased",
+      "source": "default",
+      "at": "2026-07-02T07:26:34Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "git_branch": "wo/repo-review-2026-07-remediation",
+  "communication_log": [
+    {
+      "at": "2026-07-02T07:26:34Z",
+      "from": "create-workorder",
+      "entry": "Workorder created via stub promotion (STUB-W45PTN -> WO-REPO-REVIEW-2026-07-REMEDIATION-001); rolling plan with deferred phases bound to STUB-XG7DSB / STUB-01DW28."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

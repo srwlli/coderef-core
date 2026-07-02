@@ -1,0 +1,230 @@
+{
+  "plan_type": "phased",
+  "goal": "Remediate the 2026-07-02 code-first repo review of coderef-core across three tiers. Phase 1 (P0 correctness and trust): fix coderef-query missing analyze() call; gate the hollow breaking-change detector; make RAG incremental indexing state record only successful embeds and wire chunksToDelete to vectorStore.delete(); add .coderef/** to scanner DEFAULT_EXCLUDE_PATTERNS and remove committed residue; replace hardcoded machine paths in coderef-watch and coderef-rag-server; fix the two failing vitest tests for a green baseline. Phase 2 (P1 structural, deferred): legacy analyzer/query stack retirement per DR-PHASE-5-C, tree-sitter TS relationship extraction, strict tsconfig migration, shared provider/store factory, coderef-search fix-or-drop, centralized path normalization. Phase 3 (P2 perf and hygiene, deferred): single-parse scan pipeline, dead-code deletion, plugin system wiring, sqlite-vec or atomic vector-store writes.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "P0 \u2014 Correctness & Trust",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Load Phase 1 inputs: stub context coderef/working/repo-review-2026-07-remediation/context.md (P0-1..P0-6), report coderef/reference/repo-review-2026-07-02.md section 6, and this WO's analysis.json risks.",
+          "touches": []
+        },
+        {
+          "id": "P1-T2",
+          "verb": "TEST",
+          "description": "Baseline: run npx vitest run; confirm exactly the 2 known failures (buildDependencyGraph.test.ts ENOENT mkdir .test-project/.coderef; ast-mode recursive-mode test) and record counts (last known 1660 pass / 2 fail / 30 skip).",
+          "touches": []
+        },
+        {
+          "id": "P1-T3",
+          "verb": "EDIT",
+          "description": "P0-1 fix coderef-query end-to-end: invoke analyzer.analyze() (src/cli/coderef-query.ts:86-95) before dispatching query types; verify each --type returns non-empty results on a coderef-core self-scan.",
+          "touches": [
+            "src/cli/coderef-query.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "P0-2 gate breaking-changes until real: make coderef-analyze --type=breaking-changes fail loudly with an explicit not-implemented error (or remove the wiring) instead of returning silently-empty results from the placeholder stubs at diff-analyzer.ts:130-160; document in --help.",
+          "touches": [
+            "src/context/breaking-change-detector/diff-analyzer.ts",
+            "src/cli/coderef-analyze.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "P0-3 RAG incremental truth: persist indexed-state only for chunks whose embed SUCCEEDED (indexing-orchestrator.ts ~line 919) and wire chunksToDelete through vectorStore.delete() in the incremental path so removed code leaves the vector store.",
+          "touches": [
+            "src/integration/rag/indexing-orchestrator.ts",
+            "src/integration/rag/incremental-indexer.ts"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "TEST",
+          "description": "P0-3 regression tests: a chunk whose embed fails is NOT recorded as indexed; a chunk removed from source triggers vectorStore.delete(). Add to src/integration/rag/__tests__/.",
+          "touches": [
+            "src/integration/rag/__tests__/"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "EDIT",
+          "description": "P0-4a stop self-ingestion: add .coderef/** (and the repo-root .coderef-rag-index.json state file) to DEFAULT_EXCLUDE_PATTERNS in src/scanner/scanner.ts and the mirrored default in src/index.ts.",
+          "touches": [
+            "src/scanner/scanner.ts",
+            "src/index.ts"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "DELETE",
+          "description": "P0-4b remove committed residue: git rm -r --cached the committed rag-vectors.sqlite/ directory residue and any committed .coderef self-scan artifacts; add matching .gitignore entries so they cannot return.",
+          "touches": [
+            ".gitignore"
+          ]
+        },
+        {
+          "id": "P1-T9",
+          "verb": "EDIT",
+          "description": "P0-5 remove hardcoded machine paths: replace C:/Users/willh defaults at coderef-watch.ts:233/274 and coderef-rag-server.ts:386 with env-var override + cwd-relative fallback; no literal user-profile paths remain in src/.",
+          "touches": [
+            "src/cli/coderef-watch.ts",
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "P1-T10",
+          "verb": "EDIT",
+          "description": "P0-6 fix the 2 failing tests: create the .test-project fixture dir (recursive mkdir) in buildDependencyGraph.test.ts setup; fix the ast-mode recursive-mode fixture/expectation so it passes from a clean checkout.",
+          "touches": [
+            "src/fileGeneration/__tests__/buildDependencyGraph.test.ts",
+            "src/scanner/__tests__/ast-mode.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T11",
+          "verb": "TEST",
+          "description": "Green baseline gate: npx vitest run completes with 0 failures (skips unchanged).",
+          "touches": []
+        },
+        {
+          "id": "P1-T12",
+          "verb": "RUN",
+          "description": "Pipeline verification: npm run build, then fresh scan + populate + validate on coderef-core itself; confirm ghost .coderef index entries (types.d.ts / scanner.js class) are gone, validation report is clean, and coderef-watch + coderef-rag-server still start on Windows.",
+          "touches": []
+        },
+        {
+          "id": "P1-T13",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1 on main by EXPLICIT path (never git add -A) with a plain-English message referencing WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 1 / STUB-W45PTN.",
+          "touches": []
+        },
+        {
+          "id": "P1-T14",
+          "verb": "STOP",
+          "description": "Hard stop: report Phase 1 results back (test counts, element-count delta from the exclude change, reindex outcome). Operator review gates Phase 2 planning: author Phase 2 tasks against STUB-XG7DSB only after this review, reconciling STUB-9F63EJ overlap first.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-W45PTN",
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover {feature_name} phase {N}@quick"
+        ],
+        "post_phase": [
+          "/discover {feature_name} phase {N} post@quick"
+        ]
+      }
+    },
+    {
+      "phase": 2,
+      "name": "repo-review-p1-structural \u2014 DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-XG7DSB",
+      "plan_deferred": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P2-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 2 tasks not yet authored. Pre-condition: Phase 1 must be COMPLETED + REVIEWED before this phase's plan is authored (against STUB-XG7DSB).",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover {feature_name} phase {N}@quick"
+        ],
+        "post_phase": [
+          "/discover {feature_name} phase {N} post@quick"
+        ]
+      }
+    },
+    {
+      "phase": 3,
+      "name": "repo-review-p2-perf-hygiene \u2014 DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-01DW28",
+      "plan_deferred": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P3-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 3 tasks not yet authored. Pre-condition: Phase 2 must be COMPLETED + REVIEWED before this phase's plan is authored (against STUB-01DW28).",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover {feature_name} phase {N}@quick"
+        ],
+        "post_phase": [
+          "/discover {feature_name} phase {N} post@quick"
+        ]
+      }
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Phase 1 ends with mandatory user review (rolling plan: report back before Phase 2 is planned)."
+    },
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "Phase 2 plan_deferred=true. Hard stop fires at phase planning gate."
+    },
+    {
+      "phase": 3,
+      "approved": false,
+      "reason": "Phase 3 plan_deferred=true. Hard stop fires at phase planning gate."
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260702T072634Z",
+  "plan_type_decided_by": "create-workorder@2.15.2",
+  "workorder_id": "WO-REPO-REVIEW-2026-07-REMEDIATION-001",
+  "feature_name": "repo-review-2026-07-remediation",
+  "created": "2026-07-02T07:26:34Z",
+  "plan_type_rationale": "Forced to phased by the --phased-stubs rolling-plan contract (a strict rolling plan is incoherent per ROLLING-PLAN.md). Stub category 'fix' maps to strict and the user passed --plan-type=strict; both are logged as overridden. Rolling shape chosen because Phase 1 (P0) evidence (green baseline, ghost-entry cleanup, STUB-9F63EJ overlap) changes the picture for the P1 structural tier, so one-shot planning of all 18 items would go stale by Phase 2.",
+  "rolling_plan": {
+    "mode": "rolling",
+    "close_after_phase": 3,
+    "report_back_required_after_each_phase": true,
+    "next_phase_authoring": "ad-hoc plan.json edit until /plan-next-phase skill exists (STUB-358)"
+  },
+  "workorder_hooks": {
+    "post_plan": [
+      "/discover {feature_name}@medium --output-dest=working:coderef/workorder/{feature_name}/discover-post-plan.md"
+    ],
+    "post_execute": [
+      "/discover {feature_name} post-execute@medium --output-dest=working:coderef/workorder/{feature_name}/discover-post-execute.md"
+    ],
+    "plan_gaps": [
+      "/discover {feature_name} plan-gaps@medium --output-dest=working:coderef/workorder/{feature_name}/discover-plan-gaps.md"
+    ]
+  }
+}

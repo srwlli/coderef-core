@@ -1,0 +1,361 @@
+{
+  "workorder_id": "WO-REPO-REVIEW-2026-07-REMEDIATION-001",
+  "feature_name": "repo-review-2026-07-remediation",
+  "created": "2026-07-02T07:26:34Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub-promotion: /create-workorder --from-stub=STUB-W45PTN --plan-type=strict --phased-stubs",
+    "user_request": "Promote STUB-W45PTN (full remediation of the 2026-07-02 code-first repo review) as a strict-discipline phased workorder covering all three tiers; operator ruling (A) selected the rolling-plan shape with follow-on stubs minted for the deferred P1/P2 phases."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Forced to phased by the --phased-stubs rolling-plan contract (a strict rolling plan is incoherent per ROLLING-PLAN.md). Stub category 'fix' maps to strict and the user passed --plan-type=strict; both are logged as overridden. Rolling shape chosen because Phase 1 (P0) evidence (green baseline, ghost-entry cleanup, STUB-9F63EJ overlap) changes the picture for the P1 structural tier, so one-shot planning of all 18 items would go stale by Phase 2.",
+    "plan_type_decided_by": "create-workorder@2.15.2",
+    "discovery_ref": "planning-discovery-20260702T072634Z",
+    "discovery": {
+      "candidates": [
+        "__tests__/generators/root-cause-alignment.test.ts",
+        "__tests__/integration.test.ts",
+        "__tests__/integration/rag/facet-filter.test.ts",
+        "__tests__/integration/rag/indexing-orchestrator-graph-source.test.ts",
+        "__tests__/integration/rag/indexing-orchestrator-stale-deletions.test.ts",
+        "__tests__/integration/rag/indexing-orchestrator.test.ts",
+        "__tests__/mcp-server.test.ts",
+        "__tests__/pipeline-integration.test.ts",
+        "__tests__/pipeline/builtin-classification.test.ts",
+        "__tests__/pipeline/call-resolution-determinism.test.ts",
+        "__tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts",
+        "__tests__/pipeline/call-resolution-two-pass-ordering.test.ts",
+        "__tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts",
+        "__tests__/pipeline/graph-construction-determinism.test.ts",
+        "__tests__/pipeline/graph-construction-edge-schema.test.ts",
+        "__tests__/pipeline/graph-construction-legacy-builders.test.ts",
+        "__tests__/pipeline/graph-test-origin-tagging.test.ts",
+        "__tests__/pipeline/indexing-gate-invariant.test.ts",
+        "__tests__/pipeline/no-graph-edge-claim.test.ts",
+        "__tests__/pipeline/no-phase-8-docs-leak.test.ts",
+        "__tests__/pipeline/output-validation-chokepoint.test.ts",
+        "__tests__/pipeline/output-validation-determinism.test.ts",
+        "__tests__/pipeline/output-validation-graph-integrity.test.ts",
+        "__tests__/pipeline/output-validation-real-world-noregress.test.ts",
+        "__tests__/pipeline/output-validation-report.test.ts",
+        "__tests__/pipeline/output-validation-semantic-headers.test.ts",
+        "__tests__/pipeline/output-validation-strict-headers.test.ts",
+        "__tests__/pipeline/raw-call-facts.test.ts",
+        "__tests__/pipeline/scanner-export-classification.test.ts",
+        "__tests__/pipeline/single-scanner.test.ts",
+        "__tests__/rag-index-cli.test.ts",
+        "__tests__/scanner-standalone.test.ts",
+        "examples/nextjs-api-route.ts",
+        "examples/plugins/example-detector/src/detectors/fastapi.ts",
+        "scripts/doc-gen/generate-meta-json.js",
+        "scripts/doc-gen/generate-relationships-md.js",
+        "scripts/doc-gen/utils.js",
+        "scripts/generate-intelligence.js",
+        "src/analyzer/analyzer-service.ts",
+        "src/analyzer/ast-element-scanner.ts",
+        "src/analyzer/call-detector.ts",
+        "src/analyzer/config-analyzer.ts",
+        "src/analyzer/contract-detector.ts",
+        "src/analyzer/database-detector.ts",
+        "src/analyzer/dependency-analyzer.ts",
+        "src/analyzer/design-pattern-detector.ts",
+        "src/analyzer/docs-analyzer.ts",
+        "src/analyzer/dynamic-import-detector.ts",
+        "src/analyzer/entry-detector.ts",
+        "src/analyzer/frontend-call-parsers.ts",
+        "src/analyzer/graph-analyzer.ts",
+        "src/analyzer/graph-builder.ts",
+        "src/analyzer/import-parser.ts",
+        "src/analyzer/js-call-detector/analyzer.ts",
+        "src/analyzer/js-call-detector/index.ts",
+        "src/analyzer/js-call-detector/parser.ts",
+        "src/analyzer/js-call-detector/types.ts",
+        "src/analyzer/middleware-detector.ts",
+        "src/analyzer/migration-route-analyzer.ts",
+        "src/analyzer/project-classifier.ts",
+        "src/cache/incremental-cache.ts",
+        "src/cli/coderef-analyze.ts",
+        "src/cli/coderef-mcp-server.ts",
+        "src/cli/coderef-pipeline.ts",
+        "src/cli/coderef-query.ts",
+        "src/cli/coderef-rag-server.ts",
+        "src/cli/coderef-watch.ts",
+        "src/cli/detect-languages.ts",
+        "src/cli/rag-eval.ts",
+        "src/cli/rag-index.ts",
+        "src/cli/rag-search.ts",
+        "src/cli/scan.ts",
+        "src/cli/semantic-integration.test.ts",
+        "src/cli/semantic-integration.ts",
+        "src/cli/validate-routes.ts",
+        "src/config/presets.ts",
+        "src/context/__tests__/breaking-change-detector.test.ts",
+        "src/context/breaking-change-detector/diff-analyzer.ts",
+        "src/context/breaking-change-detector/hint-generator.ts",
+        "src/context/breaking-change-detector/impact-assessor.ts",
+        "src/context/breaking-change-detector/index.ts",
+        "src/context/breaking-change-detector/signature-comparator.ts",
+        "src/context/breaking-change-detector/types.ts",
+        "src/context/context-tracker.ts",
+        "src/context/edge-case-detector.ts",
+        "src/context/entry-point-detector.ts",
+        "src/context/fuzzy-resolver.ts",
+        "src/context/multi-hop-traversal.ts",
+        "src/context/test-pattern-analyzer.ts",
+        "src/context/types.ts",
+        "src/errors/CodeRefError.ts",
+        "src/errors/ScanError.ts",
+        "src/export/graph-exporter.ts",
+        "src/fileGeneration/__tests__/buildDependencyGraph.test.ts",
+        "src/fileGeneration/analyzeCoverage.ts",
+        "src/fileGeneration/detectDrift.ts",
+        "src/fileGeneration/detectPatterns.ts",
+        "src/fileGeneration/generateContext.ts",
+        "src/fileGeneration/generateDiagrams.ts",
+        "src/fileGeneration/index-storage.ts",
+        "src/fileGeneration/saveFrontendCalls.ts",
+        "src/fileGeneration/validateReferences.ts",
+        "src/formatter/formatter.ts",
+        "src/generator/generateFrontendCalls.ts",
+        "src/generator/generateRoutes.ts",
+        "src/index.ts",
+        "src/indexer/index-store.ts",
+        "src/indexer/indexer-service.ts",
+        "src/indexer/metadata-index.ts",
+        "src/indexer/query-engine.ts",
+        "src/indexer/relationship-index.ts",
+        "src/integration/ai-prompt-generator.ts",
+        "src/integration/llm/anthropic-provider.ts",
+        "src/integration/llm/llm-provider.ts",
+        "src/integration/llm/model-registry.ts",
+        "src/integration/llm/ollama-provider.ts",
+        "src/integration/llm/openai-provider.ts",
+        "src/integration/rag/__tests__/coverage-floor-gate.test.ts",
+        "src/integration/rag/answer-generation-service.ts",
+        "src/integration/rag/confidence-scorer.ts",
+        "src/integration/rag/embedding-service.ts",
+        "src/integration/rag/embedding-text-generator.ts",
+        "src/integration/rag/graph-reranker.ts",
+        "src/integration/rag/incremental-indexer.ts",
+        "src/integration/rag/indexing-orchestrator.ts",
+        "src/integration/rag/path-types.ts",
+        "src/integration/rag/prompt-templates.ts",
+        "src/integration/rag/rag-config.ts",
+        "src/integration/rag/semantic-search.ts",
+        "src/integration/vector/chroma-store.ts",
+        "src/integration/vector/pinecone-store.ts",
+        "src/integration/vector/sqlite-store.ts",
+        "src/integration/vector/vector-store.ts",
+        "src/parser/parser.ts",
+        "src/pipeline/call-resolver.ts",
+        "src/pipeline/element-taxonomy.ts",
+        "src/pipeline/extractors/element-extractor.ts",
+        "src/pipeline/extractors/relationship-extractor.ts",
+        "src/pipeline/generators/context-generator.ts",
+        "src/pipeline/generators/coverage-generator.ts",
+        "src/pipeline/generators/diagram-generator.ts",
+        "src/pipeline/generators/drift-generator.ts",
+        "src/pipeline/generators/graph-output.ts",
+        "src/pipeline/generators/health-generator.ts",
+        "src/pipeline/generators/pattern-generator.ts",
+        "src/pipeline/generators/validation-generator.ts",
+        "src/pipeline/graph-builder.ts",
+        "src/pipeline/ignore-rules.ts",
+        "src/pipeline/import-resolver.ts",
+        "src/pipeline/incremental-cache.ts",
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/output-validator.ts",
+        "src/pipeline/semantic-elements.ts",
+        "src/pipeline/types.ts",
+        "src/plugins/loaders/config-loader.ts",
+        "src/plugins/loaders/local-loader.ts",
+        "src/plugins/loaders/npm-loader.ts",
+        "src/plugins/manifest-schema.ts",
+        "src/plugins/plugin-graph.ts",
+        "src/plugins/plugin-registry.ts",
+        "src/plugins/plugin-scanner.ts",
+        "src/plugins/types.ts",
+        "src/query/query-executor.ts",
+        "src/registry/entity-registry.ts",
+        "src/registry/types.ts",
+        "src/scanner/__tests__/ast-mode.test.ts",
+        "src/scanner/__tests__/incremental-cache-recursive.test.ts",
+        "src/scanner/__tests__/parallel-path-behavior.test.ts",
+        "src/scanner/error-reporter.ts",
+        "src/scanner/file-watcher.ts",
+        "src/scanner/framework-registry.ts",
+        "src/scanner/frontend-scanner.ts",
+        "src/scanner/lru-cache.ts",
+        "src/scanner/scanner.ts",
+        "src/scanner/semantic-analyzer.ts",
+        "src/scanner/tree-sitter-scanner.ts",
+        "src/search/search-engine.ts",
+        "src/semantic/ast-extractor.ts",
+        "src/semantic/header-generator.ts",
+        "src/semantic/llm-enricher.ts",
+        "src/semantic/orchestrator.ts",
+        "src/semantic/projections.ts",
+        "src/types/types.ts",
+        "src/utils/coderef-id.ts",
+        "src/validator/frontend-update-generator.ts",
+        "src/validator/migration-mapper.ts",
+        "src/validator/report-generator.ts",
+        "src/validator/route-normalizer.ts",
+        "src/validator/route-validator.ts",
+        "src/validator/validator.ts",
+        "utils/fs.js",
+        "utils/fs.ts"
+      ],
+      "blast_radius": [],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "call_chain_hits": [],
+      "warnings": [
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260702T072634Z"
+    }
+  },
+  "semantic_scan": {
+    "extracted_at": "2026-07-02T07:22:34.758Z",
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {
+      "decorators": 0,
+      "errorHandling": 881,
+      "functionExports": 0,
+      "imports": 0
+    },
+    "dependency_cycles": [],
+    "edge_metrics": {
+      "top_in_degree": [
+        {
+          "file": "@Fn/src/scanner/scanner.ts#scanCurrentElements:887",
+          "count": 133
+        },
+        {
+          "file": "@Cl/src/pipeline/orchestrator.ts#PipelineOrchestrator:63",
+          "count": 49
+        },
+        {
+          "file": "@Fn/src/scanner/scanner.ts#isLineCommented:1475",
+          "count": 49
+        },
+        {
+          "file": "@Fn/src/utils/coderef-id.ts#createCodeRefId:48",
+          "count": 46
+        },
+        {
+          "file": "@Fn/src/pipeline/output-validator.ts#validatePipelineState:237",
+          "count": 44
+        },
+        {
+          "file": "@Fn/demo-all-modules.ts#info:80",
+          "count": 41
+        },
+        {
+          "file": "@Fn/src/integration/rag/__tests__/graph-reranker.test.ts#createSearchResult:322",
+          "count": 29
+        },
+        {
+          "file": "@Fn/__tests__/indexer.test.ts#createSampleReferences:77",
+          "count": 29
+        },
+        {
+          "file": "@Fn/__tests__/generators/helpers.ts#createMockEnvironment:27",
+          "count": 27
+        },
+        {
+          "file": "@Fn/src/pipeline/semantic-header-parser.ts#parseHeader:228",
+          "count": 26
+        }
+      ],
+      "top_out_degree": [
+        {
+          "file": "@File/__tests__/indexer.test.ts",
+          "count": 655
+        },
+        {
+          "file": "@File/__tests__/analyzer.test.ts",
+          "count": 615
+        },
+        {
+          "file": "@File/src/fileGeneration/__tests__/index-storage.test.ts",
+          "count": 360
+        },
+        {
+          "file": "@File/src/validator/migration-mapper.test.ts",
+          "count": 329
+        },
+        {
+          "file": "@File/src/semantic/header-generator.test.ts",
+          "count": 311
+        },
+        {
+          "file": "@File/__tests__/errors.test.ts",
+          "count": 299
+        },
+        {
+          "file": "@File/__tests__/relationship-extractor.test.ts",
+          "count": 283
+        },
+        {
+          "file": "@File/src/context/__tests__/breaking-change-detector.test.ts",
+          "count": 281
+        },
+        {
+          "file": "@File/__tests__/js-call-detector.test.ts",
+          "count": 271
+        },
+        {
+          "file": "@File/scripts/scan-cli/test_scan_cli.test.ts",
+          "count": 264
+        }
+      ]
+    },
+    "errors": []
+  },
+  "discovery_rag": {
+    "rag_hits": [],
+    "lloyd_provenance": null,
+    "fallback_used": true,
+    "error": "vectors_stale (19.4 days old)",
+    "ms": 0,
+    "discovery_rag_timestamp": "2026-07-02T07:26:34Z",
+    "discovery_rag_enabled": true
+  },
+  "promotion_metadata": {
+    "from_stub": "STUB-W45PTN",
+    "phased_stubs": [
+      "STUB-XG7DSB",
+      "STUB-01DW28"
+    ],
+    "rolling_plan_contract": "references/ROLLING-PLAN.md (create-workorder v2.7.0+)",
+    "operator_ruling": "(A) rolling plan \u2014 minted STUB-XG7DSB (P1 structural) + STUB-01DW28 (P2 perf/hygiene) as deferred phases, 2026-07-02",
+    "stub_context": "coderef/working/repo-review-2026-07-remediation/context.md (P0-1..P0-6, P1-7..P1-12, P2-13..P2-18)",
+    "source_report": "coderef/reference/repo-review-2026-07-02.md"
+  },
+  "scope": {
+    "in_scope": [
+      "Phase 1 (P0 correctness & trust): coderef-query fix, breaking-changes gating, RAG incremental state + vector deletion, scanner .coderef/** excludes + committed-residue removal, hardcoded-path replacement, 2 failing-test fixes -> green baseline",
+      "Phase 2 (P1 structural, plan deferred to STUB-XG7DSB): legacy-stack retirement per DR-PHASE-5-C, tree-sitter TS relationships, strict tsconfig migration, shared provider/store factory, coderef-search fix-or-drop, centralized path normalization",
+      "Phase 3 (P2 perf & hygiene, plan deferred to STUB-01DW28): single-parse scan pipeline, dead-code deletion, plugin system wiring, sqlite-vec/atomic vector writes"
+    ],
+    "out_of_scope": [
+      "New features or MCP v2 tool additions (separate roadmap track)",
+      "Phase 3 storage roadmap work not named in the review's actionable tables",
+      "Semantic-header restamp campaigns and RAG headerless-fallback follow-ups flagged in PS rescan",
+      "Any behavior change to the canonical 6-stage populate pipeline beyond the named P0 fixes"
+    ]
+  },
+  "constraints": [
+    "Do not regress the canonical pipeline: index.json 14-field schema and validation-report contract are locked; invariant tests must keep passing",
+    "Windows-first path handling: every path fix must be tested with win32 separators (AC-09 dynamic-gap precedent)",
+    "layers.json lives in the sibling ASSISTANT repo, not coderef-core (STUB-W8S124 precedent); path fixes must not assume a bundled copy",
+    "Check STUB-9F63EJ (legacy retirement ruling) for overlap before authoring Phase 2 tasks \u2014 do not duplicate the retirement work",
+    "Scanner exclude change will drop element counts (ghost .coderef entries); re-baseline deliberately, not silently"
+  ]
+}

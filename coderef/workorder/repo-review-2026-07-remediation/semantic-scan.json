@@ -1,0 +1,99 @@
+{
+  "extracted_at": "2026-07-02T07:22:34.758Z",
+  "layer_distribution": {},
+  "hotspot_files": [],
+  "pattern_inventory": {
+    "decorators": 0,
+    "errorHandling": 881,
+    "functionExports": 0,
+    "imports": 0
+  },
+  "dependency_cycles": [],
+  "edge_metrics": {
+    "top_in_degree": [
+      {
+        "file": "@Fn/src/scanner/scanner.ts#scanCurrentElements:887",
+        "count": 133
+      },
+      {
+        "file": "@Cl/src/pipeline/orchestrator.ts#PipelineOrchestrator:63",
+        "count": 49
+      },
+      {
+        "file": "@Fn/src/scanner/scanner.ts#isLineCommented:1475",
+        "count": 49
+      },
+      {
+        "file": "@Fn/src/utils/coderef-id.ts#createCodeRefId:48",
+        "count": 46
+      },
+      {
+        "file": "@Fn/src/pipeline/output-validator.ts#validatePipelineState:237",
+        "count": 44
+      },
+      {
+        "file": "@Fn/demo-all-modules.ts#info:80",
+        "count": 41
+      },
+      {
+        "file": "@Fn/src/integration/rag/__tests__/graph-reranker.test.ts#createSearchResult:322",
+        "count": 29
+      },
+      {
+        "file": "@Fn/__tests__/indexer.test.ts#createSampleReferences:77",
+        "count": 29
+      },
+      {
+        "file": "@Fn/__tests__/generators/helpers.ts#createMockEnvironment:27",
+        "count": 27
+      },
+      {
+        "file": "@Fn/src/pipeline/semantic-header-parser.ts#parseHeader:228",
+        "count": 26
+      }
+    ],
+    "top_out_degree": [
+      {
+        "file": "@File/__tests__/indexer.test.ts",
+        "count": 655
+      },
+      {
+        "file": "@File/__tests__/analyzer.test.ts",
+        "count": 615
+      },
+      {
+        "file": "@File/src/fileGeneration/__tests__/index-storage.test.ts",
+        "count": 360
+      },
+      {
+        "file": "@File/src/validator/migration-mapper.test.ts",
+        "count": 329
+      },
+      {
+        "file": "@File/src/semantic/header-generator.test.ts",
+        "count": 311
+      },
+      {
+        "file": "@File/__tests__/errors.test.ts",
+        "count": 299
+      },
+      {
+        "file": "@File/__tests__/relationship-extractor.test.ts",
+        "count": 283
+      },
+      {
+        "file": "@File/src/context/__tests__/breaking-change-detector.test.ts",
+        "count": 281
+      },
+      {
+        "file": "@File/__tests__/js-call-detector.test.ts",
+        "count": 271
+      },
+      {
+        "file": "@File/scripts/scan-cli/test_scan_cli.test.ts",
+        "count": 264
+      }
+    ]
+  },
+  "errors": []
+}
