@@ -491,8 +491,10 @@
     },
     {
       "phase": 3,
-      "approved": false,
-      "reason": "Phase 3 is the FINAL phase: terminal hard stop. After the P3-T19 report-back the WO is close-eligible; /close-workorder requires operator approval (rolling_plan.close_after_phase=3)."
+      "approved": true,
+      "reason": "Phase 3 is the FINAL phase: terminal hard stop. After the P3-T19 report-back the WO is close-eligible; /close-workorder requires operator approval (rolling_plan.close_after_phase=3).",
+      "approved_at": "2026-07-02T20:40:00Z",
+      "approved_via": "operator /close-workorder invocation (terminal gate)"
     }
   ],
   "plan_adjustments_needed": [],

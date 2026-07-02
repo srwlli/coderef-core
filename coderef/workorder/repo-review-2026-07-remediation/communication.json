@@ -7,9 +7,9 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-W45PTN",
   "predecessor_for": null,
-  "status": "plan_created",
+  "status": "closed",
   "current_phase": 3,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\analysis.json",
@@ -176,6 +176,22 @@
       "phase": 3,
       "detail": "src/errors/ retired: CodeRefError, FileNotFoundError, IndexError, ParseError, ScanError, ValidationError no longer exported from the legacy main entry (dist/index.js). Zero production importers existed. Also removed from semantic module exports: LLMEnricher, enrichMetadata, enrichBatch, EnrichmentRequest, LLMEnricherOptions (enricher deleted; EnrichedMetadata type relocated to registry-sync). SemanticPipelineOptions.enrichLLM and SemanticIntegrationOptions.enrichLLM option fields removed (were no-ops). CLI flags removed: populate --llm-enrich, scan --plugins/--no-plugins, semantic-integration --no-enrich.",
       "at": "2026-07-02T19:14:38Z"
+    },
+    {
+      "event": "rolling_halt_no_rearm",
+      "phase": 3,
+      "at": "2026-07-02T19:47:48Z",
+      "note": "FINAL phase of the rolling plan — per execute-workorder Step 6 3.5 no re-arm on final-phase halts; control returns to the operator for /close-workorder. Interactive session precedent from phases 1-2 also applies."
+    },
+    {
+      "event": "environment_wart",
+      "at": "2026-07-02T19:47:48Z",
+      "note": "OPENAI_API_KEY exists in this shell env (residue — operator directive says NO cloud keys), flipping the key-aware provider default to openai and tripping the 768-vs-1536 dimension guard on rag-search. Verified harmless (guard refused honestly); live search verified green with --provider ollama. Recommend deleting the env var."
+    },
+    {
+      "event": "workorder_closed_close_only",
+      "at": "2026-07-02T20:40:00Z",
+      "detail": "Close-only ceremony complete per v2.8.0 default: audit WARNING (pre-existing ecosystem issues only; all WO-scoped checks green), session yaml + registry row written, active-work row removed. Registry row flips to status=complete via canonical writer at commit step. NOT archived — operator may run /close-workorder --archive later."
     }
   ],
   "phase2_gate_events": [
@@ -212,6 +228,13 @@
       "commit": "4443c6c",
       "verdict": "PASS",
       "at": "2026-07-02T09:26:03.348Z"
+    },
+    {
+      "phase": 3,
+      "to_status": "complete",
+      "commit": "3bbd97a",
+      "verdict": "PASS",
+      "at": "2026-07-02T19:47:28.162Z"
     }
   ],
   "inter_phase_results": {
@@ -248,6 +271,22 @@
           "severity": "info",
           "summary": "post-commit rg pass over src/: zero references to the feature slug remain in source; commit 4443c6c (65 files, origin-verified) + WO artifacts are the only surfaces. Untracked residue noted for Phase 3 hygiene: graphify-out/, mcp-smoke-stderr.txt (pre-existing, not this WO's)",
           "at": "2026-07-02T09:35:00Z"
+        }
+      ]
+    },
+    "3": {
+      "pre": [
+        {
+          "hook": "/discover repo-review-2026-07-remediation phase 3@quick",
+          "outcome": "pass",
+          "summary": "topic surfaces present; deep inventory pre-verified by read-only scout; no plan-vs-tree drift"
+        }
+      ],
+      "post": [
+        {
+          "hook": "/discover repo-review-2026-07-remediation phase 3 post@quick",
+          "outcome": "pass",
+          "summary": "plan.json carries authored Phase 3 (5 STUB-01DW28/p2 references); commit 3bbd97a on origin; artifacts clean: 0 stale headers, 0 duplicate edge ids, 14-field validation report, suite 1498/26/0 x2"
         }
       ]
     }
@@ -335,5 +374,66 @@
       "detail": "Scanner's private TreeSitterScanner.extractTypeScriptElements missed interfaces, constants and type aliases (probe: 5-construct fixture yielded only function/class/method). The regex double-pass was masking the gap. Fixed by routing scanner element extraction through the pipeline ElementExtractor (same tree, one parse) — P1-8 precedent. TreeSitterScanner is now production-orphaned (only its own test remains) — flagged for a future deletion stub, NOT deleted this phase (unplanned scope).",
       "at": "2026-07-02T19:29:49Z"
     }
-  ]
+  ],
+  "closed_at": "2026-07-02T20:40:00Z",
+  "close_metadata": {
+    "closed_via": "/close-workorder",
+    "close_mode": "close-only (v2.8.0 default; NOT archived — archive via --archive later)",
+    "review_status": "WARNING",
+    "audit_verdict": "WARNING",
+    "audit_summary": {
+      "phased_terminal_guard": "PASS (terminal phase 3 of 3; full close allowed)",
+      "cross_project": "target_project=coderef-core; WO dir + git history live in CODEREF-CORE repo; registry rows in ASSISTANT",
+      "plan_completion": "3/3 phases complete, verdicts PASS (981173b, 4443c6c, 3bbd97a), all origin-verified",
+      "standards_validate": "culture axis PASS (after in-session alignment remediation: inventory generator + mapping-table.json + status.json — same path as SES-2026-06-13 precedent ISS-001/ISS-003); aggregate FAIL driven solely by 3 pre-existing structure-kind failures against ASSISTANT root (VISION.md missing, docs/ README index missing, data-standard docs missing) — kinds landed 2026-06-16/17, fail fleet-wide, kinds axis has no scope mode; none of this WO commits touch those surfaces (different repo). Classified pre-existing/out-of-scope per scope-discipline intent + same-day PS-API close precedent; close proceeds at WARNING.",
+      "tracking_validator": "scoped run: 16/17 PASS incl. ALL WO-relevant files (workorders/sessions/stubs/improvements); sole FAIL = registries.json dereference of TRACKING/archive-health.json (transient artifact deliberately untracked 2026-05-22, absent on disk) — pre-existing, not a WO row, registry-hygiene class that scope mode exists to exclude. Routed to TRACKING as follow-up.",
+      "dependency_audit": {
+        "vulnerable_count": 0,
+        "health_score": 60,
+        "outdated": 17,
+        "skipped": false
+      },
+      "semantic_validation": "3 phase-gate semantic validations recorded in decisions_log/gate events (each pass_with_overridden_false_positive, STUB-6MM7W2)",
+      "quality_regression": "skipped: no .coderef/reports/quality.json artifact in target project; behavioral gates already green (suite 1498/26/0 x2, coverage 95.33%, strict typecheck 0 errors, 14-field validation report, 0 stale headers)",
+      "route_validation": "skipped silently: no WO diff paths match route-patterns.json globs",
+      "git_state": "both HEADs == origin (core 3bbd97a, assistant db4605c9); pre-existing working-tree residue noted (core: unstaged deletions of .mcp.json + coderef/ARCHIVED/** + coderef/archived/** present since session start, NOT committed by this close; assistant: peer-session modifications) — explicit-path staging keeps residue out of close commits"
+    },
+    "session_log": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/.coderef/sessions/SES-2026-07-02-REPO-REVIEW-2026-07-REMEDIATION.yaml",
+    "warnings": [
+      "standards-kinds axis FAIL is pre-existing fleet-wide drift (no scope mode) — needs STANDARDS follow-up",
+      "TRACKING/registries.json dangling pointer to absent archive-health.json — needs TRACKING follow-up",
+      "CODEREF-CORE working tree carries pre-existing unstaged deletions of .mcp.json + archived WO trees (operator to rule: restore via git checkout or commit the removal)",
+      "OPENAI_API_KEY env residue (operator directed removal — handled post-close this session)"
+    ],
+    "follow_ups": [
+      {
+        "id": "FU-1",
+        "status": "candidate",
+        "title": "Delete production-orphaned TreeSitterScanner",
+        "detail": "After P3-T3 routed scanner extraction through the pipeline ElementExtractor, TreeSitterScanner has zero production callers (only its own test). Deletion candidate incl. test.",
+        "domain": "CODEREF-CORE"
+      },
+      {
+        "id": "FU-2",
+        "status": "candidate",
+        "title": "Adopt shared cli-args helper in remaining hand-rolled CLI parsers",
+        "detail": "populate, coderef-watch, coderef-pipeline, coderef-rag-server, scan-frontend-calls, validate-routes still hand-parse argv; same --flag=value bug class the RAG bins had.",
+        "domain": "CODEREF-CORE"
+      },
+      {
+        "id": "FU-3",
+        "status": "candidate",
+        "title": "standards-kinds axis needs scope mode / per-project applicability",
+        "detail": "All 3 structure kinds FAIL against ASSISTANT root (pre-existing doc drift since kinds landed 2026-06-17), forcing every /close-workorder aggregate to FAIL. Mirror of STUB-X0J6DP which fixed this for the culture axis.",
+        "domain": "STANDARDS"
+      },
+      {
+        "id": "FU-4",
+        "status": "candidate",
+        "title": "registries.json dangling pointer to absent TRACKING/archive-health.json",
+        "detail": "archive-health.json deliberately untracked 2026-05-22 and currently absent on disk; scoped tracking validator exits 1 on the dereference for every close.",
+        "domain": "TRACKING"
+      }
+    ]
+  }
 }
