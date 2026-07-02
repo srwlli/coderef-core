@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-W45PTN",
+  "ulid": "01KWGSMSYMV4W7X7A18Y0VRF3B",
+  "feature_name": "repo-review-2026-07-remediation",
+  "description": "Full remediation of the 2026-07-02 code-first repo review across three tiers: P0 correctness/trust (broken coderef-query, hollow breaking-changes detector, RAG incremental state drift, .coderef self-ingestion + committed residue, hardcoded machine paths, 2 failing tests), P1 structural (legacy-stack retirement per DR-PHASE-5-C, TS relationship extraction via tree-sitter facts, strict tsconfig migration, shared provider/store factory, coderef-search fix-or-drop, centralized path normalization), P2 perf/hygiene (single-parse scan pipeline, dead-code deletion, plugin system wiring, sqlite-vec/atomic vector store). Explicit context in context.md (this dir) + full report at coderef/reference/repo-review-2026-07-02.md; promote via /create-workorder as strict phased (rolling plan, P0/P1/P2 as phase boundaries).",
+  "category": "fix",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-07-02T06:53:38Z"
+}
