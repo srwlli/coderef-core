@@ -146,20 +146,15 @@ const graph = await buildDependencyGraph('./my-project', elements);
 ### Dependency Analysis
 
 ```typescript
-import { AnalyzerService } from '@coderef/core';
+import { loadCanonicalGraph } from '@coderef/core';
 
-// Create analyzer for project
-const analyzer = new AnalyzerService('./my-project');
+// Query the canonical pipeline-emitted graph (run populate first)
+const engine = loadCanonicalGraph('./my-project');
 
-// Analyze codebase
-const result = await analyzer.analyze(['src/**/*.ts']);
+console.log(engine.statistics());
 
-console.log(`Nodes: ${result.statistics.nodeCount}`);
-console.log(`Edges: ${result.statistics.edgeCount}`);
-console.log(`Circular dependencies: ${result.circularDependencies.length}`);
-
-// Query relationships
-const callers = await analyzer.queryRelationships('scanCurrentElements', 'calls-me');
+// Who calls scanCurrentElements? (inbound call edges)
+const callers = engine.callersOf(engine.resolve('scanCurrentElements'));
 console.log('Functions that call scanCurrentElements:', callers);
 ```
 
@@ -361,26 +356,24 @@ console.log(`Deprecated Calls: ${report.migration.deprecated.length}`);
 
 ---
 
-### 5. Analyzer (`analyzer/analyzer-service.ts`)
+### 5. Canonical Graph Queries (`query/canonical-graph.ts`)
 
-AST-based dependency graph building and relationship queries:
+Relationship queries over the pipeline-emitted `.coderef/graph.json`
+(the legacy in-memory AnalyzerService stack was retired per DR-PHASE-5-C):
 
 ```typescript
-import { AnalyzerService } from '@coderef/core';
+import { loadCanonicalGraph } from '@coderef/core';
 
-const analyzer = new AnalyzerService('./project-root');
+const engine = loadCanonicalGraph('./project-root');
 
-// Build dependency graph
-const result = await analyzer.analyze(['src/**/*.ts']);
+// Who calls a function? (inbound)
+const callers = engine.callersOf(engine.resolve('myFunction'));
 
-// Find what calls a function
-const callers = await analyzer.queryRelationships('myFunction', 'calls-me');
+// What does it call? (outbound)
+const callees = engine.calleesOf(engine.resolve('myFunction'));
 
-// Find what a function calls
-const callees = await analyzer.queryRelationships('myFunction', 'calls');
-
-// Find circular dependencies
-console.log('Circular deps:', result.circularDependencies);
+// Transitive dependents / dependencies
+const dependents = engine.dependentsOf(engine.resolve('src/scanner/scanner.ts'), 5);
 ```
 
 ### 5. File Generation (`fileGeneration/`)
@@ -419,24 +412,12 @@ await generateDiagrams(projectPath, elements);
 // .coderef/diagrams/imports.mmd
 ```
 
-### 6. Query Engine (`query/query-executor.ts`)
+### 6. Query CLI (`cli/coderef-query.ts`)
 
-Execute complex codebase queries:
-
-```typescript
-import { QueryExecutor } from '@coderef/core';
-
-const executor = new QueryExecutor(elements);
-
-// Find all functions in a file
-const functions = executor.findByFile('src/scanner/scanner.ts', 'function');
-
-// Find all React components
-const components = executor.findByType('component');
-
-// Search by name pattern
-const testFiles = executor.search('*.test.ts');
-```
+The `coderef-query` bin answers 8 relationship questions over the canonical
+graph — see [docs/CLI.md](docs/CLI.md#coderef-query). Direction contract:
+`-me` suffixed types are inbound (who calls/imports/depends on the target),
+bare types are outbound.
 
 ### 7. Type System (`types/types.d.ts`)
 
@@ -467,7 +448,7 @@ See **[docs/API.md](docs/API.md)** for the complete public API contract (post-re
 |--------|------|-------------|
 | `scanCurrentElements` | Function | Scan code elements from directory |
 | `LANGUAGE_PATTERNS` | Object | Pattern definitions by language |
-| `AnalyzerService` | Class | Dependency analysis orchestrator |
+| `CanonicalGraphQuery` / `loadCanonicalGraph` | Class / Function | Relationship queries over canonical `.coderef/graph.json` |
 | `saveIndex` | Function | Save scan results to JSON |
 | `generateContext` | Function | Generate context files |
 | `buildDependencyGraph` | Function | Build dependency graph |
@@ -476,7 +457,6 @@ See **[docs/API.md](docs/API.md)** for the complete public API contract (post-re
 | `validateReferences` | Function | Validate references and imports |
 | `detectDrift` | Function | Detect changes since last scan |
 | `generateDiagrams` | Function | Generate Mermaid/Graphviz diagrams |
-| `QueryExecutor` | Class | Execute codebase queries |
 | `TypeDesignator` | Enum | 26 type designators |
 | `generateValidationReport` | Function | Validate frontend calls vs server routes |
 | `generateMarkdownReport` | Function | Generate validation report with fix suggestions |

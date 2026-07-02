@@ -309,7 +309,7 @@ export class ProjectClassifier {
     }
 
     // Check package.json main/module fields
-    if (packageJson?.main || packageJson?.['module']) {
+    if (packageJson?.main || (packageJson as Record<string, unknown> | undefined)?.['module']) {
       score += 0.3;
       this.indicators.push('Library exports configured');
     }

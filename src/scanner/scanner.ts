@@ -34,6 +34,7 @@ import { parseFetchCalls, parseAxiosCalls, parseReactQueryCalls, parseCustomApiC
 import { frameworkRegistry, type FrameworkDetectionResult } from './framework-registry.js';
 import './register-frameworks.js'; // Auto-register default frameworks
 import logger from '../utils/logger.js';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 /**
  * Pattern configuration with optional route metadata extraction
@@ -668,7 +669,7 @@ function deduplicateElements(elements: ElementData[]): ElementData[] {
  */
 function shouldExcludePath(filePath: string, excludePatterns: string[]): boolean {
   // Normalize path to forward slashes for consistent matching
-  const normalizedPath = filePath.replace(/\\/g, '/');
+  const normalizedPath = normalizeSlashes(filePath);
 
   for (const pattern of excludePatterns) {
     // Match against the full path and also the relative portions
@@ -856,7 +857,7 @@ async function collectFiles(
 
       if (shouldInclude) {
         // Normalize to forward slashes for consistency
-        const normalizedPath = fullPath.replace(/\\/g, '/');
+        const normalizedPath = normalizeSlashes(fullPath);
 
         // Check if file should be excluded
         if (shouldExcludePath(normalizedPath, exclude)) {
@@ -1144,10 +1145,55 @@ export async function scanCurrentElements(
                 scanner.addElement(element);
               }
 
-              // IMP-CORE-052: Wire JSCallDetector pass for TS/JS — attaches calls[] and imports[]
-              // to structural elements from tree-sitter, preserving the same call graph data
-              // the useAST branch produces.
-              if (currentLang === 'ts' || currentLang === 'js') {
+              // IMP-CORE-052: attach calls[] and imports[] to the structural
+              // elements tree-sitter produced, preserving the same call-graph
+              // data the useAST branch produces.
+              //
+              // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 2 (P1-8): ts/tsx
+              // files route through the pipeline's tree-sitter
+              // RelationshipExtractor. The previous JSCallDetector pass parses
+              // with plain Acorn, which fails on TypeScript syntax and
+              // silently yielded EMPTY calls[]/imports[] for every real .ts
+              // file. Plain .js files stay on the Acorn path (it handles
+              // CommonJS require extraction).
+              if (currentLang === 'ts') {
+                try {
+                  const { GrammarRegistry } = await import('../pipeline/grammar-registry.js');
+                  const { RelationshipExtractor } = await import('../pipeline/extractors/relationship-extractor.js');
+                  const realExt = path.extname(file).substring(1); // ts vs tsx grammar
+                  const parser = await GrammarRegistry.getInstance().getParser(realExt);
+                  if (parser) {
+                    const tree = parser.parse(content);
+                    const extractor = new RelationshipExtractor();
+                    const fileImports = extractor.extractImports(tree.rootNode, file, content, realExt);
+                    const fileCalls = extractor.extractCalls(tree.rootNode, file, content, realExt);
+                    const allElements = scanner.getElements();
+                    const fileElements = allElements.slice(elementsBefore);
+                    for (const element of fileElements) {
+                      const elementCalls = fileCalls
+                        .filter(call => call.source === element.name)
+                        .map(call => call.target);
+                      if (fileImports.length > 0) {
+                        element.imports = fileImports.map(imp => ({
+                          source: imp.target,
+                          specifiers: imp.specifiers ?? [],
+                          default: imp.default,
+                          dynamic: imp.dynamic || false,
+                          line: imp.line
+                        }));
+                      }
+                      if (elementCalls.length > 0) {
+                        element.calls = [...new Set(elementCalls)];
+                      }
+                    }
+                  }
+                } catch (relationshipError) {
+                  if (verbose) {
+                    logger.warn(`Tree-sitter relationship extraction failed for ${file}:`, relationshipError);
+                  }
+                  // Non-fatal: structural elements already added; call data is best-effort
+                }
+              } else if (currentLang === 'js') {
                 try {
                   const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
                   const detector = new JSCallDetector();

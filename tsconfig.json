@@ -10,7 +10,7 @@
     "skipLibCheck": true,
     "noImplicitAny": false,
     "strict": false,
-    "noEmitOnError": false,
+    "noEmitOnError": true,
     "lib": ["ES2019", "ES2020"],
     "downlevelIteration": true,
     "esModuleInterop": true,

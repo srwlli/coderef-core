@@ -19,6 +19,7 @@ import * as path from 'path';
 import type { ExportInfo, ImportInfo } from './ast-extractor.js';
 import type { ElementData } from '../types/types.js';
 import logger from '../utils/logger.js';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 // Ordered path-pattern → layer inference table.
 // Patterns are tested with String.includes(); first match wins.
@@ -85,9 +86,9 @@ const LAYER_PATTERNS: Array<{ pattern: string; layer: string }> = [
 ];
 
 export function inferLayerFromPath(filePath: string): string | undefined {
-  const normalized = filePath.replace(/\\/g, '/');
+  const normalized = normalizeSlashes(filePath);
   for (const { pattern, layer } of LAYER_PATTERNS) {
-    const normalizedPattern = pattern.replace(/\\/g, '/');
+    const normalizedPattern = normalizeSlashes(pattern);
     if (normalized.includes(normalizedPattern)) return layer;
   }
   return undefined;

@@ -12,6 +12,7 @@ import { globalRegistry } from '../registry/entity-registry.js';
 import { attachFileImportsToElements, buildSemanticRelationships, deduplicateUsedBy } from '../scanner/semantic-analyzer.js';
 import { createCodeRefId, normalizeProjectPath } from '../utils/coderef-id.js';
 import { DEFAULT_HEADER_STATUS } from './element-taxonomy.js';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 /**
  * Build the canonical semantic ElementData projection from PipelineState.
@@ -64,13 +65,13 @@ function normalizeImportsField(imports: ElementData['imports']): ElementData['im
 
   return imports.map(item => ({
     ...item,
-    source: typeof item.source === 'string' ? item.source.replace(/\\/g, '/') : item.source,
+    source: typeof item.source === 'string' ? normalizeSlashes(item.source) : item.source,
   }));
 }
 
 function normalizePathArray(values: unknown): unknown {
   if (!Array.isArray(values)) return values;
-  return values.map(value => typeof value === 'string' ? value.replace(/\\/g, '/') : value);
+  return values.map(value => typeof value === 'string' ? normalizeSlashes(value) : value);
 }
 
 export function normalizeRelatedField(related: any[]): any[] {
@@ -78,16 +79,16 @@ export function normalizeRelatedField(related: any[]): any[] {
 
   return related.map(item => {
     if (typeof item === 'string') {
-      return { path: item.replace(/\\/g, '/'), confidence_score: 1.0 };
+      return { path: normalizeSlashes(item), confidence_score: 1.0 };
     }
 
     if (typeof item === 'object' && item !== null) {
       const normalized: any = {};
 
       if (item.path) {
-        normalized.path = item.path.replace(/\\/g, '/');
+        normalized.path = normalizeSlashes(item.path);
       } else if (item.file) {
-        normalized.path = item.file.replace(/\\/g, '/');
+        normalized.path = normalizeSlashes(item.file);
       }
 
       if (item.confidence_score !== undefined) {

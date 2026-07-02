@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability index-breaking-change-detector
- * @exports BreakingChangeDetector
+ * @exports AnalyzerServiceLike, BreakingChangeDetector
  */
 
 /**
@@ -69,8 +69,22 @@ export {
 } from './hint-generator.js';
 
 // Import dependencies for the main class
-import { AnalyzerService } from '../../analyzer/analyzer-service.js';
 import { ImpactSimulator } from '../impact-simulator.js';
+
+/**
+ * Structural stand-in for the retired legacy AnalyzerService
+ * (DR-PHASE-5-C deletion, WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 2).
+ * The detector is GATED — diff-analyzer's extractors throw before any
+ * analyzer call happens — so the parameter survives only for constructor
+ * compatibility (the mock-based test suite instantiates with a plain object).
+ */
+export interface AnalyzerServiceLike {
+  analyze?: (...args: unknown[]) => unknown;
+  getDependents(elementName: string):
+    | Promise<Array<{ name: string; file: string; line?: number }>>
+    | Array<{ name: string; file: string; line?: number }>;
+  [key: string]: unknown;
+}
 import {
   SignatureChange,
   BreakingChangeReport,
@@ -92,10 +106,10 @@ import { generateMigrationHints } from './hint-generator.js';
  * - Delegates to specialized modules for comparison, assessment, and analysis
  */
 export class BreakingChangeDetector {
-  private analyzerService: AnalyzerService;
+  private analyzerService: AnalyzerServiceLike;
   private impactSimulator: ImpactSimulator;
 
-  constructor(analyzerService: AnalyzerService, impactSimulator: ImpactSimulator) {
+  constructor(analyzerService: AnalyzerServiceLike, impactSimulator: ImpactSimulator) {
     this.analyzerService = analyzerService;
     this.impactSimulator = impactSimulator;
   }

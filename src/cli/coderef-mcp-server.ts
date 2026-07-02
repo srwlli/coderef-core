@@ -42,6 +42,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import type { ExportedGraph } from '../export/graph-exporter.js';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 type ExportedNode = ExportedGraph['nodes'][number];
 type ExportedEdge = ExportedGraph['edges'][number];
@@ -193,8 +194,8 @@ function resolveNodes(query: string, graph: ExportedGraph): Resolution {
   const byName = graph.nodes.filter(n => n.name === query);
   if (byName.length > 0) return { nodes: byName, byFile: false };
 
-  const qPath = query.replace(/\\/g, '/').replace(/^@File\//, '');
-  const byFile = graph.nodes.filter(n => (n.file ?? '').replace(/\\/g, '/') === qPath);
+  const qPath = normalizeSlashes(query).replace(/^@File\//, '');
+  const byFile = graph.nodes.filter(n => normalizeSlashes((n.file ?? '')) === qPath);
   if (byFile.length > 0) return { nodes: byFile, byFile: true };
 
   const q = query.toLowerCase();
@@ -265,7 +266,7 @@ export interface ToolHandlers {
 const TEST_FILE_RE = /__tests__|\.test\.|\.spec\./;
 
 function isTestFile(file: string | undefined): boolean {
-  return TEST_FILE_RE.test((file ?? '').replace(/\\/g, '/'));
+  return TEST_FILE_RE.test(normalizeSlashes((file ?? '')));
 }
 
 export function buildToolHandlers(projectDir: string): ToolHandlers {
@@ -589,7 +590,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     what_exports({ file, limit }) {
       const graph = loadGraph(projectDir, cache);
       const cap = clampLimit(limit);
-      const norm = (f: string | undefined) => (f ?? '').replace(/\\/g, '/');
+      const norm = (f: string | undefined) => normalizeSlashes((f ?? ''));
       const query = norm(file).replace(/^@File\//, '');
 
       // Group export edges by their owning file.
@@ -674,7 +675,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       for (const line of res.stdout.split('\n')) {
         if (line.startsWith('+++ ')) {
           const f = line.slice(4).trim();
-          currentFile = f === '/dev/null' ? null : f.replace(/^b\//, '').replace(/\\/g, '/');
+          currentFile = f === '/dev/null' ? null : normalizeSlashes(f.replace(/^b\//, ''));
           continue;
         }
         const m = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/.exec(line);
@@ -691,7 +692,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       // [its line, next element's line) — the closest preceding element.
       const byFile = new Map<string, IndexElement[]>();
       for (const e of index.elements) {
-        const f = (e.file ?? '').replace(/\\/g, '/');
+        const f = normalizeSlashes((e.file ?? ''));
         const list = byFile.get(f);
         if (list) list.push(e);
         else byFile.set(f, [e]);
@@ -776,29 +777,20 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       const provider = meta.provider ?? 'ollama';
       const store = meta.store ?? 'sqlite';
       try {
+        // Shared factory (P1-10): provider/store construction sourced from
+        // MODEL_REGISTRY. The index's own metadata still picks the provider
+        // so query embeddings always match the index.
+        const { createLLMProvider, createVectorStore } = await import('../integration/llm/provider-factory.js');
         let llmProvider: any;
-        if (provider === 'openai') {
-          const { OpenAIProvider } = await import('../integration/llm/openai-provider.js');
-          const apiKey = process.env.OPENAI_API_KEY;
-          if (!apiKey) {
-            return { error: 'embedding_unavailable', detail: 'index was built with openai but OPENAI_API_KEY is not set' };
-          }
-          llmProvider = new OpenAIProvider({ apiKey, model: process.env.CODEREF_OPENAI_MODEL || 'gpt-4-turbo-preview' });
-        } else {
-          const { OllamaProvider } = await import('../integration/llm/ollama-provider.js');
-          llmProvider = new OllamaProvider({
-            apiKey: process.env.CODEREF_LLM_API_KEY || 'ollama',
-            baseUrl: process.env.CODEREF_LLM_BASE_URL || 'http://localhost:11434',
-            model: process.env.CODEREF_LLM_MODEL || 'qwen2.5:7b-instruct',
-          });
+        try {
+          llmProvider = await createLLMProvider(provider === 'openai' ? 'openai' : 'ollama');
+        } catch (keyErr) {
+          return {
+            error: 'embedding_unavailable',
+            detail: `index was built with ${provider} but its provider could not start: ${keyErr instanceof Error ? keyErr.message : String(keyErr)}`,
+          };
         }
-        const { SQLiteVectorStore } = await import('../integration/vector/sqlite-store.js');
-        const storagePath =
-          process.env.CODEREF_SQLITE_PATH || path.join(projectDir, '.coderef', 'coderef-vectors.json');
-        const vectorStore = new SQLiteVectorStore({
-          storagePath,
-          dimension: llmProvider.getEmbeddingDimensions(),
-        });
+        const vectorStore = await createVectorStore(store, projectDir, llmProvider, { warnTag: 'coderef-mcp' });
         await vectorStore.initialize();
         const { SemanticSearchService } = await import('../integration/rag/semantic-search.js');
         const searchService = new SemanticSearchService(llmProvider, vectorStore);

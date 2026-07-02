@@ -18,6 +18,7 @@
 
 
 import type { ExportedGraph } from '../export/graph-exporter.js';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 type GraphNode = ExportedGraph['nodes'][number];
 
@@ -223,8 +224,8 @@ export class FuzzyResolver {
     if (path1 === path2) return 1.0;
     if (!path1 || !path2) return 0.0;
 
-    const normalized1 = path1.replace(/\\/g, '/');
-    const normalized2 = path2.replace(/\\/g, '/');
+    const normalized1 = normalizeSlashes(path1);
+    const normalized2 = normalizeSlashes(path2);
 
     const parts1 = normalized1.split('/');
     const parts2 = normalized2.split('/');

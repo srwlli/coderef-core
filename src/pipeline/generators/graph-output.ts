@@ -9,13 +9,14 @@
 import * as path from 'path';
 import type { ExportedGraph } from '../../export/graph-exporter.js';
 import { globalRegistry } from '../../registry/entity-registry.js';
+import { normalizeSlashes } from '../../utils/path-normalize.js';
 
 function toPortablePath(projectPath: string, value: string): string {
   if (path.isAbsolute(value)) {
-    return path.relative(projectPath, value).replace(/\\/g, '/');
+    return normalizeSlashes(path.relative(projectPath, value));
   }
 
-  return value.replace(/\\/g, '/');
+  return normalizeSlashes(value);
 }
 
 function looksLikeElementId(value: string): boolean {
@@ -36,7 +37,7 @@ function normalizeEdgeReference(projectPath: string, value: string): string {
   }
 
   if (!path.isAbsolute(value)) {
-    return value.replace(/\\/g, '/');
+    return normalizeSlashes(value);
   }
 
   return toPortablePath(projectPath, value);

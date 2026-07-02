@@ -11,13 +11,12 @@ import { describe, expect, it } from 'vitest';
 const REPO_ROOT = path.join(__dirname, '..', '..');
 
 describe('Phase 5 legacy graph builders (AC-07)', () => {
-  it('src/analyzer/graph-builder.ts has @legacy and @deprecated tags in module JSDoc', async () => {
+  it('src/analyzer/graph-builder.ts is REMOVED (AC-07 removal arm — DR-PHASE-5-C executed, WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 2)', async () => {
+    // AC-07 allowed "removed OR explicitly marked legacy". The transition
+    // window ended when the legacy analyzer stack was deleted; this now
+    // guards against the module being reintroduced.
     const file = path.join(REPO_ROOT, 'src', 'analyzer', 'graph-builder.ts');
-    const content = await fs.readFile(file, 'utf-8');
-    expect(content).toMatch(/@legacy/);
-    expect(content).toMatch(/@deprecated/);
-    // Pointer at canonical replacement.
-    expect(content).toMatch(/src\/pipeline\/graph-builder\.ts/);
+    await expect(fs.access(file)).rejects.toThrow();
   });
 
   it('src/plugins/plugin-graph.ts has @legacy and @deprecated tags', async () => {

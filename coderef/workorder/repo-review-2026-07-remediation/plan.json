@@ -126,16 +126,148 @@
     },
     {
       "phase": 2,
-      "name": "repo-review-p1-structural \u2014 DEFERRED",
+      "name": "repo-review-p1-structural",
       "hard_stop": true,
       "stub_ref": "STUB-XG7DSB",
-      "plan_deferred": true,
-      "description": "",
+      "plan_deferred": false,
+      "authored_at": "2026-07-02T08:43:32Z",
+      "authoring_notes": "Authored post-Phase-1 review per rolling_plan.next_phase_authoring (ad-hoc plan.json edit). STUB-9F63EJ reconciled: intelligence-server retirement ALREADY SHIPPED 2026-06-13 (CHANGELOG.md:96, ruling A executed; docs/intelligence-api.md tombstoned) \u2014 no overlap with P1-7; only residue is a stale package-lock.json bin entry, folded into P2-T8. Operator rulings 2026-07-02: coderef-query KEPT, reimplemented on canonical graph.json (preserves ASSISTANT doc-discovery consumer); coderef-search DELETED.",
+      "description": "P1 structural tier: legacy analyzer/query stack retirement per DR-PHASE-5-C (port coderef-analyze + reimplement coderef-query on canonical .coderef/graph.json, then delete the legacy in-memory graph stack), scanner TS relationship extraction via tree-sitter facts, tsconfig hardening (noEmitOnError + strict for src/pipeline), shared LLM-provider/vector-store factory, coderef-search deletion, centralized path normalization with entity-registry UUID fix.",
       "tasks": [
         {
-          "id": "P2-T0",
+          "id": "P2-T1",
+          "verb": "READ",
+          "description": "Load Phase 2 inputs: stub context coderef/working/repo-review-2026-07-remediation/context.md (P1-7..P1-12), report coderef/reference/repo-review-2026-07-02.md section 6 P1 table, Phase 1 results (commit 981173b), and the two operator rulings (keep coderef-query on canonical graph; drop coderef-search).",
+          "touches": []
+        },
+        {
+          "id": "P2-T2",
+          "verb": "TEST",
+          "description": "Pre-phase baseline: npx vitest run must be green (expected 1665 pass / 30 skip / 0 fail per Phase 1 close). Record counts; any failure here is pre-existing drift to triage BEFORE structural work starts.",
+          "touches": []
+        },
+        {
+          "id": "P2-T3",
+          "verb": "WRITE",
+          "description": "P1-7a: create a canonical-graph query module (src/query/canonical-graph.ts): load .coderef/graph.json (ExportedGraph) + .coderef/index.json, resolve a friendly --target (file path suffix or element id) to canonical node ids, and provide direction-correct helpers over resolutionStatus='resolved' edges: callersOf/calleesOf (call edges), importersOf/importsOf (import edges), dependentsOf/dependenciesOf (call+import union, transitive with maxDepth), shortestPath/allPaths. Friendly error when graph.json is missing (point at populate).",
+          "touches": [
+            "src/query/canonical-graph.ts"
+          ]
+        },
+        {
+          "id": "P2-T4",
+          "verb": "EDIT",
+          "description": "P1-7b: reimplement coderef-query CLI on canonical-graph.ts keeping the 8 query types and flag surface. Direction semantics anchored on natural reading + the live ASSISTANT doc-discovery consumer: '-me' suffixed types are INBOUND (what-calls-me/what-imports-me/what-depends-on-me = who calls/imports/depends on the target); bare types are OUTBOUND (what the target calls/imports/depends on). Update help text to match implementation exactly. --patterns becomes accepted-but-ignored with a deprecation warning (no more in-memory analysis).",
+          "touches": [
+            "src/cli/coderef-query.ts"
+          ]
+        },
+        {
+          "id": "P2-T5",
+          "verb": "EDIT",
+          "description": "P1-7c: port the 5 AnalyzerService-dependent coderef-analyze types onto canonical artifacts: graph (print canonical graph summary), impact (transitive inbound BFS via canonical-graph.ts), multi-hop (usedBy/calls/dependsOn via canonical-graph.ts), complexity + middleware (elements from .coderef/index.json instead of convertGraphToElements(legacy graph)). The 6 standalone types (config/contract/db/dependency/pattern/docs) and the breaking-changes gate are untouched.",
+          "touches": [
+            "src/cli/coderef-analyze.ts"
+          ]
+        },
+        {
+          "id": "P2-T6",
+          "verb": "DELETE",
+          "description": "P1-7d: delete the legacy stack \u2014 src/analyzer/graph-builder.ts, src/analyzer/graph-analyzer.ts, src/analyzer/analyzer-service.ts, src/query/query-executor.ts, src/context/multi-hop-traversal.ts \u2014 and rewire consumers: remove legacy exports from src/analyzer/index.ts + src/context/index.ts + src/index.ts:22 (export * from query-executor); rewire src/context/context-generator.ts and src/context/breaking-change-detector/index.ts off AnalyzerService (gate or port \u2014 BCD is already hard-gated). Then grep-verify and delete now-orphaned files ONLY if zero importers remain (candidates: src/analyzer/graph-error.ts, graph-helpers.ts, import-parser.ts, call-detector.ts, src/adapter/graph-to-elements.ts, src/context/impact-simulator.ts \u2014 impact-simulator ports to canonical if coderef-analyze impact still needs it). Update any test files that imported deleted modules. NOTE: this removes symbols from the package public API \u2014 sanctioned by DR-PHASE-5-C + operator ruling A.",
+          "touches": [
+            "src/analyzer/graph-builder.ts",
+            "src/analyzer/graph-analyzer.ts",
+            "src/analyzer/analyzer-service.ts",
+            "src/query/query-executor.ts",
+            "src/context/multi-hop-traversal.ts",
+            "src/analyzer/index.ts",
+            "src/context/index.ts",
+            "src/index.ts",
+            "src/context/context-generator.ts",
+            "src/context/breaking-change-detector/index.ts"
+          ]
+        },
+        {
+          "id": "P2-T7",
+          "verb": "TEST",
+          "description": "P1-7e: direction-semantics regression tests for the new coderef-query engine (src/query/__tests__/canonical-graph.test.ts): fixture graph with known call/import edges asserting inbound vs outbound for all 6 relationship types plus a path query \u2014 the class of bug that motivated the retirement (inverted what-calls-me). Plus a coderef-analyze self-scan smoke (graph/impact/multi-hop non-empty on coderef-core's own .coderef).",
+          "touches": [
+            "src/query/__tests__/"
+          ]
+        },
+        {
+          "id": "P2-T8",
+          "verb": "DELETE",
+          "description": "P1-11 (operator ruling: drop): delete src/cli/coderef-search.ts and its package.json bin entry; regenerate package-lock.json (npm install --package-lock-only) which also clears the stale coderef-intelligence-server bin residue at package-lock.json:38 (STUB-9F63EJ reconciliation residue).",
+          "touches": [
+            "src/cli/coderef-search.ts",
+            "package.json",
+            "package-lock.json"
+          ]
+        },
+        {
+          "id": "P2-T9",
+          "verb": "EDIT",
+          "description": "P1-8: fix TS relationship extraction in the Scanner path: route ts/tsx relationship extraction through tree-sitter facts (as PipelineOrchestrator does) instead of plain-Acorn JSCallDetector (js-parser.ts:21 silently yields empty calls[]/imports[] on TS syntax); remove or bypass the dead TS-node visitor branches (visitor.ts:159-177). MUST add the missing test: non-empty calls[] AND imports[] for a real .ts fixture through scanCurrentElements \u2014 currently zero coverage of this hole. Canonical populate pipeline is unaffected; js path stays on Acorn.",
+          "touches": [
+            "src/scanner/scanner.ts",
+            "src/analyzer/js-call-detector/index.ts",
+            "src/scanner/__tests__/"
+          ]
+        },
+        {
+          "id": "P2-T10",
+          "verb": "EDIT",
+          "description": "P1-9: type-system hardening: set noEmitOnError:true in tsconfig.json (and tsconfig.cli.json if separate) and fix any errors it surfaces; add per-directory strict migration starting with src/pipeline \u2014 a tsconfig.pipeline-strict.json (strict:true, noEmit:true, include src/pipeline) + npm script typecheck:pipeline, driven to zero errors. Remaining directories are follow-up scope (Phase 3 or stub), not this task.",
+          "touches": [
+            "tsconfig.json",
+            "package.json"
+          ]
+        },
+        {
+          "id": "P2-T11",
+          "verb": "EDIT",
+          "description": "P1-10: extract ONE shared LLM-provider/vector-store factory consuming src/integration/llm/model-registry.ts; refactor the 4 copies (rag-index.ts:269-371, rag-search.ts:264-361, coderef-mcp-server.ts:780-801, rag-eval.ts:153-176) onto it and replace coderef-rag-server.ts:240's hardcoded dim table with MODEL_REGISTRY. HARD CONSTRAINT: Ollama LOCAL-ONLY defaults \u2014 the factory must never require OpenAI/Anthropic keys for default operation.",
+          "touches": [
+            "src/integration/llm/provider-factory.ts",
+            "src/cli/rag-index.ts",
+            "src/cli/rag-search.ts",
+            "src/cli/coderef-mcp-server.ts",
+            "src/cli/rag-eval.ts",
+            "src/cli/coderef-rag-server.ts"
+          ]
+        },
+        {
+          "id": "P2-T12",
+          "verb": "EDIT",
+          "description": "P1-12: centralize path normalization: route the ~60 hand-rolled .replace(/\\\\/g,'/') sites in non-test src/ through normalizeProjectPath (src/utils/coderef-id.ts) or a thin named wrapper; fix the EntityRegistry UUID identity gap (entity-registry.ts:31-34 keys on UNNORMALIZED file:name:line) so Windows-vs-posix spellings yield ONE identity, and add the first entity-registry normalization test. Windows-first verification required; check semantic-registry churn on self-scan (UUID re-keying risk) and report the delta.",
+          "touches": [
+            "src/registry/entity-registry.ts",
+            "src/utils/coderef-id.ts"
+          ]
+        },
+        {
+          "id": "P2-T13",
+          "verb": "TEST",
+          "description": "Green gate: npx vitest run completes with 0 failures TWICE consecutively (deterministic, per Phase 1 discipline). Skips may change only by explicitly-justified deltas (deleted legacy tests).",
+          "touches": []
+        },
+        {
+          "id": "P2-T14",
+          "verb": "RUN",
+          "description": "Pipeline + bin verification: npm run build clean under noEmitOnError; fresh scan + populate + validate on coderef-core itself \u2014 element counts vs the 2591/276 baseline explained by this phase's deletions only; validation report stays the locked 14 fields; startup-probe coderef-query, coderef-analyze, coderef-watch, coderef-rag-server on Windows; confirm doc-discovery's coderef-query invocation shape still works (--type=what-depends-on-me returns inbound dependents).",
+          "touches": []
+        },
+        {
+          "id": "P2-T15",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2 on main by EXPLICIT path (never git add -A) with a plain-English message referencing WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 2 / STUB-XG7DSB; push and verify origin holds HEAD.",
+          "touches": []
+        },
+        {
+          "id": "P2-T16",
           "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 2 tasks not yet authored. Pre-condition: Phase 1 must be COMPLETED + REVIEWED before this phase's plan is authored (against STUB-XG7DSB).",
+          "description": "Hard stop: report Phase 2 results back (deletion inventory, API-surface changes, test counts, element/registry deltas, strict-migration state). Operator review gates Phase 3 planning: author Phase 3 tasks against STUB-01DW28 only after this review.",
           "touches": []
         }
       ],
@@ -176,13 +308,15 @@
   "hard_stops": [
     {
       "phase": 1,
-      "approved": false,
+      "approved": true,
+      "approved_at": "2026-07-02T08:43:32Z",
+      "approved_by": "operator directive 'phase 2 please' after Phase 1 report-back (review gate satisfied)",
       "reason": "Phase 1 ends with mandatory user review (rolling plan: report back before Phase 2 is planned)."
     },
     {
       "phase": 2,
       "approved": false,
-      "reason": "Phase 2 plan_deferred=true. Hard stop fires at phase planning gate."
+      "reason": "Phase 2 ends with mandatory user review (rolling plan: report back before Phase 3 is planned)."
     },
     {
       "phase": 3,

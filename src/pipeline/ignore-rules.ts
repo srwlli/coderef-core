@@ -9,6 +9,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { minimatch } from 'minimatch';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 export const DEFAULT_PIPELINE_IGNORE_PATTERNS = [
   'node_modules/',
@@ -43,7 +44,7 @@ export const DEFAULT_PIPELINE_IGNORE_PATTERNS = [
 ] as const;
 
 function normalizePattern(pattern: string): string | null {
-  const trimmed = pattern.trim().replace(/\\/g, '/');
+  const trimmed = normalizeSlashes(pattern.trim());
   if (!trimmed || trimmed.startsWith('#')) {
     return null;
   }
@@ -88,8 +89,8 @@ export async function loadIgnorePatterns(
 }
 
 function buildCandidates(rootPath: string, entryPath: string, entryName: string, isDirectory: boolean): string[] {
-  const relativePath = path.relative(rootPath, entryPath).replace(/\\/g, '/');
-  const normalizedName = entryName.replace(/\\/g, '/');
+  const relativePath = normalizeSlashes(path.relative(rootPath, entryPath));
+  const normalizedName = normalizeSlashes(entryName);
   const suffix = isDirectory ? '/' : '';
 
   return Array.from(new Set([

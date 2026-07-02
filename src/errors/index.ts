@@ -12,5 +12,5 @@ export { ScanError } from './ScanError.js';
 export { ValidationError } from './ValidationError.js';
 export { IndexError } from './IndexError.js';
 
-// Re-export GraphError from analyzer (already exists)
-export { GraphError, GraphErrorCode } from '../analyzer/graph-error.js';
+// GraphError re-export removed: src/analyzer/graph-error.ts was deleted with
+// the legacy analyzer graph stack (DR-PHASE-5-C).

@@ -64,6 +64,7 @@ import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
 import { globalRegistry } from '../registry/entity-registry.js';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 /**
  * Canonical edge relationship enum (AC-03 + AC-04).
@@ -353,7 +354,7 @@ export function fileGrainNodeId(file: string, projectPath: string): string {
   const normalized = path.isAbsolute(file)
     ? path.relative(projectPath, file)
     : file;
-  const rel = normalized.replace(/\\/g, '/').replace(/^\.\//, '');
+  const rel = normalizeSlashes(normalized).replace(/^\.\//, '');
   return `@File/${rel}`;
 }
 

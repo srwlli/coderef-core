@@ -28,6 +28,7 @@ import { analyzeProjectConfig, type ConfigAnalysis } from '../../analyzer/config
 // IMP-CORE-022: Documentation quality analysis
 import { analyzeDocs, type DocumentationQuality } from '../../analyzer/docs-analyzer.js';
 import logger from '../../utils/logger.js';
+import { normalizeSlashes } from '../../utils/path-normalize.js';
 
 // IMP-CORE-025: Call graph relationship types
 export interface CallGraphNode {
@@ -293,7 +294,7 @@ export class ContextGenerator {
     // Convert file paths to relative for output
     return entryPoints.map(ep => ({
       ...ep,
-      file: path.relative(state.projectPath, ep.file).replace(/\\/g, '/'),
+      file: normalizeSlashes(path.relative(state.projectPath, ep.file)),
     }));
   }
 
@@ -306,7 +307,7 @@ export class ContextGenerator {
         if (!('async' in elem) || !elem.async) return false;
 
         // Filter out test files
-        const relativePath = path.relative(projectPath, elem.file).replace(/\\/g, '/');
+        const relativePath = normalizeSlashes(path.relative(projectPath, elem.file));
         const isTestFile = relativePath.includes('/tests/') ||
                           relativePath.startsWith('tests/') ||
                           relativePath.includes('/test_') ||
@@ -320,7 +321,7 @@ export class ContextGenerator {
       .slice(0, 30) // Top 30 async patterns
       .map(elem => ({
         name: elem.name,
-        file: path.relative(projectPath, elem.file).replace(/\\/g, '/'),
+        file: normalizeSlashes(path.relative(projectPath, elem.file)),
         type: elem.type,
       }));
   }
@@ -345,7 +346,7 @@ export class ContextGenerator {
     // Filter to non-test functions
     const nonTestFunctions = elements.filter(e => {
       if (e.type !== 'function' && e.type !== 'method') return false;
-      const relativePath = path.relative(projectPath, e.file).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, e.file));
       return !isTestFile(relativePath);
     });
 
@@ -366,7 +367,7 @@ export class ContextGenerator {
 
         return {
           name: func.name,
-          file: path.relative(projectPath, func.file).replace(/\\/g, '/'),
+          file: normalizeSlashes(path.relative(projectPath, func.file)),
           complexity,
           score,
         };
@@ -415,7 +416,7 @@ export class ContextGenerator {
     // Detect entry points (API routes, CLI commands, top-level exports)
     const isEntryPoint = (func: ElementData): boolean => {
       const fileName = path.basename(func.file).toLowerCase();
-      const relativePath = path.relative(projectPath, func.file).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, func.file));
 
       // API routes (Next.js, Express, etc.)
       if (fileName === 'route.ts' || fileName === 'route.js' ||
@@ -482,7 +483,7 @@ export class ContextGenerator {
       if (e.type !== 'function' && e.type !== 'method') return false;
 
       // Convert to relative path before checking (elements have absolute paths)
-      const relativePath = path.relative(projectPath, e.file).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, e.file));
       return !isTestFile(relativePath);
     });
 
@@ -517,7 +518,7 @@ export class ContextGenerator {
 
         return {
           name: func.name,
-          file: path.relative(projectPath, func.file).replace(/\\/g, '/'),
+          file: normalizeSlashes(path.relative(projectPath, func.file)),
           complexity,
           dependents,
           criticalScore,
@@ -1712,7 +1713,7 @@ export class ContextGenerator {
 
     for (const filePaths of files.values()) {
       filePaths.forEach(filePath => {
-        const relativePath = path.relative(projectPath, filePath).replace(/\\/g, '/');
+        const relativePath = normalizeSlashes(path.relative(projectPath, filePath));
         const dir = path.dirname(relativePath);
         const topLevel = dir.split('/')[0] || 'root';
 
@@ -2213,11 +2214,15 @@ export class ContextGenerator {
       `### Changelog`,
       '',
       `- **Exists:** ${changelog.exists ? 'Yes' : 'No'}`,
-      changelog.exists && `- **Format:** ${changelog.format}`,
-      changelog.exists && `- **Total Entries:** ${changelog.totalEntries}`,
-      changelog.exists && `- **Last Updated:** ${changelog.daysSinceUpdate !== Infinity ? `${changelog.daysSinceUpdate} days ago` : 'Unknown'}`,
-      changelog.exists && `- **Recency Score:** ${changelog.recencyScore}/100`,
-      changelog.exists && `- **Has Unreleased Section:** ${changelog.hasUnreleasedSection ? 'Yes' : 'No'}`,
+      ...(changelog.exists
+        ? [
+            `- **Format:** ${changelog.format}`,
+            `- **Total Entries:** ${changelog.totalEntries}`,
+            `- **Last Updated:** ${changelog.daysSinceUpdate !== Infinity ? `${changelog.daysSinceUpdate} days ago` : 'Unknown'}`,
+            `- **Recency Score:** ${changelog.recencyScore}/100`,
+            `- **Has Unreleased Section:** ${changelog.hasUnreleasedSection ? 'Yes' : 'No'}`,
+          ]
+        : []),
       ''
     );
 
@@ -2227,8 +2232,9 @@ export class ContextGenerator {
       `### API Documentation`,
       '',
       `- **Has API Docs:** ${apiDocs.hasApiDocs ? 'Yes' : 'No'}`,
-      apiDocs.hasApiDocs && `- **Location:** ${apiDocs.docsDirectory}`,
-      apiDocs.hasApiDocs && `- **Format:** ${apiDocs.format}`,
+      ...(apiDocs.hasApiDocs
+        ? [`- **Location:** ${apiDocs.docsDirectory}`, `- **Format:** ${apiDocs.format}`]
+        : []),
       ''
     );
 

@@ -6,8 +6,8 @@
 export { default as ContextTracker } from './context-tracker.js';
 export type { ContextEntry, ContextHistory } from './context-tracker.js';
 
-export { default as MultiHopTraversal } from './multi-hop-traversal.js';
-export type { TraversalResult, MultiHopResult } from './multi-hop-traversal.js';
+// MultiHopTraversal retired with the legacy analyzer graph (DR-PHASE-5-C);
+// multi-hop queries run on src/query/canonical-graph.ts.
 
 export { default as FuzzyResolver } from './fuzzy-resolver.js';
 export type { FuzzyMatch, DriftResult } from './fuzzy-resolver.js';

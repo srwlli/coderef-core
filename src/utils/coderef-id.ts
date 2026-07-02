@@ -8,6 +8,7 @@
 
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
+import { normalizeSlashes } from './path-normalize.js';
 
 const TYPE_DESIGNATORS: Record<ElementData['type'], string> = {
   function: 'Fn',
@@ -38,7 +39,7 @@ export function normalizeProjectPath(projectPath: string, value: string): string
     ? path.relative(projectPath, value)
     : value;
 
-  return normalized.replace(/\\/g, '/').replace(/^\.\//, '');
+  return normalizeSlashes(normalized).replace(/^\.\//, '');
 }
 
 export function codeRefDesignatorForType(type: ElementData['type']): string {

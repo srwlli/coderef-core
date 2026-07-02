@@ -15,7 +15,7 @@
 
 
 import { scanCurrentElements } from '../scanner/scanner.js';
-import { AnalyzerService } from '../analyzer/analyzer-service.js';
+import { loadCanonicalGraph } from '../query/canonical-graph.js';
 import { EntryPointDetector } from './entry-point-detector.js';
 import { MarkdownFormatter, type ContextData } from './markdown-formatter.js';
 import type { ElementData, ScanOptions } from '../types/types.js';
@@ -98,7 +98,11 @@ export class ContextGenerator {
     // Step 4: Detect architecture patterns
     const patterns = await this.detectPatterns(sourceDir, elements);
 
-    // Step 5: Analyze dependencies (if using analyzer)
+    // Step 5: Dependency stats from the canonical .coderef/graph.json
+    // (the legacy in-memory AnalyzerService graph was retired per
+    // DR-PHASE-5-C). circularity stays 0 here — the legacy recursive
+    // detector it came from was unsound; the MCP `cycles` tool is the
+    // honest source for cycle data.
     let dependencies = {
       nodeCount: 0,
       edgeCount: 0,
@@ -108,19 +112,24 @@ export class ContextGenerator {
 
     if (useAnalyzer) {
       try {
-        const analyzer = new AnalyzerService(sourceDir);
-        // Build glob patterns from sourceDir and languages
-        const patterns = languages.map(lang => `${sourceDir}/**/*.${lang}`);
-        const analysis = await analyzer.analyze(patterns, false);
+        const engine = loadCanonicalGraph(sourceDir);
+        const graph = engine.graph;
+        const touched = new Set<string>();
+        for (const edge of graph.edges) {
+          if (edge.resolutionStatus !== 'resolved' || !edge.sourceId || !edge.targetId) continue;
+          touched.add(edge.sourceId);
+          touched.add(edge.targetId);
+        }
         dependencies = {
-          nodeCount: analysis.statistics.nodeCount,
-          edgeCount: analysis.statistics.edgeCount,
-          circularity: analysis.statistics.circularity,
-          isolatedNodes: analysis.isolatedNodes.length,
+          nodeCount: graph.nodes.length,
+          edgeCount: graph.edges.length,
+          circularity: 0,
+          isolatedNodes: graph.nodes.filter(n => !touched.has(n.id)).length,
         };
       } catch (error) {
-        // Gracefully handle analyzer failures
-        logger.warn('Dependency analysis failed, continuing with basic context');
+        // Gracefully handle a missing/stale artifact — same degradation
+        // contract as the old analyzer failure path.
+        logger.warn('Dependency analysis skipped (no .coderef/graph.json — run populate); continuing with basic context');
       }
     }
 

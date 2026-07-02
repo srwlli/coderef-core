@@ -40,6 +40,7 @@ import type { VectorRecord } from '../vector/vector-store.js';
 import * as fs from 'fs/promises';
 import * as pathMod from 'path';
 import { type AbsolutePath, type RelativePath, toAbsolute, toRelative } from './path-types.js';
+import { normalizeSlashes } from '../../utils/path-normalize.js';
 
 /**
  * Reduce a chunk-side file path to the relative-POSIX form that
@@ -56,10 +57,10 @@ export function normalizeChunkFileForGraphJoin(
   // Peel any 'file:' URI prefix that upstream chunk producers may
   // have left attached.
   let raw = file.startsWith('file:') ? file.slice('file:'.length) : file;
-  raw = raw.replace(/\\/g, '/');
+  raw = normalizeSlashes(raw);
   if (pathMod.isAbsolute(raw)) {
-    const absBase = pathMod.resolve(basePath).replace(/\\/g, '/');
-    return pathMod.relative(absBase, raw).replace(/\\/g, '/');
+    const absBase = normalizeSlashes(pathMod.resolve(basePath));
+    return normalizeSlashes(pathMod.relative(absBase, raw));
   }
   return raw;
 }

@@ -8,6 +8,7 @@
 
 import * as crypto from 'crypto';
 import { EntityRecord, RegistryState, EntityLookup } from './types';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 /**
  * UUID Namespace for CodeRef (Deterministic v5 generation)
@@ -26,10 +27,14 @@ export class EntityRegistry {
   };
 
   /**
-   * Generates a deterministic UUID5 for a code entity
+   * Generates a deterministic UUID5 for a code entity.
+   *
+   * The file component is slash-normalized BEFORE hashing (P1-12): the same
+   * element addressed as `src\\a.ts` (Windows) and `src/a.ts` (posix) must
+   * yield ONE identity, not two.
    */
   public generateUUID(file: string, name: string, line: number): string {
-    const data = `${file}:${name}:${line}`;
+    const data = `${normalizeSlashes(file)}:${name}:${line}`;
     const hash = crypto.createHash('sha1');
     hash.update(CODEREF_NAMESPACE);
     hash.update(data);
@@ -63,12 +68,13 @@ export class EntityRegistry {
     const entity: EntityRecord = { ...record, uuid };
     this.state.entities[uuid] = entity;
 
-    // Track file mapping
-    if (!this.state.fileMap[entity.file]) {
-      this.state.fileMap[entity.file] = [];
+    // Track file mapping (slash-normalized key — same identity rule as the UUID)
+    const fileKey = normalizeSlashes(entity.file);
+    if (!this.state.fileMap[fileKey]) {
+      this.state.fileMap[fileKey] = [];
       this.state.stats.distinctFiles++;
     }
-    this.state.fileMap[entity.file].push(uuid);
+    this.state.fileMap[fileKey].push(uuid);
 
     // Update stats
     this.state.stats.totalEntities++;
@@ -90,7 +96,7 @@ export class EntityRegistry {
   }
 
   public getEntitiesByFile(file: string): EntityRecord[] {
-    const uuids = this.state.fileMap[file] || [];
+    const uuids = this.state.fileMap[normalizeSlashes(file)] || [];
     return uuids.map(id => this.state.entities[id]);
   }
 

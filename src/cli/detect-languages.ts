@@ -9,6 +9,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import { loadIgnorePatterns, shouldIgnorePath } from '../pipeline/ignore-rules.js';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 export const SUPPORTED_CLI_LANGUAGES = [
   'ts',
@@ -72,7 +73,7 @@ export function validateCliLanguages(languages?: string[]): SupportedCliLanguage
 }
 
 function getCanonicalLanguage(fileName: string): SupportedCliLanguage | undefined {
-  const normalizedName = fileName.toLowerCase().replace(/\\/g, '/');
+  const normalizedName = normalizeSlashes(fileName.toLowerCase());
 
   if (normalizedName.endsWith('.c++')) {
     return 'cpp';

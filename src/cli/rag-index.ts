@@ -20,48 +20,15 @@ import * as path from 'path';
 import { detectProjectLanguages, validateCliLanguages } from './detect-languages.js';
 import { toAbsolute } from '../integration/rag/path-types.js';
 
-// Dynamic imports for optional RAG dependencies
-let OpenAIProvider: any;
-let AnthropicProvider: any;
-let OllamaProvider: any;
-let SQLiteVectorStore: any;
-let PineconeStore: any;
-let ChromaStore: any;
+// Provider/store construction lives in the shared factory
+// (src/integration/llm/provider-factory.ts, P1-10) — MODEL_REGISTRY is the
+// single source; defaults are Ollama local-only. Only the orchestrator
+// remains a lazy optional dependency here.
+import { createLLMProvider, createVectorStore } from '../integration/llm/provider-factory.js';
+
 let IndexingOrchestrator: any;
 
-async function loadRAGDependencies(providerName: string, storeName: string = 'sqlite') {
-  // Only load the provider we need
-  if (providerName === 'openai') {
-    const llmModule = await import('../integration/llm/openai-provider.js');
-    OpenAIProvider = llmModule.OpenAIProvider;
-  } else if (providerName === 'anthropic') {
-    const anthropicModule = await import('../integration/llm/anthropic-provider.js');
-    AnthropicProvider = anthropicModule.AnthropicProvider;
-    // Anthropic needs OpenAI for embeddings
-    const llmModule = await import('../integration/llm/openai-provider.js');
-    OpenAIProvider = llmModule.OpenAIProvider;
-  } else if (providerName === 'ollama') {
-    const ollamaModule = await import('../integration/llm/ollama-provider.js');
-    OllamaProvider = ollamaModule.OllamaProvider;
-  }
-
-  // Load vector store based on selection
-  if (storeName === 'sqlite') {
-    const vectorModule = await import('../integration/vector/sqlite-store.js');
-    SQLiteVectorStore = vectorModule.SQLiteVectorStore;
-  } else if (storeName === 'pinecone') {
-    const pineconeModule = await import('../integration/vector/pinecone-store.js');
-    PineconeStore = pineconeModule.PineconeStore;
-  } else if (storeName === 'chroma') {
-    const chromaModule = await import('../integration/vector/chroma-store.js');
-    ChromaStore = chromaModule.ChromaStore;
-  }
-  // Always load SQLite as fallback
-  if (storeName !== 'sqlite') {
-    const vectorModule = await import('../integration/vector/sqlite-store.js');
-    SQLiteVectorStore = vectorModule.SQLiteVectorStore;
-  }
-
+async function loadRAGDependencies() {
   const ragModule = await import('../integration/rag/indexing-orchestrator.js');
   IndexingOrchestrator = ragModule.IndexingOrchestrator;
 }
@@ -263,114 +230,6 @@ OUTPUT:
 }
 
 /**
- * Create LLM provider based on configuration
- * Supports: openai, anthropic, and any future provider
- */
-function createLLMProvider(provider: string): any {
-  // Known providers with specific env var requirements
-  if (provider === 'openai') {
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      throw new Error('OPENAI_API_KEY environment variable is required');
-    }
-    return new OpenAIProvider({
-      apiKey,
-      model: process.env.CODEREF_OPENAI_MODEL || 'gpt-4-turbo-preview',
-    });
-  }
-
-  if (provider === 'anthropic') {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    if (!apiKey) {
-      throw new Error('ANTHROPIC_API_KEY environment variable is required');
-    }
-    return new AnthropicProvider({
-      apiKey,
-      model: process.env.CODEREF_ANTHROPIC_MODEL || 'claude-3-sonnet-20240229',
-    });
-  }
-
-  if (provider === 'ollama') {
-    // Ollama uses generic env vars (no API key required)
-    const baseUrl = process.env.CODEREF_LLM_BASE_URL ||
-                    'http://localhost:11434';
-    const apiKey = process.env.CODEREF_LLM_API_KEY || 'ollama';
-    const model = process.env.CODEREF_LLM_MODEL || 'qwen2.5:7b-instruct';
-
-    return new OllamaProvider({
-      apiKey,
-      baseUrl,
-      model,
-    });
-  }
-
-  // Unknown provider
-  throw new Error(
-    `Provider '${provider}' not supported. Supported: openai, anthropic, ollama.`
-  );
-}
-
-/**
- * Create vector store based on configuration and provider dimensions
- */
-async function createVectorStore(
-  store: string,
-  projectDir: string,
-  llmProvider: any
-): Promise<any> {
-  // Get dimensions from provider (dimension is defined in MODEL_REGISTRY)
-  const dimension = llmProvider?.getEmbeddingDimensions?.() ??
-    (() => { throw new Error(`Provider does not support embeddings or getEmbeddingDimensions() not implemented`); })();
-
-  switch (store) {
-    case 'pinecone': {
-      const apiKey = process.env.PINECONE_API_KEY;
-      if (!apiKey) {
-        console.warn('[rag-index] PINECONE_API_KEY not set, falling back to SQLite');
-        break;
-      }
-      const indexName = process.env.PINECONE_INDEX_NAME || 'coderef-index';
-      return new PineconeStore({
-        apiKey,
-        indexName,
-        dimension,
-      });
-    }
-
-    case 'chroma': {
-      const host = process.env.CHROMA_URL || 'http://localhost:8000';
-      return new ChromaStore({
-        host,
-        indexName: 'coderef-collection',
-        dimension,
-      });
-    }
-
-    case 'sqlite':
-    default: {
-      // Storage is a JSON file (the "sqlite" name is legacy/misleading).
-      // Use a .json extension so SQLiteVectorStore treats it as the literal
-      // file path and doesn't double-join `.coderef/coderef-vectors.json`.
-      const storagePath = process.env.CODEREF_SQLITE_PATH
-        || path.join(projectDir, '.coderef', 'coderef-vectors.json');
-      return new SQLiteVectorStore({
-        storagePath,
-        dimension,
-      });
-    }
-  }
-
-  // Fallback to SQLite for unknown stores or missing config.
-  // See note above about the .json extension and SQLiteVectorStore.
-  const storagePath = process.env.CODEREF_SQLITE_PATH
-    || path.join(projectDir, '.coderef', 'coderef-vectors.json');
-  return new SQLiteVectorStore({
-    storagePath,
-    dimension,
-  });
-}
-
-/**
  * Main CLI function
  */
 async function main(): Promise<void> {
@@ -409,7 +268,7 @@ async function main(): Promise<void> {
 
     // Load optional RAG dependencies
     try {
-      await loadRAGDependencies(args.provider, args.store);
+      await loadRAGDependencies();
     } catch (error) {
       console.error('Error: Failed to load RAG dependencies.');
       console.error('Make sure the optional dependencies are installed:');
@@ -443,9 +302,9 @@ async function main(): Promise<void> {
       console.log();
     }
 
-    // Initialize components
-    const llmProvider = createLLMProvider(args.provider);
-    const vectorStore = await createVectorStore(args.store, args.projectDir, llmProvider);
+    // Initialize components (shared factory — MODEL_REGISTRY-sourced)
+    const llmProvider = await createLLMProvider(args.provider);
+    const vectorStore = await createVectorStore(args.store, args.projectDir, llmProvider, { warnTag: 'rag-index' });
 
     // If --reset was requested, clear on-disk state BEFORE initialize().
     // Initialize() reads the stored vector data and would fail with a

@@ -37,7 +37,7 @@ node dist/src/cli/index.js <command>
 | [`scan-frontend-calls`](#scan-frontend-calls) | Detect frontend API calls | `--dir`, `--pattern`, `--output` |
 | [`validate-routes`](#validate-routes) | Validate API route definitions | `--dir`, `--strict`, `--fix` |
 | [`coderef-analyze`](#coderef-analyze) | Run a single analysis pass (config, contracts, DB, patterns, complexity, impact, breaking-changes, etc.) | `--project`, `--type`, `--output`, `--element`, `--depth`, `--from`, `--to` |
-| [`coderef-query`](#coderef-query) | Execute a relationship query on a project graph (calls, imports, depends-on, shortest-path, all-paths) | `--project`, `--type`, `--target`, `--source`, `--depth`, `--format` |
+| [`coderef-query`](#coderef-query) | Execute a relationship query over canonical `.coderef/graph.json` (calls, imports, depends-on, shortest-path, all-paths) | `--project`, `--type`, `--target`, `--source`, `--depth`, `--format` |
 | [`coderef-detect-languages`](#coderef-detect-languages) | Detect programming languages used in a project | `--project`, `--ignore-file`, `--json` |
 | [`coderef-semantic-integration`](#coderef-semantic-integration) | Run semantic header generation and registry sync | `--project`, `--output`, `--registry`, `--dry-run`, `--file`, `--validate-idempotency` |
 
@@ -896,7 +896,7 @@ coderef-analyze --project=. --type=breaking-changes --from=main --to=feature/my-
 
 ## coderef-query
 
-Execute a relationship query on a project's dependency graph. Runs a full project analysis on first call (may take several seconds), then answers one of 8 structural relationship questions.
+Execute a relationship query over the canonical `.coderef/graph.json`. Requires the populate pipeline to have run first (the query engine reads the pipeline-emitted graph; there is no in-memory analysis pass). Reimplemented on the canonical graph per DR-PHASE-5-C (WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 2).
 
 ### Usage
 
@@ -908,26 +908,29 @@ coderef-query --project=<path> --type=<type> --target=<element> [options]
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `--project=<path>` | Path to the project root (**required**) | — |
+| `--project=<path>` | Path to the project root — must contain `.coderef/graph.json` (**required**) | — |
 | `--type=<type>` | Query type (**required**; see table below) | — |
-| `--target=<element>` | Target element to query, e.g. `src/scanner.ts` (**required**) | — |
+| `--target=<element>` | Target element: a codeRefId, an element name, or a file path (**required**) | — |
 | `--source=<element>` | Source element for path queries (required for: `shortest-path`, `all-paths`) | — |
 | `--depth=<N>` | Max traversal depth | `5` |
 | `--format=<fmt>` | Result format: `raw` \| `summary` \| `full` | `summary` |
+| `--patterns=<globs>` | DEPRECATED — accepted but ignored (queries read the populate-emitted graph) | — |
 | `--help` | Print help | — |
 
 ### Query types
 
+Direction contract: the `-me` suffix means the target is the OBJECT (inbound edges — "who Xes the target"); bare forms answer for the target as SUBJECT (outbound — "what does the target X").
+
 | Type | Description | Required extras |
 |------|-------------|-----------------|
-| `what-calls` | What calls the target element? | — |
-| `what-calls-me` | What does the target element call? | — |
-| `what-imports` | What does the target element import? | — |
-| `what-imports-me` | What imports the target element? | — |
-| `what-depends-on` | What does the target element depend on? | — |
-| `what-depends-on-me` | What depends on the target element? | — |
-| `shortest-path` | Shortest dependency path between `--source` and `--target` | `--source` |
-| `all-paths` | All dependency paths between `--source` and `--target` | `--source` |
+| `what-calls-me` | Who calls the target? (inbound call edges) | — |
+| `what-calls` | What does the target call? (outbound call edges) | — |
+| `what-imports-me` | Who imports the target? (inbound import edges) | — |
+| `what-imports` | What does the target import? (outbound import edges) | — |
+| `what-depends-on-me` | Who depends on the target, transitively? (inbound call+import) | — |
+| `what-depends-on` | What does the target depend on, transitively? (outbound call+import) | — |
+| `shortest-path` | Shortest directed path from `--source` to `--target` | `--source` |
+| `all-paths` | All directed paths from `--source` to `--target` (bounded by `--depth`) | `--source` |
 
 ### Examples
 

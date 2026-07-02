@@ -26,7 +26,6 @@
     "coderef-rag-server": "./dist/src/cli/coderef-rag-server.js",
     "coderef-analyze": "./dist/src/cli/coderef-analyze.js",
     "coderef-query": "./dist/src/cli/coderef-query.js",
-    "coderef-search": "./dist/src/cli/coderef-search.js",
     "coderef-detect-languages": "./dist/src/cli/detect-languages-cli.js",
     "coderef-semantic-integration": "./dist/src/cli/semantic-integration-cli.js",
     "coderef-mcp-server": "./dist/src/cli/coderef-mcp-server.js",
@@ -46,6 +45,7 @@
     "build": "npx tsc && npm run build:cli",
     "build:cli": "npx tsc -p tsconfig.cli.json",
     "dev": "npx tsc --watch",
+    "typecheck:pipeline": "tsc -p tsconfig.pipeline-strict.json",
     "clean": "rimraf dist",
     "test": "npx vitest",
     "test:watch": "npx vitest --watch",
@@ -53,6 +53,7 @@
     "test:ui": "npx vitest --ui"
   },
   "devDependencies": {
+    "@types/babel__traverse": "^7.28.0",
     "@types/node": "^20.0.0",
     "rimraf": "^5.0.1",
     "typescript": "^5.9.3",

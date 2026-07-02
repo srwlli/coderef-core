@@ -13,11 +13,14 @@ import { DependencyAnalyzer } from '../analyzer/dependency-analyzer.js';
 import { DesignPatternDetector } from '../analyzer/design-pattern-detector.js';
 import { DocsAnalyzer } from '../analyzer/docs-analyzer.js';
 import { analyzeMiddlewareAndDI } from '../analyzer/middleware-detector.js';
-import AnalyzerService from '../analyzer/analyzer-service.js';
-import { convertGraphToElements } from '../adapter/graph-to-elements.js';
 import { ComplexityScorer } from '../context/complexity-scorer.js';
-import { ImpactSimulator } from '../context/impact-simulator.js';
-import { MultiHopTraversal } from '../context/multi-hop-traversal.js';
+import {
+  CanonicalGraphError,
+  CanonicalGraphQuery,
+  loadCanonicalGraph,
+} from '../query/canonical-graph.js';
+import type { ElementData } from '../types/types.js';
+import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, extname } from 'node:path';
 
@@ -54,14 +57,18 @@ Analysis types:
   pattern            Detect design patterns (Singleton, Observer, Factory, etc.)
   docs               Analyze documentation coverage and quality
   middleware         Detect middleware chains and DI containers
-  graph              Build and print the full dependency graph
-  complexity         Score element complexity (requires project scan)
-  impact             Simulate blast radius for a changed element (requires --element)
+  graph              Print canonical dependency-graph statistics
+  complexity         Score element complexity
+  impact             Blast radius for a changed element (requires --element)
   multi-hop          Traverse multi-hop relationships (requires --element)
   breaking-changes   NOT IMPLEMENTED — exits with an error. The git-diff /
                      signature extractors are placeholder stubs; this type is
                      gated until they are implemented so it cannot emit
                      confident-looking empty reports.
+
+Note: graph, complexity, impact, multi-hop, and middleware read the canonical
+.coderef/graph.json produced by the populate pipeline (DR-PHASE-5-C). Run
+populate first if the artifact is missing or stale.
 `.trim());
 }
 
@@ -74,6 +81,62 @@ async function collectTsFiles(dir: string): Promise<string[]> {
     }
   }
   return files;
+}
+
+/**
+ * Load the canonical graph for --project, exiting with the run-populate hint
+ * when .coderef/graph.json is absent (the graph-backed types no longer build
+ * an in-memory graph — DR-PHASE-5-C retirement, Phase 2).
+ */
+function loadEngineOrExit(project: string): CanonicalGraphQuery {
+  try {
+    return loadCanonicalGraph(project);
+  } catch (err) {
+    if (err instanceof CanonicalGraphError) {
+      console.error(`coderef-analyze error: ${err.message}`);
+      process.exit(1);
+    }
+    throw err;
+  }
+}
+
+/**
+ * Project the canonical graph's element nodes into ElementData[] (the shape
+ * ComplexityScorer and analyzeMiddlewareAndDI consume), with calls[] rebuilt
+ * from resolved call edges.
+ */
+function canonicalElements(engine: CanonicalGraphQuery): ElementData[] {
+  const callsBySource = new Map<string, string[]>();
+  const nodeName = new Map<string, string | undefined>();
+  for (const node of engine.graph.nodes) nodeName.set(node.id, node.name);
+  for (const edge of engine.graph.edges) {
+    if (edge.resolutionStatus !== 'resolved' || edge.relationship !== 'call') continue;
+    if (!edge.sourceId || !edge.targetId) continue;
+    const targetName = nodeName.get(edge.targetId);
+    if (!targetName) continue;
+    const list = callsBySource.get(edge.sourceId);
+    if (list) {
+      if (!list.includes(targetName)) list.push(targetName);
+    } else {
+      callsBySource.set(edge.sourceId, [targetName]);
+    }
+  }
+
+  const elements: ElementData[] = [];
+  for (const node of engine.graph.nodes) {
+    if (node.id.startsWith('@File/') || !node.file) continue;
+    const element: ElementData = {
+      type: (node.type as ElementData['type']) || 'function',
+      name: node.name ?? node.id,
+      file: node.file,
+      line: node.line ?? 1,
+      headerStatus: (node.metadata?.headerStatus as ElementData['headerStatus']) ?? DEFAULT_HEADER_STATUS,
+    };
+    const calls = callsBySource.get(node.id);
+    if (calls && calls.length > 0) element.calls = calls;
+    elements.push(element);
+  }
+  return elements;
 }
 
 async function main(): Promise<void> {
@@ -145,9 +208,8 @@ async function main(): Promise<void> {
       break;
     }
     case 'middleware': {
-      const service  = new AnalyzerService(project);
-      const result   = await service.analyze();
-      const elements = convertGraphToElements(result.graph);
+      const engine   = loadEngineOrExit(project);
+      const elements = canonicalElements(engine);
       const tsFiles  = await collectTsFiles(join(project, 'src'));
       const fileMap  = new Map<string, string>();
       for (const f of tsFiles) {
@@ -157,36 +219,53 @@ async function main(): Promise<void> {
       break;
     }
     case 'graph': {
-      const service = new AnalyzerService(project);
-      const result  = await service.analyze();
-      emit(result.graph);
+      const engine = loadEngineOrExit(project);
+      emit({
+        source: '.coderef/graph.json',
+        version: engine.graph.version,
+        statistics: engine.statistics(),
+      });
       break;
     }
     case 'complexity': {
-      const service  = new AnalyzerService(project);
-      const result   = await service.analyze();
-      const elements = convertGraphToElements(result.graph);
+      const engine   = loadEngineOrExit(project);
+      const elements = canonicalElements(engine);
       const scorer   = new ComplexityScorer();
       emit(scorer.scoreElements(elements));
       break;
     }
     case 'impact': {
       if (!values.element) { console.error('Error: --element is required for --type=impact'); process.exit(1); }
-      const service   = new AnalyzerService(project);
-      const result    = await service.analyze();
-      const simulator = new ImpactSimulator(result.graph);
-      emit(simulator.calculateBlastRadius(values.element as string, depth));
+      const engine     = loadEngineOrExit(project);
+      const resolution = engine.resolve(values.element as string);
+      if (resolution.nodes.length === 0) {
+        console.error(`Error: no graph node matches --element "${values.element}"`);
+        process.exit(1);
+      }
+      const blastRadius = engine.dependentsOf(resolution, depth);
+      emit({
+        element: values.element,
+        resolved: resolution.nodes.slice(0, 10).map(n => n.id),
+        depth,
+        count: blastRadius.length,
+        blastRadius,
+      });
       break;
     }
     case 'multi-hop': {
       if (!values.element) { console.error('Error: --element is required for --type=multi-hop'); process.exit(1); }
-      const service   = new AnalyzerService(project);
-      const result    = await service.analyze();
-      const traversal = new MultiHopTraversal(result.graph, depth);
+      const engine     = loadEngineOrExit(project);
+      const resolution = engine.resolve(values.element as string);
+      if (resolution.nodes.length === 0) {
+        console.error(`Error: no graph node matches --element "${values.element}"`);
+        process.exit(1);
+      }
       emit({
-        usedBy:    traversal.usedBy(values.element as string),
-        calls:     traversal.calls(values.element as string),
-        dependsOn: traversal.dependsOn(values.element as string),
+        element: values.element,
+        depth,
+        usedBy:    engine.dependentsOf(resolution, depth),
+        calls:     engine.calleesOf(resolution),
+        dependsOn: engine.dependenciesOf(resolution, depth),
       });
       break;
     }

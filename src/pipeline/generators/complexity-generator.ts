@@ -22,6 +22,7 @@ import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import logger from '../../utils/logger.js';
+import { normalizeSlashes } from '../../utils/path-normalize.js';
 
 interface ComplexityMetrics {
   element: string;
@@ -114,7 +115,7 @@ export class ComplexityGenerator {
     return elements
       .filter(elem => elem.type === 'function' || elem.type === 'method')
       .map(elem => {
-        const relativePath = path.relative(projectPath, elem.file).replace(/\\/g, '/');
+        const relativePath = normalizeSlashes(path.relative(projectPath, elem.file));
         const content = sources.get(elem.file) || '';
         const fileElements = elementsByFile.get(elem.file) || [];
 

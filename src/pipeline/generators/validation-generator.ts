@@ -21,6 +21,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import logger from '../../utils/logger.js';
+import { normalizeSlashes } from '../../utils/path-normalize.js';
 
 interface ValidationReport {
   totalReferences: number;
@@ -59,14 +60,14 @@ export class ValidationGenerator {
     const elementMap = new Map<string, typeof state.elements[number]>();
 
     state.elements.forEach(element => {
-      const relativeFile = path.relative(state.projectPath, element.file).replace(/\\/g, '/');
+      const relativeFile = normalizeSlashes(path.relative(state.projectPath, element.file));
       elementMap.set(`${relativeFile}:${element.name}`, element);
       elementMap.set(`${element.file}:${element.name}`, element);
     });
 
     // Scan all source files for CodeRef2 references
     for (const [filePath, content] of state.sources.entries()) {
-      const relativePath = path.relative(state.projectPath, filePath).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(state.projectPath, filePath));
       const lines = content.split('\n');
 
       lines.forEach((line, index) => {

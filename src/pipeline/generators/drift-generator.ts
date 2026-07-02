@@ -38,6 +38,7 @@ import type { ElementData } from '../../types/types.js';
 import { loadIndexFromCoderefDir } from '../../fileGeneration/index-storage.js';
 import { createCodeRefId } from '../../utils/coderef-id.js';
 import logger from '../../utils/logger.js';
+import { normalizeSlashes } from '../../utils/path-normalize.js';
 
 interface DriftReport {
   driftPercentage: number;
@@ -185,6 +186,6 @@ export class DriftGenerator {
 
   private normalizeFilePath(filePath: string, projectPath: string): string {
     const absolutePath = path.isAbsolute(filePath) ? filePath : path.resolve(projectPath, filePath);
-    return path.relative(projectPath, absolutePath).replace(/\\/g, '/');
+    return normalizeSlashes(path.relative(projectPath, absolutePath));
   }
 }

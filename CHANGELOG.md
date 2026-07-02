@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-07-02] — Repo-Review Remediation Phase 2: legacy analyzer/query stack retired (P1 structural)
+
+WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 2 (STUB-XG7DSB). Executes DR-PHASE-5-C: the legacy in-memory analyzer graph is gone; every query surface now reads the canonical pipeline-emitted `.coderef/graph.json`.
+
+### Removed
+- **Legacy analyzer/query stack DELETED**: `src/analyzer/graph-builder.ts` (`@deprecated` since Phase 5), `graph-analyzer.ts`, `analyzer-service.ts`, `graph-error.ts`, `graph-helpers.ts`, `import-parser.ts`, `call-detector.ts`, `src/query/query-executor.ts`, `src/context/multi-hop-traversal.ts`, `src/adapter/graph-to-elements.ts` — plus their 4 test files. This deletes the plural-vs-singular edge-vocabulary mismatch and the inverted query semantics (`what-calls-me` returned callees) wholesale. Package exports updated (`GraphBuilder`/`GraphAnalyzer`/`AnalyzerService`/`QueryExecutor`/`MultiHopTraversal`/`convertGraphToElements`/`GraphError` no longer exported).
+- **`coderef-search` bin DELETED** (operator ruling): it required `.coderef/search-index.json` which nothing generates, and its error text cited a nonexistent bin. `package-lock.json` regenerated (also clears the stale `coderef-intelligence-server` bin residue).
+
+### Changed
+- **`coderef-query` reimplemented on canonical `.coderef/graph.json`** (operator ruling: keep the command, swap the engine). New `src/query/canonical-graph.ts` engine; direction contract pinned by tests: `-me` = inbound (who calls/imports/depends on the target), bare = outbound. `--patterns` deprecated (no in-memory analysis pass). Requires populate to have run.
+- **`coderef-analyze` graph-backed types ported** (`graph`, `impact`, `multi-hop`, `complexity`, `middleware`) onto canonical artifacts; the 6 standalone analyzers and the `breaking-changes` gate are unchanged.
+- **Scanner-path TS relationship extraction fixed (P1-8)**: ts/tsx files route through the pipeline's tree-sitter `RelationshipExtractor`; the plain-Acorn `JSCallDetector` pass silently returned empty `calls[]`/`imports[]` for every TypeScript file. First coverage of this hole added (`src/scanner/__tests__/ts-relationship-extraction.test.ts`); plain `.js` stays on Acorn.
+- **tsconfig hardening (P1-9)**: `noEmitOnError: true`; new `npm run typecheck:pipeline` strict gate over `src/pipeline/**` (zero errors; 9 fixed in its import closure).
+- **One shared LLM-provider/vector-store factory (P1-10)**: `src/integration/llm/provider-factory.ts` consuming `MODEL_REGISTRY` replaces 4 hand-maintained copies + coderef-rag-server's private dimension table. Defaults are Ollama LOCAL-ONLY — no cloud key required unless a cloud provider is explicitly requested.
+- **Path normalization centralized (P1-12)**: 55 hand-rolled `.replace(/\\/g,'/')` sites route through `normalizeSlashes` (`src/utils/path-normalize.ts`).
+
+### Fixed
+- **EntityRegistry UUID identity gap (P1-12)**: UUIDs hashed the RAW file spelling, so `src\a.ts` and `src/a.ts` yielded two identities for one element. `generateUUID`/`register`/`getEntitiesByFile` now slash-normalize; first entity-registry tests added.
+
+---
+
 ## [2026-06-13] — Scanner Resolver Gaps: Python builtin + stdlib-receiver calls (Phase 2)
 
 WO-SCANNER-RESOLVER-THREE-GAPS-001 Phase 2 (STUB-G5E6EA). Gap #3 — the two dominant unresolved-call buckets on Primary-Sources (`callee_not_in_symbol_table` 5,009, `receiver_not_in_symbol_table` 10,245). The deterministic slice is Python builtins, the analog of the JS classifications that already existed.

@@ -236,9 +236,10 @@ async function handleReadyz(_req: http.IncomingMessage, res: http.ServerResponse
 
 async function handleStatus(_req: http.IncomingMessage, res: http.ServerResponse): Promise<void> {
   const probe = await probeOllama();
-  // Best-effort: report dim from default model registry (768 for nomic-embed-text)
-  const knownDims: Record<string, number> = { 'nomic-embed-text': 768 };
-  const dim = knownDims[probe.model] ?? null;
+  // Best-effort: dimension resolved from MODEL_REGISTRY via the shared
+  // factory (P1-10) instead of a private dimension table.
+  const { embeddingDimensionsForModel } = await import('../integration/llm/provider-factory.js');
+  const dim = embeddingDimensionsForModel(probe.model);
   send(res, 200, {
     api_version: RAG_API_VERSION,
     server_version: SERVER_VERSION,

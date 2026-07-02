@@ -22,6 +22,7 @@ import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
 import logger from '../../utils/logger.js';
+import { normalizeSlashes } from '../../utils/path-normalize.js';
 
 // IMP-CORE-007: Coverage data interface
 interface CoverageData {
@@ -137,7 +138,7 @@ export class PatternGenerator {
       .flatMap(elem =>
         (elem.decorators || []).map(dec => ({
           name: elem.name,
-          file: path.relative(projectPath, elem.file).replace(/\\/g, '/'),
+          file: normalizeSlashes(path.relative(projectPath, elem.file)),
           line: elem.line,
           decorator: dec,
         }))
@@ -152,7 +153,7 @@ export class PatternGenerator {
 
     for (const [filePath, content] of sources.entries()) {
       const lines = content.split('\n');
-      const relativePath = path.relative(projectPath, filePath).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, filePath));
 
       lines.forEach((line, index) => {
         if (line.includes('try') && line.includes('{')) {
@@ -182,7 +183,7 @@ export class PatternGenerator {
       .filter(elem => elem.async === true)
       .map(elem => ({
         name: elem.name,
-        file: path.relative(projectPath, elem.file).replace(/\\/g, '/'),
+        file: normalizeSlashes(path.relative(projectPath, elem.file)),
         line: elem.line,
       }));
   }
@@ -214,7 +215,7 @@ export class PatternGenerator {
     }
     // Helper to check if a file is a test file
     const isTestFile = (filePath: string): boolean => {
-      const relativePath = path.relative(projectPath, filePath).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, filePath));
       return relativePath.includes('/tests/') ||
              relativePath.startsWith('tests/') ||
              relativePath.includes('/test_') ||
@@ -305,7 +306,7 @@ export class PatternGenerator {
       if (name.startsWith('handle') && !name.match(/^handle(Drag|Board|Confirm|Create|Full|Generate)/)) return true;
 
       // Internal directories
-      const relativePath = path.relative(projectPath, file).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, file));
       if (relativePath.includes('/internal/')) return true;
       if (relativePath.includes('/helpers/')) return true;
 
@@ -334,7 +335,7 @@ export class PatternGenerator {
       }
 
       // Public API bonus (+20 points for exported from index/main)
-      const relativePath = path.relative(projectPath, elem.file).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, elem.file));
       if (relativePath.includes('index.ts') || relativePath.includes('main.ts')) {
         score += 20;
       }
@@ -364,8 +365,8 @@ export class PatternGenerator {
 
         return {
           name: elem.name,
-          file: path.relative(projectPath, elem.file).replace(/\\/g, '/'),
-          reason: this.generateTestGapReason(complexity, isOrchestrator, elem.async),
+          file: normalizeSlashes(path.relative(projectPath, elem.file)),
+          reason: this.generateTestGapReason(complexity, isOrchestrator, elem.async ?? false),
           priority,
           complexity,
         };
@@ -452,7 +453,7 @@ export class PatternGenerator {
     const middleware: PatternReport['middleware'] = [];
 
     for (const [filePath, content] of sources.entries()) {
-      const relativePath = path.relative(projectPath, filePath).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, filePath));
       const lines = content.split('\n');
 
       for (let i = 0; i < lines.length; i++) {
@@ -527,7 +528,7 @@ export class PatternGenerator {
     const di: PatternReport['dependencyInjection'] = [];
 
     for (const elem of elements) {
-      const relativePath = path.relative(projectPath, elem.file).replace(/\\/g, '/');
+      const relativePath = normalizeSlashes(path.relative(projectPath, elem.file));
       const decorators = elem.decorators || [];
 
       // NestJS patterns

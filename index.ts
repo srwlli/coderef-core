@@ -9,15 +9,13 @@ export * from './src/scanner/scanner.js';
 export * from './src/parser/parser.js';
 export * from './src/analyzer/index.js';
 export * from './src/validator/validator.js';
-export * from './src/query/query-executor.js';
+// Canonical-graph query engine (legacy query-executor retired per DR-PHASE-5-C)
+export * from './src/query/canonical-graph.js';
 
 // Context & AI integration
 export * from './src/context/index.js';
 export * from './src/export/index.js';
 // export * from './src/integration/index.js'; // Temporarily disabled - missing AI dependencies
-
-// Adapters
-export { convertGraphToElements, getConversionStats } from './src/adapter/graph-to-elements.js';
 
 // Utilities
 export * from './utils/fs.js';

@@ -8,7 +8,7 @@
   "parent_stub_id": "STUB-W45PTN",
   "predecessor_for": null,
   "status": "plan_created",
-  "current_phase": 1,
+  "current_phase": 2,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\context.json",
@@ -84,6 +84,42 @@
       "at": "2026-07-02T07:45:18Z"
     },
     {
+      "event": "rolling_halt_no_rearm",
+      "phase": 1,
+      "reason": "ScheduleWakeup re-arm (SKILL Step 6 3.5) deliberately skipped: interactive operator session, and Phase 2 is plan_deferred — advancing requires the operator's Phase-1 review + Phase-2 authoring (report_back_required_after_each_phase), not an inbox directive a poll could consume. Control returns to the operator in-session.",
+      "at": "2026-07-02T08:26:00Z"
+    },
+    {
+      "event": "phase1_operator_review",
+      "outcome": "approved",
+      "detail": "Operator directive '/execute-workorder phase 2 please' (2026-07-02T08:40Z) constitutes the Phase-1 review gate approval; hard_stops[phase=1].approved flipped true in plan.json.",
+      "at": "2026-07-02T08:43:32Z"
+    },
+    {
+      "event": "stub_9f63ej_reconciliation",
+      "outcome": "no_overlap_already_shipped",
+      "detail": "STUB-9F63EJ (coderef-intelligence-server retirement, operator ruling A) was ALREADY EXECUTED 2026-06-13: CHANGELOG.md:96 records source + bin deleted, docs/intelligence-api.md tombstoned with endpoint->MCP-tool map; TOOL-HOTSPOTS precondition shipped 1b40f1b. P1-7's legacy analyzer/query stack (src/analyzer/graph-builder|graph-analyzer|analyzer-service, src/query/query-executor) is a DIFFERENT, still-present surface — no duplicate work. Sole residue: stale package-lock.json:38 bin entry, folded into P2-T8.",
+      "at": "2026-07-02T08:43:32Z"
+    },
+    {
+      "event": "operator_ruling",
+      "question": "P1-7: disposition of coderef-query when the legacy graph stack is deleted",
+      "ruling": "KEEP the coderef-query command, reimplement on canonical .coderef/graph.json (preserves ASSISTANT doc-discovery consumer; kills inverted semantics + vocab mismatch); legacy stack deleted underneath",
+      "at": "2026-07-02T08:42:00Z"
+    },
+    {
+      "event": "operator_ruling",
+      "question": "P1-11: coderef-search fix-or-drop (requires never-generated search-index.json)",
+      "ruling": "DELETE the bin (src/cli/coderef-search.ts + package.json bin entry)",
+      "at": "2026-07-02T08:42:00Z"
+    },
+    {
+      "event": "phase2_authored",
+      "task_count": 16,
+      "detail": "Phase 2 tasks P2-T1..P2-T16 authored via ad-hoc plan.json edit per rolling_plan.next_phase_authoring; plan_deferred flipped false; STUB-XG7DSB flips deferred_phase->promoted in ASSISTANT tracking/stubs.json.",
+      "at": "2026-07-02T08:43:32Z"
+    },
+    {
       "event": "semantic_validation_gate",
       "outcome": "pass_with_overridden_false_positive",
       "detail": "validator flagged critical constraint-cloud-rag; root cause is JSON.stringify(context).includes('anthropic'|'openai') matching discovery-candidate FILENAMES (src/integration/llm/anthropic-provider.ts, openai-provider.ts) enumerated from the existing repo tree. No Phase 1 task touches src/integration/llm/. Determined false positive by reading semantic-validator.js:333-354; proceeding. Kaizen logged (correctness).",
@@ -95,8 +131,46 @@
       "at": "2026-07-02T07:47:00Z"
     }
   ],
-  "phase_transitions": [],
+  "phase2_gate_events": [
+    {
+      "event": "active_work_registration_degraded",
+      "phase": 2,
+      "reason": "register-active-work.cjs refused again: archive shrink guard 5384->1467 (same pre-existing transient-DB wart as Phase 1 + create time); not overriding; registry DB row is canonical",
+      "at": "2026-07-02T08:45:00Z"
+    },
+    {
+      "event": "semantic_validation_gate",
+      "phase": 2,
+      "outcome": "pass_with_overridden_false_positive",
+      "detail": "Same constraint-cloud-rag critical as Phase 1 (substring match at semantic-validator.js:333-354). This run it ALSO matches P2-T11's task text, whose sentence is the Ollama-LOCAL-ONLY enforcement itself ('must never require OpenAI/Anthropic keys') — the match cannot distinguish forbidding cloud providers from wiring them. No Phase 2 task introduces a cloud provider; P2-T11 hard-codes the local-only constraint. False positive; proceeding. Warning dep-P2-T4 ('edits undefined') is a validator parsing wart, noted.",
+      "violations_summary": {
+        "critical": 1,
+        "warning": 1,
+        "info": 0
+      },
+      "at": "2026-07-02T08:45:30Z"
+    }
+  ],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "981173b",
+      "verdict": "PASS",
+      "at": "2026-07-02T08:23:36.701Z"
+    }
+  ],
   "inter_phase_results": {
+    "2": {
+      "pre": [
+        {
+          "hook": "/discover repo-review-2026-07-remediation phase 2@quick",
+          "severity": "info",
+          "summary": "rg pass over src/: zero references to the feature slug (Phase 1 left no scaffolding); WO artifacts are the only surfaces; phase clear to start",
+          "at": "2026-07-02T08:46:00Z"
+        }
+      ]
+    },
     "1": {
       "pre": [
         {
@@ -106,10 +180,31 @@
           "at": "2026-07-02T07:50:00Z"
         }
       ],
-      "post": []
+      "post": [
+        {
+          "hook": "/discover repo-review-2026-07-remediation phase 1 post@quick",
+          "severity": "info",
+          "summary": "post-commit rg pass over src/: zero references to the feature slug remain in source (all changes are behavioral fixes, no scaffolding left behind); WO artifacts + commit 981173b are the only surfaces",
+          "at": "2026-07-02T08:24:00Z"
+        }
+      ]
     }
   },
   "plan_adjustments": [
+    {
+      "id": "ADJ-02",
+      "task": "P2-T6",
+      "applied": true,
+      "detail": "Legacy-stack deletion swept 4 test files beyond the plan's touches list: __tests__/analyzer.test.ts + graph-helpers.test.ts + phase5-integration.test.ts (test the deleted stack itself) DELETED; orphan-detection.test.ts DELETED (tests legacy GraphBuilder's orphans feature, no canonical equivalent); accuracy-validation.test.ts REDUCED to its scanner-only Accuracy Metrics block (edge accuracy now pinned by pipeline ground-truth tests + the new P1-8 scanner test). AC-07 guard test flipped from 'marked @legacy' to 'file removed' (the removal arm). Repo-root index.ts also re-exported the deleted modules (not just src/index.ts) — both rewired to canonical-graph.",
+      "at": "2026-07-02T09:05:00Z"
+    },
+    {
+      "id": "ADJ-03",
+      "task": "P2-T10",
+      "applied": true,
+      "detail": "strict pipeline typecheck's import closure pulls in 3 analyzer/generator files outside src/pipeline; 9 errors fixed (typed-conditional array pushes, PackageJson index access, elem.async ?? false) + @types/babel__traverse added as devDependency (types-only). Anthropic default generation model is now MODEL_REGISTRY-sourced (claude-3-5-sonnet-20241022, was hardcoded claude-3-sonnet-20240229 in the removed copies) — moot in this Ollama-local-only environment.",
+      "at": "2026-07-02T09:05:00Z"
+    },
     {
       "id": "ADJ-01",
       "task": "P1-T2/P1-T10",

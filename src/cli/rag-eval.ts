@@ -30,6 +30,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 export interface GoldenQuery {
   id: string;
@@ -56,7 +57,7 @@ export interface EvalAggregate {
   mrr: number;
 }
 
-const norm = (f: string | undefined): string => (f ?? '').replace(/\\/g, '/');
+const norm = (f: string | undefined): string => normalizeSlashes((f ?? ''));
 
 /**
  * Rank (1-based) of the first result whose file matches any expected file.
@@ -149,28 +150,17 @@ async function main(): Promise<void> {
   }
   const provider = meta.provider ?? 'ollama';
 
-  // Same modules as rag-search — no parallel search implementation.
+  // Shared factory (P1-10) — same construction path as rag-search, no
+  // parallel implementation. Ollama local-only defaults.
+  const { createLLMProvider, createVectorStore } = await import('../integration/llm/provider-factory.js');
   let llmProvider: any;
-  if (provider === 'openai') {
-    const { OpenAIProvider } = await import('../integration/llm/openai-provider.js');
-    const apiKey = process.env.OPENAI_API_KEY;
-    if (!apiKey) {
-      console.error('[rag-eval] index built with openai but OPENAI_API_KEY is not set');
-      process.exit(2);
-    }
-    llmProvider = new OpenAIProvider({ apiKey, model: process.env.CODEREF_OPENAI_MODEL || 'gpt-4-turbo-preview' });
-  } else {
-    const { OllamaProvider } = await import('../integration/llm/ollama-provider.js');
-    llmProvider = new OllamaProvider({
-      apiKey: process.env.CODEREF_LLM_API_KEY || 'ollama',
-      baseUrl: process.env.CODEREF_LLM_BASE_URL || 'http://localhost:11434',
-      model: process.env.CODEREF_LLM_MODEL || 'qwen2.5:7b-instruct',
-    });
+  try {
+    llmProvider = await createLLMProvider(provider === 'openai' ? 'openai' : 'ollama');
+  } catch (keyErr) {
+    console.error(`[rag-eval] index built with ${provider} but its provider could not start: ${keyErr instanceof Error ? keyErr.message : String(keyErr)}`);
+    process.exit(2);
   }
-  const { SQLiteVectorStore } = await import('../integration/vector/sqlite-store.js');
-  const storagePath =
-    process.env.CODEREF_SQLITE_PATH || path.join(args.projectDir, '.coderef', 'coderef-vectors.json');
-  const vectorStore = new SQLiteVectorStore({ storagePath, dimension: llmProvider.getEmbeddingDimensions() });
+  const vectorStore = await createVectorStore(meta.store ?? 'sqlite', args.projectDir, llmProvider, { warnTag: 'rag-eval' });
   await vectorStore.initialize();
   const { SemanticSearchService } = await import('../integration/rag/semantic-search.js');
   const searchService = new SemanticSearchService(llmProvider, vectorStore);

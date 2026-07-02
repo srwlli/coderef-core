@@ -18,8 +18,9 @@ export * from './export/index.js';
 // Parser module
 export * from './parser/parser.js';
 
-// Query module
-export * from './query/query-executor.js';
+// Query module — canonical-graph engine over .coderef/graph.json
+// (legacy query-executor retired per DR-PHASE-5-C)
+export * from './query/canonical-graph.js';
 
 // Validator module - CodeRef2 reference validation
 export * from './validator/validator.js';
@@ -121,10 +122,8 @@ export type {
 // Types module
 export * from './types/types.js';
 
-// Adapter module - Convert between scanner formats
-export { convertGraphToElements, getConversionStats } from './adapter/graph-to-elements.js';
-// export { mergeElements, getMergeStatistics } from './adapter/merge-scan-results.js';
-// export type { ConversionOptions, MergeOptions, MergeResult } from './adapter/types.js';
+// Adapter module retired with the legacy analyzer graph (DR-PHASE-5-C) —
+// canonical graph nodes already carry element shape.
 
 /**
  * Scanner module - Regex-based code element scanning

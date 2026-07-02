@@ -21,6 +21,7 @@ import type { ElementData } from '../types/types.js';
 import type { ImportRelationship } from '../pipeline/types.js';
 import * as path from 'path';
 import { normalizeProjectPath } from '../utils/coderef-id.js';
+import { normalizeSlashes } from '../utils/path-normalize.js';
 
 /**
  * Attach pipeline-level file imports to each element in the importing file.
@@ -41,7 +42,7 @@ export function attachFileImportsToElements(
   for (const imp of imports) {
     const sourceFile = normalizeProjectPath(projectPath, imp.sourceFile);
     const normalizedImport = {
-      source: imp.target.replace(/\\/g, '/'),
+      source: normalizeSlashes(imp.target),
       specifiers: imp.specifiers,
       default: imp.default,
       namespace: imp.namespace,

@@ -21,6 +21,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import logger from '../../utils/logger.js';
+import { normalizeSlashes } from '../../utils/path-normalize.js';
 
 interface CoverageReport {
   summary: {
@@ -61,7 +62,7 @@ export class CoverageGenerator {
     // Collect all files
     for (const [lang, filePaths] of state.files.entries()) {
       filePaths.forEach(filePath => {
-        const relativePath = path.relative(state.projectPath, filePath).replace(/\\/g, '/');
+        const relativePath = normalizeSlashes(path.relative(state.projectPath, filePath));
         allFiles.push(relativePath);
 
         if (this.isTestFile(relativePath)) {
