@@ -49,7 +49,6 @@ interface CliArgs {
   semanticRegistry: boolean;
   sourceHeaders: boolean;
   overwriteHeaders: boolean;
-  llmEnrich: boolean;
   strictHeaders: boolean;
   /**
    * When true, fail (exit 1) if header coverage is below `coverageFloor`.
@@ -89,7 +88,6 @@ function parseArgs(argv: string[]): CliArgs {
     semanticRegistry: true,
     sourceHeaders: false,
     overwriteHeaders: false,
-    llmEnrich: false,
     strictHeaders: false,
     enforceHeaders: false,
     coverageFloor: 100,
@@ -172,10 +170,6 @@ function parseArgs(argv: string[]): CliArgs {
         args.overwriteHeaders = true;
         break;
 
-      case '--llm-enrich':
-        args.llmEnrich = true;
-        break;
-
       case '--strict-headers':
         args.strictHeaders = true;
         break;
@@ -231,7 +225,6 @@ OPTIONS:
   --no-semantic-registry       Skip semantic-registry.json projection
   --source-headers             Write optional CodeRef-Semantics headers into source files (default: off)
   --overwrite-headers          Re-write headers even if file already has them (refreshes stale headers)
-  --llm-enrich                 Reserved for opt-in projection enrichment; never runs by default
   -h, --help                   Show this help message
 
 MODES:

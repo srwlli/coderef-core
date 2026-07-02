@@ -20,8 +20,9 @@ export * from './src/export/index.js';
 // Utilities
 export * from './utils/fs.js';
 
-// Error classes
-export * from './src/errors/index.js';
+// Error classes retired (WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3, P2-14):
+// src/errors/ had zero production importers — CodeRefError/FileNotFoundError/
+// IndexError/ParseError/ScanError/ValidationError are no longer exported.
 
 // File generation - Phase 1
 export { saveIndex } from './src/fileGeneration/saveIndex.js';

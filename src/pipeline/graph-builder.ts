@@ -676,7 +676,26 @@ export function buildEdges(
     }));
   }
 
-  return edges;
+  // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3: dedupe by edge id.
+  // computeEdgeId hashes the semantic tuple (source, relationship, target,
+  // file, line), so equal ids ARE the same edge — yet the passes above could
+  // emit the same tuple more than once (the live self-scan artifact carried
+  // 948 duplicate-id entries). One id, one edge; first occurrence wins.
+  const seenEdgeIds = new Set<string>();
+  const deduped: ExportedGraph['edges'] = [];
+  for (const edge of edges) {
+    const id = edge.id;
+    if (id === undefined) {
+      // id is optional on the transition-window edge type; every edge built
+      // above carries one, but an id-less edge cannot be deduped — pass it.
+      deduped.push(edge);
+      continue;
+    }
+    if (seenEdgeIds.has(id)) continue;
+    seenEdgeIds.add(id);
+    deduped.push(edge);
+  }
+  return deduped;
 }
 
 /**

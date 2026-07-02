@@ -12,7 +12,7 @@
  * Usage:
  *   rag-index --project-dir <path>
  *   rag-index --project-dir <path> --provider openai
- *   rag-index --project-dir <path> --store sqlite --reset
+ *   rag-index --project-dir <path> --store json --reset
  */
 
 import * as fs from 'fs/promises';
@@ -25,6 +25,7 @@ import { toAbsolute } from '../integration/rag/path-types.js';
 // single source; defaults are Ollama local-only. Only the orchestrator
 // remains a lazy optional dependency here.
 import { createLLMProvider, createVectorStore } from '../integration/llm/provider-factory.js';
+import { parseFlags, failUsage } from './shared/cli-args.js';
 
 let IndexingOrchestrator: any;
 
@@ -36,7 +37,7 @@ async function loadRAGDependencies() {
 interface CliArgs {
   projectDir: string;
   provider: string;  // Any provider name (openai, anthropic, ollama, etc.)
-  store: 'sqlite' | 'pinecone' | 'chroma';
+  store: 'json' | 'sqlite' | 'pinecone' | 'chroma';
   reset: boolean;
   languages?: string[];
   verbose: boolean;
@@ -57,114 +58,79 @@ interface CliArgs {
  * Parse command line arguments
  */
 function parseArgs(argv: string[]): CliArgs {
+  // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-18): parsing moved
+  // onto the shared helper (see rag-search) — --flag=value and --flag value
+  // both work everywhere, numerics are NaN-checked, unknown flags error out.
+  const parsed = parseFlags(argv, {
+    help: { kind: 'boolean', aliases: ['-h'] },
+    'project-dir': { kind: 'string', aliases: ['-p'] },
+    provider: { kind: 'string' },
+    store: { kind: 'string' },
+    reset: { kind: 'boolean' },
+    'coverage-floor': { kind: 'float' },
+    'strict-coverage': { kind: 'boolean' },
+    'include-headerless': { kind: 'boolean' },
+    lang: { kind: 'string', aliases: ['-l'] },
+    verbose: { kind: 'boolean', aliases: ['-v'] },
+    json: { kind: 'boolean', aliases: ['-j'] },
+  });
+
+  const v = parsed.values;
+  if (!v.get('help') && parsed.errors.length > 0) {
+    failUsage('rag-index', parsed.errors);
+  }
+
   // Honor CODEREF_LLM_PROVIDER as the default provider when --provider isn't
   // passed. Without it, default is key-aware: openai only when a cloud key is
   // actually present, otherwise ollama (local-first — embeddings must not
   // require an API key; WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001
   // P2-T1). --provider still overrides everything.
   const envProvider = process.env.CODEREF_LLM_PROVIDER?.toLowerCase();
-  const args: CliArgs = {
-    projectDir: process.cwd(),
-    provider: envProvider || (process.env.OPENAI_API_KEY ? 'openai' : 'ollama'),
-    store: 'sqlite',
-    reset: false,
-    verbose: false,
-    json: false,
-    help: false,
-    // Default coverage floor. Warn-only by default (RISK-01): an under-
-    // covered project keeps indexing but the breach is surfaced. 0 floor
-    // effectively disables the warning; we default to 0 so existing runs
-    // are unchanged until an operator opts into a real floor.
-    coverageFloor: 0,
-    strictCoverage: false,
-    includeHeaderless: false,
-  };
 
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
+  const storeRaw = (v.get('store') as string | undefined) ?? 'json';
+  let store: CliArgs['store'] = 'json';
+  if (['json', 'sqlite', 'pinecone', 'chroma'].includes(storeRaw)) {
+    store = storeRaw as CliArgs['store'];
+  } else {
+    console.warn(`[rag-index] Unknown store: ${storeRaw}. Using json.`);
+  }
 
-    // Handle --arg=value format by extracting value
-    let value: string | undefined;
-    let key = arg;
-    if (arg.startsWith('--') && arg.includes('=')) {
-      const parts = arg.split('=', 2);
-      key = parts[0];
-      value = parts[1];
-    }
-
-    switch (key) {
-      case '--help':
-      case '-h':
-        args.help = true;
-        break;
-
-      case '--project-dir':
-      case '-p':
-        args.projectDir = value ?? argv[++i];
-        break;
-
-      case '--provider':
-        args.provider = value ?? argv[++i];
-        break;
-
-      case '--store': {
-        const store = value ?? argv[++i];
-        if (['sqlite', 'pinecone', 'chroma'].includes(store)) {
-          args.store = store as 'sqlite' | 'pinecone' | 'chroma';
-        } else {
-          console.warn(`[rag-index] Unknown store: ${store}. Using sqlite.`);
-        }
-        break;
-      }
-
-      case '--reset':
-        args.reset = true;
-        break;
-
-      case '--coverage-floor': {
-        const raw = value ?? argv[++i];
-        const n = Number(raw);
-        if (Number.isFinite(n) && n >= 0 && n <= 100) {
-          args.coverageFloor = n;
-        } else {
-          console.warn(
-            `[rag-index] Invalid --coverage-floor: ${raw}. Expected 0-100. Ignoring.`,
-          );
-        }
-        break;
-      }
-
-      case '--strict-coverage':
-        args.strictCoverage = true;
-        break;
-
-      case '--include-headerless':
-        args.includeHeaderless = true;
-        break;
-
-      case '--lang':
-      case '-l':
-        args.languages = (value ?? argv[++i]).split(',');
-        break;
-
-      case '--verbose':
-      case '-v':
-        args.verbose = true;
-        break;
-
-      case '--json':
-      case '-j':
-        args.json = true;
-        break;
-
-      default:
-        if (!arg.startsWith('-')) {
-          args.projectDir = arg;
-        }
+  // Default coverage floor. Warn-only by default (RISK-01): an under-
+  // covered project keeps indexing but the breach is surfaced. 0 floor
+  // effectively disables the warning; we default to 0 so existing runs
+  // are unchanged until an operator opts into a real floor.
+  let coverageFloor = 0;
+  const floorRaw = v.get('coverage-floor') as number | undefined;
+  if (floorRaw !== undefined) {
+    if (floorRaw >= 0 && floorRaw <= 100) {
+      coverageFloor = floorRaw;
+    } else {
+      console.warn(
+        `[rag-index] Invalid --coverage-floor: ${floorRaw}. Expected 0-100. Ignoring.`,
+      );
     }
   }
 
-  return args;
+  const langRaw = v.get('lang') as string | undefined;
+
+  return {
+    // Positional project dir wins over cwd (matches previous behavior).
+    projectDir: (v.get('project-dir') as string | undefined)
+      ?? parsed.positionals[parsed.positionals.length - 1]
+      ?? process.cwd(),
+    provider: (v.get('provider') as string | undefined)
+      ?? envProvider
+      ?? (process.env.OPENAI_API_KEY ? 'openai' : 'ollama'),
+    store,
+    reset: (v.get('reset') as boolean | undefined) ?? false,
+    languages: langRaw ? langRaw.split(',') : undefined,
+    verbose: (v.get('verbose') as boolean | undefined) ?? false,
+    json: (v.get('json') as boolean | undefined) ?? false,
+    help: (v.get('help') as boolean | undefined) ?? false,
+    coverageFloor,
+    strictCoverage: (v.get('strict-coverage') as boolean | undefined) ?? false,
+    includeHeaderless: (v.get('include-headerless') as boolean | undefined) ?? false,
+  };
 }
 
 /**
@@ -180,7 +146,7 @@ USAGE:
 OPTIONS:
   -p, --project-dir <path>     Project directory to index (default: current directory)
   --provider <provider>        LLM provider: openai, anthropic, ollama (default: openai if OPENAI_API_KEY set, else ollama)
-  --store <store>              Vector store: sqlite, pinecone, chroma (default: sqlite)
+  --store <store>              Vector store: json, pinecone, chroma (default: json; 'sqlite' is a deprecated alias for json)
   --reset                      Reset existing index before indexing
   --include-headerless         Embed chunks from header-less elements (missing/stale/partial)
                                with header:false provenance instead of skipping them —

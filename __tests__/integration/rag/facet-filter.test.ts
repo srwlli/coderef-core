@@ -8,7 +8,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
-import { SQLiteVectorStore } from '../../../src/integration/vector/sqlite-store.js';
+import { JsonVectorStore } from '../../../src/integration/vector/json-store.js';
 import type { VectorRecord } from '../../../src/integration/vector/vector-store.js';
 
 // Phase 7 task 1.15 — backend filter capability integration test for
@@ -32,7 +32,7 @@ async function makeStore() {
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'coderef-p7-facet-'));
   created.push(dir);
   const storagePath = path.join(dir, 'vectors.json');
-  const store = new SQLiteVectorStore({ storagePath, dimension: 4 });
+  const store = new JsonVectorStore({ storagePath, dimension: 4 });
   await store.initialize();
   return { store, dir };
 }

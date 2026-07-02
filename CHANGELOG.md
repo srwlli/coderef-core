@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-07-02] — Repo-Review Remediation Phase 3: scan performance + dead-code subtraction (P2 perf/hygiene)
+
+WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (STUB-01DW28, final phase). The scan CLI is ~9× faster with better recall, and another ~3,400 lines of dead or dishonest code are gone.
+
+### Removed
+- **`src/plugins/` DELETED** (operator ruling): 8 files / ~2,167 LOC of plugin scaffolding nothing ever loaded (`--plugins`/`--no-plugins` on `coderef-scan` were parsed and never read). Restorable from git history when a real need exists.
+- **`src/errors/` DELETED**: six exception classes (`CodeRefError`, `FileNotFoundError`, `IndexError`, `ParseError`, `ScanError`, `ValidationError`) with zero production importers — alive only through the legacy root entry export and an isolated test. No longer exported from the legacy main entry.
+- **Dead code sweep (P2-14)**: `src/pipeline/incremental-cache.ts` (298-line stale copy of `src/cache/incremental-cache.ts`), `src/generator/generateFrontendCalls.ts` (zero importers), `src/semantic/llm-enricher.ts` + test (its constructor unconditionally self-disabled, so it NEVER enriched — and it was Anthropic-based in an Ollama-local-only environment). No-op flags removed: `populate --llm-enrich`, `scan --plugins/--no-plugins`, `semantic-integration --no-enrich`. `EnrichedMetadata` type relocated to `registry-sync.ts`; `SemanticPipelineOptions.enrichLLM` removed.
+- **Untracked residue deleted**: `graphify-out/` (8 MB, 2026-05-12) and `mcp-smoke-stderr.txt`.
+
+### Changed
+- **Scan CLI ~9× faster (P2-13): 71s → ~8s on this repo.** Three fixes: (a) the regex pass is now a true per-file FALLBACK — it no longer re-scans files tree-sitter already parsed (which only added `if`/`catch` pseudo-elements dedupe couldn't merge); (b) one read + one parse per file — the new `src/scanner/tree-sitter-file-scan.ts` feeds elements AND relationships from a single tree-sitter parse using the pipeline's full-recall `ElementExtractor` (the scanner's private `TreeSitterScanner` extractor missed interfaces, constants and type aliases — the regex double-pass was masking that gap), and `JSCallDetector` now parses once per file (AST shared across detectCalls/detectImports/etc., primeable from in-memory content); (c) the O(lines²) comment/template detection is a single-pass precomputed table, and the frontend-call parsers no longer Babel-re-parse the whole file PER REGEX MATCH (one-slot AST/result cache). `.coderef/` pipeline output is byte-identical (the pipeline has its own extraction path); `useAST` mode now takes precedence over tree-sitter when explicitly requested instead of running both plus regex.
+- **Vector store honest rename + crash-safe writes (P2-16, operator ruling)**: `sqlite-store.ts` → `json-store.ts`, `SQLiteVectorStore` → `JsonVectorStore` (deprecated alias kept). It was always a JSON file. Canonical store name is now `json` (`--store json`); `'sqlite'` is accepted as a deprecated alias with a warning. `save()` writes temp-file-then-rename, so a crash mid-write can no longer corrupt the index.
+- **One shared CLI arg helper (P2-18)**: `src/cli/shared/cli-args.ts` adopted by `rag-search`/`rag-index`/`rag-eval`/`rag-status`. Fixes the `--flag=value` bug where `--top-k=5` silently swallowed the NEXT argument; numeric flags are NaN-checked; unknown flags error (exit 1) instead of being silently ignored. `coderef-scan` help now documents its positional-first requirement.
+- **Test hygiene (P2-17)**: the fully-mocked "Ollama Provider - Unreachable Daemon" suite is un-skipped (4 tests; the mock simulates ECONNREFUSED itself — no daemon needed; its cloud-fallback assertion also had a latent self-pollution bug, fixed); the five `__tests__/*.test.mjs` smoke scripts that vitest NEVER executed now run on every suite pass via a child-process runner (`__tests__/mjs-smoke-suites.test.ts`); dead `processingTimeMs` determinism mask removed.
+
+### Fixed
+- **Duplicate edge ids in `.coderef/graph.json`**: the self-scan artifact carried 948 duplicate-id entries (edge-emission passes could push the same semantic tuple more than once). `buildEdges` now dedupes by id at emit; regression test pins uniqueness.
+
+---
+
 ## [2026-07-02] — Repo-Review Remediation Phase 2: legacy analyzer/query stack retired (P1 structural)
 
 WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 2 (STUB-XG7DSB). Executes DR-PHASE-5-C: the legacy in-memory analyzer graph is gone; every query surface now reads the canonical pipeline-emitted `.coderef/graph.json`.

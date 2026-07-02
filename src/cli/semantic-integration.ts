@@ -24,7 +24,6 @@ export interface SemanticIntegrationOptions {
   registryPath: string;
   dryRun: boolean;
   generateHeaders: boolean;
-  enrichLLM: boolean;
   syncRegistry: boolean;
   singleFile?: string;
 }
@@ -151,7 +150,6 @@ export async function runSemanticIntegration(options: SemanticIntegrationOptions
       outputDir: options.outputDir,
       registryPath: options.registryPath,
       generateHeaders: options.generateHeaders,
-      enrichLLM: options.enrichLLM,
       syncRegistry: options.syncRegistry && !options.dryRun,
       validateOnly: options.dryRun,
     };

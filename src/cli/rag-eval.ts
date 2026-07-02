@@ -31,6 +31,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { normalizeSlashes } from '../utils/path-normalize.js';
+import { parseFlags, failUsage } from './shared/cli-args.js';
 
 export interface GoldenQuery {
   id: string;
@@ -110,23 +111,28 @@ interface CliArgs {
 }
 
 function parseArgs(argv: string[]): CliArgs {
-  const args: CliArgs = {
-    projectDir: process.cwd(),
-    golden: '',
-    topK: 10,
-    json: false,
-  };
-  for (let i = 0; i < argv.length; i++) {
-    const a = argv[i];
-    if (a === '--project-dir' || a === '-p') args.projectDir = argv[++i];
-    else if (a === '--golden') args.golden = argv[++i];
-    else if (a === '--top-k') args.topK = parseInt(argv[++i], 10);
-    else if (a === '--json') args.json = true;
-    else if (a === '--min-mrr') args.minMrr = parseFloat(argv[++i]);
+  // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-18): shared helper —
+  // --flag=value works, numerics NaN-checked, unknown flags error out.
+  const parsed = parseFlags(argv, {
+    'project-dir': { kind: 'string', aliases: ['-p'] },
+    golden: { kind: 'string' },
+    'top-k': { kind: 'int' },
+    json: { kind: 'boolean' },
+    'min-mrr': { kind: 'float' },
+  });
+  if (parsed.errors.length > 0) {
+    failUsage('rag-eval', parsed.errors);
   }
-  args.projectDir = path.resolve(args.projectDir);
-  if (!args.golden) args.golden = path.join(args.projectDir, 'eval', 'golden-queries.json');
-  return args;
+  const v = parsed.values;
+  const projectDir = path.resolve((v.get('project-dir') as string | undefined) ?? process.cwd());
+  return {
+    projectDir,
+    golden: (v.get('golden') as string | undefined)
+      ?? path.join(projectDir, 'eval', 'golden-queries.json'),
+    topK: (v.get('top-k') as number | undefined) ?? 10,
+    json: (v.get('json') as boolean | undefined) ?? false,
+    minMrr: v.get('min-mrr') as number | undefined,
+  };
 }
 
 async function main(): Promise<void> {
@@ -160,7 +166,7 @@ async function main(): Promise<void> {
     console.error(`[rag-eval] index built with ${provider} but its provider could not start: ${keyErr instanceof Error ? keyErr.message : String(keyErr)}`);
     process.exit(2);
   }
-  const vectorStore = await createVectorStore(meta.store ?? 'sqlite', args.projectDir, llmProvider, { warnTag: 'rag-eval' });
+  const vectorStore = await createVectorStore(meta.store ?? 'json', args.projectDir, llmProvider, { warnTag: 'rag-eval' });
   await vectorStore.initialize();
   const { SemanticSearchService } = await import('../integration/rag/semantic-search.js');
   const searchService = new SemanticSearchService(llmProvider, vectorStore);

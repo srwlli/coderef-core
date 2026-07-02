@@ -8,7 +8,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { RegistrySyncer, syncEntry, refreshSync } from './registry-sync';
 import type { ExportInfo } from './ast-extractor';
-import type { EnrichedMetadata } from './llm-enricher';
+import type { EnrichedMetadata } from './registry-sync';
 
 describe('RegistrySyncer', () => {
   let tempDir: string;

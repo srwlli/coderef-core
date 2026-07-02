@@ -353,7 +353,8 @@ class Scanner {
     nameGroup: number,
     fileContent: string,
     extractMetadata?: (match: RegExpExecArray, content: string, line: number, file: string, fileContent: string) => RouteMetadata | null,
-    extractFrontendCall?: (match: RegExpExecArray, content: string, line: number, file: string, fileContent: string) => import('../analyzer/frontend-call-parsers.js').FrontendCall | null
+    extractFrontendCall?: (match: RegExpExecArray, content: string, line: number, file: string, fileContent: string) => import('../analyzer/frontend-call-parsers.js').FrontendCall | null,
+    metadataOnly: boolean = false
   ): void {
     this.currentLine = lineNumber;
     this.currentPattern = pattern;
@@ -389,6 +390,14 @@ class Scanner {
           if (frontendCallMetadata) {
             element.frontendCall = frontendCallMetadata;
           }
+        }
+
+        // P2-13 metadata-only pass (tree-sitter succeeded; structural elements
+        // are already authoritative): only matches that actually EXTRACTED
+        // route/frontend-call metadata become elements — a pattern hit whose
+        // extractor returned null is regex noise here.
+        if (metadataOnly && !element.route && !element.frontendCall) {
+          continue;
         }
 
         this.addElement(element);
@@ -438,7 +447,7 @@ class Scanner {
     }
   }
 
-  public processFile(file: string, content: string, patterns: PatternConfig[], includeComments: boolean): void {
+  public processFile(file: string, content: string, patterns: PatternConfig[], includeComments: boolean, metadataOnly: boolean = false): void {
     this.currentFile = file;
     const lines = content.split('\n');
 
@@ -451,7 +460,7 @@ class Scanner {
         }
         // WO-API-ROUTE-DETECTION-001: Pass extractMetadata callback and full file content
         // WO-ROUTE-VALIDATION-ENHANCEMENT-001: Pass extractFrontendCall callback
-        this.processLine(line, i + 1, file, pattern, type, nameGroup, content, extractMetadata, extractFrontendCall);
+        this.processLine(line, i + 1, file, pattern, type, nameGroup, content, extractMetadata, extractFrontendCall, metadataOnly);
       }
     }
 
@@ -652,9 +661,16 @@ function deduplicateElements(elements: ElementData[]): ElementData[] {
       const existingPriority = TYPE_PRIORITY[existing.type] || 0;
       const newPriority = TYPE_PRIORITY[element.type] || 0;
 
-      if (newPriority > existingPriority) {
-        elementMap.set(key, element);
-      }
+      const winner = newPriority > existingPriority ? element : existing;
+      const loser = winner === element ? existing : element;
+      // P2-13: merge knowledge instead of dropping it — the tree-sitter pass
+      // carries calls/imports, the metadata regex pass carries route/frontend
+      // call info; a same-key collision must keep BOTH.
+      winner.route = winner.route ?? loser.route;
+      winner.frontendCall = winner.frontendCall ?? loser.frontendCall;
+      winner.calls = winner.calls ?? loser.calls;
+      winner.imports = winner.imports ?? loser.imports;
+      elementMap.set(key, winner);
     }
   }
 
@@ -1124,7 +1140,10 @@ export async function scanCurrentElements(
           // WO-TREE-SITTER-SCANNER-001: Tree-sitter Integration
           // IMP-CORE-052: useTreeSitter defaults to true — tree-sitter is now the primary path
           // for all supported languages. Set useTreeSitter: false to force regex-only mode.
-          const useTreeSitterMode = options.useTreeSitter !== false;
+          // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-13): an explicit
+          // useAST opt-in takes the AST branch below instead of tree-sitter —
+          // previously BOTH ran (plus regex) and dedupe merged the triple scan.
+          const useTreeSitterMode = options.useTreeSitter !== false && !options.useAST;
           const fallbackEnabled = options.fallbackToRegex !== false; // Default true
 
           if (useTreeSitterMode) {
@@ -1133,105 +1152,44 @@ export async function scanCurrentElements(
                 logger.debug(`Using tree-sitter mode for: ${file}`);
               }
 
-              // Import TreeSitterScanner
-              const { TreeSitterScanner } = await import('./tree-sitter-scanner.js');
-              const treeSitterScanner = new TreeSitterScanner();
-
-              // Scan file with tree-sitter
-              const treeSitterElements = await treeSitterScanner.scanFile(file);
+              // Phase 3 (P2-13): single-parse scan — elements come from the
+              // pipeline ElementExtractor (full construct recall: interfaces,
+              // constants, type aliases) and relationships from the same
+              // parse. Replaces TreeSitterScanner (re-read + re-parse +
+              // reduced extractor). See tree-sitter-file-scan.ts.
+              const { scanFileWithTreeSitter } = await import('./tree-sitter-file-scan.js');
+              const treeSitterElements = await scanFileWithTreeSitter(file, content);
 
               // Add tree-sitter elements to scanner
               for (const element of treeSitterElements) {
                 scanner.addElement(element);
               }
 
-              // IMP-CORE-052: attach calls[] and imports[] to the structural
-              // elements tree-sitter produced, preserving the same call-graph
-              // data the useAST branch produces.
-              //
-              // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 2 (P1-8): ts/tsx
-              // files route through the pipeline's tree-sitter
-              // RelationshipExtractor. The previous JSCallDetector pass parses
-              // with plain Acorn, which fails on TypeScript syntax and
-              // silently yielded EMPTY calls[]/imports[] for every real .ts
-              // file. Plain .js files stay on the Acorn path (it handles
-              // CommonJS require extraction).
-              if (currentLang === 'ts') {
-                try {
-                  const { GrammarRegistry } = await import('../pipeline/grammar-registry.js');
-                  const { RelationshipExtractor } = await import('../pipeline/extractors/relationship-extractor.js');
-                  const realExt = path.extname(file).substring(1); // ts vs tsx grammar
-                  const parser = await GrammarRegistry.getInstance().getParser(realExt);
-                  if (parser) {
-                    const tree = parser.parse(content);
-                    const extractor = new RelationshipExtractor();
-                    const fileImports = extractor.extractImports(tree.rootNode, file, content, realExt);
-                    const fileCalls = extractor.extractCalls(tree.rootNode, file, content, realExt);
-                    const allElements = scanner.getElements();
-                    const fileElements = allElements.slice(elementsBefore);
-                    for (const element of fileElements) {
-                      const elementCalls = fileCalls
-                        .filter(call => call.source === element.name)
-                        .map(call => call.target);
-                      if (fileImports.length > 0) {
-                        element.imports = fileImports.map(imp => ({
-                          source: imp.target,
-                          specifiers: imp.specifiers ?? [],
-                          default: imp.default,
-                          dynamic: imp.dynamic || false,
-                          line: imp.line
-                        }));
-                      }
-                      if (elementCalls.length > 0) {
-                        element.calls = [...new Set(elementCalls)];
-                      }
-                    }
-                  }
-                } catch (relationshipError) {
-                  if (verbose) {
-                    logger.warn(`Tree-sitter relationship extraction failed for ${file}:`, relationshipError);
-                  }
-                  // Non-fatal: structural elements already added; call data is best-effort
-                }
-              } else if (currentLang === 'js') {
-                try {
-                  const { JSCallDetector } = await import('../analyzer/js-call-detector.js');
-                  const detector = new JSCallDetector();
-                  const fileImports = detector.detectImports(file);
-                  const fileCalls = detector.detectCalls(file);
-                  const allElements = scanner.getElements();
-                  const fileElements = allElements.slice(elementsBefore);
-                  for (const element of fileElements) {
-                    const elementCalls = fileCalls
-                      .filter(call => call.callerFunction === element.name || call.callerClass === element.name)
-                      .map(call => call.calleeFunction);
-                    if (fileImports.length > 0) {
-                      element.imports = fileImports.map(imp => ({
-                        source: imp.source,
-                        specifiers: imp.specifiers.filter(s => s !== 'default'),
-                        default: imp.isDefault ? imp.specifiers[0] : undefined,
-                        dynamic: imp.dynamic || false,
-                        line: imp.line
-                      }));
-                    }
-                    if (elementCalls.length > 0) {
-                      element.calls = elementCalls;
-                    }
-                  }
-                } catch (callDetectorError) {
-                  if (verbose) {
-                    logger.warn(`JSCallDetector failed for ${file} in tree-sitter mode:`, callDetectorError);
-                  }
-                  // Non-fatal: structural elements already added; call data is best-effort
-                }
-              }
-
               if (verbose) {
                 logger.debug(`Tree-sitter mode detected ${treeSitterElements.length} elements in: ${file}`);
               }
 
-              // If tree-sitter succeeded and we only want tree-sitter results, skip regex
-              if (!fallbackEnabled) {
+              // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-13): regex is a
+              // per-file FALLBACK, not a second pass. When tree-sitter parsed this
+              // file, its elements are authoritative — re-running the regex pass on
+              // the same content only added pseudo-elements (if/catch "methods",
+              // partial-match names) that dedupe couldn't merge, at ~5x the cost.
+              // fallbackToRegex now governs the FAILURE path only (catch below).
+              //
+              // EXCEPTION: route and frontend-call detection are regex-pattern
+              // features (extractMetadata / extractFrontendCall callbacks) with
+              // no tree-sitter equivalent. Run ONLY those patterns — the full
+              // element scan stays skipped. deduplicateElements merges their
+              // metadata onto colliding tree-sitter elements.
+              {
+                const metadataPatterns = sortPatternsByPriority(
+                  (LANGUAGE_PATTERNS[currentLang] || []).filter(
+                    p => p.extractMetadata || p.extractFrontendCall
+                  )
+                );
+                if (metadataPatterns.length > 0 && (includeComments || !isEntirelyCommented(content))) {
+                  scanner.processFile(file, content, metadataPatterns, includeComments, true);
+                }
                 // Get elements added for this file
                 const allElements = scanner.getElements();
                 const fileElements = allElements.slice(elementsBefore);
@@ -1533,7 +1491,7 @@ export function isLineCommented(line: string, lineIndex?: number, allLines?: str
 
   // Check if we're inside a template string first (before checking comment syntax)
   if (lineIndex !== undefined && allLines !== undefined) {
-    if (isInsideTemplateString(lineIndex, allLines)) {
+    if (computeLineStates(allLines).template[lineIndex]) {
       return false; // Inside template string - not a comment
     }
   }
@@ -1547,7 +1505,7 @@ export function isLineCommented(line: string, lineIndex?: number, allLines?: str
   if (trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('*/')) {
     // If we have context, check if we're inside a multi-line comment block
     if (lineIndex !== undefined && allLines !== undefined) {
-      return isInsideMultiLineComment(lineIndex, allLines);
+      return computeLineStates(allLines).comment[lineIndex];
     }
     // Without context, assume it's a comment
     return true;
@@ -1565,74 +1523,72 @@ export function isLineCommented(line: string, lineIndex?: number, allLines?: str
 }
 
 /**
- * Checks if a line is inside a multi-line comment block
- * Handles multi-line and JSDoc comment blocks
+ * Per-file line-state tables, computed once per lines-array in a single pass.
+ *
+ * WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-13): the previous
+ * isInsideMultiLineComment/isInsideTemplateString rescanned the file from
+ * line 0 for EVERY queried line — O(lines^2) per file (plus per-char template
+ * scanning). processFile queries every line of the file, so the whole-file
+ * cost was quadratic. The tables below replicate the original functions'
+ * answers exactly (including their quirks) with one O(total chars) pass,
+ * memoized on the lines-array instance.
  */
-function isInsideMultiLineComment(lineIndex: number, allLines: string[]): boolean {
-  let inComment = false;
+const LINE_STATE_CACHE = new WeakMap<string[], { template: boolean[]; comment: boolean[] }>();
 
-  for (let i = 0; i <= lineIndex; i++) {
-    const line = allLines[i];
+function computeLineStates(allLines: string[]): { template: boolean[]; comment: boolean[] } {
+  const cached = LINE_STATE_CACHE.get(allLines);
+  if (cached) return cached;
 
-    // Check for comment start
-    if (line.includes('/*')) {
-      inComment = true;
-    }
+  const n = allLines.length;
+  const template = new Array<boolean>(n);
+  const comment = new Array<boolean>(n);
 
-    // Check for comment end on the same line or after
-    if (inComment && line.includes('*/')) {
-      // If comment starts and ends on same line, check if current line is after the end
-      const startIdx = line.indexOf('/*');
-      const endIdx = line.indexOf('*/');
-
-      if (i === lineIndex) {
-        // Current line - check if we're between /* and */
-        const trimmed = line.trim();
-        if (trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('*/')) {
-          return true;
-        }
-      }
-
-      // Comment ends on this line
-      if (i < lineIndex || (i === lineIndex && endIdx < startIdx)) {
-        inComment = false;
-      }
-    }
-  }
-
-  return inComment;
-}
-
-/**
- * Checks if a line is inside a multi-line template string
- * Handles template strings that span multiple lines: `...${code}...`
- */
-function isInsideTemplateString(lineIndex: number, allLines: string[]): boolean {
+  // Template state: unescaped-backtick toggle; state AFTER each line fully
+  // processed (matches the original inclusive 0..lineIndex walk).
   let inTemplate = false;
-  let templateChar = '';
-
-  for (let i = 0; i <= lineIndex; i++) {
+  for (let i = 0; i < n; i++) {
     const line = allLines[i];
-
-    // Count backticks (template strings)
     for (let j = 0; j < line.length; j++) {
-      const char = line[j];
-      const prevChar = j > 0 ? line[j - 1] : '';
-
-      // Check for unescaped backtick
-      if (char === '`' && prevChar !== '\\') {
-        if (!inTemplate) {
-          inTemplate = true;
-          templateChar = '`';
-        } else if (templateChar === '`') {
-          inTemplate = false;
-          templateChar = '';
-        }
+      if (line[j] === '`' && (j === 0 || line[j - 1] !== '\\')) {
+        inTemplate = !inTemplate;
       }
+    }
+    template[i] = inTemplate;
+  }
+
+  // Multi-line-comment state: `running` carries the prior-lines state using
+  // the original loop's i<lineIndex rules; each line's answer applies the
+  // original i===lineIndex special-casing on top of it.
+  let running = false;
+  for (let i = 0; i < n; i++) {
+    const line = allLines[i];
+    let c = running;
+    if (line.includes('/*')) {
+      c = true;
+    }
+    if (c && line.includes('*/')) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('/*') || trimmed.startsWith('*') || trimmed.startsWith('*/')) {
+        comment[i] = true;
+      } else {
+        // Original: cleared only when */ precedes /* on the queried line
+        comment[i] = line.indexOf('*/') < line.indexOf('/*') ? false : true;
+      }
+    } else {
+      comment[i] = c;
+    }
+    // Advance the prior-lines state (original i<lineIndex behavior)
+    if (line.includes('/*')) {
+      running = true;
+    }
+    if (running && line.includes('*/')) {
+      running = false;
     }
   }
 
-  return inTemplate;
+  const states = { template, comment };
+  LINE_STATE_CACHE.set(allLines, states);
+  return states;
 }
 
 /**

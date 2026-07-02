@@ -23,6 +23,7 @@ import * as path from 'path';
 // single source; defaults are Ollama local-only. Only the search service
 // remains a lazy optional dependency here.
 import { createLLMProvider, createVectorStore } from '../integration/llm/provider-factory.js';
+import { parseFlags, failUsage } from './shared/cli-args.js';
 
 let SemanticSearchService: any;
 
@@ -35,7 +36,7 @@ interface CliArgs {
   projectDir: string;
   query: string;
   provider: string;
-  store: 'sqlite' | 'pinecone' | 'chroma';
+  store: 'json' | 'sqlite' | 'pinecone' | 'chroma';
   topK: number;
   minScore?: number;
   lang?: string;
@@ -56,118 +57,68 @@ interface CliArgs {
  * Parse command line arguments
  */
 function parseArgs(argv: string[]): CliArgs {
+  // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-18): parsing moved
+  // onto the shared helper — every value flag now accepts BOTH --flag=value
+  // and --flag value (previously --top-k=5 silently swallowed the next
+  // token), numeric flags are NaN-checked, and unknown flags error out.
+  const parsed = parseFlags(argv, {
+    help: { kind: 'boolean', aliases: ['-h'] },
+    'project-dir': { kind: 'string', aliases: ['-p'] },
+    provider: { kind: 'string' },
+    store: { kind: 'string' },
+    'top-k': { kind: 'int', aliases: ['-k'] },
+    'min-score': { kind: 'float' },
+    lang: { kind: 'string', aliases: ['-l'] },
+    type: { kind: 'string', aliases: ['-t'] },
+    file: { kind: 'string', aliases: ['-f'] },
+    exported: { kind: 'boolean' },
+    // Phase 7 task 1.10 — semantic facet filters (DR-PHASE-7-D).
+    layer: { kind: 'string' },
+    capability: { kind: 'string' },
+    // --constraint key:value — generalized filter shorthand.
+    // Recognized keys: type, file, lang, layer, capability, exported.
+    constraint: { kind: 'string' },
+    'max-tokens': { kind: 'int' },
+    json: { kind: 'boolean', aliases: ['-j'] },
+  });
+
+  const v = parsed.values;
+  if (!v.get('help') && parsed.errors.length > 0) {
+    failUsage('rag-search', parsed.errors);
+  }
+
   // Honor CODEREF_LLM_PROVIDER env when --provider is omitted. Without it,
   // default is key-aware: openai only when a cloud key is actually present,
   // otherwise ollama (local-first; must match rag-index so search embeds
   // queries with the same model the index was built with —
   // WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 P2-T1).
   const envProvider = process.env.CODEREF_LLM_PROVIDER?.toLowerCase();
-  const args: CliArgs = {
-    projectDir: process.cwd(),
-    query: '',
-    provider: envProvider || (process.env.OPENAI_API_KEY ? 'openai' : 'ollama'),
-    store: 'sqlite',
-    topK: 10,
-    json: false,
-    help: false,
+
+  const storeRaw = (v.get('store') as string | undefined) ?? 'json';
+  const store = (['json', 'sqlite', 'pinecone', 'chroma'].includes(storeRaw)
+    ? storeRaw
+    : 'json') as CliArgs['store'];
+
+  return {
+    projectDir: (v.get('project-dir') as string | undefined) ?? process.cwd(),
+    query: parsed.positionals[0] ?? '',
+    provider: (v.get('provider') as string | undefined)
+      ?? envProvider
+      ?? (process.env.OPENAI_API_KEY ? 'openai' : 'ollama'),
+    store,
+    topK: (v.get('top-k') as number | undefined) ?? 10,
+    minScore: v.get('min-score') as number | undefined,
+    lang: v.get('lang') as string | undefined,
+    type: v.get('type') as string | undefined,
+    file: v.get('file') as string | undefined,
+    exported: (v.get('exported') as boolean | undefined) || undefined,
+    layer: v.get('layer') as string | undefined,
+    capability: v.get('capability') as string | undefined,
+    constraint: v.get('constraint') as string | undefined,
+    maxTokens: v.get('max-tokens') as number | undefined,
+    json: (v.get('json') as boolean | undefined) ?? false,
+    help: (v.get('help') as boolean | undefined) ?? false,
   };
-
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-
-    // Handle --arg=value format by extracting value
-    let value: string | undefined;
-    let key = arg;
-    if (arg.startsWith('--') && arg.includes('=')) {
-      const parts = arg.split('=', 2);
-      key = parts[0];
-      value = parts[1];
-    }
-
-    switch (key) {
-      case '--help':
-      case '-h':
-        args.help = true;
-        break;
-
-      case '--project-dir':
-      case '-p':
-        args.projectDir = value ?? argv[++i];
-        break;
-
-      case '--provider':
-        args.provider = value ?? argv[++i];
-        break;
-
-      case '--store': {
-        const store = value ?? argv[++i];
-        if (['sqlite', 'pinecone', 'chroma'].includes(store)) {
-          args.store = store as 'sqlite' | 'pinecone' | 'chroma';
-        }
-        break;
-      }
-
-      case '--top-k':
-      case '-k':
-        args.topK = parseInt(argv[++i], 10);
-        break;
-
-      case '--min-score':
-        args.minScore = parseFloat(argv[++i]);
-        break;
-
-      case '--lang':
-      case '-l':
-        args.lang = argv[++i];
-        break;
-
-      case '--type':
-      case '-t':
-        args.type = argv[++i];
-        break;
-
-      case '--file':
-      case '-f':
-        args.file = argv[++i];
-        break;
-
-      case '--exported':
-        args.exported = true;
-        break;
-
-      // Phase 7 task 1.10 — semantic facet filters (DR-PHASE-7-D).
-      case '--layer':
-        args.layer = value ?? argv[++i];
-        break;
-
-      case '--capability':
-        args.capability = value ?? argv[++i];
-        break;
-
-      // --constraint key:value — generalized filter shorthand.
-      // Recognized keys: type, file, lang, layer, capability, exported.
-      case '--constraint': {
-        args.constraint = value ?? argv[++i];
-        break;
-      }
-
-      case '--max-tokens':
-        args.maxTokens = parseInt(value ?? argv[++i], 10);
-        break;
-
-      case '--json':
-      case '-j':
-        args.json = true;
-        break;
-
-      default:
-        if (!arg.startsWith('-') && !args.query) {
-          args.query = arg;
-        }
-    }
-  }
-
-  return args;
 }
 
 /**
@@ -183,7 +134,7 @@ USAGE:
 OPTIONS:
   -p, --project-dir <path>     Project directory to search (default: current directory)
   --provider <provider>        LLM provider: openai, anthropic, ollama (default: openai if OPENAI_API_KEY set, else ollama)
-  --store <store>              Vector store: sqlite, pinecone, chroma (default: sqlite)
+  --store <store>              Vector store: json, pinecone, chroma (default: json; 'sqlite' is a deprecated alias for json)
   -k, --top-k <number>         Number of results to return (default: 10)
   --min-score <number>         Minimum relevance score 0-1 (default: none)
   -l, --lang <language>        Filter by programming language
@@ -200,7 +151,7 @@ OPTIONS:
 ENVIRONMENT VARIABLES:
   OPENAI_API_KEY              Required for OpenAI provider
   ANTHROPIC_API_KEY           Required for Anthropic provider
-  CODEREF_SQLITE_PATH         Optional: Custom SQLite storage path
+  CODEREF_SQLITE_PATH         Optional: custom path for the local JSON vector store
 
 EXAMPLES:
   # Search for authentication code

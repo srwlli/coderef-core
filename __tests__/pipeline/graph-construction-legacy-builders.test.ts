@@ -19,11 +19,12 @@ describe('Phase 5 legacy graph builders (AC-07)', () => {
     await expect(fs.access(file)).rejects.toThrow();
   });
 
-  it('src/plugins/plugin-graph.ts has @legacy and @deprecated tags', async () => {
+  it('src/plugins/plugin-graph.ts is REMOVED (AC-07 removal arm — plugin system deleted per operator ruling, WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3)', async () => {
+    // AC-07 allowed "removed OR explicitly marked legacy". src/plugins/ was
+    // unwired scaffolding (zero importers) and was removed wholesale; this
+    // now guards against the module being reintroduced.
     const file = path.join(REPO_ROOT, 'src', 'plugins', 'plugin-graph.ts');
-    const content = await fs.readFile(file, 'utf-8');
-    expect(content).toMatch(/@legacy/);
-    expect(content).toMatch(/@deprecated/);
+    await expect(fs.access(file)).rejects.toThrow();
   });
 
   it('src/pipeline/ does NOT import from legacy graph-builder or plugin-graph', async () => {

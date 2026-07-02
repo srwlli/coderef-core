@@ -4,7 +4,7 @@
   "phases": [
     {
       "phase": 1,
-      "name": "P0 \u2014 Correctness & Trust",
+      "name": "P0 — Correctness & Trust",
       "hard_stop": true,
       "description": "",
       "tasks": [
@@ -131,7 +131,7 @@
       "stub_ref": "STUB-XG7DSB",
       "plan_deferred": false,
       "authored_at": "2026-07-02T08:43:32Z",
-      "authoring_notes": "Authored post-Phase-1 review per rolling_plan.next_phase_authoring (ad-hoc plan.json edit). STUB-9F63EJ reconciled: intelligence-server retirement ALREADY SHIPPED 2026-06-13 (CHANGELOG.md:96, ruling A executed; docs/intelligence-api.md tombstoned) \u2014 no overlap with P1-7; only residue is a stale package-lock.json bin entry, folded into P2-T8. Operator rulings 2026-07-02: coderef-query KEPT, reimplemented on canonical graph.json (preserves ASSISTANT doc-discovery consumer); coderef-search DELETED.",
+      "authoring_notes": "Authored post-Phase-1 review per rolling_plan.next_phase_authoring (ad-hoc plan.json edit). STUB-9F63EJ reconciled: intelligence-server retirement ALREADY SHIPPED 2026-06-13 (CHANGELOG.md:96, ruling A executed; docs/intelligence-api.md tombstoned) — no overlap with P1-7; only residue is a stale package-lock.json bin entry, folded into P2-T8. Operator rulings 2026-07-02: coderef-query KEPT, reimplemented on canonical graph.json (preserves ASSISTANT doc-discovery consumer); coderef-search DELETED.",
       "description": "P1 structural tier: legacy analyzer/query stack retirement per DR-PHASE-5-C (port coderef-analyze + reimplement coderef-query on canonical .coderef/graph.json, then delete the legacy in-memory graph stack), scanner TS relationship extraction via tree-sitter facts, tsconfig hardening (noEmitOnError + strict for src/pipeline), shared LLM-provider/vector-store factory, coderef-search deletion, centralized path normalization with entity-registry UUID fix.",
       "tasks": [
         {
@@ -173,7 +173,7 @@
         {
           "id": "P2-T6",
           "verb": "DELETE",
-          "description": "P1-7d: delete the legacy stack \u2014 src/analyzer/graph-builder.ts, src/analyzer/graph-analyzer.ts, src/analyzer/analyzer-service.ts, src/query/query-executor.ts, src/context/multi-hop-traversal.ts \u2014 and rewire consumers: remove legacy exports from src/analyzer/index.ts + src/context/index.ts + src/index.ts:22 (export * from query-executor); rewire src/context/context-generator.ts and src/context/breaking-change-detector/index.ts off AnalyzerService (gate or port \u2014 BCD is already hard-gated). Then grep-verify and delete now-orphaned files ONLY if zero importers remain (candidates: src/analyzer/graph-error.ts, graph-helpers.ts, import-parser.ts, call-detector.ts, src/adapter/graph-to-elements.ts, src/context/impact-simulator.ts \u2014 impact-simulator ports to canonical if coderef-analyze impact still needs it). Update any test files that imported deleted modules. NOTE: this removes symbols from the package public API \u2014 sanctioned by DR-PHASE-5-C + operator ruling A.",
+          "description": "P1-7d: delete the legacy stack — src/analyzer/graph-builder.ts, src/analyzer/graph-analyzer.ts, src/analyzer/analyzer-service.ts, src/query/query-executor.ts, src/context/multi-hop-traversal.ts — and rewire consumers: remove legacy exports from src/analyzer/index.ts + src/context/index.ts + src/index.ts:22 (export * from query-executor); rewire src/context/context-generator.ts and src/context/breaking-change-detector/index.ts off AnalyzerService (gate or port — BCD is already hard-gated). Then grep-verify and delete now-orphaned files ONLY if zero importers remain (candidates: src/analyzer/graph-error.ts, graph-helpers.ts, import-parser.ts, call-detector.ts, src/adapter/graph-to-elements.ts, src/context/impact-simulator.ts — impact-simulator ports to canonical if coderef-analyze impact still needs it). Update any test files that imported deleted modules. NOTE: this removes symbols from the package public API — sanctioned by DR-PHASE-5-C + operator ruling A.",
           "touches": [
             "src/analyzer/graph-builder.ts",
             "src/analyzer/graph-analyzer.ts",
@@ -190,7 +190,7 @@
         {
           "id": "P2-T7",
           "verb": "TEST",
-          "description": "P1-7e: direction-semantics regression tests for the new coderef-query engine (src/query/__tests__/canonical-graph.test.ts): fixture graph with known call/import edges asserting inbound vs outbound for all 6 relationship types plus a path query \u2014 the class of bug that motivated the retirement (inverted what-calls-me). Plus a coderef-analyze self-scan smoke (graph/impact/multi-hop non-empty on coderef-core's own .coderef).",
+          "description": "P1-7e: direction-semantics regression tests for the new coderef-query engine (src/query/__tests__/canonical-graph.test.ts): fixture graph with known call/import edges asserting inbound vs outbound for all 6 relationship types plus a path query — the class of bug that motivated the retirement (inverted what-calls-me). Plus a coderef-analyze self-scan smoke (graph/impact/multi-hop non-empty on coderef-core's own .coderef).",
           "touches": [
             "src/query/__tests__/"
           ]
@@ -208,7 +208,7 @@
         {
           "id": "P2-T9",
           "verb": "EDIT",
-          "description": "P1-8: fix TS relationship extraction in the Scanner path: route ts/tsx relationship extraction through tree-sitter facts (as PipelineOrchestrator does) instead of plain-Acorn JSCallDetector (js-parser.ts:21 silently yields empty calls[]/imports[] on TS syntax); remove or bypass the dead TS-node visitor branches (visitor.ts:159-177). MUST add the missing test: non-empty calls[] AND imports[] for a real .ts fixture through scanCurrentElements \u2014 currently zero coverage of this hole. Canonical populate pipeline is unaffected; js path stays on Acorn.",
+          "description": "P1-8: fix TS relationship extraction in the Scanner path: route ts/tsx relationship extraction through tree-sitter facts (as PipelineOrchestrator does) instead of plain-Acorn JSCallDetector (js-parser.ts:21 silently yields empty calls[]/imports[] on TS syntax); remove or bypass the dead TS-node visitor branches (visitor.ts:159-177). MUST add the missing test: non-empty calls[] AND imports[] for a real .ts fixture through scanCurrentElements — currently zero coverage of this hole. Canonical populate pipeline is unaffected; js path stays on Acorn.",
           "touches": [
             "src/scanner/scanner.ts",
             "src/analyzer/js-call-detector/index.ts",
@@ -218,7 +218,7 @@
         {
           "id": "P2-T10",
           "verb": "EDIT",
-          "description": "P1-9: type-system hardening: set noEmitOnError:true in tsconfig.json (and tsconfig.cli.json if separate) and fix any errors it surfaces; add per-directory strict migration starting with src/pipeline \u2014 a tsconfig.pipeline-strict.json (strict:true, noEmit:true, include src/pipeline) + npm script typecheck:pipeline, driven to zero errors. Remaining directories are follow-up scope (Phase 3 or stub), not this task.",
+          "description": "P1-9: type-system hardening: set noEmitOnError:true in tsconfig.json (and tsconfig.cli.json if separate) and fix any errors it surfaces; add per-directory strict migration starting with src/pipeline — a tsconfig.pipeline-strict.json (strict:true, noEmit:true, include src/pipeline) + npm script typecheck:pipeline, driven to zero errors. Remaining directories are follow-up scope (Phase 3 or stub), not this task.",
           "touches": [
             "tsconfig.json",
             "package.json"
@@ -227,7 +227,7 @@
         {
           "id": "P2-T11",
           "verb": "EDIT",
-          "description": "P1-10: extract ONE shared LLM-provider/vector-store factory consuming src/integration/llm/model-registry.ts; refactor the 4 copies (rag-index.ts:269-371, rag-search.ts:264-361, coderef-mcp-server.ts:780-801, rag-eval.ts:153-176) onto it and replace coderef-rag-server.ts:240's hardcoded dim table with MODEL_REGISTRY. HARD CONSTRAINT: Ollama LOCAL-ONLY defaults \u2014 the factory must never require OpenAI/Anthropic keys for default operation.",
+          "description": "P1-10: extract ONE shared LLM-provider/vector-store factory consuming src/integration/llm/model-registry.ts; refactor the 4 copies (rag-index.ts:269-371, rag-search.ts:264-361, coderef-mcp-server.ts:780-801, rag-eval.ts:153-176) onto it and replace coderef-rag-server.ts:240's hardcoded dim table with MODEL_REGISTRY. HARD CONSTRAINT: Ollama LOCAL-ONLY defaults — the factory must never require OpenAI/Anthropic keys for default operation.",
           "touches": [
             "src/integration/llm/provider-factory.ts",
             "src/cli/rag-index.ts",
@@ -255,7 +255,7 @@
         {
           "id": "P2-T14",
           "verb": "RUN",
-          "description": "Pipeline + bin verification: npm run build clean under noEmitOnError; fresh scan + populate + validate on coderef-core itself \u2014 element counts vs the 2591/276 baseline explained by this phase's deletions only; validation report stays the locked 14 fields; startup-probe coderef-query, coderef-analyze, coderef-watch, coderef-rag-server on Windows; confirm doc-discovery's coderef-query invocation shape still works (--type=what-depends-on-me returns inbound dependents).",
+          "description": "Pipeline + bin verification: npm run build clean under noEmitOnError; fresh scan + populate + validate on coderef-core itself — element counts vs the 2591/276 baseline explained by this phase's deletions only; validation report stays the locked 14 fields; startup-probe coderef-query, coderef-analyze, coderef-watch, coderef-rag-server on Windows; confirm doc-discovery's coderef-query invocation shape still works (--type=what-depends-on-me returns inbound dependents).",
           "touches": []
         },
         {
@@ -282,16 +282,183 @@
     },
     {
       "phase": 3,
-      "name": "repo-review-p2-perf-hygiene \u2014 DEFERRED",
+      "name": "repo-review-p2-perf-hygiene",
       "hard_stop": true,
       "stub_ref": "STUB-01DW28",
-      "plan_deferred": true,
-      "description": "",
+      "plan_deferred": false,
+      "description": "P2 perf & hygiene tier (STUB-01DW28): scanner single-read/single-parse + true per-file regex fallback + O(n) comment detection, gated on hard scan-output parity; dead-code deletion (stale pipeline cache copy, dead generator, permanently-disabled Anthropic enricher, no-op flags, src/plugins per ruling, src/errors); vector store honest rename + atomic writes; duplicate edge-id fix; test hygiene (un-skip mocked ollama suite, run the 5 orphaned .test.mjs); shared CLI arg helper adopted across the RAG-family bins.",
       "tasks": [
         {
-          "id": "P3-T0",
+          "id": "P3-T1",
+          "verb": "READ",
+          "description": "Load Phase 3 inputs: stub context coderef/working/repo-review-2026-07-remediation/context.md rows P2-13..P2-18, report coderef/reference/repo-review-2026-07-02.md section 6 P2 table, Phase 2 results (commit 4443c6c; baselines 2504 elements / 268 files, suite 1523 pass / 30 skip), the verified inventory (read-only scout 2026-07-02: all six P2 items present; graph.json 30711 edges vs 29763 unique ids = 948 excess duplicates), and the two operator rulings (P2-15: REMOVE src/plugins/; P2-16: honest rename + atomic writes, NO sqlite-vec).",
+          "touches": []
+        },
+        {
+          "id": "P3-T2",
+          "verb": "TEST",
+          "description": "Record pre-change baseline: full vitest suite (expect 1523 pass / 30 skip / 0 fail) and a TIMED self-scan over this repo; capture wall-clock seconds, element count, file count, and a sorted element-identity snapshot (id list) to a scratch file for the P3-T6 parity gate.",
+          "touches": []
+        },
+        {
+          "id": "P3-T3",
+          "verb": "EDIT",
+          "description": "Scanner perf 1/3 - make the regex pass a true per-file fallback: in src/scanner/scanner.ts scanCurrentElements (regex section ~:1389; fallbackEnabled default :1128), skip regex processing for files whose tree-sitter parse SUCCEEDED; regex still runs for tree-sitter failures/unsupported languages and when useTreeSitter=false. Keep deduplicateElements for remaining mixed cases.",
+          "touches": [
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P3-T4",
+          "verb": "EDIT",
+          "description": "Scanner perf 2/3 - one read + one parse per file per engine: pass the in-memory content scanner.ts already holds (:1109) into TreeSitterScanner.scanFile (kills the re-read at tree-sitter-scanner.ts:189); restructure JSCallDetector so detectImports+detectCalls share ONE parse (js-call-detector/index.ts:106,150 each currently re-read+re-parse via js-parser.ts:133); stop constructing a fresh JSCallDetector per file (scanner.ts:1198-1201, :1319-1324; scanner-worker.ts:60,79-80,130-131 same pattern).",
+          "touches": [
+            "src/scanner/scanner.ts",
+            "src/scanner/tree-sitter-scanner.ts",
+            "src/analyzer/js-call-detector/index.ts",
+            "src/analyzer/js-parser.ts",
+            "src/scanner/scanner-worker.ts"
+          ]
+        },
+        {
+          "id": "P3-T5",
+          "verb": "EDIT",
+          "description": "Scanner perf 3/3 - replace O(lines^2) comment/template detection (scanner.ts:1525-1636: isInsideMultiLineComment/isInsideTemplateString rescan from line 0 for every queried line) with a single-pass precomputed per-line state table; fix the per-match full-file Babel re-parse in frontend-call extraction (locate via grep under fileGeneration/frontend-call path; cache the parsed AST per file).",
+          "touches": [
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P3-T6",
+          "verb": "TEST",
+          "description": "Perf + parity gate: re-run the timed self-scan; REQUIRE identical element identity set and file count vs the P3-T2 snapshot (output parity is a HARD gate - on ANY delta, HALT and report the diff; do not accept silent scan-output change); record before/after wall-clock. If still >10s, note bounded-concurrency async reads as a follow-up candidate - do not force it into this phase.",
+          "touches": []
+        },
+        {
+          "id": "P3-T7",
+          "verb": "DELETE",
+          "description": "Dead-code sweep (all verified zero-importer/no-op): git rm src/pipeline/incremental-cache.ts (stale copy; live one is src/cache/incremental-cache.ts), src/generator/generateFrontendCalls.ts, src/semantic/llm-enricher.ts + its test (constructor self-disables at :59-65 - permanently dead, Anthropic-based, conflicts with ollama-local-only anyway); rewire: src/semantic/orchestrator.ts (drop never-true enrichLLM branches :124-125,:213-214 - behavior-preserving since isAvailable() is always false), src/semantic/index.ts (drop LLMEnricher/enrichMetadata/enrichBatch re-exports :11-12), src/semantic/registry-sync.ts type import :21; remove no-op flags: populate.ts --llm-enrich (:52,:92,:175-176, help :234) and scan.ts --plugins/--no-plugins (:158-166, help :43-44).",
+          "touches": [
+            "src/pipeline/incremental-cache.ts",
+            "src/generator/generateFrontendCalls.ts",
+            "src/semantic/llm-enricher.ts",
+            "src/semantic/llm-enricher.test.ts",
+            "src/semantic/orchestrator.ts",
+            "src/semantic/index.ts",
+            "src/semantic/registry-sync.ts",
+            "src/cli/populate.ts",
+            "src/cli/scan.ts"
+          ]
+        },
+        {
+          "id": "P3-T8",
+          "verb": "DELETE",
+          "description": "Plugin system removal (operator ruling A, 2026-07-02T09:37Z): git rm src/plugins/ entirely (8 files, ~2167 LOC, zero importers outside the directory); clean the two non-code references: src/semantic/header-generator.ts:70 layer-inference pattern entry for src/plugins/ and its test at header-generator.test.ts:339-340.",
+          "touches": [
+            "src/plugins/",
+            "src/semantic/header-generator.ts",
+            "src/semantic/header-generator.test.ts"
+          ]
+        },
+        {
+          "id": "P3-T9",
+          "verb": "DELETE",
+          "description": "Retire src/errors/ (six exception classes with ZERO production importers; alive only via legacy root index.ts:24 export + isolated __tests__/errors.test.ts + demo-all-modules.ts): git rm src/errors/ + __tests__/errors.test.ts; rewire root index.ts (drop the export line) and demo-all-modules.ts (:46,:53 CodeRefError usage). Record in communication.json: package API change - CodeRefError/FileNotFoundError/IndexError/ParseError/ScanError/ValidationError no longer exported from the legacy main entry.",
+          "touches": [
+            "src/errors/",
+            "__tests__/errors.test.ts",
+            "index.ts",
+            "demo-all-modules.ts"
+          ]
+        },
+        {
+          "id": "P3-T10",
+          "verb": "EDIT",
+          "description": "Vector store honesty + crash safety (operator ruling A): rename the misleading sqlite store to json (src/integration/vector/sqlite-store.ts -> json-store.ts, class renamed to match); KEEP the string \"sqlite\" accepted as a DEPRECATED alias in provider-factory createVectorStore + CLI --store values (warn once, map to json store) so no existing caller breaks; make save() atomic via temp-file+rename (currently direct writeFileSync at :237-248); add tests covering atomic write + alias mapping. The O(n) cosine scan stays (documented limitation, not this phase).",
+          "touches": [
+            "src/integration/vector/sqlite-store.ts",
+            "src/integration/llm/provider-factory.ts",
+            "src/cli/rag-index.ts",
+            "src/cli/rag-search.ts",
+            "src/cli/rag-eval.ts",
+            "src/cli/coderef-rag-server.ts",
+            "src/cli/coderef-mcp-server.ts"
+          ]
+        },
+        {
+          "id": "P3-T11",
+          "verb": "EDIT",
+          "description": "Fix duplicate edge ids in the canonical graph (948 excess entries across 456 duplicated ids live): add seen-id dedupe at edge emit in src/pipeline/graph-builder.ts buildEdges (:393; computeEdgeId at :750-762 hashes source:relationship:target:file:line and identical tuples are pushed by multiple passes today); add a regression test asserting emitted graph edge ids are unique; run the pipeline invariant suite - if a frozen-fixture edge-count expectation shifts SOLELY due to dedupe, update it with documented evidence (an honest artifact cannot carry duplicate ids); locked index.json/validation schemas MUST keep passing.",
+          "touches": [
+            "src/pipeline/graph-builder.ts"
+          ]
+        },
+        {
+          "id": "P3-T12",
+          "verb": "EDIT",
+          "description": "Test hygiene (P2-17): un-skip the fully-mocked \"Ollama Provider - Unreachable Daemon\" suite (src/integration/llm/__tests__/ollama-provider-unreachable.test.ts:22); the :134 \"Runtime Negative Test (Manual)\" block STAYS skipped with a comment saying why; add **/*.test.mjs to vitest include and make the 5 orphaned mjs suites run green (fix or convert - they have never executed); drop the dead processingTimeMs determinism-mask field in the indexing-gate test (:73). chroma/pinecone describe.skips stay (need external services).",
+          "touches": [
+            "vitest.config.ts",
+            "src/integration/llm/__tests__/ollama-provider-unreachable.test.ts",
+            "__tests__/coderef-rag-server-health.test.mjs",
+            "__tests__/coderef-rag-server-query-degraded.test.mjs",
+            "__tests__/coderef-watch-debounce.test.mjs",
+            "__tests__/coderef-watch-heartbeat-schema.test.mjs",
+            "__tests__/foundation-docs-meta-writer.test.mjs"
+          ]
+        },
+        {
+          "id": "P3-T13",
+          "verb": "WRITE",
+          "description": "Create ONE shared CLI arg/exit helper src/cli/shared/cli-args.ts: supports --flag=value AND --flag value for every value-taking flag, NaN-checked numeric parsing (reject with message + exit 1), consistent unknown-flag error + exit-code contract; full coderef header; unit test alongside.",
+          "touches": [
+            "src/cli/shared/cli-args.ts"
+          ]
+        },
+        {
+          "id": "P3-T14",
+          "verb": "EDIT",
+          "description": "Adopt the shared helper across the copy-pasted RAG-family parsers: rag-search.ts (:58-171 - fixes --top-k=/--min-score=/--lang=/--type=/--file= silently swallowing the NEXT arg), rag-index.ts (:59-95 same copy-pasted bug), rag-eval.ts (:112), rag-status.ts (:50); NaN-checked parseInt everywhere (rag-search.ts:145,188); document the scan.ts positional-first requirement in its help text (:148). Remaining hand-rolled parsers (populate, coderef-watch, coderef-pipeline, coderef-rag-server, scan-frontend-calls, validate-routes) are noted as follow-up, NOT forced into this phase.",
+          "touches": [
+            "src/cli/rag-search.ts",
+            "src/cli/rag-index.ts",
+            "src/cli/rag-eval.ts",
+            "src/cli/rag-status.ts",
+            "src/cli/scan.ts"
+          ]
+        },
+        {
+          "id": "P3-T15",
+          "verb": "RUN",
+          "description": "Residue + docs sweep: delete untracked residue graphify-out/ (4.3MB html+json, dated 2026-05-12) and mcp-smoke-stderr.txt (both confirmed unreferenced by any code/config); docs: CHANGELOG.md Phase 3 entry (Removed/Changed/Fixed), docs/CLI.md (--plugins/--no-plugins/--llm-enrich gone; --store json canonical with sqlite as deprecated alias; rag-search --flag=value fixed), README.md wherever it mentions plugins/errors exports.",
+          "touches": [
+            "CHANGELOG.md",
+            "docs/CLI.md",
+            "README.md"
+          ]
+        },
+        {
+          "id": "P3-T16",
+          "verb": "TEST",
+          "description": "Full suite green x2 consecutively; reconcile counts vs the 1523 pass / 30 skip baseline with an EXACT delta explanation (+5 unskipped ollama-mock tests, +N from the 5 mjs suites, +new tests from T10/T11/T13, -errors.test.ts, -llm-enricher.test.ts, +/- header-generator pattern test tweaks). Any unexplained delta = HALT.",
+          "touches": []
+        },
+        {
+          "id": "P3-T17",
+          "verb": "RUN",
+          "description": "End-to-end verification on Windows: npm run build (reconcile dist - partial-emit lesson from Phase 2), timed self-scan re-baseline (record new element/file counts + wall-clock; reconcile any element delta exactly against the deletions), locked 14-field validation report present + PASS, typecheck:pipeline 0 errors, populate headers 0 stale, probe coderef-query (all 8 types) and rag-search with --store json AND the sqlite alias warn path.",
+          "touches": []
+        },
+        {
+          "id": "P3-T18",
+          "verb": "COMMIT",
+          "description": "Commit on main by EXPLICIT path via node SKILLS/GIT/git-commit/run.mjs \"msg\" --repo=... --done --paths <files> (flags BEFORE --paths; OMIT git-rm-ed files from --paths - staged deletions ride the commit); verify origin. Then ASSISTANT repo: flip STUB-01DW28 deferred_phase -> promoted in TRACKING/stubs.json, commit + push that.",
+          "touches": []
+        },
+        {
+          "id": "P3-T19",
           "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 3 tasks not yet authored. Pre-condition: Phase 2 must be COMPLETED + REVIEWED before this phase's plan is authored (against STUB-01DW28).",
+          "description": "FINAL PHASE. Run the canonical writer (--phase=3 --status=complete --commit=<hash> --verdict=PASS), rewrite terminal-post-exec.txt + HANDOFF-repo-review-2026-07-remediation-001.json (terminal_state waiting_user; next action /close-workorder), report Phase 3 results back to the operator. rolling_plan.close_after_phase=3: the WO is now CLOSE-ELIGIBLE - the operator (not this executor) runs /close-workorder WO-REPO-REVIEW-2026-07-REMEDIATION-001.",
           "touches": []
         }
       ],
@@ -302,7 +469,9 @@
         "post_phase": [
           "/discover {feature_name} phase {N} post@quick"
         ]
-      }
+      },
+      "authored_at": "2026-07-02T09:48:48Z",
+      "authoring_notes": "Authored post-Phase-2 review per rolling_plan.next_phase_authoring (ad-hoc plan.json edit). Operator rulings 2026-07-02T09:37Z: P2-15 plugins REMOVE (ruling A); P2-16 vector store honest-rename + atomic writes (ruling A, no sqlite-vec). Inventory re-verified against the post-Phase-2 tree by a read-only scout before authoring (all six P2 items present; 948 excess duplicate edge ids confirmed in live graph.json). Scope also folds in the two items Phase 2 flagged for Phase 3 (duplicate edge-id fix, untracked residue cleanup) and the src/errors retirement (zero production importers after DR-PHASE-5-C)."
     }
   ],
   "hard_stops": [
@@ -315,13 +484,15 @@
     },
     {
       "phase": 2,
-      "approved": false,
-      "reason": "Phase 2 ends with mandatory user review (rolling plan: report back before Phase 3 is planned)."
+      "approved": true,
+      "reason": "Phase 2 ends with mandatory user review (rolling plan: report back before Phase 3 is planned).",
+      "approved_at": "2026-07-02T09:37:36Z",
+      "approved_by": "operator directive 'review for completion... continue to next phase' after Phase 2 report-back (review gate satisfied; completion re-verified against origin)"
     },
     {
       "phase": 3,
       "approved": false,
-      "reason": "Phase 3 plan_deferred=true. Hard stop fires at phase planning gate."
+      "reason": "Phase 3 is the FINAL phase: terminal hard stop. After the P3-T19 report-back the WO is close-eligible; /close-workorder requires operator approval (rolling_plan.close_after_phase=3)."
     }
   ],
   "plan_adjustments_needed": [],

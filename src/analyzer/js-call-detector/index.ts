@@ -62,7 +62,8 @@ export {
 } from './analyzer.js';
 
 // Import dependencies for the main class
-import { parseJavaScriptFile } from '../js-parser.js';
+import { parseJavaScriptFile, parseJavaScript } from '../js-parser.js';
+import type { Node } from 'acorn';
 import {
   Parameter,
   CallExpression,
@@ -89,9 +90,38 @@ export class JSCallDetector {
   private parameterCache: Map<string, Map<string, Parameter[]>> = new Map();
   private importsCache: Map<string, ModuleImport[]> = new Map();
   private exportsCache: Map<string, ModuleExport[]> = new Map();
+  // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-13): one Acorn parse per
+  // file, shared by detectCalls/detectImports/detectExports/getFileParameters/
+  // detectElements. Previously each method re-read + re-parsed independently
+  // (2+ parses per file in the scan path). Null = parse failed (cached too, so
+  // a broken file is not re-parsed per detector).
+  private astCache: Map<string, Node | null> = new Map();
 
   constructor(basePath: string = process.cwd()) {
     this.basePath = basePath;
+  }
+
+  /**
+   * Parse (or fetch the cached parse of) a file. Single parse per file per
+   * detector instance.
+   */
+  private getAST(filePath: string): Node | null {
+    if (this.astCache.has(filePath)) {
+      return this.astCache.get(filePath)!;
+    }
+    const result = parseJavaScriptFile(filePath);
+    const ast = result.success ? result.ast : null;
+    this.astCache.set(filePath, ast);
+    return ast;
+  }
+
+  /**
+   * Seed the AST cache from in-memory content, avoiding a disk re-read when
+   * the caller (scanner) already holds the file's content.
+   */
+  primeContent(filePath: string, content: string): void {
+    if (this.astCache.has(filePath)) return;
+    this.astCache.set(filePath, parseJavaScript(content));
   }
 
   /**
@@ -103,13 +133,13 @@ export class JSCallDetector {
       return this.callCache.get(filePath)!;
     }
 
-    const result = parseJavaScriptFile(filePath);
-    if (!result.success || !result.ast) {
+    const ast = this.getAST(filePath);
+    if (!ast) {
       return [];
     }
 
     const calls: CallExpression[] = [];
-    visitNode(result.ast, calls, filePath);
+    visitNode(ast, calls, filePath);
 
     // Cache results
     this.callCache.set(filePath, calls);
@@ -125,13 +155,13 @@ export class JSCallDetector {
       return this.parameterCache.get(filePath)!;
     }
 
-    const result = parseJavaScriptFile(filePath);
-    if (!result.success || !result.ast) {
+    const ast = this.getAST(filePath);
+    if (!ast) {
       return new Map();
     }
 
     const parameters = new Map<string, Parameter[]>();
-    extractParametersFromAST(result.ast, filePath, parameters);
+    extractParametersFromAST(ast, filePath, parameters);
 
     // Cache results
     this.parameterCache.set(filePath, parameters);
@@ -147,13 +177,13 @@ export class JSCallDetector {
       return this.importsCache.get(filePath)!;
     }
 
-    const result = parseJavaScriptFile(filePath);
-    if (!result.success || !result.ast) {
+    const ast = this.getAST(filePath);
+    if (!ast) {
       return [];
     }
 
     const imports: ModuleImport[] = [];
-    extractImportsFromAST(result.ast, imports);
+    extractImportsFromAST(ast, imports);
 
     // Cache results
     this.importsCache.set(filePath, imports);
@@ -169,13 +199,13 @@ export class JSCallDetector {
       return this.exportsCache.get(filePath)!;
     }
 
-    const result = parseJavaScriptFile(filePath);
-    if (!result.success || !result.ast) {
+    const ast = this.getAST(filePath);
+    if (!ast) {
       return [];
     }
 
     const exports: ModuleExport[] = [];
-    extractExportsFromAST(result.ast, exports);
+    extractExportsFromAST(ast, exports);
 
     // Cache results
     this.exportsCache.set(filePath, exports);
@@ -203,13 +233,13 @@ export class JSCallDetector {
    * Detect code elements (interfaces, types, decorators, properties)
    */
   detectElements(filePath: string): DetectedElement[] {
-    const result = parseJavaScriptFile(filePath);
-    if (!result.success || !result.ast) {
+    const ast = this.getAST(filePath);
+    if (!ast) {
       return [];
     }
 
     const elements: DetectedElement[] = [];
-    extractElementsFromAST(result.ast, filePath, elements);
+    extractElementsFromAST(ast, filePath, elements);
     return elements;
   }
 
@@ -221,6 +251,7 @@ export class JSCallDetector {
     this.parameterCache.clear();
     this.importsCache.clear();
     this.exportsCache.clear();
+    this.astCache.clear();
   }
 }
 

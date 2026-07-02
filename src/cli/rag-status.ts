@@ -16,6 +16,7 @@
 
 import * as fs from 'fs/promises';
 import * as path from 'path';
+import { parseFlags, failUsage } from './shared/cli-args.js';
 
 interface CliArgs {
   projectDir: string;
@@ -48,39 +49,24 @@ interface IndexMetadata {
  * Parse command line arguments
  */
 function parseArgs(argv: string[]): CliArgs {
-  const args: CliArgs = {
-    projectDir: process.cwd(),
-    json: false,
-    help: false,
-  };
-
-  for (let i = 0; i < argv.length; i++) {
-    const arg = argv[i];
-
-    switch (arg) {
-      case '--help':
-      case '-h':
-        args.help = true;
-        break;
-
-      case '--project-dir':
-      case '-p':
-        args.projectDir = argv[++i];
-        break;
-
-      case '--json':
-      case '-j':
-        args.json = true;
-        break;
-
-      default:
-        if (!arg.startsWith('-')) {
-          args.projectDir = arg;
-        }
-    }
+  // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-18): shared helper —
+  // --flag=value works and unknown flags error out.
+  const parsed = parseFlags(argv, {
+    help: { kind: 'boolean', aliases: ['-h'] },
+    'project-dir': { kind: 'string', aliases: ['-p'] },
+    json: { kind: 'boolean', aliases: ['-j'] },
+  });
+  const v = parsed.values;
+  if (!v.get('help') && parsed.errors.length > 0) {
+    failUsage('rag-status', parsed.errors);
   }
-
-  return args;
+  return {
+    projectDir: (v.get('project-dir') as string | undefined)
+      ?? parsed.positionals[parsed.positionals.length - 1]
+      ?? process.cwd(),
+    json: (v.get('json') as boolean | undefined) ?? false,
+    help: (v.get('help') as boolean | undefined) ?? false,
+  };
 }
 
 /**

@@ -1,23 +1,24 @@
 /**
  * @coderef-semantic: 1.0.0
  * @layer integration
- * @capability sqlite-store-storage-data
- * @exports SQLiteVectorStore
+ * @capability json-vector-store-storage-data
+ * @exports JsonVectorStore
  * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts, __tests__/integration/rag/facet-filter.test.ts
  */
 
 /**
- * SQLite/File-based Vector Store
- * WO-SQLITE-VECTOR-STORE-001
+ * JSON-file Vector Store (formerly, and misleadingly, named "sqlite")
+ * WO-SQLITE-VECTOR-STORE-001; honest rename + atomic writes:
+ * WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-16, operator ruling A).
  *
  * A lightweight, file-based vector store that requires no external services.
- * Uses JSON file storage with cosine similarity for vector search.
+ * Storage is a pretty-printed JSON file; search is an O(n) cosine scan
+ * (documented limitation — fine for codebases up to ~10,000 files).
  *
  * Benefits:
- * - Works out of the box (no Docker, no external DB)
- * - Pure JavaScript (no native modules)
+ * - Works out of the box (no Docker, no external DB, no native modules)
  * - Persistent storage in .coderef/ directory
- * - Suitable for codebases up to ~10,000 files
+ * - Crash-safe saves (temp file + rename)
  */
 
 
@@ -103,11 +104,11 @@ function matchesFilter(
 }
 
 /**
- * SQLite/File-based Vector Store Implementation
+ * JSON-file Vector Store Implementation
  *
  * @example
  * ```typescript
- * const store = new SQLiteVectorStore({
+ * const store = new JsonVectorStore({
  *   indexName: 'my-project',
  *   storagePath: './.coderef'
  * });
@@ -125,7 +126,7 @@ function matchesFilter(
  * const results = await store.query([0.1, 0.2, ...], { topK: 5 });
  * ```
  */
-export class SQLiteVectorStore implements VectorStore {
+export class JsonVectorStore implements VectorStore {
   private config: VectorStoreConfig;
   private storagePath: string;
   private data: StorageData;
@@ -224,7 +225,7 @@ export class SQLiteVectorStore implements VectorStore {
       this.initialized = true;
     } catch (error) {
       throw new VectorStoreError(
-        `Failed to initialize SQLite vector store: ${error}`,
+        `Failed to initialize JSON vector store: ${error}`,
         VectorStoreErrorCode.CONNECTION_ERROR,
         error as Error
       );
@@ -237,7 +238,12 @@ export class SQLiteVectorStore implements VectorStore {
   private async save(): Promise<void> {
     try {
       this.data.updatedAt = new Date().toISOString();
-      fs.writeFileSync(this.storagePath, JSON.stringify(this.data, null, 2));
+      // P2-16: crash-safe write — a direct overwrite could leave a truncated,
+      // corrupt index if the process died mid-write. Write to a temp file in
+      // the same directory, then rename (atomic on the same volume).
+      const tmpPath = `${this.storagePath}.tmp`;
+      fs.writeFileSync(tmpPath, JSON.stringify(this.data, null, 2));
+      fs.renameSync(tmpPath, this.storagePath);
     } catch (error) {
       throw new VectorStoreError(
         `Failed to save vector store: ${error}`,
@@ -512,4 +518,10 @@ export class SQLiteVectorStore implements VectorStore {
   }
 }
 
-export default SQLiteVectorStore;
+export default JsonVectorStore;
+
+/**
+ * @deprecated The store was never SQLite — it is a JSON file. Import
+ * JsonVectorStore instead. Alias kept so existing imports keep compiling.
+ */
+export { JsonVectorStore as SQLiteVectorStore };

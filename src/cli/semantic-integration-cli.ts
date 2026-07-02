@@ -21,7 +21,6 @@ Options:
   --registry=<path>      Path to registry file (default: <project>/.coderef/registry/entities.json)
   --dry-run              Preview changes without writing files
   --no-headers           Skip header generation
-  --no-enrich            Skip LLM enrichment
   --no-sync-registry     Skip registry sync
   --file=<path>          Process a single file instead of the whole project
   --validate-idempotency Run twice and verify identical results
@@ -42,7 +41,6 @@ const { values } = parseArgs({
     registry:              { type: 'string' },
     'dry-run':             { type: 'boolean' },
     'no-headers':          { type: 'boolean' },
-    'no-enrich':           { type: 'boolean' },
     'no-sync-registry':    { type: 'boolean' },
     file:                  { type: 'string' },
     'validate-idempotency': { type: 'boolean' },
@@ -65,7 +63,6 @@ const options = {
   registryPath,
   dryRun:          (values['dry-run']          ?? false) as boolean,
   generateHeaders: !(values['no-headers']     ?? false),
-  enrichLLM:       !(values['no-enrich']      ?? false),
   syncRegistry:    !(values['no-sync-registry'] ?? false),
   singleFile:      (values.file as string | undefined),
 };

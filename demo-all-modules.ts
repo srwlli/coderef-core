@@ -42,10 +42,6 @@ import {
   TestPatternAnalyzer,
   ExampleExtractor,
   AgenticFormatter,
-  // Module 9: Error Handling
-  CodeRefError,
-  ParseError,
-  ValidationError,
   // Module 10: Types
   type ElementData,
   type DependencyGraph,
@@ -306,40 +302,8 @@ async function main() {
     info('Configuration via .env: CODEREF_LLM_PROVIDER, CODEREF_VECTOR_STORE');
     info('Query strategies: semantic, centrality, quality, usage, public');
 
-    // =========================================================================
-    section('MODULE 9: ERROR HANDLING - Typed Exceptions');
-
-    console.log('Testing error handling...');
-
-    try {
-      throw new ParseError('Invalid tag format', {
-        context: { tag: '@Invalid' },
-      });
-    } catch (e) {
-      if (e instanceof ParseError) {
-        success(`Caught ParseError: ${e.message}`);
-      }
-    }
-
-    try {
-      throw new ValidationError('Reference not found', {
-        context: { reference: '@Fn/unknown#notfound' },
-      });
-    } catch (e) {
-      if (e instanceof ValidationError) {
-        success(`Caught ValidationError: ${e.message}`);
-      }
-    }
-
-    try {
-      throw new CodeRefError('Generic CodeRef error', {
-        context: { errorType: 'ERR_GENERIC' },
-      });
-    } catch (e) {
-      if (e instanceof CodeRefError) {
-        success(`Caught CodeRefError: ${e.message}`);
-      }
-    }
+    // Module 9 (typed exceptions) removed: src/errors/ retired with
+    // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (zero production importers).
 
     // =========================================================================
     section('MODULE 10: TYPES & UTILITIES - Type System');

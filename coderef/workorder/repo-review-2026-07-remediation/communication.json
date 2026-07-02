@@ -8,7 +8,7 @@
   "parent_stub_id": "STUB-W45PTN",
   "predecessor_for": null,
   "status": "plan_created",
-  "current_phase": 2,
+  "current_phase": 3,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\repo-review-2026-07-remediation\\context.json",
@@ -114,6 +114,18 @@
       "at": "2026-07-02T08:42:00Z"
     },
     {
+      "event": "single_phase_mode_invoked",
+      "phase": 2,
+      "reason": "rolling_plan.mode=rolling with report_back_required_after_each_phase=true; executing Phase 2 only, halt at terminal surface",
+      "at": "2026-07-02T08:46:00Z"
+    },
+    {
+      "event": "rolling_halt_no_rearm",
+      "phase": 2,
+      "reason": "ScheduleWakeup re-arm deliberately skipped (same rationale as Phase 1): interactive operator session, and Phase 3 is plan_deferred — advancing requires the operator's Phase-2 review + Phase-3 authoring against STUB-01DW28, not an inbox directive a poll could consume. Control returns to the operator in-session.",
+      "at": "2026-07-02T09:35:00Z"
+    },
+    {
       "event": "phase2_authored",
       "task_count": 16,
       "detail": "Phase 2 tasks P2-T1..P2-T16 authored via ad-hoc plan.json edit per rolling_plan.next_phase_authoring; plan_deferred flipped false; STUB-XG7DSB flips deferred_phase->promoted in ASSISTANT tracking/stubs.json.",
@@ -129,6 +141,41 @@
         "info": 0
       },
       "at": "2026-07-02T07:47:00Z"
+    },
+    {
+      "event": "phase2_operator_review",
+      "outcome": "approved",
+      "detail": "Operator directive: review for completion, then if completed and verified continue to next phase (2026-07-02). Completion re-verified: 4443c6c === origin/main tip, phase_transitions[] phases 1+2 PASS, assistant 99a5e950 pushed. Constitutes the Phase-2 review gate approval; hard_stops[phase=2].approved flipped true in plan.json.",
+      "at": "2026-07-02T09:37:36Z"
+    },
+    {
+      "event": "operator_ruling",
+      "question": "P2-15 plugin system: wire into scanner vs remove from src (src/plugins/ scaffolding, --plugins flag is a no-op)",
+      "ruling": "(A) REMOVE: delete src/plugins/ and the no-op --plugins flag; restorable from git history if ever needed",
+      "at": "2026-07-02T09:37:36Z"
+    },
+    {
+      "event": "operator_ruling",
+      "question": "P2-16 vector store: adopt sqlite-vec vs honest rename + atomic writes (store named sqlite is a JSON file with direct-overwrite saves)",
+      "ruling": "(A) HONEST RENAME + SAFE WRITES: keep JSON backing, stop claiming sqlite, temp+rename atomic writes; no new native dependency",
+      "at": "2026-07-02T09:37:36Z"
+    },
+    {
+      "event": "phase3_authored",
+      "detail": "Phase 3 (repo-review-p2-perf-hygiene) authored against STUB-01DW28: 19 tasks P3-T1..P3-T19 covering review items P2-13..P2-18 + Phase-2-flagged duplicate-edge-id fix + untracked residue + src/errors retirement. plan_deferred flipped false. Inventory pre-verified by read-only scout against post-Phase-2 tree.",
+      "at": "2026-07-02T09:48:48Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 3,
+      "at": "2026-07-02T09:49:20Z",
+      "note": "rolling plan default: execute ONLY phase 3 (final phase), then terminal halt + close-eligibility report-back"
+    },
+    {
+      "event": "package_api_change",
+      "phase": 3,
+      "detail": "src/errors/ retired: CodeRefError, FileNotFoundError, IndexError, ParseError, ScanError, ValidationError no longer exported from the legacy main entry (dist/index.js). Zero production importers existed. Also removed from semantic module exports: LLMEnricher, enrichMetadata, enrichBatch, EnrichmentRequest, LLMEnricherOptions (enricher deleted; EnrichedMetadata type relocated to registry-sync). SemanticPipelineOptions.enrichLLM and SemanticIntegrationOptions.enrichLLM option fields removed (were no-ops). CLI flags removed: populate --llm-enrich, scan --plugins/--no-plugins, semantic-integration --no-enrich.",
+      "at": "2026-07-02T19:14:38Z"
     }
   ],
   "phase2_gate_events": [
@@ -158,19 +205,16 @@
       "commit": "981173b",
       "verdict": "PASS",
       "at": "2026-07-02T08:23:36.701Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "4443c6c",
+      "verdict": "PASS",
+      "at": "2026-07-02T09:26:03.348Z"
     }
   ],
   "inter_phase_results": {
-    "2": {
-      "pre": [
-        {
-          "hook": "/discover repo-review-2026-07-remediation phase 2@quick",
-          "severity": "info",
-          "summary": "rg pass over src/: zero references to the feature slug (Phase 1 left no scaffolding); WO artifacts are the only surfaces; phase clear to start",
-          "at": "2026-07-02T08:46:00Z"
-        }
-      ]
-    },
     "1": {
       "pre": [
         {
@@ -186,6 +230,24 @@
           "severity": "info",
           "summary": "post-commit rg pass over src/: zero references to the feature slug remain in source (all changes are behavioral fixes, no scaffolding left behind); WO artifacts + commit 981173b are the only surfaces",
           "at": "2026-07-02T08:24:00Z"
+        }
+      ]
+    },
+    "2": {
+      "pre": [
+        {
+          "hook": "/discover repo-review-2026-07-remediation phase 2@quick",
+          "severity": "info",
+          "summary": "rg pass over src/: zero references to the feature slug (Phase 1 left no scaffolding); WO artifacts are the only surfaces; phase clear to start",
+          "at": "2026-07-02T08:46:00Z"
+        }
+      ],
+      "post": [
+        {
+          "hook": "/discover repo-review-2026-07-remediation phase 2 post@quick",
+          "severity": "info",
+          "summary": "post-commit rg pass over src/: zero references to the feature slug remain in source; commit 4443c6c (65 files, origin-verified) + WO artifacts are the only surfaces. Untracked residue noted for Phase 3 hygiene: graphify-out/, mcp-smoke-stderr.txt (pre-existing, not this WO's)",
+          "at": "2026-07-02T09:35:00Z"
         }
       ]
     }
@@ -211,6 +273,24 @@
       "applied": true,
       "detail": "Baseline vitest is ALREADY GREEN (1662 pass / 30 skip / 0 fail; review baseline was 1660/2/30). Both review-time failures are load-dependent flakes, reproducible only under concurrent I/O: (a) buildDependencyGraph ENOENT = Windows delete-pending race on the reused .test-project dir (source mkdir already recursive:true); (b) the 'recursive-mode' failure is __tests__/scanner-export.test.ts:170 'should support recursive option' (scans live __dirname twice, count comparison races with concurrent scans) - NOT src/scanner/__tests__/ast-mode.test.ts as the plan cited (citation drift). P1-T10 re-scoped to: harden both flaky tests deterministically (unique temp dirs; fixture-based recursive comparison).",
       "at": "2026-07-02T07:58:00Z"
+    },
+    {
+      "id": "ADJ-04",
+      "phase": 3,
+      "task": "P3-T6",
+      "applied": true,
+      "at": "2026-07-02T18:57:26Z",
+      "reason": "Parity instrument mis-targeted at authoring: populate/index.json does NOT consume scanCurrentElements (pipeline has its own tree-sitter ElementExtractor/RelationshipExtractor via orchestrator.ts). The scanner.ts perf fixes affect the scan CLI / file-watcher / context-generator path only. Probe evidence: default scanCurrentElements over repo=63-71s (reproduces review 71.9s), regex double-pass contributes 3358 noise identities (if:/catch:/fetch( pseudo-elements) on tree-sitter-succeeded files.",
+      "adjustment": "P3-T6 gate re-scoped: (a) populate index.json element identity set must be UNCHANGED (2504/268); (b) scanCurrentElements diff may contain ONLY removals on tree-sitter-succeeded files (regex double-scan noise); files where tree-sitter throws must keep their regex elements (true per-file fallback); (c) full suite green is the behavioral guard."
+    },
+    {
+      "id": "ADJ-05",
+      "phase": 3,
+      "task": "P3-T3/P3-T16",
+      "applied": true,
+      "at": "2026-07-02T19:36:48Z",
+      "reason": "Full-suite run exposed that the regex pass was NOT pure noise: route detection (Flask/FastAPI/Express, el.route) and frontend-call metadata are regex-pattern features (extractMetadata/extractFrontendCall callbacks) with no tree-sitter equivalent — 13 route-integration tests failed. Also: the pipeline ElementExtractor emits Class.method qualified names while the scanner contract is bare method names (2 more failures), and the watch-debounce smoke script is timing-sensitive under full-suite CPU load.",
+      "adjustment": "(a) After tree-sitter success the scanner now runs a METADATA-ONLY regex pass (only patterns bearing extractMetadata/extractFrontendCall; matches without extracted metadata are dropped via new processFile metadataOnly flag) — full element regex scan stays skipped, perf win retained. (b) deduplicateElements merges route/frontendCall/calls/imports across colliding elements instead of dropping the loser's knowledge. (c) tree-sitter-file-scan strips method name qualifiers to preserve the scanner's bare-name contract. (d) mjs smoke runner got retry:2 for wall-clock-sensitive scripts."
     }
   ],
   "git_branch": "wo/repo-review-2026-07-remediation",
@@ -225,5 +305,35 @@
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
+  ],
+  "phase3_gate_events": [
+    {
+      "event": "pre_phase_discover",
+      "depth": "quick",
+      "outcome": "pass",
+      "detail": "rg pass: phase-3 topic surfaces present (stub.json in coderef/working/repo-review-2026-07-remediation; context.md carries 4 P2 anchor rows). Deep inventory already verified by read-only scout pre-authoring; no drift between plan targets and tree.",
+      "at": "2026-07-02T18:49:23Z"
+    },
+    {
+      "event": "semantic_validation_gate",
+      "outcome": "pass_with_overridden_false_positive",
+      "critical": 1,
+      "warning": 1,
+      "override_evidence": "Critical constraint-violation (Cloud LLM provider referenced) fires on the literal token anthropic inside P3-T7, whose ACTION is deleting src/semantic/llm-enricher.ts — the last Anthropic-referencing module — i.e. the task ENFORCES the ollama-local-only constraint. No P3 task adds a cloud provider or key requirement; provider-factory default stays ollama. 5th recurrence of the substring-match bug (semantic-validator.js:333-354), tracked as STUB-6MM7W2. Warning dependency-violation is a shape artifact: validator reads task.target, this plan uses touches[].",
+      "at": "2026-07-02T18:49:23Z"
+    },
+    {
+      "event": "perf_parity_gate",
+      "task": "P3-T6",
+      "outcome": "pass",
+      "detail": "Scan CLI default full-repo scan 71.1s -> 8.2s (~8.7x; review target single-digit seconds HIT). Populate parity: index.json element identity set unchanged outside the phase's own source edits (24 missing / 28 extra, 100% confined to the 5 edited scanner/analyzer files — line shifts + new helper functions; 0 deltas elsewhere). Pipeline wall 21.4s -> 19.6s (pipeline has its own extraction; unaffected as predicted by ADJ-04). Scanner+analyzer suites 195/195 after edits, including the 11 tests the old double-scan behavior was breaking (ast-mode precedence + parallel fixture recall).",
+      "at": "2026-07-02T19:29:49Z"
+    },
+    {
+      "event": "extractor_recall_gap_found",
+      "task": "P3-T3",
+      "detail": "Scanner's private TreeSitterScanner.extractTypeScriptElements missed interfaces, constants and type aliases (probe: 5-construct fixture yielded only function/class/method). The regex double-pass was masking the gap. Fixed by routing scanner element extraction through the pipeline ElementExtractor (same tree, one parse) — P1-8 precedent. TreeSitterScanner is now production-orphaned (only its own test remains) — flagged for a future deletion stub, NOT deleted this phase (unplanned scope).",
+      "at": "2026-07-02T19:29:49Z"
+    }
   ]
 }

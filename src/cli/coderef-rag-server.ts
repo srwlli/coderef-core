@@ -56,10 +56,10 @@ async function loadRagModules(): Promise<void> {
   if (SemanticSearchService) return;
   const ssMod  = await import('../integration/rag/semantic-search.js');
   const ollMod = await import('../integration/llm/ollama-provider.js');
-  const sqlMod = await import('../integration/vector/sqlite-store.js');
+  const sqlMod = await import('../integration/vector/json-store.js');
   SemanticSearchService = ssMod.SemanticSearchService;
   OllamaProvider        = ollMod.OllamaProvider;
-  SQLiteVectorStore     = sqlMod.SQLiteVectorStore;
+  SQLiteVectorStore     = sqlMod.JsonVectorStore;
 }
 
 // ---- CLI args --------------------------------------------------------------
@@ -392,7 +392,7 @@ async function handleIndex(req: http.IncomingMessage, res: http.ServerResponse):
     return;
   }
 
-  const args = ['--project-dir', body.project_dir, '--provider', 'ollama', '--store', 'sqlite'];
+  const args = ['--project-dir', body.project_dir, '--provider', 'ollama', '--store', 'json'];
   if (body.reset) args.push('--reset');
 
   const start = Date.now();

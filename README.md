@@ -499,7 +499,7 @@ See **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** for the post-rebuild archit
 ├─────────────────────────────────────────────────┤
 │  Integration Module                             │
 │  ├── RAG (Retrieval-Augmented Generation)      │
-│  ├── Vector stores (Pinecone, Chroma, SQLite)  │
+│  ├── Vector stores (Pinecone, Chroma, JSON)    │
 │  ├── LLM providers (OpenAI, Anthropic)         │
 │  └── AI prompt generation                      │
 └─────────────────────────────────────────────────┘

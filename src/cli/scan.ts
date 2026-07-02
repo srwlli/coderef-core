@@ -21,8 +21,6 @@ import { IncrementalCache } from '../cache/incremental-cache.js';
 
 interface ScanOptions {
   languages?: string[];
-  plugins?: string[];
-  disablePlugins?: boolean;
   incremental?: boolean;
   useAST?: boolean;
   noTreeSitter?: boolean;
@@ -36,12 +34,11 @@ function printHelp(): void {
   console.log('Scans a project directory and reports code elements found.');
   console.log('');
   console.log('Arguments:');
-  console.log('  project_path    Path to project directory (use "." for current directory)');
+  console.log('  project_path    Path to project directory (use "." for current directory).');
+  console.log('                  MUST be the FIRST argument, before any options.');
   console.log('');
   console.log('Options:');
   console.log('  --languages     Comma-separated list of languages (default: all 10)');
-  console.log('  --plugins       Comma-separated list of plugins to enable');
-  console.log('  --no-plugins    Disable all plugins');
   console.log('  --useAST          Use TypeScript compiler API for TS/JS (legacy opt-in; tree-sitter is default)');
   console.log('  --no-tree-sitter  Force regex-only mode, disabling tree-sitter parser');
   console.log('  --incremental     Use incremental scanning (skip unchanged files)');
@@ -152,17 +149,6 @@ async function main(): Promise<void> {
   const langIndex = args.indexOf('--languages');
   if (langIndex !== -1 && args[langIndex + 1]) {
     options.languages = parseLanguages(args[langIndex + 1]);
-  }
-
-  // Parse plugin options
-  const noPluginsIndex = args.indexOf('--no-plugins');
-  if (noPluginsIndex !== -1) {
-    options.disablePlugins = true;
-  }
-
-  const pluginsIndex = args.indexOf('--plugins');
-  if (pluginsIndex !== -1 && args[pluginsIndex + 1]) {
-    options.plugins = args[pluginsIndex + 1].split(',').map(p => p.trim());
   }
 
   // Parse incremental flag

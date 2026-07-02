@@ -19,7 +19,6 @@ import * as fs from 'fs';
 import logger from '../utils/logger.js';
 import * as path from 'path';
 import { HeaderGenerator } from './header-generator.js';
-import { LLMEnricher } from './llm-enricher.js';
 import { RegistrySyncer } from './registry-sync.js';
 import { PipelineOrchestrator } from '../pipeline/orchestrator.js';
 import { buildSemanticElementsFromState } from '../pipeline/semantic-elements.js';
@@ -31,7 +30,6 @@ export interface SemanticPipelineOptions {
   outputDir: string;
   registryPath: string;
   generateHeaders?: boolean;
-  enrichLLM?: boolean;
   syncRegistry?: boolean;
   validateOnly?: boolean;
   pipelineState?: PipelineState;
@@ -52,20 +50,17 @@ export interface PipelineResult {
 export class SemanticOrchestrator {
   private options: SemanticPipelineOptions;
   private headerGenerator: HeaderGenerator;
-  private llmEnricher: LLMEnricher;
   private registrySyncer: RegistrySyncer;
 
   constructor(options: SemanticPipelineOptions) {
     this.options = {
       generateHeaders: true,
-      enrichLLM: false,
       syncRegistry: true,
       validateOnly: false,
       ...options,
     };
 
     this.headerGenerator = new HeaderGenerator();
-    this.llmEnricher = new LLMEnricher();
     this.registrySyncer = new RegistrySyncer({
       registryPath: this.options.registryPath,
       dryRun: this.options.validateOnly,
@@ -119,25 +114,13 @@ export class SemanticOrchestrator {
             result.headersGenerated++;
           }
 
-          // Enrich with LLM if enabled
-          let enrichment = undefined;
-          if (this.options.enrichLLM && this.llmEnricher.isAvailable()) {
-            enrichment = await this.llmEnricher.enrich({
-              file: extraction.file,
-              exports: extraction.exports.map((e) => e.name),
-              imports: extraction.imports.map((i) => i.name),
-              internalDeps: extraction.internalDependencies,
-              externalDeps: extraction.externalDependencies,
-            });
-            result.entriesEnriched++;
-          }
-
-          // Prepare for registry sync
+          // LLM enrichment removed (P2-14): the enricher self-disabled in its
+          // constructor and never ran; registry entries carry no enrichment.
           registryEntries.push({
             file: extraction.file,
             exports: extraction.exports,
             imports: extraction.imports.map((item) => item.name || item.from),
-            enrichment,
+            enrichment: undefined,
           });
         } catch (error) {
           result.errors.push({
@@ -209,22 +192,11 @@ export class SemanticOrchestrator {
       }
 
       if (this.options.syncRegistry) {
-        let enrichment = undefined;
-        if (this.options.enrichLLM && this.llmEnricher.isAvailable()) {
-          enrichment = await this.llmEnricher.enrich({
-            file: filePath,
-            exports: extraction.exports.map((e) => e.name),
-            imports: extraction.imports.map((i) => i.name),
-            internalDeps: extraction.internalDependencies,
-            externalDeps: extraction.externalDependencies,
-          });
-        }
-
         await this.registrySyncer.syncEntry(
           filePath,
           extraction.exports,
           extraction.imports.map((item) => item.name || item.from),
-          enrichment,
+          undefined,
         );
       }
     } catch (error) {

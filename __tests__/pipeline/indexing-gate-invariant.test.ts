@@ -69,9 +69,9 @@ describe('Phase 7 chokepoint INVARIANT (task 1.17)', () => {
       useAnalyzer: true,
       validation: { ok: false, reportPath: '/tmp/r.json' },
     });
-    // processingTimeMs is a wall-clock delta; mask before equality.
-    const mask = (r: typeof r1) => ({ ...r, processingTimeMs: 0 });
-    expect(mask(r1)).toEqual(mask(r2));
+    // processingTimeMs was removed from the result shape (see
+    // indexing-orchestrator.ts) — results compare directly now.
+    expect(r1).toEqual(r2);
   });
 });
 

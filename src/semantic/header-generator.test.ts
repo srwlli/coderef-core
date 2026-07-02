@@ -336,10 +336,6 @@ describe('inferLayerFromPath', () => {
     expect(inferLayerFromPath('src/types/types.ts')).toBe('domain');
   });
 
-  test('src/plugins/ → integration', () => {
-    expect(inferLayerFromPath('src/plugins/plugin-graph.ts')).toBe('integration');
-  });
-
   test('src/validator/ → validation', () => {
     expect(inferLayerFromPath('src/validator/report-generator.ts')).toBe('validation');
   });

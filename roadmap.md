@@ -23,7 +23,7 @@ The pipeline is not green-field. The following machinery already exists in `src/
 - **`src/pipeline/semantic-elements.ts`** — emits `codeRefId` and `codeRefIdNoLine` on every `ElementData`. ID generation runs at the producer side today.
 - **`src/registry/entity-registry.ts`** — assigns and looks up element UUIDs. Used by `semantic-elements.ts`.
 - **`src/scanner/semantic-analyzer.ts`** — `attachFileImportsToElements`, `buildSemanticRelationships`, `deduplicateUsedBy`. File-level imports are already attached to elements; reverse `usedBy` already exists.
-- **`src/semantic/`** — separate module with its own AST extractor (`ast-extractor.ts`), header generator (`header-generator.ts`), LLM enricher (`llm-enricher.ts`), registry sync (`registry-sync.ts`), orchestrator (`orchestrator.ts`), and projections (`projections.ts`).
+- **`src/semantic/`** — separate module with its own AST extractor (`ast-extractor.ts`), header generator (`header-generator.ts`), registry sync (`registry-sync.ts`), orchestrator (`orchestrator.ts`), and projections (`projections.ts`). (The LLM enricher was deleted 2026-07-02 — it self-disabled and never ran.)
 - **`src/semantic/projections.ts`** — produces `semantic-registry.json` from canonical `ElementData`. Projection seam is unified.
 - **`src/semantic/orchestrator.ts`** — still runs its own `astExtractor.extractDirectory()`. Orchestrator seam is **not** unified. Treat this as a known parallel scanner.
 

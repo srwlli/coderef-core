@@ -91,8 +91,10 @@ export async function createLLMProvider(providerName?: string): Promise<any> {
 
 /**
  * Create a vector store by name, sized to the provider's embedding
- * dimensions. Unknown stores and missing cloud config fall back to the
- * JSON-backed SQLiteVectorStore (the "sqlite" name is legacy).
+ * dimensions. Canonical local store name is 'json' (a JSON-file store);
+ * 'sqlite' is accepted as a DEPRECATED alias (P2-16 honest rename — the
+ * store was never SQLite). Unknown stores and missing cloud config fall
+ * back to the JSON store.
  */
 export async function createVectorStore(
   storeName: string,
@@ -113,7 +115,7 @@ export async function createVectorStore(
     case 'pinecone': {
       const apiKey = process.env.PINECONE_API_KEY;
       if (!apiKey) {
-        console.warn(`[${warnTag}] PINECONE_API_KEY not set, falling back to SQLite`);
+        console.warn(`[${warnTag}] PINECONE_API_KEY not set, falling back to the local JSON store`);
         break;
       }
       const { PineconeStore } = await import('../vector/pinecone-store.js');
@@ -134,18 +136,23 @@ export async function createVectorStore(
     }
 
     case 'sqlite':
+      console.warn(
+        `[${warnTag}] store name 'sqlite' is deprecated — it was always a JSON file store. Use --store json.`,
+      );
+      break;
+
+    case 'json':
     default:
       break;
   }
 
-  // Storage is a JSON file (the "sqlite" name is legacy/misleading). Use a
-  // .json extension so SQLiteVectorStore treats it as the literal file path
-  // and doesn't double-join `.coderef/coderef-vectors.json`.
-  const { SQLiteVectorStore } = await import('../vector/sqlite-store.js');
+  // Use a .json extension so JsonVectorStore treats it as the literal file
+  // path and doesn't double-join `.coderef/coderef-vectors.json`.
+  const { JsonVectorStore } = await import('../vector/json-store.js');
   const storagePath =
     process.env.CODEREF_SQLITE_PATH ||
     path.join(projectDir, '.coderef', 'coderef-vectors.json');
-  return new SQLiteVectorStore({ storagePath, dimension });
+  return new JsonVectorStore({ storagePath, dimension });
 }
 
 /**

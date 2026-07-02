@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability registry-sync-registry-entry
- * @exports RegistryEntry, RegistrySyncOptions, SyncResult, RegistrySyncer, syncEntry, refreshSync
+ * @exports EnrichedMetadata, RegistryEntry, RegistrySyncOptions, SyncResult, RegistrySyncer, syncEntry, refreshSync
  * @used_by src/semantic/orchestrator.ts
  */
 
@@ -18,8 +18,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import type { ExportInfo } from './ast-extractor.js';
-import type { EnrichedMetadata } from './llm-enricher.js';
 import logger from '../utils/logger.js';
+
+// WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-14): type relocated here
+// from the deleted llm-enricher.ts (whose constructor self-disabled — it never
+// produced enrichment). The registry entry schema keeps these fields; callers
+// simply never pass enrichment today.
+export interface EnrichedMetadata {
+  rules: string[];
+  related: string[];
+  constraints: string[];
+  confidence: number;
+}
 
 export interface RegistryEntry {
   id: string;

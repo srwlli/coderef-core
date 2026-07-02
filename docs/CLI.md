@@ -388,7 +388,7 @@ npx rag-index --project-dir ./my-project
 |------|-------------|---------|
 | `-p, --project-dir <path>` | Project directory to index (also accepts first positional argument) | Current directory |
 | `--provider <provider>` | Embedding provider: `openai`, `anthropic`, `ollama` | Key-aware: `openai` if `OPENAI_API_KEY` is set, else `ollama` (local-first; cloud is opt-in) |
-| `--store <store>` | Vector store: `sqlite`, `pinecone`, `chroma` | `sqlite` |
+| `--store <store>` | Vector store: `json`, `pinecone`, `chroma` (`sqlite` is a deprecated alias for `json`) | `json` |
 | `--reset` | Reset existing index before indexing | `false` |
 | `--include-headerless` | Embed chunks from header-less elements (`headerStatus` ∈ {missing, stale, partial}) with `header:false` provenance instead of skipping them — enables RAG on repos that were never header-annotated. Default behavior (skip-with-reason) preserves DR-PHASE-7-E. | `false` |
 | `--coverage-floor <0-100>` | Warn (or refuse, with `--strict-coverage`) when `header_coverage_pct` is below this floor. Below-floor coverage means chunks from header-less files are silently excluded from the index. `0` disables the check. | `0` |
@@ -448,7 +448,7 @@ npx rag-index --reset --lang ts,tsx
 
 - `.coderef/validation-report.json` present and `ok=true` — run `populate-coderef` first.
 - For the `ollama` provider (the local-first default): Ollama server running at `http://localhost:11434` with `nomic-embed-text` pulled.
-- For `--store chroma`: ChromaDB server running. The default `sqlite` store needs no server.
+- For `--store chroma`: ChromaDB server running. The default `json` store (a local JSON file with crash-safe writes) needs no server.
 
 ---
 
@@ -472,7 +472,7 @@ The query is a positional argument (natural language works best).
 |------|-------------|---------|
 | `-p, --project-dir <path>` | Project directory to search | Current directory |
 | `--provider <provider>` | Embedding provider: `openai`, `anthropic`, `ollama`. **Must match the provider the index was built with** — mismatched models produce empty or garbage results. | Key-aware: `openai` if `OPENAI_API_KEY` is set, else `ollama` (same rule as `rag-index`) |
-| `--store <store>` | Vector store: `sqlite`, `pinecone`, `chroma` | `sqlite` |
+| `--store <store>` | Vector store: `json`, `pinecone`, `chroma` (`sqlite` is a deprecated alias for `json`) | `json` |
 | `-k, --top-k <n>` | Number of results to return | `10` |
 | `--min-score <n>` | Minimum relevance score 0–1 | None |
 | `-t, --type <type>` | Filter by element type (`function`, `class`, `method`, ...) | All types |

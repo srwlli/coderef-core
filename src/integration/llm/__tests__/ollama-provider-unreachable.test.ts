@@ -18,8 +18,11 @@ const mockFetch = vi.fn();
 // Track all fetch URLs for assertion
 let fetchUrls: string[] = [];
 
-// Requires Ollama daemon on localhost:11434 — skipped until local inference is available. See WO-FAILING-TESTS-TRIAGE-001.
-describe.skip('Ollama Provider - Unreachable Daemon', () => {
+// Fully mocked (global fetch is stubbed — no daemon needed). Un-skipped by
+// WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-17): the skip was left
+// over from WO-FAILING-TESTS-TRIAGE-001 but nothing here touches a real
+// Ollama; the mock simulates ECONNREFUSED itself.
+describe('Ollama Provider - Unreachable Daemon', () => {
   beforeEach(() => {
     fetchUrls = [];
     mockFetch.mockImplementation((url: string) => {
@@ -76,18 +79,29 @@ describe.skip('Ollama Provider - Unreachable Daemon', () => {
     // This test ensures NO cloud fallback occurs - critical for local-only requirement
     const cloudDomains = ['api.openai.com', 'api.anthropic.com', 'api.cohere.ai', 'api.groq.com'];
 
-    // Verify mock rejects cloud URLs
+    // Verify mock rejects cloud URLs (these probe calls are TEST-initiated)
     for (const domain of cloudDomains) {
       await expect(mockFetch(`https://${domain}/v1/test`))
         .rejects.toThrow(/Unexpected non-localhost/);
     }
 
-    // CRITICAL ASSERTION: No cloud provider was ever called
+    // Reset the log: the probes above were test-initiated and the mock logs
+    // every URL it sees. The local-only guarantee is about PROVIDER-initiated
+    // traffic, so assert over a fresh log while the provider fails an embed.
+    fetchUrls = [];
+    const provider = new OllamaProvider({
+      apiKey: 'ollama',
+      baseUrl: 'http://localhost:11434',
+      model: 'qwen2.5:7b-instruct'
+    });
+    await expect(provider.embed(['test text'])).rejects.toThrow();
+
+    // CRITICAL ASSERTION: the provider called something, and nothing it
+    // called was a cloud endpoint — no cloud fallback on local failure.
+    expect(fetchUrls.length).toBeGreaterThan(0);
     for (const url of fetchUrls) {
       expect(url).not.toMatch(/api\.openai\.com|api\.anthropic\.com|api\.cohere\.ai|api\.groq\.com/);
     }
-
-    // All calls were localhost only
     expect(fetchUrls.every(u => u.includes('localhost') || u.includes('127.0.0.1'))).toBe(true);
   });
 
@@ -130,7 +144,9 @@ describe.skip('Ollama Provider - Unreachable Daemon', () => {
   });
 });
 
-// Requires Ollama daemon on localhost:11434 — skipped until local inference is available. See WO-FAILING-TESTS-TRIAGE-001.
+// Intentionally skipped: this block documents a MANUAL runtime procedure
+// (stop the real daemon, observe real ECONNREFUSED) — it is not meant to run
+// in CI. Kept skipped by WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3.
 describe.skip('Ollama Provider - Runtime Negative Test (Manual)', () => {
   it('manual test instructions for Phase 4.3', () => {
     // This test documents the manual runtime negative test procedure
