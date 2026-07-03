@@ -27,6 +27,7 @@
  *   what_this_imports    - outbound resolved import edges FROM an element
  *   what_this_depends_on - transitive outbound dependencies (forward BFS)
  *   path_between         - directed path(s) source->target (shortest | all)
+ *   unresolved_edges     - enumerate non-resolved call/import edges + evidence
  *   find_element         - element lookup in .coderef/index.json
  *   codebase_summary     - totals, type distribution, header coverage, edges
  *   validation_status    - the locked 14-field validation report verbatim
@@ -295,6 +296,15 @@ export interface ToolHandlers {
   what_this_imports(args: { element: string; limit?: number }): Record<string, unknown>;
   what_this_depends_on(args: { element: string; max_depth?: number; limit?: number }): Record<string, unknown>;
   path_between(args: { source: string; target: string; mode?: 'shortest' | 'all'; max_depth?: number; limit?: number }): Record<string, unknown>;
+  // agent-native non-resolved-edge exposure (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P2)
+  unresolved_edges(args: {
+    relationship?: 'call' | 'import';
+    status?: 'unresolved' | 'ambiguous' | 'external' | 'builtin';
+    file?: string;
+    reason?: string;
+    offset?: number;
+    limit?: number;
+  }): Record<string, unknown>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -1024,6 +1034,92 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         },
       };
     },
+
+    unresolved_edges({ relationship, status, file, reason, offset, limit }) {
+      const graph = loadGraph(projectDir, cache);
+      const cap = clampLimit(limit);
+      const start = offset !== undefined && Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0;
+
+      // The non-resolved universe. validation_status exposes only the AGGREGATE
+      // counts of these (unresolved_count/ambiguous_count/external_count/
+      // builtin_count in the locked report); this tool ENUMERATES the actual
+      // edges with their persisted evidence so an agent can see WHICH call/import
+      // could not be resolved and WHY. The status filter defaults to the two
+      // "honesty" dispositions (unresolved + ambiguous); external/builtin are
+      // available on request but are usually expected noise (npm/stdlib).
+      const NON_RESOLVED = new Set(['unresolved', 'ambiguous', 'external', 'builtin']);
+      const wantStatus = status ?? null; // null → unresolved + ambiguous only
+      const normFile = file ? normalizeSlashes(file).replace(/^@File\//, '') : null;
+      const reasonQ = reason ? reason.toLowerCase() : null;
+
+      // status breakdown over the FULL non-resolved population (pre-facet),
+      // so an agent sees the shape of the whole set even when paginating a slice.
+      const status_breakdown: Record<string, number> = {};
+      const matched: ExportedEdge[] = [];
+      for (const edge of graph.edges) {
+        const st = edge.resolutionStatus;
+        if (!NON_RESOLVED.has(st)) continue;
+        status_breakdown[st] = (status_breakdown[st] ?? 0) + 1;
+
+        // Facet filters (all AND-combined).
+        if (wantStatus ? st !== wantStatus : st !== 'unresolved' && st !== 'ambiguous') continue;
+        if (relationship && edge.relationship !== relationship) continue;
+        if (edge.relationship !== 'call' && edge.relationship !== 'import') continue;
+        if (normFile) {
+          const ef = normalizeSlashes(edge.sourceLocation?.file ?? '');
+          if (ef !== normFile && !ef.includes(normFile)) continue;
+        }
+        if (reasonQ && !(edge.reason ?? '').toLowerCase().includes(reasonQ)) continue;
+        matched.push(edge);
+      }
+
+      const total = matched.length;
+      const page = matched.slice(start, start + cap);
+      const edges = page.map(edge => {
+        const ev = edge.evidence as Record<string, unknown> | undefined;
+        const src = edge.sourceId ? cache.nodeById.get(edge.sourceId) : undefined;
+        const out: Record<string, unknown> = {
+          relationship: edge.relationship,
+          status: edge.resolutionStatus,
+          from: src ? { id: src.id, name: src.name, type: src.type } : { id: edge.sourceId },
+          at: edge.sourceLocation
+            ? `${edge.sourceLocation.file}:${edge.sourceLocation.line}`
+            : undefined,
+          // Evidence passthrough — the persisted per-kind detail. calls carry
+          // calleeName/receiverText; imports carry originSpecifier.
+          callee: ev?.calleeName as string | undefined,
+          receiver: ev?.receiverText as string | undefined,
+          specifier: ev?.originSpecifier as string | undefined,
+          reason: edge.reason ?? (ev?.reason as string | undefined),
+        };
+        // P2-T3: for ambiguous edges, surface the competing symbols so an agent
+        // sees exactly which candidate codeRefIds the resolver could not choose
+        // between. This is the engine's signature honesty feature made visible.
+        if (edge.resolutionStatus === 'ambiguous') {
+          const cands = edge.candidates ?? (ev?.candidates as string[] | undefined) ?? [];
+          out.candidates = cands.map(id => {
+            const n = cache.nodeById.get(id);
+            return n ? { id: n.id, name: n.name, file: n.file, line: n.line } : { id };
+          });
+        }
+        return out;
+      });
+
+      return {
+        total,
+        offset: start,
+        returned: edges.length,
+        truncated: start + edges.length < total,
+        filters: {
+          relationship: relationship ?? null,
+          status: wantStatus ?? '(unresolved+ambiguous)',
+          file: file ?? null,
+          reason: reason ?? null,
+        },
+        status_breakdown,
+        edges,
+      };
+    },
   };
 }
 
@@ -1266,10 +1362,40 @@ async function main(): Promise<void> {
       toContent(handlers.path_between({ source, target, mode, max_depth, limit })),
   );
 
+  // ---- non-resolved-edge exposure (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P2) ----
+  // Enumerate the call/import edges the resolver could NOT resolve, with their
+  // persisted evidence + (for ambiguous) the competing candidates. Aggregate
+  // counts alone lived in validation_status; this makes each one inspectable.
+
+  server.registerTool(
+    'unresolved_edges',
+    {
+      title: 'List non-resolved edges',
+      description:
+        'Enumerate call/import edges that did NOT resolve, with their persisted evidence — the detail behind validation_status\'s aggregate counts. Default lists unresolved + ambiguous edges (the honesty dispositions); status=external|builtin surface expected npm/stdlib noise. For ambiguous edges, candidates[] shows the competing symbols the resolver could not choose between. Facets: relationship, status, file, reason (substring). Always paginated — total + status_breakdown reflect the full set; edges[] is one offset/limit page (default 25, cap 100).',
+      inputSchema: {
+        relationship: z
+          .enum(['call', 'import'])
+          .optional()
+          .describe('Restrict to one edge kind (default: both)'),
+        status: z
+          .enum(['unresolved', 'ambiguous', 'external', 'builtin'])
+          .optional()
+          .describe('Disposition filter (default: unresolved + ambiguous)'),
+        file: z.string().optional().describe('Restrict to edges whose call/import site is in this file (path or fragment)'),
+        reason: z.string().optional().describe('Substring match on the edge reason (e.g. "receiver_not_in_symbol_table")'),
+        offset: z.number().optional().describe('Pagination offset into the matched set (default 0)'),
+        limit: limitArg,
+      },
+    },
+    async ({ relationship, status, file, reason, offset, limit }) =>
+      toContent(handlers.unresolved_edges({ relationship, status, file, reason, offset, limit })),
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (15 read-only tools)`,
+    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (16 read-only tools)`,
   );
 }
 

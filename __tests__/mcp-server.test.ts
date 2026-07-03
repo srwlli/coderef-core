@@ -69,6 +69,11 @@ const FIXTURE_GRAPH: ExportedGraph = {
     { id: '@Fn/src/dia.ts#dmidL:2', type: 'function', name: 'dmidL', file: 'src/dia.ts', line: 2, metadata: {} },
     { id: '@Fn/src/dia.ts#dmidR:3', type: 'function', name: 'dmidR', file: 'src/dia.ts', line: 3, metadata: {} },
     { id: '@Fn/src/dia.ts#dbot:4', type: 'function', name: 'dbot', file: 'src/dia.ts', line: 4, metadata: {} },
+    // P2 (WO-AGENT-NATIVE-CAPABILITY-GAPS-001): candidate targets for the
+    // ambiguous non-resolved edges below — two same-named symbols the resolver
+    // could not choose between (surfaced by unresolved_edges candidates[]).
+    { id: '@Fn/src/dupcall/x.ts#doThing:1', type: 'function', name: 'doThing', file: 'src/dupcall/x.ts', line: 1, metadata: {} },
+    { id: '@Fn/src/dupcall/y.ts#doThing:1', type: 'function', name: 'doThing', file: 'src/dupcall/y.ts', line: 1, metadata: {} },
   ],
   edges: [
     // canonical 8-field schema + legacy compat fields (source/target/type)
@@ -181,6 +186,43 @@ const FIXTURE_GRAPH: ExportedGraph = {
       relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/dia.ts', line: 3 },
       source: '@Fn/src/dia.ts#dmidR:3', target: '@Fn/src/dia.ts#dbot:4', type: 'call',
     },
+    // P2 (WO-AGENT-NATIVE-CAPABILITY-GAPS-001): non-resolved edges the
+    // unresolved_edges tool enumerates. No targetId (unresolved/ambiguous
+    // never carry one). These make the fixture's non-resolved population:
+    //   unresolved: e5 (dynamic call), ur2 (unresolved import) -> 2
+    //   ambiguous : am1 (call, 2 candidates), am2 (import, 2 candidates) -> 2
+    //   external  : ex-npm (external import) -> 1
+    // FIXTURE_REPORT counts below are kept in lockstep for the T4 reconcile.
+    {
+      id: 'ur2', sourceId: '@Fn/src/dia.ts#dtop:1',
+      relationship: 'import', resolutionStatus: 'unresolved', reason: 'module_not_found',
+      evidence: { kind: 'unresolved-import', originSpecifier: './missing', reason: 'module_not_found' } as any,
+      sourceLocation: { file: 'src/dia.ts', line: 10 },
+      source: '@Fn/src/dia.ts#dtop:1', target: './missing', type: 'import',
+    },
+    {
+      id: 'am1', sourceId: '@Fn/src/dia.ts#dtop:1',
+      relationship: 'call', resolutionStatus: 'ambiguous', reason: 'multiple_candidates',
+      candidates: ['@Fn/src/dupcall/x.ts#doThing:1', '@Fn/src/dupcall/y.ts#doThing:1'],
+      evidence: { kind: 'ambiguous-call', calleeName: 'doThing', receiverText: '', candidates: ['@Fn/src/dupcall/x.ts#doThing:1', '@Fn/src/dupcall/y.ts#doThing:1'] } as any,
+      sourceLocation: { file: 'src/dia.ts', line: 11 },
+      source: '@Fn/src/dia.ts#dtop:1', target: 'doThing', type: 'call',
+    },
+    {
+      id: 'am2', sourceId: '@Fn/src/dia.ts#dmidL:2',
+      relationship: 'import', resolutionStatus: 'ambiguous', reason: 'multiple_candidates',
+      candidates: ['@Fn/src/dupcall/x.ts#doThing:1', '@Fn/src/dupcall/y.ts#doThing:1'],
+      evidence: { kind: 'ambiguous-import', originSpecifier: 'doThing', candidates: ['@Fn/src/dupcall/x.ts#doThing:1', '@Fn/src/dupcall/y.ts#doThing:1'] } as any,
+      sourceLocation: { file: 'src/dia.ts', line: 12 },
+      source: '@Fn/src/dia.ts#dmidL:2', target: 'doThing', type: 'import',
+    },
+    {
+      id: 'ex-npm', sourceId: '@Fn/src/dia.ts#dbot:4',
+      relationship: 'import', resolutionStatus: 'external',
+      evidence: { kind: 'external-import', originSpecifier: 'left-pad' } as any,
+      sourceLocation: { file: 'src/dia.ts', line: 13 },
+      source: '@Fn/src/dia.ts#dbot:4', target: 'left-pad', type: 'import',
+    },
   ],
   statistics: { nodeCount: 11, edgeCount: 5, edgesByType: { call: 4, import: 1 }, densityRatio: 0.04 },
 };
@@ -198,11 +240,16 @@ const FIXTURE_INDEX = {
 };
 
 // The locked 12-field report (output-validator.ts additive stability rule).
+// Non-resolved counts are kept in lockstep with the FIXTURE_GRAPH edges so the
+// P2 unresolved_edges reconciliation test can assert the tool's live count over
+// graph.json equals these aggregates (mirrors output-validator's per-status
+// tally): 2 unresolved (e5 call + ur2 import), 2 ambiguous (am1 call + am2
+// import), 1 external (ex-npm import).
 const FIXTURE_REPORT = {
   valid_edge_count: 4,
-  unresolved_count: 1,
-  ambiguous_count: 0,
-  external_count: 0,
+  unresolved_count: 2,
+  ambiguous_count: 2,
+  external_count: 1,
   builtin_count: 0,
   header_defined_count: 1,
   header_missing_count: 2,
@@ -653,5 +700,113 @@ describe('path_between — mode=all enumeration (REC-P1-003c)', () => {
     const r = handlers.path_between({ source: 'dtop', target: 'dbot', mode: 'all' }) as any;
     expect(r.internal_cap_hit).toBe(false);
     expect(r.total).toBeLessThan(50);
+  });
+});
+
+// ---- unresolved_edges (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P2) ---------------------
+
+describe('unresolved_edges', () => {
+  it('defaults to unresolved + ambiguous call/import edges', () => {
+    const r = handlers.unresolved_edges({}) as any;
+    expect(r.error).toBeUndefined();
+    // fixture: e5 (unresolved call) + ur2 (unresolved import) + am1 (ambiguous
+    // call) + am2 (ambiguous import) = 4. external/builtin excluded by default.
+    expect(r.total).toBe(4);
+    expect(r.returned).toBe(4);
+    expect(r.truncated).toBe(false);
+    const statuses = new Set(r.edges.map((e: any) => e.status));
+    expect([...statuses].sort()).toEqual(['ambiguous', 'unresolved']);
+  });
+
+  it('surfaces the reason on unresolved edges', () => {
+    const r = handlers.unresolved_edges({ status: 'unresolved' }) as any;
+    expect(r.total).toBe(2);
+    const byReason = r.edges.map((e: any) => e.reason).sort();
+    expect(byReason).toEqual(['dynamic call', 'module_not_found']);
+    // call evidence passthrough: e5's callee-less dynamic call still carries the
+    // source location so an agent can jump to the site.
+    const e5 = r.edges.find((e: any) => e.reason === 'dynamic call');
+    expect(e5.relationship).toBe('call');
+    expect(e5.from.id).toBe('@Fn/src/main.ts#main:1');
+  });
+
+  it('surfaces candidates[] (competing symbols) on ambiguous edges', () => {
+    const r = handlers.unresolved_edges({ status: 'ambiguous' }) as any;
+    expect(r.total).toBe(2);
+    for (const edge of r.edges) {
+      expect(edge.status).toBe('ambiguous');
+      expect(Array.isArray(edge.candidates)).toBe(true);
+      expect(edge.candidates.length).toBe(2);
+      // candidates resolve to node summaries (name/file), not bare ids.
+      const names = edge.candidates.map((c: any) => c.name);
+      expect(names).toEqual(['doThing', 'doThing']);
+      const files = edge.candidates.map((c: any) => c.file).sort();
+      expect(files).toEqual(['src/dupcall/x.ts', 'src/dupcall/y.ts']);
+    }
+  });
+
+  it('facets by relationship', () => {
+    const calls = handlers.unresolved_edges({ relationship: 'call' }) as any;
+    // e5 (unresolved) + am1 (ambiguous) are the two non-resolved CALL edges.
+    expect(calls.total).toBe(2);
+    expect(calls.edges.every((e: any) => e.relationship === 'call')).toBe(true);
+
+    const imports = handlers.unresolved_edges({ relationship: 'import' }) as any;
+    // ur2 (unresolved) + am2 (ambiguous) are the two non-resolved IMPORT edges.
+    expect(imports.total).toBe(2);
+    expect(imports.edges.every((e: any) => e.relationship === 'import')).toBe(true);
+  });
+
+  it('facets by file (call/import site)', () => {
+    const r = handlers.unresolved_edges({ file: 'src/dia.ts' }) as any;
+    // ur2, am1 (from dtop), am2 (from dmidL) all have their site in src/dia.ts.
+    // e5's site is src/main.ts (no sourceLocation on e5 -> excluded).
+    expect(r.total).toBe(3);
+    expect(r.edges.every((e: any) => (e.at ?? '').startsWith('src/dia.ts:'))).toBe(true);
+  });
+
+  it('facets by reason substring', () => {
+    const r = handlers.unresolved_edges({ reason: 'multiple_candidates' }) as any;
+    expect(r.total).toBe(2);
+    expect(r.edges.every((e: any) => e.status === 'ambiguous')).toBe(true);
+  });
+
+  it('surfaces external/builtin only on request, with a full status_breakdown', () => {
+    const ext = handlers.unresolved_edges({ status: 'external' }) as any;
+    expect(ext.total).toBe(1);
+    expect(ext.edges[0].specifier).toBe('left-pad');
+    // status_breakdown reflects the FULL non-resolved population regardless of
+    // the active facet: 2 unresolved + 2 ambiguous + 1 external.
+    expect(ext.status_breakdown.unresolved).toBe(2);
+    expect(ext.status_breakdown.ambiguous).toBe(2);
+    expect(ext.status_breakdown.external).toBe(1);
+  });
+
+  it('paginates with offset/limit and reports truncated', () => {
+    const page1 = handlers.unresolved_edges({ limit: 2 }) as any;
+    expect(page1.total).toBe(4);
+    expect(page1.returned).toBe(2);
+    expect(page1.offset).toBe(0);
+    expect(page1.truncated).toBe(true);
+    const page2 = handlers.unresolved_edges({ limit: 2, offset: 2 }) as any;
+    expect(page2.returned).toBe(2);
+    expect(page2.offset).toBe(2);
+    expect(page2.truncated).toBe(false);
+    // the two pages together cover the full set with no overlap.
+    const ids1 = page1.edges.map((e: any) => e.at ?? e.reason);
+    const ids2 = page2.edges.map((e: any) => e.at ?? e.reason);
+    expect(ids1.filter((x: any) => ids2.includes(x))).toEqual([]);
+  });
+
+  it('reconciles unfiltered counts with the validation-report aggregates', () => {
+    // The tool computes its status_breakdown live over graph.json; the report
+    // is the pipeline's own per-status tally. They MUST agree — this is the
+    // exposure invariant: unresolved_edges enumerates exactly what
+    // validation_status counts.
+    const report = (handlers.validation_status() as any).report;
+    const breakdown = (handlers.unresolved_edges({}) as any).status_breakdown;
+    expect(breakdown.unresolved).toBe(report.unresolved_count);
+    expect(breakdown.ambiguous).toBe(report.ambiguous_count);
+    expect(breakdown.external ?? 0).toBe(report.external_count);
   });
 });

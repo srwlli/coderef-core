@@ -8,8 +8,8 @@
   "parent_stub_id": null,
   "predecessor_for": null,
   "status": "plan_created",
-  "current_phase": 1,
-  "phase_status": "complete",
+  "current_phase": 2,
+  "phase_status": "in_progress",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/analysis.json",
@@ -82,6 +82,11 @@
       "event": "phase1_followup",
       "reason": "post-P1 /discover (discovery-p1.md) surfaced 4 consistency/observability gaps in the landed outbound/path tools (no correctness bugs). Applied REC-P1-001 (document total=edges vs distinct-nodes across the mirror pair), REC-P1-002 (surface path_between mode=all internal_cap_hit at ALL_PATHS_MAX=50; exported the constant from canonical-graph.ts as single source of truth), REC-P1-003 (3 edge-case tests via an isolated fixture subgraph: outbound truncated=true, byFile intra-file self-exclusion, mode=all diamond enumeration). Full suite 1517 passed; live smoke confirmed internal_cap_hit=true on a real 50-path enumeration. REC-P1-004 (outbound at: site info) deferred to P3 rich-evidence passthrough; REC-P1-005 (depth-matrix doc) low, deferred.",
       "at": "2026-07-03T10:30:00Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 2,
+      "at": "2026-07-03T11:00:00Z"
     }
   ],
   "phase_transitions": [
