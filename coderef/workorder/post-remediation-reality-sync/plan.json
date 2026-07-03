@@ -1,0 +1,283 @@
+{
+  "plan_type": "strict",
+  "goal": "Sync all human- and agent-facing surfaces (docs, skills, CONTEXT.md) plus two runtime artifacts (RAG reindex, .mcp.json restore) to the shipped WO-REPO-REVIEW-2026-07-REMEDIATION-001 reality",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Read coderef/workorder/repo-review-2026-07-remediation/post-close-verification-2026-07-02.txt and the close commit 4cd33af diff to fix the reality anchor. Success: every stale-claim location enumerated below is confirmed against current code before editing.",
+          "touches": []
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "docs/CLI.md: remove the deleted --no-enrich flag from the semantic-integration section (examples currently fail). Success: no --no-enrich reference remains; examples run against the shipped CLI.",
+          "touches": [
+            "docs/CLI.md"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "EDIT",
+          "description": "README.md: (a) fix the stale baseline line at L69 IN-METRIC — the line reads 'valid_edge_count=3464, header_missing_count=262'; replace with the current valid_edge_count (reality anchor 5154) + current header_missing_count. DO NOT substitute statistics.edgeCount (29123) — that is a DIFFERENT metric; conflating them injects a new falsehood (gap GAP-01). (b) fix the MCP bullet at L67 that claims '6 read-only intelligence tools' and lists exactly 6 -> 11 tools (same lie fixed in CONTEXT.md P3-T1; the README copy was previously uncovered — gap GAP-02). (c) remove the false 'also kept in sync' foundation-docs claim (~L443). (d) remove the plugin roadmap bullet (~L725, plugin system deleted in P2 3bbd97a). Success: baseline line uses the correct valid_edge_count metric; MCP tool count = 11; no plugin/foundation-sync falsehoods.",
+          "touches": [
+            "README.md"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "guide-to-coderef-core.md: remove imports of deleted buildGraph/saveGraph/GraphError and the entire error-handling chapter built on deleted src/errors/. Success: no reference to deleted symbols; query examples use the canonical-graph surface.",
+          "touches": [
+            "guide-to-coderef-core.md"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "RUN",
+          "description": "Regenerate coderef/foundation-docs/* from the current codebase (documents deleted AnalyzerService/QueryExecutor as public API with inverted semantics). If a generator exists, run it; else hand-correct to canonical-graph query surface. Success: foundation-docs describe only shipped exports with correct direction semantics.",
+          "touches": [
+            "coderef/foundation-docs"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "DELETE",
+          "description": "examples/plugins/: delete or tombstone (plugin system removed in P2 3bbd97a). Success: directory removed or carries a tombstone README pointing at git history.",
+          "touches": [
+            "examples/plugins"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "CHECK",
+          "description": "Reconcile the two open stubs carrying now-unsatisfiable analyzer-service.ts constraints (supersede or annotate against deleted code \u2014 do NOT attempt to satisfy). Success: both stubs annotated/superseded with a pointer to the P1 deletion (4443c6c).",
+          "touches": []
+        },
+        {
+          "id": "P1-T8",
+          "verb": "COMMIT",
+          "description": "Commit CODEREF-CORE doc changes by EXPLICIT path (main-only; never git add -A). Success: docs/CLI.md, README.md, guide-to-coderef-core.md, coderef/foundation-docs/*, examples/plugins removal committed on main. HARD STOP after for operator review before ASSISTANT-repo edits.",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover post-remediation-reality-sync@quick"
+        ],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "EDIT",
+          "description": "ASSISTANT SKILLS/CORE/rag-index + rag-search + rag-status SKILL.md: fix sqlite-default lie (json is canonical; sqlite is deprecated alias), correct artifact path, remove invalid '--provider custom' recommendation. Success: skill docs match shared cli-args reality (--store json, --flag=value, ollama-local default).",
+          "touches": [
+            "SKILLS/CORE/rag-index/SKILL.md",
+            "SKILLS/CORE/rag-search/SKILL.md",
+            "SKILLS/CORE/rag-status/SKILL.md"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "EDIT",
+          "description": "ASSISTANT SKILLS/CORE/coderef-pipeline + coderef-watch + coderef-rag-server SKILL.md: the documented entrypoints DROP the 'coderef-' bin prefix (docs say dist/src/cli/pipeline.js, watch.js, rag-server.js; real bins are coderef-pipeline.js, coderef-watch.js, coderef-rag-server.js — verified against dist/src/cli listing, gap GAP-03). Add the prefix on each 'Absolute entrypoint' + 'Entrypoint' line (2 per file). NOTE: coderef-scan is the EXCEPTION — it genuinely compiles to unprefixed scan.js, so do NOT prefix it (see P2-T3). Also fix any fictional flags. Success: every documented entrypoint resolves to a real dist bin; scan stays unprefixed; no fictional flags.",
+          "touches": [
+            "SKILLS/CORE/coderef-pipeline/SKILL.md",
+            "SKILLS/CORE/coderef-watch/SKILL.md",
+            "SKILLS/CORE/coderef-rag-server/SKILL.md"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "CHECK",
+          "description": "VERIFY-ONLY regression guard (gap GAP-04): the /discover gaps pass confirmed SKILLS/CORE/coderef-scan/SKILL.md is ALREADY correct — it uses a POSITIONAL <project_path> (no --project-dir) and the unprefixed scan.js bin. Expect 0 edits. Grep for the stale forms '--project-dir' and 'coderef-scan.js'; if either reappears, correct it, otherwise pass clean. A no-op here is SUCCESS, not a failure. Success: neither stale form present (or corrected if regressed).",
+          "touches": [
+            "SKILLS/CORE/coderef-scan/SKILL.md"
+          ]
+        },
+        {
+          "id": "P2-T4",
+          "verb": "COMMIT",
+          "description": "Commit ASSISTANT skill changes by EXPLICIT path in the ASSISTANT repo (main-only). Success: all six CORE skill SKILL.md files committed on ASSISTANT main. HARD STOP after for operator review.",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 3,
+      "name": "Phase 3",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P3-T1",
+          "verb": "EDIT",
+          "description": "ASSISTANT PROJECT-CONTEXT/CODEREF-CORE/CONTEXT.md (auto-loaded every session \u2014 highest value): fix ~10 stale claims \u2014 SQLite default -> json store, '--type calls' -> canonical query types, '6 MCP tools' -> 11 tools, remove phantom src/rag/ dir, refresh baselines to 2411/257 + 29123 edges. Success: no claim contradicts the shipped 4cd33af reality.",
+          "touches": [
+            "PROJECT-CONTEXT/CODEREF-CORE/CONTEXT.md"
+          ]
+        },
+        {
+          "id": "P3-T2",
+          "verb": "COMMIT",
+          "description": "Commit CONTEXT.md by EXPLICIT path in the ASSISTANT repo (main-only). Success: CONTEXT.md committed on ASSISTANT main. HARD STOP after for operator review before the reindex.",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 4,
+      "name": "Phase 4",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P4-T1",
+          "verb": "CHECK",
+          "description": "Confirm ollama daemon reachable + OPENAI_API_KEY absent from the process (strip if the inherited ghost is present) so the reindex resolves to ollama 768-dim. Success: rag-status/provider probe shows ollama; no cloud call.",
+          "touches": [
+            ".coderef/rag-index.json"
+          ]
+        },
+        {
+          "id": "P4-T2",
+          "verb": "RUN",
+          "description": "Run incremental RAG reindex (ollama-local) to clear the 668 deleted-module refs from the 2026-06-12 vector index. Incremental path also exercises the P0 incremental-truth fix (deleted chunks actually removed). Success: rag-status shows fresh index, 0 refs to src/plugins/analyzer-service/sqlite-store/query-executor/llm-enricher/src-errors/coderef-search.",
+          "touches": [
+            ".coderef/rag-index.json"
+          ]
+        },
+        {
+          "id": "P4-T3",
+          "verb": "TEST",
+          "description": "Live rag_search smoke against the reindexed store: query a known symbol (e.g. deduplicateElements) and confirm the hit resolves to the ACTUAL file:line (scanner.ts:648), not a drifted/nonexistent path. Success: hits point at real, current locations.",
+          "touches": [
+            ".coderef/rag-index.json"
+          ]
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 5,
+      "name": "Phase 5",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P5-T1",
+          "verb": "RUN",
+          "description": "Restore CODEREF-CORE/.mcp.json from git history (git checkout -- .mcp.json). This re-establishes the project-local MCP registration with --project-dir, eliminating the fallback to the global ~/.claude.json entry that resolves .coderef/ from session cwd. Success: .mcp.json present with a --project-dir-bound coderef-core server entry.",
+          "touches": [
+            ".mcp.json"
+          ]
+        },
+        {
+          "id": "P5-T2",
+          "verb": "CHECK",
+          "description": "Verify MCP server picks up the restored .mcp.json (11 tools, project-dir-bound) and that .coderef/ resolves to CODEREF-CORE regardless of session cwd. Success: codebase_summary returns the 2411-element baseline from any cwd.",
+          "touches": [
+            ".mcp.json"
+          ]
+        },
+        {
+          "id": "P5-T3",
+          "verb": "COMMIT",
+          "description": "Commit .mcp.json restore + all WO artifacts by EXPLICIT path in CODEREF-CORE (main-only). Success: .mcp.json + coderef/workorder/post-remediation-reality-sync/* committed on main. Final HARD STOP -> hand off to /close-workorder.",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      }
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 3,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 4,
+      "approved": false,
+      "reason": "strict phase gate"
+    },
+    {
+      "phase": 5,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [
+    {"id": "GAP-01", "applied": true, "severity": "critical", "task": "P1-T3", "description": "Wrong edge-baseline metric. Original P1-T3 prescribed replacing the README baseline with '29123 edges' (statistics.edgeCount), but README:69 uses valid_edge_count (=3464 stale); reality anchor is valid_edge_count=5154. Prescribing 29123 would inject a NEW falsehood by conflating two edge metrics. RESOLUTION: P1-T3 rewritten to replace in-metric (valid_edge_count -> 5154 + current header_missing_count) with an explicit DO-NOT-substitute-edgeCount note. found_by=/discover gaps@medium 2026-07-03T01:27Z"},
+    {"id": "GAP-02", "applied": true, "severity": "critical", "task": "P1-T3", "description": "Missed stale claim. The '6 read-only intelligence tools' lie (actual: 11) lives in README.md:67, not only CONTEXT.md. Plan originally fixed it only in P3-T1 (CONTEXT.md); the README copy was uncovered. RESOLUTION: added the README 6->11 tools fix as sub-item (b) of P1-T3. found_by=/discover gaps@medium 2026-07-03T01:27Z"},
+    {"id": "GAP-03", "applied": true, "severity": "warning", "task": "P2-T2", "description": "Fix-direction imprecise. Skills point at dist/src/cli/pipeline.js|watch.js|rag-server.js; real bins are coderef-PREFIXED (coderef-pipeline.js etc.) per the dist/src/cli listing. Not phantom paths — a dropped prefix. coderef-scan is the exception (genuinely unprefixed scan.js). RESOLUTION: P2-T2 rewritten to add the coderef- prefix on each entrypoint line and note the scan exception. found_by=/discover gaps@medium 2026-07-03T01:27Z"},
+    {"id": "GAP-04", "applied": true, "severity": "warning", "task": "P2-T3", "description": "No-op task. coderef-scan/SKILL.md already uses positional <project_path> + unprefixed scan.js; neither stale form (--project-dir, coderef-scan.js) is present, so the original EDIT task had nothing to change and a clean pass could read as a failure. RESOLUTION: P2-T3 verb changed EDIT->CHECK (verify-only regression guard); a no-op is now explicit success. found_by=/discover gaps@medium 2026-07-03T01:27Z"}
+  ],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260703T012111Z",
+  "plan_type_decided_by": "create-workorder@2.15.2",
+  "workorder_id": "WO-POST-REMEDIATION-REALITY-SYNC-001",
+  "feature_name": "post-remediation-reality-sync",
+  "created": "2026-07-03T01:20:15Z",
+  "plan_type_rationale": "Stub category=fix -> strict; correctness drift across two repos + two runtime artifacts; per-phase hard stops for review of each surface.",
+  "workorder_hooks": {
+    "post_plan": [
+      "/discover post-remediation-reality-sync@quick --output-dest=stub:WO-POST-REMEDIATION-REALITY-SYNC-001"
+    ],
+    "post_execute": [
+      "/discover post-remediation-reality-sync post-execute@quick --output-dest=stub:WO-POST-REMEDIATION-REALITY-SYNC-001"
+    ],
+    "plan_gaps": [
+      "/discover post-remediation-reality-sync gap-sites GAP-01..04@medium --output-dest=stub:WO-POST-REMEDIATION-REALITY-SYNC-001"
+    ]
+  }
+}

@@ -1,0 +1,63 @@
+{
+  "workorder_id": "WO-POST-REMEDIATION-REALITY-SYNC-001",
+  "feature_name": "post-remediation-reality-sync",
+  "analysis_authored_at": "2026-07-03T01:20:15Z",
+  "blast_radius": {
+    "files_modified": [
+      "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/docs/CLI.md",
+      "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/README.md",
+      "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/guide-to-coderef-core.md",
+      "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/foundation-docs/*",
+      "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/CORE/rag-index/SKILL.md",
+      "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/CORE/rag-search/SKILL.md",
+      "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/CORE/rag-status/SKILL.md",
+      "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/CORE/coderef-pipeline/SKILL.md",
+      "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/CORE/coderef-watch/SKILL.md",
+      "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/CORE/coderef-rag-server/SKILL.md",
+      "C:/Users/willh/Desktop/CODEREF/ASSISTANT/SKILLS/CORE/coderef-scan/SKILL.md",
+      "C:/Users/willh/Desktop/CODEREF/ASSISTANT/PROJECT-CONTEXT/CODEREF-CORE/CONTEXT.md"
+    ],
+    "files_created": [
+      "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/.mcp.json (restore from git history)"
+    ],
+    "files_deleted_or_tombstoned": [
+      "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/examples/plugins/ (delete or tombstone — plugin system removed in P2 3bbd97a)"
+    ],
+    "runtime_artifacts": [
+      ".coderef/rag-index.json + .coderef/coderef-vectors.json (reindex — 2026-06-12, 668 deleted-module refs)"
+    ],
+    "downstream_consumers": [
+      "Every CODEREF-CORE agent session (auto-loads CONTEXT.md — the highest-read surface)",
+      "Any operator/agent following rag-index/rag-search/rag-status/coderef-scan skill docs (currently mis-documented CLI interfaces fail)",
+      "MCP rag_search tool (reads the stale vector index — returns hits at nonexistent files until reindex)",
+      "CODEREF-CORE MCP registration (falls back to global ~/.claude.json without .mcp.json)"
+    ]
+  },
+  "risks": [
+    {"id": "RISK-01", "title": "Doc edits drift again as code evolves", "likelihood": "medium", "impact": "low", "mitigation": "Prefer regenerating foundation-docs from the generator over hand-editing; cite the close commit (4cd33af) as the reality anchor so future audits have a fixed reference."},
+    {"id": "RISK-02", "title": "RAG reindex is long-running (~9.7h full)", "likelihood": "high", "impact": "medium", "mitigation": "Use incremental reindex (exercises P0 incremental-truth fix); run in a dedicated phase with a hard stop before + after so the operator controls when the multi-hour job runs. Ollama-local only."},
+    {"id": "RISK-03", "title": "Editing ASSISTANT canonical skill files can trip semantic-validator substring false-positive (openai/anthropic) — ISS-002 5th recurrence in the parent WO", "likelihood": "medium", "impact": "low", "mitigation": "Override-with-evidence per established precedent (STUB-6MM7W2); do not re-mint."},
+    {"id": "RISK-04", "title": "Cross-repo commit confusion (two repos, main-only, explicit-path)", "likelihood": "medium", "impact": "medium", "mitigation": "Commit each repo separately by explicit path; never git add -A; CODEREF-CORE gets docs + .mcp.json + WO artifacts, ASSISTANT gets skills + CONTEXT.md."},
+    {"id": "RISK-05", "title": "Two open stubs carry now-unsatisfiable analyzer-service.ts constraints", "likelihood": "low", "impact": "low", "mitigation": "Reconcile (supersede or annotate) rather than attempt to satisfy a constraint against deleted code."}
+  ],
+  "candidates": [
+    "docs/CLI.md", "README.md", "guide-to-coderef-core.md", "coderef/foundation-docs/*", "examples/plugins/",
+    "SKILLS/CORE/rag-index/SKILL.md", "SKILLS/CORE/rag-search/SKILL.md", "SKILLS/CORE/rag-status/SKILL.md",
+    "SKILLS/CORE/coderef-pipeline/SKILL.md", "SKILLS/CORE/coderef-watch/SKILL.md", "SKILLS/CORE/coderef-rag-server/SKILL.md",
+    "SKILLS/CORE/coderef-scan/SKILL.md", "PROJECT-CONTEXT/CODEREF-CORE/CONTEXT.md",
+    ".mcp.json", ".coderef/rag-index.json"
+  ],
+  "dependencies": [
+    "coderef/workorder/repo-review-2026-07-remediation/post-close-verification-2026-07-02.txt (the reality anchor — enumerates every stale claim)",
+    "close commit 4cd33af (WO-REPO-REVIEW-2026-07-REMEDIATION-001) + phase commits 981173b/4443c6c/3bbd97a",
+    "rag-index / rag-status CLI bins (for the reindex phase; ollama-local)",
+    "coderef/foundation-docs generator (for foundation-docs regeneration, if present)",
+    "git history (for .mcp.json restore via git checkout --)"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {"id": "DR-01", "decision": "Fold RAG reindex + .mcp.json restore INTO this WO (operator chose scope=everything)", "rationale": "Operator explicitly selected 'Everything' — one coherent reality-sync unit rather than three separate follow-ups."},
+    {"id": "DR-02", "decision": "Plan-type strict (operator choice, matches fix-category default)", "rationale": "Per-phase hard stops let the operator review each surface (CORE docs, ASSISTANT skills, CONTEXT.md, reindex, .mcp.json) before the next; the multi-hour reindex especially wants a gate."},
+    {"id": "DR-03", "decision": "Regenerate foundation-docs rather than hand-patch", "rationale": "Foundation-docs are generator-produced; hand-editing re-introduces drift. Regeneration from current code is the durable fix."}
+  ]
+}

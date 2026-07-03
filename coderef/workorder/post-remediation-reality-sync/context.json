@@ -1,0 +1,59 @@
+{
+  "workorder_id": "WO-POST-REMEDIATION-REALITY-SYNC-001",
+  "feature_name": "post-remediation-reality-sync",
+  "created": "2026-07-03T01:20:15Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "parent_stub_id": "STUB-GSDZ7X",
+  "intake": {
+    "trigger": "operator /create-workorder --from-stub=STUB-GSDZ7X (post-close reality-sync, decided scope=everything, plan-type=strict)",
+    "user_request": "Sync all human- and agent-facing surfaces (docs, skills, CONTEXT.md) plus two runtime artifacts (RAG reindex, .mcp.json restore) to the shipped WO-REPO-REVIEW-2026-07-REMEDIATION-001 reality (close 4cd33af). Source: coderef/workorder/repo-review-2026-07-remediation/post-close-verification-2026-07-02.txt"
+  },
+  "classification": {
+    "plan_type": "strict",
+    "plan_type_rationale": "Stub category=fix maps to strict; correctness drift across two repos (docs/skills/CONTEXT that now misrepresent shipped reality) plus two runtime artifacts (stale RAG vector index, missing .mcp.json). Strict gives full .coderef enrichment + per-phase hard stops so each surface is reviewed before the next.",
+    "plan_type_decided_by": "create-workorder@2.15.2",
+    "discovery_ref": "planning-discovery-20260703T012101Z",
+    "discovery": {
+      "candidates_count": 60,
+      "blast_radius": 0,
+      "public_api_hits": 0,
+      "hotspot_hits": 0,
+      "foundation_anchors": 0,
+      "call_chain_hits": 0,
+      "warnings": ["planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped (foundation docs live at coderef/foundation-docs/, not docs/foundation/)"],
+      "summary_ref": "planning-discovery-20260703T012101Z",
+      "note": "0 public-API hits is correct: this WO touches docs, skills, config, and runtime artifacts — not code element surfaces. Blast radius is documentation/agent-context truthfulness, not compiled behavior."
+    }
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "CODEREF-CORE docs: docs/CLI.md (remove deleted --no-enrich flag from semantic-integration examples), README.md (fix stale edge baseline ~L67, remove false 'foundation docs kept in sync' claim ~L443, remove plugin roadmap bullet ~L725), guide-to-coderef-core.md (remove buildGraph/saveGraph/GraphError imports + src/errors error-handling chapter), coderef/foundation-docs/* (regenerate — currently documents deleted AnalyzerService/QueryExecutor as public API with inverted semantics), examples/plugins/ (delete or tombstone)",
+      "ASSISTANT skills (canonical files, NOT the ~/.claude/skills stubs which are already clean): CORE/rag-index + rag-search + rag-status (sqlite-default lie, wrong artifact path, invalid '--provider custom' recommendation), coderef-pipeline + coderef-watch + coderef-rag-server (dist entrypoints that don't exist + fictional flags), coderef-scan (positional path not --project-dir; bin compiles to scan.js not coderef-scan.js)",
+      "ASSISTANT PROJECT-CONTEXT/CODEREF-CORE/CONTEXT.md (highest value — auto-loaded into every CODEREF-CORE session): ~10 stale claims (SQLite default, '--type calls', '6 MCP tools' now 11, phantom src/rag/ dir)",
+      "RAG reindex: vector index dated 2026-06-12 carries 668 refs to deleted modules — reindex (incremental recommended; also exercises the P0 incremental-truth fix)",
+      "Restore CODEREF-CORE/.mcp.json (deleted from working tree; forces fallback to global ~/.claude.json entry with no --project-dir -> silent wrong-project .coderef/ resolution hazard)",
+      "Two open stubs carrying now-unsatisfiable analyzer-service.ts constraints (reconcile or supersede)"
+    ],
+    "out_of_scope": [
+      "MCP server code + dist (verified clean: 11 tools, imports nothing deleted, live-verified — no change needed)",
+      "~/.claude/skills stub wrappers (already clean; fixed for free by the canonical-file edits they point at)",
+      "The working-tree deletion ruling for coderef/ARCHIVED/** + coderef/archived/** (separate operator decision; only .mcp.json restore is folded in here)",
+      "Re-running the full P0/P1/P2 remediation (already shipped + verified; this WO only documents/re-syncs it)",
+      "Closing WO-REPO-REVIEW-2026-07-REMEDIATION-001 --archive (separate operator-gated action)"
+    ]
+  },
+  "constraints": [
+    "LLM/embedding work is Ollama LOCAL-ONLY: no cloud API keys in this environment (operator directive 2026-07-02). Any reindex uses ollama (768-dim); doc/skill text must not present OpenAI/Anthropic as required defaults.",
+    "Commit on main by EXPLICIT path (main-only git model; never git add -A). CODEREF-CORE and ASSISTANT are separate repos — commit each by path in its own repo.",
+    "Do NOT bypass close-workorder hard gates (no --force; SKIP_COMMIT_CONTENT_CHECK forbidden).",
+    "This WO spans two repos (CODEREF-CORE + ASSISTANT). Doc/skill edits land in their respective repos; the WO artifacts + .mcp.json live in CODEREF-CORE."
+  ]
+}

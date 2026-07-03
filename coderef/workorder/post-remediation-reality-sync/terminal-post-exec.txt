@@ -1,0 +1,85 @@
+================================================================
+  WORKORDER: WO-POST-REMEDIATION-REALITY-SYNC-001
+  Feature:   post-remediation-reality-sync
+  Plan type: STRICT (per-phase hard stop)
+  Parent stub: STUB-GSDZ7X
+  Session:   SES-post-remediation-reality-sync
+================================================================
+
+PHASE 5 of 5 COMPLETE  —  CODEREF-CORE .mcp.json restore + WO close-out
+----------------------------------------------------------------
+  Repo:    CODEREF-CORE (separate repo from ASSISTANT)
+  Commit:  {P5_COMMIT}
+  Verdict: PASS
+  Tasks:   3/3
+
+  [x] P5-T1 RUN     git checkout -- .mcp.json  (restore project-local MCP registration)
+                      - .mcp.json was tracked-but-deleted in the working tree (' D',
+                        last committed ef68c3c). Restored clean to HEAD.
+                      - Restored entry: mcpServers.coderef-core -> node
+                        dist/src/cli/coderef-mcp-server.js --project-dir
+                        C:/Users/willh/Desktop/CODEREF/CODEREF-CORE (ABSOLUTE path).
+                      - Re-establishes the project-local registration; eliminates the
+                        fallback to the global ~/.claude.json entry that resolved
+                        .coderef/ from session cwd.
+  [x] P5-T2 CHECK   MCP server picks up restored .mcp.json (11 tools, project-dir-bound)
+                      - Verified by driving the coderef-mcp-server binary over stdio
+                        EXACTLY as .mcp.json invokes it (--project-dir <abs CODEREF-CORE>)
+                        from a FOREIGN cwd (C:/Users/willh/Desktop) to prove
+                        cwd-independence. The live in-session MCP client does not
+                        hot-reload .mcp.json mid-session; equivalence proven by direct
+                        binary invocation (config takes effect on next client start).
+                      - RESULT: banner 'project: ...CODEREF-CORE (11 read-only tools)';
+                        tools/list = 11 exactly (codebase_summary, cycles, diff_impact,
+                        find_element, hotspots, impact_of, rag_search, validation_status,
+                        what_calls, what_exports, what_imports); codebase_summary returned
+                        project_dir=CODEREF-CORE, total_elements=2411, graph 2771 nodes /
+                        29123 edges — MATCHES reality anchor (close 4cd33af). Baseline
+                        resolves from any cwd via the --project-dir binding.
+  [x] P5-T3 COMMIT  .mcp.json restore + all WO artifacts by EXPLICIT path (main-only)
+                      - Staged: .mcp.json + coderef/workorder/post-remediation-reality-sync/
+                        {analysis,communication,context,plan}.json + terminal-post-exec.txt.
+                      - .coderef/ artifacts (reindex vectors, index, graph) correctly
+                        EXCLUDED — gitignored, operational not committed.
+                      - Committed on main by explicit path (no git add -A). Pushed.
+
+REALITY ANCHOR RECONFIRMED (close 4cd33af, 2026-07-02):
+  2411 elements / 257 files  |  graph 2771 nodes / 29123 edges  |  11 MCP tools
+  json vector store (sqlite = deprecated alias)  |  package v2.0.0
+
+WORKORDER SUMMARY (all 5 phases, this session):
+  Phase 1  CODEREF-CORE docs        commit c9f844c   PASS  (8 tasks: CLI.md, README, guide,
+                                                            foundation-docs, examples/plugins)
+  Phase 2  ASSISTANT CORE skills    commit e856fde8  PASS  (6 SKILL.md + skill.json x6 +
+                                                            wrappers + TRACKING/skills.json)
+  Phase 3  ASSISTANT CONTEXT.md     commit c8d2ef83  PASS  (~10 stale claims synced)
+  Phase 4  CODEREF-CORE RAG reindex (runtime)        PASS  (178->0 stale refs, ollama 768-dim,
+                                                            dedup->scanner.ts:648, no commit)
+  Phase 5  CODEREF-CORE .mcp.json   commit {P5_COMMIT} PASS  (restore + WO artifacts)
+
+GATES / DISCIPLINE:
+  - MAIN-ONLY + commit-by-path honored every phase; never git add -A.
+  - Two repos kept separate: P1/P4/P5 -> CODEREF-CORE; P2/P3 -> ASSISTANT.
+  - Ollama-local-only honored in P4 (OPENAI_API_KEY ghost stripped; zero cloud calls).
+  - No forbidden bypass anywhere (SKIP_COMMIT_CONTENT_CHECK not used; no --force).
+  - 6 operator rulings folded as ADJ-* (P1-T4, P1-T5, P2-T2, P2-T4) + 4 pre-exec gaps
+    (GAP-01..04) — all recorded in decisions_log / plan_adjustments.
+
+FOLLOW-UP FLAGGED (out of scope — carry to /close-workorder triage):
+  - graph.json still lists 3 deleted examples/plugins files (P4 reindex dropped their
+    chunks but a fresh populate-coderef is needed to clean the graph nodes).
+  - rag-vectors.sqlite/ directory residue in .coderef/ (deprecated sqlite path; cosmetic).
+  - Working-tree deletion ruling still open for coderef/ARCHIVED/** + coderef/archived/**
+    (pre-existing, unrelated to this WO).
+
+================================================================
+  STRICT HARD STOP — Phase 5 (FINAL) landed in CODEREF-CORE.
+  All 5 phases complete. .mcp.json restored + project-dir-bound (11 tools, 2411
+  baseline from any cwd). WO artifacts committed on main + pushed.
+
+  This is the terminal phase — control returns to the operator for close-out.
+  The full close-out (tracking ledger, session log, active-work cleanup, foundation-
+  docs gate, final registry sync) is /close-workorder's job.
+
+  NEXT: /close-workorder WO-POST-REMEDIATION-REALITY-SYNC-001
+================================================================
