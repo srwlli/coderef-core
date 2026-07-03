@@ -80,6 +80,9 @@ const FIXTURE_GRAPH: ExportedGraph = {
     {
       id: 'e1', sourceId: '@Fn/src/a.ts#alpha:5', targetId: '@Fn/src/util.ts#helper:10',
       relationship: 'call', resolutionStatus: 'resolved',
+      // P3-T4: rich resolved-call evidence — what_calls passes calleeName/
+      // receiverText/scopePath through (previously dropped).
+      evidence: { kind: 'resolved-call', calleeName: 'helper', receiverText: 'utils', scopePath: 'alpha' } as any,
       sourceLocation: { file: 'src/a.ts', line: 6 },
       source: '@Fn/src/a.ts#alpha:5', target: '@Fn/src/util.ts#helper:10', type: 'call',
     },
@@ -223,6 +226,18 @@ const FIXTURE_GRAPH: ExportedGraph = {
       sourceLocation: { file: 'src/dia.ts', line: 13 },
       source: '@Fn/src/dia.ts#dbot:4', target: 'left-pad', type: 'import',
     },
+    // P3 (WO-AGENT-NATIVE-CAPABILITY-GAPS-001): a type-only import edge.
+    // resolutionStatus='typeOnly', module-grain source, targetId OMITTED — the
+    // engine's real shape. specifier basename 'util' matches helper's file
+    // (src/util.ts), so find_all_references surfaces it as a NON-TRAVERSABLE
+    // type_reference. It is NOT in the unresolved+ambiguous default set.
+    {
+      id: 'to1', sourceId: '@File/src/b.ts',
+      relationship: 'import', resolutionStatus: 'typeOnly', reason: 'type_only_import',
+      evidence: { kind: 'unresolved-import', originSpecifier: './util.js', reason: 'type_only_import' } as any,
+      sourceLocation: { file: 'src/b.ts', line: 2 },
+      source: '@File/src/b.ts', target: '', type: 'import',
+    },
   ],
   statistics: { nodeCount: 11, edgeCount: 5, edgesByType: { call: 4, import: 1 }, densityRatio: 0.04 },
 };
@@ -270,6 +285,19 @@ beforeAll(() => {
   fs.writeFileSync(path.join(coderefDir, 'graph.json'), JSON.stringify(FIXTURE_GRAPH));
   fs.writeFileSync(path.join(coderefDir, 'index.json'), JSON.stringify(FIXTURE_INDEX));
   fs.writeFileSync(path.join(coderefDir, 'validation-report.json'), JSON.stringify(FIXTURE_REPORT));
+  // P3: a real source file so source_of has bytes to slice. helper is at
+  // src/util.ts line 10 (per FIXTURE_INDEX); line 10 carries a marker string
+  // the source_of test asserts on.
+  const utilSrc = [
+    'export interface Helper {}',        // line 1
+    '', '', '', '', '', '', '', '',      // lines 2-9
+    'export function helper() {',         // line 10  <- helper start
+    '  return HELPER_MARKER_LINE_11;',    // line 11
+    '}',                                  // line 12
+    '// trailing',                        // line 13
+  ].join('\n');
+  fs.mkdirSync(path.join(fixtureDir, 'src'), { recursive: true });
+  fs.writeFileSync(path.join(fixtureDir, 'src', 'util.ts'), utilSrc);
   handlers = buildToolHandlers(fixtureDir);
 });
 
@@ -808,5 +836,113 @@ describe('unresolved_edges', () => {
     expect(breakdown.unresolved).toBe(report.unresolved_count);
     expect(breakdown.ambiguous).toBe(report.ambiguous_count);
     expect(breakdown.external ?? 0).toBe(report.external_count);
+  });
+});
+
+// ---- source_of (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P3) ---------------------------
+
+describe('source_of', () => {
+  it('returns the source slice from disk for a known element (no RAG)', () => {
+    const r = handlers.source_of({ element: 'helper' }) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.name).toBe('helper');
+    expect(r.file).toBe('src/util.ts');
+    expect(r.start_line).toBe(10);
+    // the slice begins at the element's start line and includes its body.
+    expect(r.source).toContain('export function helper() {');
+    expect(r.source).toContain('HELPER_MARKER_LINE_11');
+    // it must NOT include the interface at line 1 (window starts at line 10).
+    expect(r.source).not.toContain('export interface Helper');
+  });
+
+  it('honors the context window and flags char truncation', () => {
+    const small = handlers.source_of({ element: 'helper', context: 2 }) as any;
+    expect(small.lines_returned).toBeLessThanOrEqual(2);
+    const clipped = handlers.source_of({ element: 'helper', max_chars: 10 }) as any;
+    expect(clipped.char_truncated).toBe(true);
+    expect(clipped.source.length).toBeLessThanOrEqual(10);
+  });
+
+  it('resolves by exact codeRefId', () => {
+    const r = handlers.source_of({ element: '@Fn/src/util.ts#helper:10' }) as any;
+    expect(r.name).toBe('helper');
+    expect(r.source).toContain('HELPER_MARKER_LINE_11');
+  });
+
+  it('returns element_not_found for an unknown element', () => {
+    const r = handlers.source_of({ element: 'no-such-symbol-anywhere' }) as any;
+    expect(r.error).toBe('element_not_found');
+  });
+
+  it('errors cleanly (source_unavailable) when the file is gone', () => {
+    // alpha resolves in the index but src/a.ts was never written to the fixture.
+    const r = handlers.source_of({ element: 'alpha' }) as any;
+    expect(r.error).toBe('source_unavailable');
+    expect(r.file).toBe('src/a.ts');
+  });
+});
+
+// ---- find_all_references (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P3) ------------------
+
+describe('find_all_references', () => {
+  it('unions resolved call-sites + import-sites for a symbol', () => {
+    const r = handlers.find_all_references({ element: 'helper' }) as any;
+    expect(r.error).toBeUndefined();
+    // helper is called by alpha (e1) + beta (e2): 2 call-sites. No inbound
+    // resolved import edges target helper directly.
+    expect(r.call_site_count).toBe(2);
+    const callerNames = r.call_sites.map((c: any) => c.name).sort();
+    expect(callerNames).toEqual(['alpha', 'beta']);
+  });
+
+  it('surfaces type-only references as additive + non-traversable', () => {
+    const r = handlers.find_all_references({ element: 'helper' }) as any;
+    // to1 is a typeOnly import with specifier './util.js' — basename 'util'
+    // matches helper's file src/util.ts, so it surfaces as a type_reference.
+    expect(r.type_reference_count).toBe(1);
+    expect(r.type_references[0].traversable).toBe(false);
+    expect(r.type_references[0].specifier).toBe('./util.js');
+    // total unions all three categories.
+    expect(r.total_references).toBe(r.call_site_count + r.import_site_count + r.type_reference_count);
+    expect(r.note).toContain('typeOnly');
+  });
+
+  it('does not reclassify typeOnly — validation counts + resolved tools unchanged', () => {
+    // The typeOnly edge must remain invisible to the resolved-only tools and
+    // must not appear in unresolved_edges' unresolved/ambiguous default set
+    // (RISK-06: additive, never reclassified).
+    const wc = handlers.what_calls({ element: 'helper' }) as any;
+    expect(wc.total).toBe(2); // still just the 2 resolved calls
+    const ue = handlers.unresolved_edges({}) as any;
+    expect(ue.status_breakdown.typeOnly).toBeUndefined(); // not in the non-resolved set
+  });
+
+  it('returns element_not_found for an unknown symbol', () => {
+    const r = handlers.find_all_references({ element: 'no-such-symbol-anywhere' }) as any;
+    expect(r.error).toBe('element_not_found');
+  });
+});
+
+// ---- what_calls evidence passthrough (P3-T4) --------------------------------------
+
+describe('what_calls (P3 evidence passthrough)', () => {
+  it('passes through calleeName / receiverText / scopePath on call edges', () => {
+    const r = handlers.what_calls({ element: 'helper' }) as any;
+    // e1 (alpha -> helper) carries resolved-call evidence.
+    const fromAlpha = r.callers.find((c: any) => c.name === 'alpha');
+    expect(fromAlpha.callee).toBe('helper');
+    expect(fromAlpha.receiver).toBe('utils');
+    expect(fromAlpha.scope).toBe('alpha');
+    // the existing contract is preserved: total + at unchanged.
+    expect(r.total).toBe(2);
+    expect(fromAlpha.at).toBe('src/a.ts:6');
+  });
+
+  it('omits evidence fields on edges that carry none', () => {
+    const r = handlers.what_calls({ element: 'helper' }) as any;
+    // e2 (beta -> helper) has no evidence object — no callee/receiver/scope keys.
+    const fromBeta = r.callers.find((c: any) => c.name === 'beta');
+    expect(fromBeta.callee).toBeUndefined();
+    expect(fromBeta.receiver).toBeUndefined();
   });
 });

@@ -28,6 +28,8 @@
  *   what_this_depends_on - transitive outbound dependencies (forward BFS)
  *   path_between         - directed path(s) source->target (shortest | all)
  *   unresolved_edges     - enumerate non-resolved call/import edges + evidence
+ *   source_of            - an element's source slice from disk (no RAG)
+ *   find_all_references  - union call + import + type-only references
  *   find_element         - element lookup in .coderef/index.json
  *   codebase_summary     - totals, type distribution, header coverage, edges
  *   validation_status    - the locked 14-field validation report verbatim
@@ -305,6 +307,9 @@ export interface ToolHandlers {
     offset?: number;
     limit?: number;
   }): Record<string, unknown>;
+  // agent-native source-body + find-all-references (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P3)
+  source_of(args: { element: string; context?: number; max_chars?: number }): Record<string, unknown>;
+  find_all_references(args: { element: string; limit?: number }): Record<string, unknown>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -336,11 +341,22 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         total++;
         if (hits.length >= limit) continue;
         const source = edge.sourceId ? cache.nodeById.get(edge.sourceId) : undefined;
+        // P3-T4: pass through the rich per-edge evidence the resolver already
+        // computed and graph.json already persists (previously dropped). For a
+        // call edge that is receiverText.calleeName() at scopePath — this lets
+        // an agent see HOW the call is written without re-reading the source.
+        const ev = edge.evidence as
+          | { calleeName?: string; receiverText?: string; scopePath?: string; originSpecifier?: string }
+          | undefined;
         hits.push({
           ...(source ? nodeSummary(source) : { id: edge.sourceId }),
           at: edge.sourceLocation
             ? `${edge.sourceLocation.file}:${edge.sourceLocation.line}`
             : undefined,
+          ...(kind === 'call' && ev?.calleeName !== undefined && { callee: ev.calleeName }),
+          ...(kind === 'call' && ev?.receiverText ? { receiver: ev.receiverText } : {}),
+          ...(kind === 'call' && ev?.scopePath ? { scope: ev.scopePath } : {}),
+          ...(kind === 'import' && ev?.originSpecifier !== undefined && { specifier: ev.originSpecifier }),
         });
       }
     }
@@ -1120,6 +1136,158 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         edges,
       };
     },
+
+    source_of({ element, context, max_chars }) {
+      const index = loadIndex(projectDir, cache);
+      // Resolve the element from index.json (source-of works on the element
+      // record, which carries the authoritative file+line — 100% coverage).
+      const q = element.toLowerCase();
+      let matches = index.elements.filter(
+        e => e.codeRefId === element || e.name === element,
+      );
+      if (matches.length === 0) {
+        matches = index.elements.filter(
+          e =>
+            e.codeRefId?.toLowerCase().includes(q) ||
+            e.name?.toLowerCase().includes(q),
+        );
+      }
+      if (matches.length === 0) return notFound(element);
+      if (matches.length > 5) {
+        return {
+          error: 'ambiguous_element',
+          query: element,
+          match_count: matches.length,
+          hint: 'Narrow the query — pass a full codeRefId. Candidates below.',
+          candidates: matches.slice(0, 5).map(e => ({
+            id: e.codeRefId, name: e.name, type: e.type, file: e.file, line: e.line,
+          })),
+        };
+      }
+      const el = matches[0];
+      // index.json stores an ABSOLUTE file path for some elements and a
+      // project-relative one for others; normalize to an on-disk path.
+      const relFile = normalizeSlashes(el.file ?? '');
+      const absFile = path.isAbsolute(el.file ?? '')
+        ? (el.file as string)
+        : path.join(projectDir, relFile);
+      let fileContent: string;
+      try {
+        fileContent = fs.readFileSync(absFile, 'utf8');
+      } catch (e: any) {
+        return {
+          error: 'source_unavailable',
+          query: element,
+          file: el.file,
+          detail: String(e?.message ?? e).slice(0, 200),
+          hint: 'The element resolved but its source file could not be read (moved/deleted? re-run the pipeline).',
+        };
+      }
+      // Bounded line-window slice around the element's start line — the same
+      // approach chunk-converter uses for RAG (index.json carries a start line
+      // only, no end, so a context window is the honest, RAG-free body view).
+      const lines = fileContent.split('\n');
+      const ctx = Math.max(0, Math.min(200, context ?? 40));
+      const startLine = el.line ?? 1;
+      const lo = Math.max(0, startLine - 1);
+      const hi = Math.min(lines.length, startLine - 1 + ctx);
+      let snippet = lines.slice(lo, hi).join('\n');
+      const capChars = Math.max(1, Math.min(20000, max_chars ?? 4000));
+      let charTruncated = false;
+      if (snippet.length > capChars) {
+        snippet = snippet.slice(0, capChars);
+        charTruncated = true;
+      }
+      const lineTruncated = hi < lines.length && (hi - lo) >= ctx;
+      return {
+        element: el.codeRefId ?? el.name,
+        name: el.name,
+        type: el.type,
+        file: el.file,
+        start_line: startLine,
+        end_line: lo + (snippet.split('\n').length),
+        lines_returned: snippet.split('\n').length,
+        line_truncated: lineTruncated,
+        char_truncated: charTruncated,
+        source: snippet,
+      };
+    },
+
+    find_all_references({ element, limit }) {
+      const graph = loadGraph(projectDir, cache);
+      const cap = clampLimit(limit);
+      const { nodes: matches, byFile } = resolveNodes(element, graph);
+      if (matches.length === 0) return notFound(element);
+      if (!byFile && matches.length > 5) return ambiguous(element, matches);
+
+      const targetIds = new Set(matches.map(m => m.id));
+      const targetFiles = new Set(matches.map(m => normalizeSlashes(m.file ?? '')).filter(Boolean));
+
+      const callRefs: Array<Record<string, unknown>> = [];
+      const importRefs: Array<Record<string, unknown>> = [];
+      // Inbound RESOLVED call + import sites in one pass (the traversable refs).
+      for (const id of targetIds) {
+        for (const edge of cache.inbound.get(id) ?? []) {
+          const src = edge.sourceId ? cache.nodeById.get(edge.sourceId) : undefined;
+          const ref = {
+            ...(src ? nodeSummary(src) : { id: edge.sourceId }),
+            at: edge.sourceLocation
+              ? `${edge.sourceLocation.file}:${edge.sourceLocation.line}`
+              : undefined,
+          };
+          if (edge.relationship === 'call') callRefs.push(ref);
+          else if (edge.relationship === 'import') importRefs.push(ref);
+        }
+      }
+
+      // typeOnly imports are ADDITIVE, NON-TRAVERSABLE references (RISK-06):
+      // the engine emits them as resolutionStatus='typeOnly' edges with NO
+      // targetId (module-grain), so they never entered cache.inbound and are
+      // invisible to what_imports. We surface them here matched by the imported
+      // module resolving to the target element's file — best-effort, clearly
+      // labelled, and WITHOUT reclassifying them or touching validation counts.
+      const typeRefs: Array<Record<string, unknown>> = [];
+      if (targetFiles.size > 0) {
+        for (const edge of graph.edges) {
+          if (edge.resolutionStatus !== 'typeOnly') continue;
+          const spec = (edge.evidence as { originSpecifier?: string } | undefined)?.originSpecifier ?? '';
+          // Resolve the import specifier's basename against the target file's
+          // basename — a heuristic module match (no resolver rerun on read).
+          const specBase = normalizeSlashes(spec).replace(/\.(js|ts|jsx|tsx|mjs|cjs)$/,'').split('/').pop() ?? '';
+          if (!specBase) continue;
+          const hit = [...targetFiles].some(f => {
+            const fBase = f.replace(/\.(js|ts|jsx|tsx|mjs|cjs)$/,'').split('/').pop() ?? '';
+            return fBase === specBase;
+          });
+          if (!hit) continue;
+          typeRefs.push({
+            from: edge.sourceId,
+            specifier: spec,
+            at: edge.sourceLocation ? `${edge.sourceLocation.file}:${edge.sourceLocation.line}` : undefined,
+            traversable: false,
+          });
+        }
+      }
+
+      const total = callRefs.length + importRefs.length + typeRefs.length;
+      return {
+        element: byFile
+          ? [`(all ${matches.length} elements of) ${element}`]
+          : matches.map(m => m.id),
+        total_references: total,
+        call_site_count: callRefs.length,
+        import_site_count: importRefs.length,
+        type_reference_count: typeRefs.length,
+        note: typeRefs.length > 0
+          ? 'type_references are import-type-only edges (resolutionStatus=typeOnly): additive + non-traversable; matched heuristically by module basename. Validation counts unchanged.'
+          : undefined,
+        call_sites: callRefs.slice(0, cap),
+        import_sites: importRefs.slice(0, cap),
+        type_references: typeRefs.slice(0, cap),
+        truncated:
+          callRefs.length > cap || importRefs.length > cap || typeRefs.length > cap,
+      };
+    },
   };
 }
 
@@ -1392,10 +1560,40 @@ async function main(): Promise<void> {
       toContent(handlers.unresolved_edges({ relationship, status, file, reason, offset, limit })),
   );
 
+  // ---- source body + find-all-references (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P3) ----
+  // Give agents an element's source WITHOUT RAG, and all references (call +
+  // import + type-only) in one call. Additive: the existing tools are unchanged.
+
+  server.registerTool(
+    'source_of',
+    {
+      title: 'Source of an element',
+      description:
+        'Return an element\'s source directly from disk (no RAG/embedder), resolved by codeRefId or name via .coderef/index.json. A bounded line-window from the element\'s start line (index carries a start line only). Controls: context (lines, default 40, cap 200), max_chars (default 4000, cap 20000). Flags line_truncated / char_truncated when clipped.',
+      inputSchema: {
+        element: elementArg,
+        context: z.number().optional().describe('Lines to include from the start line (default 40, cap 200)'),
+        max_chars: z.number().optional().describe('Byte cap on the returned slice (default 4000, cap 20000)'),
+      },
+    },
+    async ({ element, context, max_chars }) => toContent(handlers.source_of({ element, context, max_chars })),
+  );
+
+  server.registerTool(
+    'find_all_references',
+    {
+      title: 'Find all references',
+      description:
+        'Union the inbound references to an element in ONE call: resolved call-sites + resolved import-sites (traversable), PLUS type-only import references (resolutionStatus=typeOnly, additive + non-traversable, matched heuristically by module basename). Does NOT reclassify type-only edges or shift validation counts. Returns per-category counts + sites.',
+      inputSchema: { element: elementArg, limit: limitArg },
+    },
+    async ({ element, limit }) => toContent(handlers.find_all_references({ element, limit })),
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (16 read-only tools)`,
+    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (18 read-only tools)`,
   );
 }
 
