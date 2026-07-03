@@ -8,7 +8,7 @@
   "parent_stub_id": null,
   "predecessor_for": null,
   "status": "plan_created",
-  "current_phase": 5,
+  "current_phase": 6,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/context.json",
@@ -116,6 +116,11 @@
       "value": "incremental_via_persisted_full_factset_merge_reresolve",
       "reason": "P5-T1 READ proved byte-identical parity requires resolve+construct over the FULL merged fact universe, not just changed-file calls against a symbol table: resolveImports needs ALL files' rawExports (a changed file importing from an unchanged file), and constructGraph emits edges for the WHOLE element set. The orchestrator's existing incremental path filters `files` to changed-only and never merges unchanged facts back (allFilesUnchanged is used only for the hit-ratio metric) — THAT is the cross-file corruption trap the hard_constraint warns about. Surfaced two architectures as a halt (persist full fact-set + merge + re-resolve VS persist symbol-table-only + splice edges). Operator ruled the FULL-FACT-SET approach: parity is STRUCTURAL (same pure-function inputs -> byte-identical output), reuses the tested resolveImports/resolveCalls/constructGraph unchanged, skips only the slow scan step. Trade: a larger persisted artifact (.coderef/incremental-facts.json holding per-file raw facts). Does NOT touch IncrementalCache drift logic (leaves WO-FIX-INCREMENTAL-CACHE-FALSE-DRIFT-001 in-progress work alone, RISK-05). No plan task added/removed; fixes the implementation approach for P5-T2/T3.",
       "at": "2026-07-03T12:35:00Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 6,
+      "at": "2026-07-03T13:00:00Z"
     }
   ],
   "phase_transitions": [
@@ -153,6 +158,13 @@
       "commit": "4a8c781",
       "verdict": "PASS",
       "at": "2026-07-03T11:11:08.891Z"
+    },
+    {
+      "phase": 6,
+      "to_status": "complete",
+      "commit": "ba8fec7",
+      "verdict": "PASS",
+      "at": "2026-07-03T19:34:33.822Z"
     }
   ],
   "plan_adjustments": [],

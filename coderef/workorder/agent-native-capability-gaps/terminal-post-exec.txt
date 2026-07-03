@@ -2,86 +2,89 @@
 WORKORDER PHASE EXECUTION COMPLETE (strict-phased — HARD STOP)
 
 WORKORDER ID: WO-AGENT-NATIVE-CAPABILITY-GAPS-001
-PHASE COMPLETED: Phase 5 of 6 — Graph-safe incremental watch (HEAVY)
-MODE: --phase=5 single-phase (per-phase hard stop; operator go required for P6)
+PHASE COMPLETED: Phase 6 of 6 — Promote Go to a real call+import+export graph (HEAVY)
+MODE: --phase=6 single-phase (per-phase hard stop; FINAL phase — WO now close-ready)
 
 DELIVERABLE:
-  Graph-safe incremental populate — re-resolve ONLY changed files WITHOUT losing
-  cross-file resolution against unchanged files. Closes the corruption trap the
-  hard_constraint warns about.
-
-  ADJ-03 (operator-ruled): P5-T1 READ proved byte-identical parity needs resolve+
-  construct over the FULL merged fact universe, not just changed-file calls
-  against a symbol table — resolveImports needs ALL files' rawExports and
-  constructGraph emits edges for the whole element set. The orchestrator's
-  existing incremental path filters `files` to changed-only and NEVER merges
-  unchanged facts back (allFilesUnchanged feeds only the hit-ratio metric) —
-  THAT is the trap. Surfaced two architectures as a halt; operator ruled the
-  full-fact-set approach (parity is STRUCTURAL: same pure-function inputs ->
-  byte-identical output; reuses the tested resolve/construct chain unchanged).
+  Go is no longer scan-only/graph-dead. Three raw-fact emitters in
+  relationship-extractor.ts feed the language-agnostic resolver, producing
+  resolved cross-file call edges, import edges, and export edges for .go files
+  — proving the graph-dead-language promotion path works end-to-end.
 
   Components:
-    - src/pipeline/symbol-table-cache.ts (NEW): persist the complete per-file
-      fact bundle to .coderef/incremental-facts.json after a full build; merge
-      changed/deleted files into it. Versioned, atomic temp+rename, plain-JSON.
-    - orchestrator: capture per-file bundles + order on a full run and persist
-      the fact set (additive — full-build output unchanged). runIncremental()
-      re-scans only changed files, SWAPS their facts into the cached full set,
-      and runs the SAME resolveImports/resolveCalls/constructGraph over the
-      merged universe (assembleAndResolve). Falls back to full when no fact set.
-    - populate: --changed-files / --deleted-files route to runIncremental.
-    - coderef-watch: opt-in --incremental passes the debounced snapshot to
-      populate --changed-files (default OFF; full pipeline stays the safe path).
-    - IncrementalCache drift logic UNTOUCHED (RISK-05).
+    - walkRawGoImports: import_declaration -> import_spec (field path =
+      interpreted_string_literal, quotes stripped; optional alias field name ->
+      namespaceImport unless _ or .). Emits RawImportFact.
+    - walkRawGoCalls: call_expression where field function is a bare identifier
+      OR a selector_expression (fields operand=receiver / field=callee), with
+      scopePath tracking through function_declaration/method_declaration.
+      Emits RawCallFact.
+    - walkRawGoExports: Go visibility model — capitalized top-level names
+      (/^[A-Z]/) on function_declaration, method_declaration, and
+      type_declaration->type_spec are named exports. Emits RawExportFact.
+    - Dispatch: case 'go' added to extractRawImports/extractRawCalls/
+      extractRawExports (Go removed from default:break). Resolver UNTOUCHED —
+      the language-family guard (STUB-M3GE4S) already isolates family 'go'
+      from js-ts and python; nothing can cross-bind.
 
 TASK CHECKLIST:
-  [x] P5-T1 READ    watch full-populate-every-flush; orchestrator incremental
-                    filter (the trap); buildSymbolTable shape; incremental-cache;
-                    prior watcher WOs -> HALT + operator ruling (ADJ-03)
-  [x] P5-T2 WRITE   symbol-table-cache.ts (persisted full fact set + merge)
-  [x] P5-T3 EDIT    orchestrator.runIncremental + populate/watch wiring
-  [x] P5-T4 TEST    +3 parity tests (the CORRECTNESS GATE, RISK-02)
-  [x] P5-T5 RUN     build exit 0; full suite 1544 passed | 26 skipped (+3);
-                    live CLI parity confirmed end-to-end
-  [x] P5-T6 COMMIT  4a8c781 by explicit path (main-only)
-  [x] P5-T7 STOP    this terminal surface
+  [x] P6-T1 READ    relationship-extractor dispatch + TS/JS emitter templates;
+                    learned authoritative Go AST node/field names by PARSING
+                    (import_spec path/name fields; selector_expression
+                    operand/field; method name = field_identifier)
+  [x] P6-T2 WRITE   walkRawGo{Imports,Calls,Exports} emitters
+  [x] P6-T3 EDIT    route case 'go' through all 3 dispatch switches
+  [x] P6-T4 TEST    __tests__/pipeline/go-graph-ground-truth.test.ts — 5 tests
+  [x] P6-T5 RUN     build exit 0; suite 1549 passed | 26 skipped (+5);
+                    live populate CLI on real Go project; self-scan anchor
+  [x] P6-T6 COMMIT  ba8fec7 by explicit path (main-only)
+  [x] P6-T7 STOP    this terminal surface
 
 COMMITS:
-  - 4a8c781: feat(agent-native-capability-gaps): phase 5 - graph-safe incremental populate (HEAVY)
-
-PUSH:
-  - 76244f1..<pending> -> origin/main (after this artifact commit)
+  - ba8fec7: feat(agent-native-capability-gaps): phase 6 - promote Go to a real
+             call+import+export graph (HEAVY)
 
 TEST RESULTS:
   - Build (tsc + tsc -p tsconfig.cli.json): clean, exit 0
-  - vitest run: 1544 passed | 26 skipped (160 files) — exit 0
-  - NEW __tests__/pipeline/incremental-parity.test.ts: 3 passed
+  - vitest run: 1549 passed | 26 skipped (161 files) — exit 0
+  - NEW go-graph-ground-truth.test.ts: 5 passed
+      1. cross-file call resolves to node-id endpoints (Run -> Helper)
+      2. import + export edges emitted (fmt import; Run/Widget exports)
+      3. unknown stdlib call (fmt.Println) = explicit unresolved fact (RISK-03)
+      4. duplicate top-level name = ambiguous with BOTH candidates
+         (live-probed FIRST, then asserted — a.go/b.go Helper)
+      5. no symbol leak across the language-family guard
 
-CORRECTNESS GATE (RISK-02 — the phase's reason for existing):
-  - A single-file edit via runIncremental yields a resolved-edge set (AND the
-    full edge signature incl. non-resolved reasons) BYTE-IDENTICAL to a full
-    rebuild — including a NEW cross-file call (extra() -> util.helper) into an
-    UNCHANGED file. Deleted-file drop + no-fact-set fallback also covered.
-  - LIVE CLI PARITY end-to-end through the watcher path: full populate persists
-    incremental-facts.json; `populate --changed-files main.ts` (re-scan only the
-    edited file) === full rebuild of the edited state; cross-file call resolved.
+LIVE PROOF (real populate CLI on a real Go project):
+  - graph.json persisted: 4 nodes / 5 edges
+  - Helper call RESOLVED cross-file: @Fn/main.go#Run:3 -> @Fn/util.go#Helper:2
+  - fmt.Println: unresolved (never guessed)
+  - import "fmt": explicit unresolved edge with originSpecifier
+  - exports: @Fn/main.go#Run:3, @Fn/util.go#Helper:2 (capitalized = exported)
 
-REALITY ANCHOR (AC-5 + AC-7):
-  - Self-scan graph intact + queryable after P5: 2437 elements / 29,984 edges;
-    validation counts stable (resolved 5258, unresolved 17145, ambiguous 2339).
-  - Additive fact-set capture did NOT perturb any of the 1541 pre-existing tests.
-  - .coderef/ (incl. incremental-facts.json) is gitignored. No cloud provider.
-    Every commit main-only by explicit path.
+REALITY ANCHOR (AC-6 + AC-7):
+  - Repo contains ZERO .go files -> anchor must be attributable-stable, and is:
+    self-scan 2446 elements / 30,112 edges (P5: 2437 / 29,984). Deltas are
+    EXACTLY the P6-authored code scanning itself: 3 walkRawGo* walker nodes in
+    relationship-extractor.ts + 5 nodes from the new test file; 0 nodes from
+    .go files. Validation counts moved only by the new source lines
+    (valid 5280, unresolved_src 5522, ambiguous_src 1186).
+  - TS/JS extraction behavior unperturbed: all 1544 pre-existing tests green.
+  - .coderef/ stays gitignored. No cloud provider. Main-only by explicit path.
 
-ACCEPTANCE CRITERIA (P5 scope):
-  [PASS] AC-5: incremental watch re-resolves only changed files against a
-               persisted full symbol/fact table, PROVEN byte-identical to a full
-               rebuild's resolved-edge set (no cross-file corruption).
-  [PASS] AC-7 (P5 portion): existing MCP tools + shapes unchanged; full vitest
+ACCEPTANCE CRITERIA (P6 scope):
+  [PASS] AC-6: Go produces resolved cross-file call edges + import/export edges
+               via raw-fact emitters through the UNCHANGED resolver; unknown
+               calls stay explicit unresolved facts; duplicates ambiguous with
+               candidates (resolver discipline holds — nothing guessed).
+  [PASS] AC-7 (P6 portion): existing MCP tools + shapes unchanged; full vitest
                green; no cloud provider; every commit main-only by explicit path.
 
-HARD STOP: Phase 5 complete — awaiting operator go for the final HEAVY Phase 6
-           (Promote Go to a real call+import+export graph via raw-fact emitters).
-REMAINING: P6 (Go graph promotion — HEAVY). After P6: WO ready for /close-workorder.
-NEXT: /execute-workorder WO-AGENT-NATIVE-CAPABILITY-GAPS-001 --phase=6
+HARD STOP: Phase 6 complete — ALL 6 PHASES COMPLETE (P1 e5b6f66, P2 0ecb4f9,
+           P3 1ff9a76, P4 106271b, P5 4a8c781, P6 ba8fec7 — all PASS).
+WO STATUS: WO-AGENT-NATIVE-CAPABILITY-GAPS-001 is COMPLETE and close-ready.
+NEXT: /close-workorder WO-AGENT-NATIVE-CAPABILITY-GAPS-001   (operator-invoked;
+      never auto-closed). Deferred follow-ups live in plan.json
+      out_of_scope_followups (cross-repo resolution, scored graph-eval,
+      rust/java/cpp promotion) + REC-P1-004/005.
 ================================================================================
