@@ -7,7 +7,11 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-GSDZ7X",
   "predecessor_for": null,
-  "status": "plan_created",
+  "status": "closed",
+  "closed_at": "2026-07-03T06:30:00Z",
+  "completed_at": "2026-07-03T06:30:00Z",
+  "closed_via": "/close-workorder",
+  "review_status": "WARNING",
   "current_phase": 5,
   "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/post-remediation-reality-sync/plan.json",
@@ -314,11 +318,43 @@
       "actor": "discover",
       "event": "plan_gaps_folded_in",
       "detail": "Pre-execution /discover gaps@medium audited all 20 tasks against current code: 16 accurate, 4 corrections applied to plan.json (GAP-01/02 critical on P1-T3, GAP-03/04 warning on P2-T2/T3). Re-validated: schema VALID + semantic-validator exit 0. No re-author needed; WO stays plan_created."
+    },
+    {
+      "at": "2026-07-03T06:30:00Z",
+      "actor": "close-workorder",
+      "event": "workorder_complete",
+      "detail": "All 5 phases closed (c9f844c, e856fde8, c8d2ef83, runtime, 6de2488/a66e2fb). Close-only path (v2.8.0 default, NOT archived). Audit verdict WARNING: standards-validate FAIL and 1 tracking FAIL (registries.json dangling archive-health.json pointer) are BOTH pre-existing repo-wide drift unrelated to this WO; the 3 rows this WO owns (workorders/stubs/sessions) passed the scoped tracking-validator clean. Operator-approved close-with-WARNING per Scope Discipline (AskUserQuestion 2026-07-03). workorders row flipped -> complete via registry_db. Session log SES-2026-07-03-POST-REMEDIATION-REALITY-SYNC.yaml written + sessions row registered. Two repos: CODEREF-CORE (P1/P4/P5) + ASSISTANT (P2/P3), each committed by explicit path on main. Plan adjustments applied: GAP-01..04 + ADJ-P1T4/P1T5/P2T2/P2T4."
     }
   ],
   "required_skills": [
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "close_metadata": {
+    "closed_at": "2026-07-03T06:30:00Z",
+    "closed_via": "/close-workorder",
+    "archived": false,
+    "archive_note": "close-only (v2.8.0 default); archive later via /close-workorder --archive to flip STUB-GSDZ7X -> closed and move to coderef/ARCHIVED/",
+    "review_status": "WARNING",
+    "audit": {
+      "phased_terminal_guard": "PASS (inert — strict plan)",
+      "cross_project": "target_project=coderef-core; WO dir + git history live in CODEREF-CORE (committed there); ASSISTANT registry row flipped for ledger",
+      "plan_completion": "5/5 phases complete, all PASS",
+      "scoped_tracking_validator": "PASS on workorders/stubs/sessions (rows this WO owns)",
+      "standards_validate": "FAIL (out-of-scope) — pre-existing repo-wide drift; operator-approved WARNING close",
+      "git_state": "both repos on main, in sync with origin (0/0), pushes verified"
+    },
+    "warnings": [
+      {"id": "W-STANDARDS", "detail": "standards-validate FAIL on pre-existing repo-wide drift (no docs/ INDEX; no Entities/Keying/Schema/Provenance data-kind standard docs; VISION.md + 40 scripts/ READMEs missing, mostly ARCHIVED trees; culture=alignment_gate_skipped). None touch this WO's authored files."},
+      {"id": "W-REGISTRIES", "detail": "tracking-validator FAIL on registries.json dangling pointer to TRACKING/archive-health.json (deliberately untracked in c44a96f2). Pre-existing; unrelated to this WO."}
+    ],
+    "follow_ups": [
+      {"status": "candidate", "detail": "Fresh populate-coderef to clean 3 stale examples/plugins nodes still listed in graph.json (Phase 4 reindex dropped their chunks but did not rebuild the graph)."},
+      {"status": "candidate", "detail": "rag-vectors.sqlite/ directory residue in .coderef/ (deprecated sqlite path; cosmetic)."},
+      {"status": "candidate", "detail": "registries.json dangling pointer to removed archive-health.json — ASSISTANT registry hygiene."},
+      {"status": "candidate", "detail": "Repo-wide standards drift (docs/ INDEX, data-kind standard docs, VISION.md, scripts/ READMEs) — separate /standards-establish work."}
+    ],
+    "kaizen": ["KZ-01KWK62F", "KZ-01KWK62Q", "KZ-01KWK45N", "KZ-01KWK6FN", "KZ-01KWK6FP"]
+  }
 }
