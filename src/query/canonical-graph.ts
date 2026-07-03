@@ -341,7 +341,7 @@ export class CanonicalGraphQuery {
   }
 
   /** All simple directed paths source->target within maxDepth (bounded DFS). */
-  allPaths(source: NodeResolution, target: NodeResolution, maxDepth = 5, maxPaths = 50): PathResult[] {
+  allPaths(source: NodeResolution, target: NodeResolution, maxDepth = 5, maxPaths = ALL_PATHS_MAX): PathResult[] {
     const targetIds = this.idSetOf(target);
     const results: PathResult[] = [];
     const stack: string[] = [];
@@ -398,6 +398,13 @@ export class CanonicalGraphQuery {
 const CALL: ReadonlySet<string> = new Set(['call']);
 const IMPORT: ReadonlySet<string> = new Set(['import']);
 const DEPENDS: ReadonlySet<string> = new Set(['call', 'import']);
+
+/**
+ * Upper bound on paths returned by allPaths() (bounded DFS). Exported as the
+ * single source of truth so callers (e.g. the MCP path_between tool) can detect
+ * when enumeration hit the cap rather than reading a capped count as complete.
+ */
+export const ALL_PATHS_MAX = 50;
 
 /**
  * Load `.coderef/graph.json` for a project and wrap it in a query engine.

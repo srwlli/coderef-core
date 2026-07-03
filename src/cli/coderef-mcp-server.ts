@@ -46,7 +46,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import type { ExportedGraph } from '../export/graph-exporter.js';
-import { CanonicalGraphQuery } from '../query/canonical-graph.js';
+import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 
 type ExportedNode = ExportedGraph['nodes'][number];
@@ -361,6 +361,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     if (!resolution.byFile && resolution.nodes.length > 5) return ambiguous(query, resolution.nodes);
 
     const neighbors = kind === 'call' ? engine.calleesOf(resolution) : engine.importsOf(resolution);
+    // NOTE on `total` semantics vs the inbound mirror (what_calls/what_imports):
+    // calleesOf/importsOf dedupe by neighbor id, so `total` here is the count of
+    // DISTINCT outbound targets. The inbound tools count EDGES (inboundByKind
+    // does total++ per edge), so a caller that invokes the target twice counts
+    // twice there. Comparing what_calls(X).total to what_this_calls(X).total is
+    // therefore edge-count vs distinct-node-count — surfaced in each tool's
+    // description so agents don't read the two as the same scale.
     const total = neighbors.length;
     const hits = neighbors.slice(0, limit).map(n => ({
       id: n.id,
@@ -442,7 +449,10 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       if (!targetRes.byFile && targetRes.nodes.length > 5) return ambiguous(target, targetRes.nodes);
 
       if (pathMode === 'all') {
-        // allPaths already caps internally (maxPaths=50); depth default 5.
+        // allPaths caps internally at ALL_PATHS_MAX (50); depth default 5.
+        // `total` therefore maxes out at ALL_PATHS_MAX — surface that boundary
+        // (internal_cap_hit) so an agent never reads a capped 50 as "exactly 50
+        // paths exist" (no silent upstream truncation).
         const depthCap = Math.max(1, Math.min(10, max_depth ?? 5));
         const results = engine.allPaths(sourceRes, targetRes, depthCap);
         return {
@@ -453,6 +463,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           total: results.length,
           returned: Math.min(cap, results.length),
           truncated: results.length > cap,
+          internal_cap_hit: results.length >= ALL_PATHS_MAX,
           paths: results.slice(0, cap).map(r => ({
             length: r.length,
             nodes: r.path.map(n => ({ id: n.id, name: n.name, type: n.type, file: n.file, line: n.line })),
@@ -1047,7 +1058,7 @@ async function main(): Promise<void> {
     {
       title: 'What calls this element',
       description:
-        'List the resolved call sites that invoke the given element (inbound call edges from .coderef/graph.json). Compact: caller id/name/file/line plus call location.',
+        'List the resolved call sites that invoke the given element (inbound call edges from .coderef/graph.json). Compact: caller id/name/file/line plus call location. `total` counts inbound EDGES (a caller invoking the target twice counts twice) — the outbound mirror what_this_calls counts DISTINCT targets.',
       inputSchema: { element: elementArg, limit: limitArg },
     },
     async ({ element, limit }) => toContent(handlers.what_calls({ element, limit })),
@@ -1058,7 +1069,7 @@ async function main(): Promise<void> {
     {
       title: 'What imports this element',
       description:
-        'List the modules/elements that import the given element (inbound resolved import edges).',
+        'List the modules/elements that import the given element (inbound resolved import edges). `total` counts inbound EDGES — the outbound mirror what_this_imports counts DISTINCT targets.',
       inputSchema: { element: elementArg, limit: limitArg },
     },
     async ({ element, limit }) => toContent(handlers.what_imports({ element, limit })),
@@ -1204,7 +1215,7 @@ async function main(): Promise<void> {
     {
       title: 'What this element calls',
       description:
-        'Outbound (forward) direction: list the resolved elements that the given element CALLS. The mirror of what_calls (which is inbound). Compact callee id/name/file/line.',
+        'Outbound (forward) direction: list the resolved elements that the given element CALLS. The mirror of what_calls (which is inbound). Compact callee id/name/file/line. `total` counts DISTINCT callees (deduped); the inbound what_calls counts edges. On a whole-file query, calls between two elements of the same file are omitted (intra-file self-references are not "what this file calls").',
       inputSchema: { element: elementArg, limit: limitArg },
     },
     async ({ element, limit }) => toContent(handlers.what_this_calls({ element, limit })),
@@ -1215,7 +1226,7 @@ async function main(): Promise<void> {
     {
       title: 'What this element imports',
       description:
-        'Outbound (forward) direction: list the resolved elements/modules that the given element (or its file) IMPORTS. The mirror of what_imports (which is inbound).',
+        'Outbound (forward) direction: list the resolved elements/modules that the given element (or its file) IMPORTS. The mirror of what_imports (which is inbound). `total` counts DISTINCT imported targets (deduped); the inbound what_imports counts edges.',
       inputSchema: { element: elementArg, limit: limitArg },
     },
     async ({ element, limit }) => toContent(handlers.what_this_imports({ element, limit })),
@@ -1242,7 +1253,7 @@ async function main(): Promise<void> {
     {
       title: 'Path between two elements',
       description:
-        'Trace a directed dependency path from source to target over resolved call+import edges. mode=shortest (default) returns the single shortest ordered chain; mode=all returns all simple paths (bounded — max 50 paths, depth default 5).',
+        'Trace a directed dependency path from source to target over resolved call+import edges. mode=shortest (default) returns the single shortest ordered chain; mode=all returns all simple paths (bounded — max 50 paths, depth default 5). In mode=all, internal_cap_hit=true signals the 50-path enumeration ceiling was reached (more paths may exist).',
       inputSchema: {
         source: z.string().describe('Path start element: codeRefId, element name, or file path'),
         target: z.string().describe('Path end element: codeRefId, element name, or file path'),

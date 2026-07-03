@@ -9,7 +9,7 @@
   "predecessor_for": null,
   "status": "plan_created",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/analysis.json",
@@ -77,9 +77,22 @@
       "adj": "ADJ-01",
       "reason": "plan predated STUB-FT1AT8 schema fields; validate-plan-schema.py exit 1 on entry. Add-only backfill of 5 governance fields (goal, plan_adjustments_needed, discovery_required=true, foundation_docs_gate=false, approved_verbs=[]) with schema-derived values; NO phase/task/goal-of-work change. Re-validated exit 0.",
       "at": "2026-07-03T09:40:00Z"
+    },
+    {
+      "event": "phase1_followup",
+      "reason": "post-P1 /discover (discovery-p1.md) surfaced 4 consistency/observability gaps in the landed outbound/path tools (no correctness bugs). Applied REC-P1-001 (document total=edges vs distinct-nodes across the mirror pair), REC-P1-002 (surface path_between mode=all internal_cap_hit at ALL_PATHS_MAX=50; exported the constant from canonical-graph.ts as single source of truth), REC-P1-003 (3 edge-case tests via an isolated fixture subgraph: outbound truncated=true, byFile intra-file self-exclusion, mode=all diamond enumeration). Full suite 1517 passed; live smoke confirmed internal_cap_hit=true on a real 50-path enumeration. REC-P1-004 (outbound at: site info) deferred to P3 rich-evidence passthrough; REC-P1-005 (depth-matrix doc) low, deferred.",
+      "at": "2026-07-03T10:30:00Z"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "e5b6f66",
+      "verdict": "PASS",
+      "at": "2026-07-03T09:32:36.400Z"
+    }
+  ],
   "plan_adjustments": [],
   "git_branch": "wo/agent-native-capability-gaps",
   "communication_log": [

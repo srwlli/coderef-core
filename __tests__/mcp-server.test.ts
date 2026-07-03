@@ -52,6 +52,23 @@ const FIXTURE_GRAPH: ExportedGraph = {
     { id: '@Fn/src/c1.ts#cyc1:1', type: 'function', name: 'cyc1', file: 'src/c1.ts', line: 1, metadata: {} },
     { id: '@Fn/src/c2.ts#cyc2:1', type: 'function', name: 'cyc2', file: 'src/c2.ts', line: 1, metadata: {} },
     { id: '@Fn/__tests__/t.test.ts#tcall:1', type: 'function', name: 'tcall', file: '__tests__/t.test.ts', line: 1, metadata: {} },
+    // P1 follow-up (REC-P1-003): an isolated subgraph exercising outbound
+    // edge-cases without perturbing any existing assertion.
+    //  - fan calls 3 distinct leaves -> outbound truncation (total>cap).
+    //  - sameA & sameB share src/same.ts and call each other -> byFile
+    //    intra-file self-exclusion.
+    //  - diamond: dtop -> dmidL/dmidR -> dbot -> two simple paths for mode=all.
+    { id: '@Fn/src/fan.ts#fan:1', type: 'function', name: 'fan', file: 'src/fan.ts', line: 1, metadata: {} },
+    { id: '@Fn/src/fan.ts#leaf1:2', type: 'function', name: 'leaf1', file: 'src/fan.ts', line: 2, metadata: {} },
+    { id: '@Fn/src/fan.ts#leaf2:3', type: 'function', name: 'leaf2', file: 'src/fan.ts', line: 3, metadata: {} },
+    { id: '@Fn/src/fan.ts#leaf3:4', type: 'function', name: 'leaf3', file: 'src/fan.ts', line: 4, metadata: {} },
+    { id: '@Fn/src/same.ts#sameA:1', type: 'function', name: 'sameA', file: 'src/same.ts', line: 1, metadata: {} },
+    { id: '@Fn/src/same.ts#sameB:2', type: 'function', name: 'sameB', file: 'src/same.ts', line: 2, metadata: {} },
+    { id: '@File/src/same.ts', type: 'file', name: '@File/src/same.ts', file: 'src/same.ts', line: 1, metadata: { fileGrain: true } },
+    { id: '@Fn/src/dia.ts#dtop:1', type: 'function', name: 'dtop', file: 'src/dia.ts', line: 1, metadata: {} },
+    { id: '@Fn/src/dia.ts#dmidL:2', type: 'function', name: 'dmidL', file: 'src/dia.ts', line: 2, metadata: {} },
+    { id: '@Fn/src/dia.ts#dmidR:3', type: 'function', name: 'dmidR', file: 'src/dia.ts', line: 3, metadata: {} },
+    { id: '@Fn/src/dia.ts#dbot:4', type: 'function', name: 'dbot', file: 'src/dia.ts', line: 4, metadata: {} },
   ],
   edges: [
     // canonical 8-field schema + legacy compat fields (source/target/type)
@@ -119,6 +136,50 @@ const FIXTURE_GRAPH: ExportedGraph = {
       evidence: { kind: 'resolved-call', calleeName: 'cyc2', receiverText: '', scopePath: '', testOrigin: true } as any,
       sourceLocation: { file: '__tests__/t.test.ts', line: 5 },
       source: '@Fn/__tests__/t.test.ts#tcall:1', target: '@Fn/src/c2.ts#cyc2:1', type: 'call',
+    },
+    // P1 follow-up (REC-P1-003) isolated subgraph edges.
+    // fan -> leaf1/leaf2/leaf3 (3 distinct outbound callees).
+    {
+      id: 'fn1', sourceId: '@Fn/src/fan.ts#fan:1', targetId: '@Fn/src/fan.ts#leaf1:2',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/fan.ts', line: 1 },
+      source: '@Fn/src/fan.ts#fan:1', target: '@Fn/src/fan.ts#leaf1:2', type: 'call',
+    },
+    {
+      id: 'fn2', sourceId: '@Fn/src/fan.ts#fan:1', targetId: '@Fn/src/fan.ts#leaf2:3',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/fan.ts', line: 1 },
+      source: '@Fn/src/fan.ts#fan:1', target: '@Fn/src/fan.ts#leaf2:3', type: 'call',
+    },
+    {
+      id: 'fn3', sourceId: '@Fn/src/fan.ts#fan:1', targetId: '@Fn/src/fan.ts#leaf3:4',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/fan.ts', line: 1 },
+      source: '@Fn/src/fan.ts#fan:1', target: '@Fn/src/fan.ts#leaf3:4', type: 'call',
+    },
+    // sameA -> sameB, both in src/same.ts (intra-file call for byFile self-exclusion).
+    {
+      id: 'sm1', sourceId: '@Fn/src/same.ts#sameA:1', targetId: '@Fn/src/same.ts#sameB:2',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/same.ts', line: 1 },
+      source: '@Fn/src/same.ts#sameA:1', target: '@Fn/src/same.ts#sameB:2', type: 'call',
+    },
+    // diamond: dtop -> dmidL -> dbot AND dtop -> dmidR -> dbot (2 simple paths).
+    {
+      id: 'di1', sourceId: '@Fn/src/dia.ts#dtop:1', targetId: '@Fn/src/dia.ts#dmidL:2',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/dia.ts', line: 1 },
+      source: '@Fn/src/dia.ts#dtop:1', target: '@Fn/src/dia.ts#dmidL:2', type: 'call',
+    },
+    {
+      id: 'di2', sourceId: '@Fn/src/dia.ts#dtop:1', targetId: '@Fn/src/dia.ts#dmidR:3',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/dia.ts', line: 1 },
+      source: '@Fn/src/dia.ts#dtop:1', target: '@Fn/src/dia.ts#dmidR:3', type: 'call',
+    },
+    {
+      id: 'di3', sourceId: '@Fn/src/dia.ts#dmidL:2', targetId: '@Fn/src/dia.ts#dbot:4',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/dia.ts', line: 2 },
+      source: '@Fn/src/dia.ts#dmidL:2', target: '@Fn/src/dia.ts#dbot:4', type: 'call',
+    },
+    {
+      id: 'di4', sourceId: '@Fn/src/dia.ts#dmidR:3', targetId: '@Fn/src/dia.ts#dbot:4',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/dia.ts', line: 3 },
+      source: '@Fn/src/dia.ts#dmidR:3', target: '@Fn/src/dia.ts#dbot:4', type: 'call',
     },
   ],
   statistics: { nodeCount: 11, edgeCount: 5, edgesByType: { call: 4, import: 1 }, densityRatio: 0.04 },
@@ -532,5 +593,65 @@ describe('path_between', () => {
   it('returns element_not_found when either endpoint is unknown', () => {
     expect((handlers.path_between({ source: 'no-such', target: 'helper' }) as any).error).toBe('element_not_found');
     expect((handlers.path_between({ source: 'main', target: 'no-such' }) as any).error).toBe('element_not_found');
+  });
+});
+
+// ---- P1 follow-up edge cases (REC-P1-003) -----------------------------------------
+// Close the branches the initial P1 suite left unexercised: outbound truncation,
+// byFile intra-file self-exclusion, and the mode=all path enumeration.
+
+describe('what_this_calls — outbound truncation (REC-P1-003a)', () => {
+  it('sets truncated=true when distinct callees exceed the limit', () => {
+    // fan calls 3 distinct leaves; limit 2 must truncate.
+    const r = handlers.what_this_calls({ element: 'fan', limit: 2 }) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.total).toBe(3);
+    expect(r.returned).toBe(2);
+    expect(r.truncated).toBe(true);
+    expect(r.callees.length).toBe(2);
+  });
+
+  it('total counts DISTINCT callees, not edges (contrast with what_calls edge count)', () => {
+    const r = handlers.what_this_calls({ element: 'fan' }) as any;
+    expect(r.total).toBe(3);
+    expect(r.callees.map((c: any) => c.name).sort()).toEqual(['leaf1', 'leaf2', 'leaf3']);
+  });
+});
+
+describe('what_this_calls — byFile intra-file self-exclusion (REC-P1-003b)', () => {
+  it('a whole-file query omits calls between two elements of that same file', () => {
+    // src/same.ts holds sameA + sameB; sameA calls sameB. A byFile query treats
+    // both as the subject, so the intra-file edge is excluded (this is the
+    // documented "what does this FILE call" semantics, not a bug).
+    const byFile = handlers.what_this_calls({ element: 'src/same.ts' }) as any;
+    expect(byFile.error).toBeUndefined();
+    expect(byFile.total).toBe(0);
+  });
+
+  it('but an element-level query DOES return the intra-file callee', () => {
+    // sameA alone (not byFile) -> sameB is a legitimate outbound callee.
+    const el = handlers.what_this_calls({ element: 'sameA' }) as any;
+    expect(el.total).toBe(1);
+    expect(el.callees[0].name).toBe('sameB');
+  });
+});
+
+describe('path_between — mode=all enumeration (REC-P1-003c)', () => {
+  it('enumerates both simple paths through the diamond', () => {
+    // dtop -> {dmidL, dmidR} -> dbot : exactly 2 simple paths.
+    const r = handlers.path_between({ source: 'dtop', target: 'dbot', mode: 'all' }) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.mode).toBe('all');
+    expect(r.total).toBe(2);
+    const mids = r.paths.map((p: any) => p.nodes[1].name).sort();
+    expect(mids).toEqual(['dmidL', 'dmidR']);
+    // well under the internal cap
+    expect(r.internal_cap_hit).toBe(false);
+  });
+
+  it('reports internal_cap_hit=false when the enumeration is complete', () => {
+    const r = handlers.path_between({ source: 'dtop', target: 'dbot', mode: 'all' }) as any;
+    expect(r.internal_cap_hit).toBe(false);
+    expect(r.total).toBeLessThan(50);
   });
 });
