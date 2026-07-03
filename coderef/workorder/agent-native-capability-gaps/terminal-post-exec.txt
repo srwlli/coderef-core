@@ -2,63 +2,77 @@
 WORKORDER PHASE EXECUTION COMPLETE (strict-phased — HARD STOP)
 
 WORKORDER ID: WO-AGENT-NATIVE-CAPABILITY-GAPS-001
-PHASE COMPLETED: Phase 2 of 6 — List ambiguous/unresolved edges (expose stored evidence)
-MODE: --phase=2 single-phase (per-phase hard stop; operator go required for P3)
+PHASE COMPLETED: Phase 3 of 6 — Source body + find-all-references + evidence passthrough
+MODE: --phase=3 single-phase (per-phase hard stop; operator go required for P4)
 
-DELIVERABLE:
-  - unresolved_edges  MCP tool (tool count 15 -> 16, all read-only, additive)
-      Enumerates the non-resolved call/import edges the resolver could not
-      resolve, with their persisted evidence (calleeName/receiverText/
-      originSpecifier/reason). For ambiguous edges, candidates[] surfaces the
-      competing symbols (node-resolved to name/file/line) — the engine's
-      signature honesty feature, previously invisible to agents.
-      Default view = unresolved + ambiguous; external/builtin on request.
-      Facets: relationship / status / file / reason (substring).
-      Mandatory pagination (offset/limit, default 25, cap 100); total +
-      status_breakdown always reflect the FULL non-resolved population.
-  - +9 behavioral tests (5 fixture edges + 2 candidate nodes, isolated)
+DELIVERABLES (all read-only + additive; MCP tool count 16 -> 18):
+  - source_of            An element's source directly from disk (no RAG/embedder).
+                         Resolved by codeRefId or name via index.json (100% file+
+                         line coverage). Bounded line-window slice (chunk-converter
+                         pattern) — context (default 40, cap 200) + max_chars
+                         (default 4000, cap 20000) with line/char truncation flags.
+  - find_all_references  Union inbound refs in ONE call: resolved call-sites +
+                         resolved import-sites (traversable) PLUS type-only import
+                         references (resolutionStatus=typeOnly, additive + NON-
+                         traversable, matched by module basename). Per-category
+                         counts + sites. Never reclassifies typeOnly (RISK-06).
+  - what_calls evidence  Pass through the resolved-call evidence already persisted
+                         (calleeName / receiverText / scopePath) — previously
+                         dropped. Omitted cleanly on edges carrying none.
 
 TASK CHECKLIST:
-  [x] P2-T1 READ    graph-builder EdgeEvidence union (10 variants) + emit sites;
-                    mcp-server resolved-only skip (:155); output-validator tally
-  [x] P2-T2 EDIT    unresolved_edges tool + facets + pagination + status_breakdown
-  [x] P2-T3 EDIT    ambiguous edges surface candidates[] (competing symbols)
-  [x] P2-T4 TEST    +9 tests: defaults, reason, candidates, facets, pagination,
-                    external-on-request, validation-report reconciliation
-  [x] P2-T5 RUN     build exit 0; full suite 1526 passed | 26 skipped (+9)
-  [x] P2-T6 COMMIT  0ecb4f9 by explicit path (main-only)
-  [x] P2-T7 STOP    this terminal surface
+  [x] P3-T1 READ    chunk-converter slice (:281); import-resolver typeOnly (:73);
+                    graph-builder typeOnly emit; confirmed index file+line = 100%
+  [x] P3-T2 EDIT    source_of handler + registration
+  [x] P3-T3 EDIT    find_all_references handler + registration
+  [x] P3-T4 EDIT    what_calls evidence passthrough (inboundByKind)
+  [x] P3-T5 TEST    +11 tests (real source file written to fixture for byte slice;
+                    typeOnly + evidence fixture edges)
+  [x] P3-T6 RUN     build exit 0; full suite 1537 passed | 26 skipped (+11)
+  [x] P3-T7 COMMIT  1ff9a76 by explicit path (main-only)
+  [x] P3-T8 STOP    this terminal surface
 
 COMMITS:
-  - 0ecb4f9: feat(agent-native-capability-gaps): phase 2 - unresolved_edges MCP tool (expose stored evidence)
+  - 1ff9a76: feat(agent-native-capability-gaps): phase 3 - source_of + find_all_references + what_calls evidence
 
 PUSH:
-  - ec9ec0d..0ecb4f9 -> origin/main (1 push)
+  - e5101a2..<pending> -> origin/main (after this artifact commit)
 
 TEST RESULTS:
   - Build (tsc + tsc -p tsconfig.cli.json): clean, exit 0
-  - vitest run: 1526 passed | 26 skipped (158 files) — exit 0
-  - mcp-server.test.ts: 54 passed (45 prior + 9 P2)
-  - MCP tool count: 16 (15 prior intact + 1 new)
+  - vitest run: 1537 passed | 26 skipped (158 files) — exit 0
+  - mcp-server.test.ts: 65 passed (54 prior + 11 P3)
+  - MCP tool count: 18 (16 prior intact + 2 new; what_calls extended additively)
 
-REALITY ANCHOR (AC-2 + AC-7):
-  - Live self-scan smoke: unresolved_edges({}) total = 18,837
-      (unresolved 16,536 + ambiguous 2,301) — matches the WO's confirmed premise.
-  - Reconciliation invariant PROVEN byte-exact vs on-disk validation-report:
-      unresolved 16536===16536 | ambiguous 2301===2301
-      external   218===218     | builtin   4631===4631
-  - Candidates live: ambiguous call scanCurrentElements @ demo-all-modules.ts:86
-      surfaces 17 competing candidates (previously invisible to agents).
+REALITY ANCHOR (AC-3 + AC-7):
+  - typeOnly is REAL and now reachable: 220 import edges on the self-scan carry
+    resolutionStatus=typeOnly (targetId omitted). find_all_references is the first
+    tool to surface them (additive, non-traversable, module-basename matched).
+  - Live find_all_references(normalizeSlashes): 64 call-sites + 21 import-sites =
+    85 references in one call.
+  - Live what_calls evidence: {callee:normalizeSlashes, scope:resolveNodes,
+    at:...:197} — rich evidence now surfaced (was dropped).
+  - VALIDATION COUNTS UNCHANGED (typeOnly additive, RISK-06 honored): unresolved
+    16536 / ambiguous 2301 — byte-identical to P2. No reclassification.
+  - NOTE (honest anchor observation, NOT a P3 defect): the on-disk .coderef/
+    index.json is STALE vs current source — it records buildToolHandlers at line
+    272 but the function is now at line 322 (P1/P2/P3 added ~250 lines above it
+    with no rescan; .coderef/ is gitignored). source_of faithfully slices the
+    recorded line, so on a stale index it returns the wrong window. This affects
+    EVERY line-based tool equally (find_element, diff_impact, source_of) and is
+    pre-existing; on a freshly-scanned repo (populate-then-query, the normal MCP
+    path) the line is accurate. Evidence-backed tools (what_calls) are immune —
+    edge evidence is not line-index-derived.
 
-ACCEPTANCE CRITERIA (P2 scope):
-  [PASS] AC-2: MCP enumerates non-resolved edges (unresolved + ambiguous) with
-               persisted candidates[]/reason, paginated and faceted.
-  [PASS] AC-7 (P2 portion): existing 15 tools + shapes unchanged; full vitest
-               green; no cloud provider; every commit main-only by explicit path.
+ACCEPTANCE CRITERIA (P3 scope):
+  [PASS] AC-3: source by codeRefId without RAG; find_all_references unions
+               call+import+typeOnly; what_calls carries rich evidence.
+  [PASS] AC-7 (P3 portion): existing 16 tools + shapes unchanged; full vitest
+               green; typeOnly additive (locked counts unshifted); no cloud
+               provider; every commit main-only by explicit path.
 
-HARD STOP: Phase 2 complete — awaiting operator go for Phase 3
-           (Source body + find-all-references + evidence passthrough).
-REMAINING: P3, P4 (build-if-missing), P5 (graph-safe incremental — HEAVY),
-           P6 (Go graph promotion — HEAVY).
-NEXT: /execute-workorder WO-AGENT-NATIVE-CAPABILITY-GAPS-001 --phase=3
+HARD STOP: Phase 3 complete — awaiting operator go for Phase 4
+           (Build-if-missing: MCP builds .coderef/ on demand instead of throwing).
+REMAINING: P4, P5 (graph-safe incremental — HEAVY), P6 (Go graph promotion — HEAVY).
+NEXT: /execute-workorder WO-AGENT-NATIVE-CAPABILITY-GAPS-001 --phase=4
 ================================================================================
