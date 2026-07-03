@@ -1,0 +1,64 @@
+================================================================================
+WORKORDER PHASE EXECUTION COMPLETE (strict-phased — HARD STOP)
+
+WORKORDER ID: WO-AGENT-NATIVE-CAPABILITY-GAPS-001
+PHASE COMPLETED: Phase 2 of 6 — List ambiguous/unresolved edges (expose stored evidence)
+MODE: --phase=2 single-phase (per-phase hard stop; operator go required for P3)
+
+DELIVERABLE:
+  - unresolved_edges  MCP tool (tool count 15 -> 16, all read-only, additive)
+      Enumerates the non-resolved call/import edges the resolver could not
+      resolve, with their persisted evidence (calleeName/receiverText/
+      originSpecifier/reason). For ambiguous edges, candidates[] surfaces the
+      competing symbols (node-resolved to name/file/line) — the engine's
+      signature honesty feature, previously invisible to agents.
+      Default view = unresolved + ambiguous; external/builtin on request.
+      Facets: relationship / status / file / reason (substring).
+      Mandatory pagination (offset/limit, default 25, cap 100); total +
+      status_breakdown always reflect the FULL non-resolved population.
+  - +9 behavioral tests (5 fixture edges + 2 candidate nodes, isolated)
+
+TASK CHECKLIST:
+  [x] P2-T1 READ    graph-builder EdgeEvidence union (10 variants) + emit sites;
+                    mcp-server resolved-only skip (:155); output-validator tally
+  [x] P2-T2 EDIT    unresolved_edges tool + facets + pagination + status_breakdown
+  [x] P2-T3 EDIT    ambiguous edges surface candidates[] (competing symbols)
+  [x] P2-T4 TEST    +9 tests: defaults, reason, candidates, facets, pagination,
+                    external-on-request, validation-report reconciliation
+  [x] P2-T5 RUN     build exit 0; full suite 1526 passed | 26 skipped (+9)
+  [x] P2-T6 COMMIT  0ecb4f9 by explicit path (main-only)
+  [x] P2-T7 STOP    this terminal surface
+
+COMMITS:
+  - 0ecb4f9: feat(agent-native-capability-gaps): phase 2 - unresolved_edges MCP tool (expose stored evidence)
+
+PUSH:
+  - ec9ec0d..0ecb4f9 -> origin/main (1 push)
+
+TEST RESULTS:
+  - Build (tsc + tsc -p tsconfig.cli.json): clean, exit 0
+  - vitest run: 1526 passed | 26 skipped (158 files) — exit 0
+  - mcp-server.test.ts: 54 passed (45 prior + 9 P2)
+  - MCP tool count: 16 (15 prior intact + 1 new)
+
+REALITY ANCHOR (AC-2 + AC-7):
+  - Live self-scan smoke: unresolved_edges({}) total = 18,837
+      (unresolved 16,536 + ambiguous 2,301) — matches the WO's confirmed premise.
+  - Reconciliation invariant PROVEN byte-exact vs on-disk validation-report:
+      unresolved 16536===16536 | ambiguous 2301===2301
+      external   218===218     | builtin   4631===4631
+  - Candidates live: ambiguous call scanCurrentElements @ demo-all-modules.ts:86
+      surfaces 17 competing candidates (previously invisible to agents).
+
+ACCEPTANCE CRITERIA (P2 scope):
+  [PASS] AC-2: MCP enumerates non-resolved edges (unresolved + ambiguous) with
+               persisted candidates[]/reason, paginated and faceted.
+  [PASS] AC-7 (P2 portion): existing 15 tools + shapes unchanged; full vitest
+               green; no cloud provider; every commit main-only by explicit path.
+
+HARD STOP: Phase 2 complete — awaiting operator go for Phase 3
+           (Source body + find-all-references + evidence passthrough).
+REMAINING: P3, P4 (build-if-missing), P5 (graph-safe incremental — HEAVY),
+           P6 (Go graph promotion — HEAVY).
+NEXT: /execute-workorder WO-AGENT-NATIVE-CAPABILITY-GAPS-001 --phase=3
+================================================================================
