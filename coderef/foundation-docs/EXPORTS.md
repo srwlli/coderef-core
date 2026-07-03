@@ -2,8 +2,8 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-06-13  
-**Total Exported:** 846 elements  
+**Generated:** 2026-07-02  
+**Total Exported:** 771 elements  
 <!-- coderef:uuid=exports-root -->
 
 ---
@@ -18,284 +18,267 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **307** | 446 | 753 |
-| interface | **347** | 96 | 443 |
-| constant | **30** | 93 | 123 |
-| type | **45** | 19 | 64 |
+| function | **284** | 445 | 729 |
+| interface | **312** | 89 | 401 |
+| constant | **30** | 103 | 133 |
+| type | **44** | 21 | 65 |
 | component | **2** | 0 | 2 |
-| class | **115** | 4 | 119 |
+| class | **99** | 4 | 103 |
 
 ---
 
-## Exported Functions (307)
+## Exported Functions (284)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
-| <!-- coderef:uuid=2e232703-9d05-50ba-8dca-14714e391844 --> `createMockEnvironment` | `__tests__/generators/helpers.ts` | ✅ |  | `2e232703...` |
-| <!-- coderef:uuid=93a80247-9b51-57ff-ac24-5e1dc206155c --> `cleanupEnvironment` | `__tests__/generators/helpers.ts` | ✅ | projectDir | `93a80247...` |
-| <!-- coderef:uuid=ccc97368-6a6a-5da6-8f77-3525e41b2c88 --> `readJson` | `__tests__/generators/helpers.ts` | ✅ | filePath | `ccc97368...` |
-| <!-- coderef:uuid=829daa03-7ddc-5b7e-9ebb-b7ee8b00bbaa --> `readText` | `__tests__/generators/helpers.ts` | ✅ | filePath | `829daa03...` |
-| <!-- coderef:uuid=86674bf5-7783-5733-915b-4be3e59600bc --> `convertGraphToElements` | `src/adapter/graph-to-elements.ts` | ❌ | graph, options | `86674bf5...` |
-| <!-- coderef:uuid=6dfb05f7-e3f5-5d1e-9c59-e0876312b67b --> `getConversionStats` | `src/adapter/graph-to-elements.ts` | ❌ | elements | `6dfb05f7...` |
-| <!-- coderef:uuid=943634bb-3bd1-533f-99ac-a4f309907198 --> `scanFileWithAST` | `src/analyzer/ast-element-scanner.ts` | ❌ | filePath | `943634bb...` |
-| <!-- coderef:uuid=e7fe444a-67bb-5ba7-9a53-592f4d6abaa7 --> `scanFilesWithAST` | `src/analyzer/ast-element-scanner.ts` | ❌ | filePaths | `e7fe444a...` |
-| <!-- coderef:uuid=98090ab0-912c-5d3e-b87f-dbe643aec9e9 --> `analyzeProjectConfig` | `src/analyzer/config-analyzer.ts` | ❌ | projectPath | `98090ab0...` |
-| <!-- coderef:uuid=1c5806c2-e7d4-5ea8-8157-2a8324ac9141 --> `analyzeContracts` | `src/analyzer/contract-detector.ts` | ❌ | projectPath | `1c5806c2...` |
-| <!-- coderef:uuid=ffd206d0-382a-5cc9-8ec9-035e304a2bf5 --> `analyzeDatabase` | `src/analyzer/database-detector.ts` | ❌ | projectPath | `ffd206d0...` |
-| <!-- coderef:uuid=9fd33e23-d049-5d98-a771-8754037c8dd0 --> `analyzeDependencyHealth` | `src/analyzer/dependency-analyzer.ts` | ✅ | projectPath | `9fd33e23...` |
-| <!-- coderef:uuid=91ccb2b8-4fcb-5038-9f93-43346bcb5679 --> `analyzeDesignPatterns` | `src/analyzer/design-pattern-detector.ts` | ❌ | projectPath | `91ccb2b8...` |
-| <!-- coderef:uuid=96e9e189-736c-5d21-a692-8e9a93f0ad7e --> `analyzeDocs` | `src/analyzer/docs-analyzer.ts` | ✅ | projectPath | `96e9e189...` |
-| <!-- coderef:uuid=761dea85-91ce-5553-8784-0fe4350ed985 --> `parseFetchCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `761dea85...` |
-| <!-- coderef:uuid=2cd8899d-ad25-5cb8-bae6-eab76deac7c7 --> `parseAxiosCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `2cd8899d...` |
-| <!-- coderef:uuid=d7a20d39-2279-5483-8ab7-686ed366e069 --> `parseReactQueryCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `d7a20d39...` |
-| <!-- coderef:uuid=283f59e5-9ff5-562d-bc65-8148539f0574 --> `parseCustomApiCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `283f59e5...` |
-| <!-- coderef:uuid=dfd18684-fcf0-52af-bd92-f8416bc09964 --> `extractHttpMethod` | `src/analyzer/frontend-call-parsers.ts` | ❌ | optionsArg | `dfd18684...` |
-| <!-- coderef:uuid=2b3c4a77-cf58-53c2-b67c-7b329941f45f --> `extractCallLocation` | `src/analyzer/frontend-call-parsers.ts` | ❌ | node, filePath | `2b3c4a77...` |
-| <!-- coderef:uuid=d166ef21-b40f-5c95-b515-a667d6cc869e --> `parseNodeId` | `src/analyzer/graph-helpers.ts` | ❌ | nodeId | `d166ef21...` |
-| <!-- coderef:uuid=017e6f2b-7bb1-5c93-adf6-e28d38710b61 --> `getImportsForElement` | `src/analyzer/graph-helpers.ts` | ❌ | graph, nodeId | `017e6f2b...` |
-| <!-- coderef:uuid=bbb6ad65-24e1-5f77-b6a0-627993c55303 --> `getExportsForElement` | `src/analyzer/graph-helpers.ts` | ❌ | graph, nodeId | `bbb6ad65...` |
-| <!-- coderef:uuid=bfeae9da-e936-5b15-ae18-87bb3fda5a06 --> `getConsumersForElement` | `src/analyzer/graph-helpers.ts` | ❌ | graph, nodeId | `bfeae9da...` |
-| <!-- coderef:uuid=584c6e97-a624-55d9-bf33-00573a20b0e9 --> `getDependenciesForElement` | `src/analyzer/graph-helpers.ts` | ❌ | graph, nodeId | `584c6e97...` |
-| <!-- coderef:uuid=8a40c876-f3cd-5fc5-86d2-83d127cd8271 --> `getElementCharacteristics` | `src/analyzer/graph-helpers.ts` | ❌ | graph, nodeId | `8a40c876...` |
-| <!-- coderef:uuid=b8a4c3b4-5389-5759-be38-38b276e1fe42 --> `calculateAutoFillRate` | `src/analyzer/graph-helpers.ts` | ❌ | graph, nodeId | `b8a4c3b4...` |
-| <!-- coderef:uuid=15374270-bd15-557c-89af-0cc8a64937c4 --> `buildCallEdges` | `src/analyzer/js-call-detector/analyzer.ts` | ❌ | filePaths, callDetector, elementMap | `15374270...` |
-| <!-- coderef:uuid=0dfa98a9-a404-59f3-b720-deb73c1fbd82 --> `analyzeCallPatterns` | `src/analyzer/js-call-detector/analyzer.ts` | ❌ | filePaths, callDetector | `0dfa98a9...` |
-| <!-- coderef:uuid=d71ab3b1-0ba0-52bd-8672-f931aad4def9 --> `extractImportsFromAST` | `src/analyzer/js-call-detector/module-analyzer.ts` | ❌ | ast, imports | `d71ab3b1...` |
-| <!-- coderef:uuid=00efa541-e5e1-5830-9b34-75ba268fb262 --> `extractExportsFromAST` | `src/analyzer/js-call-detector/module-analyzer.ts` | ❌ | ast, exports | `00efa541...` |
-| <!-- coderef:uuid=6bbe40d9-0db0-5005-a905-99b7c299aef5 --> `parseCallExpression` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node, filePath, context | `6bbe40d9...` |
-| <!-- coderef:uuid=12218c9e-f4f4-5859-bfcc-44c4609ee452 --> `parseNewExpression` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node, filePath, context | `12218c9e...` |
-| <!-- coderef:uuid=836c9511-cf00-59bf-b58b-1b3fdb8b3bef --> `extractObjectName` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node | `836c9511...` |
-| <!-- coderef:uuid=7b57c2e0-4fad-5148-b171-ea5ae9a6dd42 --> `isNestedCall` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node | `7b57c2e0...` |
-| <!-- coderef:uuid=2b446f2f-9784-59ae-aad7-a799c5083b0e --> `extractParameters` | `src/analyzer/js-call-detector/parser.ts` | ❌ | params | `2b446f2f...` |
-| <!-- coderef:uuid=6f81ca60-16a2-57c9-90fc-a6a06b28f098 --> `extractParameter` | `src/analyzer/js-call-detector/parser.ts` | ❌ | param | `6f81ca60...` |
-| <!-- coderef:uuid=11a7e048-bb4b-5152-be2c-a9a43223e7c0 --> `visitNode` | `src/analyzer/js-call-detector/visitor.ts` | ❌ | node, calls, filePath, context | `11a7e048...` |
-| <!-- coderef:uuid=6a5126c2-fa2f-56a3-8898-35ea29cd5758 --> `extractParametersFromAST` | `src/analyzer/js-call-detector/visitor.ts` | ❌ | ast, filePath, result, context | `6a5126c2...` |
-| <!-- coderef:uuid=4825a2df-7254-5cea-8c04-3964f6d9afae --> `extractElementsFromAST` | `src/analyzer/js-call-detector/visitor.ts` | ❌ | ast, filePath, elements, parentExported | `4825a2df...` |
-| <!-- coderef:uuid=9e1f1bf0-4f12-5c4c-985f-4f607f434348 --> `parseJavaScript` | `src/analyzer/js-parser.ts` | ❌ | code, options | `9e1f1bf0...` |
-| <!-- coderef:uuid=2e5ac029-9ee9-5228-9204-14d765bef2d3 --> `parseJavaScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath, options | `2e5ac029...` |
-| <!-- coderef:uuid=26a6a5cc-0ad1-572c-8b5f-69c9e0d1252e --> `isJavaScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath | `26a6a5cc...` |
-| <!-- coderef:uuid=e877fe7a-211e-58b1-9376-6ba7a6e537f8 --> `isTypeScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath | `e877fe7a...` |
-| <!-- coderef:uuid=79514e8d-17c9-5fad-a63e-2544de29fb92 --> `getSourceTypeFromExtension` | `src/analyzer/js-parser.ts` | ❌ | filePath | `79514e8d...` |
-| <!-- coderef:uuid=9e7ec783-0125-532b-a45b-7b5db949dbe5 --> `parseJavaScriptFileAuto` | `src/analyzer/js-parser.ts` | ❌ | filePath | `9e7ec783...` |
-| <!-- coderef:uuid=575bc8b2-ff4a-585d-8ec5-a808b4a0fb51 --> `analyzeMiddlewareAndDI` | `src/analyzer/middleware-detector.ts` | ❌ | elements, files | `575bc8b2...` |
-| <!-- coderef:uuid=feac0a76-fda8-5c18-8ff7-f24a63e0c6f2 --> `extractAllRoutes` | `src/analyzer/migration-route-analyzer.ts` | ❌ | elements | `feac0a76...` |
-| <!-- coderef:uuid=4f70008c-c1f8-56eb-b51d-49eec78c44e3 --> `findOrphanedCalls` | `src/analyzer/migration-route-analyzer.ts` | ❌ | elements, frontendCalls | `4f70008c...` |
-| <!-- coderef:uuid=1cb1c7d3-99a1-50d6-a088-0c4b2a47c1d6 --> `detectBreakingChanges` | `src/analyzer/migration-route-analyzer.ts` | ❌ | oldElements, newElements | `1cb1c7d3...` |
+| <!-- coderef:uuid=8b715f0e-d5ba-5336-b4b4-2242465d299d --> `createMockEnvironment` | `__tests__/generators/helpers.ts` | ✅ |  | `8b715f0e...` |
+| <!-- coderef:uuid=301fa8b3-1275-5c74-a128-ba1f2d655563 --> `cleanupEnvironment` | `__tests__/generators/helpers.ts` | ✅ | projectDir | `301fa8b3...` |
+| <!-- coderef:uuid=c5768a38-0e0e-5877-8cdb-c2e89366397b --> `readJson` | `__tests__/generators/helpers.ts` | ✅ | filePath | `c5768a38...` |
+| <!-- coderef:uuid=2e2f8226-cd83-5cb6-a913-9d8c10dfb0c0 --> `readText` | `__tests__/generators/helpers.ts` | ✅ | filePath | `2e2f8226...` |
+| <!-- coderef:uuid=1c859fa4-09ad-5623-a003-92eaba214105 --> `scanFileWithAST` | `src/analyzer/ast-element-scanner.ts` | ❌ | filePath | `1c859fa4...` |
+| <!-- coderef:uuid=c1cd9634-498b-583f-a1b9-6e97967397b5 --> `scanFilesWithAST` | `src/analyzer/ast-element-scanner.ts` | ❌ | filePaths | `c1cd9634...` |
+| <!-- coderef:uuid=8be88426-2b3a-5588-b578-424c28fb56c1 --> `analyzeProjectConfig` | `src/analyzer/config-analyzer.ts` | ❌ | projectPath | `8be88426...` |
+| <!-- coderef:uuid=5234e074-b8da-572d-b4f0-5882bd8dcf67 --> `analyzeContracts` | `src/analyzer/contract-detector.ts` | ❌ | projectPath | `5234e074...` |
+| <!-- coderef:uuid=c01a6bb8-c9e0-5d42-aef1-3625f06986ff --> `analyzeDatabase` | `src/analyzer/database-detector.ts` | ❌ | projectPath | `c01a6bb8...` |
+| <!-- coderef:uuid=7c3719c9-5250-5d0c-9f4f-604c1d48f618 --> `analyzeDependencyHealth` | `src/analyzer/dependency-analyzer.ts` | ✅ | projectPath | `7c3719c9...` |
+| <!-- coderef:uuid=af386c59-7fa8-5746-a403-93164d6d7872 --> `analyzeDesignPatterns` | `src/analyzer/design-pattern-detector.ts` | ❌ | projectPath | `af386c59...` |
+| <!-- coderef:uuid=e25cf992-9c64-5162-818f-3e198304af2d --> `analyzeDocs` | `src/analyzer/docs-analyzer.ts` | ✅ | projectPath | `e25cf992...` |
+| <!-- coderef:uuid=6c90a134-09a9-52ee-8106-95bc0ab5f4f8 --> `parseFetchCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `6c90a134...` |
+| <!-- coderef:uuid=b02b13d1-9ecb-5a4e-a7d0-646dbb64996f --> `parseAxiosCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `b02b13d1...` |
+| <!-- coderef:uuid=9ba3b2c1-a862-55e4-9ac2-a5490a9a5828 --> `parseReactQueryCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `9ba3b2c1...` |
+| <!-- coderef:uuid=99e49a94-1fb8-576b-8e14-a6831b190b0e --> `parseCustomApiCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `99e49a94...` |
+| <!-- coderef:uuid=f4cf1db9-9c92-5cc8-a1d6-dfa7d2385eae --> `extractHttpMethod` | `src/analyzer/frontend-call-parsers.ts` | ❌ | optionsArg | `f4cf1db9...` |
+| <!-- coderef:uuid=e14b914f-dfa7-5a22-b958-31e5eb0fe8da --> `extractCallLocation` | `src/analyzer/frontend-call-parsers.ts` | ❌ | node, filePath | `e14b914f...` |
+| <!-- coderef:uuid=8ae6ef75-37d2-5e63-ac18-1dce2fab78da --> `buildCallEdges` | `src/analyzer/js-call-detector/analyzer.ts` | ❌ | filePaths, callDetector, elementMap | `8ae6ef75...` |
+| <!-- coderef:uuid=d98c7847-086e-5481-8d44-5c73b84c5c0c --> `analyzeCallPatterns` | `src/analyzer/js-call-detector/analyzer.ts` | ❌ | filePaths, callDetector | `d98c7847...` |
+| <!-- coderef:uuid=7e45bb03-b801-5eea-b921-947e4e5bc3f5 --> `extractImportsFromAST` | `src/analyzer/js-call-detector/module-analyzer.ts` | ❌ | ast, imports | `7e45bb03...` |
+| <!-- coderef:uuid=853255af-453e-5788-be9c-5913e348bde9 --> `extractExportsFromAST` | `src/analyzer/js-call-detector/module-analyzer.ts` | ❌ | ast, exports | `853255af...` |
+| <!-- coderef:uuid=a927e0ad-0592-5a4c-8898-b54d8969ba8d --> `parseCallExpression` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node, filePath, context | `a927e0ad...` |
+| <!-- coderef:uuid=d68bae5d-6c03-52a8-9c0f-e982269054df --> `parseNewExpression` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node, filePath, context | `d68bae5d...` |
+| <!-- coderef:uuid=84893053-41a8-5f46-9863-68a35ac003f4 --> `extractObjectName` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node | `84893053...` |
+| <!-- coderef:uuid=43b80ed5-a451-509c-8b0f-c8a9efbcb66d --> `isNestedCall` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node | `43b80ed5...` |
+| <!-- coderef:uuid=88bb5a70-da37-572b-85aa-6776cb71d157 --> `extractParameters` | `src/analyzer/js-call-detector/parser.ts` | ❌ | params | `88bb5a70...` |
+| <!-- coderef:uuid=08f9741b-216f-5ee2-94bc-f5199513fe61 --> `extractParameter` | `src/analyzer/js-call-detector/parser.ts` | ❌ | param | `08f9741b...` |
+| <!-- coderef:uuid=2bd67d27-d0fd-5e59-958a-524fbdfd08d3 --> `visitNode` | `src/analyzer/js-call-detector/visitor.ts` | ❌ | node, calls, filePath, context | `2bd67d27...` |
+| <!-- coderef:uuid=9c240a84-edf3-553e-902a-fdfd314e7e5e --> `extractParametersFromAST` | `src/analyzer/js-call-detector/visitor.ts` | ❌ | ast, filePath, result, context | `9c240a84...` |
+| <!-- coderef:uuid=e258bb08-3b1f-5278-adaf-6566e7697f90 --> `extractElementsFromAST` | `src/analyzer/js-call-detector/visitor.ts` | ❌ | ast, filePath, elements, parentExported | `e258bb08...` |
+| <!-- coderef:uuid=af40ee64-522d-565b-a457-2e3ba45a6dc1 --> `parseJavaScript` | `src/analyzer/js-parser.ts` | ❌ | code, options | `af40ee64...` |
+| <!-- coderef:uuid=4dbbabea-a87f-5e09-bb02-3b8d387b0fb4 --> `parseJavaScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath, options | `4dbbabea...` |
+| <!-- coderef:uuid=398ea9c9-cd48-5655-9ea8-2d91cc3860c4 --> `isJavaScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath | `398ea9c9...` |
+| <!-- coderef:uuid=05072f95-3e58-54b9-8026-ae3fce70327f --> `isTypeScriptFile` | `src/analyzer/js-parser.ts` | ❌ | filePath | `05072f95...` |
+| <!-- coderef:uuid=a5307f6d-2c5b-597a-b639-9c5b1f6662da --> `getSourceTypeFromExtension` | `src/analyzer/js-parser.ts` | ❌ | filePath | `a5307f6d...` |
+| <!-- coderef:uuid=9bb59dcc-5c33-5150-bbda-8df9ef16f523 --> `parseJavaScriptFileAuto` | `src/analyzer/js-parser.ts` | ❌ | filePath | `9bb59dcc...` |
+| <!-- coderef:uuid=40cd87fa-fbf7-5617-8b16-ae6bb43830a8 --> `analyzeMiddlewareAndDI` | `src/analyzer/middleware-detector.ts` | ❌ | elements, files | `40cd87fa...` |
+| <!-- coderef:uuid=99aefa3f-ff1f-5c0e-8129-b8adac3d5516 --> `extractAllRoutes` | `src/analyzer/migration-route-analyzer.ts` | ❌ | elements | `99aefa3f...` |
+| <!-- coderef:uuid=d1228e06-ece5-54cb-8dae-b48f9994d87b --> `findOrphanedCalls` | `src/analyzer/migration-route-analyzer.ts` | ❌ | elements, frontendCalls | `d1228e06...` |
+| <!-- coderef:uuid=008efb29-6c96-563f-b28c-f92ce52c72c1 --> `detectBreakingChanges` | `src/analyzer/migration-route-analyzer.ts` | ❌ | oldElements, newElements | `008efb29...` |
+| <!-- coderef:uuid=f024ca90-590f-5dd8-bd20-0bda62dc12bc --> `parseFlaskRoute` | `src/analyzer/route-parsers.ts` | ❌ | code, line | `f024ca90...` |
+| <!-- coderef:uuid=de803dd2-59b6-54c9-8fed-01a468558016 --> `parseFastAPIRoute` | `src/analyzer/route-parsers.ts` | ❌ | code, line | `de803dd2...` |
+| <!-- coderef:uuid=79713800-9021-5767-a4b9-ca87de443f4d --> `parseExpressRoute` | `src/analyzer/route-parsers.ts` | ❌ | code, line, fileContent | `79713800...` |
+| <!-- coderef:uuid=be9cc7d9-effd-538c-a8c4-597afea3018d --> `parseNextJsRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, exports | `be9cc7d9...` |
+| <!-- coderef:uuid=23197ec4-0302-5335-9a91-3388cfff6cf1 --> `parseNextJsPagesRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, fileContent | `23197ec4...` |
+| <!-- coderef:uuid=9c35380e-d620-56cf-992f-61b3e2629e59 --> `parseSvelteKitRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, exports | `9c35380e...` |
+| <!-- coderef:uuid=b44cc0d3-5f1d-5dac-beeb-b280482048e6 --> `parseNuxtRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, fileContent | `b44cc0d3...` |
+| <!-- coderef:uuid=2b39d675-7591-57b5-8259-926704bcb825 --> `parseRemixRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, exports | `2b39d675...` |
+| <!-- coderef:uuid=9bf05c2f-b986-5309-a031-c352cb8432ab --> `extractRouteMetadata` | `src/analyzer/route-parsers.ts` | ❌ | code, filePath, exports, line, fileContent | `9bf05c2f...` |
 
-*... and 257 more functions. See index.json for complete list.*
+*... and 234 more functions. See index.json for complete list.*
 
 ---
 
-## Exported Classes (115)
+## Exported Classes (99)
 
 | Class | File | UUID |
 |-------|------|------|
-| <!-- coderef:uuid=7df3524f-351d-5afc-9e27-00d21269f140 --> `AnalyzerService` | `src/analyzer/analyzer-service.ts` | `7df3524f...` |
-| <!-- coderef:uuid=1c19a19c-5cc8-57ee-a5ab-83b82150501a --> `ASTElementScanner` | `src/analyzer/ast-element-scanner.ts` | `1c19a19c...` |
-| <!-- coderef:uuid=1aa6daf4-464b-56d1-9278-ab825e89f8b1 --> `CallDetector` | `src/analyzer/call-detector.ts` | `1aa6daf4...` |
-| <!-- coderef:uuid=df3e4fa6-6d49-5709-b4fb-6c65733b2dee --> `ConfigAnalyzer` | `src/analyzer/config-analyzer.ts` | `df3e4fa6...` |
-| <!-- coderef:uuid=b9d3483e-bf11-58bd-8ead-437146cd402f --> `ContractDetector` | `src/analyzer/contract-detector.ts` | `b9d3483e...` |
-| <!-- coderef:uuid=c737b949-3d82-5cb0-ac65-e62677178f64 --> `DatabaseDetector` | `src/analyzer/database-detector.ts` | `c737b949...` |
-| <!-- coderef:uuid=682ec23c-fcf8-5174-b1a2-b6f0890c6d47 --> `DependencyAnalyzer` | `src/analyzer/dependency-analyzer.ts` | `682ec23c...` |
-| <!-- coderef:uuid=a497ee99-84c9-5409-acb7-62aac63cc3a1 --> `DesignPatternDetector` | `src/analyzer/design-pattern-detector.ts` | `a497ee99...` |
-| <!-- coderef:uuid=47d156e5-e5b5-50fa-9d56-76ff89b35f35 --> `DocsAnalyzer` | `src/analyzer/docs-analyzer.ts` | `47d156e5...` |
-| <!-- coderef:uuid=7b55540c-a37b-5f9f-9e1d-9fbb9a981c03 --> `DynamicImportDetector` | `src/analyzer/dynamic-import-detector.ts` | `7b55540c...` |
-| <!-- coderef:uuid=33abf6e1-020a-526a-b519-3563a47eb82a --> `EntryPointDetector` | `src/analyzer/entry-detector.ts` | `33abf6e1...` |
-| <!-- coderef:uuid=88434c23-e831-5b8e-a46e-bd3cfa806439 --> `GraphAnalyzer` | `src/analyzer/graph-analyzer.ts` | `88434c23...` |
-| <!-- coderef:uuid=43496bb5-ed4a-5da5-b232-17cd7393af65 --> `GraphBuilder` | `src/analyzer/graph-builder.ts` | `43496bb5...` |
-| <!-- coderef:uuid=91a1c708-b9cd-5fd4-a4c1-c931462f4b91 --> `GraphError` | `src/analyzer/graph-error.ts` | `91a1c708...` |
-| <!-- coderef:uuid=f875bdb3-b8a3-5f0b-ae3b-5f20a75c81b6 --> `ImportParser` | `src/analyzer/import-parser.ts` | `f875bdb3...` |
-| <!-- coderef:uuid=3238341b-fc37-514f-8f31-feaa5b3217ea --> `JSCallDetector` | `src/analyzer/js-call-detector/index.ts` | `3238341b...` |
-| <!-- coderef:uuid=dfbf6056-435e-566f-a3b0-9686c1980345 --> `MiddlewareDetector` | `src/analyzer/middleware-detector.ts` | `dfbf6056...` |
-| <!-- coderef:uuid=a8f24464-5332-568c-96a7-1376a5a844e0 --> `MigrationRouteAnalyzer` | `src/analyzer/migration-route-analyzer.ts` | `a8f24464...` |
-| <!-- coderef:uuid=f2df23b6-1356-56e6-8c7e-fb6aaca4ae37 --> `ProjectClassifier` | `src/analyzer/project-classifier.ts` | `f2df23b6...` |
-| <!-- coderef:uuid=e7988a27-0be7-5480-b595-a2133d94c380 --> `IncrementalCache` | `src/cache/incremental-cache.ts` | `e7988a27...` |
-| <!-- coderef:uuid=bb6919af-4eb3-5ea6-9438-0f002d23a61a --> `DryRunSemanticOrchestrator` | `src/cli/semantic-integration.ts` | `bb6919af...` |
-| <!-- coderef:uuid=370ee5b0-20cb-5dff-8c93-d1a99fd01003 --> `AgenticFormatter` | `src/context/agentic-formatter.ts` | `370ee5b0...` |
-| <!-- coderef:uuid=bd5bfa83-56c4-5309-ab61-4790ec7c7190 --> `BreakingChangeDetector` | `src/context/breaking-change-detector/index.ts` | `bd5bfa83...` |
-| <!-- coderef:uuid=fa5a38ff-e5fa-5286-b0a7-c70bdf9618b1 --> `ComplexityScorer` | `src/context/complexity-scorer.ts` | `fa5a38ff...` |
-| <!-- coderef:uuid=57cbc776-261c-59e0-92f4-7186357b83b4 --> `ContextGenerator` | `src/context/context-generator.ts` | `57cbc776...` |
-| <!-- coderef:uuid=d9cbd2f5-a34f-5089-a7ee-3bc96298a767 --> `ContextTracker` | `src/context/context-tracker.ts` | `d9cbd2f5...` |
-| <!-- coderef:uuid=eb0fd918-1007-5e0f-8d47-45db42f79d71 --> `EdgeCaseDetector` | `src/context/edge-case-detector.ts` | `eb0fd918...` |
-| <!-- coderef:uuid=e68dfa41-d945-5609-98fe-34d56f9f6a33 --> `EntryPointDetector` | `src/context/entry-point-detector.ts` | `e68dfa41...` |
-| <!-- coderef:uuid=312b89f3-f004-5c47-8509-16d2d037fbc7 --> `ExampleExtractor` | `src/context/example-extractor.ts` | `312b89f3...` |
-| <!-- coderef:uuid=c1808d02-ed62-577f-9e84-f0fa26ef77a6 --> `FuzzyResolver` | `src/context/fuzzy-resolver.ts` | `c1808d02...` |
-| <!-- coderef:uuid=bc32d815-b24a-5234-b3e0-37a17dadda3d --> `ImpactSimulator` | `src/context/impact-simulator.ts` | `bc32d815...` |
-| <!-- coderef:uuid=fe5c4613-9c72-51f6-8240-928d917f8bf6 --> `MarkdownFormatter` | `src/context/markdown-formatter.ts` | `fe5c4613...` |
-| <!-- coderef:uuid=f9930e33-d9a9-5385-82d9-052762d66cb9 --> `MultiHopTraversal` | `src/context/multi-hop-traversal.ts` | `f9930e33...` |
-| <!-- coderef:uuid=62a8484e-07fe-5cef-889a-7c62289317dc --> `TaskContextGenerator` | `src/context/task-context-generator.ts` | `62a8484e...` |
-| <!-- coderef:uuid=da81c423-37ac-5764-a37d-d831f5d304ba --> `TestPatternAnalyzer` | `src/context/test-pattern-analyzer.ts` | `da81c423...` |
-| <!-- coderef:uuid=2bb6ae62-ca07-5412-9e35-bcf05098fb59 --> `CodeRefError` | `src/errors/CodeRefError.ts` | `2bb6ae62...` |
-| <!-- coderef:uuid=5afbd9d0-97a1-5915-800c-b991aab4d589 --> `FileNotFoundError` | `src/errors/FileNotFoundError.ts` | `5afbd9d0...` |
-| <!-- coderef:uuid=aabc87a9-a8e3-546f-bf27-7db5ceb90118 --> `IndexError` | `src/errors/IndexError.ts` | `aabc87a9...` |
-| <!-- coderef:uuid=63d641c3-d0a7-5f18-a895-407e5fc6037f --> `ParseError` | `src/errors/ParseError.ts` | `63d641c3...` |
-| <!-- coderef:uuid=146d9f0a-50ab-512c-99ab-9ca70b809bcf --> `ScanError` | `src/errors/ScanError.ts` | `146d9f0a...` |
-| <!-- coderef:uuid=890769ea-5a17-5ca2-93bc-693c6410edd8 --> `ValidationError` | `src/errors/ValidationError.ts` | `890769ea...` |
-| <!-- coderef:uuid=feb71d78-cb35-5bcc-aadd-6407fee21afa --> `GraphExporter` | `src/export/graph-exporter.ts` | `feb71d78...` |
-| <!-- coderef:uuid=1fd2283d-90ab-506e-bb44-558a1578e210 --> `CodeRefFormatter` | `src/formatter/formatter.ts` | `1fd2283d...` |
-| <!-- coderef:uuid=71888023-e26e-5f8c-80f6-d83629ce80b2 --> `IndexStore` | `src/indexer/index-store.ts` | `71888023...` |
-| <!-- coderef:uuid=6d8b5ba5-ebb7-5fb7-8cdc-9dec8150067b --> `IndexerService` | `src/indexer/indexer-service.ts` | `6d8b5ba5...` |
-| <!-- coderef:uuid=ff01f852-e6ff-51cf-870b-9592e6c6d8b2 --> `MetadataIndex` | `src/indexer/metadata-index.ts` | `ff01f852...` |
-| <!-- coderef:uuid=d0711540-a51d-5024-9aaa-5b819a41d3c4 --> `QueryEngine` | `src/indexer/query-engine.ts` | `d0711540...` |
-| <!-- coderef:uuid=41a65e0f-7d1d-5a82-98c9-95718f4668a8 --> `RelationshipIndex` | `src/indexer/relationship-index.ts` | `41a65e0f...` |
-| <!-- coderef:uuid=62209f5b-577e-579e-bf06-6c97f828c32a --> `AIPromptGenerator` | `src/integration/ai-prompt-generator.ts` | `62209f5b...` |
-| <!-- coderef:uuid=5c4446f7-30dc-5783-b8a8-f598e9178b5e --> `AnthropicProvider` | `src/integration/llm/anthropic-provider.ts` | `5c4446f7...` |
-| <!-- coderef:uuid=5686ad2e-499b-5261-8e8d-142f02af6218 --> `LLMError` | `src/integration/llm/llm-provider.ts` | `5686ad2e...` |
-| <!-- coderef:uuid=84ef7de9-135a-5651-bc0c-901e60bf0fec --> `ProviderDoesNotSupportEmbeddings` | `src/integration/llm/model-registry.ts` | `84ef7de9...` |
-| <!-- coderef:uuid=26b9c9ce-8df4-5eda-bb5f-7a0260bf1447 --> `OllamaProvider` | `src/integration/llm/ollama-provider.ts` | `26b9c9ce...` |
-| <!-- coderef:uuid=a278d41f-df00-521f-93e7-9dbe6a65de00 --> `OpenAIProvider` | `src/integration/llm/openai-provider.ts` | `a278d41f...` |
-| <!-- coderef:uuid=ed895f06-e4d5-5fb7-a088-c62122a80c22 --> `Cls0` | `src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod0.ts` | `ed895f06...` |
-| <!-- coderef:uuid=c5007825-afb8-54a5-a27a-975a851ef397 --> `Cls1` | `src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod1.ts` | `c5007825...` |
-| <!-- coderef:uuid=73491a02-12a8-522f-aea8-9272df00c9b9 --> `Cls2` | `src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod2.ts` | `73491a02...` |
-| <!-- coderef:uuid=e1d7b1ab-8de0-52c1-8e52-ef84e20aeac2 --> `AnswerGenerationService` | `src/integration/rag/answer-generation-service.ts` | `e1d7b1ab...` |
-| <!-- coderef:uuid=a2f36853-a535-5495-993d-28c91a5cd368 --> `ChunkConverter` | `src/integration/rag/chunk-converter.ts` | `a2f36853...` |
-| <!-- coderef:uuid=ffd025c5-e18c-5ae0-a221-beb0105f7592 --> `ConfidenceScorer` | `src/integration/rag/confidence-scorer.ts` | `ffd025c5...` |
-| <!-- coderef:uuid=0d9fce31-f9b8-5ccc-a929-3c036968d2b8 --> `ContextBuilder` | `src/integration/rag/context-builder.ts` | `0d9fce31...` |
-| <!-- coderef:uuid=578a6b1c-a6bc-5b43-b894-708b5a0c4eb3 --> `ConversationManager` | `src/integration/rag/conversation-manager.ts` | `578a6b1c...` |
-| <!-- coderef:uuid=8ac87808-8633-572a-9a67-cf52562b54eb --> `EmbeddingService` | `src/integration/rag/embedding-service.ts` | `8ac87808...` |
-| <!-- coderef:uuid=6fdf8568-2170-50ca-8223-7f3093e57db5 --> `EmbeddingTextGenerator` | `src/integration/rag/embedding-text-generator.ts` | `6fdf8568...` |
-| <!-- coderef:uuid=0d0225f9-300e-506d-a0d6-837898da9453 --> `GraphReRanker` | `src/integration/rag/graph-reranker.ts` | `0d0225f9...` |
-| <!-- coderef:uuid=f5c5c197-c021-5c2a-96fa-28630b430f67 --> `IncrementalIndexer` | `src/integration/rag/incremental-indexer.ts` | `f5c5c197...` |
-| <!-- coderef:uuid=cc584b2c-073d-5cf4-ac70-719a176afe95 --> `IndexingOrchestrator` | `src/integration/rag/indexing-orchestrator.ts` | `cc584b2c...` |
-| <!-- coderef:uuid=2608ef6c-1e5a-5ecc-8721-2f54bc272ade --> `PromptTemplateBuilder` | `src/integration/rag/prompt-templates.ts` | `2608ef6c...` |
-| <!-- coderef:uuid=1ff1abdc-a0c0-5292-a64b-e280c911b8d1 --> `PromptValidator` | `src/integration/rag/prompt-templates.ts` | `1ff1abdc...` |
-| <!-- coderef:uuid=383d815e-6305-562a-9be9-015b438a1007 --> `ConfigError` | `src/integration/rag/rag-config.ts` | `383d815e...` |
-| <!-- coderef:uuid=96cae6af-0559-58bd-bfca-bef0a81ded84 --> `RAGConfigLoader` | `src/integration/rag/rag-config.ts` | `96cae6af...` |
-| <!-- coderef:uuid=81aaba72-3e46-5c7a-92a0-6e3a45562eb3 --> `SemanticSearchService` | `src/integration/rag/semantic-search.ts` | `81aaba72...` |
-| <!-- coderef:uuid=432b7608-b48f-5851-97f4-c4e8abb3fc8c --> `ChromaStore` | `src/integration/vector/chroma-store.ts` | `432b7608...` |
-| <!-- coderef:uuid=07d0d87f-abaf-55f5-a6da-845057590842 --> `PineconeStore` | `src/integration/vector/pinecone-store.ts` | `07d0d87f...` |
-| <!-- coderef:uuid=1d462e28-e64a-5d32-9773-71a84153feb7 --> `SQLiteVectorStore` | `src/integration/vector/sqlite-store.ts` | `1d462e28...` |
-| <!-- coderef:uuid=9d758077-704d-5d18-9e92-3fa7fd50373f --> `VectorStoreError` | `src/integration/vector/vector-store.ts` | `9d758077...` |
-| <!-- coderef:uuid=91fc9af0-04f4-5461-82e8-7dcc8d4ec1cf --> `CodeRefParser` | `src/parser/parser.ts` | `91fc9af0...` |
-| <!-- coderef:uuid=cd64cc90-d639-5f55-ab43-7334beda4261 --> `ElementExtractor` | `src/pipeline/extractors/element-extractor.ts` | `cd64cc90...` |
-| <!-- coderef:uuid=e9593c19-256a-5f05-9e84-bf814e73afe7 --> `RelationshipExtractor` | `src/pipeline/extractors/relationship-extractor.ts` | `e9593c19...` |
-| <!-- coderef:uuid=5d5923a8-d749-5a14-9ef4-abde310b02c7 --> `ComplexityGenerator` | `src/pipeline/generators/complexity-generator.ts` | `5d5923a8...` |
-| <!-- coderef:uuid=8a5c746a-20c3-588e-967e-13a3c8e66f55 --> `ContextGenerator` | `src/pipeline/generators/context-generator.ts` | `8a5c746a...` |
-| <!-- coderef:uuid=0bc9cf1b-76c8-5e71-93ca-a9fa73df60fa --> `CoverageGenerator` | `src/pipeline/generators/coverage-generator.ts` | `0bc9cf1b...` |
-| <!-- coderef:uuid=9e2003f6-6cac-55c2-b6a4-935b9dac97b6 --> `DiagramGenerator` | `src/pipeline/generators/diagram-generator.ts` | `9e2003f6...` |
-| <!-- coderef:uuid=0ba24163-0a07-59fa-a98c-2e138483f9f0 --> `DriftGenerator` | `src/pipeline/generators/drift-generator.ts` | `0ba24163...` |
-| <!-- coderef:uuid=e1958a61-6008-5e8f-b7e3-20cf83ec3c7d --> `ExportGenerator` | `src/pipeline/generators/export-generator.ts` | `e1958a61...` |
-| <!-- coderef:uuid=0a2e3773-7393-52da-b64e-b0b12c31189f --> `GraphGenerator` | `src/pipeline/generators/graph-generator.ts` | `0a2e3773...` |
-| <!-- coderef:uuid=437baf0b-2b52-5d24-92eb-2b684de3e575 --> `HealthGenerator` | `src/pipeline/generators/health-generator.ts` | `437baf0b...` |
-| <!-- coderef:uuid=b9740d68-a75d-576d-af4e-88dbd61e5cd1 --> `IndexGenerator` | `src/pipeline/generators/index-generator.ts` | `b9740d68...` |
-| <!-- coderef:uuid=6902747f-ba5f-5776-a76e-d2732fc5f7e6 --> `PatternGenerator` | `src/pipeline/generators/pattern-generator.ts` | `6902747f...` |
-| <!-- coderef:uuid=2c59b77b-8b6b-55c9-a3aa-05af2506f03d --> `RegistryGenerator` | `src/pipeline/generators/registry-generator.ts` | `2c59b77b...` |
-| <!-- coderef:uuid=80163cd6-e363-5229-82c8-e305ede8777a --> `ValidationGenerator` | `src/pipeline/generators/validation-generator.ts` | `80163cd6...` |
-| <!-- coderef:uuid=11aebac3-6bdd-5c12-a06d-e6db1e92ee12 --> `GrammarRegistry` | `src/pipeline/grammar-registry.ts` | `11aebac3...` |
-| <!-- coderef:uuid=1848f36b-ac10-5b2a-8145-66d38d625e3b --> `IncrementalCache` | `src/pipeline/incremental-cache.ts` | `1848f36b...` |
-| <!-- coderef:uuid=5aa75d75-60d4-5adf-8b89-4fe661cb4033 --> `PipelineOrchestrator` | `src/pipeline/orchestrator.ts` | `5aa75d75...` |
-| <!-- coderef:uuid=edde1bcf-c776-52ff-9f23-89461d48cc0b --> `PluginError` | `src/plugins/plugin-registry.ts` | `edde1bcf...` |
-| <!-- coderef:uuid=3ee1f75d-ce33-5e02-873d-5e1601a60a38 --> `PluginRegistry` | `src/plugins/plugin-registry.ts` | `3ee1f75d...` |
-| <!-- coderef:uuid=0faf4485-d2b2-52ec-b8c0-53e47096f457 --> `QueryExecutor` | `src/query/query-executor.ts` | `0faf4485...` |
-| <!-- coderef:uuid=2a678e09-bfa8-5ba3-bec9-9b1077f9197e --> `EntityRegistry` | `src/registry/entity-registry.ts` | `2a678e09...` |
-| <!-- coderef:uuid=0c36c439-8bea-5940-a57c-0c3e8d16a818 --> `FileWatcher` | `src/scanner/file-watcher.ts` | `0c36c439...` |
-| <!-- coderef:uuid=d37e4be7-335f-52d3-9bc8-9f00249aa466 --> `LRUCache` | `src/scanner/lru-cache.ts` | `d37e4be7...` |
-| <!-- coderef:uuid=530764ac-ee68-5f3b-b672-426f179b78af --> `TreeSitterScanner` | `src/scanner/tree-sitter-scanner.ts` | `530764ac...` |
-| <!-- coderef:uuid=5bccbaa2-0b7d-5bf4-95d5-7a552f5b676f --> `SearchIndex` | `src/search/search-engine.ts` | `5bccbaa2...` |
-| <!-- coderef:uuid=a623b94b-4cde-5793-bf7e-9ce42f46e235 --> `SearchEngine` | `src/search/search-engine.ts` | `a623b94b...` |
-| <!-- coderef:uuid=e7651ac6-97ca-521e-8e70-6bfc088d64aa --> `ASTExtractor` | `src/semantic/ast-extractor.ts` | `e7651ac6...` |
-| <!-- coderef:uuid=8e4d4a9b-54fd-5ad4-aa32-84ddb8ffc5a0 --> `HeaderGenerator` | `src/semantic/header-generator.ts` | `8e4d4a9b...` |
-| <!-- coderef:uuid=5881a164-7b95-56dd-b96e-54c876788326 --> `LLMEnricher` | `src/semantic/llm-enricher.ts` | `5881a164...` |
-| <!-- coderef:uuid=7d40e33c-17fc-5522-878e-ad748909e1bf --> `SemanticOrchestrator` | `src/semantic/orchestrator.ts` | `7d40e33c...` |
-| <!-- coderef:uuid=1acabadf-d255-5089-a097-4501e50cb17d --> `RegistrySyncer` | `src/semantic/registry-sync.ts` | `1acabadf...` |
-| <!-- coderef:uuid=d69e45be-f38e-5504-8acb-9bef250a2ec8 --> `OpenAI` | `src/types/external-modules.d.ts` | `d69e45be...` |
-| <!-- coderef:uuid=62cc366d-e872-5107-9cf2-08ac4b842aea --> `Anthropic` | `src/types/external-modules.d.ts` | `62cc366d...` |
-| <!-- coderef:uuid=1a5f3909-18a9-5c29-8735-31a037111ac7 --> `ChromaClient` | `src/types/external-modules.d.ts` | `1a5f3909...` |
-| <!-- coderef:uuid=30ab4261-cb24-5e9d-af33-b4b704447132 --> `Collection` | `src/types/external-modules.d.ts` | `30ab4261...` |
-| <!-- coderef:uuid=b1a25a3e-cea3-5ef6-875a-9d50632b2d55 --> `Pinecone` | `src/types/external-modules.d.ts` | `b1a25a3e...` |
-| <!-- coderef:uuid=ccc85769-7a66-50a4-b1b1-eb4ac5e12311 --> `SemanticParameterMapper` | `src/validator/migration-mapper.ts` | `ccc85769...` |
-| <!-- coderef:uuid=2a0b5feb-c3d0-5e6d-b8fd-333c51c8c48b --> `CodeRefValidator` | `src/validator/validator.ts` | `2a0b5feb...` |
+| <!-- coderef:uuid=daa49fab-86bd-5dd2-93fc-e2e4dc285392 --> `ASTElementScanner` | `src/analyzer/ast-element-scanner.ts` | `daa49fab...` |
+| <!-- coderef:uuid=8b7294e7-76f5-56c1-968c-c7da1b7c66fd --> `ConfigAnalyzer` | `src/analyzer/config-analyzer.ts` | `8b7294e7...` |
+| <!-- coderef:uuid=aba20646-8c01-5b75-880d-e04e44be044c --> `ContractDetector` | `src/analyzer/contract-detector.ts` | `aba20646...` |
+| <!-- coderef:uuid=3c3a2ac0-6e72-59bc-9a72-7cf648761ef5 --> `DatabaseDetector` | `src/analyzer/database-detector.ts` | `3c3a2ac0...` |
+| <!-- coderef:uuid=d550f7ce-8a0f-50eb-920e-a25736c251e0 --> `DependencyAnalyzer` | `src/analyzer/dependency-analyzer.ts` | `d550f7ce...` |
+| <!-- coderef:uuid=635b02c7-54c8-5346-8366-f4b8636bb94f --> `DesignPatternDetector` | `src/analyzer/design-pattern-detector.ts` | `635b02c7...` |
+| <!-- coderef:uuid=89e68f77-ecc5-5564-9081-e65d15607728 --> `DocsAnalyzer` | `src/analyzer/docs-analyzer.ts` | `89e68f77...` |
+| <!-- coderef:uuid=41e9a0c7-30b2-58ae-b567-ad9284f0829f --> `DynamicImportDetector` | `src/analyzer/dynamic-import-detector.ts` | `41e9a0c7...` |
+| <!-- coderef:uuid=ef69e28e-af06-5803-a45c-2f2aa741cca3 --> `EntryPointDetector` | `src/analyzer/entry-detector.ts` | `ef69e28e...` |
+| <!-- coderef:uuid=34e88cd9-d838-5f0b-aceb-3b2a31ec449e --> `JSCallDetector` | `src/analyzer/js-call-detector/index.ts` | `34e88cd9...` |
+| <!-- coderef:uuid=998c43cf-0d82-599d-b5a8-0a48ee105c86 --> `MiddlewareDetector` | `src/analyzer/middleware-detector.ts` | `998c43cf...` |
+| <!-- coderef:uuid=0e096457-543d-5126-8919-822fcfc639bf --> `MigrationRouteAnalyzer` | `src/analyzer/migration-route-analyzer.ts` | `0e096457...` |
+| <!-- coderef:uuid=61c70200-9741-5534-b682-2f8b587c2f17 --> `ProjectClassifier` | `src/analyzer/project-classifier.ts` | `61c70200...` |
+| <!-- coderef:uuid=68253add-8a13-5bbd-a22c-3a46f0c5a3c4 --> `IncrementalCache` | `src/cache/incremental-cache.ts` | `68253add...` |
+| <!-- coderef:uuid=936b0c8f-3a36-5b92-a481-b06ee2f7a347 --> `DryRunSemanticOrchestrator` | `src/cli/semantic-integration.ts` | `936b0c8f...` |
+| <!-- coderef:uuid=50ad9ecf-bb54-5c2a-92e6-96c47bc7635c --> `AgenticFormatter` | `src/context/agentic-formatter.ts` | `50ad9ecf...` |
+| <!-- coderef:uuid=f6a3c8f5-54cc-57d6-8efc-cab4a3562105 --> `BreakingChangeDetector` | `src/context/breaking-change-detector/index.ts` | `f6a3c8f5...` |
+| <!-- coderef:uuid=2a7ac3ec-a6b2-528f-b83c-f18dfe4c9095 --> `ComplexityScorer` | `src/context/complexity-scorer.ts` | `2a7ac3ec...` |
+| <!-- coderef:uuid=e1229fcb-3366-54bb-8043-e6eeb4267b38 --> `ContextGenerator` | `src/context/context-generator.ts` | `e1229fcb...` |
+| <!-- coderef:uuid=a1e11a52-97fa-5b7e-afc9-8bf375db207a --> `ContextTracker` | `src/context/context-tracker.ts` | `a1e11a52...` |
+| <!-- coderef:uuid=4a643d43-c9a4-5e55-9c7a-9a2e7c8b68ce --> `EdgeCaseDetector` | `src/context/edge-case-detector.ts` | `4a643d43...` |
+| <!-- coderef:uuid=c6105ae7-a8e1-561a-891d-4b7cf0b30d5f --> `EntryPointDetector` | `src/context/entry-point-detector.ts` | `c6105ae7...` |
+| <!-- coderef:uuid=8b8660bb-0021-5a68-81d0-9ac0290d2446 --> `ExampleExtractor` | `src/context/example-extractor.ts` | `8b8660bb...` |
+| <!-- coderef:uuid=a513215f-2a38-5f27-a61a-4e0beeaa55d0 --> `FuzzyResolver` | `src/context/fuzzy-resolver.ts` | `a513215f...` |
+| <!-- coderef:uuid=33ecec19-7b44-55e9-bb49-b2b3a8ad9b37 --> `ImpactSimulator` | `src/context/impact-simulator.ts` | `33ecec19...` |
+| <!-- coderef:uuid=0d7c79e0-9fda-55d9-86f0-a6504830c06f --> `MarkdownFormatter` | `src/context/markdown-formatter.ts` | `0d7c79e0...` |
+| <!-- coderef:uuid=b23eb8f0-0e8f-5aad-abbe-7c5822dcf936 --> `TaskContextGenerator` | `src/context/task-context-generator.ts` | `b23eb8f0...` |
+| <!-- coderef:uuid=d07504ef-e7a2-5ff7-8014-4df799c53185 --> `TestPatternAnalyzer` | `src/context/test-pattern-analyzer.ts` | `d07504ef...` |
+| <!-- coderef:uuid=645b0d3c-a732-52f8-946c-fb2ac8a3c613 --> `GraphExporter` | `src/export/graph-exporter.ts` | `645b0d3c...` |
+| <!-- coderef:uuid=58a0cdc3-0717-54ed-b7a8-c28ead4c6644 --> `CodeRefFormatter` | `src/formatter/formatter.ts` | `58a0cdc3...` |
+| <!-- coderef:uuid=e7b3e468-9722-5745-82b6-fe824f59b299 --> `IndexStore` | `src/indexer/index-store.ts` | `e7b3e468...` |
+| <!-- coderef:uuid=eb490c44-0780-55f0-b673-ff4fa1a9a5ad --> `IndexerService` | `src/indexer/indexer-service.ts` | `eb490c44...` |
+| <!-- coderef:uuid=41685fc8-25e3-5b70-b3ac-f5027600a4d2 --> `MetadataIndex` | `src/indexer/metadata-index.ts` | `41685fc8...` |
+| <!-- coderef:uuid=335e7276-c2e4-5259-bcdc-bbf4e46e43ce --> `QueryEngine` | `src/indexer/query-engine.ts` | `335e7276...` |
+| <!-- coderef:uuid=23ba46b3-0c74-59a7-a777-db24f7d77fa9 --> `RelationshipIndex` | `src/indexer/relationship-index.ts` | `23ba46b3...` |
+| <!-- coderef:uuid=f96b5a78-036d-5a26-8eb4-51c8cb331da0 --> `AIPromptGenerator` | `src/integration/ai-prompt-generator.ts` | `f96b5a78...` |
+| <!-- coderef:uuid=322df3bf-574c-5d6f-8e58-5fd168782e2e --> `AnthropicProvider` | `src/integration/llm/anthropic-provider.ts` | `322df3bf...` |
+| <!-- coderef:uuid=1ed20f56-3ea8-5ef8-86e7-b730abc71661 --> `LLMError` | `src/integration/llm/llm-provider.ts` | `1ed20f56...` |
+| <!-- coderef:uuid=4b65a2a3-bf72-5c1e-8c53-b35ae6c39433 --> `ProviderDoesNotSupportEmbeddings` | `src/integration/llm/model-registry.ts` | `4b65a2a3...` |
+| <!-- coderef:uuid=3d4655c5-4fec-5655-9f98-aa0abafcf4ef --> `OllamaProvider` | `src/integration/llm/ollama-provider.ts` | `3d4655c5...` |
+| <!-- coderef:uuid=3fd4d9fc-7279-50f0-9ded-bc669f8588cc --> `OpenAIProvider` | `src/integration/llm/openai-provider.ts` | `3fd4d9fc...` |
+| <!-- coderef:uuid=34a614c4-1b7a-580a-9a54-52b697de5ff0 --> `Cls0` | `src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod0.ts` | `34a614c4...` |
+| <!-- coderef:uuid=c755ef2a-bd23-5392-93a3-d1946c7e90f3 --> `Cls1` | `src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod1.ts` | `c755ef2a...` |
+| <!-- coderef:uuid=7c2a5a73-7b84-5ad6-93a3-c745ed462a13 --> `Cls2` | `src/integration/rag/__tests__/fixtures/dual-ac-frozen/src/mod2.ts` | `7c2a5a73...` |
+| <!-- coderef:uuid=59bf646c-b5e7-5a13-875d-0b3f2ce97521 --> `AnswerGenerationService` | `src/integration/rag/answer-generation-service.ts` | `59bf646c...` |
+| <!-- coderef:uuid=c8922b5d-52ea-59e8-a948-1973421b1640 --> `ChunkConverter` | `src/integration/rag/chunk-converter.ts` | `c8922b5d...` |
+| <!-- coderef:uuid=3581a473-2b03-50b9-a0cc-bee0c2c0aabc --> `ConfidenceScorer` | `src/integration/rag/confidence-scorer.ts` | `3581a473...` |
+| <!-- coderef:uuid=44c9010c-841a-597b-8959-ee7beeb5303f --> `ContextBuilder` | `src/integration/rag/context-builder.ts` | `44c9010c...` |
+| <!-- coderef:uuid=8174b6c1-a793-5bc7-9d4b-dff19a6f2318 --> `ConversationManager` | `src/integration/rag/conversation-manager.ts` | `8174b6c1...` |
+| <!-- coderef:uuid=ff77ff02-da04-59fb-86bd-5a4aecff6617 --> `EmbeddingService` | `src/integration/rag/embedding-service.ts` | `ff77ff02...` |
+| <!-- coderef:uuid=2d0f1d8a-4fe6-55a1-ae1c-2d57d4b7bc9b --> `EmbeddingTextGenerator` | `src/integration/rag/embedding-text-generator.ts` | `2d0f1d8a...` |
+| <!-- coderef:uuid=d931473f-2682-5a4f-bb4c-f69e8c015b6c --> `GraphReRanker` | `src/integration/rag/graph-reranker.ts` | `d931473f...` |
+| <!-- coderef:uuid=28d5b202-7f5d-5fce-8a08-8e2fceae81b3 --> `IncrementalIndexer` | `src/integration/rag/incremental-indexer.ts` | `28d5b202...` |
+| <!-- coderef:uuid=2c7a4291-c36c-5cad-b6eb-4acf5da8f5a8 --> `IndexingOrchestrator` | `src/integration/rag/indexing-orchestrator.ts` | `2c7a4291...` |
+| <!-- coderef:uuid=10d8fe84-11d8-57fb-b633-01ba7f935f14 --> `PromptTemplateBuilder` | `src/integration/rag/prompt-templates.ts` | `10d8fe84...` |
+| <!-- coderef:uuid=c9e676c1-4904-563f-907e-15d08f7f2dfc --> `PromptValidator` | `src/integration/rag/prompt-templates.ts` | `c9e676c1...` |
+| <!-- coderef:uuid=d4662697-335f-5576-b4d7-0442338f1520 --> `ConfigError` | `src/integration/rag/rag-config.ts` | `d4662697...` |
+| <!-- coderef:uuid=f7510d31-8b7c-5a69-bc9b-d5422f17c0e2 --> `RAGConfigLoader` | `src/integration/rag/rag-config.ts` | `f7510d31...` |
+| <!-- coderef:uuid=c4b4750b-c848-5f6e-b004-a6a1f4010461 --> `SemanticSearchService` | `src/integration/rag/semantic-search.ts` | `c4b4750b...` |
+| <!-- coderef:uuid=2a1ce345-288e-506a-82b8-1f1af491c919 --> `ChromaStore` | `src/integration/vector/chroma-store.ts` | `2a1ce345...` |
+| <!-- coderef:uuid=9d43df3c-db56-504d-bc76-1de71b7440f4 --> `JsonVectorStore` | `src/integration/vector/json-store.ts` | `9d43df3c...` |
+| <!-- coderef:uuid=83b5b485-aefc-56d8-941f-955b469e750b --> `PineconeStore` | `src/integration/vector/pinecone-store.ts` | `83b5b485...` |
+| <!-- coderef:uuid=0bd5c7c1-7756-5812-a793-4df0a2cff59c --> `VectorStoreError` | `src/integration/vector/vector-store.ts` | `0bd5c7c1...` |
+| <!-- coderef:uuid=38816f69-ab0b-51e3-aee7-fcf7ec8917d1 --> `CodeRefParser` | `src/parser/parser.ts` | `38816f69...` |
+| <!-- coderef:uuid=07b35101-4e97-557c-bfbf-23e9b6350420 --> `ElementExtractor` | `src/pipeline/extractors/element-extractor.ts` | `07b35101...` |
+| <!-- coderef:uuid=f4b3a60a-00f2-5865-b616-41244bcb98bb --> `RelationshipExtractor` | `src/pipeline/extractors/relationship-extractor.ts` | `f4b3a60a...` |
+| <!-- coderef:uuid=7935d730-034d-51c5-ac67-6946b93bf9d2 --> `ComplexityGenerator` | `src/pipeline/generators/complexity-generator.ts` | `7935d730...` |
+| <!-- coderef:uuid=3c386af0-461e-57b0-aa04-dbbe9caa4048 --> `ContextGenerator` | `src/pipeline/generators/context-generator.ts` | `3c386af0...` |
+| <!-- coderef:uuid=f2cd84fe-5352-59a2-a3a6-3a5629efa150 --> `CoverageGenerator` | `src/pipeline/generators/coverage-generator.ts` | `f2cd84fe...` |
+| <!-- coderef:uuid=7d80d49c-957c-5bf3-9701-95ec368fc8a4 --> `DiagramGenerator` | `src/pipeline/generators/diagram-generator.ts` | `7d80d49c...` |
+| <!-- coderef:uuid=9a9ad609-64c3-5e50-85d0-da7253e05fc0 --> `DriftGenerator` | `src/pipeline/generators/drift-generator.ts` | `9a9ad609...` |
+| <!-- coderef:uuid=b247157b-a821-54cf-865d-e62974987577 --> `ExportGenerator` | `src/pipeline/generators/export-generator.ts` | `b247157b...` |
+| <!-- coderef:uuid=e21469c1-4235-5546-962b-c2d1377cd14a --> `GraphGenerator` | `src/pipeline/generators/graph-generator.ts` | `e21469c1...` |
+| <!-- coderef:uuid=24ab6298-0c84-5fbc-85f0-28873f39e0c4 --> `HealthGenerator` | `src/pipeline/generators/health-generator.ts` | `24ab6298...` |
+| <!-- coderef:uuid=a5d85f9d-7f25-59ed-b3ed-5496ea730bd3 --> `IndexGenerator` | `src/pipeline/generators/index-generator.ts` | `a5d85f9d...` |
+| <!-- coderef:uuid=203742a8-a84d-528e-98cf-45477f87c51a --> `PatternGenerator` | `src/pipeline/generators/pattern-generator.ts` | `203742a8...` |
+| <!-- coderef:uuid=cc33ef34-79b5-5863-9466-e6514836fb4c --> `RegistryGenerator` | `src/pipeline/generators/registry-generator.ts` | `cc33ef34...` |
+| <!-- coderef:uuid=463b9df2-b8c2-5cd6-a364-1bbf4c340682 --> `ValidationGenerator` | `src/pipeline/generators/validation-generator.ts` | `463b9df2...` |
+| <!-- coderef:uuid=698a845d-dbb3-5cff-866b-8086b617cb17 --> `GrammarRegistry` | `src/pipeline/grammar-registry.ts` | `698a845d...` |
+| <!-- coderef:uuid=1a648c34-3392-56cc-a393-89f0709234a2 --> `PipelineOrchestrator` | `src/pipeline/orchestrator.ts` | `1a648c34...` |
+| <!-- coderef:uuid=a2968293-adff-5fb2-8968-1b255134e328 --> `CanonicalGraphError` | `src/query/canonical-graph.ts` | `a2968293...` |
+| <!-- coderef:uuid=30035452-96cf-5b3e-945d-9893f86be402 --> `CanonicalGraphQuery` | `src/query/canonical-graph.ts` | `30035452...` |
+| <!-- coderef:uuid=eb83d35c-0592-5483-a2ce-d8b49ff2a284 --> `EntityRegistry` | `src/registry/entity-registry.ts` | `eb83d35c...` |
+| <!-- coderef:uuid=337c0f6a-8536-58ed-b54d-0371a01b594e --> `FileWatcher` | `src/scanner/file-watcher.ts` | `337c0f6a...` |
+| <!-- coderef:uuid=ed6d5e33-f0ce-5e87-9125-74cc31e4e24b --> `LRUCache` | `src/scanner/lru-cache.ts` | `ed6d5e33...` |
+| <!-- coderef:uuid=e98ca01b-fbd7-5bb3-9e3b-01d493c99750 --> `TreeSitterScanner` | `src/scanner/tree-sitter-scanner.ts` | `e98ca01b...` |
+| <!-- coderef:uuid=9489323f-68f6-5814-972b-65bde7c83843 --> `SearchIndex` | `src/search/search-engine.ts` | `9489323f...` |
+| <!-- coderef:uuid=bcdc7adf-b7f2-5619-9104-d262c4a033a3 --> `SearchEngine` | `src/search/search-engine.ts` | `bcdc7adf...` |
+| <!-- coderef:uuid=4ad8c6b6-ef75-545a-ae4e-9793deb4bdde --> `ASTExtractor` | `src/semantic/ast-extractor.ts` | `4ad8c6b6...` |
+| <!-- coderef:uuid=19b12a60-2523-581e-8972-16035b48ca6c --> `HeaderGenerator` | `src/semantic/header-generator.ts` | `19b12a60...` |
+| <!-- coderef:uuid=3358aa62-c588-589e-8013-66570d50a86d --> `SemanticOrchestrator` | `src/semantic/orchestrator.ts` | `3358aa62...` |
+| <!-- coderef:uuid=b6580849-d1c4-5385-9468-612e4e7aabcf --> `RegistrySyncer` | `src/semantic/registry-sync.ts` | `b6580849...` |
+| <!-- coderef:uuid=2f11014c-54da-5a2f-b8d1-268bcb0f58a7 --> `OpenAI` | `src/types/external-modules.d.ts` | `2f11014c...` |
+| <!-- coderef:uuid=f7782ee3-5487-517a-b3bd-19c70eff55b5 --> `Anthropic` | `src/types/external-modules.d.ts` | `f7782ee3...` |
+| <!-- coderef:uuid=a0e72e17-af27-5484-b89b-a3627bba08bf --> `ChromaClient` | `src/types/external-modules.d.ts` | `a0e72e17...` |
+| <!-- coderef:uuid=c469e427-856b-583a-9742-3b430ec8248f --> `Collection` | `src/types/external-modules.d.ts` | `c469e427...` |
+| <!-- coderef:uuid=f933eee5-671a-5ef5-aac7-d0ede8668fad --> `Pinecone` | `src/types/external-modules.d.ts` | `f933eee5...` |
+| <!-- coderef:uuid=60bbd1da-0279-5e0c-917e-085a8b7dcd0f --> `SemanticParameterMapper` | `src/validator/migration-mapper.ts` | `60bbd1da...` |
+| <!-- coderef:uuid=8d9575fa-f3a1-50c5-b6a5-f0385c77c095 --> `CodeRefValidator` | `src/validator/validator.ts` | `8d9575fa...` |
 
 ---
 
-## Exported Interfaces (347)
+## Exported Interfaces (312)
 
 | Interface | File | UUID |
 |-----------|------|------|
-| <!-- coderef:uuid=5d9dc906-8b1b-5569-adb4-d6322f9b2b41 --> `MockEnvironment` | `__tests__/generators/helpers.ts` | `5d9dc906...` |
-| <!-- coderef:uuid=f0ca744e-c2b6-5e1e-8f11-b945f9d88729 --> `ConversionOptions` | `src/adapter/graph-to-elements.ts` | `f0ca744e...` |
-| <!-- coderef:uuid=14d3fbd0-ea1e-5f72-87b7-889b6333c467 --> `AnalysisResult` | `src/analyzer/analyzer-service.ts` | `14d3fbd0...` |
-| <!-- coderef:uuid=e8c45bf5-eda8-56ad-aa7e-8edcb0ef950c --> `ASTScanResult` | `src/analyzer/ast-element-scanner.ts` | `e8c45bf5...` |
-| <!-- coderef:uuid=73b3fc26-f294-5395-9751-4610b2170dd8 --> `CallExpression` | `src/analyzer/call-detector.ts` | `73b3fc26...` |
-| <!-- coderef:uuid=11fd322c-93b0-5a1b-b561-a8b2ee1f7e7c --> `CallEdge` | `src/analyzer/call-detector.ts` | `11fd322c...` |
-| <!-- coderef:uuid=7e71b490-54ca-5e6f-b6fb-c2548bbb4a90 --> `PackageJsonAnalysis` | `src/analyzer/config-analyzer.ts` | `7e71b490...` |
-| <!-- coderef:uuid=b926c20a-4b2b-5d15-aff2-d5dba509547a --> `TsConfigAnalysis` | `src/analyzer/config-analyzer.ts` | `b926c20a...` |
-| <!-- coderef:uuid=2197e2a0-7a5d-5bd9-a659-668072a2e810 --> `DockerfileStage` | `src/analyzer/config-analyzer.ts` | `2197e2a0...` |
-| <!-- coderef:uuid=30754209-b795-593b-b6c2-0db7055c55d5 --> `DockerfileAnalysis` | `src/analyzer/config-analyzer.ts` | `30754209...` |
-| <!-- coderef:uuid=6666ff7f-8c14-5d03-a324-c3acc876f38f --> `DockerComposeService` | `src/analyzer/config-analyzer.ts` | `6666ff7f...` |
-| <!-- coderef:uuid=e252dbe3-6cec-59bb-87ca-4d5e5f18e150 --> `DockerComposeAnalysis` | `src/analyzer/config-analyzer.ts` | `e252dbe3...` |
-| <!-- coderef:uuid=90a9ccbc-4930-5182-9777-c8a34f73ac9f --> `GitHubActionStep` | `src/analyzer/config-analyzer.ts` | `90a9ccbc...` |
-| <!-- coderef:uuid=03e29f4c-0ba7-54d5-99ec-0159bd7964f9 --> `GitHubActionJob` | `src/analyzer/config-analyzer.ts` | `03e29f4c...` |
-| <!-- coderef:uuid=43de36eb-fb7c-5996-8656-954f3017cb41 --> `GitHubActionWorkflow` | `src/analyzer/config-analyzer.ts` | `43de36eb...` |
-| <!-- coderef:uuid=7e8727b6-c7bb-5954-b26a-1d025058e9b3 --> `EnvFileAnalysis` | `src/analyzer/config-analyzer.ts` | `7e8727b6...` |
-| <!-- coderef:uuid=fb7f5cf4-6c77-5bcb-bd94-6194a9a4b3d8 --> `ConfigAnalysis` | `src/analyzer/config-analyzer.ts` | `fb7f5cf4...` |
-| <!-- coderef:uuid=037005bb-6d36-566d-a092-149361a98abc --> `OpenApiSpec` | `src/analyzer/contract-detector.ts` | `037005bb...` |
-| <!-- coderef:uuid=5bc34cb9-a838-5338-ba74-ec2e4e860762 --> `OpenApiPath` | `src/analyzer/contract-detector.ts` | `5bc34cb9...` |
-| <!-- coderef:uuid=5d764a51-77c9-5338-bf6c-ea912c8f5bef --> `OpenApiComponent` | `src/analyzer/contract-detector.ts` | `5d764a51...` |
-| <!-- coderef:uuid=534eec33-af64-5f59-9d23-dc60079d1851 --> `GraphqlSchema` | `src/analyzer/contract-detector.ts` | `534eec33...` |
-| <!-- coderef:uuid=4664697f-b26d-5ad6-aa7e-9abf14e0fdd0 --> `GraphqlType` | `src/analyzer/contract-detector.ts` | `4664697f...` |
-| <!-- coderef:uuid=c8ee4e84-5c07-5eb2-b22f-a3a9d706ae13 --> `GraphqlOperation` | `src/analyzer/contract-detector.ts` | `c8ee4e84...` |
-| <!-- coderef:uuid=bd0b0389-029b-5bec-ac7c-ac20828151cc --> `ProtobufDefinition` | `src/analyzer/contract-detector.ts` | `bd0b0389...` |
-| <!-- coderef:uuid=418ebf1f-c567-51f5-a0ea-f7ea14c4f535 --> `ProtobufMessage` | `src/analyzer/contract-detector.ts` | `418ebf1f...` |
-| <!-- coderef:uuid=e610dc0f-eb38-5eeb-bd80-9776b811ffed --> `ProtobufField` | `src/analyzer/contract-detector.ts` | `e610dc0f...` |
-| <!-- coderef:uuid=cbeef7e3-1f23-5253-9d96-d3367d26ca79 --> `ProtobufService` | `src/analyzer/contract-detector.ts` | `cbeef7e3...` |
-| <!-- coderef:uuid=8a4e645f-9af0-5ea4-b557-cdd2fb8d08b1 --> `ProtobufMethod` | `src/analyzer/contract-detector.ts` | `8a4e645f...` |
-| <!-- coderef:uuid=7b63f1f8-cfc0-561a-89b9-7f10e38a2e0b --> `ProtobufEnum` | `src/analyzer/contract-detector.ts` | `7b63f1f8...` |
-| <!-- coderef:uuid=1b4add4c-0178-53c5-96ca-a8d7590df925 --> `JsonSchema` | `src/analyzer/contract-detector.ts` | `1b4add4c...` |
+| <!-- coderef:uuid=bff27489-6b20-5075-bf76-148c41b5923b --> `MockEnvironment` | `__tests__/generators/helpers.ts` | `bff27489...` |
+| <!-- coderef:uuid=46901067-e0a7-58af-933d-74a0d347a951 --> `ASTScanResult` | `src/analyzer/ast-element-scanner.ts` | `46901067...` |
+| <!-- coderef:uuid=ee831c3d-2c60-50c8-8433-80f18a575f55 --> `PackageJsonAnalysis` | `src/analyzer/config-analyzer.ts` | `ee831c3d...` |
+| <!-- coderef:uuid=a42bb154-7359-5e1e-8dde-fec8edc8ec81 --> `TsConfigAnalysis` | `src/analyzer/config-analyzer.ts` | `a42bb154...` |
+| <!-- coderef:uuid=9b791e9a-4518-525c-be08-a079773759ad --> `DockerfileStage` | `src/analyzer/config-analyzer.ts` | `9b791e9a...` |
+| <!-- coderef:uuid=be792f37-c7d3-55af-a2e6-0d4dc45c2df1 --> `DockerfileAnalysis` | `src/analyzer/config-analyzer.ts` | `be792f37...` |
+| <!-- coderef:uuid=5bbbeab9-bdf8-579f-bd97-768e18d584b6 --> `DockerComposeService` | `src/analyzer/config-analyzer.ts` | `5bbbeab9...` |
+| <!-- coderef:uuid=df947c1b-2d1d-5211-a493-20e069546ba1 --> `DockerComposeAnalysis` | `src/analyzer/config-analyzer.ts` | `df947c1b...` |
+| <!-- coderef:uuid=67735967-52f9-5ed9-8328-015d7efd9a32 --> `GitHubActionStep` | `src/analyzer/config-analyzer.ts` | `67735967...` |
+| <!-- coderef:uuid=a51ddaff-a1f7-57de-ac76-f8567b260d4c --> `GitHubActionJob` | `src/analyzer/config-analyzer.ts` | `a51ddaff...` |
+| <!-- coderef:uuid=456df1f2-3414-5af9-a2b1-0cb25ac1ba59 --> `GitHubActionWorkflow` | `src/analyzer/config-analyzer.ts` | `456df1f2...` |
+| <!-- coderef:uuid=f221db9a-9d6d-5f00-a0fe-e34ea3200671 --> `EnvFileAnalysis` | `src/analyzer/config-analyzer.ts` | `f221db9a...` |
+| <!-- coderef:uuid=eb71e607-cd70-5a78-9aad-29e5574d73d1 --> `ConfigAnalysis` | `src/analyzer/config-analyzer.ts` | `eb71e607...` |
+| <!-- coderef:uuid=21c78d66-5a16-57d9-8d70-6145165b90c2 --> `OpenApiSpec` | `src/analyzer/contract-detector.ts` | `21c78d66...` |
+| <!-- coderef:uuid=6ac31a2f-ca3e-58f3-8443-84324b44f3c6 --> `OpenApiPath` | `src/analyzer/contract-detector.ts` | `6ac31a2f...` |
+| <!-- coderef:uuid=85942d3f-7116-588f-baa5-a20a4f89e20e --> `OpenApiComponent` | `src/analyzer/contract-detector.ts` | `85942d3f...` |
+| <!-- coderef:uuid=9c01f0ce-a28c-578d-a0f4-ababda168c6e --> `GraphqlSchema` | `src/analyzer/contract-detector.ts` | `9c01f0ce...` |
+| <!-- coderef:uuid=13023a89-a396-50e2-b3b8-bcf09bfd35f3 --> `GraphqlType` | `src/analyzer/contract-detector.ts` | `13023a89...` |
+| <!-- coderef:uuid=4fe29979-50a0-59b6-9669-3b67a86b4edb --> `GraphqlOperation` | `src/analyzer/contract-detector.ts` | `4fe29979...` |
+| <!-- coderef:uuid=445b1ccb-d27b-5476-811b-67afda206df6 --> `ProtobufDefinition` | `src/analyzer/contract-detector.ts` | `445b1ccb...` |
+| <!-- coderef:uuid=dc0d1800-160f-5b86-920e-79985e506661 --> `ProtobufMessage` | `src/analyzer/contract-detector.ts` | `dc0d1800...` |
+| <!-- coderef:uuid=99321ba6-05d4-560e-add4-cd0dc8b1b631 --> `ProtobufField` | `src/analyzer/contract-detector.ts` | `99321ba6...` |
+| <!-- coderef:uuid=c0881a22-bb47-50be-9610-64d232a09e22 --> `ProtobufService` | `src/analyzer/contract-detector.ts` | `c0881a22...` |
+| <!-- coderef:uuid=47b93ddb-d5ff-553e-a4eb-a65214a974d6 --> `ProtobufMethod` | `src/analyzer/contract-detector.ts` | `47b93ddb...` |
+| <!-- coderef:uuid=b1de060a-dc6a-511e-90f3-1c7f969c4712 --> `ProtobufEnum` | `src/analyzer/contract-detector.ts` | `b1de060a...` |
+| <!-- coderef:uuid=cf97eecb-1fdd-5de2-8fcb-0fa800733509 --> `JsonSchema` | `src/analyzer/contract-detector.ts` | `cf97eecb...` |
+| <!-- coderef:uuid=353b93f2-4c73-5bef-960d-5b3dc9ceee69 --> `ContractAnalysis` | `src/analyzer/contract-detector.ts` | `353b93f2...` |
+| <!-- coderef:uuid=5da0020a-07b9-5957-a298-03e778e055f2 --> `PrismaModel` | `src/analyzer/database-detector.ts` | `5da0020a...` |
+| <!-- coderef:uuid=edbc2aa3-efe5-5bef-a4bc-0dc073b79348 --> `PrismaField` | `src/analyzer/database-detector.ts` | `edbc2aa3...` |
+| <!-- coderef:uuid=419a9b3f-dae7-5c78-9d74-a4c9cd65efc3 --> `PrismaRelation` | `src/analyzer/database-detector.ts` | `419a9b3f...` |
 
-*... and 317 more interfaces. See index.json for complete list.*
+*... and 282 more interfaces. See index.json for complete list.*
 
 ---
 
-## Exported Type Aliases (45)
+## Exported Type Aliases (44)
 
 | Type | File | UUID |
 |------|------|------|
-| <!-- coderef:uuid=b052bc9d-940d-5167-ac7a-8de90eec4f6f --> `DesignPatternType` | `src/analyzer/design-pattern-detector.ts` | `b052bc9d...` |
-| <!-- coderef:uuid=15a5a3db-9da5-55a6-935f-f267c3b6e033 --> `EntryPointType` | `src/analyzer/entry-detector.ts` | `15a5a3db...` |
-| <!-- coderef:uuid=3a7f6b89-6c4e-50bc-a729-61ae3cd69967 --> `ProjectCategory` | `src/analyzer/project-classifier.ts` | `3a7f6b89...` |
-| <!-- coderef:uuid=686c48ac-f45c-54a6-80e5-77446b0d618d --> `ApiServiceType` | `src/analyzer/project-classifier.ts` | `686c48ac...` |
-| <!-- coderef:uuid=7f9c57d8-4719-512a-ab86-3c5c83e93c66 --> `WebAppType` | `src/analyzer/project-classifier.ts` | `7f9c57d8...` |
-| <!-- coderef:uuid=cfb681c8-e716-5794-9aa6-9a7e4e064a4c --> `SupportedCliLanguage` | `src/cli/detect-languages.ts` | `cfb681c8...` |
-| <!-- coderef:uuid=821a1e90-c8eb-50df-ae92-280d37692ae6 --> `ExportFormat` | `src/export/graph-exporter.ts` | `821a1e90...` |
-| <!-- coderef:uuid=2ff35913-1b49-512e-9efd-6919d27a1582 --> `ExportedGraphEdgeRelationship` | `src/export/graph-exporter.ts` | `2ff35913...` |
-| <!-- coderef:uuid=dc11097f-3989-5ff4-89fb-f798932ed446 --> `ExportedGraphEdgeResolutionStatus` | `src/export/graph-exporter.ts` | `dc11097f...` |
-| <!-- coderef:uuid=5d0c73e5-a5f8-52e0-a0af-1a5485d7fa40 --> `IndexSchemaVersion` | `src/fileGeneration/index-storage.ts` | `5d0c73e5...` |
-| <!-- coderef:uuid=3330074a-b06a-53e4-9e3d-88f35c5232e8 --> `IndexFormat` | `src/fileGeneration/index-storage.ts` | `3330074a...` |
-| <!-- coderef:uuid=baeafd8d-77d5-5c9c-8518-1f6be21946ee --> `IndexingStage` | `src/indexer/indexer-service.ts` | `baeafd8d...` |
-| <!-- coderef:uuid=47ab1959-07f1-5472-80ea-d67fd4c2b560 --> `MetadataCategory` | `src/indexer/metadata-index.ts` | `47ab1959...` |
-| <!-- coderef:uuid=c21929e5-476a-5ac9-9035-974186466e8a --> `QueryFilter` | `src/indexer/query-engine.ts` | `c21929e5...` |
-| <!-- coderef:uuid=93e17632-cd55-59d7-a370-9078f08ad868 --> `RelationshipType` | `src/indexer/relationship-index.ts` | `93e17632...` |
-| <!-- coderef:uuid=6af16d03-18ae-52fc-82e5-abc6503c412b --> `AIQueryType` | `src/integration/ai-prompt-generator.ts` | `6af16d03...` |
-| <!-- coderef:uuid=0e9b3ee9-c8a2-5dfd-95aa-f68cea752291 --> `LLMProviderFactory` | `src/integration/llm/llm-provider.ts` | `0e9b3ee9...` |
-| <!-- coderef:uuid=1498662a-d241-58a3-b719-c90b9bd300da --> `ProgressCallback` | `src/integration/rag/embedding-service.ts` | `1498662a...` |
-| <!-- coderef:uuid=0b5ae7e0-6f23-504f-9adc-baa7296a3078 --> `QueryStrategy` | `src/integration/rag/graph-reranker.ts` | `0b5ae7e0...` |
-| <!-- coderef:uuid=e843f5c5-450c-5aaf-a133-398e36da664a --> `IndexingProgressCallback` | `src/integration/rag/indexing-orchestrator.ts` | `e843f5c5...` |
-| <!-- coderef:uuid=9f78125d-9d6e-57c7-b9f9-73e784f10c20 --> `SkipReason` | `src/integration/rag/indexing-orchestrator.ts` | `9f78125d...` |
-| <!-- coderef:uuid=6e029b02-9982-5ee9-acd4-802ea3e2f087 --> `FailReason` | `src/integration/rag/indexing-orchestrator.ts` | `6e029b02...` |
-| <!-- coderef:uuid=ba8fd074-e773-54be-b21e-d733cb01dc30 --> `IndexingStatus` | `src/integration/rag/indexing-orchestrator.ts` | `ba8fd074...` |
-| <!-- coderef:uuid=7972fbab-6cc4-5871-898f-57e006c702a0 --> `AbsolutePath` | `src/integration/rag/path-types.ts` | `7972fbab...` |
-| <!-- coderef:uuid=b13881a2-4b1c-59ef-be28-2f84e858373f --> `RelativePath` | `src/integration/rag/path-types.ts` | `b13881a2...` |
-| <!-- coderef:uuid=154c715f-ee64-54ef-8406-5daafd3bcc29 --> `LLMProviderName` | `src/integration/rag/rag-config.ts` | `154c715f...` |
-| <!-- coderef:uuid=af0cc787-7724-5e16-a86e-97a7f303d1a4 --> `VectorStoreFactory` | `src/integration/vector/vector-store.ts` | `af0cc787...` |
-| <!-- coderef:uuid=8e0680b5-bd0b-5d50-957f-6671d4b470cc --> `CallResolutionKind` | `src/pipeline/call-resolver.ts` | `8e0680b5...` |
-| <!-- coderef:uuid=15fa6d0e-7f4b-5d23-af28-e2918ff28c5e --> `SymbolTable` | `src/pipeline/call-resolver.ts` | `15fa6d0e...` |
-| <!-- coderef:uuid=af779a4b-3059-515f-b0d8-369a44f87f0b --> `LayerEnum` | `src/pipeline/element-taxonomy.ts` | `af779a4b...` |
-| <!-- coderef:uuid=8e8053a4-c91a-5317-b907-31f186654bae --> `HeaderStatus` | `src/pipeline/element-taxonomy.ts` | `8e8053a4...` |
-| <!-- coderef:uuid=3fe68c67-a8df-559f-9675-8e22662a285d --> `EdgeRelationship` | `src/pipeline/graph-builder.ts` | `3fe68c67...` |
-| <!-- coderef:uuid=c49c0aa3-0941-520f-8048-7e7982a0d5ab --> `EdgeResolutionStatus` | `src/pipeline/graph-builder.ts` | `c49c0aa3...` |
-| <!-- coderef:uuid=a8fe75a7-606b-5c89-a180-fa0b182d2ce9 --> `EdgeEvidence` | `src/pipeline/graph-builder.ts` | `a8fe75a7...` |
-| <!-- coderef:uuid=237d872f-fd4f-569c-a4b3-9702209ed135 --> `ImportResolutionKind` | `src/pipeline/import-resolver.ts` | `237d872f...` |
-| <!-- coderef:uuid=289b571c-2cab-5004-bceb-77b3ee64b2b8 --> `ExportTable` | `src/pipeline/import-resolver.ts` | `289b571c...` |
-| <!-- coderef:uuid=093cc304-7535-5ee0-9a5e-0246727f7104 --> `LanguageExtension` | `src/pipeline/types.ts` | `093cc304...` |
-| <!-- coderef:uuid=a497508e-08b1-51d1-81ce-6704d5740ab5 --> `RawExportKind` | `src/pipeline/types.ts` | `a497508e...` |
-| <!-- coderef:uuid=43cc591d-cb23-51ce-9fcd-f3c9841e488a --> `PluginSource` | `src/plugins/types.ts` | `43cc591d...` |
-| <!-- coderef:uuid=46219662-d558-573f-8404-402ec6303724 --> `QueryType` | `src/query/query-executor.ts` | `46219662...` |
-| <!-- coderef:uuid=40f362b1-6437-59b3-a017-fba5a5fe459a --> `ScanErrorType` | `src/scanner/error-reporter.ts` | `40f362b1...` |
-| <!-- coderef:uuid=349331b9-3c58-5c6f-945c-8511da788786 --> `ScanErrorSeverity` | `src/scanner/error-reporter.ts` | `349331b9...` |
-| <!-- coderef:uuid=0203c58e-c6af-5468-8bc7-360b688e6291 --> `EnrichedElementData` | `src/scanner/tree-sitter-scanner.ts` | `0203c58e...` |
-| <!-- coderef:uuid=1e7e0dec-1d31-5e50-905c-41c34eb4bea7 --> `LogLevel` | `src/utils/logger.ts` | `1e7e0dec...` |
-| <!-- coderef:uuid=ee166bf3-3b64-5d84-9b85-00ddf3e4f64e --> `ConfidenceLevel` | `src/validator/frontend-update-generator.ts` | `ee166bf3...` |
+| <!-- coderef:uuid=77737efc-e490-546f-a103-c737891bfe24 --> `DesignPatternType` | `src/analyzer/design-pattern-detector.ts` | `77737efc...` |
+| <!-- coderef:uuid=9552a2d4-891d-5f66-b727-fc03bf075092 --> `EntryPointType` | `src/analyzer/entry-detector.ts` | `9552a2d4...` |
+| <!-- coderef:uuid=fa6f3f80-424e-5bcd-bf6a-d445d692ec4d --> `ProjectCategory` | `src/analyzer/project-classifier.ts` | `fa6f3f80...` |
+| <!-- coderef:uuid=593ae025-fc3a-5893-8029-30400733604a --> `ApiServiceType` | `src/analyzer/project-classifier.ts` | `593ae025...` |
+| <!-- coderef:uuid=9d197f51-8669-58d8-8f17-c340bb4fad30 --> `WebAppType` | `src/analyzer/project-classifier.ts` | `9d197f51...` |
+| <!-- coderef:uuid=fe6953e4-8d96-55d9-a133-2af95265cfc3 --> `SupportedCliLanguage` | `src/cli/detect-languages.ts` | `fe6953e4...` |
+| <!-- coderef:uuid=65a87eea-0d35-5a97-8e05-3e21dfbfd0f1 --> `FlagKind` | `src/cli/shared/cli-args.ts` | `65a87eea...` |
+| <!-- coderef:uuid=81eaa57b-3a7a-56fa-be3a-d795b485c682 --> `ExportFormat` | `src/export/graph-exporter.ts` | `81eaa57b...` |
+| <!-- coderef:uuid=2f30bc04-b658-5b69-ab2d-f10f7e79a10f --> `ExportedGraphEdgeRelationship` | `src/export/graph-exporter.ts` | `2f30bc04...` |
+| <!-- coderef:uuid=a4394efb-2005-5549-8cab-79eb2ef227a3 --> `ExportedGraphEdgeResolutionStatus` | `src/export/graph-exporter.ts` | `a4394efb...` |
+| <!-- coderef:uuid=bbfc4150-1679-58b8-84e7-172f740a39ad --> `IndexSchemaVersion` | `src/fileGeneration/index-storage.ts` | `bbfc4150...` |
+| <!-- coderef:uuid=e73bff20-64ed-59a2-af8b-377104f943a4 --> `IndexFormat` | `src/fileGeneration/index-storage.ts` | `e73bff20...` |
+| <!-- coderef:uuid=c4d922e2-5bed-59e7-bd55-bd42d06ab1de --> `IndexingStage` | `src/indexer/indexer-service.ts` | `c4d922e2...` |
+| <!-- coderef:uuid=de06b035-cd7c-58a9-9423-2c8d495869dd --> `MetadataCategory` | `src/indexer/metadata-index.ts` | `de06b035...` |
+| <!-- coderef:uuid=e42b5036-2b3a-5e26-adf2-0fd0a467a014 --> `QueryFilter` | `src/indexer/query-engine.ts` | `e42b5036...` |
+| <!-- coderef:uuid=9bf51235-25c5-5bf2-89f0-048e235e94ae --> `RelationshipType` | `src/indexer/relationship-index.ts` | `9bf51235...` |
+| <!-- coderef:uuid=68be6883-456e-54d0-b3d8-4361e53b377c --> `AIQueryType` | `src/integration/ai-prompt-generator.ts` | `68be6883...` |
+| <!-- coderef:uuid=bd1b6a1e-794f-55f1-9387-ca420edd342b --> `LLMProviderFactory` | `src/integration/llm/llm-provider.ts` | `bd1b6a1e...` |
+| <!-- coderef:uuid=3aacda4f-1210-546c-ae96-0c146eb31ceb --> `ProgressCallback` | `src/integration/rag/embedding-service.ts` | `3aacda4f...` |
+| <!-- coderef:uuid=f75704e5-16d2-5013-b9bc-431359d01738 --> `QueryStrategy` | `src/integration/rag/graph-reranker.ts` | `f75704e5...` |
+| <!-- coderef:uuid=29a10d63-601b-5dd3-8c7d-1a6a470d1c57 --> `IndexingProgressCallback` | `src/integration/rag/indexing-orchestrator.ts` | `29a10d63...` |
+| <!-- coderef:uuid=3e58b58c-94d0-5081-917a-0d8b75676df0 --> `SkipReason` | `src/integration/rag/indexing-orchestrator.ts` | `3e58b58c...` |
+| <!-- coderef:uuid=2bccf5af-dcc8-5f00-8f80-fe6cfe4784b0 --> `FailReason` | `src/integration/rag/indexing-orchestrator.ts` | `2bccf5af...` |
+| <!-- coderef:uuid=4ba686bc-1204-5e97-858c-43f2d9e1ad8a --> `IndexingStatus` | `src/integration/rag/indexing-orchestrator.ts` | `4ba686bc...` |
+| <!-- coderef:uuid=c738b6c4-bce4-519a-8a9d-45b58f236220 --> `AbsolutePath` | `src/integration/rag/path-types.ts` | `c738b6c4...` |
+| <!-- coderef:uuid=8247fc32-09be-5676-a08a-ac386b800e7a --> `RelativePath` | `src/integration/rag/path-types.ts` | `8247fc32...` |
+| <!-- coderef:uuid=0d69ebb7-5b8e-5dff-bf29-bd8630a20d16 --> `LLMProviderName` | `src/integration/rag/rag-config.ts` | `0d69ebb7...` |
+| <!-- coderef:uuid=5f67494b-093b-5304-9e66-31666f3ba6aa --> `VectorStoreFactory` | `src/integration/vector/vector-store.ts` | `5f67494b...` |
+| <!-- coderef:uuid=eac3d10c-b890-5fd8-9885-4de96747e9c1 --> `CallResolutionKind` | `src/pipeline/call-resolver.ts` | `eac3d10c...` |
+| <!-- coderef:uuid=b56c162c-b157-58f6-8adf-3dea2252e45a --> `SymbolTable` | `src/pipeline/call-resolver.ts` | `b56c162c...` |
+| <!-- coderef:uuid=15c907e2-b0f4-5aab-a8f9-86309d40c9c0 --> `LayerEnum` | `src/pipeline/element-taxonomy.ts` | `15c907e2...` |
+| <!-- coderef:uuid=d820f85e-e1d2-5e7d-b849-733f34db0dc2 --> `HeaderStatus` | `src/pipeline/element-taxonomy.ts` | `d820f85e...` |
+| <!-- coderef:uuid=2dc4eb8d-1b5f-589a-b344-71ed7d1bbfd6 --> `EdgeRelationship` | `src/pipeline/graph-builder.ts` | `2dc4eb8d...` |
+| <!-- coderef:uuid=18493a9c-936a-5834-b968-27bd7aaaeb1d --> `EdgeResolutionStatus` | `src/pipeline/graph-builder.ts` | `18493a9c...` |
+| <!-- coderef:uuid=80b43cff-a8be-5b5c-bba1-dc1689062760 --> `EdgeEvidence` | `src/pipeline/graph-builder.ts` | `80b43cff...` |
+| <!-- coderef:uuid=572a865a-ba12-5178-8103-d4aec9153b2e --> `ImportResolutionKind` | `src/pipeline/import-resolver.ts` | `572a865a...` |
+| <!-- coderef:uuid=79d4b6d7-61a9-5069-afd3-61c3ea43a37c --> `ExportTable` | `src/pipeline/import-resolver.ts` | `79d4b6d7...` |
+| <!-- coderef:uuid=946840da-7bba-54f5-867c-a97566dc23d0 --> `LanguageExtension` | `src/pipeline/types.ts` | `946840da...` |
+| <!-- coderef:uuid=47118da6-cfd0-5fbc-b71f-180bf3409b3d --> `RawExportKind` | `src/pipeline/types.ts` | `47118da6...` |
+| <!-- coderef:uuid=19541275-09c4-553d-9584-ee2101c14196 --> `ScanErrorType` | `src/scanner/error-reporter.ts` | `19541275...` |
+| <!-- coderef:uuid=965be01c-39ee-5edb-9b7f-0d89f68af3e9 --> `ScanErrorSeverity` | `src/scanner/error-reporter.ts` | `965be01c...` |
+| <!-- coderef:uuid=45a2ff66-5cfa-58be-9daf-999cf511cada --> `EnrichedElementData` | `src/scanner/tree-sitter-scanner.ts` | `45a2ff66...` |
+| <!-- coderef:uuid=b4873eac-edff-5301-9d73-3ca0ffd69b2c --> `LogLevel` | `src/utils/logger.ts` | `b4873eac...` |
+| <!-- coderef:uuid=99534b0a-8832-536e-ad15-a1db45c123f5 --> `ConfidenceLevel` | `src/validator/frontend-update-generator.ts` | `99534b0a...` |
 
 ---
 

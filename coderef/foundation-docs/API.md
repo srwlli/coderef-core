@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-06-13 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-07-03 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -41,6 +41,7 @@
 <!-- coderef:uuid=c7af62fe-4fb5-54e5-8dcb-030d919f2cae -->
 <!-- coderef:uuid=135ed5b6-87fb-50ac-b5f1-0457d2bbd585 -->
 <!-- coderef:uuid=8989852d-ebaa-52b4-852d-813d2a6d33be -->
+<!-- coderef:uuid=ec329b04-7830-5162-b84f-fccf7cdcf863 -->
 ### `scanCurrentElements()`
 
 Scan code elements from a directory using regex patterns.
@@ -87,6 +88,7 @@ interface ScanOptions {
 <!-- coderef:uuid=2c2d5e4a-3bf8-5e1e-9569-0e12ca3cf703 -->
 <!-- coderef:uuid=c0bd137a-1155-5fb8-a62d-e6fcb184a562 -->
 <!-- coderef:uuid=e7fe444a-67bb-5ba7-9a53-592f4d6abaa7 -->
+<!-- coderef:uuid=c1cd9634-498b-583f-a1b9-6e97967397b5 -->
 ### `scanFilesWithAST()`
 
 Scan files using AST-based analysis for accurate element detection.
@@ -103,60 +105,42 @@ function scanFilesWithAST(
 
 ---
 
-## Analyzer API
+## Relationship Query API
 
-### `AnalyzerService`
+Relationship analysis runs over the persisted canonical graph (`.coderef/graph.json`),
+not an in-memory analyzer service. The pre-rebuild `AnalyzerService` was removed.
 
-Core analysis service for dependency graphs and code relationships.
+### `CanonicalGraphQuery`
 
-**File:** `src/analyzer/analyzer-service.ts`
+**File:** `src/query/canonical-graph.ts`
+
+Load the canonical graph with `loadCanonicalGraph(projectDir)`, then query relationships.
 
 ### Methods
 
-#### `analyze(paths, options)`
-Analyze code files and build dependency graph.
+#### `resolve(query)`
+Resolve a symbol string to its graph node(s) — matches by exact CodeRef id, by name, or by file.
 
 ```typescript
-async analyze(
-  paths: string[],
-  options?: AnalysisOptions
-): Promise<AnalysisResult>
+resolve(query: string): NodeResolution
 ```
 
-#### `getCallers(elementId)`
-Get all functions that call the specified element.
+#### `callersOf(resolution)`
+Get the elements that call the resolved element (inbound call edges).
 
 ```typescript
-getCallers(elementId: string): string[]
+callersOf(resolution: NodeResolution): CanonicalNode[]
 ```
 
-#### `getCallees(elementId)`
-Get all functions called by the specified element.
+#### `calleesOf(resolution)`
+Get the elements called by the resolved element (outbound call edges).
 
 ```typescript
-getCallees(elementId: string): string[]
+calleesOf(resolution: NodeResolution): CanonicalNode[]
 ```
 
-#### `getDependents(elementId)`
-Get all elements that depend on the specified element.
-
-```typescript
-getDependents(elementId: string): string[]
-```
-
-#### `getDependencies(elementId)`
-Get all dependencies of the specified element.
-
-```typescript
-getDependencies(elementId: string): string[]
-```
-
-#### `detectCircularDependencies()`
-Detect circular dependencies in the codebase.
-
-```typescript
-detectCircularDependencies(): CircularDependency[]
-```
+Import relationships are traversed over the same resolved edge set. For cycle detection,
+use the `cycles` MCP tool / `coderef-query --type=cycles` over the canonical graph.
 
 ---
 
@@ -182,21 +166,24 @@ The file generation system produces 16 different output files:
 
 ---
 
-## Query API
+## Loading the Graph
 
-### `QueryExecutor`
+### `loadCanonicalGraph(projectDir)`
 
-Execute structured queries against the codebase graph.
+Load the persisted canonical graph for querying. The pre-rebuild `QueryExecutor` class was removed.
 
-**File:** `src/query/query-executor.ts`
+**File:** `src/query/canonical-graph.ts`
 
 ```typescript
-class QueryExecutor {
-  execute(query: Query): QueryResult
-  findByType(type: ElementType): Element[]
-  findByName(name: string): Element[]
-  findByFile(file: string): Element[]
-}
+function loadCanonicalGraph(projectDir: string): CanonicalGraphQuery
+```
+
+```typescript
+import { loadCanonicalGraph } from '@coderef/core';
+
+const query = loadCanonicalGraph('./');
+const resolution = query.resolve('deduplicateElements');
+const callers = query.callersOf(resolution);
 ```
 
 ---
@@ -321,24 +308,29 @@ async function scanDirectory(dir: string, patterns: string[]): Promise<string[]>
 
 ## Error Handling
 
-### GraphError
+Scan-time failures are reported as structured `ScanError` records via the scanner
+error-reporting module (the pre-rebuild `GraphError` / `src/analyzer/graph-error.ts` class
+was removed). Canonical-graph loading throws `CanonicalGraphError` on malformed graph data.
 
-**File:** `src/analyzer/graph-error.ts`
+### ScanError
+
+**File:** `src/scanner/error-reporter.ts`
 
 ```typescript
-class GraphError extends Error {
-  code: ErrorCode;
-  elementId?: string;
-  file?: string;
+interface ScanError {
+  type: ScanErrorType;         // 'read' | 'parse' | 'pattern' | ...
+  severity: ScanErrorSeverity; // 'error' | 'warning' | 'info'
+  file: string;
   line?: number;
+  column?: number;
+  message: string;
+  suggestion?: string;         // auto-derived for ENOENT / EACCES / SyntaxError
+  stack?: string;
 }
 
-type ErrorCode =
-  | 'ELEMENT_NOT_FOUND'
-  | 'CIRCULAR_DEPENDENCY'
-  | 'INVALID_GRAPH'
-  | 'PARSE_ERROR'
-  | 'FILE_NOT_FOUND';
+// Build from a caught cause; collected on ScanResult rather than thrown:
+function createScanError(error: unknown, file: string, type: ScanErrorType, severity?: ScanErrorSeverity): ScanError
+function formatScanError(error: ScanError): string
 ```
 
 ---
@@ -364,16 +356,13 @@ export type {
   Query,
   QueryResult,
   LanguageInfo,
-  GraphError,
-  ErrorCode,
 } from './types';
 
 export {
-  AnalyzerService,
-  QueryExecutor,
+  CanonicalGraphQuery,
+  loadCanonicalGraph,
   scanCurrentElements,
   scanFilesWithAST,
-  detectProjectLanguages,
 } from './src';
 ```
 
@@ -387,11 +376,11 @@ export {
 
 | Export | Type | Description |
 |--------|------|-------------|
-| `scanCurrentElements` | Function | Regex-based scanner |
-| `AnalyzerService` | Class | AST-based analyzer |
-| `QueryExecutor` | Class | Query execution |
+| `scanCurrentElements` | Function | Element scanner |
+| `scanFilesWithAST` | Function | AST-based element scanner |
+| `CanonicalGraphQuery` / `loadCanonicalGraph` | Class / Function | Relationship queries over `.coderef/graph.json` |
 | `EmbeddingTextGenerator` | Class | RAG integration |
-| `detectProjectLanguages` | Function | Language detection |
+| `saveIndex` | Function | Persist scan results |
 
 ---
 
@@ -399,10 +388,7 @@ export {
 
 The following functions are async and return Promises:
 
-- `AnalyzerService.analyze()`
 - `scanCurrentElements()`
-- `scanFilesWithAST()`
-- `detectProjectLanguages()`
 - `ContextGenerator.generate()`
 - `BreakingChangeDetector.detectChanges()`
 

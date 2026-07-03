@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-06-13  
+**Generated:** 2026-07-03  
 <!-- coderef:uuid=hotspots-root -->
 
 ---
@@ -21,10 +21,10 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 407 |
-| **Total Elements** | 2,575 |
-| **Total Lines** | 108,277 |
-| **Entry Points** | 79 |
+| **Total Files** | 390 |
+| **Total Elements** | 2,411 |
+| **Total Lines** | 101,537 |
+| **Entry Points** | 77 |
 | **Critical Functions** | 20 |
 
 ---
@@ -36,23 +36,23 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | Rank | Function | Complexity | File | Risk |
 |------|----------|------------|------|------|
 | 1 | <!-- coderef:uuid= --> `buildToolHandlers.inboundByKind` | 🔴 136 (Critical) | `src/cli/coderef-mcp-server.ts` | 0 dependents |
-| 2 | <!-- coderef:uuid= --> `scanCurrentElements` | 🔴 109 (Critical) | `src/scanner/scanner.ts` | 0 dependents |
-| 3 | <!-- coderef:uuid= --> `ContextGenerator.generateMarkdown` | 🔴 102 (Critical) | `src/pipeline/generators/context-generator.ts` | 0 dependents |
+| 2 | <!-- coderef:uuid= --> `scanCurrentElements` | 🔴 104 (Critical) | `src/scanner/scanner.ts` | 0 dependents |
+| 3 | <!-- coderef:uuid= --> `ContextGenerator.generateMarkdown` | 🔴 97 (Critical) | `src/pipeline/generators/context-generator.ts` | 0 dependents |
 | 4 | <!-- coderef:uuid= --> `ASTElementScanner.visitNode` | 🔴 65 (Critical) | `src/analyzer/ast-element-scanner.ts` | 0 dependents |
 | 5 | <!-- coderef:uuid= --> `currentScopeCodeRefId` | 🔴 65 (Critical) | `src/pipeline/call-resolver.ts` | 0 dependents |
 | 6 | <!-- coderef:uuid= --> `extractExportsFromAST` | 🔴 55 (Critical) | `src/analyzer/js-call-detector/module-analyzer.ts` | 0 dependents |
 | 7 | <!-- coderef:uuid= --> `extractElementsFromAST` | 🔴 51 (Critical) | `src/analyzer/js-call-detector/visitor.ts` | 0 dependents |
-| 8 | <!-- coderef:uuid= --> `buildEdges` | 🟡 45 (High) | `src/pipeline/graph-builder.ts` | 0 dependents |
-| 9 | <!-- coderef:uuid= --> `run` | 🟡 44 (High) | `src/cli/populate.ts` | 0 dependents |
-| 10 | <!-- coderef:uuid= --> `main.fileToDir` | 🟡 41 (High) | `scripts/generate-intelligence.js` | 0 dependents |
-| 11 | <!-- coderef:uuid= --> `EmbeddingTextGenerator.generate` | 🟡 30 (High) | `src/integration/rag/embedding-text-generator.ts` | 0 dependents |
-| 12 | <!-- coderef:uuid= --> `DatabaseDetector.detect` | ⚪ 9 (Low) | `src/analyzer/database-detector.ts` | 0 dependents |
-| 13 | <!-- coderef:uuid= --> `buildDependencyGraph` | ⚪ 8 (Low) | `src/fileGeneration/buildDependencyGraph.ts` | 0 dependents |
-| 14 | <!-- coderef:uuid= --> `ConfigAnalyzer.analyze` | ⚪ 7 (Low) | `src/analyzer/config-analyzer.ts` | 0 dependents |
-| 15 | <!-- coderef:uuid= --> `analyzeCoverage` | ⚪ 6 (Low) | `src/fileGeneration/analyzeCoverage.ts` | 0 dependents |
-| 16 | <!-- coderef:uuid= --> `ComplexityGenerator.generate` | ⚪ 6 (Low) | `src/pipeline/generators/complexity-generator.ts` | 0 dependents |
-| 17 | <!-- coderef:uuid= --> `AnalyzerService.analyze` | ⚪ 5 (Low) | `src/analyzer/analyzer-service.ts` | 0 dependents |
-| 18 | <!-- coderef:uuid= --> `QueryExecutor.execute` | ⚪ 4 (Low) | `src/query/query-executor.ts` | 0 dependents |
+| 8 | <!-- coderef:uuid= --> `buildEdges` | 🟡 49 (High) | `src/pipeline/graph-builder.ts` | 0 dependents |
+| 9 | <!-- coderef:uuid= --> `classifyMethodCall` | 🟡 48 (High) | `src/pipeline/call-resolver.ts` | 0 dependents |
+| 10 | <!-- coderef:uuid= --> `run` | 🟡 44 (High) | `src/cli/populate.ts` | 0 dependents |
+| 11 | <!-- coderef:uuid= --> `reportProgress` | 🟡 41 (High) | `src/integration/rag/indexing-orchestrator.ts` | 0 dependents |
+| 12 | <!-- coderef:uuid= --> `main.fileToDir` | 🟡 41 (High) | `scripts/generate-intelligence.js` | 0 dependents |
+| 13 | <!-- coderef:uuid= --> `EmbeddingTextGenerator.generate` | 🟡 30 (High) | `src/integration/rag/embedding-text-generator.ts` | 0 dependents |
+| 14 | <!-- coderef:uuid= --> `DatabaseDetector.detect` | ⚪ 9 (Low) | `src/analyzer/database-detector.ts` | 0 dependents |
+| 15 | <!-- coderef:uuid= --> `buildDependencyGraph` | ⚪ 8 (Low) | `src/fileGeneration/buildDependencyGraph.ts` | 0 dependents |
+| 16 | <!-- coderef:uuid= --> `ConfigAnalyzer.analyze` | ⚪ 7 (Low) | `src/analyzer/config-analyzer.ts` | 0 dependents |
+| 17 | <!-- coderef:uuid= --> `analyzeCoverage` | ⚪ 6 (Low) | `src/fileGeneration/analyzeCoverage.ts` | 0 dependents |
+| 18 | <!-- coderef:uuid= --> `ComplexityGenerator.generate` | ⚪ 6 (Low) | `src/pipeline/generators/complexity-generator.ts` | 0 dependents |
 | 19 | <!-- coderef:uuid= --> `RegistryGenerator.generate` | ⚪ 3 (Low) | `src/pipeline/generators/registry-generator.ts` | 0 dependents |
 | 20 | <!-- coderef:uuid= --> `FrameworkRegistry.detect` | ⚪ 3 (Low) | `src/scanner/framework-registry.ts` | 0 dependents |
 
@@ -72,7 +72,6 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `rag-index.ts` | library | `src/cli/rag-index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/context/breaking-change-detector/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/context/index.ts` |
-| <!-- coderef:uuid= --> `index.ts` | library | `src/errors/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/export/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/index.ts` |
 | <!-- coderef:uuid= --> `index.ts` | library | `src/indexer/index.ts` |
@@ -89,8 +88,9 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `semantic-integration-cli.ts` | cli | `src/cli/semantic-integration-cli.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `demo-all-modules.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-analyze.ts` |
+| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-mcp-server.ts` |
 
-*... and 54 more entry points.*
+*... and 52 more entry points.*
 
 ---
 
@@ -123,8 +123,8 @@ Functions become hotspots through:
 
 Focus on 🔴 Critical complexity functions:
 - `buildToolHandlers.inboundByKind` (src/cli/coderef-mcp-server.ts) - complexity 136
-- `scanCurrentElements` (src/scanner/scanner.ts) - complexity 109
-- `ContextGenerator.generateMarkdown` (src/pipeline/generators/context-generator.ts) - complexity 102
+- `scanCurrentElements` (src/scanner/scanner.ts) - complexity 104
+- `ContextGenerator.generateMarkdown` (src/pipeline/generators/context-generator.ts) - complexity 97
 - `ASTElementScanner.visitNode` (src/analyzer/ast-element-scanner.ts) - complexity 65
 - `currentScopeCodeRefId` (src/pipeline/call-resolver.ts) - complexity 65
 - `extractExportsFromAST` (src/analyzer/js-call-detector/module-analyzer.ts) - complexity 55

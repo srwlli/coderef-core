@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-06-13 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-07-03 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -158,17 +158,19 @@ src/
 ├── scanner/                    # Regex-based code scanning
 │   └── scanner.ts             # Main scanner + language patterns
 │
-├── analyzer/                   # AST-based dependency analysis
-│   ├── analyzer-service.ts    # Orchestrator (P3-T5)
-│   ├── import-parser.ts       # Import/export detection (P3-T1)
-│   ├── call-detector.ts       # Function call detection (P3-T2)
-│   ├── graph-builder.ts       # Build dependency graph (P3-T3)
-│   ├── graph-analyzer.ts      # Analyze graph (P3-T4)
-│   ├── graph-helpers.ts       # Utility functions
-│   ├── js-parser.ts           # JavaScript AST parsing
+├── analyzer/                   # AST-based element analysis (detectors)
+│   ├── ast-element-scanner.ts # AST element scanning
+│   ├── dependency-analyzer.ts # Dependency analysis
 │   ├── js-call-detector.ts    # JavaScript call detection
 │   ├── dynamic-import-detector.ts # Dynamic import detection
-│   └── graph-error.ts         # Error types
+│   └── ...                    # design-pattern / framework / config detectors
+│
+├── pipeline/                   # Single-pass rebuild pipeline (core)
+│   ├── index.ts               # PipelineOrchestrator (deterministic phase ordering)
+│   ├── import-resolver.ts     # Import resolution phase
+│   ├── call-resolver.ts       # Call resolution phase
+│   ├── graph-builder.ts       # Graph construction phase
+│   └── generators/            # index / graph / context generators
 │
 ├── fileGeneration/             # Generate output files
 │   ├── saveIndex.ts           # Phase 1: index.json
@@ -180,8 +182,8 @@ src/
 │   ├── detectDrift.ts         # Phase 2: drift.json
 │   └── generateDiagrams.ts    # Phase 3: diagrams (mmd, dot)
 │
-├── query/                      # Query execution
-│   └── query-executor.ts      # Element search and filtering
+├── query/                      # Canonical-graph queries
+│   └── canonical-graph.ts     # CanonicalGraphQuery over .coderef/graph.json
 │
 ├── types/                      # Type system
 │   └── types.d.ts             # 26 type designators + validation
@@ -218,18 +220,18 @@ src/
          │        │
          │        └─► types/types.d.ts
          │
-         ├─► analyzer/analyzer-service.ts
+         ├─► pipeline/index.ts (PipelineOrchestrator)
          │        │
-         │        ├─► analyzer/import-parser.ts → acorn
-         │        ├─► analyzer/call-detector.ts → acorn
-         │        ├─► analyzer/graph-builder.ts
-         │        └─► analyzer/graph-analyzer.ts
+         │        ├─► pipeline/import-resolver.ts
+         │        ├─► pipeline/call-resolver.ts
+         │        ├─► pipeline/graph-builder.ts
+         │        └─► pipeline/generators/*
          │
          ├─► fileGeneration/*
          │        │
          │        └─► types/types.d.ts
          │
-         ├─► query/query-executor.ts
+         ├─► query/canonical-graph.ts (CanonicalGraphQuery)
          │        │
          │        └─► types/types.d.ts
          │
@@ -301,46 +303,40 @@ export async function scanCurrentElements(
 - Scan 500 files (~50K LOC): **~1200ms**
 - Memory: **~50MB** for 541 elements
 
-### 2. Analyzer Module
+### 2. Pipeline Module
 
-**Purpose:** Build dependency graphs and detect relationships using AST parsing
+**Purpose:** Build the canonical dependency graph in a single deterministic pass, then
+expose it for querying. The pre-rebuild in-memory `AnalyzerService` / `GraphBuilder` /
+`GraphAnalyzer` classes were removed; graph construction now lives in the pipeline and
+results are persisted to `.coderef/graph.json`.
 
 **Architecture:**
 
 ```typescript
-// Orchestrator service (P3-T5)
-export class AnalyzerService {
-  private graphBuilder: GraphBuilder;
-  private graphAnalyzer?: GraphAnalyzer;
-
-  async analyze(patterns: string[]): Promise<AnalysisResult> {
-    // 1. Find files
-    const files = await this.findFiles(patterns);
-
-    // 2. Build graph (uses import-parser + call-detector)
-    const graph = this.graphBuilder.buildGraph(files);
-
-    // 3. Analyze graph (detect circular deps, etc)
-    const analyzer = new GraphAnalyzer(graph);
-
-    // 4. Return results
-    return {
-      graph,
-      statistics: analyzer.getStatistics(),
-      circularDependencies: analyzer.detectCircularDependencies(),
-      isolatedNodes: analyzer.findIsolatedNodes()
-    };
+// Single-pass orchestrator (src/pipeline/index.ts)
+export class PipelineOrchestrator {
+  async run(projectDir: string): Promise<PipelineState> {
+    // Deterministic phase ordering:
+    //   discovery → scanner → raw facts → semantic header parser →
+    //   import resolution → call resolution → graph construction → validation
+    const state = await this.runPhases(projectDir);
+    return state;   // graph persisted to .coderef/graph.json
   }
 }
+
+// Query the persisted graph (src/query/canonical-graph.ts)
+import { loadCanonicalGraph } from '@coderef/core';
+const query = loadCanonicalGraph(projectDir);
+const callers = query.callersOf(query.resolve('deduplicateElements'));
 ```
 
 **Component Breakdown:**
 
-1. **ImportParser (P3-T1):** Parse import/export statements using acorn
-2. **CallDetector (P3-T2):** Detect function calls and method invocations
-3. **GraphBuilder (P3-T3):** Combine imports + calls into dependency graph
-4. **GraphAnalyzer (P3-T4):** Analyze graph for cycles, paths, orphans
-5. **AnalyzerService (P3-T5):** Orchestrate the full pipeline
+1. **import-resolver** — resolve import/export statements to graph edges
+2. **call-resolver** — resolve function calls to graph edges
+3. **pipeline/graph-builder** — assemble nodes + edges into the canonical graph
+4. **validatePipelineState** — pure Phase 6 chokepoint → 14-field `ValidationReport`
+5. **CanonicalGraphQuery** — query the persisted graph (cycles/paths via `coderef-query` / MCP)
 
 **Data Structures:**
 
@@ -445,43 +441,28 @@ async function generateAllFiles(projectPath, elements) {
 
 ### 4. Query Engine
 
-**Purpose:** Fast in-memory element search and filtering
+**Purpose:** Relationship search over the persisted canonical graph. The pre-rebuild
+in-memory `QueryExecutor` was removed; queries load `.coderef/graph.json` via
+`CanonicalGraphQuery` (also backing the `coderef-query` CLI and MCP intelligence tools).
 
 **Architecture:**
 
 ```typescript
-export class QueryExecutor {
-  private elementMap: Map<string, ElementData>;
-  private fileIndex: Map<string, string[]>;
-  private typeIndex: Map<string, string[]>;
-
-  constructor(elements: ElementData[]) {
-    // Build indexes for O(1) lookups
-    this.elementMap = new Map(elements.map(e => [e.id, e]));
-    this.fileIndex = this.buildFileIndex(elements);
-    this.typeIndex = this.buildTypeIndex(elements);
-  }
-
-  findByFile(file: string, type?: string): ElementData[] {
-    const ids = this.fileIndex.get(file) || [];
-    let results = ids.map(id => this.elementMap.get(id)!);
-    if (type) {
-      results = results.filter(e => e.type === type);
-    }
-    return results;
-  }
-
-  findByType(type: string): ElementData[] {
-    const ids = this.typeIndex.get(type) || [];
-    return ids.map(id => this.elementMap.get(id)!);
-  }
+// src/query/canonical-graph.ts
+export class CanonicalGraphQuery {
+  resolve(query: string): NodeResolution;         // by id / name / file
+  callersOf(resolution: NodeResolution): CanonicalNode[];   // inbound call edges
+  calleesOf(resolution: NodeResolution): CanonicalNode[];   // outbound call edges
 }
+
+// Load helper
+export function loadCanonicalGraph(projectDir: string): CanonicalGraphQuery;
 ```
 
 **Performance:**
-- Lookup by ID: **O(1)** (Map access)
-- Lookup by file: **O(k)** where k = elements in file
-- Lookup by type: **O(n)** where n = elements of that type
+- Graph load: reads the persisted `.coderef/graph.json` once
+- Resolve by id: **O(1)** (indexed by CodeRef id)
+- Directional traversal: **O(k)** where k = adjacent resolved edges
 
 ### 5. Type System
 
@@ -567,32 +548,25 @@ export function isValidTypeDesignator(type: string): boolean {
 └──────┬───────┘
        │
        ▼
-┌──────────────┐
-│ AnalyzerService.analyze() │
-└──────┬───────┘
+┌───────────────────────────┐
+│ PipelineOrchestrator.run() │
+└──────┬────────────────────┘
        │
-       ├─► ImportParser.parseImports(files)
-       │    │
-       │    └─► acorn.parse() ─► AST ─► ImportDeclarations
+       ├─► import-resolver ─► resolved import edges
        │
-       ├─► CallDetector.detectCalls(files)
-       │    │
-       │    └─► acorn.parse() ─► AST ─► CallExpressions
+       ├─► call-resolver ─► resolved call edges
        │
-       ├─► GraphBuilder.buildGraph()
+       ├─► pipeline/graph-builder ─► canonical nodes + edges
        │    │
-       │    └─► { nodes: Map, edges: [] }
+       │    └─► .coderef/graph.json (persisted)
        │
-       ├─► GraphAnalyzer.analyze()
-       │    │
-       │    ├─► detectCircularDependencies() ─► DFS cycle detection
-       │    ├─► findIsolatedNodes() ─► Nodes with degree = 0
-       │    └─► getStatistics() ─► Count nodes/edges, compute metrics
+       ├─► validatePipelineState() ─► 14-field ValidationReport
        │
        ▼
-┌──────────────┐
-│ AnalysisResult │ (graph, stats, circular deps, orphans)
-└──────────────┘
+┌──────────────────────────────────┐
+│ Query via loadCanonicalGraph()    │
+│ (callers/callees, cycles via CLI) │
+└──────────────────────────────────┘
 ```
 
 ### File Generation Pipeline
@@ -712,7 +686,7 @@ const results = await search.search('authentication functions', { limit: 5 });
 - File generation Phase 2/3 uses Promise.all (parallel output)
 
 **3. Caching**
-- AnalyzerService caches graph in memory (useCache: true)
+- The canonical graph is persisted to `.coderef/graph.json` and re-read on query (no in-memory analyzer cache)
 - File generation reads from cached scan results
 
 **4. Lazy Loading**

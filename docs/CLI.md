@@ -1048,7 +1048,6 @@ coderef-semantic-integration --project=<path> [options]
 | `--registry=<path>` | Path to registry file | `<project>/.coderef/registry/entities.json` |
 | `--dry-run` | Preview changes without writing files | `false` |
 | `--no-headers` | Skip header generation | `false` |
-| `--no-enrich` | Skip LLM enrichment | `false` |
 | `--no-sync-registry` | Skip registry sync | `false` |
 | `--file=<path>` | Process a single file instead of the whole project | — |
 | `--validate-idempotency` | Run twice and verify identical results | `false` |
@@ -1066,14 +1065,11 @@ coderef-semantic-integration --project=. --dry-run
 # Process a single file only
 coderef-semantic-integration --project=. --file=src/scanner.ts
 
-# Skip LLM enrichment (headers only, no Ollama required)
-coderef-semantic-integration --project=. --no-enrich
-
 # Verify that two consecutive runs produce identical output
 coderef-semantic-integration --project=. --validate-idempotency
 
-# Registry sync only (skip header write and enrichment)
-coderef-semantic-integration --project=. --no-headers --no-enrich
+# Registry sync only (skip header write)
+coderef-semantic-integration --project=. --no-headers
 ```
 
 ### Output

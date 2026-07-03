@@ -62,9 +62,9 @@ The 9-phase pipeline rebuild (Phase 0 through Phase 7) is complete and archived.
 - A Phase 7 `rag-index` that **refuses to run** when the validation report's `ok=false` (no more silent `chunksIndexed=0`). `IndexingResult` carries top-level `status: 'success' | 'partial' | 'failed'` plus per-entry `SkipReason` / `FailReason`.
 - `rag-search --layer` and `--capability` filter flags for facet-scoped semantic search.
 - **Local-first embeddings**: `rag-index` / `rag-search` default to `ollama`/`nomic-embed-text` unless `OPENAI_API_KEY` is set — cloud embedding is opt-in, never a silent default. `rag-index --include-headerless` indexes repos that were never header-annotated, tagging those chunks `header:false`.
-- **`coderef-mcp-server`** — an MCP stdio server (registered as the `coderef-core` domain in `.mcp.json`) exposing 6 read-only intelligence tools over `.coderef/` artifacts: `what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`. Typed against `ExportedGraph`, so graph-schema drift is a compile error. See [docs/CLI.md](docs/CLI.md#coderef-mcp-server).
+- **`coderef-mcp-server`** — an MCP stdio server (registered as the `coderef-core` domain in `.mcp.json`) exposing 11 read-only intelligence tools over `.coderef/` artifacts: `what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`, `what_exports`, `hotspots`, `cycles`, `diff_impact`, `rag_search`. Typed against `ExportedGraph`, so graph-schema drift is a compile error. See [docs/CLI.md](docs/CLI.md#coderef-mcp-server).
 
-Real-world post-Phase-7 baseline (from coderef-core's own scan): `valid_edge_count=3464`, `header_missing_count=262`, all other counts `0`, ground-truth tests 6/6 PASS.
+Real-world post-remediation baseline (from coderef-core's own scan, close `4cd33af`): `valid_edge_count=5154`, `header_missing_count=7`, `header_coverage_pct=95.33`, ground-truth tests PASS.
 
 For details: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/SCHEMA.md](docs/SCHEMA.md), [AGENTS.md](AGENTS.md). Per-phase archives: `coderef/archived/pipeline-*/`.
 
@@ -440,7 +440,7 @@ console.log(meta.description); // "React/Vue component"
 
 ## API Reference
 
-See **[docs/API.md](docs/API.md)** for the complete public API contract (post-rebuild canonical reference). The auto-generated foundation snapshot at `coderef/foundation-docs/API.md` is also kept in sync as a machine-readable companion.
+See **[docs/API.md](docs/API.md)** for the complete public API contract (post-rebuild canonical reference).
 
 ### Main Exports
 
@@ -722,7 +722,6 @@ const elements = await scanCurrentElements('./src', 'ts', options);
 
 ### v2.2.0 (Q2 2026)
 - [ ] Real-time watch mode (auto-rescan on file changes)
-- [ ] Plugin system for custom analyzers
 - [ ] Web worker support for browser environments
 - [ ] Enhanced diagram generation (D3.js, PlantUML)
 

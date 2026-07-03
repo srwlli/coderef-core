@@ -2,9 +2,9 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-06-13  
-**Nodes:** 2,945 elements  
-**Edges:** 31,537 dependencies  
+**Generated:** 2026-07-03  
+**Nodes:** 2,771 elements  
+**Edges:** 29,123 dependencies  
 <!-- coderef:uuid=relationships-root -->
 
 ---
@@ -24,11 +24,11 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,945 |
-| **Total Dependencies** | 31,537 |
+| **Total Elements** | 2,771 |
+| **Total Dependencies** | 29,123 |
 | **Avg Dependencies/Element** | (edges.length / nodes.length).toFixed(2) |
 | **Entry Points** | 15 |
-| **Most Referenced** | 26240 refs |
+| **Most Referenced** | 23969 refs |
 
 ---
 
@@ -38,25 +38,25 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Rank | Element | References | Type | File |
 |------|---------|------------|------|------|
-| 2 | <!-- coderef:uuid=8989852d-ebaa-52b4-852d-813d2a6d33be --> `scanCurrentElements` | **133** | function | `src/scanner/scanner.ts` |
-| 3 | <!-- coderef:uuid=459f8aac-d771-5118-936b-566861da9d47 --> `isLineCommented` | **49** | function | `src/scanner/scanner.ts` |
-| 4 | <!-- coderef:uuid=5aa75d75-60d4-5adf-8b89-4fe661cb4033 --> `PipelineOrchestrator` | **46** | class | `src/pipeline/orchestrator.ts` |
-| 5 | <!-- coderef:uuid=d4ecbbdd-eaf5-5039-be19-ebb3520b9bbf --> `createCodeRefId` | **46** | function | `src/utils/coderef-id.ts` |
-| 6 | <!-- coderef:uuid=64f66db7-def7-5f76-939b-8e14580a722f --> `validatePipelineState` | **44** | function | `src/pipeline/output-validator.ts` |
-| 7 | <!-- coderef:uuid=0db07e0a-fca0-54f7-9b92-6f3ce8a91373 --> `info` | **41** | function | `demo-all-modules.ts` |
-| 8 | <!-- coderef:uuid=850a9178-4970-5168-9963-efc0ac4d5c42 --> `createSearchResult` | **29** | function | `src/integration/rag/__tests__/graph-reranker.test.ts` |
-| 9 | <!-- coderef:uuid=4da7909d-dd01-52b6-aa4d-d2ce235a7bc3 --> `createSampleReferences` | **29** | function | `__tests__/indexer.test.ts` |
-| 10 | <!-- coderef:uuid=2e232703-9d05-50ba-8dca-14714e391844 --> `createMockEnvironment` | **27** | function | `__tests__/generators/helpers.ts` |
-| 11 | <!-- coderef:uuid=bc248fbf-a492-5184-b31d-a847ad606e6e --> `parseHeader` | **26** | function | `src/pipeline/semantic-header-parser.ts` |
-| 12 | <!-- coderef:uuid=06d11b18-777d-50e1-b53b-12708071c32f --> `createTestFile` | **26** | function | `__tests__/js-call-detector.test.ts` |
-| 13 | <!-- coderef:uuid=93a80247-9b51-57ff-ac24-5e1dc206155c --> `cleanupEnvironment` | **25** | function | `__tests__/generators/helpers.ts` |
-| 14 | <!-- coderef:uuid=5de579af-1612-5a5f-9d8f-b04bb3614f4e --> `success` | **25** | function | `demo-all-modules.ts` |
-| 15 | <!-- coderef:uuid=65fa6055-a404-5ad6-81b2-93156e1d4c4c --> `buildDependencyGraph` | **24** | function | `src/fileGeneration/buildDependencyGraph.ts` |
-| 16 | <!-- coderef:uuid=84853cc1-72c1-50f4-a2b0-d35c5af7d591 --> `recordTest` | **24** | function | `__tests__/integration.test.ts` |
-| 17 | <!-- coderef:uuid=ca19d23f-9625-5ed3-9296-d12d4e4dee5e --> `resolveCalls` | **23** | function | `src/pipeline/call-resolver.ts` |
-| 18 | <!-- coderef:uuid=c916a914-d126-57d9-b078-af8f1d2ea754 --> `createMockSource` | **23** | function | `src/integration/rag/__tests__/confidence-scorer.test.ts` |
-| 19 | <!-- coderef:uuid=31aa0963-955e-5f6c-b0e3-621cda88b8ee --> `createSampleRef` | **23** | function | `__tests__/indexer.test.ts` |
-| 20 | <!-- coderef:uuid=d5a9a957-9f1f-573d-80e9-10070b64f5c3 --> `parseExpressRoute` | **22** | function | `src/analyzer/route-parsers.ts` |
+| 2 | <!-- coderef:uuid=ec329b04-7830-5162-b84f-fccf7cdcf863 --> `scanCurrentElements` | **136** | function | `src/scanner/scanner.ts` |
+| 3 | <!-- coderef:uuid=a0253d1b-90c1-5017-b2da-13251a227d7f --> `normalizeSlashes` | **86** | function | `src/utils/path-normalize.ts` |
+| 4 | <!-- coderef:uuid=1a648c34-3392-56cc-a393-89f0709234a2 --> `PipelineOrchestrator` | **51** | class | `src/pipeline/orchestrator.ts` |
+| 5 | <!-- coderef:uuid=23c374e5-af97-5020-b41d-fc475c587b14 --> `isLineCommented` | **49** | function | `src/scanner/scanner.ts` |
+| 6 | <!-- coderef:uuid=c49914c7-5e1e-5b8f-b679-5e7f2337dd15 --> `createCodeRefId` | **46** | function | `src/utils/coderef-id.ts` |
+| 7 | <!-- coderef:uuid=95700825-12ef-59b5-9d78-faf1c3627d0e --> `validatePipelineState` | **44** | function | `src/pipeline/output-validator.ts` |
+| 8 | <!-- coderef:uuid=90c7e14d-350e-50a0-8dff-45ad7d746870 --> `info` | **41** | function | `demo-all-modules.ts` |
+| 9 | <!-- coderef:uuid=2693449a-b8ad-526d-b42b-23955d809203 --> `resolveCalls` | **30** | function | `src/pipeline/call-resolver.ts` |
+| 10 | <!-- coderef:uuid=274a5a75-6aeb-5d30-a5e0-2e29d427885b --> `resolveImports` | **29** | function | `src/pipeline/import-resolver.ts` |
+| 11 | <!-- coderef:uuid=cff5bd37-e122-5c29-8b73-2760959d3367 --> `createSearchResult` | **29** | function | `src/integration/rag/__tests__/graph-reranker.test.ts` |
+| 12 | <!-- coderef:uuid=14b8962e-1ffb-5d14-85ff-4bb3f2b784c4 --> `createSampleReferences` | **29** | function | `__tests__/indexer.test.ts` |
+| 13 | <!-- coderef:uuid=8b715f0e-d5ba-5336-b4b4-2242465d299d --> `createMockEnvironment` | **27** | function | `__tests__/generators/helpers.ts` |
+| 14 | <!-- coderef:uuid=04e18053-1600-56fc-9dcd-e699a1bbf607 --> `parseHeader` | **26** | function | `src/pipeline/semantic-header-parser.ts` |
+| 15 | <!-- coderef:uuid=0997f717-4d36-5e1a-81aa-17d33b4d4c1e --> `createTestFile` | **26** | function | `__tests__/js-call-detector.test.ts` |
+| 16 | <!-- coderef:uuid=301fa8b3-1275-5c74-a128-ba1f2d655563 --> `cleanupEnvironment` | **25** | function | `__tests__/generators/helpers.ts` |
+| 17 | <!-- coderef:uuid=dfa22ade-dbc6-5686-88e3-7bdb7c42a786 --> `buildDependencyGraph` | **24** | function | `src/fileGeneration/buildDependencyGraph.ts` |
+| 18 | <!-- coderef:uuid=2b437274-d9d2-5e50-893b-5616296c8e28 --> `recordTest` | **24** | function | `__tests__/integration.test.ts` |
+| 19 | <!-- coderef:uuid=d7daa7ae-d748-50d6-b6c7-acfbbe41787a --> `createMockSource` | **23** | function | `src/integration/rag/__tests__/confidence-scorer.test.ts` |
+| 20 | <!-- coderef:uuid=4ad42708-6dea-5f87-bdf9-b73ec800dd1d --> `createSampleRef` | **23** | function | `__tests__/indexer.test.ts` |
 
 ---
 
@@ -66,21 +66,21 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Element | Type | File | Outgoing Dependencies |
 |---------|------|------|----------------------|
-| <!-- coderef:uuid=934ef084-bf96-5b0c-a97d-5f93e65ab6f8 --> `AnalyzerService.getCallers` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=0bbc6712-aa0a-5ecf-a33b-a74d8fbdb202 --> `AnalyzerService.getCallees` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=3bb03b14-7962-5cab-8840-1a89b1124d0b --> `AnalyzerService.getDependents` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=0ee62bba-c18c-5548-b4da-826b9535cd9a --> `AnalyzerService.getDependencies` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=3a452ac9-c435-5c7b-87b1-e1b4d6398033 --> `AnalyzerService.traverse` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=599e57ee-e0c5-5fca-9e02-fe1b68488ac3 --> `AnalyzerService.detectCircularDependencies` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=698412d9-fc2e-5f22-9326-f5e8b42de05d --> `AnalyzerService.findShortestPath` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=0e6a5b89-e78f-592b-b952-e4cfcf716c58 --> `AnalyzerService.findAllPaths` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=31cfdf80-1d6b-57a8-9841-dda2ccd372c7 --> `AnalyzerService.clearCache` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=1ac305d2-15dc-55d7-9cb0-3c57bdd17aa0 --> `AnalyzerService.exportGraphAsJSON` | method | `src/analyzer/analyzer-service.ts` | 1 |
-| <!-- coderef:uuid=6b565b42-932b-5e56-8044-6788cf5fe75e --> `AnalyzerService.saveGraph` | method | `src/analyzer/analyzer-service.ts` | 6 |
-| <!-- coderef:uuid=af1cebe8-cf30-58f1-b06c-186a3e6ac597 --> `AnalyzerService.loadGraph` | method | `src/analyzer/analyzer-service.ts` | 5 |
-| <!-- coderef:uuid=8e685d39-a692-53c1-ba1d-ea0fbfc1b436 --> `ASTElementScanner.clearCache` | method | `src/analyzer/ast-element-scanner.ts` | 1 |
-| <!-- coderef:uuid=c0f97398-c5d9-5555-8ded-022857405aac --> `ASTElementScanner.getCacheStats` | method | `src/analyzer/ast-element-scanner.ts` | 2 |
-| <!-- coderef:uuid=db191b13-3613-521d-a52b-05e5d2352b0e --> `CallDetector.buildCallEdges` | method | `src/analyzer/call-detector.ts` | 8 |
+| <!-- coderef:uuid=a3c3c737-2722-5318-8dfd-cc5b0663e5af --> `ASTElementScanner.clearCache` | method | `src/analyzer/ast-element-scanner.ts` | 1 |
+| <!-- coderef:uuid=577a95f7-ecd1-5cba-a504-f2293840e160 --> `ASTElementScanner.getCacheStats` | method | `src/analyzer/ast-element-scanner.ts` | 2 |
+| <!-- coderef:uuid=7a2b3017-b073-54ae-9f5c-95d6a50f18ec --> `DynamicImportDetector.buildDynamicCallEdges` | method | `src/analyzer/dynamic-import-detector.ts` | 3 |
+| <!-- coderef:uuid=22c5e548-667a-57c8-9afa-6f47bae198c5 --> `DynamicImportDetector.clearCache` | method | `src/analyzer/dynamic-import-detector.ts` | 1 |
+| <!-- coderef:uuid=522aebd7-20da-54ca-aa2b-06beebec90fb --> `EntryPointDetector.detect` | method | `src/analyzer/entry-detector.ts` | 7 |
+| <!-- coderef:uuid=a93707b7-4e6d-50d7-b212-5c1a64b8865b --> `JSCallDetector.getFileParameters` | method | `src/analyzer/js-call-detector/index.ts` | 5 |
+| <!-- coderef:uuid=f0db6193-dc3a-51a4-b9a9-6a0c3133f923 --> `JSCallDetector.detectExports` | method | `src/analyzer/js-call-detector/index.ts` | 5 |
+| <!-- coderef:uuid=8f502264-51ff-5a2a-ae66-3c36b18e3df1 --> `JSCallDetector.buildCallEdges` | method | `src/analyzer/js-call-detector/index.ts` | 1 |
+| <!-- coderef:uuid=0d11be65-5200-570a-9918-cc3343340286 --> `JSCallDetector.analyzeCallPatterns` | method | `src/analyzer/js-call-detector/index.ts` | 1 |
+| <!-- coderef:uuid=eca24071-8071-58f3-a3af-83cf71505c71 --> `JSCallDetector.detectElements` | method | `src/analyzer/js-call-detector/index.ts` | 2 |
+| <!-- coderef:uuid=0ab07ce7-947e-5180-9bb1-27029b9d80bf --> `JSCallDetector.clearCache` | method | `src/analyzer/js-call-detector/index.ts` | 5 |
+| <!-- coderef:uuid=59201e93-8f74-5121-a92d-26752498cfd9 --> `MiddlewareDetector.detect` | method | `src/analyzer/middleware-detector.ts` | 9 |
+| <!-- coderef:uuid=f2df7d51-4ef0-5046-ab4e-2f68d20002ba --> `MigrationRouteAnalyzer.findRoutesByFramework` | method | `src/analyzer/migration-route-analyzer.ts` | 2 |
+| <!-- coderef:uuid=dc7a5350-a03c-52e2-93c8-c2c3d8558554 --> `MigrationRouteAnalyzer.exportForMigration` | method | `src/analyzer/migration-route-analyzer.ts` | 3 |
+| <!-- coderef:uuid=3d538ad2-5810-5cc8-a859-8bab4e06efbe --> `MigrationRouteAnalyzer.detectAffectedCallers` | method | `src/analyzer/migration-route-analyzer.ts` | 4 |
 
 ---
 

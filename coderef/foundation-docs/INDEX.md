@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-06-13  
+**Generated:** 2026-07-02  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,575 |
-| **Total Files** | 407 |
-| **Total Lines** | 108,277 |
+| **Total Elements** | 2,411 |
+| **Total Files** | 390 |
+| **Total Lines** | 101,537 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,13 +22,13 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 753 | 29.2% |
-| method | 1,071 | 41.6% |
-| interface | 443 | 17.2% |
-| class | 119 | 4.6% |
-| type | 64 | 2.5% |
+| function | 729 | 30.2% |
+| method | 978 | 40.6% |
+| interface | 401 | 16.6% |
+| class | 103 | 4.3% |
+| type | 65 | 2.7% |
 | component | 2 | 0.1% |
-| constant | 123 | 4.8% |
+| constant | 133 | 5.5% |
 
 ---
 
@@ -38,29 +38,29 @@
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
 | 2 | `src/scanner/tree-sitter-scanner.ts` | 57 | 🔴 Very High |
-| 3 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
-| 4 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
-| 5 | `src/pipeline/import-resolver.ts` | 31 | 🟡 High |
+| 3 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
+| 4 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
+| 5 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
 | 6 | `src/search/search-engine.ts` | 31 | 🟡 High |
 | 7 | `src/indexer/index-store.ts` | 30 | 🟡 High |
-| 8 | `src/scanner/scanner.ts` | 30 | 🟡 High |
-| 9 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
-| 10 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
-| 11 | `src/cli/coderef-rag-server.ts` | 28 | 🟢 Medium |
-| 12 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
-| 13 | `src/indexer/relationship-index.ts` | 28 | 🟢 Medium |
-| 14 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
-| 15 | `src/cli/coderef-mcp-server.ts` | 27 | 🟢 Medium |
-| 16 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
-| 17 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
-| 18 | `src/pipeline/extractors/relationship-extractor.ts` | 25 | 🟢 Medium |
-| 19 | `src/types/types.ts` | 24 | 🟢 Medium |
-| 20 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
-| 21 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
-| 22 | `src/cli/coderef-watch.ts` | 23 | 🟢 Medium |
-| 23 | `src/indexer/metadata-index.ts` | 23 | 🟢 Medium |
-| 24 | `src/analyzer/dependency-analyzer.ts` | 22 | 🟢 Medium |
-| 25 | `src/analyzer/design-pattern-detector.ts` | 22 | 🟢 Medium |
+| 8 | `src/query/canonical-graph.ts` | 30 | 🟡 High |
+| 9 | `src/scanner/scanner.ts` | 30 | 🟡 High |
+| 10 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
+| 11 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
+| 12 | `src/cli/coderef-rag-server.ts` | 28 | 🟢 Medium |
+| 13 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
+| 14 | `src/indexer/relationship-index.ts` | 28 | 🟢 Medium |
+| 15 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
+| 16 | `src/cli/coderef-mcp-server.ts` | 27 | 🟢 Medium |
+| 17 | `src/pipeline/call-resolver.ts` | 26 | 🟢 Medium |
+| 18 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
+| 19 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
+| 20 | `src/pipeline/extractors/relationship-extractor.ts` | 25 | 🟢 Medium |
+| 21 | `src/types/types.ts` | 24 | 🟢 Medium |
+| 22 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
+| 23 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
+| 24 | `src/cli/coderef-watch.ts` | 23 | 🟢 Medium |
+| 25 | `src/indexer/metadata-index.ts` | 23 | 🟢 Medium |
 
 ---
 
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,575 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,411 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

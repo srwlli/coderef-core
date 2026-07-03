@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-06-13 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-07-03 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -121,189 +121,44 @@ console.log(`TypeScript has ${tsPatterns.length} patterns`);
 
 ---
 
-## Analyzer Components
+## Relationship Query Components
 
-### `AnalyzerService` (Class)
+> **Rebuild note:** the pre-rebuild in-memory analyzer family — `AnalyzerService`,
+> `GraphBuilder`, `GraphAnalyzer`, `ImportParser`, `CallDetector`, `QueryExecutor` — was
+> removed. Relationships are now built by the pipeline into the canonical
+> `.coderef/graph.json` and queried through `CanonicalGraphQuery` (or the `coderef-query`
+> CLI / MCP tools). Import- and call-edge detection lives inside the pipeline generators.
 
-**Location:** `src/analyzer/analyzer-service.ts:43`
+### `CanonicalGraphQuery` (Class)
 
-**Purpose:** Orchestrates relationship analysis and dependency graph building
+**Location:** `src/query/canonical-graph.ts`
 
-**Type:** Service Class (stateful)
+**Purpose:** Query relationships over the persisted canonical graph (`.coderef/graph.json`)
 
-**State:**
-- `graphBuilder: GraphBuilder` - Builds dependency graphs
-- `graphAnalyzer?: GraphAnalyzer` - Analyzes graphs
-- `cachedGraph?: DependencyGraph` - Cached graph for performance
-- `basePath: string` - Project root path
-- `elementMap?: Map<string, ElementInfo>` - Enhanced element mapping
-
-**Key Methods:**
-
-| Method | Purpose | Returns |
-|--------|---------|---------|
-| `analyze(patterns, useCache)` | Analyze codebase and build graph | `Promise<AnalysisResult>` |
-| `queryRelationships(target, type)` | Query specific relationships | `Promise<GraphNode[]>` |
-| `setElementMap(map)` | Set element mapping for enhanced analysis | `void` |
-
-**Dependencies:**
-- `GraphBuilder` - Constructs dependency graphs
-- `GraphAnalyzer` - Analyzes graph properties
-- `glob` - File pattern matching
-
-**Usage:**
-```typescript
-import { AnalyzerService } from '@coderef/core';
-
-const analyzer = new AnalyzerService('./project-root');
-const result = await analyzer.analyze(['src/**/*.ts']);
-```
-
-**Characteristics:**
-- ✅ Stateful (caches graph)
-- ✅ Lazy initialization (builds graph on first analyze())
-- ⚡ Performance: ~150ms for 500 files
-
----
-
-### `GraphBuilder` (Class)
-
-**Location:** `src/analyzer/graph-builder.ts:14`
-
-**Purpose:** Constructs dependency graphs from source files
-
-**Type:** Builder Class
+**Type:** Query Class (loaded from a persisted graph)
 
 **Key Methods:**
 
 | Method | Purpose | Returns |
 |--------|---------|---------|
-| `buildGraph(files, elementMap)` | Build graph from files | `DependencyGraph` |
-| `addNode(node)` | Add node to graph | `void` |
-| `addEdge(source, target, type)` | Add edge to graph | `void` |
-
-**Dependencies:**
-- `ImportParser` - Parse import/export statements
-- `CallDetector` - Detect function calls
-- `acorn` - JavaScript/TypeScript AST parser
+| `resolve(query)` | Resolve a symbol to graph node(s) (by id, name, or file) | `NodeResolution` |
+| `callersOf(resolution)` | Elements that call the resolved element (inbound) | `CanonicalNode[]` |
+| `calleesOf(resolution)` | Elements called by the resolved element (outbound) | `CanonicalNode[]` |
 
 **Usage:**
 ```typescript
-import GraphBuilder from '@coderef/core';
+import { loadCanonicalGraph } from '@coderef/core';
 
-const builder = new GraphBuilder('./project-root');
-const graph = builder.buildGraph(['file1.ts', 'file2.ts']);
+const query = loadCanonicalGraph('./');
+const resolution = query.resolve('deduplicateElements');
+const callers = query.callersOf(resolution);   // inbound call edges
+const callees = query.calleesOf(resolution);   // outbound call edges
 ```
 
 **Characteristics:**
-- ✅ Incremental building (add nodes/edges one at a time)
-- ✅ AST-based parsing (99% accuracy)
-- ⚡ Performance: ~100ms for 500 files
-
----
-
-### `GraphAnalyzer` (Class)
-
-**Location:** `src/analyzer/graph-analyzer.ts:18`
-
-**Purpose:** Analyzes dependency graphs for patterns and issues
-
-**Type:** Analyzer Class
-
-**Key Methods:**
-
-| Method | Purpose | Returns |
-|--------|---------|---------|
-| `detectCircularDependencies()` | Find circular dependency cycles | `CircularDependency[]` |
-| `findIsolatedNodes()` | Find nodes with no connections | `GraphNode[]` |
-| `getStatistics()` | Compute graph statistics | `GraphStatistics` |
-| `findShortestPath(source, target)` | Find shortest path between nodes | `TraversalPath \| null` |
-| `traverseFrom(start, maxDepth)` | Traverse graph from node | `GraphNode[]` |
-
-**Algorithms:**
-- **Cycle Detection:** Depth-First Search (DFS) with recursion tracking
-- **Shortest Path:** Breadth-First Search (BFS)
-- **Statistics:** O(V+E) traversal
-
-**Usage:**
-```typescript
-import { GraphAnalyzer } from '@coderef/core';
-
-const analyzer = new GraphAnalyzer(graph);
-const cycles = analyzer.detectCircularDependencies();
-console.log(`Found ${cycles.length} circular dependencies`);
-```
-
-**Characteristics:**
-- ✅ Stateless (operates on provided graph)
-- ✅ Multiple algorithms (DFS, BFS)
-- ⚡ Performance: ~20ms for cycle detection (500 nodes)
-
----
-
-### `ImportParser` (Class)
-
-**Location:** `src/analyzer/import-parser.ts:12`
-
-**Purpose:** Parse import/export statements from source files
-
-**Type:** Parser Class
-
-**Key Methods:**
-
-| Method | Purpose | Returns |
-|--------|---------|---------|
-| `parseImports(file)` | Extract imports from file | `ImportStatement[]` |
-| `parseExports(file)` | Extract exports from file | `ExportStatement[]` |
-
-**Dependencies:**
-- `acorn` - JavaScript/TypeScript AST parser
-
-**Usage:**
-```typescript
-import { ImportParser } from '@coderef/core';
-
-const parser = new ImportParser();
-const imports = parser.parseImports('src/file.ts');
-```
-
-**Characteristics:**
-- ✅ AST-based parsing (not regex)
-- ✅ Handles ES6 imports and CommonJS requires
-- ⚡ Performance: ~5ms per file
-
----
-
-### `CallDetector` (Class)
-
-**Location:** `src/analyzer/call-detector.ts:10`
-
-**Purpose:** Detect function calls and method invocations
-
-**Type:** Detector Class
-
-**Key Methods:**
-
-| Method | Purpose | Returns |
-|--------|---------|---------|
-| `detectCalls(file)` | Extract function calls from file | `CallExpression[]` |
-
-**Dependencies:**
-- `acorn` - JavaScript/TypeScript AST parser
-
-**Usage:**
-```typescript
-import { CallDetector } from '@coderef/core';
-
-const detector = new CallDetector();
-const calls = detector.detectCalls('src/file.ts');
-```
-
-**Characteristics:**
-- ✅ Detects direct calls (`foo()`)
-- ✅ Detects method calls (`obj.method()`)
-- ✅ Detects chained calls (`obj.method1().method2()`)
-- ⚡ Performance: ~5ms per file
+- ✅ Reads the persisted `.coderef/graph.json` — no in-memory rebuild
+- ✅ Typed against `ExportedGraph` (schema drift is a compile error)
+- ⚡ Cycle detection / statistics: use the `cycles` / `codebase_summary` MCP tools or `coderef-query`
 
 ---
 
@@ -402,7 +257,7 @@ async function buildDependencyGraph(
 **Returns:** `DependencyGraph` object
 
 **Dependencies:**
-- `GraphBuilder` - Build graph structure
+- Pipeline graph generator (`src/pipeline/generators/graph-generator.ts`) - builds nodes + edges
 - `fs/promises` - File system access
 
 **Usage:**
@@ -570,57 +425,41 @@ await generateDiagrams('./my-project', elements);
 
 ## Query Components
 
-### `QueryExecutor` (Class)
+### `CanonicalGraphQuery` (Class)
 
-**Location:** `src/query/query-executor.ts:55`
+**Location:** `src/query/canonical-graph.ts`
 
-**Purpose:** Execute complex queries on relationship graph
+**Purpose:** Execute relationship queries over the persisted canonical graph. Replaces the
+removed `QueryExecutor` (which orchestrated an in-memory `AnalyzerService`).
 
-**Type:** Query Engine Class
-
-**State:**
-- `analyzer: AnalyzerService` - Analyzer instance
-- `resultCache: Map<string, CachedResult>` - Query result cache
-- `cacheExpiryMs: number` - Cache expiry time (default: 5 minutes)
-- `performanceMetrics: Map<QueryType, Metrics>` - Performance tracking
+**Type:** Query Class (loaded from `.coderef/graph.json`)
 
 **Key Methods:**
 
 | Method | Purpose | Returns |
 |--------|---------|---------|
-| `execute(request)` | Execute query | `Promise<QueryResult>` |
-| `clearCache()` | Clear query cache | `void` |
-| `getPerformanceMetrics()` | Get query statistics | `Map<QueryType, Metrics>` |
+| `resolve(query)` | Resolve a symbol to graph node(s) | `NodeResolution` |
+| `callersOf(resolution)` | What calls this element (inbound) | `CanonicalNode[]` |
+| `calleesOf(resolution)` | What this element calls (outbound) | `CanonicalNode[]` |
 
-**Query Types:**
-- `what-calls` - What calls this element?
-- `what-calls-me` - What does this element call?
-- `what-imports` - What does this element import?
-- `what-imports-me` - What imports this element?
-- `what-depends-on` - What does this depend on?
-- `what-depends-on-me` - What depends on this?
-- `shortest-path` - Shortest path between elements
-- `all-paths` - All paths between elements
+**Query concepts (served via `coderef-query` CLI / MCP tools over the same graph):**
+- `what-calls` / `what-calls-me` - inbound / outbound call edges (`what_calls` MCP tool)
+- `what-imports` / `what-imports-me` - import relationships (`what_imports` MCP tool)
+- `impact-of` - transitive dependents (`impact_of` MCP tool)
+- `cycles` - dependency cycles (`cycles` MCP tool)
 
 **Usage:**
 ```typescript
-import { QueryExecutor, AnalyzerService } from '@coderef/core';
+import { loadCanonicalGraph } from '@coderef/core';
 
-const analyzer = new AnalyzerService('./project');
-await analyzer.analyze();
-
-const executor = new QueryExecutor(analyzer);
-const result = await executor.execute({
-  type: 'what-calls-me',
-  target: 'scanCurrentElements'
-});
+const query = loadCanonicalGraph('./');
+const result = query.callersOf(query.resolve('scanCurrentElements'));
 ```
 
 **Characteristics:**
-- ✅ Result caching (5 minute TTL)
-- ✅ Performance tracking per query type
-- ✅ Automatic cache invalidation
-- ⚡ Performance: <1ms for cached queries, ~10ms for new queries
+- ✅ Reads the persisted `.coderef/graph.json` — no in-memory analyze pass
+- ✅ Typed against `ExportedGraph` (schema drift is a compile error)
+- ⚡ The same graph backs the `coderef-query` CLI and the MCP intelligence tools
 
 ---
 
@@ -790,15 +629,14 @@ Logger.error('Scan failed', error);
     ┌──────────────┼──────────────┐
     │              │              │
     ▼              ▼              ▼
-┌────────┐   ┌─────────┐   ┌──────────┐
-│Scanner │   │Analyzer │   │FileGen   │
-│        │   │Service  │   │Functions │
-└────┬───┘   └────┬────┘   └────┬─────┘
-     │            │              │
-     │            ├──► GraphBuilder
-     │            ├──► GraphAnalyzer
-     │            ├──► ImportParser
-     │            └──► CallDetector
+┌────────┐   ┌─────────────┐   ┌──────────┐
+│Scanner │   │Pipeline +   │   │FileGen   │
+│        │   │Graph Query  │   │Functions │
+└────┬───┘   └──────┬──────┘   └────┬─────┘
+     │              │               │
+     │              ├──► pipeline/generators/graph-generator.ts
+     │              ├──► query/canonical-graph.ts (CanonicalGraphQuery)
+     │              └──► scanner/error-reporter.ts (ScanError)
      │
      └──► LANGUAGE_PATTERNS
           types/types.ts
@@ -836,49 +674,30 @@ Logger.error('Scan failed', error);
 
 ## Component Patterns
 
-### 1. **Service Pattern**
+### 1. **Pipeline Orchestrator Pattern**
 
-Used in: `AnalyzerService`, `IndexerService`
+Used in: `PipelineOrchestrator` (single-pass phase sequencing)
 
 ```typescript
-class XyzService {
-  private state: State;
-
-  constructor(config: Config) {
-    this.state = initializeState(config);
-  }
-
-  async performAction(): Promise<Result> {
-    // Orchestrate multiple components
-    const step1 = await this.component1.execute();
-    const step2 = await this.component2.execute(step1);
-    return this.combineResults(step1, step2);
+class PipelineOrchestrator {
+  async run(projectDir: string): Promise<PipelineState> {
+    // Deterministic phase ordering: discovery → scanner → raw facts →
+    // semantic header parser → import resolution → call resolution → graph construction
+    const state = await this.runPhases(projectDir);
+    return state;
   }
 }
 ```
 
-### 2. **Builder Pattern**
+### 2. **Graph Query Pattern**
 
-Used in: `GraphBuilder`
+Used in: `CanonicalGraphQuery` (load persisted graph, then query)
 
 ```typescript
-class GraphBuilder {
-  private graph: Graph = createEmptyGraph();
+import { loadCanonicalGraph } from '@coderef/core';
 
-  addNode(node: Node): this {
-    this.graph.nodes.set(node.id, node);
-    return this;
-  }
-
-  addEdge(edge: Edge): this {
-    this.graph.edges.push(edge);
-    return this;
-  }
-
-  build(): Graph {
-    return this.graph;
-  }
-}
+const query = loadCanonicalGraph('./');          // read .coderef/graph.json
+const callers = query.callersOf(query.resolve('scanCurrentElements'));
 ```
 
 ### 3. **Functional Composition**

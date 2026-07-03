@@ -106,25 +106,15 @@ export function parseCodeRef(tag: string): ParsedCodeRef {
 #### **Advanced Features**
 - **Metadata Support**: JSON or key=value pairs
 - **Robust Parsing**: Graceful handling of malformed tags
-- **Bidirectional**: Parse existing ↔ Generate new tags
 - **Validation**: Syntax checking with detailed errors
 
 #### **Example Usage**
 ```typescript
-import { parseCodeRef, generateCodeRef } from '@coderef/core';
+import { parseCodeRef } from '@coderef/core';
 
 // Parse existing tag
 const parsed = parseCodeRef("@Fn/auth/login#authenticateUser:42{\"status\":\"active\"}");
 // Returns: { type: "Fn", path: "auth/login", element: "authenticateUser", line: "42", metadata: {status: "active"} }
-
-// Generate new tag
-const generated = generateCodeRef({
-  type: "Cl",
-  path: "models/User",
-  element: "validateCredentials",
-  line: 15
-});
-// Returns: "@Cl/models/User#validateCredentials:15"
 ```
 
 ### **3. Code Scanner Evolution**
@@ -342,168 +332,60 @@ flowchart TB
 
 ---
 
-### **4. Graph Persistence (`analyzer-service.ts`)** *(New in v2.1.0)*
+### **4. Canonical Graph Queries (`query/canonical-graph.ts`)**
 
-The analyzer now supports saving and loading dependency graphs for persistent analysis:
+Relationship analysis runs over the canonical `.coderef/graph.json` produced by the
+pipeline. The pre-rebuild in-memory `buildGraph`/`saveGraph`/`loadGraph` +
+`analyzer-service.ts` surface was removed in the rebuild; load the persisted canonical
+graph and query it instead.
 
-#### **Graph Loading**
+#### **Loading and Querying**
 ```typescript
-import { loadGraph } from '@coderef/core';
+import { loadCanonicalGraph } from '@coderef/core';
 
-// Load graph from JSON file
-const graphData = JSON.parse(fs.readFileSync('dependency-graph.json', 'utf-8'));
-const graph = loadGraph(graphData);
+// Load the canonical graph persisted at <projectDir>/.coderef/graph.json
+const query = loadCanonicalGraph('./');
 
-// Use the reconstructed graph
-for (const [nodeId, node] of graph.entries()) {
-  console.log(`${nodeId}: ${node.dependencies.length} dependencies`);
-}
+// Resolve a symbol to its graph node(s)
+const resolution = query.resolve('deduplicateElements');
+
+// Directional relationship queries (same directions as the coderef-query CLI)
+const callees = query.calleesOf(resolution);   // what this element calls (outbound)
+const callers = query.callersOf(resolution);   // what calls this element (inbound)
+
+console.log(`${callers.length} callers, ${callees.length} callees`);
 ```
 
 **Features:**
-- **Round-Trip Integrity**: `saveGraph()` → `loadGraph()` preserves graph structure
-- **Validation**: Checks node IDs, dependencies, and metadata
-- **Error Handling**: Throws `GraphError` for invalid graph data
-- **Type Safety**: Reconstructs `Map<string, GraphNode>` from JSON
+- **Persisted source of truth**: queries read `.coderef/graph.json`, the same artifact the
+  MCP server and `coderef-query` CLI consume — no re-scan needed.
+- **Flexible resolution**: `resolve()` matches by exact CodeRef id, by name, or by file,
+  returning a `NodeResolution`.
+- **Directional traversal**: `callersOf()` / `calleesOf()` walk resolved call edges in each
+  direction; import relationships are traversed the same way over the edge set.
+- **Typed against `ExportedGraph`**: schema drift is a compile error, not a silent wrong answer.
+- **Error handling**: invalid or missing graph data throws `CanonicalGraphError`.
 
-**Graph Structure:**
+**Canonical node shape:**
 ```typescript
-interface GraphNode {
-  id: string;              // CodeRef tag (e.g., "@Fn/auth/login#authenticate:24")
-  dependencies: string[];  // Array of CodeRef tags this node depends on
-  dependents: string[];    // Array of CodeRef tags that depend on this node
-  metadata: {
-    file: string;         // Source file path
-    line: number;         // Line number
-    type: string;         // Element type
-    name: string;         // Element name
-  };
+interface CanonicalNode {
+  id: string;        // CodeRef id (e.g., "@Fn/scanner#deduplicateElements:648")
+  file?: string;     // Source file path
+  line?: number;     // Line number
+  // ...plus layer / capability / semantic facets carried on GraphNode.metadata
 }
 ```
 
-**Validation Rules:**
-- All node IDs must be valid CodeRef tags
-- Dependency references must exist in graph
-- Node metadata must be present
-- Empty graphs are valid and handled gracefully
-
-**Example Use Case - Persistent Impact Analysis:**
-```typescript
-import { buildGraph, saveGraph, loadGraph } from '@coderef/core';
-
-// Build graph once (expensive operation)
-const graph = await buildGraph('./src', ['ts', 'tsx']);
-const graphJson = saveGraph(graph);
-fs.writeFileSync('graph-cache.json', JSON.stringify(graphJson, null, 2));
-
-// Later sessions: Load from cache (fast)
-const cachedGraphData = JSON.parse(fs.readFileSync('graph-cache.json', 'utf-8'));
-const cachedGraph = loadGraph(cachedGraphData);
-
-// Perform impact analysis without re-scanning
-const impactedNodes = analyzeImpact(cachedGraph, "@Fn/auth/login#authenticate:24");
-```
-
-**Performance Benefits:**
-- **Build Once, Use Many**: Cache graphs between sessions
-- **CI/CD Integration**: Save graphs as artifacts, load in downstream jobs
-- **Incremental Updates**: Load base graph, update only changed files
-- **Faster Testing**: Pre-computed graphs for test suites
-
-#### **Graph Builder Algorithm**
-
-The graph builder constructs a dependency graph by analyzing import/call relationships between code elements. This diagram shows the complete algorithm flow:
-
-```mermaid
-flowchart TB
-    Start([buildGraph<br/>dir, langs]) --> Init[Initialize Empty Graph<br/>Map&lt;string, GraphNode&gt;]
-    Init --> Scan[Scan Directory<br/>scanCurrentElements]
-
-    Scan --> Elements[ElementData Array<br/>functions, classes, etc.]
-    Elements --> LoopStart{For Each<br/>Element}
-
-    LoopStart -->|element| CreateNode[Create GraphNode]
-    CreateNode --> GenID[Generate Node ID<br/>@Type/path#name:line]
-    GenID --> AddMeta[Add Metadata<br/>file, line, type, name]
-
-    AddMeta --> InitArrays[Initialize Arrays<br/>dependencies: []<br/>dependents: []]
-    InitArrays --> StoreNode[Store in Graph<br/>graph.set&#40;id, node&#41;]
-
-    StoreNode --> LoopStart
-    LoopStart -->|done| AnalyzePhase[Phase 2: Analyze Dependencies]
-
-    AnalyzePhase --> LoopNodes{For Each<br/>Node}
-    LoopNodes -->|node| ParseFile[Parse Source File<br/>TypeScript Compiler API]
-
-    ParseFile --> FindImports[Find Import Statements<br/>visitNode&#40;&#41; traversal]
-    FindImports --> FindCalls[Find Function Calls<br/>CallExpression nodes]
-
-    FindCalls --> ResolveRefs{Resolve Each<br/>Reference}
-    ResolveRefs -->|reference| LookupTarget[Lookup Target Node<br/>in Graph Map]
-
-    LookupTarget --> Exists{Target<br/>Exists?}
-    Exists -->|Yes| AddEdge[Add Dependency Edge<br/>source.dependencies.push&#40;target&#41;<br/>target.dependents.push&#40;source&#41;]
-    Exists -->|No| Skip[Skip - External Dependency]
-
-    AddEdge --> ResolveRefs
-    Skip --> ResolveRefs
-    ResolveRefs -->|done| LoopNodes
-
-    LoopNodes -->|done| Validate[Validate Graph Structure<br/>check circular deps]
-    Validate --> Complete[Return Graph<br/>Map&lt;string, GraphNode&gt;]
-    Complete --> End([End])
-
-    style Start fill:#e1f5e1
-    style End fill:#e1f5e1
-    style CreateNode fill:#fff4e6
-    style AddEdge fill:#ffe6e6
-    style Complete fill:#e6f3ff
-```
-
-**Algorithm Explanation:**
-
-**Phase 1: Node Creation**
-1. **Initialize**: Create empty `Map<string, GraphNode>` to store graph
-2. **Scan**: Use `scanCurrentElements()` to discover all code elements
-3. **Create Nodes**: For each element, create a `GraphNode` with:
-   - **ID**: Generated CodeRef tag (`@Fn/auth/login#authenticate:24`)
-   - **Metadata**: File path, line number, type, name
-   - **Arrays**: Empty `dependencies[]` and `dependents[]`
-4. **Store**: Add node to graph map using ID as key
-
-**Phase 2: Edge Building**
-1. **Parse Files**: Use TypeScript Compiler API to parse each source file
-2. **Visit Nodes**: Traverse AST to find:
-   - Import statements (`import { foo } from './bar'`)
-   - Function calls (`authenticate(user)`)
-   - Class instantiations (`new UserService()`)
-3. **Resolve References**: For each import/call:
-   - Look up target node in graph map
-   - If found: Create bidirectional edge
-     - Add target to source's `dependencies[]`
-     - Add source to target's `dependents[]`
-   - If not found: Skip (external dependency)
-4. **Validate**: Check for circular dependencies and structural integrity
-
-**Key Data Structures:**
+For building a dependency graph from scratch (the persistence angle the old `buildGraph`
+covered), use the live `buildDependencyGraph` export, which returns a `DependencyGraph`
+of `GraphNode` / `GraphEdge`:
 
 ```typescript
-// Graph storage: Map for O(1) lookup
-const graph: Map<string, GraphNode> = new Map();
+import { buildDependencyGraph } from '@coderef/core';
+import type { DependencyGraph, GraphNode, GraphEdge } from '@coderef/core';
 
-// Each node tracks incoming and outgoing edges
-interface GraphNode {
-  id: string;                    // Unique identifier
-  dependencies: string[];        // Outgoing edges (what I depend on)
-  dependents: string[];          // Incoming edges (what depends on me)
-  metadata: NodeMetadata;        // Element information
-}
+const graph: DependencyGraph = await buildDependencyGraph('./src', ['ts', 'tsx']);
 ```
-
-**Complexity Analysis:**
-- **Time**: O(N + E) where N = nodes, E = edges (linear in graph size)
-- **Space**: O(N + E) for storing graph structure
-- **Lookup**: O(1) for node retrieval via Map
 
 ### **5. File System Utilities (`utils/fs.ts`)**
 
@@ -556,33 +438,17 @@ elements.forEach(el => {
 
 ### **Tag Processing Workflow**
 ```typescript
-import { parseCodeRef, generateCodeRef, extractCodeRefs } from '@coderef/core';
+import { parseCodeRef } from '@coderef/core';
 
-// Extract all tags from file content
-const fileContent = fs.readFileSync('auth/login.ts', 'utf-8');
-const existingTags = extractCodeRefs(fileContent);
+// Validate a CodeRef tag string
+const tagString = '@Fn/auth/login#authenticateUser:42';
 
-// Process each tag
-existingTags.forEach(tag => {
-  console.log(`Found: @${tag.type}/${tag.path}#${tag.element}:${tag.line}`);
-
-  // Validate tag
-  try {
-    parseCodeRef(`@${tag.type}/${tag.path}#${tag.element}:${tag.line}`);
-    console.log('✅ Valid tag');
-  } catch (error) {
-    console.error('❌ Invalid tag:', error.message);
-  }
-});
-
-// Generate new tag
-const newTag = generateCodeRef({
-  type: 'Fn',
-  path: 'auth/login',
-  element: 'authenticateUser',
-  line: '42',
-  metadata: { status: 'active', complexity: 'low' }
-});
+try {
+  const parsed = parseCodeRef(tagString);
+  console.log(`✅ Valid tag: @${parsed.type}/${parsed.path}#${parsed.element}:${parsed.line}`);
+} catch (error) {
+  console.error('❌ Invalid tag:', error.message);
+}
 ```
 
 ### **Drift Detection Integration**
@@ -638,11 +504,11 @@ import { detectDrift } from 'coderef-cli/drift-detector';
 
 // Indexing
 import { buildIndex } from 'coderef-cli/indexer';
-// Uses: extractCodeRefs, scanCurrentElements
+// Uses: scanCurrentElements, saveIndex
 
 // Tagging
 import { tagFile } from 'coderef-cli/tagger';
-// Uses: scanCurrentElements, generateCodeRef
+// Uses: scanCurrentElements, parseCodeRef
 ```
 
 ### **Enterprise Features**
@@ -654,9 +520,9 @@ import { tagFile } from 'coderef-cli/tagger';
 ## Recent Enhancements (v2.1.0)
 
 ### **Completed Features**
-1. ✅ **Graph Persistence**: `loadGraph()` implementation for persistent dependency analysis
+1. ✅ **Canonical Graph Queries**: `loadCanonicalGraph()` / `CanonicalGraphQuery` over the persisted `.coderef/graph.json`
 2. ✅ **Scanner Export**: Public API for `scanCurrentElements` from @coderef/core
-3. ✅ **Comprehensive Testing**: 25 tests covering scanner exports and functionality
+3. ✅ **Comprehensive Testing**: scanner-export and canonical-graph query coverage in the vitest suite
 
 ## Future Roadmap
 
@@ -716,424 +582,107 @@ const relativePath = getRelativePath(fromFile, toFile);
 
 ## Error Handling System
 
-Coderef-core provides a comprehensive error handling infrastructure with typed error classes, error chaining, and structured logging.
+Coderef-core reports scan-time failures through the **scanner error-reporting module**
+(`src/scanner/error-reporter.ts`, exported from `@coderef/core`). The pre-rebuild
+`CodeRefError` class taxonomy (`ParseError`, `FileNotFoundError`, `ValidationError`,
+`IndexError`, `GraphError`, and the `CodeRefError` base) was removed in the rebuild — the
+canonical surface is a structured `ScanError` **record** created by `createScanError()`,
+not a thrown error subclass.
 
-### **Error Class Hierarchy**
-
-All CodeRef errors extend the base `CodeRefError` class, providing consistent error handling across the system:
+### **Public error-reporting surface**
 
 ```typescript
 import {
-  CodeRefError,
-  ParseError,
-  FileNotFoundError,
-  ScanError,
-  ValidationError,
-  IndexError,
-  GraphError,
+  createScanError,
+  createScanErrorWithContext,
+  formatScanError,
+  printScanErrors,
+  initScanStats,
 } from '@coderef/core';
+import type { ScanError, ScanErrorType, ScanErrorSeverity } from '@coderef/core';
 ```
 
-### **Base Error Class: CodeRefError**
+### **ScanError record**
 
-The foundation for all CodeRef errors with enhanced functionality:
+`ScanError` is an interface, not a class. Errors are *built* from a caught cause plus the
+file and error type; they are collected on a `ScanResult` rather than thrown:
 
 ```typescript
-// Basic error with message
-throw new CodeRefError('Operation failed');
-
-// Error with cause chain (for debugging)
-try {
-  JSON.parse(content);
-} catch (error) {
-  throw new CodeRefError('Invalid data format', { cause: error });
+export interface ScanError {
+  type: ScanErrorType;         // 'read' | 'parse' | 'pattern' | ... (see error-reporter.ts)
+  severity: ScanErrorSeverity; // 'error' | 'warning' | 'info'
+  file: string;                // File where the error occurred
+  line?: number;               // Line number (if applicable)
+  column?: number;             // Column number (if applicable)
+  pattern?: string;            // Pattern that caused the error (pattern errors)
+  message: string;             // Human-readable message
+  suggestion?: string;         // Actionable fix (auto-derived for ENOENT/EACCES/SyntaxError)
+  stack?: string;              // Stack trace (debugging)
 }
-
-// Error with context (for recovery)
-throw new CodeRefError('Scan failed', {
-  context: { file: 'auth.ts', operation: 'scan' }
-});
-
-// Error with both cause and context
-throw new CodeRefError('Processing failed', {
-  cause: originalError,
-  context: { file: 'auth.ts', line: 42 }
-});
 ```
 
-**Error Properties:**
-- `message: string` - Human-readable error message
-- `code: string` - Error code for programmatic handling
-- `cause?: Error` - Original error that caused this error
-- `context?: Record<string, any>` - Additional debugging information
-- `stack: string` - Stack trace
-
-**Error Methods:**
-- `toJSON()` - Serialize error with cause chain for logging
-- `toString()` - User-friendly string representation for CLI
-
-### **Specialized Error Classes**
-
-#### **ParseError** - Tag Parsing Failures
-Used when CodeRef tag parsing fails:
+### **Creating and formatting errors**
 
 ```typescript
-import { ParseError } from '@coderef/core';
+import { createScanError, formatScanError } from '@coderef/core';
 
-// Invalid tag format
-throw new ParseError('Invalid CodeRef tag format: missing # separator', {
-  context: {
-    tag: '@Fn/path',
-    expected: '@Fn/path#element:line'
-  }
-});
+try {
+  const content = fs.readFileSync(file, 'utf-8');
+  // ...parse content...
+} catch (cause) {
+  // Signature: createScanError(error, file, type, severity = 'error')
+  const scanError = createScanError(cause, file, 'read');
 
-// Malformed JSON
-throw new ParseError('Invalid JSON in index file', {
-  cause: jsonError,
-  context: { file: 'coderef-index.json' }
-});
+  // Suggestion is derived automatically for known codes (ENOENT/EACCES/SyntaxError)
+  console.error(formatScanError(scanError));
+}
 ```
 
-**Common Scenarios:**
-- Missing @ prefix
-- Missing # separator
-- Invalid type designator
-- Malformed metadata
-- Corrupted JSON files
+### **Printing collected errors**
 
-#### **FileNotFoundError** - Missing Files or Directories
-Used when required files or directories are not found:
+`printScanErrors` routes a scan result's errors and warnings to the logger
+(errors → stderr, warnings → stderr) with per-entry formatting:
 
 ```typescript
-import { FileNotFoundError } from '@coderef/core';
+import { printScanErrors } from '@coderef/core';
 
-// Missing index file
-throw new FileNotFoundError('Index file not found: ./coderef-index.json', {
-  context: { path: './coderef-index.json', operation: 'drift' }
-});
-
-// Non-existent directory
-throw new FileNotFoundError('Source directory does not exist', {
-  context: { path: './src', operation: 'scan' }
-});
+// result: ScanResult<T> carrying .errors[] and .warnings[]
+printScanErrors(result, /* verbose */ true);  // verbose also prints stack traces
 ```
 
-**Common Scenarios:**
-- Missing coderef-index.json
-- Missing graph.json
-- Non-existent source files
-- Invalid directory paths
-- Permission denied errors
+### **Logging**
 
-#### **ScanError** - Code Scanning Failures
-Used when code scanning operations fail:
+Structured logging is provided by the internal logger at `src/utils/logger.ts`
+(not re-exported from the package root). It offers four severity levels (ERROR, WARN,
+INFO, DEBUG) with stream routing (ERROR/WARN → stderr, INFO/DEBUG → stdout), a verbose
+mode gating DEBUG output, and optional ANSI colors:
 
 ```typescript
-import { ScanError } from '@coderef/core';
+import { logger } from './utils/logger.js';   // internal module, not '@coderef/core'
 
-// AST parsing failure
-throw new ScanError('Failed to parse file: syntax error', {
-  cause: tsError,
-  context: { file: 'auth.ts', line: 42 }
-});
-
-// File read error
-throw new ScanError('Permission denied reading file', {
-  context: { file: 'config.ts', operation: 'scan' }
-});
-```
-
-**Common Scenarios:**
-- Invalid syntax in source files
-- TypeScript compiler errors
-- File permission issues
-- Unsupported file types
-- Memory issues with large files
-
-#### **ValidationError** - Validation Failures
-Used when validation operations fail:
-
-```typescript
-import { ValidationError } from '@coderef/core';
-
-// Invalid type designator
-throw new ValidationError('Invalid type designator: X', {
-  context: {
-    received: 'X',
-    expected: ['Fn', 'C', 'Cl', 'M', 'H', 'T', 'A', 'I', 'Cfg']
-  }
-});
-
-// Invalid line number
-throw new ValidationError('Invalid line number: must be positive integer', {
-  context: { received: -5, field: 'line' }
-});
-```
-
-**Common Scenarios:**
-- Invalid type designators
-- Invalid reference formats
-- Invalid command arguments
-- Schema validation failures
-- Invalid configuration values
-
-#### **IndexError** - Index File Issues
-Used when index operations fail:
-
-```typescript
-import { IndexError } from '@coderef/core';
-
-// Corrupted index
-throw new IndexError('Corrupted index file: invalid structure', {
-  cause: jsonError,
-  context: { file: 'coderef-index.json' }
-});
-
-// Version mismatch
-throw new IndexError('Index format version mismatch', {
-  context: { expected: '2.0', received: '1.5' }
-});
-```
-
-**Common Scenarios:**
-- Corrupted index files
-- Invalid index structure
-- Format version mismatches
-- Index rebuild failures
-- Inconsistent index state
-
-#### **GraphError** - Dependency Graph Errors
-Used when graph operations fail:
-
-```typescript
-import { GraphError, GraphErrorCode } from '@coderef/core';
-
-// Invalid graph structure
-throw new GraphError('Invalid graph JSON: nodes must be an array',
-  GraphErrorCode.MISSING_NODES,
-  { received: typeof json.nodes }
-);
-
-// Missing node reference
-throw new GraphError(
-  `Invalid edge: source node '${nodeId}' not found in graph`,
-  GraphErrorCode.INVALID_REFERENCE,
-  { edge, missingNode: nodeId }
-);
-```
-
-**Error Codes:**
-- `INVALID_FORMAT` - Malformed graph JSON
-- `MISSING_NODES` - Nodes array missing
-- `MISSING_EDGES` - Edges array missing
-- `INVALID_NODE` - Invalid node structure
-- `INVALID_EDGE` - Invalid edge structure
-- `INVALID_REFERENCE` - Edge references non-existent node
-- `FILE_NOT_FOUND` - Graph file not found
-- `PARSE_ERROR` - JSON parsing failed
-
-### **Logger Utility**
-
-Structured logging with severity levels and proper stream routing:
-
-```typescript
-import { logger } from '@coderef/core';
-
-// Error logging (always shown, stderr)
 logger.error('File not found', { path: './index.json' });
-
-// Warning logging (always shown, stderr)
-logger.warn('Deprecated function used', { function: 'oldScan' });
-
-// Info logging (shown by default, stdout)
 logger.info('Scan completed', { files: 42, elements: 150 });
-
-// Debug logging (only when verbose=true, stdout)
+logger.setVerbose(true);   // enables DEBUG + timestamps
 logger.debug('Processing file', { file: 'auth.ts' });
-
-// Enable verbose mode
-logger.setVerbose(true);
 ```
 
-**Logger Features:**
-- **4 severity levels**: ERROR, WARN, INFO, DEBUG
-- **Stream routing**: ERROR/WARN → stderr, INFO/DEBUG → stdout
-- **Verbose mode**: DEBUG logs only shown when enabled
-- **Timestamps**: Automatic timestamps in verbose mode
-- **Context logging**: Structured context information
-- **Color support**: Optional ANSI colors for terminals
+### **Graceful degradation pattern**
 
-**Logger Configuration:**
-```typescript
-import { logger } from '@coderef/core';
-
-// Enable verbose mode (shows DEBUG logs and timestamps)
-logger.setVerbose(true);
-
-// Disable colors
-logger.setUseColors(false);
-
-// Check if verbose mode is enabled
-if (logger.isVerbose()) {
-  logger.debug('Verbose mode active');
-}
-```
-
-### **Error Handling Best Practices**
-
-#### **1. Catch and Wrap Errors**
-```typescript
-import { ScanError } from '@coderef/core';
-
-try {
-  const result = await scanCurrentElements(dir, langs);
-} catch (error) {
-  // Wrap with CodeRefError for consistent handling
-  throw new ScanError('Scan failed', {
-    cause: error,
-    context: { dir, langs }
-  });
-}
-```
-
-#### **2. Preserve Error Context**
-```typescript
-import { ParseError, parseCodeRef } from '@coderef/core';
-
-try {
-  const parsed = parseCodeRef(tag);
-} catch (error) {
-  // Include original tag for debugging
-  throw new ParseError('Invalid tag format', {
-    cause: error,
-    context: { tag, expected: '@Type/path#element:line' }
-  });
-}
-```
-
-#### **3. Provide Recovery Suggestions**
-```typescript
-import { FileNotFoundError } from '@coderef/core';
-
-if (!fs.existsSync(indexPath)) {
-  throw new FileNotFoundError(
-    `Index file not found: ${indexPath}. Run 'coderef scan ./src' to create it.`,
-    { context: { path: indexPath, operation: 'drift' } }
-  );
-}
-```
-
-#### **4. Use Type Guards for Error Handling**
-```typescript
-import { CodeRefError, FileNotFoundError } from '@coderef/core';
-
-try {
-  await processFile(path);
-} catch (error) {
-  if (error instanceof FileNotFoundError) {
-    console.error('File not found:', error.message);
-    console.log('Suggestion: Check the file path');
-  } else if (error instanceof CodeRefError) {
-    console.error('CodeRef error:', error.message);
-    if (error.context) {
-      console.error('Context:', error.context);
-    }
-  } else {
-    console.error('Unexpected error:', error);
-  }
-}
-```
-
-#### **5. Log Errors Appropriately**
-```typescript
-import { logger, ScanError } from '@coderef/core';
-
-try {
-  const elements = await scanCurrentElements(dir, langs);
-  logger.info('Scan completed', { count: elements.length });
-} catch (error) {
-  if (error instanceof ScanError) {
-    logger.error('Scan failed', { dir, error: error.message });
-    if (logger.isVerbose()) {
-      logger.debug('Stack trace', { stack: error.stack });
-    }
-  }
-  throw error;
-}
-```
-
-### **Error Serialization**
-
-All CodeRef errors can be serialized to JSON for logging:
+The scanner accumulates per-file errors on the result instead of aborting the whole scan,
+so a single bad file degrades to a skip rather than a failure:
 
 ```typescript
-import { CodeRefError } from '@coderef/core';
+import { createScanError, printScanErrors } from '@coderef/core';
 
-const error = new CodeRefError('Operation failed', {
-  cause: new Error('Original error'),
-  context: { file: 'test.ts', line: 42 }
-});
-
-// Serialize for logging
-const json = error.toJSON();
-console.log(JSON.stringify(json, null, 2));
-
-// Output:
-// {
-//   "name": "CodeRefError",
-//   "code": "CODEREF_ERROR",
-//   "message": "Operation failed",
-//   "stack": "...",
-//   "context": { "file": "test.ts", "line": 42 },
-//   "cause": {
-//     "name": "Error",
-//     "message": "Original error",
-//     "stack": "..."
-//   }
-// }
-```
-
-### **Error Recovery Patterns**
-
-#### **Graceful Degradation**
-```typescript
-import { ScanError, logger } from '@coderef/core';
-
-const results = [];
+const errors: ScanError[] = [];
 for (const file of files) {
   try {
-    const elements = await scanFile(file);
-    results.push(...elements);
-  } catch (error) {
-    if (error instanceof ScanError) {
-      logger.warn(`Skipping file ${file}`, { error: error.message });
-      continue; // Skip problematic file
-    }
-    throw error; // Re-throw unexpected errors
+    results.push(...await scanFile(file));
+  } catch (cause) {
+    errors.push(createScanError(cause, file, 'read', 'warning'));  // record + continue
   }
 }
-```
-
-#### **Retry with Backoff**
-```typescript
-import { FileNotFoundError } from '@coderef/core';
-
-async function loadWithRetry(path: string, retries = 3): Promise<string> {
-  for (let i = 0; i < retries; i++) {
-    try {
-      return fs.readFileSync(path, 'utf-8');
-    } catch (error) {
-      if (i === retries - 1) {
-        throw new FileNotFoundError(`Failed to load file after ${retries} attempts`, {
-          cause: error,
-          context: { path, attempts: retries }
-        });
-      }
-      await sleep(1000 * Math.pow(2, i)); // Exponential backoff
-    }
-  }
-}
+// result.errors / result.warnings carry the accumulated ScanError records
 ```
 
 ## Conclusion
