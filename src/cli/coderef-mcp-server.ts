@@ -20,12 +20,16 @@
  *
  * Tools (all read-only, compact pre-summarized responses — never raw graph
  * dumps; responses are consumed by LLM agents where tokens are the budget):
- *   what_calls        - inbound resolved call edges to an element
- *   what_imports      - inbound resolved import edges to an element
- *   impact_of         - transitive inbound dependents (reverse BFS)
- *   find_element      - element lookup in .coderef/index.json
- *   codebase_summary  - totals, type distribution, header coverage, edges
- *   validation_status - the locked 14-field validation report verbatim
+ *   what_calls           - inbound resolved call edges to an element
+ *   what_imports         - inbound resolved import edges to an element
+ *   impact_of            - transitive inbound dependents (reverse BFS)
+ *   what_this_calls      - outbound resolved call edges FROM an element
+ *   what_this_imports    - outbound resolved import edges FROM an element
+ *   what_this_depends_on - transitive outbound dependencies (forward BFS)
+ *   path_between         - directed path(s) source->target (shortest | all)
+ *   find_element         - element lookup in .coderef/index.json
+ *   codebase_summary     - totals, type distribution, header coverage, edges
+ *   validation_status    - the locked 14-field validation report verbatim
  *
  * Protocol discipline: stdout belongs to the MCP transport. ALL diagnostics
  * go to stderr (same rule as populate --json; see populate.ts P1-T3 fix).
@@ -42,6 +46,7 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import type { ExportedGraph } from '../export/graph-exporter.js';
+import { CanonicalGraphQuery } from '../query/canonical-graph.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 
 type ExportedNode = ExportedGraph['nodes'][number];
@@ -107,6 +112,14 @@ interface ArtifactCache {
   /** Reverse adjacency over resolved edges: targetId -> source edges. */
   inbound: Map<string, ExportedEdge[]>;
   nodeById: Map<string, ExportedNode>;
+  /**
+   * Canonical-graph query engine (outbound + path traversal), built lazily
+   * from the same graph.json the cache already parsed. Reused rather than
+   * re-implemented so the direction-correct forward/path semantics stay
+   * pinned by src/query/__tests__/canonical-graph.test.ts. Invalidated
+   * together with `graph` on mtime change.
+   */
+  canonical: CanonicalGraphQuery | null;
 }
 
 function emptyCache(): ArtifactCache {
@@ -117,6 +130,7 @@ function emptyCache(): ArtifactCache {
     indexMtimeMs: 0,
     inbound: new Map(),
     nodeById: new Map(),
+    canonical: null,
   };
 }
 
@@ -129,6 +143,7 @@ function loadGraph(projectDir: string, cache: ArtifactCache): ExportedGraph {
   const graph = JSON.parse(fs.readFileSync(graphPath, 'utf8')) as ExportedGraph;
   cache.graph = graph;
   cache.graphMtimeMs = stat.mtimeMs;
+  cache.canonical = null; // invalidate the query engine; rebuilt lazily below
 
   cache.nodeById = new Map();
   for (const node of graph.nodes) cache.nodeById.set(node.id, node);
@@ -164,6 +179,21 @@ function loadIndex(projectDir: string, cache: ArtifactCache): IndexData {
 function loadValidationReport(projectDir: string): ValidationReport {
   const reportPath = path.join(projectDir, '.coderef', 'validation-report.json');
   return JSON.parse(fs.readFileSync(reportPath, 'utf8')) as ValidationReport;
+}
+
+/**
+ * Lazily build (and cache) the CanonicalGraphQuery engine from the graph the
+ * artifact cache already loaded. loadGraph() must run first (it refreshes the
+ * cache + nulls `canonical` on mtime change); this wraps the same in-memory
+ * ExportedGraph in the direction-correct outbound/path query engine used by
+ * coderef-query, avoiding a second parse or a divergent adjacency map.
+ */
+function loadCanonical(projectDir: string, cache: ArtifactCache): CanonicalGraphQuery {
+  const graph = loadGraph(projectDir, cache);
+  if (!cache.canonical) {
+    cache.canonical = new CanonicalGraphQuery(graph);
+  }
+  return cache.canonical;
 }
 
 // ---- element resolution --------------------------------------------------------
@@ -260,6 +290,11 @@ export interface ToolHandlers {
   // v2 flow tools (P2)
   diff_impact(args: { ref?: string; max_depth?: number; limit?: number }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number }): Promise<Record<string, unknown>>;
+  // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
+  what_this_calls(args: { element: string; limit?: number }): Record<string, unknown>;
+  what_this_imports(args: { element: string; limit?: number }): Record<string, unknown>;
+  what_this_depends_on(args: { element: string; max_depth?: number; limit?: number }): Record<string, unknown>;
+  path_between(args: { source: string; target: string; mode?: 'shortest' | 'all'; max_depth?: number; limit?: number }): Record<string, unknown>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -309,9 +344,135 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     };
   }
 
+  /**
+   * Outbound resolved edges of one relationship kind (the FORWARD direction:
+   * what the element calls/imports), delegated to CanonicalGraphQuery so the
+   * file-grain expansion + direction semantics match coderef-query exactly.
+   * Reuses the same notFound/ambiguous envelope + limit clamp as inboundByKind.
+   */
+  function outboundByKind(
+    query: string,
+    kind: 'call' | 'import',
+    limit: number,
+  ): Record<string, unknown> {
+    const engine = loadCanonical(projectDir, cache);
+    const resolution = engine.resolve(query);
+    if (resolution.nodes.length === 0) return notFound(query);
+    if (!resolution.byFile && resolution.nodes.length > 5) return ambiguous(query, resolution.nodes);
+
+    const neighbors = kind === 'call' ? engine.calleesOf(resolution) : engine.importsOf(resolution);
+    const total = neighbors.length;
+    const hits = neighbors.slice(0, limit).map(n => ({
+      id: n.id,
+      name: n.name,
+      type: n.type,
+      file: n.file,
+      line: n.line,
+    }));
+    return {
+      element: resolution.byFile
+        ? [`(all ${resolution.nodes.length} elements of) ${query}`]
+        : resolution.nodes.map(n => n.id),
+      relationship: kind,
+      direction: 'outbound',
+      total,
+      returned: hits.length,
+      truncated: total > hits.length,
+      [kind === 'call' ? 'callees' : 'imports']: hits,
+    };
+  }
+
   return {
     what_calls({ element, limit }) {
       return inboundByKind(element, 'call', clampLimit(limit));
+    },
+
+    what_this_calls({ element, limit }) {
+      return outboundByKind(element, 'call', clampLimit(limit));
+    },
+
+    what_this_imports({ element, limit }) {
+      return outboundByKind(element, 'import', clampLimit(limit));
+    },
+
+    what_this_depends_on({ element, max_depth, limit }) {
+      const engine = loadCanonical(projectDir, cache);
+      const cap = clampLimit(limit);
+      const depthCap = Math.max(1, Math.min(10, max_depth ?? 5));
+      const resolution = engine.resolve(element);
+      if (resolution.nodes.length === 0) return notFound(element);
+      if (!resolution.byFile && resolution.nodes.length > 5) return ambiguous(element, resolution.nodes);
+
+      // Transitive outbound over resolved call+import edges: what this element
+      // depends on, directly and indirectly (forward BFS, file-grain expanded).
+      const deps = engine.dependenciesOf(resolution, depthCap);
+      const fileCounts = new Map<string, number>();
+      for (const dep of deps) {
+        const f = dep.file ?? '(unknown)';
+        fileCounts.set(f, (fileCounts.get(f) ?? 0) + 1);
+      }
+      const files = [...fileCounts.entries()]
+        .sort((a, b) => b[1] - a[1])
+        .map(([file, count]) => ({ file, elements: count }));
+      return {
+        element: resolution.byFile
+          ? [`(all ${resolution.nodes.length} elements of) ${element}`]
+          : resolution.nodes.map(n => n.id),
+        direction: 'outbound',
+        max_depth: depthCap,
+        transitive_dependencies: deps.length,
+        affected_files: files.length,
+        files: files.slice(0, cap),
+        files_truncated: files.length > cap,
+        sample_dependencies: deps.slice(0, Math.min(10, cap)).map(d => ({
+          id: d.id, name: d.name, type: d.type, file: d.file, line: d.line,
+        })),
+      };
+    },
+
+    path_between({ source, target, mode, max_depth, limit }) {
+      const engine = loadCanonical(projectDir, cache);
+      const cap = clampLimit(limit);
+      const pathMode = mode ?? 'shortest';
+      const sourceRes = engine.resolve(source);
+      const targetRes = engine.resolve(target);
+      if (sourceRes.nodes.length === 0) return notFound(source);
+      if (targetRes.nodes.length === 0) return notFound(target);
+      if (!sourceRes.byFile && sourceRes.nodes.length > 5) return ambiguous(source, sourceRes.nodes);
+      if (!targetRes.byFile && targetRes.nodes.length > 5) return ambiguous(target, targetRes.nodes);
+
+      if (pathMode === 'all') {
+        // allPaths already caps internally (maxPaths=50); depth default 5.
+        const depthCap = Math.max(1, Math.min(10, max_depth ?? 5));
+        const results = engine.allPaths(sourceRes, targetRes, depthCap);
+        return {
+          source,
+          target,
+          mode: 'all',
+          max_depth: depthCap,
+          total: results.length,
+          returned: Math.min(cap, results.length),
+          truncated: results.length > cap,
+          paths: results.slice(0, cap).map(r => ({
+            length: r.length,
+            nodes: r.path.map(n => ({ id: n.id, name: n.name, type: n.type, file: n.file, line: n.line })),
+          })),
+        };
+      }
+
+      const depthCap = Math.max(1, Math.min(20, max_depth ?? 10));
+      const result = engine.shortestPath(sourceRes, targetRes, depthCap);
+      return {
+        source,
+        target,
+        mode: 'shortest',
+        max_depth: depthCap,
+        found: result.found,
+        length: result.length,
+        path: result.found
+          ? result.path.map(n => ({ id: n.id, name: n.name, type: n.type, file: n.file, line: n.line }))
+          : [],
+      };
     },
 
     what_imports({ element, limit }) {
@@ -1033,10 +1194,71 @@ async function main(): Promise<void> {
     async ({ query, limit }) => toContent(await handlers.rag_search({ query, limit })),
   );
 
+  // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ----
+  // Forward direction ("what does X call/import/depend-on") + path queries,
+  // wiring the already-built canonical-graph.ts traversal into MCP. Additive:
+  // the inbound tools (what_calls/what_imports/impact_of) are unchanged.
+
+  server.registerTool(
+    'what_this_calls',
+    {
+      title: 'What this element calls',
+      description:
+        'Outbound (forward) direction: list the resolved elements that the given element CALLS. The mirror of what_calls (which is inbound). Compact callee id/name/file/line.',
+      inputSchema: { element: elementArg, limit: limitArg },
+    },
+    async ({ element, limit }) => toContent(handlers.what_this_calls({ element, limit })),
+  );
+
+  server.registerTool(
+    'what_this_imports',
+    {
+      title: 'What this element imports',
+      description:
+        'Outbound (forward) direction: list the resolved elements/modules that the given element (or its file) IMPORTS. The mirror of what_imports (which is inbound).',
+      inputSchema: { element: elementArg, limit: limitArg },
+    },
+    async ({ element, limit }) => toContent(handlers.what_this_imports({ element, limit })),
+  );
+
+  server.registerTool(
+    'what_this_depends_on',
+    {
+      title: 'What this element depends on',
+      description:
+        'Transitive outbound dependencies of an element via forward BFS over resolved call+import edges — what this element relies on, directly and indirectly. The mirror of impact_of (which is inbound dependents). Returns dependency counts and affected files.',
+      inputSchema: {
+        element: elementArg,
+        max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 5)'),
+        limit: limitArg,
+      },
+    },
+    async ({ element, max_depth, limit }) =>
+      toContent(handlers.what_this_depends_on({ element, max_depth, limit })),
+  );
+
+  server.registerTool(
+    'path_between',
+    {
+      title: 'Path between two elements',
+      description:
+        'Trace a directed dependency path from source to target over resolved call+import edges. mode=shortest (default) returns the single shortest ordered chain; mode=all returns all simple paths (bounded — max 50 paths, depth default 5).',
+      inputSchema: {
+        source: z.string().describe('Path start element: codeRefId, element name, or file path'),
+        target: z.string().describe('Path end element: codeRefId, element name, or file path'),
+        mode: z.enum(['shortest', 'all']).optional().describe('shortest (default) or all simple paths'),
+        max_depth: z.number().optional().describe('Depth cap (shortest: default 10, max 20; all: default 5, max 10)'),
+        limit: limitArg,
+      },
+    },
+    async ({ source, target, mode, max_depth, limit }) =>
+      toContent(handlers.path_between({ source, target, mode, max_depth, limit })),
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (11 read-only tools)`,
+    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (15 read-only tools)`,
   );
 }
 

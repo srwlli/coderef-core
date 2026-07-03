@@ -1,0 +1,65 @@
+{
+  "workorder_id": "WO-AGENT-NATIVE-CAPABILITY-GAPS-001",
+  "feature_name": "agent-native-capability-gaps",
+  "created": "2026-07-03T08:42:45Z",
+  "owner_domain": "coderef-core",
+  "target_project": "CODEREF-CORE",
+  "intake": {
+    "trigger": "operator-directive",
+    "user_request": "Take the agent-facing bar from B+ to A+ by closing the verified capability gaps between CODEREF-CORE's MCP surface and best-in-class agent code-intelligence (Serena/Aider). Implement features we already have the infrastructure for but are not exposing, plus two heavier builds (graph-safe incremental watch, promote Go to a real call+import graph)."
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Six independent capability areas of escalating effort (pure MCP wiring → exposure → small additions → build-if-missing → heavy incremental → heavy language promotion). Per-phase hard stop lets the cheap high-value wiring wins (P1-P3) land and be reviewed before the heavier P5/P6 builds. Strict one-shot planning is wrong (too many independent surfaces); light is wrong (real engine changes with test obligations).",
+    "plan_type_decided_by": "create-workorder@2.15.2 (operator-confirmed one-WO-all-6-phases)",
+    "discovery_ref": "in-conversation read-only gap analysis 2026-07-03 (two Explore agents, file:line-grounded)"
+  },
+  "verification_provenance": {
+    "method": "Read-only investigation 2026-07-03. Full read of src/cli/coderef-mcp-server.ts (all 11 tools), src/pipeline/graph-builder.ts (EdgeEvidence union), plus two Explore-agent sweeps over call-resolver.ts, canonical-graph.ts, coderef-query.ts, relationship-extractor.ts, orchestrator.ts, coderef-watch.ts, incremental-cache.ts, eval/*.json, rag-eval.ts. Every gap carries file:line evidence.",
+    "reality_anchor": "2411 elements / 257 files; graph 2771 nodes / 29123 edges; validation-report.json at close 4cd33af (2026-07-02).",
+    "premise_confirmed_by_validation_report": {
+      "unresolved_count": 16536,
+      "ambiguous_count": 2301,
+      "unresolved_src_count": 5348,
+      "ambiguous_src_count": 1155,
+      "note": "18,837 non-resolved edges (5,348 unresolved + 1,155 ambiguous at source-call grain) are computed, persisted in graph.json with candidates[]/reason evidence, and counted — but NO agent-facing tool can enumerate them. This is the empirical backing for P2."
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "P1: MCP outbound-traversal tools (what X calls/imports/depends-on) + path query (path A→B), wiring existing canonical-graph.ts functions.",
+      "P2: MCP tool to enumerate ambiguous/unresolved call+import edges with their persisted candidates[]/reason.",
+      "P3: source-body retrieval by codeRefId (file+line slice); unified find-all-references (union call+import, make typeOnly traversable); rich per-edge evidence passthrough in what_calls.",
+      "P4: build-if-missing in the MCP server (invoke orchestrator in-process when .coderef/ absent/stale) + source-mtime staleness detection.",
+      "P5: graph-safe incremental watch — persisted full symbol table + delta re-resolution of changed files only, wired into populate (not just scan).",
+      "P6: promote Go to a real call+import graph — walkRawGo{Imports,Calls,Exports} raw-fact emitters using the TS/JS emitters as template."
+    ],
+    "out_of_scope": [
+      "ENGINE-RIGOR BAR (separate track, operator-deferred 2026-07-03): cross-repo / multi-package resolution; scored graph-correctness eval (golden-graph precision/recall/ambiguity-rate metric CLI). File as separate stub(s), do NOT fold in.",
+      "Promoting rust/java/cpp to the graph (P6 proves the pattern on Go only; the other three are follow-on once the template is validated).",
+      "Any cloud LLM/embedding provider wiring — Ollama local-only remains the only embedding path.",
+      "RAG retrieval quality / MRR improvements (the rag-eval baseline is stale but that is a retrieval concern, not an agent-native graph capability gap)."
+    ]
+  },
+  "constraints": [
+    "Ollama local-only: no cloud LLM/embedding API keys; do not present OpenAI/Anthropic as required defaults anywhere touched.",
+    "main-only git model: commit by EXPLICIT path, never git add -A. .coderef/ stays gitignored (operational, not committed).",
+    "No close-workorder bypass: no --force, SKIP_COMMIT_CONTENT_CHECK forbidden.",
+    "METHOD (feedback_scan_surfaces_not_verdicts): each phase's FIRST task READS its target files before authoring the fix. A gap surfaced by a count is a place to look, not a proven defect — the code decides whether and how big the fix is.",
+    "MCP additive-stability: existing 11 tools and their response shapes must not regress; new tools are additive. The server is typed against ExportedGraph so a schema drift is a compile error — keep it that way.",
+    "P5 correctness trap: naive incremental (filtering state.elements to changed files) blinds buildSymbolTable to unchanged cross-file targets and silently corrupts resolution. Do NOT enable the existing IncrementalCache on populate without the persisted-full-symbol-table fix."
+  ],
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [
+      { "file": "src/cli/coderef-mcp-server.ts", "reason": "entire agent-facing surface; P1-P4 all touch it" },
+      { "file": "src/pipeline/graph-builder.ts", "reason": "EdgeEvidence union (P2 source of truth) + edge emit sites" },
+      { "file": "src/query/canonical-graph.ts", "reason": "outbound + path functions P1 wires (already built)" },
+      { "file": "src/pipeline/call-resolver.ts", "reason": "buildSymbolTable — P5 delta-resolution core" },
+      { "file": "src/pipeline/extractors/relationship-extractor.ts", "reason": "raw-fact emitters — P6 Go promotion" }
+    ],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  }
+}

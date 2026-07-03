@@ -1,0 +1,97 @@
+{
+  "workorder_id": "WO-AGENT-NATIVE-CAPABILITY-GAPS-001",
+  "feature_name": "agent-native-capability-gaps",
+  "created": "2026-07-03T08:42:45Z",
+  "owner_domain": "coderef-core",
+  "target_project": "CODEREF-CORE",
+  "originating_dispatches": [],
+  "parent_stub_id": null,
+  "predecessor_for": null,
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/analysis.json",
+  "handoff": {
+    "from": "create-workorder (agent-native gap analysis 2026-07-03)",
+    "to": "execute-workorder",
+    "reason": "Six-phase strict-phased WO authored from file:line-verified gap analysis; ready for phase-1 execution behind a per-phase hard stop."
+  },
+  "execution_rules": [
+    "STRICT PHASED: execute one phase, then HARD STOP + report + await operator go. Never roll into the next phase automatically.",
+    "Each phase's FIRST task (T1) READS the named target files before any authoring — no fix scoped from a count alone.",
+    "Additive only on the MCP surface: the existing 11 tools + their response shapes must not regress."
+  ],
+  "hard_constraints": [
+    "Ollama local-only — no cloud LLM/embedding keys; no OpenAI/Anthropic as required defaults.",
+    "main-only git: commit by EXPLICIT path, never git add -A; .coderef/ stays gitignored.",
+    "No close-workorder bypass: no --force; SKIP_COMMIT_CONTENT_CHECK forbidden.",
+    "P5 must not enable the existing IncrementalCache on populate without the persisted-full-symbol-table fix (cross-file corruption trap)."
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_set",
+      "value": "phased",
+      "reason": "six independent capability areas of escalating effort; per-phase hard stop",
+      "at": "2026-07-03T08:42:45Z"
+    },
+    {
+      "event": "operator_ruling",
+      "value": "one_wo_all_six_phases",
+      "reason": "coherent b+→A+ agent-native narrative; wiring first, heavy builds last",
+      "at": "2026-07-03T08:42:45Z"
+    },
+    {
+      "event": "operator_ruling",
+      "value": "first_language_promotion=Go",
+      "reason": "cleanest import/call model of the four graph-dead languages",
+      "at": "2026-07-03T08:42:45Z"
+    },
+    {
+      "event": "operator_ruling",
+      "value": "engine_rigor_bar_deferred",
+      "reason": "agent-native bar first; cross-repo + scored graph-eval are a separate track",
+      "at": "2026-07-03T08:42:45Z"
+    },
+    {
+      "event": "premise_confirmed",
+      "value": "18837_nonresolved_edges_hidden",
+      "reason": "validation-report.json: unresolved_src_count=5348 + ambiguous_src_count=1155 computed+persisted but unlistable by any agent (P2 backing)",
+      "at": "2026-07-03T08:42:45Z"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-07-03T09:40:00Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 1,
+      "at": "2026-07-03T09:40:00Z"
+    },
+    {
+      "event": "plan_schema_backfill",
+      "adj": "ADJ-01",
+      "reason": "plan predated STUB-FT1AT8 schema fields; validate-plan-schema.py exit 1 on entry. Add-only backfill of 5 governance fields (goal, plan_adjustments_needed, discovery_required=true, foundation_docs_gate=false, approved_verbs=[]) with schema-derived values; NO phase/task/goal-of-work change. Re-validated exit 0.",
+      "at": "2026-07-03T09:40:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "git_branch": "wo/agent-native-capability-gaps",
+  "communication_log": [
+    {
+      "at": "2026-07-03T08:42:45Z",
+      "event": "workorder_created",
+      "note": "Authored from read-only, file:line-grounded agent-native gap analysis. Step 3 .coderef/ prereq gate PASSED (all six artifacts fresh, Jul 3 01:45-01:46). Six phases: P1 outbound+paths (wiring), P2 list-nonresolved (exposure), P3 source-body+find-refs+evidence, P4 build-if-missing, P5 graph-safe incremental (heavy), P6 Go graph promotion (heavy)."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

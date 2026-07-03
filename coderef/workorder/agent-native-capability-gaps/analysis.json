@@ -1,0 +1,55 @@
+{
+  "workorder_id": "WO-AGENT-NATIVE-CAPABILITY-GAPS-001",
+  "feature_name": "agent-native-capability-gaps",
+  "analysis_authored_at": "2026-07-03T08:42:45Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/cli/coderef-mcp-server.ts (P1, P2, P3, P4 — new tools + loaders)",
+      "src/pipeline/extractors/relationship-extractor.ts (P6 — Go raw-fact emitters)",
+      "src/cli/coderef-watch.ts (P5 — pass changed-file set to incremental populate)",
+      "src/pipeline/orchestrator.ts (P4 in-process build path; P5 delta-resolve wiring)",
+      "src/pipeline/import-resolver.ts (P3 — make typeOnly references traversable)"
+    ],
+    "files_created": [
+      "src/pipeline/symbol-table-cache.ts (P5 — persisted full project-wide symbol table; name provisional)",
+      "__tests__ additions per phase (behavioral tests for each new MCP tool + Go graph fixture + incremental-correctness test)"
+    ],
+    "downstream_consumers": [
+      "The 11-tool MCP client surface consumed by LLM agents (.mcp.json registration) — additive, must not regress.",
+      "coderef-query CLI shares canonical-graph.ts with P1 (no change to CLI; MCP reuses its functions).",
+      "ASSISTANT skills that wrap these bins (populate-coderef, coderef-scan, discover) — behavior-compatible; new tools are additive."
+    ]
+  },
+  "risks": [
+    { "id": "RISK-01", "title": "P2 response bloat — 5,348 unresolved + 1,155 ambiguous source calls could overflow an agent's token budget if listed unpaginated", "likelihood": "high", "impact": "medium", "mitigation": "Hard limit + pagination + facet filters (by file, by reason, by relationship) from the first commit; default cap mirrors DEFAULT_LIMIT=25/MAX_LIMIT=100. Responses are for token-budgeted agents — never dump the full set." },
+    { "id": "RISK-02", "title": "P5 incremental corruption — the documented trap: filtering elements to changed files blinds buildSymbolTable to unchanged cross-file targets, silently degrading resolved edges to unresolved", "likelihood": "high", "impact": "critical", "mitigation": "Persist the FULL project-wide symbol table; on a changed-file delta, re-resolve only changed files AGAINST the full table. Add a correctness test that asserts a single-file edit produces byte-identical resolved-edge set vs a full rebuild (no cross-file resolution loss)." },
+    { "id": "RISK-03", "title": "P6 Go emitter produces wrong edges — a bad raw-fact walker yields plausible-but-wrong call/import edges (the exact 'system that lies to itself' failure)", "likelihood": "medium", "impact": "high", "mitigation": "Follow the resolver's existing discipline: emit unresolved/ambiguous rather than guessing. Add a Go graph-ground-truth fixture (mirroring __tests__/pipeline/graph-ground-truth.test.ts) asserting known Go call/import/export edges resolve correctly and unknowns are explicit unresolved facts — before claiming Go is 'supported'." },
+    { "id": "RISK-04", "title": "P4 build-if-missing runs a full populate inside an MCP tool call — could block the agent for minutes on a large stranger repo", "likelihood": "medium", "impact": "medium", "mitigation": "Emit a clear 'building index, first call may be slow' status; cache aggressively (mtime map already present); consider a size/element ceiling above which it returns a 'run populate first' hint instead of auto-building. Never silently hang." },
+    { "id": "RISK-05", "title": "P5 collides with pre-existing watcher WOs (incremental-scan-file-watcher, incremental-scanning-file-watcher, fix-incremental-cache-false-drift)", "likelihood": "medium", "impact": "medium", "mitigation": "P5-T1 READS those WO dirs + incremental-cache.ts history first to avoid re-solving or regressing prior work. The distinct new contribution here is graph-safe delta RE-RESOLUTION (symbol-table persistence), not file-watching per se." },
+    { "id": "RISK-06", "title": "typeOnly traversability (P3) changes edge counts in validation-report — making typeOnly edges resolved/traversable could shift the locked 14-field counts and trip downstream expectations", "likelihood": "medium", "impact": "medium", "mitigation": "Treat typeOnly as a distinct traversable relationship, NOT by reclassifying it as resolved. Preserve the locked count semantics; add typeOnly as additive. Re-run the full suite + reality anchor after P3." }
+  ],
+  "candidates": [
+    { "surface": "src/cli/coderef-mcp-server.ts:107-144", "note": "inbound/resolved-only adjacency map — the single choke point that hides outbound + non-resolved edges from agents (P1, P2)" },
+    { "surface": "src/query/canonical-graph.ts:222-249", "note": "calleesOf/importsOf/dependenciesOf — outbound functions P1 wires (already built, CLI-exposed, MCP-absent)" },
+    { "surface": "src/query/canonical-graph.ts:287-380", "note": "shortestPath/allPaths — path functions P1 wires (already built, MCP-absent)" },
+    { "surface": "src/pipeline/graph-builder.ts:116-144, 567-580, 669-676", "note": "EdgeEvidence union + ambiguous/unresolved edge emit with candidates[]/reason — P2 data source" },
+    { "surface": "src/pipeline/extractors/relationship-extractor.ts:167-228, 251-688", "note": "raw-fact emitters: go/rust/java/cpp default-break at 167-207; TS/JS/PY emitters at 251-688 are the P6 template" },
+    { "surface": "src/pipeline/orchestrator.ts:106-138, 169-174", "note": "incremental honored on scan only; the element-filtering path that must NOT naively feed buildSymbolTable (P5 trap)" },
+    { "surface": "src/cli/coderef-watch.ts:259-263, 439-441", "note": "full-populate-every-flush; changed-file set collected but only logged, never scoped to the pipeline (P5)" }
+  ],
+  "dependencies": [
+    "@modelcontextprotocol/sdk (MCP server framework)",
+    "src/export/graph-exporter.ts (ExportedGraph type — the compile-time schema guard)",
+    "src/pipeline/PipelineOrchestrator (in-process run path for P4)",
+    "tree-sitter grammars (tree-sitter-go already installed per package.json for P6)"
+  ],
+  "public_api_hits": [
+    "MCP tool surface (11 tools) — additive expansion to ~15-16 tools; no existing tool signature changes",
+    "coderef-watch CLI flags (P5 may add an --incremental-safe flag)"
+  ],
+  "decision_records": [
+    { "id": "DR-01", "title": "One WO, all six phases (operator ruling 2026-07-03)", "rationale": "Coherent b+→A+ agent-native narrative; wiring wins sequenced first, heavy builds last, per-phase hard stop between." },
+    { "id": "DR-02", "title": "Go is the first language promotion (operator ruling)", "rationale": "Cleanest import/package model and simplest call syntax of the four graph-dead languages — best 'prove the template' choice before rust/java/cpp." },
+    { "id": "DR-03", "title": "Engine-rigor bar deferred to a separate track (operator ruling: agent-native first)", "rationale": "Cross-repo resolution + scored graph-correctness eval are a different quality axis; keeping them out preserves this WO's focus and avoids scope sprawl." }
+  ]
+}

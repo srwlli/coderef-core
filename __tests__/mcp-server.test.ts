@@ -424,3 +424,113 @@ describe('diff_impact', () => {
     expect(r.hint).toContain('git ref');
   });
 });
+
+// ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ---
+// Fixture call chain: main -> alpha -> helper (e3, e1). alpha imports Helper (e4).
+// These prove the FORWARD direction is distinct from the inbound tools:
+// what_this_calls(alpha) = {helper}, but what_calls(alpha) = {main}.
+
+describe('what_this_calls (outbound)', () => {
+  it('returns what the element CALLS (outbound), not who calls it', () => {
+    const out = handlers.what_this_calls({ element: 'alpha' }) as any;
+    expect(out.error).toBeUndefined();
+    expect(out.relationship).toBe('call');
+    expect(out.direction).toBe('outbound');
+    expect(out.total).toBe(1);
+    expect(out.callees[0].id).toBe('@Fn/src/util.ts#helper:10');
+  });
+
+  it('is direction-distinct from what_calls (X calls Y != Y calls X)', () => {
+    // alpha CALLS helper (outbound); alpha is CALLED BY main (inbound).
+    const outbound = handlers.what_this_calls({ element: 'alpha' }) as any;
+    const inbound = handlers.what_calls({ element: 'alpha' }) as any;
+    expect(outbound.callees.map((c: any) => c.name)).toEqual(['helper']);
+    expect(inbound.callers.map((c: any) => c.name)).toEqual(['main']);
+  });
+
+  it('helper calls nothing outbound (it is a leaf)', () => {
+    const r = handlers.what_this_calls({ element: 'helper' }) as any;
+    expect(r.total).toBe(0);
+  });
+
+  it('honors the limit and sets truncated', () => {
+    // main -> alpha is the only resolved outbound call from main (e5 is unresolved).
+    const r = handlers.what_this_calls({ element: 'main', limit: 1 }) as any;
+    expect(r.total).toBe(1);
+    expect(r.returned).toBe(1);
+    expect(r.truncated).toBe(false);
+  });
+
+  it('returns element_not_found / ambiguous like the inbound tools', () => {
+    expect((handlers.what_this_calls({ element: 'no-such-thing' }) as any).error).toBe('element_not_found');
+    const amb = handlers.what_this_calls({ element: 'dup' }) as any;
+    expect(amb.error).toBe('ambiguous_element');
+    expect(amb.match_count).toBe(6);
+  });
+});
+
+describe('what_this_imports (outbound)', () => {
+  it('returns what the element IMPORTS (outbound)', () => {
+    const r = handlers.what_this_imports({ element: 'alpha' }) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.relationship).toBe('import');
+    expect(r.direction).toBe('outbound');
+    expect(r.total).toBe(1);
+    expect(r.imports[0].id).toBe('@I/src/util.ts#Helper:3');
+  });
+
+  it('does not mix relationship kinds (alpha calls helper but that is not an import)', () => {
+    const r = handlers.what_this_imports({ element: 'main' }) as any;
+    expect(r.total).toBe(0);
+  });
+});
+
+describe('what_this_depends_on (transitive outbound)', () => {
+  it('walks transitive forward dependencies: main depends on {alpha, helper}', () => {
+    const r = handlers.what_this_depends_on({ element: 'main', max_depth: 5 }) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.direction).toBe('outbound');
+    const ids = r.sample_dependencies.map((d: any) => d.id).sort();
+    expect(ids).toContain('@Fn/src/a.ts#alpha:5');
+    expect(ids).toContain('@Fn/src/util.ts#helper:10');
+    expect(r.transitive_dependencies).toBeGreaterThanOrEqual(2);
+  });
+
+  it('is the mirror of impact_of: helper depends on nothing outbound', () => {
+    const r = handlers.what_this_depends_on({ element: 'helper', max_depth: 5 }) as any;
+    expect(r.transitive_dependencies).toBe(0);
+  });
+});
+
+describe('path_between', () => {
+  it('shortest: returns the ordered chain main -> alpha -> helper', () => {
+    const r = handlers.path_between({ source: 'main', target: 'helper' }) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.mode).toBe('shortest');
+    expect(r.found).toBe(true);
+    expect(r.path.map((n: any) => n.name)).toEqual(['main', 'alpha', 'helper']);
+    expect(r.length).toBe(2);
+  });
+
+  it('shortest: found=false when no directed path exists (helper -> main is backwards)', () => {
+    const r = handlers.path_between({ source: 'helper', target: 'main' }) as any;
+    expect(r.found).toBe(false);
+    expect(r.path).toEqual([]);
+  });
+
+  it('all: enumerates simple paths source -> target (bounded)', () => {
+    const r = handlers.path_between({ source: 'main', target: 'helper', mode: 'all' }) as any;
+    expect(r.mode).toBe('all');
+    expect(r.total).toBeGreaterThanOrEqual(1);
+    // every returned path starts at main and ends at helper
+    for (const p of r.paths) {
+      expect(p.nodes[0].name).toBe('main');
+      expect(p.nodes[p.nodes.length - 1].name).toBe('helper');
+    }
+  });
+
+  it('returns element_not_found when either endpoint is unknown', () => {
+    expect((handlers.path_between({ source: 'no-such', target: 'helper' }) as any).error).toBe('element_not_found');
+    expect((handlers.path_between({ source: 'main', target: 'no-such' }) as any).error).toBe('element_not_found');
+  });
+});

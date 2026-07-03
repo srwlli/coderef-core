@@ -1,0 +1,130 @@
+{
+  "workorder_id": "WO-AGENT-NATIVE-CAPABILITY-GAPS-001",
+  "feature_name": "agent-native-capability-gaps",
+  "created": "2026-07-03T08:42:45Z",
+  "plan_type": "phased",
+  "plan_type_rationale": "Six independent capability areas of escalating effort; per-phase hard stop lets cheap high-value wiring (P1-P3) land and be reviewed before heavier P5/P6 builds.",
+  "plan_type_decided_by": "create-workorder@2.15.2 (operator-confirmed)",
+  "goal": "Close the verified agent-native capability gaps between CODEREF-CORE's MCP surface and best-in-class agent code-intelligence (Serena/Aider), taking the agent-facing bar from B+ to A+, across six escalating phases (outbound+path wiring, non-resolved-edge exposure, source-body+find-refs+evidence, build-if-missing, graph-safe incremental watch, Go graph promotion).",
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": false,
+  "approved_verbs": [],
+  "execution_model": "strict-phased — per-phase HARD STOP; each phase reports back and awaits operator go before the next.",
+  "method_discipline": "Each phase's FIRST task READS its named target files before any authoring. A gap surfaced by a count is a place to look, not a proven defect (feedback_scan_surfaces_not_verdicts).",
+  "hard_stops": [
+    { "phase": 1, "approved": false, "reason": "P1 wiring complete + reviewed before P2." },
+    { "phase": 2, "approved": false, "reason": "P2 exposure complete + reviewed before P3." },
+    { "phase": 3, "approved": false, "reason": "P3 additions complete + reviewed before P4." },
+    { "phase": 4, "approved": false, "reason": "P4 build-if-missing complete + reviewed before the heavy P5." },
+    { "phase": 5, "approved": false, "reason": "P5 graph-safe incremental complete + correctness-tested before P6." },
+    { "phase": 6, "approved": false, "reason": "P6 Go graph promotion complete + ground-truth-tested; WO ready for close." }
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Outbound traversal + path queries (pure MCP wiring)",
+      "hard_stop": true,
+      "goal": "Expose the FORWARD direction and path queries through MCP by wiring already-built canonical-graph.ts functions. No engine change.",
+      "tasks": [
+        { "id": "P1-T1", "verb": "READ", "description": "READ src/query/canonical-graph.ts (calleesOf/importsOf/dependenciesOf :222-249; shortestPath/allPaths :287-380), src/cli/coderef-mcp-server.ts (tool-handler + registerTool structure), src/cli/coderef-query.ts (how the CLI already invokes these). Confirm the functions' signatures + resolved-edge scope before authoring." },
+        { "id": "P1-T2", "verb": "EDIT", "description": "Add outbound MCP tools: what_this_calls / what_this_imports / what_this_depends_on (forward direction), reusing the canonical-graph outbound functions. Mirror the existing ambiguity envelope + limit/clamp conventions from what_calls/what_imports." },
+        { "id": "P1-T3", "verb": "EDIT", "description": "Add a path_between MCP tool (source, target, mode=shortest|all) wiring shortestPath/allPaths. Bounded output (allPaths already caps at 50 paths). Compact response: ordered node summaries per path." },
+        { "id": "P1-T4", "verb": "TEST", "description": "Add behavioral tests over buildToolHandlers for the new tools (import-only, no stdio) — assert outbound direction is correct (X calls Y ≠ Y calls X) and path A→B returns a valid ordered chain. Follow the P3-T4 test pattern already in the server." },
+        { "id": "P1-T5", "verb": "RUN", "description": "npm run build && npx vitest — full suite green; reality anchor (2411/257, 11+new tools) reconfirmed via direct binary invocation." },
+        { "id": "P1-T6", "verb": "COMMIT", "description": "Commit P1 by EXPLICIT path (src/cli/coderef-mcp-server.ts + tests + WO artifacts). main-only, never git add -A." },
+        { "id": "P1-T7", "verb": "STOP", "description": "HARD STOP — report P1 outcome (tool count, tests, anchor). Await operator go for P2." }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "List ambiguous/unresolved edges (expose stored evidence)",
+      "hard_stop": true,
+      "goal": "New MCP tool to ENUMERATE the 18,837 non-resolved edges (5,348 unresolved + 1,155 ambiguous source calls) with their persisted candidates[]/reason — currently only aggregate counts are visible.",
+      "tasks": [
+        { "id": "P2-T1", "verb": "READ", "description": "READ src/pipeline/graph-builder.ts EdgeEvidence union (:116-144) + the ambiguous/unresolved emit sites (:554-580, :650-676); confirm exactly which fields (candidates[], reason, calleeName, receiverText, originSpecifier) are persisted into graph.json. READ coderef-mcp-server.ts:140 (the resolved-only skip) and the validation-report shape." },
+        { "id": "P2-T2", "verb": "EDIT", "description": "Add an unresolved_edges MCP tool: enumerate non-resolved call+import edges with their evidence. Facet filters: relationship (call|import), status (unresolved|ambiguous|external|builtin), file, reason. MANDATORY pagination + hard cap (default 25, max 100) — never dump the full set (RISK-01)." },
+        { "id": "P2-T3", "verb": "EDIT", "description": "For status=ambiguous edges, surface the candidates[] set so an agent can see the competing symbols. This is the engine's signature honesty feature made agent-visible." },
+        { "id": "P2-T4", "verb": "TEST", "description": "Behavioral test: assert the tool lists ambiguous edges WITH candidates and unresolved edges WITH reason; assert counts returned reconcile with validation-report aggregates (ambiguous_src_count/unresolved_src_count) when unfiltered+unpaginated totals are requested." },
+        { "id": "P2-T5", "verb": "RUN", "description": "npm run build && npx vitest — suite green; anchor reconfirmed." },
+        { "id": "P2-T6", "verb": "COMMIT", "description": "Commit P2 by explicit path. main-only." },
+        { "id": "P2-T7", "verb": "STOP", "description": "HARD STOP — report P2 outcome. Await operator go for P3." }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Source body + find-all-references + evidence passthrough",
+      "hard_stop": true,
+      "goal": "Give agents (a) an element's source by codeRefId without RAG, (b) unified references in one call incl. type-only, (c) the rich per-edge evidence the engine already computed.",
+      "tasks": [
+        { "id": "P3-T1", "verb": "READ", "description": "READ coderef-mcp-server.ts (find_element + what_calls handlers), src/pipeline/import-resolver.ts (:73-74 typeOnly handling), src/integration/rag/chunk-converter.ts (:129-139 the file+line source-slice pattern). Confirm index.json carries file+line for every element." },
+        { "id": "P3-T2", "verb": "EDIT", "description": "Add source-body retrieval: given a codeRefId (or find_element hit), read the file at the element's line range and return the source slice (bounded length). No RAG/embedder dependency. Reuse the chunk-converter slice logic." },
+        { "id": "P3-T3", "verb": "EDIT", "description": "Add find_all_references: union inbound call-sites + import-sites for a symbol in one call, and make typeOnly references traversable (as an ADDITIVE relationship — do NOT reclassify typeOnly as resolved; preserve locked validation counts per RISK-06)." },
+        { "id": "P3-T4", "verb": "EDIT", "description": "Pass through rich evidence (receiverText, scopePath, calleeName) in what_calls responses — data already in graph.json evidence, currently dropped." },
+        { "id": "P3-T5", "verb": "TEST", "description": "Tests: source slice returns correct bytes for a known element; find_all_references unions call+import+typeOnly for a symbol with known refs; what_calls now carries receiverText/scopePath." },
+        { "id": "P3-T6", "verb": "RUN", "description": "npm run build && npx vitest; anchor + validation counts reconfirmed (typeOnly additive did not shift locked counts)." },
+        { "id": "P3-T7", "verb": "COMMIT", "description": "Commit P3 by explicit path. main-only." },
+        { "id": "P3-T8", "verb": "STOP", "description": "HARD STOP — report P3 outcome. Await operator go for P4." }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Build-if-missing (zero-setup for agents)",
+      "hard_stop": true,
+      "goal": "Point-at-any-repo: the MCP server builds .coderef/ on demand instead of throwing when artifacts are absent or stale.",
+      "tasks": [
+        { "id": "P4-T1", "verb": "READ", "description": "READ coderef-mcp-server.ts loadGraph/loadIndex (:123-162, throws-if-missing + mtime cache) and src/pipeline/orchestrator.ts run() (in-process call proven by __tests__/pipeline/graph-ground-truth.test.ts:33). Confirm the in-process build signature + outputs." },
+        { "id": "P4-T2", "verb": "EDIT", "description": "In loadGraph/loadIndex: when .coderef/graph.json (or index.json) is absent, invoke PipelineOrchestrator.run() in-process once, write artifacts, then load + cache. Emit a clear stderr 'building index (first call may be slow)' status." },
+        { "id": "P4-T3", "verb": "EDIT", "description": "Add source-mtime staleness detection: if any source file is newer than graph.json mtime, treat as stale and rebuild (bounded — respect a size/element ceiling above which return a 'run populate first' hint instead of auto-building, RISK-04)." },
+        { "id": "P4-T4", "verb": "TEST", "description": "Test: point the server at a temp repo with no .coderef/ → first tool call builds + answers; a source edit newer than graph.json triggers rebuild; oversized repo returns the hint, not a hang." },
+        { "id": "P4-T5", "verb": "RUN", "description": "npm run build && npx vitest; anchor reconfirmed (pre-built repo path unchanged — build-if-missing only fires when absent/stale)." },
+        { "id": "P4-T6", "verb": "COMMIT", "description": "Commit P4 by explicit path. main-only." },
+        { "id": "P4-T7", "verb": "STOP", "description": "HARD STOP — report P4 outcome. Await operator go for the heavy P5." }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Graph-safe incremental watch (HEAVY)",
+      "hard_stop": true,
+      "goal": "Delta re-resolution: re-resolve only changed files against a PERSISTED full project-wide symbol table — without the cross-file corruption the naive incremental cache would cause.",
+      "tasks": [
+        { "id": "P5-T1", "verb": "READ", "description": "READ src/cli/coderef-watch.ts (:259-263,439-441 full-populate-every-flush), src/pipeline/orchestrator.ts (:106-138,169-174 incremental element-filter path), src/pipeline/call-resolver.ts buildSymbolTable (:378-495), src/cache/incremental-cache.ts. ALSO READ prior watcher WO dirs (incremental-scan-file-watcher, incremental-scanning-file-watcher, fix-incremental-cache-false-drift) to avoid re-solving/regressing prior work (RISK-05)." },
+        { "id": "P5-T2", "verb": "WRITE", "description": "Author a persisted full-project symbol table (src/pipeline/symbol-table-cache.ts, name provisional): serialize the complete Map<name, SymbolTableEntry[]> after a full build so a delta pass can resolve changed-file calls against ALL symbols, not just changed ones." },
+        { "id": "P5-T3", "verb": "EDIT", "description": "Wire a graph-safe incremental populate path: on a changed-file set, re-scan/re-resolve ONLY those files but resolve against the persisted full symbol table; merge deltas into the graph. Update coderef-watch to pass its changed-file snapshot into this path (currently only logged)." },
+        { "id": "P5-T4", "verb": "TEST", "description": "CORRECTNESS GATE (RISK-02): assert a single-file edit through the incremental path yields a resolved-edge set byte-identical to a full rebuild — proving zero cross-file resolution loss. This test is the phase's reason for existing." },
+        { "id": "P5-T5", "verb": "RUN", "description": "npm run build && npx vitest; full rebuild vs incremental parity confirmed on the self-scan; anchor reconfirmed." },
+        { "id": "P5-T6", "verb": "COMMIT", "description": "Commit P5 by explicit path. main-only." },
+        { "id": "P5-T7", "verb": "STOP", "description": "HARD STOP — report P5 outcome (parity result). Await operator go for P6." }
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Promote Go to a real call+import graph (HEAVY)",
+      "hard_stop": true,
+      "goal": "Go gets real resolved call+import+export edges (not scan-only), proving the 4 graph-dead languages are reachable via the raw-fact template.",
+      "tasks": [
+        { "id": "P6-T1", "verb": "READ", "description": "READ src/pipeline/extractors/relationship-extractor.ts (:167-207 the go default-break; :216-228 TS/JS-only exports; :251-688 the TS/JS + PY raw-fact emitters that are the template) and element-extractor.ts Go element cases. Confirm tree-sitter-go is wired and Go elements already become nodes." },
+        { "id": "P6-T2", "verb": "WRITE", "description": "Author walkRawGoImports (Go import specs → RawImportFact), walkRawGoCalls (call expressions → RawCallFact), walkRawGoExports (exported identifiers → RawExportFact), modeled on the TS/JS emitters. Preserve resolver discipline: emit unresolved/ambiguous, never guess (RISK-03)." },
+        { "id": "P6-T3", "verb": "EDIT", "description": "Route go/.go files through the new emitters in extractRawImports/extractRawCalls/extractRawExports (remove the default-break for go only). Confirm the language-family guard keeps Go isolated from JS/TS/Python symbols." },
+        { "id": "P6-T4", "verb": "WRITE", "description": "Author a Go graph-ground-truth fixture + test mirroring __tests__/pipeline/graph-ground-truth.test.ts: known Go call/import/export edges resolve to node-id endpoints; unknowns are explicit unresolved facts; duplicate names are ambiguous with candidates." },
+        { "id": "P6-T5", "verb": "RUN", "description": "npm run build && npx vitest; run populate over a small real Go repo (or fixture) and confirm graph.json now has resolved Go call+import edges; anchor (TS self-scan) unaffected." },
+        { "id": "P6-T6", "verb": "COMMIT", "description": "Commit P6 by explicit path. main-only." },
+        { "id": "P6-T7", "verb": "STOP", "description": "HARD STOP — report P6 outcome (Go edges resolved, fixture green). WO complete — ready for /close-workorder." }
+      ]
+    }
+  ],
+  "acceptance_criteria": [
+    "AC-1: MCP exposes outbound traversal (what X calls/imports/depends-on) and path_between — agents can query the forward direction and trace A→B.",
+    "AC-2: MCP can enumerate non-resolved edges (unresolved + ambiguous) with their persisted candidates[]/reason, paginated and faceted.",
+    "AC-3: agents can retrieve an element's source by codeRefId without RAG; find_all_references unions call+import+typeOnly; what_calls carries rich evidence.",
+    "AC-4: the MCP server builds .coderef/ on demand when absent/stale (bounded), instead of throwing — zero-setup for a fresh repo.",
+    "AC-5: incremental watch re-resolves only changed files against a persisted full symbol table, PROVEN byte-identical to a full rebuild's resolved-edge set (no cross-file corruption).",
+    "AC-6: Go produces resolved call+import+export edges in graph.json, validated by a Go graph-ground-truth fixture; the raw-fact template is proven for the remaining graph-dead languages.",
+    "AC-7: all existing 11 MCP tools + their response shapes unchanged; full vitest suite green; reality anchor (2411/257) reconfirmed at each phase; no cloud provider introduced; every commit main-only by explicit path."
+  ],
+  "out_of_scope_followups": [
+    "STUB (to file): engine-rigor bar — cross-repo/multi-package resolution.",
+    "STUB (to file): scored graph-correctness eval — golden-graph precision/recall/ambiguity-rate metric CLI (the graph analogue of rag-eval).",
+    "STUB (to file): promote rust/java/cpp to the graph once P6 proves the Go template."
+  ]
+}
