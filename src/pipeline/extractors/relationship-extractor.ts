@@ -174,8 +174,12 @@ export class RelationshipExtractor {
       case 'py':
         this.walkRawPyImports(rootNode, filePath, content, facts);
         break;
-      // Other languages: Phase 2 ships TS/JS/PY raw facts; legacy extractors
-      // keep covering go/rs/java/cpp until later phases promote them.
+      // Go promoted to real raw facts (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P6).
+      case 'go':
+        this.walkRawGoImports(rootNode, filePath, content, facts);
+        break;
+      // Remaining languages: legacy extractors cover rs/java/cpp until later
+      // phases promote them via the same raw-fact template Go now proves.
       default:
         break;
     }
@@ -200,6 +204,9 @@ export class RelationshipExtractor {
       case 'py':
         this.walkRawPyCalls(rootNode, filePath, content, language, [], facts);
         break;
+      case 'go':
+        this.walkRawGoCalls(rootNode, filePath, content, language, [], facts);
+        break;
       default:
         break;
     }
@@ -220,6 +227,9 @@ export class RelationshipExtractor {
       case 'js':
       case 'jsx':
         this.walkRawTsExports(rootNode, filePath, content, facts);
+        break;
+      case 'go':
+        this.walkRawGoExports(rootNode, filePath, content, facts);
         break;
       default:
         break;
@@ -685,6 +695,161 @@ export class RelationshipExtractor {
     }
 
     if (pushed) scopePath.pop();
+  }
+
+  // ========================================================================
+  // Go raw imports / calls / exports (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P6)
+  //
+  // Promotes Go from scan-only to a real call+import+export graph via the same
+  // raw-fact contract the TS/JS/PY emitters use. Node types are the AUTHORITATIVE
+  // tree-sitter-go grammar (verified against the wired grammar, not guessed):
+  //   import:  import_declaration -> import_spec_list? -> import_spec
+  //            import_spec has field `path` (interpreted_string_literal) and an
+  //            optional field `name` (alias, e.g. `m "math/rand"`).
+  //   call:    call_expression field `function` is either a bare `identifier`
+  //            (calleeName only) or a `selector_expression` with fields
+  //            `operand` (receiver) + `field` (calleeName).
+  //   export:  Go has no export keyword — top-level identifiers are exported iff
+  //            the name is capitalized. function_declaration / method_declaration
+  //            / type_declaration->type_spec with a /^[A-Z]/ name is a `named`
+  //            export (mirrors element-extractor.ts's Go visibility rule).
+  //
+  // Resolver discipline (RISK-03): these emit RAW facts only — no resolution, no
+  // guessing. Cross-package/stdlib imports and calls that don't bind to a
+  // project symbol stay unresolved/external downstream, exactly like TS/JS.
+  // ========================================================================
+
+  private walkRawGoImports(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    facts: RawImportFact[]
+  ): void {
+    if (node.type === 'import_spec') {
+      const pathNode = node.childForFieldName('path');
+      if (pathNode) {
+        // path is an interpreted/raw string literal — strip the quotes.
+        const raw = content.slice(pathNode.startIndex, pathNode.endIndex);
+        const moduleSpecifier = raw.replace(/^[`"]|[`"]$/g, '');
+        const nameNode = node.childForFieldName('name');
+        // Go aliases (`m "math/rand"`) bind the whole package under one name —
+        // model as a namespace import so the resolver treats `m.X` like `ns.X`.
+        const alias = nameNode ? content.slice(nameNode.startIndex, nameNode.endIndex) : null;
+        facts.push({
+          sourceElementId: null,
+          sourceFile: filePath,
+          moduleSpecifier,
+          specifiers: [],
+          defaultImport: null,
+          namespaceImport: alias && alias !== '_' && alias !== '.' ? alias : null,
+          typeOnly: false,
+          dynamic: false,
+          line: node.startPosition.row + 1,
+        });
+      }
+      return; // import_spec has no nested imports
+    }
+
+    for (const child of node.namedChildren) {
+      this.walkRawGoImports(child, filePath, content, facts);
+    }
+  }
+
+  private walkRawGoCalls(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    language: string,
+    scopePath: string[],
+    facts: RawCallFact[]
+  ): void {
+    if (node.type === 'call_expression') {
+      const fn = node.childForFieldName('function');
+      if (fn) {
+        const callExpressionText = content.slice(node.startIndex, node.endIndex);
+        let calleeName = '';
+        let receiverText: string | null = null;
+        if (fn.type === 'selector_expression') {
+          // `pkg.Fn(...)` / `recv.Method(...)` — field is the callee, operand the receiver.
+          const operand = fn.childForFieldName('operand');
+          const field = fn.childForFieldName('field');
+          if (field) calleeName = content.slice(field.startIndex, field.endIndex);
+          if (operand) receiverText = content.slice(operand.startIndex, operand.endIndex);
+        } else if (fn.type === 'identifier') {
+          // Bare `Fn(...)` call.
+          calleeName = content.slice(fn.startIndex, fn.endIndex);
+        }
+        // Anything else (e.g. type conversions `T(x)`, func-literal calls) is
+        // skipped — no callee name means no resolvable edge (never guess).
+        if (calleeName) {
+          facts.push({
+            sourceElementCandidate: null,
+            sourceFile: filePath,
+            callExpressionText,
+            calleeName,
+            receiverText,
+            scopePath: [...scopePath],
+            line: node.startPosition.row + 1,
+            language,
+          });
+        }
+      }
+    }
+
+    // Track enclosing function/method scope so scopePath mirrors the TS/PY walkers.
+    let pushed = false;
+    if (node.type === 'function_declaration' || node.type === 'method_declaration') {
+      const nameNode = node.childForFieldName('name');
+      if (nameNode) {
+        scopePath.push(content.slice(nameNode.startIndex, nameNode.endIndex));
+        pushed = true;
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.walkRawGoCalls(child, filePath, content, language, scopePath, facts);
+    }
+
+    if (pushed) scopePath.pop();
+  }
+
+  private walkRawGoExports(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    facts: RawExportFact[]
+  ): void {
+    const isExported = (name: string): boolean => /^[A-Z]/.test(name);
+    const push = (name: string, line: number): void => {
+      if (!isExported(name)) return; // Go visibility: capitalized == exported.
+      facts.push({
+        sourceFile: filePath,
+        exportedName: name,
+        localName: name,
+        kind: 'named',
+        line,
+      });
+    };
+
+    if (node.type === 'function_declaration') {
+      const nameNode = node.childForFieldName('name');
+      if (nameNode) push(content.slice(nameNode.startIndex, nameNode.endIndex), nameNode.startPosition.row + 1);
+    } else if (node.type === 'method_declaration') {
+      // Methods are exported members of their receiver type; surface the bare
+      // method name (mirrors element-extractor emitting it as a method element).
+      const nameNode = node.childForFieldName('name');
+      if (nameNode) push(content.slice(nameNode.startIndex, nameNode.endIndex), nameNode.startPosition.row + 1);
+    } else if (node.type === 'type_declaration') {
+      for (const spec of node.namedChildren) {
+        if (spec.type !== 'type_spec') continue;
+        const nameNode = spec.childForFieldName('name');
+        if (nameNode) push(content.slice(nameNode.startIndex, nameNode.endIndex), nameNode.startPosition.row + 1);
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.walkRawGoExports(child, filePath, content, facts);
+    }
   }
 
   // ========== TypeScript/JavaScript Import Extraction (legacy) ==========
