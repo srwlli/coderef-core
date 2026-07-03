@@ -61,6 +61,14 @@ interface CliArgs {
   json: boolean;
   verbose: boolean;
   help: boolean;
+  /**
+   * Graph-safe incremental populate (P5, ADJ-03). When set, a flush passes its
+   * debounced changed-file snapshot to `populate --changed-files` instead of a
+   * full pipeline — re-scanning only changed files and resolving against the
+   * persisted full fact set (byte-identical to a full rebuild). Opt-in; default
+   * OFF (the full pipeline stays the safe default).
+   */
+  incremental: boolean;
 }
 
 function printHelp(): void {
@@ -78,6 +86,10 @@ OPTIONS:
   --once                   Run the pipeline once against the current workspace and exit.
   --no-pipeline            Log change events only; do NOT spawn the pipeline.
                            Useful for debugging chokidar setup.
+  --incremental            Graph-safe incremental populate: pass the debounced
+                           changed-file snapshot to populate --changed-files
+                           (re-scan only changed files, resolve against the
+                           persisted full fact set). Opt-in; default OFF.
   --json                   Heartbeat-only structured output to stdout (one JSON line per flush).
   -v, --verbose            Verbose logging (forwarded to coderef-pipeline).
   -h, --help               Show this help.
@@ -111,6 +123,7 @@ function parseArgs(argv: string[]): CliArgs {
     json: false,
     verbose: false,
     help: false,
+    incremental: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -151,6 +164,9 @@ function parseArgs(argv: string[]): CliArgs {
         break;
       case '--no-pipeline':
         args.noPipeline = true;
+        break;
+      case '--incremental':
+        args.incremental = true;
         break;
       case '--json':
       case '-j':
@@ -310,6 +326,70 @@ function runPipeline(opts: {
   };
 }
 
+/**
+ * Graph-safe incremental flush (P5, ADJ-03). Route the debounced changed-file
+ * snapshot to `populate --changed-files` (existing files) / `--deleted-files`
+ * (paths that no longer exist), which re-scans only those files and resolves
+ * against the persisted full fact set. On the first flush (no fact set yet) the
+ * orchestrator transparently falls back to a full build. Docs/RAG legs are NOT
+ * run here — the incremental leg targets the graph/index artifacts an agent
+ * queries; a full `--once` (or a non-incremental flush) refreshes docs/RAG.
+ */
+function runIncrementalPopulate(opts: {
+  projectDir: string;
+  snapshot: string[];
+  verbose: boolean;
+}): FlushResult {
+  const start = Date.now();
+  const changed = opts.snapshot.filter(p => fs.existsSync(p));
+  const deleted = opts.snapshot.filter(p => !fs.existsSync(p));
+
+  const buildArgs = (bin: string): string[] => {
+    const a = [bin, '--project-dir', opts.projectDir];
+    if (changed.length > 0) a.push('--changed-files', changed.join(','));
+    if (deleted.length > 0) a.push('--deleted-files', deleted.join(','));
+    if (opts.verbose) a.push('--verbose');
+    return a;
+  };
+
+  // Prefer the bin (npx populate-coderef), fall back to the sibling dist path.
+  let result = spawnSync('npx', buildArgs('populate-coderef'), {
+    cwd: opts.projectDir,
+    encoding: 'utf-8',
+    timeout: 600_000,
+    shell: process.platform === 'win32',
+  });
+  if (result.error || (result.status !== 0 && result.status !== null)) {
+    const distPath = path.join(__dirname, 'populate.js');
+    if (fs.existsSync(distPath)) {
+      result = spawnSync('node', buildArgs(distPath), {
+        cwd: opts.projectDir,
+        encoding: 'utf-8',
+        timeout: 600_000,
+      });
+    }
+  }
+
+  const duration = Date.now() - start;
+  if (result.error) {
+    return {
+      status: 'fail',
+      exit_code: null,
+      exit_reason: `spawn_error: ${String(result.error.message)}`,
+      duration_ms: duration,
+      paths_changed: [],
+    };
+  }
+  const code = typeof result.status === 'number' ? result.status : null;
+  return {
+    status: code === 0 ? 'pass' : 'fail',
+    exit_code: code,
+    exit_reason: code === 0 ? 'incremental_ok' : `incremental_exit_${code}`,
+    duration_ms: duration,
+    paths_changed: [],
+  };
+}
+
 function writeHeartbeat(opts: {
   projectDir: string;
   result: FlushResult;
@@ -411,7 +491,9 @@ async function runDaemon(args: CliArgs): Promise<number> {
     try {
       const result = args.noPipeline
         ? { status: 'skipped' as const, exit_code: 0, exit_reason: 'no_pipeline_flag', duration_ms: 0, paths_changed: snapshot }
-        : runPipeline({ projectDir: args.projectDir, skipRag: args.skipRag, verbose: args.verbose });
+        : args.incremental
+          ? runIncrementalPopulate({ projectDir: args.projectDir, snapshot, verbose: args.verbose })
+          : runPipeline({ projectDir: args.projectDir, skipRag: args.skipRag, verbose: args.verbose });
       const hb = writeHeartbeat({
         projectDir: args.projectDir,
         result: { ...result, paths_changed: snapshot },

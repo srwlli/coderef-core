@@ -60,6 +60,15 @@ interface CliArgs {
   enforceHeaders: boolean;
   /** Coverage floor (0-100) for --enforce-headers. Default 100. */
   coverageFloor: number;
+  /**
+   * Graph-safe incremental populate (P5, ADJ-03). When a changed-file list is
+   * supplied, re-scan ONLY those files and resolve against the persisted full
+   * fact set (falls back to a full build if none exists). Absolute or
+   * project-relative paths, comma-separated. The watcher passes its debounced
+   * snapshot here. Deleted files go in `deletedFiles`.
+   */
+  changedFiles?: string[];
+  deletedFiles?: string[];
 }
 
 interface GeneratorRunner {
@@ -150,6 +159,16 @@ function parseArgs(argv: string[]): CliArgs {
 
       case '--select':
         args.select = argv[++i].split(',');
+        break;
+
+      case '--changed-files':
+        // Graph-safe incremental (P5): re-scan only these files, resolve against
+        // the persisted full fact set. Empty entries dropped.
+        args.changedFiles = argv[++i].split(',').map(s => s.trim()).filter(Boolean);
+        break;
+
+      case '--deleted-files':
+        args.deletedFiles = argv[++i].split(',').map(s => s.trim()).filter(Boolean);
         break;
 
       case '--semantic':
@@ -308,15 +327,28 @@ async function run(args: CliArgs): Promise<void> {
     // Create output directory
     await fs.mkdir(outputDir, { recursive: true });
 
-    // Run pipeline
+    // Run pipeline. Graph-safe incremental (P5, ADJ-03) when --changed-files is
+    // supplied: re-scan only those files and resolve against the persisted full
+    // fact set (falls back to a full build if none exists). Otherwise a normal
+    // full build (which also (re)persists the fact set for the next delta).
     const orchestrator = new PipelineOrchestrator();
-    const state = await orchestrator.run(args.projectDir, {
+    const pipelineOpts = {
       languages,
       verbose: args.verbose && !args.json,
       outputDir,
       mode: args.mode,
       select: args.select,
-    });
+    };
+    const toAbs = (p: string): string => (path.isAbsolute(p) ? p : path.resolve(args.projectDir, p));
+    const state =
+      args.changedFiles && args.changedFiles.length > 0
+        ? await orchestrator.runIncremental(
+            args.projectDir,
+            args.changedFiles.map(toAbs),
+            pipelineOpts,
+            (args.deletedFiles ?? []).map(toAbs),
+          )
+        : await orchestrator.run(args.projectDir, pipelineOpts);
 
     // Phase 6 chokepoint (R-PHASE-6-A). Single validation surface preceding
     // every write. On ok=false: log errors, skip generators, exit 1. On

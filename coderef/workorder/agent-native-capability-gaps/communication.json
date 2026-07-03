@@ -8,8 +8,8 @@
   "parent_stub_id": null,
   "predecessor_for": null,
   "status": "plan_created",
-  "current_phase": 4,
-  "phase_status": "complete",
+  "current_phase": 5,
+  "phase_status": "in_progress",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/analysis.json",
@@ -104,6 +104,18 @@
       "value": "build_if_missing_via_spawn_populate_cli",
       "reason": "P4-T1 READ found the plan premise incomplete: orchestrator.run() returns in-memory PipelineState but does NOT persist graph.json/index.json — populate.ts does that via a separate generators+validation+index-rewrite dance. Surfaced two viable paths (spawn populate CLI vs in-process orchestrator+generators) as a halt; operator ruled SPAWN populate CLI. Rationale: reuses the EXACT tested persist path (zero drift from populate.ts), consistent with the server's existing spawnSync(git) pattern in diff_impact. Trade: requires the built populate bin under dist/ (fail-closed with a clear hint when absent). No plan task added/removed; this fixes the implementation approach for P4-T2/T3.",
       "at": "2026-07-03T12:05:00Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 5,
+      "at": "2026-07-03T12:30:00Z"
+    },
+    {
+      "event": "operator_ruling",
+      "adj": "ADJ-03",
+      "value": "incremental_via_persisted_full_factset_merge_reresolve",
+      "reason": "P5-T1 READ proved byte-identical parity requires resolve+construct over the FULL merged fact universe, not just changed-file calls against a symbol table: resolveImports needs ALL files' rawExports (a changed file importing from an unchanged file), and constructGraph emits edges for the WHOLE element set. The orchestrator's existing incremental path filters `files` to changed-only and never merges unchanged facts back (allFilesUnchanged is used only for the hit-ratio metric) — THAT is the cross-file corruption trap the hard_constraint warns about. Surfaced two architectures as a halt (persist full fact-set + merge + re-resolve VS persist symbol-table-only + splice edges). Operator ruled the FULL-FACT-SET approach: parity is STRUCTURAL (same pure-function inputs -> byte-identical output), reuses the tested resolveImports/resolveCalls/constructGraph unchanged, skips only the slow scan step. Trade: a larger persisted artifact (.coderef/incremental-facts.json holding per-file raw facts). Does NOT touch IncrementalCache drift logic (leaves WO-FIX-INCREMENTAL-CACHE-FALSE-DRIFT-001 in-progress work alone, RISK-05). No plan task added/removed; fixes the implementation approach for P5-T2/T3.",
+      "at": "2026-07-03T12:35:00Z"
     }
   ],
   "phase_transitions": [

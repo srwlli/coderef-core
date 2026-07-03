@@ -52,6 +52,14 @@ import type {
 import { resolveImports } from './import-resolver.js';
 import { resolveCalls } from './call-resolver.js';
 import { constructGraph } from './graph-builder.js';
+import {
+  buildFactSet,
+  mergeChangedFacts,
+  readFactSet,
+  writeFactSet,
+  type FileFactBundle,
+  type IncrementalFactSet,
+} from './symbol-table-cache.js';
 import type { HeaderStatus } from './element-taxonomy.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
@@ -153,6 +161,11 @@ export class PipelineOrchestrator {
     const allHeaderImportFacts: HeaderImportFact[] = [];
     const allHeaderParseErrors: HeaderParseError[] = [];
     const sources = new Map<string, string>();
+    // P5 (ADJ-03): capture the per-file fact bundle + file order so a full build
+    // can persist the complete fact set for a later graph-safe incremental pass.
+    // Additive — does not alter the accumulation of the all* arrays above.
+    const factBundles = new Map<string, FileFactBundle>();
+    const fileOrder: string[] = [];
 
     let filesScanned = 0;
 
@@ -178,6 +191,19 @@ export class PipelineOrchestrator {
             allHeaderParseErrors.push(...result.headerFact.parseErrors);
           }
           sources.set(filePath, result.content);
+          fileOrder.push(filePath);
+          factBundles.set(filePath, {
+            language,
+            elements: result.elements,
+            imports: result.imports,
+            calls: result.calls,
+            rawImports: result.rawImports,
+            rawCalls: result.rawCalls,
+            rawExports: result.rawExports,
+            headerFact: result.headerFact,
+            headerImportFacts: result.headerImportFacts,
+            content: result.content,
+          });
           filesScanned++;
 
           if (verbose && filesScanned % 10 === 0) {
@@ -312,6 +338,22 @@ export class PipelineOrchestrator {
       await cache.save();
     }
 
+    // Step 5.5 (P5, ADJ-03): persist the full-project fact set after a FULL,
+    // NON-incremental build. This is the input a later graph-safe incremental
+    // pass merges changed-file rescans into. Guarded on !incrementalEnabled so
+    // the persisted set always reflects a COMPLETE universe (an incremental
+    // orchestrator.run() would filter `files` and produce a partial set — never
+    // persist that). Best-effort: a write failure must not fail the build.
+    if (!incrementalEnabled && options.outputDir) {
+      try {
+        const factSet = buildFactSet(projectPath, fileOrder, factBundles);
+        writeFactSet(projectPath, factSet);
+        if (verbose) logger.info(`[PipelineOrchestrator] Persisted incremental fact set (${fileOrder.length} files).`);
+      } catch (e) {
+        logger.warn(`[PipelineOrchestrator] Failed to persist incremental fact set: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+
     // Step 6: Return populated state
     const state: PipelineState = {
       ...preResolveState,
@@ -332,6 +374,169 @@ export class PipelineOrchestrator {
     };
 
     return state;
+  }
+
+  /**
+   * Graph-safe incremental populate (P5, ADJ-03). Re-scan ONLY `changedFiles`,
+   * SWAP their fact bundles into the persisted full fact set, then run the SAME
+   * pure resolveImports/resolveCalls/constructGraph over the MERGED full
+   * universe. The resolved-edge set is byte-identical to a full rebuild because
+   * the inputs are identical (fresh facts for changed files + cached facts for
+   * every unchanged file) and the resolve/construct functions are pure.
+   *
+   * Falls back to a FULL run() when no valid persisted fact set exists (first
+   * run, stale schema, or a corrupt cache) — never resolves against a partial
+   * universe (that is the corruption trap this phase closes).
+   *
+   * @param changedFiles absolute paths added or modified since the cached build
+   * @param deletedFiles absolute paths removed since the cached build
+   */
+  async runIncremental(
+    projectPath: string,
+    changedFiles: string[],
+    options: PipelineOptions = {},
+    deletedFiles: string[] = [],
+  ): Promise<PipelineState> {
+    const startTime = Date.now();
+    const verbose = options.verbose ?? false;
+
+    const cached = readFactSet(projectPath);
+    if (!cached) {
+      if (verbose) logger.info('[PipelineOrchestrator] No valid fact set — falling back to a full build.');
+      return this.run(projectPath, options);
+    }
+
+    // Reset the registry (parity with run(): run() clears it at the top).
+    globalRegistry.clear();
+
+    // Re-scan ONLY the changed files. Language is derived from the cached
+    // bundle when known, else from the extension via getDefaultLanguages match.
+    const rescanned = new Map<string, FileFactBundle>();
+    for (const filePath of changedFiles) {
+      const language = cached.byFile[filePath]?.language ?? this.languageOf(filePath);
+      if (!language) continue; // unsupported extension — skip
+      try {
+        await this.registry.preloadGrammars([language]);
+        const result = await this.processFile(filePath, language, verbose);
+        rescanned.set(filePath, {
+          language,
+          elements: result.elements,
+          imports: result.imports,
+          calls: result.calls,
+          rawImports: result.rawImports,
+          rawCalls: result.rawCalls,
+          rawExports: result.rawExports,
+          headerFact: result.headerFact,
+          headerImportFacts: result.headerImportFacts,
+          content: result.content,
+        });
+      } catch (error) {
+        logger.error(`[PipelineOrchestrator] Incremental rescan error for ${filePath}:`, error);
+      }
+    }
+
+    // Merge changed/deleted into the cached full set — the graph-safe step.
+    const merged = mergeChangedFacts(cached, rescanned, deletedFiles);
+
+    // Reassemble the FULL fact arrays in the merged file order, register every
+    // element (parity with run()), then run the identical resolve/construct
+    // chain over the complete universe.
+    const state = this.assembleAndResolve(projectPath, merged, options, startTime);
+
+    // Re-persist the merged set so the NEXT delta builds on this one.
+    if (options.outputDir !== undefined) {
+      try {
+        writeFactSet(projectPath, merged);
+      } catch (e) {
+        logger.warn(`[PipelineOrchestrator] Failed to re-persist fact set: ${e instanceof Error ? e.message : String(e)}`);
+      }
+    }
+    return state;
+  }
+
+  /**
+   * Assemble the full fact arrays from a (merged) fact set in its file order,
+   * then run resolveImports → resolveCalls → constructGraph — the EXACT chain
+   * run() uses. Factored so both the full and incremental paths resolve through
+   * identical code (structural parity).
+   */
+  private assembleAndResolve(
+    projectPath: string,
+    set: IncrementalFactSet,
+    options: PipelineOptions,
+    startTime: number,
+  ): PipelineState {
+    const files = new Map<string, string[]>();
+    const allElements: ElementData[] = [];
+    const allImports: ImportRelationship[] = [];
+    const allCalls: CallRelationship[] = [];
+    const allRawImports: RawImportFact[] = [];
+    const allRawCalls: RawCallFact[] = [];
+    const allRawExports: RawExportFact[] = [];
+    const allHeaderFacts = new Map<string, HeaderFact>();
+    const allHeaderImportFacts: HeaderImportFact[] = [];
+    const allHeaderParseErrors: HeaderParseError[] = [];
+    const sources = new Map<string, string>();
+
+    for (const filePath of set.order) {
+      const bundle = set.byFile[filePath];
+      if (!bundle) continue;
+      const list = files.get(bundle.language) ?? [];
+      list.push(filePath);
+      files.set(bundle.language, list);
+      for (const elem of bundle.elements) globalRegistry.register(elem);
+      allElements.push(...bundle.elements);
+      allImports.push(...bundle.imports);
+      allCalls.push(...bundle.calls);
+      allRawImports.push(...bundle.rawImports);
+      allRawCalls.push(...bundle.rawCalls);
+      allRawExports.push(...bundle.rawExports);
+      allHeaderFacts.set(filePath, bundle.headerFact);
+      allHeaderImportFacts.push(...bundle.headerImportFacts);
+      if (bundle.headerFact.parseErrors) allHeaderParseErrors.push(...bundle.headerFact.parseErrors);
+      sources.set(filePath, bundle.content);
+    }
+
+    const graph = this.buildGraph(allElements, allImports, allCalls, projectPath);
+    const preResolveState: PipelineState = {
+      projectPath, files,
+      elements: allElements, imports: allImports, calls: allCalls,
+      rawImports: allRawImports, rawCalls: allRawCalls, rawExports: allRawExports,
+      headerFacts: allHeaderFacts, headerImportFacts: allHeaderImportFacts,
+      headerParseErrors: allHeaderParseErrors,
+      importResolutions: [], callResolutions: [], graph, sources, options,
+      metadata: {
+        startTime, filesScanned: set.order.length,
+        elementsExtracted: allElements.length,
+        relationshipsExtracted: allImports.length + allCalls.length,
+      },
+    };
+    const importResolutions = resolveImports(preResolveState);
+    const callResolutions = resolveCalls({ ...preResolveState, importResolutions });
+    const v2Graph = constructGraph({ ...preResolveState, importResolutions, callResolutions, graph });
+    Object.assign(graph, {
+      nodes: v2Graph.nodes, edges: v2Graph.edges, statistics: v2Graph.statistics,
+      version: v2Graph.version, exportedAt: v2Graph.exportedAt,
+    });
+    return {
+      ...preResolveState, importResolutions, callResolutions,
+      metadata: {
+        startTime, endTime: Date.now(), filesScanned: set.order.length,
+        elementsExtracted: allElements.length,
+        relationshipsExtracted: allImports.length + allCalls.length,
+        incremental: { filesSkipped: 0, hitRatio: 0, enabled: true },
+      },
+    };
+  }
+
+  /** Map a file path to its pipeline language key by extension, or null. */
+  private languageOf(filePath: string): string | null {
+    const ext = path.extname(filePath).toLowerCase();
+    const map: Record<string, string> = {
+      '.ts': 'ts', '.tsx': 'ts', '.js': 'js', '.jsx': 'js', '.mjs': 'js', '.cjs': 'js',
+      '.py': 'python', '.go': 'go', '.rs': 'rust', '.java': 'java',
+    };
+    return map[ext] ?? null;
   }
 
   /**
