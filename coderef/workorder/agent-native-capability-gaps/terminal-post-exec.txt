@@ -2,79 +2,86 @@
 WORKORDER PHASE EXECUTION COMPLETE (strict-phased — HARD STOP)
 
 WORKORDER ID: WO-AGENT-NATIVE-CAPABILITY-GAPS-001
-PHASE COMPLETED: Phase 4 of 6 — Build-if-missing (zero-setup for agents)
-MODE: --phase=4 single-phase (per-phase hard stop; operator go required for HEAVY P5)
+PHASE COMPLETED: Phase 5 of 6 — Graph-safe incremental watch (HEAVY)
+MODE: --phase=5 single-phase (per-phase hard stop; operator go required for P6)
 
 DELIVERABLE:
-  The MCP server no longer THROWS when .coderef/ is absent or stale. loadGraph/
-  loadIndex now call ensureArtifacts, which builds the index on demand:
-    - absent graph.json/index.json -> spawn the populate CLI in-process ONCE,
-      then read the artifacts it wrote.
-    - stale (any source file newer than graph.json) -> rebuild (bounded).
-    - fresh, pre-built .coderef/ -> served as-is, NO rebuild (additive no-op).
+  Graph-safe incremental populate — re-resolve ONLY changed files WITHOUT losing
+  cross-file resolution against unchanged files. Closes the corruption trap the
+  hard_constraint warns about.
 
-  ADJ-02 (operator-ruled): P4-T1 READ found the plan premise incomplete —
-  orchestrator.run() returns in-memory PipelineState but does NOT persist
-  graph.json/index.json (populate.ts does that via a separate generators+
-  validation+index-rewrite dance). Surfaced two paths as a halt; operator ruled
-  SPAWN populate CLI (reuses the exact tested persist path, zero drift, matches
-  the server's existing spawnSync(git) pattern) over in-process generators.
+  ADJ-03 (operator-ruled): P5-T1 READ proved byte-identical parity needs resolve+
+  construct over the FULL merged fact universe, not just changed-file calls
+  against a symbol table — resolveImports needs ALL files' rawExports and
+  constructGraph emits edges for the whole element set. The orchestrator's
+  existing incremental path filters `files` to changed-only and NEVER merges
+  unchanged facts back (allFilesUnchanged feeds only the hit-ratio metric) —
+  THAT is the trap. Surfaced two architectures as a halt; operator ruled the
+  full-fact-set approach (parity is STRUCTURAL: same pure-function inputs ->
+  byte-identical output; reuses the tested resolve/construct chain unchanged).
 
-  RISK-04 bounds:
-    - >4000 source files -> 'run populate first' hint (never a hang / long build).
-    - 10-minute wall-clock timeout on the spawned build.
-    - build-once guard prevents rebuild loops.
-    - BuildHintError carries an actionable message when auto-build can't proceed
-      (bin missing, over ceiling, build failed/incomplete).
+  Components:
+    - src/pipeline/symbol-table-cache.ts (NEW): persist the complete per-file
+      fact bundle to .coderef/incremental-facts.json after a full build; merge
+      changed/deleted files into it. Versioned, atomic temp+rename, plain-JSON.
+    - orchestrator: capture per-file bundles + order on a full run and persist
+      the fact set (additive — full-build output unchanged). runIncremental()
+      re-scans only changed files, SWAPS their facts into the cached full set,
+      and runs the SAME resolveImports/resolveCalls/constructGraph over the
+      merged universe (assembleAndResolve). Falls back to full when no fact set.
+    - populate: --changed-files / --deleted-files route to runIncremental.
+    - coderef-watch: opt-in --incremental passes the debounced snapshot to
+      populate --changed-files (default OFF; full pipeline stays the safe path).
+    - IncrementalCache drift logic UNTOUCHED (RISK-05).
 
 TASK CHECKLIST:
-  [x] P4-T1 READ    loadGraph/loadIndex throws-if-missing; orchestrator.run does
-                    NOT persist; populate.ts is the real persist path -> HALT +
-                    operator ruling (ADJ-02)
-  [x] P4-T2 EDIT    ensureArtifacts build-if-missing via spawn populate
-  [x] P4-T3 EDIT    bounded staleness (source-mtime vs graph.json; file ceiling)
-  [x] P4-T4 TEST    +4 tests in a NEW file, real temp repo + real populate spawn:
-                    absent->builds+answers, stale->rebuilds, fresh->no-op
-  [x] P4-T5 RUN     build exit 0; full suite 1541 passed | 26 skipped (+4)
-  [x] P4-T6 COMMIT  106271b by explicit path (main-only)
-  [x] P4-T7 STOP    this terminal surface
+  [x] P5-T1 READ    watch full-populate-every-flush; orchestrator incremental
+                    filter (the trap); buildSymbolTable shape; incremental-cache;
+                    prior watcher WOs -> HALT + operator ruling (ADJ-03)
+  [x] P5-T2 WRITE   symbol-table-cache.ts (persisted full fact set + merge)
+  [x] P5-T3 EDIT    orchestrator.runIncremental + populate/watch wiring
+  [x] P5-T4 TEST    +3 parity tests (the CORRECTNESS GATE, RISK-02)
+  [x] P5-T5 RUN     build exit 0; full suite 1544 passed | 26 skipped (+3);
+                    live CLI parity confirmed end-to-end
+  [x] P5-T6 COMMIT  4a8c781 by explicit path (main-only)
+  [x] P5-T7 STOP    this terminal surface
 
 COMMITS:
-  - 106271b: feat(agent-native-capability-gaps): phase 4 - build-if-missing (zero-setup for agents)
+  - 4a8c781: feat(agent-native-capability-gaps): phase 5 - graph-safe incremental populate (HEAVY)
 
 PUSH:
-  - 868d26b..<pending> -> origin/main (after this artifact commit)
+  - 76244f1..<pending> -> origin/main (after this artifact commit)
 
 TEST RESULTS:
   - Build (tsc + tsc -p tsconfig.cli.json): clean, exit 0
-  - vitest run: 1541 passed | 26 skipped (159 files) — exit 0
-  - New file mcp-server-build-if-missing.test.ts: 4 passed (real populate spawns)
-  - mcp-server.test.ts: 65 passed (fixture marked fresh so build-if-missing
-    serves it as-is — the staleness feature was correctly firing on it)
+  - vitest run: 1544 passed | 26 skipped (160 files) — exit 0
+  - NEW __tests__/pipeline/incremental-parity.test.ts: 3 passed
 
-REALITY ANCHOR (AC-4 + AC-7):
-  - Live: build-if-missing PROVED itself on the self-scan. The on-disk index had
-    gone stale (I edited coderef-mcp-server.ts across P1-P4 with no rescan); the
-    server detected staleness and rebuilt in-process, refreshing 2405 -> 2417
-    elements / 29,802 edges. This SELF-HEALED the stale-index caveat flagged at P3.
-  - Live: a SECOND read against the now-fresh index did NOT rebuild (mtime
-    unchanged) — the pre-built-fresh path is a clean no-op.
-  - The existing 18 tools + response shapes are unchanged.
-  - .coderef/ is gitignored (the live rebuild is not committed). No cloud
-    provider introduced. Every commit main-only by explicit path.
-  - A real findPopulateBin() off-by-one (path resolution under vitest) was caught
-    by P4-T4 and fixed before commit — the reason the test exists.
+CORRECTNESS GATE (RISK-02 — the phase's reason for existing):
+  - A single-file edit via runIncremental yields a resolved-edge set (AND the
+    full edge signature incl. non-resolved reasons) BYTE-IDENTICAL to a full
+    rebuild — including a NEW cross-file call (extra() -> util.helper) into an
+    UNCHANGED file. Deleted-file drop + no-fact-set fallback also covered.
+  - LIVE CLI PARITY end-to-end through the watcher path: full populate persists
+    incremental-facts.json; `populate --changed-files main.ts` (re-scan only the
+    edited file) === full rebuild of the edited state; cross-file call resolved.
 
-ACCEPTANCE CRITERIA (P4 scope):
-  [PASS] AC-4: the MCP server builds .coderef/ on demand when absent/stale
-               (bounded), instead of throwing — zero-setup for a fresh repo.
-  [PASS] AC-7 (P4 portion): existing 18 tools + shapes unchanged; full vitest
-               green; pre-built path unchanged; no cloud provider; every commit
-               main-only by explicit path.
+REALITY ANCHOR (AC-5 + AC-7):
+  - Self-scan graph intact + queryable after P5: 2437 elements / 29,984 edges;
+    validation counts stable (resolved 5258, unresolved 17145, ambiguous 2339).
+  - Additive fact-set capture did NOT perturb any of the 1541 pre-existing tests.
+  - .coderef/ (incl. incremental-facts.json) is gitignored. No cloud provider.
+    Every commit main-only by explicit path.
 
-HARD STOP: Phase 4 complete — awaiting operator go for the HEAVY Phase 5
-           (Graph-safe incremental watch — persisted full symbol table, delta
-           re-resolve; the CORRUPTION-TRAP phase — see hard_constraints).
-REMAINING: P5 (HEAVY), P6 (Go graph promotion — HEAVY).
-NEXT: /execute-workorder WO-AGENT-NATIVE-CAPABILITY-GAPS-001 --phase=5
+ACCEPTANCE CRITERIA (P5 scope):
+  [PASS] AC-5: incremental watch re-resolves only changed files against a
+               persisted full symbol/fact table, PROVEN byte-identical to a full
+               rebuild's resolved-edge set (no cross-file corruption).
+  [PASS] AC-7 (P5 portion): existing MCP tools + shapes unchanged; full vitest
+               green; no cloud provider; every commit main-only by explicit path.
+
+HARD STOP: Phase 5 complete — awaiting operator go for the final HEAVY Phase 6
+           (Promote Go to a real call+import+export graph via raw-fact emitters).
+REMAINING: P6 (Go graph promotion — HEAVY). After P6: WO ready for /close-workorder.
+NEXT: /execute-workorder WO-AGENT-NATIVE-CAPABILITY-GAPS-001 --phase=6
 ================================================================================
