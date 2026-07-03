@@ -58,6 +58,17 @@ type ExportedEdge = ExportedGraph['edges'][number];
 const SERVER_NAME = 'coderef-core';
 const SERVER_VERSION = '1.0.0';
 const DEFAULT_LIMIT = 25;
+
+// ---- build-if-missing bounds (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P4) ----------
+// RISK-04: auto-build must be BOUNDED. Above this source-file ceiling the server
+// returns a "run populate first" hint instead of spawning a potentially long
+// in-process build (which would block the tool call / risk a hang).
+const AUTO_BUILD_FILE_CEILING = 4000;
+// Hard wall-clock cap on the spawned populate build (ms). A build that exceeds
+// this is killed and surfaced as a clear error, never an indefinite hang.
+const AUTO_BUILD_TIMEOUT_MS = 10 * 60 * 1000;
+// Source extensions counted for staleness + the file-ceiling check.
+const SOURCE_EXT_RE = /\.(ts|tsx|js|jsx|mjs|cjs|py|go|rs|java|cpp|cc|h|hpp)$/;
 const MAX_LIMIT = 100;
 
 // ---- index.json element shape (subset we surface) -----------------------------
@@ -123,6 +134,13 @@ interface ArtifactCache {
    * together with `graph` on mtime change.
    */
   canonical: CanonicalGraphQuery | null;
+  /**
+   * Build-if-missing guard (P4): once a spawned populate build has run in this
+   * server's lifetime we do NOT auto-build again on the same absent/stale
+   * condition — prevents a rebuild loop if the build produced nothing usable.
+   * Reset only when a fresh build is deliberately triggered by staleness.
+   */
+  buildAttempted: boolean;
 }
 
 function emptyCache(): ArtifactCache {
@@ -134,10 +152,172 @@ function emptyCache(): ArtifactCache {
     inbound: new Map(),
     nodeById: new Map(),
     canonical: null,
+    buildAttempted: false,
   };
 }
 
+/**
+ * Locate the populate-coderef CLI bin. The MCP server runs from
+ * dist/src/cli/coderef-mcp-server.js, so its sibling is dist/src/cli/populate.js.
+ * Returns null when it cannot be found (source-mode / unbuilt) — the caller
+ * then surfaces a clear "run populate first" hint rather than auto-building.
+ */
+function findPopulateBin(): string | null {
+  // Built (normal) run: __dirname = <repo>/dist/src/cli, sibling populate.js.
+  // Source/test run (vitest): __dirname = <repo>/src/cli, no built sibling — so
+  // also probe the built copy by walking up to a plausible repo root. The repo
+  // root is 2 levels above BOTH src/cli and dist/src/cli's parent-of-parent, so
+  // derive it and join dist/src/cli/populate.js.
+  const candidates = [
+    path.join(__dirname, 'populate.js'),                                  // dist run: sibling
+    path.join(__dirname, '..', '..', 'dist', 'src', 'cli', 'populate.js'),// src/cli run: <repo>/dist/...
+    path.join(__dirname, '..', '..', '..', 'dist', 'src', 'cli', 'populate.js'), // deep-nested run
+  ];
+  for (const c of candidates) {
+    try {
+      if (fs.statSync(c).isFile()) return c;
+    } catch {
+      // try next
+    }
+  }
+  return null;
+}
+
+/** Newest source-file mtime under projectDir + a count, bounded walk (skips .coderef, node_modules, .git). */
+function scanSources(projectDir: string): { newestMtimeMs: number; count: number } {
+  let newest = 0;
+  let count = 0;
+  const SKIP = new Set(['.coderef', 'node_modules', '.git', 'dist', '.vscode', 'coverage']);
+  const walk = (dir: string): void => {
+    let entries: fs.Dirent[];
+    try {
+      entries = fs.readdirSync(dir, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const e of entries) {
+      if (e.isDirectory()) {
+        if (SKIP.has(e.name)) continue;
+        walk(path.join(dir, e.name));
+      } else if (e.isFile() && SOURCE_EXT_RE.test(e.name)) {
+        count++;
+        try {
+          const m = fs.statSync(path.join(dir, e.name)).mtimeMs;
+          if (m > newest) newest = m;
+        } catch {
+          // ignore unreadable file
+        }
+      }
+    }
+  };
+  walk(projectDir);
+  return { newestMtimeMs: newest, count };
+}
+
+/**
+ * Tagged error carrying an agent-facing hint. loadGraph/loadIndex throw this
+ * when artifacts are absent/stale AND auto-build is not possible or not
+ * appropriate (bin missing, or file-count over the ceiling). The tool-call
+ * wrapper already surfaces thrown errors; this makes the message actionable.
+ */
+class BuildHintError extends Error {
+  constructor(public hint: string, public detail?: string) {
+    super(hint);
+    this.name = 'BuildHintError';
+  }
+}
+
+/**
+ * Build-if-missing / build-if-stale (P4, ADJ-02: spawn the populate CLI).
+ * Called at the top of loadGraph/loadIndex. Returns silently when the artifacts
+ * are present + fresh. When absent (or source is newer than graph.json AND the
+ * repo is under the file ceiling), spawns `node populate.js <projectDir>` ONCE
+ * to produce them via the exact tested persist path. Throws BuildHintError when
+ * it cannot/should not auto-build (bin missing, over ceiling, or build failed).
+ */
+function ensureArtifacts(projectDir: string, cache: ArtifactCache): void {
+  const graphPath = path.join(projectDir, '.coderef', 'graph.json');
+  const indexPath = path.join(projectDir, '.coderef', 'index.json');
+  const graphExists = fs.existsSync(graphPath);
+  const indexExists = fs.existsSync(indexPath);
+
+  let reason: 'absent' | 'stale' | null = null;
+  if (!graphExists || !indexExists) {
+    reason = 'absent';
+  } else {
+    // Staleness: any source file newer than graph.json → stale (bounded).
+    const graphMtime = fs.statSync(graphPath).mtimeMs;
+    const { newestMtimeMs, count } = scanSources(projectDir);
+    if (newestMtimeMs > graphMtime) {
+      if (count > AUTO_BUILD_FILE_CEILING) {
+        // Over the ceiling: do NOT auto-rebuild (RISK-04). Serve the stale
+        // artifacts but tell the agent they're stale + how to refresh.
+        console.error(
+          `[coderef-mcp] artifacts STALE (${count} source files > ${AUTO_BUILD_FILE_CEILING} ceiling) — serving existing graph.json; run populate to refresh.`,
+        );
+        return;
+      }
+      reason = 'stale';
+    }
+  }
+
+  if (reason === null) return; // present + fresh
+
+  // Guard: only auto-build once per (absent) condition to avoid a rebuild loop.
+  if (reason === 'absent' && cache.buildAttempted) {
+    throw new BuildHintError(
+      'coderef_artifacts_missing',
+      `.coderef/ artifacts are still absent after a build attempt at ${projectDir}. Run 'populate-coderef ${projectDir}' manually and check its output.`,
+    );
+  }
+
+  const { count } = scanSources(projectDir);
+  if (reason === 'absent' && count > AUTO_BUILD_FILE_CEILING) {
+    throw new BuildHintError(
+      'repo_too_large_for_auto_build',
+      `${count} source files exceed the ${AUTO_BUILD_FILE_CEILING} auto-build ceiling. Run 'populate-coderef ${projectDir}' once; subsequent tool calls will use the built index.`,
+    );
+  }
+
+  const bin = findPopulateBin();
+  if (!bin) {
+    throw new BuildHintError(
+      'coderef_artifacts_missing',
+      `No .coderef/ index at ${projectDir} and the populate CLI could not be located for auto-build. Run 'populate-coderef ${projectDir}' first.`,
+    );
+  }
+
+  console.error(
+    `[coderef-mcp] .coderef/ ${reason} — building index in-process (first call may be slow)…`,
+  );
+  cache.buildAttempted = true;
+  const res = spawnSync('node', [bin, projectDir], {
+    cwd: projectDir,
+    encoding: 'utf8',
+    timeout: AUTO_BUILD_TIMEOUT_MS,
+    maxBuffer: 64 * 1024 * 1024,
+    stdio: ['ignore', 'ignore', 'inherit'], // populate diagnostics → our stderr
+  });
+  if (res.error || res.status !== 0) {
+    throw new BuildHintError(
+      'coderef_build_failed',
+      `Auto-build via populate failed: ${String(res.error?.message ?? `exit ${res.status}`).slice(0, 200)}. Run 'populate-coderef ${projectDir}' manually.`,
+    );
+  }
+  if (!fs.existsSync(graphPath) || !fs.existsSync(indexPath)) {
+    throw new BuildHintError(
+      'coderef_build_incomplete',
+      `populate completed but ${!fs.existsSync(graphPath) ? 'graph.json' : 'index.json'} was not produced. Check the populate output.`,
+    );
+  }
+  console.error('[coderef-mcp] build complete.');
+  // A fresh build means the mtime cache is stale — force a re-read below.
+  cache.graphMtimeMs = 0;
+  cache.indexMtimeMs = 0;
+}
+
 function loadGraph(projectDir: string, cache: ArtifactCache): ExportedGraph {
+  ensureArtifacts(projectDir, cache);
   const graphPath = path.join(projectDir, '.coderef', 'graph.json');
   const stat = fs.statSync(graphPath); // throws if missing — surfaced as tool error
   if (cache.graph && stat.mtimeMs === cache.graphMtimeMs) {
@@ -167,6 +347,7 @@ function loadGraph(projectDir: string, cache: ArtifactCache): ExportedGraph {
 }
 
 function loadIndex(projectDir: string, cache: ArtifactCache): IndexData {
+  ensureArtifacts(projectDir, cache);
   const indexPath = path.join(projectDir, '.coderef', 'index.json');
   const stat = fs.statSync(indexPath);
   if (cache.index && stat.mtimeMs === cache.indexMtimeMs) {

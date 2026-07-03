@@ -298,6 +298,14 @@ beforeAll(() => {
   ].join('\n');
   fs.mkdirSync(path.join(fixtureDir, 'src'), { recursive: true });
   fs.writeFileSync(path.join(fixtureDir, 'src', 'util.ts'), utilSrc);
+  // P4: this fixture IS an authoritative, pre-built .coderef/ — mark graph.json +
+  // index.json as the NEWEST files so build-if-missing's staleness check treats
+  // them as fresh and serves them as-is (never auto-rebuilds over the hand-built
+  // fixture). Without this, src/util.ts (written last) would read as newer than
+  // graph.json and trigger a populate that clobbers the fixture.
+  const future = new Date(Date.now() + 60_000);
+  fs.utimesSync(path.join(coderefDir, 'graph.json'), future, future);
+  fs.utimesSync(path.join(coderefDir, 'index.json'), future, future);
   handlers = buildToolHandlers(fixtureDir);
 });
 

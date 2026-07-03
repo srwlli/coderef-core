@@ -8,8 +8,8 @@
   "parent_stub_id": null,
   "predecessor_for": null,
   "status": "plan_created",
-  "current_phase": 3,
-  "phase_status": "complete",
+  "current_phase": 4,
+  "phase_status": "in_progress",
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/analysis.json",
@@ -92,6 +92,18 @@
       "event": "single_phase_mode_invoked",
       "phase": 3,
       "at": "2026-07-03T11:30:00Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 4,
+      "at": "2026-07-03T12:00:00Z"
+    },
+    {
+      "event": "operator_ruling",
+      "adj": "ADJ-02",
+      "value": "build_if_missing_via_spawn_populate_cli",
+      "reason": "P4-T1 READ found the plan premise incomplete: orchestrator.run() returns in-memory PipelineState but does NOT persist graph.json/index.json — populate.ts does that via a separate generators+validation+index-rewrite dance. Surfaced two viable paths (spawn populate CLI vs in-process orchestrator+generators) as a halt; operator ruled SPAWN populate CLI. Rationale: reuses the EXACT tested persist path (zero drift from populate.ts), consistent with the server's existing spawnSync(git) pattern in diff_impact. Trade: requires the built populate bin under dist/ (fail-closed with a clear hint when absent). No plan task added/removed; this fixes the implementation approach for P4-T2/T3.",
+      "at": "2026-07-03T12:05:00Z"
     }
   ],
   "phase_transitions": [
