@@ -7,9 +7,22 @@
   "originating_dispatches": [],
   "parent_stub_id": null,
   "predecessor_for": null,
-  "status": "plan_created",
+  "status": "closed",
+  "completed_at": "2026-07-03T19:38:27Z",
+  "closed_at": "2026-07-03T19:42:00Z",
+  "updated": "2026-07-03T19:42:00Z",
   "current_phase": 6,
   "phase_status": "complete",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "review_verdict_source": "Step 3 audit — pre-existing ecosystem standards drift (agent-docs-structure, data, structure non-WO issues); culture gate alignment_gate_skipped (infrastructure); WO-specific tracking row clean after type fix",
+    "archive_marker": "coderef/workorder/agent-native-capability-gaps/close-only (no --archive flag; WO stays in coderef/workorder/)",
+    "warnings": [
+      "standards-validate: pre-existing repo-wide drift (agent-docs-structure, data, structure); not caused by this WO",
+      "standards-validate: culture alignment_gate_skipped (infrastructure flakiness, not a FAIL)",
+      "workorders.json type field was 'enhancement' (not in schema enum); corrected to 'feature' via canonical writer"
+    ]
+  },
   "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/plan.json",
   "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/context.json",
   "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/agent-native-capability-gaps/analysis.json",
@@ -174,6 +187,11 @@
       "at": "2026-07-03T08:42:45Z",
       "event": "workorder_created",
       "note": "Authored from read-only, file:line-grounded agent-native gap analysis. Step 3 .coderef/ prereq gate PASSED (all six artifacts fresh, Jul 3 01:45-01:46). Six phases: P1 outbound+paths (wiring), P2 list-nonresolved (exposure), P3 source-body+find-refs+evidence, P4 build-if-missing, P5 graph-safe incremental (heavy), P6 Go graph promotion (heavy)."
+    },
+    {
+      "timestamp": "2026-07-03T19:42:00Z",
+      "agent": "close-workorder v2.17.2",
+      "message": "Workorder closed via /close-workorder (CLOSE-ONLY, no --archive). Audit WARNING (pre-existing ecosystem drift, not WO-caused). All 6 phases PASS (e5b6f66/0ecb4f9/1ff9a76/106271b/4a8c781/ba8fec7). Session log SES-2026-07-03-AGENT-NATIVE-CAPABILITY-GAPS.yaml written. Registry row status=complete. WO remains in coderef/workorder/; archive pending /close-workorder --archive."
     }
   ],
   "required_skills": [
