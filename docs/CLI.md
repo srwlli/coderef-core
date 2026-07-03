@@ -219,6 +219,8 @@ Session events conform to WO-SESSIONS-EVENT-EMISSION-PROTOCOL-001 with `type=cod
 
 Scan a codebase for code elements (functions, classes, components, hooks).
 
+> **Scan-count vs index-count:** `coderef-scan` reports the raw scan-pass element count, which is **expected to be higher** than the element count in `populate-coderef`'s `.coderef/index.json`. They are produced by two independent extractors: the scan CLI (`src/scanner`) runs a regex pass that can emit pseudo-elements (e.g. `if:`/`catch:`/`fetch(`) on tree-sitter-succeeded files, while the populate/index pipeline (`src/pipeline/extractors`) uses its own tree-sitter extractor with a deduped element set. `coderef-scan` count > `index.json` count is by design — not a discrepancy. Likewise, quote scan **timing** with its command + conditions (cold vs warm cache, language set), since those dominate the number.
+
 ### Usage
 
 ```bash
