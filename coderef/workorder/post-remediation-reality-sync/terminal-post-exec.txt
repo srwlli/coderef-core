@@ -9,7 +9,7 @@
 PHASE 5 of 5 COMPLETE  —  CODEREF-CORE .mcp.json restore + WO close-out
 ----------------------------------------------------------------
   Repo:    CODEREF-CORE (separate repo from ASSISTANT)
-  Commit:  {P5_COMMIT}
+  Commit:  6de2488
   Verdict: PASS
   Tasks:   3/3
 
@@ -55,7 +55,7 @@ WORKORDER SUMMARY (all 5 phases, this session):
   Phase 3  ASSISTANT CONTEXT.md     commit c8d2ef83  PASS  (~10 stale claims synced)
   Phase 4  CODEREF-CORE RAG reindex (runtime)        PASS  (178->0 stale refs, ollama 768-dim,
                                                             dedup->scanner.ts:648, no commit)
-  Phase 5  CODEREF-CORE .mcp.json   commit {P5_COMMIT} PASS  (restore + WO artifacts)
+  Phase 5  CODEREF-CORE .mcp.json   commit 6de2488 PASS  (restore + WO artifacts)
 
 GATES / DISCIPLINE:
   - MAIN-ONLY + commit-by-path honored every phase; never git add -A.
