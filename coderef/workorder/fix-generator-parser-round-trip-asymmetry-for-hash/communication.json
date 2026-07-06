@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-0G9DPT",
   "predecessor_for": null,
-  "status": "complete",
+  "status": "closed",
   "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\fix-generator-parser-round-trip-asymmetry-for-hash\\plan.json",
@@ -129,6 +129,12 @@
       "summary": "post-execute quick discovery: detectHeaderBlock now 4 branches (block, //, #, docstring) at semantic-header-parser.ts L70-109; hash branch CRLF-safe; round-trip test surface header-round-trip-hash-comments.test.ts (7 tests); dist rebuilt; no dangling references to the 3-branch shape found",
       "output_dest_note": "stub:WO output-dest skipped — STUB-0G9DPT already closed at hook time; summary recorded here instead",
       "at": "2026-07-06T07:25:00Z"
+    },
+    {
+      "event": "workorder_closed",
+      "mode": "close-only",
+      "audit": "WARNING (pre-existing-only)",
+      "at": "2026-07-06T07:42:00Z"
     }
   ],
   "phase_transitions": [
@@ -173,5 +179,20 @@
       ]
     }
   },
-  "completed_at": "2026-07-06T07:10:00Z"
+  "completed_at": "2026-07-06T07:10:00Z",
+  "closed_at": "2026-07-06T07:42:00Z",
+  "closed_via": "/close-workorder",
+  "close_metadata": {
+    "close_mode": "close-only (v2.8.0 default; archive pending --archive)",
+    "audit_verdict": "WARNING",
+    "audit_notes": [
+      "culture gate PASS (all 11 checks green, scope-mode) after running align-coderef-culture for CODEREF-CORE this session",
+      "scoped tracking-validator: closing WO rows PASS; 1 pre-existing failure (registries.json dereference: TRACKING/archive-health.json missing) unrelated to this WO",
+      "repo-wide standards-kinds baseline FAILs are pre-existing drift, not attributable to this WO (standards-validate scope note)",
+      "dependency audit: no vulnerable flag; 17 outdated / 27 unused (hygiene, non-blocking)",
+      "quality-regression check soft-skipped: .coderef/reports/quality.json absent in coderef-core; no severity=error signal",
+      "route-validation skipped: diff matches no route patterns",
+      "semantic validation PASS via dist: hash CRLF => defined; docstring + line-comment no-regression"
+    ]
+  }
 }
