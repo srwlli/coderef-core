@@ -85,6 +85,23 @@ function detectHeaderBlock(
     }
   }
 
+  // Hash-comment languages (Python, Ruby, Shell, YAML, …): the generator
+  // writes one `#` line per directive (header-generator formatAsComments,
+  // 'hash' family). The shebang strip above keeps `#!` out of this block;
+  // an adjacent PEP263 coding cookie is swept into the body harmlessly —
+  // tag extraction only reads `@tag` lines.
+  const hashMatch = text.match(/^\s*((?:#.*\r?\n)+)/);
+  if (hashMatch) {
+    const stripped = hashMatch[1]
+      .split('\n')
+      .map(line => line.replace(/^\s*#\s?/, '').replace(/\r$/, ''))
+      .join('\n');
+    if (SEMANTIC_MARKER_RE.test(stripped)) {
+      const startLine = shebangLines + countLines(text.slice(0, hashMatch.index ?? 0)) + 1;
+      return { body: stripped, startLine };
+    }
+  }
+
   const docstringMatch = text.match(/^\s*"""([\s\S]*?)"""/);
   if (docstringMatch && SEMANTIC_MARKER_RE.test(docstringMatch[1])) {
     const startLine = shebangLines + countLines(text.slice(0, docstringMatch.index ?? 0)) + 1;
