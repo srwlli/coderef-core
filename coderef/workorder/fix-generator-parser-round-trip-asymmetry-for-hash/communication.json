@@ -193,6 +193,7 @@
       "quality-regression check soft-skipped: .coderef/reports/quality.json absent in coderef-core; no severity=error signal",
       "route-validation skipped: diff matches no route patterns",
       "semantic validation PASS via dist: hash CRLF => defined; docstring + line-comment no-regression"
-    ]
+    ],
+    "what_shipped": "Commit 7493b478 (main, pushed) — close finalize. Substantive commits: a4f333e (parser hash branch + 7 round-trip tests), 17c98ee (execution notes), ae9c209 (finalize + foundation docs), 92e47ce (terminal surface). Validation: baseline suite 1556 passed / 26 skipped; E2E fixture py coverage 0% -> 100% (3/3); primary-sources element coverage 21.7% -> 100.0% (4812/4812)."
   }
 }
