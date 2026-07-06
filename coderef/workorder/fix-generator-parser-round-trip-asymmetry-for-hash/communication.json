@@ -1,0 +1,110 @@
+{
+  "workorder_id": "WO-FIX-GENERATOR-PARSER-ROUND-TRIP-ASYMMETRY-FOR-HASH-001",
+  "feature_name": "fix-generator-parser-round-trip-asymmetry-for-hash",
+  "created": "2026-07-06T06:38:51Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "parent_stub_id": "STUB-0G9DPT",
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 2,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\fix-generator-parser-round-trip-asymmetry-for-hash\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\fix-generator-parser-round-trip-asymmetry-for-hash\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\fix-generator-parser-round-trip-asymmetry-for-hash\\analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored from STUB-0G9DPT; ready for Phase 1 execution (parser fix + round-trip tests)."
+  },
+  "execution_rules": {
+    "plan_type": "strict",
+    "rule": "Execute tasks in order within each phase; TEST tasks gate progression; hard stops honored; commit by explicit path on main."
+  },
+  "hard_constraints": [
+    "Do not regress /** */, //, or docstring header detection",
+    "Do not modify primary-sources tracked source files (PS domain owns commits there)",
+    "npm run build before any dist-surface verification"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "approved_tasks_injected",
+      "count": 10,
+      "source": "inline (task list authored from DISPATCH-2026-07-06-CODEREF-CORE-001 findings)",
+      "at": "2026-07-06T06:38:51Z"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "strict",
+      "phase_count": 2,
+      "source": "default",
+      "at": "2026-07-06T06:38:51Z"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "strict",
+      "source": "default",
+      "at": "2026-07-06T06:38:51Z"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-07-06T06:45:05Z"
+    },
+    {
+      "event": "plan_schema_validated",
+      "validator": "scripts/validate-plan-schema.py",
+      "result": "PASS",
+      "at": "2026-07-06T06:45:05Z"
+    },
+    {
+      "event": "semantic_context_degraded",
+      "reason": "context.json discovery_rag fallback_used=true (rag_server_error); enrichment skipped, standard discovery applies",
+      "at": "2026-07-06T06:45:05Z"
+    },
+    {
+      "event": "pre_execution_validation_gate",
+      "outcome": "PASS",
+      "note": "constraints loaded from context.json; no critical violations; discovery_rag degraded (enrichment only)",
+      "at": "2026-07-06T06:45:05Z"
+    }
+  ],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "a4f333e",
+      "verdict": "PASS",
+      "at": "2026-07-06T06:55:11.826Z"
+    }
+  ],
+  "plan_adjustments": [],
+  "git_branch": "wo/fix-generator-parser-round-trip-asymmetry-for-hash",
+  "communication_log": [
+    {
+      "at": "2026-07-06T06:38:51Z",
+      "from": "create-workorder",
+      "entry": "Workorder created from STUB-0G9DPT (category fix -> strict). Phase 1: parser hash-branch fix + round-trip tests in coderef-core. Phase 2: measurement rerun on primary-sources."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "inter_phase_results": {
+    "1": {
+      "pre": [
+        {
+          "hook": "/discover fix-generator-parser-round-trip-asymmetry-for-hash@quick",
+          "severity": "info",
+          "summary": "quick discovery: detectHeaderBlock 3 branches no '#' branch (parser L56-95); writer contract comment at header-generator.ts:348-352; test surface header-generator.test.ts:184",
+          "at": "2026-07-06T06:46:16Z"
+        }
+      ]
+    }
+  }
+}
