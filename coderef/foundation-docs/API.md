@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-07-03 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-07-06 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
 
 ---
 
@@ -42,6 +42,7 @@
 <!-- coderef:uuid=135ed5b6-87fb-50ac-b5f1-0457d2bbd585 -->
 <!-- coderef:uuid=8989852d-ebaa-52b4-852d-813d2a6d33be -->
 <!-- coderef:uuid=ec329b04-7830-5162-b84f-fccf7cdcf863 -->
+<!-- coderef:uuid=7c9b7ea0-070c-5509-a24a-f12fbfb87353 -->
 ### `scanCurrentElements()`
 
 Scan code elements from a directory using regex patterns.
@@ -89,6 +90,7 @@ interface ScanOptions {
 <!-- coderef:uuid=c0bd137a-1155-5fb8-a62d-e6fcb184a562 -->
 <!-- coderef:uuid=e7fe444a-67bb-5ba7-9a53-592f4d6abaa7 -->
 <!-- coderef:uuid=c1cd9634-498b-583f-a1b9-6e97967397b5 -->
+<!-- coderef:uuid=815dc249-b434-5924-9b3b-2d854d74c4da -->
 ### `scanFilesWithAST()`
 
 Scan files using AST-based analysis for accurate element detection.

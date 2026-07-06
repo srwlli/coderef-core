@@ -1,0 +1,140 @@
+{
+  "plan_type": "strict",
+  "goal": "Fix generator/parser round-trip asymmetry for hash-comment semantic headers: HeaderGenerator.formatAsComments writes '#'-line @coderef-semantic headers for Python (and other hash-comment languages), but semantic-header-parser detectHeaderBlock only recognizes /** */ blocks, // line comments, and triple-quote docstrings - so stamped Python files stay headerStatus=missing. Proven on primary-sources 2026-07-06 (DISPATCH-2026-07-06-CODEREF-CORE-001): 520 stamped .py files parse to 0 defined; all 3764 missing elements are .py while JS/TS/TSX parse 100%. Fix: add hash-line detection to detectHeaderBlock (mirror the // branch with # prefix, preserving shebang+PEP263 coding-cookie handling). Round-trip contract: write then parse => defined.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "READ src/pipeline/semantic-header-parser.ts (detectHeaderBlock, ~lines 56-95) and src/semantic/header-generator.ts (formatAsComments hash-comment branch, ~line 293) to lock the exact '#'-line header shape the writer emits for Python before touching the parser.",
+          "touches": [
+            "src/pipeline/semantic-header-parser.ts",
+            "src/semantic/header-generator.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "READ",
+          "description": "READ the existing header-parser test surfaces (__tests__/pipeline/output-validation-semantic-headers.test.ts and any semantic-header-parser unit tests) to find where round-trip coverage belongs and which fixtures exist.",
+          "touches": [
+            "__tests__/pipeline/output-validation-semantic-headers.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "TEST",
+          "description": "AUTHOR a FAILING round-trip test: HeaderGenerator writes a '#'-style @coderef-semantic header into .py fixture content (three variants: plain, with shebang line, with PEP263 coding cookie '# -*- coding: utf-8 -*-'), then semantic-header-parser must detect the block (headerStatus=defined). Run it to prove red before the fix.",
+          "touches": []
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "EDIT src/pipeline/semantic-header-parser.ts detectHeaderBlock: add a hash-line-comment branch mirroring the existing '//' branch (match leading '(?:#.*\\n)+' block, strip '#'-prefixes, require SEMANTIC_MARKER_RE in the stripped body). MUST NOT consume the shebang line (existing '#!' strip runs first) and MUST tolerate a PEP263 coding-cookie line adjacent to the header block. Do not alter the /** */, //, or docstring branches.",
+          "touches": [
+            "src/pipeline/semantic-header-parser.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "TEST",
+          "description": "RUN the pipeline test suite (npx vitest run __tests__/pipeline plus the new round-trip test): new test green, zero regressions on block-comment, line-comment, and docstring header forms.",
+          "touches": []
+        },
+        {
+          "id": "P1-T6",
+          "verb": "RUN",
+          "description": "RUN npm run build, then E2E-verify at the CLI surface on a temp Python fixture project: populate-coderef --source-headers followed by a second measuring populate-coderef run; assert .py header coverage > 0 (round-trip closed end-to-end through dist/).",
+          "touches": []
+        },
+        {
+          "id": "P1-T7",
+          "verb": "COMMIT",
+          "description": "COMMIT the parser fix + tests on main by explicit path (/git-commit --paths src/pipeline/semantic-header-parser.ts <test files>); push via /git-commit --done or /git-land.",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [
+          "/discover fix-generator-parser-round-trip-asymmetry-for-hash@quick"
+        ],
+        "post_phase": []
+      }
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "RUN",
+          "description": "RUN a fresh measuring populate over C:/Users/willh/Desktop/CODEREF/PROJECTS/primary-sources (headers already stamped 2026-07-06; .coderef artifacts untracked): node dist/src/cli/populate.js . from the PS repo root using the rebuilt dist. No --source-headers needed. Precondition: confirm stamped '#' headers are still present in PS working tree (they are uncommitted); if PS reverted them, coordinate with PRIMARY-SOURCES before proceeding.",
+          "touches": []
+        },
+        {
+          "id": "P2-T2",
+          "verb": "CHECK",
+          "description": "CHECK primary-sources .coderef/index.json + validation-report.json: previously-missing .py elements flip to defined (element-level coverage rises from 21.7% toward ~100%); JS/TS/TSX defined counts unchanged; total_elements does not regress; stale/partial counts do not spike.",
+          "touches": []
+        },
+        {
+          "id": "P2-T3",
+          "verb": "COMMIT",
+          "description": "COMMIT any execution notes under coderef/workorder/ by explicit path and report the coverage delta back (optional follow-up dispatch to PRIMARY-SOURCES with the new by_status breakdown).",
+          "touches": []
+        }
+      ],
+      "inter_phase_hooks": {
+        "pre_phase": [],
+        "post_phase": []
+      }
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": true,
+      "reason": "strict phase gate — auto-approved at close: runtime policy ignores non-terminal inter-phase halts (Step 4 default), Step 6 terminal surface is the halt; both phases PASS"
+    },
+    {
+      "phase": 2,
+      "approved": true,
+      "reason": "strict phase gate — auto-approved at close: runtime policy ignores non-terminal inter-phase halts (Step 4 default), Step 6 terminal surface is the halt; both phases PASS"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260706T063852Z",
+  "plan_type_decided_by": "create-workorder@2.15.2 category-mapping",
+  "workorder_id": "WO-FIX-GENERATOR-PARSER-ROUND-TRIP-ASYMMETRY-FOR-HASH-001",
+  "feature_name": "fix-generator-parser-round-trip-asymmetry-for-hash",
+  "created": "2026-07-06T06:38:51Z",
+  "plan_type_rationale": "Stub category 'fix' maps to strict per category-rules.json: bug work needs blast-radius analysis (what regressed, where, what else might break).",
+  "workorder_hooks": {
+    "post_plan": [
+      "/discover fix-generator-parser-round-trip-asymmetry-for-hash@quick --output-dest=stub:WO-FIX-GENERATOR-PARSER-ROUND-TRIP-ASYMMETRY-FOR-HASH-001"
+    ],
+    "post_execute": [
+      "/discover fix-generator-parser-round-trip-asymmetry-for-hash post-execute@quick --output-dest=stub:WO-FIX-GENERATOR-PARSER-ROUND-TRIP-ASYMMETRY-FOR-HASH-001"
+    ],
+    "plan_gaps": []
+  }
+}

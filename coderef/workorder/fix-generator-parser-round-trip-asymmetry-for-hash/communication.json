@@ -7,9 +7,9 @@
   "originating_dispatches": [],
   "parent_stub_id": "STUB-0G9DPT",
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 2,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\fix-generator-parser-round-trip-asymmetry-for-hash\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\fix-generator-parser-round-trip-asymmetry-for-hash\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\fix-generator-parser-round-trip-asymmetry-for-hash\\analysis.json",
@@ -70,6 +70,57 @@
       "outcome": "PASS",
       "note": "constraints loaded from context.json; no critical violations; discovery_rag degraded (enrichment only)",
       "at": "2026-07-06T06:45:05Z"
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": [
+        "coderef/foundation-docs/INDEX.md",
+        "coderef/foundation-docs/EXPORTS.md",
+        "coderef/foundation-docs/HOTSPOTS.md",
+        "coderef/foundation-docs/RELATIONSHIPS.md",
+        "coderef/foundation-docs/API.md",
+        "coderef/foundation-docs/COMPONENTS.md",
+        "coderef/foundation-docs/ARCHITECTURE.md",
+        "coderef/foundation-docs/SCHEMA.md"
+      ],
+      "note": "validator warnings only (23 invalid UUID anchors, pre-existing)",
+      "at": "2026-07-06T07:04:00Z"
+    },
+    {
+      "event": "doc_discovery",
+      "candidates": 0,
+      "manual_inventory_applied": [
+        "ASSISTANT/SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md Language Support list: added #-line comment form for Python + hash-comment languages"
+      ],
+      "at": "2026-07-06T07:05:00Z"
+    },
+    {
+      "event": "tracking_validator",
+      "outcome": "FAIL_PREEXISTING",
+      "note": "7 tracking files fail schema at HEAD identically with this WO ledger delta stashed; zero new errors introduced (verified via stash/pop A-B run). Documented pre-existing drift outside WO scope.",
+      "at": "2026-07-06T07:08:00Z"
+    },
+    {
+      "event": "workorder_complete",
+      "phases_closed": [
+        1,
+        2
+      ],
+      "commits": [
+        "a4f333e",
+        "17c98ee"
+      ],
+      "plan_deviations": [],
+      "evidence": [
+        "baseline suite 1556 passed/26 skipped",
+        "E2E fixture coverage 0%->100% (3/3)",
+        "primary-sources element coverage 21.7%->100.0% (4812/4812), py 3766 defined/0 missing, JS/TS/TSX unchanged",
+        "execution-notes.md table"
+      ],
+      "at": "2026-07-06T07:10:00Z"
     }
   ],
   "phase_transitions": [
@@ -79,6 +130,13 @@
       "commit": "a4f333e",
       "verdict": "PASS",
       "at": "2026-07-06T06:55:11.826Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "17c98ee",
+      "verdict": "PASS",
+      "at": "2026-07-06T06:58:58.392Z"
     }
   ],
   "plan_adjustments": [],
@@ -106,5 +164,6 @@
         }
       ]
     }
-  }
+  },
+  "completed_at": "2026-07-06T07:10:00Z"
 }
