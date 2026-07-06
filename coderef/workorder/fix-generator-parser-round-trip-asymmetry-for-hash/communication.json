@@ -121,6 +121,14 @@
         "execution-notes.md table"
       ],
       "at": "2026-07-06T07:10:00Z"
+    },
+    {
+      "event": "post_execute_hook",
+      "hook": "/discover fix-generator-parser-round-trip-asymmetry-for-hash post-execute@quick",
+      "severity": "info",
+      "summary": "post-execute quick discovery: detectHeaderBlock now 4 branches (block, //, #, docstring) at semantic-header-parser.ts L70-109; hash branch CRLF-safe; round-trip test surface header-round-trip-hash-comments.test.ts (7 tests); dist rebuilt; no dangling references to the 3-branch shape found",
+      "output_dest_note": "stub:WO output-dest skipped — STUB-0G9DPT already closed at hook time; summary recorded here instead",
+      "at": "2026-07-06T07:25:00Z"
     }
   ],
   "phase_transitions": [

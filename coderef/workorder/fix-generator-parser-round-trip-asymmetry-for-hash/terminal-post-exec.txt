@@ -1,0 +1,27 @@
+=============================================================
+WORKORDER: WO-FIX-GENERATOR-PARSER-ROUND-TRIP-ASYMMETRY-FOR-HASH-001  |  fix-generator-parser-round-trip-asymmetry-for-hash  |  COMPLETE
+Session: daily-agent-session-2026-07-06  |  Phases: 2  |  Commits: 4  |  Pushes: 3
+Parent stub: STUB-0G9DPT (closed via registry-db at close-out)
+
+FILES CREATED:
+  + __tests__/pipeline/header-round-trip-hash-comments.test.ts  (a4f333e)
+  + coderef/workorder/fix-generator-parser-round-trip-asymmetry-for-hash/execution-notes.md  (17c98ee)
+  + coderef/workorder/fix-generator-parser-round-trip-asymmetry-for-hash/{plan,context,analysis}.json  (ae9c209)
+
+FILES MODIFIED:
+  ~ src/pipeline/semantic-header-parser.ts  (a4f333e)
+  ~ coderef/workorder/.../communication.json + plan.json finalize  (ae9c209)
+  ~ coderef/foundation-docs/*.md (8 regenerated, gate PASS)  (ae9c209)
+  ~ ASSISTANT TRACKING views + analyze-coderef-semantics 1.0.1 doc sync  (b5b80b2f)
+
+PHASE CHECKLIST:
+  [x] Phase 1: parser hash-branch fix + round-trip tests  (a4f333e)
+  [x] Phase 2: primary-sources measurement rerun  (17c98ee)
+
+Evidence: baseline 1556 passed/26 skipped; E2E fixture 0%->100%;
+primary-sources element coverage 21.7%->100.0% (4812/4812, py 3766 defined)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing drift, documented; zero new errors — A/B verified)
+
+APPROVE -> /close-workorder WO-FIX-GENERATOR-PARSER-ROUND-TRIP-ASYMMETRY-FOR-HASH-001
+=============================================================
