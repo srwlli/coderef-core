@@ -36,7 +36,11 @@ const POPULATE_CLI = path.join(REPO_ROOT, 'dist', 'src', 'cli', 'populate.js');
 // Schema bump 12 -> 14 (WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 P3,
 // STUB-K5YBFN): unresolved_src_count + ambiguous_src_count added
 // additive-only under the same stability rule as the 11 -> 12 bump
-// (header_coverage_pct). The locked set below is the new contract.
+// (header_coverage_pct).
+// Schema bump 14 -> 15 (WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001 Phase 2,
+// STUB-6CWWHQ): provisional_count added additive-only under the same rule —
+// the single_candidate_unknown_receiver confidence tier. The locked set below
+// is the new contract.
 const REQUIRED_REPORT_FIELDS = [
   'valid_edge_count',
   'unresolved_count',
@@ -45,6 +49,7 @@ const REQUIRED_REPORT_FIELDS = [
   'builtin_count',
   'unresolved_src_count',
   'ambiguous_src_count',
+  'provisional_count',
   'header_defined_count',
   'header_missing_count',
   'header_stale_count',
@@ -73,7 +78,7 @@ async function makeMinimalFixture(): Promise<string> {
 }
 
 describe('Phase 6 validation-report.json contract (AC-04, AC-05)', () => {
-  it('writes .coderef/validation-report.json with all 14 fields as numbers', async () => {
+  it('writes .coderef/validation-report.json with all 15 fields as numbers', async () => {
     const dir = await makeMinimalFixture();
     const result = spawnSync('node', [POPULATE_CLI, dir, '--mode', 'minimal'], {
       encoding: 'utf-8',

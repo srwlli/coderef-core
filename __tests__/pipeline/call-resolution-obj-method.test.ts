@@ -48,7 +48,15 @@ describe('Phase 4 call-resolution obj.method() (AC-04 + guardrail-4)', () => {
     expect(call?.resolvedTargetCodeRefId).toBe(expectedHandleId);
   });
 
-  it('GUARDRAIL 4: obj.method() where obj = factory call (NOT new) stays ambiguous, never silently resolved', async () => {
+  // STUB-6CWWHQ (Phase 2): this case previously stayed kind='ambiguous'. The
+  // factory-bound receiver `svc` is unknown to the resolver (guardrail-1 only
+  // tracks `const x = new Y()`, not `const x = makeY()`), and `handle` is a
+  // method on EXACTLY ONE class — the single_candidate_unknown_receiver tier.
+  // Phase 2 RESOLVES it but LABELS confidence='provisional', keeping the lone
+  // candidate for audit. Guardrail-4's real invariant — never SILENTLY bind an
+  // unknown receiver — is preserved: provisional is an explicit non-silent
+  // label, and a MULTI-candidate unknown receiver still stays ambiguous.
+  it('GUARDRAIL 4: obj.method() where obj = factory call (single candidate) resolves PROVISIONAL, never silently full-confidence', async () => {
     const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'coderef-call-obj-factory-'));
     created.push(dir);
     await fs.mkdir(path.join(dir, 'src'), { recursive: true });
@@ -77,9 +85,13 @@ describe('Phase 4 call-resolution obj.method() (AC-04 + guardrail-4)', () => {
       r.receiverText === 'svc' && r.calleeName === 'handle',
     );
     expect(factoryCall).toBeDefined();
-    // Factory pattern stays ambiguous (or unresolved) — never silently resolved.
-    expect(factoryCall?.kind).not.toBe('resolved');
-    expect(['ambiguous', 'unresolved']).toContain(factoryCall?.kind);
+    // Phase 2 (STUB-6CWWHQ): resolved but LABELED provisional (single candidate).
+    // NOT silently full-confidence — confidence must be present and provisional,
+    // and the lone candidate is retained for audit.
+    expect(factoryCall?.kind).toBe('resolved');
+    expect(factoryCall?.confidence).toBe('provisional');
+    expect(factoryCall?.candidates?.length).toBe(1);
+    expect(factoryCall?.resolvedTargetCodeRefId).toBeDefined();
   });
 
   it('obj.method() with completely unknown receiver and unknown method → unresolved', async () => {

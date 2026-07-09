@@ -143,6 +143,16 @@ export interface ValidationReport {
   unresolved_src_count: number;
   /** Edges with resolutionStatus='ambiguous' NOT tagged testOrigin (src-only). */
   ambiguous_src_count: number;
+  /**
+   * Resolved call edges carrying evidence.confidence='provisional' (STUB-6CWWHQ,
+   * Phase 2): the single_candidate_unknown_receiver tier that was resolved to
+   * its one candidate but LABELED provisional (guardrail-4 preserved). This is
+   * a SUB-count of valid_edge_count — provisional edges ARE resolved and are
+   * counted in valid_edge_count too; this field separates the provisional-trust
+   * slice so consumers can filter. provisional_count <= valid_edge_count always.
+   * Added under the documented additive-only allowance.
+   */
+  provisional_count: number;
   /** Unique files with headerStatus='defined'. */
   header_defined_count: number;
   /** Unique files with headerStatus='missing'. */
@@ -569,11 +579,16 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
   // testOrigin tag stamped by graph-builder. Totals above include both.
   let unresolved_src_count = 0;
   let ambiguous_src_count = 0;
+  // provisional_count (STUB-6CWWHQ, Phase 2): sub-count of valid_edge_count for
+  // resolved edges carrying evidence.confidence='provisional'.
+  let provisional_count = 0;
   for (const edge of graph.edges) {
-    const testOrigin = (edge.evidence as { testOrigin?: boolean } | undefined)?.testOrigin === true;
+    const evidence = edge.evidence as { testOrigin?: boolean; confidence?: string } | undefined;
+    const testOrigin = evidence?.testOrigin === true;
     switch (edge.resolutionStatus) {
       case 'resolved':
         valid_edge_count++;
+        if (evidence?.confidence === 'provisional') provisional_count++;
         break;
       case 'unresolved':
         unresolved_count++;
@@ -652,6 +667,7 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
     builtin_count,
     unresolved_src_count,
     ambiguous_src_count,
+    provisional_count,
     header_defined_count,
     header_missing_count,
     header_stale_count,

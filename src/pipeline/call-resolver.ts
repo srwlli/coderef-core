@@ -119,10 +119,23 @@ export interface CallResolution {
    */
   resolvedTargetCodeRefId?: string;
   /**
-   * Candidate codeRefIds when kind === 'ambiguous'. Always at least 2
-   * entries when present.
+   * Candidate codeRefIds. Present with >= 2 entries when kind === 'ambiguous'.
+   * Also present with EXACTLY 1 entry when kind === 'resolved' AND
+   * confidence === 'provisional' (STUB-6CWWHQ): the single-candidate
+   * unknown-receiver tier keeps its lone candidate for audit.
    */
   candidates?: string[];
+  /**
+   * Confidence tier for a resolved call (STUB-6CWWHQ, Phase 2). Absent on a
+   * normally-resolved call (implicitly full confidence). Set to 'provisional'
+   * ONLY for the single_candidate_unknown_receiver case: an unknown receiver
+   * whose method name has EXACTLY one candidate method in the same language
+   * family. Guardrail-4 is preserved by LABELING (not silently binding) — the
+   * edge is resolved to that one candidate but flagged provisional so
+   * consumers can filter by trust tier. Never set when candidates.length >= 2
+   * (that stays kind='ambiguous').
+   */
+  confidence?: 'provisional';
   /**
    * Structured reason for non-resolved kinds. Examples:
    *   'in_allowlist'                       (builtin)
@@ -644,6 +657,7 @@ export function classifyMethodCall(
   kind: CallResolutionKind;
   resolvedTargetCodeRefId?: string;
   candidates?: string[];
+  confidence?: 'provisional';
   reason?: string;
 } {
   const receiver = fact.receiverText;
@@ -774,9 +788,20 @@ export function classifyMethodCall(
     };
   }
   if (calleeEntries.length === 1) {
+    // Confidence-tiered resolution (STUB-6CWWHQ, Phase 2). An unknown receiver
+    // whose method name has EXACTLY one candidate in the same language family
+    // was previously parked kind='ambiguous' by guardrail-4. Instead RESOLVE to
+    // that one candidate but LABEL it confidence='provisional' — guardrail-4 is
+    // preserved (we never bind a MULTI-candidate unknown receiver; that path
+    // above stays ambiguous), and the lone candidate is kept for audit. This
+    // moves the single-candidate slice out of ambiguous_count into a
+    // provisional sub-tier of the resolved population.
+    const only = uniqueIds(calleeEntries.map(e => e.codeRefId));
     return {
-      kind: 'ambiguous',
-      candidates: uniqueIds(calleeEntries.map(e => e.codeRefId)),
+      kind: 'resolved',
+      resolvedTargetCodeRefId: only[0],
+      candidates: only,
+      confidence: 'provisional',
       reason: 'single_candidate_unknown_receiver',
     };
   }

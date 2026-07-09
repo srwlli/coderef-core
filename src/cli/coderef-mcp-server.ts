@@ -107,6 +107,8 @@ interface ValidationReport {
   builtin_count: number;
   unresolved_src_count?: number;
   ambiguous_src_count?: number;
+  // STUB-6CWWHQ Phase 2: optional for compat with pre-bump artifacts on disk.
+  provisional_count?: number;
   header_defined_count: number;
   header_missing_count: number;
   header_stale_count: number;
@@ -1221,6 +1223,12 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         summary: {
           header_coverage_pct: report.header_coverage_pct,
           resolved_edges: report.valid_edge_count,
+          // STUB-6CWWHQ Phase 2: the provisional-trust slice of resolved_edges
+          // (single_candidate_unknown_receiver). Sub-count of resolved_edges;
+          // undefined on pre-bump artifacts that predate the field. Provisional
+          // edges are audited here (aggregate) — they no longer appear in
+          // unresolved_edges since they resolve.
+          provisional_edges: report.provisional_count,
           unresolved_edges: report.unresolved_count,
           header_problems:
             report.header_missing_count +
@@ -1244,6 +1252,10 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       // could not be resolved and WHY. The status filter defaults to the two
       // "honesty" dispositions (unresolved + ambiguous); external/builtin are
       // available on request but are usually expected noise (npm/stdlib).
+      // STUB-6CWWHQ Phase 2: provisional edges (single_candidate_unknown_receiver)
+      // now resolve, so they are NOT in this non-resolved universe — they are
+      // audited via validation_status (provisional_edges) and by reading the
+      // resolved edges' evidence.confidence, not enumerated here.
       const NON_RESOLVED = new Set(['unresolved', 'ambiguous', 'external', 'builtin']);
       const wantStatus = status ?? null; // null → unresolved + ambiguous only
       const normFile = file ? normalizeSlashes(file).replace(/^@File\//, '') : null;

@@ -141,6 +141,15 @@ export type EdgeEvidence = (
    * — this is a probabilistic sub-classification hint, not a status.
    */
   probableBuiltinMember?: boolean;
+  /**
+   * Additive evidence-level tier (STUB-6CWWHQ, Phase 2). Present and set to
+   * 'provisional' on a resolved-call edge whose CallResolution.confidence was
+   * 'provisional' (the single_candidate_unknown_receiver tier). The edge is a
+   * genuine resolved edge (targetId set, counted in valid_edge_count) but the
+   * flag lets validation reporting sub-count it (provisional_count) and lets
+   * agents filter by trust tier. Never present on ambiguous/unresolved edges.
+   */
+  confidence?: 'provisional';
 };
 
 /**
@@ -626,6 +635,12 @@ export function buildEdges(
         receiverText,
         scopePath: cr.scopePath.join('.'),
       };
+      // Confidence tier (STUB-6CWWHQ, Phase 2): a provisional resolved call
+      // (single_candidate_unknown_receiver) stamps the additive evidence flag
+      // AND keeps its lone candidate on the edge for audit. A normally-resolved
+      // call carries neither — evidence.confidence stays absent.
+      const provisional = cr.confidence === 'provisional';
+      if (provisional) evidence.confidence = 'provisional';
       const id = computeEdgeId({
         sourceId, relationship: 'call', targetId,
         originSpecifier: calleeName, sourceFile, line,
@@ -635,6 +650,9 @@ export function buildEdges(
         resolutionStatus: 'resolved',
         evidence,
         sourceLocation: { file: sourceFile, line },
+        // Provisional resolved edges retain their single candidate for audit;
+        // normally-resolved edges have no candidates.
+        candidates: provisional ? cr.candidates : undefined,
       }));
       continue;
     }

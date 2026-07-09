@@ -266,6 +266,9 @@ const FIXTURE_REPORT = {
   ambiguous_count: 2,
   external_count: 1,
   builtin_count: 0,
+  // STUB-6CWWHQ Phase 2: sub-count of valid_edge_count. 1 of the 4 resolved
+  // edges is a provisional (single_candidate_unknown_receiver) tier edge.
+  provisional_count: 1,
   header_defined_count: 1,
   header_missing_count: 2,
   header_stale_count: 0,
@@ -460,15 +463,20 @@ describe('codebase_summary', () => {
 // ---- validation_status ------------------------------------------------------------
 
 describe('validation_status', () => {
-  it('passes the locked 12-field report through verbatim', () => {
+  it('passes the report through verbatim + surfaces provisional_edges in the summary', () => {
     const r = handlers.validation_status() as any;
     expect(r.report).toEqual(FIXTURE_REPORT);
-    // every locked field present and numeric — same contract the pipeline
-    // output-validation-report test enforces on the producer side.
-    expect(Object.keys(r.report)).toHaveLength(12);
+    // every field present and numeric — same contract the pipeline
+    // output-validation-report test enforces on the producer side. This
+    // minimal fixture omits the optional *_src_count fields; it now carries
+    // provisional_count (STUB-6CWWHQ Phase 2), so 13 keys.
+    expect(Object.keys(r.report)).toHaveLength(13);
     for (const v of Object.values(r.report)) expect(typeof v).toBe('number');
     expect(r.summary.header_coverage_pct).toBe(33.3);
     expect(r.summary.resolved_edges).toBe(4);
+    // STUB-6CWWHQ Phase 2: the provisional-trust slice surfaces in the summary
+    // for agent visibility (sub-count of resolved_edges).
+    expect(r.summary.provisional_edges).toBe(1);
   });
 
   it('degrades gracefully when the report is missing', () => {

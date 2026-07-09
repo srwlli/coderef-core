@@ -327,8 +327,12 @@ describe('currentScopeCodeRefId — exercised via buildNewInitializerMap pipelin
     expect(resolutions).toHaveLength(1);
     const r = resolutions[0];
     // No newInitMap entry exists for module-scope const; falls to branch 5/6/7.
-    // MyClass.doWork is in the symbol table as a method → ambiguous with one candidate.
-    expect(r.kind).toBe('ambiguous');
+    // MyClass.doWork is in the symbol table as a method with ONE candidate →
+    // STUB-6CWWHQ Phase 2 resolves it provisional (was 'ambiguous' pre-Phase-2).
+    // The binding-skip behavior this test guards is unchanged; only the
+    // downstream fallback disposition moved to the provisional tier.
+    expect(r.kind).toBe('resolved');
+    expect(r.confidence).toBe('provisional');
     expect(r.calleeName).toBe('doWork');
   });
 
@@ -342,8 +346,10 @@ describe('currentScopeCodeRefId — exercised via buildNewInitializerMap pipelin
 
     expect(resolutions).toHaveLength(1);
     const r = resolutions[0];
-    // No newInitMap entry → unknown-receiver fallback.
-    expect(r.kind).toBe('ambiguous');
+    // No newInitMap entry → unknown-receiver fallback. Single candidate →
+    // STUB-6CWWHQ Phase 2 provisional-resolved (was 'ambiguous' pre-Phase-2).
+    expect(r.kind).toBe('resolved');
+    expect(r.confidence).toBe('provisional');
   });
 
   it('attributes const obj = new ClassName() to innermost scope when nested fns present', () => {
@@ -521,9 +527,14 @@ describe('currentScopeCodeRefId — exercised via buildNewInitializerMap pipelin
 
     expect(resolutions).toHaveLength(1);
     const r = resolutions[0];
-    // File B's fnB has no `const obj = new MyClass()` — cross-file binding
-    // does not apply. Falls to unknown-receiver fallback.
-    expect(r.kind).not.toBe('resolved');
+    // File B's fnB has no `const obj = new MyClass()` — cross-file binding does
+    // not apply. Falls to unknown-receiver fallback. STUB-6CWWHQ Phase 2: single
+    // candidate → provisional-resolved. The isolation invariant is PROVEN by the
+    // provisional label: had file A's binding leaked, this would be a
+    // FULL-confidence resolve (no confidence field). Provisional here means the
+    // receiver was genuinely unknown — the binding did NOT cross the file seam.
+    expect(r.kind).toBe('resolved');
+    expect(r.confidence).toBe('provisional');
     expect(r.calleeName).toBe('doWork');
   });
 });
