@@ -319,13 +319,14 @@ function isPythonFile(file: string): boolean {
 }
 
 /**
- * JS prototype-method vocabulary (STUB-XX4JBC). Member-call callees that
- * are overwhelmingly likely to be Array/String/Object/Map/Set/Promise/
- * RegExp/Function prototype methods when the receiver is unknown. Used by
- * graph-builder to stamp the additive `evidence.probableBuiltinMember`
- * flag on receiver_not_in_symbol_table call edges — a probabilistic
- * sub-classification hint, never a status change (operator ruling
- * option A, 2026-06-12).
+ * JS prototype-method vocabulary (STUB-XX4JBC, extended by STUB-KWDA8V 3c).
+ * Member-call callees that are overwhelmingly likely to be Array/String/
+ * Object/Map/Set/Promise/RegExp/Function prototype methods when the receiver
+ * is unknown. Used by classifyMethodCall's zero-candidate tail: an unknown
+ * receiver in a JS/TS file whose callee is in this set and has ZERO project
+ * candidates classifies kind='builtin' reason='js_prototype_member' (operator
+ * ruling 2026-07-09, superseding the 2026-06-12 option-A evidence-flag ruling
+ * — `arr.push()` is honestly a builtin, not an unresolvable project edge).
  */
 export const JS_PROTOTYPE_METHODS = new Set<string>([
   // Array.prototype
@@ -804,6 +805,31 @@ export function classifyMethodCall(
       confidence: 'provisional',
       reason: 'single_candidate_unknown_receiver',
     };
+  }
+  // Zero project candidates. STUB-KWDA8V Phase 3, sub-stage 3c (operator ruling
+  // 2026-07-09, supersedes the 2026-06-12 option-A evidence-flag ruling of
+  // STUB-XX4JBC): an unknown receiver whose callee is JS prototype vocabulary
+  // (push/map/split/add/...) in a JS/TS file, with ZERO project methods of that
+  // name, is honestly a language builtin — NOT an unresolvable project edge.
+  // `str.split()`, `arr.push()` will never resolve to a project target. Classify
+  // kind='builtin' so it leaves the receiver_not_in_symbol_table population and
+  // stops inflating the unresolved count. Guardrails preserved:
+  //   - fires ONLY here, the zero-candidate tail: a project method genuinely
+  //     named `map`/`filter`/... already resolved (known receiver) or went
+  //     ambiguous/provisional (candidates >= 1) in the branches above, so no
+  //     real project edge is ever swept to builtin;
+  //   - LANGUAGE-GUARDED to js-ts (mirrors the python_stdlib / node_builtin
+  //     precedent) so a Python `.split()` / `.get()` on an unknown receiver is
+  //     never JS-reclassified;
+  //   - `builtin` emits NO graph edge — identical to unresolved on the graph,
+  //     so the ruling's original concern (never fabricate a project edge) holds.
+  // This supersedes graph-builder's probableBuiltinMember evidence flag, which
+  // is removed (the classification now carries the meaning).
+  if (
+    JS_PROTOTYPE_METHODS.has(callee)
+    && languageFamily(fact.sourceFile) === 'js-ts'
+  ) {
+    return { kind: 'builtin', reason: 'js_prototype_member' };
   }
   return { kind: 'unresolved', reason: 'receiver_not_in_symbol_table' };
 }

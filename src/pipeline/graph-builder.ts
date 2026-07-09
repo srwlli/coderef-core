@@ -58,7 +58,6 @@
 
 
 import * as crypto from 'crypto';
-import { JS_PROTOTYPE_METHODS } from './call-resolver.js';
 import type { PipelineState, CallResolution, ImportResolution } from './types.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
@@ -133,14 +132,6 @@ export type EdgeEvidence = (
    * test-origin edges keep their status, ids, and totals membership.
    */
   testOrigin?: boolean;
-  /**
-   * Additive evidence-level flag (STUB-XX4JBC, operator ruling option A):
-   * present and true on unresolved-call evidence when the call's reason is
-   * receiver_not_in_symbol_table AND the callee is JS prototype vocabulary
-   * (JS_PROTOTYPE_METHODS in call-resolver.ts). The edge stays unresolved
-   * — this is a probabilistic sub-classification hint, not a status.
-   */
-  probableBuiltinMember?: boolean;
   /**
    * Additive evidence-level tier (STUB-6CWWHQ, Phase 2). Present and set to
    * 'provisional' on a resolved-call edge whose CallResolution.confidence was
@@ -675,14 +666,11 @@ export function buildEdges(
         kind: 'unresolved-call', calleeName, receiverText,
         reason: cr.reason ?? `kind:${cr.kind}`,
       };
-      // probableBuiltinMember evidence flag (STUB-XX4JBC, operator ruling
-      // option A): an unknown-receiver call whose callee is JS prototype
-      // vocabulary (push/map/join/...) is PROBABLY a builtin member call.
-      // Evidence-level only — the edge stays unresolved; consumers and
-      // reports may sub-count without any enum or status change.
-      if (cr.reason === 'receiver_not_in_symbol_table' && JS_PROTOTYPE_METHODS.has(calleeName)) {
-        evidence.probableBuiltinMember = true;
-      }
+      // STUB-KWDA8V Phase 3 (3c): JS-prototype calls on unknown receivers are
+      // now classified kind='builtin' reason='js_prototype_member' upstream in
+      // call-resolver (superseding the 2026-06-12 option-A probableBuiltinMember
+      // evidence flag, now removed). They take the builtin-call branch above and
+      // emit no edge, so no receiver_not_in_symbol_table sub-flagging remains.
     }
     edges.push(buildEdgeRecord({
       id, sourceId, relationship: 'call',
