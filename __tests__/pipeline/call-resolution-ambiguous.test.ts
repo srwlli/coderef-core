@@ -3,6 +3,9 @@ import * as os from 'os';
 import * as path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { PipelineOrchestrator } from '../../src/pipeline/orchestrator.js';
+import { buildSymbolTable } from '../../src/pipeline/call-resolver.js';
+import type { PipelineState } from '../../src/pipeline/types.js';
+import type { ExportedGraph } from '../../src/export/graph-exporter.js';
 import { createCodeRefId } from '../../src/utils/coderef-id.js';
 
 const created: string[] = [];
@@ -62,5 +65,67 @@ describe('Phase 4 call-resolution duplicate-name ambiguity (AC-05)', () => {
     );
     // Ambiguous never has a single resolved target.
     expect(call?.resolvedTargetCodeRefId).toBeUndefined();
+
+    // STUB-1XDRTR regression: an ambiguous candidate array must never contain
+    // the same codeRefId twice. Pre-fix, addEntry pushed duplicate entries and
+    // this array could list the identical id up to 17× (verified live).
+    expect(call?.candidates).toEqual([...new Set(call?.candidates)]);
+  });
+});
+
+// STUB-1XDRTR: unit-level regression for the symbol-table de-dup guard.
+// buildSymbolTable.addEntry previously push()ed with no duplicate check, so an
+// element offered twice under the same name produced two identical entries,
+// which then bloated every ambiguous edge's candidates[]. This test reproduces
+// the precondition (the same method element present twice in state.elements)
+// and asserts the table holds exactly one entry per identical symbol.
+describe('Phase 4 buildSymbolTable de-dup guard (STUB-1XDRTR)', () => {
+  function stateWithDuplicateMethod(): PipelineState {
+    const graph: ExportedGraph = {
+      nodes: [],
+      edges: [],
+      statistics: { nodeCount: 0, edgeCount: 0, edgesByType: {} },
+    };
+    const methodElem = {
+      type: 'method' as const,
+      name: 'Widget.render',
+      file: '/tmp/dedup/src/widget.ts',
+      line: 3,
+      codeRefId: '@Method/src/widget.ts#Widget.render:3',
+    };
+    return {
+      projectPath: '/tmp/dedup',
+      files: new Map([['ts', ['/tmp/dedup/src/widget.ts']]]),
+      // Same element appears twice — the live duplicate-registration condition.
+      elements: [methodElem, { ...methodElem }],
+      imports: [],
+      calls: [],
+      rawImports: [],
+      rawCalls: [],
+      rawExports: [],
+      headerFacts: new Map(),
+      headerImportFacts: [],
+      headerParseErrors: [],
+      importResolutions: [],
+      callResolutions: [],
+      graph,
+      sources: new Map(),
+      options: {},
+      metadata: { startTime: 0, filesScanned: 1, elementsExtracted: 2, relationshipsExtracted: 0 },
+    } as unknown as PipelineState;
+  }
+
+  it('registers a duplicated element exactly once per name (bare + qualified)', () => {
+    const table = buildSymbolTable(stateWithDuplicateMethod());
+    const bare = table.get('render') ?? [];
+    const qualified = table.get('Widget.render') ?? [];
+    // Pre-fix: bare.length === 2, qualified.length === 2.
+    expect(bare.length).toBe(1);
+    expect(qualified.length).toBe(1);
+    // Every entry list is free of duplicate codeRefIds.
+    for (const [, entries] of table) {
+      const ids = entries.map(e => e.codeRefId);
+      expect(ids).toEqual([...new Set(ids)]);
+    }
   });
 });

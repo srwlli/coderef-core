@@ -381,8 +381,24 @@ export function buildSymbolTable(state: PipelineState): SymbolTable {
 
   const addEntry = (name: string, entry: SymbolTableEntry): void => {
     const list = table.get(name);
-    if (list) list.push(entry);
-    else table.set(name, [entry]);
+    if (!list) {
+      table.set(name, [entry]);
+      return;
+    }
+    // De-dup guard (STUB-1XDRTR): the same element can be offered to addEntry
+    // more than once under the same name (e.g. registered on multiple passes),
+    // which bloated candidate arrays with the identical codeRefId up to 17×
+    // (verified live: scanCurrentElements:908). Skip an entry that is identical
+    // to one already present on this name. Identity = the full tuple, so two
+    // genuinely-distinct symbols that merely share a codeRefId (never happens
+    // today, but cheap to be precise) are still both kept.
+    const isDup = list.some(e =>
+      e.codeRefId === entry.codeRefId
+      && e.scope === entry.scope
+      && e.sourceFile === entry.sourceFile
+      && e.parentScope === entry.parentScope,
+    );
+    if (!isDup) list.push(entry);
   };
 
   for (const elem of state.elements) {
@@ -607,6 +623,17 @@ export function isBuiltinReceiver(receiverText: string | null): boolean {
  *   7. `obj.X()` where obj is unknown and X has zero candidates →
  *      unresolved with reason='receiver_not_in_symbol_table'.
  */
+/**
+ * De-dup a candidate codeRefId list, preserving first-seen order (STUB-1XDRTR).
+ * The symbol-table addEntry guard is the root-cause fix; this is defense-in-depth
+ * at every `candidates:` emission so a duplicate can never reach a consumer even
+ * if a future code path repopulates the table without going through addEntry.
+ * DoD requires `[...new Set(candidates)]` at emission — this centralizes it.
+ */
+function uniqueIds(ids: string[]): string[] {
+  return [...new Set(ids)];
+}
+
 export function classifyMethodCall(
   fact: RawCallFact,
   symbolTable: SymbolTable,
@@ -635,7 +662,7 @@ export function classifyMethodCall(
       return { kind: 'resolved', resolvedTargetCodeRefId: sameFile[0].codeRefId };
     }
     if (sameFile.length > 1) {
-      return { kind: 'ambiguous', candidates: sameFile.map(e => e.codeRefId) };
+      return { kind: 'ambiguous', candidates: uniqueIds(sameFile.map(e => e.codeRefId)) };
     }
     return { kind: 'unresolved', reason: 'this_method_not_in_class' };
   }
@@ -664,7 +691,7 @@ export function classifyMethodCall(
         return { kind: 'resolved', resolvedTargetCodeRefId: ownMethods[0].codeRefId };
       }
       if (ownMethods.length > 1) {
-        return { kind: 'ambiguous', candidates: ownMethods.map(e => e.codeRefId) };
+        return { kind: 'ambiguous', candidates: uniqueIds(ownMethods.map(e => e.codeRefId)) };
       }
       // class is known but method not in own methods → unresolved.
       return {
@@ -723,9 +750,9 @@ export function classifyMethodCall(
         && ir.kind === 'resolved',
     );
     if (importBinding) {
-      const candidates = (symbolTable.get(callee) ?? [])
+      const candidates = uniqueIds((symbolTable.get(callee) ?? [])
         .filter(e => e.scope === 'method' && sameLanguageFamily(fact.sourceFile, e.sourceFile))
-        .map(e => e.codeRefId);
+        .map(e => e.codeRefId));
       if (candidates.length >= 2) {
         return { kind: 'ambiguous', candidates };
       }
@@ -743,13 +770,13 @@ export function classifyMethodCall(
   if (calleeEntries.length >= 2) {
     return {
       kind: 'ambiguous',
-      candidates: calleeEntries.map(e => e.codeRefId),
+      candidates: uniqueIds(calleeEntries.map(e => e.codeRefId)),
     };
   }
   if (calleeEntries.length === 1) {
     return {
       kind: 'ambiguous',
-      candidates: calleeEntries.map(e => e.codeRefId),
+      candidates: uniqueIds(calleeEntries.map(e => e.codeRefId)),
       reason: 'single_candidate_unknown_receiver',
     };
   }
@@ -818,10 +845,10 @@ function classifyBareCall(
     if (scopeMatched.length > 1) {
       return {
         kind: 'ambiguous',
-        candidates: scopeMatched.map(e => e.codeRefId),
+        candidates: uniqueIds(scopeMatched.map(e => e.codeRefId)),
       };
     }
-    return { kind: 'ambiguous', candidates: sameFile.map(e => e.codeRefId) };
+    return { kind: 'ambiguous', candidates: uniqueIds(sameFile.map(e => e.codeRefId)) };
   }
   if (sameFile.length === 1) {
     return { kind: 'resolved', resolvedTargetCodeRefId: sameFile[0].codeRefId };
@@ -835,7 +862,7 @@ function classifyBareCall(
     return { kind: 'resolved', resolvedTargetCodeRefId: imported[0].codeRefId };
   }
   if (imported.length > 1) {
-    return { kind: 'ambiguous', candidates: imported.map(e => e.codeRefId) };
+    return { kind: 'ambiguous', candidates: uniqueIds(imported.map(e => e.codeRefId)) };
   }
 
   // 3) Project-wide. Class methods excluded.
@@ -844,7 +871,7 @@ function classifyBareCall(
     return { kind: 'resolved', resolvedTargetCodeRefId: projectWide[0].codeRefId };
   }
   if (projectWide.length >= 2) {
-    return { kind: 'ambiguous', candidates: projectWide.map(e => e.codeRefId) };
+    return { kind: 'ambiguous', candidates: uniqueIds(projectWide.map(e => e.codeRefId)) };
   }
   // Only method-scope entries matched — a bare call cannot target a class
   // method, so a JS/Node global of the same name is the honest disposition.
