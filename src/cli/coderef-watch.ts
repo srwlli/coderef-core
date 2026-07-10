@@ -89,7 +89,10 @@ OPTIONS:
   --incremental            Graph-safe incremental populate: pass the debounced
                            changed-file snapshot to populate --changed-files
                            (re-scan only changed files, resolve against the
-                           persisted full fact set). Opt-in; default OFF.
+                           persisted full fact set), then refresh the docs (and
+                           RAG, unless --skip-rag) legs — both self-incremental,
+                           so ALL artifacts stay fresh, not just graph/index.
+                           Opt-in; default OFF.
   --json                   Heartbeat-only structured output to stdout (one JSON line per flush).
   -v, --verbose            Verbose logging (forwarded to coderef-pipeline).
   -h, --help               Show this help.
@@ -272,39 +275,8 @@ function runPipeline(opts: {
   verbose: boolean;
 }): FlushResult {
   const start = Date.now();
-  const pipelineArgs = [
-    'coderef-pipeline',
-    '--project-dir', opts.projectDir,
-    '--only', opts.skipRag ? 'scan,populate,docs' : 'scan,populate,docs,rag',
-  ];
-  if (opts.verbose) pipelineArgs.push('--verbose');
-
-  // Try the bin (npx) first; fall back to absolute dist path.
-  let result = spawnSync('npx', pipelineArgs, {
-    cwd: opts.projectDir,
-    encoding: 'utf-8',
-    timeout: 600_000,
-    shell: process.platform === 'win32',
-  });
-
-  if (result.error || (result.status !== 0 && result.status !== null)) {
-    // Fallback to direct invocation of the sibling bin in this package's
-    // own dist tree (this file compiles to dist/src/cli/coderef-watch.js).
-    const distPath = path.join(__dirname, 'coderef-pipeline.js');
-    if (fs.existsSync(distPath)) {
-      const fallbackArgs = [
-        distPath,
-        '--project-dir', opts.projectDir,
-        '--only', opts.skipRag ? 'scan,populate,docs' : 'scan,populate,docs,rag',
-      ];
-      if (opts.verbose) fallbackArgs.push('--verbose');
-      result = spawnSync('node', fallbackArgs, {
-        cwd: opts.projectDir,
-        encoding: 'utf-8',
-        timeout: 600_000,
-      });
-    }
-  }
+  const legs = opts.skipRag ? 'scan,populate,docs' : 'scan,populate,docs,rag';
+  const result = spawnPipelineLegs(opts.projectDir, legs, opts.verbose);
 
   const duration = Date.now() - start;
   if (result.error) {
@@ -327,17 +299,58 @@ function runPipeline(opts: {
 }
 
 /**
+ * Run one subset of the pipeline legs (`coderef-pipeline --only <legs>`) with the
+ * same bin-then-dist-fallback spawn logic runPipeline uses. Returns the spawn
+ * result so callers can inspect status/error. Shared by runPipeline (full flush)
+ * and runIncrementalPopulate's docs/rag refresh leg (STUB-9DN53Q).
+ */
+function spawnPipelineLegs(projectDir: string, legs: string, verbose: boolean) {
+  const buildArgs = (bin: string): string[] => {
+    const a = [bin, '--project-dir', projectDir, '--only', legs];
+    if (verbose) a.push('--verbose');
+    return a;
+  };
+  let result = spawnSync('npx', buildArgs('coderef-pipeline'), {
+    cwd: projectDir,
+    encoding: 'utf-8',
+    timeout: 600_000,
+    shell: process.platform === 'win32',
+  });
+  if (result.error || (result.status !== 0 && result.status !== null)) {
+    const distPath = path.join(__dirname, 'coderef-pipeline.js');
+    if (fs.existsSync(distPath)) {
+      result = spawnSync('node', buildArgs(distPath), {
+        cwd: projectDir,
+        encoding: 'utf-8',
+        timeout: 600_000,
+      });
+    }
+  }
+  return result;
+}
+
+/**
  * Graph-safe incremental flush (P5, ADJ-03). Route the debounced changed-file
  * snapshot to `populate --changed-files` (existing files) / `--deleted-files`
  * (paths that no longer exist), which re-scans only those files and resolves
  * against the persisted full fact set. On the first flush (no fact set yet) the
- * orchestrator transparently falls back to a full build. Docs/RAG legs are NOT
- * run here — the incremental leg targets the graph/index artifacts an agent
- * queries; a full `--once` (or a non-incremental flush) refreshes docs/RAG.
+ * orchestrator transparently falls back to a full build.
+ *
+ * STUB-9DN53Q: after the incremental populate succeeds, refresh the docs (and,
+ * unless skipRag, the RAG) legs so a purely-incremental watch does not leave
+ * docs/RAG stale. Both legs are already incremental by construction: docs
+ * regenerate from the just-updated graph/index, and the RAG leg's
+ * indexing-orchestrator drives an IncrementalIndexer that hash-filters chunks —
+ * only changed files re-embed, stale vectors (deleted files / old chunks of
+ * modified files) are pruned — so this is NOT a full-corpus rebuild. The
+ * docs/rag legs run via coderef-pipeline (--only docs[,rag]); a docs/rag failure
+ * is surfaced in exit_reason but does NOT mask a successful graph/index
+ * populate (the artifacts an agent queries are already fresh).
  */
 function runIncrementalPopulate(opts: {
   projectDir: string;
   snapshot: string[];
+  skipRag: boolean;
   verbose: boolean;
 }): FlushResult {
   const start = Date.now();
@@ -370,22 +383,44 @@ function runIncrementalPopulate(opts: {
     }
   }
 
-  const duration = Date.now() - start;
   if (result.error) {
     return {
       status: 'fail',
       exit_code: null,
       exit_reason: `spawn_error: ${String(result.error.message)}`,
-      duration_ms: duration,
+      duration_ms: Date.now() - start,
       paths_changed: [],
     };
   }
   const code = typeof result.status === 'number' ? result.status : null;
+  if (code !== 0) {
+    return {
+      status: 'fail',
+      exit_code: code,
+      exit_reason: `incremental_exit_${code}`,
+      duration_ms: Date.now() - start,
+      paths_changed: [],
+    };
+  }
+
+  // Populate (graph/index) succeeded. STUB-9DN53Q: refresh docs (+ rag unless
+  // skipped) so the incremental watch keeps ALL artifacts fresh, not just the
+  // graph/index. Both legs self-incrementalize (see the doc comment). A docs/rag
+  // failure is reported but does not fail the flush — the graph/index an agent
+  // queries is already up to date; docs/rag staleness is the lesser fault.
+  const legs = opts.skipRag ? 'docs' : 'docs,rag';
+  const docsRag = spawnPipelineLegs(opts.projectDir, legs, opts.verbose);
+  const docsRagCode =
+    typeof docsRag.status === 'number' ? docsRag.status : null;
+  const docsRagOk = !docsRag.error && docsRagCode === 0;
+
   return {
-    status: code === 0 ? 'pass' : 'fail',
+    status: 'pass',
     exit_code: code,
-    exit_reason: code === 0 ? 'incremental_ok' : `incremental_exit_${code}`,
-    duration_ms: duration,
+    exit_reason: docsRagOk
+      ? `incremental_ok(+${legs})`
+      : `incremental_ok(graph/index); ${legs}_stale(${docsRag.error ? `spawn_error: ${String(docsRag.error.message)}` : `exit_${docsRagCode}`})`,
+    duration_ms: Date.now() - start,
     paths_changed: [],
   };
 }
@@ -492,7 +527,7 @@ async function runDaemon(args: CliArgs): Promise<number> {
       const result = args.noPipeline
         ? { status: 'skipped' as const, exit_code: 0, exit_reason: 'no_pipeline_flag', duration_ms: 0, paths_changed: snapshot }
         : args.incremental
-          ? runIncrementalPopulate({ projectDir: args.projectDir, snapshot, verbose: args.verbose })
+          ? runIncrementalPopulate({ projectDir: args.projectDir, snapshot, skipRag: args.skipRag, verbose: args.verbose })
           : runPipeline({ projectDir: args.projectDir, skipRag: args.skipRag, verbose: args.verbose });
       const hb = writeHeartbeat({
         projectDir: args.projectDir,
