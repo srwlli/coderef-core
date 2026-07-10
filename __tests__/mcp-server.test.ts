@@ -305,6 +305,13 @@ const FIXTURE_REPORT = {
   header_layer_mismatch_count: 0,
   header_export_mismatch_count: 0,
   header_coverage_pct: 33.3,
+  // STUB-CXZ7VZ Phase 5: resolution rates (canonical, produced by buildReport;
+  // hand-computed here to match). total_emitted = 4+2+2+1+0 = 9; resolvable =
+  // 9 - external(1) - builtin(0) = 8.
+  resolution_rate: 44.44, // 4/9
+  resolved_of_resolvable: 50, // 4/8
+  ambiguous_rate: 22.22, // 2/9
+  provisional_rate: 25, // 1/4
 };
 
 let fixtureDir: string;
@@ -487,6 +494,42 @@ describe('codebase_summary', () => {
     expect(r.graph.nodes).toBe(11);
     expect(r.graph.edges_by_type).toEqual({ call: 4, import: 1 });
   });
+
+  it('surfaces a resolution block that reconciles with validation_status (STUB-CXZ7VZ)', () => {
+    const r = handlers.codebase_summary() as any;
+    // The rates come from the ValidationReport (canonical), the SAME source
+    // validation_status reads — so the two tools agree on how many call edges
+    // resolve. total_call_edges = 4+2+2+1+0 = 9 (all emitted), resolved = 4.
+    expect(r.resolution.resolution_rate).toBe(44.44);
+    expect(r.resolution.resolved_of_resolvable).toBe(50);
+    expect(r.resolution.ambiguous_rate).toBe(22.22);
+    expect(r.resolution.provisional_rate).toBe(25);
+    expect(r.resolution.resolved_edges).toBe(4);
+    expect(r.resolution.total_call_edges).toBe(9);
+    // THE reconciliation invariant: codebase_summary and validation_status now
+    // report the identical resolved-edge count and resolution_rate.
+    const vs = handlers.validation_status() as any;
+    expect(r.resolution.resolved_edges).toBe(vs.summary.resolved_edges);
+    expect(r.resolution.resolution_rate).toBe(vs.summary.resolution_rate);
+  });
+
+  it('resolution block is null-safe when no validation-report.json exists', () => {
+    const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-summary-bare-'));
+    try {
+      const bareCoderef = path.join(bare, '.coderef');
+      fs.mkdirSync(bareCoderef, { recursive: true });
+      fs.writeFileSync(path.join(bareCoderef, 'graph.json'), JSON.stringify(FIXTURE_GRAPH));
+      fs.writeFileSync(path.join(bareCoderef, 'index.json'), JSON.stringify(FIXTURE_INDEX));
+      // no validation-report.json — report load fails, rates fall back to null.
+      const h = buildToolHandlers(bare);
+      const r = h.codebase_summary() as any;
+      expect(r.resolution.resolution_rate).toBeNull();
+      expect(r.resolution.resolved_of_resolvable).toBeNull();
+      expect(r.resolution.total_call_edges).toBeNull();
+    } finally {
+      fs.rmSync(bare, { recursive: true, force: true });
+    }
+  });
 });
 
 // ---- validation_status ------------------------------------------------------------
@@ -497,15 +540,20 @@ describe('validation_status', () => {
     expect(r.report).toEqual(FIXTURE_REPORT);
     // every field present and numeric — same contract the pipeline
     // output-validation-report test enforces on the producer side. This
-    // minimal fixture omits the optional *_src_count fields; it now carries
-    // provisional_count (STUB-6CWWHQ Phase 2), so 13 keys.
-    expect(Object.keys(r.report)).toHaveLength(13);
+    // minimal fixture omits the optional *_src_count fields; it carries
+    // provisional_count (STUB-6CWWHQ Phase 2) + the four Phase 5 resolution
+    // rates (STUB-CXZ7VZ), so 17 keys.
+    expect(Object.keys(r.report)).toHaveLength(17);
     for (const v of Object.values(r.report)) expect(typeof v).toBe('number');
     expect(r.summary.header_coverage_pct).toBe(33.3);
     expect(r.summary.resolved_edges).toBe(4);
     // STUB-6CWWHQ Phase 2: the provisional-trust slice surfaces in the summary
     // for agent visibility (sub-count of resolved_edges).
     expect(r.summary.provisional_edges).toBe(1);
+    // STUB-CXZ7VZ Phase 5: the canonical resolution rates surface in the
+    // summary — the SAME fields codebase_summary reads, so the two tools agree.
+    expect(r.summary.resolution_rate).toBe(44.44); // 4/9 emitted
+    expect(r.summary.resolved_of_resolvable).toBe(50); // 4/8 resolvable
   });
 
   it('degrades gracefully when the report is missing', () => {

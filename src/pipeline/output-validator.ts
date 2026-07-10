@@ -179,6 +179,41 @@ export interface ValidationReport {
    * unchanged.
    */
   header_coverage_pct: number;
+  /**
+   * Share of ALL emitted call edges that RESOLVED, as a 0-100 percentage (2dp).
+   * Numerator = valid_edge_count; denominator = every call edge the resolver
+   * emitted a status for (valid + unresolved + ambiguous + external + builtin).
+   * This is the raw graph-density honesty number (WO-RESOLVER-SYMBOL-TABLE-DEDUP-
+   * FIX-001 Phase 5, STUB-CXZ7VZ): it reconciles codebase_summary's all-emitted
+   * call-edge count with validation_status's resolved-only valid_edge_count so an
+   * agent reading either tool no longer over-trusts graph density. 0 when the
+   * denominator is 0. Additive under the documented additive-only allowance.
+   */
+  resolution_rate: number;
+  /**
+   * Share of RESOLVABLE call edges that resolved, as a 0-100 percentage (2dp).
+   * Numerator = valid_edge_count; denominator = total emitted MINUS external_count
+   * and builtin_count. external (library) and builtin (JS-prototype / stdlib) calls
+   * are correctly-NOT-fabricated project edges, not resolver failures (Phase 3
+   * js_prototype_member reclassification), so excluding them yields the true
+   * resolver-quality read — always >= resolution_rate. 100 when the denominator is
+   * 0 (vacuously fully resolved, mirrors header_coverage_pct). Additive.
+   */
+  resolved_of_resolvable: number;
+  /**
+   * Share of ALL emitted call edges that are AMBIGUOUS (multi-candidate), as a
+   * 0-100 percentage (2dp). Numerator = ambiguous_count; same all-emitted
+   * denominator as resolution_rate. 0 when the denominator is 0. Additive.
+   */
+  ambiguous_rate: number;
+  /**
+   * The provisional-trust slice of RESOLVED edges, as a 0-100 percentage (2dp).
+   * Numerator = provisional_count (single_candidate_unknown_receiver, Phase 2);
+   * denominator = valid_edge_count (provisional edges ARE resolved). Surfaces how
+   * much of the resolved population rests on provisional confidence. 0 when
+   * valid_edge_count is 0. Additive.
+   */
+  provisional_rate: number;
 }
 
 /**
@@ -651,6 +686,22 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
     header_total_count === 0
       ? 100
       : Math.round((header_defined_count / header_total_count) * 10000) / 100;
+  // Resolution rates (WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001 Phase 5, STUB-CXZ7VZ).
+  // Same 2dp rounding shape as header_coverage_pct above. total_emitted = every
+  // call edge the resolver emitted a status for; resolvable excludes external
+  // (library) + builtin (JS-prototype/stdlib) — correctly-not-fabricated project
+  // edges, not resolver failures. Every denominator guarded (vacuous-0, except
+  // resolved_of_resolvable which is vacuously 100 like header_coverage_pct).
+  const total_emitted =
+    valid_edge_count + unresolved_count + ambiguous_count + external_count + builtin_count;
+  const resolvable = total_emitted - external_count - builtin_count;
+  const pct2 = (num: number, den: number): number =>
+    den === 0 ? 0 : Math.round((num / den) * 10000) / 100;
+  const resolution_rate = pct2(valid_edge_count, total_emitted);
+  const resolved_of_resolvable =
+    resolvable === 0 ? 100 : Math.round((valid_edge_count / resolvable) * 10000) / 100;
+  const ambiguous_rate = pct2(ambiguous_count, total_emitted);
+  const provisional_rate = pct2(provisional_count, valid_edge_count);
   // header_layer_mismatch_count: defined-but-not-in-enum (SH-1).
   let header_layer_mismatch_count = 0;
   // Note: the validator caller supplies layerEnum to checkSemanticHeaders
@@ -675,6 +726,10 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
     header_layer_mismatch_count,
     header_export_mismatch_count,
     header_coverage_pct,
+    resolution_rate,
+    resolved_of_resolvable,
+    ambiguous_rate,
+    provisional_rate,
   };
 }
 

@@ -93,6 +93,74 @@ describe('Phase 6 GI-1: node ID uniqueness', () => {
   });
 });
 
+describe('Resolution rates (STUB-CXZ7VZ, Phase 5): report reconciles the two tools', () => {
+  // Fixture: 5 resolved (1 provisional) + 2 unresolved + 2 ambiguous + 1 external
+  // + 1 builtin = 11 emitted edges. buildReport counts purely by resolutionStatus.
+  const GAMMA = { id: '@Fn/src/gamma.ts#c:1', type: 'function', name: 'c', file: 'src/gamma.ts', line: 1 };
+  const rEdge = (id: string, provisional = false): ExportedGraph['edges'][0] => ({
+    id, sourceId: ALPHA.id, targetId: BETA.id, relationship: 'call', resolutionStatus: 'resolved',
+    source: '', target: '', type: 'call',
+    ...(provisional ? { evidence: { confidence: 'provisional' } } : {}),
+  });
+  const sEdge = (id: string, status: NonNullable<ExportedGraph['edges'][0]['resolutionStatus']>): ExportedGraph['edges'][0] => ({
+    id, sourceId: ALPHA.id, targetId: BETA.id, relationship: 'call', resolutionStatus: status,
+    source: '', target: '', type: 'call',
+  });
+
+  it('computes each rate over the correct denominator (2dp)', () => {
+    const edges = [
+      rEdge('r1'), rEdge('r2'), rEdge('r3'), rEdge('r4'), rEdge('r5', true),
+      sEdge('u1', 'unresolved'), sEdge('u2', 'unresolved'),
+      sEdge('a1', 'ambiguous'), sEdge('a2', 'ambiguous'),
+      sEdge('x1', 'external'), sEdge('b1', 'builtin'),
+    ];
+    const r = validatePipelineState(makeState(), makeGraph([ALPHA, BETA, GAMMA], edges), { layerEnum });
+    const rep = r.report;
+    // total_emitted = 11; resolvable = 11 - external(1) - builtin(1) = 9.
+    expect(rep.valid_edge_count).toBe(5);
+    expect(rep.provisional_count).toBe(1);
+    // resolution_rate = 5/11 = 45.45 (all-emitted denominator — the stub's number).
+    expect(rep.resolution_rate).toBe(45.45);
+    // resolved_of_resolvable = 5/9 = 55.56 — ALWAYS >= resolution_rate (external/
+    // builtin excluded because they are correctly-not-fabricated, not failures).
+    expect(rep.resolved_of_resolvable).toBe(55.56);
+    expect(rep.resolved_of_resolvable).toBeGreaterThan(rep.resolution_rate);
+    // ambiguous_rate = 2/11 = 18.18 (same all-emitted denominator).
+    expect(rep.ambiguous_rate).toBe(18.18);
+    // provisional_rate = 1/5 = 20 (denominator = valid_edge_count, the resolved slice).
+    expect(rep.provisional_rate).toBe(20);
+    // Every rate is a bounded number — the additive-contract invariant.
+    for (const k of ['resolution_rate', 'resolved_of_resolvable', 'ambiguous_rate', 'provisional_rate'] as const) {
+      expect(typeof rep[k]).toBe('number');
+      expect(rep[k]).toBeGreaterThanOrEqual(0);
+      expect(rep[k]).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it('handles vacuous denominators: empty graph -> resolution 0, resolvable 100, provisional 0', () => {
+    const r = validatePipelineState(makeState(), makeGraph([], []), { layerEnum });
+    const rep = r.report;
+    // total_emitted = 0 -> resolution_rate/ambiguous_rate = 0.
+    expect(rep.resolution_rate).toBe(0);
+    expect(rep.ambiguous_rate).toBe(0);
+    // resolvable = 0 -> resolved_of_resolvable is vacuously 100 (mirrors
+    // header_coverage_pct's empty-denominator convention).
+    expect(rep.resolved_of_resolvable).toBe(100);
+    // valid_edge_count = 0 -> provisional_rate = 0.
+    expect(rep.provisional_rate).toBe(0);
+  });
+
+  it('all-external/builtin graph: resolution_rate 0 but resolved_of_resolvable stays 100 (no resolvable edges)', () => {
+    const edges = [sEdge('x1', 'external'), sEdge('x2', 'external'), sEdge('b1', 'builtin')];
+    const r = validatePipelineState(makeState(), makeGraph([ALPHA, BETA], edges), { layerEnum });
+    const rep = r.report;
+    // total_emitted = 3, valid = 0 -> resolution_rate = 0.
+    expect(rep.resolution_rate).toBe(0);
+    // resolvable = 3 - 2 - 1 = 0 -> vacuously 100 (never divides by zero).
+    expect(rep.resolved_of_resolvable).toBe(100);
+  });
+});
+
 describe('Phase 6 GI-2: resolved edge endpoint existence', () => {
   it('PASS: resolved edge endpoints in nodes', () => {
     const r = validatePipelineState(

@@ -95,9 +95,12 @@ interface IndexData {
 }
 
 /**
- * The locked 14-field validation report (output-validator.ts additive rule).
- * The two *_src_count fields (STUB-K5YBFN) are optional so the server stays
- * compatible with pre-bump 12-field artifacts on disk.
+ * The locked validation report (mirror of output-validator.ts ValidationReport,
+ * kept in lockstep by hand under the additive-only rule). Optional fields stay
+ * compatible with pre-bump artifacts on disk: *_src_count (STUB-K5YBFN),
+ * provisional_count (STUB-6CWWHQ Phase 2), and the four resolution rates
+ * (STUB-CXZ7VZ Phase 5) are all `?` so a stale report.json still parses — the
+ * consumers fall back to null when a rate is absent.
  */
 interface ValidationReport {
   valid_edge_count: number;
@@ -116,6 +119,12 @@ interface ValidationReport {
   header_layer_mismatch_count: number;
   header_export_mismatch_count: number;
   header_coverage_pct: number;
+  // STUB-CXZ7VZ Phase 5: resolution reconciliation rates (see output-validator.ts
+  // for exact denominators). Optional for compat with pre-bump artifacts.
+  resolution_rate?: number;
+  resolved_of_resolvable?: number;
+  ambiguous_rate?: number;
+  provisional_rate?: number;
 }
 
 // ---- artifact cache (mtime-invalidated) ----------------------------------------
@@ -839,6 +848,26 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           edges: graph.statistics?.edgeCount ?? graph.edges.length,
           edges_by_type: graph.statistics?.edgesByType ?? {},
         },
+        // Resolution reconciliation (STUB-CXZ7VZ, Phase 5): codebase_summary's
+        // graph.edges counts ALL emitted edges, while validation_status reports
+        // resolved-only (valid_edge_count) — an agent reading only this tool
+        // over-trusts density. These rates (canonical, from the ValidationReport)
+        // make the two tools agree. null when no validation-report.json exists
+        // (report is optional here — the try/catch above tolerates its absence).
+        resolution: {
+          resolution_rate: report?.resolution_rate ?? null,
+          resolved_of_resolvable: report?.resolved_of_resolvable ?? null,
+          ambiguous_rate: report?.ambiguous_rate ?? null,
+          provisional_rate: report?.provisional_rate ?? null,
+          resolved_edges: report?.valid_edge_count ?? null,
+          total_call_edges: report
+            ? report.valid_edge_count +
+              report.unresolved_count +
+              report.ambiguous_count +
+              report.external_count +
+              report.builtin_count
+            : null,
+        },
       };
     },
 
@@ -1244,6 +1273,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         summary: {
           header_coverage_pct: report.header_coverage_pct,
           resolved_edges: report.valid_edge_count,
+          // STUB-CXZ7VZ Phase 5: canonical resolution rates (from the report),
+          // the SAME fields codebase_summary's resolution block surfaces — so
+          // the two tools agree on how many call edges resolve. resolution_rate
+          // is over all-emitted call edges; resolved_of_resolvable excludes
+          // external/builtin (correctly-not-fabricated project edges).
+          resolution_rate: report.resolution_rate,
+          resolved_of_resolvable: report.resolved_of_resolvable,
           // STUB-6CWWHQ Phase 2: the provisional-trust slice of resolved_edges
           // (single_candidate_unknown_receiver). Sub-count of resolved_edges;
           // undefined on pre-bump artifacts that predate the field. Provisional

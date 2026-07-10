@@ -39,8 +39,12 @@ const POPULATE_CLI = path.join(REPO_ROOT, 'dist', 'src', 'cli', 'populate.js');
 // (header_coverage_pct).
 // Schema bump 14 -> 15 (WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001 Phase 2,
 // STUB-6CWWHQ): provisional_count added additive-only under the same rule —
-// the single_candidate_unknown_receiver confidence tier. The locked set below
-// is the new contract.
+// the single_candidate_unknown_receiver confidence tier.
+// Schema bump 15 -> 19 (WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001 Phase 5,
+// STUB-CXZ7VZ): resolution_rate + resolved_of_resolvable + ambiguous_rate +
+// provisional_rate added additive-only under the same rule — resolution
+// reconciliation so codebase_summary and validation_status agree. The locked
+// set below is the new contract.
 const REQUIRED_REPORT_FIELDS = [
   'valid_edge_count',
   'unresolved_count',
@@ -57,6 +61,10 @@ const REQUIRED_REPORT_FIELDS = [
   'header_layer_mismatch_count',
   'header_export_mismatch_count',
   'header_coverage_pct',
+  'resolution_rate',
+  'resolved_of_resolvable',
+  'ambiguous_rate',
+  'provisional_rate',
 ] as const;
 
 const created: string[] = [];
@@ -78,7 +86,7 @@ async function makeMinimalFixture(): Promise<string> {
 }
 
 describe('Phase 6 validation-report.json contract (AC-04, AC-05)', () => {
-  it('writes .coderef/validation-report.json with all 15 fields as numbers', async () => {
+  it('writes .coderef/validation-report.json with all 19 fields as numbers', async () => {
     const dir = await makeMinimalFixture();
     const result = spawnSync('node', [POPULATE_CLI, dir, '--mode', 'minimal'], {
       encoding: 'utf-8',
