@@ -18,7 +18,7 @@
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import { buildToolHandlers, ToolHandlers } from '../src/cli/coderef-mcp-server.js';
 import type { ExportedGraph } from '../src/export/graph-exporter.js';
 
@@ -1062,4 +1062,310 @@ describe('what_calls (P3 evidence passthrough)', () => {
     expect(fromBeta.callee).toBeUndefined();
     expect(fromBeta.receiver).toBeUndefined();
   });
+});
+
+// ---- CLI/MCP parity tools (WO-...-CLI-MCP-PARITY-001 P6) ===========================
+// Five new tools bring the surface to 23. Two of these are GUARD tests that go RED
+// if a safety property is removed:
+//   (b) rename_preview writes NOTHING to disk — RED if an apply path is ever added.
+//   (d) reindex writes ONLY under <tmp>/.coderef/ — RED if a stray write escapes.
+
+// ---- (a) pack_context -------------------------------------------------------------
+
+describe('pack_context', () => {
+  it('returns a bundle + manifest for a fixture element', () => {
+    // helper (src/util.ts) exists on disk in the fixture; it is a leaf (no
+    // outbound deps) so the bundle is the focus block alone.
+    const r = handlers.pack_context({ element: 'helper' }) as any;
+    expect(r.error).toBeUndefined();
+    expect(typeof r.bundle).toBe('string');
+    expect(r.bundle.length).toBeGreaterThan(0);
+    // the focus block leads with the element's own header + source window.
+    expect(r.bundle).toContain('@Fn/src/util.ts#helper:10');
+    expect(r.bundle).toContain('[focus]');
+    expect(r.manifest).toBeDefined();
+    expect(r.manifest.focus).toBe('helper');
+    // the focus is always the first included entry.
+    expect(r.manifest.included[0].id).toBe('@Fn/src/util.ts#helper:10');
+  });
+
+  it('honors token_budget (a tiny budget still admits the focus, drops far deps)', () => {
+    // main -> alpha -> helper: main has a dependency closure. A tiny budget must
+    // still include the focus but record dropped deps in the manifest — nothing
+    // is silently omitted.
+    const generous = handlers.pack_context({ element: 'main', token_budget: 8000 }) as any;
+    const tiny = handlers.pack_context({ element: 'main', token_budget: 1 }) as any;
+    expect(tiny.error).toBeUndefined();
+    expect(tiny.manifest.budget).toBe(1);
+    // focus always present even when it alone exceeds the budget.
+    expect(tiny.manifest.included.length).toBeGreaterThanOrEqual(1);
+    // the tiny budget admits no MORE than the generous one (monotonic).
+    expect(tiny.manifest.included.length).toBeLessThanOrEqual(generous.manifest.included.length);
+    // if the generous pack had deps, the tiny one must have dropped at least one.
+    if (generous.manifest.included.length > 1) {
+      expect(tiny.manifest.dropped.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('returns element_not_found for an unknown focus (throw caught cleanly)', () => {
+    const r = handlers.pack_context({ element: 'no-such-focus-anywhere' }) as any;
+    expect(r.error).toBe('element_not_found');
+  });
+});
+
+// ---- (b) rename_preview — GUARD: writes NOTHING -----------------------------------
+
+describe('rename_preview', () => {
+  it('returns the rename plan (sites, target ids, ambiguities) as a dry run', () => {
+    // helper is called by alpha (e1) + beta (e2); its declaration is a site too.
+    const r = handlers.rename_preview({ old_name: 'helper', new_name: 'helper2' }) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.old_name).toBe('helper');
+    expect(r.new_name).toBe('helper2');
+    expect(r.preview_only).toBe(true);
+    expect(Array.isArray(r.sites)).toBe(true);
+    // at least the declaration + 2 call sites are attributed.
+    expect(r.site_count).toBeGreaterThanOrEqual(3);
+    expect(r.target_ids).toContain('@Fn/src/util.ts#helper:10');
+    expect(Array.isArray(r.ambiguities)).toBe(true);
+    // there is NO apply flag on the output — this is preview-only.
+    expect(r.applied).toBeUndefined();
+  });
+
+  it('returns element_not_found for an unknown symbol (throw caught cleanly)', () => {
+    const r = handlers.rename_preview({ old_name: 'no-such-symbol', new_name: 'x' }) as any;
+    expect(r.error).toBe('element_not_found');
+  });
+
+  // GUARD (b): the whole point of rename_preview is that it is DRY-RUN. This test
+  // runs it against a dedicated temp project whose source files carry REAL
+  // rename sites (declaration + call sites), snapshots the WHOLE project tree
+  // (path -> bytes) before + after, and asserts it is byte-identical. It goes
+  // RED the moment anyone wires an apply/force path into rename_preview: an
+  // apply would rewrite src/*.ts -> a file's bytes change -> assertion fails.
+  it('GUARD: writes NOTHING to disk (fails if an apply path is ever added)', () => {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-rename-guard-'));
+    try {
+      const cr = path.join(proj, '.coderef');
+      fs.mkdirSync(cr, { recursive: true });
+      fs.mkdirSync(path.join(proj, 'src'), { recursive: true });
+      // renameMe: declared in a.ts, called from b.ts — real sites to plan over.
+      fs.writeFileSync(path.join(proj, 'src', 'a.ts'), 'export function renameMe(x) {\n  return x;\n}\n');
+      fs.writeFileSync(path.join(proj, 'src', 'b.ts'), "import { renameMe } from './a.js';\nexport const q = renameMe(1);\n");
+      const graph: ExportedGraph = {
+        version: '1.0.0', exportedAt: 1,
+        nodes: [
+          { id: '@Fn/src/a.ts#renameMe:1', type: 'function', name: 'renameMe', file: 'src/a.ts', line: 1, metadata: {} },
+          { id: '@Fn/src/b.ts#q:2', type: 'variable', name: 'q', file: 'src/b.ts', line: 2, metadata: {} },
+        ],
+        edges: [
+          {
+            id: 'rc1', sourceId: '@Fn/src/b.ts#q:2', targetId: '@Fn/src/a.ts#renameMe:1',
+            relationship: 'call', resolutionStatus: 'resolved',
+            sourceLocation: { file: 'src/b.ts', line: 2 },
+            source: '@Fn/src/b.ts#q:2', target: '@Fn/src/a.ts#renameMe:1', type: 'call',
+          },
+        ],
+        statistics: { nodeCount: 2, edgeCount: 1, edgesByType: { call: 1 }, densityRatio: 0 },
+      };
+      fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify(graph));
+
+      // Snapshot the whole project tree (bytes) BEFORE the preview.
+      const snapshotTree = (root: string): Map<string, string> => {
+        const snap = new Map<string, string>();
+        const walk = (dir: string): void => {
+          for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+            const full = path.join(dir, entry.name);
+            if (entry.isDirectory()) walk(full);
+            else snap.set(full, fs.readFileSync(full, 'utf8'));
+          }
+        };
+        walk(root);
+        return snap;
+      };
+      const before = snapshotTree(proj);
+
+      const h = buildToolHandlers(proj);
+      const r = h.rename_preview({ old_name: 'renameMe', new_name: 'renameMe2' }) as any;
+      expect(r.error).toBeUndefined();
+      expect(r.preview_only).toBe(true);
+      expect(r.site_count).toBeGreaterThanOrEqual(2); // declaration + 1 call site
+
+      // THE GUARD: the entire tree is byte-identical — nothing was written.
+      const after = snapshotTree(proj);
+      expect([...after.keys()].sort()).toEqual([...before.keys()].sort());
+      for (const [file, content] of before) {
+        expect(after.get(file)).toBe(content);
+      }
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+});
+
+// ---- (c) rag_status ---------------------------------------------------------------
+
+describe('rag_status', () => {
+  it('returns metadata + health for a fixture index', async () => {
+    const withIndex = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-ragstatus-'));
+    try {
+      const cr = path.join(withIndex, '.coderef');
+      fs.mkdirSync(cr, { recursive: true });
+      fs.writeFileSync(path.join(cr, 'rag-index.json'), JSON.stringify({
+        version: '1.0', createdAt: new Date().toISOString(), provider: 'ollama',
+        store: 'json', chunksIndexed: 42, filesProcessed: 3, processingTimeMs: 1234,
+        stats: { tokensUsed: 100, avgEmbeddingTimeMs: 1, byType: {}, byLanguage: {} },
+      }));
+      // a vector store file so health can reach 'healthy'.
+      fs.writeFileSync(path.join(cr, 'coderef-vectors.json'), JSON.stringify({ vectors: [] }));
+      const h = buildToolHandlers(withIndex);
+      const r = (await h.rag_status()) as any;
+      expect(r.error).toBeUndefined();
+      expect(r.indexExists).toBe(true);
+      expect(r.vectorsExist).toBe(true);
+      expect(r.health).toBe('healthy');
+      expect(r.metadata.provider).toBe('ollama');
+      expect(r.metadata.chunksIndexed).toBe(42);
+    } finally {
+      fs.rmSync(withIndex, { recursive: true, force: true });
+    }
+  });
+
+  it('reports a clean "no index" status when none exists', async () => {
+    const bare = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-ragstatus-bare-'));
+    try {
+      fs.mkdirSync(path.join(bare, '.coderef'), { recursive: true });
+      const h = buildToolHandlers(bare);
+      const r = (await h.rag_status()) as any;
+      // no throw, no crash — a clean 'missing' verdict.
+      expect(r.error).toBeUndefined();
+      expect(r.exists).toBe(false);
+      expect(r.indexExists).toBe(false);
+      expect(r.health).toBe('missing');
+      expect(r.metadata).toBeNull();
+    } finally {
+      fs.rmSync(bare, { recursive: true, force: true });
+    }
+  });
+});
+
+// ---- (d) reindex — GUARD: writes ONLY under <tmp>/.coderef/ ------------------------
+
+describe('reindex', () => {
+  const OLD_LAYERS = process.env.CODEREF_LAYERS_PATH;
+  afterEach(() => {
+    if (OLD_LAYERS === undefined) delete process.env.CODEREF_LAYERS_PATH;
+    else process.env.CODEREF_LAYERS_PATH = OLD_LAYERS;
+  });
+
+  // Snapshot every file OUTSIDE <proj>/.coderef/ as path -> content. Used to
+  // prove the reindex touched nothing outside the .coderef/ write surface.
+  function snapshotOutsideCoderef(root: string): Map<string, string> {
+    const snap = new Map<string, string>();
+    const coderefRoot = path.join(root, '.coderef');
+    const walk = (dir: string): void => {
+      for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+        const full = path.join(dir, entry.name);
+        if (full === coderefRoot) continue; // the ONE allowed write surface
+        if (entry.isDirectory()) walk(full);
+        else snap.set(full, fs.readFileSync(full, 'utf8'));
+      }
+    };
+    walk(root);
+    return snap;
+  }
+
+  // GUARD (d): reindex runs the REAL populate pipeline (delegated) against a tiny
+  // temp project. It snapshots every file OUTSIDE <tmp>/.coderef/ (path -> bytes)
+  // before + after and asserts that set is IDENTICAL — the write-CONFINEMENT
+  // property. It goes RED if a stray write ever escapes .coderef/ (e.g. a
+  // source-header rewrite of src/a.ts, an output-dir arg, or a new write path):
+  // a changed/added/removed file outside .coderef/ breaks an assertion below.
+  it('GUARD: writes ONLY under <tmp>/.coderef/ (fails if a write escapes)', async () => {
+    const proj = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-reindex-')));
+    // Pin a local layers.json so the pipeline never depends on a sibling repo.
+    const layersPath = path.join(proj, 'layers.json');
+    fs.writeFileSync(layersPath, JSON.stringify({
+      layers: [{ id: 'service' }, { id: 'cli' }, { id: 'test_support' }, { id: 'ui' }],
+    }));
+    process.env.CODEREF_LAYERS_PATH = layersPath;
+    fs.mkdirSync(path.join(proj, 'src'), { recursive: true });
+    fs.writeFileSync(
+      path.join(proj, 'src', 'a.ts'),
+      'export function foo() { return 1; }\nexport function bar() { return foo(); }\n',
+    );
+
+    const coderefRoot = path.join(proj, '.coderef');
+    // Snapshot everything outside .coderef/ BEFORE the reindex.
+    const before = snapshotOutsideCoderef(proj);
+
+    try {
+      const h = buildToolHandlers(proj);
+      const r = (await h.reindex({})) as any;
+      // the delegated pipeline succeeded and reported a compact summary.
+      expect(r.error).toBeUndefined();
+      expect(r.success).toBe(true);
+      expect(r.elements).toBeGreaterThanOrEqual(2); // foo + bar
+      expect(r.files).toBe(1);
+      expect(r.outputPath).toBe(coderefRoot);
+
+      // THE GUARD: the set of files outside .coderef/ and their bytes are
+      // IDENTICAL before and after — no source mutation, no stray output.
+      const after = snapshotOutsideCoderef(proj);
+      expect([...after.keys()].sort()).toEqual([...before.keys()].sort());
+      for (const [file, content] of before) {
+        expect(after.get(file)).toBe(content);
+      }
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  }, 60_000);
+});
+
+// ---- (e) rag_index — clean error when the embedder is unreachable ------------------
+
+describe('rag_index', () => {
+  const SAVED = {
+    base: process.env.CODEREF_LLM_BASE_URL,
+    localOnly: process.env.CODEREF_RAG_LOCAL_ONLY,
+  };
+  afterEach(() => {
+    const restore = (k: string, v: string | undefined) => {
+      if (v === undefined) delete process.env[k]; else process.env[k] = v;
+    };
+    restore('CODEREF_LLM_BASE_URL', SAVED.base);
+    restore('CODEREF_RAG_LOCAL_ONLY', SAVED.localOnly);
+  });
+
+  it('surfaces a clean error (not a crash) when Ollama is unreachable', async () => {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-ragindex-'));
+    try {
+      const cr = path.join(proj, '.coderef');
+      fs.mkdirSync(cr, { recursive: true });
+      fs.mkdirSync(path.join(proj, 'src'), { recursive: true });
+      fs.writeFileSync(
+        path.join(proj, 'src', 'a.ts'),
+        '/**\n * @coderef-semantic: 1.0.0\n * @layer service\n * @capability x\n */\nexport function foo() { return 1; }\n',
+      );
+      // The phase-6 gate needs a passing validation-report on disk.
+      fs.writeFileSync(path.join(cr, 'validation-report.json'), JSON.stringify({ valid_edge_count: 1, header_coverage_pct: 100 }));
+      fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify({ elements: [] }));
+      fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify({ version: '1.0.0', exportedAt: 1, nodes: [], edges: [], statistics: {} }));
+
+      // Point the local embedder at a dead port -> every embed batch fails.
+      process.env.CODEREF_LLM_BASE_URL = 'http://127.0.0.1:9';
+      process.env.CODEREF_RAG_LOCAL_ONLY = '1';
+
+      const h = buildToolHandlers(proj);
+      const r = (await h.rag_index()) as any;
+      // The server did NOT crash — it returned a clean error record. When Ollama
+      // is unreachable, no chunks embed, so the handler surfaces
+      // embedding_unavailable (never a silent zero-chunk "success").
+      expect(r.error).toBe('embedding_unavailable');
+      expect(r.provider).toBe('ollama');
+      expect(r.hint).toMatch(/ollama/i);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  }, 60_000);
 });

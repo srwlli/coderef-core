@@ -34,7 +34,7 @@ async function loadRAGDependencies() {
   IndexingOrchestrator = ragModule.IndexingOrchestrator;
 }
 
-interface CliArgs {
+export interface CliArgs {
   projectDir: string;
   provider: string;  // Any provider name (openai, anthropic, ollama, etc.)
   store: 'json' | 'sqlite' | 'pinecone' | 'chroma';
@@ -52,6 +52,53 @@ interface CliArgs {
    * with header:false provenance instead of skipping them.
    */
   includeHeaderless: boolean;
+}
+
+/**
+ * Compact result of a RAG-index run (WO-...-CLI-MCP-PARITY-001 P6). Returned by
+ * runRagIndex() so the MCP `rag_index` tool can report what happened without
+ * re-parsing stdout or spawning the CLI. The full metadata is still written to
+ * `.coderef/rag-index.json` as before — this is additive telemetry.
+ */
+export interface RagIndexSummary {
+  /** Terminal orchestrator status ('complete' | 'partial' | 'failed'). */
+  status: string;
+  /** Chunks embedded + stored. */
+  chunksIndexed: number;
+  /** Chunks skipped (e.g. header-less) and failed. */
+  chunksSkipped: number;
+  chunksFailed: number;
+  /** Embedding provider actually used (ollama by default — local-only). */
+  provider: string;
+  /** Vector store backend ('json' | 'sqlite' | ...). */
+  store: string;
+  /** Wall-clock indexing duration, ms. */
+  durationMs: number;
+  /** Absolute path of the written `.coderef/rag-index.json`. */
+  indexPath: string;
+}
+
+/**
+ * CliArgs for programmatic callers (MCP `rag_index`) that never touch argv.
+ * Provider is pinned to LOCAL Ollama — NO cloud fallback (OpenAI/Anthropic are
+ * never wired here); store defaults to the JSON-backed `coderef-vectors.json`
+ * the rest of the toolchain reads. reset:false preserves any existing index.
+ * json:true keeps the CLI path stdout-quiet as a belt-and-suspenders alongside
+ * programmatic mode.
+ */
+export function defaultRagIndexArgs(projectDir: string): CliArgs {
+  return {
+    projectDir,
+    provider: 'ollama',
+    store: 'json',
+    reset: false,
+    verbose: false,
+    json: true,
+    help: false,
+    coverageFloor: 0,
+    strictCoverage: false,
+    includeHeaderless: false,
+  };
 }
 
 /**
@@ -196,17 +243,33 @@ OUTPUT:
 }
 
 /**
- * Main CLI function
+ * Run the RAG indexing pipeline and return a compact summary.
+ *
+ * WO-...-CLI-MCP-PARITY-001 P6: the pipeline body was EXTRACTED out of the
+ * former non-exported `main()` so the MCP `rag_index` tool can drive the SAME
+ * code path (local Ollama by default — NO cloud fallback; writes ONLY under
+ * `<projectDir>/.coderef/`) and get back a RagIndexSummary.
+ *
+ * `opts.programmatic` (default false = CLI behavior) toggles the seams a
+ * long-lived MCP server cannot tolerate: process.exit(...) becomes `throw`
+ * (surfaced to the handler as a clean error record — e.g. Ollama unreachable),
+ * and the CLI's progress/stdout is suppressed (stdout belongs to the MCP
+ * transport). CLI behavior is unchanged: main() calls this with programmatic
+ * false and still owns the exit-code propagation.
  */
-async function main(): Promise<void> {
-  try {
-    const args = parseArgs(process.argv.slice(2));
-
-    if (args.help) {
-      printHelp();
-      process.exit(0);
+export async function runRagIndex(
+  args: CliArgs,
+  opts: { programmatic?: boolean } = {},
+): Promise<RagIndexSummary> {
+  const programmatic = opts.programmatic ?? false;
+  const halt = (code: number, message?: string): never => {
+    if (programmatic) {
+      throw new Error(message ?? `rag-index halted with code ${code}`);
     }
+    process.exit(code);
+  };
 
+  try {
     // RAG local-only enforcement. When CODEREF_RAG_LOCAL_ONLY is set
     // (truthy), reject cloud providers regardless of how they were
     // selected. This mirrors RAGConfigLoader.getLLMProvider() but covers
@@ -221,7 +284,7 @@ async function main(): Promise<void> {
         `Set CODEREF_LLM_PROVIDER=ollama (or pass --provider ollama) and ` +
         `configure CODEREF_LLM_BASE_URL.`
       );
-      process.exit(2);
+      halt(2, `provider '${args.provider}' rejected under RAG local-only mode`);
     }
 
     // Validate project directory
@@ -229,7 +292,7 @@ async function main(): Promise<void> {
       await fs.access(args.projectDir);
     } catch {
       console.error(`Error: Project directory not found: ${args.projectDir}`);
-      process.exit(2);
+      halt(2, `Project directory not found: ${args.projectDir}`);
     }
 
     // Load optional RAG dependencies
@@ -241,7 +304,7 @@ async function main(): Promise<void> {
       console.error('  npm install openai tiktoken');
       console.error('  or');
       console.error('  pnpm add openai tiktoken');
-      process.exit(1);
+      halt(1, 'Failed to load RAG dependencies (openai/tiktoken)');
     }
 
     // Ensure .coderef directory exists
@@ -256,7 +319,7 @@ async function main(): Promise<void> {
       throw new Error('No supported source files detected in project.');
     }
 
-    if (!args.json) {
+    if (!args.json && !programmatic) {
       console.log('🔍 Creating RAG index...\n');
       console.log(`Project: ${args.projectDir}`);
       console.log(`Provider: ${args.provider}`);
@@ -316,8 +379,9 @@ async function main(): Promise<void> {
       toAbsolute(args.projectDir)
     );
 
-    // Progress callback
-    const onProgress = args.json
+    // Progress callback — suppressed in programmatic mode (stdout belongs to
+    // the MCP transport) exactly as it is in --json mode.
+    const onProgress = (args.json || programmatic)
       ? undefined
       : (progress: { stage: string; stageProgress: number; overallProgress: number }) => {
           const stageEmoji: Record<string, string> = {
@@ -390,7 +454,7 @@ async function main(): Promise<void> {
         '   Run `populate-coderef` first to produce a valid validation report,',
       );
       console.error('   then retry rag-index. Underlying error:', err?.message ?? err);
-      process.exit(1);
+      return halt(1, `Phase 6 validation gate refused: cannot read ${validationReportPath}`);
     }
     if (validation.ok === false) {
       console.error(
@@ -399,7 +463,7 @@ async function main(): Promise<void> {
       console.error(
         '   Indexing refused. Resolve graph-integrity errors before re-running.',
       );
-      process.exit(1);
+      halt(1, `Phase 6 validation reports ok=false at ${validationReportPath}`);
     }
 
     // Run indexing
@@ -450,6 +514,24 @@ async function main(): Promise<void> {
 
     const indexPath = path.join(coderefDir, 'rag-index.json');
     await fs.writeFile(indexPath, JSON.stringify(indexMetadata, null, 2));
+
+    // Compact summary for programmatic callers (MCP `rag_index`).
+    const summary: RagIndexSummary = {
+      status: result.status,
+      chunksIndexed: result.chunksIndexed,
+      chunksSkipped: result.chunksSkipped,
+      chunksFailed: result.chunksFailed,
+      provider: args.provider,
+      store: args.store,
+      durationMs: totalTime,
+      indexPath,
+    };
+
+    // Programmatic callers get the summary object; stdout stays clean for the
+    // MCP transport. The status-based exit-code propagation below is CLI-only.
+    if (programmatic) {
+      return summary;
+    }
 
     // Output results
     if (args.json) {
@@ -552,6 +634,12 @@ async function main(): Promise<void> {
     process.exit(0);
 
   } catch (error) {
+    // Programmatic callers (MCP `rag_index`) get the raw error to surface as a
+    // clean error record — e.g. Ollama unreachable — WITHOUT crashing the
+    // server. The CLI keeps its formatted stderr + exit(1) behavior.
+    if (programmatic) {
+      throw error;
+    }
     console.error('\n❌ Indexing failed:\n');
     if (error instanceof Error) {
       console.error(error.message);
@@ -566,5 +654,25 @@ async function main(): Promise<void> {
   }
 }
 
-// Run CLI
-main();
+/**
+ * CLI entry point: parse argv, run the pipeline via runRagIndex (CLI mode), and
+ * let it own progress printing + exit-code propagation. Extracted so the bin
+ * behavior is unchanged while the pipeline is reusable by MCP.
+ */
+async function main(): Promise<void> {
+  const args = parseArgs(process.argv.slice(2));
+
+  if (args.help) {
+    printHelp();
+    process.exit(0);
+  }
+
+  await runRagIndex(args);
+}
+
+// Run CLI only when executed as a bin — never on import. runRagIndex +
+// defaultRagIndexArgs are imported by the MCP server; importing this module
+// must not launch the CLI (which would parse argv + process.exit).
+if (require.main === module) {
+  main();
+}

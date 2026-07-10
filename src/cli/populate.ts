@@ -35,7 +35,7 @@ import {
 import { HeaderGenerator } from '../semantic/header-generator.js';
 import { buildSemanticElementsFromState } from '../pipeline/semantic-elements.js';
 
-interface CliArgs {
+export interface CliArgs {
   projectDir: string;
   languages?: string[];
   output?: string;
@@ -84,6 +84,57 @@ interface GeneratorRunner {
   name: string;
   instance: {
     generate(state: PipelineState, outputDir: string): Promise<void>;
+  };
+}
+
+/**
+ * Compact result of a populate run (WO-...-CLI-MCP-PARITY-001 P6). Returned by
+ * runPopulate() so the MCP `reindex` tool can report what happened WITHOUT
+ * re-parsing stdout or spawning the CLI. Side effects (the .coderef/ writes)
+ * are unchanged — this is purely additive telemetry alongside them.
+ */
+export interface PopulateSummary {
+  /** true when every generator ran without failure. */
+  success: boolean;
+  /** Absolute `.coderef/` (or --output) directory the artifacts were written to. */
+  outputPath: string;
+  /** Languages the pipeline actually scanned. */
+  languagesUsed: string[];
+  /** Elements extracted (from state.metadata). */
+  elements: number;
+  /** Source files scanned. */
+  files: number;
+  /** Total graph edges emitted (resolved + non-resolved). */
+  edges: number;
+  /** Wall-clock duration of the run, ms. */
+  durationMs: number;
+  /** Names of generators that failed (empty on a clean run). */
+  failures: string[];
+}
+
+/**
+ * CliArgs with the SAME defaults parseArgs() applies, for programmatic callers
+ * (MCP `reindex`) that never touch argv. The MCP handler overrides only
+ * projectDir and (via changedFiles) the incremental toggle; every other field
+ * matches a bare `populate-coderef` invocation so the delegated pipeline
+ * behaves identically. json:true keeps the pipeline on its stdout-quiet path
+ * as a belt-and-suspenders alongside programmatic mode.
+ */
+export function defaultPopulateArgs(projectDir: string): CliArgs {
+  return {
+    projectDir,
+    verbose: false,
+    json: true,
+    parallel: false,
+    help: false,
+    mode: 'full',
+    semanticRegistry: true,
+    sourceHeaders: false,
+    overwriteHeaders: false,
+    staleOnly: false,
+    strictHeaders: false,
+    enforceHeaders: false,
+    coverageFloor: 100,
   };
 }
 
@@ -325,12 +376,39 @@ async function runGenerator(
 }
 
 /**
- * Run pipeline and generate all outputs
+ * Run pipeline and generate all outputs.
+ *
+ * WO-...-CLI-MCP-PARITY-001 P6: the pipeline body was EXTRACTED out of the
+ * former non-exported `run()` into this exported function so the MCP `reindex`
+ * tool can drive the SAME code path (which already writes ONLY under
+ * `<projectDir>/.coderef/`) and get back a compact PopulateSummary — never a
+ * new write path or an arbitrary output dir.
+ *
+ * `opts.programmatic` (default false = CLI behavior) toggles the two seams that
+ * a long-lived MCP server cannot tolerate:
+ *  - process.exit(...) becomes `throw` (a killed server is not an option).
+ *  - the trailing stdout summary line is suppressed (stdout belongs to the MCP
+ *    transport). All other diagnostics already go to stderr.
+ * CLI behavior is byte-for-byte unchanged: run() calls this with programmatic
+ * false and still owns the final process.exit.
  */
-async function run(args: CliArgs): Promise<void> {
+export async function runPopulate(
+  args: CliArgs,
+  opts: { programmatic?: boolean } = {},
+): Promise<PopulateSummary> {
+  const programmatic = opts.programmatic ?? false;
   const startTime = Date.now();
 
-  try {
+  // In programmatic mode a fatal condition throws (caught by the MCP handler)
+  // instead of exiting the process; in CLI mode it exits as before.
+  const halt = (code: number, message?: string): never => {
+    if (programmatic) {
+      throw new Error(message ?? `populate halted with code ${code}`);
+    }
+    process.exit(code);
+  };
+
+  {
     // Ensure project directory exists
     await fs.access(args.projectDir);
 
@@ -387,7 +465,7 @@ async function run(args: CliArgs): Promise<void> {
       console.error(
         `[populate-coderef] Failed to load layer enum from STANDARDS/layers.json: ${e instanceof Error ? e.message : String(e)}`,
       );
-      process.exit(1);
+      halt(1, 'Failed to load layer enum from STANDARDS/layers.json');
     }
     const validation = validatePipelineState(state, state.graph, {
       strictHeaders: args.strictHeaders,
@@ -400,7 +478,7 @@ async function run(args: CliArgs): Promise<void> {
           `[validation error ${err.kind} ${err.check}] ${offender} ${JSON.stringify(err.details)}`,
         );
       }
-      process.exit(1);
+      halt(1, `pipeline validation failed with ${validation.errors.length} error(s)`);
     }
     for (const warn of validation.warnings) {
       console.error(
@@ -453,7 +531,7 @@ async function run(args: CliArgs): Promise<void> {
             `Run \`populate-coderef ${args.projectDir} --source-headers\` to ` +
             `stamp @coderef-semantic headers, then retry.`,
         );
-        process.exit(1);
+        halt(1, `header coverage ${r.header_coverage_pct}% below floor ${args.coverageFloor}%`);
       }
     }
 
@@ -590,16 +668,47 @@ async function run(args: CliArgs): Promise<void> {
 
     const totalTime = Date.now() - startTime;
 
-    if (args.json) {
-       console.log(JSON.stringify({ success: failures.length === 0, languagesUsed: languages, stats: state.metadata, timing: { total: totalTime, generators: generatorTimings }, failures }, null, 2));
-    } else {
-      console.log(`\n✓ Complete - Scan finished in ${totalTime}ms (Mode: ${args.mode})`);
-      if (args.verbose) {
-         console.log(`  Output: ${outputDir}`);
+    // Compact summary for programmatic callers (MCP `reindex`). edges pulls the
+    // full count off the emitted graph; elements/files come from the pipeline's
+    // own metadata tally — the same numbers --json surfaces.
+    const summary: PopulateSummary = {
+      success: failures.length === 0,
+      outputPath: outputDir,
+      languagesUsed: languages,
+      elements: state.metadata.elementsExtracted,
+      files: state.metadata.filesScanned,
+      edges: state.graph?.edges?.length ?? 0,
+      durationMs: totalTime,
+      failures: failures.map(f => f.name),
+    };
+
+    // stdout belongs to the MCP transport in programmatic mode — suppress the
+    // CLI summary line there (diagnostics already went to stderr).
+    if (!programmatic) {
+      if (args.json) {
+        console.log(JSON.stringify({ success: failures.length === 0, languagesUsed: languages, stats: state.metadata, timing: { total: totalTime, generators: generatorTimings }, failures }, null, 2));
+      } else {
+        console.log(`\n✓ Complete - Scan finished in ${totalTime}ms (Mode: ${args.mode})`);
+        if (args.verbose) {
+          console.log(`  Output: ${outputDir}`);
+        }
       }
     }
 
-    process.exit(failures.length > 0 ? 1 : 0);
+    return summary;
+  }
+}
+
+/**
+ * CLI wrapper: run the pipeline and translate its outcome into a process exit
+ * code. All the pipeline logic (and the .coderef/ writes) lives in runPopulate;
+ * this keeps the former `run()` contract — including the exit-code + top-level
+ * error handling — byte-for-byte identical for the bin entry point.
+ */
+async function run(args: CliArgs): Promise<void> {
+  try {
+    const summary = await runPopulate(args);
+    process.exit(summary.failures.length > 0 ? 1 : 0);
   } catch (error) {
     console.error(`\n✗ Error: ${error instanceof Error ? error.message : String(error)}`);
     process.exit(1);
@@ -620,4 +729,9 @@ async function main() {
   await run(args);
 }
 
-main();
+// Run CLI only when executed as a bin — never on import. runPopulate +
+// defaultPopulateArgs are imported by the MCP server; importing this module
+// must not launch the CLI (which would parse argv + process.exit).
+if (require.main === module) {
+  main();
+}

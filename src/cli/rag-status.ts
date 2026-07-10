@@ -46,6 +46,88 @@ interface IndexMetadata {
 }
 
 /**
+ * The programmatic RAG-status readout (WO-...-CLI-MCP-PARITY-001 P6). The
+ * inline inspection logic that lived in main() is EXTRACTED here so the MCP
+ * `rag_status` tool can reuse it without duplicating (or spawning) the CLI.
+ * Read-only: it only reads `<projectDir>/.coderef/rag-index.json` +
+ * `coderef-vectors.json`; it never writes, exits, or prints. main() calls it
+ * and does the (unchanged) stdout formatting.
+ */
+export interface RagStatusReport {
+  exists: boolean;
+  indexExists: boolean;
+  vectorsExist: boolean;
+  indexPath: string;
+  vectorsPath: string;
+  metadata: IndexMetadata | null;
+  vectorStats: {
+    storageSize: number;
+    createdAt: string;
+    modifiedAt: string;
+  } | null;
+  health: 'healthy' | 'partial' | 'missing';
+}
+
+/**
+ * Inspect a project's RAG index without printing or exiting. Reports cleanly
+ * (health='missing', metadata=null) when no index exists — never throws for a
+ * missing index. Mirrors the vector-store path resolution main() used.
+ */
+export async function readRagStatus(projectDir: string): Promise<RagStatusReport> {
+  const coderefDir = path.join(projectDir, '.coderef');
+  const indexPath = path.join(coderefDir, 'rag-index.json');
+  // VECTOR-STORE-PATH-FIX (WO-REGISTRY-RAWFACTS-DEDUP-001 P2): the JSON-backed
+  // default store is `coderef-vectors.json` — the SAME default rag-index,
+  // rag-search, and the indexing orchestrator use. The CODEREF_SQLITE_PATH env
+  // override is a legacy alias kept for parity.
+  const vectorsPath = process.env.CODEREF_SQLITE_PATH
+    || path.join(coderefDir, 'coderef-vectors.json');
+
+  let metadata: IndexMetadata | null = null;
+  let indexExists = false;
+  let vectorsExist = false;
+  let vectorStats: RagStatusReport['vectorStats'] = null;
+
+  // Check index metadata file
+  try {
+    const indexContent = await fs.readFile(indexPath, 'utf-8');
+    metadata = JSON.parse(indexContent);
+    indexExists = true;
+  } catch {
+    indexExists = false;
+  }
+
+  // Check vector store
+  try {
+    await fs.access(vectorsPath);
+    vectorsExist = true;
+    const stats = await fs.stat(vectorsPath);
+    vectorStats = {
+      storageSize: stats.size,
+      createdAt: stats.birthtime.toISOString(),
+      modifiedAt: stats.mtime.toISOString(),
+    };
+  } catch {
+    vectorsExist = false;
+  }
+
+  return {
+    exists: indexExists || vectorsExist,
+    indexExists,
+    vectorsExist,
+    indexPath,
+    vectorsPath,
+    metadata,
+    vectorStats,
+    health: indexExists && vectorsExist
+      ? 'healthy'
+      : indexExists || vectorsExist
+        ? 'partial'
+        : 'missing',
+  };
+}
+
+/**
  * Parse command line arguments
  */
 function parseArgs(argv: string[]): CliArgs {
@@ -173,63 +255,11 @@ async function main(): Promise<void> {
       process.exit(2);
     }
 
-    // Check for index
-    const coderefDir = path.join(args.projectDir, '.coderef');
-    const indexPath = path.join(coderefDir, 'rag-index.json');
-    // VECTOR-STORE-PATH-FIX (WO-REGISTRY-RAWFACTS-DEDUP-001 P2): the JSON-
-    // backed default store is `coderef-vectors.json` — the SAME default
-    // rag-index, rag-search, and the indexing orchestrator use. rag-status
-    // previously defaulted to a never-written `rag-vectors.sqlite`, so it
-    // reported "vectors missing" against a perfectly good index. The
-    // CODEREF_SQLITE_PATH env override is a legacy alias kept for parity.
-    const vectorsPath = process.env.CODEREF_SQLITE_PATH
-      || path.join(coderefDir, 'coderef-vectors.json');
-
-    let metadata: IndexMetadata | null = null;
-    let indexExists = false;
-    let vectorsExist = false;
-    let vectorStats: any = null;
-
-    // Check index metadata file
-    try {
-      const indexContent = await fs.readFile(indexPath, 'utf-8');
-      metadata = JSON.parse(indexContent);
-      indexExists = true;
-    } catch {
-      indexExists = false;
-    }
-
-    // Check vector store
-    try {
-      await fs.access(vectorsPath);
-      vectorsExist = true;
-
-      // Get vector store file stats
-      const stats = await fs.stat(vectorsPath);
-      vectorStats = {
-        storageSize: stats.size,
-        createdAt: stats.birthtime.toISOString(),
-        modifiedAt: stats.mtime.toISOString(),
-      };
-    } catch {
-      vectorsExist = false;
-    }
-
-    // Build status response
-    const status = {
-      exists: indexExists || vectorsExist,
-      indexExists,
-      vectorsExist,
-      indexPath,
-      vectorsPath,
-      metadata,
-      vectorStats,
-      health: indexExists && vectorsExist
-        ? 'healthy'
-        : indexExists || vectorsExist
-          ? 'partial'
-          : 'missing',
-    };
+    // Check for index — the inspection logic is EXTRACTED into readRagStatus so
+    // the MCP `rag_status` tool can reuse it (behavior-preserving: main() still
+    // prints the identical readout below).
+    const status = await readRagStatus(args.projectDir);
+    const { indexExists, vectorsExist, indexPath, vectorsPath, metadata, vectorStats } = status;
 
     // Output results
     if (args.json) {
@@ -363,5 +393,9 @@ async function main(): Promise<void> {
   }
 }
 
-// Run CLI
-main();
+// Run CLI only when executed as a bin — never on import. readRagStatus is
+// imported by the MCP server; importing this module must not launch the CLI
+// (which would parse argv + process.exit).
+if (require.main === module) {
+  main();
+}

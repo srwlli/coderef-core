@@ -7,10 +7,20 @@
  */
 
 /**
- * coderef-mcp-server — stdio MCP server exposing read-only code-intelligence
- * tools over .coderef/ artifacts.
+ * coderef-mcp-server — stdio MCP server exposing code-intelligence tools over
+ * .coderef/ artifacts. Most tools are READ-only; a small set of WRITE tools
+ * (reindex, rag_index) regenerate the .coderef/ substrate itself.
  *
- * WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 Phase 3.
+ * WRITE CONFINEMENT (contract): every write this server performs is confined to
+ * <projectDir>/.coderef/. It NEVER mutates arbitrary source. This is guaranteed
+ * structurally by DELEGATING to the existing populate / rag-index pipelines
+ * (which only ever write .coderef/) rather than opening a new write path or an
+ * output-dir argument. SOURCE mutation (coderef-rename --apply) is deliberately
+ * NOT exposed: MCP offers rename only as a dry-run PREVIEW (rename_preview).
+ *
+ * WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 Phase 3;
+ * CLI/MCP parity Phase 6 (pack_context, rename_preview, rag_status, reindex,
+ * rag_index).
  *
  * Built INSIDE coderef-core (not as an external consumer) so the graph read
  * path is typed against ExportedGraph from src/export/graph-exporter.ts —
@@ -18,8 +28,9 @@
  * silent wrong-answers the external Python coderef-context server produced
  * after the sourceId/targetId/relationship migration.
  *
- * Tools (all read-only, compact pre-summarized responses — never raw graph
- * dumps; responses are consumed by LLM agents where tokens are the budget):
+ * Tools (compact pre-summarized responses — never raw graph dumps; responses
+ * are consumed by LLM agents where tokens are the budget). READ tools unless
+ * marked [.coderef-WRITE]:
  *   what_calls           - inbound resolved call edges to an element
  *   what_imports         - inbound resolved import edges to an element
  *   impact_of            - transitive inbound dependents (reverse BFS)
@@ -33,6 +44,11 @@
  *   find_element         - element lookup in .coderef/index.json
  *   codebase_summary     - totals, type distribution, header coverage, edges
  *   validation_status    - the locked 14-field validation report verbatim
+ *   pack_context         - focus + dependency-closure context bundle (read)
+ *   rename_preview       - dry-run symbol-rename plan (read; NO apply path)
+ *   rag_status           - RAG index/vector metadata + health (read)
+ *   reindex              - [.coderef-WRITE] regenerate the .coderef/ substrate
+ *   rag_index            - [.coderef-WRITE] build the RAG index (local Ollama)
  *
  * Protocol discipline: stdout belongs to the MCP transport. ALL diagnostics
  * go to stderr (same rule as populate --json; see populate.ts P1-T3 fix).
@@ -48,13 +64,23 @@ import * as path from 'path';
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
+import { packContext } from '../context/context-packer.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
 // STUB-2CM92P: canonical ValidationReport shape (type-only — erased at compile,
 // no runtime coupling), replacing the former hand-mirrored local interface that
 // drifted from canonical and broke tsconfig.cli.json on every field change.
 import type { ValidationReport } from '../pipeline/output-validator.js';
 import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js';
+import { planRename } from '../refactor/rename-planner.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
+// P6 CLI/MCP parity (WO-...-CLI-MCP-PARITY-001): the two .coderef/-WRITE tools
+// (reindex, rag_index) and rag_status DELEGATE to the existing CLI pipelines'
+// EXTRACTED cores — never a new write path. These functions write ONLY under
+// <projectDir>/.coderef/. Source mutation (rename --apply) stays CLI-ONLY: MCP
+// exposes rename only as a PREVIEW (rename_preview), no apply arg.
+import { defaultPopulateArgs, runPopulate } from './populate.js';
+import { defaultRagIndexArgs, runRagIndex } from './rag-index.js';
+import { readRagStatus } from './rag-status.js';
 
 type ExportedNode = ExportedGraph['nodes'][number];
 type ExportedEdge = ExportedGraph['edges'][number];
@@ -477,6 +503,15 @@ export interface ToolHandlers {
   // agent-native source-body + find-all-references (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P3)
   source_of(args: { element: string; context?: number; max_chars?: number }): Record<string, unknown>;
   find_all_references(args: { element: string; limit?: number }): Record<string, unknown>;
+  // CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6).
+  // READ tools — wrap a clean substrate export, return synchronously.
+  pack_context(args: { element: string; token_budget?: number; full_deps?: boolean }): Record<string, unknown>;
+  rename_preview(args: { old_name: string; new_name: string }): Record<string, unknown>;
+  // .coderef-WRITE / status tools — async (delegate to the extracted pipelines /
+  // async status readout). Writes are confined to <projectDir>/.coderef/.
+  rag_status(): Promise<Record<string, unknown>>;
+  reindex(args: { incremental?: boolean }): Promise<Record<string, unknown>>;
+  rag_index(): Promise<Record<string, unknown>>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -1516,6 +1551,138 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           callRefs.length > cap || importRefs.length > cap || typeRefs.length > cap,
       };
     },
+
+    // ---- CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6) ----------------------
+    // pack_context + rename_preview are READ tools (they only load
+    // .coderef/graph.json + read source). rename_preview is PREVIEW-ONLY: no
+    // apply arg, no write — source mutation lives exclusively on the
+    // coderef-rename CLI. See buildToolHandlers header + the registerTool blocks.
+
+    pack_context({ element, token_budget, full_deps }) {
+      // Wrap the clean substrate export. full_deps=true opts back into full
+      // dependency windows (compressDeps=false); default compresses deps.
+      try {
+        const result = packContext(projectDir, element, {
+          tokenBudget: token_budget,
+          compressDeps: full_deps ? false : undefined,
+        });
+        return { bundle: result.bundle, manifest: result.manifest };
+      } catch (e: any) {
+        // packContext throws Error('focus not found: ...') on a miss — surface
+        // the same clean not-found envelope the resolved-edge tools use.
+        const msg = String(e?.message ?? e);
+        if (/focus not found/i.test(msg)) return notFound(element);
+        return { error: 'pack_failed', query: element, detail: msg.slice(0, 300) };
+      }
+    },
+
+    rename_preview({ old_name, new_name }) {
+      // Dry-run ONLY. planRename reads the canonical graph and returns the plan
+      // (sites/typeOnlyRefs/ambiguities). It writes NOTHING. There is
+      // deliberately NO apply path here — a stray apply-arg regression would be
+      // caught by the mcp-server test's write-confinement guard.
+      try {
+        const plan = planRename(projectDir, old_name, new_name);
+        return {
+          old_name: plan.oldName,
+          new_name: plan.newName,
+          preview_only: true,
+          apply_hint: 'To apply, run the coderef-rename CLI (--apply). MCP is preview-only.',
+          target_ids: plan.targetIds,
+          site_count: plan.sites.length,
+          sites: plan.sites,
+          type_only_refs: plan.typeOnlyRefs,
+          ambiguities: plan.ambiguities,
+        };
+      } catch (e: any) {
+        const msg = String(e?.message ?? e);
+        if (/symbol not found/i.test(msg)) return notFound(old_name);
+        return { error: 'rename_preview_failed', query: old_name, detail: msg.slice(0, 300) };
+      }
+    },
+
+    async rag_status() {
+      // Read-only: delegates to the extracted readRagStatus (reads only
+      // .coderef/rag-index.json + coderef-vectors.json). Reports cleanly when no
+      // index exists (health='missing', metadata=null) — never throws for that.
+      try {
+        const status = await readRagStatus(projectDir);
+        return { ...status };
+      } catch (e: any) {
+        return {
+          error: 'rag_status_failed',
+          detail: String(e?.message ?? e).slice(0, 300),
+        };
+      }
+    },
+
+    async reindex({ incremental } = {}) {
+      // .coderef-WRITE: DELEGATES to the extracted runPopulate, which writes
+      // ONLY under <projectDir>/.coderef/ (no new write path, no output-dir
+      // arg). `incremental` is accepted for CLI-ergonomic parity, but a graph-
+      // safe incremental populate needs a changed-file list the MCP surface
+      // does not carry; with none supplied the pipeline runs a full rebuild
+      // (populate's default) — always safe and complete. Reported as `mode`.
+      try {
+        const summary = await runPopulate(defaultPopulateArgs(projectDir), {
+          programmatic: true,
+        });
+        return {
+          ...summary,
+          mode: 'full',
+          incremental_requested: incremental ?? false,
+          writes_confined_to: path.join(projectDir, '.coderef'),
+        };
+      } catch (e: any) {
+        return {
+          error: 'reindex_failed',
+          detail: String(e?.message ?? e).slice(0, 500),
+          hint: 'Populate failed (validation gate, missing source, or layer enum). See server stderr for the specific validation errors.',
+        };
+      }
+    },
+
+    async rag_index() {
+      // .coderef-WRITE: DELEGATES to the extracted runRagIndex over LOCAL Ollama
+      // (defaultRagIndexArgs pins provider='ollama' — NO cloud fallback). Writes
+      // only .coderef/rag-index.json + the vector store. Errors CLEANLY when the
+      // embedder/Ollama is unreachable (mirrors rag_search's embedding_unavailable
+      // envelope) instead of crashing the server.
+      try {
+        const summary = await runRagIndex(defaultRagIndexArgs(projectDir), {
+          programmatic: true,
+        });
+        // The orchestrator catches embedding failures INTERNALLY and returns
+        // status='failed' with zero chunks rather than throwing — the exact
+        // shape produced when Ollama is unreachable (every batch embed fails).
+        // Surface that as a clean embedding_unavailable envelope so an agent
+        // never mistakes a zero-chunk failed run for a successful index.
+        if (summary.status === 'failed' || summary.chunksIndexed === 0) {
+          return {
+            error: 'embedding_unavailable',
+            provider: 'ollama',
+            status: summary.status,
+            chunksIndexed: summary.chunksIndexed,
+            chunksFailed: summary.chunksFailed,
+            hint: 'No chunks were embedded. Is Ollama running with the embedding model pulled? (ollama serve; ollama pull nomic-embed-text). Also ensure populate-coderef ran first so .coderef/validation-report.json exists.',
+          };
+        }
+        return {
+          ...summary,
+          provider: 'ollama',
+          writes_confined_to: path.join(projectDir, '.coderef'),
+        };
+      } catch (e: any) {
+        // A THROW (e.g. validation gate refused, RAG deps missing) also lands
+        // here — surfaced cleanly, never crashing the server.
+        return {
+          error: 'embedding_unavailable',
+          provider: 'ollama',
+          detail: String(e?.message ?? e).slice(0, 300),
+          hint: 'Is Ollama running with the embedding model pulled? (ollama serve; ollama pull nomic-embed-text). Also ensure populate-coderef ran first so .coderef/validation-report.json exists.',
+        };
+      }
+    },
   };
 }
 
@@ -1819,10 +1986,90 @@ async function main(): Promise<void> {
     async ({ element, limit }) => toContent(handlers.find_all_references({ element, limit })),
   );
 
+  // ---- CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6) --------------------------
+  // Three READ tools + two .coderef-WRITE tools. SAFETY CONTRACT:
+  //  - rename_preview is DRY-RUN ONLY (no apply arg, writes nothing). Source
+  //    mutation (coderef-rename --apply) stays CLI-only.
+  //  - reindex + rag_index WRITE, but every byte is confined to
+  //    <projectDir>/.coderef/ because they delegate to the populate / rag-index
+  //    pipelines (which only write .coderef/) — never a new write path.
+
+  server.registerTool(
+    'pack_context',
+    {
+      title: 'Pack context bundle',
+      description:
+        'READ. Build a single context bundle for a focus element: the focus source (uncompressed, first) + its transitive dependency closure, admitted closest-first while a running token total stays under budget. Dependencies are signature-compressed by default; pass full_deps=true for full dependency windows. Returns { bundle, manifest }; manifest.dropped records anything trimmed. Reads .coderef/graph.json + source; writes nothing.',
+      inputSchema: {
+        element: z.string().describe('Focus element: codeRefId or element name to pack context around'),
+        token_budget: z.number().optional().describe('Max bundle tokens (default 8000). Deps are admitted closest-first until this fills.'),
+        full_deps: z.boolean().optional().describe('Include FULL dependency source windows instead of the default signature-compressed skeletons.'),
+      },
+    },
+    async ({ element, token_budget, full_deps }) =>
+      toContent(handlers.pack_context({ element, token_budget, full_deps })),
+  );
+
+  server.registerTool(
+    'rename_preview',
+    {
+      title: 'Rename preview (dry-run)',
+      description:
+        'READ / PREVIEW-ONLY. Plan a project-wide symbol rename over .coderef/graph.json: returns declaration + reference SITES (call/import), type-only refs, and any ambiguities the applier would guard. Writes NOTHING and has NO apply path — source mutation stays exclusively on the coderef-rename CLI (--apply). Use this to inspect blast radius before running the CLI.',
+      inputSchema: {
+        old_name: z.string().describe('Existing symbol name (or codeRefId) to rename'),
+        new_name: z.string().describe('Proposed new name (used only to shape the plan; nothing is written)'),
+      },
+    },
+    async ({ old_name, new_name }) =>
+      toContent(handlers.rename_preview({ old_name, new_name })),
+  );
+
+  server.registerTool(
+    'rag_status',
+    {
+      title: 'RAG index status',
+      description:
+        'READ. Report the RAG index + vector-store metadata and health from .coderef/rag-index.json + coderef-vectors.json: provider/store/model, chunk counts, index/vectors existence, and a healthy|partial|missing verdict. Reports cleanly (health="missing") when the project has not been indexed. Reads only; writes nothing.',
+      inputSchema: {},
+    },
+    async () => toContent(await handlers.rag_status()),
+  );
+
+  server.registerTool(
+    'reindex',
+    {
+      title: 'Regenerate .coderef substrate (WRITE)',
+      // WRITE tool: writes are CONFINED to <projectDir>/.coderef/ — it delegates
+      // to the populate pipeline, which only writes there (no source mutation,
+      // no output-dir arg).
+      description:
+        'WRITE (.coderef/ only). Regenerate the .coderef/ intelligence substrate (index/graph/validation-report/etc.) by running the populate pipeline for this project. All writes are confined to <projectDir>/.coderef/. Returns a compact summary (elements, files, edges, duration, outputPath). `incremental` is accepted for parity but a full rebuild is always run over MCP (no changed-file list is carried). Does NOT mutate source files.',
+      inputSchema: {
+        incremental: z.boolean().optional().describe('Request an incremental rebuild (accepted for CLI parity; MCP runs a full rebuild since no changed-file list is supplied).'),
+      },
+    },
+    async ({ incremental }) => toContent(await handlers.reindex({ incremental })),
+  );
+
+  server.registerTool(
+    'rag_index',
+    {
+      title: 'Build RAG index (WRITE, local Ollama)',
+      // WRITE tool: writes are CONFINED to <projectDir>/.coderef/ — it delegates
+      // to the rag-index pipeline (writes rag-index.json + the vector store
+      // there). Local Ollama ONLY — no cloud LLM fallback.
+      description:
+        'WRITE (.coderef/ only). Build the semantic RAG index for this project using LOCAL Ollama embeddings (no cloud LLM). Writes .coderef/rag-index.json + the vector store; nothing outside .coderef/. Requires populate-coderef to have run first (reads validation-report.json). Errors cleanly (embedding_unavailable) when Ollama is unreachable — the server keeps running. Returns { status, chunksIndexed, provider, store, durationMs, indexPath }.',
+      inputSchema: {},
+    },
+    async () => toContent(await handlers.rag_index()),
+  );
+
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (18 read-only tools)`,
+    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (23 tools — read + .coderef-write)`,
   );
 }
 
