@@ -28,6 +28,11 @@ import {
   type TextGenerationOptions
 } from './embedding-text-generator.js';
 import type { CodeChunkMetadata } from '../vector/vector-store.js';
+import {
+  SparseRetriever,
+  reciprocalRankFusion,
+  type RankedList
+} from './sparse-retriever.js';
 
 /**
  * A search result with code metadata
@@ -73,6 +78,23 @@ export interface SearchOptions {
 
   /** Namespace for multi-tenancy */
   namespace?: string;
+
+  /**
+   * Hybrid retrieval toggle (STUB-Q7MRD6). When true (the default), a sparse/
+   * BM25 lexical leg runs in parallel with the dense/embedding leg and the two
+   * ranked lists are fused via reciprocal-rank fusion before results are
+   * returned. Set false to force embedding-only retrieval (A/B testing, or when
+   * the store cannot enumerate its corpus). Falls back to embedding-only
+   * automatically if the vector store does not implement listAll().
+   */
+  hybrid?: boolean;
+
+  /**
+   * Reciprocal-rank-fusion constant (default 60, the standard TREC value).
+   * Higher values flatten the contribution of lower-ranked hits. Only used
+   * when hybrid retrieval is active.
+   */
+  rrfK?: number;
 }
 
 /**
@@ -121,11 +143,56 @@ export class SemanticSearchService {
   private textGenerator: EmbeddingTextGenerator;
   private graph?: DependencyGraph;
 
-  constructor(llmProvider: LLMProvider, vectorStore: VectorStore, graph?: DependencyGraph) {
+  /** Whether hybrid (dense + sparse/BM25 RRF) retrieval is on by default. */
+  private hybridDefault: boolean;
+
+  /**
+   * Lazily-built sparse index, cached across searches on this service instance.
+   * `null` = not yet attempted; a Promise = build in flight or done; the
+   * resolved value is `undefined` when the store cannot enumerate its corpus
+   * (no listAll), which pins this service to embedding-only.
+   */
+  private sparsePromise: Promise<SparseRetriever | undefined> | null = null;
+
+  constructor(
+    llmProvider: LLMProvider,
+    vectorStore: VectorStore,
+    graph?: DependencyGraph,
+    options?: { hybrid?: boolean }
+  ) {
     this.llmProvider = llmProvider;
     this.vectorStore = vectorStore;
     this.textGenerator = new EmbeddingTextGenerator();
     this.graph = graph;
+    // Hybrid on by default (STUB-Q7MRD6); callers opt out via options.hybrid
+    // or per-search via SearchOptions.hybrid.
+    this.hybridDefault = options?.hybrid ?? true;
+  }
+
+  /**
+   * Build (once) and return the sparse/BM25 retriever over the store's corpus,
+   * or undefined if the store cannot enumerate its records. Cached on the
+   * instance so repeated searches reuse the index.
+   */
+  private getSparseRetriever(namespace?: string): Promise<SparseRetriever | undefined> {
+    if (this.sparsePromise) return this.sparsePromise;
+    this.sparsePromise = (async () => {
+      // Capability probe: only stores that hold their corpus locally implement
+      // listAll(). Remote stores (Pinecone/Chroma) omit it → embedding-only.
+      const listAll = this.vectorStore.listAll?.bind(this.vectorStore);
+      if (!listAll) return undefined;
+      try {
+        const records = await listAll(namespace);
+        if (!records || records.length === 0) return undefined;
+        return SparseRetriever.fromRecords(
+          records.map((r) => ({ id: r.id, metadata: r.metadata }))
+        );
+      } catch {
+        // Any enumeration failure degrades to embedding-only, never throws.
+        return undefined;
+      }
+    })();
+    return this.sparsePromise;
   }
 
   /**
@@ -182,19 +249,76 @@ export class SemanticSearchService {
       vectorOptions.filter = filter;
     }
 
-    // Query vector store
-    const queryResult = await this.vectorStore.query(
-      queryEmbedding,
-      vectorOptions
-    );
+    const topK = options?.topK ?? 10;
+    const hybrid = options?.hybrid ?? this.hybridDefault;
 
-    // Convert to search results
-    const results: SearchResult[] = queryResult.matches.map((match) => ({
-      coderef: match.id,
-      score: match.score,
-      metadata: match.metadata as CodeChunkMetadata,
-      snippet: match.metadata?.documentation
-    }));
+    // Resolve the sparse leg FIRST (cheap after the first call — cached). This
+    // determines whether fusion will actually happen: only stores that can
+    // enumerate their corpus (listAll) support the BM25 leg. When fusion is off
+    // we must NOT over-fetch the dense leg — the dense topK stays exactly the
+    // caller's topK so embedding-only behavior is byte-for-byte unchanged.
+    const sparseRetriever = hybrid
+      ? await this.getSparseRetriever(options?.namespace)
+      : undefined;
+    const willFuse = hybrid && !!sparseRetriever;
+
+    // Dense (embedding) leg. When fusion WILL run, over-fetch so fusion has a
+    // deeper candidate pool than the final topK (a lexical-only hit may sit
+    // below rank topK in the dense list). Otherwise fetch exactly topK.
+    const denseTopK = willFuse ? Math.max(topK * 4, 40) : topK;
+    const queryResult = await this.vectorStore.query(queryEmbedding, {
+      ...vectorOptions,
+      topK: denseTopK
+    });
+
+    // Dense results as a ranked list.
+    const denseMatches = queryResult.matches;
+
+    let results: SearchResult[];
+    let fusionApplied = false;
+
+    if (willFuse && sparseRetriever) {
+      // Sparse leg over the same corpus; over-fetch symmetrically.
+      const sparseHits = sparseRetriever.search(enhancedQuery, denseTopK);
+
+      // Apply the same metadata filter to sparse hits so hybrid respects
+      // --lang/--type/--layer/etc. exactly as the dense leg does.
+      const sparseFiltered = Object.keys(filter).length > 0
+        ? sparseHits.filter((h) => this.matchesFilter(h.metadata, filter))
+        : sparseHits;
+
+      const denseList: RankedList = {
+        order: denseMatches.map((m) => m.id),
+        metaById: new Map(denseMatches.map((m) => [m.id, m.metadata as CodeChunkMetadata])),
+        scoreById: new Map(denseMatches.map((m) => [m.id, m.score]))
+      };
+      const sparseList: RankedList = {
+        order: sparseFiltered.map((h) => h.id),
+        metaById: new Map(sparseFiltered.map((h) => [h.id, h.metadata])),
+        scoreById: new Map(sparseFiltered.map((h) => [h.id, h.score]))
+      };
+
+      const fused = reciprocalRankFusion([denseList, sparseList], {
+        rrfK: options?.rrfK,
+        topK
+      });
+
+      results = fused.map((f) => ({
+        coderef: f.id,
+        score: f.score,
+        metadata: f.metadata,
+        snippet: f.metadata?.documentation
+      }));
+      fusionApplied = true;
+    } else {
+      // Embedding-only path (hybrid off, or store not enumerable).
+      results = denseMatches.slice(0, topK).map((match) => ({
+        coderef: match.id,
+        score: match.score,
+        metadata: match.metadata as CodeChunkMetadata,
+        snippet: match.metadata?.documentation
+      }));
+    }
 
     const searchTimeMs = Date.now() - startTime;
 
@@ -203,8 +327,25 @@ export class SemanticSearchService {
       results,
       totalResults: results.length,
       searchTimeMs,
-      filtered: Object.keys(filter).length > 0
+      filtered: Object.keys(filter).length > 0 || fusionApplied
     };
+  }
+
+  /**
+   * Metadata-filter predicate mirroring the vector store's own matchesFilter
+   * (json-store.ts). Applied to sparse hits so hybrid retrieval honors the same
+   * --lang/--type/--layer/etc. filters the dense leg passes to the store.
+   */
+  private matchesFilter(
+    metadata: CodeChunkMetadata,
+    filter: Partial<CodeChunkMetadata>
+  ): boolean {
+    for (const [key, value] of Object.entries(filter)) {
+      if (value !== undefined && (metadata as Record<string, unknown>)[key] !== value) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**

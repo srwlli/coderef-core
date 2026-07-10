@@ -49,6 +49,9 @@ interface CliArgs {
   // --constraint key:value generalized filter (DR-PHASE-7-D followup).
   constraint?: string;
   maxTokens?: number;
+  // STUB-Q7MRD6: hybrid (dense + BM25 RRF) retrieval. Default on; --no-hybrid
+  // forces embedding-only for A/B.
+  hybrid: boolean;
   json: boolean;
   help: boolean;
 }
@@ -79,6 +82,9 @@ function parseArgs(argv: string[]): CliArgs {
     // Recognized keys: type, file, lang, layer, capability, exported.
     constraint: { kind: 'string' },
     'max-tokens': { kind: 'int' },
+    // STUB-Q7MRD6: hybrid retrieval is on by default; --no-hybrid opts out.
+    hybrid: { kind: 'boolean' },
+    'no-hybrid': { kind: 'boolean' },
     json: { kind: 'boolean', aliases: ['-j'] },
   });
 
@@ -116,6 +122,10 @@ function parseArgs(argv: string[]): CliArgs {
     capability: v.get('capability') as string | undefined,
     constraint: v.get('constraint') as string | undefined,
     maxTokens: v.get('max-tokens') as number | undefined,
+    // Hybrid on by default; --no-hybrid (or --hybrid=false) forces embedding-only.
+    hybrid: (v.get('no-hybrid') as boolean | undefined)
+      ? false
+      : ((v.get('hybrid') as boolean | undefined) ?? true),
     json: (v.get('json') as boolean | undefined) ?? false,
     help: (v.get('help') as boolean | undefined) ?? false,
   };
@@ -145,6 +155,7 @@ OPTIONS:
   --capability <value>         Filter by semantic capability slug (kebab-case)
   --constraint <key:value>     Generalized filter shorthand. Keys: type, file, lang, layer, capability, exported
   --max-tokens <number>        Truncate output to approximately this many tokens (chars/4 estimate)
+  --no-hybrid                  Force embedding-only retrieval (default: hybrid dense+BM25 RRF fusion)
   -j, --json                   Output results as JSON
   -h, --help                   Show this help message
 
@@ -285,6 +296,8 @@ async function main(): Promise<void> {
     // Build search options
     const searchOptions: any = {
       topK: args.topK,
+      // STUB-Q7MRD6: hybrid dense+sparse fusion (default on).
+      hybrid: args.hybrid,
     };
 
     if (args.minScore !== undefined) {

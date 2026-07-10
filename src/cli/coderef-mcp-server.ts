@@ -459,7 +459,7 @@ export interface ToolHandlers {
   what_exports(args: { file: string; limit?: number }): Record<string, unknown>;
   // v2 flow tools (P2)
   diff_impact(args: { ref?: string; max_depth?: number; limit?: number }): Record<string, unknown>;
-  rag_search(args: { query: string; limit?: number }): Promise<Record<string, unknown>>;
+  rag_search(args: { query: string; limit?: number; hybrid?: boolean }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number }): Record<string, unknown>;
   what_this_imports(args: { element: string; limit?: number }): Record<string, unknown>;
@@ -1166,7 +1166,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
-    async rag_search({ query, limit }) {
+    async rag_search({ query, limit, hybrid }) {
       const cap = clampLimit(limit);
       const indexMetaPath = path.join(projectDir, '.coderef', 'rag-index.json');
       let meta: { provider?: string; store?: string };
@@ -1200,12 +1200,15 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         await vectorStore.initialize();
         const { SemanticSearchService } = await import('../integration/rag/semantic-search.js');
         const searchService = new SemanticSearchService(llmProvider, vectorStore);
-        const response = await searchService.search(query, { topK: cap });
+        // STUB-Q7MRD6: hybrid dense+BM25 RRF fusion, on by default; callers can
+        // pass hybrid=false to force embedding-only (A/B).
+        const response = await searchService.search(query, { topK: cap, hybrid: hybrid ?? true });
         const results = (response?.results ?? response ?? []) as any[];
         return {
           query,
           provider,
           store,
+          hybrid: hybrid ?? true,
           total: results.length,
           results: results.slice(0, cap).map((r: any) => ({
             id: r.metadata?.coderefId ?? r.id,
@@ -1685,13 +1688,14 @@ async function main(): Promise<void> {
     {
       title: 'Semantic code search',
       description:
-        'Semantic search over the RAG index. Reads provider/store from .coderef/rag-index.json metadata so query embeddings always match the index model. Errors cleanly when no index exists or the embedder is unavailable.',
+        'Semantic search over the RAG index. Hybrid by default: fuses a dense/embedding leg with a sparse/BM25 lexical leg via reciprocal-rank fusion (better recall on exact-identifier queries). Reads provider/store from .coderef/rag-index.json metadata so query embeddings always match the index model. Errors cleanly when no index exists or the embedder is unavailable. Pass hybrid=false to force embedding-only.',
       inputSchema: {
         query: z.string().describe('Natural-language query, e.g. "where are import specifiers resolved"'),
         limit: limitArg,
+        hybrid: z.boolean().optional().describe('Hybrid dense+BM25 fusion (default true). Set false for embedding-only retrieval.'),
       },
     },
-    async ({ query, limit }) => toContent(await handlers.rag_search({ query, limit })),
+    async ({ query, limit, hybrid }) => toContent(await handlers.rag_search({ query, limit, hybrid })),
   );
 
   // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ----

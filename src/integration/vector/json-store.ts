@@ -497,6 +497,24 @@ export class JsonVectorStore implements VectorStore {
   }
 
   /**
+   * List all stored records (metadata + values), optionally namespace-filtered.
+   *
+   * Backs the sparse/BM25 retriever (STUB-Q7MRD6): it needs the full corpus of
+   * chunk metadata to build an in-process lexical index over the same ids the
+   * dense leg queries. Values are included (this store already holds them in
+   * memory) but the sparse leg ignores them.
+   */
+  async listAll(namespace?: string): Promise<VectorRecord[]> {
+    this.ensureInitialized();
+    const out: VectorRecord[] = [];
+    for (const record of Object.values(this.data.records)) {
+      if (namespace && record.namespace !== namespace) continue;
+      out.push({ id: record.id, values: record.values, metadata: record.metadata });
+    }
+    return out;
+  }
+
+  /**
    * Get provider name
    */
   getProviderName(): string {

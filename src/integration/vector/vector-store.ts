@@ -338,6 +338,22 @@ export interface VectorStore {
    * ```
    */
   fetchById(id: string, namespace?: string): Promise<VectorRecord | null>;
+
+  /**
+   * List all stored records (optional capability).
+   *
+   * Used by the sparse/BM25 retriever (STUB-Q7MRD6) to build an in-process
+   * lexical index over the same chunks the dense leg queries. Only stores that
+   * hold their corpus locally (e.g. the JSON file store) implement this; remote
+   * stores (Pinecone/Chroma) omit it, and the hybrid path gracefully falls back
+   * to embedding-only when the method is absent. Metadata-only by default —
+   * embedding `values` are not needed for lexical scoring, so the returned
+   * records may carry an empty `values` array to avoid loading vectors.
+   *
+   * @param namespace - Optional namespace filter
+   * @returns Promise resolving to all records (metadata populated; values may be empty)
+   */
+  listAll?(namespace?: string): Promise<VectorRecord[]>;
 }
 
 /**
