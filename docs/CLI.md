@@ -32,7 +32,7 @@ node dist/src/cli/index.js <command>
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
-| [`coderef-watch`](#coderef-watch) | Workspace file-watcher daemon for foundation-docs freshness | `--project-dir`, `--debounce-ms`, `--once`, `--no-pipeline`, `--json` |
+| [`coderef-watch`](#coderef-watch) | Workspace file-watcher daemon for foundation-docs freshness (incremental by default) | `--project-dir`, `--debounce-ms`, `--full`, `--once`, `--no-pipeline`, `--json` |
 | [`coderef-rag-server`](rag-http-api.md) | Always-on HTTP RAG server for cross-runtime callers (port 52849) | `--port`, `--help` |
 | [`scan-frontend-calls`](#scan-frontend-calls) | Detect frontend API calls | `--dir`, `--pattern`, `--output` |
 | [`validate-routes`](#validate-routes) | Validate API route definitions | `--dir`, `--strict`, `--fix` |
@@ -123,9 +123,9 @@ If you need cloud RAG, invoke `rag-index` directly without the
 
 ## coderef-watch
 
-Workspace file-watcher daemon for foundation-docs freshness. Watches the project via chokidar, debounces edits (default 30s), and on each flush spawns `coderef-pipeline --only scan,populate,docs`. After every flush attempt, writes `{project-dir}/.coderef/last-scan.json` atomically (temp + rename) so LLOYD can compute `doc_age_seconds = now − last_scan_at` cheaply on every pre-prompt assembly.
+Workspace file-watcher daemon for foundation-docs freshness. Watches the project via chokidar, debounces edits (default 30s), and on each flush runs a **graph-safe incremental populate by default** (STUB-6TKGW7): the debounced changed-file snapshot goes to `populate --changed-files` (re-scan only changed files, resolve against the persisted full fact set — byte-identical to a full rebuild, proven by the RISK-02 parity gate; fail-closed to a full build on the first flush when no fact set exists yet), then the `docs` (and `rag`, unless RAG is skipped) legs refresh so **all** artifacts stay fresh, not just graph/index (STUB-9DN53Q). Pass `--full` to opt back into an always-full `coderef-pipeline --only scan,populate,docs[,rag]` on every flush. After every flush attempt, writes `{project-dir}/.coderef/last-scan.json` atomically (temp + rename) so LLOYD can compute `doc_age_seconds = now − last_scan_at` cheaply on every pre-prompt assembly.
 
-WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001.
+WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001. Incremental leg: WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P5/RISK-02 + WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001 follow-ups (STUB-9DN53Q docs/RAG refresh, STUB-6TKGW7 default flip).
 
 ### Operational expectation
 
@@ -134,8 +134,11 @@ WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001.
 ### Usage
 
 ```bash
-# Daemon mode against the current workspace
+# Daemon mode against the current workspace (incremental populate + docs/RAG by default)
 npx coderef-watch --project-dir "$(pwd)"
+
+# Opt out of incremental — always-full pipeline on every flush
+npx coderef-watch --project-dir "$(pwd)" --full
 
 # Custom debounce window
 npx coderef-watch --project-dir /abs/path --debounce-ms 60000
@@ -155,7 +158,9 @@ npx coderef-watch --project-dir /abs/path --no-pipeline --json
 | `--debounce-ms <n>` | Debounce window in milliseconds | `30000` (per LLOYD D2 spec) |
 | `-l, --languages <csv>` | File extensions to watch | `ts,tsx,js,jsx,py,go,rs,java,cpp,c` |
 | `--exclude <csv>` | Additional glob patterns to exclude | `(none — defaults already exclude node_modules, dist, .git, .coderef, foundation-docs)` |
-| `--include-rag` | Also run the RAG leg on each flush | off (RAG re-index is too expensive for debounce; out of scope per WO) |
+| `--include-rag` | Also run the RAG leg on each flush (the incremental leg's RAG re-index is itself incremental — only changed files re-embed, stale vectors pruned) | off (RAG opt-in) |
+| `--incremental` | Graph-safe incremental populate + docs/RAG refresh. **Now the default** — this flag is a no-op kept for back-compat | **on (default)** |
+| `--full`, `--no-incremental` | Opt out of incremental: run the always-full pipeline (`scan,populate,docs[,rag]`) on every flush | off |
 | `--once` | Run pipeline once against the workspace and exit | off (daemon mode) |
 | `--no-pipeline` | Log change events only; do NOT spawn pipeline | off (debug) |
 | `-j, --json` | Heartbeat-only structured stdout (one JSON line per flush) | off |
@@ -314,7 +319,8 @@ npx populate-coderef ./my-project --mode full
 | `--semantic` | Legacy alias for `--semantic-registry` | `true` |
 | `--no-semantic-registry` | Remove/skip `semantic-registry.json` projection | `false` |
 | `--source-headers` | Write optional CodeRef-Semantics headers into source files. Infers `@layer` from file path patterns automatically (e.g. `src/cli/` → `cli`, `__tests__/` → `test_support`). | `false` |
-| `--overwrite-headers` | Re-write headers even if the file already has them (refreshes stale headers). Requires `--source-headers`. | `false` |
+| `--overwrite-headers` | Re-write **every** file's header even if present. Refreshes headers but can churn many unrelated files (`@used_by` refreshes + CRLF re-normalization) when only a few are actually stale — prefer `--stale-only` for a targeted refresh. Implies `--source-headers`. | `false` |
+| `--stale-only` | Refresh **only** stale-header files (`headerStatus='stale'`, i.e. `@exports` drifted from the AST). Implies `--overwrite-headers`. Regenerates just the drifted files, avoiding the full-repo rewrite/CRLF churn of a blanket `--overwrite-headers` pass. Prints `refreshed N / skipped M`. (STUB-QDXGBA) | `false` |
 | `--strict-headers` | Promote semantic-header drift (SH-1, SH-2, SH-3) from warnings to hard errors at the Phase 6 validator. `populate-coderef` exits non-zero on header drift. | `false` |
 | `--enforce-headers` | Fail (exit 1) if header coverage is below `--coverage-floor`. Prevention layer: a header-less codebase can no longer produce a green scan, so new files added without a `@coderef-semantic` header are caught at scan time instead of being silently excluded from the RAG index. | `false` |
 | `--coverage-floor <0-100>` | Minimum `header_coverage_pct` required by `--enforce-headers`. | `100` |
@@ -347,7 +353,10 @@ npx populate-coderef ./my-project --mode minimal
 # Generate optional human-facing source headers
 npx populate-coderef ./my-project --source-headers
 
-# Refresh stale headers (re-write all existing headers)
+# Refresh ONLY stale headers (targeted — recommended; touches just drifted files)
+npx populate-coderef ./my-project --stale-only
+
+# Refresh ALL headers (blanket rewrite — churns many files; use --stale-only instead)
 npx populate-coderef ./my-project --source-headers --overwrite-headers
 
 # Hard-fail on any semantic header drift (CI mode)

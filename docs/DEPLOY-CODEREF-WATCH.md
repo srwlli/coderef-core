@@ -26,9 +26,14 @@ Pick the one that matches the host. All five run the same binary with the same f
 
 Useful for first-run smoke testing and debugging. NOT recommended for long-running workspaces.
 
+> **Flush behavior (STUB-6TKGW7).** Each flush now runs a **graph-safe incremental populate by default** (re-scan only changed files — byte-identical to a full rebuild, fail-closed to full on the first flush) and then refreshes docs/RAG, so all artifacts stay fresh. This is the recommended default for long-running daemons — cheaper flushes, same artifacts. Add `--full` to force an always-full pipeline on every flush.
+
 ```bash
-# From the workspace root
+# From the workspace root (incremental populate + docs/RAG by default)
 npx coderef-watch --project-dir "$(pwd)"
+
+# Force an always-full pipeline on every flush (opt out of incremental)
+npx coderef-watch --project-dir "$(pwd)" --full
 
 # Or with a non-default debounce window
 npx coderef-watch --project-dir "$(pwd)" --debounce-ms 60000
