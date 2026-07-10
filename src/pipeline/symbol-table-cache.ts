@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability pipeline-symbol-table-cache
- * @exports FileFactBundle, IncrementalFactSet, serializeFactSet, deserializeFactSet, writeFactSet, readFactSet, mergeChangedFacts, FACT_SET_FILENAME
+ * @exports FACT_SET_FILENAME, FileFactBundle, IncrementalFactSet, buildFactSet, serializeFactSet, deserializeFactSet, factSetPath, writeFactSet, readFactSet, mergeChangedFacts
  */
 
 /**

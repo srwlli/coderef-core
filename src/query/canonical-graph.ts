@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability canonical-graph-query
- * @exports CanonicalGraphError, CanonicalNode, NodeResolution, PathResult, CanonicalGraphQuery, loadCanonicalGraph
+ * @exports CanonicalGraphError, CanonicalNode, NodeResolution, PathResult, CanonicalGraphQuery, ALL_PATHS_MAX, loadCanonicalGraph
  * @used_by src/cli/coderef-query.ts, src/cli/coderef-analyze.ts
  */
 
