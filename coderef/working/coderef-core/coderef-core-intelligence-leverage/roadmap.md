@@ -1,10 +1,19 @@
 # Roadmap — coderef-core-intelligence-leverage
 
+> **⚠ SUPERSEDED (2026-07-10) — STALE ROUTE, terminal-closed.**
+> This roadmap's phases were marked `not_started` but the work shipped and was never
+> reconciled: **P1** `.github/workflows/ci.yml` exists · **P2** rag-index provider default
+> is "ollama by default — local-only" · **P3** `src/cli/coderef-mcp-server.ts` exists with
+> 23 registered tools (extended in the genre WO P6). Live successor: **coderef-core-next**
+> (P5 RAG-quality active). Closed during DISPATCH-2026-07-09-CODEREF-CORE-002 roadmap
+> triage (operator ruling: close stale + surface next's gap). See `roadmap.json`
+> `superseded_note` for full provenance.
+
 **Owner:** CODEREF-CORE
 **Created:** 2026-06-12T11:00:00Z
-**Updated:** 2026-06-12T11:00:00Z
+**Updated:** 2026-07-10T08:00:00Z
 **Current phase:** 1
-**Status:** active
+**Status:** superseded
 **Workorder:** WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 (parent stub STUB-DF3PBN)
 
 Origin: honest review of coderef-core (2026-06-12) + leverage plan. Thesis: stop competing

@@ -4,7 +4,10 @@
   "created": "2026-06-12T11:00:00Z",
   "updated": "2026-06-12T11:00:00Z",
   "current_phase": 1,
-  "status": "active",
+  "status": "superseded",
+  "superseded_at": "2026-07-10T08:00:00Z",
+  "superseded_by": "coderef-core-next + WO-...-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 + WO-GENRE-FEATURE-EXTRACTION-PROGRAM-001",
+  "superseded_note": "STALE ROUTE — terminal-closed during DISPATCH-2026-07-09-CODEREF-CORE-002 structure-roadmap triage. Phases were marked not_started but the work shipped and was never reconciled: P1 CI-WORKFLOW (.github/workflows/ci.yml exists), P2 OLLAMA-DEFAULT (rag-index provider default is 'ollama by default — local-only'), P3 MCP-SERVER-BIN (src/cli/coderef-mcp-server.ts exists with 23 registered tools, extended in the genre WO P6). The live successor is coderef-core-next (P5 RAG-quality active). Operator ruling 2026-07-10 (close stale + surface next's gap).",
   "phases": [
     {
       "phase": 1,
