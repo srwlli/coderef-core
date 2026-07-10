@@ -22,6 +22,10 @@ import type { ExportedGraph } from '../export/graph-exporter.js';
 
 type GraphNode = ExportedGraph['nodes'][number];
 import { ContextTracker } from '../context/context-tracker.js';
+import {
+  estimateTokens as estTokens,
+  compressStructurePreserving,
+} from '../context/token-compress.js';
 
 /**
  * AI query types
@@ -251,10 +255,12 @@ Please provide relevant analysis and recommendations.`,
   }
 
   /**
-   * Estimate tokens (rough approximation: 1 token ≈ 4 characters)
+   * Estimate tokens (rough approximation: 1 token ≈ 4 characters).
+   * Thin wrapper over the shared token-compress primitive so internal
+   * call-sites are unchanged while the logic lives in one place.
    */
   private estimateTokens(text: string): number {
-    return Math.ceil(text.length / 4);
+    return estTokens(text);
   }
 
   /**
@@ -271,51 +277,11 @@ Please provide relevant analysis and recommendations.`,
     prompt: string,
     budget: number
   ): { optimized: string; truncated: boolean } {
-    if (this.estimateTokens(prompt) <= budget) {
-      return { optimized: prompt, truncated: false };
-    }
-
-    const lines = prompt.split('\n');
-    const SIGNATURE_RE = /^\s*(function |class |interface |type |const |let |var |export |import |async |private |public |protected |#|##|###)/;
-    const BODY_SKIP_RE = /^\s{2,}[^#\-*\s]/; // indented non-list, non-heading lines
-
-    // Pass 1: keep all signature/heading lines; drop body lines to meet budget.
-    const kept: string[] = [];
-    let inBody = false;
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      if (line.trim() === '') {
-        inBody = false;
-        kept.push(line);
-        continue;
-      }
-      if (SIGNATURE_RE.test(line)) {
-        inBody = true;
-        kept.push(line);
-        continue;
-      }
-      if (inBody && BODY_SKIP_RE.test(line)) {
-        // Drop body line — record placeholder only once per gap
-        if (kept[kept.length - 1] !== '  // ...') kept.push('  // ...');
-        continue;
-      }
-      kept.push(line);
-    }
-
-    let result = kept.join('\n');
-
-    // Pass 2: if still over budget, hard-truncate at last section boundary.
-    if (this.estimateTokens(result) > budget) {
-      const charLimit = Math.floor(budget * 4); // 1 token ≈ 4 chars
-      result = result.substring(0, charLimit);
-      const lastHeading = result.lastIndexOf('\n##');
-      const lastBlank = result.lastIndexOf('\n\n');
-      const cutAt = Math.max(lastHeading, lastBlank);
-      if (cutAt > charLimit * 0.7) result = result.substring(0, cutAt);
-    }
-
-    result += '\n\n[Context truncated to fit token limit]';
-    return { optimized: result, truncated: true };
+    // Delegates to the shared token-compress primitive (extracted verbatim
+    // from the original two-pass logic). Adapt the return shape from
+    // { text, truncated } to this method's { optimized, truncated } contract.
+    const { text, truncated } = compressStructurePreserving(prompt, budget);
+    return { optimized: text, truncated };
   }
 
   /**
