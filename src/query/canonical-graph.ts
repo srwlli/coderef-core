@@ -214,6 +214,35 @@ export class CanonicalGraphQuery {
     return out;
   }
 
+  /**
+   * Inbound resolved call+import reference SITES (per-edge, with line).
+   *
+   * Unlike callersOf/importersOf (which dedupe to unique neighbor NODES and so
+   * collapse multiple call sites in one caller into a single entry), this
+   * returns every distinct (file, line, relationship) triple at which the
+   * resolution is referenced — the span granularity a rename needs. Read-only.
+   */
+  referenceSitesOf(
+    resolution: NodeResolution,
+  ): Array<{ file: string; line: number; relationship: string }> {
+    const ids = this.idSetOf(resolution);
+    const seen = new Set<string>();
+    const sites: Array<{ file: string; line: number; relationship: string }> = [];
+    for (const id of ids) {
+      for (const edge of this.inbound.get(id) ?? []) {
+        const rel = edge.relationship ?? '';
+        if (rel !== 'call' && rel !== 'import') continue;
+        const loc = edge.sourceLocation;
+        if (!loc || typeof loc.file !== 'string' || typeof loc.line !== 'number') continue;
+        const key = `${loc.file}::${loc.line}::${rel}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        sites.push({ file: loc.file, line: loc.line, relationship: rel });
+      }
+    }
+    return sites;
+  }
+
   /** Who calls the target? (inbound call edges) */
   callersOf(resolution: NodeResolution): CanonicalNode[] {
     return this.nodesOf(this.collectNeighbors(this.idSetOf(resolution), 'inbound', CALL).keys());
