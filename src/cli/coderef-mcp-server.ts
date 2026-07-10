@@ -49,6 +49,10 @@ import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { z } from 'zod';
 import type { ExportedGraph } from '../export/graph-exporter.js';
+// STUB-2CM92P: canonical ValidationReport shape (type-only — erased at compile,
+// no runtime coupling), replacing the former hand-mirrored local interface that
+// drifted from canonical and broke tsconfig.cli.json on every field change.
+import type { ValidationReport } from '../pipeline/output-validator.js';
 import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 
@@ -94,38 +98,9 @@ interface IndexData {
   elements: IndexElement[];
 }
 
-/**
- * The locked validation report (mirror of output-validator.ts ValidationReport,
- * kept in lockstep by hand under the additive-only rule). Optional fields stay
- * compatible with pre-bump artifacts on disk: *_src_count (STUB-K5YBFN),
- * provisional_count (STUB-6CWWHQ Phase 2), and the four resolution rates
- * (STUB-CXZ7VZ Phase 5) are all `?` so a stale report.json still parses — the
- * consumers fall back to null when a rate is absent.
- */
-interface ValidationReport {
-  valid_edge_count: number;
-  unresolved_count: number;
-  ambiguous_count: number;
-  external_count: number;
-  builtin_count: number;
-  unresolved_src_count?: number;
-  ambiguous_src_count?: number;
-  // STUB-6CWWHQ Phase 2: optional for compat with pre-bump artifacts on disk.
-  provisional_count?: number;
-  header_defined_count: number;
-  header_missing_count: number;
-  header_stale_count: number;
-  header_partial_count: number;
-  header_layer_mismatch_count: number;
-  header_export_mismatch_count: number;
-  header_coverage_pct: number;
-  // STUB-CXZ7VZ Phase 5: resolution reconciliation rates (see output-validator.ts
-  // for exact denominators). Optional for compat with pre-bump artifacts.
-  resolution_rate?: number;
-  resolved_of_resolvable?: number;
-  ambiguous_rate?: number;
-  provisional_rate?: number;
-}
+// ValidationReport is imported (type-only) from output-validator.ts at the top
+// of this file (STUB-2CM92P) — the former hand-mirrored local interface lived
+// here and is now retired.
 
 // ---- artifact cache (mtime-invalidated) ----------------------------------------
 
