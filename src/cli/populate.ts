@@ -49,6 +49,15 @@ interface CliArgs {
   semanticRegistry: boolean;
   sourceHeaders: boolean;
   overwriteHeaders: boolean;
+  /**
+   * STUB-QDXGBA: scope the header refresh to ONLY files with a stale header
+   * (headerStatus==='stale', i.e. @exports disagrees with the AST). Implies
+   * --overwrite-headers. Without this, --overwrite-headers rewrites EVERY file's
+   * header block, which can churn dozens of unrelated files (@used_by refreshes +
+   * CRLF re-normalization) when only a handful are actually stale — the P7
+   * blast-radius trap. --stale-only regenerates just the drifted files.
+   */
+  staleOnly: boolean;
   strictHeaders: boolean;
   /**
    * When true, fail (exit 1) if header coverage is below `coverageFloor`.
@@ -97,6 +106,7 @@ function parseArgs(argv: string[]): CliArgs {
     semanticRegistry: true,
     sourceHeaders: false,
     overwriteHeaders: false,
+    staleOnly: false,
     strictHeaders: false,
     enforceHeaders: false,
     coverageFloor: 100,
@@ -189,6 +199,15 @@ function parseArgs(argv: string[]): CliArgs {
         args.overwriteHeaders = true;
         break;
 
+      case '--stale-only':
+        // STUB-QDXGBA: refresh ONLY stale-header files. Implies the overwrite
+        // path (you can only fix a stale header by rewriting it) which itself
+        // implies --source-headers.
+        args.sourceHeaders = true;
+        args.overwriteHeaders = true;
+        args.staleOnly = true;
+        break;
+
       case '--strict-headers':
         args.strictHeaders = true;
         break;
@@ -243,7 +262,9 @@ OPTIONS:
   --semantic-registry          Generate semantic-registry.json projection (default: on)
   --no-semantic-registry       Skip semantic-registry.json projection
   --source-headers             Write optional CodeRef-Semantics headers into source files (default: off)
-  --overwrite-headers          Re-write headers even if file already has them (refreshes stale headers)
+  --overwrite-headers          Re-write EVERY file's header even if present (refreshes headers; may churn many files)
+  --stale-only                 Refresh ONLY stale-header files (@exports drifted from AST); implies --overwrite-headers.
+                               Avoids the full-repo rewrite/CRLF churn of a blanket --overwrite-headers pass.
   -h, --help                   Show this help message
 
 MODES:
@@ -544,10 +565,26 @@ async function run(args: CliArgs): Promise<void> {
         elementsByFile.set(element.file, existing);
       }
 
+      let staleRefreshed = 0;
+      let staleSkipped = 0;
       for (const [file, elements] of elementsByFile) {
+        // STUB-QDXGBA: --stale-only regenerates only files whose header is stale
+        // (any element with headerStatus==='stale' — @exports drifted from AST),
+        // avoiding the full-repo rewrite/CRLF churn of a blanket --overwrite pass.
+        if (args.staleOnly && !elements.some(e => e.headerStatus === 'stale')) {
+          staleSkipped++;
+          continue;
+        }
         const headers = headerGenerator.generateHeadersFromElements(elements);
         if (headers.length === 0) continue;
         await headerGenerator.insertHeaders(path.join(args.projectDir, file), headers);
+        staleRefreshed++;
+      }
+      if (args.staleOnly && !args.json) {
+        console.log(
+          `[source-headers] --stale-only: refreshed ${staleRefreshed} stale-header file(s), ` +
+            `skipped ${staleSkipped} up-to-date file(s).`,
+        );
       }
     }
 
