@@ -65,8 +65,15 @@ interface CliArgs {
    * Graph-safe incremental populate (P5, ADJ-03). When set, a flush passes its
    * debounced changed-file snapshot to `populate --changed-files` instead of a
    * full pipeline — re-scanning only changed files and resolving against the
-   * persisted full fact set (byte-identical to a full rebuild). Opt-in; default
-   * OFF (the full pipeline stays the safe default).
+   * persisted full fact set (byte-identical to a full rebuild).
+   *
+   * STUB-6TKGW7: now the DEFAULT (was opt-in / default OFF). Safe to default
+   * because incremental is (a) byte-identical to a full rebuild by construction
+   * and proven by the RISK-02 parity gate, (b) fail-closed — it falls back to a
+   * full run() on the first flush when no fact set exists yet, and (c) as of
+   * STUB-9DN53Q artifact-complete — it now refreshes docs/RAG too, not just
+   * graph/index. `--full` opts back into the always-full pipeline; `--incremental`
+   * is retained as an explicit no-op for back-compat with existing invocations.
    */
   incremental: boolean;
 }
@@ -86,13 +93,17 @@ OPTIONS:
   --once                   Run the pipeline once against the current workspace and exit.
   --no-pipeline            Log change events only; do NOT spawn the pipeline.
                            Useful for debugging chokidar setup.
-  --incremental            Graph-safe incremental populate: pass the debounced
-                           changed-file snapshot to populate --changed-files
-                           (re-scan only changed files, resolve against the
-                           persisted full fact set), then refresh the docs (and
-                           RAG, unless --skip-rag) legs — both self-incremental,
-                           so ALL artifacts stay fresh, not just graph/index.
-                           Opt-in; default OFF.
+  --incremental            Graph-safe incremental populate (DEFAULT): pass the
+                           debounced changed-file snapshot to populate
+                           --changed-files (re-scan only changed files, resolve
+                           against the persisted full fact set), then refresh the
+                           docs (and RAG, unless --skip-rag) legs — both
+                           self-incremental, so ALL artifacts stay fresh, not just
+                           graph/index. Now on by default; this flag is a no-op
+                           kept for back-compat. First flush (no fact set yet)
+                           falls back to a full build.
+  --full, --no-incremental Opt out of incremental: run the always-full pipeline
+                           (scan,populate,docs[,rag]) on every flush.
   --json                   Heartbeat-only structured output to stdout (one JSON line per flush).
   -v, --verbose            Verbose logging (forwarded to coderef-pipeline).
   -h, --help               Show this help.
@@ -126,7 +137,7 @@ function parseArgs(argv: string[]): CliArgs {
     json: false,
     verbose: false,
     help: false,
-    incremental: false,
+    incremental: true,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -169,7 +180,14 @@ function parseArgs(argv: string[]): CliArgs {
         args.noPipeline = true;
         break;
       case '--incremental':
+        // STUB-6TKGW7: incremental is now the default; --incremental is retained
+        // as an explicit no-op for back-compat with existing invocations.
         args.incremental = true;
+        break;
+      case '--full':
+      case '--no-incremental':
+        // Opt back into the always-full pipeline (STUB-6TKGW7 opt-out).
+        args.incremental = false;
         break;
       case '--json':
       case '-j':
