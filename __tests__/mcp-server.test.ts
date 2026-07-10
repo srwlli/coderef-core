@@ -74,6 +74,14 @@ const FIXTURE_GRAPH: ExportedGraph = {
     // could not choose between (surfaced by unresolved_edges candidates[]).
     { id: '@Fn/src/dupcall/x.ts#doThing:1', type: 'function', name: 'doThing', file: 'src/dupcall/x.ts', line: 1, metadata: {} },
     { id: '@Fn/src/dupcall/y.ts#doThing:1', type: 'function', name: 'doThing', file: 'src/dupcall/y.ts', line: 1, metadata: {} },
+    // STUB-4NYW5W (P4): demo/example scaffolding that WOULD rank under src_only
+    // (each has a resolved outbound call -> fan_out) but must be EXCLUDED, plus a
+    // guardrail src file whose basename contains "example" that must STILL rank.
+    { id: '@Fn/demo-all-modules.ts#demoMain:1', type: 'function', name: 'demoMain', file: 'demo-all-modules.ts', line: 1, metadata: {} },
+    { id: '@Fn/examples/nextjs-api-route.ts#handler:1', type: 'function', name: 'handler', file: 'examples/nextjs-api-route.ts', line: 1, metadata: {} },
+    { id: '@Fn/src/context/example-extractor.ts#extractExample:1', type: 'function', name: 'extractExample', file: 'src/context/example-extractor.ts', line: 1, metadata: {} },
+    // Isolated sink for the P4 demo/example edges (no other test asserts on it).
+    { id: '@Fn/src/sink.ts#demoSink:1', type: 'function', name: 'demoSink', file: 'src/sink.ts', line: 1, metadata: {} },
   ],
   edges: [
     // canonical 8-field schema + legacy compat fields (source/target/type)
@@ -225,6 +233,27 @@ const FIXTURE_GRAPH: ExportedGraph = {
       evidence: { kind: 'external-import', originSpecifier: 'left-pad' } as any,
       sourceLocation: { file: 'src/dia.ts', line: 13 },
       source: '@Fn/src/dia.ts#dbot:4', target: 'left-pad', type: 'import',
+    },
+    // STUB-4NYW5W (P4): resolved outbound calls from the demo/example/guardrail
+    // sources -> an ISOLATED sink (demoSink) that no other test asserts on. This
+    // gives demoMain/handler/extractExample a fan_out so they are ELIGIBLE to rank
+    // WITHOUT perturbing helper's fan_in / what_calls / impact_of assertions. The
+    // src_only demo filter must drop the first two and keep extractExample
+    // (path-anchored, not a substring match on "example").
+    {
+      id: 'dm1', sourceId: '@Fn/demo-all-modules.ts#demoMain:1', targetId: '@Fn/src/sink.ts#demoSink:1',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'demo-all-modules.ts', line: 2 },
+      source: '@Fn/demo-all-modules.ts#demoMain:1', target: '@Fn/src/sink.ts#demoSink:1', type: 'call',
+    },
+    {
+      id: 'ex-eg1', sourceId: '@Fn/examples/nextjs-api-route.ts#handler:1', targetId: '@Fn/src/sink.ts#demoSink:1',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'examples/nextjs-api-route.ts', line: 2 },
+      source: '@Fn/examples/nextjs-api-route.ts#handler:1', target: '@Fn/src/sink.ts#demoSink:1', type: 'call',
+    },
+    {
+      id: 'eg1', sourceId: '@Fn/src/context/example-extractor.ts#extractExample:1', targetId: '@Fn/src/sink.ts#demoSink:1',
+      relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/context/example-extractor.ts', line: 2 },
+      source: '@Fn/src/context/example-extractor.ts#extractExample:1', target: '@Fn/src/sink.ts#demoSink:1', type: 'call',
     },
     // P3 (WO-AGENT-NATIVE-CAPABILITY-GAPS-001): a type-only import edge.
     // resolutionStatus='typeOnly', module-grain source, targetId OMITTED — the
@@ -518,6 +547,30 @@ describe('hotspots', () => {
     for (const h of r.hotspots) byId[h.id] = h;
     expect(byId['@Fn/src/c2.ts#cyc2:1'].fan_in).toBe(2);
     expect(byId['@Fn/__tests__/t.test.ts#tcall:1'].fan_out).toBe(1);
+  });
+
+  // STUB-4NYW5W (WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001 P4): demo/example
+  // scaffolding pollutes the src_only leverage signal (live: demo-all-modules.ts
+  // ranked in the top-8). It must be excluded under src_only, present under
+  // src_only=false, and the exclusion must be PATH-ANCHORED — a real src file
+  // whose basename merely contains "example" still ranks.
+  it('src_only excludes demo-*.ts and examples/ elements from ranking', () => {
+    const r = (handlers as any).hotspots({}) as any;
+    const ids = new Set(r.hotspots.map((h: any) => h.id));
+    // root demo-all-modules.ts and examples/ scaffolding are dropped...
+    expect(ids.has('@Fn/demo-all-modules.ts#demoMain:1')).toBe(false);
+    expect(ids.has('@Fn/examples/nextjs-api-route.ts#handler:1')).toBe(false);
+    // ...GUARDRAIL: a real src file with "example" in its basename still ranks
+    // (path-anchored filter, never a substring match on "example").
+    expect(ids.has('@Fn/src/context/example-extractor.ts#extractExample:1')).toBe(true);
+  });
+
+  it('src_only=false includes the demo/example elements', () => {
+    const r = (handlers as any).hotspots({ src_only: false }) as any;
+    const ids = new Set(r.hotspots.map((h: any) => h.id));
+    expect(ids.has('@Fn/demo-all-modules.ts#demoMain:1')).toBe(true);
+    expect(ids.has('@Fn/examples/nextjs-api-route.ts#handler:1')).toBe(true);
+    expect(ids.has('@Fn/src/context/example-extractor.ts#extractExample:1')).toBe(true);
   });
 });
 

@@ -502,6 +502,23 @@ function isTestFile(file: string | undefined): boolean {
   return TEST_FILE_RE.test(normalizeSlashes((file ?? '')));
 }
 
+/**
+ * Demo/example file detection (STUB-4NYW5W, WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001
+ * Phase 4). Under src_only, demo/example scaffolding pollutes the hotspot leverage
+ * signal — e.g. demo-all-modules.ts#main ranked in the src_only top-8 with fan_out 86,
+ * a fan-out that reflects the demo touring every module, not real architectural load.
+ *
+ * PATH-ANCHORED, never a substring match: this must NOT drop a real src file whose
+ * basename merely contains "example" (e.g. src/context/example-extractor.ts). The
+ * first arm matches an `examples/` PATH SEGMENT; the second matches a `demo-` prefixed
+ * BASENAME with a JS/TS extension (covers demo-*.ts and root demo-all-modules.ts).
+ */
+const DEMO_FILE_RE = /(^|\/)examples\/|(^|\/)demo-[^/]*\.(?:ts|tsx|js|jsx|mjs|cjs)$/;
+
+function isDemoFile(file: string | undefined): boolean {
+  return DEMO_FILE_RE.test(normalizeSlashes((file ?? '')));
+}
+
 export function buildToolHandlers(projectDir: string): ToolHandlers {
   const cache = emptyCache();
 
@@ -845,7 +862,11 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       for (const id of ids) {
         const node = cache.nodeById.get(id);
         if (!node) continue;
-        if (srcOnly && isTestFile(node.file)) continue;
+        // src_only excludes test files AND demo/example scaffolding (STUB-4NYW5W):
+        // both pollute the architectural leverage signal. src_only=false still ranks
+        // everything. Demo elements are dropped at the ranking stage only — fan-in/out
+        // is still computed over the full resolved graph above.
+        if (srcOnly && (isTestFile(node.file) || isDemoFile(node.file))) continue;
         const fi = fanIn.get(id) ?? 0;
         const fo = fanOut.get(id) ?? 0;
         ranked.push({ ...nodeSummary(node), fan_in: fi, fan_out: fo, score: fi + fo });
