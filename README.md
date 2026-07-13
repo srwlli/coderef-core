@@ -1,3 +1,9 @@
+---
+title: @coderef/core
+status: living
+updated: 2026-07-12
+---
+
 # @coderef/core
 
 > Core scanning and analysis library for the CodeRef Ecosystem
@@ -105,7 +111,7 @@ node dist/src/cli/index.js scan --dir ./src
 
 ---
 
-## Quick Start
+## Quickstart
 
 ### Basic Scanning
 
