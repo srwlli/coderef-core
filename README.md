@@ -2,6 +2,7 @@
 title: @coderef/core
 status: living
 updated: 2026-07-12
+documents: package.json
 ---
 
 # @coderef/core
@@ -11,6 +12,26 @@ updated: 2026-07-12
 [![Version](https://img.shields.io/badge/version-2.0.0-blue.svg)](package.json)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue.svg)](https://www.typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Pipeline Rebuild Status](#pipeline-rebuild-status--complete-2026-05-05)
+- [Installation](#installation)
+- [Quickstart](#quickstart)
+- [Core Modules](#core-modules)
+- [API Reference](#api-reference)
+- [Architecture](#architecture)
+- [Data Models](#data-models)
+- [Integration Examples](#integration-examples)
+- [Configuration](#configuration)
+- [Troubleshooting](#troubleshooting)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Comparables](#comparables)
+- [Resources](#resources)
+- [Support](#support)
 
 ## Overview
 
@@ -477,7 +498,7 @@ See **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** for the post-rebuild archit
 
 ### High-Level Overview
 
-```
+```text
 ┌─────────────────────────────────────────────────┐
 │         CodeRef Core Library                    │
 ├─────────────────────────────────────────────────┤
