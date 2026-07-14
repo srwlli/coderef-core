@@ -1,4 +1,5 @@
 {
+  "_comment": "coderef-core MCP server is REPO-AGNOSTIC (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001): the --project-dir launcher arg below is now OPTIONAL and acts only as a DEFAULT ANCHOR for resolving relative project_root paths. Every tool invocation must pass project_root explicitly — there is no default repo.",
   "mcpServers": {
     "coderef-core": {
       "command": "node",

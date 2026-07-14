@@ -11,12 +11,24 @@
  * .coderef/ artifacts. Most tools are READ-only; a small set of WRITE tools
  * (reindex, rag_index) regenerate the .coderef/ substrate itself.
  *
- * WRITE CONFINEMENT (contract): every write this server performs is confined to
- * <projectDir>/.coderef/. It NEVER mutates arbitrary source. This is guaranteed
- * structurally by DELEGATING to the existing populate / rag-index pipelines
- * (which only ever write .coderef/) rather than opening a new write path or an
- * output-dir argument. SOURCE mutation (coderef-rename --apply) is deliberately
- * NOT exposed: MCP offers rename only as a dry-run PREVIEW (rename_preview).
+ * REPO-AGNOSTIC per WO-MCP-REPO-AGNOSTIC-ANY-REPO-001 (2026-07-14):
+ * project_root is REQUIRED on every tool; the server resolves and serves
+ * whichever repo the caller names — pure CLI semantics. There is NO default
+ * repo, NO cwd walk-up, NO env fallback; omitting project_root is a
+ * schema-level rejection. One handler set (with its artifact cache) is
+ * memoized per distinct canonical root (handlersFor registry); the launch
+ * --project-dir arg is only an ANCHOR for resolving relative project_root
+ * paths. Resolution failures return structured { error, project_root, hint }
+ * envelopes (see RESOLUTION-DESIGN.md taxonomy) — never another repo's data.
+ *
+ * WRITE CONFINEMENT (contract): all writes (reindex, rag_index) are confined
+ * to <project_root>/.coderef/ PER TOOL CALL — writes are per-repo, never
+ * cached to the launch root. It NEVER mutates arbitrary source. This is
+ * guaranteed structurally by DELEGATING to the existing populate / rag-index
+ * pipelines (which only ever write .coderef/) rather than opening a new write
+ * path or an output-dir argument. SOURCE mutation (coderef-rename --apply) is
+ * deliberately NOT exposed: MCP offers rename only as a dry-run PREVIEW
+ * (rename_preview).
  *
  * WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 Phase 3;
  * CLI/MCP parity Phase 6 (pack_context, rename_preview, rag_status, reindex,

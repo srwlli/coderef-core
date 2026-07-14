@@ -28,7 +28,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | MCP stdio server exposing `.coderef` intelligence as 23 tools (read + `.coderef`-write) | `--project-dir` |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 23 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
@@ -589,7 +589,9 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes a project's `.coderef/` intelligence artifacts as 23 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 23 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+
+**Repo-agnostic (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001):** one running server serves ANY indexed repo. Every tool takes a **required `project_root`** argument naming the target repo root (the directory containing `.coderef/`) — pure CLI semantics, exactly as if the caller had the CLI. There is no default repo, no cwd inference, no env fallback; omitting `project_root` is a schema-level rejection.
 
 Most tools are **read-only**. Two are **`.coderef`-write** tools — `reindex` (regenerate the substrate) and `rag_index` (build the RAG index over local Ollama) — and every write they perform is confined to `<projectDir>/.coderef/`: they delegate to the `populate` / `rag-index` pipelines and never mutate source. Source-mutating rename is deliberately **not** exposed here; MCP offers only the dry-run `rename_preview` (the `coderef-rename --apply` CLI owns source mutation).
 
@@ -607,7 +609,37 @@ The server speaks JSON-RPC over stdio; all diagnostics go to stderr. It is meant
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-p, --project-dir <path>` | Project root containing `.coderef/` (also accepts first positional argument) | Current directory |
+| `-p, --project-dir <path>` | OPTIONAL DEFAULT ANCHOR: used only to resolve a *relative* per-call `project_root` (also accepts first positional argument). It never binds the tools to a default repo. | Current directory |
+
+### Per-repo queries
+
+One server, any indexed repo — name the repo per call:
+
+```
+codebase_summary(project_root="C:/repos/project-one")   → project-one's census
+codebase_summary(project_root="C:/repos/project-two")   → project-two's census
+what_exports(project_root="C:/repos/project-two", file="src/lib.ts")
+```
+
+- `project_root` is **required and mandatory** on all 23 tools. Absolute paths are used as-is; relative paths resolve against the launch anchor (`--project-dir`, default cwd).
+- One handler set (with its mtime-invalidated artifact cache) is memoized per distinct canonical root — repeated queries against the same repo are cheap, and repos never share caches.
+- Resolution failures return a structured envelope instead of another repo's data:
+
+```json
+{ "error": "<code>", "project_root": "<path you passed>", "hint": "<actionable remedy>" }
+```
+
+| Error code | Meaning / remedy |
+|---|---|
+| `project_root_nonexistent` | The path does not exist (or is not a directory) — check the path |
+| `coderef_artifacts_missing` | No `.coderef/` and auto-build not possible — run `populate-coderef <root>` first |
+| `coderef_artifacts_corrupt` | `graph.json`/`index.json` failed to parse — delete `.coderef/` and rebuild |
+| `coderef_artifacts_incomplete` | A build produced only one of graph/index — check populate output |
+| `project_root_access_denied` | Permission denied on the root — check directory permissions |
+| `project_root_symlink_loop` | Circular symlink in the path — fix the link chain |
+| `project_root_symlink_broken` | Symlink points at a nonexistent target (named in the hint) |
+
+The two `.coderef`-WRITE tools (`reindex`, `rag_index`) are likewise per-call: writes are confined to `<project_root>/.coderef/` of whichever repo the call names (CLI-parity — see the DR-002 ruling in the workorder's RESOLUTION-DESIGN.md).
 
 ### Tools
 
@@ -625,7 +657,7 @@ The server speaks JSON-RPC over stdio; all diagnostics go to stderr. It is meant
 | `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model |
 
-Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
+Every tool additionally requires `project_root` (string, absolute or anchor-relative path to the target repo root) — see **Per-repo queries** above. Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
 
 ### Registration (Claude Code)
 
@@ -638,12 +670,14 @@ Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less code
       "command": "node",
       "args": [
         "<repo>/dist/src/cli/coderef-mcp-server.js",
-        "--project-dir", "<project-to-analyze>"
+        "--project-dir", "<default-anchor>"
       ]
     }
   }
 }
 ```
+
+The `--project-dir` launcher arg is optional and acts only as a **default anchor** for relative `project_root` paths — every tool invocation names its own repo via the required `project_root` argument; there is no default repo.
 
 ### Prerequisites
 
