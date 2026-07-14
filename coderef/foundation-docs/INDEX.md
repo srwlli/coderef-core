@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,522 |
-| **Total Files** | 403 |
-| **Total Lines** | 107,789 |
+| **Total Elements** | 2,533 |
+| **Total Files** | 404 |
+| **Total Lines** | 108,320 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,13 +22,13 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 805 | 31.9% |
-| method | 992 | 39.3% |
-| interface | 410 | 16.3% |
-| class | 105 | 4.2% |
+| function | 811 | 32.0% |
+| method | 992 | 39.2% |
+| interface | 410 | 16.2% |
+| class | 106 | 4.2% |
 | type | 66 | 2.6% |
 | component | 2 | 0.1% |
-| constant | 142 | 5.6% |
+| constant | 146 | 5.8% |
 
 ---
 
@@ -38,7 +38,7 @@
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
 | 2 | `src/scanner/tree-sitter-scanner.ts` | 57 | 🔴 Very High |
-| 3 | `src/cli/coderef-mcp-server.ts` | 37 | 🟡 High |
+| 3 | `src/cli/coderef-mcp-server.ts` | 42 | 🟡 High |
 | 4 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
 | 5 | `src/query/canonical-graph.ts` | 32 | 🟡 High |
 | 6 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,522 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,533 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

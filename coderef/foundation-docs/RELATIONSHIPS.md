@@ -3,8 +3,8 @@
 **Project:** @coderef/core  
 **Version:** 2.0.0  
 **Generated:** 2026-07-14  
-**Nodes:** 2,895 elements  
-**Edges:** 31,491 dependencies  
+**Nodes:** 2,907 elements  
+**Edges:** 31,718 dependencies  
 <!-- coderef:uuid=relationships-root -->
 
 ---
@@ -24,11 +24,11 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,895 |
-| **Total Dependencies** | 31,491 |
+| **Total Elements** | 2,907 |
+| **Total Dependencies** | 31,718 |
 | **Avg Dependencies/Element** | (edges.length / nodes.length).toFixed(2) |
 | **Entry Points** | 15 |
-| **Most Referenced** | 24266 refs |
+| **Most Referenced** | 24458 refs |
 
 ---
 
@@ -38,8 +38,8 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Rank | Element | References | Type | File |
 |------|---------|------------|------|------|
-| 2 | <!-- coderef:uuid=3a5c7092-5439-5eea-b229-0bf972fc6ac8 --> `LRUCache.get` | **357** | method | `src/scanner/lru-cache.ts` |
-| 3 | <!-- coderef:uuid=3386019c-4d86-51df-a279-7419ad867305 --> `LRUCache.set` | **255** | method | `src/scanner/lru-cache.ts` |
+| 2 | <!-- coderef:uuid=3a5c7092-5439-5eea-b229-0bf972fc6ac8 --> `LRUCache.get` | **358** | method | `src/scanner/lru-cache.ts` |
+| 3 | <!-- coderef:uuid=3386019c-4d86-51df-a279-7419ad867305 --> `LRUCache.set` | **256** | method | `src/scanner/lru-cache.ts` |
 | 4 | <!-- coderef:uuid=e343c184-4fbd-51a3-b8a7-9ec6e6865960 --> `LRUCache.has` | **205** | method | `src/scanner/lru-cache.ts` |
 | 5 | <!-- coderef:uuid=7c9b7ea0-070c-5509-a24a-f12fbfb87353 --> `scanCurrentElements` | **136** | function | `src/scanner/scanner.ts` |
 | 6 | <!-- coderef:uuid=eb90e629-6848-5f36-98bc-ea35b7f360f7 --> `normalizeSlashes` | **92** | function | `src/utils/path-normalize.ts` |

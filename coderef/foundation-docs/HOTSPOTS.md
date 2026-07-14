@@ -21,10 +21,10 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 403 |
-| **Total Elements** | 2,522 |
-| **Total Lines** | 107,789 |
-| **Entry Points** | 79 |
+| **Total Files** | 404 |
+| **Total Elements** | 2,533 |
+| **Total Lines** | 108,320 |
+| **Entry Points** | 80 |
 | **Critical Functions** | 20 |
 
 ---
@@ -90,7 +90,7 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-mcp-server.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-pack.ts` |
 
-*... and 54 more entry points.*
+*... and 55 more entry points.*
 
 ---
 

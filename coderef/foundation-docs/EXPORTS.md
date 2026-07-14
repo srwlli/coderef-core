@@ -3,7 +3,7 @@
 **Project:** @coderef/core  
 **Version:** 2.0.0  
 **Generated:** 2026-07-14  
-**Total Exported:** 814 elements  
+**Total Exported:** 816 elements  
 <!-- coderef:uuid=exports-root -->
 
 ---
@@ -18,16 +18,16 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **306** | 499 | 805 |
+| function | **308** | 503 | 811 |
 | interface | **330** | 80 | 410 |
-| constant | **32** | 110 | 142 |
+| constant | **32** | 114 | 146 |
 | type | **44** | 22 | 66 |
 | component | **2** | 0 | 2 |
-| class | **100** | 5 | 105 |
+| class | **100** | 6 | 106 |
 
 ---
 
-## Exported Functions (306)
+## Exported Functions (308)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
@@ -82,7 +82,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=640edcae-5798-5444-a325-2b34810d298c --> `parseRemixRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, exports | `640edcae...` |
 | <!-- coderef:uuid=2eac99ad-00a7-506f-82d2-9c9ab7583d96 --> `extractRouteMetadata` | `src/analyzer/route-parsers.ts` | ❌ | code, filePath, exports, line, fileContent | `2eac99ad...` |
 
-*... and 256 more functions. See index.json for complete list.*
+*... and 258 more functions. See index.json for complete list.*
 
 ---
 
