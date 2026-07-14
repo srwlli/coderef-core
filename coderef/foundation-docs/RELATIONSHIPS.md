@@ -2,9 +2,9 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-06  
-**Nodes:** 2,807 elements  
-**Edges:** 30,112 dependencies  
+**Generated:** 2026-07-14  
+**Nodes:** 2,895 elements  
+**Edges:** 31,491 dependencies  
 <!-- coderef:uuid=relationships-root -->
 
 ---
@@ -24,11 +24,11 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,807 |
-| **Total Dependencies** | 30,112 |
+| **Total Elements** | 2,895 |
+| **Total Dependencies** | 31,491 |
 | **Avg Dependencies/Element** | (edges.length / nodes.length).toFixed(2) |
 | **Entry Points** | 15 |
-| **Most Referenced** | 24832 refs |
+| **Most Referenced** | 24266 refs |
 
 ---
 
@@ -38,25 +38,25 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Rank | Element | References | Type | File |
 |------|---------|------------|------|------|
-| 2 | <!-- coderef:uuid=7c9b7ea0-070c-5509-a24a-f12fbfb87353 --> `scanCurrentElements` | **136** | function | `src/scanner/scanner.ts` |
-| 3 | <!-- coderef:uuid=eb90e629-6848-5f36-98bc-ea35b7f360f7 --> `normalizeSlashes` | **91** | function | `src/utils/path-normalize.ts` |
-| 4 | <!-- coderef:uuid=8e2c4a95-d041-56b3-aecc-c42aa8da876a --> `PipelineOrchestrator` | **53** | class | `src/pipeline/orchestrator.ts` |
-| 5 | <!-- coderef:uuid=b738b18c-e096-5182-acbb-c31fd523b354 --> `isLineCommented` | **49** | function | `src/scanner/scanner.ts` |
-| 6 | <!-- coderef:uuid=74b8c20d-39d9-5a27-a13a-2b27acc3e5b3 --> `createCodeRefId` | **46** | function | `src/utils/coderef-id.ts` |
-| 7 | <!-- coderef:uuid=b471a0df-b45d-5c88-9f91-d8e9249bfff3 --> `validatePipelineState` | **44** | function | `src/pipeline/output-validator.ts` |
-| 8 | <!-- coderef:uuid=d7282a25-1191-5007-92fc-0f5e5d833e73 --> `info` | **41** | function | `demo-all-modules.ts` |
-| 9 | <!-- coderef:uuid=17efe7de-e6da-51ab-ac90-ac45e5ff8911 --> `resolveCalls` | **31** | function | `src/pipeline/call-resolver.ts` |
-| 10 | <!-- coderef:uuid=bc54d2b9-7442-5249-a79e-8fbbb006e1a0 --> `resolveImports` | **30** | function | `src/pipeline/import-resolver.ts` |
-| 11 | <!-- coderef:uuid=f18ac834-9ed0-5182-8928-d956b215cde9 --> `createSearchResult` | **29** | function | `src/integration/rag/__tests__/graph-reranker.test.ts` |
-| 12 | <!-- coderef:uuid=4fc4f0b0-83b7-5f26-be88-7f31b8dd2bf5 --> `createSampleReferences` | **29** | function | `__tests__/indexer.test.ts` |
-| 13 | <!-- coderef:uuid=8ab5018f-83dc-5253-a4a4-3c1d3cafc5ef --> `createMockEnvironment` | **27** | function | `__tests__/generators/helpers.ts` |
-| 14 | <!-- coderef:uuid=feda1a0b-89f7-5ffd-9a13-4ccf71a3d664 --> `parseHeader` | **26** | function | `src/pipeline/semantic-header-parser.ts` |
-| 15 | <!-- coderef:uuid=800d74c5-af16-5b87-9aa4-a6868bd3833c --> `createTestFile` | **26** | function | `__tests__/js-call-detector.test.ts` |
-| 16 | <!-- coderef:uuid=afb22276-5b5b-5ce7-b30f-a1daa3a977dc --> `cleanupEnvironment` | **25** | function | `__tests__/generators/helpers.ts` |
-| 17 | <!-- coderef:uuid=171200d2-031d-56a5-875b-231bd173e6e0 --> `buildDependencyGraph` | **24** | function | `src/fileGeneration/buildDependencyGraph.ts` |
-| 18 | <!-- coderef:uuid=641dfdb1-4d55-59db-afbc-fbec2a527318 --> `recordTest` | **24** | function | `__tests__/integration.test.ts` |
-| 19 | <!-- coderef:uuid=8f8b94bc-0021-5a6d-8356-3ca66c2ad852 --> `createMockSource` | **23** | function | `src/integration/rag/__tests__/confidence-scorer.test.ts` |
-| 20 | <!-- coderef:uuid=7bd2d3ad-740d-5836-9c97-c0d744214e49 --> `createSampleRef` | **23** | function | `__tests__/indexer.test.ts` |
+| 2 | <!-- coderef:uuid=3a5c7092-5439-5eea-b229-0bf972fc6ac8 --> `LRUCache.get` | **357** | method | `src/scanner/lru-cache.ts` |
+| 3 | <!-- coderef:uuid=3386019c-4d86-51df-a279-7419ad867305 --> `LRUCache.set` | **255** | method | `src/scanner/lru-cache.ts` |
+| 4 | <!-- coderef:uuid=e343c184-4fbd-51a3-b8a7-9ec6e6865960 --> `LRUCache.has` | **205** | method | `src/scanner/lru-cache.ts` |
+| 5 | <!-- coderef:uuid=7c9b7ea0-070c-5509-a24a-f12fbfb87353 --> `scanCurrentElements` | **136** | function | `src/scanner/scanner.ts` |
+| 6 | <!-- coderef:uuid=eb90e629-6848-5f36-98bc-ea35b7f360f7 --> `normalizeSlashes` | **92** | function | `src/utils/path-normalize.ts` |
+| 7 | <!-- coderef:uuid=338a35e8-1178-5291-bf00-0843e0e06e24 --> `PipelineOrchestrator.run` | **87** | method | `src/pipeline/orchestrator.ts` |
+| 8 | <!-- coderef:uuid=c9ce9b7a-50d6-590f-b659-a3f451440d57 --> `GrammarRegistry.getParser` | **73** | method | `src/pipeline/grammar-registry.ts` |
+| 9 | <!-- coderef:uuid=83d416a5-ec82-56cc-bc52-fef76fccda8e --> `CodeRefParser.parse` | **56** | method | `src/parser/parser.ts` |
+| 10 | <!-- coderef:uuid=8e2c4a95-d041-56b3-aecc-c42aa8da876a --> `PipelineOrchestrator` | **53** | class | `src/pipeline/orchestrator.ts` |
+| 11 | <!-- coderef:uuid=b738b18c-e096-5182-acbb-c31fd523b354 --> `isLineCommented` | **49** | function | `src/scanner/scanner.ts` |
+| 12 | <!-- coderef:uuid=6f0639fc-2091-570a-85d2-fefd5b81c53f --> `validatePipelineState` | **47** | function | `src/pipeline/output-validator.ts` |
+| 13 | <!-- coderef:uuid=74b8c20d-39d9-5a27-a13a-2b27acc3e5b3 --> `createCodeRefId` | **46** | function | `src/utils/coderef-id.ts` |
+| 14 | <!-- coderef:uuid=d7282a25-1191-5007-92fc-0f5e5d833e73 --> `info` | **41** | function | `demo-all-modules.ts` |
+| 15 | <!-- coderef:uuid=33e60716-a27c-5b15-80a4-94006c614ec3 --> `resolveCalls` | **38** | function | `src/pipeline/call-resolver.ts` |
+| 16 | <!-- coderef:uuid=05629e21-570c-5611-be54-019c1499ea76 --> `parseHeader` | **32** | function | `src/pipeline/semantic-header-parser.ts` |
+| 17 | <!-- coderef:uuid=bc54d2b9-7442-5249-a79e-8fbbb006e1a0 --> `resolveImports` | **32** | function | `src/pipeline/import-resolver.ts` |
+| 18 | <!-- coderef:uuid=cfb37037-92c0-530c-8076-d518a6fad009 --> `CanonicalGraphQuery.resolve` | **30** | method | `src/query/canonical-graph.ts` |
+| 19 | <!-- coderef:uuid=51b4e664-5917-50b9-a45f-ff8b46202254 --> `IndexingOrchestrator.indexCodebase` | **30** | method | `src/integration/rag/indexing-orchestrator.ts` |
+| 20 | <!-- coderef:uuid=3eefcaa6-3d19-5872-98ee-0cf2989a7528 --> `ComplexityScorer.scoreElement` | **29** | method | `src/context/complexity-scorer.ts` |
 
 ---
 
@@ -68,19 +68,19 @@ This document visualizes the dependency graph between code elements. Understandi
 |---------|------|------|----------------------|
 | <!-- coderef:uuid=d065bcd4-af5d-58b5-a0d2-42b072429de6 --> `ASTElementScanner.clearCache` | method | `src/analyzer/ast-element-scanner.ts` | 1 |
 | <!-- coderef:uuid=1516f911-15f7-5413-b0e4-144894870239 --> `ASTElementScanner.getCacheStats` | method | `src/analyzer/ast-element-scanner.ts` | 2 |
-| <!-- coderef:uuid=f16c5001-3e2f-51ab-88d2-fdb51a0a7729 --> `DynamicImportDetector.buildDynamicCallEdges` | method | `src/analyzer/dynamic-import-detector.ts` | 3 |
 | <!-- coderef:uuid=7166723f-7218-59ee-a49f-900e2b74225b --> `DynamicImportDetector.clearCache` | method | `src/analyzer/dynamic-import-detector.ts` | 1 |
 | <!-- coderef:uuid=8ab8c06d-0293-58ae-8250-145e3fe62b60 --> `EntryPointDetector.detect` | method | `src/analyzer/entry-detector.ts` | 7 |
-| <!-- coderef:uuid=29c36cf8-ee73-504a-8297-e1da816378d0 --> `JSCallDetector.getFileParameters` | method | `src/analyzer/js-call-detector/index.ts` | 5 |
-| <!-- coderef:uuid=f75dbfb7-3738-5a5f-aca8-b55f8f6f50f8 --> `JSCallDetector.detectExports` | method | `src/analyzer/js-call-detector/index.ts` | 5 |
-| <!-- coderef:uuid=6b99ba96-b67e-5076-982b-63909cb9f18a --> `JSCallDetector.buildCallEdges` | method | `src/analyzer/js-call-detector/index.ts` | 1 |
-| <!-- coderef:uuid=d98600e2-73ee-595a-a7f3-dbbb0d1e0b22 --> `JSCallDetector.analyzeCallPatterns` | method | `src/analyzer/js-call-detector/index.ts` | 1 |
-| <!-- coderef:uuid=84d18a4f-c1b9-57ac-90ed-849988e512b7 --> `JSCallDetector.detectElements` | method | `src/analyzer/js-call-detector/index.ts` | 2 |
 | <!-- coderef:uuid=58bcd85d-2006-5657-9505-9c45e06f8f91 --> `JSCallDetector.clearCache` | method | `src/analyzer/js-call-detector/index.ts` | 5 |
 | <!-- coderef:uuid=c6c124e2-e097-5a3f-bf5f-5a5a5d9e4591 --> `MiddlewareDetector.detect` | method | `src/analyzer/middleware-detector.ts` | 9 |
-| <!-- coderef:uuid=105947b8-2802-5a30-9e65-e4ad82ce223b --> `MigrationRouteAnalyzer.findRoutesByFramework` | method | `src/analyzer/migration-route-analyzer.ts` | 2 |
-| <!-- coderef:uuid=19581f68-824d-5a58-b86f-fb39da8af978 --> `MigrationRouteAnalyzer.exportForMigration` | method | `src/analyzer/migration-route-analyzer.ts` | 3 |
 | <!-- coderef:uuid=f408aa38-6b5f-593b-bf63-2d4f907db63b --> `MigrationRouteAnalyzer.detectAffectedCallers` | method | `src/analyzer/migration-route-analyzer.ts` | 4 |
+| <!-- coderef:uuid=2d54a0ab-cf6e-53dc-b2d6-63f82884c5dc --> `IncrementalCache.save` | method | `src/cache/incremental-cache.ts` | 8 |
+| <!-- coderef:uuid=5bc3385d-fdf0-5ef4-891d-89062bc53730 --> `IncrementalCache.clear` | method | `src/cache/incremental-cache.ts` | 3 |
+| <!-- coderef:uuid=0cce8982-c8dc-5803-bfa8-50500c55c2d6 --> `DryRunSemanticOrchestrator.processProject` | method | `src/cli/semantic-integration.ts` | 2 |
+| <!-- coderef:uuid=7d000b4c-2792-5edc-814e-82074f0d9c60 --> `DryRunSemanticOrchestrator.processFile` | method | `src/cli/semantic-integration.ts` | 2 |
+| <!-- coderef:uuid=0fcada70-9c68-5d06-9fd0-42918191b719 --> `AgenticFormatter.formatAsSummary` | method | `src/context/agentic-formatter.ts` | 5 |
+| <!-- coderef:uuid=6cc35644-ceae-566c-9ac4-37c129a84235 --> `BreakingChangeDetector.compareSignatures` | method | `src/context/breaking-change-detector/index.ts` | 1 |
+| <!-- coderef:uuid=b8b3b779-1f79-581c-9ec5-dabb1c9d85d1 --> `BreakingChangeDetector.extractCallContext` | method | `src/context/breaking-change-detector/index.ts` | 1 |
+| <!-- coderef:uuid=9aab9ba0-4d20-5467-9ffe-df4c165f3729 --> `BreakingChangeDetector.isCompatibleCall` | method | `src/context/breaking-change-detector/index.ts` | 1 |
 
 ---
 
