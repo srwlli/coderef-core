@@ -398,7 +398,7 @@ npx rag-index --project-dir ./my-project
 | Flag | Description | Default |
 |------|-------------|---------|
 | `-p, --project-dir <path>` | Project directory to index (also accepts first positional argument) | Current directory |
-| `--provider <provider>` | Embedding provider: `openai`, `anthropic`, `ollama` | Key-aware: `openai` if `OPENAI_API_KEY` is set, else `ollama` (local-first; cloud is opt-in) |
+| `--provider <provider>` | Embedding provider: `openai`, `anthropic`, `ollama` | `ollama` — local, always; cloud requires explicit `--provider` or `CODEREF_LLM_PROVIDER` |
 | `--store <store>` | Vector store: `json`, `pinecone`, `chroma` (`sqlite` is a deprecated alias for `json`) | `json` |
 | `--reset` | Reset existing index before indexing | `false` |
 | `--include-headerless` | Embed chunks from header-less elements (`headerStatus` ∈ {missing, stale, partial}) with `header:false` provenance instead of skipping them — enables RAG on repos that were never header-annotated. Default behavior (skip-with-reason) preserves DR-PHASE-7-E. | `false` |
@@ -408,7 +408,7 @@ npx rag-index --project-dir ./my-project
 | `-j, --json` | Output results as JSON | `false` |
 | `-v, --verbose` | Verbose output | `false` |
 
-**Provider default is key-aware** (WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001): with no `--provider` flag, the CLI selects `openai` only when `OPENAI_API_KEY` is present in the environment, otherwise `ollama` with `nomic-embed-text` (768-dim, fully local). `rag-search` applies the same rule, so index and query embeddings stay on the same model. Cloud embedding is never a silent default.
+**Provider default is unconditionally local** (WO-RAG-INDEX-DEFAULTS-TO-CLOUD-OPENAI-ON-LOCAL-001, supersedes the earlier key-aware rule): with no `--provider` flag the CLI always selects `ollama` with `nomic-embed-text` (768-dim, fully local) — the presence of `OPENAI_API_KEY`/`ANTHROPIC_API_KEY` in the environment is never consulted. Cloud embedding requires an explicit `--provider openai`/`anthropic` or `CODEREF_LLM_PROVIDER` opt-in. `rag-search` shares the same resolver (`resolveRagProvider`), so index and query embeddings stay on the same model.
 
 `rag-index` now prints `Header coverage: X%` and a `by reason:` breakdown of skipped chunks (e.g. `header_status_missing: N`), so a run that drops most of the codebase for missing headers is no longer indistinguishable from a clean no-op. Coverage flags added by WO-RAG-HEADER-COVERAGE-ENFORCE-AND-SURFACE-001.
 
@@ -482,7 +482,7 @@ The query is a positional argument (natural language works best).
 | Flag | Description | Default |
 |------|-------------|---------|
 | `-p, --project-dir <path>` | Project directory to search | Current directory |
-| `--provider <provider>` | Embedding provider: `openai`, `anthropic`, `ollama`. **Must match the provider the index was built with** — mismatched models produce empty or garbage results. | Key-aware: `openai` if `OPENAI_API_KEY` is set, else `ollama` (same rule as `rag-index`) |
+| `--provider <provider>` | Embedding provider: `openai`, `anthropic`, `ollama`. **Must match the provider the index was built with** — mismatched models produce empty or garbage results. | `ollama` — local, always (same shared resolver as `rag-index`) |
 | `--store <store>` | Vector store: `json`, `pinecone`, `chroma` (`sqlite` is a deprecated alias for `json`) | `json` |
 | `-k, --top-k <n>` | Number of results to return | `10` |
 | `--min-score <n>` | Minimum relevance score 0–1 | None |
