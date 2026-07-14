@@ -24,7 +24,7 @@ import { toAbsolute } from '../integration/rag/path-types.js';
 // (src/integration/llm/provider-factory.ts, P1-10) — MODEL_REGISTRY is the
 // single source; defaults are Ollama local-only. Only the orchestrator
 // remains a lazy optional dependency here.
-import { createLLMProvider, createVectorStore } from '../integration/llm/provider-factory.js';
+import { createLLMProvider, createVectorStore, resolveRagProvider } from '../integration/llm/provider-factory.js';
 import { parseFlags, failUsage } from './shared/cli-args.js';
 
 let IndexingOrchestrator: any;
@@ -127,12 +127,10 @@ function parseArgs(argv: string[]): CliArgs {
     failUsage('rag-index', parsed.errors);
   }
 
-  // Honor CODEREF_LLM_PROVIDER as the default provider when --provider isn't
-  // passed. Without it, default is key-aware: openai only when a cloud key is
-  // actually present, otherwise ollama (local-first — embeddings must not
-  // require an API key; WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001
-  // P2-T1). --provider still overrides everything.
-  const envProvider = process.env.CODEREF_LLM_PROVIDER?.toLowerCase();
+  // Provider resolution is the shared canonical rule (resolveRagProvider,
+  // STUB-MN7E0G): --provider > CODEREF_LLM_PROVIDER > 'ollama'. Local Ollama
+  // is the UNCONDITIONAL default — an incidental OPENAI_API_KEY in the shell
+  // never flips a bare run to a paid cloud API. Cloud is explicit opt-in.
 
   const storeRaw = (v.get('store') as string | undefined) ?? 'json';
   let store: CliArgs['store'] = 'json';
@@ -165,9 +163,7 @@ function parseArgs(argv: string[]): CliArgs {
     projectDir: (v.get('project-dir') as string | undefined)
       ?? parsed.positionals[parsed.positionals.length - 1]
       ?? process.cwd(),
-    provider: (v.get('provider') as string | undefined)
-      ?? envProvider
-      ?? (process.env.OPENAI_API_KEY ? 'openai' : 'ollama'),
+    provider: resolveRagProvider(v.get('provider') as string | undefined),
     store,
     reset: (v.get('reset') as boolean | undefined) ?? false,
     languages: langRaw ? langRaw.split(',') : undefined,
@@ -192,7 +188,8 @@ USAGE:
 
 OPTIONS:
   -p, --project-dir <path>     Project directory to index (default: current directory)
-  --provider <provider>        LLM provider: openai, anthropic, ollama (default: openai if OPENAI_API_KEY set, else ollama)
+  --provider <provider>        LLM provider: openai, anthropic, ollama (default: ollama — local, always;
+                               cloud requires explicit --provider or CODEREF_LLM_PROVIDER)
   --store <store>              Vector store: json, pinecone, chroma (default: json; 'sqlite' is a deprecated alias for json)
   --reset                      Reset existing index before indexing
   --include-headerless         Embed chunks from header-less elements (missing/stale/partial)
@@ -208,8 +205,9 @@ OPTIONS:
   -h, --help                   Show this help message
 
 ENVIRONMENT VARIABLES:
-  OPENAI_API_KEY              Required for OpenAI provider
-  ANTHROPIC_API_KEY           Required for Anthropic provider
+  OPENAI_API_KEY              Used ONLY when openai is explicitly selected (its presence
+                              never changes the default provider)
+  ANTHROPIC_API_KEY           Used ONLY when anthropic is explicitly selected
   PINECONE_API_KEY            Required for Pinecone store
   CODEREF_SQLITE_PATH         Optional: Custom SQLite storage path
 
@@ -223,11 +221,11 @@ EXAMPLES:
   # Index current directory
   rag-index
 
-  # Index specific project with OpenAI
-  rag-index --project-dir ./my-project --provider openai
+  # Index with local Ollama (the default — always; no flag needed)
+  rag-index --project-dir ./my-project
 
-  # Index with local Ollama (the default when OPENAI_API_KEY is not set)
-  rag-index --project-dir ./my-project --provider ollama
+  # Explicitly opt into cloud OpenAI embeddings (requires OPENAI_API_KEY)
+  rag-index --project-dir ./my-project --provider openai
 
   # Reset and re-index
   rag-index --project-dir ./my-project --reset

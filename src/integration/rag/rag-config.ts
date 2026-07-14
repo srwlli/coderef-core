@@ -189,8 +189,12 @@ export class RAGConfigLoader {
    *
    * Local-only mode (CODEREF_RAG_LOCAL_ONLY=1): refuses any cloud provider.
    * Explicit provider must be 'ollama' (or a generic name paired with a
-   * CODEREF_LLM_BASE_URL that points at localhost). Cloud auto-selection
-   * via OPENAI_API_KEY or ANTHROPIC_API_KEY is disabled.
+   * CODEREF_LLM_BASE_URL that points at localhost).
+   *
+   * Permissive mode (STUB-MN7E0G): CODEREF_LLM_PROVIDER when set, else
+   * 'ollama' — unconditionally. Cloud auto-selection via a merely-present
+   * OPENAI_API_KEY / ANTHROPIC_API_KEY is REMOVED in every mode; cloud
+   * providers require the explicit CODEREF_LLM_PROVIDER opt-in.
    */
   private getLLMProvider(): LLMProviderName {
     const localOnly = isLocalOnly();
@@ -218,23 +222,16 @@ export class RAGConfigLoader {
       );
     }
 
-    // Permissive (non-local-only) mode: original behavior.
+    // Permissive (non-local-only) mode: explicit env selection, else local.
     if (provider) {
       return provider;
     }
 
-    if (process.env[ENV_VARS.OPENAI_API_KEY]) {
-      return 'openai';
-    }
-
-    if (process.env[ENV_VARS.ANTHROPIC_API_KEY]) {
-      return 'anthropic';
-    }
-
-    throw new ConfigError(
-      `LLM provider not configured. Set ${ENV_VARS.LLM_PROVIDER} to a provider name ` +
-      `(e.g., 'openai', 'anthropic', 'ollama'), or provide ${ENV_VARS.OPENAI_API_KEY} or ${ENV_VARS.ANTHROPIC_API_KEY}`
-    );
+    // No key-sniffing: an OPENAI_API_KEY/ANTHROPIC_API_KEY sitting in the
+    // shell must never silently select a paid cloud API (STUB-MN7E0G).
+    // Default to local Ollama; getLLMConfig's generic branch surfaces the
+    // actionable CODEREF_LLM_BASE_URL guidance if local config is absent.
+    return 'ollama';
   }
 
   /**

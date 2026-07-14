@@ -22,7 +22,7 @@ import * as path from 'path';
 // (src/integration/llm/provider-factory.ts, P1-10) — MODEL_REGISTRY is the
 // single source; defaults are Ollama local-only. Only the search service
 // remains a lazy optional dependency here.
-import { createLLMProvider, createVectorStore } from '../integration/llm/provider-factory.js';
+import { createLLMProvider, createVectorStore, resolveRagProvider } from '../integration/llm/provider-factory.js';
 import { parseFlags, failUsage } from './shared/cli-args.js';
 
 let SemanticSearchService: any;
@@ -93,12 +93,11 @@ function parseArgs(argv: string[]): CliArgs {
     failUsage('rag-search', parsed.errors);
   }
 
-  // Honor CODEREF_LLM_PROVIDER env when --provider is omitted. Without it,
-  // default is key-aware: openai only when a cloud key is actually present,
-  // otherwise ollama (local-first; must match rag-index so search embeds
-  // queries with the same model the index was built with —
-  // WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 P2-T1).
-  const envProvider = process.env.CODEREF_LLM_PROVIDER?.toLowerCase();
+  // Provider resolution is the shared canonical rule (resolveRagProvider,
+  // STUB-MN7E0G): --provider > CODEREF_LLM_PROVIDER > 'ollama' — local
+  // Ollama unconditionally; an incidental cloud key never changes selection.
+  // Sharing the resolver with rag-index keeps the invariant structural:
+  // search embeds queries with the same provider the index was built with.
 
   const storeRaw = (v.get('store') as string | undefined) ?? 'json';
   const store = (['json', 'sqlite', 'pinecone', 'chroma'].includes(storeRaw)
@@ -108,9 +107,7 @@ function parseArgs(argv: string[]): CliArgs {
   return {
     projectDir: (v.get('project-dir') as string | undefined) ?? process.cwd(),
     query: parsed.positionals[0] ?? '',
-    provider: (v.get('provider') as string | undefined)
-      ?? envProvider
-      ?? (process.env.OPENAI_API_KEY ? 'openai' : 'ollama'),
+    provider: resolveRagProvider(v.get('provider') as string | undefined),
     store,
     topK: (v.get('top-k') as number | undefined) ?? 10,
     minScore: v.get('min-score') as number | undefined,
@@ -143,7 +140,8 @@ USAGE:
 
 OPTIONS:
   -p, --project-dir <path>     Project directory to search (default: current directory)
-  --provider <provider>        LLM provider: openai, anthropic, ollama (default: openai if OPENAI_API_KEY set, else ollama)
+  --provider <provider>        LLM provider: openai, anthropic, ollama (default: ollama — local, always;
+                               must match the provider the index was built with)
   --store <store>              Vector store: json, pinecone, chroma (default: json; 'sqlite' is a deprecated alias for json)
   -k, --top-k <number>         Number of results to return (default: 10)
   --min-score <number>         Minimum relevance score 0-1 (default: none)
@@ -160,8 +158,9 @@ OPTIONS:
   -h, --help                   Show this help message
 
 ENVIRONMENT VARIABLES:
-  OPENAI_API_KEY              Required for OpenAI provider
-  ANTHROPIC_API_KEY           Required for Anthropic provider
+  OPENAI_API_KEY              Used ONLY when openai is explicitly selected (its presence
+                              never changes the default provider)
+  ANTHROPIC_API_KEY           Used ONLY when anthropic is explicitly selected
   CODEREF_SQLITE_PATH         Optional: custom path for the local JSON vector store
 
 EXAMPLES:

@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer integration
  * @capability llm-provider-store-factory
- * @exports createLLMProvider, createVectorStore, embeddingDimensionsForModel
+ * @exports resolveRagProvider, createLLMProvider, createVectorStore, embeddingDimensionsForModel
  * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts, src/cli/rag-eval.ts, src/cli/coderef-mcp-server.ts, src/cli/coderef-rag-server.ts
  */
 
@@ -29,6 +29,21 @@ import * as path from 'path';
 import { MODEL_REGISTRY, getProviderSpec } from './model-registry.js';
 
 /**
+ * Resolve the RAG embedding/LLM provider name from an explicit value or env.
+ *
+ * THE canonical resolution rule (STUB-MN7E0G, operator-locked): explicit
+ * value > CODEREF_LLM_PROVIDER > 'ollama'. Local Ollama is the UNCONDITIONAL
+ * default — the presence of OPENAI_API_KEY / ANTHROPIC_API_KEY is NEVER
+ * consulted for selection; cloud providers require an explicit opt-in
+ * (--provider openai or CODEREF_LLM_PROVIDER=openai). Shared by rag-index
+ * and rag-search so index and query embeddings always resolve to the same
+ * provider, and by createLLMProvider below.
+ */
+export function resolveRagProvider(explicit?: string): string {
+  return (explicit ?? process.env.CODEREF_LLM_PROVIDER ?? 'ollama').toLowerCase();
+}
+
+/**
  * Create an LLM provider by name. Defaults to Ollama (local-only).
  *
  * Env compatibility: the long-standing CLI variable names
@@ -37,7 +52,7 @@ import { MODEL_REGISTRY, getProviderSpec } from './model-registry.js';
  * default.
  */
 export async function createLLMProvider(providerName?: string): Promise<any> {
-  const provider = (providerName ?? process.env.CODEREF_LLM_PROVIDER ?? 'ollama').toLowerCase();
+  const provider = resolveRagProvider(providerName);
 
   if (provider === 'openai') {
     const spec = getProviderSpec('openai')!;
