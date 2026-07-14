@@ -3,7 +3,7 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability coderef-mcp-server
- * @exports buildToolHandlers, ToolHandlers
+ * @exports buildToolHandlers, handlersFor, ToolHandlers
  */
 
 /**
@@ -1686,27 +1686,186 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
   };
 }
 
+// ---- per-repo handler registry (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001) ---------------
+// The server is REPO-AGNOSTIC: every tool call names its target repo via a
+// REQUIRED project_root argument (pure CLI semantics — no hidden default, no
+// cwd walk-up, no env fallback; operator-locked 2026-07-14). handlersFor
+// resolves + validates the root, then memoizes one buildToolHandlers per
+// DISTINCT canonical root so repeated calls reuse the mtime-invalidated
+// artifact cache. buildToolHandlers itself is unchanged — it remains the
+// per-repo factory this registry calls.
+
+/** Tagged error for project_root resolution failures — mapped to the
+ * structured error envelope at the tool-call boundary (never a raw throw). */
+class RootResolutionError extends Error {
+  constructor(
+    public code:
+      | 'project_root_nonexistent'
+      | 'project_root_access_denied'
+      | 'project_root_symlink_loop'
+      | 'project_root_symlink_broken',
+    public hint: string,
+  ) {
+    super(code);
+    this.name = 'RootResolutionError';
+  }
+}
+
+const handlerRegistry = new Map<string, ToolHandlers>();
+
+/**
+ * Resolve a caller-supplied project_root to a canonical on-disk directory.
+ * Relative paths resolve against the anchor (launch --project-dir, default
+ * cwd); absolute paths ignore the anchor. Symlinks are canonicalized via
+ * fs.realpathSync — native OS loop detection (ELOOP) rather than a
+ * hand-rolled hop walk (RESOLUTION-DESIGN.md ADJ-01; same error contract).
+ */
+function resolveProjectRoot(project_root: string, anchor: string): string {
+  const resolved = path.resolve(anchor, project_root);
+  let canonical: string;
+  try {
+    canonical = fs.realpathSync(resolved);
+  } catch (e: any) {
+    const code = e?.code;
+    if (code === 'ELOOP') {
+      throw new RootResolutionError(
+        'project_root_symlink_loop',
+        `circular symlink detected resolving ${resolved} — fix the link chain`,
+      );
+    }
+    if (code === 'EACCES' || code === 'EPERM') {
+      throw new RootResolutionError(
+        'project_root_access_denied',
+        `permission denied at ${resolved} — check directory permissions`,
+      );
+    }
+    // ENOENT: distinguish a broken symlink (the path ENTRY exists as a link
+    // whose target is missing) from a plainly nonexistent path.
+    let isBrokenLink = false;
+    let linkTarget = '(unreadable)';
+    try {
+      if (fs.lstatSync(resolved).isSymbolicLink()) {
+        isBrokenLink = true;
+        try {
+          linkTarget = fs.readlinkSync(resolved);
+        } catch {
+          // keep placeholder
+        }
+      }
+    } catch {
+      // lstat ENOENT too → plainly nonexistent
+    }
+    if (isBrokenLink) {
+      throw new RootResolutionError(
+        'project_root_symlink_broken',
+        `${resolved} is a symlink to a nonexistent target: ${linkTarget}`,
+      );
+    }
+    throw new RootResolutionError(
+      'project_root_nonexistent',
+      `${resolved} does not exist — create the dir or check the path`,
+    );
+  }
+  if (!fs.statSync(canonical).isDirectory()) {
+    throw new RootResolutionError(
+      'project_root_nonexistent',
+      `${canonical} is not a directory — project_root must be the repo root containing .coderef/`,
+    );
+  }
+  return canonical;
+}
+
+/**
+ * Per-repo handler registry: one memoized ToolHandlers per distinct canonical
+ * root. Memoization happens only AFTER resolution succeeds — a failed
+ * resolution caches nothing (errors never pollute the registry).
+ * Exported for the repo-agnostic behavioral tests.
+ */
+export function handlersFor(project_root: string, anchor: string = process.cwd()): ToolHandlers {
+  const canonical = resolveProjectRoot(project_root, anchor);
+  let handlers = handlerRegistry.get(canonical);
+  if (!handlers) {
+    handlers = buildToolHandlers(canonical);
+    handlerRegistry.set(canonical, handlers);
+  }
+  return handlers;
+}
+
 // ---- MCP wiring -----------------------------------------------------------------
 
 function toContent(payload: Record<string, unknown>) {
   return { content: [{ type: 'text' as const, text: JSON.stringify(payload) }] };
 }
 
+/**
+ * Convert any resolution or handler error into the structured per-repo error
+ * envelope { error, project_root, hint } (RESOLUTION-DESIGN.md taxonomy).
+ * NEVER falls back to another repo's data; never re-throws (a raw throw would
+ * surface as an SDK-level error instead of this agent-actionable payload).
+ */
+function errorPayload(e: unknown, project_root: string): Record<string, unknown> {
+  if (e instanceof RootResolutionError) {
+    return { error: e.code, project_root, hint: e.hint };
+  }
+  if (e instanceof BuildHintError) {
+    // BuildHintError.hint carries the code-like tag from ensureArtifacts
+    // (coderef_artifacts_missing / repo_too_large_for_auto_build /
+    // coderef_build_failed / coderef_build_incomplete). Alias the incomplete
+    // tag onto the taxonomy's artifact-scoped name.
+    const code = e.hint === 'coderef_build_incomplete' ? 'coderef_artifacts_incomplete' : e.hint;
+    return { error: code, project_root, hint: e.detail ?? e.hint };
+  }
+  if (e instanceof SyntaxError) {
+    // JSON.parse failure inside loadGraph/loadIndex — corrupt artifacts.
+    return {
+      error: 'coderef_artifacts_corrupt',
+      project_root,
+      hint: `artifact JSON failed to parse (${String(e.message).slice(0, 120)}) — delete .coderef/ and rebuild with populate-coderef`,
+    };
+  }
+  return {
+    error: 'tool_failed',
+    project_root,
+    hint: String((e as { message?: unknown })?.message ?? e).slice(0, 300),
+  };
+}
+
 async function main(): Promise<void> {
-  // --project-dir/-p or positional arg; default cwd (matches sibling CLIs).
+  // --project-dir/-p or positional arg — DEMOTED to an optional DEFAULT ANCHOR
+  // (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001): it is used ONLY to resolve a RELATIVE
+  // per-call project_root (path.resolve(anchor, project_root)); an absolute
+  // project_root ignores it. It NEVER binds the tools to a default repo — a
+  // call without project_root is schema-rejected regardless of the anchor.
   const argv = process.argv.slice(2);
-  let projectDir = process.cwd();
+  let anchor = process.cwd();
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
-    if (arg === '--project-dir' || arg === '-p') projectDir = argv[++i];
-    else if (arg.startsWith('--project-dir=')) projectDir = arg.slice('--project-dir='.length);
-    else if (!arg.startsWith('-')) projectDir = arg;
+    if (arg === '--project-dir' || arg === '-p') anchor = argv[++i];
+    else if (arg.startsWith('--project-dir=')) anchor = arg.slice('--project-dir='.length);
+    else if (!arg.startsWith('-')) anchor = arg;
   }
-  projectDir = path.resolve(projectDir);
+  anchor = path.resolve(anchor);
 
-  const handlers = buildToolHandlers(projectDir);
   const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
 
+  /** Route one tool call to its named repo's handlers; convert every
+   * resolution/handler error into the structured envelope (P2-T4). */
+  const perRepo = async (
+    project_root: string,
+    fn: (h: ToolHandlers) => Record<string, unknown> | Promise<Record<string, unknown>>,
+  ) => {
+    try {
+      return toContent(await fn(handlersFor(project_root, anchor)));
+    } catch (e) {
+      return toContent(errorPayload(e, project_root));
+    }
+  };
+
+  const projectRootArg = z
+    .string()
+    .describe(
+      'REQUIRED. Absolute or anchor-relative path to the target repo root (the directory containing .coderef/). The server serves whichever indexed repo you name — pure CLI semantics, no default repo.',
+    );
   const elementArg = z
     .string()
     .describe('Element to query: codeRefId (e.g. "@Fn/src/foo.ts#bar:12"), element name, or file path fragment');
@@ -1718,9 +1877,10 @@ async function main(): Promise<void> {
       title: 'What calls this element',
       description:
         'List the resolved call sites that invoke the given element (inbound call edges from .coderef/graph.json). Compact: caller id/name/file/line plus call location. `total` counts inbound EDGES (a caller invoking the target twice counts twice) — the outbound mirror what_this_calls counts DISTINCT targets.',
-      inputSchema: { element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
     },
-    async ({ element, limit }) => toContent(handlers.what_calls({ element, limit })),
+    async ({ project_root, element, limit }) =>
+      perRepo(project_root, h => h.what_calls({ element, limit })),
   );
 
   server.registerTool(
@@ -1729,9 +1889,10 @@ async function main(): Promise<void> {
       title: 'What imports this element',
       description:
         'List the modules/elements that import the given element (inbound resolved import edges). `total` counts inbound EDGES — the outbound mirror what_this_imports counts DISTINCT targets.',
-      inputSchema: { element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
     },
-    async ({ element, limit }) => toContent(handlers.what_imports({ element, limit })),
+    async ({ project_root, element, limit }) =>
+      perRepo(project_root, h => h.what_imports({ element, limit })),
   );
 
   server.registerTool(
@@ -1741,13 +1902,14 @@ async function main(): Promise<void> {
       description:
         'Transitive inbound dependents of an element via reverse BFS over resolved edges — what breaks if this changes. Returns dependent counts by depth and affected files.',
       inputSchema: {
+        project_root: projectRootArg,
         element: elementArg,
         max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 3)'),
         limit: limitArg,
       },
     },
-    async ({ element, max_depth, limit }) =>
-      toContent(handlers.impact_of({ element, max_depth, limit })),
+    async ({ project_root, element, max_depth, limit }) =>
+      perRepo(project_root, h => h.impact_of({ element, max_depth, limit })),
   );
 
   server.registerTool(
@@ -1757,12 +1919,14 @@ async function main(): Promise<void> {
       description:
         'Look up code elements in .coderef/index.json by name, codeRefId, or file substring. Returns id/type/file/line/exported/headerStatus (+layer/capability when annotated).',
       inputSchema: {
+        project_root: projectRootArg,
         query: z.string().describe('Name, codeRefId, or file path substring'),
         type: z.string().optional().describe('Filter by element type (function, class, interface, ...)'),
         limit: limitArg,
       },
     },
-    async ({ query, type, limit }) => toContent(handlers.find_element({ query, type, limit })),
+    async ({ project_root, query, type, limit }) =>
+      perRepo(project_root, h => h.find_element({ query, type, limit })),
   );
 
   server.registerTool(
@@ -1771,9 +1935,9 @@ async function main(): Promise<void> {
       title: 'Codebase summary',
       description:
         'High-level intelligence snapshot: element totals by type, header coverage, graph node/edge counts by relationship.',
-      inputSchema: {},
+      inputSchema: { project_root: projectRootArg },
     },
-    async () => toContent(handlers.codebase_summary()),
+    async ({ project_root }) => perRepo(project_root, h => h.codebase_summary()),
   );
 
   server.registerTool(
@@ -1782,9 +1946,9 @@ async function main(): Promise<void> {
       title: 'Validation status',
       description:
         'The pipeline validation report (locked 14-field schema) from .coderef/validation-report.json, plus a compact summary.',
-      inputSchema: {},
+      inputSchema: { project_root: projectRootArg },
     },
-    async () => toContent(handlers.validation_status()),
+    async ({ project_root }) => perRepo(project_root, h => h.validation_status()),
   );
 
   server.registerTool(
@@ -1794,6 +1958,7 @@ async function main(): Promise<void> {
       description:
         'Rank elements by fan-in + fan-out over resolved call/import edges. src_only (default true) excludes test-origin edges and test-file elements so architectural load-bearers rank first.',
       inputSchema: {
+        project_root: projectRootArg,
         limit: limitArg,
         src_only: z
           .boolean()
@@ -1801,7 +1966,8 @@ async function main(): Promise<void> {
           .describe('Exclude test-origin edges + test-file elements (default true)'),
       },
     },
-    async ({ limit, src_only }) => toContent(handlers.hotspots({ limit, src_only })),
+    async ({ project_root, limit, src_only }) =>
+      perRepo(project_root, h => h.hotspots({ limit, src_only })),
   );
 
   server.registerTool(
@@ -1811,6 +1977,7 @@ async function main(): Promise<void> {
       description:
         'Strongly-connected components over resolved call/import edges (Tarjan). Returns cycle membership and a sample in-cycle edge per cycle, largest first.',
       inputSchema: {
+        project_root: projectRootArg,
         limit: limitArg,
         relationship: z
           .enum(['call', 'import'])
@@ -1818,7 +1985,8 @@ async function main(): Promise<void> {
           .describe('Restrict to one edge kind (default: both)'),
       },
     },
-    async ({ limit, relationship }) => toContent(handlers.cycles({ limit, relationship })),
+    async ({ project_root, limit, relationship }) =>
+      perRepo(project_root, h => h.cycles({ limit, relationship })),
   );
 
   server.registerTool(
@@ -1828,11 +1996,13 @@ async function main(): Promise<void> {
       description:
         'List the exported elements of a file via resolved export edges. Accepts a project-relative path or a path fragment (ambiguity envelope when several files match).',
       inputSchema: {
+        project_root: projectRootArg,
         file: z.string().describe('Project-relative file path (or fragment), e.g. "src/pipeline/call-resolver.ts"'),
         limit: limitArg,
       },
     },
-    async ({ file, limit }) => toContent(handlers.what_exports({ file, limit })),
+    async ({ project_root, file, limit }) =>
+      perRepo(project_root, h => h.what_exports({ file, limit })),
   );
 
   server.registerTool(
@@ -1842,12 +2012,14 @@ async function main(): Promise<void> {
       description:
         'PR blast-radius in one call: map a git diff (default: working tree vs HEAD) to changed elements via index.json line ranges, then union transitive inbound dependents over resolved call/import edges.',
       inputSchema: {
+        project_root: projectRootArg,
         ref: z.string().optional().describe('Git ref to diff against (default HEAD; e.g. "main", "HEAD~3")'),
         max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 3)'),
         limit: limitArg,
       },
     },
-    async ({ ref, max_depth, limit }) => toContent(handlers.diff_impact({ ref, max_depth, limit })),
+    async ({ project_root, ref, max_depth, limit }) =>
+      perRepo(project_root, h => h.diff_impact({ ref, max_depth, limit })),
   );
 
   server.registerTool(
@@ -1857,12 +2029,14 @@ async function main(): Promise<void> {
       description:
         'Semantic search over the RAG index. Hybrid by default: fuses a dense/embedding leg with a sparse/BM25 lexical leg via reciprocal-rank fusion (better recall on exact-identifier queries). Reads provider/store from .coderef/rag-index.json metadata so query embeddings always match the index model. Errors cleanly when no index exists or the embedder is unavailable. Pass hybrid=false to force embedding-only.',
       inputSchema: {
+        project_root: projectRootArg,
         query: z.string().describe('Natural-language query, e.g. "where are import specifiers resolved"'),
         limit: limitArg,
         hybrid: z.boolean().optional().describe('Hybrid dense+BM25 fusion (default true). Set false for embedding-only retrieval.'),
       },
     },
-    async ({ query, limit, hybrid }) => toContent(await handlers.rag_search({ query, limit, hybrid })),
+    async ({ project_root, query, limit, hybrid }) =>
+      perRepo(project_root, h => h.rag_search({ query, limit, hybrid })),
   );
 
   // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ----
@@ -1876,9 +2050,10 @@ async function main(): Promise<void> {
       title: 'What this element calls',
       description:
         'Outbound (forward) direction: list the resolved elements that the given element CALLS. The mirror of what_calls (which is inbound). Compact callee id/name/file/line. `total` counts DISTINCT callees (deduped); the inbound what_calls counts edges. On a whole-file query, calls between two elements of the same file are omitted (intra-file self-references are not "what this file calls").',
-      inputSchema: { element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
     },
-    async ({ element, limit }) => toContent(handlers.what_this_calls({ element, limit })),
+    async ({ project_root, element, limit }) =>
+      perRepo(project_root, h => h.what_this_calls({ element, limit })),
   );
 
   server.registerTool(
@@ -1887,9 +2062,10 @@ async function main(): Promise<void> {
       title: 'What this element imports',
       description:
         'Outbound (forward) direction: list the resolved elements/modules that the given element (or its file) IMPORTS. The mirror of what_imports (which is inbound). `total` counts DISTINCT imported targets (deduped); the inbound what_imports counts edges.',
-      inputSchema: { element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
     },
-    async ({ element, limit }) => toContent(handlers.what_this_imports({ element, limit })),
+    async ({ project_root, element, limit }) =>
+      perRepo(project_root, h => h.what_this_imports({ element, limit })),
   );
 
   server.registerTool(
@@ -1899,13 +2075,14 @@ async function main(): Promise<void> {
       description:
         'Transitive outbound dependencies of an element via forward BFS over resolved call+import edges — what this element relies on, directly and indirectly. The mirror of impact_of (which is inbound dependents). Returns dependency counts and affected files.',
       inputSchema: {
+        project_root: projectRootArg,
         element: elementArg,
         max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 5)'),
         limit: limitArg,
       },
     },
-    async ({ element, max_depth, limit }) =>
-      toContent(handlers.what_this_depends_on({ element, max_depth, limit })),
+    async ({ project_root, element, max_depth, limit }) =>
+      perRepo(project_root, h => h.what_this_depends_on({ element, max_depth, limit })),
   );
 
   server.registerTool(
@@ -1915,6 +2092,7 @@ async function main(): Promise<void> {
       description:
         'Trace a directed dependency path from source to target over resolved call+import edges. mode=shortest (default) returns the single shortest ordered chain; mode=all returns all simple paths (bounded — max 50 paths, depth default 5). In mode=all, internal_cap_hit=true signals the 50-path enumeration ceiling was reached (more paths may exist).',
       inputSchema: {
+        project_root: projectRootArg,
         source: z.string().describe('Path start element: codeRefId, element name, or file path'),
         target: z.string().describe('Path end element: codeRefId, element name, or file path'),
         mode: z.enum(['shortest', 'all']).optional().describe('shortest (default) or all simple paths'),
@@ -1922,8 +2100,8 @@ async function main(): Promise<void> {
         limit: limitArg,
       },
     },
-    async ({ source, target, mode, max_depth, limit }) =>
-      toContent(handlers.path_between({ source, target, mode, max_depth, limit })),
+    async ({ project_root, source, target, mode, max_depth, limit }) =>
+      perRepo(project_root, h => h.path_between({ source, target, mode, max_depth, limit })),
   );
 
   // ---- non-resolved-edge exposure (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P2) ----
@@ -1938,6 +2116,7 @@ async function main(): Promise<void> {
       description:
         'Enumerate call/import edges that did NOT resolve, with their persisted evidence — the detail behind validation_status\'s aggregate counts. Default lists unresolved + ambiguous edges (the honesty dispositions); status=external|builtin surface expected npm/stdlib noise. For ambiguous edges, candidates[] shows the competing symbols the resolver could not choose between. Facets: relationship, status, file, reason (substring). Always paginated — total + status_breakdown reflect the full set; edges[] is one offset/limit page (default 25, cap 100).',
       inputSchema: {
+        project_root: projectRootArg,
         relationship: z
           .enum(['call', 'import'])
           .optional()
@@ -1952,8 +2131,10 @@ async function main(): Promise<void> {
         limit: limitArg,
       },
     },
-    async ({ relationship, status, file, reason, offset, limit }) =>
-      toContent(handlers.unresolved_edges({ relationship, status, file, reason, offset, limit })),
+    async ({ project_root, relationship, status, file, reason, offset, limit }) =>
+      perRepo(project_root, h =>
+        h.unresolved_edges({ relationship, status, file, reason, offset, limit }),
+      ),
   );
 
   // ---- source body + find-all-references (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P3) ----
@@ -1967,12 +2148,14 @@ async function main(): Promise<void> {
       description:
         'Return an element\'s source directly from disk (no RAG/embedder), resolved by codeRefId or name via .coderef/index.json. A bounded line-window from the element\'s start line (index carries a start line only). Controls: context (lines, default 40, cap 200), max_chars (default 4000, cap 20000). Flags line_truncated / char_truncated when clipped.',
       inputSchema: {
+        project_root: projectRootArg,
         element: elementArg,
         context: z.number().optional().describe('Lines to include from the start line (default 40, cap 200)'),
         max_chars: z.number().optional().describe('Byte cap on the returned slice (default 4000, cap 20000)'),
       },
     },
-    async ({ element, context, max_chars }) => toContent(handlers.source_of({ element, context, max_chars })),
+    async ({ project_root, element, context, max_chars }) =>
+      perRepo(project_root, h => h.source_of({ element, context, max_chars })),
   );
 
   server.registerTool(
@@ -1981,9 +2164,10 @@ async function main(): Promise<void> {
       title: 'Find all references',
       description:
         'Union the inbound references to an element in ONE call: resolved call-sites + resolved import-sites (traversable), PLUS type-only import references (resolutionStatus=typeOnly, additive + non-traversable, matched heuristically by module basename). Does NOT reclassify type-only edges or shift validation counts. Returns per-category counts + sites.',
-      inputSchema: { element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
     },
-    async ({ element, limit }) => toContent(handlers.find_all_references({ element, limit })),
+    async ({ project_root, element, limit }) =>
+      perRepo(project_root, h => h.find_all_references({ element, limit })),
   );
 
   // ---- CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6) --------------------------
@@ -2001,13 +2185,14 @@ async function main(): Promise<void> {
       description:
         'READ. Build a single context bundle for a focus element: the focus source (uncompressed, first) + its transitive dependency closure, admitted closest-first while a running token total stays under budget. Dependencies are signature-compressed by default; pass full_deps=true for full dependency windows. Returns { bundle, manifest }; manifest.dropped records anything trimmed. Reads .coderef/graph.json + source; writes nothing.',
       inputSchema: {
+        project_root: projectRootArg,
         element: z.string().describe('Focus element: codeRefId or element name to pack context around'),
         token_budget: z.number().optional().describe('Max bundle tokens (default 8000). Deps are admitted closest-first until this fills.'),
         full_deps: z.boolean().optional().describe('Include FULL dependency source windows instead of the default signature-compressed skeletons.'),
       },
     },
-    async ({ element, token_budget, full_deps }) =>
-      toContent(handlers.pack_context({ element, token_budget, full_deps })),
+    async ({ project_root, element, token_budget, full_deps }) =>
+      perRepo(project_root, h => h.pack_context({ element, token_budget, full_deps })),
   );
 
   server.registerTool(
@@ -2017,12 +2202,13 @@ async function main(): Promise<void> {
       description:
         'READ / PREVIEW-ONLY. Plan a project-wide symbol rename over .coderef/graph.json: returns declaration + reference SITES (call/import), type-only refs, and any ambiguities the applier would guard. Writes NOTHING and has NO apply path — source mutation stays exclusively on the coderef-rename CLI (--apply). Use this to inspect blast radius before running the CLI.',
       inputSchema: {
+        project_root: projectRootArg,
         old_name: z.string().describe('Existing symbol name (or codeRefId) to rename'),
         new_name: z.string().describe('Proposed new name (used only to shape the plan; nothing is written)'),
       },
     },
-    async ({ old_name, new_name }) =>
-      toContent(handlers.rename_preview({ old_name, new_name })),
+    async ({ project_root, old_name, new_name }) =>
+      perRepo(project_root, h => h.rename_preview({ old_name, new_name })),
   );
 
   server.registerTool(
@@ -2031,9 +2217,9 @@ async function main(): Promise<void> {
       title: 'RAG index status',
       description:
         'READ. Report the RAG index + vector-store metadata and health from .coderef/rag-index.json + coderef-vectors.json: provider/store/model, chunk counts, index/vectors existence, and a healthy|partial|missing verdict. Reports cleanly (health="missing") when the project has not been indexed. Reads only; writes nothing.',
-      inputSchema: {},
+      inputSchema: { project_root: projectRootArg },
     },
-    async () => toContent(await handlers.rag_status()),
+    async ({ project_root }) => perRepo(project_root, h => h.rag_status()),
   );
 
   server.registerTool(
@@ -2046,10 +2232,12 @@ async function main(): Promise<void> {
       description:
         'WRITE (.coderef/ only). Regenerate the .coderef/ intelligence substrate (index/graph/validation-report/etc.) by running the populate pipeline for this project. All writes are confined to <projectDir>/.coderef/. Returns a compact summary (elements, files, edges, duration, outputPath). `incremental` is accepted for parity but a full rebuild is always run over MCP (no changed-file list is carried). Does NOT mutate source files.',
       inputSchema: {
+        project_root: projectRootArg,
         incremental: z.boolean().optional().describe('Request an incremental rebuild (accepted for CLI parity; MCP runs a full rebuild since no changed-file list is supplied).'),
       },
     },
-    async ({ incremental }) => toContent(await handlers.reindex({ incremental })),
+    async ({ project_root, incremental }) =>
+      perRepo(project_root, h => h.reindex({ incremental })),
   );
 
   server.registerTool(
@@ -2061,15 +2249,15 @@ async function main(): Promise<void> {
       // there). Local Ollama ONLY — no cloud LLM fallback.
       description:
         'WRITE (.coderef/ only). Build the semantic RAG index for this project using LOCAL Ollama embeddings (no cloud LLM). Writes .coderef/rag-index.json + the vector store; nothing outside .coderef/. Requires populate-coderef to have run first (reads validation-report.json). Errors cleanly (embedding_unavailable) when Ollama is unreachable — the server keeps running. Returns { status, chunksIndexed, provider, store, durationMs, indexPath }.',
-      inputSchema: {},
+      inputSchema: { project_root: projectRootArg },
     },
-    async () => toContent(await handlers.rag_index()),
+    async ({ project_root }) => perRepo(project_root, h => h.rag_index()),
   );
 
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    `[coderef-mcp] v${SERVER_VERSION} on stdio — project: ${projectDir} (23 tools — read + .coderef-write)`,
+    `[coderef-mcp] v${SERVER_VERSION} on stdio — 23 tools, per-repo; project_root required per call; anchor: ${anchor}`,
   );
 }
 
