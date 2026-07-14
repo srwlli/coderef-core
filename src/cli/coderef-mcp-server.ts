@@ -3,7 +3,7 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability coderef-mcp-server
- * @exports buildToolHandlers, handlersFor, ToolHandlers
+ * @exports buildToolHandlers, handlersFor, errorPayload, ToolHandlers
  */
 
 /**
@@ -1802,8 +1802,10 @@ function toContent(payload: Record<string, unknown>) {
  * envelope { error, project_root, hint } (RESOLUTION-DESIGN.md taxonomy).
  * NEVER falls back to another repo's data; never re-throws (a raw throw would
  * surface as an SDK-level error instead of this agent-actionable payload).
+ * Exported for the repo-agnostic behavioral tests (they mirror perRepo:
+ * handlersFor + errorPayload is exactly the tool-call boundary).
  */
-function errorPayload(e: unknown, project_root: string): Record<string, unknown> {
+export function errorPayload(e: unknown, project_root: string): Record<string, unknown> {
   if (e instanceof RootResolutionError) {
     return { error: e.code, project_root, hint: e.hint };
   }
