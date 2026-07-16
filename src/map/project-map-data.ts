@@ -23,12 +23,17 @@
  * - Universal on any repo: hotspots + cycles overlays are COMPUTED from the
  *   projected file graph itself. `.coderef/intelligence/hotspots.json` is
  *   optional enrichment only — arbitrary repos will not have it.
+ * - Graph analytics (communities, centrality/bridges, coupling, dead-code
+ *   candidates — WO-MAP-GRAPH-ANALYTICS-MODULE-001 P1) follow the same rule:
+ *   computed from the projected file graph by src/map/graph-analytics.ts,
+ *   attached as the optional schema-additive `analytics` block.
  * - Pure data. This module must never know HTML exists.
  */
 
 import * as fs from 'fs';
 import * as path from 'path';
 import { normalizeSlashes } from '../utils/path-normalize.js';
+import { computeGraphAnalytics, MapAnalytics } from './graph-analytics.js';
 
 export interface MapElement {
   name: string;
@@ -101,6 +106,8 @@ export interface MapData {
   nodes: MapNode[];
   edges: MapEdge[];
   overlays: MapOverlays;
+  /** Graph analytics over this projection (absent when options.analytics === false). */
+  analytics?: MapAnalytics;
 }
 
 export class MapProjectionError extends Error {
@@ -117,6 +124,8 @@ export interface ProjectMapDataOptions {
   hotspotCap?: number;
   /** Max cycle overlay entries (default 50). */
   cycleCap?: number;
+  /** Compute the analytics block (default true). */
+  analytics?: boolean;
 }
 
 const HOTSPOT_CAP_DEFAULT = 25;
@@ -402,10 +411,15 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
 
   const cycles = fileCycles(nodes.map(n => n.id), edges).slice(0, cycleCap);
 
+  const analytics =
+    options.analytics === false
+      ? undefined
+      : computeGraphAnalytics(nodes.map(n => n.id), edges);
+
   const projectPath = normalizeSlashes(path.resolve(projectRoot));
   return {
     meta: {
-      schemaVersion: '1.0.0',
+      schemaVersion: '1.1.0',
       projectPath,
       repoName: path.basename(projectPath),
       generatedAt: new Date().toISOString(),
@@ -420,5 +434,6 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     nodes,
     edges,
     overlays: { hotspots, cycles },
+    ...(analytics ? { analytics } : {}),
   };
 }

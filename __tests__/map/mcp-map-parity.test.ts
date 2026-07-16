@@ -90,6 +90,10 @@ describe('MCP map tool — CLI parity (hermetic fixture repo)', () => {
     expect(stripVolatile(mcpData)).toEqual(stripVolatile(cli.data));
     expect(result.node_count).toBe(cli.data.nodes.length);
     expect(result.edge_count).toBe(cli.data.edges.length);
+    // Analytics summary fields (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P1)
+    expect(result.community_count).toBe(cli.data.analytics!.communityCount);
+    expect(result.isolated_count).toBe(cli.data.analytics!.deadCode.isolated.length);
+    expect(result.community_count).toBeGreaterThan(0);
   });
 
   it('serves a fresh map without regeneration on the second call', () => {

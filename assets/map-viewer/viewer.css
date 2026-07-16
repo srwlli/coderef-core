@@ -57,6 +57,11 @@ html, body {
   border-color: #4fc3f7;
   color: #ffffff;
 }
+#toolbar button[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+#toolbar button[disabled]:hover { background: #1d2632; }
 
 #stats {
   margin-left: auto;

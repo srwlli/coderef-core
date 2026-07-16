@@ -28,6 +28,8 @@ describe('map-viewer static asset', () => {
       'detail-panel',
       'toggle-hotspots',
       'toggle-cycles',
+      'toggle-communities',
+      'toggle-deadcode',
       'toggle-blast',
       'reset-view',
       'graph-canvas',

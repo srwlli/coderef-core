@@ -19,7 +19,7 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
-import { MapData, projectMapData } from './project-map-data.js';
+import { MapData, projectMapData, ProjectMapDataOptions } from './project-map-data.js';
 
 export const MAP_DATA_PLACEHOLDER = '/*__CODEREF_MAP_DATA__*/null';
 
@@ -81,8 +81,12 @@ export interface GenerateMapResult {
  * scan-if-absent decision (CLI runs scan+populate; MCP relies on the server's
  * bounded ensureArtifacts).
  */
-export function generateMap(projectRoot: string, outDir?: string): GenerateMapResult {
-  const data = projectMapData(projectRoot);
+export function generateMap(
+  projectRoot: string,
+  outDir?: string,
+  options?: ProjectMapDataOptions,
+): GenerateMapResult {
+  const data = projectMapData(projectRoot, options);
   const out = outDir || path.join(projectRoot, '.coderef', 'map');
   emitViewer(out, JSON.stringify(data));
   return {

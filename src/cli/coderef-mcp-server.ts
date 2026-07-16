@@ -1652,9 +1652,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         edge_count: data.edges.length,
         hotspot_count: data.overlays?.hotspots?.length ?? 0,
         cycle_count: data.overlays?.cycles?.length ?? 0,
+        // Analytics summary (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P1); null when
+        // reading an older data.json without the analytics block.
+        community_count: data.analytics?.communityCount ?? null,
+        isolated_count: data.analytics?.deadCode?.isolated?.length ?? null,
         warnings: data.meta?.warnings ?? [],
         hint:
-          'data_path is the same file-level MapData the viewer renders (nodes=files with embedded elements, edges=resolved file deps, hotspot/cycle overlays). Open graph_html_path in a browser for the visual map, or read data.json directly.',
+          'data_path is the same file-level MapData the viewer renders (nodes=files with embedded elements, edges=resolved file deps, hotspot/cycle overlays, graph-analytics block: communities/centrality/bridges/coupling/dead-code candidates). Open graph_html_path in a browser for the visual map, or read data.json directly.',
         writes_confined_to: path.join(projectDir, '.coderef', 'map'),
       };
     },
@@ -2054,7 +2058,7 @@ async function main(): Promise<void> {
     {
       title: 'Repository map (file-level)',
       description:
-        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps, hotspot/cycle overlays) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json.',
+        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps, hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json.',
       inputSchema: {
         project_root: projectRootArg,
         refresh: z.boolean().optional().describe('Force regeneration even if the map is fresh (default: regenerate only when absent or older than graph.json)'),

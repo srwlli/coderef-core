@@ -49,8 +49,11 @@
   var cycleEdgeKeys = new Set();
   var hotspotRank = new Map(); // id -> rank (0 = hottest)
   var maxHotspot = 1;
+  var analytics = null;        // data.analytics (absent on pre-1.1.0 data.json)
+  var communityOf = {};        // file -> community id
+  var deadSet = new Set();     // isolated + zero-in-degree candidates
 
-  var mode = { hotspots: false, cycles: false, blast: false };
+  var mode = { hotspots: false, cycles: false, communities: false, deadcode: false, blast: false };
   var selected = null;
   var hovered = null;
   var blastDepths = new Map(); // id -> 1|2 when blast mode active
@@ -109,6 +112,21 @@
       hotspotRank.set(h.file, i);
       maxHotspot = Math.max(maxHotspot, h.score);
     });
+    // Graph analytics (optional, schema-additive): older data.json has no
+    // analytics block — the two overlay toggles disable gracefully.
+    analytics = data.analytics || null;
+    if (analytics) {
+      communityOf = analytics.assignments || {};
+      var dead = analytics.deadCode || {};
+      (dead.isolated || []).forEach(function (f) { deadSet.add(f); });
+      (dead.zeroInDegreeCandidates || []).forEach(function (f) { deadSet.add(f); });
+    } else {
+      ['toggle-communities', 'toggle-deadcode'].forEach(function (id) {
+        var btn = document.getElementById(id);
+        btn.disabled = true;
+        btn.title += ' — unavailable: no analytics block in this data.json (regenerate the map)';
+      });
+    }
 
     document.getElementById('repo-name').textContent = data.meta.repoName || 'coderef map';
     document.getElementById('stats').textContent =
@@ -214,6 +232,7 @@
       return depth === 1 ? 0.95 : depth === 2 ? 0.7 : 0.08;
     }
     if (mode.cycles) return cycleNodes.has(n.id) ? 1 : 0.12;
+    if (mode.deadcode) return deadSet.has(n.id) ? 1 : 0.12;
     if (mode.hotspots) return hotspotRank.has(n.id) ? 1 : 0.25;
     return 1;
   }
@@ -225,6 +244,10 @@
       return 'rgb(255,' + g + ',60)';
     }
     if (mode.cycles && cycleNodes.has(n.id)) return '#ff5252';
+    if (mode.communities && communityOf[n.id] !== undefined) {
+      return PALETTE[communityOf[n.id] % PALETTE.length];
+    }
+    if (mode.deadcode && deadSet.has(n.id)) return '#ff8a65';
     return n.color;
   }
 
@@ -345,6 +368,14 @@
     addRow(meta, 'Elements', String(selected.elementCount));
     addRow(meta, 'Hotspot score', selected.hotspotScore + '  (in ' + selected.inWeight + ' / out ' + selected.outWeight + ')');
     if (cycleNodes.has(selected.id)) addRow(meta, 'Cycle', 'member of a dependency cycle');
+    if (analytics && communityOf[selected.id] !== undefined) {
+      var cid = communityOf[selected.id];
+      var community = (analytics.communities || []).filter(function (c) { return c.id === cid; })[0];
+      addRow(meta, 'Community', '#' + cid + (community ? ' (' + community.label + ', ' + community.size + ' files)' : ''));
+    }
+    if (deadSet.has(selected.id)) {
+      addRow(meta, 'Dead code', 'candidate (isolated or zero in-degree) — verify before removing');
+    }
 
     var edgesBox = document.getElementById('detail-edges');
     edgesBox.innerHTML = '';
@@ -440,21 +471,22 @@
     var search = document.getElementById('search-input');
     search.addEventListener('input', function () { runSearch(search.value); });
 
-    document.getElementById('toggle-hotspots').addEventListener('click', function () {
-      mode.hotspots = !mode.hotspots;
-      if (mode.hotspots) { mode.cycles = false; mode.blast = false; }
+    // Overlay toggles are mutually exclusive: turning one on clears the rest.
+    function exclusiveToggle(key) {
+      mode[key] = !mode[key];
+      if (mode[key]) {
+        ['hotspots', 'cycles', 'communities', 'deadcode', 'blast'].forEach(function (other) {
+          if (other !== key) mode[other] = false;
+        });
+        if (key === 'blast') computeBlast();
+      }
       syncToggles();
-    });
-    document.getElementById('toggle-cycles').addEventListener('click', function () {
-      mode.cycles = !mode.cycles;
-      if (mode.cycles) { mode.hotspots = false; mode.blast = false; }
-      syncToggles();
-    });
-    document.getElementById('toggle-blast').addEventListener('click', function () {
-      mode.blast = !mode.blast;
-      if (mode.blast) { mode.hotspots = false; mode.cycles = false; computeBlast(); }
-      syncToggles();
-    });
+    }
+    document.getElementById('toggle-hotspots').addEventListener('click', function () { exclusiveToggle('hotspots'); });
+    document.getElementById('toggle-cycles').addEventListener('click', function () { exclusiveToggle('cycles'); });
+    document.getElementById('toggle-communities').addEventListener('click', function () { exclusiveToggle('communities'); });
+    document.getElementById('toggle-deadcode').addEventListener('click', function () { exclusiveToggle('deadcode'); });
+    document.getElementById('toggle-blast').addEventListener('click', function () { exclusiveToggle('blast'); });
     document.getElementById('reset-view').addEventListener('click', function () {
       fitView();
     });
@@ -522,6 +554,8 @@
   function syncToggles() {
     setToggle(document.getElementById('toggle-hotspots'), mode.hotspots);
     setToggle(document.getElementById('toggle-cycles'), mode.cycles);
+    setToggle(document.getElementById('toggle-communities'), mode.communities);
+    setToggle(document.getElementById('toggle-deadcode'), mode.deadcode);
     setToggle(document.getElementById('toggle-blast'), mode.blast);
     if (mode.blast) computeBlast();
   }

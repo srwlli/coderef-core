@@ -130,8 +130,9 @@ One command from any repo to an interactive dependency map
 bins `coderef-pipeline` chains), then projects `graph.json` + `index.json` to
 a file-level `.coderef/map/data.json` and emits the bundled browser viewer —
 dependency graph, search (files + elements), node-detail panel, hotspots and
-cycles overlays, blast-radius mode. Header-less repos degrade gracefully (the
-map renders from the dependency graph alone).
+cycles overlays, communities and dead-code overlays (graph analytics), blast-radius
+mode. Header-less repos degrade gracefully (the map renders from the dependency
+graph alone).
 
 ### Usage
 
@@ -163,16 +164,40 @@ npx coderef-map /path/to/any/repo --force-scan --no-open
 
 | File | Purpose |
 |------|---------|
-| `.coderef/map/data.json` | File-level MapData v1: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights, hotspot/cycle overlays. Same file the MCP `map` tool returns to agents. |
+| `.coderef/map/data.json` | File-level MapData v1.1: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights, hotspot/cycle overlays, `analytics` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
+
+### Analytics block (`data.analytics`, MapData v1.1)
+
+Graph analytics computed from the projected file graph itself
+(`src/map/graph-analytics.ts`, WO-MAP-GRAPH-ANALYTICS-MODULE-001 P1) — no
+intelligence artifacts required, so it works on any repo. Optional and
+schema-additive: consumers of older `data.json` files see no block; the viewer
+disables the two analytics toggles gracefully. Deterministic modulo
+`meta.generatedAt`.
+
+| Field | Contents |
+|-------|----------|
+| `communities[]` | `{id, size, files[], label}` — connected components refined by weighted label propagation; ids ranked by size; `label` = dominant top-level dir. Capped (default 50) with a warning; `assignments` (file → community id) always covers **all** files. |
+| `centrality.top[]` | `{file, degree, inDegree, outDegree, betweenness}` — degree exact; Brandes betweenness exact ≤ 500 files, else deterministic stride-sampled and flagged via `betweennessApproximated` + `sampledSources`. |
+| `bridges[]` | Articulation-point files of the undirected file graph (removal disconnects components). |
+| `coupling.top[]` | `{file, efferent, afferent, instability}` — distinct dependency counts; `instability = Ce/(Ce+Ca)`. |
+| `deadCode` | `{isolated[], zeroInDegreeCandidates[], entrypointExcludedCount, note}` — **surfaces, not verdicts**: entrypoint-like (`index.*`, `main.*`, `bin/`, `cli/`, `scripts/`) and test files are excluded from candidates. |
+| `warnings[]` | Every cap truncation and approximation, one line each. |
+
+Viewer toggles: **Communities** (color nodes by community) and **Dead code**
+(highlight candidates, dim the rest) join the existing Hotspots/Cycles/Blast
+radius modes; the node detail panel shows the community and dead-code-candidate
+rows.
 
 ### Agent parity
 
 The MCP server's `map` tool (see below) emits/refreshes the identical
 `data.json` via the same extracted core (`src/map/emit-map.ts`) —
-parity-tested byte-identical modulo timestamp. Agents query `data.json`;
-humans open `graph.html`.
+parity-tested byte-identical modulo timestamp, and summarizes the analytics
+block as `community_count` + `isolated_count` (null when reading an older
+`data.json`). Agents query `data.json`; humans open `graph.html`.
 
 ---
 
