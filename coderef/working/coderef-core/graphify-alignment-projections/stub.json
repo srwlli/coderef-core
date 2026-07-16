@@ -1,0 +1,14 @@
+{
+  "stub_id": "STUB-BXW070",
+  "ulid": "01KXPG200A5N7G9P269A1YMS6N",
+  "feature_name": "graphify-alignment-projections",
+  "description": "Universal 'coderef map <path>' command working on ANY repo: scans if .coderef/ absent, projects graph.json+index.json to a file-level map/data.json, emits bundled interactive browser viewer (static graph.html default + --serve local server for big repos) with dependency graph, search, node-detail panel, hotspots/cycles/impact overlays; agent parity in v1 (/coderef-map skill + MCP map tool). V2 enrichments: graph analytics (communities/centrality/coupling/dead-code), per-edge evidence, declared-vs-detected drift. Ruled plan at coderef/working/coderef-core/graphify-alignment-projections/PLAN.md",
+  "category": "feature",
+  "priority": "medium",
+  "status": "promoted",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-07-16T22:16:50Z",
+  "workorder_id": "WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001",
+  "promoted_at": "2026-07-16T22:23:55Z"
+}

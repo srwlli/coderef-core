@@ -2,8 +2,8 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-14  
-**Total Exported:** 816 elements  
+**Generated:** 2026-07-16  
+**Total Exported:** 833 elements  
 <!-- coderef:uuid=exports-root -->
 
 ---
@@ -18,16 +18,16 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **308** | 503 | 811 |
-| interface | **330** | 80 | 410 |
-| constant | **32** | 114 | 146 |
+| function | **314** | 540 | 854 |
+| interface | **339** | 81 | 420 |
+| constant | **33** | 133 | 166 |
 | type | **44** | 22 | 66 |
 | component | **2** | 0 | 2 |
-| class | **100** | 6 | 106 |
+| class | **101** | 6 | 107 |
 
 ---
 
-## Exported Functions (308)
+## Exported Functions (314)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
@@ -82,11 +82,11 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=640edcae-5798-5444-a325-2b34810d298c --> `parseRemixRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, exports | `640edcae...` |
 | <!-- coderef:uuid=2eac99ad-00a7-506f-82d2-9c9ab7583d96 --> `extractRouteMetadata` | `src/analyzer/route-parsers.ts` | ❌ | code, filePath, exports, line, fileContent | `2eac99ad...` |
 
-*... and 258 more functions. See index.json for complete list.*
+*... and 264 more functions. See index.json for complete list.*
 
 ---
 
-## Exported Classes (100)
+## Exported Classes (101)
 
 | Class | File | UUID |
 |-------|------|------|
@@ -154,6 +154,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=244bfb7b-b886-54d8-ad3c-18e761f8af1d --> `JsonVectorStore` | `src/integration/vector/json-store.ts` | `244bfb7b...` |
 | <!-- coderef:uuid=494772ba-4d63-57ee-9fa5-dbf980e6b245 --> `PineconeStore` | `src/integration/vector/pinecone-store.ts` | `494772ba...` |
 | <!-- coderef:uuid=daddac9a-eebf-52bf-a860-1dd4f318de33 --> `VectorStoreError` | `src/integration/vector/vector-store.ts` | `daddac9a...` |
+| <!-- coderef:uuid=7beb9296-f48a-5b17-84ff-4493989ecdee --> `MapProjectionError` | `src/map/project-map-data.ts` | `7beb9296...` |
 | <!-- coderef:uuid=559101b1-1016-5357-b066-fe95e2c4ffc4 --> `CodeRefParser` | `src/parser/parser.ts` | `559101b1...` |
 | <!-- coderef:uuid=523ba0ce-8b89-579c-90ab-b670f95473db --> `ElementExtractor` | `src/pipeline/extractors/element-extractor.ts` | `523ba0ce...` |
 | <!-- coderef:uuid=c1f2698a-6231-5aaf-9ee3-581b02368e4b --> `RelationshipExtractor` | `src/pipeline/extractors/relationship-extractor.ts` | `c1f2698a...` |
@@ -193,7 +194,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 ---
 
-## Exported Interfaces (330)
+## Exported Interfaces (339)
 
 | Interface | File | UUID |
 |-----------|------|------|
@@ -228,7 +229,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=d0fa2d27-e6be-5757-8b98-37be3b8659fe --> `PrismaField` | `src/analyzer/database-detector.ts` | `d0fa2d27...` |
 | <!-- coderef:uuid=d61b4ee1-44e2-5e0f-a8d9-80ee84f11c9d --> `PrismaRelation` | `src/analyzer/database-detector.ts` | `d61b4ee1...` |
 
-*... and 300 more interfaces. See index.json for complete list.*
+*... and 309 more interfaces. See index.json for complete list.*
 
 ---
 

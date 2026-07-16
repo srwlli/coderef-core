@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-14  
+**Generated:** 2026-07-16  
 <!-- coderef:uuid=hotspots-root -->
 
 ---
@@ -21,10 +21,10 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 404 |
-| **Total Elements** | 2,533 |
-| **Total Lines** | 108,320 |
-| **Entry Points** | 80 |
+| **Total Files** | 414 |
+| **Total Elements** | 2,607 |
+| **Total Lines** | 110,376 |
+| **Entry Points** | 81 |
 | **Critical Functions** | 20 |
 
 ---
@@ -38,15 +38,15 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | 1 | <!-- coderef:uuid= --> `buildToolHandlers.outboundByKind` | 🔴 170 (Critical) | `src/cli/coderef-mcp-server.ts` | 0 dependents |
 | 2 | <!-- coderef:uuid= --> `scanCurrentElements` | 🔴 104 (Critical) | `src/scanner/scanner.ts` | 0 dependents |
 | 3 | <!-- coderef:uuid= --> `ContextGenerator.generateMarkdown` | 🔴 97 (Critical) | `src/pipeline/generators/context-generator.ts` | 0 dependents |
-| 4 | <!-- coderef:uuid= --> `ASTElementScanner.visitNode` | 🔴 65 (Critical) | `src/analyzer/ast-element-scanner.ts` | 0 dependents |
-| 5 | <!-- coderef:uuid= --> `currentScopeCodeRefId` | 🔴 65 (Critical) | `src/pipeline/call-resolver.ts` | 0 dependents |
-| 6 | <!-- coderef:uuid= --> `extractExportsFromAST` | 🔴 55 (Critical) | `src/analyzer/js-call-detector/module-analyzer.ts` | 0 dependents |
-| 7 | <!-- coderef:uuid= --> `extractElementsFromAST` | 🔴 51 (Critical) | `src/analyzer/js-call-detector/visitor.ts` | 0 dependents |
-| 8 | <!-- coderef:uuid= --> `classifyMethodCall` | 🔴 51 (Critical) | `src/pipeline/call-resolver.ts` | 0 dependents |
-| 9 | <!-- coderef:uuid= --> `toAbs` | 🔴 50 (Critical) | `src/cli/populate.ts` | 0 dependents |
-| 10 | <!-- coderef:uuid= --> `buildEdges` | 🟡 49 (High) | `src/pipeline/graph-builder.ts` | 0 dependents |
-| 11 | <!-- coderef:uuid= --> `SemanticSearchService.search` | 🟡 43 (High) | `src/integration/rag/semantic-search.ts` | 0 dependents |
-| 12 | <!-- coderef:uuid= --> `reportProgress` | 🟡 41 (High) | `src/integration/rag/indexing-orchestrator.ts` | 0 dependents |
+| 4 | <!-- coderef:uuid= --> `projectMapData` | 🔴 80 (Critical) | `src/map/project-map-data.ts` | 0 dependents |
+| 5 | <!-- coderef:uuid= --> `ASTElementScanner.visitNode` | 🔴 65 (Critical) | `src/analyzer/ast-element-scanner.ts` | 0 dependents |
+| 6 | <!-- coderef:uuid= --> `currentScopeCodeRefId` | 🔴 65 (Critical) | `src/pipeline/call-resolver.ts` | 0 dependents |
+| 7 | <!-- coderef:uuid= --> `extractExportsFromAST` | 🔴 55 (Critical) | `src/analyzer/js-call-detector/module-analyzer.ts` | 0 dependents |
+| 8 | <!-- coderef:uuid= --> `extractElementsFromAST` | 🔴 51 (Critical) | `src/analyzer/js-call-detector/visitor.ts` | 0 dependents |
+| 9 | <!-- coderef:uuid= --> `classifyMethodCall` | 🔴 51 (Critical) | `src/pipeline/call-resolver.ts` | 0 dependents |
+| 10 | <!-- coderef:uuid= --> `toAbs` | 🔴 50 (Critical) | `src/cli/populate.ts` | 0 dependents |
+| 11 | <!-- coderef:uuid= --> `buildEdges` | 🟡 49 (High) | `src/pipeline/graph-builder.ts` | 0 dependents |
+| 12 | <!-- coderef:uuid= --> `SemanticSearchService.search` | 🟡 43 (High) | `src/integration/rag/semantic-search.ts` | 0 dependents |
 | 13 | <!-- coderef:uuid= --> `buildToolHandlers.inboundByKind` | 🟡 31 (High) | `src/cli/coderef-mcp-server.ts` | 0 dependents |
 | 14 | <!-- coderef:uuid= --> `EmbeddingTextGenerator.generate` | 🟡 30 (High) | `src/integration/rag/embedding-text-generator.ts` | 0 dependents |
 | 15 | <!-- coderef:uuid= --> `SparseRetriever.build` | ⚪ 10 (Low) | `src/integration/rag/sparse-retriever.ts` | 0 dependents |
@@ -87,10 +87,10 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | <!-- coderef:uuid= --> `semantic-integration-cli.ts` | cli | `src/cli/semantic-integration-cli.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `demo-all-modules.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-analyze.ts` |
+| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-map.ts` |
 | <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-mcp-server.ts` |
-| <!-- coderef:uuid= --> `main` | cli | `src/cli/coderef-pack.ts` |
 
-*... and 55 more entry points.*
+*... and 56 more entry points.*
 
 ---
 
@@ -125,6 +125,7 @@ Focus on 🔴 Critical complexity functions:
 - `buildToolHandlers.outboundByKind` (src/cli/coderef-mcp-server.ts) - complexity 170
 - `scanCurrentElements` (src/scanner/scanner.ts) - complexity 104
 - `ContextGenerator.generateMarkdown` (src/pipeline/generators/context-generator.ts) - complexity 97
+- `projectMapData` (src/map/project-map-data.ts) - complexity 80
 - `ASTElementScanner.visitNode` (src/analyzer/ast-element-scanner.ts) - complexity 65
 - `currentScopeCodeRefId` (src/pipeline/call-resolver.ts) - complexity 65
 - `extractExportsFromAST` (src/analyzer/js-call-detector/module-analyzer.ts) - complexity 55

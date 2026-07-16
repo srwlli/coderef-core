@@ -2,9 +2,9 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-14  
-**Nodes:** 2,907 elements  
-**Edges:** 31,718 dependencies  
+**Generated:** 2026-07-16  
+**Nodes:** 2,991 elements  
+**Edges:** 32,686 dependencies  
 <!-- coderef:uuid=relationships-root -->
 
 ---
@@ -24,11 +24,11 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,907 |
-| **Total Dependencies** | 31,718 |
+| **Total Elements** | 2,991 |
+| **Total Dependencies** | 32,686 |
 | **Avg Dependencies/Element** | (edges.length / nodes.length).toFixed(2) |
 | **Entry Points** | 15 |
-| **Most Referenced** | 24458 refs |
+| **Most Referenced** | 25210 refs |
 
 ---
 
@@ -38,11 +38,11 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Rank | Element | References | Type | File |
 |------|---------|------------|------|------|
-| 2 | <!-- coderef:uuid=3a5c7092-5439-5eea-b229-0bf972fc6ac8 --> `LRUCache.get` | **358** | method | `src/scanner/lru-cache.ts` |
-| 3 | <!-- coderef:uuid=3386019c-4d86-51df-a279-7419ad867305 --> `LRUCache.set` | **256** | method | `src/scanner/lru-cache.ts` |
-| 4 | <!-- coderef:uuid=e343c184-4fbd-51a3-b8a7-9ec6e6865960 --> `LRUCache.has` | **205** | method | `src/scanner/lru-cache.ts` |
+| 2 | <!-- coderef:uuid=3a5c7092-5439-5eea-b229-0bf972fc6ac8 --> `LRUCache.get` | **387** | method | `src/scanner/lru-cache.ts` |
+| 3 | <!-- coderef:uuid=3386019c-4d86-51df-a279-7419ad867305 --> `LRUCache.set` | **276** | method | `src/scanner/lru-cache.ts` |
+| 4 | <!-- coderef:uuid=e343c184-4fbd-51a3-b8a7-9ec6e6865960 --> `LRUCache.has` | **219** | method | `src/scanner/lru-cache.ts` |
 | 5 | <!-- coderef:uuid=7c9b7ea0-070c-5509-a24a-f12fbfb87353 --> `scanCurrentElements` | **136** | function | `src/scanner/scanner.ts` |
-| 6 | <!-- coderef:uuid=eb90e629-6848-5f36-98bc-ea35b7f360f7 --> `normalizeSlashes` | **92** | function | `src/utils/path-normalize.ts` |
+| 6 | <!-- coderef:uuid=eb90e629-6848-5f36-98bc-ea35b7f360f7 --> `normalizeSlashes` | **100** | function | `src/utils/path-normalize.ts` |
 | 7 | <!-- coderef:uuid=338a35e8-1178-5291-bf00-0843e0e06e24 --> `PipelineOrchestrator.run` | **87** | method | `src/pipeline/orchestrator.ts` |
 | 8 | <!-- coderef:uuid=c9ce9b7a-50d6-590f-b659-a3f451440d57 --> `GrammarRegistry.getParser` | **73** | method | `src/pipeline/grammar-registry.ts` |
 | 9 | <!-- coderef:uuid=83d416a5-ec82-56cc-bc52-fef76fccda8e --> `CodeRefParser.parse` | **56** | method | `src/parser/parser.ts` |
