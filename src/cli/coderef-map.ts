@@ -31,7 +31,8 @@ import { spawnSync, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
-import { projectMapData, MapProjectionError } from '../map/project-map-data.js';
+import { generateMap, GenerateMapResult } from '../map/emit-map.js';
+import { MapProjectionError } from '../map/project-map-data.js';
 
 interface CliArgs {
   projectDir: string;
@@ -137,25 +138,6 @@ function coderefBin(name: string): string {
   return path.resolve(__dirname, `${name}.js`);
 }
 
-/**
- * Locate the bundled viewer asset dir. Works from dist (installed package /
- * built clone: dist/src/cli -> repo root is ../../..) and from source
- * execution under the test runner (src/cli -> repo root is ../..).
- */
-function viewerAssetDir(): string {
-  const candidates = [
-    path.resolve(__dirname, '..', '..', '..', 'assets', 'map-viewer'),
-    path.resolve(__dirname, '..', '..', 'assets', 'map-viewer'),
-  ];
-  for (const dir of candidates) {
-    if (fs.existsSync(path.join(dir, 'graph.html'))) return dir;
-  }
-  throw new Error(
-    `Bundled viewer assets not found (looked in: ${candidates.join(', ')}). ` +
-    'The coderef package install is incomplete.',
-  );
-}
-
 function runLeg(name: string, binArgs: string[]): void {
   const bin = coderefBin(name);
   if (!fs.existsSync(bin)) {
@@ -168,33 +150,6 @@ function runLeg(name: string, binArgs: string[]): void {
     console.error(`[coderef-map] ${name} failed (exit=${r.status}).`);
     process.exit(1);
   }
-}
-
-/** Escape JSON for safe embedding inside a <script> block. */
-function embedJson(json: string): string {
-  return json
-    .replace(/</g, '\\u003c')
-    .replace(/\u2028/g, '\\u2028')
-    .replace(/\u2029/g, '\\u2029');
-}
-
-const PLACEHOLDER = '/*__CODEREF_MAP_DATA__*/null';
-
-function emitViewer(outDir: string, dataJson: string): void {
-  const assetDir = viewerAssetDir();
-  fs.mkdirSync(outDir, { recursive: true });
-  fs.writeFileSync(path.join(outDir, 'data.json'), dataJson, 'utf-8');
-  fs.copyFileSync(path.join(assetDir, 'viewer.js'), path.join(outDir, 'viewer.js'));
-  fs.copyFileSync(path.join(assetDir, 'viewer.css'), path.join(outDir, 'viewer.css'));
-  const html = fs.readFileSync(path.join(assetDir, 'graph.html'), 'utf-8');
-  if (!html.includes(PLACEHOLDER)) {
-    throw new Error('Bundled graph.html is missing the data placeholder token.');
-  }
-  fs.writeFileSync(
-    path.join(outDir, 'graph.html'),
-    html.replace(PLACEHOLDER, embedJson(dataJson)),
-    'utf-8',
-  );
 }
 
 function openInBrowser(target: string): void {
@@ -269,9 +224,9 @@ function main(): void {
     runLeg('populate', [projectDir]);
   }
 
-  let data;
+  let result: GenerateMapResult;
   try {
-    data = projectMapData(projectDir);
+    result = generateMap(projectDir, args.outDir);
   } catch (err: any) {
     if (err instanceof MapProjectionError) {
       console.error(`[coderef-map] ${err.message}`);
@@ -279,10 +234,7 @@ function main(): void {
     }
     throw err;
   }
-
-  const outDir = args.outDir || path.join(projectDir, '.coderef', 'map');
-  const dataJson = JSON.stringify(data);
-  emitViewer(outDir, dataJson);
+  const { data, outDir } = result;
 
   console.log(`[coderef-map] ${data.meta.repoName}: ${data.nodes.length} files, ${data.edges.length} edges, ` +
     `${data.overlays.hotspots.length} hotspots, ${data.overlays.cycles.length} cycles`);

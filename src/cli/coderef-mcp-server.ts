@@ -61,6 +61,7 @@
  *   rag_status           - RAG index/vector metadata + health (read)
  *   reindex              - [.coderef-WRITE] regenerate the .coderef/ substrate
  *   rag_index            - [.coderef-WRITE] build the RAG index (local Ollama)
+ *   map                  - [.coderef-WRITE] file-level map data + bundled viewer (.coderef/map/)
  *
  * Protocol discipline: stdout belongs to the MCP transport. ALL diagnostics
  * go to stderr (same rule as populate --json; see populate.ts P1-T3 fix).
@@ -93,6 +94,10 @@ import { normalizeSlashes } from '../utils/path-normalize.js';
 import { defaultPopulateArgs, runPopulate } from './populate.js';
 import { defaultRagIndexArgs, runRagIndex } from './rag-index.js';
 import { readRagStatus } from './rag-status.js';
+// Agent parity for coderef-map (WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P5):
+// the MCP map tool shares the CLI's extracted emission core — one write path,
+// confined to <projectDir>/.coderef/map/.
+import { generateMap } from '../map/emit-map.js';
 
 type ExportedNode = ExportedGraph['nodes'][number];
 type ExportedEdge = ExportedGraph['edges'][number];
@@ -524,6 +529,8 @@ export interface ToolHandlers {
   rag_status(): Promise<Record<string, unknown>>;
   reindex(args: { incremental?: boolean }): Promise<Record<string, unknown>>;
   rag_index(): Promise<Record<string, unknown>>;
+  // Agent parity for coderef-map (WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P5).
+  map(args: { refresh?: boolean }): Record<string, unknown>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -1613,6 +1620,45 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       }
     },
 
+    map({ refresh } = {}) {
+      // .coderef-WRITE (confined to <projectDir>/.coderef/map/). Same bounded
+      // build-if-missing substrate contract as every other tool: loadGraph
+      // runs ensureArtifacts first (auto-populate under the file ceiling,
+      // actionable BuildHintError above it). The map itself regenerates when
+      // forced (refresh=true), absent, or older than graph.json — so agents
+      // always read a data.json consistent with the current graph.
+      loadGraph(projectDir, cache);
+      const graphPath = path.join(projectDir, '.coderef', 'graph.json');
+      const dataPath = path.join(projectDir, '.coderef', 'map', 'data.json');
+      const htmlPath = path.join(projectDir, '.coderef', 'map', 'graph.html');
+      const stale =
+        !fs.existsSync(dataPath) ||
+        !fs.existsSync(htmlPath) ||
+        fs.statSync(dataPath).mtimeMs < fs.statSync(graphPath).mtimeMs;
+      let data;
+      let refreshed = false;
+      if (refresh || stale) {
+        data = generateMap(projectDir).data;
+        refreshed = true;
+      } else {
+        data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+      }
+      return {
+        data_path: normalizeSlashes(dataPath),
+        graph_html_path: normalizeSlashes(htmlPath),
+        refreshed,
+        generated_at: data.meta?.generatedAt ?? null,
+        node_count: data.nodes.length,
+        edge_count: data.edges.length,
+        hotspot_count: data.overlays?.hotspots?.length ?? 0,
+        cycle_count: data.overlays?.cycles?.length ?? 0,
+        warnings: data.meta?.warnings ?? [],
+        hint:
+          'data_path is the same file-level MapData the viewer renders (nodes=files with embedded elements, edges=resolved file deps, hotspot/cycle overlays). Open graph_html_path in a browser for the visual map, or read data.json directly.',
+        writes_confined_to: path.join(projectDir, '.coderef', 'map'),
+      };
+    },
+
     async rag_status() {
       // Read-only: delegates to the extracted readRagStatus (reads only
       // .coderef/rag-index.json + coderef-vectors.json). Reports cleanly when no
@@ -2001,6 +2047,20 @@ async function main(): Promise<void> {
     },
     async ({ project_root, limit, relationship }) =>
       perRepo(project_root, h => h.cycles({ limit, relationship })),
+  );
+
+  server.registerTool(
+    'map',
+    {
+      title: 'Repository map (file-level)',
+      description:
+        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps, hotspot/cycle overlays) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json.',
+      inputSchema: {
+        project_root: projectRootArg,
+        refresh: z.boolean().optional().describe('Force regeneration even if the map is fresh (default: regenerate only when absent or older than graph.json)'),
+      },
+    },
+    async ({ project_root, refresh }) => perRepo(project_root, h => h.map({ refresh })),
   );
 
   server.registerTool(

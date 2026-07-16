@@ -28,7 +28,8 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 23 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 24 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html` or `--serve` | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
@@ -118,6 +119,60 @@ If you need cloud RAG, invoke `rag-index` directly without the
 | `CODEREF_LLM_PROVIDER` | Provider name (`ollama` for local-only). |
 | `CODEREF_LLM_BASE_URL` | Ollama (or other local) endpoint. |
 | `CODEREF_LLM_MODEL` | Ollama embedding model. |
+
+---
+
+## coderef-map
+
+One command from any repo to an interactive dependency map
+(WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001). Point it at ANY project: if
+`.coderef/graph.json` is absent it runs the scan + populate legs first (same
+bins `coderef-pipeline` chains), then projects `graph.json` + `index.json` to
+a file-level `.coderef/map/data.json` and emits the bundled browser viewer —
+dependency graph, search (files + elements), node-detail panel, hotspots and
+cycles overlays, blast-radius mode. Header-less repos degrade gracefully (the
+map renders from the dependency graph alone).
+
+### Usage
+
+```bash
+# Static mode (default): emits .coderef/map/graph.html with the data inlined
+# and opens the browser. The file is double-clickable afterwards — no server.
+npx coderef-map /path/to/any/repo
+
+# Serve mode: local HTTP server over the same artifacts (big repos, or when
+# the browser blocks file: pages)
+npx coderef-map /path/to/any/repo --serve --port 8123
+
+# Regenerate artifacts first, don't open a browser
+npx coderef-map /path/to/any/repo --force-scan --no-open
+```
+
+### Options
+
+| Flag | Description | Default |
+|------|-------------|---------|
+| `--project-dir <path>` | Target project root (or first positional arg) | cwd |
+| `--serve` | Serve the map over localhost instead of relying on the static file | off |
+| `--port <N>` | Port for `--serve` (`0` = auto-assign) | `8123` |
+| `--no-open` | Do not open the browser | opens |
+| `--force-scan` | Re-run scan + populate even if `.coderef/` exists | off |
+| `--out <dir>` | Output directory | `<path>/.coderef/map` |
+
+### Output
+
+| File | Purpose |
+|------|---------|
+| `.coderef/map/data.json` | File-level MapData v1: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights, hotspot/cycle overlays. Same file the MCP `map` tool returns to agents. |
+| `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
+| `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
+
+### Agent parity
+
+The MCP server's `map` tool (see below) emits/refreshes the identical
+`data.json` via the same extracted core (`src/map/emit-map.ts`) —
+parity-tested byte-identical modulo timestamp. Agents query `data.json`;
+humans open `graph.html`.
 
 ---
 
@@ -589,11 +644,11 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 23 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 24 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
 
 **Repo-agnostic (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001):** one running server serves ANY indexed repo. Every tool takes a **required `project_root`** argument naming the target repo root (the directory containing `.coderef/`) — pure CLI semantics, exactly as if the caller had the CLI. There is no default repo, no cwd inference, no env fallback; omitting `project_root` is a schema-level rejection.
 
-Most tools are **read-only**. Two are **`.coderef`-write** tools — `reindex` (regenerate the substrate) and `rag_index` (build the RAG index over local Ollama) — and every write they perform is confined to `<projectDir>/.coderef/`: they delegate to the `populate` / `rag-index` pipelines and never mutate source. Source-mutating rename is deliberately **not** exposed here; MCP offers only the dry-run `rename_preview` (the `coderef-rename --apply` CLI owns source mutation).
+Most tools are **read-only**. Three are **`.coderef`-write** tools — `reindex` (regenerate the substrate), `rag_index` (build the RAG index over local Ollama), and `map` (emit/refresh the file-level map + bundled viewer under `.coderef/map/`) — and every write they perform is confined to `<projectDir>/.coderef/`: they delegate to the `populate` / `rag-index` / `emit-map` pipelines and never mutate source. Source-mutating rename is deliberately **not** exposed here; MCP offers only the dry-run `rename_preview` (the `coderef-rename --apply` CLI owns source mutation).
 
 Built inside coderef-core and typed against `ExportedGraph` — schema drift between the graph exporter and the MCP surface is a compile error, not a runtime mystery (the failure mode that killed the previous external Python server).
 
@@ -621,7 +676,7 @@ codebase_summary(project_root="C:/repos/project-two")   → project-two's census
 what_exports(project_root="C:/repos/project-two", file="src/lib.ts")
 ```
 
-- `project_root` is **required and mandatory** on all 23 tools. Absolute paths are used as-is; relative paths resolve against the launch anchor (`--project-dir`, default cwd).
+- `project_root` is **required and mandatory** on all 24 tools. Absolute paths are used as-is; relative paths resolve against the launch anchor (`--project-dir`, default cwd).
 - One handler set (with its mtime-invalidated artifact cache) is memoized per distinct canonical root — repeated queries against the same repo are cheap, and repos never share caches.
 - Resolution failures return a structured envelope instead of another repo's data:
 
@@ -639,7 +694,7 @@ what_exports(project_root="C:/repos/project-two", file="src/lib.ts")
 | `project_root_symlink_loop` | Circular symlink in the path — fix the link chain |
 | `project_root_symlink_broken` | Symlink points at a nonexistent target (named in the hint) |
 
-The two `.coderef`-WRITE tools (`reindex`, `rag_index`) are likewise per-call: writes are confined to `<project_root>/.coderef/` of whichever repo the call names (CLI-parity — see the DR-002 ruling in the workorder's RESOLUTION-DESIGN.md).
+The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise per-call: writes are confined to `<project_root>/.coderef/` of whichever repo the call names (CLI-parity — see the DR-002 ruling in the workorder's RESOLUTION-DESIGN.md).
 
 ### Tools
 
