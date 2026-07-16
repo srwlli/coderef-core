@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<!--
+  coderef map viewer — prebuilt static asset (WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P2).
+  Core analysis code never generates HTML: the coderef-map command only copies
+  this asset and substitutes the data placeholder below. No network, no CDN.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>coderef map</title>
+  <link rel="stylesheet" href="./viewer.css">
+  <script id="coderef-map-data">
+    /* Static mode: the coderef-map CLI replaces the null below with the map
+       data JSON. Serve mode leaves it null and viewer.js fetches ./data.json. */
+    window.__CODEREF_MAP_DATA__ = /*__CODEREF_MAP_DATA__*/null;
+  </script>
+</head>
+<body>
+  <div id="toolbar">
+    <span id="repo-name">coderef map</span>
+    <input id="search-input" type="search" placeholder="Search files and elements..." autocomplete="off">
+    <button id="toggle-hotspots" title="Color nodes by hotspot score">Hotspots</button>
+    <button id="toggle-cycles" title="Highlight file-level dependency cycles">Cycles</button>
+    <button id="toggle-blast" title="Highlight blast radius (depth 1-2) of the selected node">Blast radius</button>
+    <button id="reset-view" title="Fit graph to screen">Reset view</button>
+    <span id="stats"></span>
+  </div>
+  <div id="search-results" hidden></div>
+  <canvas id="graph-canvas"></canvas>
+  <aside id="detail-panel" hidden>
+    <button id="detail-close" title="Close">&times;</button>
+    <h2 id="detail-title"></h2>
+    <div id="detail-meta"></div>
+    <div id="detail-edges"></div>
+    <div id="detail-elements"></div>
+  </aside>
+  <div id="empty-state" hidden>No map data. Run: coderef-map &lt;path&gt;</div>
+  <script src="./viewer.js"></script>
+</body>
+</html>
