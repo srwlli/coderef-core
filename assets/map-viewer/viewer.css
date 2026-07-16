@@ -143,6 +143,12 @@ html, body {
 }
 #detail-close:hover { color: #ffffff; }
 
+#empty-state[hidden],
+#detail-panel[hidden],
+#search-results[hidden] {
+  display: none;
+}
+
 #empty-state {
   position: fixed;
   inset: 0;
