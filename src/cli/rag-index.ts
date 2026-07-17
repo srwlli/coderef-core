@@ -52,6 +52,19 @@ export interface CliArgs {
    * with header:false provenance instead of skipping them.
    */
   includeHeaderless: boolean;
+  /**
+   * Max concurrent embedding requests (Ollama worker pool). Undefined =
+   * provider default (4) / CODEREF_EMBED_CONCURRENCY. Changes wall-clock
+   * only — output vectors + order are unchanged. WO-AGENTIC-CODING-
+   * INTELLIGENCE-PROGRAM-001 P5.
+   */
+  concurrency?: number;
+  /**
+   * Chunk-grain embedding cache toggle (default ON). Serves byte-identical
+   * chunks from .coderef-embed-cache.json instead of re-embedding — additive
+   * over the file-grain incremental layer. --no-embed-cache disables it.
+   */
+  embedCache: boolean;
 }
 
 /**
@@ -76,6 +89,15 @@ export interface RagIndexSummary {
   durationMs: number;
   /** Absolute path of the written `.coderef/rag-index.json`. */
   indexPath: string;
+  /**
+   * Chunk-grain embedding-cache hits this run (chunks served from the
+   * sidecar, not re-embedded). Present only when the embed cache was enabled.
+   */
+  embedCacheHits?: number;
+  /** Chunk-grain embedding-cache misses (chunks embedded live). */
+  embedCacheMisses?: number;
+  /** Embedding concurrency actually requested (undefined = provider default). */
+  concurrency?: number;
 }
 
 /**
@@ -98,6 +120,11 @@ export function defaultRagIndexArgs(projectDir: string): CliArgs {
     coverageFloor: 0,
     strictCoverage: false,
     includeHeaderless: false,
+    // Concurrency unset -> provider default (4) / CODEREF_EMBED_CONCURRENCY.
+    // Embed cache ON by default so the MCP rag_index path gets the re-embed
+    // reduction without an extra flag.
+    concurrency: undefined,
+    embedCache: true,
   };
 }
 
@@ -117,6 +144,9 @@ function parseArgs(argv: string[]): CliArgs {
     'coverage-floor': { kind: 'float' },
     'strict-coverage': { kind: 'boolean' },
     'include-headerless': { kind: 'boolean' },
+    concurrency: { kind: 'int' },
+    'embed-cache': { kind: 'boolean' },
+    'no-embed-cache': { kind: 'boolean' },
     lang: { kind: 'string', aliases: ['-l'] },
     verbose: { kind: 'boolean', aliases: ['-v'] },
     json: { kind: 'boolean', aliases: ['-j'] },
@@ -158,6 +188,25 @@ function parseArgs(argv: string[]): CliArgs {
 
   const langRaw = v.get('lang') as string | undefined;
 
+  // Concurrency: a positive int; <1 or non-numeric is ignored (falls back to
+  // the provider default) with a warning. parseFlags already rejected NaN.
+  let concurrency: number | undefined;
+  const concRaw = v.get('concurrency') as number | undefined;
+  if (concRaw !== undefined) {
+    if (concRaw >= 1) {
+      concurrency = concRaw;
+    } else {
+      console.warn(
+        `[rag-index] Invalid --concurrency: ${concRaw}. Expected >= 1. Using provider default.`,
+      );
+    }
+  }
+
+  // Embed cache defaults ON. --no-embed-cache forces off; --embed-cache is the
+  // explicit on. If both are passed, --no-embed-cache wins (safer/explicit).
+  const noEmbedCache = (v.get('no-embed-cache') as boolean | undefined) ?? false;
+  const embedCache = noEmbedCache ? false : true;
+
   return {
     // Positional project dir wins over cwd (matches previous behavior).
     projectDir: (v.get('project-dir') as string | undefined)
@@ -173,6 +222,8 @@ function parseArgs(argv: string[]): CliArgs {
     coverageFloor,
     strictCoverage: (v.get('strict-coverage') as boolean | undefined) ?? false,
     includeHeaderless: (v.get('include-headerless') as boolean | undefined) ?? false,
+    concurrency,
+    embedCache,
   };
 }
 
@@ -195,6 +246,13 @@ OPTIONS:
   --include-headerless         Embed chunks from header-less elements (missing/stale/partial)
                                with header:false provenance instead of skipping them —
                                enables RAG on repos that were never header-annotated
+  --concurrency <N>            Max concurrent embedding requests (Ollama worker pool).
+                               Default: provider default (4) or CODEREF_EMBED_CONCURRENCY,
+                               clamped to [1,16]. Speeds up indexing; output is unchanged.
+  --no-embed-cache             Disable the chunk-grain embedding cache (default: ON).
+                               The cache (.coderef-embed-cache.json) serves byte-identical
+                               chunks without re-embedding — additive over the file-grain
+                               incremental layer.
   --coverage-floor <0-100>     Warn when header_coverage_pct is below this floor
                                (0 disables the check; default 0)
   --strict-coverage            Make a coverage-floor breach REFUSE indexing
@@ -329,8 +387,12 @@ export async function runRagIndex(
       console.log();
     }
 
-    // Initialize components (shared factory — MODEL_REGISTRY-sourced)
-    const llmProvider = await createLLMProvider(args.provider);
+    // Initialize components (shared factory — MODEL_REGISTRY-sourced).
+    // Thread embedding concurrency into the provider (Ollama worker pool);
+    // undefined -> provider default / CODEREF_EMBED_CONCURRENCY.
+    const llmProvider = await createLLMProvider(args.provider, {
+      embedConcurrency: args.concurrency,
+    });
     const vectorStore = await createVectorStore(args.store, args.projectDir, llmProvider, { warnTag: 'rag-index' });
 
     // If --reset was requested, clear on-disk state BEFORE initialize().
@@ -473,6 +535,7 @@ export async function runRagIndex(
       useAnalyzer: true,
       validation,
       includeHeaderless: args.includeHeaderless,
+      embedCache: args.embedCache,
     });
 
     const totalTime = Date.now() - startTime;
@@ -508,6 +571,10 @@ export async function runRagIndex(
       coverageGateRefused: result.coverageGateRefused ?? false,
       coverageWarning: result.coverageWarning,
       staleIndexWarning: result.staleIndexWarning,
+      embedCache: args.embedCache,
+      embedCacheHits: result.embedCacheHits,
+      embedCacheMisses: result.embedCacheMisses,
+      concurrency: args.concurrency,
     };
 
     const indexPath = path.join(coderefDir, 'rag-index.json');
@@ -523,6 +590,13 @@ export async function runRagIndex(
       store: args.store,
       durationMs: totalTime,
       indexPath,
+      ...(args.embedCache
+        ? {
+            embedCacheHits: result.embedCacheHits,
+            embedCacheMisses: result.embedCacheMisses,
+          }
+        : {}),
+      ...(args.concurrency !== undefined ? { concurrency: args.concurrency } : {}),
     };
 
     // Programmatic callers get the summary object; stdout stays clean for the
@@ -564,6 +638,20 @@ export async function runRagIndex(
       }
       if (result.chunksFailed > 0) {
         console.log(`  Chunks failed: ${result.chunksFailed}`);
+      }
+      // Embedding-cache + concurrency line (P5). Surfaces the re-embed
+      // reduction as proof-of-value; only printed when the cache ran.
+      if (args.embedCache && typeof result.embedCacheHits === 'number') {
+        const hits = result.embedCacheHits;
+        const misses = result.embedCacheMisses ?? 0;
+        const total = hits + misses;
+        const pct = total > 0 ? Math.round((hits / total) * 100) : 0;
+        console.log(
+          `  Embed cache: ${hits} hit / ${misses} miss (${pct}% served from cache)`,
+        );
+      }
+      if (args.concurrency !== undefined) {
+        console.log(`  Embed concurrency: ${args.concurrency}`);
       }
       // Header-coverage line + floor-breach warning (option C). coveragePct
       // is undefined for legacy validation reports; only print when present.

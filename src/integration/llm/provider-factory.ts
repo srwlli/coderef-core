@@ -44,6 +44,20 @@ export function resolveRagProvider(explicit?: string): string {
 }
 
 /**
+ * Optional provider-construction knobs that are provider-agnostic at the
+ * factory boundary. `embedConcurrency` only affects single-text-per-call
+ * embedding providers (Ollama); native-batch providers (OpenAI) ignore it.
+ */
+export interface CreateLLMProviderOptions {
+  /**
+   * Max concurrent embedding requests for the Ollama worker pool (see
+   * OllamaProvider.embed / LLMProviderConfig.embedConcurrency). Undefined =
+   * provider default (4) or CODEREF_EMBED_CONCURRENCY.
+   */
+  embedConcurrency?: number;
+}
+
+/**
  * Create an LLM provider by name. Defaults to Ollama (local-only).
  *
  * Env compatibility: the long-standing CLI variable names
@@ -51,7 +65,10 @@ export function resolveRagProvider(explicit?: string): string {
  * honored first, then the registry's own envOverride, then the registry
  * default.
  */
-export async function createLLMProvider(providerName?: string): Promise<any> {
+export async function createLLMProvider(
+  providerName?: string,
+  options: CreateLLMProviderOptions = {},
+): Promise<any> {
   const provider = resolveRagProvider(providerName);
 
   if (provider === 'openai') {
@@ -96,6 +113,10 @@ export async function createLLMProvider(providerName?: string): Promise<any> {
       model:
         process.env[spec.generationModel.envOverride] ||
         spec.generationModel.name,
+      // Bounded embedding concurrency (undefined -> provider default 4 or
+      // CODEREF_EMBED_CONCURRENCY). Only Ollama's single-text embed path
+      // uses this; the pool preserves output order.
+      embedConcurrency: options.embedConcurrency,
     });
   }
 

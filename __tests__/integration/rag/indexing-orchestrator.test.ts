@@ -243,3 +243,144 @@ describe('DISPATCH-003 AC — layer propagates from node.metadata to VectorRecor
     expect(record.metadata.layer).toBe('infrastructure');
   });
 });
+
+describe('P5 — chunk-grain embedding cache (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001)', () => {
+  // A warm cache serves a chunk WITHOUT a live embed call, but the chunk is
+  // still INDEXED (its vector is upserted) — a cache hit is never a skip.
+  // This locks the Phase-7 invariant against the cache splice.
+  it('a cache hit indexes the chunk with no embed call (Phase-7 invariant preserved)', async () => {
+    const basePath = fs.mkdtempSync(path.join(os.tmpdir(), 'orch-embedcache-test-'));
+    fs.mkdirSync(path.join(basePath, '.coderef'), { recursive: true });
+    const srcDir = path.join(basePath, 'src');
+    fs.mkdirSync(srcDir, { recursive: true });
+    fs.writeFileSync(path.join(srcDir, 'infra.ts'), 'export function connect() {}');
+    fs.writeFileSync(
+      path.join(basePath, '.coderef', 'graph.json'),
+      JSON.stringify({
+        nodes: [
+          {
+            id: '@Fn/src/infra.ts#connect:1',
+            name: 'connect',
+            type: 'function',
+            file: 'src/infra.ts',
+            line: 1,
+            metadata: { headerStatus: 'defined' },
+          },
+        ],
+        edges: [],
+      }),
+    );
+
+    const upserts: any[][] = [];
+    const vectorStore = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      upsert: vi.fn().mockImplementation(async (records: any[]) => {
+        upserts.push(records);
+      }),
+      delete: vi.fn().mockResolvedValue(undefined),
+      stats: vi.fn().mockResolvedValue({}),
+      clear: vi.fn().mockResolvedValue(undefined),
+    } as any;
+
+    const embed = vi.fn().mockResolvedValue([[0.1, 0.2, 0.3, 0.4]]);
+    const llmProvider = {
+      getEmbeddingDimensions: () => 4,
+      getEmbeddingModel: () => 'test-embed-model',
+      embed,
+    } as any;
+
+    const orch = new IndexingOrchestrator(llmProvider, vectorStore, basePath);
+
+    // First run: cold cache -> the chunk is a MISS, embedded live.
+    const first = await orch.indexCodebase({
+      sourceDir: '.',
+      useAnalyzer: true,
+      validation: { ok: true },
+      embedCache: true,
+    });
+    expect(first.chunksIndexed).toBe(1);
+    expect(first.embedCacheHits).toBe(0);
+    expect(first.embedCacheMisses).toBe(1);
+    expect(embed).toHaveBeenCalledTimes(1);
+    // The sidecar was written.
+    expect(fs.existsSync(path.join(basePath, '.coderef-embed-cache.json'))).toBe(true);
+
+    // Force the incremental layer to re-present the chunk (so the CHUNK cache,
+    // not the FILE cache, is what serves it): clear the incremental state.
+    const incState = path.join(basePath, '.coderef-rag-index.json');
+    if (fs.existsSync(incState)) fs.rmSync(incState);
+    embed.mockClear();
+    upserts.length = 0;
+
+    // Second run: warm cache -> the chunk is a HIT. It must still be INDEXED
+    // (upserted with its vector) and NOT counted as skipped, and no embed call.
+    const second = await orch.indexCodebase({
+      sourceDir: '.',
+      useAnalyzer: true,
+      validation: { ok: true },
+      embedCache: true,
+    });
+    expect(second.embedCacheHits).toBe(1);
+    expect(second.embedCacheMisses).toBe(0);
+    expect(embed).not.toHaveBeenCalled(); // served entirely from cache
+    expect(second.chunksIndexed).toBe(1); // hit is INDEXED, not skipped
+    expect(second.chunksSkipped).toBe(0);
+    // The vector reached the upsert set.
+    const flat = upserts.flat();
+    const rec = flat.find((r) => r.id === '@Fn/src/infra.ts#connect:1');
+    expect(rec).toBeDefined();
+    expect(rec.values).toEqual([0.1, 0.2, 0.3, 0.4]);
+
+    fs.rmSync(basePath, { recursive: true, force: true });
+  });
+
+  it('default (embedCache off) makes no cache sidecar and reports no cache counts', async () => {
+    const basePath = fs.mkdtempSync(path.join(os.tmpdir(), 'orch-nocache-test-'));
+    fs.mkdirSync(path.join(basePath, '.coderef'), { recursive: true });
+    const srcDir = path.join(basePath, 'src');
+    fs.mkdirSync(srcDir, { recursive: true });
+    fs.writeFileSync(path.join(srcDir, 'infra.ts'), 'export function connect() {}');
+    fs.writeFileSync(
+      path.join(basePath, '.coderef', 'graph.json'),
+      JSON.stringify({
+        nodes: [
+          {
+            id: '@Fn/src/infra.ts#connect:1',
+            name: 'connect',
+            type: 'function',
+            file: 'src/infra.ts',
+            line: 1,
+            metadata: { headerStatus: 'defined' },
+          },
+        ],
+        edges: [],
+      }),
+    );
+    const vectorStore = {
+      initialize: vi.fn().mockResolvedValue(undefined),
+      upsert: vi.fn().mockResolvedValue(undefined),
+      delete: vi.fn().mockResolvedValue(undefined),
+      stats: vi.fn().mockResolvedValue({}),
+      clear: vi.fn().mockResolvedValue(undefined),
+    } as any;
+    const llmProvider = {
+      getEmbeddingDimensions: () => 4,
+      getEmbeddingModel: () => 'test-embed-model',
+      embed: vi.fn().mockResolvedValue([[0.1, 0.2, 0.3, 0.4]]),
+    } as any;
+
+    const orch = new IndexingOrchestrator(llmProvider, vectorStore, basePath);
+    const result = await orch.indexCodebase({
+      sourceDir: '.',
+      useAnalyzer: true,
+      validation: { ok: true },
+      // embedCache omitted -> default off
+    });
+    expect(result.chunksIndexed).toBe(1);
+    expect(result.embedCacheHits).toBeUndefined();
+    expect(result.embedCacheMisses).toBeUndefined();
+    expect(fs.existsSync(path.join(basePath, '.coderef-embed-cache.json'))).toBe(false);
+
+    fs.rmSync(basePath, { recursive: true, force: true });
+  });
+});

@@ -78,12 +78,45 @@ interface OllamaGenerateResponse {
  * const response = await provider.complete('Explain this code');
  * ```
  */
+/**
+ * Bounded default + clamp for the embedding worker pool. Ollama serves
+ * concurrent /api/embeddings requests fine, but an unbounded fan-out over
+ * thousands of chunks would hammer the daemon; 4 is a daemon-friendly
+ * default and 16 a safe ceiling. Exported for the concurrency tests.
+ */
+export const OLLAMA_EMBED_CONCURRENCY_DEFAULT = 4;
+export const OLLAMA_EMBED_CONCURRENCY_MAX = 16;
+
+/**
+ * Resolve the embedding concurrency from (config > CODEREF_EMBED_CONCURRENCY
+ * env > default), clamped to [1, MAX]. A non-finite / <1 value falls back to
+ * the default; concurrency 1 is the strictly-serial legacy path. Pure — no
+ * I/O, no Date.now/Math.random.
+ */
+export function resolveEmbedConcurrency(
+  configValue: number | undefined,
+  envValue: string | undefined,
+): number {
+  let raw = configValue;
+  if (raw === undefined && envValue !== undefined && envValue.trim() !== '') {
+    const parsed = Number(envValue);
+    if (Number.isFinite(parsed)) raw = parsed;
+  }
+  if (raw === undefined || !Number.isFinite(raw)) {
+    return OLLAMA_EMBED_CONCURRENCY_DEFAULT;
+  }
+  const floored = Math.floor(raw);
+  if (floored < 1) return OLLAMA_EMBED_CONCURRENCY_DEFAULT;
+  return Math.min(floored, OLLAMA_EMBED_CONCURRENCY_MAX);
+}
+
 export class OllamaProvider implements LLMProvider {
   private baseUrl: string;
   private model: string;
   private embeddingModel: string;
   private maxRetries: number;
   private timeout: number;
+  private embedConcurrency: number;
 
   constructor(config: LLMProviderConfig) {
     // Get spec from registry
@@ -113,6 +146,13 @@ export class OllamaProvider implements LLMProvider {
 
     this.maxRetries = config.maxRetries ?? 3;
     this.timeout = config.timeout ?? 60000;
+
+    // Embedding concurrency (config > CODEREF_EMBED_CONCURRENCY > default 4),
+    // clamped to [1,16]. 1 = strictly-serial legacy path.
+    this.embedConcurrency = resolveEmbedConcurrency(
+      config.embedConcurrency,
+      process.env.CODEREF_EMBED_CONCURRENCY,
+    );
   }
 
   /**
@@ -182,10 +222,24 @@ export class OllamaProvider implements LLMProvider {
   }
 
   /**
-   * Generate embeddings using Ollama embeddings API
+   * Generate embeddings using Ollama embeddings API.
    *
-   * Note: Ollama does not support batch embeddings. Each text is embedded
-   * individually in sequence.
+   * Ollama's /api/embeddings is single-text-per-call (no batch endpoint),
+   * but the daemon serves concurrent requests. This runs a fixed-size,
+   * ORDER-PRESERVING worker pool: `embedConcurrency` workers pull the next
+   * input index from a shared cursor and write each result into its own
+   * index-keyed slot, so the returned array is always in INPUT order
+   * regardless of which request completes first. Order preservation is a
+   * hard contract — EmbeddingService maps `embedding: embeddings[j]`
+   * positionally back onto chunks.
+   *
+   * FAIL-FAST: the first non-retryable error (e.g. ECONNREFUSED when the
+   * daemon is down) aborts the pool — no further indices are dispatched, so
+   * a dead socket is not fanned N more times. That first error is re-thrown,
+   * preserving the pre-existing failure surface.
+   *
+   * With embedConcurrency === 1 this is byte-for-byte the legacy serial loop
+   * (one worker, sequential). No Date.now/Math.random.
    */
   async embed(texts: string[]): Promise<number[][]> {
     if (texts.length === 0) {
@@ -199,12 +253,44 @@ export class OllamaProvider implements LLMProvider {
     }
     const expectedDim = spec.embeddingModel.dimensions;
 
-    const results: number[][] = [];
+    // Index-keyed result slots preserve input order independent of
+    // completion order.
+    const results: number[][] = new Array(texts.length);
 
-    // Ollama embeddings API is single-text only, so we loop
-    for (const text of texts) {
-      const embedding = await this.embedSingle(text, expectedDim);
-      results.push(embedding);
+    const workerCount = Math.min(this.embedConcurrency, texts.length);
+
+    // Shared cursor + abort flag drive the pool. `nextIndex` is only ever
+    // read/incremented on the single JS event-loop thread (no interleaving
+    // mid-statement), so the post-increment hand-out is race-free.
+    let nextIndex = 0;
+    let aborted = false;
+    let firstError: unknown;
+
+    const worker = async (): Promise<void> => {
+      while (!aborted) {
+        const i = nextIndex++;
+        if (i >= texts.length) {
+          return;
+        }
+        try {
+          results[i] = await this.embedSingle(texts[i], expectedDim);
+        } catch (error) {
+          // Fail-fast: record the first error and stop dispatch. Other
+          // in-flight workers observe `aborted` and exit at the next loop
+          // check without starting new requests.
+          if (!aborted) {
+            aborted = true;
+            firstError = error;
+          }
+          return;
+        }
+      }
+    };
+
+    await Promise.all(Array.from({ length: workerCount }, () => worker()));
+
+    if (aborted) {
+      throw firstError;
     }
 
     return results;
@@ -287,6 +373,15 @@ export class OllamaProvider implements LLMProvider {
    */
   getModel(): string {
     return this.model;
+  }
+
+  /**
+   * Get the embedding model identifier (e.g. 'nomic-embed-text').
+   * The content-addressed embedding cache mixes this into its key so a
+   * model swap (nomic-embed-text -> other) invalidates cached vectors.
+   */
+  getEmbeddingModel(): string {
+    return this.embeddingModel;
   }
 
   /**

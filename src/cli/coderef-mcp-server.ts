@@ -531,7 +531,10 @@ export interface ToolHandlers {
   // async status readout). Writes are confined to <projectDir>/.coderef/.
   rag_status(): Promise<Record<string, unknown>>;
   reindex(args: { incremental?: boolean }): Promise<Record<string, unknown>>;
-  rag_index(): Promise<Record<string, unknown>>;
+  // concurrency: Ollama embed worker-pool size (speeds up indexing, output
+  // unchanged). embed_cache: chunk-grain cache toggle (default ON).
+  // WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P5.
+  rag_index(args: { concurrency?: number; embed_cache?: boolean }): Promise<Record<string, unknown>>;
   // Agent parity for coderef-map (WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P5;
   // git-behavioral opt-in WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2).
   map(args: { refresh?: boolean; format?: string; token_budget?: number; git?: boolean }): Record<string, unknown>;
@@ -1847,14 +1850,24 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       }
     },
 
-    async rag_index() {
+    async rag_index(args: { concurrency?: number; embed_cache?: boolean } = {}) {
       // .coderef-WRITE: DELEGATES to the extracted runRagIndex over LOCAL Ollama
       // (defaultRagIndexArgs pins provider='ollama' — NO cloud fallback). Writes
       // only .coderef/rag-index.json + the vector store. Errors CLEANLY when the
       // embedder/Ollama is unreachable (mirrors rag_search's embedding_unavailable
       // envelope) instead of crashing the server.
       try {
-        const summary = await runRagIndex(defaultRagIndexArgs(projectDir), {
+        // Thread P5 knobs over the local-only defaults: concurrency (Ollama
+        // embed pool; undefined -> provider default) and embed_cache (chunk
+        // cache; defaults ON unless explicitly false).
+        const ragArgs = defaultRagIndexArgs(projectDir);
+        if (typeof args.concurrency === 'number') {
+          ragArgs.concurrency = args.concurrency;
+        }
+        if (typeof args.embed_cache === 'boolean') {
+          ragArgs.embedCache = args.embed_cache;
+        }
+        const summary = await runRagIndex(ragArgs, {
           programmatic: true,
         });
         // The orchestrator catches embedding failures INTERNALLY and returns
@@ -2495,10 +2508,21 @@ async function main(): Promise<void> {
       // to the rag-index pipeline (writes rag-index.json + the vector store
       // there). Local Ollama ONLY — no cloud LLM fallback.
       description:
-        'WRITE (.coderef/ only). Build the semantic RAG index for this project using LOCAL Ollama embeddings (no cloud LLM). Writes .coderef/rag-index.json + the vector store; nothing outside .coderef/. Requires populate-coderef to have run first (reads validation-report.json). Errors cleanly (embedding_unavailable) when Ollama is unreachable — the server keeps running. Returns { status, chunksIndexed, provider, store, durationMs, indexPath }.',
-      inputSchema: { project_root: projectRootArg },
+        'WRITE (.coderef/ only). Build the semantic RAG index for this project using LOCAL Ollama embeddings (no cloud LLM). Writes .coderef/rag-index.json + the vector store; nothing outside .coderef/. Requires populate-coderef to have run first (reads validation-report.json). Errors cleanly (embedding_unavailable) when Ollama is unreachable — the server keeps running. Pass concurrency to size the Ollama embed worker pool (speeds up indexing; output unchanged). embed_cache (default true) serves byte-identical chunks from .coderef-embed-cache.json without re-embedding — additive over the file-grain incremental layer. Returns { status, chunksIndexed, provider, store, durationMs, indexPath, embedCacheHits, embedCacheMisses }.',
+      inputSchema: {
+        project_root: projectRootArg,
+        concurrency: z
+          .number()
+          .optional()
+          .describe('Max concurrent Ollama embedding requests (worker-pool size, clamped to [1,16]). Default: provider default (4) or CODEREF_EMBED_CONCURRENCY. Changes wall-clock only — the output vectors and their order are unchanged.'),
+        embed_cache: z
+          .boolean()
+          .optional()
+          .describe('Chunk-grain embedding cache (default true). When true, chunks whose exact embedding text was already embedded under the same model are served from the cache sidecar instead of being re-embedded (a cache hit is still INDEXED). Set false to force a full re-embed.'),
+      },
     },
-    async ({ project_root }) => perRepo(project_root, h => h.rag_index()),
+    async ({ project_root, concurrency, embed_cache }) =>
+      perRepo(project_root, h => h.rag_index({ concurrency, embed_cache })),
   );
 
   const transport = new StdioServerTransport();

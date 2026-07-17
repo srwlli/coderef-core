@@ -224,6 +224,21 @@ export interface LLMProvider {
    * ```
    */
   supportsEmbeddings(): boolean;
+
+  /**
+   * Get the embedding model identifier (e.g. 'nomic-embed-text',
+   * 'text-embedding-3-small'). Distinct from getModel() (the generation
+   * model). Used to key the content-addressed embedding cache so a model
+   * swap invalidates cached vectors — the embedding-model name is the
+   * cache-key discriminator that dimensions alone cannot provide (two
+   * 768-dim models would otherwise collide).
+   *
+   * Optional so existing providers/mocks compile without it; callers must
+   * tolerate `undefined` and fall back (e.g. skip the cache-model qualifier).
+   *
+   * @returns Embedding model name, or undefined if the provider cannot embed.
+   */
+  getEmbeddingModel?(): string | undefined;
 }
 
 /**
@@ -252,4 +267,16 @@ export interface LLMProviderConfig {
 
   /** Maximum retries for failed requests */
   maxRetries?: number;
+
+  /**
+   * Maximum concurrent embedding requests for providers whose embeddings
+   * API is single-text-per-call (e.g. Ollama's /api/embeddings). A fixed-
+   * size worker pool fires this many embedSingle calls at once while
+   * PRESERVING result order. Default is provider-defined (Ollama: 4,
+   * clamped to [1,16]); 1 reproduces the strictly-serial legacy path
+   * byte-for-byte. Overridable per-provider via CODEREF_EMBED_CONCURRENCY.
+   * Ignored by providers with native batch embeddings (OpenAI). Changes
+   * wall-clock only — never the output vectors or their order.
+   */
+  embedConcurrency?: number;
 }

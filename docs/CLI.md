@@ -636,6 +636,8 @@ npx rag-index --project-dir ./my-project
 | `--include-headerless` | Embed chunks from header-less elements (`headerStatus` ∈ {missing, stale, partial}) with `header:false` provenance instead of skipping them — enables RAG on repos that were never header-annotated. Default behavior (skip-with-reason) preserves DR-PHASE-7-E. | `false` |
 | `--coverage-floor <0-100>` | Warn (or refuse, with `--strict-coverage`) when `header_coverage_pct` is below this floor. Below-floor coverage means chunks from header-less files are silently excluded from the index. `0` disables the check. | `0` |
 | `--strict-coverage` | Make a `--coverage-floor` breach REFUSE indexing (`status='failed'`, `coverageGateRefused=true`) instead of warning. | `false` |
+| `--concurrency <N>` | Max concurrent Ollama embedding requests (worker-pool size, clamped to `[1,16]`). Ollama's `/api/embeddings` is single-text-per-call but the daemon serves concurrent requests, so this collapses the serial per-chunk round-trips. **Changes wall-clock only — the output vectors and their order are byte-identical.** Also settable via `CODEREF_EMBED_CONCURRENCY`. | provider default (`4`) |
+| `--no-embed-cache` | Disable the chunk-grain embedding cache (default ON). The cache (`.coderef-embed-cache.json`) serves byte-identical chunks under the same embedding model without re-embedding them — additive over the file-grain incremental layer (which drops whole unchanged files; the chunk cache rescues unchanged chunks *inside* changed files). Model id is in the cache key, so a model swap invalidates it. | cache ON |
 | `-l, --lang <languages>` | Comma-separated language filter | All languages |
 | `-j, --json` | Output results as JSON | `false` |
 | `-v, --verbose` | Verbose output | `false` |
@@ -682,6 +684,12 @@ npx rag-index --project-dir ./legacy-repo --include-headerless
 
 # Enforce a header-coverage floor (refuse below 80%)
 npx rag-index --coverage-floor 80 --strict-coverage
+
+# Index with a larger embedding worker pool (faster on Ollama; output unchanged)
+npx rag-index --concurrency 8
+
+# Force a full re-embed, bypassing the chunk-grain cache
+npx rag-index --no-embed-cache
 
 # Reset and re-index TypeScript only
 npx rag-index --reset --lang ts,tsx
@@ -872,6 +880,8 @@ what_exports(project_root="C:/repos/project-two", file="src/lib.ts")
 | `project_root_symlink_broken` | Symlink points at a nonexistent target (named in the hint) |
 
 The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise per-call: writes are confined to `<project_root>/.coderef/` of whichever repo the call names (CLI-parity — see the DR-002 ruling in the workorder's RESOLUTION-DESIGN.md).
+
+`rag_index` accepts two optional throughput knobs mirroring the CLI: `concurrency` (Ollama embed worker-pool size, clamped `[1,16]`; wall-clock only, output vectors + order unchanged) and `embed_cache` (default `true`; serves byte-identical chunks from `.coderef-embed-cache.json` under the same model instead of re-embedding — additive over the file-grain incremental layer). Its response reports `embedCacheHits` / `embedCacheMisses` alongside `chunksIndexed`.
 
 ### Tools
 

@@ -29,12 +29,15 @@ import { ChunkConverter } from './chunk-converter.js';
 import type { ChunkOptions } from './code-chunk.js';
 import {
   EmbeddingService,
-  type EmbeddingServiceOptions
+  type EmbeddingServiceOptions,
+  type EmbeddedChunk
 } from './embedding-service.js';
 import {
   IncrementalIndexer,
   type IncrementalIndexOptions
 } from './incremental-indexer.js';
+import { EmbeddingCache } from './embedding-cache.js';
+import { EmbeddingTextGenerator } from './embedding-text-generator.js';
 import type { CodeChunk } from './code-chunk.js';
 import type { VectorRecord } from '../vector/vector-store.js';
 import * as fs from 'fs/promises';
@@ -241,6 +244,18 @@ export interface IndexingOptions {
   includeHeaderless?: boolean;
 
   /**
+   * Chunk-grain embedding cache (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001
+   * P5). When true, chunks whose exact embedding text was already embedded
+   * under the same model are served from `.coderef-embed-cache.json` instead
+   * of being re-embedded — additive over the file-grain incremental layer
+   * (rescues unchanged CHUNKS inside changed files). A cache-hit chunk is
+   * INDEXED (its vector is spliced into the upsert), never skipped, so the
+   * Phase-7 skip/fail invariants are unaffected. Default false leaves the
+   * embedding path byte-unchanged.
+   */
+  embedCache?: boolean;
+
+  /**
    * REQUIRED at the call site: Phase 6 validation gate input
    * (DR-PHASE-7-A). The orchestrator throws if undefined — callers
    * must read .coderef/validation-report.json and pass the result.
@@ -392,6 +407,22 @@ export interface IndexingResult {
    * Additive per DR-PHASE-7-B.
    */
   staleIndexWarning?: string;
+
+  /**
+   * Chunk-grain embedding-cache hit count (chunks served from
+   * .coderef-embed-cache.json without a live embed call). Present only when
+   * the embed cache was enabled. Additive telemetry — the CLI/MCP surface it
+   * as proof of the re-embed reduction. WO-AGENTIC-CODING-INTELLIGENCE-
+   * PROGRAM-001 P5.
+   */
+  embedCacheHits?: number;
+
+  /**
+   * Chunk-grain embedding-cache miss count (chunks that WERE embedded live
+   * this run). Present only when the embed cache was enabled. hits + misses
+   * === chunksToIndex length. Additive telemetry.
+   */
+  embedCacheMisses?: number;
 }
 
 /**
@@ -805,8 +836,38 @@ export class IndexingOrchestrator {
       // Stage 3: Generate embeddings (40-80% of overall progress)
       const embeddingService = new EmbeddingService(this.llmProvider);
 
+      // Chunk-grain embedding cache (P5). When enabled, split chunksToIndex
+      // into cache-HITS (already embedded under this model — served from the
+      // sidecar, no live embed) and MISSES (embedded below). The text
+      // generator + textOptions MUST match what EmbeddingService.embedChunks
+      // uses internally (it constructs `new EmbeddingTextGenerator()` and
+      // passes opts.textOptions), or the keys would not line up. Only the
+      // misses hit the network; cache hits are merged into the embedding
+      // result afterward so every downstream consumer (vectorRecords,
+      // chunksIndexed, chunksToRecord) treats them as INDEXED — the Phase-7
+      // skip/fail invariants are untouched (a cache hit is never a skip).
+      let embedCache: EmbeddingCache | undefined;
+      let cacheHits: EmbeddedChunk[] = [];
+      let chunksToEmbed = chunksToIndex;
+      const cacheTextOptions = options.embeddingOptions?.textOptions;
+      // One text generator shared by the partition (read) and merge (write)
+      // sides so the key definition never drifts within a run.
+      const cacheTextGenerator = new EmbeddingTextGenerator();
+      if (options.embedCache) {
+        const modelId = this.llmProvider.getEmbeddingModel?.();
+        embedCache = new EmbeddingCache(this.basePath, modelId);
+        await embedCache.load();
+        const partition = embedCache.partition(
+          chunksToIndex,
+          cacheTextGenerator,
+          cacheTextOptions,
+        );
+        cacheHits = partition.hits;
+        chunksToEmbed = partition.misses;
+      }
+
       const embeddingResult = await embeddingService.embedChunks(
-        chunksToIndex,
+        chunksToEmbed,
         {
           ...options.embeddingOptions,
           onProgress: (embeddingProgress) => {
@@ -823,6 +884,34 @@ export class IndexingOrchestrator {
           }
         }
       );
+
+      // Merge cache hits back into the embedding result and persist any newly
+      // embedded vectors. After this splice, embeddingResult.embedded holds
+      // BOTH freshly-embedded and cache-hit chunks, so the rest of the
+      // pipeline is cache-agnostic. Persist is best-effort: a write failure
+      // is logged and does NOT fail the run (the index itself is already
+      // valid; the cache is an optimization).
+      if (embedCache) {
+        for (const item of embeddingResult.embedded) {
+          const key = embedCache.keyForChunk(
+            item.chunk,
+            cacheTextGenerator,
+            cacheTextOptions,
+          );
+          embedCache.set(key, item.embedding);
+        }
+        if (cacheHits.length > 0) {
+          embeddingResult.embedded.push(...cacheHits);
+          embeddingResult.stats.successCount = embeddingResult.embedded.length;
+        }
+        try {
+          await embedCache.persist();
+        } catch (err: any) {
+          console.warn(
+            `[indexing-orchestrator] embed-cache persist failed (index is still valid): ${err?.message ?? err}`,
+          );
+        }
+      }
 
       // Record embedding errors + Phase 7 task 1.7 fail-with-reason
       // classification. Embedding-API failures map to
@@ -991,6 +1080,12 @@ export class IndexingOrchestrator {
         validationReportPath: options.validation?.reportPath,
         ...(coverageWarning ? { coverageWarning } : {}),
         ...(staleIndexWarning ? { staleIndexWarning } : {}),
+        ...(options.embedCache
+          ? {
+              embedCacheHits: cacheHits.length,
+              embedCacheMisses: chunksToEmbed.length,
+            }
+          : {}),
       };
     } catch (error: any) {
       errors.push({

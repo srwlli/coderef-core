@@ -84,7 +84,17 @@ export interface EmbeddingServiceOptions {
   /** Delay between batches in milliseconds (for rate limiting) */
   batchDelayMs?: number;
 
-  /** Maximum concurrent batch operations (default: 1) */
+  /**
+   * @deprecated Embedding concurrency is PROVIDER-owned as of
+   * WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P5. This service no longer
+   * runs its own batch pool; the real parallelism lives inside the LLM
+   * provider's `embed()` (see OllamaProvider's order-preserving worker pool,
+   * configured via `LLMProviderConfig.embedConcurrency` /
+   * CODEREF_EMBED_CONCURRENCY, wired by `createLLMProvider`). This field is
+   * retained for back-compat and is intentionally a NO-OP here — set the
+   * provider's `embedConcurrency` instead. Kept (not deleted) so existing
+   * callers that pass it still compile.
+   */
   maxConcurrency?: number;
 }
 
@@ -163,12 +173,14 @@ export class EmbeddingService {
   ): Promise<EmbeddingResult> {
     const startTime = Date.now();
 
-    const opts: Required<EmbeddingServiceOptions> = {
+    // maxConcurrency is intentionally omitted: it is a deprecated no-op here
+    // (embedding concurrency is provider-owned as of P5 — see the option's
+    // doc-comment). The real pool lives in the LLM provider's embed().
+    const opts: Required<Omit<EmbeddingServiceOptions, 'maxConcurrency'>> = {
       batchSize: options?.batchSize ?? 100,
       textOptions: options?.textOptions ?? {},
       onProgress: options?.onProgress ?? (() => {}),
-      batchDelayMs: options?.batchDelayMs ?? 0,
-      maxConcurrency: options?.maxConcurrency ?? 1
+      batchDelayMs: options?.batchDelayMs ?? 0
     };
 
     const embedded: EmbeddedChunk[] = [];

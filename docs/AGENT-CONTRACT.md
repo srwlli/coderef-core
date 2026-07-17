@@ -50,6 +50,9 @@ The Phase 7 indexer returns an `IndexingResult`. The shape is **strictly additiv
 - `validationReportPath?: string` — path to the `validation-report.json` that gated this run.
 - `coverageGateRefused?: boolean` — `true` iff `status='failed'` because `header_coverage_pct` breached `--coverage-floor` with `--strict-coverage` set.
 - `coverageWarning?: string` — set on any floor breach (strict or not); non-blocking in default mode.
+- `embedCacheHits?` / `embedCacheMisses?: number` — present only when the chunk-grain embedding cache ran (default ON). A cache HIT is served from `.coderef-embed-cache.json` without a live embed call but is still counted in `chunksIndexed` (a cache hit is INDEXED, never a skip) — so `embedCacheHits + embedCacheMisses === (chunks embedded this run)` and does **not** shift the skip/fail invariants above. Additive telemetry proving the re-embed reduction.
+
+**Throughput knobs (rag-index / `rag_index`).** Embedding concurrency is provider-owned: the Ollama embed path runs a bounded, **order-preserving** worker pool (`--concurrency` / `CODEREF_EMBED_CONCURRENCY`, default 4, clamped `[1,16]`). It changes wall-clock only — the output vectors and their order are byte-identical to a serial run (`concurrency=1` reproduces the legacy path exactly). The chunk-grain embedding cache is content-addressed on `sha256(embedding-text)+modelId`, so it is safely substitutable (identical text + model ⇒ identical vector) and self-invalidates on a model swap.
 
 ### `ExportedGraph` (Phase 5)
 
