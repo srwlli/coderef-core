@@ -86,6 +86,12 @@ import type { ValidationReport } from '../pipeline/output-validator.js';
 import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js';
 import { type EdgeConfidenceTier, classifyEdgeConfidence, meetsMinConfidence } from '../pipeline/edge-confidence.js';
 import { type EgoGraph, egoGraphOf } from '../query/ego-graph.js';
+import {
+  type ResponseFormat,
+  isConcise,
+  paginate,
+  shapeResponse,
+} from './mcp-response-format.js';
 import { planRename } from '../refactor/rename-planner.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 // P6 CLI/MCP parity (WO-...-CLI-MCP-PARITY-001): the two .coderef/-WRITE tools
@@ -493,24 +499,27 @@ function notFound(query: string): Record<string, unknown> {
 // ---- tool handlers (exported for behavioral tests — P3-T4) ----------------------
 
 export interface ToolHandlers {
-  what_calls(args: { element: string; limit?: number; min_confidence?: EdgeConfidenceTier }): Record<string, unknown>;
-  what_imports(args: { element: string; limit?: number }): Record<string, unknown>;
-  impact_of(args: { element: string; max_depth?: number; limit?: number; min_confidence?: EdgeConfidenceTier }): Record<string, unknown>;
-  find_element(args: { query: string; type?: string; limit?: number }): Record<string, unknown>;
+  // Phase 6 (STUB-8H3YV0): list tools gain a shared response_format ('concise' |
+  // 'detailed', default detailed = today's shape) verbosity projection and a
+  // generalized offset for pagination. Absent params preserve current behavior.
+  what_calls(args: { element: string; limit?: number; offset?: number; min_confidence?: EdgeConfidenceTier; response_format?: ResponseFormat }): Record<string, unknown>;
+  what_imports(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  impact_of(args: { element: string; max_depth?: number; limit?: number; offset?: number; min_confidence?: EdgeConfidenceTier; response_format?: ResponseFormat }): Record<string, unknown>;
+  find_element(args: { query: string; type?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   codebase_summary(): Record<string, unknown>;
   validation_status(): Record<string, unknown>;
   // v2 tools (WO-MCP-V2-TOOLS-AND-PS-VALIDATION-001 P1)
-  hotspots(args: { limit?: number; src_only?: boolean }): Record<string, unknown>;
-  cycles(args: { limit?: number; relationship?: 'call' | 'import' }): Record<string, unknown>;
-  what_exports(args: { file: string; limit?: number }): Record<string, unknown>;
+  hotspots(args: { limit?: number; offset?: number; src_only?: boolean; response_format?: ResponseFormat }): Record<string, unknown>;
+  cycles(args: { limit?: number; offset?: number; relationship?: 'call' | 'import'; response_format?: ResponseFormat }): Record<string, unknown>;
+  what_exports(args: { file: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // v2 flow tools (P2)
-  diff_impact(args: { ref?: string; max_depth?: number; limit?: number }): Record<string, unknown>;
-  rag_search(args: { query: string; limit?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number }): Promise<Record<string, unknown>>;
+  diff_impact(args: { ref?: string; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
-  what_this_calls(args: { element: string; limit?: number }): Record<string, unknown>;
-  what_this_imports(args: { element: string; limit?: number }): Record<string, unknown>;
-  what_this_depends_on(args: { element: string; max_depth?: number; limit?: number }): Record<string, unknown>;
-  path_between(args: { source: string; target: string; mode?: 'shortest' | 'all'; max_depth?: number; limit?: number }): Record<string, unknown>;
+  what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  what_this_imports(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  what_this_depends_on(args: { element: string; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  path_between(args: { source: string; target: string; mode?: 'shortest' | 'all'; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // agent-native non-resolved-edge exposure (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P2)
   unresolved_edges(args: {
     relationship?: 'call' | 'import';
@@ -519,10 +528,11 @@ export interface ToolHandlers {
     reason?: string;
     offset?: number;
     limit?: number;
+    response_format?: ResponseFormat;
   }): Record<string, unknown>;
   // agent-native source-body + find-all-references (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P3)
   source_of(args: { element: string; context?: number; max_chars?: number }): Record<string, unknown>;
-  find_all_references(args: { element: string; limit?: number }): Record<string, unknown>;
+  find_all_references(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6).
   // READ tools — wrap a clean substrate export, return synchronously.
   pack_context(args: { element: string; token_budget?: number; full_deps?: boolean; include_callers?: boolean }): Record<string, unknown>;
@@ -584,16 +594,20 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
   function inboundByKind(
     query: string,
     kind: 'call' | 'import',
-    limit: number,
+    limit: number | undefined,
     minConfidence?: EdgeConfidenceTier,
+    offset?: number,
+    responseFormat?: ResponseFormat,
   ): Record<string, unknown> {
     const graph = loadGraph(projectDir, cache);
     const { nodes: matches, byFile } = resolveNodes(query, graph);
     if (matches.length === 0) return notFound(query);
     if (!byFile && matches.length > 5) return ambiguous(query, matches);
 
-    const hits: Array<Record<string, unknown>> = [];
-    let total = 0;
+    // Phase 6: collect the FULL matching set, then window it via the shared
+    // paginate() helper so offset can page past the first `limit`. total counts
+    // inbound EDGES (a caller invoking the target twice counts twice).
+    const all: Array<Record<string, unknown>> = [];
     for (const node of matches) {
       for (const edge of cache.inbound.get(node.id) ?? []) {
         if (edge.relationship !== kind) continue;
@@ -604,8 +618,6 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         // pure classifier for a pre-Phase-3 graph.json.
         const confidence = edgeConfidenceOf(edge);
         if (!meetsMinConfidence(confidence, minConfidence)) continue;
-        total++;
-        if (hits.length >= limit) continue;
         const source = edge.sourceId ? cache.nodeById.get(edge.sourceId) : undefined;
         // P3-T4: pass through the rich per-edge evidence the resolver already
         // computed and graph.json already persists (previously dropped). For a
@@ -614,7 +626,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         const ev = edge.evidence as
           | { calleeName?: string; receiverText?: string; scopePath?: string; originSpecifier?: string }
           | undefined;
-        hits.push({
+        all.push({
           ...(source ? nodeSummary(source) : { id: edge.sourceId }),
           at: edge.sourceLocation
             ? `${edge.sourceLocation.file}:${edge.sourceLocation.line}`
@@ -627,15 +639,23 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         });
       }
     }
-    return {
+    const paged = paginate(all, offset, limit);
+    const itemKey = kind === 'call' ? 'callers' : 'importers';
+    const envelope: Record<string, unknown> = {
       element: byFile ? [`(all ${matches.length} elements of) ${query}`] : matches.map(m => m.id),
       relationship: kind,
       ...(minConfidence ? { min_confidence: minConfidence } : {}),
-      total,
-      returned: hits.length,
-      truncated: total > hits.length,
-      [kind === 'call' ? 'callers' : 'importers']: hits,
+      total: paged.total,
+      offset: paged.offset,
+      limit: paged.limit,
+      returned: paged.page.length,
+      // `truncated` retained for back-compat (more-exists-beyond-this-window);
+      // `has_more` is the forward paging signal.
+      truncated: paged.has_more,
+      has_more: paged.has_more,
+      [itemKey]: paged.page,
     };
+    return shapeResponse(envelope, responseFormat, [itemKey]);
   }
 
   /**
@@ -647,7 +667,9 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
   function outboundByKind(
     query: string,
     kind: 'call' | 'import',
-    limit: number,
+    limit: number | undefined,
+    offset?: number,
+    responseFormat?: ResponseFormat,
   ): Record<string, unknown> {
     const engine = loadCanonical(projectDir, cache);
     const resolution = engine.resolve(query);
@@ -662,43 +684,47 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     // twice there. Comparing what_calls(X).total to what_this_calls(X).total is
     // therefore edge-count vs distinct-node-count — surfaced in each tool's
     // description so agents don't read the two as the same scale.
-    const total = neighbors.length;
-    const hits = neighbors.slice(0, limit).map(n => ({
+    const all = neighbors.map(n => ({
       id: n.id,
       name: n.name,
       type: n.type,
       file: n.file,
       line: n.line,
     }));
-    return {
+    const paged = paginate(all, offset, limit);
+    const itemKey = kind === 'call' ? 'callees' : 'imports';
+    const envelope: Record<string, unknown> = {
       element: resolution.byFile
         ? [`(all ${resolution.nodes.length} elements of) ${query}`]
         : resolution.nodes.map(n => n.id),
       relationship: kind,
       direction: 'outbound',
-      total,
-      returned: hits.length,
-      truncated: total > hits.length,
-      [kind === 'call' ? 'callees' : 'imports']: hits,
+      total: paged.total,
+      offset: paged.offset,
+      limit: paged.limit,
+      returned: paged.page.length,
+      truncated: paged.has_more,
+      has_more: paged.has_more,
+      [itemKey]: paged.page,
     };
+    return shapeResponse(envelope, responseFormat, [itemKey]);
   }
 
   return {
-    what_calls({ element, limit, min_confidence }) {
-      return inboundByKind(element, 'call', clampLimit(limit), min_confidence);
+    what_calls({ element, limit, offset, min_confidence, response_format }) {
+      return inboundByKind(element, 'call', limit, min_confidence, offset, response_format);
     },
 
-    what_this_calls({ element, limit }) {
-      return outboundByKind(element, 'call', clampLimit(limit));
+    what_this_calls({ element, limit, offset, response_format }) {
+      return outboundByKind(element, 'call', limit, offset, response_format);
     },
 
-    what_this_imports({ element, limit }) {
-      return outboundByKind(element, 'import', clampLimit(limit));
+    what_this_imports({ element, limit, offset, response_format }) {
+      return outboundByKind(element, 'import', limit, offset, response_format);
     },
 
-    what_this_depends_on({ element, max_depth, limit }) {
+    what_this_depends_on({ element, max_depth, limit, offset, response_format }) {
       const engine = loadCanonical(projectDir, cache);
-      const cap = clampLimit(limit);
       const depthCap = Math.max(1, Math.min(10, max_depth ?? 5));
       const resolution = engine.resolve(element);
       if (resolution.nodes.length === 0) return notFound(element);
@@ -715,25 +741,30 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       const files = [...fileCounts.entries()]
         .sort((a, b) => b[1] - a[1])
         .map(([file, count]) => ({ file, elements: count }));
-      return {
+      // Phase 6: `files` (affected-files ranking) is the paged list.
+      const paged = paginate(files, offset, limit);
+      const envelope: Record<string, unknown> = {
         element: resolution.byFile
           ? [`(all ${resolution.nodes.length} elements of) ${element}`]
           : resolution.nodes.map(n => n.id),
         direction: 'outbound',
         max_depth: depthCap,
         transitive_dependencies: deps.length,
-        affected_files: files.length,
-        files: files.slice(0, cap),
-        files_truncated: files.length > cap,
-        sample_dependencies: deps.slice(0, Math.min(10, cap)).map(d => ({
+        affected_files: paged.total,
+        offset: paged.offset,
+        limit: paged.limit,
+        files: paged.page,
+        files_truncated: paged.has_more,
+        has_more: paged.has_more,
+        sample_dependencies: deps.slice(0, Math.min(10, paged.limit)).map(d => ({
           id: d.id, name: d.name, type: d.type, file: d.file, line: d.line,
         })),
       };
+      return shapeResponse(envelope, response_format, ['files', 'sample_dependencies']);
     },
 
-    path_between({ source, target, mode, max_depth, limit }) {
+    path_between({ source, target, mode, max_depth, limit, offset, response_format }) {
       const engine = loadCanonical(projectDir, cache);
-      const cap = clampLimit(limit);
       const pathMode = mode ?? 'shortest';
       const sourceRes = engine.resolve(source);
       const targetRes = engine.resolve(target);
@@ -749,20 +780,31 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         // paths exist" (no silent upstream truncation).
         const depthCap = Math.max(1, Math.min(10, max_depth ?? 5));
         const results = engine.allPaths(sourceRes, targetRes, depthCap);
-        return {
+        const mapped = results.map(r => ({
+          length: r.length,
+          nodes: r.path.map(n => ({ id: n.id, name: n.name, type: n.type, file: n.file, line: n.line })),
+        }));
+        // Phase 6: paths is the paged list. total is the true path count (bounded
+        // by ALL_PATHS_MAX, flagged via internal_cap_hit).
+        const paged = paginate(mapped, offset, limit);
+        const envelope: Record<string, unknown> = {
           source,
           target,
           mode: 'all',
           max_depth: depthCap,
-          total: results.length,
-          returned: Math.min(cap, results.length),
-          truncated: results.length > cap,
+          total: paged.total,
+          offset: paged.offset,
+          limit: paged.limit,
+          returned: paged.page.length,
+          truncated: paged.has_more,
+          has_more: paged.has_more,
           internal_cap_hit: results.length >= ALL_PATHS_MAX,
-          paths: results.slice(0, cap).map(r => ({
-            length: r.length,
-            nodes: r.path.map(n => ({ id: n.id, name: n.name, type: n.type, file: n.file, line: n.line })),
-          })),
+          paths: paged.page,
         };
+        // paths carry nested node arrays (not top-level identity fields), so
+        // concise is the pagination + a self-describing marker here.
+        if (isConcise(response_format)) envelope.format = 'concise';
+        return envelope;
       }
 
       const depthCap = Math.max(1, Math.min(20, max_depth ?? 10));
@@ -780,11 +822,11 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
-    what_imports({ element, limit }) {
-      return inboundByKind(element, 'import', clampLimit(limit));
+    what_imports({ element, limit, offset, response_format }) {
+      return inboundByKind(element, 'import', limit, undefined, offset, response_format);
     },
 
-    impact_of({ element, max_depth, limit, min_confidence }) {
+    impact_of({ element, max_depth, limit, offset, min_confidence, response_format }) {
       const graph = loadGraph(projectDir, cache);
       const cap = clampLimit(limit);
       const depthCap = Math.max(1, Math.min(10, max_depth ?? 3));
@@ -829,7 +871,11 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         .sort((a, b) => b[1] - a[1])
         .map(([file, count]) => ({ file, elements: count }));
 
-      return {
+      // Phase 6: `files` is the paged list here (the affected-files ranking).
+      // paginate() windows it via offset/limit; total/has_more report the true
+      // affected-files count. sample_dependents stays a fixed 10-item preview.
+      const paged = paginate(files, offset, limit);
+      const envelope: Record<string, unknown> = {
         element: byFile
           ? [`(all ${matches.length} elements of) ${element}`]
           : matches.map(m => m.id),
@@ -837,16 +883,20 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         ...(min_confidence ? { min_confidence } : {}),
         transitive_dependents: dependents.length,
         dependents_by_depth: byDepth,
-        affected_files: files.length,
-        files: files.slice(0, cap),
-        files_truncated: files.length > cap,
-        sample_dependents: dependents.slice(0, Math.min(10, cap)).map(nodeSummary),
+        affected_files: paged.total,
+        offset: paged.offset,
+        limit: paged.limit,
+        files: paged.page,
+        // files_truncated retained for back-compat; has_more is the paging signal.
+        files_truncated: paged.has_more,
+        has_more: paged.has_more,
+        sample_dependents: dependents.slice(0, Math.min(10, paged.limit)).map(nodeSummary),
       };
+      return shapeResponse(envelope, response_format, ['files', 'sample_dependents']);
     },
 
-    find_element({ query, type, limit }) {
+    find_element({ query, type, limit, offset, response_format }) {
       const index = loadIndex(projectDir, cache);
-      const cap = clampLimit(limit);
       const q = query.toLowerCase();
       let elements = index.elements.filter(
         e =>
@@ -859,24 +909,30 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       if (type) elements = elements.filter(e => e.type === type);
       // Exact-name matches first so `find_element foo` surfaces foo() above foobar().
       elements.sort((a, b) => Number(b.name === query) - Number(a.name === query));
-      return {
+      const full = elements.map(e => ({
+        id: e.codeRefId,
+        name: e.name,
+        type: e.type,
+        file: e.file,
+        line: e.line,
+        exported: e.exported ?? false,
+        headerStatus: e.headerStatus ?? 'missing',
+        ...(e.layer !== undefined && { layer: e.layer }),
+        ...(e.capability !== undefined && { capability: e.capability }),
+      }));
+      const paged = paginate(full, offset, limit);
+      const envelope: Record<string, unknown> = {
         query,
         type_filter: type ?? null,
-        total: elements.length,
-        returned: Math.min(cap, elements.length),
-        truncated: elements.length > cap,
-        elements: elements.slice(0, cap).map(e => ({
-          id: e.codeRefId,
-          name: e.name,
-          type: e.type,
-          file: e.file,
-          line: e.line,
-          exported: e.exported ?? false,
-          headerStatus: e.headerStatus ?? 'missing',
-          ...(e.layer !== undefined && { layer: e.layer }),
-          ...(e.capability !== undefined && { capability: e.capability }),
-        })),
+        total: paged.total,
+        offset: paged.offset,
+        limit: paged.limit,
+        returned: paged.page.length,
+        truncated: paged.has_more,
+        has_more: paged.has_more,
+        elements: paged.page,
       };
+      return shapeResponse(envelope, response_format, ['elements']);
     },
 
     codebase_summary() {
@@ -935,9 +991,8 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
-    hotspots({ limit, src_only }) {
+    hotspots({ limit, offset, src_only, response_format }) {
       const graph = loadGraph(projectDir, cache);
-      const cap = clampLimit(limit);
       const srcOnly = src_only ?? true;
 
       const fanIn = new Map<string, number>();
@@ -966,18 +1021,22 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       }
       ranked.sort((a, b) => b.score - a.score);
 
-      return {
+      const paged = paginate(ranked, offset, limit);
+      const envelope: Record<string, unknown> = {
         src_only: srcOnly,
-        total_ranked: ranked.length,
-        returned: Math.min(cap, ranked.length),
-        truncated: ranked.length > cap,
-        hotspots: ranked.slice(0, cap),
+        total_ranked: paged.total,
+        offset: paged.offset,
+        limit: paged.limit,
+        returned: paged.page.length,
+        truncated: paged.has_more,
+        has_more: paged.has_more,
+        hotspots: paged.page,
       };
+      return shapeResponse(envelope, response_format, ['hotspots']);
     },
 
-    cycles({ limit, relationship }) {
+    cycles({ limit, offset, relationship, response_format }) {
       const graph = loadGraph(projectDir, cache);
-      const cap = clampLimit(limit);
 
       // Forward adjacency over resolved call/import edges (export edges are
       // containment and cannot form dependency cycles worth surfacing).
@@ -1047,7 +1106,9 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       }
 
       sccs.sort((a, b) => b.length - a.length);
-      const cycles = sccs.slice(0, cap).map(scc => {
+      // Phase 6: paginate the full SCC list; map only the windowed slice.
+      const pagedSccs = paginate(sccs, offset, limit);
+      const cycles = pagedSccs.page.map(scc => {
         const memberSet = new Set(scc);
         let sample: ExportedEdge | undefined;
         for (const id of scc) {
@@ -1073,18 +1134,25 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         };
       });
 
-      return {
+      // cycles carry nested member summaries (already nodeSummary-grade identity
+      // fields), so concise here is the pagination + a self-describing marker; the
+      // members are the identity-bearing part and stay intact.
+      const envelope: Record<string, unknown> = {
         relationship: relationship ?? 'call+import',
-        total_cycles: sccs.length,
+        total_cycles: pagedSccs.total,
+        offset: pagedSccs.offset,
+        limit: pagedSccs.limit,
         returned: cycles.length,
-        truncated: sccs.length > cycles.length,
+        truncated: pagedSccs.has_more,
+        has_more: pagedSccs.has_more,
         cycles,
+        ...(isConcise(response_format) ? { format: 'concise' } : {}),
       };
+      return envelope;
     },
 
-    what_exports({ file, limit }) {
+    what_exports({ file, limit, offset, response_format }) {
       const graph = loadGraph(projectDir, cache);
-      const cap = clampLimit(limit);
       const norm = (f: string | undefined) => normalizeSlashes((f ?? ''));
       const query = norm(file).replace(/^@File\//, '');
 
@@ -1130,16 +1198,21 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           exports.push(target ? nodeSummary(target) : { id: edge.targetId });
         }
       }
-      return {
+      const paged = paginate(exports, offset, limit);
+      const envelope: Record<string, unknown> = {
         file: matchedFiles.length === 1 ? matchedFiles[0] : matchedFiles,
-        total: exports.length,
-        returned: Math.min(cap, exports.length),
-        truncated: exports.length > cap,
-        exports: exports.slice(0, cap),
+        total: paged.total,
+        offset: paged.offset,
+        limit: paged.limit,
+        returned: paged.page.length,
+        truncated: paged.has_more,
+        has_more: paged.has_more,
+        exports: paged.page,
       };
+      return shapeResponse(envelope, response_format, ['exports']);
     },
 
-    diff_impact({ ref, max_depth, limit }) {
+    diff_impact({ ref, max_depth, limit, offset, response_format }) {
       const graph = loadGraph(projectDir, cache);
       const index = loadIndex(projectDir, cache);
       const cap = clampLimit(limit);
@@ -1240,22 +1313,28 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         .sort((a, b) => b[1] - a[1])
         .map(([file, count]) => ({ file, elements: count }));
 
-      return {
+      // Phase 6: `files` (affected-files ranking) is the paged list.
+      const paged = paginate(files, offset, limit);
+      const envelope: Record<string, unknown> = {
         ref: gitRef,
         changed_files: changedRanges.size,
         changed_elements: changedElements.size,
-        changed_element_sample: [...changedElements.values()].slice(0, Math.min(20, cap)).map(e => ({
+        changed_element_sample: [...changedElements.values()].slice(0, Math.min(20, paged.limit)).map(e => ({
           id: e.codeRefId, name: e.name, type: e.type, file: e.file, line: e.line,
         })),
         max_depth: depthCap,
         transitive_dependents: dependents.length,
-        affected_files: files.length,
-        files: files.slice(0, cap),
-        files_truncated: files.length > cap,
+        affected_files: paged.total,
+        offset: paged.offset,
+        limit: paged.limit,
+        files: paged.page,
+        files_truncated: paged.has_more,
+        has_more: paged.has_more,
       };
+      return shapeResponse(envelope, response_format, ['files', 'changed_element_sample']);
     },
 
-    async rag_search({ query, limit, hybrid, expand, neighbor_limit }) {
+    async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, response_format }) {
       const cap = clampLimit(limit);
       const indexMetaPath = path.join(projectDir, '.coderef', 'rag-index.json');
       let meta: { provider?: string; store?: string };
@@ -1291,7 +1370,11 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         const searchService = new SemanticSearchService(llmProvider, vectorStore);
         // STUB-Q7MRD6: hybrid dense+BM25 RRF fusion, on by default; callers can
         // pass hybrid=false to force embedding-only (A/B).
-        const response = await searchService.search(query, { topK: cap, hybrid: hybrid ?? true });
+        // Phase 6: fetch enough to cover the requested offset window. topK is the
+        // retrieval depth; offset then pages within it. A bare call (offset unset)
+        // requests exactly `cap` — byte-identical to pre-Phase-6.
+        const off = offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset));
+        const response = await searchService.search(query, { topK: off + cap, hybrid: hybrid ?? true });
         const results = (response?.results ?? response ?? []) as any[];
         // Ego-graph expansion (Phase 4): when expand is set, load the canonical
         // graph ONCE (lazily — a bare search never pays this cost) and attach
@@ -1312,39 +1395,50 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         const neighborCap = neighbor_limit === undefined
           ? 10
           : Math.max(1, Math.min(MAX_LIMIT, Math.floor(neighbor_limit)));
-        return {
+        const allHits = results.map((r: any) => {
+          const id = r.metadata?.coderefId ?? r.id;
+          const name = r.metadata?.name;
+          const hit: Record<string, unknown> = {
+            id,
+            name,
+            file: r.metadata?.file,
+            line: r.metadata?.line,
+            score: typeof r.score === 'number' ? Math.round(r.score * 1000) / 1000 : r.score,
+            snippet: typeof r.metadata?.sourceCode === 'string'
+              ? r.metadata.sourceCode.slice(0, 200)
+              : (typeof r.content === 'string' ? r.content.slice(0, 200) : undefined),
+          };
+          if (engine) {
+            // Resolve the hit to a graph node. Prefer the coderefId; fall back
+            // to the element name when the chunk id is a bare index (not a
+            // graph id). ALWAYS attach neighbors when expand is set — a hit
+            // that resolves to no graph node yields neighbors.resolved=false,
+            // so absence is SURFACED (no-data), never silently omitted.
+            const resolveKey = typeof id === 'string' ? id : (typeof name === 'string' ? name : '');
+            const neighbors: EgoGraph = egoGraphOf(engine, engine.resolve(resolveKey), { cap: neighborCap });
+            hit.neighbors = neighbors;
+          }
+          return hit;
+        });
+        // Phase 6: page within the retrieved set. total is the retrieved-result
+        // count (topK depth); has_more true when a further page is in-hand. A bare
+        // call (offset unset) yields the first `cap` window — pre-Phase-6 shape
+        // plus the additive offset/limit/has_more envelope fields.
+        const paged = paginate(allHits, off, cap);
+        const envelope: Record<string, unknown> = {
           query,
           provider,
           store,
           hybrid: hybrid ?? true,
           ...(expand ? { expanded: true, neighbor_limit: neighborCap } : {}),
-          total: results.length,
-          results: results.slice(0, cap).map((r: any) => {
-            const id = r.metadata?.coderefId ?? r.id;
-            const name = r.metadata?.name;
-            const hit: Record<string, unknown> = {
-              id,
-              name,
-              file: r.metadata?.file,
-              line: r.metadata?.line,
-              score: typeof r.score === 'number' ? Math.round(r.score * 1000) / 1000 : r.score,
-              snippet: typeof r.metadata?.sourceCode === 'string'
-                ? r.metadata.sourceCode.slice(0, 200)
-                : (typeof r.content === 'string' ? r.content.slice(0, 200) : undefined),
-            };
-            if (engine) {
-              // Resolve the hit to a graph node. Prefer the coderefId; fall back
-              // to the element name when the chunk id is a bare index (not a
-              // graph id). ALWAYS attach neighbors when expand is set — a hit
-              // that resolves to no graph node yields neighbors.resolved=false,
-              // so absence is SURFACED (no-data), never silently omitted.
-              const resolveKey = typeof id === 'string' ? id : (typeof name === 'string' ? name : '');
-              const neighbors: EgoGraph = egoGraphOf(engine, engine.resolve(resolveKey), { cap: neighborCap });
-              hit.neighbors = neighbors;
-            }
-            return hit;
-          }),
+          total: paged.total,
+          offset: paged.offset,
+          limit: paged.limit,
+          returned: paged.page.length,
+          has_more: paged.has_more,
+          results: paged.page,
         };
+        return shapeResponse(envelope, response_format, ['results']);
       } catch (e: any) {
         return {
           error: 'embedding_unavailable',
@@ -1399,10 +1493,8 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
-    unresolved_edges({ relationship, status, file, reason, offset, limit }) {
+    unresolved_edges({ relationship, status, file, reason, offset, limit, response_format }) {
       const graph = loadGraph(projectDir, cache);
-      const cap = clampLimit(limit);
-      const start = offset !== undefined && Number.isFinite(offset) ? Math.max(0, Math.floor(offset)) : 0;
 
       // The non-resolved universe. validation_status exposes only the AGGREGATE
       // counts of these (unresolved_count/ambiguous_count/external_count/
@@ -1441,9 +1533,11 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         matched.push(edge);
       }
 
-      const total = matched.length;
-      const page = matched.slice(start, start + cap);
-      const edges = page.map(edge => {
+      // Phase 6: this tool's pre-existing offset now runs through the SHARED
+      // paginate() helper — one pagination implementation across all list tools.
+      // Slice the raw edges first (cheap), then map only the window.
+      const paged = paginate(matched, offset, limit);
+      const edges = paged.page.map(edge => {
         const ev = edge.evidence as Record<string, unknown> | undefined;
         const src = edge.sourceId ? cache.nodeById.get(edge.sourceId) : undefined;
         const out: Record<string, unknown> = {
@@ -1473,11 +1567,15 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         return out;
       });
 
-      return {
-        total,
-        offset: start,
+      const envelope: Record<string, unknown> = {
+        total: paged.total,
+        offset: paged.offset,
+        limit: paged.limit,
         returned: edges.length,
-        truncated: start + edges.length < total,
+        // Preserve the pre-Phase-6 `truncated` meaning (more-beyond-this-window)
+        // and add has_more as the shared forward paging signal.
+        truncated: paged.has_more,
+        has_more: paged.has_more,
         filters: {
           relationship: relationship ?? null,
           status: wantStatus ?? '(unresolved+ambiguous)',
@@ -1487,6 +1585,18 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         status_breakdown,
         edges,
       };
+      // edges carry from/candidates nested objects (not top-level identity), so
+      // concise here reduces the from-node and drops evidence passthrough.
+      if (isConcise(response_format)) {
+        envelope.format = 'concise';
+        envelope.edges = edges.map(e => ({
+          relationship: e.relationship,
+          status: e.status,
+          from: e.from,
+          at: e.at,
+        }));
+      }
+      return envelope;
     },
 
     source_of({ element, context, max_chars }) {
@@ -1565,9 +1675,8 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
-    find_all_references({ element, limit }) {
+    find_all_references({ element, limit, offset, response_format }) {
       const graph = loadGraph(projectDir, cache);
-      const cap = clampLimit(limit);
       const { nodes: matches, byFile } = resolveNodes(element, graph);
       if (matches.length === 0) return notFound(element);
       if (!byFile && matches.length > 5) return ambiguous(element, matches);
@@ -1622,7 +1731,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       }
 
       const total = callRefs.length + importRefs.length + typeRefs.length;
-      return {
+      // Phase 6: the three parallel ref lists page under one shared offset/limit
+      // window. has_more is true if ANY list has more beyond the window.
+      const pagedCalls = paginate(callRefs, offset, limit);
+      const pagedImports = paginate(importRefs, offset, limit);
+      const pagedTypes = paginate(typeRefs, offset, limit);
+      const anyMore = pagedCalls.has_more || pagedImports.has_more || pagedTypes.has_more;
+      const envelope: Record<string, unknown> = {
         element: byFile
           ? [`(all ${matches.length} elements of) ${element}`]
           : matches.map(m => m.id),
@@ -1630,15 +1745,18 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         call_site_count: callRefs.length,
         import_site_count: importRefs.length,
         type_reference_count: typeRefs.length,
+        offset: pagedCalls.offset,
+        limit: pagedCalls.limit,
         note: typeRefs.length > 0
           ? 'type_references are import-type-only edges (resolutionStatus=typeOnly): additive + non-traversable; matched heuristically by module basename. Validation counts unchanged.'
           : undefined,
-        call_sites: callRefs.slice(0, cap),
-        import_sites: importRefs.slice(0, cap),
-        type_references: typeRefs.slice(0, cap),
-        truncated:
-          callRefs.length > cap || importRefs.length > cap || typeRefs.length > cap,
+        call_sites: pagedCalls.page,
+        import_sites: pagedImports.page,
+        type_references: pagedTypes.page,
+        truncated: anyMore,
+        has_more: anyMore,
       };
+      return shapeResponse(envelope, response_format, ['call_sites', 'import_sites']);
     },
 
     // ---- CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6) ----------------------
@@ -2090,6 +2208,20 @@ async function main(): Promise<void> {
     .string()
     .describe('Element to query: codeRefId (e.g. "@Fn/src/foo.ts#bar:12"), element name, or file path fragment');
   const limitArg = z.number().optional().describe(`Max results (default ${DEFAULT_LIMIT}, cap ${MAX_LIMIT})`);
+  // Phase 6 (STUB-8H3YV0): shared response_format + offset args, threaded onto
+  // every list-returning tool so agent-discovery descriptions stay uniform.
+  const offsetArg = z
+    .number()
+    .optional()
+    .describe(
+      `Pagination offset into the full result set (default 0). Page with offset+limit; the response reports {offset, limit, total, has_more} so you can tell when a next page exists (total is always the true pre-page count).`,
+    );
+  const responseFormatArg = z
+    .enum(['concise', 'detailed'])
+    .optional()
+    .describe(
+      `Verbosity of the response (default 'detailed' = full shape). 'concise' returns counts + identity fields (id/name/file/line) only, dropping per-item body detail for a ~1/3 token cut — request concise first, escalate to detailed only when you need the extra fields. A verbosity choice over the SAME facts (counts/total preserved), never a filter or a quality verdict.`,
+    );
   const minConfidenceArg = z
     .enum(['exact', 'strong', 'heuristic', 'inferred'])
     .optional()
@@ -2104,11 +2236,11 @@ async function main(): Promise<void> {
     {
       title: 'What calls this element',
       description:
-        'List the resolved call sites that invoke the given element (inbound call edges from .coderef/graph.json). Compact: caller id/name/file/line plus call location and confidence tier. `total` counts inbound EDGES (a caller invoking the target twice counts twice) — the outbound mirror what_this_calls counts DISTINCT targets. Pass min_confidence to keep only callers at/above a tier (e.g. exact drops provisional single-candidate calls).',
-      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg, min_confidence: minConfidenceArg },
+        'List the resolved call sites that invoke the given element (inbound call edges from .coderef/graph.json). Compact: caller id/name/file/line plus call location and confidence tier. `total` counts inbound EDGES (a caller invoking the target twice counts twice) — the outbound mirror what_this_calls counts DISTINCT targets. Pass min_confidence to keep only callers at/above a tier (e.g. exact drops provisional single-candidate calls). Pass response_format:"concise" for a ~1/3-lighter identity-only response, and offset to page past the limit on a hot symbol (the response reports {offset,limit,total,has_more}).',
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg, offset: offsetArg, min_confidence: minConfidenceArg, response_format: responseFormatArg },
     },
-    async ({ project_root, element, limit, min_confidence }) =>
-      perRepo(project_root, h => h.what_calls({ element, limit, min_confidence })),
+    async ({ project_root, element, limit, offset, min_confidence, response_format }) =>
+      perRepo(project_root, h => h.what_calls({ element, limit, offset, min_confidence, response_format })),
   );
 
   server.registerTool(
@@ -2117,10 +2249,10 @@ async function main(): Promise<void> {
       title: 'What imports this element',
       description:
         'List the modules/elements that import the given element (inbound resolved import edges). `total` counts inbound EDGES — the outbound mirror what_this_imports counts DISTINCT targets.',
-      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg, offset: offsetArg, response_format: responseFormatArg },
     },
-    async ({ project_root, element, limit }) =>
-      perRepo(project_root, h => h.what_imports({ element, limit })),
+    async ({ project_root, element, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.what_imports({ element, limit, offset, response_format })),
   );
 
   server.registerTool(
@@ -2134,11 +2266,13 @@ async function main(): Promise<void> {
         element: elementArg,
         max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 3)'),
         limit: limitArg,
+        offset: offsetArg,
         min_confidence: minConfidenceArg,
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, element, max_depth, limit, min_confidence }) =>
-      perRepo(project_root, h => h.impact_of({ element, max_depth, limit, min_confidence })),
+    async ({ project_root, element, max_depth, limit, offset, min_confidence, response_format }) =>
+      perRepo(project_root, h => h.impact_of({ element, max_depth, limit, offset, min_confidence, response_format })),
   );
 
   server.registerTool(
@@ -2152,10 +2286,12 @@ async function main(): Promise<void> {
         query: z.string().describe('Name, codeRefId, or file path substring'),
         type: z.string().optional().describe('Filter by element type (function, class, interface, ...)'),
         limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, query, type, limit }) =>
-      perRepo(project_root, h => h.find_element({ query, type, limit })),
+    async ({ project_root, query, type, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.find_element({ query, type, limit, offset, response_format })),
   );
 
   server.registerTool(
@@ -2189,14 +2325,16 @@ async function main(): Promise<void> {
       inputSchema: {
         project_root: projectRootArg,
         limit: limitArg,
+        offset: offsetArg,
         src_only: z
           .boolean()
           .optional()
           .describe('Exclude test-origin edges + test-file elements (default true)'),
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, limit, src_only }) =>
-      perRepo(project_root, h => h.hotspots({ limit, src_only })),
+    async ({ project_root, limit, offset, src_only, response_format }) =>
+      perRepo(project_root, h => h.hotspots({ limit, offset, src_only, response_format })),
   );
 
   server.registerTool(
@@ -2208,14 +2346,16 @@ async function main(): Promise<void> {
       inputSchema: {
         project_root: projectRootArg,
         limit: limitArg,
+        offset: offsetArg,
         relationship: z
           .enum(['call', 'import'])
           .optional()
           .describe('Restrict to one edge kind (default: both)'),
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, limit, relationship }) =>
-      perRepo(project_root, h => h.cycles({ limit, relationship })),
+    async ({ project_root, limit, offset, relationship, response_format }) =>
+      perRepo(project_root, h => h.cycles({ limit, offset, relationship, response_format })),
   );
 
   server.registerTool(
@@ -2255,10 +2395,12 @@ async function main(): Promise<void> {
         project_root: projectRootArg,
         file: z.string().describe('Project-relative file path (or fragment), e.g. "src/pipeline/call-resolver.ts"'),
         limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, file, limit }) =>
-      perRepo(project_root, h => h.what_exports({ file, limit })),
+    async ({ project_root, file, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.what_exports({ file, limit, offset, response_format })),
   );
 
   server.registerTool(
@@ -2272,10 +2414,12 @@ async function main(): Promise<void> {
         ref: z.string().optional().describe('Git ref to diff against (default HEAD; e.g. "main", "HEAD~3")'),
         max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 3)'),
         limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, ref, max_depth, limit }) =>
-      perRepo(project_root, h => h.diff_impact({ ref, max_depth, limit })),
+    async ({ project_root, ref, max_depth, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.diff_impact({ ref, max_depth, limit, offset, response_format })),
   );
 
   server.registerTool(
@@ -2288,13 +2432,15 @@ async function main(): Promise<void> {
         project_root: projectRootArg,
         query: z.string().describe('Natural-language query, e.g. "where are import specifiers resolved"'),
         limit: limitArg,
+        offset: offsetArg,
         hybrid: z.boolean().optional().describe('Hybrid dense+BM25 fusion (default true). Set false for embedding-only retrieval.'),
         expand: z.boolean().optional().describe('Attach each hit\'s 1-hop graph neighborhood (callers/callees/imports/importedBy) as signatures. Default false (bare hits, byte-unchanged).'),
         neighbor_limit: z.number().optional().describe('Max neighbors per direction when expand=true (default 10). Excess is truncated with a per-direction total + flag.'),
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, query, limit, hybrid, expand, neighbor_limit }) =>
-      perRepo(project_root, h => h.rag_search({ query, limit, hybrid, expand, neighbor_limit })),
+    async ({ project_root, query, limit, offset, hybrid, expand, neighbor_limit, response_format }) =>
+      perRepo(project_root, h => h.rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, response_format })),
   );
 
   // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ----
@@ -2308,10 +2454,10 @@ async function main(): Promise<void> {
       title: 'What this element calls',
       description:
         'Outbound (forward) direction: list the resolved elements that the given element CALLS. The mirror of what_calls (which is inbound). Compact callee id/name/file/line. `total` counts DISTINCT callees (deduped); the inbound what_calls counts edges. On a whole-file query, calls between two elements of the same file are omitted (intra-file self-references are not "what this file calls").',
-      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg, offset: offsetArg, response_format: responseFormatArg },
     },
-    async ({ project_root, element, limit }) =>
-      perRepo(project_root, h => h.what_this_calls({ element, limit })),
+    async ({ project_root, element, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.what_this_calls({ element, limit, offset, response_format })),
   );
 
   server.registerTool(
@@ -2320,10 +2466,10 @@ async function main(): Promise<void> {
       title: 'What this element imports',
       description:
         'Outbound (forward) direction: list the resolved elements/modules that the given element (or its file) IMPORTS. The mirror of what_imports (which is inbound). `total` counts DISTINCT imported targets (deduped); the inbound what_imports counts edges.',
-      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg, offset: offsetArg, response_format: responseFormatArg },
     },
-    async ({ project_root, element, limit }) =>
-      perRepo(project_root, h => h.what_this_imports({ element, limit })),
+    async ({ project_root, element, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.what_this_imports({ element, limit, offset, response_format })),
   );
 
   server.registerTool(
@@ -2337,10 +2483,12 @@ async function main(): Promise<void> {
         element: elementArg,
         max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 5)'),
         limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, element, max_depth, limit }) =>
-      perRepo(project_root, h => h.what_this_depends_on({ element, max_depth, limit })),
+    async ({ project_root, element, max_depth, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.what_this_depends_on({ element, max_depth, limit, offset, response_format })),
   );
 
   server.registerTool(
@@ -2356,10 +2504,12 @@ async function main(): Promise<void> {
         mode: z.enum(['shortest', 'all']).optional().describe('shortest (default) or all simple paths'),
         max_depth: z.number().optional().describe('Depth cap (shortest: default 10, max 20; all: default 5, max 10)'),
         limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, source, target, mode, max_depth, limit }) =>
-      perRepo(project_root, h => h.path_between({ source, target, mode, max_depth, limit })),
+    async ({ project_root, source, target, mode, max_depth, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.path_between({ source, target, mode, max_depth, limit, offset, response_format })),
   );
 
   // ---- non-resolved-edge exposure (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P2) ----
@@ -2385,13 +2535,14 @@ async function main(): Promise<void> {
           .describe('Disposition filter (default: unresolved + ambiguous)'),
         file: z.string().optional().describe('Restrict to edges whose call/import site is in this file (path or fragment)'),
         reason: z.string().optional().describe('Substring match on the edge reason (e.g. "receiver_not_in_symbol_table")'),
-        offset: z.number().optional().describe('Pagination offset into the matched set (default 0)'),
+        offset: offsetArg,
         limit: limitArg,
+        response_format: responseFormatArg,
       },
     },
-    async ({ project_root, relationship, status, file, reason, offset, limit }) =>
+    async ({ project_root, relationship, status, file, reason, offset, limit, response_format }) =>
       perRepo(project_root, h =>
-        h.unresolved_edges({ relationship, status, file, reason, offset, limit }),
+        h.unresolved_edges({ relationship, status, file, reason, offset, limit, response_format }),
       ),
   );
 
@@ -2422,10 +2573,10 @@ async function main(): Promise<void> {
       title: 'Find all references',
       description:
         'Union the inbound references to an element in ONE call: resolved call-sites + resolved import-sites (traversable), PLUS type-only import references (resolutionStatus=typeOnly, additive + non-traversable, matched heuristically by module basename). Does NOT reclassify type-only edges or shift validation counts. Returns per-category counts + sites.',
-      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg, offset: offsetArg, response_format: responseFormatArg },
     },
-    async ({ project_root, element, limit }) =>
-      perRepo(project_root, h => h.find_all_references({ element, limit })),
+    async ({ project_root, element, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.find_all_references({ element, limit, offset, response_format })),
   );
 
   // ---- CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6) --------------------------

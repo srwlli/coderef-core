@@ -902,6 +902,8 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 
 Every tool additionally requires `project_root` (string, absolute or anchor-relative path to the target repo root) — see **Per-repo queries** above. Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
 
+Every **list-returning** tool above also accepts two shared, additive params — `response_format` and `offset` — see **Pagination & verbosity** below.
+
 #### Confidence tiers (`min_confidence`)
 
 Every graph edge carries a **confidence tier** — a projection of its resolution provenance onto four bands: `exact` > `strong` > `heuristic` > `inferred`. It reports **how the edge was derived, not whether it is "good"** (surfaces, not verdicts):
@@ -912,6 +914,15 @@ Every graph edge carries a **confidence tier** — a projection of its resolutio
 - **`inferred`** — could not be bound to a single confirmed target (unresolved / ambiguous / stale). Lowest provenance — `inferred` is "lower-provenance," not "wrong."
 
 `what_calls`, `impact_of`, and `rename_preview` accept an optional `min_confidence` floor. Because these tools already traverse only `resolved` edges, the filter differentiates **within the resolved set** (`exact` vs `heuristic`) — it tightens an already-resolved traversal, it does **not** resurface unresolved edges or change graph connectivity. Omitting `min_confidence` preserves the prior (unfiltered) behavior exactly. Counts shrink monotonically as the floor rises. `rename_preview` additionally reports a `sites_by_confidence` tally and a `confidence` tier per site, so `min_confidence=exact` yields just the auto-apply-safe sites and leaves provisional single-candidate references for human review.
+
+#### Pagination & verbosity (`response_format`, `offset`)
+
+Every **list-returning** tool (`what_calls`, `what_imports`, `impact_of`, `find_element`, `hotspots`, `cycles`, `what_exports`, `diff_impact`, `what_this_calls`, `what_this_imports`, `what_this_depends_on`, `path_between`, `unresolved_edges`, `find_all_references`, `rag_search`) accepts two shared, additive params built on the existing `limit` substrate (default 25, cap 100):
+
+- **`response_format`** (`concise` | `detailed`, default `detailed`) — a per-tool **verbosity projection**. `detailed` is today's full shape, byte-for-byte. `concise` keeps every envelope count (`total`/`returned`/`truncated`/`has_more`) and reduces each item to its **identity fields** (`id`/`name`/`file`/`line`), dropping per-item body detail (call evidence, snippets, per-depth breakdowns) for roughly a one-third token cut on a hot symbol. It is a **verbosity choice over the same known facts** — the `total`/counts are never dropped — not a filter and not a quality verdict (surfaces, not verdicts). Single-object tools (`codebase_summary`, `validation_status`, `rag_status`, `source_of`, …) are already summary-shaped, so `response_format` is a documented **no-op** there — a knob does what it says.
+- **`offset`** (number, default 0) — generalized pagination. `what_calls`/`impact_of`/etc. on a high-fan-in symbol can exceed the `limit` cap; page past it with `offset`. Each paged response reports **`{ offset, limit, total, has_more }`** — `total` is always the **true pre-page count**, so an agent can tell a next page exists and never mistakes a capped window for the whole set (no silent truncation). Absent `offset` returns the first page exactly as before. (`unresolved_edges` already exposed `offset`; it now shares one pagination implementation with every other list tool.)
+
+Both default to the pre-existing behavior, so an omitting caller sees the unchanged first-page/full-shape response.
 
 #### Ego-graph expansion (`rag_search --expand`, `pack_context --include_callers`)
 

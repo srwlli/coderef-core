@@ -1381,3 +1381,96 @@ describe('rag_index', () => {
     }
   }, 60_000);
 });
+
+// ---- Phase 6: response_format + offset wiring (STUB-8H3YV0) ----------------------
+// Pure-module behavior is pinned in __tests__/cli/mcp-response-format.test.ts;
+// these assert the params actually reach the fixture handlers and that the
+// default (absent-param) shape is byte-unchanged.
+
+describe('Phase 6 — response_format', () => {
+  it('what_calls concise keeps counts but reduces callers to identity fields', () => {
+    const detailed = handlers.what_calls({ element: 'helper' }) as any;
+    const concise = handlers.what_calls({ element: 'helper', response_format: 'concise' }) as any;
+    // counts preserved (total-preserving)
+    expect(concise.total).toBe(detailed.total);
+    expect(concise.returned).toBe(detailed.returned);
+    expect(concise.format).toBe('concise');
+    // body detail dropped: detailed callers carry `at` (+ maybe callee); concise does not
+    const dHasExtra = detailed.callers.some((c: any) => 'at' in c || 'confidence' in c);
+    expect(dHasExtra).toBe(true);
+    for (const c of concise.callers) {
+      expect('at' in c).toBe(false);
+      expect('confidence' in c).toBe(false);
+      // identity fields still present
+      expect(c).toHaveProperty('id');
+      expect(c).toHaveProperty('name');
+    }
+    // same caller identities, same order
+    expect(concise.callers.map((c: any) => c.id)).toEqual(detailed.callers.map((c: any) => c.id));
+  });
+
+  it('what_this_calls concise reduces callees; detailed is unchanged', () => {
+    const concise = handlers.what_this_calls({ element: 'fan', response_format: 'concise' }) as any;
+    expect(concise.total).toBe(3);
+    expect(concise.format).toBe('concise');
+    expect(concise.callees).toHaveLength(3);
+  });
+
+  it('default (absent response_format) is byte-identical to explicit detailed', () => {
+    const bare = handlers.what_calls({ element: 'helper' });
+    const detailed = handlers.what_calls({ element: 'helper', response_format: 'detailed' });
+    expect(bare).toEqual(detailed);
+    // and carries NO concise marker
+    expect((bare as any).format).toBeUndefined();
+  });
+});
+
+describe('Phase 6 — offset pagination', () => {
+  it('what_this_calls pages via offset with a correct has_more', () => {
+    // fan calls 3 leaves. limit 2, offset 0 -> first 2 + has_more.
+    const p1 = handlers.what_this_calls({ element: 'fan', limit: 2, offset: 0 }) as any;
+    expect(p1.total).toBe(3);
+    expect(p1.offset).toBe(0);
+    expect(p1.limit).toBe(2);
+    expect(p1.callees).toHaveLength(2);
+    expect(p1.has_more).toBe(true);
+    // second page: offset 2 -> the remaining 1, has_more false.
+    const p2 = handlers.what_this_calls({ element: 'fan', limit: 2, offset: 2 }) as any;
+    expect(p2.offset).toBe(2);
+    expect(p2.callees).toHaveLength(1);
+    expect(p2.has_more).toBe(false);
+    // windows are disjoint and cover the full set
+    const ids = [...p1.callees, ...p2.callees].map((c: any) => c.id);
+    expect(new Set(ids).size).toBe(3);
+  });
+
+  it('what_calls reports the paged envelope {offset,limit,total,has_more}', () => {
+    const r = handlers.what_calls({ element: 'helper', limit: 1, offset: 0 }) as any;
+    expect(r.total).toBe(2); // helper has 2 callers
+    expect(r.offset).toBe(0);
+    expect(r.limit).toBe(1);
+    expect(r.returned).toBe(1);
+    expect(r.has_more).toBe(true); // 0 + 1 < 2
+    // truncated retained for back-compat and tracks has_more here
+    expect(r.truncated).toBe(true);
+  });
+
+  it('offset past the end yields an empty page with has_more=false (not an error)', () => {
+    const r = handlers.what_calls({ element: 'helper', offset: 999 }) as any;
+    expect(r.total).toBe(2); // true count preserved — no silent truncation
+    expect(r.callers).toEqual([]);
+    expect(r.has_more).toBe(false);
+  });
+
+  it('unresolved_edges still pages on the refactored shared helper', () => {
+    // The pre-existing offset tool now runs through paginate(); its envelope
+    // gains limit/has_more while keeping total/offset/status_breakdown.
+    const r = handlers.unresolved_edges({ limit: 1, offset: 0 }) as any;
+    expect(typeof r.total).toBe('number');
+    expect(r.offset).toBe(0);
+    expect(r.limit).toBe(1);
+    expect(r).toHaveProperty('has_more');
+    expect(r).toHaveProperty('status_breakdown');
+    expect(Array.isArray(r.edges)).toBe(true);
+  });
+});
