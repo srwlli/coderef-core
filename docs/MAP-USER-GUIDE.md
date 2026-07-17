@@ -16,7 +16,7 @@ The repo map is an interactive, file-level picture of any repo that has been sca
 
 - [Purpose](#purpose)
 - [Prerequisites](#prerequisites)
-- [Steps](#steps) — scan · generate · serve · explore the viewer · read the Metrics overlay · agent path · read data.json
+- [Steps](#steps) — scan · generate · serve · explore the viewer · read the Metrics overlay · agent path · read data.json · skeleton map
 - [Verification](#verification)
 - [Troubleshooting](#troubleshooting)
 - [Revision History](#revision-history)
@@ -28,7 +28,7 @@ Use the map when you want to *see* a codebase instead of grepping it: which file
 Two audiences share one identical data set (`MapData`, schema v1.4):
 
 - **Humans** use the bundled viewer (`graph.html`) — canvas force layout, search, detail panel, and exclusive overlay toggles.
-- **Agents** use the MCP `map` tool, which returns triage-ready summary counts plus `data_path` to the full `data.json`. The `/coderef-map` skill wraps the same surface.
+- **Agents** use the MCP `map` tool, which returns triage-ready summary counts plus `data_path` to the full `data.json`, or — with `format: "skeleton"` — a token-budgeted, centrality-ranked plaintext repo map returned inline for fast orientation (step 8). The `/coderef-map` skill wraps the same surface.
 
 One framing rule governs everything here: **every block is a surface, not a verdict.** The map tells you *where to look*, never *what is wrong*. A file with zero test in-edges is a candidate for attention, not proven-untested; a missing block is missing data, not a zero.
 
@@ -103,7 +103,7 @@ The legend always ends with the reminder: *surfaces, not verdicts*.
 
 ### 6. Agent path (MCP / skill)
 
-Agents call the MCP `map` tool (server `coderef-core`, `project_root` required). It regenerates the map when `graph.json` is newer (or on `refresh: true`) and returns summary fields — `node_count`, `edge_count`, `community_count`, `isolated_count`, `evidence_edge_count`, `declared_layer_count`, `drift_outlier_count`, `untested_src_count`, `undocumented_file_count` — plus `data_path` for deep reads. The last two are `null` on pre-1.4 data. See [AGENT-CONTRACT.md](./AGENT-CONTRACT.md) for the consumption contract.
+Agents call the MCP `map` tool (server `coderef-core`, `project_root` required). It regenerates the map when `graph.json` is newer (or on `refresh: true`) and returns summary fields — `node_count`, `edge_count`, `community_count`, `isolated_count`, `evidence_edge_count`, `declared_layer_count`, `drift_outlier_count`, `untested_src_count`, `undocumented_file_count` — plus `data_path` for deep reads. The last two are `null` on pre-1.4 data. For a fast orientation pass, call it with `format: "skeleton"` (see step 8) — the ranked plaintext map comes back inline, no second read. See [AGENT-CONTRACT.md](./AGENT-CONTRACT.md) for the consumption contract.
 
 ### 7. Read `data.json` directly (optional)
 
@@ -115,6 +115,32 @@ Top-level shape (all enrichment blocks schema-additive, each independently disab
 - `drift` — declared-layer coverage, layer→layer dependency matrix, per-community composition/purity, outliers; plus vocabulary/invariant surfaces when a `--layers` spec was provided.
 - `metrics` — the five families above. File-bounded records are complete (uncapped); *rankings* are capped (25; zero-test list 200) with one aggregate warning each.
 
+### 8. Skeleton map (fast orientation, for agents especially)
+
+The viewer answers "show me the structure." The **skeleton map** answers a different question — "give me the structure as text I can read (or paste into a prompt) in one shot." It is a token-budgeted, centrality-ranked plaintext projection of the same data: files ranked by how depended-on they are, each with its top exported symbol signatures, fitted to a token budget.
+
+```bash
+# Plaintext repo map to stdout and .coderef/map/skeleton.md (default budget 1600 tokens)
+npx coderef-map . --skeleton --tokens 1600
+```
+
+Agents get the same artifact inline from the MCP `map` tool:
+
+```jsonc
+map({ project_root: "...", format: "skeleton", token_budget: 1600 })
+// → { skeleton_text, skeleton_included_files, skeleton_omitted_files,
+//     skeleton_estimated_tokens, skeleton_token_budget, skeleton_path,
+//     skeleton_warnings, ...all the usual summary fields }
+```
+
+How to read it (and how not to over-read it):
+
+- **Ranking** is by dependency centrality — most depended-on files first (`in` = distinct dependents, `out` = distinct dependencies). This is the full ranking, not the top-25 the `analytics` block caps at.
+- **Budget behavior** is monotone: a bigger `--tokens` budget yields a *superset* of the smaller budget's files. Leftover budget upgrades files in rank order (path-only → exported names → full signatures), so the highest-value files are the ones that get signatures.
+- **Determinism**: no timestamp in the output; identical inputs produce byte-identical text (`ceil(chars/4)` token estimate — a documented heuristic, not a tokenizer guarantee).
+- **Truncation is always declared** in a trailing `## truncation` section: omitted files, reduced-detail files, capped symbol lists, and — on a header-less repo — the fall back to exported-names-only (no signatures). Silence there means nothing was dropped.
+- **Surfaces, not verdicts** — a high-centrality file is load-bearing, not "important" or "good." Same rule as every other block: it tells you where to look.
+
 ## Verification
 
 After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, viewer.css}`. Open the viewer and check:
@@ -123,6 +149,7 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 - All toggles are enabled. A **disabled** toggle with a tooltip like *"unavailable: no metrics block in this data.json (regenerate the map)"* means your `data.json` predates that block's schema version — re-run `coderef-map` (the viewer intentionally degrades instead of breaking on old data).
 - Metrics on → legend shows the family name, its value range, a `no data (N)` chip, and the *surfaces, not verdicts* note; selecting a node shows the Metrics row in the detail panel.
 - For agents: the `map` tool response has non-null `untested_src_count` / `undocumented_file_count`.
+- Skeleton map: `npx coderef-map . --skeleton` prints a ranked plaintext map and writes `.coderef/map/skeleton.md`; `skeleton_estimated_tokens` stays at or under the budget, and any dropped content is named under `## truncation`.
 
 ## Troubleshooting
 
@@ -132,12 +159,14 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 - **Console shows a 404 for `/favicon.ico`** — harmless; the bundle ships no favicon. Any *other* console error is worth reporting.
 - **Numbers look "wrong" (e.g. a shared utility flagged as untested)** — check the interpretation rules first: gray = no data ≠ zero; rankings are capped (see `meta.warnings`); betweenness is sampled on repos >500 files; test linkage is a heuristic over test-file naming (`.test.` / `.spec.` / test directories). The map surfaces candidates — confirm in the code before acting.
 - **Drift spec surfaces absent** — `layers.json` is explicit opt-in (`--layers <path>`); without it you still get declared-vs-detected drift from in-repo header declarations, but not vocabulary/invariant checks.
+- **Skeleton map shows only file paths, no signatures** — either the token budget is too small to upgrade past path-only (raise `--tokens`, and check the `## truncation` section), or `index.json` is absent/unreadable so signature detail degraded to exported-names-only (a header-less repo; the truncation section declares this).
 
 ## Revision History
 
 | Date | Change |
 |---|---|
 | 2026-07-17 | Initial guide — covers MapData v1.4 (analytics, evidence, drift, metrics; WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 + WO-MAP-GRAPH-ANALYTICS-MODULE-001) |
+| 2026-07-17 | Added the skeleton map (step 8): token-budgeted, centrality-ranked plaintext repo map via `coderef-map --skeleton` and the MCP `map` tool's `format:"skeleton"` (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P1) |
 
 ---
 

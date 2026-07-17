@@ -98,6 +98,7 @@ import { readRagStatus } from './rag-status.js';
 // the MCP map tool shares the CLI's extracted emission core — one write path,
 // confined to <projectDir>/.coderef/map/.
 import { generateMap } from '../map/emit-map.js';
+import { emitSkeleton } from '../map/skeleton-map.js';
 
 type ExportedNode = ExportedGraph['nodes'][number];
 type ExportedEdge = ExportedGraph['edges'][number];
@@ -530,7 +531,7 @@ export interface ToolHandlers {
   reindex(args: { incremental?: boolean }): Promise<Record<string, unknown>>;
   rag_index(): Promise<Record<string, unknown>>;
   // Agent parity for coderef-map (WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P5).
-  map(args: { refresh?: boolean }): Record<string, unknown>;
+  map(args: { refresh?: boolean; format?: string; token_budget?: number }): Record<string, unknown>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -1620,7 +1621,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       }
     },
 
-    map({ refresh } = {}) {
+    map({ refresh, format, token_budget } = {}) {
       // .coderef-WRITE (confined to <projectDir>/.coderef/map/). Same bounded
       // build-if-missing substrate contract as every other tool: loadGraph
       // runs ensureArtifacts first (auto-populate under the file ceiling,
@@ -1642,6 +1643,18 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         refreshed = true;
       } else {
         data = JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+      }
+      // Skeleton format: same emission wrapper the CLI --skeleton flag uses
+      // (one write path). Returned INLINE — the whole point is a
+      // prompt-injectable orientation artifact without a second read.
+      let skeleton;
+      if (format === 'skeleton') {
+        skeleton = emitSkeleton(
+          projectDir,
+          data,
+          undefined,
+          token_budget !== undefined ? { tokenBudget: token_budget } : undefined,
+        );
       }
       return {
         data_path: normalizeSlashes(dataPath),
@@ -1678,8 +1691,22 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           ? (data.metrics.documentation?.summary?.filesWithNonDefinedCount ?? 0)
           : null,
         warnings: data.meta?.warnings ?? [],
+        // Skeleton block (format:'skeleton' only) — token-budgeted plaintext
+        // repo map, inline for direct prompt injection.
+        ...(skeleton
+          ? {
+              format: 'skeleton',
+              skeleton_text: skeleton.text,
+              skeleton_estimated_tokens: skeleton.estimatedTokens,
+              skeleton_token_budget: skeleton.tokenBudget,
+              skeleton_included_files: skeleton.includedFiles,
+              skeleton_omitted_files: skeleton.omittedFiles,
+              skeleton_path: normalizeSlashes(skeleton.skeletonPath),
+              skeleton_warnings: skeleton.warnings,
+            }
+          : {}),
         hint:
-          'data_path is the same file-level MapData the viewer renders (nodes=files with embedded elements, edges=resolved file deps carrying per-edge evidence: provenance classes, line-sorted samples, ambiguous-candidate counts; hotspot/cycle overlays, graph-analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer dependency matrix, per-community layer composition, layer-outlier files — surfaces, not verdicts). Open graph_html_path in a browser for the visual map, or read data.json directly.',
+          'data_path is the same file-level MapData the viewer renders (nodes=files with embedded elements, edges=resolved file deps carrying per-edge evidence: provenance classes, line-sorted samples, ambiguous-candidate counts; hotspot/cycle overlays, graph-analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer dependency matrix, per-community layer composition, layer-outlier files — surfaces, not verdicts). Open graph_html_path in a browser for the visual map, or read data.json directly. Pass format:"skeleton" for a token-budgeted plaintext orientation map returned inline (skeleton_text).',
         writes_confined_to: path.join(projectDir, '.coderef', 'map'),
       };
     },
@@ -2079,13 +2106,22 @@ async function main(): Promise<void> {
     {
       title: 'Repository map (file-level)',
       description:
-        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps with per-edge evidence blocks: provenance classes, line samples, ambiguous-candidate counts; hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer matrix, per-community layer composition + purity, layer-outlier files; metrics block: test linkage, per-file header-status tallies, unresolved-reference counts, largest modules, most dependencies — surfaces, not verdicts) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json.',
+        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps with per-edge evidence blocks: provenance classes, line samples, ambiguous-candidate counts; hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer matrix, per-community layer composition + purity, layer-outlier files; metrics block: test linkage, per-file header-status tallies, unresolved-reference counts, largest modules, most dependencies — surfaces, not verdicts) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json. format:"skeleton" additionally returns a token-budgeted plaintext repo map inline (centrality-ranked files + exported symbol signatures) — the fastest first call for repo orientation.',
       inputSchema: {
         project_root: projectRootArg,
         refresh: z.boolean().optional().describe('Force regeneration even if the map is fresh (default: regenerate only when absent or older than graph.json)'),
+        format: z
+          .enum(['skeleton'])
+          .optional()
+          .describe('skeleton = additionally return a token-budgeted plaintext repo map inline (skeleton_text): files ranked by dependency centrality with exported symbol signatures, every truncation declared. Prompt-injectable agent orientation; also written to .coderef/map/skeleton.md.'),
+        token_budget: z
+          .number()
+          .optional()
+          .describe('Token budget the skeleton text is fitted to (default 1600; only with format:"skeleton")'),
       },
     },
-    async ({ project_root, refresh }) => perRepo(project_root, h => h.map({ refresh })),
+    async ({ project_root, refresh, format, token_budget }) =>
+      perRepo(project_root, h => h.map({ refresh, format, token_budget })),
   );
 
   server.registerTool(

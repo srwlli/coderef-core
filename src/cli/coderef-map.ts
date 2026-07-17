@@ -33,6 +33,7 @@ import * as http from 'http';
 import * as path from 'path';
 import { generateMap, GenerateMapResult } from '../map/emit-map.js';
 import { MapProjectionError } from '../map/project-map-data.js';
+import { emitSkeleton } from '../map/skeleton-map.js';
 
 interface CliArgs {
   projectDir: string;
@@ -42,6 +43,8 @@ interface CliArgs {
   forceScan: boolean;
   outDir?: string;
   layersPath?: string;
+  skeleton: boolean;
+  tokens?: number;
 }
 
 function printHelp(): void {
@@ -64,12 +67,19 @@ OPTIONS:
                         with vocabulary + entry/leaf surfaces. Explicit opt-in;
                         without it drift compares @layer headers to detected
                         communities only.
+  --skeleton            Also emit the token-budgeted plaintext skeleton map to
+                        stdout and <out>/skeleton.md (files ranked by
+                        dependency centrality with exported symbol
+                        signatures — prompt-injectable agent orientation).
+                        Implies --no-open.
+  --tokens <N>          Token budget for --skeleton (default: 1600).
   -h, --help            Show this help.
 
 OUTPUT:
   <out>/data.json    file-level map data (also consumed by the MCP 'map' tool)
   <out>/graph.html   static viewer with the data inlined (double-clickable)
   <out>/viewer.js|css  viewer runtime assets
+  <out>/skeleton.md  plaintext skeleton map (--skeleton only)
 
 SCAN-IF-ABSENT:
   When <path>/.coderef/graph.json is missing, coderef-map runs the scan and
@@ -85,6 +95,7 @@ function parseArgs(argv: string[]): CliArgs {
     port: 8123,
     open: true,
     forceScan: false,
+    skeleton: false,
   };
   let positionalSeen = false;
   for (let i = 0; i < argv.length; i++) {
@@ -116,6 +127,12 @@ function parseArgs(argv: string[]): CliArgs {
       case '--layers':
         args.layersPath = path.resolve(argv[++i]);
         break;
+      case '--skeleton':
+        args.skeleton = true;
+        break;
+      case '--tokens':
+        args.tokens = parseInt(argv[++i], 10);
+        break;
       default:
         if (a.startsWith('--project-dir=')) {
           args.projectDir = path.resolve(a.slice('--project-dir='.length));
@@ -126,6 +143,8 @@ function parseArgs(argv: string[]): CliArgs {
           args.outDir = path.resolve(a.slice('--out='.length));
         } else if (a.startsWith('--layers=')) {
           args.layersPath = path.resolve(a.slice('--layers='.length));
+        } else if (a.startsWith('--tokens=')) {
+          args.tokens = parseInt(a.slice('--tokens='.length), 10);
         } else if (!a.startsWith('-') && !positionalSeen) {
           args.projectDir = path.resolve(a);
           positionalSeen = true;
@@ -138,6 +157,10 @@ function parseArgs(argv: string[]): CliArgs {
   }
   if (Number.isNaN(args.port) || args.port < 0 || args.port > 65535) {
     console.error('Invalid --port value.');
+    process.exit(2);
+  }
+  if (args.tokens !== undefined && (Number.isNaN(args.tokens) || args.tokens < 1)) {
+    console.error('Invalid --tokens value.');
     process.exit(2);
   }
   return args;
@@ -217,6 +240,7 @@ function serveMap(outDir: string, port: number, open: boolean): void {
 
 function main(): void {
   const args = parseArgs(process.argv.slice(2));
+  if (args.skeleton) args.open = false; // text mode: never open a browser
   const projectDir = args.projectDir;
   if (!fs.existsSync(projectDir)) {
     console.error(`[coderef-map] project path not found: ${projectDir}`);
@@ -254,6 +278,21 @@ function main(): void {
     `${data.overlays.hotspots.length} hotspots, ${data.overlays.cycles.length} cycles`);
   for (const w of data.meta.warnings) console.log(`[coderef-map] note: ${w}`);
   console.log(`[coderef-map] map written to ${outDir}`);
+
+  if (args.skeleton) {
+    const skeleton = emitSkeleton(
+      projectDir,
+      data,
+      outDir,
+      args.tokens !== undefined ? { tokenBudget: args.tokens } : undefined,
+    );
+    console.log(
+      `[coderef-map] skeleton: ${skeleton.includedFiles} files in ~${skeleton.estimatedTokens} tokens ` +
+      `(budget ${skeleton.tokenBudget}, ${skeleton.omittedFiles} omitted) -> ${skeleton.skeletonPath}`,
+    );
+    process.stdout.write('\n' + skeleton.text);
+    if (!args.serve) return; // text mode: never open a browser
+  }
 
   if (args.serve) {
     serveMap(outDir, args.port, args.open);

@@ -29,7 +29,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
 | [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 24 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
-| [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html` or `--serve` | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers` |
+| [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
@@ -149,6 +149,12 @@ npx coderef-map /path/to/any/repo --serve --port 8123
 
 # Regenerate artifacts first, don't open a browser
 npx coderef-map /path/to/any/repo --force-scan --no-open
+
+# Skeleton mode: token-budgeted plaintext repo map to stdout (and
+# .coderef/map/skeleton.md) — files ranked by dependency centrality with their
+# exported symbol signatures. Prompt-injectable agent orientation. Implies
+# --no-open.
+npx coderef-map /path/to/any/repo --skeleton --tokens 1600
 ```
 
 ### Options
@@ -162,6 +168,8 @@ npx coderef-map /path/to/any/repo --force-scan --no-open
 | `--force-scan` | Re-run scan + populate even if `.coderef/` exists | off |
 | `--out <dir>` | Output directory | `<path>/.coderef/map` |
 | `--layers <path>` | Layers spec (`layers.json`) enriching the drift block with vocabulary + entry/leaf surfaces (below). **Explicit opt-in** — never auto-resolved, so map output stays machine-independent | off (spec-less drift) |
+| `--skeleton` | Also emit the token-budgeted plaintext skeleton map to stdout and `.coderef/map/skeleton.md` (below). Implies `--no-open` | off |
+| `--tokens <N>` | Token budget for `--skeleton` | `1600` |
 
 ### Output
 
@@ -170,6 +178,31 @@ npx coderef-map /path/to/any/repo --force-scan --no-open
 | `.coderef/map/data.json` | File-level MapData v1.4: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
+| `.coderef/map/skeleton.md` | **`--skeleton` only.** Token-budgeted plaintext repo map (below). Same renderer the MCP `map` tool's `format:"skeleton"` returns inline. |
+
+### Skeleton map (`--skeleton`, `.coderef/map/skeleton.md`)
+
+A token-budgeted, centrality-ranked plaintext projection of the same MapData
+(`src/map/skeleton-map.ts`, WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P1;
+aider repo-map / `repomix --compress` pattern). The problem it solves: an agent
+otherwise burns its first several tool calls reconstructing repo orientation.
+The skeleton is a single prompt-injectable artifact — files ranked by
+dependency centrality (most depended-on first), each carrying its top exported
+symbol signatures, fitted deterministically to a token budget.
+
+- **Ranking:** distinct in-degree (dependents) desc, then total degree, then
+  hotspot score, then path — computed from the projected file edges, so it is a
+  *full* ranking (not the top-25 the `analytics` block caps at).
+- **Budget fit:** a larger `--tokens` budget always yields a **superset** of the
+  files a smaller budget included (monotone); leftover budget upgrades files in
+  rank order from path-only → exported names → full signatures.
+- **Determinism:** no timestamp in the artifact; identical inputs render
+  byte-identical text (`ceil(chars/4)` token estimate, documented as a heuristic).
+- **Truncation is declared:** a trailing `## truncation` section lists every
+  omitted file, reduced-detail file, capped symbol list, and (on a header-less
+  repo) the fallback to exported-names-only. Silence means nothing was dropped.
+- **Surfaces, not verdicts** — a high-centrality file is load-bearing, not
+  "important"; the map tells you where to look, never what is wrong.
 
 ### Edge evidence block (`edges[].evidence`, MapData v1.2)
 
@@ -817,6 +850,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `hotspots` | Which elements carry the most load? Fan-in + fan-out ranking over resolved call/import edges; `src_only` (default true) excludes test-origin edges and test-file elements |
 | `cycles` | Where are the dependency cycles? Tarjan SCC over resolved call/import edges, largest first, with a sample in-cycle edge per cycle |
 | `what_exports` | What does this file export? Exported elements via resolved export edges; path fragments get an ambiguity envelope |
+| `map` | Emit/refresh the file-level repo map (`.coderef/map/data.json` + viewer). `format:"skeleton"` (+ optional `token_budget`, default 1600) also returns a token-budgeted, centrality-ranked plaintext repo map **inline** (`skeleton_text`) — the fastest first call for repo orientation |
 | `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model |
 
