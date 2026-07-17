@@ -899,6 +899,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `map` | Emit/refresh the file-level repo map (`.coderef/map/data.json` + viewer). `format:"skeleton"` (+ optional `token_budget`, default 1600) also returns a token-budgeted, centrality-ranked plaintext repo map **inline** (`skeleton_text`) — the fastest first call for repo orientation |
 | `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model. Pass `expand=true` to attach each hit's 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — see **Ego-graph expansion** below |
+| `symbol_context` | The consolidated **one-card-per-symbol** view: identity + header presence + 1-hop neighborhood + references + test-linkage + mtime-staleness in a single call — the understand-before-edit workflow that otherwise costs ~5 round-trips. A JOIN over existing data, not new analysis. See **Symbol context card** below |
 
 Every tool additionally requires `project_root` (string, absolute or anchor-relative path to the target repo root) — see **Per-repo queries** above. Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
 
@@ -932,6 +933,19 @@ The retriever and the graph don't talk at query time, so an agent that searches 
 - **`pack_context` with `include_callers=true`** — the default bundle is the focus + its outbound dependency closure (what it calls); this also packs the focus's **inbound 1-hop callers** (who calls it), signature-compressed, ahead of the deps — the "understand-before-edit" view. Default off → bundle byte-unchanged.
 
 Directions map 1:1 onto the neighbor edges: `callers`=inbound call, `callees`=outbound call, `imports`=outbound import, `importedBy`=inbound import. Neighbors are **resolved-graph** neighbors (the query index is resolved-only) and carry the Phase 3 `confidence` tier — provenance (how the graph knows the neighbor), not a verdict. Off-MCP, the ego-graph is the same 1-hop neighborhood the `what_calls`/`what_this_calls`/`what_imports`/`what_this_imports` tools return individually.
+
+#### Symbol context card (`symbol_context`)
+
+Understanding a symbol before editing it — its signature, whether it has a semantic header, who calls it, what it calls, whether a test touches it, and whether the index is still fresh for it — otherwise costs ~5 separate calls (`find_element` + `source_of` + `what_calls` + `what_this_calls` + `what_imports`). `symbol_context` returns all of it as **one card**:
+
+- **`identity`** — `{ id, name, type, file, line }` (the same grade as `find_element`).
+- **`header`** — `{ status, exported, layer?, capability? }` from `index.json`. `status: "missing"` means no semantic header was authored — **no-data, not an error**.
+- **`neighborhood`** — the 1-hop ego-graph `{ resolved, callers, callees, imports, importedBy }` (signatures + confidence tiers, each direction capped by `cap`). `resolved: false` = no resolved edges recorded — **absence is no-data, not "unused."**
+- **`references`** — `{ call_site_count, import_site_count, total, sample, truncated }`. Counts (+ a bounded sample) so the card stays a card; drill to `find_all_references` for the full site list.
+- **`test_linkage`** — `{ test_ref_count, sample, truncated }`: the subset of inbound refs whose source file is a test file. A count of who-tests-this, **never a coverage verdict** — `0` is "no test-file ref recorded."
+- **`staleness`** — `{ stale, basis: "element-file-mtime-vs-graph", note? }`. `stale: true` means the element's file is newer than `graph.json`, so this card **may** predate a recent edit. This is a cheap **mtime heuristic**, deliberately **not** the scan-time hash-manifest freshness contract (that is a separate, forthcoming capability). Reindex if you need certainty.
+
+Flags: **`include_source`** (opt-in) attaches a bounded signature/body slice like `source_of`; **`cap`** (default 25, cap 100) bounds each facet; **`response_format`** honors the concise/detailed axis (concise drops the source slice + signals verbosity, all counts preserved). `symbol_context` is a **single-symbol** tool — a whole-file query or a name matching >1 element returns the standard ambiguity envelope (narrow to a `codeRefId`). It is a JOIN over data the other tools already expose — no new analysis, deterministic, additive; the other 24 tools are byte-unchanged.
 
 ### Registration (Claude Code)
 

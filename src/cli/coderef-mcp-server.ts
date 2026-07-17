@@ -86,6 +86,7 @@ import type { ValidationReport } from '../pipeline/output-validator.js';
 import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js';
 import { type EdgeConfidenceTier, classifyEdgeConfidence, meetsMinConfidence } from '../pipeline/edge-confidence.js';
 import { type EgoGraph, egoGraphOf } from '../query/ego-graph.js';
+import { type SymbolContext, assembleSymbolContext } from '../query/symbol-context.js';
 import {
   type ResponseFormat,
   isConcise,
@@ -533,6 +534,13 @@ export interface ToolHandlers {
   // agent-native source-body + find-all-references (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P3)
   source_of(args: { element: string; context?: number; max_chars?: number }): Record<string, unknown>;
   find_all_references(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  // Consolidated symbol card (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P7):
+  // ONE call joining identity + header presence + the 1-hop neighborhood +
+  // references + test-linkage + mtime-staleness — the ~5-round-trip
+  // understand-before-edit workflow collapsed to a single tool. A JOIN over
+  // existing substrate, not new analysis. cap bounds each facet; include_source
+  // opts in the signature slice; response_format honors the Phase 6 axis.
+  symbol_context(args: { element: string; include_source?: boolean; cap?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6).
   // READ tools — wrap a clean substrate export, return synchronously.
   pack_context(args: { element: string; token_budget?: number; full_deps?: boolean; include_callers?: boolean }): Record<string, unknown>;
@@ -1759,6 +1767,153 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       return shapeResponse(envelope, response_format, ['call_sites', 'import_sites']);
     },
 
+    symbol_context({ element, include_source, cap, response_format }) {
+      // Consolidated card (Phase 7). A JOIN over the substrate the sibling
+      // tools already expose — no new resolution/analysis. Load graph + index +
+      // query engine ONCE, resolve the subject with the shared envelope, then
+      // hand the already-loaded pieces to the pure assembler.
+      const graph = loadGraph(projectDir, cache);
+      const index = loadIndex(projectDir, cache);
+      const engine = loadCanonical(projectDir, cache);
+      const { nodes: matches, byFile } = resolveNodes(element, graph);
+      if (matches.length === 0) return notFound(element);
+      // symbol_context is a SINGLE-symbol card: a whole-file query (or >5
+      // matches) is an ambiguity to narrow, not an aggregate to join.
+      if (byFile || matches.length > 1) return ambiguous(element, matches);
+      const node = matches[0];
+
+      // Match the resolved node to its index element (header/layer/capability
+      // presence live in index.json). Prefer codeRefId, else name+file+line.
+      const nodeFile = normalizeSlashes(node.file ?? '');
+      const indexElement =
+        index.elements.find(e => e.codeRefId && e.codeRefId === node.id) ??
+        index.elements.find(
+          e =>
+            e.name === node.name &&
+            normalizeSlashes(e.file ?? '') === nodeFile &&
+            (node.line === undefined || e.line === node.line),
+        );
+
+      // Inbound RESOLVED edges targeting this node — the same reverse-adjacency
+      // cache what_calls/find_all_references read. Feeds refs + test-linkage.
+      const inboundEdges = cache.inbound.get(node.id) ?? [];
+
+      // Element-file mtime vs graph.json mtime = the staleness heuristic (NOT
+      // the Phase-8 hash manifest). Absolute-or-relative index path normalized
+      // the same way source_of does.
+      let elementFileMtimeMs: number | null = null;
+      try {
+        const absFile = path.isAbsolute(node.file ?? '')
+          ? (node.file as string)
+          : path.join(projectDir, nodeFile);
+        elementFileMtimeMs = fs.statSync(absFile).mtimeMs;
+      } catch {
+        elementFileMtimeMs = null; // freshness unknown → treated as not-stale
+      }
+      const graphMtimeMs = cache.graphMtimeMs;
+
+      const card: SymbolContext = assembleSymbolContext(
+        {
+          node,
+          indexElement,
+          query: engine,
+          inboundEdges,
+          resolveSource: (sourceId: string) => {
+            const n = cache.nodeById.get(sourceId);
+            return n ? { id: n.id, name: n.name, type: n.type, file: n.file, line: n.line } : undefined;
+          },
+          isTestFile,
+          elementFileMtimeMs,
+          graphMtimeMs,
+        },
+        { cap: clampLimit(cap) },
+      );
+
+      // include_source (opt-in): attach a bounded signature/body slice — the
+      // same RAG-free line-window approach source_of uses — so the card can
+      // stand alone for understand-before-edit. Inlined (not a this.source_of
+      // call) to avoid method-binding fragility; the handler object has no
+      // other cross-method references.
+      let source: Record<string, unknown> | undefined;
+      if (include_source) {
+        try {
+          const absFile = path.isAbsolute(node.file ?? '')
+            ? (node.file as string)
+            : path.join(projectDir, nodeFile);
+          const lines = fs.readFileSync(absFile, 'utf8').split('\n');
+          const startLine = node.line ?? 1;
+          const ctx = 40; // signature-grade window (source_of default)
+          const lo = Math.max(0, startLine - 1);
+          const hi = Math.min(lines.length, lo + ctx);
+          let snippet = lines.slice(lo, hi).join('\n');
+          let charTruncated = false;
+          if (snippet.length > 4000) {
+            snippet = snippet.slice(0, 4000);
+            charTruncated = true;
+          }
+          source = {
+            file: node.file,
+            start_line: startLine,
+            lines_returned: snippet.split('\n').length,
+            line_truncated: hi < lines.length && hi - lo >= ctx,
+            char_truncated: charTruncated,
+            source: snippet,
+          };
+        } catch (e: any) {
+          source = {
+            error: 'source_unavailable',
+            file: node.file,
+            detail: String(e?.message ?? e).slice(0, 200),
+          };
+        }
+      }
+
+      const envelope: Record<string, unknown> = {
+        element: node.id,
+        identity: card.identity,
+        header: card.header,
+        neighborhood: card.neighborhood,
+        references: card.references,
+        test_linkage: card.test_linkage,
+        staleness: card.staleness,
+        ...(source ? { source } : {}),
+      };
+      // Concise is a genuine token cut, not a marker: it keeps every COUNT +
+      // identity + header + staleness, and reduces each list facet to its
+      // {total, returned, truncated} summary — dropping the neighbor/site
+      // arrays an agent can page in via the neighbor tools when it actually
+      // needs them. Same surfaces-not-verdicts rule as Phase 6: counts/total
+      // are never lost; only body detail is. The source slice is dropped too.
+      if (isConcise(response_format)) {
+        const dirSummary = (d: { neighbors: unknown[]; total: number; truncated: boolean }) => ({
+          returned: d.neighbors.length,
+          total: d.total,
+          truncated: d.truncated,
+        });
+        return {
+          element: node.id,
+          identity: card.identity,
+          header: card.header,
+          neighborhood: {
+            resolved: card.neighborhood.resolved,
+            callers: dirSummary(card.neighborhood.callers),
+            callees: dirSummary(card.neighborhood.callees),
+            imports: dirSummary(card.neighborhood.imports),
+            importedBy: dirSummary(card.neighborhood.importedBy),
+          },
+          references: {
+            call_site_count: card.references.call_site_count,
+            import_site_count: card.references.import_site_count,
+            total: card.references.total,
+          },
+          test_linkage: { test_ref_count: card.test_linkage.test_ref_count },
+          staleness: card.staleness,
+          format: 'concise' as const,
+        };
+      }
+      return envelope;
+    },
+
     // ---- CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6) ----------------------
     // pack_context + rename_preview are READ tools (they only load
     // .coderef/graph.json + read source). rename_preview is PREVIEW-ONLY: no
@@ -2577,6 +2732,24 @@ async function main(): Promise<void> {
     },
     async ({ project_root, element, limit, offset, response_format }) =>
       perRepo(project_root, h => h.find_all_references({ element, limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'symbol_context',
+    {
+      title: 'Symbol context card',
+      description:
+        'READ. One consolidated CARD for a symbol in a SINGLE call — the understand-before-edit view that today costs ~5 round-trips (find_element + source_of + what_calls + what_this_calls + what_imports). Joins: identity (id/name/type/file/line) + header presence (headerStatus/layer/capability/exported from the index) + neighborhood (callers/callees/imports/importedBy as signatures with confidence tiers, the 1-hop ego-graph) + references (call/import site counts + sample) + test_linkage (inbound refs from test files) + staleness (mtime heuristic: element file vs graph.json). A JOIN over existing data, not new analysis. Flags: include_source (attach a bounded signature/body slice), cap (per-facet max, default 25 cap 100), response_format (concise|detailed — concise drops the source slice + signals verbosity, counts preserved). Absence is no-data: header \'missing\', neighborhood resolved:false, 0 test refs each mean "nothing recorded", never a verdict. staleness is a cheap mtime hint, NOT the authoritative hash-manifest freshness contract.',
+      inputSchema: {
+        project_root: projectRootArg,
+        element: elementArg,
+        include_source: z.boolean().optional().describe('Attach a bounded signature/body slice of the element (like source_of). Default false.'),
+        cap: z.number().optional().describe(`Per-facet max (neighborhood directions, ref/test samples). Default ${DEFAULT_LIMIT}, cap ${MAX_LIMIT}.`),
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, element, include_source, cap, response_format }) =>
+      perRepo(project_root, h => h.symbol_context({ element, include_source, cap, response_format })),
   );
 
   // ---- CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6) --------------------------

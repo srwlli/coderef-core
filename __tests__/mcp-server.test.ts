@@ -1474,3 +1474,134 @@ describe('Phase 6 — offset pagination', () => {
     expect(Array.isArray(r.edges)).toBe(true);
   });
 });
+
+// ---- Phase 7: symbol_context consolidated card (STUB-G1VH0S) --------------------
+// Pure card-assembly is pinned in __tests__/query/symbol-context.test.ts; these
+// assert the JOIN reaches the fixture handler — every facet sourced from the
+// substrate the sibling tools already expose, no new analysis.
+
+describe('Phase 7 — symbol_context', () => {
+  it('joins identity + header + neighborhood + references + test_linkage + staleness in ONE call', () => {
+    const card = handlers.symbol_context({ element: 'helper' }) as any;
+    // identity — the nodeSummary grade
+    expect(card.identity).toEqual({
+      id: '@Fn/src/util.ts#helper:10',
+      name: 'helper',
+      type: 'function',
+      file: 'src/util.ts',
+      line: 10,
+    });
+    // header PRESENCE — from the index element (find_element grade)
+    expect(card.header).toEqual({
+      status: 'defined',
+      exported: true,
+      layer: 'service',
+      capability: 'helping',
+    });
+    // neighborhood — the ego-graph: helper is CALLED by alpha + beta (inbound)
+    expect(card.neighborhood.resolved).toBe(true);
+    const callerIds = card.neighborhood.callers.neighbors.map((n: any) => n.id).sort();
+    expect(callerIds).toEqual(['@Fn/src/a.ts#alpha:5', '@Fn/src/b.ts#beta:8']);
+    // references — 2 inbound call sites, 0 import sites
+    expect(card.references.call_site_count).toBe(2);
+    expect(card.references.import_site_count).toBe(0);
+    expect(card.references.total).toBe(2);
+    // staleness — fixture graph.json is stamped NEWER than src/util.ts, so the
+    // mtime heuristic reports fresh (basis labelled, NOT a hash-manifest claim)
+    expect(card.staleness.stale).toBe(false);
+    expect(card.staleness.basis).toBe('element-file-mtime-vs-graph');
+  });
+
+  it('directions are not swapped — callers are inbound, callees/imports outbound', () => {
+    const card = handlers.symbol_context({ element: 'helper' }) as any;
+    // helper is a leaf: no outbound calls/imports of its own
+    expect(card.neighborhood.callees.neighbors).toHaveLength(0);
+    expect(card.neighborhood.imports.neighbors).toHaveLength(0);
+    // but it HAS inbound callers (proven above) — the direction is real
+    expect(card.neighborhood.callers.neighbors.length).toBeGreaterThan(0);
+  });
+
+  it('test_linkage counts inbound refs from test files (cyc2 is called by a *.test.ts)', () => {
+    // cyc2 is called by tcall in __tests__/t.test.ts (edge te1)
+    const card = handlers.symbol_context({ element: 'cyc2' }) as any;
+    expect(card.test_linkage.test_ref_count).toBe(1);
+    expect(card.test_linkage.sample[0].id).toBe('@Fn/__tests__/t.test.ts#tcall:1');
+    // helper's callers are src (alpha/beta), not tests -> 0 test refs (no-data)
+    const helperCard = handlers.symbol_context({ element: 'helper' }) as any;
+    expect(helperCard.test_linkage.test_ref_count).toBe(0);
+  });
+
+  it('absence is no-data — a header-less element reports status:missing, not an error', () => {
+    // alpha has headerStatus:'missing' in the index; it is NOT an error envelope
+    const card = handlers.symbol_context({ element: 'alpha' }) as any;
+    expect(card.error).toBeUndefined();
+    expect(card.header.status).toBe('missing');
+    expect(card.header.exported).toBe(false);
+    // alpha calls helper (outbound) and is called by main (inbound) — both present
+    expect(card.neighborhood.callees.neighbors.map((n: any) => n.id)).toContain('@Fn/src/util.ts#helper:10');
+    expect(card.neighborhood.callers.neighbors.map((n: any) => n.id)).toContain('@Fn/src/main.ts#main:1');
+  });
+
+  it('is a single-symbol card — an ambiguous (>1) query returns the ambiguity envelope', () => {
+    const r = handlers.symbol_context({ element: 'dup' }) as any; // 6 dups
+    expect(r.error).toBe('ambiguous_element');
+    expect(r.match_count).toBe(6);
+  });
+
+  it('not-found element returns the shared notFound envelope', () => {
+    const r = handlers.symbol_context({ element: 'no_such_symbol_xyz' }) as any;
+    expect(r.error).toBe('element_not_found');
+  });
+
+  it('include_source attaches a bounded body slice; default omits it', () => {
+    const bare = handlers.symbol_context({ element: 'helper' }) as any;
+    expect(bare.source).toBeUndefined();
+    const withSrc = handlers.symbol_context({ element: 'helper', include_source: true }) as any;
+    expect(withSrc.source).toBeDefined();
+    // the slice starts at helper's line and carries the marker on line 11
+    expect(withSrc.source.start_line).toBe(10);
+    expect(withSrc.source.source).toContain('HELPER_MARKER_LINE_11');
+  });
+
+  it('cap bounds each facet with a declared truncation flag', () => {
+    // helper has 2 callers; cap 1 keeps 1 and flags the ego-graph direction
+    const card = handlers.symbol_context({ element: 'helper', cap: 1 }) as any;
+    expect(card.neighborhood.callers.neighbors).toHaveLength(1);
+    expect(card.neighborhood.callers.truncated).toBe(true);
+    expect(card.neighborhood.callers.total).toBe(2);
+    // references sample also honors the cap
+    expect(card.references.sample).toHaveLength(1);
+    expect(card.references.truncated).toBe(true);
+    expect(card.references.total).toBe(2); // true count preserved
+  });
+
+  it('response_format concise preserves counts, drops list bodies, and is genuinely smaller', () => {
+    const detailed = handlers.symbol_context({ element: 'helper', response_format: 'detailed' }) as any;
+    const concise = handlers.symbol_context({ element: 'helper', response_format: 'concise' }) as any;
+    expect(concise.format).toBe('concise');
+    // counts/totals PRESERVED (surfaces-not-verdicts — never lose the count)
+    expect(concise.references.total).toBe(2);
+    expect(concise.references.call_site_count).toBe(2);
+    expect(concise.neighborhood.callers.total).toBe(2);
+    expect(concise.test_linkage.test_ref_count).toBe(0);
+    expect(concise.staleness.basis).toBe('element-file-mtime-vs-graph');
+    // but the neighbor/site ARRAYS are dropped (that's the token cut)
+    expect(concise.neighborhood.callers.neighbors).toBeUndefined();
+    expect(concise.references.sample).toBeUndefined();
+    // and concise is strictly smaller than detailed on the same symbol
+    const size = (o: unknown) => JSON.stringify(o).length;
+    expect(size(concise)).toBeLessThan(size(detailed));
+    // concise drops the (opt-in) source slice even if requested
+    const conciseSrc = handlers.symbol_context({ element: 'helper', include_source: true, response_format: 'concise' }) as any;
+    expect(conciseSrc.source).toBeUndefined();
+    // default (absent) === explicit detailed, no concise marker
+    const bare = handlers.symbol_context({ element: 'helper' });
+    expect(bare).toEqual(detailed);
+    expect((bare as any).format).toBeUndefined();
+  });
+
+  it('is deterministic — identical inputs yield a byte-identical card', () => {
+    expect(handlers.symbol_context({ element: 'helper' }))
+      .toEqual(handlers.symbol_context({ element: 'helper' }));
+  });
+});
