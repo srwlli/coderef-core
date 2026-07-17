@@ -888,7 +888,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `what_exports` | What does this file export? Exported elements via resolved export edges; path fragments get an ambiguity envelope |
 | `map` | Emit/refresh the file-level repo map (`.coderef/map/data.json` + viewer). `format:"skeleton"` (+ optional `token_budget`, default 1600) also returns a token-budgeted, centrality-ranked plaintext repo map **inline** (`skeleton_text`) — the fastest first call for repo orientation |
 | `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
-| `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model |
+| `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model. Pass `expand=true` to attach each hit's 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — see **Ego-graph expansion** below |
 
 Every tool additionally requires `project_root` (string, absolute or anchor-relative path to the target repo root) — see **Per-repo queries** above. Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
 
@@ -902,6 +902,15 @@ Every graph edge carries a **confidence tier** — a projection of its resolutio
 - **`inferred`** — could not be bound to a single confirmed target (unresolved / ambiguous / stale). Lowest provenance — `inferred` is "lower-provenance," not "wrong."
 
 `what_calls`, `impact_of`, and `rename_preview` accept an optional `min_confidence` floor. Because these tools already traverse only `resolved` edges, the filter differentiates **within the resolved set** (`exact` vs `heuristic`) — it tightens an already-resolved traversal, it does **not** resurface unresolved edges or change graph connectivity. Omitting `min_confidence` preserves the prior (unfiltered) behavior exactly. Counts shrink monotonically as the floor rises. `rename_preview` additionally reports a `sites_by_confidence` tally and a `confidence` tier per site, so `min_confidence=exact` yields just the auto-apply-safe sites and leaves provisional single-candidate references for human review.
+
+#### Ego-graph expansion (`rag_search --expand`, `pack_context --include_callers`)
+
+The retriever and the graph don't talk at query time, so an agent that searches then spends 4–6 follow-up calls (`what_calls`, `what_this_calls`, `source_of`) fetching the neighborhood of every hit the graph already knows. Ego-graph expansion collapses that: **the search returns its own 1-hop graph neighborhood inline, as signatures (not bodies).**
+
+- **`rag_search` with `expand=true`** — each hit gains a `neighbors` object: `{ resolved, callers, callees, imports, importedBy }`. Each direction is `{ neighbors: [...node summaries with a confidence tier], total, truncated }`, capped by `neighbor_limit` (default 10, excess declared via `truncated` + true `total`). A hit whose `coderefId` is not a graph node reports `neighbors.resolved=false` — **absence is no-data, not "isolated."** `expand` omitted → bare hits, byte-unchanged. The embedding/index path is untouched.
+- **`pack_context` with `include_callers=true`** — the default bundle is the focus + its outbound dependency closure (what it calls); this also packs the focus's **inbound 1-hop callers** (who calls it), signature-compressed, ahead of the deps — the "understand-before-edit" view. Default off → bundle byte-unchanged.
+
+Directions map 1:1 onto the neighbor edges: `callers`=inbound call, `callees`=outbound call, `imports`=outbound import, `importedBy`=inbound import. Neighbors are **resolved-graph** neighbors (the query index is resolved-only) and carry the Phase 3 `confidence` tier — provenance (how the graph knows the neighbor), not a verdict. Off-MCP, the ego-graph is the same 1-hop neighborhood the `what_calls`/`what_this_calls`/`what_imports`/`what_this_imports` tools return individually.
 
 ### Registration (Claude Code)
 

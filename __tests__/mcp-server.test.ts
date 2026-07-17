@@ -668,6 +668,18 @@ describe('rag_search', () => {
     const r = (await (handlers as any).rag_search({ query: 'anything' })) as any;
     expect(r.error).toBe('rag_index_missing');
   });
+
+  it('accepts the Phase 4 expand param without changing the no-index error path', async () => {
+    // expand=true must not perturb the clean rag_index_missing envelope — the
+    // ego-graph attachment only runs AFTER a successful search (which needs a
+    // live index + embedder, exercised by the P4-T7 dogfood, not this hermetic
+    // unit). Here we pin that the new params are accepted and the error path is
+    // byte-identical to the bare call.
+    const bare = (await (handlers as any).rag_search({ query: 'anything' })) as any;
+    const expanded = (await (handlers as any).rag_search({ query: 'anything', expand: true, neighbor_limit: 5 })) as any;
+    expect(expanded.error).toBe('rag_index_missing');
+    expect(expanded).toEqual(bare);
+  });
 });
 
 describe('diff_impact', () => {

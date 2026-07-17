@@ -29,6 +29,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { loadCanonicalGraph } from '../query/canonical-graph.js';
 import type { CanonicalNode } from '../query/canonical-graph.js';
+import { egoGraphOf } from '../query/ego-graph.js';
 import { estimateTokens, compressStructurePreserving } from './token-compress.js';
 
 export interface PackManifestEntry {
@@ -95,7 +96,7 @@ function readWindow(
 }
 
 /** Render one element's bundle header (readable, machine-parseable). */
-function header(node: CanonicalNode, role: 'focus' | 'dependency', compressed: boolean): string {
+function header(node: CanonicalNode, role: 'focus' | 'dependency' | 'caller', compressed: boolean): string {
   const loc = `${node.file ?? '<no-file>'}:${node.line ?? '?'}`;
   const tags = compressed ? `${role}, compressed` : role;
   return `// ==== ${node.id} (${loc}) [${tags}] ====`;
@@ -118,7 +119,7 @@ function header(node: CanonicalNode, role: 'focus' | 'dependency', compressed: b
 export function packContext(
   projectDir: string,
   focus: string,
-  opts?: { tokenBudget?: number; window?: number; compressDeps?: boolean },
+  opts?: { tokenBudget?: number; window?: number; compressDeps?: boolean; includeCallers?: boolean },
 ): PackResult {
   const tokenBudget = opts?.tokenBudget ?? 8000;
   const window = opts?.window ?? 40;
@@ -127,6 +128,11 @@ export function packContext(
   // focus + the SHAPE of its deps, not their full bodies. --full-deps
   // (compressDeps=false) opts back into full dependency windows.
   const compressDeps = opts?.compressDeps ?? true;
+  // includeCallers (Phase 4, ego-graph): the default pack is the focus + its
+  // OUTBOUND dependency closure (what the focus calls). The ego-graph
+  // "understand-before-edit" view also wants the INBOUND 1-hop callers (who
+  // calls the focus). Opt-in so the default bundle shape is byte-unchanged.
+  const includeCallers = opts?.includeCallers ?? false;
 
   const q = loadCanonicalGraph(projectDir);
   const res = q.resolve(focus);
@@ -168,57 +174,56 @@ export function packContext(
     compressed: false,
   });
 
-  // --- Dependencies: closest-first (dependenciesOf returns BFS-ish order). ---
-  const deps = q.dependenciesOf(res);
+  // Track ids already emitted so a caller that is also a dependency (mutual
+  // reference) is not double-counted in the bundle.
+  const seenIds = new Set<string>([focusSummary.id]);
   let budgetExhausted = false;
-  for (const dep of deps) {
-    // Skip the focus node itself and any node without a file.
-    if (dep.id === focusSummary.id) continue;
-    if (typeof dep.file !== 'string' || dep.file.length === 0) continue;
 
-    const depSource = readWindow(projectDir, dep, window);
+  // Admit one related element (dependency or caller) into the bundle under the
+  // running budget. Identical rendering for both roles — signature-compressed by
+  // default; a body-shed with no size change reports uncompressed (honest). A
+  // node that would overflow the budget (or anything after the budget is spent)
+  // is recorded in `dropped`, never silently omitted.
+  const admit = (node: CanonicalNode, role: 'dependency' | 'caller'): void => {
+    if (node.id === focusSummary.id || seenIds.has(node.id)) return;
+    if (typeof node.file !== 'string' || node.file.length === 0) return;
+    seenIds.add(node.id);
+
+    const src = readWindow(projectDir, node, window);
     const remainingBudget = Math.max(0, tokenBudget - runningTokens);
-    // force: compress deps to their skeleton even when they'd fit the remaining
-    // budget uncompressed (compressDeps default true). --full-deps flips this off.
     const { text: compressedSource, truncated } = compressStructurePreserving(
-      depSource,
+      src,
       remainingBudget,
       { force: compressDeps },
     );
-    // A dep is "compressed" if its body was shed (compressDeps on and the source
-    // actually shrank) OR it was hard-truncated to fit. Body-shed with no size
-    // change (e.g. an all-signature dep) reports uncompressed — honest.
-    const depCompressed = truncated || (compressDeps && compressedSource.length < depSource.length);
-    const depBlock = `${header(dep, 'dependency', depCompressed)}\n${compressedSource}`;
-    const depTokens = estimateTokens(depBlock);
+    const compressed = truncated || (compressDeps && compressedSource.length < src.length);
+    const block = `${header(node, role, compressed)}\n${compressedSource}`;
+    const blockTokens = estimateTokens(block);
 
-    // BUDGET TRIM: if admitting this dep would exceed the budget, STOP — record
-    // this dep and all remaining deps as dropped (never silently omit).
-    if (budgetExhausted || runningTokens + depTokens > tokenBudget) {
+    if (budgetExhausted || runningTokens + blockTokens > tokenBudget) {
       budgetExhausted = true;
-      dropped.push({
-        id: dep.id,
-        name: dep.name,
-        file: dep.file,
-        estTokens: depTokens,
-        compressed: depCompressed,
-      });
-      continue;
+      dropped.push({ id: node.id, name: node.name, file: node.file, estTokens: blockTokens, compressed });
+      return;
     }
 
-    blocks.push(depBlock);
-    runningTokens += depTokens;
-    // Baseline for ratio: the same dep read uncompressed (full window block).
-    const uncompressedDepBlock = `${header(dep, 'dependency', false)}\n${depSource}`;
-    uncompressedIncludedTokens += estimateTokens(uncompressedDepBlock);
-    included.push({
-      id: dep.id,
-      name: dep.name,
-      file: dep.file,
-      estTokens: depTokens,
-      compressed: depCompressed,
-    });
+    blocks.push(block);
+    runningTokens += blockTokens;
+    const uncompressedBlock = `${header(node, role, false)}\n${src}`;
+    uncompressedIncludedTokens += estimateTokens(uncompressedBlock);
+    included.push({ id: node.id, name: node.name, file: node.file, estTokens: blockTokens, compressed });
+  };
+
+  // --- Inbound callers FIRST (opt-in, Phase 4): who calls the focus. ---
+  // Closest, most relevant context for "understand before edit"; admitted ahead
+  // of the transitive outbound deps so it is not starved by a large dep closure.
+  if (includeCallers) {
+    const ego = egoGraphOf(q, res, { directions: ['callers'], cap: 0, withConfidence: false });
+    for (const caller of ego.callers.neighbors) admit(caller, 'caller');
   }
+
+  // --- Dependencies: closest-first (dependenciesOf returns BFS-ish order). ---
+  const deps = q.dependenciesOf(res);
+  for (const dep of deps) admit(dep, 'dependency');
 
   const bundle = blocks.join('\n\n');
   const bundleTokens = estimateTokens(bundle);

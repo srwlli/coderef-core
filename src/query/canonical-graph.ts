@@ -295,6 +295,39 @@ export class CanonicalGraphQuery {
   }
 
   /**
+   * 1-hop neighbors of a resolution in one direction/kind, each paired with the
+   * confidence TIER of the edge it was reached through (Phase 4, ego-graph).
+   *
+   * callersOf/calleesOf/importersOf/importsOf discard the edge (they keep only
+   * neighbor NODES); this exposes the (node, edge→tier) pair `collectNeighbors`
+   * already computes so the ego-graph helper can annotate provenance without
+   * duplicating any adjacency logic. Because the inbound/outbound index holds
+   * ONLY resolved edges (constructor invariant), these neighbors are
+   * resolved-graph neighbors — deterministic, never fabricated. Read-only.
+   *
+   * `direction`: 'inbound' = who points AT the target (callers / importers);
+   * 'outbound' = what the target points at (callees / imports). `kind`: 'call'
+   * or 'import'. Returns node summaries (signatures, not bodies).
+   */
+  neighborsWithConfidence(
+    resolution: NodeResolution,
+    direction: 'inbound' | 'outbound',
+    kind: 'call' | 'import',
+  ): Array<{ node: CanonicalNode; confidence: EdgeConfidenceTier }> {
+    const kinds = kind === 'call' ? CALL : IMPORT;
+    const hits = this.collectNeighbors(this.idSetOf(resolution), direction, kinds);
+    const out: Array<{ node: CanonicalNode; confidence: EdgeConfidenceTier }> = [];
+    for (const [neighborId, edge] of hits) {
+      const node = this.nodeById.get(neighborId);
+      out.push({
+        node: node ? summarize(node) : { id: neighborId, type: 'unknown' },
+        confidence: this.edgeConfidence(edge),
+      });
+    }
+    return out;
+  }
+
+  /**
    * Who depends on the target, transitively? (inbound call+import BFS)
    * Depth counts BFS levels; each discovered @File node also seeds its
    * elements so the walk crosses file boundaries.

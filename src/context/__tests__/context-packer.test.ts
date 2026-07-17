@@ -331,3 +331,75 @@ describe('packContext — unknown focus', () => {
       .toThrow(/focus not found/i);
   });
 });
+
+/**
+ * Fixture for the ego-graph include_callers view (Phase 4):
+ *   theCaller --call--> focusFn --call--> dep1
+ * The default pack (outbound) sees focus + dep1; include_callers ALSO admits
+ * theCaller (inbound). theCaller's body carries a distinctive marker so we can
+ * assert it entered the bundle.
+ */
+function makeCallerFixtureProject(): { dir: string } {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-pack-callers-'));
+  const coderefDir = path.join(dir, '.coderef');
+  fs.mkdirSync(coderefDir, { recursive: true });
+  const srcDir = path.join(dir, 'src');
+  fs.mkdirSync(srcDir, { recursive: true });
+
+  fs.writeFileSync(path.join(srcDir, 'focus.ts'), ['export function focusFn(x) {', '  return dep1(x);', '}'].join('\n'), 'utf-8');
+  fs.writeFileSync(path.join(srcDir, 'dep1.ts'), ['export function dep1(y) {', '  return y;', '}'].join('\n'), 'utf-8');
+  fs.writeFileSync(path.join(srcDir, 'caller.ts'), ['export function theCaller() {', '  callerMarkerXYZ();', '  return focusFn(1);', '}'].join('\n'), 'utf-8');
+
+  const nodes: ExportedGraph['nodes'] = [
+    { id: '@File/src/focus.ts', type: 'file', name: 'focus.ts', file: 'src/focus.ts' },
+    { id: '@File/src/dep1.ts', type: 'file', name: 'dep1.ts', file: 'src/dep1.ts' },
+    { id: '@File/src/caller.ts', type: 'file', name: 'caller.ts', file: 'src/caller.ts' },
+    { id: '@Fn/src/focus.ts#focusFn:1', type: 'function', name: 'focusFn', file: 'src/focus.ts', line: 1, metadata: { codeRefIdNoLine: '@Fn/src/focus.ts#focusFn' } },
+    { id: '@Fn/src/dep1.ts#dep1:1', type: 'function', name: 'dep1', file: 'src/dep1.ts', line: 1, metadata: { codeRefIdNoLine: '@Fn/src/dep1.ts#dep1' } },
+    { id: '@Fn/src/caller.ts#theCaller:1', type: 'function', name: 'theCaller', file: 'src/caller.ts', line: 1, metadata: { codeRefIdNoLine: '@Fn/src/caller.ts#theCaller' } },
+  ];
+  const callEdge = (id: string, s: string, t: string, f: string, ln: number): ExportedGraph['edges'][number] => ({
+    id, sourceId: s, targetId: t, relationship: 'call', resolutionStatus: 'resolved',
+    sourceLocation: { file: f, line: ln }, source: s, target: t, type: 'call',
+  } as ExportedGraph['edges'][number]);
+  const edges: ExportedGraph['edges'] = [
+    callEdge('e1', '@Fn/src/focus.ts#focusFn:1', '@Fn/src/dep1.ts#dep1:1', 'src/focus.ts', 2),
+    callEdge('e2', '@Fn/src/caller.ts#theCaller:1', '@Fn/src/focus.ts#focusFn:1', 'src/caller.ts', 3),
+  ];
+  const graph: ExportedGraph = {
+    version: '1.0.0', exportedAt: 0, nodes, edges,
+    statistics: { nodeCount: nodes.length, edgeCount: edges.length, edgesByType: {}, densityRatio: 0 },
+  };
+  fs.writeFileSync(path.join(coderefDir, 'graph.json'), JSON.stringify(graph), 'utf-8');
+  return { dir };
+}
+
+describe('packContext — include_callers (ego-graph, Phase 4)', () => {
+  let fixture: { dir: string };
+  beforeEach(() => { fixture = makeCallerFixtureProject(); });
+  afterEach(() => { fs.rmSync(fixture.dir, { recursive: true, force: true }); });
+
+  it('DEFAULT bundle does NOT include the inbound caller (byte-unchanged behavior)', () => {
+    const { bundle, manifest } = packContext(fixture.dir, 'focusFn', { tokenBudget: 8000 });
+    expect(bundle).not.toContain('theCaller');
+    expect(manifest.included.map(e => e.id)).not.toContain('@Fn/src/caller.ts#theCaller:1');
+  });
+
+  it('include_callers=true admits the focus\'s 1-hop caller signature-compressed', () => {
+    const { bundle, manifest } = packContext(fixture.dir, 'focusFn', { tokenBudget: 8000, includeCallers: true });
+    // The caller entered the bundle with a caller role tag.
+    expect(bundle).toContain('@Fn/src/caller.ts#theCaller:1');
+    expect(bundle).toMatch(/\[caller(, compressed)?\]/);
+    // The caller is in the manifest included set.
+    expect(manifest.included.map(e => e.id)).toContain('@Fn/src/caller.ts#theCaller:1');
+    // The focus is still first and uncompressed.
+    expect(bundle.startsWith('// ==== @Fn/src/focus.ts#focusFn:1')).toBe(true);
+  });
+
+  it('does not double-count a node that is both a caller and a dependency', () => {
+    // theCaller is only a caller here; assert no id appears twice in included.
+    const { manifest } = packContext(fixture.dir, 'focusFn', { tokenBudget: 8000, includeCallers: true });
+    const ids = manifest.included.map(e => e.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+});

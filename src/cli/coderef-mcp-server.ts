@@ -85,6 +85,7 @@ import type { ExportedGraph } from '../export/graph-exporter.js';
 import type { ValidationReport } from '../pipeline/output-validator.js';
 import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js';
 import { type EdgeConfidenceTier, classifyEdgeConfidence, meetsMinConfidence } from '../pipeline/edge-confidence.js';
+import { type EgoGraph, egoGraphOf } from '../query/ego-graph.js';
 import { planRename } from '../refactor/rename-planner.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 // P6 CLI/MCP parity (WO-...-CLI-MCP-PARITY-001): the two .coderef/-WRITE tools
@@ -504,7 +505,7 @@ export interface ToolHandlers {
   what_exports(args: { file: string; limit?: number }): Record<string, unknown>;
   // v2 flow tools (P2)
   diff_impact(args: { ref?: string; max_depth?: number; limit?: number }): Record<string, unknown>;
-  rag_search(args: { query: string; limit?: number; hybrid?: boolean }): Promise<Record<string, unknown>>;
+  rag_search(args: { query: string; limit?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number }): Record<string, unknown>;
   what_this_imports(args: { element: string; limit?: number }): Record<string, unknown>;
@@ -524,7 +525,7 @@ export interface ToolHandlers {
   find_all_references(args: { element: string; limit?: number }): Record<string, unknown>;
   // CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6).
   // READ tools — wrap a clean substrate export, return synchronously.
-  pack_context(args: { element: string; token_budget?: number; full_deps?: boolean }): Record<string, unknown>;
+  pack_context(args: { element: string; token_budget?: number; full_deps?: boolean; include_callers?: boolean }): Record<string, unknown>;
   rename_preview(args: { old_name: string; new_name: string; min_confidence?: EdgeConfidenceTier }): Record<string, unknown>;
   // .coderef-WRITE / status tools — async (delegate to the extracted pipelines /
   // async status readout). Writes are confined to <projectDir>/.coderef/.
@@ -1251,7 +1252,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
-    async rag_search({ query, limit, hybrid }) {
+    async rag_search({ query, limit, hybrid, expand, neighbor_limit }) {
       const cap = clampLimit(limit);
       const indexMetaPath = path.join(projectDir, '.coderef', 'rag-index.json');
       let meta: { provider?: string; store?: string };
@@ -1289,22 +1290,57 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         // pass hybrid=false to force embedding-only (A/B).
         const response = await searchService.search(query, { topK: cap, hybrid: hybrid ?? true });
         const results = (response?.results ?? response ?? []) as any[];
+        // Ego-graph expansion (Phase 4): when expand is set, load the canonical
+        // graph ONCE (lazily — a bare search never pays this cost) and attach
+        // each hit's 1-hop neighborhood (callers/callees/imports/importedBy) as
+        // signatures. Collapses the 4-6 follow-up neighborhood-fetch calls an
+        // agent would otherwise make. A hit whose coderefId is not a graph node
+        // gets neighbors.resolved=false (absence = no-data). The embedding/index
+        // path above is untouched. If the graph is missing/unreadable, expansion
+        // degrades to absent per-hit (never fails the search).
+        let engine: CanonicalGraphQuery | null = null;
+        if (expand) {
+          try {
+            engine = loadCanonical(projectDir, cache);
+          } catch {
+            engine = null;
+          }
+        }
+        const neighborCap = neighbor_limit === undefined
+          ? 10
+          : Math.max(1, Math.min(MAX_LIMIT, Math.floor(neighbor_limit)));
         return {
           query,
           provider,
           store,
           hybrid: hybrid ?? true,
+          ...(expand ? { expanded: true, neighbor_limit: neighborCap } : {}),
           total: results.length,
-          results: results.slice(0, cap).map((r: any) => ({
-            id: r.metadata?.coderefId ?? r.id,
-            name: r.metadata?.name,
-            file: r.metadata?.file,
-            line: r.metadata?.line,
-            score: typeof r.score === 'number' ? Math.round(r.score * 1000) / 1000 : r.score,
-            snippet: typeof r.metadata?.sourceCode === 'string'
-              ? r.metadata.sourceCode.slice(0, 200)
-              : (typeof r.content === 'string' ? r.content.slice(0, 200) : undefined),
-          })),
+          results: results.slice(0, cap).map((r: any) => {
+            const id = r.metadata?.coderefId ?? r.id;
+            const name = r.metadata?.name;
+            const hit: Record<string, unknown> = {
+              id,
+              name,
+              file: r.metadata?.file,
+              line: r.metadata?.line,
+              score: typeof r.score === 'number' ? Math.round(r.score * 1000) / 1000 : r.score,
+              snippet: typeof r.metadata?.sourceCode === 'string'
+                ? r.metadata.sourceCode.slice(0, 200)
+                : (typeof r.content === 'string' ? r.content.slice(0, 200) : undefined),
+            };
+            if (engine) {
+              // Resolve the hit to a graph node. Prefer the coderefId; fall back
+              // to the element name when the chunk id is a bare index (not a
+              // graph id). ALWAYS attach neighbors when expand is set — a hit
+              // that resolves to no graph node yields neighbors.resolved=false,
+              // so absence is SURFACED (no-data), never silently omitted.
+              const resolveKey = typeof id === 'string' ? id : (typeof name === 'string' ? name : '');
+              const neighbors: EgoGraph = egoGraphOf(engine, engine.resolve(resolveKey), { cap: neighborCap });
+              hit.neighbors = neighbors;
+            }
+            return hit;
+          }),
         };
       } catch (e: any) {
         return {
@@ -1608,13 +1644,17 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     // apply arg, no write — source mutation lives exclusively on the
     // coderef-rename CLI. See buildToolHandlers header + the registerTool blocks.
 
-    pack_context({ element, token_budget, full_deps }) {
+    pack_context({ element, token_budget, full_deps, include_callers }) {
       // Wrap the clean substrate export. full_deps=true opts back into full
       // dependency windows (compressDeps=false); default compresses deps.
+      // include_callers=true (Phase 4, ego-graph) also packs the focus's 1-hop
+      // inbound callers (who calls it), signature-compressed — the
+      // understand-before-edit view. Default off = bundle byte-unchanged.
       try {
         const result = packContext(projectDir, element, {
           tokenBudget: token_budget,
           compressDeps: full_deps ? false : undefined,
+          includeCallers: include_callers ?? false,
         });
         return { bundle: result.bundle, manifest: result.manifest };
       } catch (e: any) {
@@ -2230,16 +2270,18 @@ async function main(): Promise<void> {
     {
       title: 'Semantic code search',
       description:
-        'Semantic search over the RAG index. Hybrid by default: fuses a dense/embedding leg with a sparse/BM25 lexical leg via reciprocal-rank fusion (better recall on exact-identifier queries). Reads provider/store from .coderef/rag-index.json metadata so query embeddings always match the index model. Errors cleanly when no index exists or the embedder is unavailable. Pass hybrid=false to force embedding-only.',
+        'Semantic search over the RAG index. Hybrid by default: fuses a dense/embedding leg with a sparse/BM25 lexical leg via reciprocal-rank fusion (better recall on exact-identifier queries). Reads provider/store from .coderef/rag-index.json metadata so query embeddings always match the index model. Errors cleanly when no index exists or the embedder is unavailable. Pass hybrid=false to force embedding-only. Pass expand=true to attach each hit\'s 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — one call instead of 4-6 follow-up what_calls/what_this_calls fetches. Neighbors carry a confidence tier; a hit not in the graph reports neighbors.resolved=false (absence = no-data).',
       inputSchema: {
         project_root: projectRootArg,
         query: z.string().describe('Natural-language query, e.g. "where are import specifiers resolved"'),
         limit: limitArg,
         hybrid: z.boolean().optional().describe('Hybrid dense+BM25 fusion (default true). Set false for embedding-only retrieval.'),
+        expand: z.boolean().optional().describe('Attach each hit\'s 1-hop graph neighborhood (callers/callees/imports/importedBy) as signatures. Default false (bare hits, byte-unchanged).'),
+        neighbor_limit: z.number().optional().describe('Max neighbors per direction when expand=true (default 10). Excess is truncated with a per-direction total + flag.'),
       },
     },
-    async ({ project_root, query, limit, hybrid }) =>
-      perRepo(project_root, h => h.rag_search({ query, limit, hybrid })),
+    async ({ project_root, query, limit, hybrid, expand, neighbor_limit }) =>
+      perRepo(project_root, h => h.rag_search({ query, limit, hybrid, expand, neighbor_limit })),
   );
 
   // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ----
@@ -2386,16 +2428,17 @@ async function main(): Promise<void> {
     {
       title: 'Pack context bundle',
       description:
-        'READ. Build a single context bundle for a focus element: the focus source (uncompressed, first) + its transitive dependency closure, admitted closest-first while a running token total stays under budget. Dependencies are signature-compressed by default; pass full_deps=true for full dependency windows. Returns { bundle, manifest }; manifest.dropped records anything trimmed. Reads .coderef/graph.json + source; writes nothing.',
+        'READ. Build a single context bundle for a focus element: the focus source (uncompressed, first) + its transitive dependency closure, admitted closest-first while a running token total stays under budget. Dependencies are signature-compressed by default; pass full_deps=true for full dependency windows. Pass include_callers=true to also pack the focus\'s 1-hop inbound callers (who calls it) signature-compressed — the understand-before-edit view. Returns { bundle, manifest }; manifest.dropped records anything trimmed. Reads .coderef/graph.json + source; writes nothing.',
       inputSchema: {
         project_root: projectRootArg,
         element: z.string().describe('Focus element: codeRefId or element name to pack context around'),
         token_budget: z.number().optional().describe('Max bundle tokens (default 8000). Deps are admitted closest-first until this fills.'),
         full_deps: z.boolean().optional().describe('Include FULL dependency source windows instead of the default signature-compressed skeletons.'),
+        include_callers: z.boolean().optional().describe('Also pack the focus\'s 1-hop inbound callers (who calls it), signature-compressed, ahead of the outbound deps. Default false (bundle byte-unchanged).'),
       },
     },
-    async ({ project_root, element, token_budget, full_deps }) =>
-      perRepo(project_root, h => h.pack_context({ element, token_budget, full_deps })),
+    async ({ project_root, element, token_budget, full_deps, include_callers }) =>
+      perRepo(project_root, h => h.pack_context({ element, token_budget, full_deps, include_callers })),
   );
 
   server.registerTool(
