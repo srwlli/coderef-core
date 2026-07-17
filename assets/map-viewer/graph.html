@@ -25,12 +25,21 @@
     <button id="toggle-communities" title="Color nodes by detected community (graph analytics)">Communities</button>
     <button id="toggle-deadcode" title="Highlight isolated and zero-in-degree files (dead-code candidates: surfaces, not verdicts)">Dead code</button>
     <button id="toggle-drift" title="Color nodes by declared @layer; amber ring = declared layer differs from the community's dominant layer (drift surfaces, not verdicts)">Layer drift</button>
+    <button id="toggle-metrics" title="Color nodes by the selected engineering metric — gradient over the value range, gray = no data (surfaces, not verdicts)">Metrics</button>
+    <select id="metric-select" title="Metric family for the Metrics overlay" hidden>
+      <option value="tests">Test in-edges</option>
+      <option value="docs">Non-defined headers</option>
+      <option value="unresolved">Unresolved refs</option>
+      <option value="size">Module size</option>
+      <option value="deps">Dependencies</option>
+    </select>
     <button id="toggle-blast" title="Highlight blast radius (depth 1-2) of the selected node">Blast radius</button>
     <button id="reset-view" title="Fit graph to screen">Reset view</button>
     <span id="stats"></span>
   </div>
   <div id="search-results" hidden></div>
   <div id="drift-legend" hidden></div>
+  <div id="metrics-legend" hidden></div>
   <canvas id="graph-canvas"></canvas>
   <aside id="detail-panel" hidden>
     <button id="detail-close" title="Close">&times;</button>

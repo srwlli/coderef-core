@@ -110,6 +110,22 @@ describe('MCP map tool — CLI parity (hermetic fixture repo)', () => {
     expect(result.declared_layer_count).toBe(1);
     expect(result.drift_outlier_count).toBe(cli.data.drift!.outliers.length);
     expect(result.drift_outlier_count).toBe(0);
+    // Engineering-metrics parity (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P4): both
+    // surfaces carry the identical metrics block (byte-equality above) and the
+    // MCP summary reflects it. Fixture: no test-like files (both src files are
+    // untested candidates); index elements carry no headerStatus, so both
+    // files tally as missing (non-defined).
+    expect(cli.data.metrics).toBeDefined();
+    expect(cli.data.metrics!.testLinkage.summary.testFileCount).toBe(0);
+    expect(result.untested_src_count).toBe(
+      cli.data.metrics!.testLinkage.summary.srcWithoutTestEdgeCount,
+    );
+    expect(result.untested_src_count).toBe(2);
+    expect(result.undocumented_file_count).toBe(
+      cli.data.metrics!.documentation.summary.filesWithNonDefinedCount,
+    );
+    expect(result.undocumented_file_count).toBe(2);
+    expect(cli.data.metrics!.documentation.note).toContain('header convention appears absent');
   });
 
   it('serves a fresh map without regeneration on the second call', () => {

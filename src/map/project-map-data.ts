@@ -37,6 +37,12 @@
  *   layers spec is EXPLICIT opt-in via options.layersPath — never
  *   install-anchored auto-resolution, which would make any-repo output
  *   machine-dependent.
+ * - Engineering metrics (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P4): the walks
+ *   this projection already performs (index elements, raw graph edges) also
+ *   feed src/map/engineering-metrics.ts — per-file headerStatus tallies and
+ *   unresolved/ambiguous raw-edge counts — attaching the schema-additive
+ *   `metrics` block (test linkage, documentation, unresolved refs, largest
+ *   modules, most dependencies). Independent of options.analytics.
  * - Pure data. This module must never know HTML exists.
  */
 
@@ -46,6 +52,7 @@ import { normalizeSlashes } from '../utils/path-normalize.js';
 import { computeGraphAnalytics, MapAnalytics } from './graph-analytics.js';
 import { computeEdgeEvidence, MapEdgeEvidence } from './edge-evidence.js';
 import { computeLayerDrift, MapLayerDrift, LayersSpec } from './layer-drift.js';
+import { computeEngineeringMetrics, MapMetrics } from './engineering-metrics.js';
 
 export interface MapElement {
   name: string;
@@ -124,6 +131,8 @@ export interface MapData {
   analytics?: MapAnalytics;
   /** Declared-vs-detected layer drift (absent when options.layerDrift === false). */
   drift?: MapLayerDrift;
+  /** Engineering metrics over this projection (absent when options.metrics === false). */
+  metrics?: MapMetrics;
 }
 
 export class MapProjectionError extends Error {
@@ -153,6 +162,8 @@ export interface ProjectMapDataOptions {
    * dependency_rules.entry_layers/leaf_layers). Absent = spec-less drift.
    */
   layersPath?: string;
+  /** Compute the metrics block (default true; independent of `analytics`). */
+  metrics?: boolean;
 }
 
 const HOTSPOT_CAP_DEFAULT = 25;
@@ -288,10 +299,27 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
   }
 
   // ---- file-level edge aggregation (resolved edges only) -------------------
+  // The same walk feeds the metrics block's per-file unresolved/ambiguous
+  // tallies (P4) — the only per-file resolution signal (validation-report.json
+  // is repo-level only).
+  const unresolvedCounts = new Map<string, { unresolved: number; ambiguous: number }>();
   const edgeAgg = new Map<string, MapEdge>();
   let resolvedEdgeCount = 0;
   for (const e of graphEdges) {
-    if (!e || e.resolutionStatus !== 'resolved' || !e.sourceId || !e.targetId) continue;
+    if (!e) continue;
+    if ((e.resolutionStatus === 'unresolved' || e.resolutionStatus === 'ambiguous') && e.sourceId) {
+      const unresolvedSourceFile = nodeFile.get(e.sourceId);
+      if (unresolvedSourceFile) {
+        let counts = unresolvedCounts.get(unresolvedSourceFile);
+        if (!counts) {
+          counts = { unresolved: 0, ambiguous: 0 };
+          unresolvedCounts.set(unresolvedSourceFile, counts);
+        }
+        if (e.resolutionStatus === 'unresolved') counts.unresolved++;
+        else counts.ambiguous++;
+      }
+    }
+    if (e.resolutionStatus !== 'resolved' || !e.sourceId || !e.targetId) continue;
     resolvedEdgeCount++;
     const sourceFile = nodeFile.get(e.sourceId);
     const targetFile = nodeFile.get(e.targetId);
@@ -325,13 +353,18 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
   }
 
   // ---- elements per file ----------------------------------------------------
+  // The same walk feeds the metrics block's per-file headerStatus tallies
+  // (P4). Undefined when index.json is absent/unreadable — the documentation
+  // family degrades to no-data, never a false zero.
   const fileElements = new Map<string, MapElement[]>();
+  let headerTallies: Map<string, Map<string, number>> | undefined;
   let elementCount = 0;
   let indexUsable = false;
   if (fs.existsSync(indexPath)) {
     try {
       const index = readJson(indexPath);
       const elements: any[] = Array.isArray(index.elements) ? index.elements : [];
+      headerTallies = new Map();
       for (const el of elements) {
         if (!el || !el.file || !el.name) continue;
         const file = normalizeSlashes(String(el.file));
@@ -347,9 +380,17 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
           exported: el.exported === true ? true : undefined,
         });
         elementCount++;
+        const status = String(el.headerStatus || 'missing');
+        let tally = headerTallies.get(file);
+        if (!tally) {
+          tally = new Map();
+          headerTallies.set(file, tally);
+        }
+        tally.set(status, (tally.get(status) || 0) + 1);
       }
       indexUsable = true;
     } catch (err: any) {
+      headerTallies = undefined;
       warnings.push(`index.json unreadable (${err.message}); element detail degraded to graph nodes`);
     }
   } else {
@@ -479,10 +520,22 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     warnings.push(...drift.warnings);
   }
 
+  // ---- engineering metrics (independent of the analytics block) --------------
+  let metrics: MapMetrics | undefined;
+  if (options.metrics !== false) {
+    metrics = computeEngineeringMetrics(
+      nodes.map(n => ({ id: n.id, elementCount: n.elementCount })),
+      edges,
+      headerTallies,
+      unresolvedCounts,
+    );
+    warnings.push(...metrics.warnings);
+  }
+
   const projectPath = normalizeSlashes(path.resolve(projectRoot));
   return {
     meta: {
-      schemaVersion: '1.3.0',
+      schemaVersion: '1.4.0',
       projectPath,
       repoName: path.basename(projectPath),
       generatedAt: new Date().toISOString(),
@@ -499,5 +552,6 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     overlays: { hotspots, cycles },
     ...(analytics ? { analytics } : {}),
     ...(drift ? { drift } : {}),
+    ...(metrics ? { metrics } : {}),
   };
 }

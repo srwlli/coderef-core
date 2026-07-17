@@ -55,8 +55,13 @@
   var drift = null;            // data.drift (absent on pre-1.3.0 data.json)
   var layerColor = new Map();  // declared layer -> palette color (sorted-name deterministic)
   var outlierOf = new Map();   // file -> community dominant layer it differs from
+  var metrics = null;          // data.metrics (absent on pre-1.4.0 data.json)
+  var metricKey = 'tests';     // selected metric family (#metric-select)
+  var metricRange = { min: 0, max: 0 };
+  var metricNoData = 0;        // nodes with no data for the selected family
+  var testFileSet = new Set(); // metrics.testLinkage.testFiles
 
-  var mode = { hotspots: false, cycles: false, communities: false, deadcode: false, drift: false, blast: false };
+  var mode = { hotspots: false, cycles: false, communities: false, deadcode: false, drift: false, metrics: false, blast: false };
   var selected = null;
   var hovered = null;
   var blastDepths = new Map(); // id -> 1|2 when blast mode active
@@ -144,6 +149,19 @@
       var driftBtn = document.getElementById('toggle-drift');
       driftBtn.disabled = true;
       driftBtn.title += ' — unavailable: no drift block in this data.json (regenerate the map)';
+    }
+    // Engineering metrics (optional, schema-additive): pre-1.4 data.json has
+    // no metrics block — the toggle + select disable gracefully.
+    metrics = data.metrics || null;
+    if (metrics) {
+      ((metrics.testLinkage && metrics.testLinkage.testFiles) || []).forEach(function (f) {
+        testFileSet.add(f);
+      });
+    } else {
+      var metricsBtn = document.getElementById('toggle-metrics');
+      metricsBtn.disabled = true;
+      metricsBtn.title += ' — unavailable: no metrics block in this data.json (regenerate the map)';
+      document.getElementById('metric-select').disabled = true;
     }
 
     document.getElementById('repo-name').textContent = data.meta.repoName || 'coderef map';
@@ -270,7 +288,101 @@
     if (mode.drift) {
       return n.layer ? (layerColor.get(n.layer) || '#90a4ae') : '#546e7a';
     }
+    if (mode.metrics) {
+      var mv = metricValue(n);
+      return mv === null ? '#546e7a' : metricColor(mv);
+    }
     return n.color;
+  }
+
+  // ------------------------------------------------------ metrics overlay ----
+  var METRIC_LABELS = {
+    tests: 'Test in-edges',
+    docs: 'Non-defined headers',
+    unresolved: 'Unresolved refs',
+    size: 'Module size (elements)',
+    deps: 'Dependencies (distinct out)'
+  };
+
+  // Per-node value for the selected family; null = no data (rendered neutral,
+  // distinct from an observed zero).
+  function metricValue(n) {
+    if (!metrics) return null;
+    if (metricKey === 'tests') {
+      if (testFileSet.has(n.id)) return null; // test files: not a src candidate
+      var t = metrics.testLinkage.inboundFromTests[n.id];
+      return t ? t.testFileCount : 0;
+    }
+    if (metricKey === 'docs') {
+      var f = metrics.documentation.files[n.id];
+      if (!f) return null; // absent from index.json: no data, not zero
+      var nd = 0;
+      Object.keys(f).forEach(function (k) { if (k !== 'defined') nd += f[k]; });
+      return nd;
+    }
+    if (metricKey === 'unresolved') {
+      var u = metrics.unresolvedRefs.files[n.id];
+      return u ? u.unresolved + u.ambiguous : 0;
+    }
+    if (metricKey === 'size') return n.elementCount;
+    if (metricKey === 'deps') return (outAdj.get(n.id) || []).length;
+    return null;
+  }
+
+  function computeMetricRange() {
+    var min = Infinity, max = -Infinity, noData = 0;
+    nodes.forEach(function (n) {
+      var v = metricValue(n);
+      if (v === null) { noData++; return; }
+      if (v < min) min = v;
+      if (v > max) max = v;
+    });
+    if (min === Infinity) { min = 0; max = 0; }
+    metricRange = { min: min, max: max };
+    metricNoData = noData;
+  }
+
+  // Two-stop gradient over the selected metric's value range: low #1e88e5 -> high #ffca28.
+  function metricColor(v) {
+    var span = metricRange.max - metricRange.min;
+    var t = span > 0 ? (v - metricRange.min) / span : 0;
+    var r = Math.round(0x1e + t * (0xff - 0x1e));
+    var g = Math.round(0x88 + t * (0xca - 0x88));
+    var b = Math.round(0xe5 + t * (0x28 - 0xe5));
+    return 'rgb(' + r + ',' + g + ',' + b + ')';
+  }
+
+  function buildMetricsLegend() {
+    var box = document.getElementById('metrics-legend');
+    box.innerHTML = '';
+    if (!metrics) return;
+    var label = document.createElement('span');
+    label.className = 'metric-chip';
+    label.textContent = METRIC_LABELS[metricKey] + ' — value range:';
+    box.appendChild(label);
+    var lo = document.createElement('span');
+    lo.className = 'metric-chip';
+    lo.textContent = String(metricRange.min);
+    box.appendChild(lo);
+    var bar = document.createElement('span');
+    bar.className = 'metric-gradient';
+    box.appendChild(bar);
+    var hi = document.createElement('span');
+    hi.className = 'metric-chip';
+    hi.textContent = String(metricRange.max);
+    box.appendChild(hi);
+    var nd = document.createElement('span');
+    nd.className = 'metric-chip';
+    var dot = document.createElement('span');
+    dot.className = 'drift-dot';
+    dot.style.background = '#546e7a';
+    nd.appendChild(dot);
+    nd.appendChild(document.createTextNode('no data (' + metricNoData + ')'));
+    box.appendChild(nd);
+    var note = document.createElement('span');
+    note.className = 'metric-chip metric-note';
+    note.textContent = 'surfaces, not verdicts';
+    box.appendChild(note);
   }
 
   function draw() {
@@ -421,6 +533,28 @@
           : 'declared "' + selected.layer + '"';
       }
       addRow(meta, 'Drift', driftText);
+    }
+    if (metrics) {
+      var parts = [];
+      if (testFileSet.has(selected.id)) {
+        parts.push('test file');
+      } else {
+        var tv = metrics.testLinkage.inboundFromTests[selected.id];
+        parts.push('test in-edges ' + (tv ? tv.testFileCount : 0));
+      }
+      var df = metrics.documentation.files[selected.id];
+      if (df) {
+        var ndCount = 0;
+        Object.keys(df).forEach(function (k) { if (k !== 'defined') ndCount += df[k]; });
+        parts.push('non-defined headers ' + ndCount);
+      } else {
+        parts.push('headers: no index data');
+      }
+      var uv = metrics.unresolvedRefs.files[selected.id];
+      parts.push('unresolved refs ' + (uv ? uv.unresolved + uv.ambiguous : 0));
+      parts.push('deps out ' + (outAdj.get(selected.id) || []).length +
+        ' / in ' + (inAdj.get(selected.id) || []).length);
+      addRow(meta, 'Metrics', parts.join(' · '));
     }
 
     var edgesBox = document.getElementById('detail-edges');
@@ -606,10 +740,11 @@
     function exclusiveToggle(key) {
       mode[key] = !mode[key];
       if (mode[key]) {
-        ['hotspots', 'cycles', 'communities', 'deadcode', 'drift', 'blast'].forEach(function (other) {
+        ['hotspots', 'cycles', 'communities', 'deadcode', 'drift', 'metrics', 'blast'].forEach(function (other) {
           if (other !== key) mode[other] = false;
         });
         if (key === 'blast') computeBlast();
+        if (key === 'metrics') { computeMetricRange(); buildMetricsLegend(); }
       }
       syncToggles();
     }
@@ -618,6 +753,15 @@
     document.getElementById('toggle-communities').addEventListener('click', function () { exclusiveToggle('communities'); });
     document.getElementById('toggle-deadcode').addEventListener('click', function () { exclusiveToggle('deadcode'); });
     document.getElementById('toggle-drift').addEventListener('click', function () { exclusiveToggle('drift'); });
+    document.getElementById('toggle-metrics').addEventListener('click', function () { exclusiveToggle('metrics'); });
+    document.getElementById('metric-select').addEventListener('change', function (ev) {
+      metricKey = ev.target.value;
+      if (mode.metrics) {
+        computeMetricRange();
+        buildMetricsLegend();
+      }
+      renderDetail();
+    });
     document.getElementById('toggle-blast').addEventListener('click', function () { exclusiveToggle('blast'); });
     document.getElementById('reset-view').addEventListener('click', function () {
       fitView();
@@ -689,8 +833,11 @@
     setToggle(document.getElementById('toggle-communities'), mode.communities);
     setToggle(document.getElementById('toggle-deadcode'), mode.deadcode);
     setToggle(document.getElementById('toggle-drift'), mode.drift);
+    setToggle(document.getElementById('toggle-metrics'), mode.metrics);
     setToggle(document.getElementById('toggle-blast'), mode.blast);
     document.getElementById('drift-legend').hidden = !(mode.drift && drift);
+    document.getElementById('metrics-legend').hidden = !(mode.metrics && metrics);
+    document.getElementById('metric-select').hidden = !(mode.metrics && metrics);
     if (mode.blast) computeBlast();
   }
 

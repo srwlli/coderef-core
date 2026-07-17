@@ -224,3 +224,50 @@ html, body {
   background: transparent;
   border: 2px solid #ffb300;
 }
+
+/* Engineering-metrics legend strip + family select (MapData >= 1.4, WO-MAP-GRAPH-ANALYTICS-MODULE-001 P4) */
+#metrics-legend {
+  position: fixed;
+  top: 44px;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 14px;
+  padding: 6px 12px;
+  background: rgba(22, 29, 39, 0.94);
+  border-bottom: 1px solid #232d3a;
+  z-index: 9;
+  font-size: 12px;
+  color: #cfd8e3;
+}
+#metrics-legend[hidden] { display: none; }
+.metric-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.metric-gradient {
+  width: 120px;
+  height: 10px;
+  border-radius: 5px;
+  display: inline-block;
+  flex: none;
+  background: linear-gradient(to right, #1e88e5, #ffca28);
+}
+.metric-note { color: #8fa3b8; font-style: italic; }
+#metric-select {
+  padding: 6px 8px;
+  background: #1d2632;
+  color: #cfd8e3;
+  border: 1px solid #2b3644;
+  border-radius: 6px;
+  cursor: pointer;
+}
+#metric-select[hidden] { display: none; }
+#metric-select[disabled] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

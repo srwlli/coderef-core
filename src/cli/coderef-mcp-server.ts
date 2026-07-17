@@ -1669,6 +1669,14 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         declared_layer_count: data.drift
           ? Object.keys(data.drift.coverage?.byLayer ?? {}).length
           : null,
+        // Engineering-metrics summary (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P4);
+        // null when reading a pre-1.4 data.json without the metrics block.
+        untested_src_count: data.metrics
+          ? (data.metrics.testLinkage?.summary?.srcWithoutTestEdgeCount ?? 0)
+          : null,
+        undocumented_file_count: data.metrics
+          ? (data.metrics.documentation?.summary?.filesWithNonDefinedCount ?? 0)
+          : null,
         warnings: data.meta?.warnings ?? [],
         hint:
           'data_path is the same file-level MapData the viewer renders (nodes=files with embedded elements, edges=resolved file deps carrying per-edge evidence: provenance classes, line-sorted samples, ambiguous-candidate counts; hotspot/cycle overlays, graph-analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer dependency matrix, per-community layer composition, layer-outlier files — surfaces, not verdicts). Open graph_html_path in a browser for the visual map, or read data.json directly.',
@@ -2071,7 +2079,7 @@ async function main(): Promise<void> {
     {
       title: 'Repository map (file-level)',
       description:
-        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps with per-edge evidence blocks: provenance classes, line samples, ambiguous-candidate counts; hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer matrix, per-community layer composition + purity, layer-outlier files — surfaces, not verdicts) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json.',
+        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps with per-edge evidence blocks: provenance classes, line samples, ambiguous-candidate counts; hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer matrix, per-community layer composition + purity, layer-outlier files; metrics block: test linkage, per-file header-status tallies, unresolved-reference counts, largest modules, most dependencies — surfaces, not verdicts) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json.',
       inputSchema: {
         project_root: projectRootArg,
         refresh: z.boolean().optional().describe('Force regeneration even if the map is fresh (default: regenerate only when absent or older than graph.json)'),

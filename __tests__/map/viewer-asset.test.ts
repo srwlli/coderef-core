@@ -31,6 +31,9 @@ describe('map-viewer static asset', () => {
       'toggle-communities',
       'toggle-deadcode',
       'toggle-drift',
+      'toggle-metrics',
+      'metric-select',
+      'metrics-legend',
       'toggle-blast',
       'drift-legend',
       'reset-view',
@@ -79,6 +82,29 @@ describe('map-viewer static asset', () => {
     expect(css).toContain('#drift-legend');
     expect(css).toContain('.drift-chip');
     expect(css).toContain('.drift-ring');
+  });
+
+  it('viewer renders the metrics overlay with a pre-1.4 graceful path (P4)', () => {
+    // Overlay only when the data.json carries a metrics block.
+    expect(js).toContain('data.metrics || null');
+    expect(js).toContain('buildMetricsLegend');
+    expect(js).toContain('computeMetricRange');
+    expect(js).toContain('metricValue');
+    expect(js).toContain("exclusiveToggle('metrics')");
+    // Five metric families feed the select control.
+    for (const key of ['tests', 'docs', 'unresolved', 'size', 'deps']) {
+      expect(js, `missing metric family '${key}'`).toContain(`'${key}'`);
+    }
+    for (const value of ['tests', 'docs', 'unresolved', 'size', 'deps']) {
+      expect(html, `missing option value="${value}"`).toContain(`value="${value}"`);
+    }
+    // Detail-panel metrics row + graceful disable on pre-1.4 data.
+    expect(js).toContain("addRow(meta, 'Metrics'");
+    expect(js).toContain('no metrics block in this data.json');
+    // Styles ship with the bundle.
+    expect(css).toContain('#metrics-legend');
+    expect(css).toContain('.metric-gradient');
+    expect(css).toContain('#metric-select');
   });
 
   it('asset bundle makes no external network references (CDN ban)', () => {

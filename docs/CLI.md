@@ -131,8 +131,10 @@ bins `coderef-pipeline` chains), then projects `graph.json` + `index.json` to
 a file-level `.coderef/map/data.json` and emits the bundled browser viewer —
 dependency graph, search (files + elements), node-detail panel, hotspots and
 cycles overlays, communities and dead-code overlays (graph analytics), layer-drift
-overlay (declared vs detected), blast-radius mode. Header-less repos degrade
-gracefully (the map renders from the dependency graph alone).
+overlay (declared vs detected), engineering-metrics overlay (test linkage,
+header coverage, unresolved refs, module size, dependencies), blast-radius
+mode. Header-less repos degrade gracefully (the map renders from the
+dependency graph alone).
 
 ### Usage
 
@@ -165,7 +167,7 @@ npx coderef-map /path/to/any/repo --force-scan --no-open
 
 | File | Purpose |
 |------|---------|
-| `.coderef/map/data.json` | File-level MapData v1.3: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below). Same file the MCP `map` tool returns to agents. |
+| `.coderef/map/data.json` | File-level MapData v1.4: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
 
@@ -240,15 +242,45 @@ outliers in amber, and shows a legend strip while active; the node detail panel
 gains a `Drift` row (declared layer vs community dominant + outlier marker).
 Pre-1.3 `data.json` disables the toggle gracefully.
 
+### Metrics block (`data.metrics`, MapData v1.4)
+
+Engineering metrics computed from artifacts the projection already walks
+(`src/map/engineering-metrics.ts`, WO-MAP-GRAPH-ANALYTICS-MODULE-001 P4):
+projected nodes/edges, `index.json` element `headerStatus`, and raw
+`graph.json` edge resolution statuses — no new inputs, so it works on any
+repo. Optional and schema-additive: `projectMapData(root, { metrics: false })`
+skips it; computed **independently of the analytics block**. **Surfaces, not
+verdicts** — zero test in-edges is an observation (transitive/integration
+coverage is invisible to the file graph), unresolved references are resolution
+facts, missing headers are coverage facts.
+
+| Field | Contents |
+|-------|----------|
+| `testLinkage` | `summary` `{testFileCount, srcFileCount, srcWithTestEdgeCount, srcWithoutTestEdgeCount}`; `testFiles[]` (sorted, classified by the same heuristic graph-analytics uses — single source); `inboundFromTests` (src file → `{testFileCount, weight}`, key-sorted; absence = observed zero); `zeroTestInEdge[]` (sorted src files with no inbound test edge, capped, default 200). |
+| `documentation` | `summary` `{totalElements, byStatus, indexedFileCount, filesWithNonDefinedCount}`; `files` (file → headerStatus → element count, key-sorted, **all** index-present files — a file absent from the Record has no index data: no-data, not zero); `topNonDefined[]` ranking (capped). Header-less repos degrade to a coverage-only note; absent index degrades to no-data. |
+| `unresolvedRefs` | `summary` `{fileCount, edgeCount, byStatus}`; `files` (file → `{unresolved, ambiguous}` outbound raw-edge counts, key-sorted; absence = observed zero); `top[]` ranking (capped). The per-file resolution signal — `validation-report.json` is repo-level only. |
+| `largestModules` | `top[]` `{file, elementCount}` ranking (capped). |
+| `mostDependencies` | `top[]` `{file, efferent, afferent}` — distinct dependency counts from projected edges, computed independently of `analytics.coupling` (which is analytics-gated and capped). |
+| `warnings[]` / `note` | One aggregate warning per ranking truncation (`rankingCap` default 25, `zeroTestCap` default 200), mirrored into `meta.warnings`; per-family notes state the observation semantics. |
+
+Viewer toggle: **Metrics** plus a family select (`Test in-edges` /
+`Non-defined headers` / `Unresolved refs` / `Module size` / `Dependencies`)
+colors nodes by a two-stop gradient over the selected metric's value range,
+with a legend strip showing the range endpoints and the no-data count;
+no-data nodes render neutral gray (distinct from an observed zero); the node
+detail panel gains a `Metrics` row (per-family values for the selected file).
+Pre-1.4 `data.json` disables the toggle + select gracefully.
+
 ### Agent parity
 
 The MCP server's `map` tool (see below) emits/refreshes the identical
 `data.json` via the same extracted core (`src/map/emit-map.ts`) —
 parity-tested byte-identical modulo timestamp, and summarizes the analytics
 block as `community_count` + `isolated_count`, the evidence blocks as
-`evidence_edge_count`, and the drift block as `drift_outlier_count` +
-`declared_layer_count` (each null when reading an older `data.json`). Agents
-query `data.json`; humans open `graph.html`.
+`evidence_edge_count`, the drift block as `drift_outlier_count` +
+`declared_layer_count`, and the metrics block as `untested_src_count` +
+`undocumented_file_count` (each null when reading an older `data.json`).
+Agents query `data.json`; humans open `graph.html`.
 
 ---
 

@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability map-graph-analytics
- * @exports MapCommunity, MapCentralityEntry, MapCouplingEntry, MapDeadCode, MapAnalytics, GraphAnalyticsOptions, computeGraphAnalytics
+ * @exports MapCommunity, MapCentralityEntry, MapCouplingEntry, MapDeadCode, MapAnalytics, GraphAnalyticsOptions, isTestLikeFile, computeGraphAnalytics
  * @used_by src/map/project-map-data.ts
  */
 
@@ -115,13 +115,28 @@ const ENTRYPOINT_BASENAME = /^(index|main|app|server|cli|bin)\.[^.]+$/;
 const ENTRYPOINT_SEGMENT = /^(bin|cli|scripts)$/;
 const TEST_SEGMENT = /^(__tests__|__mocks__|tests?)$/;
 
+/**
+ * Test-like file classification — the single source for the test heuristic
+ * (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P4 exports it for the engineering-metrics
+ * testLinkage family; never duplicate these regexes).
+ */
+export function isTestLikeFile(file: string): boolean {
+  const segments = file.toLowerCase().split('/');
+  const base = segments[segments.length - 1];
+  if (base.includes('.test.') || base.includes('.spec.')) return true;
+  for (let i = 0; i < segments.length - 1; i++) {
+    if (TEST_SEGMENT.test(segments[i])) return true;
+  }
+  return false;
+}
+
 function isEntrypointOrTestLike(file: string): boolean {
+  if (isTestLikeFile(file)) return true;
   const segments = file.toLowerCase().split('/');
   const base = segments[segments.length - 1];
   if (ENTRYPOINT_BASENAME.test(base)) return true;
-  if (base.includes('.test.') || base.includes('.spec.')) return true;
   for (let i = 0; i < segments.length - 1; i++) {
-    if (ENTRYPOINT_SEGMENT.test(segments[i]) || TEST_SEGMENT.test(segments[i])) return true;
+    if (ENTRYPOINT_SEGMENT.test(segments[i])) return true;
   }
   return false;
 }
