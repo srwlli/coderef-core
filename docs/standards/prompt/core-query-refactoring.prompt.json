@@ -1,0 +1,34 @@
+{
+  "id": "core-query-refactoring",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "context-assembly",
+  "form": "composed",
+  "dialect": "single-brace",
+  "input": {
+    "placeholders": {
+      "query": { "type": "string", "required": true, "description": "the developer's refactoring question, substituted for {query}" },
+      "context": { "type": "string", "required": true, "description": "the synthesized context block (main + related elements + refactoring context), substituted for {context}" }
+    },
+    "sample": {
+      "query": "How should I split this class?",
+      "context": "## Main Element\n- ID: ...\n## Refactoring Context ..."
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "response addresses: current structure/patterns, recommended approach, elements to preserve, migration strategy, and testing considerations"
+    ]
+  },
+  "provider": {
+    "profile": "context-aware-generation",
+    "notes": "the 'refactoring' entry of AIPromptGenerator.getTemplate(); composed by applyTemplate() substituting {query}/{context} (lowercase single-brace; not scannable — form=composed). Tokens declared honestly for documentation."
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/ai-prompt-generator.ts (AIPromptGenerator.generatePrompt via getTemplate/applyTemplate)",
+    "payload_symbol": "AIPromptGenerator.getTemplate templates.refactoring",
+    "pairs_with": "docs/standards/prompt/core-query-general.prompt.json"
+  }
+}

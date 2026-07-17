@@ -1,0 +1,30 @@
+{
+  "id": "core-system-prompt",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "rag-grounding",
+  "form": "persona-system",
+  "dialect": "none",
+  "input": {
+    "placeholders": {},
+    "sample": {}
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "response opens with a Direct Answer, then Relevant Code, then Dependencies/context, then 2-3 Related Questions",
+      "every referenced code element carries a CodeRef tag (@Fn/@Cl/@M/@C form)",
+      "information not present in the supplied context is flagged as missing, not fabricated"
+    ]
+  },
+  "provider": {
+    "profile": "rag-system-role",
+    "notes": "the fixed system role passed on every RAG Q&A turn; the @Fn/... backtick lines are LITERAL format exemplars, not template tokens (dialect=none skips the token scan)"
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/rag/answer-generation-service.ts (via PromptTemplateBuilder.buildPrompt -> systemPrompt)",
+    "payload_symbol": "SYSTEM_PROMPT",
+    "pairs_with": "docs/standards/prompt/core-qa-template.prompt.json"
+  }
+}

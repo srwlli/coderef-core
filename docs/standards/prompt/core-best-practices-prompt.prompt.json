@@ -1,0 +1,37 @@
+{
+  "id": "core-best-practices-prompt",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "task-template",
+  "form": "static-fill",
+  "dialect": "double-brace",
+  "input": {
+    "placeholders": {
+      "context": { "type": "string", "required": true, "description": "the code to assess, filled into the prompt body" },
+      "question": { "type": "string", "required": true, "description": "the specific best-practices question, filled into the 'Question:' line" },
+      "additionalInstructions": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file; not filled by the best-practices builder" },
+      "conversationHistory": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file; not filled by the best-practices builder" }
+    },
+    "sample": {
+      "context": "(code to assess)",
+      "question": "Is the error handling here robust?"
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "analysis covers quality/best-practice adherence, improvements/concerns, coverage, dependency management, and docs",
+      "CodeRef tags reference specific elements"
+    ]
+  },
+  "provider": {
+    "profile": "rag-user-turn",
+    "notes": "filled by PromptTemplateBuilder.buildBestPracticesPrompt() ({{context}} + {{question}}); union of prompt-templates.ts double-brace tokens declared (extra = WARN only)"
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/rag/answer-generation-service.ts (via PromptTemplateBuilder.buildBestPracticesPrompt)",
+    "payload_symbol": "BEST_PRACTICES_PROMPT",
+    "pairs_with": "docs/standards/prompt/core-system-prompt.prompt.json"
+  }
+}

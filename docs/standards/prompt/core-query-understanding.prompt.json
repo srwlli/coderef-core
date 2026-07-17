@@ -1,0 +1,34 @@
+{
+  "id": "core-query-understanding",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "context-assembly",
+  "form": "composed",
+  "dialect": "single-brace",
+  "input": {
+    "placeholders": {
+      "query": { "type": "string", "required": true, "description": "the developer's understanding question, substituted for {query}" },
+      "context": { "type": "string", "required": true, "description": "the synthesized context block (main + related elements), substituted for {context}" }
+    },
+    "sample": {
+      "query": "What does this function do and who uses it?",
+      "context": "## Main Element\n- ID: ...\n## Related Elements ..."
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "response addresses: what the element does, how it's used, its dependencies, and potential improvements/issues"
+    ]
+  },
+  "provider": {
+    "profile": "context-aware-generation",
+    "notes": "the 'understanding' entry of AIPromptGenerator.getTemplate(); composed by applyTemplate() which .replace()s {query} and {context} (LOWERCASE single-brace tokens — the checker's single-brace scanner matches UPPERCASE only, and form=composed is not scannable regardless). Tokens declared honestly for documentation."
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/ai-prompt-generator.ts (AIPromptGenerator.generatePrompt via getTemplate/applyTemplate)",
+    "payload_symbol": "AIPromptGenerator.getTemplate templates.understanding",
+    "pairs_with": "docs/standards/prompt/core-query-general.prompt.json"
+  }
+}

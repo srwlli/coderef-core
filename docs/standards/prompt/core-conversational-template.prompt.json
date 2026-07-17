@@ -1,0 +1,38 @@
+{
+  "id": "core-conversational-template",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "task-template",
+  "form": "static-fill",
+  "dialect": "double-brace",
+  "input": {
+    "placeholders": {
+      "conversationHistory": { "type": "string", "required": true, "description": "prior conversation turns filled into the # Conversation History section (defaults to 'No previous conversation.')" },
+      "question": { "type": "string", "required": true, "description": "the current question filled into the # Current Question section" },
+      "context": { "type": "string", "required": true, "description": "retrieved code context (markdown) filled into the # Code Context section" },
+      "additionalInstructions": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file (used by core-qa-template); not filled by the conversational builder" }
+    },
+    "sample": {
+      "conversationHistory": "user: what does authenticate do?\nassistant: ...",
+      "question": "And where is the session created?",
+      "context": "(retrieved code context markdown)"
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "response continues the conversation using prior-turn context",
+      "CodeRef citations maintained; follow-up questions suggested"
+    ]
+  },
+  "provider": {
+    "profile": "rag-user-turn",
+    "notes": "the with-history user-turn template filled by PromptTemplateBuilder.buildConversationalPrompt(); union of prompt-templates.ts double-brace tokens declared (additionalInstructions unused here = WARN only)"
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/rag/answer-generation-service.ts (via PromptTemplateBuilder.buildConversationalPrompt)",
+    "payload_symbol": "CONVERSATIONAL_PROMPT_TEMPLATE",
+    "pairs_with": "docs/standards/prompt/core-system-prompt.prompt.json"
+  }
+}

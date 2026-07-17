@@ -1,0 +1,38 @@
+{
+  "id": "core-qa-template",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "task-template",
+  "form": "static-fill",
+  "dialect": "double-brace",
+  "input": {
+    "placeholders": {
+      "question": { "type": "string", "required": true, "description": "the user's question, filled into the # Question section" },
+      "context": { "type": "string", "required": true, "description": "retrieved code context (markdown) filled into the # Code Context section" },
+      "additionalInstructions": { "type": "string", "required": false, "description": "extra instructions; when absent, derived from user preferences via buildInstructionsFromPreferences()" },
+      "conversationHistory": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file (used by core-conversational-template); not filled by the QA builder" }
+    },
+    "sample": {
+      "question": "How is authentication handled?",
+      "context": "(retrieved code context markdown)",
+      "additionalInstructions": "Provide a clear, detailed answer."
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "answer uses only the supplied code context; missing information is called out explicitly",
+      "CodeRef tags accompany every referenced code element"
+    ]
+  },
+  "provider": {
+    "profile": "rag-user-turn",
+    "notes": "the user-turn template filled by PromptTemplateBuilder.buildQAPrompt(); because the token scanner reads the WHOLE payload file, the union of all double-brace tokens in prompt-templates.ts is declared here (conversationHistory unused by this prompt = WARN only)"
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/rag/answer-generation-service.ts (via PromptTemplateBuilder.buildQAPrompt)",
+    "payload_symbol": "QA_PROMPT_TEMPLATE",
+    "pairs_with": "docs/standards/prompt/core-system-prompt.prompt.json"
+  }
+}

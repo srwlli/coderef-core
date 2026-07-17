@@ -1,0 +1,34 @@
+{
+  "id": "core-query-general",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "context-assembly",
+  "form": "composed",
+  "dialect": "single-brace",
+  "input": {
+    "placeholders": {
+      "query": { "type": "string", "required": true, "description": "the developer's general question, substituted for {query}" },
+      "context": { "type": "string", "required": true, "description": "the synthesized context block (main + related elements), substituted for {context}" }
+    },
+    "sample": {
+      "query": "Tell me about this element.",
+      "context": "## Main Element\n- ID: ...\n## Related Elements ..."
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "response provides relevant analysis and recommendations for the supplied element in context"
+    ]
+  },
+  "provider": {
+    "profile": "context-aware-generation",
+    "notes": "the 'general' (default) entry of AIPromptGenerator.getTemplate(); composed by applyTemplate() substituting {query}/{context} (lowercase single-brace; not scannable — form=composed). Tokens declared honestly for documentation."
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/ai-prompt-generator.ts (AIPromptGenerator.generatePrompt via getTemplate/applyTemplate)",
+    "payload_symbol": "AIPromptGenerator.getTemplate templates.general",
+    "pairs_with": "docs/standards/prompt/core-query-understanding.prompt.json"
+  }
+}

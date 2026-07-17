@@ -1,0 +1,37 @@
+{
+  "id": "core-comparison-prompt",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "task-template",
+  "form": "static-fill",
+  "dialect": "double-brace",
+  "input": {
+    "placeholders": {
+      "context": { "type": "string", "required": true, "description": "the code elements to compare, filled into the prompt body" },
+      "question": { "type": "string", "required": true, "description": "the appropriateness criterion, filled into 'Which might be more appropriate for {{question}}'" },
+      "additionalInstructions": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file; not filled by the comparison builder" },
+      "conversationHistory": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file; not filled by the comparison builder" }
+    },
+    "sample": {
+      "context": "(two or more code elements)",
+      "question": "a high-throughput write path"
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "analysis covers similarities/differences, use cases, quality metrics, and an appropriateness recommendation",
+      "CodeRef tags reference specific elements"
+    ]
+  },
+  "provider": {
+    "profile": "rag-user-turn",
+    "notes": "filled by PromptTemplateBuilder.buildComparisonPrompt() ({{context}} + {{question}}); union of prompt-templates.ts double-brace tokens declared (extra = WARN only)"
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/rag/answer-generation-service.ts (via PromptTemplateBuilder.buildComparisonPrompt)",
+    "payload_symbol": "CODE_COMPARISON_PROMPT",
+    "pairs_with": "docs/standards/prompt/core-system-prompt.prompt.json"
+  }
+}

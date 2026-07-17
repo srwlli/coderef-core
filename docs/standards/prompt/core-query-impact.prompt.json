@@ -1,0 +1,34 @@
+{
+  "id": "core-query-impact",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "context-assembly",
+  "form": "composed",
+  "dialect": "single-brace",
+  "input": {
+    "placeholders": {
+      "query": { "type": "string", "required": true, "description": "the developer's impact/change question, substituted for {query}" },
+      "context": { "type": "string", "required": true, "description": "the synthesized context block (main + related elements + impact context), substituted for {context}" }
+    },
+    "sample": {
+      "query": "What breaks if I change this signature?",
+      "context": "## Main Element\n- ID: ...\n## Impact Context ..."
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "response addresses: direct impact, cascading effects, risk (low/medium/high), testing strategy, and mitigations"
+    ]
+  },
+  "provider": {
+    "profile": "context-aware-generation",
+    "notes": "the 'impact' entry of AIPromptGenerator.getTemplate(); composed by applyTemplate() substituting {query}/{context} (lowercase single-brace; not scannable — form=composed). Tokens declared honestly for documentation."
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/ai-prompt-generator.ts (AIPromptGenerator.generatePrompt via getTemplate/applyTemplate)",
+    "payload_symbol": "AIPromptGenerator.getTemplate templates.impact",
+    "pairs_with": "docs/standards/prompt/core-query-general.prompt.json"
+  }
+}

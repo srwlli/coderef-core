@@ -1,0 +1,36 @@
+{
+  "id": "core-explanation-prompt",
+  "version": "1.0.0",
+  "status": "active",
+  "variant": "task-template",
+  "form": "static-fill",
+  "dialect": "double-brace",
+  "input": {
+    "placeholders": {
+      "context": { "type": "string", "required": true, "description": "the code to explain, filled into the prompt body" },
+      "question": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file; not filled by the explanation builder" },
+      "additionalInstructions": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file; not filled by the explanation builder" },
+      "conversationHistory": { "type": "string", "required": false, "description": "declared for the union of double-brace tokens present in the shared payload file; not filled by the explanation builder" }
+    },
+    "sample": {
+      "context": "(code element(s) to explain)"
+    }
+  },
+  "output": {
+    "format": "markdown",
+    "checks": [
+      "explanation covers what the code does, how it fits the system, dependencies, quality, and usage patterns",
+      "CodeRef tags reference specific elements"
+    ]
+  },
+  "provider": {
+    "profile": "rag-user-turn",
+    "notes": "filled by PromptTemplateBuilder.buildExplanationPrompt(); only {{context}} is substituted, but the union of prompt-templates.ts double-brace tokens is declared because the scanner reads the whole file (unused = WARN only)"
+  },
+  "provenance": {
+    "owner": "CODEREF-CORE",
+    "consumer": "src/integration/rag/answer-generation-service.ts (via PromptTemplateBuilder.buildExplanationPrompt)",
+    "payload_symbol": "CODE_EXPLANATION_PROMPT",
+    "pairs_with": "docs/standards/prompt/core-system-prompt.prompt.json"
+  }
+}
