@@ -60,6 +60,7 @@ import type {
 } from './types.js';
 import type { ElementData } from '../types/types.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
+import { buildFieldIndex, lookupField, type FieldIndex } from './field-index.js';
 
 /**
  * Classification of a single resolved call. Every RawCallFact yields exactly
@@ -374,11 +375,16 @@ export function resolveCalls(state: PipelineState): CallResolution[] {
     );
   }
 
-  // Pass 1: build the project-wide symbol table.
+  // Pass 1: build the project-wide symbol table AND the field/property index
+  // (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 Phase 10, ACG). Both are PURE
+  // functions of state.elements and complete fully before Pass 2 (AC-09). The
+  // field index widens the unknown-receiver tail's candidate source from
+  // method-only symbol-table entries to every method + property definition.
   const symbolTable = buildSymbolTable(state);
+  const fieldIndex = buildFieldIndex(state.elements, state.projectPath);
 
-  // Pass 2: resolve every RawCallFact against the symbol table.
-  return resolveCallsAgainstTable(state, symbolTable);
+  // Pass 2: resolve every RawCallFact against the symbol table + field index.
+  return resolveCallsAgainstTable(state, symbolTable, fieldIndex);
 }
 
 /**
@@ -533,9 +539,16 @@ export function buildSymbolTable(state: PipelineState): SymbolTable {
 export function resolveCallsAgainstTable(
   state: PipelineState,
   symbolTable: SymbolTable,
+  fieldIndex?: FieldIndex,
 ): CallResolution[] {
   const elementsByFile = indexElementsByFile(state.elements);
   const projectPath = state.projectPath;
+  // The field/property index (Phase 10 ACG) is built by resolveCalls in Pass 1
+  // and threaded in. When a caller invokes this Pass-2 entry point directly
+  // (e.g. the two-pass-ordering tests) without it, build it here from the same
+  // state so the unknown-receiver tail resolves identically — Pass 1 is still
+  // fully complete (buildSymbolTable was already called) before Pass 2 begins.
+  const resolvedFieldIndex = fieldIndex ?? buildFieldIndex(state.elements, projectPath);
   // Per-scope `const X = new Y()` map (option 1 + guardrails 1+2): one
   // fresh map per enclosing element. Outer key = callerCodeRefId; inner
   // key = local variable name; value = class name. Built lazily per file
@@ -569,6 +582,7 @@ export function resolveCallsAgainstTable(
         state.importResolutions,
         callerCodeRefId,
         newInitMap,
+        resolvedFieldIndex,
       );
       resolutions.push({
         sourceFile: fact.sourceFile,
@@ -654,6 +668,7 @@ export function classifyMethodCall(
   importResolutions: readonly ImportResolution[],
   callerCodeRefId: string | null,
   newInitMap: NewInitializerMap,
+  fieldIndex: FieldIndex = new Map(),
 ): {
   kind: CallResolutionKind;
   resolvedTargetCodeRefId?: string;
@@ -778,32 +793,50 @@ export function classifyMethodCall(
     }
   }
 
-  // (5)/(6)/(7) Unknown receiver — ambiguous-or-unresolved, never resolved
-  // (DR-PHASE-4-B + guardrail 4). Same-language-family only (STUB-M3GE4S).
-  const calleeEntries = (symbolTable.get(callee) ?? [])
-    .filter(e => e.scope === 'method' && sameLanguageFamily(fact.sourceFile, e.sourceFile));
-  if (calleeEntries.length >= 2) {
+  // (5)/(6)/(7) Unknown receiver — the honest-project tail. FIELD-BASED (ACG)
+  // RESOLUTION (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 Phase 10, Feldthaus
+  // Approximate Call Graph). The builtin / prototype / node-builtin / python-
+  // stdlib / imported-namespace branches above have already won FIRST, so this
+  // consult only ever sees the genuinely-unknown project tail. Consult the
+  // field/property-definition index — which covers BOTH `type:'method'` AND
+  // `type:'property'` definitions (the property coverage buildSymbolTable's
+  // method-only lookup never had) — for everything in the project that DEFINES
+  // this bare property name, filtered to the same language family (STUB-M3GE4S,
+  // enforced inside lookupField).
+  //
+  // GUARDRAIL 4 PRESERVED BY LABELING, NEVER SILENTLY PROMOTING: an ACG edge is
+  // approximate by construction (the receiver type was never proven), so it is
+  // emitted at a DISTINCT reason ('field_based_acg') that maps to a NON-exact
+  // confidence tier. A MULTI-candidate hit stays kind='ambiguous' with the full
+  // set; a SINGLE-candidate hit resolves-provisional exactly like the STUB-6CWWHQ
+  // single_candidate_unknown_receiver tier (kind='resolved' + confidence=
+  // 'provisional'), differing only in the reason string so it is separately
+  // filterable via --min-confidence. Both endpoints exist (candidates are real
+  // element codeRefIds — no fabricated nodes).
+  const fieldCandidates = uniqueIds(
+    lookupField(fieldIndex, callee, fact.sourceFile).map(d => d.codeRefId),
+  );
+  if (fieldCandidates.length >= 2) {
     return {
       kind: 'ambiguous',
-      candidates: uniqueIds(calleeEntries.map(e => e.codeRefId)),
+      candidates: fieldCandidates,
+      reason: 'field_based_acg',
     };
   }
-  if (calleeEntries.length === 1) {
-    // Confidence-tiered resolution (STUB-6CWWHQ, Phase 2). An unknown receiver
-    // whose method name has EXACTLY one candidate in the same language family
-    // was previously parked kind='ambiguous' by guardrail-4. Instead RESOLVE to
-    // that one candidate but LABEL it confidence='provisional' — guardrail-4 is
-    // preserved (we never bind a MULTI-candidate unknown receiver; that path
-    // above stays ambiguous), and the lone candidate is kept for audit. This
-    // moves the single-candidate slice out of ambiguous_count into a
-    // provisional sub-tier of the resolved population.
-    const only = uniqueIds(calleeEntries.map(e => e.codeRefId));
+  if (fieldCandidates.length === 1) {
+    // Feldthaus single-candidate approximation. RESOLVE to the lone definition
+    // but LABEL it provisional — guardrail-4 is honored (a MULTI-candidate
+    // unknown receiver above stays ambiguous), and the candidate is retained for
+    // audit. A single-element set is STILL an approximation (the receiver was
+    // never proven to be that type); the provisional tier + field_based_acg
+    // reason say exactly that. This is the surface that moves the 64%
+    // receiver_not_in_symbol_table slice into a labeled, filterable ACG tier.
     return {
       kind: 'resolved',
-      resolvedTargetCodeRefId: only[0],
-      candidates: only,
+      resolvedTargetCodeRefId: fieldCandidates[0],
+      candidates: fieldCandidates,
       confidence: 'provisional',
-      reason: 'single_candidate_unknown_receiver',
+      reason: 'field_based_acg',
     };
   }
   // Zero project candidates. STUB-KWDA8V Phase 3, sub-stage 3c (operator ruling

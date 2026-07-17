@@ -119,7 +119,12 @@ describe('Phase 4 confidence-tiered resolution (STUB-6CWWHQ)', () => {
     expect(call?.resolvedTargetCodeRefId).toBe('@Method/src/widget.ts#Widget.render:3');
     // The lone candidate is retained for audit — exactly one, no dup.
     expect(call?.candidates).toEqual(['@Method/src/widget.ts#Widget.render:3']);
-    expect(call?.reason).toBe('single_candidate_unknown_receiver');
+    // Phase 10 (ACG) generalized the unknown-receiver tail onto the field/
+    // property index, so the reason label for this single-candidate case is now
+    // 'field_based_acg' (was 'single_candidate_unknown_receiver'). The behavior —
+    // resolved + provisional + lone candidate retained — is byte-identical; only
+    // the reason string (audit provenance) changed. The tier stays 'heuristic'.
+    expect(call?.reason).toBe('field_based_acg');
   });
 
   it('two candidates on an unknown receiver STAY ambiguous (guardrail-4 preserved)', () => {

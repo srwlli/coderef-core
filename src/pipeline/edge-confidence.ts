@@ -29,8 +29,10 @@
  *                 Not an intra-project target, but NOT a guess — high provenance.
  *   - `heuristic` the edge is resolved but PROVISIONAL: bound to its single
  *                 candidate while the receiver was unknown
- *                 (`single_candidate_unknown_receiver`). Labeled, not silently
- *                 trusted — verify before auto-acting.
+ *                 (`single_candidate_unknown_receiver`, or the Phase-10
+ *                 `field_based_acg` single-candidate Approximate-Call-Graph
+ *                 hit). Labeled, not silently trusted — verify before
+ *                 auto-acting.
  *   - `inferred`  the edge could NOT be bound to a single confirmed target
  *                 (unresolved / ambiguous / stale). LOWEST provenance. `inferred`
  *                 is not "wrong" — it is "lower-provenance: verify before you
@@ -117,21 +119,29 @@ const INFERRED_STATUSES: ReadonlySet<string> = new Set([
  *
  * The classifier is STATUS-PRIMARY with a SINGLE reason/evidence override:
  *
- *   1. `resolved` + `evidenceConfidence === 'provisional'` → `heuristic`
- *      (the `single_candidate_unknown_receiver` case, STUB-6CWWHQ). This is the
- *      ONLY case where `reason`/evidence changes the tier away from what status
- *      alone would give.
- *   2. `resolved` (no provisional flag)                    → `exact`
- *   3. external | builtin | typeOnly | dynamic             → `strong`
- *   4. unresolved | ambiguous | stale                      → `inferred`
- *   5. any UNKNOWN `resolutionStatus`                      → `inferred`
+ *   1. `resolved` + `reason === 'field_based_acg'`         → `heuristic`
+ *      (Phase-10 ACG defensive guard, WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001).
+ *      A field-based Approximate-Call-Graph edge is approximate BY CONSTRUCTION
+ *      (the receiver type was never proven), so it can NEVER be `exact` — even
+ *      if a future caller forgot the provisional evidence flag. Pinned here at
+ *      the classifier, not left to depend on the caller.
+ *   2. `resolved` + `evidenceConfidence === 'provisional'` → `heuristic`
+ *      (the `single_candidate_unknown_receiver` case, STUB-6CWWHQ). In practice a
+ *      `field_based_acg` single hit also carries this flag, so (1) and (2) agree;
+ *      (1) is the explicit belt-and-suspenders guard.
+ *   3. `resolved` (no provisional flag, no ACG reason)     → `exact`
+ *   4. external | builtin | typeOnly | dynamic             → `strong`
+ *   5. unresolved | ambiguous | stale                      → `inferred`
+ *      (a MULTI-candidate `field_based_acg` hit is `ambiguous` and lands here as
+ *      `inferred` — correctly the lowest provenance).
+ *   6. any UNKNOWN `resolutionStatus`                      → `inferred`
  *      (fail-safe: unknown provenance is the LEAST trusted, never silently
  *      promoted to `exact`).
  *
- * `reason` is accepted for forward-compatibility and to keep the call site
- * self-documenting, but only the provisional-evidence signal currently changes
- * the outcome; an unknown or absent `reason` never alters the tier (status
- * decides). This keeps the mapping table small and auditable.
+ * `reason` now carries ONE tier-affecting override (`field_based_acg`, the
+ * never-exact guard above); otherwise it is informational and an unknown or
+ * absent `reason` never alters the tier (status decides). This keeps the mapping
+ * table small and auditable.
  *
  * @param resolutionStatus the edge's `resolutionStatus` (8-value enum, or any
  *   string — unknowns fall back to `inferred`).
@@ -145,8 +155,14 @@ export function classifyEdgeConfidence(
   evidenceConfidence?: string,
 ): EdgeConfidenceTier {
   if (resolutionStatus === 'resolved') {
-    // The one reason/evidence-keyed override: a provisional single-candidate
-    // resolution is bound but its receiver was unknown — heuristic, not exact.
+    // Phase-10 ACG never-exact guard: a field-based Approximate-Call-Graph edge
+    // is approximate by construction (receiver type unproven). It can NEVER be
+    // `exact`, independent of whether the caller remembered the provisional
+    // evidence flag. Pinned here so the LABEL-never-promote invariant holds at
+    // the classifier boundary.
+    if (reason === 'field_based_acg') return 'heuristic';
+    // The provisional single-candidate resolution is bound but its receiver was
+    // unknown — heuristic, not exact (STUB-6CWWHQ).
     if (evidenceConfidence === 'provisional') return 'heuristic';
     return 'exact';
   }

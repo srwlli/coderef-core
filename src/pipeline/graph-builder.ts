@@ -628,9 +628,10 @@ export function buildEdges(
         scopePath: cr.scopePath.join('.'),
       };
       // Confidence tier (STUB-6CWWHQ, Phase 2): a provisional resolved call
-      // (single_candidate_unknown_receiver) stamps the additive evidence flag
-      // AND keeps its lone candidate on the edge for audit. A normally-resolved
-      // call carries neither — evidence.confidence stays absent.
+      // (single_candidate_unknown_receiver OR the Phase-10 field_based_acg
+      // single-candidate ACG hit) stamps the additive evidence flag AND keeps
+      // its lone candidate on the edge for audit. A normally-resolved call
+      // carries neither — evidence.confidence stays absent.
       const provisional = cr.confidence === 'provisional';
       if (provisional) evidence.confidence = 'provisional';
       const id = computeEdgeId({
@@ -645,6 +646,12 @@ export function buildEdges(
         // Provisional resolved edges retain their single candidate for audit;
         // normally-resolved edges have no candidates.
         candidates: provisional ? cr.candidates : undefined,
+        // Pass the resolver reason through so a provisional resolved edge is
+        // separately identifiable and filterable by its origin — notably
+        // 'field_based_acg' (Phase 10 ACG) vs 'single_candidate_unknown_receiver'.
+        // The tier is unaffected (both stay 'heuristic' via evidence.confidence);
+        // reason is additive audit provenance on the exported edge.
+        reason: cr.reason,
       }));
       continue;
     }
