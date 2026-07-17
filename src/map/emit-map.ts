@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability map-emit
- * @exports MAP_DATA_PLACEHOLDER, GenerateMapResult, viewerAssetDir, embedJson, emitViewer, generateMap
+ * @exports MAP_DATA_PLACEHOLDER, GenerateMapResult, GenerateMapOptions, viewerAssetDir, embedJson, emitViewer, generateMap
  * @used_by src/cli/coderef-map.ts, src/cli/coderef-mcp-server.ts
  */
 
@@ -20,6 +20,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { MapData, projectMapData, ProjectMapDataOptions } from './project-map-data.js';
+import { extractGitHistory, ExtractGitHistoryOptions } from './git-history.js';
 
 export const MAP_DATA_PLACEHOLDER = '/*__CODEREF_MAP_DATA__*/null';
 
@@ -73,6 +74,23 @@ export interface GenerateMapResult {
   outDir: string;
   dataPath: string;
   htmlPath: string;
+  /**
+   * Git extraction outcome (present only when git was requested). reason is set
+   * when the history could not be extracted (non-git repo, git absent, empty).
+   */
+  gitReason?: string;
+}
+
+/**
+ * Options for generateMap: the pure projection options plus the OPT-IN git
+ * switch. `git: true` is where the ONE impure step is invoked — generateMap (not
+ * the pure projectMapData) runs extractGitHistory and forwards the plain record.
+ */
+export interface GenerateMapOptions extends ProjectMapDataOptions {
+  /** Extract + attach the git-behavioral block (default false — opt-in). */
+  git?: boolean;
+  /** Extraction window bounds forwarded to git-history.ts. */
+  gitExtractOptions?: ExtractGitHistoryOptions;
 }
 
 /**
@@ -80,13 +98,24 @@ export interface GenerateMapResult {
  * <projectRoot>/.coderef/graph.json is absent — the CALLER owns the
  * scan-if-absent decision (CLI runs scan+populate; MCP relies on the server's
  * bounded ensureArtifacts).
+ *
+ * IMPURITY BOUNDARY: when options.git is set, generateMap runs the impure
+ * extractGitHistory here and passes the resulting plain GitHistory into the pure
+ * projectMapData via options.gitHistory. projectMapData never shells to git.
  */
 export function generateMap(
   projectRoot: string,
   outDir?: string,
-  options?: ProjectMapDataOptions,
+  options?: GenerateMapOptions,
 ): GenerateMapResult {
-  const data = projectMapData(projectRoot, options);
+  let gitReason: string | undefined;
+  let projectionOptions: ProjectMapDataOptions | undefined = options;
+  if (options?.git) {
+    const extraction = extractGitHistory(projectRoot, options.gitExtractOptions);
+    gitReason = extraction.reason;
+    projectionOptions = { ...options, git: true, gitHistory: extraction.history };
+  }
+  const data = projectMapData(projectRoot, projectionOptions);
   const out = outDir || path.join(projectRoot, '.coderef', 'map');
   emitViewer(out, JSON.stringify(data));
   return {
@@ -94,5 +123,6 @@ export function generateMap(
     outDir: out,
     dataPath: path.join(out, 'data.json'),
     htmlPath: path.join(out, 'graph.html'),
+    ...(gitReason ? { gitReason } : {}),
   };
 }

@@ -215,3 +215,52 @@ describe('projectMapData — real-repo smoke (coderef-core)', () => {
     expect(bytes).toBeLessThan(5 * 1024 * 1024);
   });
 });
+
+describe('projectMapData — git-behavioral block (opt-in, additive)', () => {
+  let root: string;
+
+  beforeAll(() => {
+    root = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-map-git-'));
+    writeFixture(root); // src/a.ts <-> src/b.ts have a static edge; src/c.ts isolated
+  });
+  afterAll(() => {
+    fs.rmSync(root, { recursive: true, force: true });
+  });
+
+  const syntheticHistory = {
+    window: { maxCount: 500, since: null, commitsScanned: 4, headSha: 'fixture', shallow: false },
+    files: [
+      { file: 'src/a.ts', commitCount: 4, linesAdded: 40, linesDeleted: 4 },
+      { file: 'src/b.ts', commitCount: 2, linesAdded: 20, linesDeleted: 2 },
+      { file: 'src/c.ts', commitCount: 3, linesAdded: 30, linesDeleted: 3 },
+    ],
+    coChanges: [
+      { a: 'src/a.ts', b: 'src/b.ts', coChangeCount: 2 }, // has a static edge -> corroborated
+      { a: 'src/a.ts', b: 'src/c.ts', coChangeCount: 3 }, // NO static edge -> drift candidate
+    ],
+  };
+
+  it('omits the git block by default (base path is git-independent)', () => {
+    const data = projectMapData(root);
+    expect(data.git).toBeUndefined();
+    expect(data.meta.schemaVersion).toBe('1.5.0');
+  });
+
+  it('omits the git block (with a warning) when git requested but no history supplied', () => {
+    const data = projectMapData(root, { git: true, gitHistory: null });
+    expect(data.git).toBeUndefined();
+    expect(data.meta.warnings.some(w => w.includes('git block requested but no git history'))).toBe(true);
+  });
+
+  it('attaches the git block when a history is supplied, applying the co-change-minus-static-edge diff', () => {
+    const data = projectMapData(root, { git: true, gitHistory: syntheticHistory });
+    expect(data.git).toBeDefined();
+    // a/c has no static edge -> surfaced as drift; a/b has one -> corroborated, excluded.
+    expect(data.git!.couplingDrift.top).toEqual([{ a: 'src/a.ts', b: 'src/c.ts', coChangeCount: 3 }]);
+    expect(data.git!.couplingDrift.summary.corroboratedPairCount).toBe(1);
+    // churn×size: src/a.ts has the most commits; elementCount comes from the projection.
+    expect(data.git!.churnHotspots.top[0].file).toBe('src/a.ts');
+    // provenance window rides along
+    expect(data.git!.window.commitsScanned).toBe(4);
+  });
+});

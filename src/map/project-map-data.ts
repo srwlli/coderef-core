@@ -3,7 +3,7 @@
  * @layer service
  * @capability map-data-projection
  * @exports MapElement, MapNode, MapEdge, MapHotspot, MapOverlays, MapMeta, MapData, MapProjectionError, projectMapData
- * @used_by src/cli/coderef-map.ts, src/cli/coderef-mcp-server.ts
+ * @used_by src/cli/coderef-map.ts, src/cli/coderef-mcp-server.ts, src/map/emit-map.ts
  */
 
 /**
@@ -43,6 +43,14 @@
  *   unresolved/ambiguous raw-edge counts — attaching the schema-additive
  *   `metrics` block (test linkage, documentation, unresolved refs, largest
  *   modules, most dependencies). Independent of options.analytics.
+ * - Git-behavioral (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2): OPT-IN. The
+ *   caller extracts a plain GitHistory record (the ONE impure step lives in
+ *   src/map/git-history.ts, invoked by generateMap when options.git is set) and
+ *   passes it in via options.gitHistory. This projection stays PURE — it only
+ *   feeds that data record plus the projected nodes/edges to the pure
+ *   src/map/git-behavioral.ts, attaching the schema-additive `git` block
+ *   (churn×size hotspots, change-coupling drift). Absent by default and on any
+ *   non-git repo, so the base map path stays git-independent.
  * - Pure data. This module must never know HTML exists.
  */
 
@@ -53,6 +61,8 @@ import { computeGraphAnalytics, MapAnalytics } from './graph-analytics.js';
 import { computeEdgeEvidence, MapEdgeEvidence } from './edge-evidence.js';
 import { computeLayerDrift, MapLayerDrift, LayersSpec } from './layer-drift.js';
 import { computeEngineeringMetrics, MapMetrics } from './engineering-metrics.js';
+import { computeGitBehavioral, GitBehavioral } from './git-behavioral.js';
+import { GitHistory } from './git-history.js';
 
 export interface MapElement {
   name: string;
@@ -133,6 +143,11 @@ export interface MapData {
   drift?: MapLayerDrift;
   /** Engineering metrics over this projection (absent when options.metrics === false). */
   metrics?: MapMetrics;
+  /**
+   * Git-behavioral analytics (absent unless options.git AND a GitHistory was
+   * extracted). Opt-in; absent on non-git repos and by default.
+   */
+  git?: GitBehavioral;
 }
 
 export class MapProjectionError extends Error {
@@ -164,6 +179,22 @@ export interface ProjectMapDataOptions {
   layersPath?: string;
   /** Compute the metrics block (default true; independent of `analytics`). */
   metrics?: boolean;
+  /**
+   * Attach the git-behavioral block (default false — OPT-IN). Requires
+   * `gitHistory` to be supplied; the block is absent when it is null/absent.
+   * The git READ itself is the caller's job (generateMap runs the impure
+   * src/map/git-history.ts extractor); this projection only consumes the record.
+   */
+  git?: boolean;
+  /**
+   * Pre-extracted git history (the caller-run impure step). Null/absent =>
+   * git block absent with a declared warning. Only consulted when `git` is true.
+   */
+  gitHistory?: GitHistory | null;
+  /** Max churn-hotspot + coupling-drift entries in the git block (default 25 each). */
+  gitRankingCap?: number;
+  /** Co-change count floor for coupling drift (default 2). */
+  gitMinCoChange?: number;
 }
 
 const HOTSPOT_CAP_DEFAULT = 25;
@@ -532,10 +563,35 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     warnings.push(...metrics.warnings);
   }
 
+  // ---- git-behavioral (OPT-IN; pure over the caller-extracted GitHistory) ----
+  // The impure git read happens in the caller (generateMap → git-history.ts);
+  // this projection only consumes the plain record, so it stays pure. Absent by
+  // default and on any non-git repo — the base path stays git-independent.
+  let git: GitBehavioral | undefined;
+  if (options.git) {
+    if (options.gitHistory) {
+      git = computeGitBehavioral(
+        options.gitHistory,
+        nodes.map(n => ({ id: n.id, elementCount: n.elementCount })),
+        edges,
+        {
+          ...(options.gitRankingCap !== undefined
+            ? { hotspotTop: options.gitRankingCap, couplingTop: options.gitRankingCap }
+            : {}),
+          ...(options.gitMinCoChange !== undefined ? { minCoChange: options.gitMinCoChange } : {}),
+        },
+      );
+    } else {
+      warnings.push(
+        'git block requested but no git history was extracted (non-git repo, git absent, or empty history); git block omitted',
+      );
+    }
+  }
+
   const projectPath = normalizeSlashes(path.resolve(projectRoot));
   return {
     meta: {
-      schemaVersion: '1.4.0',
+      schemaVersion: '1.5.0',
       projectPath,
       repoName: path.basename(projectPath),
       generatedAt: new Date().toISOString(),
@@ -553,5 +609,6 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     ...(analytics ? { analytics } : {}),
     ...(drift ? { drift } : {}),
     ...(metrics ? { metrics } : {}),
+    ...(git ? { git } : {}),
   };
 }

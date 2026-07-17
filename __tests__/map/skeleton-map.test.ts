@@ -47,7 +47,7 @@ function makeEdge(source: string, target: string, weight = 1): MapEdge {
 function makeData(nodes: MapNode[], edges: MapEdge[]): MapData {
   return {
     meta: {
-      schemaVersion: '1.4.0',
+      schemaVersion: '1.5.0',
       projectPath: '/fixture',
       repoName: 'fixture',
       generatedAt: '2026-01-01T00:00:00.000Z',

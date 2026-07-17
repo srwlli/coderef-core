@@ -29,7 +29,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
 | [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 24 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
-| [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens` |
+| [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens`, `--git` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
@@ -155,6 +155,11 @@ npx coderef-map /path/to/any/repo --force-scan --no-open
 # exported symbol signatures. Prompt-injectable agent orientation. Implies
 # --no-open.
 npx coderef-map /path/to/any/repo --skeleton --tokens 1600
+
+# Git-behavioral block (opt-in): churn×size hotspots + change-coupling drift
+# (files that co-change in git history but have no static import/call edge).
+# Requires a git work tree; degrades to an absent block on a non-git repo.
+npx coderef-map /path/to/any/repo --git --no-open
 ```
 
 ### Options
@@ -170,12 +175,13 @@ npx coderef-map /path/to/any/repo --skeleton --tokens 1600
 | `--layers <path>` | Layers spec (`layers.json`) enriching the drift block with vocabulary + entry/leaf surfaces (below). **Explicit opt-in** — never auto-resolved, so map output stays machine-independent | off (spec-less drift) |
 | `--skeleton` | Also emit the token-budgeted plaintext skeleton map to stdout and `.coderef/map/skeleton.md` (below). Implies `--no-open` | off |
 | `--tokens <N>` | Token budget for `--skeleton` | `1600` |
+| `--git` | Attach the git-behavioral block (below): churn×size hotspots + change-coupling drift. **Opt-in** — requires a git work tree; degrades to an absent block on a non-git repo | off |
 
 ### Output
 
 | File | Purpose |
 |------|---------|
-| `.coderef/map/data.json` | File-level MapData v1.4: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below). Same file the MCP `map` tool returns to agents. |
+| `.coderef/map/data.json` | File-level MapData v1.5: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below), and — with `--git` — the `git` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
 | `.coderef/map/skeleton.md` | **`--skeleton` only.** Token-budgeted plaintext repo map (below). Same renderer the MCP `map` tool's `format:"skeleton"` returns inline. |
@@ -304,6 +310,33 @@ no-data nodes render neutral gray (distinct from an observed zero); the node
 detail panel gains a `Metrics` row (per-family values for the selected file).
 Pre-1.4 `data.json` disables the toggle + select gracefully.
 
+### Git-behavioral block (`data.git`, MapData v1.5, `--git` opt-in)
+
+The first git-history signal in coderef-core
+(`src/map/git-behavioral.ts` + `src/map/git-history.ts`,
+WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2; CodeScene / code-maat pattern).
+**Opt-in** via `--git` (CLI) or `git:true` (MCP) — the base map path stays
+git-independent, so a non-git repo, a git-less PATH, or an empty history simply
+omits the block with a declared `meta.warnings` line (no-data ≠ zero). The git
+**read** is isolated in one impure module (`git-history.ts`, the only code that
+shells to `git`); everything downstream is pure over the extracted record, so
+the analytics are deterministic and unit-tested without a repo. Extraction is
+bounded by a commit window (`--max-count` default 500, optional `--since`); the
+resolved window is stamped into the block. **Surfaces, not verdicts** — high
+churn tracks active development as much as instability, and a coupling-drift
+pair is a *candidate* hidden dependency, not a proven missing edge.
+
+| Field | Contents |
+|-------|----------|
+| `window` | `{maxCount, since, commitsScanned, headSha, shallow}` — the extraction provenance and bound. `shallow:true` flags a shallow clone (window partial by depth). |
+| `churnHotspots` | `summary` `{churnedFileCount, scoredFileCount}`; `top[]` `{file, commitCount, elementCount, score, linesAdded, linesDeleted}` ranked by **churn × module-size** (`commitCount × elementCount`), capped (default 25). Churned files absent from the projection are counted but not scored (no size proxy). |
+| `couplingDrift` | `summary` `{coChangePairCount, corroboratedPairCount, driftPairCount, minCoChange}`; `top[]` `{a, b, coChangeCount}` = file pairs that **co-change in git but have NO static import/call edge** (the set difference `co-change − static edge`), ranked by co-change count, capped (default 25). Pairs *with* a static edge are corroboration (counted, not listed). A `minCoChange` floor (default 2) drops single-commit noise. |
+| `note` | Per-surface + block-level surfaces-not-verdicts notes. |
+
+Viewer overlay for the git block is out of scope for this phase (data-first;
+the overlay is a follow-up). Read it from `data.json` or via the MCP summary
+fields below.
+
 ### Agent parity
 
 The MCP server's `map` tool (see below) emits/refreshes the identical
@@ -311,9 +344,12 @@ The MCP server's `map` tool (see below) emits/refreshes the identical
 parity-tested byte-identical modulo timestamp, and summarizes the analytics
 block as `community_count` + `isolated_count`, the evidence blocks as
 `evidence_edge_count`, the drift block as `drift_outlier_count` +
-`declared_layer_count`, and the metrics block as `untested_src_count` +
-`undocumented_file_count` (each null when reading an older `data.json`).
-Agents query `data.json`; humans open `graph.html`.
+`declared_layer_count`, the metrics block as `untested_src_count` +
+`undocumented_file_count`, and — with `git:true` — the git block as
+`git_commits_scanned` + `churn_hotspot_count` + `coupling_drift_count`
+(plus `git_block_reason` naming why the block is absent on a non-git repo).
+Each summary field is null when reading an older `data.json` or when the block
+was not requested. Agents query `data.json`; humans open `graph.html`.
 
 ---
 

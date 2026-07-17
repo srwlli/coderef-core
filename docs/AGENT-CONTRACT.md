@@ -1,6 +1,6 @@
 # Agent Usage Contract — `@coderef/core`
 
-**Last updated:** 2026-07-17 (MCP `map` tool + MapData v1.4 engineering-metrics overlays; skeleton-map `format:"skeleton"`)
+**Last updated:** 2026-07-17 (MCP `map` tool + MapData v1.5: engineering-metrics overlays, skeleton-map `format:"skeleton"`, git-behavioral `git:true`)
 **Status:** post-rebuild canonical agent contract
 
 This is the canonical contract for **LLM agents and downstream automation** that consume `@coderef/core` artifacts. It tells you what to read, what to ignore, what the gates mean, and how to interpret exit codes — without requiring you to read the source.
@@ -67,7 +67,7 @@ Header-less elements are skipped with `header_status_*` reasons by default (DR-P
 
 `coderef-mcp-server` (MCP domain `coderef-core`, registered via `.mcp.json`) exposes the artifacts above as 24 tools — see the tool table in [docs/CLI.md § coderef-mcp-server](./CLI.md#coderef-mcp-server) for the authoritative list. Every tool requires `project_root` (the server is repo-agnostic; there is no default repo). Most are read-only (`what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`, `hotspots`, `cycles`, `what_exports`, `diff_impact`, `rag_search`, `pack_context`, `rename_preview`, `map`, …); `reindex` and `rag_index` write, confined to `<project_root>/.coderef/`. If your runtime is MCP-capable, use these instead of reading `graph.json`/`index.json` directly — the server is typed against `ExportedGraph`, traverses only `resolved` edges, and returns ambiguity envelopes (≤5 candidates) rather than guessing. `validation_status` returns the 14-field report verbatim.
 
-**The `map` tool is the agent entry point to the repo map** (MapData v1.4). Its response carries triage-ready summary fields — `node_count`, `edge_count`, `community_count`, `isolated_count`, `evidence_edge_count`, `declared_layer_count`, `drift_outlier_count`, `untested_src_count`, `undocumented_file_count` (the last two are `null` on pre-1.4 data) — plus `data_path` pointing at the full `.coderef/map/data.json` (nodes/edges + the additive `analytics`, per-edge `evidence`, `drift`, and `metrics` blocks). Treat every block as a **surface, not a verdict**: a file with zero test in-edges is a *candidate*, not "untested"; absence of index data is *no data*, not zero. See [docs/MAP-USER-GUIDE.md](./MAP-USER-GUIDE.md).
+**The `map` tool is the agent entry point to the repo map** (MapData v1.5). Its response carries triage-ready summary fields — `node_count`, `edge_count`, `community_count`, `isolated_count`, `evidence_edge_count`, `declared_layer_count`, `drift_outlier_count`, `untested_src_count`, `undocumented_file_count` (the last two are `null` on pre-1.4 data) — plus `data_path` pointing at the full `.coderef/map/data.json` (nodes/edges + the additive `analytics`, per-edge `evidence`, `drift`, and `metrics` blocks). Treat every block as a **surface, not a verdict**: a file with zero test in-edges is a *candidate*, not "untested"; absence of index data is *no data*, not zero. See [docs/MAP-USER-GUIDE.md](./MAP-USER-GUIDE.md).
 
 **For first-contact orientation, call `map` with `format: "skeleton"`.** Instead of a `data_path` you have to open, the response carries the repo map **inline** as `skeleton_text`: a token-budgeted, centrality-ranked plaintext listing — files ordered by how depended-on they are, each with its top exported symbol signatures. This is the cheapest way to answer "what is this repo and where do the load-bearing files live" without spending your first several calls reconstructing it by hand. Contract to rely on:
 
@@ -77,6 +77,13 @@ Header-less elements are skipped with `header_status_*` reasons by default (DR-P
 - **Same surfaces-not-verdicts rule.** A high-centrality file is load-bearing, not "important." Use the skeleton to decide *where to look next* (then drill in via `data_path`, `what_calls`, `impact_of`, `source_of`), never as a judgment.
 
 The identical artifact is available off-MCP as `coderef-map <repo> --skeleton [--tokens N]` (writes `.coderef/map/skeleton.md`) — one renderer, both surfaces.
+
+**For behavioral signal — how the code changed, not just how it's wired — call `map` with `git: true`** (opt-in; MapData v1.5). This attaches a `git` block and adds three summary fields: `git_commits_scanned`, `churn_hotspot_count`, `coupling_drift_count`. It surfaces two things structure alone cannot:
+
+- **Churn × module-size hotspots** — `git.churnHotspots.top[]` ranks files by `commitCount × elementCount` (element count is the size proxy; coderef has no cyclomatic-complexity metric and this does not invent one). A hotspot is a big, frequently-changed file — a place to *look*.
+- **Change-coupling drift** — `git.couplingDrift.top[]` lists file pairs that **co-change in git history but have no static import/call edge between them**. These are candidate hidden dependencies that `impact_of` structurally cannot surface (no edge to traverse). Use it to widen a blast-radius check the static graph would under-report — then confirm in the code. A pair *with* a static edge is corroboration, counted but not listed.
+
+Contract to rely on: the git read is **opt-in and any-repo-safe** — on a non-git repo, a git-less PATH, or an empty history the block is simply absent and `git_block_reason` names why (absence is *no data*, never zero churn). Extraction is bounded by a commit window stamped into `git.window` (with a `shallow` flag when the clone is shallow — the window is partial by depth). **Surfaces, not verdicts:** high churn tracks active development as much as instability; a coupling-drift pair is a *candidate*, not a proven missing edge. Off-MCP: `coderef-map <repo> --git`.
 
 ---
 

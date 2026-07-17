@@ -10,13 +10,13 @@ tracks: src/map/, assets/map-viewer/, src/cli/coderef-map.ts, src/cli/coderef-mc
 
 # CodeRef Repo Map — User Guide
 
-The repo map is an interactive, file-level picture of any repo that has been scanned into `.coderef/`: every file is a node, every aggregated import/call relationship is an edge, and four enrichment blocks — graph analytics, per-edge evidence, layer drift, and engineering metrics — layer signal on top. This guide walks you from a bare repo to exploring the map in the browser (or from an agent), and explains how to read what it shows you without over-reading it.
+The repo map is an interactive, file-level picture of any repo that has been scanned into `.coderef/`: every file is a node, every aggregated import/call relationship is an edge, and enrichment blocks — graph analytics, per-edge evidence, layer drift, engineering metrics, and an opt-in git-behavioral block — layer signal on top. This guide walks you from a bare repo to exploring the map in the browser (or from an agent), and explains how to read what it shows you without over-reading it.
 
 ## Table of Contents
 
 - [Purpose](#purpose)
 - [Prerequisites](#prerequisites)
-- [Steps](#steps) — scan · generate · serve · explore the viewer · read the Metrics overlay · agent path · read data.json · skeleton map
+- [Steps](#steps) — scan · generate · serve · explore the viewer · read the Metrics overlay · agent path · read data.json · skeleton map · git-behavioral block
 - [Verification](#verification)
 - [Troubleshooting](#troubleshooting)
 - [Revision History](#revision-history)
@@ -25,7 +25,7 @@ The repo map is an interactive, file-level picture of any repo that has been sca
 
 Use the map when you want to *see* a codebase instead of grepping it: which files cluster together, where the hotspots and cycles are, which modules bridge otherwise-separate regions, where declared architecture disagrees with detected structure, and which files carry engineering risk signals (no test in-edges, non-defined semantic headers, unresolved references, unusual size or coupling).
 
-Two audiences share one identical data set (`MapData`, schema v1.4):
+Two audiences share one identical data set (`MapData`, schema v1.5):
 
 - **Humans** use the bundled viewer (`graph.html`) — canvas force layout, search, detail panel, and exclusive overlay toggles.
 - **Agents** use the MCP `map` tool, which returns triage-ready summary counts plus `data_path` to the full `data.json`, or — with `format: "skeleton"` — a token-budgeted, centrality-ranked plaintext repo map returned inline for fast orientation (step 8). The `/coderef-map` skill wraps the same surface.
@@ -109,11 +109,12 @@ Agents call the MCP `map` tool (server `coderef-core`, `project_root` required).
 
 Top-level shape (all enrichment blocks schema-additive, each independently disableable at generation time):
 
-- `meta` — `schemaVersion` (`1.4.0`), repo name, counts, and `warnings[]` (every truncation the generator applied is declared here — silence means nothing was dropped).
+- `meta` — `schemaVersion` (`1.5.0`), repo name, counts, and `warnings[]` (every truncation the generator applied is declared here — silence means nothing was dropped).
 - `nodes[]` / `edges[]` — files and aggregated relationships; edges carry `evidence` (provenance class, capped line-sorted samples, ambiguity counts).
 - `analytics` — communities + per-file assignments, degree/betweenness centrality (exact ≤500 files, stride-sampled above), bridge nodes, Ce/Ca coupling, dead-code candidates.
 - `drift` — declared-layer coverage, layer→layer dependency matrix, per-community composition/purity, outliers; plus vocabulary/invariant surfaces when a `--layers` spec was provided.
 - `metrics` — the five families above. File-bounded records are complete (uncapped); *rankings* are capped (25; zero-test list 200) with one aggregate warning each.
+- `git` — **opt-in** (`--git` / `git:true`), absent otherwise and on any non-git repo. Churn×module-size hotspots and change-coupling drift (co-change pairs with no static edge) over a bounded commit window (see step 9).
 
 ### 8. Skeleton map (fast orientation, for agents especially)
 
@@ -141,6 +142,27 @@ How to read it (and how not to over-read it):
 - **Truncation is always declared** in a trailing `## truncation` section: omitted files, reduced-detail files, capped symbol lists, and — on a header-less repo — the fall back to exported-names-only (no signatures). Silence there means nothing was dropped.
 - **Surfaces, not verdicts** — a high-centrality file is load-bearing, not "important" or "good." Same rule as every other block: it tells you where to look.
 
+### 9. Git-behavioral block (opt-in behavioral signal)
+
+Every block so far is a projection of *structure* — what the code declares and imports right now. The **git-behavioral block** adds the one thing structure can't see: *how the code has changed over time*. It is **opt-in** — pass `--git` (CLI) or `git: true` (MCP `map` tool) — because reading git history is the only impure, checkout-dependent input in the whole map, so the base path stays git-independent (any repo, CI without history, a non-git directory).
+
+```bash
+# Attach the git block: churn×size hotspots + change-coupling drift
+npx coderef-map . --git --no-open
+```
+
+It surfaces two things (CodeScene / code-maat pattern):
+
+- **Churn × module-size hotspots** — files ranked by `commitCount × elementCount`. coderef has no cyclomatic-complexity metric and this doesn't invent one; element count is the size proxy. A hotspot is a big file that changes a lot — a place worth *looking*, not a defect.
+- **Change-coupling drift** — file pairs that **co-change in git history but have no static import/call edge between them**. This is the set difference "co-change − static edge": candidate hidden dependencies that `impact_of` cannot see, because there is no edge to traverse. A pair that co-changes *and* has a static edge is corroboration, not news, so it's counted but not listed.
+
+How to read it (and how not to over-read it):
+
+- **No-data vs zero, again.** On a non-git repo (or one with git absent from PATH, or an empty history), the block is simply **absent** and `meta.warnings` says why — over MCP the `git_block_reason` field names it. Absence means "not measured here," never "zero churn."
+- **The window is declared.** Extraction is bounded (`--max-count` default 500, optional `--since`); `git.window` records exactly what was scanned, including a `shallow` flag when the clone is shallow (the window is partial by depth). The observation is only as complete as the window.
+- **Surfaces, not verdicts.** High churn tracks active feature work as much as instability; a coupling-drift pair is a *candidate* hidden dependency to investigate in the code, not a proven missing edge.
+- The viewer has no git overlay yet (data-first this phase; overlay is a follow-up) — read it from `data.json` or the MCP summary fields (`git_commits_scanned`, `churn_hotspot_count`, `coupling_drift_count`).
+
 ## Verification
 
 After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, viewer.css}`. Open the viewer and check:
@@ -150,6 +172,7 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 - Metrics on → legend shows the family name, its value range, a `no data (N)` chip, and the *surfaces, not verdicts* note; selecting a node shows the Metrics row in the detail panel.
 - For agents: the `map` tool response has non-null `untested_src_count` / `undocumented_file_count`.
 - Skeleton map: `npx coderef-map . --skeleton` prints a ranked plaintext map and writes `.coderef/map/skeleton.md`; `skeleton_estimated_tokens` stays at or under the budget, and any dropped content is named under `## truncation`.
+- Git block: `npx coderef-map . --git` on a git repo adds `data.git` with a stamped `window`, `churnHotspots`, and `couplingDrift`; on a non-git repo the block is absent and `meta.warnings` (or the MCP `git_block_reason`) says why — that absence is correct, not a failure.
 
 ## Troubleshooting
 
@@ -160,6 +183,7 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 - **Numbers look "wrong" (e.g. a shared utility flagged as untested)** — check the interpretation rules first: gray = no data ≠ zero; rankings are capped (see `meta.warnings`); betweenness is sampled on repos >500 files; test linkage is a heuristic over test-file naming (`.test.` / `.spec.` / test directories). The map surfaces candidates — confirm in the code before acting.
 - **Drift spec surfaces absent** — `layers.json` is explicit opt-in (`--layers <path>`); without it you still get declared-vs-detected drift from in-repo header declarations, but not vocabulary/invariant checks.
 - **Skeleton map shows only file paths, no signatures** — either the token budget is too small to upgrade past path-only (raise `--tokens`, and check the `## truncation` section), or `index.json` is absent/unreadable so signature detail degraded to exported-names-only (a header-less repo; the truncation section declares this).
+- **`--git` produced no `git` block** — the target is not a git work tree, `git` is not on PATH, or the history is empty (a brand-new repo with no commits, or a `--since` window that matched nothing). Check `meta.warnings` / the MCP `git_block_reason`; on a shallow clone the block appears but `git.window.shallow` is `true` (the window is partial by clone depth — deepen the clone for full coverage).
 
 ## Revision History
 
@@ -167,6 +191,7 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 |---|---|
 | 2026-07-17 | Initial guide — covers MapData v1.4 (analytics, evidence, drift, metrics; WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 + WO-MAP-GRAPH-ANALYTICS-MODULE-001) |
 | 2026-07-17 | Added the skeleton map (step 8): token-budgeted, centrality-ranked plaintext repo map via `coderef-map --skeleton` and the MCP `map` tool's `format:"skeleton"` (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P1) |
+| 2026-07-17 | Added the git-behavioral block (step 9): opt-in churn×size hotspots + change-coupling drift via `coderef-map --git` and the MCP `map` tool's `git:true` — MapData v1.5 (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2) |
 
 ---
 

@@ -530,8 +530,9 @@ export interface ToolHandlers {
   rag_status(): Promise<Record<string, unknown>>;
   reindex(args: { incremental?: boolean }): Promise<Record<string, unknown>>;
   rag_index(): Promise<Record<string, unknown>>;
-  // Agent parity for coderef-map (WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P5).
-  map(args: { refresh?: boolean; format?: string; token_budget?: number }): Record<string, unknown>;
+  // Agent parity for coderef-map (WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P5;
+  // git-behavioral opt-in WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2).
+  map(args: { refresh?: boolean; format?: string; token_budget?: number; git?: boolean }): Record<string, unknown>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -1621,7 +1622,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       }
     },
 
-    map({ refresh, format, token_budget } = {}) {
+    map({ refresh, format, token_budget, git } = {}) {
       // .coderef-WRITE (confined to <projectDir>/.coderef/map/). Same bounded
       // build-if-missing substrate contract as every other tool: loadGraph
       // runs ensureArtifacts first (auto-populate under the file ceiling,
@@ -1636,9 +1637,18 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         !fs.existsSync(dataPath) ||
         !fs.existsSync(htmlPath) ||
         fs.statSync(dataPath).mtimeMs < fs.statSync(graphPath).mtimeMs;
+      // The git-behavioral block is OPT-IN and only produced by a git-enabled
+      // generation (extractGitHistory runs in generateMap). A cached data.json
+      // never carries it, so git:true forces a regeneration even when fresh.
       let data;
       let refreshed = false;
-      if (refresh || stale) {
+      let gitReason: string | undefined;
+      if (git) {
+        const gen = generateMap(projectDir, undefined, { git: true });
+        data = gen.data;
+        gitReason = gen.gitReason;
+        refreshed = true;
+      } else if (refresh || stale) {
         data = generateMap(projectDir).data;
         refreshed = true;
       } else {
@@ -1690,6 +1700,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         undocumented_file_count: data.metrics
           ? (data.metrics.documentation?.summary?.filesWithNonDefinedCount ?? 0)
           : null,
+        // Git-behavioral summary (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2);
+        // opt-in via git:true. null when not requested or the block is absent
+        // (non-git repo / git absent / empty history — see git_block_reason).
+        git_commits_scanned: data.git ? (data.git.window?.commitsScanned ?? 0) : null,
+        churn_hotspot_count: data.git ? (data.git.churnHotspots?.summary?.scoredFileCount ?? 0) : null,
+        coupling_drift_count: data.git ? (data.git.couplingDrift?.summary?.driftPairCount ?? 0) : null,
+        git_block_reason: git ? (data.git ? null : (gitReason ?? 'no_history')) : null,
         warnings: data.meta?.warnings ?? [],
         // Skeleton block (format:'skeleton' only) — token-budgeted plaintext
         // repo map, inline for direct prompt injection.
@@ -2106,7 +2123,7 @@ async function main(): Promise<void> {
     {
       title: 'Repository map (file-level)',
       description:
-        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps with per-edge evidence blocks: provenance classes, line samples, ambiguous-candidate counts; hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer matrix, per-community layer composition + purity, layer-outlier files; metrics block: test linkage, per-file header-status tallies, unresolved-reference counts, largest modules, most dependencies — surfaces, not verdicts) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json. format:"skeleton" additionally returns a token-budgeted plaintext repo map inline (centrality-ranked files + exported symbol signatures) — the fastest first call for repo orientation.',
+        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps with per-edge evidence blocks: provenance classes, line samples, ambiguous-candidate counts; hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates; drift block: declared @layer coverage, layer->layer matrix, per-community layer composition + purity, layer-outlier files; metrics block: test linkage, per-file header-status tallies, unresolved-reference counts, largest modules, most dependencies — surfaces, not verdicts) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json. format:"skeleton" additionally returns a token-budgeted plaintext repo map inline (centrality-ranked files + exported symbol signatures) — the fastest first call for repo orientation. git:true additionally attaches a git-behavioral block (opt-in): churn×module-size hotspots and change-coupling drift (file pairs that co-change in git history but have NO static import/call edge — candidate hidden dependencies invisible to impact_of). Requires a git work tree; on a non-git repo the block is absent and git_block_reason explains why. Surfaces, not verdicts.',
       inputSchema: {
         project_root: projectRootArg,
         refresh: z.boolean().optional().describe('Force regeneration even if the map is fresh (default: regenerate only when absent or older than graph.json)'),
@@ -2118,10 +2135,14 @@ async function main(): Promise<void> {
           .number()
           .optional()
           .describe('Token budget the skeleton text is fitted to (default 1600; only with format:"skeleton")'),
+        git: z
+          .boolean()
+          .optional()
+          .describe('Attach the git-behavioral block (opt-in): churn×size hotspots + change-coupling drift (co-change pairs with no static edge). Forces a git-enabled regeneration. Returns git_commits_scanned, churn_hotspot_count, coupling_drift_count (null + git_block_reason on a non-git repo). Surfaces, not verdicts.'),
       },
     },
-    async ({ project_root, refresh, format, token_budget }) =>
-      perRepo(project_root, h => h.map({ refresh, format, token_budget })),
+    async ({ project_root, refresh, format, token_budget, git }) =>
+      perRepo(project_root, h => h.map({ refresh, format, token_budget, git })),
   );
 
   server.registerTool(

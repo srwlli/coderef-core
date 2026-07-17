@@ -31,7 +31,7 @@ import { spawnSync, spawn } from 'child_process';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as path from 'path';
-import { generateMap, GenerateMapResult } from '../map/emit-map.js';
+import { generateMap, GenerateMapResult, GenerateMapOptions } from '../map/emit-map.js';
 import { MapProjectionError } from '../map/project-map-data.js';
 import { emitSkeleton } from '../map/skeleton-map.js';
 
@@ -45,6 +45,7 @@ interface CliArgs {
   layersPath?: string;
   skeleton: boolean;
   tokens?: number;
+  git: boolean;
 }
 
 function printHelp(): void {
@@ -73,6 +74,11 @@ OPTIONS:
                         signatures — prompt-injectable agent orientation).
                         Implies --no-open.
   --tokens <N>          Token budget for --skeleton (default: 1600).
+  --git                 Attach the git-behavioral block (opt-in): churn×size
+                        hotspots + change-coupling drift (files that co-change
+                        in git history but have no static import/call edge).
+                        Requires a git work tree; degrades to an absent block on
+                        a non-git repo. Surfaces, not verdicts.
   -h, --help            Show this help.
 
 OUTPUT:
@@ -96,6 +102,7 @@ function parseArgs(argv: string[]): CliArgs {
     open: true,
     forceScan: false,
     skeleton: false,
+    git: false,
   };
   let positionalSeen = false;
   for (let i = 0; i < argv.length; i++) {
@@ -132,6 +139,9 @@ function parseArgs(argv: string[]): CliArgs {
         break;
       case '--tokens':
         args.tokens = parseInt(argv[++i], 10);
+        break;
+      case '--git':
+        args.git = true;
         break;
       default:
         if (a.startsWith('--project-dir=')) {
@@ -260,10 +270,13 @@ function main(): void {
 
   let result: GenerateMapResult;
   try {
+    const genOptions: GenerateMapOptions = {};
+    if (args.layersPath) genOptions.layersPath = args.layersPath;
+    if (args.git) genOptions.git = true;
     result = generateMap(
       projectDir,
       args.outDir,
-      args.layersPath ? { layersPath: args.layersPath } : undefined,
+      Object.keys(genOptions).length > 0 ? genOptions : undefined,
     );
   } catch (err: any) {
     if (err instanceof MapProjectionError) {
@@ -278,6 +291,24 @@ function main(): void {
     `${data.overlays.hotspots.length} hotspots, ${data.overlays.cycles.length} cycles`);
   for (const w of data.meta.warnings) console.log(`[coderef-map] note: ${w}`);
   console.log(`[coderef-map] map written to ${outDir}`);
+
+  if (args.git) {
+    if (data.git) {
+      const g = data.git;
+      console.log(
+        `[coderef-map] git: ${g.window.commitsScanned} commits scanned, ` +
+        `${g.churnHotspots.summary.scoredFileCount} churned files, ` +
+        `${g.couplingDrift.summary.driftPairCount} coupling-drift pairs ` +
+        `(${g.couplingDrift.summary.corroboratedPairCount} corroborated)` +
+        (g.window.shallow ? ' [shallow clone — window partial]' : ''),
+      );
+    } else {
+      console.log(
+        `[coderef-map] git: block omitted (${result.gitReason ?? 'no history'}) — ` +
+        'non-git repo, git absent on PATH, or empty history',
+      );
+    }
+  }
 
   if (args.skeleton) {
     const skeleton = emitSkeleton(
