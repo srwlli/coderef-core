@@ -337,6 +337,37 @@ Viewer overlay for the git block is out of scope for this phase (data-first;
 the overlay is a follow-up). Read it from `data.json` or via the MCP summary
 fields below.
 
+### Metrics delta (`map_metrics_delta`, verified-refactor loop)
+
+The CodeScene verified-refactor loop closed against the five metric families
+(`src/map/metrics-delta.ts`, WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P11). The
+metrics block already **names** issues; the delta tool lets an agent **prove** a
+refactor improved the target family without regressing others. It is a pure
+JOIN/DIFF over the existing `data.metrics` — no new metric computation, no graph
+change.
+
+Two modes on the `map_metrics_delta` MCP tool:
+
+- **`snapshot:true`** — copies the current `data.metrics` to a named sidecar
+  `.coderef/map/metrics-snapshot-<label>.json` (default label `baseline`). A pure
+  read/copy, confined to `.coderef/map/`. Snapshot **before** refactoring.
+- **diff (default)** — `before` (a snapshot label or an explicit `data.json`/snapshot
+  path; default the `baseline` snapshot) vs `after` (the current `data.metrics`, or
+  an explicit path). Returns a **decomposed per-family factor vector**.
+
+| Field | Contents |
+|-------|----------|
+| `schemaVersion` | `{before, after, match}` — a snapshot-schema mismatch sets `match:false` and adds a `warnings[]` entry (families still diff field-by-field; the mismatch is surfaced, never silently mis-diffed). |
+| `testLinkage` / `documentation` / `unresolvedRefs` | `{noData, direction, summaryDeltas, byStatusDeltas?}` — per numeric summary scalar `{before, after, delta}`, and (documentation/unresolvedRefs) per-`byStatus` key deltas. `direction` (`improved`/`regressed`/`unchanged`) is from that family's concern-scalar (`srcWithoutTestEdgeCount` / `filesWithNonDefinedCount` / `edgeCount` **down = improved**) — PROVENANCE, not a verdict. |
+| `largestModules` / `mostDependencies` | `{noData, direction, rankingChange}` — `rankingChange` `{entered[], left[], rankChanged[]}` diffed by **file identity** (a pure reorder reports only rank shifts, never a positional delta). These pure rankings are **direction-neutral** (`unchanged`) — a module growing is a fact, not a regression. |
+| `warnings[]` / `note` | Mismatch / absent-family warnings; surfaces-not-verdicts note. |
+
+There is deliberately **NO composite score** — the five families are never summed
+or weighted into one number, so a regression in one family is never hidden by a
+gain in another. `response_format:"concise"` returns per-family `{noData, direction}`
+only. A missing snapshot or a pre-1.4 `data.json` with no metrics block returns a
+declared no-data warning envelope, never a fabricated diff.
+
 ### Agent parity
 
 The MCP server's `map` tool (see below) emits/refreshes the identical
@@ -918,6 +949,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `cycles` | Where are the dependency cycles? Tarjan SCC over resolved call/import edges, largest first, with a sample in-cycle edge per cycle |
 | `what_exports` | What does this file export? Exported elements via resolved export edges; path fragments get an ambiguity envelope |
 | `map` | Emit/refresh the file-level repo map (`.coderef/map/data.json` + viewer). `format:"skeleton"` (+ optional `token_budget`, default 1600) also returns a token-budgeted, centrality-ranked plaintext repo map **inline** (`skeleton_text`) — the fastest first call for repo orientation |
+| `map_metrics_delta` | Verified-refactor loop: `snapshot:true` saves the five map metric families; the diff (`before`/`after`) proves the target family improved without regressing others — a **decomposed per-family factor vector, never a composite score**. Direction labels are provenance, not verdicts. See **Metrics delta** above |
 | `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model. Pass `expand=true` to attach each hit's 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — see **Ego-graph expansion** below |
 | `symbol_context` | The consolidated **one-card-per-symbol** view: identity + header presence + 1-hop neighborhood + references + test-linkage + mtime-staleness in a single call — the understand-before-edit workflow that otherwise costs ~5 round-trips. A JOIN over existing data, not new analysis. See **Symbol context card** below |

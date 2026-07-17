@@ -114,6 +114,8 @@ import { readRagStatus } from './rag-status.js';
 // confined to <projectDir>/.coderef/map/.
 import { generateMap } from '../map/emit-map.js';
 import { emitSkeleton } from '../map/skeleton-map.js';
+import type { MapMetrics } from '../map/engineering-metrics.js';
+import { type MapMetricsDelta, type MetricsFamilyDelta, diffMapMetrics } from '../map/metrics-delta.js';
 
 type ExportedNode = ExportedGraph['nodes'][number];
 type ExportedEdge = ExportedGraph['edges'][number];
@@ -615,6 +617,19 @@ export interface ToolHandlers {
   // Agent parity for coderef-map (WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P5;
   // git-behavioral opt-in WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2).
   map(args: { refresh?: boolean; format?: string; token_budget?: number; git?: boolean }): Record<string, unknown>;
+  // Verified-refactor delta (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P11):
+  // snapshot the five MapMetrics families, then diff before/after into a
+  // DECOMPOSED per-family factor vector (never a composite score) so an agent can
+  // PROVE a refactor improved the target family without regressing others. snapshot
+  // copies the current data.metrics to a sidecar; before/after resolve from a
+  // snapshot label or an explicit data.json path. response_format honors Phase 6.
+  map_metrics_delta(args: {
+    before?: string;
+    after?: string;
+    snapshot?: boolean;
+    snapshot_label?: string;
+    response_format?: ResponseFormat;
+  }): Record<string, unknown>;
 }
 
 /** Test-origin file detection (mirrors graph-builder's TEST_ORIGIN_RE). */
@@ -2212,6 +2227,148 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
+    map_metrics_delta({ before, after, snapshot, snapshot_label, response_format } = {}) {
+      // .coderef-WRITE (snapshot mode only, confined to <projectDir>/.coderef/map/).
+      // The five MapMetrics families ride in .coderef/map/data.json (data.metrics),
+      // written by the map tool. This tool NEVER recomputes metrics — it reads two
+      // MapMetrics snapshots and diffs them (a pure JOIN over existing substrate).
+      const mapDir = path.join(projectDir, '.coderef', 'map');
+      const dataPath = path.join(mapDir, 'data.json');
+      const snapPath = (label: string) =>
+        path.join(mapDir, `metrics-snapshot-${label.replace(/[^A-Za-z0-9._-]/g, '_')}.json`);
+
+      // Read the current data.metrics, regenerating the map when data.json is
+      // absent/stale (mirrors the map handler's build-if-missing contract).
+      const currentMetrics = (): MapMetrics | undefined => {
+        loadGraph(projectDir, cache);
+        const graphPath = path.join(projectDir, '.coderef', 'graph.json');
+        const stale =
+          !fs.existsSync(dataPath) ||
+          fs.statSync(dataPath).mtimeMs < fs.statSync(graphPath).mtimeMs;
+        const data = stale
+          ? generateMap(projectDir).data
+          : JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+        return (data as { metrics?: MapMetrics }).metrics;
+      };
+
+      // Load a MapMetrics from an explicit path: a snapshot sidecar (bare
+      // MapMetrics) OR a full data.json (its .metrics block). Returns undefined
+      // when the file is absent or carries no metrics (pre-1.4 map) — the caller
+      // surfaces that as declared no-data, never a throw.
+      const loadMetricsFrom = (p: string): MapMetrics | undefined => {
+        if (!fs.existsSync(p)) return undefined;
+        try {
+          const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+          if (parsed && typeof parsed === 'object' && 'metrics' in parsed) {
+            return (parsed as { metrics?: MapMetrics }).metrics;
+          }
+          // A bare snapshot sidecar IS a MapMetrics (has the five families).
+          if (parsed && typeof parsed === 'object' && 'testLinkage' in parsed) {
+            return parsed as MapMetrics;
+          }
+          return undefined;
+        } catch {
+          return undefined;
+        }
+      };
+
+      // SNAPSHOT mode: copy the current data.metrics to a named sidecar (a pure
+      // read/copy — no diff). Confined to .coderef/map/.
+      if (snapshot) {
+        const label = snapshot_label && snapshot_label.length ? snapshot_label : 'baseline';
+        const metrics = currentMetrics();
+        if (!metrics) {
+          return {
+            action: 'snapshot',
+            ok: false,
+            warning:
+              'no metrics block in .coderef/map/data.json (pre-1.4 map or empty repo) — nothing to snapshot',
+            data_path: normalizeSlashes(dataPath),
+            writes_confined_to: normalizeSlashes(mapDir),
+          };
+        }
+        const out = snapPath(label);
+        fs.writeFileSync(out, JSON.stringify(metrics, null, 2), 'utf8');
+        return {
+          action: 'snapshot',
+          ok: true,
+          snapshot_label: label,
+          snapshot_path: normalizeSlashes(out),
+          schema_version: metrics.schemaVersion,
+          hint: `Snapshot saved. Refactor, then diff: map_metrics_delta({ before: "${label}" }) compares this snapshot to the current map.`,
+          writes_confined_to: normalizeSlashes(mapDir),
+        };
+      }
+
+      // DELTA mode. Resolve BEFORE: an explicit path, else the named snapshot
+      // sidecar (default label 'baseline'). Resolve AFTER: an explicit path, else
+      // the current data.metrics.
+      const beforeIsPath = before && (before.includes('/') || before.includes('\\') || before.endsWith('.json'));
+      const beforePath = before ? (beforeIsPath ? path.resolve(projectDir, before) : snapPath(before)) : snapPath('baseline');
+      const beforeMetrics = loadMetricsFrom(beforePath);
+
+      const afterMetrics = after ? loadMetricsFrom(path.resolve(projectDir, after)) : currentMetrics();
+
+      const missing: string[] = [];
+      if (!beforeMetrics) {
+        missing.push(
+          before
+            ? `before (${normalizeSlashes(beforePath)})`
+            : `before (no snapshot at ${normalizeSlashes(snapPath('baseline'))} — run map_metrics_delta({ snapshot: true }) first)`,
+        );
+      }
+      if (!afterMetrics) {
+        missing.push(after ? `after (${normalizeSlashes(path.resolve(projectDir, after))})` : 'after (current map has no metrics block — pre-1.4 or empty repo)');
+      }
+      if (missing.length) {
+        return {
+          action: 'delta',
+          ok: false,
+          warning: `metrics snapshot unavailable: ${missing.join('; ')}`,
+          hint: 'Snapshot the baseline first: map_metrics_delta({ snapshot: true }), refactor, then map_metrics_delta({}).',
+          before_path: normalizeSlashes(beforePath),
+        };
+      }
+
+      const delta: MapMetricsDelta = diffMapMetrics(beforeMetrics, afterMetrics);
+
+      const envelope: Record<string, unknown> = {
+        action: 'delta',
+        ok: true,
+        schema_version: delta.schemaVersion,
+        before_path: normalizeSlashes(beforePath),
+        // The five decomposed family deltas — NEVER summed into a composite score.
+        testLinkage: delta.testLinkage,
+        documentation: delta.documentation,
+        unresolvedRefs: delta.unresolvedRefs,
+        largestModules: delta.largestModules,
+        mostDependencies: delta.mostDependencies,
+        warnings: delta.warnings,
+        note: delta.note,
+        hint: 'A decomposed per-family factor vector — NO composite score. Each family reports direction (PROVENANCE, not a verdict) + its own scalar/Record/ranking deltas. A regression in one family is never hidden by a gain in another.',
+      };
+
+      // Concise: per-family direction + noData only; drop the scalar/Record/ranking
+      // detail. Counts/provenance (schema_version, warnings) preserved.
+      if (isConcise(response_format)) {
+        const dir = (f: MetricsFamilyDelta) => ({ noData: f.noData, direction: f.direction });
+        return {
+          action: 'delta',
+          ok: true,
+          format: 'concise',
+          schema_version: delta.schemaVersion,
+          testLinkage: dir(delta.testLinkage),
+          documentation: dir(delta.documentation),
+          unresolvedRefs: dir(delta.unresolvedRefs),
+          largestModules: dir(delta.largestModules),
+          mostDependencies: dir(delta.mostDependencies),
+          warnings: delta.warnings,
+          note: delta.note,
+        };
+      }
+      return envelope;
+    },
+
     async rag_status() {
       // Read-only: delegates to the extracted readRagStatus (reads only
       // .coderef/rag-index.json + coderef-vectors.json). Reports cleanly when no
@@ -2676,6 +2833,37 @@ async function main(): Promise<void> {
     },
     async ({ project_root, refresh, format, token_budget, git }) =>
       perRepo(project_root, h => h.map({ refresh, format, token_budget, git })),
+  );
+
+  server.registerTool(
+    'map_metrics_delta',
+    {
+      title: 'Verified-refactor metrics delta',
+      description:
+        '[.coderef-WRITE (snapshot mode only), confined to .coderef/map/] The CodeScene verified-refactor loop: snapshot the five map metric families (test linkage, documentation/header coverage, unresolved references, largest modules, most dependencies), refactor, then diff to PROVE the target family improved WITHOUT regressing others. snapshot:true copies the current data.metrics to a named sidecar (default label "baseline"). With no snapshot flag it DIFFS: before (a snapshot label or an explicit data.json path; default the "baseline" snapshot) vs after (the current map, or an explicit path). Returns a DECOMPOSED per-family factor vector — one delta record per family (summary-scalar deltas + per-status Record deltas + ranked-list membership entered/left/rankChanged) plus a per-family direction label. There is deliberately NO composite score: a regression in one family is never hidden by a gain in another. The direction label is PROVENANCE (which way the surface moved), not a quality verdict — surfaces, not verdicts. A schemaVersion mismatch or a family absent on one side is surfaced as a warning + no-data, never a fabricated diff.',
+      inputSchema: {
+        project_root: projectRootArg,
+        before: z
+          .string()
+          .optional()
+          .describe('BEFORE snapshot: a snapshot label (e.g. "baseline") OR a data.json/snapshot path. Default: the "baseline" snapshot sidecar.'),
+        after: z
+          .string()
+          .optional()
+          .describe('AFTER snapshot: a data.json/snapshot path. Default: the current .coderef/map/data.json metrics.'),
+        snapshot: z
+          .boolean()
+          .optional()
+          .describe('Snapshot mode: copy the current data.metrics to a named sidecar (a pure read/copy, no diff). Snapshot BEFORE refactoring, then diff AFTER.'),
+        snapshot_label: z
+          .string()
+          .optional()
+          .describe('Label for the snapshot sidecar (default "baseline"); only with snapshot:true.'),
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, before, after, snapshot, snapshot_label, response_format }) =>
+      perRepo(project_root, h => h.map_metrics_delta({ before, after, snapshot, snapshot_label, response_format })),
   );
 
   server.registerTool(

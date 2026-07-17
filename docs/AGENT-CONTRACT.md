@@ -1,6 +1,6 @@
 # Agent Usage Contract — `@coderef/core`
 
-**Last updated:** 2026-07-17 (MCP `map` tool + MapData v1.5: engineering-metrics overlays, skeleton-map `format:"skeleton"`, git-behavioral `git:true`)
+**Last updated:** 2026-07-17 (MCP `map` tool + MapData v1.5: engineering-metrics overlays, skeleton-map `format:"skeleton"`, git-behavioral `git:true`; `map_metrics_delta` verified-refactor loop)
 **Status:** post-rebuild canonical agent contract
 
 This is the canonical contract for **LLM agents and downstream automation** that consume `@coderef/core` artifacts. It tells you what to read, what to ignore, what the gates mean, and how to interpret exit codes — without requiring you to read the source.
@@ -87,6 +87,12 @@ The identical artifact is available off-MCP as `coderef-map <repo> --skeleton [-
 - **Change-coupling drift** — `git.couplingDrift.top[]` lists file pairs that **co-change in git history but have no static import/call edge between them**. These are candidate hidden dependencies that `impact_of` structurally cannot surface (no edge to traverse). Use it to widen a blast-radius check the static graph would under-report — then confirm in the code. A pair *with* a static edge is corroboration, counted but not listed.
 
 Contract to rely on: the git read is **opt-in and any-repo-safe** — on a non-git repo, a git-less PATH, or an empty history the block is simply absent and `git_block_reason` names why (absence is *no data*, never zero churn). Extraction is bounded by a commit window stamped into `git.window` (with a `shallow` flag when the clone is shallow — the window is partial by depth). **Surfaces, not verdicts:** high churn tracks active development as much as instability; a coupling-drift pair is a *candidate*, not a proven missing edge. Off-MCP: `coderef-map <repo> --git`.
+
+**Prove your refactor helped — snapshot the metrics, refactor, then `map_metrics_delta`.** The five metric families *name* issues; the delta tool lets you *verify* a fix (the CodeScene loop). Before you start, call `map_metrics_delta` with `snapshot: true` (saves the current `data.metrics` to `.coderef/map/metrics-snapshot-baseline.json`). Refactor. Then call `map_metrics_delta` (no args) to diff the baseline against the current map. What you get back is a **decomposed per-family factor vector** — one delta record per family (`testLinkage`, `documentation`, `unresolvedRefs`, `largestModules`, `mostDependencies`), each with its own `summaryDeltas` / `byStatusDeltas` / `rankingChange` and a `direction` label. Read it as follows:
+
+- **No composite score — on purpose.** The families are never summed into one number, so a regression in one family can never be hidden by an improvement in another. You must look at each family; the tool will not collapse the tradeoff for you.
+- **`direction` is provenance, not a verdict.** For `testLinkage`/`documentation`/`unresolvedRefs`, `improved`/`regressed` reports which way that family's concern-scalar moved (`srcWithoutTestEdgeCount` / `filesWithNonDefinedCount` / `edgeCount` **down = improved**) — a fact about the surface, not a claim your change was good or bad. `largestModules`/`mostDependencies` are pure rankings and stay **`unchanged`** (a module growing is a fact, not a regression); their `rankingChange` reports which files `entered`/`left`/`rankChanged` **by identity**, never a spurious position delta.
+- **Graceful no-data, never a fabricated diff.** A snapshot/schema-version mismatch is surfaced in `warnings[]` with `schemaVersion.match: false`; a family absent on one side (e.g. a pre-1.4 snapshot) is marked `noData: true`, not a made-up zero. `response_format: "concise"` returns just per-family `{ noData, direction }`. Off-MCP parity: the same data lives in `.coderef/map/data.json` metrics; the delta tool is MCP-first.
 
 **For trust-tiered traversal, filter `what_calls` / `impact_of` / `rename_preview` by `min_confidence`.** Every graph edge carries a **confidence tier** — a projection of its resolution provenance onto `exact` > `strong` > `heuristic` > `inferred`. It is edge PROVENANCE (how the edge was derived), **not a quality verdict**:
 
