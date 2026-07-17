@@ -94,6 +94,13 @@ describe('MCP map tool — CLI parity (hermetic fixture repo)', () => {
     expect(result.community_count).toBe(cli.data.analytics!.communityCount);
     expect(result.isolated_count).toBe(cli.data.analytics!.deadCode.isolated.length);
     expect(result.community_count).toBeGreaterThan(0);
+    // Edge-evidence parity (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P2): both
+    // surfaces carry identical evidence blocks (covered by the byte-equality
+    // above) and the MCP summary counts them.
+    const evidenceEdges = cli.data.edges.filter(e => e.evidence);
+    expect(evidenceEdges.length).toBe(cli.data.edges.length);
+    expect(result.evidence_edge_count).toBe(evidenceEdges.length);
+    expect(result.evidence_edge_count).toBeGreaterThan(0);
   });
 
   it('serves a fresh map without regeneration on the second call', () => {

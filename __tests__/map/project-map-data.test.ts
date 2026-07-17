@@ -73,8 +73,42 @@ describe('projectMapData — synthetic fixture', () => {
   it('aggregates resolved edges to file level, skipping intra-file and unresolved', () => {
     const data = projectMapData(root);
     expect(data.nodes.map(n => n.id)).toEqual(['src/a.ts', 'src/b.ts', 'src/c.ts']);
-    // a->b aggregates e1 (import) + e3 (call) into one weighted edge
+    // a->b aggregates e1 (import) + e3 (call) into one weighted edge; each
+    // edge carries the default-on evidence block (P2 — no evidence payloads
+    // in this fixture, so provenance falls back to relationship and detail
+    // to the target element name).
     expect(data.edges).toEqual([
+      {
+        source: 'src/a.ts',
+        target: 'src/b.ts',
+        weight: 2,
+        kinds: { import: 1, call: 1 },
+        evidence: {
+          provenance: { explicit: 1, inferred: 1 },
+          samples: [
+            { relationship: 'call', provenance: 'inferred', line: 0, detail: 'beta' },
+            { relationship: 'import', provenance: 'explicit', line: 0, detail: 'beta' },
+          ],
+          samplesTruncated: false,
+        },
+      },
+      {
+        source: 'src/b.ts',
+        target: 'src/a.ts',
+        weight: 1,
+        kinds: { call: 1 },
+        evidence: {
+          provenance: { inferred: 1 },
+          samples: [
+            { relationship: 'call', provenance: 'inferred', line: 0, detail: 'alpha' },
+          ],
+          samplesTruncated: false,
+        },
+      },
+    ]);
+    // Opting out strips the blocks without touching aggregation.
+    const bare = projectMapData(root, { edgeEvidence: false });
+    expect(bare.edges).toEqual([
       { source: 'src/a.ts', target: 'src/b.ts', weight: 2, kinds: { import: 1, call: 1 } },
       { source: 'src/b.ts', target: 'src/a.ts', weight: 1, kinds: { call: 1 } },
     ]);

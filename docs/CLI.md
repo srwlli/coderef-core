@@ -164,9 +164,30 @@ npx coderef-map /path/to/any/repo --force-scan --no-open
 
 | File | Purpose |
 |------|---------|
-| `.coderef/map/data.json` | File-level MapData v1.1: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights, hotspot/cycle overlays, `analytics` block (below). Same file the MCP `map` tool returns to agents. |
+| `.coderef/map/data.json` | File-level MapData v1.2: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
+
+### Edge evidence block (`edges[].evidence`, MapData v1.2)
+
+Per-edge provenance computed from the same raw `graph.json` edge records the
+aggregation pass walks (`src/map/edge-evidence.ts`,
+WO-MAP-GRAPH-ANALYTICS-MODULE-001 P2). Optional and schema-additive: consumers
+of older `data.json` files see no block; `projectMapData(root,
+{ edgeEvidence: false })` skips it. **Surfaces, not verdicts** — resolution
+facts from the scan, no judgment about whether an edge is correct.
+
+| Field | Contents |
+|-------|----------|
+| `provenance` | Underlying-edge counts per class, key-sorted: `explicit` (declared — resolved imports/exports), `inferred` (derived via symbol resolution — resolved calls), `unspecified` (no basis recorded). Counts cover **all** underlying edges of the pair, not just samples. |
+| `samples[]` | `{relationship, provenance, line, detail}` — capped (default 5, `evidenceSampleCap` option), sorted by line/relationship/detail; `line` 0 = unknown (import edges commonly carry 0); `detail` = `localName <- originSpecifier` for imports, `receiver.callee() in scope` for calls. |
+| `samplesTruncated` | `true` when the pair had more underlying edges than the cap. Aggregate truncation counts land in `meta.warnings`. |
+| `ambiguous` | `{edgeCount, candidateCount}` — ambiguous-call edges whose candidates land in this (already-resolved) pair. Counts only, never samples; ambiguous edges never create new map edges. Unattachable ambiguous edges are reported once in `meta.warnings`. |
+
+Viewer: each row in the detail panel's **Depends on / Used by** lists gains an
+`evidence` expander showing the relationship-kind breakdown, provenance counts,
+line-numbered samples, and the ambiguous-candidate count. Rows from a pre-1.2
+`data.json` render exactly as before (no expander).
 
 ### Analytics block (`data.analytics`, MapData v1.1)
 
@@ -196,8 +217,9 @@ rows.
 The MCP server's `map` tool (see below) emits/refreshes the identical
 `data.json` via the same extracted core (`src/map/emit-map.ts`) —
 parity-tested byte-identical modulo timestamp, and summarizes the analytics
-block as `community_count` + `isolated_count` (null when reading an older
-`data.json`). Agents query `data.json`; humans open `graph.html`.
+block as `community_count` + `isolated_count` and the evidence blocks as
+`evidence_edge_count` (each null when reading an older `data.json`). Agents
+query `data.json`; humans open `graph.html`.
 
 ---
 

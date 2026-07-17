@@ -53,6 +53,17 @@ describe('map-viewer static asset', () => {
     expect(js).toContain("fetch('./data.json')");
   });
 
+  it('viewer renders per-edge evidence with a pre-1.2 graceful path (P2)', () => {
+    // Expander only when the edge carries an evidence block.
+    expect(js).toContain('link.edge && link.edge.evidence');
+    expect(js).toContain('buildEvidenceBox');
+    expect(js).toContain('evidence-toggle');
+    expect(js).toContain('ambiguous');
+    // Styles ship with the bundle.
+    expect(css).toContain('.edge-evidence');
+    expect(css).toContain('.evidence-toggle');
+  });
+
   it('asset bundle makes no external network references (CDN ban)', () => {
     const external = /https?:\/\//i;
     expect(external.test(html)).toBe(false);

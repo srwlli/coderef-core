@@ -1656,9 +1656,16 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         // reading an older data.json without the analytics block.
         community_count: data.analytics?.communityCount ?? null,
         isolated_count: data.analytics?.deadCode?.isolated?.length ?? null,
+        // Edge-evidence summary (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P2); null
+        // when reading a pre-1.2 data.json without evidence blocks.
+        evidence_edge_count: Array.isArray(data.edges)
+          ? (data.edges.some((e: any) => e.evidence)
+              ? data.edges.filter((e: any) => e.evidence).length
+              : null)
+          : null,
         warnings: data.meta?.warnings ?? [],
         hint:
-          'data_path is the same file-level MapData the viewer renders (nodes=files with embedded elements, edges=resolved file deps, hotspot/cycle overlays, graph-analytics block: communities/centrality/bridges/coupling/dead-code candidates). Open graph_html_path in a browser for the visual map, or read data.json directly.',
+          'data_path is the same file-level MapData the viewer renders (nodes=files with embedded elements, edges=resolved file deps carrying per-edge evidence: provenance classes, line-sorted samples, ambiguous-candidate counts; hotspot/cycle overlays, graph-analytics block: communities/centrality/bridges/coupling/dead-code candidates). Open graph_html_path in a browser for the visual map, or read data.json directly.',
         writes_confined_to: path.join(projectDir, '.coderef', 'map'),
       };
     },
@@ -2058,7 +2065,7 @@ async function main(): Promise<void> {
     {
       title: 'Repository map (file-level)',
       description:
-        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps, hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json.',
+        '[.coderef-WRITE, confined to .coderef/map/] Generate or refresh the file-level repository map: .coderef/map/data.json (nodes=files with embedded element detail, edges=aggregated resolved deps with per-edge evidence blocks: provenance classes, line samples, ambiguous-candidate counts; hotspot/cycle overlays, analytics block: communities/centrality/bridges/coupling/dead-code candidates) plus the bundled interactive graph.html viewer. Same data the coderef-map CLI emits — agents query data.json; humans open graph.html. Auto-refreshes when older than graph.json.',
       inputSchema: {
         project_root: projectRootArg,
         refresh: z.boolean().optional().describe('Force regeneration even if the map is fresh (default: regenerate only when absent or older than graph.json)'),

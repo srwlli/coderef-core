@@ -27,6 +27,10 @@
  *   candidates — WO-MAP-GRAPH-ANALYTICS-MODULE-001 P1) follow the same rule:
  *   computed from the projected file graph by src/map/graph-analytics.ts,
  *   attached as the optional schema-additive `analytics` block.
+ * - Per-edge evidence (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P2): the raw edge
+ *   records the aggregation pass walks also feed src/map/edge-evidence.ts,
+ *   attaching a schema-additive `evidence` block to each MapEdge (provenance
+ *   classes, capped line-sorted samples, ambiguous-candidate counts).
  * - Pure data. This module must never know HTML exists.
  */
 
@@ -34,6 +38,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 import { computeGraphAnalytics, MapAnalytics } from './graph-analytics.js';
+import { computeEdgeEvidence, MapEdgeEvidence } from './edge-evidence.js';
 
 export interface MapElement {
   name: string;
@@ -70,6 +75,8 @@ export interface MapEdge {
   weight: number;
   /** Per-relationship breakdown, e.g. { import: 3, call: 12 }. */
   kinds: Record<string, number>;
+  /** Per-edge provenance evidence (absent when options.edgeEvidence === false). */
+  evidence?: MapEdgeEvidence;
 }
 
 export interface MapHotspot {
@@ -126,6 +133,10 @@ export interface ProjectMapDataOptions {
   cycleCap?: number;
   /** Compute the analytics block (default true). */
   analytics?: boolean;
+  /** Attach per-edge evidence blocks (default true). */
+  edgeEvidence?: boolean;
+  /** Max evidence samples per file edge (default 5; see edge-evidence.ts). */
+  evidenceSampleCap?: number;
 }
 
 const HOTSPOT_CAP_DEFAULT = 25;
@@ -285,6 +296,18 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
       : (a.source < b.source ? -1 : 1),
   );
 
+  // ---- per-edge evidence (same raw edges, same skip rules) ------------------
+  if (options.edgeEvidence !== false) {
+    const evidence = computeEdgeEvidence(graphEdges, nodeFile, {
+      ...(options.evidenceSampleCap !== undefined ? { sampleCap: options.evidenceSampleCap } : {}),
+    });
+    for (const e of edges) {
+      const ev = evidence.byPair.get(e.source + ' ' + e.target);
+      if (ev) e.evidence = ev;
+    }
+    warnings.push(...evidence.warnings);
+  }
+
   // ---- elements per file ----------------------------------------------------
   const fileElements = new Map<string, MapElement[]>();
   let elementCount = 0;
@@ -419,7 +442,7 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
   const projectPath = normalizeSlashes(path.resolve(projectRoot));
   return {
     meta: {
-      schemaVersion: '1.1.0',
+      schemaVersion: '1.2.0',
       projectPath,
       repoName: path.basename(projectPath),
       generatedAt: new Date().toISOString(),

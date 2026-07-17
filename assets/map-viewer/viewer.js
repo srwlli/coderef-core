@@ -97,8 +97,8 @@
     edges.forEach(function (e) {
       if (!outAdj.has(e.source)) outAdj.set(e.source, []);
       if (!inAdj.has(e.target)) inAdj.set(e.target, []);
-      outAdj.get(e.source).push({ node: e.b, weight: e.weight });
-      inAdj.get(e.target).push({ node: e.a, weight: e.weight });
+      outAdj.get(e.source).push({ node: e.b, weight: e.weight, edge: e });
+      inAdj.get(e.target).push({ node: e.a, weight: e.weight, edge: e });
     });
     (data.overlays && data.overlays.cycles || []).forEach(function (cycle) {
       cycle.forEach(function (f) { cycleNodes.add(f); });
@@ -421,9 +421,69 @@
         select(link.node, true);
       });
       li.appendChild(aEl);
+      // Per-edge evidence expander (MapData >= 1.2). Older data.json edges
+      // have no evidence block — the row renders exactly as before.
+      var evidence = link.edge && link.edge.evidence;
+      if (evidence) {
+        var toggle = document.createElement('a');
+        toggle.href = '#';
+        toggle.className = 'evidence-toggle';
+        toggle.textContent = 'evidence';
+        var box = buildEvidenceBox(link.edge, evidence);
+        box.hidden = true;
+        toggle.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          box.hidden = !box.hidden;
+        });
+        li.appendChild(document.createTextNode(' '));
+        li.appendChild(toggle);
+        li.appendChild(box);
+      }
       ul.appendChild(li);
     });
     parent.appendChild(ul);
+  }
+
+  function buildEvidenceBox(edge, evidence) {
+    var box = document.createElement('div');
+    box.className = 'edge-evidence';
+
+    var kindParts = [];
+    Object.keys(edge.kinds || {}).sort().forEach(function (k) {
+      kindParts.push(k + ' ×' + edge.kinds[k]);
+    });
+    var provParts = [];
+    Object.keys(evidence.provenance || {}).sort().forEach(function (p) {
+      provParts.push(p + ' ' + evidence.provenance[p]);
+    });
+    var head = document.createElement('div');
+    head.className = 'evidence-head';
+    head.textContent = kindParts.join(', ') + (provParts.length ? ' — ' + provParts.join(' / ') : '');
+    box.appendChild(head);
+
+    var ul = document.createElement('ul');
+    (evidence.samples || []).forEach(function (s) {
+      var li = document.createElement('li');
+      var line = s.line > 0 ? 'L' + s.line + ' ' : '';
+      li.textContent = line + s.relationship + ' ' + s.detail + ' [' + s.provenance + ']';
+      ul.appendChild(li);
+    });
+    box.appendChild(ul);
+
+    if (evidence.samplesTruncated) {
+      var more = document.createElement('div');
+      more.className = 'evidence-note';
+      more.textContent = 'showing first ' + (evidence.samples || []).length + ' of ' + edge.weight + ' underlying edges';
+      box.appendChild(more);
+    }
+    if (evidence.ambiguous) {
+      var amb = document.createElement('div');
+      amb.className = 'evidence-note';
+      amb.textContent = evidence.ambiguous.edgeCount + ' ambiguous call edge(s), ' +
+        evidence.ambiguous.candidateCount + ' candidate(s) into this pair';
+      box.appendChild(amb);
+    }
+    return box;
   }
 
   // -------------------------------------------------------------- search ----

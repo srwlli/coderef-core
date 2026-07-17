@@ -77,7 +77,7 @@ describe('coderef-map any-repo acceptance (synthetic never-seen repo)', () => {
     const dataPath = path.join(root, '.coderef', 'map', 'data.json');
     expect(fs.existsSync(dataPath)).toBe(true);
     const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    expect(data.meta.schemaVersion).toBe('1.1.0');
+    expect(data.meta.schemaVersion).toBe('1.2.0');
     // v1.1 analytics block rides along on any repo (universality)
     expect(data.analytics).toBeDefined();
     expect(data.analytics.communityCount).toBeGreaterThan(0);

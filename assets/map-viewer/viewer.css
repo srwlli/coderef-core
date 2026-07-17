@@ -166,3 +166,26 @@ html, body {
   text-align: center;
   padding: 0 20%;
 }
+
+/* Per-edge evidence expander (MapData >= 1.2, WO-MAP-GRAPH-ANALYTICS-MODULE-001 P2) */
+.evidence-toggle {
+  font-size: 11px;
+  color: #8fa3b8 !important;
+  border: 1px solid #334152;
+  border-radius: 3px;
+  padding: 0 4px;
+}
+.evidence-toggle:hover { color: #ffffff !important; text-decoration: none !important; }
+.edge-evidence {
+  margin: 4px 0 6px 12px;
+  padding: 5px 8px;
+  border-left: 2px solid #334152;
+  background: #16202c;
+  font-size: 12px;
+  color: #b8c7d9;
+}
+.edge-evidence[hidden] { display: none; }
+.edge-evidence ul { margin: 3px 0 0 0; padding-left: 16px; }
+.edge-evidence li { color: #b8c7d9; }
+.evidence-head { color: #d5e1ef; }
+.evidence-note { margin-top: 3px; color: #8fa3b8; font-style: italic; }
