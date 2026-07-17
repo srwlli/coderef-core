@@ -87,6 +87,7 @@ import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js'
 import { type EdgeConfidenceTier, classifyEdgeConfidence, meetsMinConfidence } from '../pipeline/edge-confidence.js';
 import { type EgoGraph, egoGraphOf } from '../query/ego-graph.js';
 import { type SymbolContext, assembleSymbolContext } from '../query/symbol-context.js';
+import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
   type ResponseFormat,
   isConcise,
@@ -251,6 +252,59 @@ function scanSources(projectDir: string): { newestMtimeMs: number; count: number
   };
   walk(projectDir);
   return { newestMtimeMs: newest, count };
+}
+
+// ---- Phase-8 staleness attach (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001) ------
+// Every read response carries a `staleness` block reporting whether any source
+// file has changed since graph.json was built (authoritative hash-manifest basis;
+// mtime fallback when no manifest). Computed once per (root, graph.json mtime) and
+// cached so a hot server does not re-walk/re-hash on every tool call.
+
+interface StalenessCacheEntry {
+  graphMtimeMs: number;
+  result: StalenessResult;
+}
+const stalenessCache = new Map<string, StalenessCacheEntry>();
+
+/** Compute (or reuse) the staleness verdict for a repo, keyed on graph.json mtime. */
+function computeStaleness(projectDir: string): StalenessResult | null {
+  const graphPath = path.join(projectDir, '.coderef', 'graph.json');
+  let graphMtimeMs: number;
+  try {
+    graphMtimeMs = fs.statSync(graphPath).mtimeMs;
+  } catch {
+    return null; // no graph.json — nothing to report a freshness baseline against
+  }
+  const cached = stalenessCache.get(projectDir);
+  if (cached && cached.graphMtimeMs === graphMtimeMs) return cached.result;
+  const result = checkStaleness(projectDir);
+  stalenessCache.set(projectDir, { graphMtimeMs, result });
+  return result;
+}
+
+/**
+ * Attach the compact staleness block to a successful tool payload, in place.
+ * Additive + non-clobbering: skips error envelopes (they carry an `error` key) and
+ * never overwrites a handler's own `staleness` field. The block is small by design
+ * — `{ stale, stale_count }` always, plus `stale_files_sample`/`basis`/`hint`/`note`
+ * only when stale — so it is format-agnostic (no response_format gating needed).
+ * Best-effort: any failure leaves the payload untouched (a freshness check must
+ * never break a read tool).
+ */
+export function attachStaleness(payload: Record<string, unknown>, project_root: string, anchor: string): void {
+  try {
+    if (payload == null || typeof payload !== 'object') return;
+    if ('error' in payload) return; // never annotate an error envelope
+    if ('staleness' in payload) return; // handler already set it — do not clobber
+    const canonical = fs.realpathSync(path.resolve(anchor, project_root));
+    const result = computeStaleness(canonical);
+    if (!result) return;
+    payload.staleness = result.stale
+      ? result // full block when stale: count + sample + basis + hint + note
+      : { stale: false, stale_count: 0, basis: result.basis }; // compact when fresh
+  } catch {
+    // best-effort — leave the payload as-is
+  }
 }
 
 /**
@@ -2342,13 +2396,21 @@ async function main(): Promise<void> {
   const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
 
   /** Route one tool call to its named repo's handlers; convert every
-   * resolution/handler error into the structured envelope (P2-T4). */
+   * resolution/handler error into the structured envelope (P2-T4). On success,
+   * attach the Phase-8 staleness block (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001
+   * / STUB-G5PDE9) so EVERY read response reports whether the graph predates a
+   * recent source edit — the stub's "every MCP response reports stale-file count".
+   * Additive + non-clobbering: never overwrites a handler's own field, never
+   * attached to an error envelope, and best-effort (a freshness-check failure
+   * degrades to no block, never breaks the tool). */
   const perRepo = async (
     project_root: string,
     fn: (h: ToolHandlers) => Record<string, unknown> | Promise<Record<string, unknown>>,
   ) => {
     try {
-      return toContent(await fn(handlersFor(project_root, anchor)));
+      const payload = await fn(handlersFor(project_root, anchor));
+      attachStaleness(payload, project_root, anchor);
+      return toContent(payload);
     } catch (e) {
       return toContent(errorPayload(e, project_root));
     }

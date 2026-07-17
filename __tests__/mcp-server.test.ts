@@ -19,8 +19,10 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { buildToolHandlers, ToolHandlers } from '../src/cli/coderef-mcp-server.js';
+import { buildToolHandlers, ToolHandlers, attachStaleness } from '../src/cli/coderef-mcp-server.js';
 import type { ExportedGraph } from '../src/export/graph-exporter.js';
+import { createHash } from 'crypto';
+import { buildManifest, type ManifestSourceFile } from '../src/pipeline/staleness-manifest.js';
 
 // ---- fixture --------------------------------------------------------------------
 
@@ -1603,5 +1605,74 @@ describe('Phase 7 — symbol_context', () => {
   it('is deterministic — identical inputs yield a byte-identical card', () => {
     expect(handlers.symbol_context({ element: 'helper' }))
       .toEqual(handlers.symbol_context({ element: 'helper' }));
+  });
+});
+
+// ---- Phase 8 — staleness attach (perRepo seam, WO-...-PROGRAM-001 / STUB-G5PDE9)-
+// attachStaleness is the module-level function perRepo calls on every success
+// payload. These pin the ADDITIVE, non-clobbering, error-safe attach contract
+// against a real tmp .coderef/ (the verdict logic itself is pinned in
+// __tests__/query/staleness-check.test.ts).
+describe('Phase 8 — attachStaleness', () => {
+  const dirs: string[] = [];
+  afterEach(() => {
+    for (const d of dirs.splice(0)) {
+      try { fs.rmSync(d, { recursive: true, force: true }); } catch { /* ignore */ }
+    }
+  });
+
+  function makeRepo(withManifest: boolean): string {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'staleness-wire-'));
+    dirs.push(root);
+    const coderef = path.join(root, '.coderef');
+    fs.mkdirSync(path.join(root, 'src'), { recursive: true });
+    fs.mkdirSync(coderef, { recursive: true });
+    const aAbs = path.join(root, 'src', 'a.ts');
+    fs.writeFileSync(aAbs, 'export const a = 1;\n');
+    if (withManifest) {
+      const files: ManifestSourceFile[] = [{ path: 'src/a.ts', size: fs.statSync(aAbs).size }];
+      const manifest = buildManifest(
+        files,
+        () => createHash('sha256').update(fs.readFileSync(aAbs)).digest('hex'),
+        '2026-07-17T00:00:00.000Z',
+      );
+      fs.writeFileSync(path.join(coderef, 'manifest.json'), JSON.stringify(manifest));
+    }
+    fs.writeFileSync(path.join(coderef, 'graph.json'), JSON.stringify({ version: '1.0.0', nodes: [], edges: [] }));
+    return root;
+  }
+
+  it('attaches a compact fresh block to a success payload (hash basis)', () => {
+    const root = makeRepo(true);
+    const payload: Record<string, unknown> = { result: 'ok' };
+    attachStaleness(payload, root, process.cwd());
+    expect(payload.staleness).toEqual({ stale: false, stale_count: 0, basis: 'scan-time-hash-manifest' });
+  });
+
+  it('degrades to basis:manifest-absent when no manifest is present', () => {
+    const root = makeRepo(false);
+    const payload: Record<string, unknown> = { result: 'ok' };
+    attachStaleness(payload, root, process.cwd());
+    expect((payload.staleness as any).basis).toBe('manifest-absent');
+  });
+
+  it('NEVER annotates an error envelope', () => {
+    const root = makeRepo(true);
+    const payload: Record<string, unknown> = { error: 'tool_failed', hint: 'x' };
+    attachStaleness(payload, root, process.cwd());
+    expect('staleness' in payload).toBe(false);
+  });
+
+  it('does NOT clobber a handler-provided staleness field', () => {
+    const root = makeRepo(true);
+    const payload: Record<string, unknown> = { result: 'ok', staleness: { mine: true } };
+    attachStaleness(payload, root, process.cwd());
+    expect(payload.staleness).toEqual({ mine: true });
+  });
+
+  it('is best-effort — an unresolvable root leaves the payload untouched', () => {
+    const payload: Record<string, unknown> = { result: 'ok' };
+    attachStaleness(payload, path.join(os.tmpdir(), 'no-such-dir-xyz-staleness'), process.cwd());
+    expect('staleness' in payload).toBe(false);
   });
 });

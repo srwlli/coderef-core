@@ -943,9 +943,24 @@ Understanding a symbol before editing it — its signature, whether it has a sem
 - **`neighborhood`** — the 1-hop ego-graph `{ resolved, callers, callees, imports, importedBy }` (signatures + confidence tiers, each direction capped by `cap`). `resolved: false` = no resolved edges recorded — **absence is no-data, not "unused."**
 - **`references`** — `{ call_site_count, import_site_count, total, sample, truncated }`. Counts (+ a bounded sample) so the card stays a card; drill to `find_all_references` for the full site list.
 - **`test_linkage`** — `{ test_ref_count, sample, truncated }`: the subset of inbound refs whose source file is a test file. A count of who-tests-this, **never a coverage verdict** — `0` is "no test-file ref recorded."
-- **`staleness`** — `{ stale, basis: "element-file-mtime-vs-graph", note? }`. `stale: true` means the element's file is newer than `graph.json`, so this card **may** predate a recent edit. This is a cheap **mtime heuristic**, deliberately **not** the scan-time hash-manifest freshness contract (that is a separate, forthcoming capability). Reindex if you need certainty.
+- **`staleness`** — `{ stale, basis: "element-file-mtime-vs-graph", note? }`. `stale: true` means the element's file is newer than `graph.json`, so this card **may** predate a recent edit. This is a cheap **per-symbol mtime heuristic**, deliberately **not** the authoritative scan-time hash-manifest freshness contract — that is the repo-wide **`staleness` block** now attached to every response (see **Staleness contract** below).
 
 Flags: **`include_source`** (opt-in) attaches a bounded signature/body slice like `source_of`; **`cap`** (default 25, cap 100) bounds each facet; **`response_format`** honors the concise/detailed axis (concise drops the source slice + signals verbosity, all counts preserved). `symbol_context` is a **single-symbol** tool — a whole-file query or a name matching >1 element returns the standard ambiguity envelope (narrow to a `codeRefId`). It is a JOIN over data the other tools already expose — no new analysis, deterministic, additive; the other 24 tools are byte-unchanged.
+
+#### Staleness contract (`staleness` block on every response)
+
+The worst failure mode of a precomputed index is confident action on **stale** structure: you read a card, edit the file, re-query — and the graph still reflects the pre-edit structure. To close that gap, **every read response carries an additive `staleness` block** reporting whether any source file has changed since `graph.json` was built:
+
+```json
+"staleness": { "stale": true, "stale_count": 2,
+  "stale_files_sample": ["src/foo.ts", "src/bar.ts"],
+  "basis": "scan-time-hash-manifest",
+  "hint": "Source files changed since the graph was built — run the `reindex` tool ..." }
+```
+
+- **`basis: "scan-time-hash-manifest"`** — authoritative. At build time `populate`/`reindex` writes `.coderef/manifest.json` (one sha256 per source file) alongside `graph.json`. At query time the checker uses an mtime/size **fast-path** (a file whose size + mtime match the manifest is assumed fresh — the steady-state re-hashes **zero** files) and re-hashes only the suspects. So a file that was merely **touched** (mtime bumped) but is byte-identical — e.g. a `git checkout` that restores identical content — is correctly **not** stale (the exact false-positive a pure mtime heuristic gets wrong).
+- **`basis: "manifest-absent"`** — degraded. A pre-manifest `.coderef/` (built before this contract) falls back to the coarse newest-source-mtime-vs-`graph.json` signal; `stale_count` is `1` ("something is newer") and no file can be named. Run `reindex` once to write a manifest and get authoritative answers.
+- **Fresh** responses carry the compact `{ stale: false, stale_count: 0, basis }`. **Surfaces-not-verdicts:** `stale_count: 0` means "no source file differs from the manifest," **not** "the graph is correct." The block is best-effort — a freshness-check failure omits the block rather than breaking the tool, and it is never attached to an error envelope.
 
 ### Registration (Claude Code)
 
