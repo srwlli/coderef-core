@@ -877,9 +877,9 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 
 | Tool | Question it answers |
 |------|---------------------|
-| `what_calls` | Which resolved call sites invoke this element? (inbound call edges, with `file:line` locations) |
+| `what_calls` | Which resolved call sites invoke this element? (inbound call edges, with `file:line` locations + a `confidence` tier per caller). `min_confidence` (`exact`\|`strong`\|`heuristic`\|`inferred`) keeps only callers at/above a tier |
 | `what_imports` | Which modules/elements import this element? (inbound resolved import edges) |
-| `impact_of` | What breaks if this changes? Transitive inbound dependents via reverse BFS (depth 1–10, default 3), with dependents-by-depth and affected files |
+| `impact_of` | What breaks if this changes? Transitive inbound dependents via reverse BFS (depth 1–10, default 3), with dependents-by-depth and affected files. `min_confidence` tightens the traversal to a tier floor (counts shrink monotonically as the floor rises) |
 | `find_element` | Look up elements in `index.json` by name, codeRefId, or file substring; optional type filter; returns layer/capability when annotated |
 | `codebase_summary` | Project totals: elements by type, header coverage, graph node/edge counts by relationship |
 | `validation_status` | The 14-field locked `ValidationReport` verbatim, plus a pass/fail summary |
@@ -891,6 +891,17 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model |
 
 Every tool additionally requires `project_root` (string, absolute or anchor-relative path to the target repo root) — see **Per-repo queries** above. Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
+
+#### Confidence tiers (`min_confidence`)
+
+Every graph edge carries a **confidence tier** — a projection of its resolution provenance onto four bands: `exact` > `strong` > `heuristic` > `inferred`. It reports **how the edge was derived, not whether it is "good"** (surfaces, not verdicts):
+
+- **`exact`** — a fully-resolved binding, both endpoints known. Auto-apply-safe.
+- **`strong`** — deterministically classified as out-of-project (builtin / external / stdlib / `import type` / dynamic import). Known-and-classified, not a guess.
+- **`heuristic`** — resolved but *provisional*: bound to its single candidate while the receiver was unknown (`single_candidate_unknown_receiver`). Verify before auto-acting.
+- **`inferred`** — could not be bound to a single confirmed target (unresolved / ambiguous / stale). Lowest provenance — `inferred` is "lower-provenance," not "wrong."
+
+`what_calls`, `impact_of`, and `rename_preview` accept an optional `min_confidence` floor. Because these tools already traverse only `resolved` edges, the filter differentiates **within the resolved set** (`exact` vs `heuristic`) — it tightens an already-resolved traversal, it does **not** resurface unresolved edges or change graph connectivity. Omitting `min_confidence` preserves the prior (unfiltered) behavior exactly. Counts shrink monotonically as the floor rises. `rename_preview` additionally reports a `sites_by_confidence` tally and a `confidence` tier per site, so `min_confidence=exact` yields just the auto-apply-safe sites and leaves provisional single-candidate references for human review.
 
 ### Registration (Claude Code)
 

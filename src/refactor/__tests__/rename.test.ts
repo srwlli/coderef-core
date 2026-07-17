@@ -173,13 +173,13 @@ describe('planRename', () => {
     const aAbs = path.resolve(fixture.dir, 'src/a.ts');
     const bAbs = path.resolve(fixture.dir, 'src/b.ts');
 
-    // declaration site at src/a.ts:1
+    // declaration site at src/a.ts:1 (Phase 3: declarations are always 'exact')
     const decl = plan.sites.filter(s => s.kind === 'declaration');
-    expect(decl).toContainEqual({ file: aAbs, line: 1, kind: 'declaration' });
+    expect(decl).toContainEqual({ file: aAbs, line: 1, kind: 'declaration', confidence: 'exact' });
 
-    // import site at src/b.ts:3
+    // import site at src/b.ts:3 (resolved edge -> 'exact')
     const imports = plan.sites.filter(s => s.kind === 'import');
-    expect(imports).toContainEqual({ file: bAbs, line: 3, kind: 'import' });
+    expect(imports).toContainEqual({ file: bAbs, line: 3, kind: 'import', confidence: 'exact' });
 
     // three call edges on b.ts:6 dedupe to ONE (file,line,rel) site
     const callsB6 = plan.sites.filter(s => s.kind === 'call' && s.file === bAbs && s.line === 6);
@@ -209,9 +209,9 @@ describe('applyRename — line re-tokenization', () => {
     const threeSitePlan = {
       ...plan,
       sites: [
-        { file: fixture.bPath, line: 6, kind: 'call' as const },
-        { file: fixture.bPath, line: 6, kind: 'call' as const },
-        { file: fixture.bPath, line: 6, kind: 'call' as const },
+        { file: fixture.bPath, line: 6, kind: 'call' as const, confidence: 'exact' as const },
+        { file: fixture.bPath, line: 6, kind: 'call' as const, confidence: 'exact' as const },
+        { file: fixture.bPath, line: 6, kind: 'call' as const, confidence: 'exact' as const },
       ],
     };
     const result = applyRename(threeSitePlan, { apply: false });
@@ -314,8 +314,8 @@ describe('applyRename — --apply path', () => {
     const haltPlan = {
       ...plan,
       sites: [
-        { file: fixture.bPath, line: 3, kind: 'import' as const },
-        { file: unwritable, line: 1, kind: 'declaration' as const },
+        { file: fixture.bPath, line: 3, kind: 'import' as const, confidence: 'exact' as const },
+        { file: unwritable, line: 1, kind: 'declaration' as const, confidence: 'exact' as const },
       ],
     };
     const result = applyRename(haltPlan, { apply: true });
@@ -325,5 +325,134 @@ describe('applyRename — --apply path', () => {
     // b.ts was applied before the halt and remains in the list
     expect(result.appliedFiles).toContain(fixture.bPath);
     expect(result.appliedFiles).not.toContain(unwritable);
+  });
+});
+
+/**
+ * Phase 3 (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001): confidence tiers on
+ * rename sites + the --min-confidence filter.
+ *
+ * Fixture: a symbol `target` declared in src/t.ts:1, referenced by TWO resolved
+ * call edges — one NORMAL (exact) at src/u.ts:4 and one PROVISIONAL/heuristic
+ * (resolutionStatus='resolved' + evidence.confidence='provisional', the
+ * single_candidate_unknown_receiver tier) at src/u.ts:8. min_confidence=exact
+ * must drop the heuristic site and keep the exact one; the declaration is
+ * always exact.
+ */
+function makeTieredFixture(): { dir: string } {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-rename-tier-'));
+  const coderefDir = path.join(dir, '.coderef');
+  fs.mkdirSync(coderefDir, { recursive: true });
+  const srcDir = path.join(dir, 'src');
+  fs.mkdirSync(srcDir, { recursive: true });
+
+  fs.writeFileSync(
+    path.join(srcDir, 't.ts'),
+    ['export function target(x) {', '  return x;', '}', ''].join('\n'),
+    'utf-8',
+  );
+  fs.writeFileSync(
+    path.join(srcDir, 'u.ts'),
+    [
+      "import { target } from './t.js';", // 1
+      '',                                  // 2
+      'export function callExact() {',     // 3
+      '  return target(1);',               // 4 exact call
+      '}',                                 // 5
+      'export function callProvisional(o) {', // 6
+      '  // o is an unknown receiver whose method resolved to one candidate',    // 7
+      '  return o.target();',              // 8 provisional (heuristic) call
+      '}',                                 // 9
+    ].join('\n'),
+    'utf-8',
+  );
+
+  const nodes: ExportedGraph['nodes'] = [
+    { id: '@File/src/t.ts', type: 'file', name: 't.ts', file: 'src/t.ts' },
+    { id: '@File/src/u.ts', type: 'file', name: 'u.ts', file: 'src/u.ts' },
+    {
+      id: '@Fn/src/t.ts#target:1', type: 'function', name: 'target', file: 'src/t.ts', line: 1,
+      metadata: { codeRefIdNoLine: '@Fn/src/t.ts#target' },
+    },
+    {
+      id: '@Fn/src/u.ts#callExact:3', type: 'function', name: 'callExact', file: 'src/u.ts', line: 3,
+      metadata: { codeRefIdNoLine: '@Fn/src/u.ts#callExact' },
+    },
+    {
+      id: '@Fn/src/u.ts#callProvisional:6', type: 'function', name: 'callProvisional', file: 'src/u.ts', line: 6,
+      metadata: { codeRefIdNoLine: '@Fn/src/u.ts#callProvisional' },
+    },
+  ];
+
+  const edges: ExportedGraph['edges'] = [
+    // exact call at u.ts:4 — resolutionStatus 'resolved', no provisional flag.
+    {
+      id: 'exact1', sourceId: '@Fn/src/u.ts#callExact:3', targetId: '@Fn/src/t.ts#target:1',
+      relationship: 'call', resolutionStatus: 'resolved',
+      sourceLocation: { file: 'src/u.ts', line: 4 },
+      source: '@Fn/src/u.ts#callExact:3', target: '@Fn/src/t.ts#target:1', type: 'call',
+    } as ExportedGraph['edges'][number],
+    // provisional (heuristic) call at u.ts:8 — resolved but single_candidate.
+    {
+      id: 'prov1', sourceId: '@Fn/src/u.ts#callProvisional:6', targetId: '@Fn/src/t.ts#target:1',
+      relationship: 'call', resolutionStatus: 'resolved',
+      evidence: { kind: 'resolved-call', confidence: 'provisional' },
+      candidates: ['@Fn/src/t.ts#target:1'],
+      sourceLocation: { file: 'src/u.ts', line: 8 },
+      source: '@Fn/src/u.ts#callProvisional:6', target: '@Fn/src/t.ts#target:1', type: 'call',
+    } as ExportedGraph['edges'][number],
+  ];
+
+  const graph: ExportedGraph = {
+    version: '1.0.0', exportedAt: 0, nodes, edges,
+    statistics: { nodeCount: nodes.length, edgeCount: edges.length, edgesByType: {}, densityRatio: 0 },
+  };
+  fs.writeFileSync(path.join(coderefDir, 'graph.json'), JSON.stringify(graph), 'utf-8');
+  return { dir };
+}
+
+describe('planRename — confidence tiers + --min-confidence (Phase 3)', () => {
+  let fixture: { dir: string };
+  beforeEach(() => { fixture = makeTieredFixture(); });
+  afterEach(() => { fs.rmSync(fixture.dir, { recursive: true, force: true }); });
+
+  it('tags every site with a confidence tier; declaration is exact', () => {
+    const plan = planRename(fixture.dir, 'target', 'renamedTarget');
+    for (const s of plan.sites) {
+      expect(['exact', 'strong', 'heuristic', 'inferred']).toContain(s.confidence);
+    }
+    const decl = plan.sites.find(s => s.kind === 'declaration');
+    expect(decl?.confidence).toBe('exact');
+    // No filter requested -> minConfidence echoes null and both call sites present.
+    expect(plan.minConfidence).toBeNull();
+    const uAbs = path.resolve(fixture.dir, 'src/u.ts');
+    const exactSite = plan.sites.find(s => s.file === uAbs && s.line === 4);
+    const provSite = plan.sites.find(s => s.file === uAbs && s.line === 8);
+    expect(exactSite?.confidence).toBe('exact');
+    expect(provSite?.confidence).toBe('heuristic');
+  });
+
+  it('min_confidence=exact drops the provisional (heuristic) reference site, keeps the exact one', () => {
+    const uAbs = path.resolve(fixture.dir, 'src/u.ts');
+    const full = planRename(fixture.dir, 'target', 'renamedTarget');
+    const filtered = planRename(fixture.dir, 'target', 'renamedTarget', 'exact');
+
+    // The heuristic site at u.ts:8 is present unfiltered, absent when exact-only.
+    expect(full.sites.some(s => s.file === uAbs && s.line === 8)).toBe(true);
+    expect(filtered.sites.some(s => s.file === uAbs && s.line === 8)).toBe(false);
+    // The exact site at u.ts:4 survives the filter.
+    expect(filtered.sites.some(s => s.file === uAbs && s.line === 4)).toBe(true);
+    // The declaration (always exact) survives.
+    expect(filtered.sites.some(s => s.kind === 'declaration')).toBe(true);
+    // Filtering only shrinks the site set (monotonic), never grows it.
+    expect(filtered.sites.length).toBeLessThan(full.sites.length);
+    expect(filtered.minConfidence).toBe('exact');
+  });
+
+  it('min_confidence=heuristic keeps both exact and heuristic sites (threshold is inclusive)', () => {
+    const uAbs = path.resolve(fixture.dir, 'src/u.ts');
+    const plan = planRename(fixture.dir, 'target', 'renamedTarget', 'heuristic');
+    expect(plan.sites.some(s => s.file === uAbs && s.line === 4)).toBe(true); // exact >= heuristic
+    expect(plan.sites.some(s => s.file === uAbs && s.line === 8)).toBe(true); // heuristic >= heuristic
   });
 });

@@ -52,6 +52,16 @@ export type ExportedGraphEdgeResolutionStatus =
   | 'stale';
 
 /**
+ * Per-edge confidence TIER (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 Phase 3).
+ * A PURE projection of the edge's (resolutionStatus, reason, evidence.confidence)
+ * onto four provenance bands — see src/pipeline/edge-confidence.ts. Additive:
+ * legacy consumers ignore it. Re-exported from the classifier as the single
+ * source of truth for the enum.
+ */
+export type { EdgeConfidenceTier } from '../pipeline/edge-confidence.js';
+import type { EdgeConfidenceTier as _EdgeConfidenceTier } from '../pipeline/edge-confidence.js';
+
+/**
  * Exported graph structure.
  *
  * WO-PIPELINE-GRAPH-CONSTRUCTION-001 / Phase 5: edges adopt the
@@ -94,6 +104,13 @@ export interface ExportedGraph {
     candidates?: string[];
     /** Reason string for non-resolved kinds. */
     reason?: string;
+    /**
+     * Additive (Phase 3). Confidence TIER projected from
+     * (resolutionStatus, reason, evidence.confidence) — exact|strong|
+     * heuristic|inferred. Edge PROVENANCE, not a quality verdict. Stamped by
+     * graph-builder's buildEdgeRecord chokepoint via classifyEdgeConfidence.
+     */
+    confidence?: _EdgeConfidenceTier;
     // Legacy compat fields (kept populated through Phase 5):
     /** @deprecated use sourceId instead. */
     source: string;

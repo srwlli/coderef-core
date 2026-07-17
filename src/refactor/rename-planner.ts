@@ -26,11 +26,21 @@
 
 import * as path from 'path';
 import { loadCanonicalGraph } from '../query/canonical-graph.js';
+import type { EdgeConfidenceTier } from '../pipeline/edge-confidence.js';
 
 export interface RenameSite {
   file: string;
   line: number;
   kind: 'declaration' | 'call' | 'import';
+  /**
+   * Confidence TIER of the edge this site came from (Phase 3). Declaration
+   * sites are always 'exact' (they ARE the resolved target node). Reference
+   * sites carry the tier of their inbound resolved edge — 'exact' for a normal
+   * resolved reference, 'heuristic' for a provisional single-candidate one.
+   * PROVENANCE, not a verdict: use it to separate auto-apply-safe ('exact')
+   * sites from ones a human should review before rewriting.
+   */
+  confidence: EdgeConfidenceTier;
 }
 
 export interface RenamePlan {
@@ -40,13 +50,32 @@ export interface RenamePlan {
   sites: RenameSite[];
   typeOnlyRefs: Array<{ file?: string; line?: number; note: string }>;
   ambiguities: Array<{ file: string; line: number; reason: string }>;
+  /**
+   * The minConfidence threshold applied when building this plan, or null when
+   * no filter was requested (Phase 3). Echoed so a consumer knows whether the
+   * site list was tightened.
+   */
+  minConfidence: EdgeConfidenceTier | null;
 }
 
 /**
  * Build a rename plan for `oldName -> newName` against the project's canonical
  * graph. Throws if the symbol resolves to zero nodes.
+ *
+ * `minConfidence` (optional, Phase 3) tightens the REFERENCE sites to those
+ * whose edge tier meets or exceeds the threshold — e.g. `'exact'` drops
+ * provisional single-candidate ('heuristic') sites, leaving only the
+ * auto-apply-safe ones. Declaration sites are always retained (they are 'exact'
+ * by construction). Absent `minConfidence` → every reference site is kept and
+ * the plan is byte-unchanged from the pre-Phase-3 shape plus the additive
+ * `confidence`/`minConfidence` fields.
  */
-export function planRename(projectDir: string, oldName: string, newName: string): RenamePlan {
+export function planRename(
+  projectDir: string,
+  oldName: string,
+  newName: string,
+  minConfidence?: EdgeConfidenceTier,
+): RenamePlan {
   const q = loadCanonicalGraph(projectDir);
   const res = q.resolve(oldName);
   if (res.nodes.length === 0) {
@@ -64,15 +93,17 @@ export function planRename(projectDir: string, oldName: string, newName: string)
     path.isAbsolute(file) ? file : path.resolve(projectDir, file);
 
   // Declaration sites: one per resolved target node that carries a location.
+  // A declaration IS the resolved target, so its provenance is always 'exact'.
   for (const node of res.nodes) {
     if (typeof node.file !== 'string' || typeof node.line !== 'number') continue;
-    sites.push({ file: abs(node.file), line: node.line, kind: 'declaration' });
+    sites.push({ file: abs(node.file), line: node.line, kind: 'declaration', confidence: 'exact' });
   }
 
-  // Reference sites: per-edge inbound call+import sites (with line).
-  for (const site of q.referenceSitesOf(res)) {
+  // Reference sites: per-edge inbound call+import sites (with line + tier),
+  // optionally filtered to the minConfidence threshold.
+  for (const site of q.referenceSitesOf(res, minConfidence)) {
     const kind: RenameSite['kind'] = site.relationship === 'import' ? 'import' : 'call';
-    sites.push({ file: abs(site.file), line: site.line, kind });
+    sites.push({ file: abs(site.file), line: site.line, kind, confidence: site.confidence });
   }
 
   return {
@@ -86,5 +117,6 @@ export function planRename(projectDir: string, oldName: string, newName: string)
     // The applier fills shadow ambiguities during rewriting; the planner
     // returns an empty array so the RenamePlan shape is stable.
     ambiguities: [],
+    minConfidence: minConfidence ?? null,
   };
 }

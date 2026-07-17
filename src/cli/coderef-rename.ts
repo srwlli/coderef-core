@@ -23,6 +23,7 @@
 
 import { parseArgs } from 'node:util';
 import { CanonicalGraphError } from '../query/canonical-graph.js';
+import { type EdgeConfidenceTier, EDGE_CONFIDENCE_TIERS } from '../pipeline/edge-confidence.js';
 import { planRename } from '../refactor/rename-planner.js';
 import { applyRename } from '../refactor/rename-applier.js';
 
@@ -40,6 +41,10 @@ Arguments:
 Options:
   --apply            Perform the rewrite (default: DRY RUN — writes nothing)
   --force-ambiguous  Rewrite lines flagged as shadow-ambiguous instead of skipping them
+  --min-confidence   Keep only reference sites at/above a confidence tier
+                     (exact|strong|heuristic|inferred). exact leaves only the
+                     auto-apply-safe sites, dropping provisional single-candidate
+                     references. Edge provenance, not a verdict. Default: no filter.
   --project-dir, -p  Project root containing .coderef/graph.json (default: cwd)
   --help             Print this help
 
@@ -55,6 +60,7 @@ async function main(): Promise<void> {
     options: {
       apply:            { type: 'boolean', default: false },
       'force-ambiguous': { type: 'boolean', default: false },
+      'min-confidence': { type: 'string' },
       'project-dir':    { type: 'string' },
       p:                { type: 'string' },
       help:             { type: 'boolean', default: false },
@@ -81,9 +87,22 @@ async function main(): Promise<void> {
   const apply = values.apply === true;
   const forceAmbiguous = values['force-ambiguous'] === true;
 
+  // --min-confidence: optional tier floor on the reference sites (Phase 3).
+  let minConfidence: EdgeConfidenceTier | undefined;
+  const rawMinConfidence = values['min-confidence'] as string | undefined;
+  if (rawMinConfidence !== undefined) {
+    if (!EDGE_CONFIDENCE_TIERS.includes(rawMinConfidence as EdgeConfidenceTier)) {
+      console.error(
+        `Error: --min-confidence must be one of ${EDGE_CONFIDENCE_TIERS.join('|')} (got "${rawMinConfidence}")`,
+      );
+      process.exit(1);
+    }
+    minConfidence = rawMinConfidence as EdgeConfidenceTier;
+  }
+
   let plan;
   try {
-    plan = planRename(projectDir, oldName, newName);
+    plan = planRename(projectDir, oldName, newName, minConfidence);
   } catch (err) {
     if (err instanceof CanonicalGraphError) {
       console.error(`Rename error: ${err.message}`);
@@ -102,6 +121,19 @@ async function main(): Promise<void> {
   console.log(`target ids (${plan.targetIds.length}):`);
   for (const id of plan.targetIds.slice(0, 20)) console.log(`  ${id}`);
   if (plan.targetIds.length > 20) console.log(`  ... (+${plan.targetIds.length - 20} more)`);
+
+  // Confidence-tier tally over the (possibly filtered) sites (Phase 3):
+  // provenance, not a verdict — 'exact' is auto-apply-safe, lower tiers warrant
+  // review. Ordered exact>strong>heuristic>inferred.
+  const byConfidence = new Map<EdgeConfidenceTier, number>();
+  for (const s of plan.sites) byConfidence.set(s.confidence, (byConfidence.get(s.confidence) ?? 0) + 1);
+  const tierParts = EDGE_CONFIDENCE_TIERS
+    .filter(t => byConfidence.has(t))
+    .map(t => `${t}=${byConfidence.get(t)}`);
+  console.log(
+    `\nconfidence${plan.minConfidence ? ` (min ${plan.minConfidence})` : ''}: ` +
+      (tierParts.length > 0 ? tierParts.join(', ') : '(no sites)'),
+  );
 
   // Per-file summary.
   console.log(`\nfiles (${result.previews.length}):`);

@@ -1,8 +1,15 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability graph-construction-edge-schema-test-valid-relationships
+ */
+
 import * as fs from 'fs/promises';
 import * as os from 'os';
 import * as path from 'path';
 import { afterEach, describe, expect, it } from 'vitest';
 import { PipelineOrchestrator } from '../../src/pipeline/orchestrator.js';
+import { EDGE_CONFIDENCE_TIERS, classifyEdgeConfidence } from '../../src/pipeline/edge-confidence.js';
 
 const created: string[] = [];
 afterEach(async () => {
@@ -74,11 +81,27 @@ describe('Phase 5 graph-construction edge schema (AC-03 + AC-05 + AC-10)', () =>
         expect(Array.isArray(candidates)).toBe(true);
         expect((candidates as string[]).length).toBeGreaterThanOrEqual(2);
       }
+
+      // Phase 3: every edge carries an additive `confidence` tier, and it
+      // matches the PURE classifier over the edge's own fields (the tier is a
+      // projection, not independent state — the builder must not diverge).
+      expect(EDGE_CONFIDENCE_TIERS).toContain(edge.confidence);
+      const ev = edge.evidence as { confidence?: unknown } | undefined;
+      const evidenceConfidence = typeof ev?.confidence === 'string' ? ev.confidence : undefined;
+      expect(edge.confidence).toBe(
+        classifyEdgeConfidence(edge.resolutionStatus, edge.reason, evidenceConfidence),
+      );
     }
 
     // Sanity: fixture exercises multiple kinds.
     const kinds = new Set(state.graph.edges.map(e => e.resolutionStatus));
     expect(kinds.has('resolved')).toBe(true);
     expect(kinds.has('unresolved')).toBe(true);
+
+    // Phase 3 sanity: the mixed fixture surfaces more than one tier — resolved
+    // edges are 'exact', unresolved are 'inferred' (so both appear).
+    const tiers = new Set(state.graph.edges.map(e => e.confidence));
+    expect(tiers.has('exact')).toBe(true);
+    expect(tiers.has('inferred')).toBe(true);
   });
 });

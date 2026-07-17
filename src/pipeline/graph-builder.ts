@@ -64,6 +64,7 @@ import type { ExportedGraph } from '../export/graph-exporter.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
 import { globalRegistry } from '../registry/entity-registry.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
+import { classifyEdgeConfidence } from './edge-confidence.js';
 
 /**
  * Canonical edge relationship enum (AC-03 + AC-04).
@@ -738,6 +739,21 @@ function buildEdgeRecord(args: {
   if (evidence && args.sourceLocation && isTestOriginFile(args.sourceLocation.file)) {
     evidence = { ...evidence, testOrigin: true };
   }
+  // Confidence TIER (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 Phase 3): a PURE
+  // projection of the edge's (resolutionStatus, reason, evidence.confidence)
+  // onto exact|strong|heuristic|inferred. Single chokepoint — every canonical
+  // edge (call / import / export) is stamped exactly once, deterministically.
+  // Additive; legacy consumers ignore it. evidence.confidence is 'provisional'
+  // only for the single_candidate_unknown_receiver case (STUB-6CWWHQ).
+  const evidenceConfidence =
+    evidence && typeof (evidence as { confidence?: unknown }).confidence === 'string'
+      ? (evidence as { confidence?: string }).confidence
+      : undefined;
+  const confidence = classifyEdgeConfidence(
+    args.resolutionStatus,
+    args.reason,
+    evidenceConfidence,
+  );
   const record: ExportedGraph['edges'][number] = {
     id: args.id,
     sourceId: args.sourceId,
@@ -748,6 +764,7 @@ function buildEdgeRecord(args: {
     sourceLocation: args.sourceLocation,
     candidates: args.candidates,
     reason: args.reason,
+    confidence,
     // Legacy compat: source = sourceId, target = targetId ?? evidence
     // originSpecifier ?? '', type = relationship.
     source: args.sourceId,

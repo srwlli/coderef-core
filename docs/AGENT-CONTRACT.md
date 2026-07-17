@@ -85,6 +85,15 @@ The identical artifact is available off-MCP as `coderef-map <repo> --skeleton [-
 
 Contract to rely on: the git read is **opt-in and any-repo-safe** — on a non-git repo, a git-less PATH, or an empty history the block is simply absent and `git_block_reason` names why (absence is *no data*, never zero churn). Extraction is bounded by a commit window stamped into `git.window` (with a `shallow` flag when the clone is shallow — the window is partial by depth). **Surfaces, not verdicts:** high churn tracks active development as much as instability; a coupling-drift pair is a *candidate*, not a proven missing edge. Off-MCP: `coderef-map <repo> --git`.
 
+**For trust-tiered traversal, filter `what_calls` / `impact_of` / `rename_preview` by `min_confidence`.** Every graph edge carries a **confidence tier** — a projection of its resolution provenance onto `exact` > `strong` > `heuristic` > `inferred`. It is edge PROVENANCE (how the edge was derived), **not a quality verdict**:
+
+- **`exact`** — fully-resolved binding, both endpoints known. Auto-apply-safe.
+- **`strong`** — deterministically classified out-of-project (builtin / external / stdlib / `import type` / dynamic import). Known-and-classified, not a guess.
+- **`heuristic`** — resolved but *provisional*: bound to its single candidate on an unknown receiver (`single_candidate_unknown_receiver`). Verify before auto-acting.
+- **`inferred`** — could not bind to one confirmed target (unresolved / ambiguous / stale). Lowest provenance — "lower-provenance," not "wrong."
+
+The three consumer tools take an optional `min_confidence` floor. Since they already traverse only `resolved` edges, it differentiates **within the resolved set** (`exact` vs `heuristic`) — it tightens an already-resolved traversal, it does **not** resurface unresolved edges. Omitting it preserves prior behavior; counts shrink monotonically as the floor rises. **The headline use is `rename_preview`:** it tags each site with a `confidence` tier and a `sites_by_confidence` tally, so `min_confidence=exact` gives just the auto-apply-safe sites and holds provisional single-candidate references for review — the "safe to auto-apply vs needs review" split that undifferentiated edges could not express. Off-MCP: `coderef-rename <old> <new> --min-confidence exact`.
+
 ---
 
 ## 2. The gate contract (Phase 6 → Phase 7)

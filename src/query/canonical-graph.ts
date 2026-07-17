@@ -32,6 +32,11 @@ import * as fs from 'fs';
 import * as path from 'path';
 import type { ExportedGraph } from '../export/graph-exporter.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
+import {
+  type EdgeConfidenceTier,
+  classifyEdgeConfidence,
+  meetsMinConfidence,
+} from '../pipeline/edge-confidence.js';
 
 type ExportedNode = ExportedGraph['nodes'][number];
 type ExportedEdge = ExportedGraph['edges'][number];
@@ -215,29 +220,55 @@ export class CanonicalGraphQuery {
   }
 
   /**
-   * Inbound resolved call+import reference SITES (per-edge, with line).
+   * The confidence TIER of an edge (Phase 3). Prefers the tier the builder
+   * already stamped onto the edge; falls back to recomputing from
+   * (resolutionStatus, reason, evidence.confidence) via the same pure
+   * classifier so a pre-Phase-3 graph.json (no `confidence` field) still
+   * yields a correct tier. Read-only, deterministic.
+   */
+  private edgeConfidence(edge: ExportedEdge): EdgeConfidenceTier {
+    if (typeof edge.confidence === 'string') return edge.confidence;
+    const ev = edge.evidence as { confidence?: unknown } | undefined;
+    const evidenceConfidence = typeof ev?.confidence === 'string' ? ev.confidence : undefined;
+    return classifyEdgeConfidence(edge.resolutionStatus, edge.reason, evidenceConfidence);
+  }
+
+  /**
+   * Inbound resolved call+import reference SITES (per-edge, with line + tier).
    *
    * Unlike callersOf/importersOf (which dedupe to unique neighbor NODES and so
    * collapse multiple call sites in one caller into a single entry), this
    * returns every distinct (file, line, relationship) triple at which the
-   * resolution is referenced — the span granularity a rename needs. Read-only.
+   * resolution is referenced — the span granularity a rename needs. Each site
+   * additionally carries its edge `confidence` tier (Phase 3). Read-only.
+   *
+   * `minConfidence` (optional) is a within-the-resolved-set filter: only sites
+   * whose edge tier meets or exceeds the threshold are returned. Because the
+   * inbound index holds ONLY resolved edges (constructor invariant), the filter
+   * differentiates `exact` from `heuristic` (provisional single-candidate); it
+   * never resurfaces non-resolved edges. Absent `minConfidence` → no filter, so
+   * the default output is byte-unchanged from the pre-Phase-3 shape plus the
+   * additive `confidence` field.
    */
   referenceSitesOf(
     resolution: NodeResolution,
-  ): Array<{ file: string; line: number; relationship: string }> {
+    minConfidence?: EdgeConfidenceTier,
+  ): Array<{ file: string; line: number; relationship: string; confidence: EdgeConfidenceTier }> {
     const ids = this.idSetOf(resolution);
     const seen = new Set<string>();
-    const sites: Array<{ file: string; line: number; relationship: string }> = [];
+    const sites: Array<{ file: string; line: number; relationship: string; confidence: EdgeConfidenceTier }> = [];
     for (const id of ids) {
       for (const edge of this.inbound.get(id) ?? []) {
         const rel = edge.relationship ?? '';
         if (rel !== 'call' && rel !== 'import') continue;
         const loc = edge.sourceLocation;
         if (!loc || typeof loc.file !== 'string' || typeof loc.line !== 'number') continue;
+        const confidence = this.edgeConfidence(edge);
+        if (!meetsMinConfidence(confidence, minConfidence)) continue;
         const key = `${loc.file}::${loc.line}::${rel}`;
         if (seen.has(key)) continue;
         seen.add(key);
-        sites.push({ file: loc.file, line: loc.line, relationship: rel });
+        sites.push({ file: loc.file, line: loc.line, relationship: rel, confidence });
       }
     }
     return sites;

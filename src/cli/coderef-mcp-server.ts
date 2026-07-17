@@ -84,6 +84,7 @@ import type { ExportedGraph } from '../export/graph-exporter.js';
 // drifted from canonical and broke tsconfig.cli.json on every field change.
 import type { ValidationReport } from '../pipeline/output-validator.js';
 import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js';
+import { type EdgeConfidenceTier, classifyEdgeConfidence, meetsMinConfidence } from '../pipeline/edge-confidence.js';
 import { planRename } from '../refactor/rename-planner.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 // P6 CLI/MCP parity (WO-...-CLI-MCP-PARITY-001): the two .coderef/-WRITE tools
@@ -491,9 +492,9 @@ function notFound(query: string): Record<string, unknown> {
 // ---- tool handlers (exported for behavioral tests — P3-T4) ----------------------
 
 export interface ToolHandlers {
-  what_calls(args: { element: string; limit?: number }): Record<string, unknown>;
+  what_calls(args: { element: string; limit?: number; min_confidence?: EdgeConfidenceTier }): Record<string, unknown>;
   what_imports(args: { element: string; limit?: number }): Record<string, unknown>;
-  impact_of(args: { element: string; max_depth?: number; limit?: number }): Record<string, unknown>;
+  impact_of(args: { element: string; max_depth?: number; limit?: number; min_confidence?: EdgeConfidenceTier }): Record<string, unknown>;
   find_element(args: { query: string; type?: string; limit?: number }): Record<string, unknown>;
   codebase_summary(): Record<string, unknown>;
   validation_status(): Record<string, unknown>;
@@ -524,7 +525,7 @@ export interface ToolHandlers {
   // CLI/MCP parity (WO-...-CLI-MCP-PARITY-001 P6).
   // READ tools — wrap a clean substrate export, return synchronously.
   pack_context(args: { element: string; token_budget?: number; full_deps?: boolean }): Record<string, unknown>;
-  rename_preview(args: { old_name: string; new_name: string }): Record<string, unknown>;
+  rename_preview(args: { old_name: string; new_name: string; min_confidence?: EdgeConfidenceTier }): Record<string, unknown>;
   // .coderef-WRITE / status tools — async (delegate to the extracted pipelines /
   // async status readout). Writes are confined to <projectDir>/.coderef/.
   rag_status(): Promise<Record<string, unknown>>;
@@ -559,6 +560,19 @@ function isDemoFile(file: string | undefined): boolean {
   return DEMO_FILE_RE.test(normalizeSlashes((file ?? '')));
 }
 
+/**
+ * The confidence TIER of a canonical edge (Phase 3). Prefers the tier the
+ * builder stamped onto the edge; falls back to recomputing it from
+ * (resolutionStatus, reason, evidence.confidence) so a pre-Phase-3 graph.json
+ * (no `confidence` field) still yields a correct tier. Pure + deterministic.
+ */
+function edgeConfidenceOf(edge: ExportedGraph['edges'][number]): EdgeConfidenceTier {
+  if (typeof edge.confidence === 'string') return edge.confidence;
+  const ev = edge.evidence as { confidence?: unknown } | undefined;
+  const evidenceConfidence = typeof ev?.confidence === 'string' ? ev.confidence : undefined;
+  return classifyEdgeConfidence(edge.resolutionStatus, edge.reason, evidenceConfidence);
+}
+
 export function buildToolHandlers(projectDir: string): ToolHandlers {
   const cache = emptyCache();
 
@@ -567,6 +581,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     query: string,
     kind: 'call' | 'import',
     limit: number,
+    minConfidence?: EdgeConfidenceTier,
   ): Record<string, unknown> {
     const graph = loadGraph(projectDir, cache);
     const { nodes: matches, byFile } = resolveNodes(query, graph);
@@ -578,6 +593,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     for (const node of matches) {
       for (const edge of cache.inbound.get(node.id) ?? []) {
         if (edge.relationship !== kind) continue;
+        // Phase 3: confidence tier is a within-resolved-set filter. cache.inbound
+        // holds only resolved edges, so min_confidence differentiates exact vs
+        // heuristic (provisional single-candidate); it never resurfaces
+        // non-resolved edges. Prefer the builder-stamped tier; fall back to the
+        // pure classifier for a pre-Phase-3 graph.json.
+        const confidence = edgeConfidenceOf(edge);
+        if (!meetsMinConfidence(confidence, minConfidence)) continue;
         total++;
         if (hits.length >= limit) continue;
         const source = edge.sourceId ? cache.nodeById.get(edge.sourceId) : undefined;
@@ -593,6 +615,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           at: edge.sourceLocation
             ? `${edge.sourceLocation.file}:${edge.sourceLocation.line}`
             : undefined,
+          confidence,
           ...(kind === 'call' && ev?.calleeName !== undefined && { callee: ev.calleeName }),
           ...(kind === 'call' && ev?.receiverText ? { receiver: ev.receiverText } : {}),
           ...(kind === 'call' && ev?.scopePath ? { scope: ev.scopePath } : {}),
@@ -603,6 +626,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     return {
       element: byFile ? [`(all ${matches.length} elements of) ${query}`] : matches.map(m => m.id),
       relationship: kind,
+      ...(minConfidence ? { min_confidence: minConfidence } : {}),
       total,
       returned: hits.length,
       truncated: total > hits.length,
@@ -656,8 +680,8 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
   }
 
   return {
-    what_calls({ element, limit }) {
-      return inboundByKind(element, 'call', clampLimit(limit));
+    what_calls({ element, limit, min_confidence }) {
+      return inboundByKind(element, 'call', clampLimit(limit), min_confidence);
     },
 
     what_this_calls({ element, limit }) {
@@ -756,7 +780,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       return inboundByKind(element, 'import', clampLimit(limit));
     },
 
-    impact_of({ element, max_depth, limit }) {
+    impact_of({ element, max_depth, limit, min_confidence }) {
       const graph = loadGraph(projectDir, cache);
       const cap = clampLimit(limit);
       const depthCap = Math.max(1, Math.min(10, max_depth ?? 3));
@@ -767,6 +791,9 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       // Reverse BFS over resolved call+import edges: who (transitively)
       // depends on this? Export edges are containment, not consumption —
       // a file exporting X is not "impacted by" X (v2 hygiene).
+      // Phase 3: min_confidence tightens the traversal WITHIN the resolved set
+      // (cache.inbound is resolved-only) — e.g. exact-only drops provisional
+      // single-candidate hops. It does not resurface non-resolved edges.
       const visited = new Set<string>(matches.map(m => m.id));
       const byDepth: number[] = [];
       let frontier = matches.map(m => m.id);
@@ -776,6 +803,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         for (const id of frontier) {
           for (const edge of cache.inbound.get(id) ?? []) {
             if (edge.relationship !== 'call' && edge.relationship !== 'import') continue;
+            if (!meetsMinConfidence(edgeConfidenceOf(edge), min_confidence)) continue;
             const src = edge.sourceId!;
             if (visited.has(src)) continue;
             visited.add(src);
@@ -802,6 +830,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           ? [`(all ${matches.length} elements of) ${element}`]
           : matches.map(m => m.id),
         max_depth: depthCap,
+        ...(min_confidence ? { min_confidence } : {}),
         transitive_dependents: dependents.length,
         dependents_by_depth: byDepth,
         affected_files: files.length,
@@ -1597,20 +1626,29 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       }
     },
 
-    rename_preview({ old_name, new_name }) {
+    rename_preview({ old_name, new_name, min_confidence }) {
       // Dry-run ONLY. planRename reads the canonical graph and returns the plan
       // (sites/typeOnlyRefs/ambiguities). It writes NOTHING. There is
       // deliberately NO apply path here — a stray apply-arg regression would be
       // caught by the mcp-server test's write-confinement guard.
+      // Phase 3: each site carries its confidence tier (declaration sites are
+      // 'exact'; reference sites echo their edge tier). min_confidence tightens
+      // the reference sites to the threshold — e.g. 'exact' leaves only the
+      // auto-apply-safe sites, dropping provisional single-candidate ones.
       try {
-        const plan = planRename(projectDir, old_name, new_name);
+        const plan = planRename(projectDir, old_name, new_name, min_confidence);
+        // Tier tally so an agent can see the safe-vs-review split at a glance.
+        const byConfidence: Record<string, number> = {};
+        for (const s of plan.sites) byConfidence[s.confidence] = (byConfidence[s.confidence] ?? 0) + 1;
         return {
           old_name: plan.oldName,
           new_name: plan.newName,
           preview_only: true,
           apply_hint: 'To apply, run the coderef-rename CLI (--apply). MCP is preview-only.',
+          ...(plan.minConfidence ? { min_confidence: plan.minConfidence } : {}),
           target_ids: plan.targetIds,
           site_count: plan.sites.length,
+          sites_by_confidence: byConfidence,
           sites: plan.sites,
           type_only_refs: plan.typeOnlyRefs,
           ambiguities: plan.ambiguities,
@@ -1999,17 +2037,25 @@ async function main(): Promise<void> {
     .string()
     .describe('Element to query: codeRefId (e.g. "@Fn/src/foo.ts#bar:12"), element name, or file path fragment');
   const limitArg = z.number().optional().describe(`Max results (default ${DEFAULT_LIMIT}, cap ${MAX_LIMIT})`);
+  const minConfidenceArg = z
+    .enum(['exact', 'strong', 'heuristic', 'inferred'])
+    .optional()
+    .describe(
+      'Confidence-tier floor (Phase 3): keep only edges/sites whose tier >= this. exact>strong>heuristic>inferred. ' +
+      'Reports edge PROVENANCE, not a quality verdict. Because traversal is already resolved-only, this differentiates ' +
+      'exact vs heuristic (provisional single-candidate) WITHIN the resolved set — it does not resurface unresolved edges. Omit for no filter.',
+    );
 
   server.registerTool(
     'what_calls',
     {
       title: 'What calls this element',
       description:
-        'List the resolved call sites that invoke the given element (inbound call edges from .coderef/graph.json). Compact: caller id/name/file/line plus call location. `total` counts inbound EDGES (a caller invoking the target twice counts twice) — the outbound mirror what_this_calls counts DISTINCT targets.',
-      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg },
+        'List the resolved call sites that invoke the given element (inbound call edges from .coderef/graph.json). Compact: caller id/name/file/line plus call location and confidence tier. `total` counts inbound EDGES (a caller invoking the target twice counts twice) — the outbound mirror what_this_calls counts DISTINCT targets. Pass min_confidence to keep only callers at/above a tier (e.g. exact drops provisional single-candidate calls).',
+      inputSchema: { project_root: projectRootArg, element: elementArg, limit: limitArg, min_confidence: minConfidenceArg },
     },
-    async ({ project_root, element, limit }) =>
-      perRepo(project_root, h => h.what_calls({ element, limit })),
+    async ({ project_root, element, limit, min_confidence }) =>
+      perRepo(project_root, h => h.what_calls({ element, limit, min_confidence })),
   );
 
   server.registerTool(
@@ -2029,16 +2075,17 @@ async function main(): Promise<void> {
     {
       title: 'Impact analysis',
       description:
-        'Transitive inbound dependents of an element via reverse BFS over resolved edges — what breaks if this changes. Returns dependent counts by depth and affected files.',
+        'Transitive inbound dependents of an element via reverse BFS over resolved edges — what breaks if this changes. Returns dependent counts by depth and affected files. Pass min_confidence to tighten the traversal to a tier floor (e.g. exact drops provisional single-candidate hops) — within the resolved set, so counts shrink monotonically as the floor rises.',
       inputSchema: {
         project_root: projectRootArg,
         element: elementArg,
         max_depth: z.number().optional().describe('BFS depth cap, 1-10 (default 3)'),
         limit: limitArg,
+        min_confidence: minConfidenceArg,
       },
     },
-    async ({ project_root, element, max_depth, limit }) =>
-      perRepo(project_root, h => h.impact_of({ element, max_depth, limit })),
+    async ({ project_root, element, max_depth, limit, min_confidence }) =>
+      perRepo(project_root, h => h.impact_of({ element, max_depth, limit, min_confidence })),
   );
 
   server.registerTool(
@@ -2356,15 +2403,16 @@ async function main(): Promise<void> {
     {
       title: 'Rename preview (dry-run)',
       description:
-        'READ / PREVIEW-ONLY. Plan a project-wide symbol rename over .coderef/graph.json: returns declaration + reference SITES (call/import), type-only refs, and any ambiguities the applier would guard. Writes NOTHING and has NO apply path — source mutation stays exclusively on the coderef-rename CLI (--apply). Use this to inspect blast radius before running the CLI.',
+        'READ / PREVIEW-ONLY. Plan a project-wide symbol rename over .coderef/graph.json: returns declaration + reference SITES (call/import) each tagged with a confidence tier, a sites_by_confidence tally, type-only refs, and any ambiguities the applier would guard. Writes NOTHING and has NO apply path — source mutation stays exclusively on the coderef-rename CLI (--apply). Pass min_confidence=exact to keep only auto-apply-safe sites (drops provisional single-candidate references, which a human should review). Use this to inspect blast radius before running the CLI.',
       inputSchema: {
         project_root: projectRootArg,
         old_name: z.string().describe('Existing symbol name (or codeRefId) to rename'),
         new_name: z.string().describe('Proposed new name (used only to shape the plan; nothing is written)'),
+        min_confidence: minConfidenceArg,
       },
     },
-    async ({ project_root, old_name, new_name }) =>
-      perRepo(project_root, h => h.rename_preview({ old_name, new_name })),
+    async ({ project_root, old_name, new_name, min_confidence }) =>
+      perRepo(project_root, h => h.rename_preview({ old_name, new_name, min_confidence })),
   );
 
   server.registerTool(
