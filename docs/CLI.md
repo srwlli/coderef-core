@@ -709,6 +709,20 @@ Search the indexed codebase using natural language queries, with optional filter
 
 The CLI binary is `rag-search` (registered in `package.json`). `coderef-rag-search` is the historical name.
 
+### Lexical-first routing (Phase 9)
+
+`rag-search` (and the `rag_search` MCP tool) route through a **lexical-first router**. A **symbol-shaped** query — a bare identifier (`authenticateUser`), a dotted member access (`LRUCache.get`), a `--flag`-like token, or a `"quoted exact"` phrase — is answered from the **symbol table** (`.coderef/index.json`) via in-process BM25 with **zero Ollama and zero rag-index dependency**. It works on a `populate`-only repo (no `rag-index` run) and when the embedding daemon is down.
+
+A **multi-word conceptual** query (`how does authentication work`) routes to the **embedding lane** (hybrid dense+BM25 fusion) when a rag-index + provider are available. If they are not, it **degrades to the lexical lane and still answers** (`lane: "lexical", degraded: true`) rather than erroring.
+
+Every response reports which lane answered:
+
+- `lane`: `"lexical"` | `"semantic"` | `"hybrid"` — **provenance of how you were answered, never a quality verdict**. `lexical` means "answered from the symbol table without embeddings", not "lower quality".
+- `routing_reason`: a one-line explanation of the routing decision.
+- `degraded: true`: present only when a conceptual query fell back to the lexical lane because the embedding lane was unavailable.
+
+`--lexical` forces the symbol-table lane always (skips the embedding lane even for conceptual queries). Because the lexical lane keys on `name`/`type`/`file`, it works on a repo **with no semantic headers** — search quality is decoupled from both a daemon being up and headers existing.
+
 ### Usage
 
 ```bash
@@ -734,6 +748,7 @@ The query is a positional argument (natural language works best).
 | `--capability <value>` | Filter by semantic `@capability` slug (kebab-case). Phase 7. | None |
 | `--constraint <key:value>` | Generalized filter shorthand. Keys: `type`, `file`, `lang`, `layer`, `capability`, `exported`. | None |
 | `--max-tokens <n>` | Truncate output to approximately N tokens (chars/4 estimate). Applies to both human-readable and `--json` modes. Omit for unbounded output. | None |
+| `--lexical` | Force the symbol-table BM25 lane (zero Ollama / rag-index needed). Symbol-shaped queries route here automatically; this forces it for all queries. Phase 9. | `false` |
 | `-j, --json` | Output as JSON | `false` |
 
 `--layer` and `--capability` map to the `CodeChunk.{layer, capability}` facets propagated from `ElementData` via `GraphNode.metadata` (Phase 5 → Phase 7). They pass through to the vector-store metadata filter — only chunks with matching values are returned. Layer values come from `ASSISTANT/STANDARDS/layers.json` (the 13-value `LayerEnum`); capability values are free-form kebab-case slugs declared in source headers.
@@ -755,6 +770,12 @@ npx rag-search "embedding" --capability rag-indexing
 
 # Combine filters
 npx rag-search "validate" --layer validation --capability output-validation
+
+# Symbol-shaped query — answered from the symbol table, no Ollama/rag-index needed (Phase 9)
+npx rag-search "LRUCache.get"
+
+# Force the lexical lane for any query (Phase 9)
+npx rag-search "authentication" --lexical
 
 # Higher score floor for precision
 npx rag-search "error handling" --min-score 0.85

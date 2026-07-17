@@ -24,12 +24,66 @@ import * as path from 'path';
 // remains a lazy optional dependency here.
 import { createLLMProvider, createVectorStore, resolveRagProvider } from '../integration/llm/provider-factory.js';
 import { parseFlags, failUsage } from './shared/cli-args.js';
+// Phase 9 (STUB-014M9C): the lexical-first router core — pure, no embeddings.
+import {
+  classifyQuery,
+  lexicalSearch,
+  type SymbolTableElement,
+} from '../integration/rag/search-router.js';
 
 let SemanticSearchService: any;
 
 async function loadRAGDependencies() {
   const searchModule = await import('../integration/rag/semantic-search.js');
   SemanticSearchService = searchModule.SemanticSearchService;
+}
+
+/**
+ * Phase 9 lexical lane (CLI): load the symbol table (.coderef/index.json) and run
+ * the pure BM25 router over it — ZERO Ollama, ZERO rag-index dependency. Prints the
+ * answering lane + routing_reason. Returns true on success, false if the symbol
+ * table itself is missing (the caller then reports that).
+ */
+async function runLexicalLane(
+  args: CliArgs,
+  degradeNote?: string,
+): Promise<boolean> {
+  const indexJsonPath = path.join(args.projectDir, '.coderef', 'index.json');
+  let elements: SymbolTableElement[];
+  try {
+    const raw = JSON.parse(await fs.readFile(indexJsonPath, 'utf8'));
+    elements = Array.isArray(raw?.elements) ? raw.elements : [];
+  } catch {
+    return false;
+  }
+  const lex = lexicalSearch(elements, args.query, { topK: args.topK });
+  const lane = 'lexical';
+  if (args.json) {
+    console.log(JSON.stringify({
+      query: args.query,
+      lane,
+      routing_reason: degradeNote ?? lex.routing_reason,
+      degraded: degradeNote ? true : undefined,
+      results: lex.results,
+      totalResults: lex.results.length,
+    }, null, 2));
+    return true;
+  }
+  console.log(`🔤 Lane: ${lane}${degradeNote ? ' (degraded fallback)' : ''} — ${degradeNote ?? lex.routing_reason}`);
+  console.log(`✅ Found ${lex.results.length} result(s) from the symbol table\n`);
+  if (lex.results.length === 0) {
+    console.log('No symbol-table match. Try a different identifier, or a multi-word query to use the embedding lane.\n');
+  } else {
+    lex.results.forEach((r, i) => {
+      console.log(`${i + 1}. ${r.name ?? r.id} ${'─'.repeat(50)}`);
+      console.log(`   📍 ${r.file ?? 'unknown'}:${r.line ?? '?'}`);
+      console.log(`   🏷️  ${r.id}`);
+      if (r.type) console.log(`   📝 Type: ${r.type}`);
+      console.log(`   📊 Score: ${r.score}`);
+      console.log();
+    });
+  }
+  return true;
 }
 
 interface CliArgs {
@@ -52,6 +106,10 @@ interface CliArgs {
   // STUB-Q7MRD6: hybrid (dense + BM25 RRF) retrieval. Default on; --no-hybrid
   // forces embedding-only for A/B.
   hybrid: boolean;
+  // Phase 9 (STUB-014M9C): force the lexical (symbol-table BM25) lane — answers
+  // with ZERO Ollama / rag-index dependency. Auto-routing (symbol-shaped queries
+  // go lexical-first) happens without this flag; --lexical forces it always.
+  lexical: boolean;
   json: boolean;
   help: boolean;
 }
@@ -85,6 +143,8 @@ function parseArgs(argv: string[]): CliArgs {
     // STUB-Q7MRD6: hybrid retrieval is on by default; --no-hybrid opts out.
     hybrid: { kind: 'boolean' },
     'no-hybrid': { kind: 'boolean' },
+    // Phase 9 (STUB-014M9C): --lexical forces the symbol-table BM25 lane.
+    lexical: { kind: 'boolean' },
     json: { kind: 'boolean', aliases: ['-j'] },
   });
 
@@ -123,6 +183,8 @@ function parseArgs(argv: string[]): CliArgs {
     hybrid: (v.get('no-hybrid') as boolean | undefined)
       ? false
       : ((v.get('hybrid') as boolean | undefined) ?? true),
+    // Phase 9: --lexical forces the symbol-table lane (no embeddings/rag-index).
+    lexical: (v.get('lexical') as boolean | undefined) ?? false,
     json: (v.get('json') as boolean | undefined) ?? false,
     help: (v.get('help') as boolean | undefined) ?? false,
   };
@@ -154,6 +216,8 @@ OPTIONS:
   --constraint <key:value>     Generalized filter shorthand. Keys: type, file, lang, layer, capability, exported
   --max-tokens <number>        Truncate output to approximately this many tokens (chars/4 estimate)
   --no-hybrid                  Force embedding-only retrieval (default: hybrid dense+BM25 RRF fusion)
+  --lexical                    Force the symbol-table BM25 lane (ZERO Ollama / rag-index needed).
+                               Symbol-shaped queries route here automatically; this forces it always.
   -j, --json                   Output results as JSON
   -h, --help                   Show this help message
 
@@ -258,13 +322,40 @@ async function main(): Promise<void> {
       process.exit(2);
     }
 
+    // Phase 9 (STUB-014M9C): LEXICAL-FIRST routing. A symbol-shaped query (a bare
+    // identifier / dotted Receiver.method / --flag / "quoted exact") — or an
+    // explicit --lexical — is answered from the symbol table via in-process BM25
+    // with NO embedding and NO rag-index requirement. Only multi-word conceptual
+    // queries fall through to the embedding lane below.
+    const cls = classifyQuery(args.query);
+    if (args.lexical || cls.isSymbolShaped) {
+      if (!args.json) {
+        console.log(`🔍 Searching: "${args.query}"\n`);
+      }
+      const ok = await runLexicalLane(args);
+      if (ok) process.exit(0);
+      // No symbol table at all — fall through to report the missing index below.
+      console.error(`Error: No symbol table at ${path.join(args.projectDir, '.coderef', 'index.json')}. Run populate/reindex first.`);
+      process.exit(2);
+    }
+
     // Check for index
     const coderefDir = path.join(args.projectDir, '.coderef');
     const indexPath = path.join(coderefDir, 'rag-index.json');
-    
+
     try {
       await fs.access(indexPath);
     } catch {
+      // Phase 9: a conceptual query with no RAG index degrades to the lexical
+      // lane (symbol table) instead of the old hard exit — still answers.
+      if (!args.json) {
+        console.log(`🔍 Searching: "${args.query}"\n`);
+      }
+      const ok = await runLexicalLane(
+        args,
+        'no RAG index for the semantic lane — answered from the symbol table (lexical fallback). Run "rag-index" to enable embedding search.',
+      );
+      if (ok) process.exit(0);
       console.error(`Error: No RAG index found at ${indexPath}`);
       console.error('Run "rag-index" first to create the index.');
       process.exit(2);
@@ -377,6 +468,9 @@ async function main(): Promise<void> {
       }
       console.log(JSON.stringify({
         query: args.query,
+        // Phase 9: the embedding lane ran — hybrid fuses BM25+dense, else pure semantic.
+        lane: args.hybrid ? 'hybrid' : 'semantic',
+        routing_reason: cls.reason,
         results: jsonResults,
         totalResults: response.totalResults,
         searchTimeMs: searchTime,
@@ -391,6 +485,7 @@ async function main(): Promise<void> {
         },
       }, null, 2));
     } else {
+      console.log(`🔤 Lane: ${args.hybrid ? 'hybrid' : 'semantic'} — ${cls.reason}`);
       console.log(`✅ Found ${response.totalResults} results in ${searchTime}ms\n`);
 
       if (response.results.length === 0) {

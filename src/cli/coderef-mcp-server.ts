@@ -94,6 +94,11 @@ import {
   paginate,
   shapeResponse,
 } from './mcp-response-format.js';
+import {
+  type SearchLane,
+  classifyQuery,
+  lexicalSearch,
+} from '../integration/rag/search-router.js';
 import { planRename } from '../refactor/rename-planner.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 // P6 CLI/MCP parity (WO-...-CLI-MCP-PARITY-001): the two .coderef/-WRITE tools
@@ -569,7 +574,7 @@ export interface ToolHandlers {
   what_exports(args: { file: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // v2 flow tools (P2)
   diff_impact(args: { ref?: string; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
-  rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
+  rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   what_this_imports(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1396,17 +1401,111 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       return shapeResponse(envelope, response_format, ['files', 'changed_element_sample']);
     },
 
-    async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, response_format }) {
+    async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
       const cap = clampLimit(limit);
+      const off = offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset));
+      const neighborCap = neighbor_limit === undefined
+        ? 10
+        : Math.max(1, Math.min(MAX_LIMIT, Math.floor(neighbor_limit)));
+
+      // Phase 9 (lexical-first-search-router, STUB-014M9C): classify the query
+      // and route the LEXICAL lane FIRST. A symbol-shaped query (a bare
+      // identifier / dotted Receiver.method / --flag / quoted-exact) is answered
+      // from the symbol table (index.json) via in-process BM25 with ZERO Ollama
+      // and ZERO rag-index dependency. The embedding lane is the gated fallback
+      // for conceptual (multi-word) queries. When the embedding lane is
+      // unavailable (daemon down / no rag-index), we DEGRADE to the lexical lane
+      // and still answer — the old hard error:'embedding_unavailable' /
+      // 'rag_index_missing' becomes a graceful lane:'lexical', degraded:true.
+      const cls = classifyQuery(query);
+      const laneMode: 'auto' | 'lexical' | 'semantic' = lane ?? 'auto';
+      const forceLexical = laneMode === 'lexical';
+      const forceSemantic = laneMode === 'semantic';
+      const wantSemantic = !forceLexical && (forceSemantic || !cls.isSymbolShaped);
+
+      // Ego-graph expansion (Phase 4): when expand is set, load the canonical
+      // graph ONCE and attach each hit's 1-hop neighborhood. Shared by both lanes.
+      let engine: CanonicalGraphQuery | null = null;
+      if (expand) {
+        try {
+          engine = loadCanonical(projectDir, cache);
+        } catch {
+          engine = null;
+        }
+      }
+      const attachNeighbors = (hit: Record<string, unknown>, id: unknown, name: unknown): void => {
+        if (!engine) return;
+        // Resolve the hit to a graph node. Prefer the coderefId; fall back to the
+        // element name. ALWAYS attach when expand is set — a non-resolving hit
+        // yields neighbors.resolved=false, so absence is SURFACED (no-data).
+        const resolveKey = typeof id === 'string' ? id : (typeof name === 'string' ? name : '');
+        const neighbors: EgoGraph = egoGraphOf(engine, engine.resolve(resolveKey), { cap: neighborCap });
+        hit.neighbors = neighbors;
+      };
+
+      // The LEXICAL lane — pure BM25 over the symbol table, no embeddings, no
+      // daemon. Used as the primary path for symbol-shaped queries AND as the
+      // graceful-degrade fallback when the embedding lane is unavailable.
+      const runLexical = (laneTag: SearchLane, degraded: boolean, degradeReason?: string): Record<string, unknown> => {
+        let index: IndexData;
+        try {
+          index = loadIndex(projectDir, cache);
+        } catch (e: any) {
+          // No index.json at all — nothing the lexical lane can answer from.
+          return {
+            error: 'index_missing',
+            hint: `No symbol table at ${path.join(projectDir, '.coderef', 'index.json')}. Run populate/reindex first.`,
+            detail: String(e?.message ?? e).slice(0, 200),
+          };
+        }
+        // Over-fetch to cover the requested offset window, then page.
+        const lex = lexicalSearch(index.elements, query, { topK: off + cap });
+        const allHits = lex.results.map((r) => {
+          const hit: Record<string, unknown> = {
+            id: r.id,
+            name: r.name,
+            file: r.file,
+            line: r.line,
+            score: r.score,
+          };
+          attachNeighbors(hit, r.id, r.name);
+          return hit;
+        });
+        const paged = paginate(allHits, off, cap);
+        const envelope: Record<string, unknown> = {
+          query,
+          lane: laneTag,
+          routing_reason: degraded && degradeReason ? degradeReason : lex.routing_reason,
+          ...(degraded ? { degraded: true } : {}),
+          ...(expand ? { expanded: true, neighbor_limit: neighborCap } : {}),
+          total: paged.total,
+          offset: paged.offset,
+          limit: paged.limit,
+          returned: paged.page.length,
+          has_more: paged.has_more,
+          results: paged.page,
+        };
+        return shapeResponse(envelope, response_format, ['results']);
+      };
+
+      // Symbol-shaped (or explicitly forced lexical): answer from the symbol
+      // table with no embedding path at all.
+      if (!wantSemantic) {
+        return runLexical('lexical', false);
+      }
+
+      // Conceptual query (or forced semantic): attempt the embedding lane, but
+      // degrade to lexical instead of hard-erroring when it is unavailable.
       const indexMetaPath = path.join(projectDir, '.coderef', 'rag-index.json');
       let meta: { provider?: string; store?: string };
       try {
         meta = JSON.parse(fs.readFileSync(indexMetaPath, 'utf8'));
       } catch {
-        return {
-          error: 'rag_index_missing',
-          hint: `No RAG index at ${indexMetaPath}. Run rag-index first; the tool reads provider/store from its metadata so query embeddings always match the index.`,
-        };
+        return runLexical(
+          'lexical',
+          true,
+          `no RAG index for the semantic lane — answered from the symbol table (lexical fallback). Run rag-index to enable embedding search. (${cls.reason})`,
+        );
       }
       // Provider/store from index metadata — the key-aware invariant: query
       // embeddings MUST come from the same model that built the index.
@@ -1421,10 +1520,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         try {
           llmProvider = await createLLMProvider(provider === 'openai' ? 'openai' : 'ollama');
         } catch (keyErr) {
-          return {
-            error: 'embedding_unavailable',
-            detail: `index was built with ${provider} but its provider could not start: ${keyErr instanceof Error ? keyErr.message : String(keyErr)}`,
-          };
+          // Provider could not start (daemon down / missing key) — degrade to
+          // the lexical lane instead of the old hard error.
+          return runLexical(
+            'lexical',
+            true,
+            `embedding provider ${provider} could not start — answered from the symbol table (lexical fallback): ${keyErr instanceof Error ? keyErr.message : String(keyErr)}`,
+          );
         }
         const vectorStore = await createVectorStore(store, projectDir, llmProvider, { warnTag: 'coderef-mcp' });
         await vectorStore.initialize();
@@ -1435,28 +1537,9 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         // Phase 6: fetch enough to cover the requested offset window. topK is the
         // retrieval depth; offset then pages within it. A bare call (offset unset)
         // requests exactly `cap` — byte-identical to pre-Phase-6.
-        const off = offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset));
-        const response = await searchService.search(query, { topK: off + cap, hybrid: hybrid ?? true });
+        const useHybrid = hybrid ?? true;
+        const response = await searchService.search(query, { topK: off + cap, hybrid: useHybrid });
         const results = (response?.results ?? response ?? []) as any[];
-        // Ego-graph expansion (Phase 4): when expand is set, load the canonical
-        // graph ONCE (lazily — a bare search never pays this cost) and attach
-        // each hit's 1-hop neighborhood (callers/callees/imports/importedBy) as
-        // signatures. Collapses the 4-6 follow-up neighborhood-fetch calls an
-        // agent would otherwise make. A hit whose coderefId is not a graph node
-        // gets neighbors.resolved=false (absence = no-data). The embedding/index
-        // path above is untouched. If the graph is missing/unreadable, expansion
-        // degrades to absent per-hit (never fails the search).
-        let engine: CanonicalGraphQuery | null = null;
-        if (expand) {
-          try {
-            engine = loadCanonical(projectDir, cache);
-          } catch {
-            engine = null;
-          }
-        }
-        const neighborCap = neighbor_limit === undefined
-          ? 10
-          : Math.max(1, Math.min(MAX_LIMIT, Math.floor(neighbor_limit)));
         const allHits = results.map((r: any) => {
           const id = r.metadata?.coderefId ?? r.id;
           const name = r.metadata?.name;
@@ -1470,28 +1553,22 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
               ? r.metadata.sourceCode.slice(0, 200)
               : (typeof r.content === 'string' ? r.content.slice(0, 200) : undefined),
           };
-          if (engine) {
-            // Resolve the hit to a graph node. Prefer the coderefId; fall back
-            // to the element name when the chunk id is a bare index (not a
-            // graph id). ALWAYS attach neighbors when expand is set — a hit
-            // that resolves to no graph node yields neighbors.resolved=false,
-            // so absence is SURFACED (no-data), never silently omitted.
-            const resolveKey = typeof id === 'string' ? id : (typeof name === 'string' ? name : '');
-            const neighbors: EgoGraph = egoGraphOf(engine, engine.resolve(resolveKey), { cap: neighborCap });
-            hit.neighbors = neighbors;
-          }
+          attachNeighbors(hit, id, name);
           return hit;
         });
         // Phase 6: page within the retrieved set. total is the retrieved-result
-        // count (topK depth); has_more true when a further page is in-hand. A bare
-        // call (offset unset) yields the first `cap` window — pre-Phase-6 shape
-        // plus the additive offset/limit/has_more envelope fields.
+        // count (topK depth); has_more true when a further page is in-hand.
         const paged = paginate(allHits, off, cap);
+        // The lane tag reflects what actually ran: hybrid fuses the BM25 leg with
+        // the dense leg, embedding-only is pure semantic.
+        const laneTag: SearchLane = useHybrid ? 'hybrid' : 'semantic';
         const envelope: Record<string, unknown> = {
           query,
+          lane: laneTag,
+          routing_reason: cls.reason,
           provider,
           store,
-          hybrid: hybrid ?? true,
+          hybrid: useHybrid,
           ...(expand ? { expanded: true, neighbor_limit: neighborCap } : {}),
           total: paged.total,
           offset: paged.offset,
@@ -1502,14 +1579,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         };
         return shapeResponse(envelope, response_format, ['results']);
       } catch (e: any) {
-        return {
-          error: 'embedding_unavailable',
-          provider,
-          detail: String(e?.message ?? e).slice(0, 300),
-          hint: provider === 'ollama'
-            ? 'Is Ollama running with the embedding model pulled? (ollama serve; ollama pull nomic-embed-text)'
-            : 'Check provider credentials and network.',
-        };
+        // The embedding lane failed mid-flight (store init, embed call, etc.) —
+        // degrade to the lexical lane rather than returning a hard error.
+        return runLexical(
+          'lexical',
+          true,
+          `embedding search failed (${provider}) — answered from the symbol table (lexical fallback): ${String(e?.message ?? e).slice(0, 200)}`,
+        );
       }
     },
 
@@ -2642,22 +2718,23 @@ async function main(): Promise<void> {
   server.registerTool(
     'rag_search',
     {
-      title: 'Semantic code search',
+      title: 'Code search (lexical-first router)',
       description:
-        'Semantic search over the RAG index. Hybrid by default: fuses a dense/embedding leg with a sparse/BM25 lexical leg via reciprocal-rank fusion (better recall on exact-identifier queries). Reads provider/store from .coderef/rag-index.json metadata so query embeddings always match the index model. Errors cleanly when no index exists or the embedder is unavailable. Pass hybrid=false to force embedding-only. Pass expand=true to attach each hit\'s 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — one call instead of 4-6 follow-up what_calls/what_this_calls fetches. Neighbors carry a confidence tier; a hit not in the graph reports neighbors.resolved=false (absence = no-data).',
+        'Code search with a LEXICAL-FIRST router (Phase 9). A symbol-shaped query — a bare identifier (authenticateUser), a dotted member (LRUCache.get), a --flag, or a "quoted exact" phrase — is answered from the SYMBOL TABLE (index.json) via in-process BM25 with ZERO Ollama and ZERO rag-index dependency: it works on a populate-only repo and when the embedding daemon is down. A multi-word conceptual query routes to the embedding lane (hybrid dense+BM25 fusion) when a rag-index + provider are available; if they are not, it DEGRADES to the lexical lane and still answers (lane:"lexical", degraded:true) instead of erroring. Every response reports lane ("lexical" | "semantic" | "hybrid") + routing_reason — provenance of HOW you were answered, not a quality verdict. Force a lane with lane:"lexical"|"semantic" (default "auto"). Pass expand=true to attach each hit\'s 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline. Neighbors carry a confidence tier; a hit not in the graph reports neighbors.resolved=false (absence = no-data).',
       inputSchema: {
         project_root: projectRootArg,
-        query: z.string().describe('Natural-language query, e.g. "where are import specifiers resolved"'),
+        query: z.string().describe('A symbol-shaped query (identifier / Receiver.method / --flag / "quoted exact") answers from the symbol table with no embeddings; a multi-word phrase routes to the embedding lane.'),
         limit: limitArg,
         offset: offsetArg,
-        hybrid: z.boolean().optional().describe('Hybrid dense+BM25 fusion (default true). Set false for embedding-only retrieval.'),
+        hybrid: z.boolean().optional().describe('Hybrid dense+BM25 fusion on the embedding lane (default true). Set false for embedding-only. Ignored on the lexical lane.'),
+        lane: z.enum(['auto', 'lexical', 'semantic']).optional().describe('Force the routing lane. auto (default) = lexical-first for symbol-shaped queries, embedding for conceptual. lexical = always the symbol-table lane (no embeddings). semantic = force the embedding lane (degrades to lexical if unavailable).'),
         expand: z.boolean().optional().describe('Attach each hit\'s 1-hop graph neighborhood (callers/callees/imports/importedBy) as signatures. Default false (bare hits, byte-unchanged).'),
         neighbor_limit: z.number().optional().describe('Max neighbors per direction when expand=true (default 10). Excess is truncated with a per-direction total + flag.'),
         response_format: responseFormatArg,
       },
     },
-    async ({ project_root, query, limit, offset, hybrid, expand, neighbor_limit, response_format }) =>
-      perRepo(project_root, h => h.rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, response_format })),
+    async ({ project_root, query, limit, offset, hybrid, lane, expand, neighbor_limit, response_format }) =>
+      perRepo(project_root, h => h.rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format })),
   );
 
   // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ----

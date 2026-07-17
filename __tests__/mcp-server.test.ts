@@ -665,22 +665,69 @@ describe('impact_of export-edge hygiene (v2)', () => {
 
 // ---- v2 flow tools (P2) -----------------------------------------------------------
 
-describe('rag_search', () => {
-  it('errors cleanly when no rag-index.json exists', async () => {
+describe('rag_search — Phase 9 lexical-first router', () => {
+  it('answers a symbol-shaped query from the LEXICAL lane with no rag-index / Ollama', async () => {
+    // Phase 9: `anything` is a single-token (symbol-shaped) query, so it routes
+    // to the symbol-table BM25 lane over index.json — NO embedding, NO rag-index
+    // requirement. The old hard error:'rag_index_missing' is gone; a symbol query
+    // ALWAYS answers from the symbol table (empty results here, since the fixture
+    // has no matching element — absence = no-data, never an error).
     const r = (await (handlers as any).rag_search({ query: 'anything' })) as any;
-    expect(r.error).toBe('rag_index_missing');
+    expect(r.error).toBeUndefined();
+    expect(r.lane).toBe('lexical');
+    expect(r.routing_reason).toMatch(/lexical lane/);
+    expect(Array.isArray(r.results)).toBe(true);
+    expect(r.results).toEqual([]);
   });
 
-  it('accepts the Phase 4 expand param without changing the no-index error path', async () => {
-    // expand=true must not perturb the clean rag_index_missing envelope — the
-    // ego-graph attachment only runs AFTER a successful search (which needs a
-    // live index + embedder, exercised by the P4-T7 dogfood, not this hermetic
-    // unit). Here we pin that the new params are accepted and the error path is
-    // byte-identical to the bare call.
+  it('ranks a known fixture symbol at the top via the lexical lane', async () => {
+    // `helper` is a fixture element — the lexical lane must find and rank it at
+    // the top. The fixture also has an interface `Helper`; both tokenize to
+    // `helper` and both earn the case-insensitive exact-name boost, so they TIE
+    // and the deterministic id-tiebreak decides rank 0. Assert the meaningful
+    // property: the top result is one of the two exact `helper`/`Helper` matches
+    // (not a bad match), both are present, and ordering is byte-deterministic.
+    const r = (await (handlers as any).rag_search({ query: 'helper' })) as any;
+    expect(r.lane).toBe('lexical');
+    expect(r.results.length).toBeGreaterThan(0);
+    const topNames = r.results.slice(0, 2).map((h: any) => h.name);
+    expect(topNames).toContain('helper');
+    expect(topNames).toContain('Helper');
+    expect(String(r.results[0].name).toLowerCase()).toBe('helper');
+    // Determinism: identical query ⇒ identical ordering.
+    const r2 = (await (handlers as any).rag_search({ query: 'helper' })) as any;
+    expect(r2.results).toEqual(r.results);
+  });
+
+  it('accepts the Phase 4 expand param on the lexical lane (params accepted, lane consistent)', async () => {
+    // expand=true must not perturb the lexical envelope's lane/routing when the
+    // hits have no graph neighbors; the new params are accepted and the bare vs
+    // expanded lane/results are consistent.
     const bare = (await (handlers as any).rag_search({ query: 'anything' })) as any;
     const expanded = (await (handlers as any).rag_search({ query: 'anything', expand: true, neighbor_limit: 5 })) as any;
-    expect(expanded.error).toBe('rag_index_missing');
-    expect(expanded).toEqual(bare);
+    expect(bare.lane).toBe('lexical');
+    expect(expanded.lane).toBe('lexical');
+    expect(expanded.results).toEqual(bare.results);
+  });
+
+  it('DEGRADES a conceptual query to the lexical lane when no rag-index exists (no hard error)', async () => {
+    // A multi-word conceptual query would route to the embedding lane, but the
+    // fixture has no rag-index.json — Phase 9 degrades to the lexical lane and
+    // still answers (lane:'lexical', degraded:true) instead of the old
+    // error:'rag_index_missing'.
+    const r = (await (handlers as any).rag_search({ query: 'how does the helper work' })) as any;
+    expect(r.error).toBeUndefined();
+    expect(r.lane).toBe('lexical');
+    expect(r.degraded).toBe(true);
+    expect(r.routing_reason).toMatch(/lexical fallback/);
+  });
+
+  it('lane:"lexical" forces the symbol-table lane even for a conceptual query', async () => {
+    const r = (await (handlers as any).rag_search({ query: 'how does the helper work', lane: 'lexical' })) as any;
+    expect(r.lane).toBe('lexical');
+    expect(r.error).toBeUndefined();
+    // Forced-lexical is NOT a degrade — it is the requested lane.
+    expect(r.degraded).toBeUndefined();
   });
 });
 
