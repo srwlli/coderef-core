@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-07-17] — Agentic Coding Intelligence Program: 11-phase agent-orientation, retrieval, and trust upgrade (MCP 24 → 26 tools; MapData 1.4.0 → 1.5.0)
+
+WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 (11-phase rolling program; commits `3a38d58`, `83183a3`, `d872add`, `ccaf089`, `7dde915`, `997656a`, `2ca67ec`, `2c05405`, `25e5930`, `4b211be`, `b1b9ba2`). Each phase maps a validated best-in-class system (Aider repo-map, CodeScene, SCIP/Glean, RepoGraph, Cursor Merkle sync, Anthropic tool-design, Serena, Sourcegraph Cody, Feldthaus ACG) onto a concrete coderef-core gap. Every block is **surfaces, not verdicts** and additive (omitting a new flag preserves prior behavior byte-for-byte). Suite at close: 1931 passed / 26 skipped (190 files); zero regressions.
+
+### Added
+- **Phase 1 — Skeleton map output mode** (`3a38d58`): `map` accepts `format:"skeleton"` (+ optional `token_budget`, default 1600) and returns a token-budgeted, centrality-ranked plaintext repo map **inline** as `skeleton_text` — the cheapest first call for repo orientation, from ranking/signatures coderef already computed.
+- **Phase 2 — Git behavioral substrate** (`83183a3`, `src/map/git-behavioral.ts`, MapData → 1.5.0): churn×complexity hotspots + change-coupling drift (co-change vs static edges) from git history — the strongest validated defect signal, previously absent. No-data when git history is unavailable (the `git` block is omitted rather than fabricated).
+- **Phase 3 — Edge confidence tiers** (`d872add`): every graph edge carries an `exact` > `strong` > `heuristic` > `inferred` tier projected from resolution provenance; `what_calls`/`impact_of`/`rename_preview` accept a `min_confidence` floor. Provenance, not a quality verdict.
+- **Phase 4 — Ego-graph retrieval** (`ccaf089`): `rag_search --expand` and `pack_context --include_callers` attach each hit's 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — collapsing the 4–6 follow-up calls an agent otherwise spends per hit.
+- **Phase 5 — RAG indexing throughput fix** (`7dde915`): batched Ollama `/api/embed`, a `[1,16]` embed worker-pool (`concurrency`), and a chunk-hash embedding cache (`embed_cache`, `.coderef-embed-cache.json`) serving byte-identical chunks instead of re-embedding. Attacks the `maxConcurrency:1` per-chunk pipeline defect; output vectors + order unchanged.
+- **Phase 6 — `response_format` + pagination** (`997656a`): every list-returning MCP tool accepts `response_format` (`concise`|`detailed`, default `detailed`) and `offset`. `concise` reduces each item to identity fields (all envelope counts preserved) for roughly a one-third token cut; `offset` paginates past the `limit` cap with a true pre-page `total` (no silent truncation).
+- **Phase 7 — `symbol_context` consolidated tool** (`2ca67ec`, MCP tool #25): one card per symbol — identity + header presence + 1-hop neighborhood + references + test-linkage + mtime-staleness — the understand-before-edit workflow that otherwise costs ~5 round-trips. A JOIN over existing data, deterministic, additive.
+- **Phase 8 — Staleness contract** (`2c05405`): `populate`/`reindex` write `.coderef/manifest.json` (one sha256 per source file); every read response carries an additive `staleness` block (`basis:"scan-time-hash-manifest"`, mtime/size fast-path) so an agent can tell whether the graph predates its own last edit. A merely-touched but byte-identical file is correctly not stale.
+- **Phase 9 — Lexical-first search router** (`25e5930`): symbol-table + BM25 answers symbol-shaped queries deterministically on any repo with zero Ollama dependency; embeddings are reserved for conceptual queries.
+- **Phase 10 — Field-based (ACG) resolution** (`4b211be`, `reason=field_based_acg`): an `obj.foo()` call on an unknown receiver now consults a project-wide field/property-definition index (Feldthaus Approximate Call Graph). One same-language definition ⇒ a `heuristic` resolved edge; ≥2 ⇒ an `inferred` ambiguous edge with the full candidate set. Never `exact`; `--min-confidence strong` filters the whole ACG population back out (the recall/precision dial). Targets the measured 64% `receiver_not_in_symbol_table` precision hole.
+- **Phase 11 — `map_metrics_delta` verified-refactor tool** (`b1b9ba2`, MCP tool #26, `src/map/metrics-delta.ts`): `snapshot:true` saves the five map metric families; the diff (`before`/`after`) proves the target family improved without regressing others as a **decomposed per-family factor vector, never a composite score** — the missing re-measure half of the CodeScene fix loop. Direction labels are provenance, not verdicts; schema-mismatch/absent-family degrade to a declared no-data envelope, not a throw.
+
+### Changed
+- MCP surface **24 → 26 tools** (`symbol_context`, `map_metrics_delta`); `MapData.meta.schemaVersion` **1.4.0 → 1.5.0** (git-behavioral substrate). Docs: `docs/CLI.md` (tool table + Metrics-delta/Symbol-context/Confidence-tier/Ego-graph/Staleness sections), `docs/AGENT-CONTRACT.md` (verified-refactor loop contract + tool count).
+
+---
+
 ## [2026-07-17] — Map V2: graph analytics, edge evidence, layer drift, engineering metrics (MapData 1.1.0 → 1.4.0)
 
 WO-MAP-GRAPH-ANALYTICS-MODULE-001 (4-phase rolling program; commits `d8bfd5f`, `b287a63`, `4ac23db`, `ae1db32`). Each block is schema-additive and framed as **surfaces, not verdicts**; the viewer degrades gracefully on older `data.json`. Suite at close: 1701 passed / 0 failed (177 files).

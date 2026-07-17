@@ -28,7 +28,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 24 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 26 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
 | [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens`, `--git` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
@@ -881,7 +881,7 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 24 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 26 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
 
 **Repo-agnostic (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001):** one running server serves ANY indexed repo. Every tool takes a **required `project_root`** argument naming the target repo root (the directory containing `.coderef/`) — pure CLI semantics, exactly as if the caller had the CLI. There is no default repo, no cwd inference, no env fallback; omitting `project_root` is a schema-level rejection.
 
@@ -913,7 +913,7 @@ codebase_summary(project_root="C:/repos/project-two")   → project-two's census
 what_exports(project_root="C:/repos/project-two", file="src/lib.ts")
 ```
 
-- `project_root` is **required and mandatory** on all 24 tools. Absolute paths are used as-is; relative paths resolve against the launch anchor (`--project-dir`, default cwd).
+- `project_root` is **required and mandatory** on all 26 tools. Absolute paths are used as-is; relative paths resolve against the launch anchor (`--project-dir`, default cwd).
 - One handler set (with its mtime-invalidated artifact cache) is memoized per distinct canonical root — repeated queries against the same repo are cheap, and repos never share caches.
 - Resolution failures return a structured envelope instead of another repo's data:
 
@@ -1000,7 +1000,7 @@ Understanding a symbol before editing it — its signature, whether it has a sem
 - **`test_linkage`** — `{ test_ref_count, sample, truncated }`: the subset of inbound refs whose source file is a test file. A count of who-tests-this, **never a coverage verdict** — `0` is "no test-file ref recorded."
 - **`staleness`** — `{ stale, basis: "element-file-mtime-vs-graph", note? }`. `stale: true` means the element's file is newer than `graph.json`, so this card **may** predate a recent edit. This is a cheap **per-symbol mtime heuristic**, deliberately **not** the authoritative scan-time hash-manifest freshness contract — that is the repo-wide **`staleness` block** now attached to every response (see **Staleness contract** below).
 
-Flags: **`include_source`** (opt-in) attaches a bounded signature/body slice like `source_of`; **`cap`** (default 25, cap 100) bounds each facet; **`response_format`** honors the concise/detailed axis (concise drops the source slice + signals verbosity, all counts preserved). `symbol_context` is a **single-symbol** tool — a whole-file query or a name matching >1 element returns the standard ambiguity envelope (narrow to a `codeRefId`). It is a JOIN over data the other tools already expose — no new analysis, deterministic, additive; the other 24 tools are byte-unchanged.
+Flags: **`include_source`** (opt-in) attaches a bounded signature/body slice like `source_of`; **`cap`** (default 25, cap 100) bounds each facet; **`response_format`** honors the concise/detailed axis (concise drops the source slice + signals verbosity, all counts preserved). `symbol_context` is a **single-symbol** tool — a whole-file query or a name matching >1 element returns the standard ambiguity envelope (narrow to a `codeRefId`). It is a JOIN over data the other tools already expose — no new analysis, deterministic, additive; the other 25 tools are byte-unchanged.
 
 #### Staleness contract (`staleness` block on every response)
 
