@@ -1,6 +1,6 @@
 # Agent Usage Contract — `@coderef/core`
 
-**Last updated:** 2026-06-12 (MCP server + local-first RAG)
+**Last updated:** 2026-07-17 (MCP `map` tool + MapData v1.4 engineering-metrics overlays)
 **Status:** post-rebuild canonical agent contract
 
 This is the canonical contract for **LLM agents and downstream automation** that consume `@coderef/core` artifacts. It tells you what to read, what to ignore, what the gates mean, and how to interpret exit codes — without requiring you to read the source.
@@ -65,7 +65,9 @@ Header-less elements are skipped with `header_status_*` reasons by default (DR-P
 
 ### Prefer the MCP tools over parsing artifacts by hand
 
-`coderef-mcp-server` (MCP domain `coderef-core`, registered via `.mcp.json`) exposes the artifacts above as 11 read-only tools: `what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`, `hotspots`, `cycles`, `what_exports`, `diff_impact`, `rag_search`. If your runtime is MCP-capable, use these instead of reading `graph.json`/`index.json` directly — the server is typed against `ExportedGraph`, traverses only `resolved` edges, and returns ambiguity envelopes (≤5 candidates) rather than guessing. `validation_status` returns the 14-field report verbatim. See [docs/CLI.md § coderef-mcp-server](./CLI.md#coderef-mcp-server).
+`coderef-mcp-server` (MCP domain `coderef-core`, registered via `.mcp.json`) exposes the artifacts above as 24 tools — see the tool table in [docs/CLI.md § coderef-mcp-server](./CLI.md#coderef-mcp-server) for the authoritative list. Every tool requires `project_root` (the server is repo-agnostic; there is no default repo). Most are read-only (`what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`, `hotspots`, `cycles`, `what_exports`, `diff_impact`, `rag_search`, `pack_context`, `rename_preview`, `map`, …); `reindex` and `rag_index` write, confined to `<project_root>/.coderef/`. If your runtime is MCP-capable, use these instead of reading `graph.json`/`index.json` directly — the server is typed against `ExportedGraph`, traverses only `resolved` edges, and returns ambiguity envelopes (≤5 candidates) rather than guessing. `validation_status` returns the 14-field report verbatim.
+
+**The `map` tool is the agent entry point to the repo map** (MapData v1.4). Its response carries triage-ready summary fields — `node_count`, `edge_count`, `community_count`, `isolated_count`, `evidence_edge_count`, `declared_layer_count`, `drift_outlier_count`, `untested_src_count`, `undocumented_file_count` (the last two are `null` on pre-1.4 data) — plus `data_path` pointing at the full `.coderef/map/data.json` (nodes/edges + the additive `analytics`, per-edge `evidence`, `drift`, and `metrics` blocks). Treat every block as a **surface, not a verdict**: a file with zero test in-edges is a *candidate*, not "untested"; absence of index data is *no data*, not zero. See [docs/MAP-USER-GUIDE.md](./MAP-USER-GUIDE.md).
 
 ---
 

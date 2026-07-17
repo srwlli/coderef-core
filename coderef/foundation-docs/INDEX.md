@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-16  
+**Generated:** 2026-07-17  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,607 |
-| **Total Files** | 414 |
-| **Total Lines** | 110,376 |
+| **Total Elements** | 2,682 |
+| **Total Files** | 421 |
+| **Total Lines** | 113,142 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,13 +22,13 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 854 | 32.8% |
-| method | 992 | 38.1% |
-| interface | 420 | 16.1% |
-| class | 107 | 4.1% |
+| function | 881 | 32.8% |
+| method | 992 | 37.0% |
+| interface | 451 | 16.8% |
+| class | 107 | 4.0% |
 | type | 66 | 2.5% |
 | component | 2 | 0.1% |
-| constant | 166 | 6.4% |
+| constant | 183 | 6.8% |
 
 ---
 
@@ -39,9 +39,9 @@
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
 | 2 | `src/scanner/tree-sitter-scanner.ts` | 57 | 🔴 Very High |
 | 3 | `src/cli/coderef-mcp-server.ts` | 42 | 🟡 High |
-| 4 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
-| 5 | `src/query/canonical-graph.ts` | 32 | 🟡 High |
-| 6 | `assets/map-viewer/viewer.js` | 31 | 🟡 High |
+| 4 | `assets/map-viewer/viewer.js` | 40 | 🟡 High |
+| 5 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
+| 6 | `src/query/canonical-graph.ts` | 32 | 🟡 High |
 | 7 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
 | 8 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
 | 9 | `src/search/search-engine.ts` | 31 | 🟡 High |
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,607 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 2,682 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

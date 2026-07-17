@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-07-17] — Map V2: graph analytics, edge evidence, layer drift, engineering metrics (MapData 1.1.0 → 1.4.0)
+
+WO-MAP-GRAPH-ANALYTICS-MODULE-001 (4-phase rolling program; commits `d8bfd5f`, `b287a63`, `4ac23db`, `ae1db32`). Each block is schema-additive and framed as **surfaces, not verdicts**; the viewer degrades gracefully on older `data.json`. Suite at close: 1701 passed / 0 failed (177 files).
+
+### Added
+- **`src/map/graph-analytics.ts` (`MapData.analytics`, v1.1.0 → 1.2.0 era P1)**: label-propagation communities + per-file assignments, degree + Brandes betweenness centrality (exact ≤500 files, stride-sampled above), articulation-point bridges, Ce/Ca coupling, dead-code candidates (isolated + zero-in-degree, entrypoint/test-aware). Viewer: communities + dead-code overlay toggles. MCP `map` summary: `community_count`, `isolated_count`.
+- **`src/map/edge-evidence.ts` (`MapEdge.evidence`, v1.2.0)**: per-edge provenance (explicit/inferred/unspecified) classified from raw graph edge evidence kinds, cap-5 line-sorted samples, ambiguous-candidate counts. Viewer: detail-panel evidence expander. MCP summary: `evidence_edge_count`.
+- **`src/map/layer-drift.ts` (`MapData.drift`, v1.3.0)**: declared-vs-detected architecture drift — declared-layer coverage, directed layer→layer dependency matrix, per-community composition/purity, outliers (declared layer ≠ community dominant); optional `--layers <path>` spec surfaces (unknown/unused vocabulary, entry-peer + leaf-outbound invariants). Explicit opt-in, never auto-resolved. Viewer: color-by-layer + legend + amber outlier rings + Drift row. MCP summary: `declared_layer_count`, `drift_outlier_count`.
+- **`src/map/engineering-metrics.ts` (`MapData.metrics`, v1.4.0)**: five metric families — testLinkage (test-file detection via exported `isTestLikeFile` + inbound-from-tests per src file), documentation (per-file semantic-header status tallies), unresolvedRefs (per-file unresolved+ambiguous raw-edge counts), largestModules (element count), mostDependencies (distinct Ce/Ca). File-bounded Records ship uncapped; rankings capped (25 / zero-test 200) with aggregate warnings mirrored into `meta.warnings`. No-data is distinct from observed zero. Viewer: Metrics toggle + 5-family select, two-stop gradient, neutral no-data, detail-panel Metrics row. MCP summary: `untested_src_count`, `undocumented_file_count` (null-safe pre-1.4).
+
+### Changed
+- `MapData.meta.schemaVersion` 1.1.0 → 1.4.0 across the program; `options.analytics` / `edgeEvidence` / `layerDrift` / `metrics` all default ON (each independently disableable).
+
+---
+
+## [2026-07-16] — Universal repo map: `coderef-map` CLI + bundled viewer + MCP `map` tool (23 → 24 tools)
+
+WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 (5 phases). A universal, repo-agnostic map projection over `.coderef/` artifacts.
+
+### Added
+- **`src/map/` projection module** (`project-map-data.ts`, `emit-map.ts`): file-level MapData (nodes from index/graph, aggregated import/call edges) projected from canonical artifacts — core never touches HTML.
+- **`assets/map-viewer/`** static viewer bundle (`graph.html` + `viewer.js` + `viewer.css`, zero CDN): canvas force layout, search, detail panel, hotspot/cycle/blast-radius overlays; inline-data (static) + fetch (serve) modes.
+- **`coderef-map` CLI**: static emit to `.coderef/map/` by default; `--serve --port N` for the live viewer.
+- **MCP `map` tool** (24th tool): staleness-aware regenerate + summary fields + `data_path`/`graph_html_path`; writes confined to `.coderef/map/`.
+
+---
+
 ## [2026-07-02] — Repo-Review Remediation Phase 3: scan performance + dead-code subtraction (P2 perf/hygiene)
 
 WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (STUB-01DW28, final phase). The scan CLI is ~9× faster with better recall, and another ~3,400 lines of dead or dishonest code are gone.

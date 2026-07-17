@@ -72,6 +72,7 @@ await saveIndex('./my-project', elements);
 | Command | Purpose |
 |---------|---------|
 | `populate-coderef` | Scan and populate .coderef/ directory |
+| `coderef-map` | Emit the interactive repo map (`--serve` opens the viewer) |
 | `validate-routes` | Validate API route definitions |
 | `scan-frontend-calls` | Detect frontend API calls |
 | `rag-index` | Build RAG index for codebase |
@@ -111,6 +112,7 @@ await saveIndex('./my-project', elements);
 
 ## Next Steps
 
+- Run `npx populate-coderef --dir .` then `npx coderef-map . --serve` to explore the repo map (see `docs/MAP-USER-GUIDE.md`)
 - Review the API documentation in `docs/API.md`
 - Explore the scanner modules in `src/scanner/`
 - Check example usage in `examples/` directory

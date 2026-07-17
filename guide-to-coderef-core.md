@@ -417,6 +417,12 @@ export function collectFiles(
 ): string[];
 ```
 
+### **6. Repo Map Projection (`map/`)**
+
+A universal, file-level map of any indexed repo, projected from `.coderef/` artifacts (MapData v1.4). `project-map-data.ts` builds nodes (from `index.json`/`graph.json`) and aggregated import/call edges, then enriches them with four schema-additive blocks: `analytics` (`graph-analytics.ts` — communities, centrality, bridges, dead-code candidates), per-edge `evidence` (`edge-evidence.ts` — provenance + samples), `drift` (`layer-drift.ts` — declared-vs-detected architecture layers), and `metrics` (`engineering-metrics.ts` — test linkage, header coverage, unresolved refs, module size, dependency counts). All blocks are surfaces, not verdicts.
+
+Three consumer surfaces share the identical projection: the `coderef-map` CLI (static bundle to `.coderef/map/`, or `--serve` for the interactive viewer in `assets/map-viewer/`), the MCP `map` tool (summary fields + `data_path` for agents), and direct reads of `.coderef/map/data.json`. See **[docs/MAP-USER-GUIDE.md](docs/MAP-USER-GUIDE.md)** for the full walkthrough and [docs/CLI.md](docs/CLI.md#coderef-map) for the command reference.
+
 ## Usage Patterns
 
 ### **Basic Element Scanning**
