@@ -41,6 +41,7 @@ interface CliArgs {
   open: boolean;
   forceScan: boolean;
   outDir?: string;
+  layersPath?: string;
 }
 
 function printHelp(): void {
@@ -59,6 +60,10 @@ OPTIONS:
   --no-open             Do not open the browser.
   --force-scan          Re-run scan + populate even if .coderef/ exists.
   --out <dir>           Output directory (default: <path>/.coderef/map).
+  --layers <path>       Layers spec (layers.json) enriching the drift block
+                        with vocabulary + entry/leaf surfaces. Explicit opt-in;
+                        without it drift compares @layer headers to detected
+                        communities only.
   -h, --help            Show this help.
 
 OUTPUT:
@@ -108,6 +113,9 @@ function parseArgs(argv: string[]): CliArgs {
       case '--out':
         args.outDir = path.resolve(argv[++i]);
         break;
+      case '--layers':
+        args.layersPath = path.resolve(argv[++i]);
+        break;
       default:
         if (a.startsWith('--project-dir=')) {
           args.projectDir = path.resolve(a.slice('--project-dir='.length));
@@ -116,6 +124,8 @@ function parseArgs(argv: string[]): CliArgs {
           args.port = parseInt(a.slice('--port='.length), 10);
         } else if (a.startsWith('--out=')) {
           args.outDir = path.resolve(a.slice('--out='.length));
+        } else if (a.startsWith('--layers=')) {
+          args.layersPath = path.resolve(a.slice('--layers='.length));
         } else if (!a.startsWith('-') && !positionalSeen) {
           args.projectDir = path.resolve(a);
           positionalSeen = true;
@@ -226,7 +236,11 @@ function main(): void {
 
   let result: GenerateMapResult;
   try {
-    result = generateMap(projectDir, args.outDir);
+    result = generateMap(
+      projectDir,
+      args.outDir,
+      args.layersPath ? { layersPath: args.layersPath } : undefined,
+    );
   } catch (err: any) {
     if (err instanceof MapProjectionError) {
       console.error(`[coderef-map] ${err.message}`);

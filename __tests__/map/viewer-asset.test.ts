@@ -30,7 +30,9 @@ describe('map-viewer static asset', () => {
       'toggle-cycles',
       'toggle-communities',
       'toggle-deadcode',
+      'toggle-drift',
       'toggle-blast',
+      'drift-legend',
       'reset-view',
       'graph-canvas',
     ]) {
@@ -62,6 +64,21 @@ describe('map-viewer static asset', () => {
     // Styles ship with the bundle.
     expect(css).toContain('.edge-evidence');
     expect(css).toContain('.evidence-toggle');
+  });
+
+  it('viewer renders the layer-drift overlay with a pre-1.3 graceful path (P3)', () => {
+    // Overlay only when the data.json carries a drift block.
+    expect(js).toContain('data.drift || null');
+    expect(js).toContain('buildDriftLegend');
+    expect(js).toContain('outlierOf');
+    expect(js).toContain("exclusiveToggle('drift')");
+    // Detail-panel drift row + graceful disable on pre-1.3 data.
+    expect(js).toContain("addRow(meta, 'Drift'");
+    expect(js).toContain('no drift block in this data.json');
+    // Styles ship with the bundle.
+    expect(css).toContain('#drift-legend');
+    expect(css).toContain('.drift-chip');
+    expect(css).toContain('.drift-ring');
   });
 
   it('asset bundle makes no external network references (CDN ban)', () => {

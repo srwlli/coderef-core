@@ -52,8 +52,11 @@
   var analytics = null;        // data.analytics (absent on pre-1.1.0 data.json)
   var communityOf = {};        // file -> community id
   var deadSet = new Set();     // isolated + zero-in-degree candidates
+  var drift = null;            // data.drift (absent on pre-1.3.0 data.json)
+  var layerColor = new Map();  // declared layer -> palette color (sorted-name deterministic)
+  var outlierOf = new Map();   // file -> community dominant layer it differs from
 
-  var mode = { hotspots: false, cycles: false, communities: false, deadcode: false, blast: false };
+  var mode = { hotspots: false, cycles: false, communities: false, deadcode: false, drift: false, blast: false };
   var selected = null;
   var hovered = null;
   var blastDepths = new Map(); // id -> 1|2 when blast mode active
@@ -126,6 +129,21 @@
         btn.disabled = true;
         btn.title += ' — unavailable: no analytics block in this data.json (regenerate the map)';
       });
+    }
+    // Layer drift (optional, schema-additive): pre-1.3 data.json has no drift
+    // block — the toggle disables gracefully.
+    drift = data.drift || null;
+    if (drift) {
+      var layerNames = Object.keys((drift.coverage && drift.coverage.byLayer) || {}).sort();
+      layerNames.forEach(function (layer, i) {
+        layerColor.set(layer, PALETTE[i % PALETTE.length]);
+      });
+      (drift.outliers || []).forEach(function (o) { outlierOf.set(o.file, o.dominantLayer); });
+      buildDriftLegend(layerNames);
+    } else {
+      var driftBtn = document.getElementById('toggle-drift');
+      driftBtn.disabled = true;
+      driftBtn.title += ' — unavailable: no drift block in this data.json (regenerate the map)';
     }
 
     document.getElementById('repo-name').textContent = data.meta.repoName || 'coderef map';
@@ -233,6 +251,7 @@
     }
     if (mode.cycles) return cycleNodes.has(n.id) ? 1 : 0.12;
     if (mode.deadcode) return deadSet.has(n.id) ? 1 : 0.12;
+    if (mode.drift) return n.layer ? 1 : 0.18;
     if (mode.hotspots) return hotspotRank.has(n.id) ? 1 : 0.25;
     return 1;
   }
@@ -248,6 +267,9 @@
       return PALETTE[communityOf[n.id] % PALETTE.length];
     }
     if (mode.deadcode && deadSet.has(n.id)) return '#ff8a65';
+    if (mode.drift) {
+      return n.layer ? (layerColor.get(n.layer) || '#90a4ae') : '#546e7a';
+    }
     return n.color;
   }
 
@@ -298,6 +320,12 @@
       ctx.arc(p.x, p.y, Math.max(2, r), 0, Math.PI * 2);
       ctx.fillStyle = nodeFill(n);
       ctx.fill();
+      // Layer-outlier ring: declared layer differs from community dominant.
+      if (mode.drift && outlierOf.has(n.id)) {
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#ffb300';
+        ctx.stroke();
+      }
       if (n === selected || n === hovered) {
         ctx.lineWidth = 2;
         ctx.strokeStyle = '#ffffff';
@@ -375,6 +403,24 @@
     }
     if (deadSet.has(selected.id)) {
       addRow(meta, 'Dead code', 'candidate (isolated or zero in-degree) — verify before removing');
+    }
+    if (drift) {
+      var driftText;
+      if (!selected.layer) {
+        driftText = 'no declared layer';
+      } else if (outlierOf.has(selected.id)) {
+        driftText = 'layer outlier — declared "' + selected.layer +
+          '" vs community dominant "' + outlierOf.get(selected.id) + '"';
+      } else {
+        var dcid = communityOf[selected.id];
+        var dcomm = dcid === undefined ? null :
+          (drift.communities || []).filter(function (c) { return c.id === dcid; })[0];
+        driftText = dcomm
+          ? 'declared "' + selected.layer + '" — community dominant "' + dcomm.dominantLayer +
+            '" (purity ' + dcomm.purity + ')'
+          : 'declared "' + selected.layer + '"';
+      }
+      addRow(meta, 'Drift', driftText);
     }
 
     var edgesBox = document.getElementById('detail-edges');
@@ -486,6 +532,31 @@
     return box;
   }
 
+  // -------------------------------------------------------- drift legend ----
+  function buildDriftLegend(layerNames) {
+    var box = document.getElementById('drift-legend');
+    box.innerHTML = '';
+    layerNames.forEach(function (layer) {
+      box.appendChild(legendChip(layerColor.get(layer), false,
+        layer + ' (' + drift.coverage.byLayer[layer] + ')'));
+    });
+    box.appendChild(legendChip('#546e7a', false,
+      'undeclared (' + drift.coverage.undeclaredFileCount + ')'));
+    box.appendChild(legendChip(null, true,
+      'layer outlier (' + (drift.outliers || []).length + (drift.outliersTruncated ? '+' : '') + ')'));
+  }
+
+  function legendChip(color, ring, label) {
+    var chip = document.createElement('span');
+    chip.className = 'drift-chip';
+    var dot = document.createElement('span');
+    dot.className = 'drift-dot' + (ring ? ' drift-ring' : '');
+    if (color) dot.style.background = color;
+    chip.appendChild(dot);
+    chip.appendChild(document.createTextNode(label));
+    return chip;
+  }
+
   // -------------------------------------------------------------- search ----
   function runSearch(q) {
     var box = document.getElementById('search-results');
@@ -535,7 +606,7 @@
     function exclusiveToggle(key) {
       mode[key] = !mode[key];
       if (mode[key]) {
-        ['hotspots', 'cycles', 'communities', 'deadcode', 'blast'].forEach(function (other) {
+        ['hotspots', 'cycles', 'communities', 'deadcode', 'drift', 'blast'].forEach(function (other) {
           if (other !== key) mode[other] = false;
         });
         if (key === 'blast') computeBlast();
@@ -546,6 +617,7 @@
     document.getElementById('toggle-cycles').addEventListener('click', function () { exclusiveToggle('cycles'); });
     document.getElementById('toggle-communities').addEventListener('click', function () { exclusiveToggle('communities'); });
     document.getElementById('toggle-deadcode').addEventListener('click', function () { exclusiveToggle('deadcode'); });
+    document.getElementById('toggle-drift').addEventListener('click', function () { exclusiveToggle('drift'); });
     document.getElementById('toggle-blast').addEventListener('click', function () { exclusiveToggle('blast'); });
     document.getElementById('reset-view').addEventListener('click', function () {
       fitView();
@@ -616,7 +688,9 @@
     setToggle(document.getElementById('toggle-cycles'), mode.cycles);
     setToggle(document.getElementById('toggle-communities'), mode.communities);
     setToggle(document.getElementById('toggle-deadcode'), mode.deadcode);
+    setToggle(document.getElementById('toggle-drift'), mode.drift);
     setToggle(document.getElementById('toggle-blast'), mode.blast);
+    document.getElementById('drift-legend').hidden = !(mode.drift && drift);
     if (mode.blast) computeBlast();
   }
 

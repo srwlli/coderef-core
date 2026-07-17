@@ -31,6 +31,12 @@
  *   records the aggregation pass walks also feed src/map/edge-evidence.ts,
  *   attaching a schema-additive `evidence` block to each MapEdge (provenance
  *   classes, capped line-sorted samples, ambiguous-candidate counts).
+ * - Declared-vs-detected drift (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P3): the
+ *   projected nodes/edges plus analytics.assignments feed
+ *   src/map/layer-drift.ts, attaching the schema-additive `drift` block. A
+ *   layers spec is EXPLICIT opt-in via options.layersPath — never
+ *   install-anchored auto-resolution, which would make any-repo output
+ *   machine-dependent.
  * - Pure data. This module must never know HTML exists.
  */
 
@@ -39,6 +45,7 @@ import * as path from 'path';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 import { computeGraphAnalytics, MapAnalytics } from './graph-analytics.js';
 import { computeEdgeEvidence, MapEdgeEvidence } from './edge-evidence.js';
+import { computeLayerDrift, MapLayerDrift, LayersSpec } from './layer-drift.js';
 
 export interface MapElement {
   name: string;
@@ -115,6 +122,8 @@ export interface MapData {
   overlays: MapOverlays;
   /** Graph analytics over this projection (absent when options.analytics === false). */
   analytics?: MapAnalytics;
+  /** Declared-vs-detected layer drift (absent when options.layerDrift === false). */
+  drift?: MapLayerDrift;
 }
 
 export class MapProjectionError extends Error {
@@ -137,6 +146,13 @@ export interface ProjectMapDataOptions {
   edgeEvidence?: boolean;
   /** Max evidence samples per file edge (default 5; see edge-evidence.ts). */
   evidenceSampleCap?: number;
+  /** Compute the drift block (default true). */
+  layerDrift?: boolean;
+  /**
+   * Explicit path to a layers.json vocabulary (parsed for layers[].id +
+   * dependency_rules.entry_layers/leaf_layers). Absent = spec-less drift.
+   */
+  layersPath?: string;
 }
 
 const HOTSPOT_CAP_DEFAULT = 25;
@@ -439,10 +455,34 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
       ? undefined
       : computeGraphAnalytics(nodes.map(n => n.id), edges);
 
+  // ---- declared-vs-detected drift (after analytics — needs assignments) ------
+  let drift: MapLayerDrift | undefined;
+  if (options.layerDrift !== false) {
+    let layersSpec: LayersSpec | undefined;
+    if (options.layersPath) {
+      try {
+        const spec = readJson(options.layersPath);
+        const layerIds = Array.isArray(spec && spec.layers)
+          ? spec.layers.map((l: any) => String((l && l.id) || '')).filter(Boolean)
+          : [];
+        const rules = (spec && spec.dependency_rules) || {};
+        layersSpec = {
+          layerIds,
+          entryLayers: Array.isArray(rules.entry_layers) ? rules.entry_layers.map(String) : [],
+          leafLayers: Array.isArray(rules.leaf_layers) ? rules.leaf_layers.map(String) : [],
+        };
+      } catch (err: any) {
+        warnings.push(`layers spec unreadable (${err.message}); drift computed without a spec`);
+      }
+    }
+    drift = computeLayerDrift(nodes, edges, analytics ? analytics.assignments : undefined, layersSpec);
+    warnings.push(...drift.warnings);
+  }
+
   const projectPath = normalizeSlashes(path.resolve(projectRoot));
   return {
     meta: {
-      schemaVersion: '1.2.0',
+      schemaVersion: '1.3.0',
       projectPath,
       repoName: path.basename(projectPath),
       generatedAt: new Date().toISOString(),
@@ -458,5 +498,6 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     edges,
     overlays: { hotspots, cycles },
     ...(analytics ? { analytics } : {}),
+    ...(drift ? { drift } : {}),
   };
 }

@@ -29,7 +29,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
 | [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 24 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
-| [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html` or `--serve` | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out` |
+| [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html` or `--serve` | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
@@ -130,9 +130,9 @@ One command from any repo to an interactive dependency map
 bins `coderef-pipeline` chains), then projects `graph.json` + `index.json` to
 a file-level `.coderef/map/data.json` and emits the bundled browser viewer —
 dependency graph, search (files + elements), node-detail panel, hotspots and
-cycles overlays, communities and dead-code overlays (graph analytics), blast-radius
-mode. Header-less repos degrade gracefully (the map renders from the dependency
-graph alone).
+cycles overlays, communities and dead-code overlays (graph analytics), layer-drift
+overlay (declared vs detected), blast-radius mode. Header-less repos degrade
+gracefully (the map renders from the dependency graph alone).
 
 ### Usage
 
@@ -159,12 +159,13 @@ npx coderef-map /path/to/any/repo --force-scan --no-open
 | `--no-open` | Do not open the browser | opens |
 | `--force-scan` | Re-run scan + populate even if `.coderef/` exists | off |
 | `--out <dir>` | Output directory | `<path>/.coderef/map` |
+| `--layers <path>` | Layers spec (`layers.json`) enriching the drift block with vocabulary + entry/leaf surfaces (below). **Explicit opt-in** — never auto-resolved, so map output stays machine-independent | off (spec-less drift) |
 
 ### Output
 
 | File | Purpose |
 |------|---------|
-| `.coderef/map/data.json` | File-level MapData v1.2: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below). Same file the MCP `map` tool returns to agents. |
+| `.coderef/map/data.json` | File-level MapData v1.3: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
 
@@ -212,13 +213,41 @@ Viewer toggles: **Communities** (color nodes by community) and **Dead code**
 radius modes; the node detail panel shows the community and dead-code-candidate
 rows.
 
+### Drift block (`data.drift`, MapData v1.3)
+
+Declared-vs-detected architecture drift computed from the projection itself
+(`src/map/layer-drift.ts`, WO-MAP-GRAPH-ANALYTICS-MODULE-001 P3): per-file
+declared layers (the `@layer` semantic headers already projected onto
+`nodes[].layer`) compared against the detected communities from the analytics
+block. Optional and schema-additive: consumers of older `data.json` files see
+no block; `projectMapData(root, { layerDrift: false })` skips it.
+**Surfaces, not verdicts** — an "outlier" is a file whose declared layer
+differs from its community's dominant declared layer, nothing more.
+
+| Field | Contents |
+|-------|----------|
+| `coverage` | `{declaredFileCount, undeclaredFileCount, undeclared[], undeclaredTruncated, byLayer}` — how much of the repo declares a layer; `byLayer` (layer → file count) key-sorted; undeclared list capped (default 100). |
+| `layerMatrix[]` | `{sourceLayer, targetLayer, edgeCount, weight}` — directed declared-layer dependency matrix over file edges whose **both** endpoints declare a layer, sorted by (source, target). |
+| `communities[]` | `{id, size, layeredSize, layers, dominantLayer, purity}` — per detected community with ≥ 1 layered member; `layers` key-sorted; `purity` = dominant count / layeredSize (3 decimals). Capped (default 100). |
+| `outliers[]` | `{file, layer, communityId, dominantLayer}` — files whose declared layer differs from the community dominant (communities with ≥ 2 layered members only; a lone layered file is its own dominant). File-sorted, capped (default 100). |
+| `vocabulary` | Only with `--layers`: `{unknownLayers, unusedLayers}` — declared layers absent from the spec's `layers[].id` (with file counts) and spec layers with zero declared files. |
+| `invariantSurfaces` | Only with `--layers`: `{entryPeerEdges, leafOutboundEdges, note}` — observed edges against the spec's **machine-readable** rules (`dependency_rules.entry_layers` / `leaf_layers`); the spec's prose invariants are never parsed. |
+| `warnings[]` / `note` | Every cap truncation, one line each (also mirrored into `meta.warnings`); analytics-off degrades to coverage + matrix with a warning; zero declared layers degrades to a coverage-only note. |
+
+Viewer toggle: **Layer drift** colors nodes by declared layer (deterministic
+palette by sorted layer name, undeclared files neutral gray), rings layer
+outliers in amber, and shows a legend strip while active; the node detail panel
+gains a `Drift` row (declared layer vs community dominant + outlier marker).
+Pre-1.3 `data.json` disables the toggle gracefully.
+
 ### Agent parity
 
 The MCP server's `map` tool (see below) emits/refreshes the identical
 `data.json` via the same extracted core (`src/map/emit-map.ts`) —
 parity-tested byte-identical modulo timestamp, and summarizes the analytics
-block as `community_count` + `isolated_count` and the evidence blocks as
-`evidence_edge_count` (each null when reading an older `data.json`). Agents
+block as `community_count` + `isolated_count`, the evidence blocks as
+`evidence_edge_count`, and the drift block as `drift_outlier_count` +
+`declared_layer_count` (each null when reading an older `data.json`). Agents
 query `data.json`; humans open `graph.html`.
 
 ---

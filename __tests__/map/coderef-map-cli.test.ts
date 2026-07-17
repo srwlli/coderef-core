@@ -88,7 +88,7 @@ describe('coderef-map CLI e2e', () => {
       expect(page.body).toContain('graph-canvas');
       const data = await httpGet(url.replace('/graph.html', '/data.json'));
       expect(data.status).toBe(200);
-      expect(JSON.parse(data.body).meta.schemaVersion).toBe('1.2.0');
+      expect(JSON.parse(data.body).meta.schemaVersion).toBe('1.3.0');
       // path traversal guarded
       const evil = await httpGet(url.replace('/graph.html', '/../package.json'));
       expect(evil.status).not.toBe(200);

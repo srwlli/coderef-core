@@ -101,6 +101,15 @@ describe('MCP map tool — CLI parity (hermetic fixture repo)', () => {
     expect(evidenceEdges.length).toBe(cli.data.edges.length);
     expect(result.evidence_edge_count).toBe(evidenceEdges.length);
     expect(result.evidence_edge_count).toBeGreaterThan(0);
+    // Layer-drift parity (WO-MAP-GRAPH-ANALYTICS-MODULE-001 P3): both surfaces
+    // carry the identical drift block (byte-equality above) and the MCP
+    // summary reflects it. Fixture: src/a.ts declares 'service', src/b.ts is
+    // undeclared — one declared layer, no outliers (lone layered member).
+    expect(cli.data.drift).toBeDefined();
+    expect(cli.data.drift!.coverage.byLayer).toEqual({ service: 1 });
+    expect(result.declared_layer_count).toBe(1);
+    expect(result.drift_outlier_count).toBe(cli.data.drift!.outliers.length);
+    expect(result.drift_outlier_count).toBe(0);
   });
 
   it('serves a fresh map without regeneration on the second call', () => {

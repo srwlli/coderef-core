@@ -77,10 +77,14 @@ describe('coderef-map any-repo acceptance (synthetic never-seen repo)', () => {
     const dataPath = path.join(root, '.coderef', 'map', 'data.json');
     expect(fs.existsSync(dataPath)).toBe(true);
     const data = JSON.parse(fs.readFileSync(dataPath, 'utf-8'));
-    expect(data.meta.schemaVersion).toBe('1.2.0');
+    expect(data.meta.schemaVersion).toBe('1.3.0');
     // v1.1 analytics block rides along on any repo (universality)
     expect(data.analytics).toBeDefined();
     expect(data.analytics.communityCount).toBeGreaterThan(0);
+    // v1.3 drift block rides along too (spec-less on arbitrary repos)
+    expect(data.drift).toBeDefined();
+    expect(data.drift.coverage.declaredFileCount + data.drift.coverage.undeclaredFileCount)
+      .toBe(data.nodes.length);
     const ids = data.nodes.map((n: any) => n.id);
     expect(ids).toContain('index.ts');
     expect(ids).toContain('lib/format.ts');
