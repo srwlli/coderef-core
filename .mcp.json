@@ -1,12 +1,10 @@
 {
-  "_comment": "coderef-core MCP server is REPO-AGNOSTIC (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001): the --project-dir launcher arg below is now OPTIONAL and acts only as a DEFAULT ANCHOR for resolving relative project_root paths. Every tool invocation must pass project_root explicitly — there is no default repo.",
+  "_comment": "coderef-core MCP server is REPO-AGNOSTIC (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001): every tool invocation must pass project_root explicitly — there is no default repo. Launch is PORTABLE: 'npx coderef-mcp-server' resolves the published bin (package.json bin.coderef-mcp-server) cwd- and path-independently, so this manifest carries no absolute machine paths. The --project-dir anchor was dropped — it only ever defaulted relative-project_root resolution to process.cwd(), which the absolute-per-call any-repo contract never relies on.",
   "mcpServers": {
     "coderef-core": {
-      "command": "node",
+      "command": "npx",
       "args": [
-        "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/dist/src/cli/coderef-mcp-server.js",
-        "--project-dir",
-        "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE"
+        "coderef-mcp-server"
       ]
     }
   }
