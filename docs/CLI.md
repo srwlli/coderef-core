@@ -584,6 +584,8 @@ npx populate-coderef ./my-project --mode full
 | `--source-headers` | Write optional CodeRef-Semantics headers into source files. Infers `@layer` from file path patterns automatically (e.g. `src/cli/` → `cli`, `__tests__/` → `test_support`). | `false` |
 | `--overwrite-headers` | Re-write **every** file's header even if present. Refreshes headers but can churn many unrelated files (`@used_by` refreshes + CRLF re-normalization) when only a few are actually stale — prefer `--stale-only` for a targeted refresh. Implies `--source-headers`. | `false` |
 | `--stale-only` | Refresh **only** stale-header files (`headerStatus='stale'`, i.e. `@exports` drifted from the AST). Implies `--overwrite-headers`. Regenerates just the drifted files, avoiding the full-repo rewrite/CRLF churn of a blanket `--overwrite-headers` pass. Prints `refreshed N / skipped M`. (STUB-QDXGBA) | `false` |
+| `--include <globs>` | Scope `--source-headers` writes to files matching these comma-separated globs (allowlist, e.g. `scripts/**,src/api/**`). Matched against **project-relative** paths via `minimatch`. Filters the header **write** loop only — `graph`/`index`/`registry` output is unchanged. Composes with `--exclude` and `--stale-only` as AND. (STUB-4JDQXX) | none |
+| `--exclude <globs>` | Skip `--source-headers` writes for files matching these comma-separated globs (denylist). Use to head a shared project root while leaving foreign sub-domains untouched. Composes with `--include` and `--stale-only` as AND. (STUB-4JDQXX) | none |
 | `--strict-headers` | Promote semantic-header drift (SH-1, SH-2, SH-3) from warnings to hard errors at the Phase 6 validator. `populate-coderef` exits non-zero on header drift. | `false` |
 | `--enforce-headers` | Fail (exit 1) if header coverage is below `--coverage-floor`. Prevention layer: a header-less codebase can no longer produce a green scan, so new files added without a `@coderef-semantic` header are caught at scan time instead of being silently excluded from the RAG index. | `false` |
 | `--coverage-floor <0-100>` | Minimum `header_coverage_pct` required by `--enforce-headers`. | `100` |
@@ -621,6 +623,9 @@ npx populate-coderef ./my-project --stale-only
 
 # Refresh ALL headers (blanket rewrite — churns many files; use --stale-only instead)
 npx populate-coderef ./my-project --source-headers --overwrite-headers
+
+# Write headers into OWNED subdirs only, leaving a shared root's foreign files untouched
+npx populate-coderef ./shared-root --source-headers --include "scripts/**,ORCHESTRATOR/**,ENGINES/**"
 
 # Hard-fail on any semantic header drift (CI mode)
 npx populate-coderef ./my-project --strict-headers
