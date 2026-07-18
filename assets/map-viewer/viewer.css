@@ -1,12 +1,47 @@
 /* coderef map viewer — WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P2 */
+/* Tokenized to the static-html-ui standard (WO-VIEWER-CSS-STATIC-HTML-UI-TOKENIZATION-001):
+   chrome derives from the :root six-bucket catalog via var(); data-semantic hues
+   (drift ring, metrics gradient) are fixed by design in the --data-* block. */
+:root {
+  color-scheme: light dark;
+
+  /* BUCKET 1: colors — chrome, theme-aware via light-dark() (light fallback derived) */
+  --background:          light-dark(#f4f7fb, #10151c);
+  --foreground:          light-dark(#1a2733, #e6eef5);
+  --surface-toolbar:     light-dark(#eef2f8, #161d27);
+  --surface-panel:       light-dark(rgba(238, 242, 248, 0.97), rgba(22, 29, 39, 0.97));
+  --surface-strip:       light-dark(rgba(238, 242, 248, 0.94), rgba(22, 29, 39, 0.94));
+  --surface-evidence:    light-dark(#e4ebf4, #16202c);
+  --surface-input:       light-dark(#ffffff, #0d1219);
+  --surface-button:      light-dark(#e7edf5, #1d2632);
+  --hover:               light-dark(#dbe4ef, #243040);
+  --active:              light-dark(#1565c0, #0d47a1);
+  --on-active:           light-dark(#ffffff, #ffffff);
+  --text-strong:         light-dark(#3a4a5c, #cfd8e3);
+  --text-muted:          light-dark(#5c6f82, #8fa3b8);
+  --text-evidence:       light-dark(#42556a, #b8c7d9);
+  --text-evidence-head:  light-dark(#2c3d50, #d5e1ef);
+  --border:              light-dark(#d3dce7, #232d3a);
+  --border-strong:       light-dark(#c3cedb, #2b3644);
+  --border-evidence:     light-dark(#b6c2d1, #334152);
+  --accent:              light-dark(#0277bd, #4fc3f7);
+  --link:                light-dark(#1565c0, #9ecbff);
+
+  /* data / semantic encodings — fixed by design, meaningful, NOT theme chrome.
+     NO light-dark() here: a data hue must read the same in both modes. */
+  --data-drift-ring: #ffb300;   /* layer-drift ring */
+  --data-metric-lo:  #1e88e5;   /* metrics-gradient low stop  */
+  --data-metric-hi:  #ffca28;   /* metrics-gradient high stop */
+}
+
 * { box-sizing: border-box; }
 
 html, body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: #10151c;
-  color: #e6eef5;
+  background: var(--background);
+  color: var(--foreground);
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
 }
 
@@ -20,8 +55,8 @@ html, body {
   align-items: center;
   gap: 8px;
   padding: 0 12px;
-  background: #161d27;
-  border-bottom: 1px solid #232d3a;
+  background: var(--surface-toolbar);
+  border-bottom: 1px solid var(--border);
   z-index: 10;
 }
 
@@ -34,38 +69,38 @@ html, body {
 #search-input {
   flex: 0 1 340px;
   padding: 6px 10px;
-  background: #0d1219;
-  color: #e6eef5;
-  border: 1px solid #2b3644;
+  background: var(--surface-input);
+  color: var(--foreground);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   outline: none;
 }
-#search-input:focus { border-color: #4fc3f7; }
+#search-input:focus { border-color: var(--accent); }
 
 #toolbar button {
   padding: 6px 10px;
-  background: #1d2632;
-  color: #cfd8e3;
-  border: 1px solid #2b3644;
+  background: var(--surface-button);
+  color: var(--text-strong);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   cursor: pointer;
   white-space: nowrap;
 }
-#toolbar button:hover { background: #243040; }
+#toolbar button:hover { background: var(--hover); }
 #toolbar button.active {
-  background: #0d47a1;
-  border-color: #4fc3f7;
-  color: #ffffff;
+  background: var(--active);
+  border-color: var(--accent);
+  color: var(--on-active);
 }
 #toolbar button[disabled] {
   opacity: 0.4;
   cursor: not-allowed;
 }
-#toolbar button[disabled]:hover { background: #1d2632; }
+#toolbar button[disabled]:hover { background: var(--surface-button); }
 
 #stats {
   margin-left: auto;
-  color: #8fa3b8;
+  color: var(--text-muted);
   font-size: 12px;
   white-space: nowrap;
 }
@@ -77,8 +112,8 @@ html, body {
   width: 420px;
   max-height: 50vh;
   overflow-y: auto;
-  background: #161d27;
-  border: 1px solid #2b3644;
+  background: var(--surface-toolbar);
+  border: 1px solid var(--border-strong);
   border-radius: 0 0 8px 8px;
   z-index: 20;
 }
@@ -86,12 +121,12 @@ html, body {
   padding: 6px 10px;
   cursor: pointer;
   font-size: 13px;
-  border-bottom: 1px solid #1d2632;
+  border-bottom: 1px solid var(--surface-button);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.search-hit:hover { background: #243040; }
+.search-hit:hover { background: var(--hover); }
 
 #graph-canvas {
   position: fixed;
@@ -108,8 +143,8 @@ html, body {
   bottom: 0;
   width: 360px;
   overflow-y: auto;
-  background: rgba(22, 29, 39, 0.97);
-  border-left: 1px solid #232d3a;
+  background: var(--surface-panel);
+  border-left: 1px solid var(--border);
   padding: 14px 16px;
   z-index: 15;
 }
@@ -117,13 +152,13 @@ html, body {
   font-size: 14px;
   margin: 0 24px 10px 0;
   word-break: break-all;
-  color: #4fc3f7;
+  color: var(--accent);
 }
 #detail-panel h3 {
   font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #8fa3b8;
+  color: var(--text-muted);
   margin: 14px 0 6px;
 }
 #detail-panel ul {
@@ -132,7 +167,7 @@ html, body {
   font-size: 13px;
 }
 #detail-panel li { margin: 2px 0; word-break: break-all; }
-#detail-panel a { color: #9ecbff; text-decoration: none; }
+#detail-panel a { color: var(--link); text-decoration: none; }
 #detail-panel a:hover { text-decoration: underline; }
 .meta-row { font-size: 13px; margin: 3px 0; }
 
@@ -142,11 +177,11 @@ html, body {
   right: 10px;
   background: none;
   border: none;
-  color: #8fa3b8;
+  color: var(--text-muted);
   font-size: 20px;
   cursor: pointer;
 }
-#detail-close:hover { color: #ffffff; }
+#detail-close:hover { color: var(--on-active); }
 
 #empty-state[hidden],
 #detail-panel[hidden],
@@ -160,7 +195,7 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #8fa3b8;
+  color: var(--text-muted);
   font-size: 15px;
   z-index: 5;
   text-align: center;
@@ -170,25 +205,25 @@ html, body {
 /* Per-edge evidence expander (MapData >= 1.2, WO-MAP-GRAPH-ANALYTICS-MODULE-001 P2) */
 .evidence-toggle {
   font-size: 11px;
-  color: #8fa3b8 !important;
-  border: 1px solid #334152;
+  color: var(--text-muted) !important;
+  border: 1px solid var(--border-evidence);
   border-radius: 3px;
   padding: 0 4px;
 }
-.evidence-toggle:hover { color: #ffffff !important; text-decoration: none !important; }
+.evidence-toggle:hover { color: var(--on-active) !important; text-decoration: none !important; }
 .edge-evidence {
   margin: 4px 0 6px 12px;
   padding: 5px 8px;
-  border-left: 2px solid #334152;
-  background: #16202c;
+  border-left: 2px solid var(--border-evidence);
+  background: var(--surface-evidence);
   font-size: 12px;
-  color: #b8c7d9;
+  color: var(--text-evidence);
 }
 .edge-evidence[hidden] { display: none; }
 .edge-evidence ul { margin: 3px 0 0 0; padding-left: 16px; }
-.edge-evidence li { color: #b8c7d9; }
-.evidence-head { color: #d5e1ef; }
-.evidence-note { margin-top: 3px; color: #8fa3b8; font-style: italic; }
+.edge-evidence li { color: var(--text-evidence); }
+.evidence-head { color: var(--text-evidence-head); }
+.evidence-note { margin-top: 3px; color: var(--text-muted); font-style: italic; }
 
 /* Layer-drift legend strip (MapData >= 1.3, WO-MAP-GRAPH-ANALYTICS-MODULE-001 P3) */
 #drift-legend {
@@ -200,11 +235,11 @@ html, body {
   flex-wrap: wrap;
   gap: 4px 14px;
   padding: 6px 12px;
-  background: rgba(22, 29, 39, 0.94);
-  border-bottom: 1px solid #232d3a;
+  background: var(--surface-strip);
+  border-bottom: 1px solid var(--border);
   z-index: 9;
   font-size: 12px;
-  color: #cfd8e3;
+  color: var(--text-strong);
 }
 #drift-legend[hidden] { display: none; }
 .drift-chip {
@@ -222,7 +257,7 @@ html, body {
 }
 .drift-ring {
   background: transparent;
-  border: 2px solid #ffb300;
+  border: 2px solid var(--data-drift-ring);
 }
 
 /* Engineering-metrics legend strip + family select (MapData >= 1.4, WO-MAP-GRAPH-ANALYTICS-MODULE-001 P4) */
@@ -236,11 +271,11 @@ html, body {
   align-items: center;
   gap: 4px 14px;
   padding: 6px 12px;
-  background: rgba(22, 29, 39, 0.94);
-  border-bottom: 1px solid #232d3a;
+  background: var(--surface-strip);
+  border-bottom: 1px solid var(--border);
   z-index: 9;
   font-size: 12px;
-  color: #cfd8e3;
+  color: var(--text-strong);
 }
 #metrics-legend[hidden] { display: none; }
 .metric-chip {
@@ -255,14 +290,14 @@ html, body {
   border-radius: 5px;
   display: inline-block;
   flex: none;
-  background: linear-gradient(to right, #1e88e5, #ffca28);
+  background: linear-gradient(to right, var(--data-metric-lo), var(--data-metric-hi));
 }
-.metric-note { color: #8fa3b8; font-style: italic; }
+.metric-note { color: var(--text-muted); font-style: italic; }
 #metric-select {
   padding: 6px 8px;
-  background: #1d2632;
-  color: #cfd8e3;
-  border: 1px solid #2b3644;
+  background: var(--surface-button);
+  color: var(--text-strong);
+  border: 1px solid var(--border-strong);
   border-radius: 6px;
   cursor: pointer;
 }
