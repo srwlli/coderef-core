@@ -224,4 +224,67 @@ describe('populate-coderef CLI', () => {
     expect(providerContent).toMatch(/^\/\*\*\r?\n \* @coderef-semantic/);
     expect(providerContent).toContain('/* License header */');
   });
+
+  // WO-ADD-A-PATH-SCOPE-ALLOWLIST-DENYLIST-TO-POPULATE-001 (STUB-4JDQXX): build a
+  // repo with an "owned" subdir and a "foreign" subdir sharing one project root.
+  async function makeScopedRepo(prefix: string) {
+    const projectDir = await fs.mkdtemp(path.join(os.tmpdir(), prefix));
+    created.push(projectDir);
+
+    const ownedDir = path.join(projectDir, 'owned');
+    const foreignDir = path.join(projectDir, 'foreign');
+    await fs.mkdir(ownedDir, { recursive: true });
+    await fs.mkdir(foreignDir, { recursive: true });
+
+    await fs.writeFile(
+      path.join(ownedDir, 'mine.ts'),
+      'export function mine() { return 1; }\n',
+      'utf-8'
+    );
+    await fs.writeFile(
+      path.join(foreignDir, 'theirs.ts'),
+      'export function theirs() { return 2; }\n',
+      'utf-8'
+    );
+
+    return { projectDir, ownedDir, foreignDir };
+  }
+
+  it('--include scopes --source-headers writes to the allowlisted subset only', async () => {
+    const { projectDir, ownedDir, foreignDir } = await makeScopedRepo(
+      'coderef-populate-cli-include-'
+    );
+
+    await execAsync(
+      `node dist/src/cli/populate.js "${projectDir}" --mode minimal --source-headers --include "owned/**" --json`,
+      { cwd: packageRoot }
+    );
+
+    const ownedContent = await fs.readFile(path.join(ownedDir, 'mine.ts'), 'utf-8');
+    const foreignContent = await fs.readFile(path.join(foreignDir, 'theirs.ts'), 'utf-8');
+
+    // Header LANDS in the included subset...
+    expect(ownedContent).toContain('@coderef-semantic');
+    // ...and the foreign file is left untouched.
+    expect(foreignContent).not.toContain('@coderef-semantic');
+  });
+
+  it('--exclude skips --source-headers writes for the denylisted subset', async () => {
+    const { projectDir, ownedDir, foreignDir } = await makeScopedRepo(
+      'coderef-populate-cli-exclude-'
+    );
+
+    await execAsync(
+      `node dist/src/cli/populate.js "${projectDir}" --mode minimal --source-headers --exclude "foreign/**" --json`,
+      { cwd: packageRoot }
+    );
+
+    const ownedContent = await fs.readFile(path.join(ownedDir, 'mine.ts'), 'utf-8');
+    const foreignContent = await fs.readFile(path.join(foreignDir, 'theirs.ts'), 'utf-8');
+
+    // Non-excluded file still gets a header...
+    expect(ownedContent).toContain('@coderef-semantic');
+    // ...and the excluded file is skipped.
+    expect(foreignContent).not.toContain('@coderef-semantic');
+  });
 });

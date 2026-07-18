@@ -34,6 +34,7 @@ import {
 } from './detect-languages.js';
 import { HeaderGenerator } from '../semantic/header-generator.js';
 import { buildSemanticElementsFromState } from '../pipeline/semantic-elements.js';
+import { minimatch } from 'minimatch';
 
 export interface CliArgs {
   projectDir: string;
@@ -78,6 +79,23 @@ export interface CliArgs {
    */
   changedFiles?: string[];
   deletedFiles?: string[];
+  /**
+   * Path-scope allowlist for --source-headers (WO-ADD-A-PATH-SCOPE-ALLOWLIST-
+   * DENYLIST-TO-POPULATE-001, STUB-4JDQXX). Comma-separated globs matched against
+   * the PROJECT-RELATIVE file path (e.g. `scripts/**`). When set, --source-headers
+   * writes a header ONLY into files matching at least one include glob. Unset =
+   * no allowlist = every discovered file is eligible (today's behavior). Scopes
+   * the header WRITE loop only — graph/index/registry output is unchanged.
+   */
+  include?: string[];
+  /**
+   * Path-scope denylist for --source-headers (companion to `include`). Comma-
+   * separated globs matched against the project-relative file path. A file
+   * matching any exclude glob is skipped. Composes with `include` and
+   * `--stale-only` as AND: a file is written iff it matches include (if set)
+   * AND is not excluded AND (if --stale-only) is stale.
+   */
+  exclude?: string[];
 }
 
 interface GeneratorRunner {
@@ -135,6 +153,8 @@ export function defaultPopulateArgs(projectDir: string): CliArgs {
     strictHeaders: false,
     enforceHeaders: false,
     coverageFloor: 100,
+    include: undefined,
+    exclude: undefined,
   };
 }
 
@@ -161,6 +181,8 @@ function parseArgs(argv: string[]): CliArgs {
     strictHeaders: false,
     enforceHeaders: false,
     coverageFloor: 100,
+    include: undefined,
+    exclude: undefined,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -230,6 +252,19 @@ function parseArgs(argv: string[]): CliArgs {
 
       case '--deleted-files':
         args.deletedFiles = argv[++i].split(',').map(s => s.trim()).filter(Boolean);
+        break;
+
+      case '--include':
+        // Path-scope allowlist for --source-headers (STUB-4JDQXX). Comma-split
+        // globs matched against the project-relative file path. Pure filter — it
+        // does NOT imply --source-headers (unlike --stale-only); scoping without
+        // --source-headers is a no-op, matching the --changed-files precedent.
+        args.include = argv[++i].split(',').map(s => s.trim()).filter(Boolean);
+        break;
+
+      case '--exclude':
+        // Path-scope denylist for --source-headers (companion to --include).
+        args.exclude = argv[++i].split(',').map(s => s.trim()).filter(Boolean);
         break;
 
       case '--semantic':
@@ -316,6 +351,11 @@ OPTIONS:
   --overwrite-headers          Re-write EVERY file's header even if present (refreshes headers; may churn many files)
   --stale-only                 Refresh ONLY stale-header files (@exports drifted from AST); implies --overwrite-headers.
                                Avoids the full-repo rewrite/CRLF churn of a blanket --overwrite-headers pass.
+  --include <globs>            Scope --source-headers writes to files matching these comma-separated globs
+                               (allowlist, e.g. scripts/**,src/api/**). Matched against project-relative paths.
+                               Filters the header WRITE only — graph/index/registry output is unchanged.
+  --exclude <globs>            Skip --source-headers writes for files matching these comma-separated globs
+                               (denylist). Composes with --include and --stale-only as AND.
   -h, --help                   Show this help message
 
 MODES:
@@ -342,6 +382,9 @@ EXAMPLES:
 
   # Run only graph and registry
   populate-coderef --select graph,registry
+
+  # Write headers into owned files only (path-scope allowlist)
+  populate-coderef --source-headers --include scripts/**,ORCHESTRATOR/**,ENGINES/**
 `);
 }
 
@@ -643,9 +686,30 @@ export async function runPopulate(
         elementsByFile.set(element.file, existing);
       }
 
+      // Path-scope globs (STUB-4JDQXX / WO-ADD-A-PATH-SCOPE-ALLOWLIST-...). Matched
+      // against the project-relative `file` key. Empty/undefined = no filter.
+      const includeGlobs = args.include ?? [];
+      const excludeGlobs = args.exclude ?? [];
+
       let staleRefreshed = 0;
       let staleSkipped = 0;
+      let pathScopedSkipped = 0;
       for (const [file, elements] of elementsByFile) {
+        // Path-scope allowlist/denylist filter. `element.file` is project-relative;
+        // normalize to forward slashes so `scripts/**`-style globs match regardless
+        // of the OS path separator. Composes with --stale-only as AND (D3): a file
+        // is written iff it matches include (if set) AND is not excluded AND (if
+        // --stale-only) is stale. Filters the WRITE loop only — graph/index/registry
+        // output is untouched (D1).
+        const relForGlob = file.split(path.sep).join('/');
+        if (includeGlobs.length > 0 && !includeGlobs.some(g => minimatch(relForGlob, g))) {
+          pathScopedSkipped++;
+          continue;
+        }
+        if (excludeGlobs.length > 0 && excludeGlobs.some(g => minimatch(relForGlob, g))) {
+          pathScopedSkipped++;
+          continue;
+        }
         // STUB-QDXGBA: --stale-only regenerates only files whose header is stale
         // (any element with headerStatus==='stale' — @exports drifted from AST),
         // avoiding the full-repo rewrite/CRLF churn of a blanket --overwrite pass.
@@ -662,6 +726,12 @@ export async function runPopulate(
         console.log(
           `[source-headers] --stale-only: refreshed ${staleRefreshed} stale-header file(s), ` +
             `skipped ${staleSkipped} up-to-date file(s).`,
+        );
+      }
+      if ((includeGlobs.length > 0 || excludeGlobs.length > 0) && !args.json) {
+        console.log(
+          `[source-headers] path-scope: wrote ${staleRefreshed} in-scope file(s), ` +
+            `skipped ${pathScopedSkipped} out-of-scope file(s).`,
         );
       }
     }
