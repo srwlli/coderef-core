@@ -36,11 +36,13 @@ import {
   type DependencyRulesNode, type DependencyRulesEdge,
 } from '../query/dependency-rules.js';
 import { computeDocstringSurface, type DocstringElement } from '../query/docstrings.js';
+import { computeCloneSurface, type CloneElement } from '../query/clones.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
   'middleware', 'graph', 'complexity', 'impact', 'multi-hop', 'breaking-changes',
   'tests-for-change', 'ast-search', 'type-hierarchy', 'dependency-rules', 'docstrings',
+  'clones',
 ] as const;
 type AnalyzeType = typeof TYPES[number];
 
@@ -197,6 +199,7 @@ async function main(): Promise<void> {
       offset:    { type: 'string' },
       documented:   { type: 'boolean', default: false },
       undocumented: { type: 'boolean', default: false },
+      'min-group-size': { type: 'string' },
       gate:    { type: 'boolean', default: false },
       help:    { type: 'boolean', default: false },
     },
@@ -701,6 +704,45 @@ async function main(): Promise<void> {
         documented,
         limit: docLimit,
         offset: docOffset,
+      });
+      emit(surface);
+      break;
+    }
+    case 'clones': {
+      // Structural-signature clone surface (P10): groups elements sharing
+      // (kind, name, arity, param-name shingle, import-source set), read from
+      // the canonical index.json elements (same source as docstrings/api_diff).
+      // The pure projection is in src/query/clones.ts. Surfaces-not-verdicts:
+      // a clone group is co-location-of-shape, NOT a defect (no score/grade).
+      let elements: CloneElement[] = [];
+      try {
+        const idxPath = join(project, '.coderef', 'index.json');
+        const idx = JSON.parse(await readFile(idxPath, 'utf8')) as { elements?: CloneElement[] };
+        elements = idx.elements ?? [];
+      } catch {
+        console.error(
+          'coderef-analyze error: .coderef/index.json not found or unreadable. ' +
+          'Run populate-coderef first.',
+        );
+        process.exit(1);
+      }
+
+      const cloneLimit = values.limit
+        ? (parseInt(values.limit as string, 10) || undefined)
+        : undefined;
+      const cloneOffset = values.offset
+        ? (parseInt(values.offset as string, 10) || undefined)
+        : undefined;
+      const minGroupSize = values['min-group-size']
+        ? (parseInt(values['min-group-size'] as string, 10) || undefined)
+        : undefined;
+
+      const surface = computeCloneSurface({
+        elements,
+        filter: values.element as string | undefined,
+        minGroupSize,
+        limit: cloneLimit,
+        offset: cloneOffset,
       });
       emit(surface);
       break;

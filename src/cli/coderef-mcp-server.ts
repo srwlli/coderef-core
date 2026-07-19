@@ -98,6 +98,7 @@ import {
   type DependencyRulesNode, type DependencyRulesEdge,
 } from '../query/dependency-rules.js';
 import { computeDocstringSurface, type DocstringElement } from '../query/docstrings.js';
+import { computeCloneSurface, type CloneElement } from '../query/clones.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
@@ -600,6 +601,7 @@ export interface ToolHandlers {
   dependency_rules(args: { limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // per-element docstring presence + text surface (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P8)
   docstrings(args: { element?: string; documented?: boolean; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  clones(args: { filter?: string; min_group_size?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1775,6 +1777,28 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         offset: offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset)),
       });
       return shapeResponse(surface as unknown as Record<string, unknown>, response_format, ['items']);
+    },
+
+    // clones (P10): structural-signature duplication surface. Groups elements
+    // sharing (kind, name, arity, param-name shingle, import-source set) — the
+    // honest zero-re-parse clone signal the index carries (no body/endLine/hash
+    // for a true line-hash or AST-subtree pass). Read-only, paginated.
+    // Surfaces-not-verdicts (a group is co-location-of-shape, NOT a defect; no
+    // score/grade) + absence=no-data (empty set -> no_data). signature_basis +
+    // elements_without_signature disclose the basis + thin-signature elements.
+    clones({ filter, min_group_size, limit, offset, response_format }) {
+      const index = loadIndex(projectDir, cache);
+      const surface = computeCloneSurface({
+        elements: (index.elements ?? []) as unknown as CloneElement[],
+        filter,
+        minGroupSize:
+          min_group_size === undefined || !Number.isFinite(min_group_size)
+            ? undefined
+            : Math.max(2, Math.floor(min_group_size)),
+        limit: clampLimit(limit),
+        offset: offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset)),
+      });
+      return shapeResponse(surface as unknown as Record<string, unknown>, response_format, ['groups']);
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
@@ -3399,6 +3423,25 @@ async function main(): Promise<void> {
     },
     async ({ project_root, element, documented, limit, offset, response_format }) =>
       perRepo(project_root, h => h.docstrings({ element, documented, limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'clones',
+    {
+      title: 'Clone surface (structural-signature duplication groups)',
+      description:
+        'Surface elements that share the same STRUCTURAL SHAPE — a group is elements with an identical signature (kind, name, arity, sorted param-name shingle, sorted import-source set), computed from the index with no source re-read. Catches renamed copies, boilerplate handlers, and parallel test helpers. Returns clone groups [{signature, members:[{codeRefId,name,kind,file,line}], size}] plus a roll-up. SURFACES, NOT VERDICTS: a clone group is CO-LOCATION-of-shape, NOT a defect — there is deliberately no duplication score/grade/verdict. ABSENCE = NO-DATA: an empty element set returns no_data:true, never a false "0 clones". DISCLOSURE: signature_basis names the composing fields; elements_without_signature counts thin-signature (kind+name only) elements so a thin candidate is distinguishable from a richly-signatured singleton. Does NOT detect byte-level or AST-subtree near-misses (a tracked follow-up needs endLine + a body hash).',
+      inputSchema: {
+        project_root: projectRootArg,
+        filter: z.string().optional().describe('Case-insensitive substring filter over element name'),
+        min_group_size: z.number().optional().describe('Minimum members for a clone group (default 2, floor 2)'),
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, filter, min_group_size, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.clones({ filter, min_group_size, limit, offset, response_format })),
   );
 
   server.registerTool(

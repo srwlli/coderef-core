@@ -2025,3 +2025,73 @@ describe('docstrings', () => {
     }
   });
 });
+
+// clones (P10): structural-signature duplication groups from index.json elements.
+describe('clones', () => {
+  it('is registered as a handler', () => {
+    expect(typeof (handlers as any).clones).toBe('function');
+  });
+
+  function writeRepo(elements: any[]): string {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-clones-'));
+    const cr = path.join(proj, '.coderef');
+    fs.mkdirSync(cr, { recursive: true });
+    const graph: ExportedGraph = {
+      version: '1.0.0', exportedAt: 1, nodes: [], edges: [],
+      statistics: { nodeCount: 0, edgeCount: 0, edgesByType: {}, densityRatio: 0 },
+    };
+    fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify(graph));
+    fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify({ elements }));
+    fs.writeFileSync(path.join(cr, 'validation-report.json'), JSON.stringify({ ok: true }));
+    const future = new Date(Date.now() + 60_000);
+    fs.utimesSync(path.join(cr, 'graph.json'), future, future);
+    fs.utimesSync(path.join(cr, 'index.json'), future, future);
+    return proj;
+  }
+
+  it('no_data:true when the index has no elements (never a false 0 clones)', () => {
+    const proj = writeRepo([]);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.clones({}) as any;
+      expect(r.no_data).toBe(true);
+      expect(r.summary.total_groups).toBe(0);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('groups two elements with an identical structural signature', () => {
+    const proj = writeRepo([
+      { name: 'handler', type: 'function', file: 'src/a.ts', line: 1, codeRefId: '@Fn/a.ts#handler:1', parameters: ['req', 'res'], imports: [{ source: 'express', line: 1 }] },
+      { name: 'handler', type: 'function', file: 'src/b.ts', line: 5, codeRefId: '@Fn/b.ts#handler:5', parameters: ['req', 'res'], imports: [{ source: 'express', line: 1 }] },
+    ]);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.clones({}) as any;
+      expect(r.no_data).toBe(false);
+      expect(r.summary.total_groups).toBe(1);
+      expect(r.groups[0].size).toBe(2);
+      expect(r.groups[0].members.map((m: any) => m.file)).toEqual(['src/a.ts', 'src/b.ts']);
+      // disclosure fields present
+      expect(Array.isArray(r.summary.signature_basis)).toBe(true);
+      expect(r.summary.elements_without_signature).toBe(0);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('does not group elements that differ in arity', () => {
+    const proj = writeRepo([
+      { name: 'f', type: 'function', file: 'src/a.ts', line: 1, parameters: ['x'], imports: [] },
+      { name: 'f', type: 'function', file: 'src/b.ts', line: 1, parameters: ['x', 'y'], imports: [] },
+    ]);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.clones({}) as any;
+      expect(r.summary.total_groups).toBe(0);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+});
