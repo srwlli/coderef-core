@@ -37,12 +37,18 @@ import {
 } from '../query/dependency-rules.js';
 import { computeDocstringSurface, type DocstringElement } from '../query/docstrings.js';
 import { computeCloneSurface, type CloneElement } from '../query/clones.js';
+import { decodeScipIndex, ScipDecodeError } from '../integration/scip/scip-schema.js';
+import {
+  computeScipResolutionDelta,
+  type ScipDeltaElement,
+  type ScipDeltaEdge,
+} from '../query/scip-resolution-delta.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
   'middleware', 'graph', 'complexity', 'impact', 'multi-hop', 'breaking-changes',
   'tests-for-change', 'ast-search', 'type-hierarchy', 'dependency-rules', 'docstrings',
-  'clones',
+  'clones', 'scip-resolution-delta',
 ] as const;
 type AnalyzeType = typeof TYPES[number];
 
@@ -200,6 +206,7 @@ async function main(): Promise<void> {
       documented:   { type: 'boolean', default: false },
       undocumented: { type: 'boolean', default: false },
       'min-group-size': { type: 'string' },
+      scip:    { type: 'string' },
       gate:    { type: 'boolean', default: false },
       help:    { type: 'boolean', default: false },
     },
@@ -743,6 +750,62 @@ async function main(): Promise<void> {
         minGroupSize,
         limit: cloneLimit,
         offset: cloneOffset,
+      });
+      emit(surface);
+      break;
+    }
+    case 'scip-resolution-delta': {
+      // SCIP resolution delta (P11, scope-A): what SCIP resolves that CodeRef
+      // did not. Opt-in via --scip=<.scip path>; absent -> graceful no_data.
+      // Read-only: does NOT feed the resolver. The pure projection is in
+      // src/query/scip-resolution-delta.ts.
+      let elements: ScipDeltaElement[] = [];
+      let edges: ScipDeltaEdge[] = [];
+      try {
+        const idxPath = join(project, '.coderef', 'index.json');
+        const idx = JSON.parse(await readFile(idxPath, 'utf8')) as { elements?: ScipDeltaElement[] };
+        elements = idx.elements ?? [];
+        const graphPath = join(project, '.coderef', 'graph.json');
+        const graph = JSON.parse(await readFile(graphPath, 'utf8')) as { edges?: ScipDeltaEdge[] };
+        edges = graph.edges ?? [];
+      } catch {
+        console.error(
+          'coderef-analyze error: .coderef/index.json or graph.json not found or unreadable. ' +
+          'Run populate-coderef first.',
+        );
+        process.exit(1);
+      }
+
+      // Opt-in SCIP index. Absent -> no_data (the honest, expected default).
+      let scip = null;
+      const scipPath = values.scip as string | undefined;
+      if (scipPath) {
+        try {
+          const bytes = await readFile(scipPath);
+          scip = decodeScipIndex(new Uint8Array(bytes));
+        } catch (err) {
+          if (err instanceof ScipDecodeError) {
+            console.error(`coderef-analyze error: could not decode SCIP index at ${scipPath}: ${err.message}`);
+            process.exit(1);
+          }
+          console.error(`coderef-analyze error: SCIP index not found or unreadable at ${scipPath}`);
+          process.exit(1);
+        }
+      }
+
+      const sdLimit = values.limit
+        ? (parseInt(values.limit as string, 10) || undefined)
+        : undefined;
+      const sdOffset = values.offset
+        ? (parseInt(values.offset as string, 10) || undefined)
+        : undefined;
+
+      const surface = computeScipResolutionDelta({
+        scip,
+        elements,
+        edges,
+        limit: sdLimit,
+        offset: sdOffset,
       });
       emit(surface);
       break;

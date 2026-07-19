@@ -2095,3 +2095,52 @@ describe('clones', () => {
     }
   });
 });
+
+// scip_resolution_delta (P11): opt-in; absent scip_path -> no_data envelope.
+describe('scip_resolution_delta', () => {
+  it('is registered as a handler', () => {
+    expect(typeof (handlers as any).scip_resolution_delta).toBe('function');
+  });
+
+  function writeRepo(): string {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-scip-'));
+    const cr = path.join(proj, '.coderef');
+    fs.mkdirSync(cr, { recursive: true });
+    const graph: ExportedGraph = {
+      version: '1.0.0', exportedAt: 1,
+      nodes: [],
+      edges: [],
+      statistics: { nodeCount: 0, edgeCount: 0, edgesByType: {}, densityRatio: 0 },
+    };
+    fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify(graph));
+    fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify({ elements: [] }));
+    fs.writeFileSync(path.join(cr, 'validation-report.json'), JSON.stringify({ ok: true }));
+    const future = new Date(Date.now() + 60_000);
+    fs.utimesSync(path.join(cr, 'graph.json'), future, future);
+    fs.utimesSync(path.join(cr, 'index.json'), future, future);
+    return proj;
+  }
+
+  it('no_data:true when no scip_path is provided (opt-in, honest default)', () => {
+    const proj = writeRepo();
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.scip_resolution_delta({}) as any;
+      expect(r.no_data).toBe(true);
+      expect(r.summary.delta_resolved_by_scip).toBe(0);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('degrades to no_data when scip_path does not exist (never a hard error)', () => {
+    const proj = writeRepo();
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.scip_resolution_delta({ scip_path: path.join(proj, 'nope.scip') }) as any;
+      expect(r.no_data).toBe(true);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+});

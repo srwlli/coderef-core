@@ -99,6 +99,12 @@ import {
 } from '../query/dependency-rules.js';
 import { computeDocstringSurface, type DocstringElement } from '../query/docstrings.js';
 import { computeCloneSurface, type CloneElement } from '../query/clones.js';
+import { decodeScipIndex, ScipDecodeError } from '../integration/scip/scip-schema.js';
+import {
+  computeScipResolutionDelta,
+  type ScipDeltaElement,
+  type ScipDeltaEdge,
+} from '../query/scip-resolution-delta.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
@@ -602,6 +608,7 @@ export interface ToolHandlers {
   // per-element docstring presence + text surface (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P8)
   docstrings(args: { element?: string; documented?: boolean; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   clones(args: { filter?: string; min_group_size?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  scip_resolution_delta(args: { scip_path?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1799,6 +1806,38 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         offset: offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset)),
       });
       return shapeResponse(surface as unknown as Record<string, unknown>, response_format, ['groups']);
+    },
+
+    // scip_resolution_delta (P11, scope-A): what a user-provided SCIP index
+    // resolves that CodeRef's own heuristic did NOT (the ~21.58%-resolution
+    // lift). Opt-in via scip_path; ABSENT -> no_data (the honest default, since
+    // most repos have no .scip). Read-only: does NOT feed the resolver or mutate
+    // edges (that live wiring is a deferred deep integration). Surfaces-not-verdicts.
+    scip_resolution_delta({ scip_path, limit, offset, response_format }) {
+      const graph = loadGraph(projectDir, cache);
+      const index = loadIndex(projectDir, cache);
+      let scip = null;
+      if (scip_path) {
+        try {
+          const bytes = fs.readFileSync(scip_path);
+          scip = decodeScipIndex(new Uint8Array(bytes));
+        } catch (err) {
+          // Decode/read failure degrades to no_data with a note rather than a
+          // hard tool error — the delta is opt-in enrichment, never a gate.
+          if (!(err instanceof ScipDecodeError) && (err as NodeJS.ErrnoException)?.code !== 'ENOENT') {
+            throw err;
+          }
+          scip = null;
+        }
+      }
+      const surface = computeScipResolutionDelta({
+        scip,
+        elements: (index.elements ?? []) as unknown as ScipDeltaElement[],
+        edges: (graph.edges ?? []) as unknown as ScipDeltaEdge[],
+        limit: clampLimit(limit),
+        offset: offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset)),
+      });
+      return shapeResponse(surface as unknown as Record<string, unknown>, response_format, ['deltas']);
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
@@ -3442,6 +3481,24 @@ async function main(): Promise<void> {
     },
     async ({ project_root, filter, min_group_size, limit, offset, response_format }) =>
       perRepo(project_root, h => h.clones({ filter, min_group_size, limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'scip_resolution_delta',
+    {
+      title: 'SCIP resolution delta (what SCIP resolves that CodeRef did not)',
+      description:
+        "Quantify the precise-resolution LIFT a user-provided SCIP index (from an external scip-* indexer) gives over CodeRef's own tree-sitter heuristic. CodeRef's own resolution rate is only ~21.58% (most cross-file/cross-lib references are unresolved); SCIP is compiler-grade. For each SCIP-resolved reference whose co-located CodeRef edge is unresolved/ambiguous/absent, returns a delta row {codeRefId, scipSymbol, file, line, coderefStatus, scipStatus, provenance:'scip'} plus a roll-up. OPT-IN via scip_path; ABSENCE = NO-DATA (no .scip -> no_data:true, never a false '0 delta' that would falsely imply CodeRef's resolution is complete). SURFACES, NOT VERDICTS: a delta is a resolution-provenance GAIN, not a defect or grade (no score). READ-ONLY: does NOT feed the resolver or mutate edges — the live SCIP-into-resolver wiring is a deferred deep integration needing a real scip-typescript index.",
+      inputSchema: {
+        project_root: projectRootArg,
+        scip_path: z.string().optional().describe('Absolute path to a .scip index file (opt-in; absent -> no_data)'),
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, scip_path, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.scip_resolution_delta({ scip_path, limit, offset, response_format })),
   );
 
   server.registerTool(
