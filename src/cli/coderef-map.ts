@@ -302,6 +302,13 @@ function main(): void {
         `(${g.couplingDrift.summary.corroboratedPairCount} corroborated)` +
         (g.window.shallow ? ' [shallow clone — window partial]' : ''),
       );
+      if (data.ownership) {
+        const o = data.ownership;
+        console.log(
+          `[coderef-map] ownership: ${o.summary.filesWithAuthorship} files with authorship, ` +
+          `${o.summary.singleAuthorFileCount} single-author (bus factor 1) — surfaces, not verdicts`,
+        );
+      }
     } else {
       console.log(
         `[coderef-map] git: block omitted (${result.gitReason ?? 'no history'}) — ` +

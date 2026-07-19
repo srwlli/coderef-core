@@ -181,7 +181,7 @@ npx coderef-map /path/to/any/repo --git --no-open
 
 | File | Purpose |
 |------|---------|
-| `.coderef/map/data.json` | File-level MapData v1.5: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below), and — with `--git` — the `git` block (below). Same file the MCP `map` tool returns to agents. |
+| `.coderef/map/data.json` | File-level MapData v1.6: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below), and — with `--git` — the `git` block **and** the `ownership` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
 | `.coderef/map/skeleton.md` | **`--skeleton` only.** Token-budgeted plaintext repo map (below). Same renderer the MCP `map` tool's `format:"skeleton"` returns inline. |
@@ -337,6 +337,30 @@ Viewer overlay for the git block is out of scope for this phase (data-first;
 the overlay is a follow-up). Read it from `data.json` or via the MCP summary
 fields below.
 
+### Ownership / knowledge block (`data.ownership`, MapData v1.6, `--git` opt-in)
+
+Per-file authorship distribution — the bus-factor / knowledge-map surface
+(`src/map/ownership.ts` + `src/map/git-history.ts` author capture,
+WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P2; CodeScene knowledge-map /
+CODEOWNERS pattern). It rides the **same** opt-in `--git` (CLI) / `git:true`
+(MCP) switch as the git-behavioral block — author capture (`%an`/`%at`) is a git
+read, isolated in the same one impure module (`git-history.ts`); the analytics
+are pure and deterministic over the extracted record (the reference clock is
+passed in as data — the newest commit in the window — so `ageDays` is a property
+of the observation, not the reader's wall clock). Absent on a non-git repo, a
+git-less PATH, an empty history, **or a window with no author fields** (no-data ≠
+zero — a file outside the window is never reported as share-0/"unowned").
+**Surfaces, not verdicts** — a single-author or long-untouched file is an
+observation (it may be small and stable, or a knowledge silo), not a "risky
+code" judgment; the block reports the distribution and the agent decides how
+boldly to refactor.
+
+| Field | Contents |
+|-------|----------|
+| `summary` | `{filesWithAuthorship, singleAuthorFileCount, nowEpoch}` — population of files carrying authorship, of those the count that are single-author (`dominantAuthorShare == 1`, bus factor 1), and the reference clock `ageDays` is measured against (provenance). |
+| `top[]` | `{file, distinctAuthorCount, dominantAuthor, dominantAuthorShare, totalCommits, lastTouchedEpoch, ageDays}` — `dominantAuthorShare` ∈ [0,1] is the fraction of the file's window commits from its single most active author (the bus-factor proxy). Ranked `dominantAuthorShare` desc, then `ageDays` desc, then file asc (concentrated-**and**-stale surfaces first), capped (default 25). |
+| `note` | Surfaces-not-verdicts + absence-is-no-data note. |
+
 ### Metrics delta (`map_metrics_delta`, verified-refactor loop)
 
 The CodeScene verified-refactor loop closed against the five metric families
@@ -378,9 +402,11 @@ block as `community_count` + `isolated_count`, the evidence blocks as
 `declared_layer_count`, the metrics block as `untested_src_count` +
 `undocumented_file_count`, and — with `git:true` — the git block as
 `git_commits_scanned` + `churn_hotspot_count` + `coupling_drift_count`
-(plus `git_block_reason` naming why the block is absent on a non-git repo).
-Each summary field is null when reading an older `data.json` or when the block
-was not requested. Agents query `data.json`; humans open `graph.html`.
+and the ownership block as `ownership_file_count` + `single_author_file_count`
+(plus `git_block_reason` naming why both blocks are absent on a non-git repo or
+an author-less window). Each summary field is null when reading an older
+`data.json` or when the block was not requested. Agents query `data.json`;
+humans open `graph.html`.
 
 ---
 

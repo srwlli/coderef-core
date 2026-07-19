@@ -2243,6 +2243,12 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         churn_hotspot_count: data.git ? (data.git.churnHotspots?.summary?.scoredFileCount ?? 0) : null,
         coupling_drift_count: data.git ? (data.git.couplingDrift?.summary?.driftPairCount ?? 0) : null,
         git_block_reason: git ? (data.git ? null : (gitReason ?? 'no_history')) : null,
+        // Ownership/knowledge summary (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001
+        // P2); rides the same opt-in git:true switch. null when not requested or the
+        // block is absent (non-git repo, git absent, empty history, or a window with
+        // no author fields — the git_block_reason above explains the shared cause).
+        ownership_file_count: data.ownership ? (data.ownership.summary?.filesWithAuthorship ?? 0) : null,
+        single_author_file_count: data.ownership ? (data.ownership.summary?.singleAuthorFileCount ?? 0) : null,
         warnings: data.meta?.warnings ?? [],
         // Skeleton block (format:'skeleton' only) — token-budgeted plaintext
         // repo map, inline for direct prompt injection.
@@ -2865,7 +2871,7 @@ async function main(): Promise<void> {
         git: z
           .boolean()
           .optional()
-          .describe('Attach the git-behavioral block (opt-in): churn×size hotspots + change-coupling drift (co-change pairs with no static edge). Forces a git-enabled regeneration. Returns git_commits_scanned, churn_hotspot_count, coupling_drift_count (null + git_block_reason on a non-git repo). Surfaces, not verdicts.'),
+          .describe('Attach the git-behavioral block (opt-in): churn×size hotspots + change-coupling drift (co-change pairs with no static edge). ALSO attaches the ownership/knowledge block: per-file author concentration (dominant-author share = bus-factor proxy), distinct authors, last-touched age — "one author, long-untouched" fragility signal for refactor calibration. Forces a git-enabled regeneration. Returns git_commits_scanned, churn_hotspot_count, coupling_drift_count, ownership_file_count, single_author_file_count (all null + git_block_reason on a non-git repo or an author-less window). Surfaces, not verdicts.'),
       },
     },
     async ({ project_root, refresh, format, token_budget, git }) =>

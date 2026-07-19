@@ -62,6 +62,7 @@ import { computeEdgeEvidence, MapEdgeEvidence } from './edge-evidence.js';
 import { computeLayerDrift, MapLayerDrift, LayersSpec } from './layer-drift.js';
 import { computeEngineeringMetrics, MapMetrics } from './engineering-metrics.js';
 import { computeGitBehavioral, GitBehavioral } from './git-behavioral.js';
+import { computeOwnership, MapOwnership } from './ownership.js';
 import { GitHistory } from './git-history.js';
 
 export interface MapElement {
@@ -148,6 +149,14 @@ export interface MapData {
    * extracted). Opt-in; absent on non-git repos and by default.
    */
   git?: GitBehavioral;
+  /**
+   * Ownership / knowledge analytics — per-file author concentration (bus-factor
+   * proxy), distinct authors, last-touched age. Rides the SAME opt-in `git`
+   * switch as the git-behavioral block; absent unless git history with author
+   * capture was extracted. Absent on non-git repos, on a window without author
+   * fields, and by default.
+   */
+  ownership?: MapOwnership;
 }
 
 export class MapProjectionError extends Error {
@@ -568,6 +577,7 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
   // this projection only consumes the plain record, so it stays pure. Absent by
   // default and on any non-git repo — the base path stays git-independent.
   let git: GitBehavioral | undefined;
+  let ownership: MapOwnership | undefined;
   if (options.git) {
     if (options.gitHistory) {
       git = computeGitBehavioral(
@@ -581,6 +591,23 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
           ...(options.gitMinCoChange !== undefined ? { minCoChange: options.gitMinCoChange } : {}),
         },
       );
+
+      // Ownership rides the same opt-in git switch. It is emitted only when the
+      // extraction actually captured authorship (a window with author fields);
+      // an absent/empty authorship array degrades the block to no-data. nowEpoch
+      // is the NEWEST commit in the window (max lastTouchedEpoch) so ageDays is a
+      // property of the observation, not the reader's wall clock — keeping the
+      // projection pure and deterministic.
+      const authorship = options.gitHistory.authorship ?? [];
+      if (authorship.length > 0) {
+        const nowEpoch = authorship.reduce((max, a) => (a.lastTouchedEpoch > max ? a.lastTouchedEpoch : max), 0);
+        ownership = computeOwnership(
+          options.gitHistory,
+          nodes.map(n => ({ id: n.id })),
+          nowEpoch,
+          options.gitRankingCap !== undefined ? { ownershipTop: options.gitRankingCap } : {},
+        );
+      }
     } else {
       warnings.push(
         'git block requested but no git history was extracted (non-git repo, git absent, or empty history); git block omitted',
@@ -591,7 +618,7 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
   const projectPath = normalizeSlashes(path.resolve(projectRoot));
   return {
     meta: {
-      schemaVersion: '1.5.0',
+      schemaVersion: '1.6.0',
       projectPath,
       repoName: path.basename(projectPath),
       generatedAt: new Date().toISOString(),
@@ -610,5 +637,6 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     ...(drift ? { drift } : {}),
     ...(metrics ? { metrics } : {}),
     ...(git ? { git } : {}),
+    ...(ownership ? { ownership } : {}),
   };
 }

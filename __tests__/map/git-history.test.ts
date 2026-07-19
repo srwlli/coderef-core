@@ -108,6 +108,55 @@ describe('parseGitLogNumstat — pure parse over fixture text', () => {
     // pairs sorted by (a, b)
     expect(coChanges.map(p => `${p.a}|${p.b}`)).toEqual(['a.ts|m.ts', 'a.ts|z.ts', 'm.ts|z.ts']);
   });
+
+  it('yields NO authorship for bare `<DELIM>sha` headers (additive — no author fields)', () => {
+    // The existing fixture shape carries no author/at on the header; authorship
+    // must be empty so the ownership block downstream degrades to no-data.
+    const fixture = [`${DELIM}sha1`, '1\t0\tsrc/a.ts', ''].join('\n');
+    const { files, authorship } = parseGitLogNumstat(fixture);
+    expect(files).toHaveLength(1); // churn shape unchanged
+    expect(authorship).toEqual([]);
+  });
+
+  it('captures per-file authorship when the header carries <DELIM>sha<DELIM>author<DELIM>at', () => {
+    // 3 commits with authors: c1 alice touches a,b ; c2 bob touches a ; c3 alice touches a.
+    // a.ts -> alice x2, bob x1 (alice dominant); b.ts -> alice x1.
+    const at1 = '1700000000';
+    const at2 = '1700100000';
+    const at3 = '1700200000';
+    const fixture = [
+      `${DELIM}sha1${DELIM}alice${DELIM}${at1}`,
+      '10\t2\tsrc/a.ts',
+      '5\t1\tsrc/b.ts',
+      `${DELIM}sha2${DELIM}bob${DELIM}${at2}`,
+      '3\t0\tsrc/a.ts',
+      `${DELIM}sha3${DELIM}alice${DELIM}${at3}`,
+      '2\t2\tsrc/a.ts',
+      '',
+    ].join('\n');
+
+    const { files, authorship } = parseGitLogNumstat(fixture);
+
+    // churn shape is unchanged by author capture.
+    expect(files.find(f => f.file === 'src/a.ts')!.commitCount).toBe(3);
+
+    const a = authorship.find(f => f.file === 'src/a.ts')!;
+    // authors sorted by commitCount desc then name asc -> alice(2) before bob(1).
+    expect(a.authors).toEqual([
+      { name: 'alice', commitCount: 2 },
+      { name: 'bob', commitCount: 1 },
+    ]);
+    expect(a.distinctAuthorCount).toBe(2);
+    // newest touch of a.ts is c3 (at3).
+    expect(a.lastTouchedEpoch).toBe(parseInt(at3, 10));
+
+    const b = authorship.find(f => f.file === 'src/b.ts')!;
+    expect(b.authors).toEqual([{ name: 'alice', commitCount: 1 }]);
+    expect(b.lastTouchedEpoch).toBe(parseInt(at1, 10));
+
+    // authorship sorted file asc.
+    expect(authorship.map(f => f.file)).toEqual(['src/a.ts', 'src/b.ts']);
+  });
 });
 
 describe('extractGitHistory — degradation paths (any-repo rule)', () => {
@@ -193,6 +242,13 @@ describe.runIf(gitAvailable())('extractGitHistory — live extraction over a fre
     // a and b co-changed exactly once (commit 1).
     const pair = h.coChanges.find(p => p.a === 'a.ts' && p.b === 'b.ts')!;
     expect(pair.coChangeCount).toBe(1);
+
+    // Author capture is live (the tmp repo commits as 'coderef-test').
+    expect(h.authorship).toBeDefined();
+    const authA = h.authorship!.find(f => f.file === 'a.ts')!;
+    expect(authA.authors).toEqual([{ name: 'coderef-test', commitCount: 2 }]);
+    expect(authA.distinctAuthorCount).toBe(1);
+    expect(authA.lastTouchedEpoch).toBeGreaterThan(0);
   });
 
   it('returns empty_history for a git repo with zero commits', () => {

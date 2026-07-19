@@ -163,6 +163,8 @@ How to read it (and how not to over-read it):
 - **Surfaces, not verdicts.** High churn tracks active feature work as much as instability; a coupling-drift pair is a *candidate* hidden dependency to investigate in the code, not a proven missing edge.
 - The viewer has no git overlay yet (data-first this phase; overlay is a follow-up) — read it from `data.json` or the MCP summary fields (`git_commits_scanned`, `churn_hotspot_count`, `coupling_drift_count`).
 
+The **same `--git` switch** also attaches the **ownership / knowledge block** (`data.ownership`) — the one thing structure *and* churn can't see: *who* knows each file. For every file it reports the **dominant-author share** (what fraction of the file's commits in the window came from its single most active author — the bus-factor proxy), the distinct author count, and the last-touched age (`ageDays`, measured against the newest commit in the window, not your wall clock). A file that is single-author *and* long-untouched is the classic "one author, nobody's looked at it in a year" fragility signal — it changes how boldly an agent should refactor. Read it the same way as the rest: **surfaces, not verdicts** (single-author can mean small-and-stable as easily as knowledge-silo), and **absence is no-data** — a file outside the window is never reported as share-0 or "unowned." Over MCP it summarizes as `ownership_file_count` + `single_author_file_count`, absent (null) on the same non-git / author-less conditions the `git_block_reason` names.
+
 ## Verification
 
 After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, viewer.css}`. Open the viewer and check:
@@ -173,6 +175,7 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 - For agents: the `map` tool response has non-null `untested_src_count` / `undocumented_file_count`.
 - Skeleton map: `npx coderef-map . --skeleton` prints a ranked plaintext map and writes `.coderef/map/skeleton.md`; `skeleton_estimated_tokens` stays at or under the budget, and any dropped content is named under `## truncation`.
 - Git block: `npx coderef-map . --git` on a git repo adds `data.git` with a stamped `window`, `churnHotspots`, and `couplingDrift`; on a non-git repo the block is absent and `meta.warnings` (or the MCP `git_block_reason`) says why — that absence is correct, not a failure.
+- Ownership block: the same `--git` run also adds `data.ownership` (`summary.filesWithAuthorship`, `summary.singleAuthorFileCount`, and a `top[]` ranked by dominant-author share then age); over MCP, `ownership_file_count` / `single_author_file_count` are non-null. Absent on the same non-git / empty-history conditions as the git block, and on a window that carried no author fields.
 
 ## Troubleshooting
 
@@ -192,6 +195,7 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 | 2026-07-17 | Initial guide — covers MapData v1.4 (analytics, evidence, drift, metrics; WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 + WO-MAP-GRAPH-ANALYTICS-MODULE-001) |
 | 2026-07-17 | Added the skeleton map (step 8): token-budgeted, centrality-ranked plaintext repo map via `coderef-map --skeleton` and the MCP `map` tool's `format:"skeleton"` (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P1) |
 | 2026-07-17 | Added the git-behavioral block (step 9): opt-in churn×size hotspots + change-coupling drift via `coderef-map --git` and the MCP `map` tool's `git:true` — MapData v1.5 (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2) |
+| 2026-07-18 | Added the ownership / knowledge block (step 9): per-file author concentration (bus-factor proxy), distinct authors, last-touched age — rides the same `--git` / `git:true` switch — MapData v1.6 (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P2) |
 
 ---
 

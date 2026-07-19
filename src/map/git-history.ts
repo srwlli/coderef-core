@@ -57,6 +57,32 @@ export interface GitCoChangePair {
   coChangeCount: number;
 }
 
+/** One author's contribution count to a single file within the window. */
+export interface GitFileAuthorCount {
+  /** Author name as reported by git `%an` (verbatim; may be non-unique across identities). */
+  name: string;
+  /** Distinct commits in the window by this author that touched this file. */
+  commitCount: number;
+}
+
+/**
+ * Per-file authorship facts within the extracted commit window. ADDITIVE — this
+ * array is present only when the extraction captured author fields (`%an`/`%at`
+ * on the commit header). Older callers / fixtures without author fields produce
+ * NO authorship entries, so the block downstream stays absent (no-data), never a
+ * guess. The pure ownership analytics (src/map/ownership.ts) consume this record.
+ */
+export interface GitFileAuthorship {
+  /** Project-relative, slash-normalized file path (matches graph node ids). */
+  file: string;
+  /** Per-author commit tallies for this file, sorted commitCount desc then name asc. */
+  authors: GitFileAuthorCount[];
+  /** Distinct authors that touched this file in the window. */
+  distinctAuthorCount: number;
+  /** Author-timestamp (epoch seconds) of the most recent commit touching this file. */
+  lastTouchedEpoch: number;
+}
+
 /** Resolved extraction window — the block's provenance metadata. */
 export interface GitHistoryWindow {
   /** The --max-count bound applied (0 = unbounded was requested). */
@@ -78,6 +104,14 @@ export interface GitHistory {
   files: GitFileChurn[];
   /** Co-change pairs, sorted (a asc, then b asc). */
   coChanges: GitCoChangePair[];
+  /**
+   * Per-file authorship, sorted (file asc). ADDITIVE + OPTIONAL: present only
+   * when the extraction captured author fields (`%an`/`%at`). Absent when the
+   * source (an older caller or a fixture without author fields) carried none —
+   * the ownership block then degrades to no-data. Existing `files`/`coChanges`
+   * consumers are unaffected (additive-schema rule).
+   */
+  authorship?: GitFileAuthorship[];
 }
 
 /** Extraction outcome: a history, or null with a machine-readable reason. */
@@ -141,20 +175,36 @@ function resolveNumstatPath(raw: string): string {
  * PURE over its string input — split out so tests can feed fixture text with no
  * git process. Exported for direct unit testing.
  *
- * Format contract: each commit begins with a line `<DELIM><sha>`; subsequent
- * non-empty lines are numstat rows `added\tdeleted\tpath`. `added`/`deleted`
- * are `-` for binary files (counted as a co-change member, 0 lines).
+ * Format contract: each commit begins with a header line `<DELIM><sha>` — OR,
+ * when author capture is enabled, `<DELIM><sha><DELIM><author><DELIM><at>`
+ * (author name + author-timestamp epoch seconds). Subsequent non-empty lines are
+ * numstat rows `added\tdeleted\tpath`. `added`/`deleted` are `-` for binary
+ * files (counted as a co-change member, 0 lines).
+ *
+ * ADDITIVE authorship: the returned `authorship` array is populated ONLY when
+ * commit headers carried author fields; bare `<DELIM><sha>` headers (older
+ * callers, existing fixtures) yield an EMPTY authorship array, so the ownership
+ * block downstream degrades to no-data rather than guessing.
  */
 export function parseGitLogNumstat(
   raw: string,
   coChangeCommitFileCap: number = DEFAULT_COCHANGE_FILE_CAP,
-): { files: GitFileChurn[]; coChanges: GitCoChangePair[]; commitsScanned: number } {
+): {
+  files: GitFileChurn[];
+  coChanges: GitCoChangePair[];
+  authorship: GitFileAuthorship[];
+  commitsScanned: number;
+} {
   const churn = new Map<string, { commitCount: number; linesAdded: number; linesDeleted: number }>();
   const pairCounts = new Map<string, number>();
+  // Per-file authorship accumulation: file -> (author -> commitCount) + newest touch epoch.
+  const authorAcc = new Map<string, { byAuthor: Map<string, number>; lastTouchedEpoch: number }>();
   let commitsScanned = 0;
 
   const lines = raw.split(/\r?\n/);
   let currentFiles: Set<string> | null = null;
+  let currentAuthor: string | null = null;
+  let currentEpoch: number | null = null;
 
   const flush = (files: Set<string> | null): void => {
     if (!files || files.size === 0) return;
@@ -177,6 +227,14 @@ export function parseGitLogNumstat(
       flush(currentFiles);
       currentFiles = new Set<string>();
       commitsScanned++;
+      // Header may be bare `<DELIM>sha` or `<DELIM>sha<DELIM>author<DELIM>at`.
+      // Split on the delimiter; fields after the sha are the optional author + at.
+      const parts = line.split(COMMIT_DELIM);
+      // parts[0] is '' (leading delimiter), parts[1] is the sha.
+      currentAuthor = parts.length >= 3 && parts[2] !== '' ? parts[2] : null;
+      const atRaw = parts.length >= 4 ? parts[3] : '';
+      const at = parseInt(atRaw, 10);
+      currentEpoch = Number.isFinite(at) ? at : null;
       continue;
     }
     if (!line.trim()) continue;
@@ -204,6 +262,19 @@ export function parseGitLogNumstat(
     if (firstTouchThisCommit) c.commitCount++;
     c.linesAdded += added;
     c.linesDeleted += deleted;
+
+    // Authorship accrues only when this commit header carried an author.
+    if (firstTouchThisCommit && currentAuthor !== null) {
+      let acc = authorAcc.get(file);
+      if (!acc) {
+        acc = { byAuthor: new Map<string, number>(), lastTouchedEpoch: 0 };
+        authorAcc.set(file, acc);
+      }
+      acc.byAuthor.set(currentAuthor, (acc.byAuthor.get(currentAuthor) || 0) + 1);
+      if (currentEpoch !== null && currentEpoch > acc.lastTouchedEpoch) {
+        acc.lastTouchedEpoch = currentEpoch;
+      }
+    }
   }
   flush(currentFiles); // last commit
 
@@ -218,7 +289,23 @@ export function parseGitLogNumstat(
     })
     .sort((x, y) => (x.a < y.a ? -1 : x.a > y.a ? 1 : x.b < y.b ? -1 : x.b > y.b ? 1 : 0));
 
-  return { files, coChanges, commitsScanned };
+  const authorship: GitFileAuthorship[] = Array.from(authorAcc.entries())
+    .map(([file, acc]) => {
+      const authors: GitFileAuthorCount[] = Array.from(acc.byAuthor.entries())
+        .map(([name, commitCount]) => ({ name, commitCount }))
+        .sort((x, y) =>
+          y.commitCount - x.commitCount || (x.name < y.name ? -1 : x.name > y.name ? 1 : 0),
+        );
+      return {
+        file,
+        authors,
+        distinctAuthorCount: authors.length,
+        lastTouchedEpoch: acc.lastTouchedEpoch,
+      };
+    })
+    .sort((x, y) => (x.file < y.file ? -1 : x.file > y.file ? 1 : 0));
+
+  return { files, coChanges, authorship, commitsScanned };
 }
 
 function runGit(projectRoot: string, gitArgs: string[]): { ok: boolean; stdout: string; enoent: boolean; status: number | null } {
@@ -280,8 +367,16 @@ export function extractGitHistory(
     shallow = false; // best-effort; absence of the marker is the common case
   }
 
-  // 4. The extraction: bounded git log with per-commit numstat.
-  const logArgs = ['log', '--no-merges', '--numstat', `--format=${COMMIT_DELIM}%H`];
+  // 4. The extraction: bounded git log with per-commit numstat + authorship.
+  //    Header carries sha + author name + author-timestamp so the pure parser can
+  //    roll up per-file ownership without a second git pass. Delimiter-separated
+  //    on the header line; numstat rows follow unchanged.
+  const logArgs = [
+    'log',
+    '--no-merges',
+    '--numstat',
+    `--format=${COMMIT_DELIM}%H${COMMIT_DELIM}%an${COMMIT_DELIM}%at`,
+  ];
   if (maxCount > 0) logArgs.push(`--max-count=${maxCount}`);
   if (since) logArgs.push(`--since=${since}`);
   const logRes = runGit(projectRoot, logArgs);
@@ -309,6 +404,10 @@ export function extractGitHistory(
       },
       files: parsed.files,
       coChanges: parsed.coChanges,
+      // Additive: present when the format captured authors (always, post-P2).
+      // An empty array (e.g. a window with no author fields) is preserved as
+      // no-data — the ownership block is then absent rather than fabricated.
+      authorship: parsed.authorship,
     },
   };
 }

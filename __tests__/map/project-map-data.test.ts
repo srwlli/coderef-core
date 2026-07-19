@@ -243,7 +243,7 @@ describe('projectMapData — git-behavioral block (opt-in, additive)', () => {
   it('omits the git block by default (base path is git-independent)', () => {
     const data = projectMapData(root);
     expect(data.git).toBeUndefined();
-    expect(data.meta.schemaVersion).toBe('1.5.0');
+    expect(data.meta.schemaVersion).toBe('1.6.0');
   });
 
   it('omits the git block (with a warning) when git requested but no history supplied', () => {
