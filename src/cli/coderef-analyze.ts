@@ -23,10 +23,15 @@ import type { ElementData } from '../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, extname } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { computeTestsForChange } from '../query/tests-for-change.js';
+import { parseDiffToChangedElements, type ChangedElement } from '../query/changed-elements.js';
+import { isTestLikeFile } from '../map/graph-analytics.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
   'middleware', 'graph', 'complexity', 'impact', 'multi-hop', 'breaking-changes',
+  'tests-for-change',
 ] as const;
 type AnalyzeType = typeof TYPES[number];
 
@@ -47,6 +52,7 @@ Options:
   --depth=<N>        Max traversal depth (default: 5; used by: impact, multi-hop)
   --from=<ref>       Git ref baseline (required for: breaking-changes)
   --to=<ref>         Git ref head     (optional for: breaking-changes; defaults to worktree)
+  --ref=<ref>        Git ref to diff against (used by: tests-for-change; default HEAD)
   --help             Print this help
 
 Analysis types:
@@ -65,6 +71,10 @@ Analysis types:
                      signature extractors are placeholder stubs; this type is
                      gated until they are implemented so it cannot emit
                      confident-looking empty reports.
+  tests-for-change   Diff-to-test-selection: map a git diff (default HEAD) to
+                     changed elements, then return the TEST-FILE elements that
+                     reach them through resolved call/import edges, ranked by
+                     directness. Absence is no-data, not "untested". (--ref)
 
 Note: graph, complexity, impact, multi-hop, and middleware read the canonical
 .coderef/graph.json produced by the populate pipeline (DR-PHASE-5-C). Run
@@ -149,6 +159,7 @@ async function main(): Promise<void> {
       depth:   { type: 'string' },
       from:    { type: 'string' },
       to:      { type: 'string' },
+      ref:     { type: 'string' },
       help:    { type: 'boolean', default: false },
     },
     strict: false,
@@ -266,6 +277,75 @@ async function main(): Promise<void> {
         usedBy:    engine.dependentsOf(resolution, depth),
         calls:     engine.calleesOf(resolution),
         dependsOn: engine.dependenciesOf(resolution, depth),
+      });
+      break;
+    }
+    case 'tests-for-change': {
+      const engine = loadEngineOrExit(project);
+      const gitRef = (values.ref as string | undefined) ?? 'HEAD';
+
+      // Run the read-only diff (same shape the MCP diff_impact tool runs).
+      const gitArgs = ['diff', '-U0', '--no-color'];
+      if (gitRef !== 'WORKTREE') gitArgs.push(gitRef);
+      const res = spawnSync('git', [...gitArgs, '--'], {
+        cwd: project,
+        encoding: 'utf8',
+        maxBuffer: 32 * 1024 * 1024,
+      });
+      if (res.error || res.status !== 0) {
+        console.error(
+          `coderef-analyze error: git diff failed (ref="${gitRef}"): ` +
+          String(res.error?.message ?? res.stderr ?? `exit ${res.status}`).slice(0, 300),
+        );
+        process.exit(1);
+      }
+
+      // Load index.json (sibling of graph.json) for line-range attribution.
+      let indexElements: ChangedElement[] = [];
+      try {
+        const idxPath = join(project, '.coderef', 'index.json');
+        const idx = JSON.parse(await readFile(idxPath, 'utf8')) as { elements?: ChangedElement[] };
+        indexElements = idx.elements ?? [];
+      } catch {
+        console.error(
+          'coderef-analyze error: .coderef/index.json not found or unreadable. ' +
+          'Run populate-coderef first.',
+        );
+        process.exit(1);
+      }
+
+      // Build the graph primitives (nodeById + reverse adjacency) from the
+      // canonical graph, mirroring the MCP server's cache.
+      const nodeById = new Map(engine.graph.nodes.map(n => [n.id, n]));
+      const inbound = new Map<string, typeof engine.graph.edges>();
+      for (const edge of engine.graph.edges) {
+        if (!edge.targetId) continue;
+        const list = inbound.get(edge.targetId);
+        if (list) list.push(edge);
+        else inbound.set(edge.targetId, [edge]);
+      }
+
+      const { changedElements, changedFileCount } = parseDiffToChangedElements(res.stdout, indexElements);
+      const selection = computeTestsForChange({
+        changedElementIds: changedElements.keys(),
+        nodeById,
+        inbound,
+        isTestFile: isTestLikeFile,
+        maxDepth: depth,
+      });
+
+      emit({
+        ref: gitRef,
+        changed_files: changedFileCount,
+        changed_elements: changedElements.size,
+        max_depth: depth,
+        test_file_count: selection.test_file_count,
+        selected_tests: selection.total,
+        test_files: selection.files,
+        tests: selection.tests,
+        note:
+          'Ranked test-file elements reaching the diff through resolved call/import edges ' +
+          '(depth 1 = direct). Absence is no-data, not "untested".',
       });
       break;
     }

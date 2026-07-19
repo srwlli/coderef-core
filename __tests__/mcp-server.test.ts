@@ -739,6 +739,18 @@ describe('diff_impact', () => {
   });
 });
 
+describe('tests_for_change', () => {
+  it('is registered as a handler', () => {
+    expect(typeof (handlers as any).tests_for_change).toBe('function');
+  });
+
+  it('errors cleanly when the project dir is not a git repo (shares diff_impact seam)', () => {
+    const r = (handlers as any).tests_for_change({}) as any;
+    expect(r.error).toBe('git_diff_failed');
+    expect(r.hint).toContain('git ref');
+  });
+});
+
 // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ---
 // Fixture call chain: main -> alpha -> helper (e3, e1). alpha imports Helper (e4).
 // These prove the FORWARD direction is distinct from the inbound tools:

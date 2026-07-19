@@ -87,6 +87,9 @@ import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js'
 import { type EdgeConfidenceTier, classifyEdgeConfidence, meetsMinConfidence } from '../pipeline/edge-confidence.js';
 import { type EgoGraph, egoGraphOf } from '../query/ego-graph.js';
 import { type SymbolContext, assembleSymbolContext } from '../query/symbol-context.js';
+import { computeTestsForChange } from '../query/tests-for-change.js';
+import { parseDiffToChangedElements } from '../query/changed-elements.js';
+import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
   type ResponseFormat,
@@ -576,6 +579,8 @@ export interface ToolHandlers {
   what_exports(args: { file: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // v2 flow tools (P2)
   diff_impact(args: { ref?: string; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  // diff-to-test-selection (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P1)
+  tests_for_change(args: { ref?: string; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -667,6 +672,52 @@ function edgeConfidenceOf(edge: ExportedGraph['edges'][number]): EdgeConfidenceT
   const ev = edge.evidence as { confidence?: unknown } | undefined;
   const evidenceConfidence = typeof ev?.confidence === 'string' ? ev.confidence : undefined;
   return classifyEdgeConfidence(edge.resolutionStatus, edge.reason, evidenceConfidence);
+}
+
+/**
+ * Map a git diff onto the set of changed INDEX ELEMENTS — the shared front half
+ * of diff_impact AND tests_for_change (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001
+ * Phase 1). Runs a zero-context read-only `git diff`, parses the new-side hunk
+ * ranges, and attributes each range to its enclosing element (the closest
+ * preceding element owns `[its line, next element's line)`). Returns the changed
+ * elements keyed by codeRefId plus the changed-file count, or a structured
+ * `error` envelope when the git diff fails. Extracted so the two tools cannot
+ * drift on how a diff becomes a set of changed elements.
+ */
+function computeChangedElements(
+  projectDir: string,
+  cache: ArtifactCache,
+  gitRef: string,
+): { changedElements: Map<string, IndexElement>; changedFileCount: number } | { error: Record<string, unknown> } {
+  const index = loadIndex(projectDir, cache);
+
+  // Read-only git: diff the working tree (or a ref range) with zero context so
+  // hunk headers map cleanly onto line ranges.
+  const gitArgs = ['diff', '-U0', '--no-color'];
+  if (gitRef !== 'WORKTREE') gitArgs.push(gitRef);
+  const res = spawnSync('git', [...gitArgs, '--'], {
+    cwd: projectDir,
+    encoding: 'utf8',
+    maxBuffer: 32 * 1024 * 1024,
+  });
+  if (res.error || res.status !== 0) {
+    return {
+      error: {
+        error: 'git_diff_failed',
+        ref: gitRef,
+        detail: String(res.error?.message ?? res.stderr ?? `exit ${res.status}`).slice(0, 300),
+        hint: 'Pass a valid git ref (default HEAD = working tree vs last commit).',
+      },
+    };
+  }
+
+  // Shared parse: diff text -> changed index elements (single seam). The map
+  // values are the very IndexElement objects passed in, so the cast is sound.
+  const parsed = parseDiffToChangedElements(res.stdout, index.elements);
+  return {
+    changedElements: parsed.changedElements as Map<string, unknown> as Map<string, IndexElement>,
+    changedFileCount: parsed.changedFileCount,
+  };
 }
 
 export function buildToolHandlers(projectDir: string): ToolHandlers {
@@ -1296,73 +1347,13 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
 
     diff_impact({ ref, max_depth, limit, offset, response_format }) {
       const graph = loadGraph(projectDir, cache);
-      const index = loadIndex(projectDir, cache);
-      const cap = clampLimit(limit);
       const depthCap = Math.max(1, Math.min(10, max_depth ?? 3));
       const gitRef = ref ?? 'HEAD';
 
-      // Read-only git: diff the working tree (or a ref range) with zero
-      // context so hunk headers map cleanly onto line ranges.
-      const gitArgs = ['diff', '-U0', '--no-color'];
-      if (gitRef !== 'WORKTREE') gitArgs.push(gitRef);
-      const res = spawnSync('git', [...gitArgs, '--'], {
-        cwd: projectDir,
-        encoding: 'utf8',
-        maxBuffer: 32 * 1024 * 1024,
-      });
-      if (res.error || res.status !== 0) {
-        return {
-          error: 'git_diff_failed',
-          ref: gitRef,
-          detail: String(res.error?.message ?? res.stderr ?? `exit ${res.status}`).slice(0, 300),
-          hint: 'Pass a valid git ref (default HEAD = working tree vs last commit).',
-        };
-      }
-
-      // Parse +++ b/<file> and @@ -a,b +c,d @@ new-side ranges.
-      const changedRanges = new Map<string, Array<[number, number]>>();
-      let currentFile: string | null = null;
-      for (const line of res.stdout.split('\n')) {
-        if (line.startsWith('+++ ')) {
-          const f = line.slice(4).trim();
-          currentFile = f === '/dev/null' ? null : normalizeSlashes(f.replace(/^b\//, ''));
-          continue;
-        }
-        const m = /^@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@/.exec(line);
-        if (m && currentFile) {
-          const start = parseInt(m[1], 10);
-          const count = m[2] !== undefined ? parseInt(m[2], 10) : 1;
-          const list = changedRanges.get(currentFile) ?? [];
-          list.push([start, start + Math.max(count, 1) - 1]);
-          changedRanges.set(currentFile, list);
-        }
-      }
-
-      // Map changed ranges to enclosing elements: per file, an element owns
-      // [its line, next element's line) — the closest preceding element.
-      const byFile = new Map<string, IndexElement[]>();
-      for (const e of index.elements) {
-        const f = normalizeSlashes((e.file ?? ''));
-        const list = byFile.get(f);
-        if (list) list.push(e);
-        else byFile.set(f, [e]);
-      }
-      for (const list of byFile.values()) list.sort((a, b) => (a.line ?? 0) - (b.line ?? 0));
-
-      const changedElements = new Map<string, IndexElement>();
-      for (const [file, ranges] of changedRanges) {
-        const elements = byFile.get(file);
-        if (!elements) continue;
-        for (const [lo, hi] of ranges) {
-          for (let i = 0; i < elements.length; i++) {
-            const start = elements[i].line ?? 0;
-            const end = i + 1 < elements.length ? (elements[i + 1].line ?? Infinity) - 1 : Infinity;
-            if (start <= hi && end >= lo && elements[i].codeRefId) {
-              changedElements.set(elements[i].codeRefId!, elements[i]);
-            }
-          }
-        }
-      }
+      // Shared front half (diff -> changed elements) — see computeChangedElements.
+      const changed = computeChangedElements(projectDir, cache, gitRef);
+      if ('error' in changed) return changed.error;
+      const { changedElements, changedFileCount } = changed;
 
       // Union reverse BFS over resolved call+import edges.
       const seeds = [...changedElements.keys()].filter(id => cache.nodeById.has(id));
@@ -1399,7 +1390,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       const paged = paginate(files, offset, limit);
       const envelope: Record<string, unknown> = {
         ref: gitRef,
-        changed_files: changedRanges.size,
+        changed_files: changedFileCount,
         changed_elements: changedElements.size,
         changed_element_sample: [...changedElements.values()].slice(0, Math.min(20, paged.limit)).map(e => ({
           id: e.codeRefId, name: e.name, type: e.type, file: e.file, line: e.line,
@@ -1414,6 +1405,52 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         has_more: paged.has_more,
       };
       return shapeResponse(envelope, response_format, ['files', 'changed_element_sample']);
+    },
+
+    tests_for_change({ ref, max_depth, limit, offset, response_format }) {
+      loadGraph(projectDir, cache);
+      const depthCap = Math.max(1, Math.min(10, max_depth ?? 3));
+      const gitRef = ref ?? 'HEAD';
+
+      // Shared front half (diff -> changed elements) — same seam diff_impact uses.
+      const changed = computeChangedElements(projectDir, cache, gitRef);
+      if ('error' in changed) return changed.error;
+      const { changedElements, changedFileCount } = changed;
+
+      // PURE join: reverse-BFS the changed elements to the test-file elements
+      // that reach them. Delegates ranking to src/query/tests-for-change.ts.
+      const selection = computeTestsForChange({
+        changedElementIds: changedElements.keys(),
+        nodeById: cache.nodeById,
+        inbound: cache.inbound,
+        isTestFile: isTestLikeFile,
+        maxDepth: depthCap,
+      });
+
+      // `tests` (the ranked test-element list) is the paged surface.
+      const paged = paginate(selection.tests, offset, limit);
+      const envelope: Record<string, unknown> = {
+        ref: gitRef,
+        changed_files: changedFileCount,
+        changed_elements: changedElements.size,
+        changed_element_sample: [...changedElements.values()].slice(0, Math.min(20, paged.limit)).map(e => ({
+          id: e.codeRefId, name: e.name, type: e.type, file: e.file, line: e.line,
+        })),
+        max_depth: depthCap,
+        // absence = no-data: 0 selected tests means "no test-file element with a
+        // recorded edge-path to the change", NEVER "untested" or "safe to skip".
+        test_file_count: selection.test_file_count,
+        selected_tests: selection.total,
+        test_files: selection.files,
+        offset: paged.offset,
+        limit: paged.limit,
+        tests: paged.page,
+        tests_truncated: paged.has_more,
+        has_more: paged.has_more,
+        note:
+          'Ranked test-file elements reaching the diff through resolved call/import edges (depth 1 = direct). Absence is no-data, not "untested".',
+      };
+      return shapeResponse(envelope, response_format, ['tests', 'test_files', 'changed_element_sample']);
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
@@ -2901,6 +2938,25 @@ async function main(): Promise<void> {
     },
     async ({ project_root, ref, max_depth, limit, offset, response_format }) =>
       perRepo(project_root, h => h.diff_impact({ ref, max_depth, limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'tests_for_change',
+    {
+      title: 'Tests for change',
+      description:
+        'Diff-to-test-selection in one call: map a git diff (default: working tree vs HEAD) to changed elements, then return the TEST-FILE elements that reach them through resolved call/import edges — ranked by directness (depth 1 = a test directly references changed code). Closes the agent verify-loop: run the handful of tests that actually exercise your edit instead of the whole suite. Absence is NO-DATA — an empty result means "no test-file element with a recorded edge-path to the change", NOT "untested" and NOT "safe to skip verification".',
+      inputSchema: {
+        project_root: projectRootArg,
+        ref: z.string().optional().describe('Git ref to diff against (default HEAD; e.g. "main", "HEAD~3")'),
+        max_depth: z.number().optional().describe('Reverse-BFS depth cap, 1-10 (default 3)'),
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, ref, max_depth, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.tests_for_change({ ref, max_depth, limit, offset, response_format })),
   );
 
   server.registerTool(

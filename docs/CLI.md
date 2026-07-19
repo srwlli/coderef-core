@@ -28,7 +28,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 26 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 27 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
 | [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens`, `--git` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
@@ -886,7 +886,7 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 26 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 27 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
 
 **Repo-agnostic (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001):** one running server serves ANY indexed repo. Every tool takes a **required `project_root`** argument naming the target repo root (the directory containing `.coderef/`) — pure CLI semantics, exactly as if the caller had the CLI. There is no default repo, no cwd inference, no env fallback; omitting `project_root` is a schema-level rejection.
 
@@ -918,7 +918,7 @@ codebase_summary(project_root="C:/repos/project-two")   → project-two's census
 what_exports(project_root="C:/repos/project-two", file="src/lib.ts")
 ```
 
-- `project_root` is **required and mandatory** on all 26 tools. Absolute paths are used as-is; relative paths resolve against the launch anchor (`--project-dir`, default cwd).
+- `project_root` is **required and mandatory** on all 27 tools. Absolute paths are used as-is; relative paths resolve against the launch anchor (`--project-dir`, default cwd).
 - One handler set (with its mtime-invalidated artifact cache) is memoized per distinct canonical root — repeated queries against the same repo are cheap, and repos never share caches.
 - Resolution failures return a structured envelope instead of another repo's data:
 
@@ -956,6 +956,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `map` | Emit/refresh the file-level repo map (`.coderef/map/data.json` + viewer). `format:"skeleton"` (+ optional `token_budget`, default 1600) also returns a token-budgeted, centrality-ranked plaintext repo map **inline** (`skeleton_text`) — the fastest first call for repo orientation |
 | `map_metrics_delta` | Verified-refactor loop: `snapshot:true` saves the five map metric families; the diff (`before`/`after`) proves the target family improved without regressing others — a **decomposed per-family factor vector, never a composite score**. Direction labels are provenance, not verdicts. See **Metrics delta** above |
 | `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
+| `tests_for_change` | Diff-to-test-selection in one call: map a git diff (default working tree vs HEAD) to changed elements, then return the TEST-FILE elements that reach them through resolved call/import edges, ranked by directness (depth 1 = direct). Absence is no-data, not "untested" |
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model. Pass `expand=true` to attach each hit's 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — see **Ego-graph expansion** below |
 | `symbol_context` | The consolidated **one-card-per-symbol** view: identity + header presence + 1-hop neighborhood + references + test-linkage + mtime-staleness in a single call — the understand-before-edit workflow that otherwise costs ~5 round-trips. A JOIN over existing data, not new analysis. See **Symbol context card** below |
 
@@ -978,7 +979,7 @@ Every graph edge carries a **confidence tier** — a projection of its resolutio
 
 #### Pagination & verbosity (`response_format`, `offset`)
 
-Every **list-returning** tool (`what_calls`, `what_imports`, `impact_of`, `find_element`, `hotspots`, `cycles`, `what_exports`, `diff_impact`, `what_this_calls`, `what_this_imports`, `what_this_depends_on`, `path_between`, `unresolved_edges`, `find_all_references`, `rag_search`) accepts two shared, additive params built on the existing `limit` substrate (default 25, cap 100):
+Every **list-returning** tool (`what_calls`, `what_imports`, `impact_of`, `find_element`, `hotspots`, `cycles`, `what_exports`, `diff_impact`, `tests_for_change`, `what_this_calls`, `what_this_imports`, `what_this_depends_on`, `path_between`, `unresolved_edges`, `find_all_references`, `rag_search`) accepts two shared, additive params built on the existing `limit` substrate (default 25, cap 100):
 
 - **`response_format`** (`concise` | `detailed`, default `detailed`) — a per-tool **verbosity projection**. `detailed` is today's full shape, byte-for-byte. `concise` keeps every envelope count (`total`/`returned`/`truncated`/`has_more`) and reduces each item to its **identity fields** (`id`/`name`/`file`/`line`), dropping per-item body detail (call evidence, snippets, per-depth breakdowns) for roughly a one-third token cut on a hot symbol. It is a **verbosity choice over the same known facts** — the `total`/counts are never dropped — not a filter and not a quality verdict (surfaces, not verdicts). Single-object tools (`codebase_summary`, `validation_status`, `rag_status`, `source_of`, …) are already summary-shaped, so `response_format` is a documented **no-op** there — a knob does what it says.
 - **`offset`** (number, default 0) — generalized pagination. `what_calls`/`impact_of`/etc. on a high-fan-in symbol can exceed the `limit` cap; page past it with `offset`. Each paged response reports **`{ offset, limit, total, has_more }`** — `total` is always the **true pre-page count**, so an agent can tell a next page exists and never mistakes a capped window for the whole set (no silent truncation). Absent `offset` returns the first page exactly as before. (`unresolved_edges` already exposed `offset`; it now shares one pagination implementation with every other list tool.)
@@ -1228,7 +1229,7 @@ JSON format:
 
 ## coderef-analyze
 
-Run a single analysis pass on a project. Supports 12 analysis types covering configuration, contracts, database patterns, dependencies, design patterns, documentation, middleware, dependency graphs, complexity scoring, blast-radius simulation, multi-hop traversal, and breaking-change detection.
+Run a single analysis pass on a project. Supports 13 analysis types covering configuration, contracts, database patterns, dependencies, design patterns, documentation, middleware, dependency graphs, complexity scoring, blast-radius simulation, multi-hop traversal, breaking-change detection, and diff-to-test-selection.
 
 ### Usage
 
@@ -1247,6 +1248,7 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `--depth=<N>` | Max traversal depth (used by: `impact`, `multi-hop`) | `5` |
 | `--from=<ref>` | Git ref baseline (required for: `breaking-changes`) | — |
 | `--to=<ref>` | Git ref head (optional for: `breaking-changes`; defaults to worktree) | worktree |
+| `--ref=<ref>` | Git ref to diff against (used by: `tests-for-change`) | `HEAD` |
 | `--help` | Print help | — |
 
 ### Analysis types
@@ -1265,6 +1267,7 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `impact` | Simulate blast radius for a changed element | `--element` |
 | `multi-hop` | Traverse multi-hop relationships | `--element` |
 | `breaking-changes` | Detect breaking API changes between two git refs | `--from` |
+| `tests-for-change` | Diff-to-test-selection: which test-file elements reach the diff through resolved call/import edges, ranked by directness (depth 1 = direct). Absence is no-data, not "untested". | `--ref` (default `HEAD`) |
 
 ### Examples
 
@@ -1292,6 +1295,12 @@ coderef-analyze --project=. --type=breaking-changes --from=v1.2.0
 
 # Detect breaking changes between two refs
 coderef-analyze --project=. --type=breaking-changes --from=main --to=feature/my-branch
+
+# Which tests exercise my current (uncommitted) edits?
+coderef-analyze --project=. --type=tests-for-change --output=json
+
+# Which tests exercise the diff since a branch point?
+coderef-analyze --project=. --type=tests-for-change --ref=main --output=json
 ```
 
 ### Exit codes
