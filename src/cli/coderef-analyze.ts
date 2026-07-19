@@ -29,11 +29,12 @@ import { parseDiffToChangedElements, type ChangedElement } from '../query/change
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { searchAst, computeNotSearchedCounts, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
 import { listLanguageFilesOnDisk } from '../search/language-files.js';
+import { computeTypeHierarchy, type TypeHierarchyDirection } from '../query/type-hierarchy.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
   'middleware', 'graph', 'complexity', 'impact', 'multi-hop', 'breaking-changes',
-  'tests-for-change', 'ast-search',
+  'tests-for-change', 'ast-search', 'type-hierarchy',
 ] as const;
 type AnalyzeType = typeof TYPES[number];
 
@@ -167,14 +168,15 @@ async function main(): Promise<void> {
       project: { type: 'string' },
       type:    { type: 'string' },
       output:  { type: 'string' },
-      element: { type: 'string' },
-      depth:   { type: 'string' },
-      from:    { type: 'string' },
-      to:      { type: 'string' },
-      ref:     { type: 'string' },
-      lang:    { type: 'string' },
-      query:   { type: 'string' },
-      limit:   { type: 'string' },
+      element:   { type: 'string' },
+      depth:     { type: 'string' },
+      direction: { type: 'string' },
+      from:      { type: 'string' },
+      to:        { type: 'string' },
+      ref:       { type: 'string' },
+      lang:      { type: 'string' },
+      query:     { type: 'string' },
+      limit:     { type: 'string' },
       help:    { type: 'boolean', default: false },
     },
     strict: false,
@@ -427,6 +429,55 @@ async function main(): Promise<void> {
         truncated: result.truncated,
         ...(result.reason ? { reason: result.reason } : {}),
         matches: result.matches,
+        note: result.note,
+      });
+      break;
+    }
+    case 'type-hierarchy': {
+      if (!values.element) { console.error('Error: --element is required for --type=type-hierarchy'); process.exit(1); }
+      const engine = loadEngineOrExit(project);
+      const resolution = engine.resolve(values.element as string);
+      if (resolution.nodes.length === 0) {
+        console.error(`Error: no graph node matches --element "${values.element}"`);
+        process.exit(1);
+      }
+      const graph = engine.graph;
+
+      // Build heritage adjacency + node map from the loaded graph (parity with the
+      // MCP handler): only extends/implements edges participate.
+      const nodeById = new Map(graph.nodes.map(n => [n.id, n] as const));
+      const supertypeEdges = new Map<string, typeof graph.edges>();
+      const subtypeEdges = new Map<string, typeof graph.edges>();
+      for (const edge of graph.edges) {
+        if (edge.type !== 'extends' && edge.type !== 'implements') continue;
+        const src = edge.sourceId ?? edge.source;
+        const tgt = edge.targetId ?? edge.target;
+        if (src) { const l = supertypeEdges.get(src); if (l) l.push(edge); else supertypeEdges.set(src, [edge]); }
+        if (tgt) { const l = subtypeEdges.get(tgt); if (l) l.push(edge); else subtypeEdges.set(tgt, [edge]); }
+      }
+
+      const dirRaw = values.direction as string | undefined;
+      const direction: TypeHierarchyDirection =
+        dirRaw === 'up' || dirRaw === 'down' || dirRaw === 'both' ? dirRaw : 'both';
+      const maxDepth = values.depth ? depth : undefined;
+
+      const result = computeTypeHierarchy({
+        element: resolution.nodes[0].id,
+        direction,
+        nodeById,
+        supertypeEdges,
+        subtypeEdges,
+        maxDepth,
+      });
+      emit({
+        element: result.element,
+        element_resolved: result.element_resolved,
+        direction: result.direction,
+        supertype_count: result.supertypes.length,
+        subtype_count: result.subtypes.length,
+        supertypes: result.supertypes,
+        subtypes: result.subtypes,
+        truncated: result.truncated,
         note: result.note,
       });
       break;

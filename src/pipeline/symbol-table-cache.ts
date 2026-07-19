@@ -37,6 +37,7 @@ import type {
 import type {
   ImportRelationship,
   CallRelationship,
+  HeritageRelationship,
   RawImportFact,
   RawCallFact,
   RawExportFact,
@@ -47,7 +48,7 @@ import type {
 /** Canonical on-disk filename under .coderef/. */
 export const FACT_SET_FILENAME = 'incremental-facts.json';
 /** Bump when the persisted shape changes so stale caches are ignored, not misread. */
-const FACT_SET_VERSION = 1;
+const FACT_SET_VERSION = 2; // v2: FileFactBundle.heritage (WO-...-GENRE-FEATURES-PROGRAM-001 P5)
 
 /**
  * The complete per-file output of PipelineOrchestrator.processFile() — every
@@ -60,6 +61,13 @@ export interface FileFactBundle {
   elements: ElementData[];
   imports: ImportRelationship[];
   calls: CallRelationship[];
+  /**
+   * Class/interface heritage facts (WO-...-GENRE-FEATURES-PROGRAM-001 P5). Optional so
+   * a bundle read from an older cache (pre-v2, no heritage) still deserializes; a missing
+   * field is treated as "no heritage extracted" (absence=no-data), and the FACT_SET_VERSION
+   * bump means such a cache is ignored on load rather than misread anyway.
+   */
+  heritage?: HeritageRelationship[];
   rawImports: RawImportFact[];
   rawCalls: RawCallFact[];
   rawExports: RawExportFact[];

@@ -256,6 +256,9 @@ const VALID_RELATIONSHIPS = new Set<string>([
   'call',
   'export',
   'header-import',
+  // WO-...-GENRE-FEATURES-PROGRAM-001 P5: class/interface heritage edges.
+  'extends',
+  'implements',
 ]);
 
 /** Canonical EdgeResolutionStatus enum (mirrors graph-builder.ts EdgeResolutionStatus). */

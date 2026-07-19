@@ -91,6 +91,7 @@ import { computeTestsForChange } from '../query/tests-for-change.js';
 import { parseDiffToChangedElements } from '../query/changed-elements.js';
 import { searchAst, computeNotSearchedCounts, AST_SEARCH_LANG_EXTENSIONS, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
 import { listLanguageFilesOnDisk } from '../search/language-files.js';
+import { computeTypeHierarchy, type TypeHierarchyDirection } from '../query/type-hierarchy.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
@@ -585,6 +586,8 @@ export interface ToolHandlers {
   tests_for_change(args: { ref?: string; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // structural AST pattern search (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P3)
   ast_search(args: { query: string; lang: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
+  // class/interface supertype+subtype hierarchy (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P5)
+  type_hierarchy(args: { element: string; direction?: 'up' | 'down' | 'both'; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1519,6 +1522,70 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         note: result.note,
       };
       return shapeResponse(envelope, response_format, ['matches']);
+    },
+
+    // type_hierarchy (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P5): supertypes
+    // (extends/implements a type points UP to) + subtypes (types pointing DOWN to it),
+    // over the heritage edges the pipeline now populates. Absence=no-data.
+    type_hierarchy({ element, direction, max_depth, limit, offset, response_format }) {
+      const graph = loadGraph(projectDir, cache);
+      const { nodes: matches, byFile } = resolveNodes(element, graph);
+      if (matches.length === 0) return notFound(element);
+      if (!byFile && matches.length > 5) return ambiguous(element, matches);
+
+      // Build heritage adjacency ONCE from the loaded graph: forward (source->edges,
+      // toward supertypes) + reverse (target->edges, toward subtypes). Only
+      // extends/implements edges participate — the Phase 5 populated types.
+      const supertypeEdges = new Map<string, ExportedEdge[]>();
+      const subtypeEdges = new Map<string, ExportedEdge[]>();
+      for (const edge of graph.edges) {
+        if (edge.type !== 'extends' && edge.type !== 'implements') continue;
+        const src = edge.sourceId ?? edge.source;
+        const tgt = edge.targetId ?? edge.target;
+        if (src) {
+          const l = supertypeEdges.get(src);
+          if (l) l.push(edge); else supertypeEdges.set(src, [edge]);
+        }
+        if (tgt) {
+          const l = subtypeEdges.get(tgt);
+          if (l) l.push(edge); else subtypeEdges.set(tgt, [edge]);
+        }
+      }
+
+      const dir: TypeHierarchyDirection =
+        direction === 'up' || direction === 'down' || direction === 'both' ? direction : 'both';
+
+      // Seed with the first resolved node id; a byFile match uses that node too.
+      const seedId = matches[0].id;
+      const result = computeTypeHierarchy({
+        element: seedId,
+        direction: dir,
+        nodeById: cache.nodeById,
+        supertypeEdges,
+        subtypeEdges,
+        maxDepth: max_depth,
+      });
+
+      const cap = clampLimit(limit);
+      const pagedSuper = paginate(result.supertypes, offset, cap);
+      const pagedSub = paginate(result.subtypes, offset, cap);
+      const envelope: Record<string, unknown> = {
+        element: seedId,
+        element_resolved: result.element_resolved,
+        direction: result.direction,
+        // absence = no-data: empty supertypes/subtypes means "no recorded heritage
+        // edge for this element", never "this type has no hierarchy".
+        supertype_count: result.supertypes.length,
+        subtype_count: result.subtypes.length,
+        supertypes: pagedSuper.page,
+        subtypes: pagedSub.page,
+        offset: pagedSuper.offset,
+        limit: pagedSuper.limit,
+        has_more: pagedSuper.has_more || pagedSub.has_more,
+        truncated: result.truncated || pagedSuper.has_more || pagedSub.has_more,
+        note: result.note,
+      };
+      return shapeResponse(envelope, response_format, ['supertypes', 'subtypes']);
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
@@ -3054,6 +3121,26 @@ async function main(): Promise<void> {
     },
     async ({ project_root, query, lang, limit, offset, response_format }) =>
       perRepo(project_root, h => h.ast_search({ query, lang, limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'type_hierarchy',
+    {
+      title: 'Class/interface type hierarchy',
+      description:
+        'Supertypes and subtypes of a class or interface, over the extends/implements heritage edges the pipeline extracts. direction:"up" returns what the element EXTENDS/IMPLEMENTS (its ancestors); "down" returns what extends/implements the element (its descendants); "both" (default) returns each. Every related type carries its depth (1 = direct) and the heritage kind (extends|implements), attributed to a codeRefId so it pipes into what_calls / impact_of / symbol_context. Surfaces, NOT verdicts. Absence is NO-DATA: empty supertypes/subtypes means the graph has no recorded heritage edge for this element (e.g. it is not a class/interface, or its base is an external/unresolved type), NEVER "this type is flat". A supertype that did not resolve to a project element is returned with resolved:false rather than dropped.',
+      inputSchema: {
+        project_root: projectRootArg,
+        element: z.string().describe('The class/interface to walk — a codeRefId or a bare type name resolved against the graph.'),
+        direction: z.enum(['up', 'down', 'both']).optional().describe('up = supertypes (ancestors), down = subtypes (descendants), both = each. Default both.'),
+        max_depth: z.number().int().positive().optional().describe('Max heritage-walk depth (default 10, clamped 1..25).'),
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, element, direction, max_depth, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.type_hierarchy({ element, direction, max_depth, limit, offset, response_format })),
   );
 
   server.registerTool(

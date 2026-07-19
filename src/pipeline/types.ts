@@ -113,6 +113,13 @@ export interface PipelineState {
   /** All extracted call relationships from the single-pass scan */
   calls: CallRelationship[];
   /**
+   * All extracted class/interface heritage relationships (extends/implements)
+   * from the single-pass scan (WO-...-GENRE-FEATURES-PROGRAM-001 P5). Optional so
+   * a PipelineState assembled by a pre-P5 code path (or a test) still type-checks;
+   * constructGraph treats a missing/empty value as "no heritage" (absence=no-data).
+   */
+  heritage?: HeritageRelationship[];
+  /**
    * Phase 2 raw-fact arrays. These are unresolved facts — endpoints are NEVER
    * graph node IDs. Resolution into edges happens in Phase 3 (imports) /
    * Phase 4 (calls). The legacy imports/calls arrays above are kept additive
@@ -258,6 +265,27 @@ export interface CallRelationship {
   line: number;
   /** True if this is a method call (object.method()) */
   isMethod?: boolean;
+}
+
+/**
+ * A class/interface heritage relationship (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001
+ * Phase 5, type_hierarchy). `subtype extends|implements supertype`. Extracted from the
+ * tree-sitter class_heritage / superclass / super_interfaces / argument_list nodes and
+ * threaded into the canonical graph as an `extends`/`implements` edge — populating edge
+ * types that were previously declared-but-empty. Unresolved supertype names are kept as
+ * strings (absence=no-data); codeRefId resolution happens at graph-thread time like calls.
+ */
+export interface HeritageRelationship {
+  /** The declaring class/interface (the subtype / child). */
+  subtype: string;
+  /** The referenced base class or implemented interface (the supertype / parent). */
+  supertype: string;
+  /** File containing the declaration. */
+  sourceFile: string;
+  /** 1-based line of the declaration. */
+  line: number;
+  /** `extends` (class/interface inheritance) or `implements` (interface conformance). */
+  kind: 'extends' | 'implements';
 }
 
 // ============================================================================

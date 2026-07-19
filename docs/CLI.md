@@ -28,7 +28,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 28 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 29 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
 | [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens`, `--git` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
@@ -912,7 +912,7 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 28 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 29 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
 
 **Repo-agnostic (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001):** one running server serves ANY indexed repo. Every tool takes a **required `project_root`** argument naming the target repo root (the directory containing `.coderef/`) — pure CLI semantics, exactly as if the caller had the CLI. There is no default repo, no cwd inference, no env fallback; omitting `project_root` is a schema-level rejection.
 
@@ -984,6 +984,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
 | `tests_for_change` | Diff-to-test-selection in one call: map a git diff (default working tree vs HEAD) to changed elements, then return the TEST-FILE elements that reach them through resolved call/import edges, ranked by directness (depth 1 = direct). Absence is no-data, not "untested" |
 | `ast_search` | Structural AST pattern search ripgrep can't express ("await inside a loop", "empty catch"): run a tree-sitter S-expression `query` against every `lang` source file; each match returns file+line+snippet attributed to the enclosing element's `codeRefId` so hits join the graph tools. A match is a syntactic fact, never a verdict; absence is no-data (empty / `reason:"invalid_query"` / `reason:"unsupported_language"`) |
+| `type_hierarchy` | Class/interface supertypes + subtypes over the `extends`/`implements` heritage edges the pipeline populates. `direction:"up"` = ancestors (what the element extends/implements), `"down"` = descendants, `"both"` (default) = each; every hit carries depth (1 = direct) + heritage kind, attributed to a `codeRefId`. Absence is no-data (no recorded heritage edge), never "flat hierarchy"; an unresolved external supertype is returned with `resolved:false` |
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model. Pass `expand=true` to attach each hit's 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — see **Ego-graph expansion** below |
 | `symbol_context` | The consolidated **one-card-per-symbol** view: identity + header presence + 1-hop neighborhood + references + test-linkage + mtime-staleness in a single call — the understand-before-edit workflow that otherwise costs ~5 round-trips. A JOIN over existing data, not new analysis. See **Symbol context card** below |
 
@@ -1271,8 +1272,9 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `--project=<path>` | Path to the project root (**required**) | — |
 | `--type=<type>` | Analysis type (**required**; see table below) | — |
 | `--output=<fmt>` | Output format: `json` \| `text` | `text` |
-| `--element=<id>` | Target element ID (required for: `impact`, `multi-hop`) | — |
-| `--depth=<N>` | Max traversal depth (used by: `impact`, `multi-hop`) | `5` |
+| `--element=<id>` | Target element ID (required for: `impact`, `multi-hop`, `type-hierarchy`) | — |
+| `--depth=<N>` | Max traversal depth (used by: `impact`, `multi-hop`, `type-hierarchy`) | `5` |
+| `--direction=<up\|down\|both>` | Heritage walk direction (used by: `type-hierarchy`) | `both` |
 | `--from=<ref>` | Git ref baseline (required for: `breaking-changes`) | — |
 | `--to=<ref>` | Git ref head (optional for: `breaking-changes`; defaults to worktree) | worktree |
 | `--ref=<ref>` | Git ref to diff against (used by: `tests-for-change`) | `HEAD` |
@@ -1299,6 +1301,7 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `breaking-changes` | Detect breaking API changes between two git refs | `--from` |
 | `tests-for-change` | Diff-to-test-selection: which test-file elements reach the diff through resolved call/import edges, ranked by directness (depth 1 = direct). Absence is no-data, not "untested". | `--ref` (default `HEAD`) |
 | `ast-search` | Structural AST pattern search: run a tree-sitter S-expression `--query` against every `--lang` file; each match returns file+line+snippet attributed to the enclosing element's `codeRefId`. A match is a syntactic fact, never a verdict; absence is no-data. Malformed query → `reason:"invalid_query"`. | `--lang`, `--query`, `--limit` |
+| `type-hierarchy` | Class/interface supertypes + subtypes over the `extends`/`implements` heritage edges the pipeline populates. `--direction=up` = ancestors (what the element extends/implements), `down` = descendants, `both` (default) = each; every hit carries its depth (1 = direct) + heritage kind. Absence is no-data (no recorded heritage edge), never "flat hierarchy"; an unresolved external supertype is returned with `resolved:false`. | `--element` (opt: `--direction`, `--depth`) |
 
 ### Examples
 
@@ -1336,6 +1339,9 @@ coderef-analyze --project=. --type=tests-for-change --ref=main --output=json
 # Structural search: every `await` that sits inside a loop body (a shape ripgrep can't match)
 coderef-analyze --project=. --type=ast-search --lang=ts \
   --query='(for_statement body: (_ (await_expression)))' --output=json
+
+# Type hierarchy: what does a class extend/implement, and what extends/implements it?
+coderef-analyze --project=. --type=type-hierarchy --element="JsonVectorStore" --direction=both --output=json
 ```
 
 The `ast-search` result envelope carries not-searched visibility so absence is

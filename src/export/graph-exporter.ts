@@ -21,7 +21,7 @@
 
 
 interface GraphNode { id: string; uuid?: string; name?: string; type: string; file: string; line?: number; metadata?: Record<string, unknown>; }
-interface GraphEdge { source: string; target: string; type: 'imports' | 'calls' | 'depends-on' | 'implements' | 'tests' | 'reexports'; weight?: number; metadata?: Record<string, unknown>; }
+interface GraphEdge { source: string; target: string; type: 'imports' | 'calls' | 'depends-on' | 'extends' | 'implements' | 'tests' | 'reexports'; weight?: number; metadata?: Record<string, unknown>; }
 interface DependencyGraph { nodes: Map<string, GraphNode>; edges: GraphEdge[]; edgesBySource: Map<string, GraphEdge[]>; edgesByTarget: Map<string, GraphEdge[]>; }
 import protobuf from 'protobufjs';
 
@@ -39,7 +39,10 @@ export type ExportedGraphEdgeRelationship =
   | 'import'
   | 'call'
   | 'export'
-  | 'header-import';
+  | 'header-import'
+  // WO-...-GENRE-FEATURES-PROGRAM-001 P5: class/interface heritage edges.
+  | 'extends'
+  | 'implements';
 
 export type ExportedGraphEdgeResolutionStatus =
   | 'resolved'

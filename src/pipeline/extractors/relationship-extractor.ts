@@ -35,6 +35,7 @@ import type Parser from 'tree-sitter';
 import type {
   ImportRelationship,
   CallRelationship,
+  HeritageRelationship,
   RawImportFact,
   RawImportSpecifier,
   RawCallFact,
@@ -150,6 +151,184 @@ export class RelationshipExtractor {
     }
 
     return calls;
+  }
+
+  /**
+   * Extract class/interface heritage relationships (WO-...-GENRE-FEATURES-PROGRAM-001
+   * Phase 5, type_hierarchy). Produces `subtype extends|implements supertype` facts from
+   * the tree-sitter heritage nodes so the previously-declared-but-empty extends/implements
+   * graph edges get populated. Best-effort + never throws; an unsupported language yields
+   * an empty list (absence=no-data, not an error). Currently covers the class-based OO
+   * grammars with a heritage concept (TS/JS, Python, Java); Go (struct embedding) and Rust
+   * (traits) use a different model and intentionally yield no heritage facts here.
+   */
+  extractHeritage(
+    rootNode: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    language: string
+  ): HeritageRelationship[] {
+    const heritage: HeritageRelationship[] = [];
+    try {
+      switch (language) {
+        case 'ts':
+        case 'tsx':
+        case 'js':
+        case 'jsx':
+          this.extractTypeScriptHeritage(rootNode, filePath, content, heritage);
+          break;
+        case 'py':
+          this.extractPythonHeritage(rootNode, filePath, content, heritage);
+          break;
+        case 'java':
+          this.extractJavaHeritage(rootNode, filePath, content, heritage);
+          break;
+        default:
+          // Go/Rust/C(++): no class-heritage concept in the same shape — empty (no-data).
+          break;
+      }
+    } catch (err) {
+      // Heritage extraction is additive + best-effort: never fail the scan over it.
+      logger.warn(`[RelationshipExtractor] heritage extraction failed for ${filePath}: ${String(err)}`);
+    }
+    return heritage;
+  }
+
+  /**
+   * TS/JS heritage: `class_declaration -> class_heritage -> extends_clause (identifier) +
+   * implements_clause (type_identifier list)`; `interface_declaration -> extends_type_clause
+   * (type_identifier list)`. Node/field names confirmed against a live tree-sitter parse.
+   */
+  private extractTypeScriptHeritage(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    out: HeritageRelationship[]
+  ): void {
+    const nameText = (n: Parser.SyntaxNode | null | undefined): string | undefined =>
+      n ? content.slice(n.startIndex, n.endIndex) : undefined;
+
+    if (node.type === 'class_declaration') {
+      const subtype = nameText(node.childForFieldName('name'));
+      const heritage = node.namedChildren.find(c => c.type === 'class_heritage');
+      if (subtype && heritage) {
+        for (const clause of heritage.namedChildren) {
+          const line = clause.startPosition.row + 1;
+          if (clause.type === 'extends_clause') {
+            // First non-type-argument child is the base class expression.
+            for (const c of clause.namedChildren) {
+              if (c.type === 'type_arguments') continue;
+              const supertype = nameText(c);
+              if (supertype) out.push({ subtype, supertype, sourceFile: filePath, line, kind: 'extends' });
+              break; // a class extends exactly one base
+            }
+          } else if (clause.type === 'implements_clause') {
+            for (const c of clause.namedChildren) {
+              if (c.type === 'type_arguments') continue;
+              const supertype = nameText(c);
+              if (supertype) out.push({ subtype, supertype, sourceFile: filePath, line, kind: 'implements' });
+            }
+          }
+        }
+      }
+    } else if (node.type === 'interface_declaration') {
+      const subtype = nameText(node.childForFieldName('name'));
+      const extendsClause = node.namedChildren.find(c => c.type === 'extends_type_clause');
+      if (subtype && extendsClause) {
+        const line = extendsClause.startPosition.row + 1;
+        for (const c of extendsClause.namedChildren) {
+          if (c.type === 'type_arguments') continue;
+          const supertype = nameText(c);
+          if (supertype) out.push({ subtype, supertype, sourceFile: filePath, line, kind: 'extends' });
+        }
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.extractTypeScriptHeritage(child, filePath, content, out);
+    }
+  }
+
+  /**
+   * Python heritage: `class_definition -> identifier (name) + argument_list (bases)`.
+   * Python has no interface concept, so every base is an `extends`. Keyword args in the
+   * base list (e.g. `metaclass=...`) are skipped.
+   */
+  private extractPythonHeritage(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    out: HeritageRelationship[]
+  ): void {
+    if (node.type === 'class_definition') {
+      const nameNode = node.childForFieldName('name');
+      const subtype = nameNode ? content.slice(nameNode.startIndex, nameNode.endIndex) : undefined;
+      const args = node.namedChildren.find(c => c.type === 'argument_list');
+      if (subtype && args) {
+        const line = node.startPosition.row + 1;
+        for (const base of args.namedChildren) {
+          // Only plain base references: identifier / dotted (attribute). Skip keyword_argument.
+          if (base.type === 'keyword_argument') continue;
+          const supertype = content.slice(base.startIndex, base.endIndex);
+          if (supertype) out.push({ subtype, supertype, sourceFile: filePath, line, kind: 'extends' });
+        }
+      }
+    }
+    for (const child of node.namedChildren) {
+      this.extractPythonHeritage(child, filePath, content, out);
+    }
+  }
+
+  /**
+   * Java heritage: `class_declaration -> superclass (type_identifier) + super_interfaces
+   * (type_list of type_identifiers)`. superclass -> extends; super_interfaces -> implements.
+   * interface_declaration -> extends_interfaces (type_list) -> extends.
+   */
+  private extractJavaHeritage(
+    node: Parser.SyntaxNode,
+    filePath: string,
+    content: string,
+    out: HeritageRelationship[]
+  ): void {
+    const text = (n: Parser.SyntaxNode) => content.slice(n.startIndex, n.endIndex);
+
+    if (node.type === 'class_declaration') {
+      const nameNode = node.childForFieldName('name');
+      const subtype = nameNode ? text(nameNode) : undefined;
+      if (subtype) {
+        const line = node.startPosition.row + 1;
+        const superclass = node.namedChildren.find(c => c.type === 'superclass');
+        if (superclass) {
+          for (const c of superclass.namedChildren) {
+            if (c.type === 'type_identifier' || c.type === 'scoped_type_identifier' || c.type === 'generic_type') {
+              out.push({ subtype, supertype: text(c), sourceFile: filePath, line, kind: 'extends' });
+            }
+          }
+        }
+        const superInterfaces = node.namedChildren.find(c => c.type === 'super_interfaces');
+        const typeList = superInterfaces?.namedChildren.find(c => c.type === 'type_list');
+        if (typeList) {
+          for (const c of typeList.namedChildren) {
+            out.push({ subtype, supertype: text(c), sourceFile: filePath, line, kind: 'implements' });
+          }
+        }
+      }
+    } else if (node.type === 'interface_declaration') {
+      const nameNode = node.childForFieldName('name');
+      const subtype = nameNode ? text(nameNode) : undefined;
+      const ext = node.namedChildren.find(c => c.type === 'extends_interfaces');
+      const typeList = ext?.namedChildren.find(c => c.type === 'type_list');
+      if (subtype && typeList) {
+        const line = node.startPosition.row + 1;
+        for (const c of typeList.namedChildren) {
+          out.push({ subtype, supertype: text(c), sourceFile: filePath, line, kind: 'extends' });
+        }
+      }
+    }
+
+    for (const child of node.namedChildren) {
+      this.extractJavaHeritage(child, filePath, content, out);
+    }
   }
 
   // ========================================================================

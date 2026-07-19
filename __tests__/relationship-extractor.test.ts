@@ -522,4 +522,69 @@ const y = 'hello';
       expect(calls).toEqual([]);
     });
   });
+
+  // ==========================================================================
+  // Heritage extraction (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P5).
+  // extends/implements facts feeding the type_hierarchy tool. Grammar-gated per
+  // language so a missing native build degrades to a skip, not a red suite.
+  // ==========================================================================
+  describe('Heritage extraction (P5 type_hierarchy)', () => {
+    it('TS: class extends + implements, and interface extends', async () => {
+      const parser = await registry.getParser('ts');
+      if (!parser) return; // grammar unavailable -> skip (mirrors call/import gates)
+      const code = [
+        'class B extends A implements I, J {}',
+        'interface K extends L, M {}',
+      ].join('\n');
+      const tree = parser.parse(code);
+      const h = extractor.extractHeritage(tree.rootNode, 'h.ts', code, 'ts');
+
+      // B extends A (extends), B implements I + J (implements), K extends L + M (extends).
+      expect(h).toContainEqual({ subtype: 'B', supertype: 'A', sourceFile: 'h.ts', line: 1, kind: 'extends' });
+      expect(h).toContainEqual({ subtype: 'B', supertype: 'I', sourceFile: 'h.ts', line: 1, kind: 'implements' });
+      expect(h).toContainEqual({ subtype: 'B', supertype: 'J', sourceFile: 'h.ts', line: 1, kind: 'implements' });
+      expect(h).toContainEqual({ subtype: 'K', supertype: 'L', sourceFile: 'h.ts', line: 2, kind: 'extends' });
+      expect(h).toContainEqual({ subtype: 'K', supertype: 'M', sourceFile: 'h.ts', line: 2, kind: 'extends' });
+    });
+
+    it('TS: a class with no heritage yields no facts (absence=no-data)', async () => {
+      const parser = await registry.getParser('ts');
+      if (!parser) return;
+      const code = 'class Standalone { run() {} }';
+      const tree = parser.parse(code);
+      expect(extractor.extractHeritage(tree.rootNode, 's.ts', code, 'ts')).toEqual([]);
+    });
+
+    it('Python: class bases are extends (no interface concept)', async () => {
+      const parser = await registry.getParser('py');
+      if (!parser) return;
+      const code = 'class Foo(Base, Mixin):\n    pass\n';
+      const tree = parser.parse(code);
+      const h = extractor.extractHeritage(tree.rootNode, 'f.py', code, 'py');
+      expect(h).toContainEqual({ subtype: 'Foo', supertype: 'Base', sourceFile: 'f.py', line: 1, kind: 'extends' });
+      expect(h).toContainEqual({ subtype: 'Foo', supertype: 'Mixin', sourceFile: 'f.py', line: 1, kind: 'extends' });
+      expect(h.every(f => f.kind === 'extends')).toBe(true);
+    });
+
+    it('Java: superclass -> extends, interfaces -> implements', async () => {
+      const parser = await registry.getParser('java');
+      if (!parser) return;
+      const code = 'class B extends A implements I, J {}';
+      const tree = parser.parse(code);
+      const h = extractor.extractHeritage(tree.rootNode, 'B.java', code, 'java');
+      const extendsA = h.find(f => f.kind === 'extends' && f.supertype === 'A');
+      expect(extendsA).toMatchObject({ subtype: 'B', supertype: 'A', kind: 'extends' });
+      // Interfaces implemented (super_interfaces/type_list) -> implements.
+      const impls = h.filter(f => f.kind === 'implements').map(f => f.supertype).sort();
+      expect(impls).toEqual(['I', 'J']);
+    });
+
+    it('a language with no heritage concept (go) yields no facts, never throws', async () => {
+      const parser = await registry.getParser('go');
+      if (!parser) return;
+      const code = 'package main\ntype T struct { X int }\n';
+      const tree = parser.parse(code);
+      expect(extractor.extractHeritage(tree.rootNode, 'g.go', code, 'go')).toEqual([]);
+    });
+  });
 });

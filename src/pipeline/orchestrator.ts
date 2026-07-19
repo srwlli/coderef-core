@@ -40,6 +40,7 @@ import type {
   PipelineState,
   ImportRelationship,
   CallRelationship,
+  HeritageRelationship,
   RawImportFact,
   RawCallFact,
   RawExportFact,
@@ -154,6 +155,7 @@ export class PipelineOrchestrator {
     const allElements: ElementData[] = [];
     const allImports: ImportRelationship[] = [];
     const allCalls: CallRelationship[] = [];
+    const allHeritage: HeritageRelationship[] = [];
     const allRawImports: RawImportFact[] = [];
     const allRawCalls: RawCallFact[] = [];
     const allRawExports: RawExportFact[] = [];
@@ -182,6 +184,7 @@ export class PipelineOrchestrator {
           allElements.push(...result.elements);
           allImports.push(...result.imports);
           allCalls.push(...result.calls);
+          allHeritage.push(...result.heritage);
           allRawImports.push(...result.rawImports);
           allRawCalls.push(...result.rawCalls);
           allRawExports.push(...result.rawExports);
@@ -197,6 +200,7 @@ export class PipelineOrchestrator {
             elements: result.elements,
             imports: result.imports,
             calls: result.calls,
+            heritage: result.heritage,
             rawImports: result.rawImports,
             rawCalls: result.rawCalls,
             rawExports: result.rawExports,
@@ -218,7 +222,7 @@ export class PipelineOrchestrator {
 
     // Step 4: Build dependency graph
     if (verbose) logger.info('[PipelineOrchestrator] Building dependency graph...');
-    const graph = this.buildGraph(allElements, allImports, allCalls, projectPath);
+    const graph = this.buildGraph(allElements, allImports, allCalls, allHeritage, projectPath);
 
     // Step 4.5: Phase 3 — resolve imports against export tables and emit
     // resolved-import graph edges. resolveImports is a pure function over
@@ -234,6 +238,7 @@ export class PipelineOrchestrator {
       elements: allElements,
       imports: allImports,
       calls: allCalls,
+      heritage: allHeritage,
       rawImports: allRawImports,
       rawCalls: allRawCalls,
       rawExports: allRawExports,
@@ -470,6 +475,7 @@ export class PipelineOrchestrator {
     const allElements: ElementData[] = [];
     const allImports: ImportRelationship[] = [];
     const allCalls: CallRelationship[] = [];
+    const allHeritage: HeritageRelationship[] = [];
     const allRawImports: RawImportFact[] = [];
     const allRawCalls: RawCallFact[] = [];
     const allRawExports: RawExportFact[] = [];
@@ -488,6 +494,7 @@ export class PipelineOrchestrator {
       allElements.push(...bundle.elements);
       allImports.push(...bundle.imports);
       allCalls.push(...bundle.calls);
+      allHeritage.push(...(bundle.heritage ?? [])); // optional pre-v2 cache field
       allRawImports.push(...bundle.rawImports);
       allRawCalls.push(...bundle.rawCalls);
       allRawExports.push(...bundle.rawExports);
@@ -497,10 +504,11 @@ export class PipelineOrchestrator {
       sources.set(filePath, bundle.content);
     }
 
-    const graph = this.buildGraph(allElements, allImports, allCalls, projectPath);
+    const graph = this.buildGraph(allElements, allImports, allCalls, allHeritage, projectPath);
     const preResolveState: PipelineState = {
       projectPath, files,
       elements: allElements, imports: allImports, calls: allCalls,
+      heritage: allHeritage,
       rawImports: allRawImports, rawCalls: allRawCalls, rawExports: allRawExports,
       headerFacts: allHeaderFacts, headerImportFacts: allHeaderImportFacts,
       headerParseErrors: allHeaderParseErrors,
@@ -632,6 +640,7 @@ export class PipelineOrchestrator {
     elements: ElementData[];
     imports: ImportRelationship[];
     calls: CallRelationship[];
+    heritage: HeritageRelationship[];
     rawImports: RawImportFact[];
     rawCalls: RawCallFact[];
     rawExports: RawExportFact[];
@@ -653,6 +662,7 @@ export class PipelineOrchestrator {
         elements: [],
         imports: [],
         calls: [],
+        heritage: [],
         rawImports: [],
         rawCalls: [],
         rawExports: [],
@@ -670,6 +680,7 @@ export class PipelineOrchestrator {
     const elements = this.elementExtractor.extract(tree.rootNode, filePath, content, language);
     const imports = this.relationshipExtractor.extractImports(tree.rootNode, filePath, content, language);
     const calls = this.relationshipExtractor.extractCalls(tree.rootNode, filePath, content, language);
+    const heritage = this.relationshipExtractor.extractHeritage(tree.rootNode, filePath, content, language);
     const rawImports = this.relationshipExtractor.extractRawImports(tree.rootNode, filePath, content, language);
     const rawCalls = this.relationshipExtractor.extractRawCalls(tree.rootNode, filePath, content, language);
     const rawExports = this.relationshipExtractor.extractRawExports(tree.rootNode, filePath, content, language);
@@ -707,6 +718,7 @@ export class PipelineOrchestrator {
       elements,
       imports,
       calls,
+      heritage,
       rawImports,
       rawCalls,
       rawExports,
@@ -729,6 +741,7 @@ export class PipelineOrchestrator {
     elements: ElementData[],
     imports: ImportRelationship[],
     calls: CallRelationship[],
+    heritage: HeritageRelationship[],
     projectPath: string
   ): ExportedGraph {
     const elementIndexes = this.buildElementIndexes(elements);
@@ -776,6 +789,27 @@ export class PipelineOrchestrator {
           file: call.file,
           line: call.line,
           isMethod: call.isMethod,
+          sourceElementId,
+          targetElementId,
+        },
+      });
+    }
+
+    // Add heritage edges (WO-...-GENRE-FEATURES-PROGRAM-001 P5, type_hierarchy).
+    // `subtype extends|implements supertype` — populating edge types that were
+    // previously declared but never emitted. Endpoints resolve to codeRefIds the
+    // same way calls do; an unresolved supertype keeps its string name (no-data).
+    for (const h of heritage) {
+      const sourceElementId = this.resolveElementId(h.subtype, h.sourceFile, elementIndexes, projectPath);
+      const targetElementId = this.resolveElementId(h.supertype, h.sourceFile, elementIndexes, projectPath);
+
+      edges.push({
+        source: h.subtype,
+        target: h.supertype,
+        type: h.kind, // 'extends' | 'implements'
+        metadata: {
+          file: h.sourceFile,
+          line: h.line,
           sourceElementId,
           targetElementId,
         },

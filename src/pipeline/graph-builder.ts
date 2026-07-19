@@ -58,7 +58,7 @@
 
 
 import * as crypto from 'crypto';
-import type { PipelineState, CallResolution, ImportResolution } from './types.js';
+import type { PipelineState, CallResolution, ImportResolution, HeritageRelationship } from './types.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
@@ -80,8 +80,13 @@ import { classifyEdgeConfidence } from './edge-confidence.js';
  *                   HeaderImportFact). Sourced via
  *                   state.headerImportFacts. Per AC-04 these coexist
  *                   with 'import' edges without merging.
+ *   extends       — class/interface inheritance heritage edge
+ *                   (WO-...-GENRE-FEATURES-PROGRAM-001 P5). Sourced via
+ *                   state.heritage (subtype extends supertype).
+ *   implements    — interface-conformance heritage edge. Sourced via
+ *                   state.heritage (subtype implements supertype).
  */
-export type EdgeRelationship = 'import' | 'call' | 'export' | 'header-import';
+export type EdgeRelationship = 'import' | 'call' | 'export' | 'header-import' | 'extends' | 'implements';
 
 /**
  * Canonical edge resolution status (AC-03).
@@ -688,6 +693,69 @@ export function buildEdges(
       candidates: cr.candidates,
       reason: cr.reason,
     }));
+  }
+
+  // === Heritage edges (WO-...-GENRE-FEATURES-PROGRAM-001 P5) ===
+  // Emit extends/implements edges from state.heritage. Endpoints are TYPE NAMES
+  // (subtype/supertype); resolve each to a class/interface element's codeRefId
+  // via a name->id map built from state.elements. A supertype that does not
+  // resolve to a project element (an external base like Error or a library
+  // interface) is emitted as an 'external' edge with the raw name as target
+  // (absence=no-data — the base exists, we just don't own its element).
+  const heritage = state.heritage ?? [];
+  if (heritage.length > 0) {
+    // Map a type NAME to its codeRefId. Prefer class/interface elements; a name
+    // that resolves to multiple elements is ambiguous and left unresolved (we do
+    // not guess). Keyed by (file, name) first for a same-file subtype match, then
+    // by bare name for cross-file supertypes.
+    const idByFileName = new Map<string, string>();
+    const idsByName = new Map<string, string[]>();
+    const typeKinds = new Set(['class', 'interface', 'Class', 'Interface', 'type', 'enum']);
+    for (const elem of state.elements) {
+      if (elem.name === undefined) continue;
+      if (!typeKinds.has(elem.type)) continue;
+      const id = elem.codeRefId ?? createCodeRefId(elem, state.projectPath, { includeLine: true });
+      idByFileName.set(`${normalizeSlashes(elem.file)} ${elem.name}`, id);
+      const list = idsByName.get(elem.name);
+      if (list) list.push(id); else idsByName.set(elem.name, [id]);
+    }
+    const resolveName = (name: string, sameFile: string): string | undefined => {
+      const inFile = idByFileName.get(`${normalizeSlashes(sameFile)} ${name}`);
+      if (inFile) return inFile;
+      const byName = idsByName.get(name);
+      return byName && byName.length === 1 ? byName[0] : undefined; // unique-only; no guessing
+    };
+    for (const h of heritage) {
+      const sourceId = resolveName(h.subtype, h.sourceFile);
+      if (!sourceId) continue; // the declaring type must be a known element to anchor the edge
+      const targetId = resolveName(h.supertype, h.sourceFile);
+      const relationship: EdgeRelationship = h.kind; // 'extends' | 'implements'
+      const id = computeEdgeId({
+        sourceId,
+        relationship,
+        targetId: targetId ?? undefined,
+        originSpecifier: h.supertype,
+        sourceFile: h.sourceFile,
+        line: h.line,
+      });
+      edges.push(buildEdgeRecord({
+        id,
+        sourceId,
+        targetId: targetId ?? undefined,
+        relationship,
+        // resolved when both endpoints are project elements; external when the
+        // supertype is not one we extracted (a library/global base type).
+        resolutionStatus: targetId ? 'resolved' : 'external',
+        evidence: {
+          kind: `resolved-heritage`,
+          heritageKind: h.kind,
+          supertypeName: h.supertype,
+          subtypeName: h.subtype,
+        } as unknown as EdgeEvidence,
+        sourceLocation: { file: h.sourceFile, line: h.line },
+        ...(targetId ? {} : { reason: 'supertype_not_in_project' }),
+      }));
+    }
   }
 
   // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3: dedupe by edge id.

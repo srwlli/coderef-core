@@ -751,6 +751,78 @@ describe('tests_for_change', () => {
   });
 });
 
+// type_hierarchy (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P5). Self-contained
+// fixture with heritage edges so we don't perturb the shared FIXTURE_GRAPH aggregates.
+describe('type_hierarchy', () => {
+  it('is registered as a handler', () => {
+    expect(typeof (handlers as any).type_hierarchy).toBe('function');
+  });
+
+  it('returns supertypes UP and subtypes DOWN over extends/implements edges', () => {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-typehier-'));
+    try {
+      const cr = path.join(proj, '.coderef');
+      fs.mkdirSync(cr, { recursive: true });
+      // Dog extends Animal; Dog implements Pet. (Dog -> Animal extends, Dog -> Pet implements)
+      const graph: ExportedGraph = {
+        version: '1.0.0', exportedAt: 1,
+        nodes: [
+          { id: '@Class/src/a.ts#Animal:1', type: 'Class', name: 'Animal', file: 'src/a.ts', line: 1, metadata: {} },
+          { id: '@Class/src/p.ts#Pet:1', type: 'Class', name: 'Pet', file: 'src/p.ts', line: 1, metadata: {} },
+          { id: '@Class/src/d.ts#Dog:1', type: 'Class', name: 'Dog', file: 'src/d.ts', line: 1, metadata: {} },
+        ],
+        edges: [
+          {
+            id: 'h1', sourceId: '@Class/src/d.ts#Dog:1', targetId: '@Class/src/a.ts#Animal:1',
+            relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/d.ts', line: 1 },
+            source: '@Class/src/d.ts#Dog:1', target: '@Class/src/a.ts#Animal:1', type: 'extends',
+          },
+          {
+            id: 'h2', sourceId: '@Class/src/d.ts#Dog:1', targetId: '@Class/src/p.ts#Pet:1',
+            relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/d.ts', line: 1 },
+            source: '@Class/src/d.ts#Dog:1', target: '@Class/src/p.ts#Pet:1', type: 'implements',
+          },
+        ],
+        statistics: { nodeCount: 3, edgeCount: 2, edgesByType: { extends: 1, implements: 1 }, densityRatio: 0 },
+      };
+      // Write all three artifacts + mark them newest so build-if-missing serves the
+      // hand-built fixture instead of auto-populating the tmp dir (mirrors the main
+      // fixture setup). index.json mirrors the three class elements.
+      const index = {
+        elements: graph.nodes.map(n => ({ file: n.file, line: n.line, codeRefId: n.id, name: n.name })),
+      };
+      fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify(graph));
+      fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify(index));
+      fs.writeFileSync(path.join(cr, 'validation-report.json'), JSON.stringify({ ok: true }));
+      const future = new Date(Date.now() + 60_000);
+      fs.utimesSync(path.join(cr, 'graph.json'), future, future);
+      fs.utimesSync(path.join(cr, 'index.json'), future, future);
+
+      const h = buildToolHandlers(proj);
+
+      // UP from Dog: Animal (extends) + Pet (implements), both depth 1.
+      const up = h.type_hierarchy({ element: '@Class/src/d.ts#Dog:1', direction: 'up' }) as any;
+      expect(up.error).toBeUndefined();
+      expect(up.supertype_count).toBe(2);
+      const kinds = Object.fromEntries(up.supertypes.map((s: any) => [s.name, s.kind]));
+      expect(kinds).toEqual({ Animal: 'extends', Pet: 'implements' });
+      expect(up.subtype_count).toBe(0);
+
+      // DOWN from Animal: Dog (depth 1).
+      const down = h.type_hierarchy({ element: '@Class/src/a.ts#Animal:1', direction: 'down' }) as any;
+      expect(down.subtype_count).toBe(1);
+      expect(down.subtypes[0].name).toBe('Dog');
+
+      // absence=no-data: Pet has no supertypes/subtypes below it.
+      const petUp = h.type_hierarchy({ element: '@Class/src/p.ts#Pet:1', direction: 'up' }) as any;
+      expect(petUp.supertype_count).toBe(0);
+      expect(petUp.note).toMatch(/no-data/i);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+});
+
 // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ---
 // Fixture call chain: main -> alpha -> helper (e3, e1). alpha imports Helper (e4).
 // These prove the FORWARD direction is distinct from the inbound tools:
