@@ -491,20 +491,24 @@ async function main(): Promise<void> {
       // call-site path (breaking-change-detector/) stays gated; here we diff a
       // manifest snapshot the caller took earlier vs the current exports. The
       // pure differ is in src/query/api-diff.ts; git stays out of it.
-      const engine = loadEngineOrExit(project);
-      // Project the current exports manifest from the canonical graph nodes.
-      const currentElements: ManifestElement[] = engine.graph.nodes
-        .filter(n => !n.id.startsWith('@File/') && n.file)
-        .map(n => ({
-          name: n.name,
-          type: n.type,
-          file: n.file,
-          line: n.line,
-          exported: (n.metadata?.exported as boolean | undefined) ?? true,
-          parameters: (n.metadata?.parameters as unknown[] | undefined),
-          codeRefId: n.id,
-          codeRefIdNoLine: (n.metadata?.codeRefIdNoLine as string | undefined),
-        }));
+      // Project the current exports manifest from the canonical index.json
+      // elements — the SAME source the MCP api_diff handler uses (loadIndex().
+      // elements). graph.json nodes carry NO metadata.exported / metadata.
+      // parameters, so building the manifest from them fabricated `exported`
+      // and left paramArity permanently null (dead signature-change detection).
+      // index.json elements carry the real exported flag + parameter list.
+      let currentElements: ManifestElement[] = [];
+      try {
+        const idxPath = join(project, '.coderef', 'index.json');
+        const idx = JSON.parse(await readFile(idxPath, 'utf8')) as { elements?: ManifestElement[] };
+        currentElements = idx.elements ?? [];
+      } catch {
+        console.error(
+          'coderef-analyze error: .coderef/index.json not found or unreadable. ' +
+          'Run populate-coderef first.',
+        );
+        process.exit(1);
+      }
       const afterManifest = extractExportsManifest(currentElements);
 
       // BEFORE: --from as a snapshot label or a manifest .json path (default
