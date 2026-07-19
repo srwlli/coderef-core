@@ -823,6 +823,82 @@ describe('type_hierarchy', () => {
   });
 });
 
+// api_diff (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P6). Self-contained
+// fixture: snapshot the current exports, then diff. index.json carries exported +
+// parameters so the manifest has real signatures.
+describe('api_diff', () => {
+  it('is registered as a handler', () => {
+    expect(typeof (handlers as any).api_diff).toBe('function');
+  });
+
+  function writeRepo(elements: any[]): string {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-apidiff-'));
+    const cr = path.join(proj, '.coderef');
+    fs.mkdirSync(cr, { recursive: true });
+    const graph: ExportedGraph = {
+      version: '1.0.0', exportedAt: 1, nodes: [], edges: [],
+      statistics: { nodeCount: 0, edgeCount: 0, edgesByType: {}, densityRatio: 0 },
+    };
+    fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify(graph));
+    fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify({ elements }));
+    fs.writeFileSync(path.join(cr, 'validation-report.json'), JSON.stringify({ ok: true }));
+    const future = new Date(Date.now() + 60_000);
+    fs.utimesSync(path.join(cr, 'graph.json'), future, future);
+    fs.utimesSync(path.join(cr, 'index.json'), future, future);
+    return proj;
+  }
+
+  it('no-data when no baseline snapshot exists (never a false 0-breaking)', () => {
+    const proj = writeRepo([{ name: 'a', type: 'function', file: 'src/a.ts', line: 1, exported: true, parameters: [], codeRefIdNoLine: 'a' }]);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.api_diff({}) as any;
+      expect(r.no_data).toBe(true);
+      expect(r.added).toEqual([]);
+      expect(r.removed).toEqual([]);
+      expect(r.warnings.some((w: string) => /BEFORE manifest absent/.test(w))).toBe(true);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('snapshot then diff surfaces an added export (no composite verdict)', () => {
+    const proj = writeRepo([{ name: 'a', type: 'function', file: 'src/a.ts', line: 1, exported: true, parameters: [], codeRefIdNoLine: 'a' }]);
+    try {
+      const h = buildToolHandlers(proj);
+      // Snapshot the current single-export surface.
+      const snap = h.api_diff({ snapshot: true }) as any;
+      expect(snap.action).toBe('snapshot');
+      expect(snap.exported_count).toBe(1);
+      expect(fs.existsSync(path.join(proj, '.coderef', 'api-manifest-baseline.json'))).toBe(true);
+
+      // Add a second exported element to the index, then diff.
+      const cr = path.join(proj, '.coderef');
+      fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify({
+        elements: [
+          { name: 'a', type: 'function', file: 'src/a.ts', line: 1, exported: true, parameters: [], codeRefIdNoLine: 'a' },
+          { name: 'b', type: 'function', file: 'src/b.ts', line: 1, exported: true, parameters: [{}], codeRefIdNoLine: 'b' },
+        ],
+      }));
+      const future = new Date(Date.now() + 120_000);
+      fs.utimesSync(path.join(cr, 'index.json'), future, future);
+
+      const h2 = buildToolHandlers(proj);
+      const d = h2.api_diff({}) as any;
+      expect(d.no_data).toBe(false);
+      expect(d.added_count).toBe(1);
+      expect(d.added[0].name).toBe('b');
+      expect(d.removed_count).toBe(0);
+      expect(d.unchanged_count).toBe(1);
+      // Surfaces-not-verdicts: no composite breaking-count field.
+      expect(d).not.toHaveProperty('breaking_count');
+      expect(d.note).toMatch(/SURFACES, NOT VERDICTS/);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+});
+
 // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ---
 // Fixture call chain: main -> alpha -> helper (e3, e1). alpha imports Helper (e4).
 // These prove the FORWARD direction is distinct from the inbound tools:

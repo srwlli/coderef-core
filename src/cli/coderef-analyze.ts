@@ -30,6 +30,7 @@ import { isTestLikeFile } from '../map/graph-analytics.js';
 import { searchAst, computeNotSearchedCounts, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
 import { listLanguageFilesOnDisk } from '../search/language-files.js';
 import { computeTypeHierarchy, type TypeHierarchyDirection } from '../query/type-hierarchy.js';
+import { extractExportsManifest, diffApiSurface, type ExportsManifest, type ManifestElement } from '../query/api-diff.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
@@ -53,8 +54,8 @@ Options:
   --output=<fmt>     Output format: json | text  (default: text)
   --element=<id>     Target element ID (required for: impact, multi-hop)
   --depth=<N>        Max traversal depth (default: 5; used by: impact, multi-hop)
-  --from=<ref>       Git ref baseline (required for: breaking-changes)
-  --to=<ref>         Git ref head     (optional for: breaking-changes; defaults to worktree)
+  --from=<label>     Baseline manifest snapshot label or .json path (breaking-changes; default "baseline")
+  --to=<label>       Snapshot the CURRENT exports under this label instead of diffing (breaking-changes)
   --ref=<ref>        Git ref to diff against (used by: tests-for-change; default HEAD)
   --lang=<ext>       Source language extension for ast-search (ts, tsx, js, jsx, py, go, rs, java, cpp, cc, cxx, c++, c, h)
   --query=<s-expr>   tree-sitter S-expression query (required for: ast-search)
@@ -73,10 +74,12 @@ Analysis types:
   complexity         Score element complexity
   impact             Blast radius for a changed element (requires --element)
   multi-hop          Traverse multi-hop relationships (requires --element)
-  breaking-changes   NOT IMPLEMENTED — exits with an error. The git-diff /
-                     signature extractors are placeholder stubs; this type is
-                     gated until they are implemented so it cannot emit
-                     confident-looking empty reports.
+  breaking-changes   Exported-API-surface diff over a snapshot baseline. Snapshot
+                     the current exports (--to=<label>), change the API, then diff
+                     (--from=<label>, default "baseline") into added / removed /
+                     signature-changed exports. Surfaces, NOT verdicts: a removed
+                     export is a CHANGE fact, never auto-"break"; no composite score.
+                     No baseline = no-data, never a false "0 breaking changes".
   tests-for-change   Diff-to-test-selection: map a git diff (default HEAD) to
                      changed elements, then return the TEST-FILE elements that
                      reach them through resolved call/import edges, ranked by
@@ -483,17 +486,80 @@ async function main(): Promise<void> {
       break;
     }
     case 'breaking-changes': {
-      // Gated until the diff/signature extractors are real (they are
-      // placeholder stubs returning empty — see diff-analyzer.ts). Running
-      // them would emit a confident-looking report that found nothing.
-      console.error(
-        'Error: --type=breaking-changes is NOT IMPLEMENTED.\n' +
-        'The underlying git-diff and signature extractors (getChangedElements, ' +
-        'extractSignaturesFromRef/FromWorktree) are placeholder stubs that return ' +
-        'empty results, so any report would be a false negative. ' +
-        'This type is disabled until they are implemented.'
-      );
-      process.exit(1);
+      // Exported-API-surface diff over a snapshot baseline (P6). Mirrors the MCP
+      // api_diff tool + map_metrics_delta's snapshot model: the OLD git-ref
+      // call-site path (breaking-change-detector/) stays gated; here we diff a
+      // manifest snapshot the caller took earlier vs the current exports. The
+      // pure differ is in src/query/api-diff.ts; git stays out of it.
+      const engine = loadEngineOrExit(project);
+      // Project the current exports manifest from the canonical graph nodes.
+      const currentElements: ManifestElement[] = engine.graph.nodes
+        .filter(n => !n.id.startsWith('@File/') && n.file)
+        .map(n => ({
+          name: n.name,
+          type: n.type,
+          file: n.file,
+          line: n.line,
+          exported: (n.metadata?.exported as boolean | undefined) ?? true,
+          parameters: (n.metadata?.parameters as unknown[] | undefined),
+          codeRefId: n.id,
+          codeRefIdNoLine: (n.metadata?.codeRefIdNoLine as string | undefined),
+        }));
+      const afterManifest = extractExportsManifest(currentElements);
+
+      // BEFORE: --from as a snapshot label or a manifest .json path (default
+      // "baseline" sidecar). --to snapshots the current manifest to a sidecar.
+      const crefDir = join(project, '.coderef');
+      const snapPath = (label: string) =>
+        join(crefDir, `api-manifest-${label.replace(/[^A-Za-z0-9._-]/g, '_')}.json`);
+      const fs = await import('node:fs');
+
+      // --to=<label> in this model = "snapshot the current surface under <label>".
+      if (values.to) {
+        const label = String(values.to);
+        const out = snapPath(label);
+        fs.writeFileSync(out, JSON.stringify(afterManifest, null, 2), 'utf8');
+        emit({
+          action: 'snapshot',
+          ok: true,
+          snapshot_label: label,
+          snapshot_path: out.replace(/\\/g, '/'),
+          exported_count: Object.keys(afterManifest.exports).length,
+          hint: `Snapshot saved. Change the API, then diff: --type=breaking-changes --from=${label}`,
+        });
+        break;
+      }
+
+      const from = values.from ? String(values.from) : 'baseline';
+      const fromIsPath = from.includes('/') || from.includes('\\') || from.endsWith('.json');
+      const beforePath = fromIsPath ? from : snapPath(from);
+      let beforeManifest: ExportsManifest | undefined;
+      try {
+        if (fs.existsSync(beforePath)) {
+          const parsed = JSON.parse(fs.readFileSync(beforePath, 'utf8'));
+          if (parsed && typeof parsed === 'object' && 'exports' in parsed) beforeManifest = parsed as ExportsManifest;
+        }
+      } catch { /* absent/unreadable -> no-data below */ }
+
+      const diff = diffApiSurface({ before: beforeManifest, after: afterManifest });
+      emit({
+        action: 'delta',
+        ok: !diff.noData,
+        no_data: diff.noData,
+        before_path: beforePath.replace(/\\/g, '/'),
+        schema_version: diff.schemaVersion,
+        added_count: diff.added.length,
+        removed_count: diff.removed.length,
+        changed_count: diff.changed.length,
+        unchanged_count: diff.unchangedCount,
+        added: diff.added,
+        removed: diff.removed,
+        changed: diff.changed,
+        warnings: diff.warnings,
+        note: diff.noData
+          ? `${diff.note} No baseline at ${beforePath.replace(/\\/g, '/')} — snapshot first: --type=breaking-changes --to=baseline`
+          : diff.note,
+      });
       break;
     }
     default: {

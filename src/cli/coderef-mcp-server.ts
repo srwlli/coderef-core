@@ -92,6 +92,7 @@ import { parseDiffToChangedElements } from '../query/changed-elements.js';
 import { searchAst, computeNotSearchedCounts, AST_SEARCH_LANG_EXTENSIONS, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
 import { listLanguageFilesOnDisk } from '../search/language-files.js';
 import { computeTypeHierarchy, type TypeHierarchyDirection } from '../query/type-hierarchy.js';
+import { extractExportsManifest, diffApiSurface, type ExportsManifest, type ManifestElement } from '../query/api-diff.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
@@ -588,6 +589,8 @@ export interface ToolHandlers {
   ast_search(args: { query: string; lang: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // class/interface supertype+subtype hierarchy (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P5)
   type_hierarchy(args: { element: string; direction?: 'up' | 'down' | 'both'; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  // exported-API-surface diff over a snapshot baseline (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P6)
+  api_diff(args: { before?: string; after?: string; snapshot?: boolean; snapshot_label?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1586,6 +1589,94 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         note: result.note,
       };
       return shapeResponse(envelope, response_format, ['supertypes', 'subtypes']);
+    },
+
+    // api_diff (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P6): diff the
+    // EXPORTED API surface against a snapshot baseline, mirroring map_metrics_delta's
+    // snapshot-sidecar model (NOT a git-ref re-parse — the OLD breaking-change-detector
+    // call-site path stays gated). snapshot:true copies the current exports manifest to
+    // a .coderef-confined sidecar; a bare call diffs the "baseline" sidecar vs the
+    // current index. Surfaces-not-verdicts + absence=no-data: a missing baseline is
+    // declared no-data, never a fabricated all-added/all-removed report.
+    api_diff({ before, after, snapshot, snapshot_label, limit, offset, response_format }) {
+      const crefDir = path.join(projectDir, '.coderef');
+      const snapPath = (label: string) =>
+        path.join(crefDir, `api-manifest-${label.replace(/[^A-Za-z0-9._-]/g, '_')}.json`);
+
+      // The current exports manifest, projected from index.json (the same element
+      // set find_element / tests_for_change read). NEVER recomputes elements.
+      const currentManifest = (): ExportsManifest => {
+        const index = loadIndex(projectDir, cache);
+        return extractExportsManifest(index.elements as unknown as ManifestElement[]);
+      };
+
+      // Load a manifest sidecar written by an earlier snapshot (an ExportsManifest).
+      const loadManifestFrom = (p: string): ExportsManifest | undefined => {
+        if (!fs.existsSync(p)) return undefined;
+        try {
+          const parsed = JSON.parse(fs.readFileSync(p, 'utf8'));
+          if (parsed && typeof parsed === 'object' && 'exports' in parsed) return parsed as ExportsManifest;
+          return undefined;
+        } catch {
+          return undefined;
+        }
+      };
+
+      // SNAPSHOT mode: copy the current manifest to a named sidecar (pure read/copy).
+      if (snapshot) {
+        const label = snapshot_label && snapshot_label.length ? snapshot_label : 'baseline';
+        const manifest = currentManifest();
+        const out = snapPath(label);
+        fs.writeFileSync(out, JSON.stringify(manifest, null, 2), 'utf8');
+        return {
+          action: 'snapshot',
+          ok: true,
+          snapshot_label: label,
+          snapshot_path: normalizeSlashes(out),
+          schema_version: manifest.schemaVersion,
+          exported_count: Object.keys(manifest.exports).length,
+          hint: `Snapshot saved. Change the API, then diff: api_diff({ before: "${label}" }) compares this snapshot to the current exports.`,
+          writes_confined_to: normalizeSlashes(crefDir),
+        };
+      }
+
+      // DELTA mode. BEFORE: an explicit path, else the named snapshot sidecar
+      // (default label 'baseline'). AFTER: an explicit path, else the current index.
+      const beforeIsPath = before && (before.includes('/') || before.includes('\\') || before.endsWith('.json'));
+      const beforePath = before ? (beforeIsPath ? path.resolve(projectDir, before) : snapPath(before)) : snapPath('baseline');
+      const beforeManifest = loadManifestFrom(beforePath);
+      const afterManifest = after ? loadManifestFrom(path.resolve(projectDir, after)) : currentManifest();
+
+      // No baseline snapshot -> honest no-data, NEVER a false "0 breaking changes".
+      const diff = diffApiSurface({ before: beforeManifest, after: afterManifest });
+      const cap = clampLimit(limit);
+      const pagedAdded = paginate(diff.added, offset, cap);
+      const pagedRemoved = paginate(diff.removed, offset, cap);
+      const pagedChanged = paginate(diff.changed, offset, cap);
+
+      const envelope: Record<string, unknown> = {
+        action: 'delta',
+        ok: !diff.noData,
+        schema_version: diff.schemaVersion,
+        before_path: normalizeSlashes(beforePath),
+        no_data: diff.noData,
+        // Decomposed change vector — NO composite breaking-count verdict.
+        added_count: diff.added.length,
+        removed_count: diff.removed.length,
+        changed_count: diff.changed.length,
+        unchanged_count: diff.unchangedCount,
+        added: pagedAdded.page,
+        removed: pagedRemoved.page,
+        changed: pagedChanged.page,
+        offset: pagedAdded.offset,
+        limit: pagedAdded.limit,
+        has_more: pagedAdded.has_more || pagedRemoved.has_more || pagedChanged.has_more,
+        warnings: diff.warnings,
+        note: diff.noData
+          ? `${diff.note} No baseline snapshot at ${normalizeSlashes(beforePath)} — run api_diff({ snapshot: true }) first.`
+          : diff.note,
+      };
+      return shapeResponse(envelope, response_format, ['added', 'removed', 'changed']);
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
@@ -3141,6 +3232,39 @@ async function main(): Promise<void> {
     },
     async ({ project_root, element, direction, max_depth, limit, offset, response_format }) =>
       perRepo(project_root, h => h.type_hierarchy({ element, direction, max_depth, limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'api_diff',
+    {
+      title: 'Exported API surface diff (breaking-changes)',
+      description:
+        '[.coderef-WRITE (snapshot mode only, confined to .coderef/)] Diff the project\'s EXPORTED API surface against a snapshot baseline, mirroring map_metrics_delta\'s verified-change loop: snapshot:true copies the current exports manifest (every exported element\'s name + kind + parameter arity, keyed by codeRefId) to a named sidecar (default "baseline"); a bare call DIFFS the baseline snapshot vs the current index into a decomposed change vector — added exports, removed exports, and signature-changed exports (parameter-arity change). SURFACES, NOT VERDICTS: a removed or changed export is a CHANGE fact, NOT automatically a "breaking change" — there is deliberately NO composite breaking-count score, and the per-change direction (added/removed/changed) is PROVENANCE, not a quality verdict. ABSENCE = NO-DATA: with no baseline snapshot, the result is no_data:true with a warning (run api_diff({ snapshot: true }) first), NEVER a false "0 breaking changes". This replaces the old NOT-IMPLEMENTED breaking-changes gate; the git-ref call-site path is intentionally not used.',
+      inputSchema: {
+        project_root: projectRootArg,
+        before: z
+          .string()
+          .optional()
+          .describe('BEFORE manifest: a snapshot label (e.g. "baseline") OR a manifest .json path. Default: the "baseline" snapshot sidecar.'),
+        after: z
+          .string()
+          .optional()
+          .describe('AFTER manifest: a manifest .json path. Default: the current exports (from index.json).'),
+        snapshot: z
+          .boolean()
+          .optional()
+          .describe('Snapshot mode: copy the current exports manifest to a named sidecar (a pure read/copy, no diff). Snapshot BEFORE the API change, then diff AFTER.'),
+        snapshot_label: z
+          .string()
+          .optional()
+          .describe('Label for the snapshot sidecar (default "baseline"); only with snapshot:true.'),
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, before, after, snapshot, snapshot_label, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.api_diff({ before, after, snapshot, snapshot_label, limit, offset, response_format })),
   );
 
   server.registerTool(

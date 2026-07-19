@@ -28,7 +28,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 29 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 30 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
 | [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens`, `--git` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
@@ -912,7 +912,7 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 29 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 30 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
 
 **Repo-agnostic (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001):** one running server serves ANY indexed repo. Every tool takes a **required `project_root`** argument naming the target repo root (the directory containing `.coderef/`) — pure CLI semantics, exactly as if the caller had the CLI. There is no default repo, no cwd inference, no env fallback; omitting `project_root` is a schema-level rejection.
 
@@ -985,6 +985,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `tests_for_change` | Diff-to-test-selection in one call: map a git diff (default working tree vs HEAD) to changed elements, then return the TEST-FILE elements that reach them through resolved call/import edges, ranked by directness (depth 1 = direct). Absence is no-data, not "untested" |
 | `ast_search` | Structural AST pattern search ripgrep can't express ("await inside a loop", "empty catch"): run a tree-sitter S-expression `query` against every `lang` source file; each match returns file+line+snippet attributed to the enclosing element's `codeRefId` so hits join the graph tools. A match is a syntactic fact, never a verdict; absence is no-data (empty / `reason:"invalid_query"` / `reason:"unsupported_language"`) |
 | `type_hierarchy` | Class/interface supertypes + subtypes over the `extends`/`implements` heritage edges the pipeline populates. `direction:"up"` = ancestors (what the element extends/implements), `"down"` = descendants, `"both"` (default) = each; every hit carries depth (1 = direct) + heritage kind, attributed to a `codeRefId`. Absence is no-data (no recorded heritage edge), never "flat hierarchy"; an unresolved external supertype is returned with `resolved:false` |
+| `api_diff` | Exported-API-surface diff over a snapshot baseline (breaking-changes). `snapshot:true` copies the current exports manifest (name + kind + parameter arity per exported element, keyed by `codeRefId`) to a `.coderef`-confined sidecar; a bare call diffs the `baseline` sidecar vs the current index into added / removed / signature-changed exports. Surfaces, NOT verdicts: a removed export is a CHANGE fact, never auto-"break"; no composite score. Absence = no-data (no baseline snapshot → `no_data:true`), never a false "0 breaking changes" |
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model. Pass `expand=true` to attach each hit's 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — see **Ego-graph expansion** below |
 | `symbol_context` | The consolidated **one-card-per-symbol** view: identity + header presence + 1-hop neighborhood + references + test-linkage + mtime-staleness in a single call — the understand-before-edit workflow that otherwise costs ~5 round-trips. A JOIN over existing data, not new analysis. See **Symbol context card** below |
 
@@ -1275,8 +1276,8 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `--element=<id>` | Target element ID (required for: `impact`, `multi-hop`, `type-hierarchy`) | — |
 | `--depth=<N>` | Max traversal depth (used by: `impact`, `multi-hop`, `type-hierarchy`) | `5` |
 | `--direction=<up\|down\|both>` | Heritage walk direction (used by: `type-hierarchy`) | `both` |
-| `--from=<ref>` | Git ref baseline (required for: `breaking-changes`) | — |
-| `--to=<ref>` | Git ref head (optional for: `breaking-changes`; defaults to worktree) | worktree |
+| `--from=<label>` | Baseline manifest snapshot label or `.json` path (used by: `breaking-changes`) | `baseline` |
+| `--to=<label>` | Snapshot the CURRENT exports under this label instead of diffing (used by: `breaking-changes`) | — |
 | `--ref=<ref>` | Git ref to diff against (used by: `tests-for-change`) | `HEAD` |
 | `--lang=<ext>` | Source language extension (required for: `ast-search`; `ts`,`tsx`,`js`,`jsx`,`py`,`go`,`rs`,`java`,`cpp`,`cc`,`cxx`,`c++`,`c`,`h`) | — |
 | `--query=<s-expr>` | tree-sitter S-expression query (required for: `ast-search`) | — |
@@ -1298,7 +1299,7 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `complexity` | Score element complexity (requires project scan) | — |
 | `impact` | Simulate blast radius for a changed element | `--element` |
 | `multi-hop` | Traverse multi-hop relationships | `--element` |
-| `breaking-changes` | Detect breaking API changes between two git refs | `--from` |
+| `breaking-changes` | Exported-API-surface diff over a snapshot baseline: `--to=<label>` snapshots the current exports; a later `--from=<label>` (default `baseline`) diffs into added / removed / signature-changed exports. Surfaces, NOT verdicts (a removed export is a change fact, never auto-"break"; no composite score); no baseline = no-data, never a false "0 breaking changes". | `--from`, `--to` |
 | `tests-for-change` | Diff-to-test-selection: which test-file elements reach the diff through resolved call/import edges, ranked by directness (depth 1 = direct). Absence is no-data, not "untested". | `--ref` (default `HEAD`) |
 | `ast-search` | Structural AST pattern search: run a tree-sitter S-expression `--query` against every `--lang` file; each match returns file+line+snippet attributed to the enclosing element's `codeRefId`. A match is a syntactic fact, never a verdict; absence is no-data. Malformed query → `reason:"invalid_query"`. | `--lang`, `--query`, `--limit` |
 | `type-hierarchy` | Class/interface supertypes + subtypes over the `extends`/`implements` heritage edges the pipeline populates. `--direction=up` = ancestors (what the element extends/implements), `down` = descendants, `both` (default) = each; every hit carries its depth (1 = direct) + heritage kind. Absence is no-data (no recorded heritage edge), never "flat hierarchy"; an unresolved external supertype is returned with `resolved:false`. | `--element` (opt: `--direction`, `--depth`) |
@@ -1324,11 +1325,10 @@ coderef-analyze --project=. --type=impact --element="src/scanner.ts"
 # Multi-hop traversal (custom depth)
 coderef-analyze --project=. --type=multi-hop --element="src/scanner.ts" --depth=3
 
-# Detect breaking changes since last release tag
-coderef-analyze --project=. --type=breaking-changes --from=v1.2.0
-
-# Detect breaking changes between two refs
-coderef-analyze --project=. --type=breaking-changes --from=main --to=feature/my-branch
+# Snapshot the current exported API surface as a baseline...
+coderef-analyze --project=. --type=breaking-changes --to=baseline
+# ...change the API, then diff against that baseline (added/removed/signature-changed exports)
+coderef-analyze --project=. --type=breaking-changes --from=baseline --output=json
 
 # Which tests exercise my current (uncommitted) edits?
 coderef-analyze --project=. --type=tests-for-change --output=json
