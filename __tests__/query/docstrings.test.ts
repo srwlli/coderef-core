@@ -97,4 +97,38 @@ describe('computeDocstringSurface', () => {
     expect(s.summary).not.toHaveProperty('score');
     expect(s).not.toHaveProperty('verdict');
   });
+
+  // P8 remediation (REC-001): disclose per-language capture scope so a
+  // hasDocstring:false in an UNCAPTURED language (Go/Rust/Java/C++) is
+  // distinguishable from a genuinely-undocumented element.
+  it('counts elements in an UNCAPTURED language (Go) as elements_uncaptured_language', () => {
+    const mixed: DocstringElement[] = [
+      { type: 'function', name: 'tsFn', file: 'a.ts', line: 1 },        // captured, no doc
+      { type: 'function', name: 'goFn', file: 'b.go', line: 1 },        // UNCAPTURED language
+    ];
+    const s = computeDocstringSurface({ elements: mixed });
+    expect(s.summary.total).toBe(2);
+    expect(s.summary.elements_uncaptured_language).toBe(1);
+    expect(s.summary.captured_languages).toContain('typescript');
+    expect(s.summary.captured_languages).toContain('python');
+  });
+
+  it('reports elements_uncaptured_language === 0 when every element is in a captured language', () => {
+    const s = computeDocstringSurface({ elements: els }); // all .ts
+    expect(s.summary.elements_uncaptured_language).toBe(0);
+  });
+
+  it('captured_languages is stable/deterministic', () => {
+    const a = computeDocstringSurface({ elements: els }).summary.captured_languages;
+    const b = computeDocstringSurface({ elements: els }).summary.captured_languages;
+    expect(a).toEqual(b);
+    expect([...a]).toEqual(['typescript', 'javascript', 'python']);
+  });
+
+  it('exposes captured_languages even on the no_data (empty) path', () => {
+    const s = computeDocstringSurface({ elements: [] });
+    expect(s.no_data).toBe(true);
+    expect(s.summary.captured_languages.length).toBeGreaterThan(0);
+    expect(s.summary.elements_uncaptured_language).toBe(0);
+  });
 });

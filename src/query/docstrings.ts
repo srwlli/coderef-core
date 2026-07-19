@@ -31,7 +31,39 @@
  * src/analyzer/docs-analyzer.ts (that surface is coarser + not codeRefId-keyed).
  */
 
-export const DOCSTRING_SCHEMA_VERSION = '1.0.0';
+import { EXTENSION_TO_LANGUAGE } from '../pipeline/types.js';
+
+export const DOCSTRING_SCHEMA_VERSION = '1.1.0';
+
+/**
+ * Languages the LIVE extractor (src/pipeline/extractors/element-extractor.ts)
+ * actually fills a docstring for. PINNED to the extractor's wiring: only the
+ * TS/JS family (extractLeadingJsDoc) and Python (extractPythonDocstring) have a
+ * docstring path. Go / Rust / Java / C++ are parsed for elements but carry NO
+ * docstring capture yet (tracked follow-up) — so a `hasDocstring:false` on one
+ * of those is NO-DATA, not evidence of a missing doc. Update this set in
+ * lockstep whenever a new language gains docstring wiring (mirrors the
+ * ast_search enum-pin lesson — keep disclosure honest as coverage grows).
+ */
+export const DOCSTRING_CAPTURED_LANGUAGES: readonly string[] = [
+  'typescript',
+  'javascript',
+  'python',
+];
+
+/** Map an element's file path to its language name via the canonical ext map. */
+function languageOfFile(file: string): string | undefined {
+  const dot = file.lastIndexOf('.');
+  if (dot < 0) return undefined;
+  const ext = file.slice(dot + 1).toLowerCase();
+  return (EXTENSION_TO_LANGUAGE as Record<string, string>)[ext];
+}
+
+/** True when the element's language has a docstring-capture path in the extractor. */
+function isCapturedLanguage(file: string): boolean {
+  const lang = languageOfFile(file);
+  return lang !== undefined && DOCSTRING_CAPTURED_LANGUAGES.includes(lang);
+}
 
 /** Minimal element shape this projection needs (subset of ElementData). */
 export interface DocstringElement {
@@ -61,6 +93,18 @@ export interface DocstringSummary {
   documented: number;
   undocumented: number;
   coverageRatio: number;
+  /**
+   * The languages the extractor captures docstrings for (pinned set). An
+   * element outside this set reports hasDocstring:false regardless of whether
+   * it has a doc comment — see elements_uncaptured_language.
+   */
+  captured_languages: readonly string[];
+  /**
+   * Count of elements (within the filtered set) whose language has NO docstring
+   * path in the extractor. Their hasDocstring:false is NO-DATA, not a real
+   * absence — this makes silent not-captured distinguishable from undocumented.
+   */
+  elements_uncaptured_language: number;
 }
 
 export interface DocstringSurface {
@@ -87,7 +131,10 @@ const DEFAULT_LIMIT = 100;
 const NOTE =
   'Element-grain docstring surface: coverageRatio is provenance (documented/total), ' +
   'NOT a quality score. hasDocstring:false is no-data (undocumented is a fact, never a guess). ' +
-  'Complements the file-grain JSDocCoverage in docs-analyzer.ts.';
+  'Capture is scoped to captured_languages (TS/JS + Python); an element in a language ' +
+  'OUTSIDE that set (see elements_uncaptured_language) reports hasDocstring:false because ' +
+  'it was never scanned for docs — not because it lacks one. Complements the file-grain ' +
+  'JSDocCoverage in docs-analyzer.ts.';
 
 /**
  * Project per-element docstring presence + text, with a coverage roll-up.
@@ -101,7 +148,14 @@ export function computeDocstringSurface(inputs: DocstringInputs): DocstringSurfa
   if (!elements || elements.length === 0) {
     return {
       items: [],
-      summary: { total: 0, documented: 0, undocumented: 0, coverageRatio: 0 },
+      summary: {
+        total: 0,
+        documented: 0,
+        undocumented: 0,
+        coverageRatio: 0,
+        captured_languages: DOCSTRING_CAPTURED_LANGUAGES,
+        elements_uncaptured_language: 0,
+      },
       no_data: true,
       truncated: false,
       schema_version: DOCSTRING_SCHEMA_VERSION,
@@ -138,11 +192,14 @@ export function computeDocstringSurface(inputs: DocstringInputs): DocstringSurfa
 
   const documentedCount = projected.filter((i) => i.hasDocstring).length;
   const total = projected.length;
+  const uncapturedCount = projected.filter((i) => !isCapturedLanguage(i.file)).length;
   const summary: DocstringSummary = {
     total,
     documented: documentedCount,
     undocumented: total - documentedCount,
     coverageRatio: total > 0 ? documentedCount / total : 0,
+    captured_languages: DOCSTRING_CAPTURED_LANGUAGES,
+    elements_uncaptured_language: uncapturedCount,
   };
 
   const page = projected.slice(offset, offset + limit);
