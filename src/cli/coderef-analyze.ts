@@ -27,11 +27,12 @@ import { spawnSync } from 'node:child_process';
 import { computeTestsForChange } from '../query/tests-for-change.js';
 import { parseDiffToChangedElements, type ChangedElement } from '../query/changed-elements.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
+import { searchAst, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
   'middleware', 'graph', 'complexity', 'impact', 'multi-hop', 'breaking-changes',
-  'tests-for-change',
+  'tests-for-change', 'ast-search',
 ] as const;
 type AnalyzeType = typeof TYPES[number];
 
@@ -53,6 +54,9 @@ Options:
   --from=<ref>       Git ref baseline (required for: breaking-changes)
   --to=<ref>         Git ref head     (optional for: breaking-changes; defaults to worktree)
   --ref=<ref>        Git ref to diff against (used by: tests-for-change; default HEAD)
+  --lang=<ext>       Source language extension for ast-search (ts, tsx, js, jsx, py, go, rs, java, cpp, c)
+  --query=<s-expr>   tree-sitter S-expression query (required for: ast-search)
+  --limit=<N>        Max results (used by: ast-search; default 100)
   --help             Print this help
 
 Analysis types:
@@ -75,6 +79,13 @@ Analysis types:
                      changed elements, then return the TEST-FILE elements that
                      reach them through resolved call/import edges, ranked by
                      directness. Absence is no-data, not "untested". (--ref)
+  ast-search         Structural AST pattern search: run a tree-sitter
+                     S-expression --query against every --lang source file and
+                     return file+line+snippet, attributed to the enclosing
+                     element's codeRefId so hits join the graph tools. A match
+                     is a syntactic fact, never a verdict; absence is no-data.
+                     A malformed query degrades to reason:"invalid_query".
+                     (--lang, --query, --limit)
 
 Note: graph, complexity, impact, multi-hop, and middleware read the canonical
 .coderef/graph.json produced by the populate pipeline (DR-PHASE-5-C). Run
@@ -160,6 +171,9 @@ async function main(): Promise<void> {
       from:    { type: 'string' },
       to:      { type: 'string' },
       ref:     { type: 'string' },
+      lang:    { type: 'string' },
+      query:   { type: 'string' },
+      limit:   { type: 'string' },
       help:    { type: 'boolean', default: false },
     },
     strict: false,
@@ -346,6 +360,63 @@ async function main(): Promise<void> {
         note:
           'Ranked test-file elements reaching the diff through resolved call/import edges ' +
           '(depth 1 = direct). Absence is no-data, not "untested".',
+      });
+      break;
+    }
+    case 'ast-search': {
+      const lang = values.lang as string | undefined;
+      const query = values.query as string | undefined;
+      if (!lang) { console.error('Error: --lang is required for --type=ast-search'); process.exit(1); }
+      if (!query) { console.error('Error: --query is required for --type=ast-search'); process.exit(1); }
+      const limit = parseInt((values.limit as string | undefined) ?? '100', 10) || 100;
+
+      // Load index.json (element attribution + the source file list), same seam
+      // tests-for-change uses.
+      interface IdxEl { file: string; line: number; codeRefId?: string; name?: string }
+      let idxElements: IdxEl[] = [];
+      try {
+        const idxPath = join(project, '.coderef', 'index.json');
+        const idx = JSON.parse(await readFile(idxPath, 'utf8')) as { elements?: IdxEl[] };
+        idxElements = idx.elements ?? [];
+      } catch {
+        console.error(
+          'coderef-analyze error: .coderef/index.json not found or unreadable. ' +
+          'Run populate-coderef first.',
+        );
+        process.exit(1);
+      }
+
+      const elements: AstSearchElement[] = idxElements.map(e => ({
+        file: e.file, line: e.line, codeRefId: e.codeRefId, name: e.name,
+      }));
+
+      // Distinct source files for the requested language, read from disk.
+      const wantExt = lang.toLowerCase();
+      const seen = new Set<string>();
+      const files: AstSearchFile[] = [];
+      for (const el of idxElements) {
+        const ext = extname(el.file).slice(1).toLowerCase();
+        if (ext !== wantExt || seen.has(el.file)) continue;
+        seen.add(el.file);
+        try {
+          const abs = el.file.startsWith('/') || /^[A-Za-z]:/.test(el.file)
+            ? el.file : join(project, el.file);
+          files.push({ file: el.file, content: await readFile(abs, 'utf8') });
+        } catch {
+          // Unreadable/deleted file contributes no matches.
+        }
+      }
+
+      const result = await searchAst({ lang: wantExt, query, files, elements, limit });
+      emit({
+        language: result.language,
+        query: result.query,
+        files_searched: files.length,
+        total_matches: result.totalMatches,
+        truncated: result.truncated,
+        ...(result.reason ? { reason: result.reason } : {}),
+        matches: result.matches,
+        note: result.note,
       });
       break;
     }

@@ -89,6 +89,7 @@ import { type EgoGraph, egoGraphOf } from '../query/ego-graph.js';
 import { type SymbolContext, assembleSymbolContext } from '../query/symbol-context.js';
 import { computeTestsForChange } from '../query/tests-for-change.js';
 import { parseDiffToChangedElements } from '../query/changed-elements.js';
+import { searchAst, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
@@ -581,6 +582,8 @@ export interface ToolHandlers {
   diff_impact(args: { ref?: string; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // diff-to-test-selection (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P1)
   tests_for_change(args: { ref?: string; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  // structural AST pattern search (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P3)
+  ast_search(args: { query: string; lang: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1451,6 +1454,57 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           'Ranked test-file elements reaching the diff through resolved call/import edges (depth 1 = direct). Absence is no-data, not "untested".',
       };
       return shapeResponse(envelope, response_format, ['tests', 'test_files', 'changed_element_sample']);
+    },
+
+    async ast_search({ query, lang, limit, offset, response_format }) {
+      // Element set = index.json (start-line attribution, same seam tests_for_change uses).
+      const index = loadIndex(projectDir, cache);
+      const elements: AstSearchElement[] = index.elements.map(e => ({
+        file: e.file,
+        line: e.line,
+        codeRefId: e.codeRefId,
+        name: e.name,
+      }));
+
+      // File set = the distinct source files for the requested language, read
+      // from disk at this impure CLI edge (searchAst itself stays pure over the
+      // supplied content). Files that no longer exist are skipped (best-effort).
+      const wantExt = String(lang).toLowerCase();
+      const seen = new Set<string>();
+      const files: AstSearchFile[] = [];
+      for (const el of index.elements) {
+        const ext = path.extname(el.file).slice(1).toLowerCase();
+        if (ext !== wantExt || seen.has(el.file)) continue;
+        seen.add(el.file);
+        try {
+          const abs = path.isAbsolute(el.file) ? el.file : path.join(projectDir, el.file);
+          files.push({ file: el.file, content: fs.readFileSync(abs, 'utf8') });
+        } catch {
+          // Unreadable/deleted file contributes no matches.
+        }
+      }
+
+      const cap = clampLimit(limit);
+      const result = await searchAst({ lang: wantExt, query, files, elements, limit: MAX_LIMIT });
+
+      // Page the (already deterministically sorted) match list.
+      const paged = paginate(result.matches, offset, cap);
+      const envelope: Record<string, unknown> = {
+        language: result.language,
+        query: result.query,
+        files_searched: files.length,
+        total_matches: result.totalMatches,
+        // absence = no-data: 0 matches means "this syntactic shape was not found"
+        // (or the query/language was unusable, see `reason`), never a verdict.
+        ...(result.reason ? { reason: result.reason } : {}),
+        offset: paged.offset,
+        limit: paged.limit,
+        matches: paged.page,
+        matches_truncated: paged.has_more || result.truncated,
+        has_more: paged.has_more,
+        note: result.note,
+      };
+      return shapeResponse(envelope, response_format, ['matches']);
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
@@ -2963,6 +3017,25 @@ async function main(): Promise<void> {
     },
     async ({ project_root, ref, max_depth, limit, offset, response_format }) =>
       perRepo(project_root, h => h.tests_for_change({ ref, max_depth, limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'ast_search',
+    {
+      title: 'Structural AST pattern search',
+      description:
+        'Syntax-aware structural search that ripgrep CANNOT express. You supply a tree-sitter S-EXPRESSION query (the query IS tree-sitter\'s own pattern grammar — no new pattern language) and a language, and each match returns file + line range + the matched source, ATTRIBUTED to the enclosing element\'s codeRefId so a hit pipes straight into what_calls / impact_of / symbol_context. Examples: `(for_statement body: (_ (await_expression)))` (an await inside a loop), `(catch_clause body: (statement_block) @b)` then inspect for emptiness. Surfaces, NOT verdicts: a match is a syntactic fact ("this shape occurs here"), never a defect. Absence is NO-DATA: an empty result — or reason:"invalid_query" / "unsupported_language" — means the shape was not found or the query was unusable, NOT that the code is correct.',
+      inputSchema: {
+        project_root: projectRootArg,
+        query: z.string().describe('A tree-sitter S-expression query, e.g. `(for_statement body: (_ (await_expression)))`. Malformed queries degrade to reason:"invalid_query" (never an error).'),
+        lang: z.enum(['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c']).describe('Source language extension to search. The query is compiled against this grammar; files of other extensions are skipped.'),
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, query, lang, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.ast_search({ query, lang, limit, offset, response_format })),
   );
 
   server.registerTool(
