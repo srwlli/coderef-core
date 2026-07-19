@@ -89,7 +89,8 @@ import { type EgoGraph, egoGraphOf } from '../query/ego-graph.js';
 import { type SymbolContext, assembleSymbolContext } from '../query/symbol-context.js';
 import { computeTestsForChange } from '../query/tests-for-change.js';
 import { parseDiffToChangedElements } from '../query/changed-elements.js';
-import { searchAst, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
+import { searchAst, computeNotSearchedCounts, AST_SEARCH_LANG_EXTENSIONS, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
+import { listLanguageFilesOnDisk } from '../search/language-files.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
@@ -1470,19 +1471,27 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       // from disk at this impure CLI edge (searchAst itself stays pure over the
       // supplied content). Files that no longer exist are skipped (best-effort).
       const wantExt = String(lang).toLowerCase();
-      const seen = new Set<string>();
+      const indexedFiles = new Set<string>();  // distinct lang files present in the index
+      const searchedFiles: string[] = [];      // index lang files actually read
       const files: AstSearchFile[] = [];
       for (const el of index.elements) {
         const ext = path.extname(el.file).slice(1).toLowerCase();
-        if (ext !== wantExt || seen.has(el.file)) continue;
-        seen.add(el.file);
+        if (ext !== wantExt || indexedFiles.has(el.file)) continue;
+        indexedFiles.add(el.file);
         try {
           const abs = path.isAbsolute(el.file) ? el.file : path.join(projectDir, el.file);
           files.push({ file: el.file, content: fs.readFileSync(abs, 'utf8') });
+          searchedFiles.push(el.file);
         } catch {
-          // Unreadable/deleted file contributes no matches.
+          // Unreadable/deleted file contributes no matches (counted below).
         }
       }
+
+      // REC-002: not-searched visibility. Walk the project for on-disk files of
+      // this language and compare against the indexed/searched sets so the caller
+      // can tell "zero matches" apart from "this file was never searched".
+      const onDiskFiles = listLanguageFilesOnDisk(projectDir, wantExt);
+      const skip = computeNotSearchedCounts(onDiskFiles, [...indexedFiles], searchedFiles);
 
       const cap = clampLimit(limit);
       const result = await searchAst({ lang: wantExt, query, files, elements, limit: MAX_LIMIT });
@@ -1493,6 +1502,11 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         language: result.language,
         query: result.query,
         files_searched: files.length,
+        // absence=no-data made explicit: files that exist on disk for this
+        // language but carry no index element (never searched), and indexed
+        // files that could not be read at search time.
+        files_skipped_no_index: skip.filesSkippedNoIndex,
+        files_skipped_unreadable: skip.filesSkippedUnreadable,
         total_matches: result.totalMatches,
         // absence = no-data: 0 matches means "this syntactic shape was not found"
         // (or the query/language was unusable, see `reason`), never a verdict.
@@ -3028,7 +3042,11 @@ async function main(): Promise<void> {
       inputSchema: {
         project_root: projectRootArg,
         query: z.string().describe('A tree-sitter S-expression query, e.g. `(for_statement body: (_ (await_expression)))`. Malformed queries degrade to reason:"invalid_query" (never an error).'),
-        lang: z.enum(['ts', 'tsx', 'js', 'jsx', 'py', 'go', 'rs', 'java', 'cpp', 'c']).describe('Source language extension to search. The query is compiled against this grammar; files of other extensions are skipped.'),
+        // REC-001: the accepted set is DERIVED from EXTENSION_TO_LANGUAGE (via
+        // AST_SEARCH_LANG_EXTENSIONS) so this enum can never drift narrower than
+        // the grammar loader again — previously a hand-maintained literal that
+        // omitted cc/cxx/c++/h and rejected those files before searchAst ran.
+        lang: z.enum([...AST_SEARCH_LANG_EXTENSIONS] as [string, ...string[]]).describe('Source language extension to search (derived from the supported grammar set: ts, tsx, js, jsx, py, go, rs, java, cpp, cc, cxx, c++, c, h). The query is compiled against this grammar; files of other extensions are skipped.'),
         limit: limitArg,
         offset: offsetArg,
         response_format: responseFormatArg,

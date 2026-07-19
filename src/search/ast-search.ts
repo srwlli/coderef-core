@@ -41,6 +41,18 @@ import { EXTENSION_TO_LANGUAGE, type LanguageExtension } from '../pipeline/types
 /** Default cap on returned matches (deterministic truncation). */
 export const AST_SEARCH_DEFAULT_LIMIT = 100;
 
+/**
+ * The canonical set of language extensions ast_search accepts, DERIVED from
+ * EXTENSION_TO_LANGUAGE so the MCP `lang` enum can never silently drift narrower
+ * than the grammar loader again (REC-001, WO-...-GENRE-FEATURES-PROGRAM-001 P3
+ * remediation). Sorted for deterministic enum ordering. The MCP registration
+ * builds its z.enum from this, and a drift-guard test pins this === the
+ * EXTENSION_TO_LANGUAGE key set — add a language in types.ts and both the enum
+ * and the guard pick it up automatically.
+ */
+export const AST_SEARCH_LANG_EXTENSIONS: readonly LanguageExtension[] =
+  (Object.keys(EXTENSION_TO_LANGUAGE) as LanguageExtension[]).slice().sort();
+
 /** Max characters of matched source kept per snippet (longer is clamped + elided). */
 const SNIPPET_MAX_CHARS = 400;
 
@@ -279,4 +291,58 @@ export async function searchAst(options: AstSearchOptions): Promise<AstSearchRes
       ? `Showing ${limit} of ${totalMatches} matches (capped). ${SURFACE_NOTE}`
       : SURFACE_NOTE,
   };
+}
+
+/** The additive not-searched visibility counts (REC-002). */
+export interface NotSearchedCounts {
+  /**
+   * Distinct source files of the requested language present ON DISK but NOT in
+   * the index (they carry zero indexed elements), so they were never enumerated
+   * and thus never searched. Makes "zero matches" distinguishable from "this
+   * file was never searched" — absence=no-data made explicit. Best-effort: the
+   * count reflects the on-disk list the caller supplied (scan roots may narrow it).
+   */
+  filesSkippedNoIndex: number;
+  /**
+   * Distinct language files that WERE enumerated from the index but could not be
+   * read at search time (deleted / unreadable), so they contributed no matches.
+   * Free to compute (no extra I/O); previously swallowed by a silent catch.
+   */
+  filesSkippedUnreadable: number;
+}
+
+/**
+ * PURE computation of the REC-002 not-searched counts. Kept separate from the
+ * impure edges (MCP handler + CLI case) that gather the file lists so the
+ * arithmetic is unit-testable without touching disk.
+ *
+ * @param onDiskFiles   Distinct language files found on disk (from a bounded walk).
+ * @param indexedFiles  Distinct language files present in index.json (have elements).
+ * @param searchedFiles Files actually read + handed to searchAst (subset of indexedFiles).
+ *
+ * All three are compared as SUPPLIED strings — the caller MUST normalize path
+ * form (separators / relative-vs-absolute) consistently across the three sets,
+ * exactly as it already does when it derives `searchedFiles` from `indexedFiles`.
+ */
+export function computeNotSearchedCounts(
+  onDiskFiles: readonly string[],
+  indexedFiles: readonly string[],
+  searchedFiles: readonly string[],
+): NotSearchedCounts {
+  const indexed = new Set(indexedFiles);
+  const searched = new Set(searchedFiles);
+  // On-disk files with no indexed element = on disk but not in the index set.
+  let filesSkippedNoIndex = 0;
+  const seenOnDisk = new Set<string>();
+  for (const f of onDiskFiles) {
+    if (seenOnDisk.has(f)) continue;
+    seenOnDisk.add(f);
+    if (!indexed.has(f)) filesSkippedNoIndex += 1;
+  }
+  // Indexed language files we meant to search but could not read.
+  let filesSkippedUnreadable = 0;
+  for (const f of indexed) {
+    if (!searched.has(f)) filesSkippedUnreadable += 1;
+  }
+  return { filesSkippedNoIndex, filesSkippedUnreadable };
 }

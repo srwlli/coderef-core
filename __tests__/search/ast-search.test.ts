@@ -16,8 +16,15 @@
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
-import { searchAst, AST_SEARCH_DEFAULT_LIMIT, type AstSearchElement } from '../../src/search/ast-search.js';
+import {
+  searchAst,
+  computeNotSearchedCounts,
+  AST_SEARCH_DEFAULT_LIMIT,
+  AST_SEARCH_LANG_EXTENSIONS,
+  type AstSearchElement,
+} from '../../src/search/ast-search.js';
 import { GrammarRegistry } from '../../src/pipeline/grammar-registry.js';
+import { EXTENSION_TO_LANGUAGE } from '../../src/pipeline/types.js';
 
 /** Can we actually load the TS grammar in this environment? */
 async function tsGrammarAvailable(): Promise<boolean> {
@@ -199,5 +206,71 @@ describe.runIf(await tsGrammarAvailable())('searchAst — structural matches ove
     });
     expect(r.truncated).toBe(false);
     expect(AST_SEARCH_DEFAULT_LIMIT).toBe(100);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// P3 remediation (WO-...-GENRE-FEATURES-PROGRAM-001 Phase 4)
+// REC-001 lang-enum coverage + REC-002 not-searched visibility. Pure — no
+// grammar needed, so these run unconditionally.
+// ---------------------------------------------------------------------------
+
+describe('REC-001 — ast_search accepted-language set (drift guard)', () => {
+  it('AST_SEARCH_LANG_EXTENSIONS === the EXTENSION_TO_LANGUAGE key set (no drift)', () => {
+    // The MCP `lang` enum is built from AST_SEARCH_LANG_EXTENSIONS. This guard
+    // fails the moment either side gains/loses a language without the other,
+    // which is exactly how the enum previously drifted narrower than the loader.
+    const accepted = [...AST_SEARCH_LANG_EXTENSIONS].sort();
+    const loaderKeys = Object.keys(EXTENSION_TO_LANGUAGE).sort();
+    expect(accepted).toEqual(loaderKeys);
+  });
+
+  it('includes cc, cxx, c++, h (the extensions the old literal enum omitted)', () => {
+    for (const ext of ['cc', 'cxx', 'c++', 'h']) {
+      expect(AST_SEARCH_LANG_EXTENSIONS).toContain(ext);
+    }
+  });
+
+  it('every accepted extension resolves to a real grammar language (no dead enum member)', () => {
+    for (const ext of AST_SEARCH_LANG_EXTENSIONS) {
+      expect(EXTENSION_TO_LANGUAGE[ext]).toBeTruthy();
+    }
+  });
+});
+
+describe('REC-002 — computeNotSearchedCounts (not-searched visibility)', () => {
+  it('counts on-disk language files that carry no index element', () => {
+    // a.ts + b.ts are indexed (and searched); c.ts is on disk but not indexed.
+    const onDisk = ['a.ts', 'b.ts', 'c.ts'];
+    const indexed = ['a.ts', 'b.ts'];
+    const searched = ['a.ts', 'b.ts'];
+    const r = computeNotSearchedCounts(onDisk, indexed, searched);
+    expect(r.filesSkippedNoIndex).toBe(1); // c.ts
+    expect(r.filesSkippedUnreadable).toBe(0);
+  });
+
+  it('counts indexed files that could not be read at search time', () => {
+    // b.ts is indexed but was not successfully read (deleted/unreadable).
+    const onDisk = ['a.ts', 'b.ts'];
+    const indexed = ['a.ts', 'b.ts'];
+    const searched = ['a.ts'];
+    const r = computeNotSearchedCounts(onDisk, indexed, searched);
+    expect(r.filesSkippedNoIndex).toBe(0);
+    expect(r.filesSkippedUnreadable).toBe(1); // b.ts
+  });
+
+  it('is zero on a fully-indexed, fully-read tree (absence is truly no-match)', () => {
+    const files = ['a.ts', 'b.ts', 'c.ts'];
+    const r = computeNotSearchedCounts(files, files, files);
+    expect(r.filesSkippedNoIndex).toBe(0);
+    expect(r.filesSkippedUnreadable).toBe(0);
+  });
+
+  it('dedupes repeated on-disk entries (never double-counts a skip)', () => {
+    const onDisk = ['a.ts', 'c.ts', 'c.ts', 'c.ts'];
+    const indexed = ['a.ts'];
+    const searched = ['a.ts'];
+    const r = computeNotSearchedCounts(onDisk, indexed, searched);
+    expect(r.filesSkippedNoIndex).toBe(1); // c.ts counted once
   });
 });

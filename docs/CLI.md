@@ -1276,7 +1276,7 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `--from=<ref>` | Git ref baseline (required for: `breaking-changes`) | — |
 | `--to=<ref>` | Git ref head (optional for: `breaking-changes`; defaults to worktree) | worktree |
 | `--ref=<ref>` | Git ref to diff against (used by: `tests-for-change`) | `HEAD` |
-| `--lang=<ext>` | Source language extension (required for: `ast-search`; `ts`,`tsx`,`js`,`jsx`,`py`,`go`,`rs`,`java`,`cpp`,`c`) | — |
+| `--lang=<ext>` | Source language extension (required for: `ast-search`; `ts`,`tsx`,`js`,`jsx`,`py`,`go`,`rs`,`java`,`cpp`,`cc`,`cxx`,`c++`,`c`,`h`) | — |
 | `--query=<s-expr>` | tree-sitter S-expression query (required for: `ast-search`) | — |
 | `--limit=<N>` | Max results (used by: `ast-search`) | `100` |
 | `--help` | Print help | — |
@@ -1337,6 +1337,14 @@ coderef-analyze --project=. --type=tests-for-change --ref=main --output=json
 coderef-analyze --project=. --type=ast-search --lang=ts \
   --query='(for_statement body: (_ (await_expression)))' --output=json
 ```
+
+The `ast-search` result envelope carries not-searched visibility so absence is
+never ambiguous: `files_searched` (files handed to the query), `files_skipped_no_index`
+(on-disk files of `--lang` that carry no index element and were therefore never
+searched — re-run `populate-coderef` to index them), and `files_skipped_unreadable`
+(indexed files that could not be read at search time). A `total_matches` of `0`
+with a non-zero `files_skipped_no_index` means "not fully searched", not "shape
+absent". The same three fields appear on the `ast_search` MCP tool response.
 
 ### Exit codes
 

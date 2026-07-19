@@ -27,7 +27,8 @@ import { spawnSync } from 'node:child_process';
 import { computeTestsForChange } from '../query/tests-for-change.js';
 import { parseDiffToChangedElements, type ChangedElement } from '../query/changed-elements.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
-import { searchAst, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
+import { searchAst, computeNotSearchedCounts, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
+import { listLanguageFilesOnDisk } from '../search/language-files.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
@@ -54,7 +55,7 @@ Options:
   --from=<ref>       Git ref baseline (required for: breaking-changes)
   --to=<ref>         Git ref head     (optional for: breaking-changes; defaults to worktree)
   --ref=<ref>        Git ref to diff against (used by: tests-for-change; default HEAD)
-  --lang=<ext>       Source language extension for ast-search (ts, tsx, js, jsx, py, go, rs, java, cpp, c)
+  --lang=<ext>       Source language extension for ast-search (ts, tsx, js, jsx, py, go, rs, java, cpp, cc, cxx, c++, c, h)
   --query=<s-expr>   tree-sitter S-expression query (required for: ast-search)
   --limit=<N>        Max results (used by: ast-search; default 100)
   --help             Print this help
@@ -392,26 +393,36 @@ async function main(): Promise<void> {
 
       // Distinct source files for the requested language, read from disk.
       const wantExt = lang.toLowerCase();
-      const seen = new Set<string>();
+      const indexedFiles = new Set<string>();  // distinct lang files present in the index
+      const searchedFiles: string[] = [];      // index lang files actually read
       const files: AstSearchFile[] = [];
       for (const el of idxElements) {
         const ext = extname(el.file).slice(1).toLowerCase();
-        if (ext !== wantExt || seen.has(el.file)) continue;
-        seen.add(el.file);
+        if (ext !== wantExt || indexedFiles.has(el.file)) continue;
+        indexedFiles.add(el.file);
         try {
           const abs = el.file.startsWith('/') || /^[A-Za-z]:/.test(el.file)
             ? el.file : join(project, el.file);
           files.push({ file: el.file, content: await readFile(abs, 'utf8') });
+          searchedFiles.push(el.file);
         } catch {
-          // Unreadable/deleted file contributes no matches.
+          // Unreadable/deleted file contributes no matches (counted below).
         }
       }
+
+      // REC-002: not-searched visibility — on-disk language files with no index
+      // element are silently unsearched otherwise. Surface the skip counts so
+      // "zero matches" is distinguishable from "this file was never searched".
+      const onDiskFiles = listLanguageFilesOnDisk(project, wantExt);
+      const skip = computeNotSearchedCounts(onDiskFiles, [...indexedFiles], searchedFiles);
 
       const result = await searchAst({ lang: wantExt, query, files, elements, limit });
       emit({
         language: result.language,
         query: result.query,
         files_searched: files.length,
+        files_skipped_no_index: skip.filesSkippedNoIndex,
+        files_skipped_unreadable: skip.filesSkippedUnreadable,
         total_matches: result.totalMatches,
         truncated: result.truncated,
         ...(result.reason ? { reason: result.reason } : {}),
