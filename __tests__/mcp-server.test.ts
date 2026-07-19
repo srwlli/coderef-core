@@ -1956,3 +1956,72 @@ describe('Phase 8 — attachStaleness', () => {
     expect('staleness' in payload).toBe(false);
   });
 });
+
+// docstrings (P8): reads ElementData.docstring from index.json elements.
+describe('docstrings', () => {
+  it('is registered as a handler', () => {
+    expect(typeof (handlers as any).docstrings).toBe('function');
+  });
+
+  function writeRepo(elements: any[]): string {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-docstrings-'));
+    const cr = path.join(proj, '.coderef');
+    fs.mkdirSync(cr, { recursive: true });
+    const graph: ExportedGraph = {
+      version: '1.0.0', exportedAt: 1, nodes: [], edges: [],
+      statistics: { nodeCount: 0, edgeCount: 0, edgesByType: {}, densityRatio: 0 },
+    };
+    fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify(graph));
+    fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify({ elements }));
+    fs.writeFileSync(path.join(cr, 'validation-report.json'), JSON.stringify({ ok: true }));
+    const future = new Date(Date.now() + 60_000);
+    fs.utimesSync(path.join(cr, 'graph.json'), future, future);
+    fs.utimesSync(path.join(cr, 'index.json'), future, future);
+    return proj;
+  }
+
+  const FIXTURE = [
+    { name: 'add', type: 'function', file: 'src/a.ts', line: 10, codeRefId: '@Fn/a.ts#add:10', docstring: 'Adds.' },
+    { name: 'sub', type: 'function', file: 'src/a.ts', line: 20, codeRefId: '@Fn/a.ts#sub:20' },
+  ];
+
+  it('no_data:true when the index has no elements (never a false 0% coverage)', () => {
+    const proj = writeRepo([]);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.docstrings({}) as any;
+      expect(r.no_data).toBe(true);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('surfaces per-element docstring presence + coverage roll-up', () => {
+    const proj = writeRepo(FIXTURE);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.docstrings({}) as any;
+      expect(r.no_data).toBe(false);
+      expect(r.summary.total).toBe(2);
+      expect(r.summary.documented).toBe(1);
+      const add = r.items.find((i: any) => i.name === 'add');
+      expect(add.hasDocstring).toBe(true);
+      expect(add.docstring).toBe('Adds.');
+      const sub = r.items.find((i: any) => i.name === 'sub');
+      expect(sub.hasDocstring).toBe(false);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('documented=true filter returns only documented elements', () => {
+    const proj = writeRepo(FIXTURE);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.docstrings({ documented: true }) as any;
+      expect(r.items.map((i: any) => i.name)).toEqual(['add']);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+});

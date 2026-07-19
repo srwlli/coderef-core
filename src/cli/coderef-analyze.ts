@@ -35,11 +35,12 @@ import {
   parseRulesSpec, projectLayerEdges, checkDependencyRules,
   type DependencyRulesNode, type DependencyRulesEdge,
 } from '../query/dependency-rules.js';
+import { computeDocstringSurface, type DocstringElement } from '../query/docstrings.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
   'middleware', 'graph', 'complexity', 'impact', 'multi-hop', 'breaking-changes',
-  'tests-for-change', 'ast-search', 'type-hierarchy', 'dependency-rules',
+  'tests-for-change', 'ast-search', 'type-hierarchy', 'dependency-rules', 'docstrings',
 ] as const;
 type AnalyzeType = typeof TYPES[number];
 
@@ -193,6 +194,9 @@ async function main(): Promise<void> {
       lang:      { type: 'string' },
       query:     { type: 'string' },
       limit:     { type: 'string' },
+      offset:    { type: 'string' },
+      documented:   { type: 'boolean', default: false },
+      undocumented: { type: 'boolean', default: false },
       gate:    { type: 'boolean', default: false },
       help:    { type: 'boolean', default: false },
     },
@@ -661,6 +665,44 @@ async function main(): Promise<void> {
       // asked for the gate; the default (report-only) always exits 0 — the
       // surfaces-not-verdicts default. process.exit here is intentional.
       if (values.gate && report.violatedCount > 0) process.exit(2);
+      break;
+    }
+    case 'docstrings': {
+      // Per-element docstring surface (P8): reads the ElementData.docstring slot
+      // the live extractor now fills, from the canonical index.json elements
+      // (the same source the api_diff/breaking-changes path uses). The pure
+      // projection is in src/query/docstrings.ts. Surfaces-not-verdicts:
+      // coverageRatio is provenance, not a quality grade.
+      let elements: DocstringElement[] = [];
+      try {
+        const idxPath = join(project, '.coderef', 'index.json');
+        const idx = JSON.parse(await readFile(idxPath, 'utf8')) as { elements?: DocstringElement[] };
+        elements = idx.elements ?? [];
+      } catch {
+        console.error(
+          'coderef-analyze error: .coderef/index.json not found or unreadable. ' +
+          'Run populate-coderef first.',
+        );
+        process.exit(1);
+      }
+
+      const documented =
+        values.documented === true ? true : values.undocumented === true ? false : undefined;
+      const docLimit = values.limit
+        ? (parseInt(values.limit as string, 10) || undefined)
+        : undefined;
+      const docOffset = values.offset
+        ? (parseInt(values.offset as string, 10) || undefined)
+        : undefined;
+
+      const surface = computeDocstringSurface({
+        elements,
+        filter: values.element as string | undefined,
+        documented,
+        limit: docLimit,
+        offset: docOffset,
+      });
+      emit(surface);
       break;
     }
     default: {

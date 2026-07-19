@@ -97,6 +97,7 @@ import {
   parseRulesSpec, projectLayerEdges, checkDependencyRules,
   type DependencyRulesNode, type DependencyRulesEdge,
 } from '../query/dependency-rules.js';
+import { computeDocstringSurface, type DocstringElement } from '../query/docstrings.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
@@ -597,6 +598,8 @@ export interface ToolHandlers {
   api_diff(args: { before?: string; after?: string; snapshot?: boolean; snapshot_label?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // declared architecture-constraint check over observed layer edges (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P7)
   dependency_rules(args: { limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  // per-element docstring presence + text surface (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P8)
+  docstrings(args: { element?: string; documented?: boolean; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1754,6 +1757,24 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         note: report.note,
       };
       return shapeResponse(envelope, response_format, ['rules']);
+    },
+
+    // docstrings (P8): per-element docstring presence + text, read from the
+    // ElementData.docstring slot the live extractor now fills. Read-only,
+    // paginated, mirrors the query-tool report shape. Surfaces-not-verdicts
+    // (coverageRatio is provenance, not a quality grade) + absence=no-data
+    // (undocumented is a fact; empty element set -> no_data). Complements the
+    // file-grain docs-analyzer JSDocCoverage — it does not replace it.
+    docstrings({ element, documented, limit, offset, response_format }) {
+      const index = loadIndex(projectDir, cache);
+      const surface = computeDocstringSurface({
+        elements: (index.elements ?? []) as unknown as DocstringElement[],
+        filter: element,
+        documented,
+        limit: clampLimit(limit),
+        offset: offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset)),
+      });
+      return shapeResponse(surface as unknown as Record<string, unknown>, response_format, ['items']);
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
@@ -3359,6 +3380,25 @@ async function main(): Promise<void> {
     },
     async ({ project_root, limit, offset, response_format }) =>
       perRepo(project_root, h => h.dependency_rules({ limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'docstrings',
+    {
+      title: 'Docstring surface (per-element JSDoc / docstring capture)',
+      description:
+        'Surface the docstring for each code element — the leading /** */ JSDoc block for JS/TS/JSX, or the first string-literal statement for Python — attributed to its codeRefId so a hit pipes into the graph tools. Returns per-element {hasDocstring, docstring?} plus a coverage roll-up {total, documented, undocumented, coverageRatio}. SURFACES, NOT VERDICTS: coverageRatio is a PROVENANCE ratio (documented/total), NOT a quality score or grade. ABSENCE = NO-DATA: an element with no docstring reports hasDocstring:false with the text omitted (undocumented is a fact, never a guess); an empty element set returns no_data:true. Filter by name substring (element) and/or documented=true|false. Complements — does not replace — the file-grain regex JSDoc coverage in the docs analysis.',
+      inputSchema: {
+        project_root: projectRootArg,
+        element: z.string().optional().describe('Case-insensitive substring filter over element name'),
+        documented: z.boolean().optional().describe('true -> documented only; false -> undocumented only; omit -> all'),
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, element, documented, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.docstrings({ element, documented, limit, offset, response_format })),
   );
 
   server.registerTool(

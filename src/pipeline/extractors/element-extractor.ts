@@ -29,6 +29,7 @@
 import type Parser from 'tree-sitter';
 import type { ElementData } from '../../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../element-taxonomy.js';
+import { extractLeadingJsDoc, extractPythonDocstring } from './docstring.js';
 import logger from '../../utils/logger.js';
 
 /**
@@ -190,6 +191,7 @@ export class ElementExtractor {
             file: filePath,
             line: nameNode.startPosition.row + 1,
             exported: this.isExported(node),
+            docstring: extractLeadingJsDoc(node),
           });
 
           // Traverse class body for methods
@@ -234,6 +236,7 @@ export class ElementExtractor {
             parameters,
             exported: false, // Methods are part of classes
             async: isAsync,
+            docstring: extractLeadingJsDoc(node),
           });
         }
       }
@@ -248,6 +251,7 @@ export class ElementExtractor {
             file: filePath,
             line: nameNode.startPosition.row + 1,
             exported: this.isExported(node),
+            docstring: extractLeadingJsDoc(node),
           });
         }
       }
@@ -262,6 +266,7 @@ export class ElementExtractor {
             file: filePath,
             line: nameNode.startPosition.row + 1,
             exported: this.isExported(node),
+            docstring: extractLeadingJsDoc(node),
           });
         }
       }
@@ -302,6 +307,7 @@ export class ElementExtractor {
             parameters,
             exported: !isMethod && !name.startsWith('_'), // Private if starts with _
             async: isAsync || undefined,
+            docstring: extractPythonDocstring(node),
           });
         }
       }
@@ -317,6 +323,7 @@ export class ElementExtractor {
             file: filePath,
             line: nameNode.startPosition.row + 1,
             exported: !name.startsWith('_'),
+            docstring: extractPythonDocstring(node),
           });
 
           // Traverse class body for methods
@@ -658,6 +665,8 @@ export class ElementExtractor {
       // stop at the enclosing statement_block.
       exported: this.isExported(funcNode),
       async: isAsync,
+      // P8: leading /** */ JSDoc for this declaration (undefined when absent).
+      docstring: extractLeadingJsDoc(funcNode),
     };
   }
 
