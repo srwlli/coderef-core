@@ -93,6 +93,10 @@ import { searchAst, computeNotSearchedCounts, AST_SEARCH_LANG_EXTENSIONS, type A
 import { listLanguageFilesOnDisk } from '../search/language-files.js';
 import { computeTypeHierarchy, type TypeHierarchyDirection } from '../query/type-hierarchy.js';
 import { extractExportsManifest, diffApiSurface, type ExportsManifest, type ManifestElement } from '../query/api-diff.js';
+import {
+  parseRulesSpec, projectLayerEdges, checkDependencyRules,
+  type DependencyRulesNode, type DependencyRulesEdge,
+} from '../query/dependency-rules.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
 import {
@@ -591,6 +595,8 @@ export interface ToolHandlers {
   type_hierarchy(args: { element: string; direction?: 'up' | 'down' | 'both'; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // exported-API-surface diff over a snapshot baseline (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P6)
   api_diff(args: { before?: string; after?: string; snapshot?: boolean; snapshot_label?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  // declared architecture-constraint check over observed layer edges (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P7)
+  dependency_rules(args: { limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)
   what_this_calls(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1677,6 +1683,77 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           : diff.note,
       };
       return shapeResponse(envelope, response_format, ['added', 'removed', 'changed']);
+    },
+
+    // dependency_rules (P7): check DECLARED architecture constraints (an optional
+    // .coderef/rules.json — forbid/allow layer-pairs) against the OBSERVED
+    // declared-layer edges in graph.json. Read-only, mirrors validation_status's
+    // report shape. Surfaces-not-verdicts (no composite score) + absence=no-data
+    // (no rules.json -> no_data:true, never a false all-pass). MCP has no exit
+    // code — the CLI --gate flag owns the CI gate; the tool only reports.
+    dependency_rules({ limit, offset, response_format }) {
+      const crefDir = path.join(projectDir, '.coderef');
+      const graph = loadGraph(projectDir, cache);
+      const layerEdges = projectLayerEdges(
+        graph.nodes as unknown as DependencyRulesNode[],
+        graph.edges as unknown as DependencyRulesEdge[],
+      );
+
+      const rulesPath = path.join(crefDir, 'rules.json');
+      if (!fs.existsSync(rulesPath)) {
+        return {
+          action: 'gate',
+          ok: true,
+          no_data: true,
+          schema_version: '1.0.0',
+          rule_count: 0,
+          violated_count: 0,
+          satisfied_count: 0,
+          not_applicable_count: 0,
+          observed_layer_edge_count: layerEdges.length,
+          rules: [],
+          warnings: [],
+          note:
+            `no .coderef/rules.json — declare forbid/allow layer-pair constraints to enable ` +
+            `the gate. Observed ${layerEdges.length} declared-layer dependency edge(s).`,
+        };
+      }
+
+      let rulesRaw: unknown;
+      try {
+        rulesRaw = JSON.parse(fs.readFileSync(rulesPath, 'utf8'));
+      } catch (err) {
+        return {
+          action: 'gate',
+          ok: false,
+          no_data: true,
+          error: 'rules_json_invalid',
+          hint: `.coderef/rules.json is not valid JSON: ${String(err instanceof Error ? err.message : err).slice(0, 200)}`,
+        };
+      }
+
+      const spec = parseRulesSpec(rulesRaw);
+      const report = checkDependencyRules({ rules: spec, layerEdges });
+      const cap = clampLimit(limit);
+      const paged = paginate(report.rules, offset, cap);
+      const envelope: Record<string, unknown> = {
+        action: 'gate',
+        ok: report.violatedCount === 0,
+        no_data: false,
+        schema_version: report.schemaVersion,
+        rule_count: report.ruleCount,
+        violated_count: report.violatedCount,
+        satisfied_count: report.satisfiedCount,
+        not_applicable_count: report.notApplicableCount,
+        observed_layer_edge_count: layerEdges.length,
+        rules: paged.page,
+        offset: paged.offset,
+        limit: paged.limit,
+        has_more: paged.has_more,
+        warnings: report.warnings,
+        note: report.note,
+      };
+      return shapeResponse(envelope, response_format, ['rules']);
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
@@ -3265,6 +3342,23 @@ async function main(): Promise<void> {
     },
     async ({ project_root, before, after, snapshot, snapshot_label, limit, offset, response_format }) =>
       perRepo(project_root, h => h.api_diff({ before, after, snapshot, snapshot_label, limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'dependency_rules',
+    {
+      title: 'Dependency-rules gate (declared architecture constraints)',
+      description:
+        'Check DECLARED architecture constraints against the OBSERVED declared-layer dependency edges. An optional .coderef/rules.json declares forbid layer-pairs (a dependency that MUST NOT exist, {from,to}) and/or allow-lists (a source layer may only depend on the listed targets); this checks them against the layer->layer edges projected from graph.json (each node\'s @layer header). Per rule: status satisfied | violated | not_applicable, with the offending edges named. SURFACES, NOT VERDICTS: a violation is a declared-constraint MISMATCH fact — there is deliberately NO composite architecture-health score. ABSENCE = NO-DATA: with no .coderef/rules.json the result is no_data:true (declare constraints to enable the gate), NEVER a false "all rules pass". Read-only report; the CI exit-code gate lives on the coderef-analyze --type=dependency-rules --gate CLI (MCP only reports).',
+      inputSchema: {
+        project_root: projectRootArg,
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.dependency_rules({ limit, offset, response_format })),
   );
 
   server.registerTool(

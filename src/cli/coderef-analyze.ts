@@ -31,11 +31,15 @@ import { searchAst, computeNotSearchedCounts, type AstSearchFile, type AstSearch
 import { listLanguageFilesOnDisk } from '../search/language-files.js';
 import { computeTypeHierarchy, type TypeHierarchyDirection } from '../query/type-hierarchy.js';
 import { extractExportsManifest, diffApiSurface, type ExportsManifest, type ManifestElement } from '../query/api-diff.js';
+import {
+  parseRulesSpec, projectLayerEdges, checkDependencyRules,
+  type DependencyRulesNode, type DependencyRulesEdge,
+} from '../query/dependency-rules.js';
 
 const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
   'middleware', 'graph', 'complexity', 'impact', 'multi-hop', 'breaking-changes',
-  'tests-for-change', 'ast-search', 'type-hierarchy',
+  'tests-for-change', 'ast-search', 'type-hierarchy', 'dependency-rules',
 ] as const;
 type AnalyzeType = typeof TYPES[number];
 
@@ -60,6 +64,7 @@ Options:
   --lang=<ext>       Source language extension for ast-search (ts, tsx, js, jsx, py, go, rs, java, cpp, cc, cxx, c++, c, h)
   --query=<s-expr>   tree-sitter S-expression query (required for: ast-search)
   --limit=<N>        Max results (used by: ast-search; default 100)
+  --gate             Exit 2 on any dependency-rule violation (dependency-rules; CI gate)
   --help             Print this help
 
 Analysis types:
@@ -91,6 +96,14 @@ Analysis types:
                      is a syntactic fact, never a verdict; absence is no-data.
                      A malformed query degrades to reason:"invalid_query".
                      (--lang, --query, --limit)
+  dependency-rules   Dependency-rules gate: check DECLARED architecture
+                     constraints (optional .coderef/rules.json, forbid/allow
+                     layer-pairs) against the OBSERVED declared-layer edges in
+                     graph.json. Per rule: satisfied | violated | not_applicable,
+                     with the offending edges named. Surfaces, NOT verdicts: no
+                     composite health score. No rules.json = no-data, never a
+                     false "all rules pass". With --gate, exit 2 on any violation
+                     (CI gate); default exit 0 (report-only).
 
 Note: graph, complexity, impact, multi-hop, and middleware read the canonical
 .coderef/graph.json produced by the populate pipeline (DR-PHASE-5-C). Run
@@ -180,6 +193,7 @@ async function main(): Promise<void> {
       lang:      { type: 'string' },
       query:     { type: 'string' },
       limit:     { type: 'string' },
+      gate:    { type: 'boolean', default: false },
       help:    { type: 'boolean', default: false },
     },
     strict: false,
@@ -564,6 +578,89 @@ async function main(): Promise<void> {
           ? `${diff.note} No baseline at ${beforePath.replace(/\\/g, '/')} — snapshot first: --type=breaking-changes --to=baseline`
           : diff.note,
       });
+      break;
+    }
+    case 'dependency-rules': {
+      // Dependency-rules gate (P7): check declared architecture constraints
+      // (.coderef/rules.json) against the observed declared-layer edges in
+      // graph.json. Rides the same layer model as src/map/layer-drift.ts. The
+      // pure checker is in src/query/dependency-rules.ts; git stays out of it.
+      const fs = await import('node:fs');
+      const crefDir = join(project, '.coderef');
+
+      // Load graph.json (nodes carry metadata.layer; edges are node-id pairs).
+      let graphNodes: DependencyRulesNode[] = [];
+      let graphEdges: DependencyRulesEdge[] = [];
+      try {
+        const graphRaw = JSON.parse(await readFile(join(crefDir, 'graph.json'), 'utf8')) as {
+          nodes?: DependencyRulesNode[]; edges?: DependencyRulesEdge[];
+        };
+        graphNodes = graphRaw.nodes ?? [];
+        graphEdges = graphRaw.edges ?? [];
+      } catch {
+        console.error(
+          'coderef-analyze error: .coderef/graph.json not found or unreadable. ' +
+          'Run populate-coderef first.',
+        );
+        process.exit(1);
+      }
+
+      const layerEdges = projectLayerEdges(graphNodes, graphEdges);
+
+      // ABSENCE = NO-DATA: no rules.json -> honest no_data, never a false pass.
+      const rulesPath = join(crefDir, 'rules.json');
+      if (!fs.existsSync(rulesPath)) {
+        emit({
+          action: 'gate',
+          ok: true,
+          no_data: true,
+          schema_version: '1.0.0',
+          rule_count: 0,
+          violated_count: 0,
+          satisfied_count: 0,
+          not_applicable_count: 0,
+          observed_layer_edge_count: layerEdges.length,
+          rules: [],
+          warnings: [],
+          note:
+            `no .coderef/rules.json — declare forbid/allow layer-pair constraints to enable ` +
+            `the gate. Observed ${layerEdges.length} declared-layer dependency edge(s).`,
+        });
+        break;
+      }
+
+      let rulesRaw: unknown;
+      try {
+        rulesRaw = JSON.parse(fs.readFileSync(rulesPath, 'utf8'));
+      } catch (err) {
+        console.error(
+          `coderef-analyze error: .coderef/rules.json is not valid JSON: ` +
+          String(err instanceof Error ? err.message : err).slice(0, 200),
+        );
+        process.exit(1);
+      }
+
+      const spec = parseRulesSpec(rulesRaw);
+      const report = checkDependencyRules({ rules: spec, layerEdges });
+      emit({
+        action: 'gate',
+        ok: report.violatedCount === 0,
+        no_data: false,
+        schema_version: report.schemaVersion,
+        rule_count: report.ruleCount,
+        violated_count: report.violatedCount,
+        satisfied_count: report.satisfiedCount,
+        not_applicable_count: report.notApplicableCount,
+        observed_layer_edge_count: layerEdges.length,
+        rules: report.rules,
+        warnings: report.warnings,
+        note: report.note,
+      });
+
+      // --gate: opt-in CI exit code. A violation exits 2 ONLY when the operator
+      // asked for the gate; the default (report-only) always exits 0 — the
+      // surfaces-not-verdicts default. process.exit here is intentional.
+      if (values.gate && report.violatedCount > 0) process.exit(2);
       break;
     }
     default: {

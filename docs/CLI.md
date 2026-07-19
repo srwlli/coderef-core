@@ -28,7 +28,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 30 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 31 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
 | [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens`, `--git` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
@@ -912,7 +912,7 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 30 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 31 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
 
 **Repo-agnostic (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001):** one running server serves ANY indexed repo. Every tool takes a **required `project_root`** argument naming the target repo root (the directory containing `.coderef/`) — pure CLI semantics, exactly as if the caller had the CLI. There is no default repo, no cwd inference, no env fallback; omitting `project_root` is a schema-level rejection.
 
@@ -986,6 +986,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `ast_search` | Structural AST pattern search ripgrep can't express ("await inside a loop", "empty catch"): run a tree-sitter S-expression `query` against every `lang` source file; each match returns file+line+snippet attributed to the enclosing element's `codeRefId` so hits join the graph tools. A match is a syntactic fact, never a verdict; absence is no-data (empty / `reason:"invalid_query"` / `reason:"unsupported_language"`) |
 | `type_hierarchy` | Class/interface supertypes + subtypes over the `extends`/`implements` heritage edges the pipeline populates. `direction:"up"` = ancestors (what the element extends/implements), `"down"` = descendants, `"both"` (default) = each; every hit carries depth (1 = direct) + heritage kind, attributed to a `codeRefId`. Absence is no-data (no recorded heritage edge), never "flat hierarchy"; an unresolved external supertype is returned with `resolved:false` |
 | `api_diff` | Exported-API-surface diff over a snapshot baseline (breaking-changes). `snapshot:true` copies the current exports manifest (name + kind + parameter arity per exported element, keyed by `codeRefId`) to a `.coderef`-confined sidecar; a bare call diffs the `baseline` sidecar vs the current index into added / removed / signature-changed exports. Surfaces, NOT verdicts: a removed export is a CHANGE fact, never auto-"break"; no composite score. Absence = no-data (no baseline snapshot → `no_data:true`), never a false "0 breaking changes" |
+| `dependency_rules` | Dependency-rules gate: check DECLARED architecture constraints (optional `.coderef/rules.json` — `forbid`/`allow` layer-pairs `{from,to}`) against the OBSERVED declared-layer edges projected from `graph.json` (`@layer` headers). Per rule: `satisfied` \| `violated` \| `not_applicable`, with the offending edges named. Surfaces, NOT verdicts: no composite architecture-health score. Absence = no-data (no `rules.json` → `no_data:true`), never a false "all rules pass". Read-only report; the CI exit-code gate lives on the `coderef-analyze --type=dependency-rules --gate` CLI (MCP only reports) |
 | `rag_search` | Semantic code search over the RAG index; provider/store read from rag-index.json metadata so query embeddings always match the index model. Pass `expand=true` to attach each hit's 1-hop graph neighborhood (callers/callees/imports/importedBy, as signatures) inline — see **Ego-graph expansion** below |
 | `symbol_context` | The consolidated **one-card-per-symbol** view: identity + header presence + 1-hop neighborhood + references + test-linkage + mtime-staleness in a single call — the understand-before-edit workflow that otherwise costs ~5 round-trips. A JOIN over existing data, not new analysis. See **Symbol context card** below |
 
@@ -1282,6 +1283,7 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `--lang=<ext>` | Source language extension (required for: `ast-search`; `ts`,`tsx`,`js`,`jsx`,`py`,`go`,`rs`,`java`,`cpp`,`cc`,`cxx`,`c++`,`c`,`h`) | — |
 | `--query=<s-expr>` | tree-sitter S-expression query (required for: `ast-search`) | — |
 | `--limit=<N>` | Max results (used by: `ast-search`) | `100` |
+| `--gate` | Exit `2` on any dependency-rule violation (used by: `dependency-rules`; CI gate). Default is report-only (exit `0`) | — |
 | `--help` | Print help | — |
 
 ### Analysis types
@@ -1303,6 +1305,7 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `tests-for-change` | Diff-to-test-selection: which test-file elements reach the diff through resolved call/import edges, ranked by directness (depth 1 = direct). Absence is no-data, not "untested". | `--ref` (default `HEAD`) |
 | `ast-search` | Structural AST pattern search: run a tree-sitter S-expression `--query` against every `--lang` file; each match returns file+line+snippet attributed to the enclosing element's `codeRefId`. A match is a syntactic fact, never a verdict; absence is no-data. Malformed query → `reason:"invalid_query"`. | `--lang`, `--query`, `--limit` |
 | `type-hierarchy` | Class/interface supertypes + subtypes over the `extends`/`implements` heritage edges the pipeline populates. `--direction=up` = ancestors (what the element extends/implements), `down` = descendants, `both` (default) = each; every hit carries its depth (1 = direct) + heritage kind. Absence is no-data (no recorded heritage edge), never "flat hierarchy"; an unresolved external supertype is returned with `resolved:false`. | `--element` (opt: `--direction`, `--depth`) |
+| `dependency-rules` | Dependency-rules gate: check DECLARED architecture constraints (optional `.coderef/rules.json` — `forbid`/`allow` layer-pairs) against the OBSERVED declared-layer edges in `graph.json`. Per rule: `satisfied` \| `violated` \| `not_applicable`, with the offending edges named. Surfaces, NOT verdicts (no composite health score); no `rules.json` = no-data, never a false "all rules pass". With `--gate`, exit `2` on any violation (CI gate); default exit `0` (report-only). | `--gate` (opt) |
 
 ### Examples
 

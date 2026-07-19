@@ -899,6 +899,79 @@ describe('api_diff', () => {
   });
 });
 
+// dependency_rules (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P7). Graph
+// nodes carry metadata.layer; one observed edge service -> cli. rules.json
+// declares constraints checked against it. No exit code — MCP only reports.
+describe('dependency_rules', () => {
+  it('is registered as a handler', () => {
+    expect(typeof (handlers as any).dependency_rules).toBe('function');
+  });
+
+  function writeRepo(rules?: unknown): string {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-deprules-'));
+    const cr = path.join(proj, '.coderef');
+    fs.mkdirSync(cr, { recursive: true });
+    const nodes = [
+      { id: '@Fn/svc.ts#doWork:1', file: 'svc.ts', type: 'function', name: 'doWork', line: 1, metadata: { layer: 'service' } },
+      { id: '@Fn/cli.ts#main:1', file: 'cli.ts', type: 'function', name: 'main', line: 1, metadata: { layer: 'cli' } },
+    ];
+    const edges = [{ id: 'e1', sourceId: '@Fn/svc.ts#doWork:1', source: '@Fn/svc.ts#doWork:1', target: '@Fn/cli.ts#main:1', type: 'calls' }];
+    const graph: ExportedGraph = {
+      version: '1.0.0', exportedAt: 1, nodes: nodes as any, edges: edges as any,
+      statistics: { nodeCount: nodes.length, edgeCount: edges.length, edgesByType: { calls: 1 }, densityRatio: 0 },
+    };
+    fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify(graph));
+    fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify({ elements: nodes }));
+    fs.writeFileSync(path.join(cr, 'validation-report.json'), JSON.stringify({ ok: true }));
+    const future = new Date(Date.now() + 60_000);
+    fs.utimesSync(path.join(cr, 'graph.json'), future, future);
+    fs.utimesSync(path.join(cr, 'index.json'), future, future);
+    if (rules !== undefined) fs.writeFileSync(path.join(cr, 'rules.json'), JSON.stringify(rules));
+    return proj;
+  }
+
+  it('no rules.json -> no_data (never a false all-pass), edges still surfaced', () => {
+    const proj = writeRepo();
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.dependency_rules({}) as any;
+      expect(r.no_data).toBe(true);
+      expect(r.rule_count).toBe(0);
+      expect(r.observed_layer_edge_count).toBe(1);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('a forbid violation is surfaced with the offending edge (no composite score)', () => {
+    const proj = writeRepo({ forbid: [{ from: 'service', to: 'cli' }] });
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.dependency_rules({}) as any;
+      expect(r.no_data).toBe(false);
+      expect(r.violated_count).toBe(1);
+      expect(r.rules[0].status).toBe('violated');
+      expect(r.rules[0].violatingEdges[0].sourceLayer).toBe('service');
+      expect(r.rules[0].violatingEdges[0].targetLayer).toBe('cli');
+      expect(r).not.toHaveProperty('score');
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it('a satisfied forbid rule reports satisfied, 0 violated', () => {
+    const proj = writeRepo({ forbid: [{ from: 'cli', to: 'service' }] });
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.dependency_rules({}) as any;
+      expect(r.violated_count).toBe(0);
+      expect(r.satisfied_count).toBe(1);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+});
+
 // ---- agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1) ---
 // Fixture call chain: main -> alpha -> helper (e3, e1). alpha imports Helper (e4).
 // These prove the FORWARD direction is distinct from the inbound tools:
