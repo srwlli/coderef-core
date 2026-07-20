@@ -141,6 +141,23 @@ type ExportedEdge = ExportedGraph['edges'][number];
 
 const SERVER_NAME = 'coderef-core';
 const SERVER_VERSION = '1.0.0';
+// Registered-tool count surfaced in the instructions string + startup log.
+// Bump when adding/removing a tool registration below — the mcp-server test
+// counts registrations in this file and fails on drift.
+export const SERVER_TOOL_COUNT = 34;
+// Agent-facing usage contract delivered through the MCP initialize handshake
+// (ServerOptions.instructions). This is the ONE surface every connected agent
+// receives automatically, so it carries the load-bearing rules that were
+// previously learned only by failing (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P1).
+export const SERVER_INSTRUCTIONS = `CodeRef code-intelligence server — ${SERVER_TOOL_COUNT} tools over a repo's .coderef/ artifacts (index, call/import graph, semantic map, RAG vectors).
+
+USAGE CONTRACT:
+1. Every tool REQUIRES project_root (absolute path to the target repo). There is no default repo — the server serves whichever indexed repo you name.
+2. If .coderef/ is missing or stale, run the reindex tool first (or the populate-coderef CLI). Every read response carries a staleness block — reindex when it warns.
+3. Orient before you grep: open a new repo with map format:"skeleton", then codebase_summary and validation_status. That replaces 10-15 blind file reads.
+4. Prefer graph tools over grep for structure questions: what_calls / impact_of (who breaks if I change X), cycles / hotspots (risk), find_element + symbol_context (definitions and neighbors), rag_search (concept search — check rag_status freshness first).
+5. Surfaces, not verdicts: results show WHERE to look, never WHAT is wrong — read the files before concluding. An empty result means NO RESOLVED DATA, not "none exist"; check unresolved_edges and validation_status before trusting a negative.
+6. Write scope: no tool here writes source files. rename --apply is CLI-only by design; MCP exposes rename_preview only. Index writes (reindex, rag_index, map) are confined to .coderef/.`;
 const DEFAULT_LIMIT = 25;
 
 // ---- build-if-missing bounds (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P4) ----------
@@ -3056,7 +3073,12 @@ async function main(): Promise<void> {
   }
   anchor = path.resolve(anchor);
 
-  const server = new McpServer({ name: SERVER_NAME, version: SERVER_VERSION });
+  // instructions ride the initialize handshake (ServerOptions, not Implementation) —
+  // the SDK exposes them to every client as InitializeResult.instructions.
+  const server = new McpServer(
+    { name: SERVER_NAME, version: SERVER_VERSION },
+    { instructions: SERVER_INSTRUCTIONS },
+  );
 
   /** Route one tool call to its named repo's handlers; convert every
    * resolution/handler error into the structured envelope (P2-T4). On success,
@@ -3777,7 +3799,7 @@ async function main(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error(
-    `[coderef-mcp] v${SERVER_VERSION} on stdio — 23 tools, per-repo; project_root required per call; anchor: ${anchor}`,
+    `[coderef-mcp] v${SERVER_VERSION} on stdio — ${SERVER_TOOL_COUNT} tools, per-repo; project_root required per call; anchor: ${anchor}`,
   );
 }
 

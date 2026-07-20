@@ -19,7 +19,7 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
-import { buildToolHandlers, ToolHandlers, attachStaleness } from '../src/cli/coderef-mcp-server.js';
+import { buildToolHandlers, ToolHandlers, attachStaleness, SERVER_INSTRUCTIONS, SERVER_TOOL_COUNT } from '../src/cli/coderef-mcp-server.js';
 import type { ExportedGraph } from '../src/export/graph-exporter.js';
 import { createHash } from 'crypto';
 import { buildManifest, type ManifestSourceFile } from '../src/pipeline/staleness-manifest.js';
@@ -2142,5 +2142,34 @@ describe('scip_resolution_delta', () => {
     } finally {
       fs.rmSync(proj, { recursive: true, force: true });
     }
+  });
+});
+
+// ---- server instructions envelope (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P1) ----
+// The instructions string rides the initialize handshake to EVERY client, so
+// its load-bearing tokens are contract, not prose. The tool-count guard reads
+// the server source and fails when a registerTool call lands without the
+// SERVER_TOOL_COUNT bump (same drift class as the stale "23 tools" log line
+// this phase fixed).
+describe('server instructions (initialize handshake envelope)', () => {
+  it('carries a non-empty instructions string with the load-bearing tokens', () => {
+    expect(typeof SERVER_INSTRUCTIONS).toBe('string');
+    expect(SERVER_INSTRUCTIONS.length).toBeGreaterThan(200);
+    for (const token of ['project_root', 'reindex', 'skeleton', 'rename_preview']) {
+      expect(SERVER_INSTRUCTIONS).toContain(token);
+    }
+    // Write-scope + trust rules are stated, not implied.
+    expect(SERVER_INSTRUCTIONS).toMatch(/CLI-only/);
+    expect(SERVER_INSTRUCTIONS).toMatch(/Surfaces, not verdicts/i);
+  });
+
+  it('SERVER_TOOL_COUNT matches the registerTool() registrations in source (drift guard)', () => {
+    const src = fs.readFileSync(
+      path.join(__dirname, '..', 'src', 'cli', 'coderef-mcp-server.ts'),
+      'utf8',
+    );
+    const registrations = (src.match(/server\.registerTool\(/g) ?? []).length;
+    expect(registrations).toBe(SERVER_TOOL_COUNT);
+    expect(SERVER_INSTRUCTIONS).toContain(`${SERVER_TOOL_COUNT} tools`);
   });
 });

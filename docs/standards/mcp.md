@@ -2,7 +2,7 @@
 title: MCP Server Standard
 kind: mcp
 status: living
-updated: 2026-07-17
+updated: 2026-07-20
 ---
 <!-- Authored by /standards-establish from SKILLS/STANDARDS/kinds/mcp/template/mcp.md.
      This is the PROJECT's standard for the "mcp" kind. Edit to fit the project;
@@ -90,11 +90,24 @@ conformance win. If this project's server is single-target, mark this section
 - [ ] This server is **single-target** (this invariant is N/A).
 
 **This project (coderef-core) is a target-repo server.** `coderef-mcp-server` exposes
-**27 tools** (TS SDK) that answer questions about *whatever* repository the caller
+**34 tools** (TS SDK) that answer questions about *whatever* repository the caller
 names: every `mcp__coderef-core__*` call takes a **required `project_root`** parameter
 and there is **no default/hidden root** (the operator-locked any-repo contract shipped
 in WO-MCP-REPO-AGNOSTIC-ANY-REPO-001). The checker fires this invariant and PASSES it;
 this section affirms that posture.
+
+## Server instructions + write scope (agent-facing contract)
+
+The server declares its own usage contract through the `initialize` handshake
+(`ServerOptions.instructions`, shipped in WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001
+P1): `project_root` required per call, populate-first (`reindex` before querying an
+unindexed/stale repo), skeleton-map orientation, prefer-graph-over-grep, and
+surfaces-not-verdicts. The **write-scope rule** is part of that contract and of this
+standard's posture: **no MCP tool writes source files.** `coderef-rename --apply` is
+CLI-only by design — MCP exposes `rename_preview` only. Index writes (`reindex`,
+`rag_index`, `map`, `api_diff` snapshot) are confined to `<project_root>/.coderef/`.
+The mcp-server test suite pins the instructions string's load-bearing tokens
+(`project_root`, `reindex`, `skeleton`, `rename_preview`) and fails on tool-count drift.
 
 ## Maintain-time: the MCP Inspector CLI is the dynamic companion
 
