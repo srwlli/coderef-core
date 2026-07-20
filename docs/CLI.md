@@ -28,7 +28,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 34 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 35 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
 | [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens`, `--git` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
@@ -980,6 +980,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `cycles` | Where are the dependency cycles? Tarjan SCC over resolved call/import edges, largest first, with a sample in-cycle edge per cycle |
 | `what_exports` | What does this file export? Exported elements via resolved export edges; path fragments get an ambiguity envelope |
 | `map` | Emit/refresh the file-level repo map (`.coderef/map/data.json` + viewer). `format:"skeleton"` (+ optional `token_budget`, default 1600) also returns a token-budgeted, centrality-ranked plaintext repo map **inline** (`skeleton_text`) — the fastest first call for repo orientation |
+| `orient` | One-call first-turn orientation: ONE token-budgeted envelope (default 2400) composing the skeleton map, `codebase_summary` toplines, validation trust numbers, BOTH staleness axes (source-vs-graph + vectors-vs-index), and the top-10 hotspots. Replaces the `map format:"skeleton"` -> `codebase_summary` -> `validation_status` -> `hotspots` opening sequence. Absent artifacts are named in `no_data`; over-budget trims are declared in `warnings` |
 | `map_metrics_delta` | Verified-refactor loop: `snapshot:true` saves the five map metric families; the diff (`before`/`after`) proves the target family improved without regressing others — a **decomposed per-family factor vector, never a composite score**. Direction labels are provenance, not verdicts. See **Metrics delta** above |
 | `diff_impact` | PR blast-radius in one call: map a git diff (default working tree vs HEAD) to changed elements via index.json line ranges, then union transitive dependents |
 | `tests_for_change` | Diff-to-test-selection in one call: map a git diff (default working tree vs HEAD) to changed elements, then return the TEST-FILE elements that reach them through resolved call/import edges, ranked by directness (depth 1 = direct). Absence is no-data, not "untested" |
@@ -1387,10 +1388,11 @@ coderef-query --project=<path> --type=<type> --target=<element> [options]
 |------|-------------|---------|
 | `--project=<path>` | Path to the project root — must contain `.coderef/graph.json` (**required**) | — |
 | `--type=<type>` | Query type (**required**; see table below) | — |
-| `--target=<element>` | Target element: a codeRefId, an element name, or a file path (**required**) | — |
+| `--target=<element>` | Target element: a codeRefId, an element name, or a file path (**required** except `--type=orient`) | — |
 | `--source=<element>` | Source element for path queries (required for: `shortest-path`, `all-paths`) | — |
 | `--depth=<N>` | Max traversal depth | `5` |
 | `--format=<fmt>` | Result format: `raw` \| `summary` \| `full` | `summary` |
+| `--token-budget=<N>` | Overall token budget for `--type=orient` | `2400` |
 | `--patterns=<globs>` | DEPRECATED — accepted but ignored (queries read the populate-emitted graph) | — |
 | `--help` | Print help | — |
 
@@ -1408,6 +1410,7 @@ Direction contract: the `-me` suffix means the target is the OBJECT (inbound edg
 | `what-depends-on` | What does the target depend on, transitively? (outbound call+import) | — |
 | `shortest-path` | Shortest directed path from `--source` to `--target` | `--source` |
 | `all-paths` | All directed paths from `--source` to `--target` (bounded by `--depth`) | `--source` |
+| `orient` | One-call repo orientation (no `--target`): skeleton map + summary + validation + both staleness axes + top-10 hotspots, token-budgeted — CLI mirror of the MCP `orient` tool | — |
 
 ### Examples
 

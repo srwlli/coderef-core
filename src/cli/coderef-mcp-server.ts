@@ -106,7 +106,15 @@ import {
   type ScipDeltaEdge,
 } from '../query/scip-resolution-delta.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
-import { type StalenessResult, checkStaleness } from '../query/staleness-check.js';
+import { type StalenessResult, checkStaleness, readVectorStaleness } from '../query/staleness-check.js';
+import {
+  type OrientHotspot,
+  type OrientSkeletonBlock,
+  ORIENT_DEFAULT_TOKEN_BUDGET,
+  skeletonBudgetFor,
+  condenseValidation,
+  composeOrient,
+} from '../query/orient.js';
 import {
   type ResponseFormat,
   isConcise,
@@ -144,7 +152,7 @@ const SERVER_VERSION = '1.0.0';
 // Registered-tool count surfaced in the instructions string + startup log.
 // Bump when adding/removing a tool registration below — the mcp-server test
 // counts registrations in this file and fails on drift.
-export const SERVER_TOOL_COUNT = 34;
+export const SERVER_TOOL_COUNT = 35;
 // Agent-facing usage contract delivered through the MCP initialize handshake
 // (ServerOptions.instructions). This is the ONE surface every connected agent
 // receives automatically, so it carries the load-bearing rules that were
@@ -154,7 +162,7 @@ export const SERVER_INSTRUCTIONS = `CodeRef code-intelligence server — ${SERVE
 USAGE CONTRACT:
 1. Every tool REQUIRES project_root (absolute path to the target repo). There is no default repo — the server serves whichever indexed repo you name.
 2. If .coderef/ is missing or stale, run the reindex tool first (or the populate-coderef CLI). Every read response carries a staleness block — reindex when it warns.
-3. Orient before you grep: open a new repo with map format:"skeleton", then codebase_summary and validation_status. That replaces 10-15 blind file reads.
+3. Orient before you grep: call orient first — ONE token-budgeted envelope composing the skeleton map, codebase_summary, validation numbers, both staleness axes, and top hotspots. (The granular map format:"skeleton" / codebase_summary / validation_status calls remain for piecemeal reads.) That replaces 10-15 blind file reads.
 4. Prefer graph tools over grep for structure questions: what_calls / impact_of (who breaks if I change X), cycles / hotspots (risk), find_element + symbol_context (definitions and neighbors), rag_search (concept search — check rag_status freshness first).
 5. Surfaces, not verdicts: results show WHERE to look, never WHAT is wrong — read the files before concluding. An empty result means NO RESOLVED DATA, not "none exist"; check unresolved_edges and validation_status before trusting a negative.
 6. Write scope: no tool here writes source files. rename --apply is CLI-only by design; MCP exposes rename_preview only. Index writes (reindex, rag_index, map) are confined to .coderef/.`;
@@ -659,6 +667,7 @@ export interface ToolHandlers {
   // .coderef-WRITE / status tools — async (delegate to the extracted pipelines /
   // async status readout). Writes are confined to <projectDir>/.coderef/.
   rag_status(): Promise<Record<string, unknown>>;
+  orient(args: { token_budget?: number }): Record<string, unknown>;
   reindex(args: { incremental?: boolean }): Promise<Record<string, unknown>>;
   // concurrency: Ollama embed worker-pool size (speeds up indexing, output
   // unchanged). embed_cache: chunk-grain cache toggle (default ON).
@@ -1858,6 +1867,11 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
     },
 
     async rag_search({ query, limit, offset, hybrid, expand, neighbor_limit, lane, response_format }) {
+      // P4 vector-staleness WARN (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001,
+      // REC-006): computed once per call, attached to every successful envelope
+      // (both lanes — a lexical answer to a semantic-intent query still benefits
+      // from knowing the vectors are stale). null (absent stamps) attaches nothing.
+      const vecStale = readVectorStaleness(projectDir);
       const cap = clampLimit(limit);
       const off = offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset));
       const neighborCap = neighbor_limit === undefined
@@ -1933,6 +1947,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           lane: laneTag,
           routing_reason: degraded && degradeReason ? degradeReason : lex.routing_reason,
           ...(degraded ? { degraded: true } : {}),
+          ...(vecStale ? { vector_staleness: vecStale } : {}),
           ...(expand ? { expanded: true, neighbor_limit: neighborCap } : {}),
           total: paged.total,
           offset: paged.offset,
@@ -2025,6 +2040,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
           provider,
           store,
           hybrid: useHybrid,
+          ...(vecStale ? { vector_staleness: vecStale } : {}),
           ...(expand ? { expanded: true, neighbor_limit: neighborCap } : {}),
           total: paged.total,
           offset: paged.offset,
@@ -2674,6 +2690,80 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       };
     },
 
+    orient({ token_budget } = {}) {
+      // One-call first-turn orientation (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001
+      // P4, REC-003): a pure JOIN over the existing blocks — skeleton map,
+      // codebase_summary, validation report, BOTH staleness axes, top-10
+      // hotspots — composed and token-fitted by src/query/orient.ts. No new
+      // substrate, no new write path (the skeleton ride-along write is the map
+      // tool's own, confined to .coderef/map/). Absent blocks land in no_data.
+      const budget =
+        typeof token_budget === 'number' && Number.isFinite(token_budget) && token_budget > 0
+          ? Math.floor(token_budget)
+          : ORIENT_DEFAULT_TOKEN_BUDGET;
+      let skeleton: OrientSkeletonBlock | null = null;
+      try {
+        const m = this.map({ format: 'skeleton', token_budget: skeletonBudgetFor(budget) }) as Record<string, any>;
+        if (typeof m.skeleton_text === 'string') {
+          skeleton = {
+            text: m.skeleton_text,
+            estimated_tokens: m.skeleton_estimated_tokens ?? 0,
+            token_budget: m.skeleton_token_budget ?? skeletonBudgetFor(budget),
+            included_files: m.skeleton_included_files ?? 0,
+            omitted_files: m.skeleton_omitted_files ?? 0,
+            warnings: m.skeleton_warnings ?? [],
+          };
+        }
+      } catch {
+        // skeleton unavailable — composeOrient names it in no_data
+      }
+      let summary: Record<string, unknown> | null = null;
+      try {
+        summary = this.codebase_summary();
+      } catch {
+        // index/graph unavailable — no_data
+      }
+      let validation: Record<string, unknown> | null = null;
+      try {
+        validation = condenseValidation(loadValidationReport(projectDir) as unknown as Record<string, unknown>);
+      } catch {
+        // validation-report.json absent — no_data
+      }
+      let staleness: Record<string, unknown> | null = null;
+      try {
+        staleness = checkStaleness(projectDir) as unknown as Record<string, unknown>;
+      } catch {
+        // checkStaleness never throws by contract; belt-and-suspenders
+      }
+      const vector_staleness = readVectorStaleness(projectDir) as unknown as Record<string, unknown> | null;
+      let hotspots: OrientHotspot[] | null = null;
+      try {
+        const h = this.hotspots({ limit: 10 }) as Record<string, any>;
+        if (Array.isArray(h.hotspots)) {
+          hotspots = h.hotspots.map((x: any) => ({
+            id: String(x.id ?? ''),
+            name: x.name ?? null,
+            file: x.file ?? null,
+            line: x.line ?? null,
+            fan_in: x.fan_in ?? 0,
+            fan_out: x.fan_out ?? 0,
+            score: x.score ?? 0,
+          }));
+        }
+      } catch {
+        // graph unavailable — no_data
+      }
+      return composeOrient({
+        skeleton,
+        summary,
+        validation,
+        staleness,
+        vector_staleness,
+        hotspots,
+        token_budget: budget,
+      }) as unknown as Record<string, unknown>;
+    },
+
     map_metrics_delta({ before, after, snapshot, snapshot_label, response_format } = {}) {
       // .coderef-WRITE (snapshot mode only, confined to <projectDir>/.coderef/map/).
       // The five MapMetrics families ride in .coderef/map/data.json (data.metrics),
@@ -2822,7 +2912,10 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
       // index exists (health='missing', metadata=null) — never throws for that.
       try {
         const status = await readRagStatus(projectDir);
-        return { ...status };
+        // P4 vector-staleness WARN (REC-006): the freshness axis rag_status
+        // exists to answer — attached whenever both stamps are readable.
+        const vecStale = readVectorStaleness(projectDir);
+        return { ...status, ...(vecStale ? { vector_staleness: vecStale } : {}) };
       } catch (e: any) {
         return {
           error: 'rag_status_failed',
@@ -3285,6 +3378,23 @@ async function main(): Promise<void> {
     },
     async ({ project_root, refresh, format, token_budget, git }) =>
       perRepo(project_root, h => h.map({ refresh, format, token_budget, git })),
+  );
+
+  server.registerTool(
+    'orient',
+    {
+      title: 'One-call repo orientation',
+      description:
+        '[.coderef-WRITE (skeleton ride-along), confined to .coderef/map/] The FIRST call on any repo: ONE token-budgeted envelope composing the skeleton map (centrality-ranked files + exported symbol signatures), codebase_summary toplines, validation trust numbers, BOTH staleness axes (source-vs-graph and vectors-vs-index), and the top-10 hotspots. Replaces the map format:"skeleton" -> codebase_summary -> validation_status -> hotspots opening sequence. Absent artifacts are named in no_data (never guessed); over-budget assemblies trim hotspots with declared warnings. Surfaces, not verdicts — read the cited files before concluding.',
+      inputSchema: {
+        project_root: projectRootArg,
+        token_budget: z
+          .number()
+          .optional()
+          .describe('Overall token budget for the envelope (default 2400). The skeleton text is fitted to budget minus a fixed structured-blocks reserve.'),
+      },
+    },
+    async ({ project_root, token_budget }) => perRepo(project_root, h => h.orient({ token_budget })),
   );
 
   server.registerTool(

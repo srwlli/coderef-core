@@ -22,17 +22,31 @@
  */
 
 import { parseArgs } from 'node:util';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import {
   CanonicalGraphError,
   CanonicalGraphQuery,
   loadCanonicalGraph,
 } from '../query/canonical-graph.js';
+import { checkStaleness, readVectorStaleness } from '../query/staleness-check.js';
+import {
+  type OrientGraphNode,
+  type OrientSkeletonBlock,
+  ORIENT_DEFAULT_TOKEN_BUDGET,
+  skeletonBudgetFor,
+  rankHotspotsFromGraph,
+  condenseSummary,
+  condenseValidation,
+  composeOrient,
+} from '../query/orient.js';
 
 const QUERY_TYPES = [
   'what-calls', 'what-calls-me',
   'what-imports', 'what-imports-me',
   'what-depends-on', 'what-depends-on-me',
   'shortest-path', 'all-paths',
+  'orient',
 ] as const;
 type QueryType = typeof QUERY_TYPES[number];
 
@@ -52,6 +66,7 @@ Options:
   --source=<element> Source element for path queries (required for: shortest-path, all-paths)
   --depth=<N>        Max traversal depth (default: 5)
   --format=<fmt>     Result format: raw | summary | full  (default: summary)
+  --token-budget=<N> Overall token budget for --type=orient (default: 2400)
   --patterns=<globs> DEPRECATED — ignored. Queries read the populate-emitted
                      graph; there is no in-memory analysis pass anymore.
   --help             Print this help
@@ -65,10 +80,94 @@ Query types ('-me' = the target is the object; bare = the target is the subject)
   what-depends-on    What does the target depend on, transitively? (outbound call+import)
   shortest-path      Shortest directed path from --source to --target
   all-paths          All directed paths from --source to --target (bounded by --depth)
+  orient             One-call repo orientation (no --target): skeleton map +
+                     summary + validation + staleness axes + top-10 hotspots,
+                     token-budgeted. CLI mirror of the MCP orient tool.
 
 The graph is produced by the populate pipeline. If .coderef/graph.json is
 missing or stale, re-run populate first.
 `.trim());
+}
+
+/**
+ * --type=orient CLI mirror (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P4,
+ * REC-003). Same composition seam as the MCP orient tool — the pure
+ * src/query/orient.ts module — with the I/O done here: cached map data.json
+ * when fresh (else a lazy generateMap), local artifact reads for the rest.
+ * Absent artifacts land in no_data; this mirror never hard-fails on missing
+ * substrate.
+ */
+async function runOrient(project: string, tokenBudget: number | undefined): Promise<void> {
+  const budget =
+    typeof tokenBudget === 'number' && Number.isFinite(tokenBudget) && tokenBudget > 0
+      ? Math.floor(tokenBudget)
+      : ORIENT_DEFAULT_TOKEN_BUDGET;
+  const readJson = (p: string): any | null => {
+    try {
+      return JSON.parse(fs.readFileSync(p, 'utf-8'));
+    } catch {
+      return null;
+    }
+  };
+  const dotCoderef = path.join(project, '.coderef');
+  const index = readJson(path.join(dotCoderef, 'index.json'));
+  const graph = readJson(path.join(dotCoderef, 'graph.json'));
+
+  let skeleton: OrientSkeletonBlock | null = null;
+  if (graph) {
+    try {
+      // Lazy imports: the map projection is heavy and only needed here.
+      const { generateMap } = await import('../map/emit-map.js');
+      const { emitSkeleton } = await import('../map/skeleton-map.js');
+      const dataPath = path.join(dotCoderef, 'map', 'data.json');
+      const graphPath = path.join(dotCoderef, 'graph.json');
+      const fresh =
+        fs.existsSync(dataPath) && fs.statSync(dataPath).mtimeMs >= fs.statSync(graphPath).mtimeMs;
+      const data = fresh ? readJson(dataPath) : generateMap(project).data;
+      if (data) {
+        const s = emitSkeleton(project, data, undefined, { tokenBudget: skeletonBudgetFor(budget) });
+        skeleton = {
+          text: s.text,
+          estimated_tokens: s.estimatedTokens,
+          token_budget: s.tokenBudget,
+          included_files: s.includedFiles,
+          omitted_files: s.omittedFiles,
+          warnings: s.warnings,
+        };
+      }
+    } catch {
+      // skeleton unavailable — composeOrient names it in no_data
+    }
+  }
+
+  const validation = condenseValidation(readJson(path.join(dotCoderef, 'validation-report.json')));
+  let staleness: Record<string, unknown> | null = null;
+  try {
+    staleness = checkStaleness(project) as unknown as Record<string, unknown>;
+  } catch {
+    // checkStaleness never throws by contract
+  }
+  const vector_staleness = readVectorStaleness(project) as unknown as Record<string, unknown> | null;
+
+  let hotspots = null;
+  if (graph && Array.isArray(graph.edges) && Array.isArray(graph.nodes)) {
+    const nodesById = new Map<string, OrientGraphNode>();
+    for (const n of graph.nodes) {
+      if (n && typeof n.id === 'string') nodesById.set(n.id, n);
+    }
+    hotspots = rankHotspotsFromGraph(graph.edges, nodesById, 10);
+  }
+
+  const envelope = composeOrient({
+    skeleton,
+    summary: condenseSummary(index, graph),
+    validation,
+    staleness,
+    vector_staleness,
+    hotspots,
+    token_budget: budget,
+  });
+  console.log(JSON.stringify(envelope, null, 2));
 }
 
 interface RelationshipResult {
@@ -124,6 +223,7 @@ async function main(): Promise<void> {
       source:   { type: 'string' },
       depth:    { type: 'string' },
       format:   { type: 'string' },
+      'token-budget': { type: 'string' },
       patterns: { type: 'string' },
       help:     { type: 'boolean', default: false },
     },
@@ -144,6 +244,13 @@ async function main(): Promise<void> {
     console.error(`Error: --type must be one of: ${QUERY_TYPES.join(', ')}`);
     process.exit(1);
   }
+
+  if (type === 'orient') {
+    const rawBudget = values['token-budget'] as string | undefined;
+    await runOrient(project, rawBudget !== undefined ? parseInt(rawBudget, 10) : undefined);
+    return;
+  }
+
   if (!values.target) { console.error('Error: --target is required'); process.exit(1); }
 
   const isPathQuery = type === 'shortest-path' || type === 'all-paths';

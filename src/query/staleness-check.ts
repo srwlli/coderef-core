@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability staleness-check
- * @exports StalenessResult, checkStaleness
+ * @exports StalenessResult, checkStaleness, VectorStaleness, compareVectorStamps, readVectorStaleness
  */
 
 /**
@@ -220,4 +220,75 @@ function newestSourceMtime(projectDir: string): number {
   };
   walk(projectDir);
   return newest;
+}
+
+// ---- vector-vs-index staleness (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P4, REC-006) ----
+//
+// The SECOND freshness axis: checkStaleness above compares SOURCE vs GRAPH;
+// this compares VECTORS vs INDEX. A rag-index built before the last populate
+// serves embeddings of code that may have moved, been renamed, or deleted —
+// live evidence at authoring: vectors createdAt 2026-07-10 vs index
+// generatedAt 2026-07-19 on coderef-core itself, silently. The WARN makes
+// stale retrieval self-announcing in-band on rag_search/rag_status responses.
+//
+// ABSENCE = NO_DATA. A missing stamp (no rag-index.json, no generatedAt, an
+// unparseable date) returns null — never a guessed verdict.
+
+/** The vector-freshness block attached to rag_search / rag_status / orient responses. */
+export interface VectorStaleness {
+  /** True iff the vector index build stamp predates the code index generation stamp. */
+  stale: boolean;
+  vectors_created_at: string;
+  index_generated_at: string;
+  /** Present only when stale — the in-band WARN. */
+  warning?: string;
+  /** Present only when stale — the remediation. */
+  suggestion?: string;
+}
+
+/**
+ * PURE comparator: vector build stamp vs index generation stamp. Returns null
+ * (no_data) when either stamp is absent or unparseable — never a guess.
+ */
+export function compareVectorStamps(
+  vectorsCreatedAt: string | null | undefined,
+  indexGeneratedAt: string | null | undefined,
+): VectorStaleness | null {
+  if (typeof vectorsCreatedAt !== 'string' || typeof indexGeneratedAt !== 'string') return null;
+  const v = Date.parse(vectorsCreatedAt);
+  const i = Date.parse(indexGeneratedAt);
+  if (!Number.isFinite(v) || !Number.isFinite(i)) return null;
+  const stale = v < i;
+  return {
+    stale,
+    vectors_created_at: vectorsCreatedAt,
+    index_generated_at: indexGeneratedAt,
+    ...(stale
+      ? {
+          warning:
+            `vector index built ${vectorsCreatedAt} predates the code index generated ` +
+            `${indexGeneratedAt} — semantic hits may cite moved, renamed, or deleted code`,
+          suggestion: 'run rag_index (or the rag-index CLI) to rebuild vectors over the current index',
+        }
+      : {}),
+  };
+}
+
+/**
+ * Impure wrapper: read the two stamps from .coderef/rag-index.json (createdAt)
+ * and .coderef/index.json (generatedAt) and compare. Any read/parse failure
+ * degrades to null (no_data) — a freshness checker must never break a read tool.
+ */
+export function readVectorStaleness(projectDir: string): VectorStaleness | null {
+  try {
+    const meta = JSON.parse(
+      fs.readFileSync(path.join(projectDir, '.coderef', 'rag-index.json'), 'utf-8'),
+    ) as { createdAt?: string };
+    const index = JSON.parse(
+      fs.readFileSync(path.join(projectDir, '.coderef', 'index.json'), 'utf-8'),
+    ) as { generatedAt?: string };
+    return compareVectorStamps(meta.createdAt ?? null, index.generatedAt ?? null);
+  } catch {
+    return null;
+  }
 }

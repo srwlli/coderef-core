@@ -90,7 +90,7 @@ conformance win. If this project's server is single-target, mark this section
 - [ ] This server is **single-target** (this invariant is N/A).
 
 **This project (coderef-core) is a target-repo server.** `coderef-mcp-server` exposes
-**34 tools** (TS SDK) that answer questions about *whatever* repository the caller
+**35 tools** (TS SDK) that answer questions about *whatever* repository the caller
 names: every `mcp__coderef-core__*` call takes a **required `project_root`** parameter
 and there is **no default/hidden root** (the operator-locked any-repo contract shipped
 in WO-MCP-REPO-AGNOSTIC-ANY-REPO-001). The checker fires this invariant and PASSES it;
