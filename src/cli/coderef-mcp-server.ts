@@ -87,7 +87,10 @@ import { ALL_PATHS_MAX, CanonicalGraphQuery } from '../query/canonical-graph.js'
 import { type EdgeConfidenceTier, classifyEdgeConfidence, meetsMinConfidence } from '../pipeline/edge-confidence.js';
 import { type EgoGraph, egoGraphOf } from '../query/ego-graph.js';
 import { type SymbolContext, assembleSymbolContext } from '../query/symbol-context.js';
-import { computeTestsForChange } from '../query/tests-for-change.js';
+import { computeTestsForChange, computeRunCommand, type RunnerManifest } from '../query/tests-for-change.js';
+import {
+  condenseImpact, condenseTests, condenseApiDiff, condenseRules, composeChangeDossier,
+} from '../query/change-dossier.js';
 import { parseDiffToChangedElements } from '../query/changed-elements.js';
 import { searchAst, computeNotSearchedCounts, AST_SEARCH_LANG_EXTENSIONS, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
 import { listLanguageFilesOnDisk } from '../search/language-files.js';
@@ -152,7 +155,7 @@ const SERVER_VERSION = '1.0.0';
 // Registered-tool count surfaced in the instructions string + startup log.
 // Bump when adding/removing a tool registration below — the mcp-server test
 // counts registrations in this file and fails on drift.
-export const SERVER_TOOL_COUNT = 35;
+export const SERVER_TOOL_COUNT = 36;
 // Agent-facing usage contract delivered through the MCP initialize handshake
 // (ServerOptions.instructions). This is the ONE surface every connected agent
 // receives automatically, so it carries the load-bearing rules that were
@@ -164,6 +167,7 @@ USAGE CONTRACT:
 2. If .coderef/ is missing or stale, run the reindex tool first (or the populate-coderef CLI). Every read response carries a staleness block — reindex when it warns.
 3. Orient before you grep: call orient first — ONE token-budgeted envelope composing the skeleton map, codebase_summary, validation numbers, both staleness axes, and top hotspots. (The granular map format:"skeleton" / codebase_summary / validation_status calls remain for piecemeal reads.) That replaces 10-15 blind file reads.
 4. Prefer graph tools over grep for structure questions: what_calls / impact_of (who breaks if I change X), cycles / hotspots (risk), find_element + symbol_context (definitions and neighbors), rag_search (concept search — check rag_status freshness first).
+4b. Verify before you commit: tests_for_change returns the ranked tests reaching your diff PLUS a ready-to-run command — run those first, not the whole suite. change_dossier composes the full pre-flight (blast radius + selected tests + exported-API delta + rule mismatches) in one call.
 5. Surfaces, not verdicts: results show WHERE to look, never WHAT is wrong — read the files before concluding. An empty result means NO RESOLVED DATA, not "none exist"; check unresolved_edges and validation_status before trusting a negative.
 6. Write scope: no tool here writes source files. rename --apply is CLI-only by design; MCP exposes rename_preview only. Index writes (reindex, rag_index, map) are confined to .coderef/.`;
 const DEFAULT_LIMIT = 25;
@@ -630,6 +634,7 @@ export interface ToolHandlers {
   api_diff(args: { before?: string; after?: string; snapshot?: boolean; snapshot_label?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // declared architecture-constraint check over observed layer edges (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P7)
   dependency_rules(args: { limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  change_dossier(args: { ref?: string; max_depth?: number }): Record<string, unknown>;
   // per-element docstring presence + text surface (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P8)
   docstrings(args: { element?: string; documented?: boolean; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   clones(args: { filter?: string; min_group_size?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
@@ -1481,6 +1486,17 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         maxDepth: depthCap,
       });
 
+      // P5 (REC-004): ready-to-run command line for the selected test files,
+      // via the shared pure joiner. Manifest read at this impure edge only;
+      // an absent/unparseable package.json degrades to run_command no-data.
+      let manifest: RunnerManifest | null = null;
+      try {
+        manifest = JSON.parse(fs.readFileSync(path.join(projectDir, 'package.json'), 'utf8')) as RunnerManifest;
+      } catch {
+        // no manifest -> computeRunCommand reports no-data, never a guess
+      }
+      const runBlock = computeRunCommand(manifest, selection.files.map(f => f.file));
+
       // `tests` (the ranked test-element list) is the paged surface.
       const paged = paginate(selection.tests, offset, limit);
       const envelope: Record<string, unknown> = {
@@ -1496,6 +1512,7 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         test_file_count: selection.test_file_count,
         selected_tests: selection.total,
         test_files: selection.files,
+        ...runBlock,
         offset: paged.offset,
         limit: paged.limit,
         tests: paged.page,
@@ -1792,6 +1809,47 @@ export function buildToolHandlers(projectDir: string): ToolHandlers {
         note: report.note,
       };
       return shapeResponse(envelope, response_format, ['rules']);
+    },
+
+    // change_dossier (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P5,
+    // REC-007): the pre-flight envelope for a proposed change — ONE call
+    // composing the four verify legs this handler object already owns
+    // (diff_impact + tests_for_change + api_diff delta + dependency_rules),
+    // condensed through the pure src/query/change-dossier.ts seam. Same
+    // sibling-handler JOIN pattern as orient: no new substrate, no new write
+    // path (api_diff is called in DELTA mode only — never snapshot). A leg
+    // that fails (e.g. git diff error) degrades to null + a named warning;
+    // composeChangeDossier lists absent legs in no_data.
+    change_dossier({ ref, max_depth } = {}) {
+      const gitRef = ref ?? 'HEAD';
+      const warnings: string[] = [];
+      const leg = (name: string, fn: () => Record<string, unknown>): Record<string, unknown> | null => {
+        try {
+          const env = fn();
+          if (env && typeof env === 'object' && 'error' in env) {
+            warnings.push(`${name}: ${String(env.error)}${env.detail ? ` — ${String(env.detail).slice(0, 120)}` : ''}`);
+            return null;
+          }
+          return env;
+        } catch (err) {
+          warnings.push(`${name}: ${String(err instanceof Error ? err.message : err).slice(0, 120)}`);
+          return null;
+        }
+      };
+
+      const impactEnv = leg('diff_impact', () => this.diff_impact({ ref: gitRef, max_depth, limit: 10 }));
+      const testsEnv = leg('tests_for_change', () => this.tests_for_change({ ref: gitRef, max_depth, limit: 10 }));
+      const apiEnv = leg('api_diff', () => this.api_diff({ limit: 5 }));
+      const rulesEnv = leg('dependency_rules', () => this.dependency_rules({ limit: 100 }));
+
+      return composeChangeDossier({
+        ref: gitRef,
+        impact: condenseImpact(impactEnv),
+        tests: condenseTests(testsEnv),
+        api: condenseApiDiff(apiEnv),
+        rules: condenseRules(rulesEnv),
+        warnings,
+      }) as unknown as Record<string, unknown>;
     },
 
     // docstrings (P8): per-element docstring presence + text, read from the
@@ -3575,6 +3633,22 @@ async function main(): Promise<void> {
     },
     async ({ project_root, limit, offset, response_format }) =>
       perRepo(project_root, h => h.dependency_rules({ limit, offset, response_format })),
+  );
+
+  server.registerTool(
+    'change_dossier',
+    {
+      title: 'Change dossier (pre-flight surfaces for a proposed change)',
+      description:
+        'The pre-commit pre-flight in ONE call: for a git diff (default: working tree vs HEAD), compose the four verify surfaces — diff_impact (blast radius: changed elements + transitive dependents + top affected files), tests_for_change (ranked test selection + a ready-to-run command when a runner is detectable), api_diff in delta mode (exported-API change vector vs the snapshot baseline), and dependency_rules (declared-constraint mismatches) — into one condensed envelope. Run it BEFORE writing a commit; run the dossier\'s run_command to execute the graph-selected tests first. SURFACES, NOT VERDICTS: the dossier names WHERE to look, never a merge decision — there is deliberately no composite risk score. ABSENCE = NO-DATA: a leg that could not run is named in no_data (with a warning naming why); a leg reporting its own no_data:true ran but had nothing to compare (e.g. no api_diff baseline snapshot, no rules.json) — neither is ever guessed around. Read-only: api_diff is composed in delta mode only (no snapshot write).',
+      inputSchema: {
+        project_root: projectRootArg,
+        ref: z.string().optional().describe('Git ref to diff against (default HEAD; e.g. "main", "HEAD~3")'),
+        max_depth: z.number().optional().describe('BFS depth cap for the impact/tests legs, 1-10 (default 3)'),
+      },
+    },
+    async ({ project_root, ref, max_depth }) =>
+      perRepo(project_root, h => h.change_dossier({ ref, max_depth })),
   );
 
   server.registerTool(

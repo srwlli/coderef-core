@@ -24,7 +24,10 @@ import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 import { readdir, readFile } from 'node:fs/promises';
 import { join, extname } from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { computeTestsForChange } from '../query/tests-for-change.js';
+import { computeTestsForChange, computeRunCommand, type RunnerManifest } from '../query/tests-for-change.js';
+import {
+  condenseImpact, condenseTests, condenseApiDiff, condenseRules, composeChangeDossier,
+} from '../query/change-dossier.js';
 import { parseDiffToChangedElements, type ChangedElement } from '../query/changed-elements.js';
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { searchAst, computeNotSearchedCounts, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
@@ -48,7 +51,7 @@ const TYPES = [
   'config', 'contract', 'db', 'dependency', 'pattern', 'docs',
   'middleware', 'graph', 'complexity', 'impact', 'multi-hop', 'breaking-changes',
   'tests-for-change', 'ast-search', 'type-hierarchy', 'dependency-rules', 'docstrings',
-  'clones', 'scip-resolution-delta',
+  'clones', 'scip-resolution-delta', 'change-dossier',
 ] as const;
 type AnalyzeType = typeof TYPES[number];
 
@@ -69,7 +72,7 @@ Options:
   --depth=<N>        Max traversal depth (default: 5; used by: impact, multi-hop)
   --from=<label>     Baseline manifest snapshot label or .json path (breaking-changes; default "baseline")
   --to=<label>       Snapshot the CURRENT exports under this label instead of diffing (breaking-changes)
-  --ref=<ref>        Git ref to diff against (used by: tests-for-change; default HEAD)
+  --ref=<ref>        Git ref to diff against (used by: tests-for-change, change-dossier; default HEAD)
   --lang=<ext>       Source language extension for ast-search (ts, tsx, js, jsx, py, go, rs, java, cpp, cc, cxx, c++, c, h)
   --query=<s-expr>   tree-sitter S-expression query (required for: ast-search)
   --limit=<N>        Max results (used by: ast-search; default 100)
@@ -113,6 +116,14 @@ Analysis types:
                      composite health score. No rules.json = no-data, never a
                      false "all rules pass". With --gate, exit 2 on any violation
                      (CI gate); default exit 0 (report-only).
+  change-dossier     Pre-flight envelope for a proposed change: compose blast
+                     radius (impact BFS), ranked test selection (+ a ready-to-
+                     run command when a runner is detectable), exported-API
+                     delta vs the "baseline" snapshot, and dependency-rule
+                     mismatches for a git diff (--ref, default HEAD) into ONE
+                     condensed envelope. Surfaces, not verdicts — names WHERE
+                     to look before a commit, never a merge decision. Absent
+                     legs land in no_data; read-only (never snapshots).
 
 Note: graph, complexity, impact, multi-hop, and middleware read the canonical
 .coderef/graph.json produced by the populate pipeline (DR-PHASE-5-C). Run
@@ -382,6 +393,16 @@ async function main(): Promise<void> {
         maxDepth: depth,
       });
 
+      // P5 (REC-004): ready-to-run command via the shared pure joiner — the
+      // same seam the MCP handler spreads, so the edges cannot drift.
+      let manifest: RunnerManifest | null = null;
+      try {
+        manifest = JSON.parse(await readFile(join(project, 'package.json'), 'utf8')) as RunnerManifest;
+      } catch {
+        // no manifest -> computeRunCommand reports no-data, never a guess
+      }
+      const runBlock = computeRunCommand(manifest, selection.files.map(f => f.file));
+
       emit({
         ref: gitRef,
         changed_files: changedFileCount,
@@ -390,6 +411,7 @@ async function main(): Promise<void> {
         test_file_count: selection.test_file_count,
         selected_tests: selection.total,
         test_files: selection.files,
+        ...runBlock,
         tests: selection.tests,
         note:
           'Ranked test-file elements reaching the diff through resolved call/import edges ' +
@@ -675,6 +697,186 @@ async function main(): Promise<void> {
       // asked for the gate; the default (report-only) always exits 0 — the
       // surfaces-not-verdicts default. process.exit here is intentional.
       if (values.gate && report.violatedCount > 0) process.exit(2);
+      break;
+    }
+    case 'change-dossier': {
+      // Pre-flight envelope for a proposed change (WO-CODE-INTELLIGENCE-LEVERAGE-
+      // WIRING-PROGRAM-001 P5, REC-007) — CLI mirror of the MCP change_dossier
+      // tool. Runs the four verify legs this CLI already owns (impact BFS +
+      // test selection over the diff, api-diff delta vs the "baseline"
+      // snapshot, dependency-rules check) and composes them through the pure
+      // src/query/change-dossier.ts seam, so the two edges cannot drift.
+      const fs = await import('node:fs');
+      const crefDir = join(project, '.coderef');
+      const gitRef = (values.ref as string | undefined) ?? 'HEAD';
+      const warnings: string[] = [];
+
+      // Shared substrate: index elements + canonical-graph primitives.
+      let indexElements: ChangedElement[] = [];
+      try {
+        const idx = JSON.parse(await readFile(join(crefDir, 'index.json'), 'utf8')) as { elements?: ChangedElement[] };
+        indexElements = idx.elements ?? [];
+      } catch {
+        console.error(
+          'coderef-analyze error: .coderef/index.json not found or unreadable. ' +
+          'Run populate-coderef first.',
+        );
+        process.exit(1);
+      }
+      const engine = loadEngineOrExit(project);
+      const nodeById = new Map(engine.graph.nodes.map(n => [n.id, n]));
+      const inbound = new Map<string, typeof engine.graph.edges>();
+      for (const edge of engine.graph.edges) {
+        if (!edge.targetId) continue;
+        const list = inbound.get(edge.targetId);
+        if (list) list.push(edge);
+        else inbound.set(edge.targetId, [edge]);
+      }
+
+      // Legs 1+2 (diff-scoped): git diff -> changed elements -> impact BFS +
+      // ranked test selection. A failed diff degrades BOTH legs to null with
+      // a named warning — the dossier stays honest, never guessed.
+      let impactEnv: Record<string, unknown> | null = null;
+      let testsEnv: Record<string, unknown> | null = null;
+      const dossierGitArgs = ['diff', '-U0', '--no-color'];
+      if (gitRef !== 'WORKTREE') dossierGitArgs.push(gitRef);
+      const diffRes = spawnSync('git', [...dossierGitArgs, '--'], {
+        cwd: project,
+        encoding: 'utf8',
+        maxBuffer: 32 * 1024 * 1024,
+      });
+      if (diffRes.error || diffRes.status !== 0) {
+        const detail = String(diffRes.error?.message ?? diffRes.stderr ?? `exit ${diffRes.status}`).slice(0, 120);
+        warnings.push(`diff_impact: git_diff_failed — ${detail}`);
+        warnings.push('tests_for_change: git_diff_failed (same diff)');
+      } else {
+        const { changedElements, changedFileCount } = parseDiffToChangedElements(diffRes.stdout, indexElements);
+        // Impact: union reverse BFS over resolved call+import edges (mirrors
+        // the MCP diff_impact handler).
+        const seeds = [...changedElements.keys()].filter(id => nodeById.has(id));
+        const visited = new Set<string>(seeds);
+        let frontier = seeds;
+        let dependents = 0;
+        const fileCounts = new Map<string, number>();
+        for (let d = 1; d <= depth && frontier.length > 0; d++) {
+          const next: string[] = [];
+          for (const id of frontier) {
+            for (const edge of inbound.get(id) ?? []) {
+              if (edge.relationship !== 'call' && edge.relationship !== 'import') continue;
+              const src = edge.sourceId;
+              if (!src || visited.has(src)) continue;
+              visited.add(src);
+              next.push(src);
+              dependents++;
+              const f = nodeById.get(src)?.file ?? '(unknown)';
+              fileCounts.set(f, (fileCounts.get(f) ?? 0) + 1);
+            }
+          }
+          frontier = next;
+        }
+        const affected = [...fileCounts.entries()]
+          .sort((a, b) => b[1] - a[1])
+          .map(([file, count]) => ({ file, elements: count }));
+        impactEnv = {
+          changed_files: changedFileCount,
+          changed_elements: changedElements.size,
+          max_depth: depth,
+          transitive_dependents: dependents,
+          affected_files: affected.length,
+          files: affected,
+        };
+
+        const selection = computeTestsForChange({
+          changedElementIds: changedElements.keys(),
+          nodeById,
+          inbound,
+          isTestFile: isTestLikeFile,
+          maxDepth: depth,
+        });
+        let dossierManifest: RunnerManifest | null = null;
+        try {
+          dossierManifest = JSON.parse(await readFile(join(project, 'package.json'), 'utf8')) as RunnerManifest;
+        } catch { /* no manifest -> run_command no-data */ }
+        testsEnv = {
+          test_file_count: selection.test_file_count,
+          selected_tests: selection.total,
+          test_files: selection.files,
+          ...computeRunCommand(dossierManifest, selection.files.map(f => f.file)),
+        };
+      }
+
+      // Leg 3: api-diff delta vs the "baseline" snapshot sidecar (read-only —
+      // the dossier never snapshots; a missing baseline is the differ's own
+      // honest no_data).
+      const afterManifest = extractExportsManifest(indexElements as unknown as ManifestElement[]);
+      const baselinePath = join(crefDir, 'api-manifest-baseline.json');
+      let beforeManifest: ExportsManifest | undefined;
+      try {
+        if (fs.existsSync(baselinePath)) {
+          const parsed = JSON.parse(fs.readFileSync(baselinePath, 'utf8'));
+          if (parsed && typeof parsed === 'object' && 'exports' in parsed) beforeManifest = parsed as ExportsManifest;
+        }
+      } catch { /* absent/unreadable -> no-data in the differ */ }
+      const apiDelta = diffApiSurface({ before: beforeManifest, after: afterManifest });
+      const apiEnv: Record<string, unknown> = {
+        no_data: apiDelta.noData,
+        added_count: apiDelta.added.length,
+        removed_count: apiDelta.removed.length,
+        changed_count: apiDelta.changed.length,
+        unchanged_count: apiDelta.unchangedCount,
+        added: apiDelta.added,
+        removed: apiDelta.removed,
+        changed: apiDelta.changed,
+        note: apiDelta.note,
+      };
+
+      // Leg 4: dependency rules (no rules.json = the checker's own no_data).
+      let rulesEnv: Record<string, unknown> | null = null;
+      const dossierLayerEdges = projectLayerEdges(
+        engine.graph.nodes as unknown as DependencyRulesNode[],
+        engine.graph.edges as unknown as DependencyRulesEdge[],
+      );
+      const dossierRulesPath = join(crefDir, 'rules.json');
+      if (!fs.existsSync(dossierRulesPath)) {
+        rulesEnv = {
+          no_data: true,
+          rule_count: 0,
+          violated_count: 0,
+          satisfied_count: 0,
+          not_applicable_count: 0,
+          rules: [],
+          note:
+            `no .coderef/rules.json — declare forbid/allow layer-pair constraints to enable ` +
+            `the gate. Observed ${dossierLayerEdges.length} declared-layer dependency edge(s).`,
+        };
+      } else {
+        try {
+          const spec = parseRulesSpec(JSON.parse(fs.readFileSync(dossierRulesPath, 'utf8')));
+          const report = checkDependencyRules({ rules: spec, layerEdges: dossierLayerEdges });
+          rulesEnv = {
+            no_data: false,
+            rule_count: report.ruleCount,
+            violated_count: report.violatedCount,
+            satisfied_count: report.satisfiedCount,
+            not_applicable_count: report.notApplicableCount,
+            rules: report.rules,
+            note: report.note,
+          };
+        } catch (err) {
+          warnings.push(
+            `dependency_rules: rules_json_invalid — ${String(err instanceof Error ? err.message : err).slice(0, 120)}`,
+          );
+        }
+      }
+
+      emit(composeChangeDossier({
+        ref: gitRef,
+        impact: condenseImpact(impactEnv),
+        tests: condenseTests(testsEnv),
+        api: condenseApiDiff(apiEnv),
+        rules: condenseRules(rulesEnv),
+        warnings,
+      }) as unknown as Record<string, unknown>);
       break;
     }
     case 'docstrings': {

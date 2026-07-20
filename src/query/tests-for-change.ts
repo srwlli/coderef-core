@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability tests-for-change
- * @exports TestForChangeSite, TestsForChange, TestsForChangeInputs, computeTestsForChange
+ * @exports TestForChangeSite, TestsForChange, TestsForChangeInputs, computeTestsForChange, RunnerManifest, DetectedTestRunner, RunCommandBlock, detectTestRunner, buildRunCommand, computeRunCommand
  * @used_by src/cli/coderef-mcp-server.ts, src/cli/coderef-query.ts
  */
 
@@ -198,4 +198,128 @@ export function computeTestsForChange(inputs: TestsForChangeInputs): TestsForCha
     tests: sites,
     files,
   };
+}
+
+// ---------------------------------------------------------------------------
+// run_command emission (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P5,
+// REC-004): turn the ranked test-FILE selection into ONE ready-to-run command
+// line. Detection reads the project's package.json manifest (scripts.test
+// first, then declared runner dependencies); the command is only ever built
+// from a RECOGNIZED runner — an unrecognizable test script or an absent
+// manifest is honest no-data, NEVER a guessed command line. Both edges (the
+// MCP tests_for_change handler and the coderef-analyze CLI mirror) call the
+// same computeRunCommand joiner so they cannot drift.
+// ---------------------------------------------------------------------------
+
+/** The package.json slice runner detection reads. */
+export interface RunnerManifest {
+  scripts?: Record<string, string>;
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+}
+
+/** A recognized test runner + how to invoke it with explicit file args. */
+export interface DetectedTestRunner {
+  /** Canonical runner name (vitest | jest | mocha | playwright | node-test). */
+  runner: string;
+  /** Invocation prefix a file list is appended to (e.g. "npx vitest run"). */
+  invoke: string;
+  /** Detection provenance (e.g. "package.json scripts.test"). */
+  source: string;
+}
+
+/**
+ * The additive response block both edges spread into their envelopes.
+ * `run_command` is null whenever a command cannot be stated truthfully, with
+ * `run_command_no_data` naming why (absence = no-data, never a guess).
+ */
+export interface RunCommandBlock {
+  run_command: string | null;
+  runner?: string;
+  run_command_source?: string;
+  run_command_no_data?: string;
+}
+
+// Recognized runners, checked in order. The invoke prefixes are the file-arg
+// forms (vitest needs `run` for a non-watch one-shot; jest/mocha take files
+// directly; playwright filters by file args; node --test takes file paths).
+const RUNNER_PATTERNS: ReadonlyArray<{ runner: string; invoke: string; scriptRe: RegExp }> = [
+  { runner: 'vitest', invoke: 'npx vitest run', scriptRe: /\bvitest\b/ },
+  { runner: 'jest', invoke: 'npx jest', scriptRe: /\bjest\b/ },
+  { runner: 'playwright', invoke: 'npx playwright test', scriptRe: /\bplaywright\b/ },
+  { runner: 'mocha', invoke: 'npx mocha', scriptRe: /\bmocha\b/ },
+  { runner: 'node-test', invoke: 'node --test', scriptRe: /\bnode\s+--test\b/ },
+];
+
+/**
+ * Detect the project's test runner from its package.json manifest. PURE.
+ * scripts.test wins (it is the project's own declared entrypoint); a test
+ * script that names no recognized runner returns null — we cannot append file
+ * args to a script we cannot parameterize, and guessing is worse than no-data.
+ * With no test script, a declared vitest/jest/playwright/mocha dependency
+ * (dev or prod) is accepted as the runner.
+ */
+export function detectTestRunner(manifest: RunnerManifest | null | undefined): DetectedTestRunner | null {
+  if (!manifest || typeof manifest !== 'object') return null;
+  const testScript = manifest.scripts?.test;
+  if (typeof testScript === 'string' && testScript.trim().length > 0) {
+    for (const p of RUNNER_PATTERNS) {
+      if (p.scriptRe.test(testScript)) {
+        return { runner: p.runner, invoke: p.invoke, source: 'package.json scripts.test' };
+      }
+    }
+    return null;
+  }
+  for (const depField of ['devDependencies', 'dependencies'] as const) {
+    const deps = manifest[depField];
+    if (!deps) continue;
+    for (const p of RUNNER_PATTERNS) {
+      if (p.runner !== 'node-test' && Object.prototype.hasOwnProperty.call(deps, p.runner)) {
+        return { runner: p.runner, invoke: p.invoke, source: `package.json ${depField}.${p.runner}` };
+      }
+    }
+  }
+  return null;
+}
+
+/** Quote a path for a command line only when it needs it. */
+function quoteArg(file: string): string {
+  return /\s/.test(file) ? `"${file}"` : file;
+}
+
+/**
+ * Build the ready-to-run command for a detected runner + the selected test
+ * files (already ranked shallowest-linkage first). PURE + deterministic.
+ */
+export function buildRunCommand(runner: DetectedTestRunner, testFiles: string[]): string | null {
+  if (testFiles.length === 0) return null;
+  return `${runner.invoke} ${testFiles.map(quoteArg).join(' ')}`;
+}
+
+/**
+ * The single joiner both edges spread into their response envelopes:
+ * manifest + selected test files -> the additive run_command block.
+ */
+export function computeRunCommand(
+  manifest: RunnerManifest | null | undefined,
+  testFiles: string[],
+): RunCommandBlock {
+  const detected = detectTestRunner(manifest);
+  if (!detected) {
+    return {
+      run_command: null,
+      run_command_no_data:
+        'no recognized test runner (package.json scripts.test / declared runner dependency) — command not guessed',
+    };
+  }
+  const command = buildRunCommand(detected, testFiles);
+  if (command === null) {
+    return {
+      run_command: null,
+      runner: detected.runner,
+      run_command_source: detected.source,
+      run_command_no_data: 'no selected test files — nothing to run (no-data, not "safe to skip")',
+    };
+  }
+  return { run_command: command, runner: detected.runner, run_command_source: detected.source };
 }
