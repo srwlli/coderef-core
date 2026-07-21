@@ -381,6 +381,22 @@ export interface ElementData {
   docstring?: string;
   /** Optional: Parent class/scope name (for distinguishing methods from top-level functions) */
   parentScope?: string;
+
+  // WO-EXTEND-THE-CLONE-SURFACE-P10-SRC-QUERY-CLONES-001: clone substrate
+  // (additive; absent on old/regex-fallback-scanned indexes = no-body-data,
+  // disclosed by the clone passes — never a fake zero).
+  /** Optional: 1-based end line of the defining node (element source span). */
+  endLine?: number;
+  /** Optional: sha256 (32 hex) of the comment-stripped, whitespace-collapsed body. */
+  normalizedBodyHash?: string;
+  /** Optional: length of the normalized body text the hash was computed over. */
+  normalizedBodyLength?: number;
+  /**
+   * Optional: Deckard-style sparse counts of named AST node types over the
+   * element subtree (function-like kinds only). Comparable within one grammar
+   * family; consumed by the near-miss clone pass.
+   */
+  astFingerprint?: Record<string, number>;
   /** Optional: Complexity metrics. Not implemented by the Phase 1 scanner downgrade. */
   complexity?: {
     /** Cyclomatic complexity (number of decision points + 1) */

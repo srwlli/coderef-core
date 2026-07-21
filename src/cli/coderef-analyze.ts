@@ -77,6 +77,11 @@ Options:
   --query=<s-expr>   tree-sitter S-expression query (required for: ast-search)
   --limit=<N>        Max results (used by: ast-search; default 100)
   --gate             Exit 2 on any dependency-rule violation (dependency-rules; CI gate)
+  --pass=<p>         Clone pass: structural | lexical | near_miss  (clones; default structural)
+  --min-group-size=<N>        Minimum members for a clone group (clones; default 2, floor 2)
+  --similarity-threshold=<F>  near_miss minimum fingerprint similarity in [0,1] (clones; default 0.9)
+  --min-body-length=<N>       Exclude elements with a normalized body shorter than N from
+                              the lexical/near_miss passes (clones; default 0, disclosed)
   --help             Print this help
 
 Analysis types:
@@ -116,6 +121,16 @@ Analysis types:
                      composite health score. No rules.json = no-data, never a
                      false "all rules pass". With --gate, exit 2 on any violation
                      (CI gate); default exit 0 (report-only).
+  clones             Clone surface with three passes (--pass): structural
+                     (default) groups elements sharing (kind, name, arity,
+                     param-name shingle, import-source set); lexical groups
+                     IDENTICAL persisted normalized-body hashes (byte-level
+                     copy-paste, same-body-different-name); near_miss pairs
+                     similar persisted AST fingerprints under
+                     --similarity-threshold (Deckard-style, opt-in). Surfaces,
+                     not verdicts: co-location, never a duplication grade. A
+                     body pass over an index without the persisted substrate
+                     returns no_data (repopulate to refresh), never fake zero.
   change-dossier     Pre-flight envelope for a proposed change: compose blast
                      radius (impact BFS), ranked test selection (+ a ready-to-
                      run command when a runner is detectable), exported-API
@@ -217,6 +232,9 @@ async function main(): Promise<void> {
       documented:   { type: 'boolean', default: false },
       undocumented: { type: 'boolean', default: false },
       'min-group-size': { type: 'string' },
+      pass: { type: 'string' },
+      'similarity-threshold': { type: 'string' },
+      'min-body-length': { type: 'string' },
       scip:    { type: 'string' },
       gate:    { type: 'boolean', default: false },
       help:    { type: 'boolean', default: false },
@@ -918,11 +936,12 @@ async function main(): Promise<void> {
       break;
     }
     case 'clones': {
-      // Structural-signature clone surface (P10): groups elements sharing
-      // (kind, name, arity, param-name shingle, import-source set), read from
-      // the canonical index.json elements (same source as docstrings/api_diff).
-      // The pure projection is in src/query/clones.ts. Surfaces-not-verdicts:
-      // a clone group is co-location-of-shape, NOT a defect (no score/grade).
+      // Clone surface, three passes (P10 + clone-surface WO P1): structural
+      // (signature grouping, default), lexical (identical persisted
+      // normalizedBodyHash), near_miss (similar persisted astFingerprint under
+      // --similarity-threshold). Read from the canonical index.json elements;
+      // the pure projection is in src/query/clones.ts. Surfaces-not-verdicts:
+      // a group/pair is co-location, NOT a defect (no score/grade).
       let elements: CloneElement[] = [];
       try {
         const idxPath = join(project, '.coderef', 'index.json');
@@ -945,11 +964,27 @@ async function main(): Promise<void> {
       const minGroupSize = values['min-group-size']
         ? (parseInt(values['min-group-size'] as string, 10) || undefined)
         : undefined;
+      const rawPass = values.pass as string | undefined;
+      if (rawPass && rawPass !== 'structural' && rawPass !== 'lexical' && rawPass !== 'near_miss') {
+        console.error(
+          `coderef-analyze error: unknown --pass=${rawPass} (expected structural | lexical | near_miss)`,
+        );
+        process.exit(1);
+      }
+      const similarityThreshold = values['similarity-threshold']
+        ? (parseFloat(values['similarity-threshold'] as string) || undefined)
+        : undefined;
+      const minBodyLength = values['min-body-length']
+        ? (parseInt(values['min-body-length'] as string, 10) || undefined)
+        : undefined;
 
       const surface = computeCloneSurface({
         elements,
         filter: values.element as string | undefined,
         minGroupSize,
+        pass: rawPass as 'structural' | 'lexical' | 'near_miss' | undefined,
+        similarityThreshold,
+        minBodyLength,
         limit: cloneLimit,
         offset: cloneOffset,
       });

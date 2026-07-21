@@ -762,20 +762,23 @@ async function main(): Promise<void> {
   server.registerTool(
     'clones',
     {
-      title: 'Clone surface (structural-signature duplication groups)',
+      title: 'Clone surface (structural / lexical / AST near-miss passes)',
       description:
-        'Surface elements that share the same STRUCTURAL SHAPE — a group is elements with an identical signature (kind, name, arity, sorted param-name shingle, sorted import-source set), computed from the index with no source re-read. Catches renamed copies, boilerplate handlers, and parallel test helpers. Returns clone groups [{signature, members:[{codeRefId,name,kind,file,line}], size}] plus a roll-up. SURFACES, NOT VERDICTS: a clone group is CO-LOCATION-of-shape, NOT a defect — there is deliberately no duplication score/grade/verdict. ABSENCE = NO-DATA: an empty element set returns no_data:true, never a false "0 clones". DISCLOSURE: signature_basis names the composing fields; elements_without_signature counts thin-signature (kind+name only) elements so a thin candidate is distinguishable from a richly-signatured singleton. Does NOT detect byte-level or AST-subtree near-misses (a tracked follow-up needs endLine + a body hash).',
+        "Surface duplicated code via three passes. pass='structural' (default): groups elements with an identical signature (kind, name, arity, sorted param-name shingle, sorted import-source set) — renamed copies, boilerplate handlers, parallel helpers; no body data needed. pass='lexical': groups elements whose persisted normalizedBodyHash (comment-stripped, whitespace-collapsed body, hashed at extract time) is IDENTICAL — byte-level copy-paste and same-body-different-name clones. pass='near_miss': pairs elements whose persisted astFingerprint vectors meet similarity_threshold under normalized-L1 distance (bucketed by kind + extension family; identical-hash pairs excluded — those are lexical territory). SURFACES, NOT VERDICTS: a group/pair is co-location, NOT a defect; near-miss similarity is measured provenance, not a grade. ABSENCE = NO-DATA: an empty element set — or a body pass over an index with NO persisted body substrate (populated pre-substrate or via the regex-fallback scanner) — returns no_data:true, never a false \"0 clones\"; elements_without_body_data discloses the gap (repopulate to refresh).",
       inputSchema: {
         project_root: projectRootArg,
         filter: z.string().optional().describe('Case-insensitive substring filter over element name'),
         min_group_size: z.number().optional().describe('Minimum members for a clone group (default 2, floor 2)'),
+        pass: z.enum(['structural', 'lexical', 'near_miss']).optional().describe("Clone pass (default 'structural')"),
+        similarity_threshold: z.number().optional().describe('near_miss only: minimum fingerprint similarity in [0,1] (default 0.9; clamps)'),
+        min_body_length: z.number().optional().describe('Body passes: exclude elements with a normalized body shorter than this (default 0; excluded elements are disclosed, never silent)'),
         limit: limitArg,
         offset: offsetArg,
         response_format: responseFormatArg,
       },
     },
-    async ({ project_root, filter, min_group_size, limit, offset, response_format }) =>
-      perRepo(project_root, h => h.clones({ filter, min_group_size, limit, offset, response_format })),
+    async ({ project_root, filter, min_group_size, pass, similarity_threshold, min_body_length, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.clones({ filter, min_group_size, pass, similarity_threshold, min_body_length, limit, offset, response_format })),
   );
 
   server.registerTool(

@@ -500,7 +500,7 @@ export interface ToolHandlers {
   change_dossier(args: { ref?: string; max_depth?: number }): Record<string, unknown>;
   // per-element docstring presence + text surface (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P8)
   docstrings(args: { element?: string; documented?: boolean; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
-  clones(args: { filter?: string; min_group_size?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  clones(args: { filter?: string; min_group_size?: number; pass?: 'structural' | 'lexical' | 'near_miss'; similarity_threshold?: number; min_body_length?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   scip_resolution_delta(args: { scip_path?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   rag_search(args: { query: string; limit?: number; offset?: number; hybrid?: boolean; expand?: boolean; neighbor_limit?: number; lane?: 'auto' | 'lexical' | 'semantic'; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // agent-native outbound + path tools (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P1)

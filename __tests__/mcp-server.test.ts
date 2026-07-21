@@ -2094,6 +2094,54 @@ describe('clones', () => {
       fs.rmSync(proj, { recursive: true, force: true });
     }
   });
+
+  it("routes pass:'lexical' — identical persisted body hashes group across names", () => {
+    const proj = writeRepo([
+      { name: 'copyOne', type: 'function', file: 'src/a.ts', line: 1, endLine: 8, normalizedBodyHash: 'a'.repeat(32), normalizedBodyLength: 90 },
+      { name: 'copyTwo', type: 'function', file: 'src/b.ts', line: 4, endLine: 11, normalizedBodyHash: 'a'.repeat(32), normalizedBodyLength: 90 },
+    ]);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.clones({ pass: 'lexical' }) as any;
+      expect(r.pass).toBe('lexical');
+      expect(r.summary.total_groups).toBe(1);
+      expect(r.lexical_groups[0].size).toBe(2);
+      expect(r.summary.elements_with_body_data).toBe(2);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
+
+  it("routes pass:'near_miss' with similarity_threshold — old index (no substrate) is no_data", () => {
+    const fpA = { if_statement: 2, call_expression: 6, identifier: 20 };
+    const fpB = { if_statement: 2, call_expression: 5, identifier: 21 };
+    const proj = writeRepo([
+      { name: 'nA', type: 'function', file: 'src/a.ts', line: 1, normalizedBodyHash: 'a'.repeat(32), normalizedBodyLength: 80, astFingerprint: fpA },
+      { name: 'nB', type: 'function', file: 'src/b.ts', line: 1, normalizedBodyHash: 'b'.repeat(32), normalizedBodyLength: 82, astFingerprint: fpB },
+    ]);
+    try {
+      const h = buildToolHandlers(proj);
+      const r = h.clones({ pass: 'near_miss', similarity_threshold: 0.9 }) as any;
+      expect(r.pass).toBe('near_miss');
+      expect(r.near_miss_pairs.length).toBe(1);
+      expect(r.summary.similarity_threshold).toBe(0.9);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+
+    // old-index elements (no persisted substrate) -> honest no_data
+    const legacy = writeRepo([
+      { name: 'legacy', type: 'function', file: 'src/a.ts', line: 1, parameters: ['x'], imports: [] },
+    ]);
+    try {
+      const h = buildToolHandlers(legacy);
+      const r = h.clones({ pass: 'near_miss' }) as any;
+      expect(r.no_data).toBe(true);
+      expect(r.summary.elements_without_body_data).toBe(1);
+    } finally {
+      fs.rmSync(legacy, { recursive: true, force: true });
+    }
+  });
 });
 
 // scip_resolution_delta (P11): opt-in; absent scip_path -> no_data envelope.

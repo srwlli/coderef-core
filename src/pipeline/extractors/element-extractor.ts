@@ -30,6 +30,7 @@ import type Parser from 'tree-sitter';
 import type { ElementData } from '../../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../element-taxonomy.js';
 import { extractLeadingJsDoc, extractPythonDocstring } from './docstring.js';
+import { captureCloneSubstrate } from './clone-substrate.js';
 import logger from '../../utils/logger.js';
 
 /**
@@ -173,6 +174,7 @@ export class ElementExtractor {
                   file: filePath,
                   line: nameNode.startPosition.row + 1,
                   exported: this.isExported(node),
+                  ...captureCloneSubstrate(declarator, 'constant'),
                 });
               }
             }
@@ -192,6 +194,7 @@ export class ElementExtractor {
             line: nameNode.startPosition.row + 1,
             exported: this.isExported(node),
             docstring: extractLeadingJsDoc(node),
+            ...captureCloneSubstrate(node, 'class'),
           });
 
           // Traverse class body for methods
@@ -237,6 +240,7 @@ export class ElementExtractor {
             exported: false, // Methods are part of classes
             async: isAsync,
             docstring: extractLeadingJsDoc(node),
+            ...captureCloneSubstrate(node, 'method'),
           });
         }
       }
@@ -252,6 +256,7 @@ export class ElementExtractor {
             line: nameNode.startPosition.row + 1,
             exported: this.isExported(node),
             docstring: extractLeadingJsDoc(node),
+            ...captureCloneSubstrate(node, 'interface'),
           });
         }
       }
@@ -267,6 +272,7 @@ export class ElementExtractor {
             line: nameNode.startPosition.row + 1,
             exported: this.isExported(node),
             docstring: extractLeadingJsDoc(node),
+            ...captureCloneSubstrate(node, 'type'),
           });
         }
       }
@@ -308,6 +314,7 @@ export class ElementExtractor {
             exported: !isMethod && !name.startsWith('_'), // Private if starts with _
             async: isAsync || undefined,
             docstring: extractPythonDocstring(node),
+            ...captureCloneSubstrate(node, isMethod ? 'method' : 'function'),
           });
         }
       }
@@ -324,6 +331,7 @@ export class ElementExtractor {
             line: nameNode.startPosition.row + 1,
             exported: !name.startsWith('_'),
             docstring: extractPythonDocstring(node),
+            ...captureCloneSubstrate(node, 'class'),
           });
 
           // Traverse class body for methods
@@ -369,6 +377,7 @@ export class ElementExtractor {
             line: nameNode.startPosition.row + 1,
             parameters,
             exported,
+            ...captureCloneSubstrate(node, 'function'),
           });
         }
       }
@@ -390,6 +399,7 @@ export class ElementExtractor {
             line: nameNode.startPosition.row + 1,
             parameters,
             exported,
+            ...captureCloneSubstrate(node, 'method'),
           });
         }
       }
@@ -409,6 +419,7 @@ export class ElementExtractor {
               file: filePath,
               line: nameNode.startPosition.row + 1,
               exported,
+              ...captureCloneSubstrate(spec, 'class'),
             });
           }
         }
@@ -449,6 +460,7 @@ export class ElementExtractor {
             line: nameNode.startPosition.row + 1,
             parameters,
             exported,
+            ...captureCloneSubstrate(node, 'function'),
           });
         }
       }
@@ -477,6 +489,7 @@ export class ElementExtractor {
             file: filePath,
             line: nameNode.startPosition.row + 1,
             exported,
+            ...captureCloneSubstrate(node, 'class'),
           });
         }
       }
@@ -514,6 +527,7 @@ export class ElementExtractor {
             file: filePath,
             line: nameNode.startPosition.row + 1,
             parameters,
+            ...captureCloneSubstrate(node, isMethod ? 'method' : 'function'),
           });
         }
       }
@@ -528,6 +542,7 @@ export class ElementExtractor {
             name,
             file: filePath,
             line: nameNode.startPosition.row + 1,
+            ...captureCloneSubstrate(node, 'class'),
           });
 
           // Traverse class body
@@ -547,6 +562,7 @@ export class ElementExtractor {
             name: nameNode.text,
             file: filePath,
             line: nameNode.startPosition.row + 1,
+            ...captureCloneSubstrate(node, 'interface'),
           });
         }
       }
@@ -585,6 +601,7 @@ export class ElementExtractor {
               file: filePath,
               line: nameNode.startPosition.row + 1,
               parameters,
+              ...captureCloneSubstrate(node, 'function'),
             });
           }
         }
@@ -600,6 +617,7 @@ export class ElementExtractor {
             name,
             file: filePath,
             line: nameNode.startPosition.row + 1,
+            ...captureCloneSubstrate(node, 'class'),
           });
 
           // Traverse class body
@@ -667,6 +685,7 @@ export class ElementExtractor {
       async: isAsync,
       // P8: leading /** */ JSDoc for this declaration (undefined when absent).
       docstring: extractLeadingJsDoc(funcNode),
+      ...captureCloneSubstrate(funcNode, elementType),
     };
   }
 

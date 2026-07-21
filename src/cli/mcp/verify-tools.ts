@@ -461,14 +461,16 @@ export function buildVerifyTools(ctx: HandlerContext): VerifyTools {
       return shapeResponse(surface as unknown as Record<string, unknown>, response_format, ['items']);
     },
 
-    // clones (P10): structural-signature duplication surface. Groups elements
-    // sharing (kind, name, arity, param-name shingle, import-source set) — the
-    // honest zero-re-parse clone signal the index carries (no body/endLine/hash
-    // for a true line-hash or AST-subtree pass). Read-only, paginated.
-    // Surfaces-not-verdicts (a group is co-location-of-shape, NOT a defect; no
-    // score/grade) + absence=no-data (empty set -> no_data). signature_basis +
-    // elements_without_signature disclose the basis + thin-signature elements.
-    clones({ filter, min_group_size, limit, offset, response_format }) {
+    // clones (P10 + clone-surface WO P1): three passes over the index.
+    // structural (default) groups on (kind, name, arity, param-name shingle,
+    // import-source set); lexical groups on the persisted normalizedBodyHash
+    // (identical comment-stripped bodies); near_miss pairs similar persisted
+    // astFingerprint vectors under a threshold. Read-only, paginated.
+    // Surfaces-not-verdicts (co-location, NOT a defect; near-miss similarity is
+    // measured provenance, not a grade) + absence=no-data (empty set — or a
+    // body pass over an index with NO persisted substrate — -> no_data;
+    // elements_without_body_data discloses the gap).
+    clones({ filter, min_group_size, pass, similarity_threshold, min_body_length, limit, offset, response_format }) {
       const index = loadIndex(projectDir, cache);
       const surface = computeCloneSurface({
         elements: (index.elements ?? []) as unknown as CloneElement[],
@@ -477,10 +479,20 @@ export function buildVerifyTools(ctx: HandlerContext): VerifyTools {
           min_group_size === undefined || !Number.isFinite(min_group_size)
             ? undefined
             : Math.max(2, Math.floor(min_group_size)),
+        pass: pass === 'lexical' || pass === 'near_miss' ? pass : undefined,
+        similarityThreshold:
+          similarity_threshold === undefined || !Number.isFinite(similarity_threshold)
+            ? undefined
+            : similarity_threshold,
+        minBodyLength:
+          min_body_length === undefined || !Number.isFinite(min_body_length)
+            ? undefined
+            : Math.max(0, Math.floor(min_body_length)),
         limit: clampLimit(limit),
         offset: offset === undefined || !Number.isFinite(offset) ? 0 : Math.max(0, Math.floor(offset)),
       });
-      return shapeResponse(surface as unknown as Record<string, unknown>, response_format, ['groups']);
+      const primary = pass === 'lexical' ? 'lexical_groups' : pass === 'near_miss' ? 'near_miss_pairs' : 'groups';
+      return shapeResponse(surface as unknown as Record<string, unknown>, response_format, [primary]);
     },
 
     // scip_resolution_delta (P11, scope-A): what a user-provided SCIP index
