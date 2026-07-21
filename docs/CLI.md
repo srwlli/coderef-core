@@ -615,6 +615,7 @@ npx populate-coderef ./my-project --mode full
 | `--strict-headers` | Promote semantic-header drift (SH-1, SH-2, SH-3) from warnings to hard errors at the Phase 6 validator. `populate-coderef` exits non-zero on header drift. | `false` |
 | `--enforce-headers` | Fail (exit 1) if header coverage is below `--coverage-floor`. Prevention layer: a header-less codebase can no longer produce a green scan, so new files added without a `@coderef-semantic` header are caught at scan time instead of being silently excluded from the RAG index. | `false` |
 | `--coverage-floor <0-100>` | Minimum `header_coverage_pct` required by `--enforce-headers`. | `100` |
+| `--scip <path>` | Opt-in SCIP live resolution overlay. Path to a `.scip` index (absolute or project-relative). Flips co-located unresolved/ambiguous **call** edges to `resolved` with SCIP provenance. No-regress by construction; a missing/undecodable file warns and continues without the overlay. See **SCIP resolution overlay** below. (STUB-BQQJSY) | none |
 | `-j, --json` | Output JSON summary | `false` |
 | `-v, --verbose` | Verbose output | `false` |
 
@@ -631,6 +632,14 @@ Every `populate-coderef` run now also prints a `[header coverage] N% (defined X 
 | `ok=false` (graph-integrity error or `--strict-headers` promoting header drift) | non-zero | error detail |
 
 Downstream `rag-index` reads `validation-report.json` and refuses to run when `ok=false` — see [`rag-index`](#coderef-rag-index) below.
+
+**SCIP resolution overlay (`--scip`, opt-in).** CodeRef's own tree-sitter resolver is heuristic (self-reported resolution ~22%); a compiler-grade SCIP index resolves references it cannot. `--scip <path>` threads a decoded `.scip` index into the pipeline as a **post-resolution overlay**:
+
+- **Decode is upstream.** `populate-coderef` reads and decodes the `.scip` before the pipeline runs; the call-resolver stays file-IO-free (pass purity, AC-09). The overlay runs *after* Phase 5 graph construction.
+- **Flips only unresolved/ambiguous → resolved, with a REAL `targetId`.** For each SCIP reference occurrence co-located (same repo-relative file + line) with an existing CodeRef call edge whose status is `unresolved` or `ambiguous`, the overlay follows the symbol to its SCIP definition occurrence and maps that site onto the graph's nodes. Only when exactly ONE node sits at the definition site does the edge flip to `resolved` — stamped with that node's real id as `targetId` (validator invariants GI-3/GI-2 hold by construction; the edge is traversable by `what_calls`/`impact_of`/`tests_for_change`) plus `evidence.kind:'scip'` + `evidence.scipSymbol` + `reason:'scip_resolved'`. A reference with no unique symbol→node mapping flips nothing (counted as `no_target_mapping`).
+- **Confidence tier is `heuristic`, not `exact`.** The definition-site → node join is positional (line-grain co-location), not an identity proof, so the flipped edge carries `evidence.confidence:'provisional'` → tier `heuristic` (labeled, verify before auto-acting).
+- **No-regress by construction.** Edges already `resolved` (or `builtin`/`external`/`typeOnly`/`dynamic`/`stale`) are **never** touched, and the overlay **never invents** an edge from a SCIP occurrence with no co-located CodeRef edge. Without `--scip` the graph is byte-identical to a normal run.
+- **Generate the index locally, no cloud:** `npx @sourcegraph/scip-typescript index --output .coderef/scip/index.scip` (convention path: `.coderef/scip/index.scip`). The read-only `coderef-analyze --type=scip-resolution-delta --scip=<path>` surface reports the *potential* lift before you commit to the overlay.
 
 ### Examples
 
@@ -655,6 +664,10 @@ npx populate-coderef ./shared-root --source-headers --include "scripts/**,ORCHES
 
 # Hard-fail on any semantic header drift (CI mode)
 npx populate-coderef ./my-project --strict-headers
+
+# Lift resolution with a compiler-grade SCIP index (opt-in overlay, local, no cloud)
+npx @sourcegraph/scip-typescript index --output .coderef/scip/index.scip
+npx populate-coderef ./my-project --scip .coderef/scip/index.scip
 ```
 
 ### Generated Artifacts

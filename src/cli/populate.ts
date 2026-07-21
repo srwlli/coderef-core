@@ -35,6 +35,7 @@ import {
 import { HeaderGenerator } from '../semantic/header-generator.js';
 import { buildSemanticElementsFromState } from '../pipeline/semantic-elements.js';
 import { minimatch } from 'minimatch';
+import { decodeScipIndex, type ScipIndex } from '../integration/scip/scip-schema.js';
 
 export interface CliArgs {
   projectDir: string;
@@ -96,6 +97,24 @@ export interface CliArgs {
    * AND is not excluded AND (if --stale-only) is stale.
    */
   exclude?: string[];
+  /**
+   * Opt-in SCIP live resolution overlay (WO-DECOMPOSE-CODEREF-MCP-SERVER-
+   * MONOLITH-001 Phase 2, STUB-BQQJSY). Path to a .scip index emitted by an
+   * external indexer (e.g. `npx @sourcegraph/scip-typescript index`, local, no
+   * cloud). When set, populate DECODES the .scip here (upstream of the
+   * resolver, keeping it file-IO-free per AC-09) and threads the decoded index
+   * into the pipeline; a post-Phase-5 overlay flips co-located unresolved/
+   * ambiguous edges to resolved with SCIP provenance (evidence.kind:'scip',
+   * confidence tier 'heuristic') — ONLY when the reference's symbol maps via
+   * its SCIP definition occurrence to exactly one graph node, whose real id is
+   * stamped as targetId (GI-3/GI-2 hold by construction; unmappable references
+   * flip nothing). Already-resolved edges are NEVER touched and
+   * no edges are invented — no-regress by construction. Absolute or
+   * project-relative. Unset (the default) = no overlay = unchanged behavior. A
+   * missing/unreadable/undecodable file degrades to a stderr warning + no
+   * overlay (never a crash).
+   */
+  scip?: string;
 }
 
 interface GeneratorRunner {
@@ -155,6 +174,7 @@ export function defaultPopulateArgs(projectDir: string): CliArgs {
     coverageFloor: 100,
     include: undefined,
     exclude: undefined,
+    scip: undefined,
   };
 }
 
@@ -267,6 +287,12 @@ function parseArgs(argv: string[]): CliArgs {
         args.exclude = argv[++i].split(',').map(s => s.trim()).filter(Boolean);
         break;
 
+      case '--scip':
+        // Opt-in SCIP live resolution overlay (STUB-BQQJSY). Path to a .scip
+        // index; decoded upstream in runPopulate and threaded into the pipeline.
+        args.scip = (inlineValue ?? argv[++i])?.trim() || undefined;
+        break;
+
       case '--semantic':
       case '--semantic-registry':
         args.semanticRegistry = true;
@@ -356,6 +382,13 @@ OPTIONS:
                                Filters the header WRITE only — graph/index/registry output is unchanged.
   --exclude <globs>            Skip --source-headers writes for files matching these comma-separated globs
                                (denylist). Composes with --include and --stale-only as AND.
+  --scip <path>                Opt-in SCIP live resolution overlay. Path to a .scip index (e.g. from
+                               \`npx @sourcegraph/scip-typescript index\`, local, no cloud). Flips co-located
+                               unresolved/ambiguous call edges to resolved with SCIP provenance (heuristic
+                               tier) when the symbol's definition maps to exactly one graph node (its real
+                               id becomes targetId; unmappable references are left untouched). Never touches
+                               resolved edges, never invents edges (no-regress). Unset
+                               = no overlay. A missing/undecodable file warns and continues without it.
   -h, --help                   Show this help message
 
 MODES:
@@ -385,6 +418,10 @@ EXAMPLES:
 
   # Write headers into owned files only (path-scope allowlist)
   populate-coderef --source-headers --include scripts/**,ORCHESTRATOR/**,ENGINES/**
+
+  # Lift resolution with a SCIP index (opt-in overlay)
+  npx @sourcegraph/scip-typescript index --output .coderef/scip/index.scip
+  populate-coderef --scip .coderef/scip/index.scip
 `);
 }
 
@@ -469,6 +506,35 @@ export async function runPopulate(
     // Create output directory
     await fs.mkdir(outputDir, { recursive: true });
 
+    // SCIP live overlay (opt-in --scip, STUB-BQQJSY). Decode the .scip HERE —
+    // upstream of the pipeline — so the resolver stays file-IO-free (AC-09). The
+    // decoded index is threaded into pipelineOpts.scipIndex; the orchestrator's
+    // post-Phase-5 overlay flips co-located unresolved/ambiguous edges. Failure
+    // (missing / unreadable / undecodable) degrades to a stderr warning + no
+    // overlay — never a crash, matching the read-only delta's ABSENCE=NO-DATA.
+    let scipIndex: ScipIndex | undefined;
+    if (args.scip) {
+      const scipPath = path.isAbsolute(args.scip)
+        ? args.scip
+        : path.resolve(args.projectDir, args.scip);
+      try {
+        const bytes = await fs.readFile(scipPath);
+        scipIndex = decodeScipIndex(bytes);
+        if (!args.json) {
+          console.error(
+            `[populate-coderef] SCIP overlay enabled: ${scipIndex.documents.length} ` +
+              `document(s) from ${scipPath}`,
+          );
+        }
+      } catch (e) {
+        console.error(
+          `[populate-coderef] --scip: could not read/decode ${scipPath} ` +
+            `(${e instanceof Error ? e.message : String(e)}); continuing WITHOUT the overlay.`,
+        );
+        scipIndex = undefined;
+      }
+    }
+
     // Run pipeline. Graph-safe incremental (P5, ADJ-03) when --changed-files is
     // supplied: re-scan only those files and resolve against the persisted full
     // fact set (falls back to a full build if none exists). Otherwise a normal
@@ -480,6 +546,7 @@ export async function runPopulate(
       outputDir,
       mode: args.mode,
       select: args.select,
+      scipIndex,
     };
     const toAbs = (p: string): string => (path.isAbsolute(p) ? p : path.resolve(args.projectDir, p));
     const state =

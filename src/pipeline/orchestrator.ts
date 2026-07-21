@@ -53,6 +53,7 @@ import type {
 import { resolveImports } from './import-resolver.js';
 import { resolveCalls } from './call-resolver.js';
 import { constructGraph } from './graph-builder.js';
+import { applyScipOverlay } from './scip-overlay.js';
 import {
   buildFactSet,
   mergeChangedFacts,
@@ -319,6 +320,28 @@ export class PipelineOrchestrator {
       version: v2Graph.version,
       exportedAt: v2Graph.exportedAt,
     });
+
+    // Step 4.8: SCIP live resolution overlay (opt-in --scip,
+    // WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 Phase 2, STUB-BQQJSY).
+    // Runs ONLY when a decoded SCIP index was threaded through options
+    // (the CLI decodes the .scip UPSTREAM — the resolver stays file-IO-free
+    // per AC-09). Post-resolution overlay: flips co-located unresolved/
+    // ambiguous edges to resolved with SCIP provenance; NEVER touches an
+    // already-resolved edge and NEVER invents an edge, so the graph is
+    // no-regress by construction. Absent options.scipIndex = zero behavior
+    // change (byte-identical graph).
+    if (options.scipIndex) {
+      const overlayStats = applyScipOverlay(graph, options.scipIndex, projectPath);
+      if (verbose) {
+        logger.info(
+          `[PipelineOrchestrator] SCIP overlay: flipped ${overlayStats.flipped_total} ` +
+            `edge(s) (unresolved ${overlayStats.flipped_unresolved}, ambiguous ` +
+            `${overlayStats.flipped_ambiguous}) over ${overlayStats.scip_references} ` +
+            `SCIP reference(s); ${overlayStats.already_resolved} site(s) already resolved; ` +
+            `${overlayStats.no_target_mapping} reference(s) had no unique node mapping (not flipped).`,
+        );
+      }
+    }
 
     const endTime = Date.now();
 

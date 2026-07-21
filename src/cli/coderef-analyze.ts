@@ -22,7 +22,7 @@ import {
 import type { ElementData } from '../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../pipeline/element-taxonomy.js';
 import { readdir, readFile } from 'node:fs/promises';
-import { join, extname } from 'node:path';
+import { join, extname, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { computeTestsForChange, computeRunCommand, type RunnerManifest } from '../query/tests-for-change.js';
 import {
@@ -1006,6 +1006,9 @@ async function main(): Promise<void> {
         scip,
         elements,
         edges,
+        // B-3: pass the absolute repo root so absolute edge sourceLocation.file
+        // and repo-relative SCIP relativePath collapse to one canonical key.
+        projectPath: resolve(project),
         limit: sdLimit,
         offset: sdOffset,
       });

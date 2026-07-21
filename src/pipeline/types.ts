@@ -96,6 +96,39 @@ export interface PipelineOptions {
    * validatePipelineState options (DR-PHASE-6-D).
    */
   strictHeaders?: boolean;
+  /**
+   * Decoded SCIP index for the opt-in `--scip` live resolution overlay
+   * (WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 Phase 2, STUB-BQQJSY). The
+   * DECODE happens UPSTREAM in populate.ts (readFile → decodeScipIndex) — the
+   * resolver stays file-IO-free per AC-09; the orchestrator receives the
+   * already-decoded index here and runs applyScipOverlay AFTER Phase 5, flipping
+   * co-located unresolved/ambiguous edges to resolved with SCIP provenance.
+   * Absent (the default) = no overlay = byte-identical graph. See
+   * src/pipeline/scip-overlay.ts.
+   *
+   * Typed STRUCTURALLY (ScipIndexShape), NOT as the concrete `ScipIndex` from
+   * src/integration/scip — the core pipeline project deliberately excludes the
+   * integration/ decoder domain (see tsconfig.json exclude). The decoded
+   * ScipIndex is structurally assignable to this shape, so the CLI passes it in
+   * without dragging an integration-layer import across the boundary.
+   */
+  scipIndex?: ScipIndexShape;
+}
+
+/**
+ * Minimal structural shape of a decoded SCIP index the pipeline overlay
+ * consumes (WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 Phase 2). Kept here in
+ * the core `types` module — rather than importing the concrete `ScipIndex` from
+ * src/integration/scip/scip-schema.ts — so PipelineOptions carries NO
+ * integration-layer dependency (the main tsconfig excludes src/integration/**).
+ * The decoded `ScipIndex` is structurally assignable to this. applyScipOverlay
+ * (src/pipeline/scip-overlay.ts) consumes exactly these fields.
+ */
+export interface ScipIndexShape {
+  documents: Array<{
+    relativePath: string;
+    occurrences: Array<{ range: number[]; symbol: string; isDefinition: boolean }>;
+  }>;
 }
 
 /**

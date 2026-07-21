@@ -34,6 +34,8 @@
  * would falsely imply CodeRef's resolution is already complete).
  */
 
+import { toRepoRelativePosix } from '../utils/path-normalize.js';
+
 /** Minimal element shape (subset of ElementData) needed to map occurrences. */
 export interface ScipDeltaElement {
   codeRefId?: string;
@@ -102,6 +104,17 @@ export interface ScipResolutionDeltaInputs {
   scip: ScipIndexLike | null | undefined;
   elements: ScipDeltaElement[];
   edges: ScipDeltaEdge[];
+  /**
+   * Absolute repo root. When supplied, edge `sourceLocation.file` (which is
+   * ABSOLUTE in the exported graph) and SCIP `relativePath` are both mapped to
+   * one canonical repo-relative forward-slash key via toRepoRelativePosix
+   * (blocker B-3). Without it, an absolute edge path and a relative SCIP path
+   * for the SAME source line never matched — every occurrence fell through to
+   * `absent`, inflating delta_resolved_by_scip to == reference count (the
+   * delta_ratio>1 artifact). Optional for back-compat with callers that already
+   * pass repo-relative edges/paths.
+   */
+  projectPath?: string;
   limit?: number;
   offset?: number;
 }
@@ -132,7 +145,9 @@ function elementKey(file: string, line: number): string {
 export function computeScipResolutionDelta(
   inputs: ScipResolutionDeltaInputs,
 ): ScipResolutionDeltaSurface {
-  const { scip, elements, edges, limit = DEFAULT_LIMIT, offset = 0 } = inputs;
+  const { scip, elements, edges, projectPath, limit = DEFAULT_LIMIT, offset = 0 } = inputs;
+  // B-3: one canonical repo-relative forward-slash key for both sides.
+  const key = (file: string): string => toRepoRelativePosix(file, projectPath);
 
   const emptyScip = !scip || !Array.isArray(scip.documents) || scip.documents.length === 0;
   if (emptyScip) {
@@ -154,10 +169,11 @@ export function computeScipResolutionDelta(
   }
 
   // Index elements by (file, 1-indexed line) for occurrence → codeRefId mapping.
+  // Canonicalize the file so element keys match the SCIP-doc keys below (B-3).
   const elByKey = new Map<string, ScipDeltaElement>();
   for (const el of elements) {
     if (typeof el.line === 'number') {
-      elByKey.set(elementKey(el.file, el.line), el);
+      elByKey.set(elementKey(key(el.file), el.line), el);
     }
   }
 
@@ -172,10 +188,10 @@ export function computeScipResolutionDelta(
     const status = e.resolutionStatus;
     if (status === 'unresolved' || status === 'ambiguous') coderefUnresolvedTotal += 1;
     if (typeof file === 'string' && typeof line === 'number' && status) {
-      const key = elementKey(normalizeFile(file), line);
+      const ek = elementKey(key(file), line);
       // Prefer a 'resolved' status if any edge at that site resolved.
-      const prev = edgeStatusByKey.get(key);
-      if (prev !== 'resolved') edgeStatusByKey.set(key, status);
+      const prev = edgeStatusByKey.get(ek);
+      if (prev !== 'resolved') edgeStatusByKey.set(ek, status);
     }
   }
 
@@ -184,7 +200,7 @@ export function computeScipResolutionDelta(
   const deltas: ScipDeltaRow[] = [];
 
   for (const doc of scip.documents) {
-    const file = normalizeFile(doc.relativePath);
+    const file = key(doc.relativePath);
     for (const occ of doc.occurrences) {
       scipOccurrences += 1;
       if (occ.isDefinition) {
@@ -195,8 +211,8 @@ export function computeScipResolutionDelta(
 
       // SCIP range is 0-indexed [startLine, ...]; CodeRef line is 1-indexed.
       const line = occ.range[0] + 1;
-      const key = elementKey(file, line);
-      const crStatus = edgeStatusByKey.get(key);
+      const occKey = elementKey(file, line);
+      const crStatus = edgeStatusByKey.get(occKey);
 
       // SCIP resolved this reference (it has a symbol). Is it a LIFT over CodeRef?
       // Lift when CodeRef's co-located edge is unresolved / ambiguous / absent.
@@ -205,7 +221,7 @@ export function computeScipResolutionDelta(
       const coderefStatus: ScipDeltaRow['coderefStatus'] =
         crStatus === 'unresolved' || crStatus === 'ambiguous' ? crStatus : 'absent';
 
-      const el = elByKey.get(key);
+      const el = elByKey.get(occKey);
       deltas.push({
         codeRefId: el?.codeRefId ?? null,
         scipSymbol: occ.symbol,
@@ -245,9 +261,4 @@ export function computeScipResolutionDelta(
     schema_version: SCIP_DELTA_SCHEMA_VERSION,
     note: NOTE,
   };
-}
-
-/** Normalize a file path to forward-slash relative form (matches index.json keys). */
-function normalizeFile(file: string): string {
-  return file.replace(/\\/g, '/');
 }
