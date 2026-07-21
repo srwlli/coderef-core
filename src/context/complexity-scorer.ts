@@ -13,9 +13,19 @@
  * - Lines of Code (LOC)
  * - Parameter count
  * - Cyclomatic complexity
- * - Effort estimation
+ * - Cognitive complexity + nesting depth (passthrough, when persisted)
  *
- * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 1
+ * Part of WO-CODEREF-CONTEXT-ENHANCEMENT-001 - Phase 1.
+ *
+ * WO-EXTEND-THE-CLONE-SURFACE-P10 P2 rewire: inputs are REAL when the element
+ * carries them — LOC from the persisted `endLine` span, parameterCount from
+ * `element.parameters`, cyclomatic/cognitive/nesting from the extract-time
+ * AST metrics (`ElementData.complexity`, computed by
+ * src/pipeline/extractors/complexity-metrics.ts). The previous fabrications
+ * (LOC = max(2, calls)*2, hardcoded 2/1 params, file-wide regex CC that gave
+ * every element in a file the same number) are RETIRED. Elements without the
+ * persisted data fall back to minimal disclosed estimates and are stamped
+ * `metric_source: 'estimated'` — never a silently fake number.
  */
 
 
@@ -38,9 +48,11 @@ export class ComplexityScorer {
   }
 
   /**
-   * Add source code for a file to enable LOC calculation
-   * @param filePath File path
-   * @param source Source code content
+   * Add source code for a file (retained for API back-compat).
+   *
+   * @deprecated The P2 rewire scores from persisted element data
+   * (endLine/parameters/complexity); registered sources are no longer read
+   * by any scoring path.
    */
   addSource(filePath: string, source: string): void {
     this.sourceMap.set(filePath, source);
@@ -52,12 +64,25 @@ export class ComplexityScorer {
    * @returns Element complexity with all metrics
    */
   scoreElement(element: ElementData): ElementComplexity {
+    // Provenance keys on the headline metric: persisted AST cyclomatic
+    // present = 'ast'; otherwise the fallbacks below are estimates.
+    const hasAstMetrics = element.complexity?.cyclomatic !== undefined;
+
     const metrics: ComplexityMetrics = {
       loc: this.calculateLOC(element),
       parameterCount: this.countParameters(element),
       cyclomaticComplexity: this.calculateCyclomaticComplexity(element),
       complexityScore: 0, // Will be calculated below
+      metric_source: hasAstMetrics ? 'ast' : 'estimated',
     };
+
+    // Passthrough of the extract-time metrics when present (additive fields).
+    if (element.complexity?.cognitive !== undefined) {
+      metrics.cognitiveComplexity = element.complexity.cognitive;
+    }
+    if (element.complexity?.nestingDepth !== undefined) {
+      metrics.nestingDepth = element.complexity.nestingDepth;
+    }
 
     // Calculate overall complexity score (0-10)
     metrics.complexityScore = this.calculateComplexityScore(metrics);
@@ -87,105 +112,55 @@ export class ComplexityScorer {
   /**
    * Calculate Lines of Code (LOC) for an element
    *
-   * Uses source code if available, otherwise estimates based on
-   * available metadata
+   * REAL when the element carries the persisted `endLine` span (P1 clone
+   * substrate): endLine - line + 1. Fallback: a small type-keyed estimate
+   * (the element is stamped metric_source 'estimated' by scoreElement).
    *
    * @param element Element to measure
-   * @returns Estimated LOC
+   * @returns LOC (real span when endLine present, else estimate)
    */
   private calculateLOC(element: ElementData): number {
-    const source = this.sourceMap.get(element.file);
-    if (!source) {
-      // Estimate LOC if source not available
-      // Default: function calls ~5-10 lines, method calls ~5-15 lines
-      return element.type === 'method' ? 8 : 6;
+    if (element.endLine !== undefined && element.endLine >= element.line) {
+      return element.endLine - element.line + 1;
     }
-
-    // Count actual LOC from source code
-    // This is a simplified calculation - real implementation would parse the function body
-    const lines = source.split('\n');
-
-    // For now, estimate based on element properties
-    // In a real implementation, we'd parse the AST to find exact line ranges
-    const baseLines = Math.max(2, element.calls?.length || 0) * 2;
-
-    return Math.max(1, baseLines);
+    // Estimate when no persisted span exists (old/fallback-scanned index).
+    return element.type === 'method' ? 8 : 6;
   }
 
   /**
    * Count function parameters
    *
-   * Extracts parameter count from element metadata or parses signature
+   * REAL when the extractor populated `element.parameters` (all tree-sitter
+   * paths do). Fallback: the historical type-keyed estimate.
    *
    * @param element Element to analyze
    * @returns Parameter count
    */
   private countParameters(element: ElementData): number {
-    // In a real implementation, this would parse the function signature
-    // from source code using AST analysis
-
-    // For now, return a reasonable default estimate
-    // We'd enhance this with actual AST parsing
-
-    // Most functions have 1-3 parameters on average
-    // Methods might have fewer due to 'this'
+    if (element.parameters !== undefined) {
+      return element.parameters.length;
+    }
     return element.type === 'method' ? 2 : 1;
   }
 
   /**
-   * Calculate Cyclomatic Complexity (CC)
+   * Cyclomatic Complexity (CC)
    *
-   * Counts decision points:
-   * - if/else: +1
-   * - switch: +1 per case
-   * - for/while/do-while: +1
-   * - catch: +1
-   * - logical operators (&&, ||): +1
-   * - ternary: +1
-   *
-   * Base complexity is 1
+   * REAL when the element carries the extract-time AST metric
+   * (`element.complexity.cyclomatic` — decision nodes + 1 over the element
+   * BODY, per-grammar node sets; see complexity-metrics.ts for the pinned
+   * spec). The former file-wide regex fallback is RETIRED — it counted the
+   * WHOLE FILE's tokens (including strings/comments) for every element.
+   * Without the persisted metric this returns the minimal estimate 1.
    *
    * @param element Element to analyze
    * @returns Cyclomatic complexity
    */
   private calculateCyclomaticComplexity(element: ElementData): number {
-    const source = this.sourceMap.get(element.file);
-    if (!source) {
-      // Estimate CC if source not available
-      // Default function complexity ~1-2
-      return 1;
+    if (element.complexity?.cyclomatic !== undefined) {
+      return Math.max(1, element.complexity.cyclomatic);
     }
-
-    // Count decision points in source code
-    let complexity = 1; // Base complexity
-
-    // Count if statements
-    const ifMatches = source.match(/\bif\s*\(/g);
-    complexity += ifMatches ? ifMatches.length : 0;
-
-    // Count switch cases
-    const switchMatches = source.match(/\bcase\s+/g);
-    complexity += switchMatches ? switchMatches.length : 0;
-
-    // Count loops
-    const loopMatches = source.match(/\b(for|while|do)\s*[\(\{]/g);
-    complexity += loopMatches ? loopMatches.length : 0;
-
-    // Count catch blocks
-    const catchMatches = source.match(/\bcatch\s*\(/g);
-    complexity += catchMatches ? catchMatches.length : 0;
-
-    // Count logical operators (conservative estimate: every 5 will be a decision point)
-    const logicalMatches = source.match(/[&|]{2}/g);
-    if (logicalMatches) {
-      complexity += Math.floor(logicalMatches.length / 2);
-    }
-
-    // Count ternary operators
-    const ternaryMatches = source.match(/\?[^:]+:/g);
-    complexity += ternaryMatches ? ternaryMatches.length : 0;
-
-    return Math.max(1, complexity);
+    return 1;
   }
 
   /**

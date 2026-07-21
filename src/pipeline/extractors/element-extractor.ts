@@ -31,6 +31,7 @@ import type { ElementData } from '../../types/types.js';
 import { DEFAULT_HEADER_STATUS } from '../element-taxonomy.js';
 import { extractLeadingJsDoc, extractPythonDocstring } from './docstring.js';
 import { captureCloneSubstrate } from './clone-substrate.js';
+import { captureComplexity } from './complexity-metrics.js';
 import logger from '../../utils/logger.js';
 
 /**
@@ -241,6 +242,7 @@ export class ElementExtractor {
             async: isAsync,
             docstring: extractLeadingJsDoc(node),
             ...captureCloneSubstrate(node, 'method'),
+            ...captureComplexity(node, 'js'),
           });
         }
       }
@@ -315,6 +317,7 @@ export class ElementExtractor {
             async: isAsync || undefined,
             docstring: extractPythonDocstring(node),
             ...captureCloneSubstrate(node, isMethod ? 'method' : 'function'),
+            ...captureComplexity(node, 'py'),
           });
         }
       }
@@ -378,6 +381,7 @@ export class ElementExtractor {
             parameters,
             exported,
             ...captureCloneSubstrate(node, 'function'),
+            ...captureComplexity(node, 'go'),
           });
         }
       }
@@ -400,6 +404,7 @@ export class ElementExtractor {
             parameters,
             exported,
             ...captureCloneSubstrate(node, 'method'),
+            ...captureComplexity(node, 'go'),
           });
         }
       }
@@ -461,6 +466,7 @@ export class ElementExtractor {
             parameters,
             exported,
             ...captureCloneSubstrate(node, 'function'),
+            ...captureComplexity(node, 'rs'),
           });
         }
       }
@@ -528,6 +534,7 @@ export class ElementExtractor {
             line: nameNode.startPosition.row + 1,
             parameters,
             ...captureCloneSubstrate(node, isMethod ? 'method' : 'function'),
+            ...captureComplexity(node, 'java'),
           });
         }
       }
@@ -602,6 +609,7 @@ export class ElementExtractor {
               line: nameNode.startPosition.row + 1,
               parameters,
               ...captureCloneSubstrate(node, 'function'),
+              ...captureComplexity(node, 'c'),
             });
           }
         }
@@ -686,6 +694,7 @@ export class ElementExtractor {
       // P8: leading /** */ JSDoc for this declaration (undefined when absent).
       docstring: extractLeadingJsDoc(funcNode),
       ...captureCloneSubstrate(funcNode, elementType),
+      ...captureComplexity(funcNode, 'js'),
     };
   }
 

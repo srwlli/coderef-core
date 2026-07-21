@@ -397,12 +397,20 @@ export interface ElementData {
    * family; consumed by the near-miss clone pass.
    */
   astFingerprint?: Record<string, number>;
-  /** Optional: Complexity metrics. Not implemented by the Phase 1 scanner downgrade. */
+  /**
+   * Optional: AST-accurate complexity metrics, computed at extract time over
+   * the element's resolved BODY node (WO-EXTEND-THE-CLONE-SURFACE-P10 P2,
+   * src/pipeline/extractors/complexity-metrics.ts). Function-like kinds only;
+   * absent on old/regex-fallback-scanned indexes = downstream consumers
+   * disclose metric_source 'estimated', never a fake number.
+   */
   complexity?: {
     /** Cyclomatic complexity (number of decision points + 1) */
     cyclomatic: number;
     /** Maximum nesting depth of control flow structures */
     nestingDepth: number;
+    /** Cognitive complexity (documented Sonar-style subset with nesting penalty) */
+    cognitive?: number;
   };
   /** Optional: Additional metadata from scanners, plugins, or graph projection. */
   metadata?: Record<string, any>;

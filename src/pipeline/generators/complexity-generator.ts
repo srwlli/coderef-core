@@ -13,6 +13,13 @@
  *
  * Produces: .coderef/reports/complexity/summary.json and complexity.json
  * Metrics: Cyclomatic complexity, LOC, parameter count per element
+ *
+ * WO-EXTEND-THE-CLONE-SURFACE-P10 P2: rows prefer the extract-time AST
+ * metrics — cyclomatic from ElementData.complexity (the IMP-CORE-003
+ * preference path, now actually fed), LOC from the persisted endLine span —
+ * and carry additive cognitive/nestingDepth/metric_source columns. The
+ * regex + next-element-line estimates remain ONLY as the disclosed fallback
+ * (`metric_source: 'estimated'`) for elements without persisted data.
  */
 
 
@@ -31,6 +38,12 @@ interface ComplexityMetrics {
   complexity: number;
   loc: number;
   parameters: number;
+  /** Cognitive complexity (Sonar-style subset), present when AST metrics were persisted */
+  cognitive?: number;
+  /** Max nesting depth, present when AST metrics were persisted */
+  nestingDepth?: number;
+  /** Provenance: 'ast' = extract-time metrics; 'estimated' = regex/next-element fallback */
+  metric_source: 'ast' | 'estimated';
 }
 
 /**
@@ -119,14 +132,23 @@ export class ComplexityGenerator {
         const content = sources.get(elem.file) || '';
         const fileElements = elementsByFile.get(elem.file) || [];
 
-        return {
+        const hasAstMetrics = elem.complexity?.cyclomatic !== undefined;
+        const row: ComplexityMetrics = {
           element: elem.name,
           file: relativePath,
           type: elem.type,
           complexity: this.calculateComplexity(content, elem, fileElements),
           loc: this.calculateLOC(content, elem, fileElements),
           parameters: elem.parameters?.length || 0,
+          metric_source: hasAstMetrics ? 'ast' : 'estimated',
         };
+        if (elem.complexity?.cognitive !== undefined) {
+          row.cognitive = elem.complexity.cognitive;
+        }
+        if (elem.complexity?.nestingDepth !== undefined) {
+          row.nestingDepth = elem.complexity.nestingDepth;
+        }
+        return row;
       });
   }
 
@@ -196,6 +218,11 @@ export class ComplexityGenerator {
     elem: ElementData,
     fileElements: ElementData[]
   ): number {
+    // Persisted element span (P1 clone substrate) beats the next-element
+    // estimate — the estimate attributes trailing gap/comments to the element.
+    if (elem.endLine !== undefined && elem.endLine >= elem.line) {
+      return elem.endLine - elem.line + 1;
+    }
     const totalLines = content.split('\n').length;
     const endLine = this.getEstimatedEndLine(totalLines, elem, fileElements);
     return Math.max(1, endLine - elem.line + 1);

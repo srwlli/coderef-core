@@ -3,8 +3,8 @@
  * @layer service
  * @capability clone-substrate-capture
  * @constraint zero extra I/O; computed from the defining node already in the extractor's hand
- * @exports captureCloneSubstrate, CLONE_FINGERPRINT_KINDS, CloneSubstrate
- * @used_by src/pipeline/extractors/element-extractor.ts
+ * @exports captureCloneSubstrate, resolveBodyNode, CLONE_FINGERPRINT_KINDS, CloneSubstrate
+ * @used_by src/pipeline/extractors/element-extractor.ts, src/pipeline/extractors/complexity-metrics.ts
  */
 
 /**
@@ -101,8 +101,10 @@ export function captureCloneSubstrate(
  * `type` (go type_spec). Chained one level so a `value` that resolves to a
  * function expression contributes ITS body. Falls back to the whole node when
  * no field matches (hash still deterministic, just name-inclusive).
+ * Exported for the P2 complexity walk (complexity-metrics.ts), which measures
+ * the same body the hash covers.
  */
-function resolveBodyNode(node: Parser.SyntaxNode): Parser.SyntaxNode {
+export function resolveBodyNode(node: Parser.SyntaxNode): Parser.SyntaxNode {
   let resolved =
     node.childForFieldName('body') ??
     node.childForFieldName('value') ??

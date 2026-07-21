@@ -1316,7 +1316,7 @@ coderef-analyze --project=<path> --type=<type> [options]
 | `docs` | Analyze documentation coverage and quality | — |
 | `middleware` | Detect middleware chains and DI containers | — |
 | `graph` | Build and print the full dependency graph | — |
-| `complexity` | Score element complexity (requires project scan) | — |
+| `complexity` | Score element complexity from the persisted extract-time AST metrics: cyclomatic + cognitive (documented Sonar-style subset) + nesting depth computed over the element BODY at scan time, LOC from the persisted `endLine` span, parameter count from the real parameter list. Every row carries `metric_source: 'ast' \| 'estimated'` — `estimated` = element scanned without AST metrics (old/regex-fallback index; repopulate to refresh), disclosed, never a silently fake number. | — |
 | `impact` | Simulate blast radius for a changed element | `--element` |
 | `multi-hop` | Traverse multi-hop relationships | `--element` |
 | `breaking-changes` | Exported-API-surface diff over a snapshot baseline: `--to=<label>` snapshots the current exports; a later `--from=<label>` (default `baseline`) diffs into added / removed / signature-changed exports. Surfaces, NOT verdicts (a removed export is a change fact, never auto-"break"; no composite score); no baseline = no-data, never a false "0 breaking changes". | `--from`, `--to` |

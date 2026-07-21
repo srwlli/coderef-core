@@ -30,6 +30,12 @@ import type { ElementData } from '../types/types.js';
 
 /**
  * Complexity metrics for a code element
+ *
+ * WO-EXTEND-THE-CLONE-SURFACE-P10 P2: inputs are REAL when the element
+ * carries the extract-time AST metrics (ElementData.complexity + endLine +
+ * parameters); `metric_source` discloses which path produced them. The
+ * envelope (loc/parameterCount/cyclomaticComplexity/complexityScore) is
+ * unchanged for back-compat.
  */
 export interface ComplexityMetrics {
   /** Lines of code (LOC) */
@@ -40,6 +46,12 @@ export interface ComplexityMetrics {
   cyclomaticComplexity: number;
   /** Overall complexity score (0-10) */
   complexityScore: number;
+  /** Cognitive complexity (Sonar-style subset), when the AST metrics carry it */
+  cognitiveComplexity?: number;
+  /** Max nesting depth of control structures, when the AST metrics carry it */
+  nestingDepth?: number;
+  /** Provenance: 'ast' = persisted extract-time metrics; 'estimated' = fallback heuristics */
+  metric_source?: 'ast' | 'estimated';
 }
 
 /**
