@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-GSDZ7X",
+  "ulid": "01KWJRZ200T85Y4NYS7ENZ4NFQ",
+  "feature_name": "post-remediation-reality-sync",
+  "description": "Sync all human- and agent-facing surfaces to the shipped WO-REPO-REVIEW-2026-07-REMEDIATION-001 reality (close 4cd33af; P0 981173b / P1 4443c6c / P2 3bbd97a). Post-close verification (coderef/workorder/repo-review-2026-07-remediation/post-close-verification-2026-07-02.txt) proved all fixes but surfaced stale docs/skills/context + two runtime artifacts. Scope: (1) CODEREF-CORE docs — docs/CLI.md (--no-enrich gone), README.md (stale edge baseline L67, false foundation-docs-sync claim L443, plugin roadmap bullet L725), guide-to-coderef-core.md (imports deleted buildGraph/saveGraph/GraphError + src/errors chapter), coderef/foundation-docs/* regenerate (documents deleted AnalyzerService/QueryExecutor as public API with inverted semantics), examples/plugins/ delete-or-tombstone; (2) ASSISTANT skills — CORE/rag-index+rag-search+rag-status (sqlite-default lie + wrong artifact path + invalid --provider custom), coderef-pipeline+coderef-watch+coderef-rag-server (dist entrypoints that don't exist + fictional flags), coderef-scan (positional path not --project-dir; compiles to scan.js); (3) PROJECT-CONTEXT/CODEREF-CORE/CONTEXT.md — highest value, auto-loaded every session, ~10 stale claims (SQLite default, --type calls, '6 MCP tools' -> 11, phantom src/rag/ dir); (4) RAG reindex — vector index dated 2026-06-12 carries 668 refs to deleted modules, needs reindex (incremental recommended, exercises P0 incremental-truth fix); (5) restore CODEREF-CORE/.mcp.json — deleted from working tree, forces fallback to global ~/.claude.json entry with no --project-dir (silent wrong-project .coderef/ resolution hazard). Two-repo span (CODEREF-CORE + ASSISTANT). Source: post-close-verification-2026-07-02.txt.",
+  "category": "fix",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-07-03T01:20:15Z"
+}

@@ -1,0 +1,23 @@
+{
+  "stub_id": "STUB-1ZAR94",
+  "ulid": "01KXFCXG4D0CX937VH49H0A78A",
+  "feature_name": "mcp-repo-agnostic-any-repo",
+  "description": "Make the coderef-core MCP server repo-agnostic: it should resolve and serve whichever repo it is invoked against (per-request / cwd / arg-driven project root), not be hard-wired to a single indexed project. Today the MCP is bound to one repo's .coderef graph (observed: codebase_summary / hotspots / what_exports all return CODEREF-CORE's own graph regardless of the caller's project), so a consumer wanting the census of automation/, ASSISTANT/, or any other indexed tree cannot get it through the MCP. Fix so the server selects the target repo's .coderef graph dynamically (e.g. a project_root parameter on each tool, or resolution from the caller's working directory / a configurable root), keeping the query surface (codebase_summary, what_exports/imports/calls, find_element, hotspots, cycles, path_between, pack_context, rag_search, etc.) identical but per-repo.",
+  "category": "fix",
+  "priority": "medium",
+  "status": "promoted",
+  "workorder_id": "WO-MCP-REPO-AGNOSTIC-ANY-REPO-001",
+  "promoted_at": "2026-07-14T04:10:08.483315+00:00",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-07-14T00:30:00Z",
+  "scope_details": {
+    "problem": "MCP server hard-wired to CODEREF-CORE's .coderef graph; cannot query any other indexed project's census.",
+    "observed_limitation": "All 14 MCP tools (codebase_summary, what_exports, what_imports, what_calls, find_element, find_all_references, hotspots, cycles, path_between, pack_context, rag_search, source_of, impact_of, validation_status) return CODEREF-CORE graph regardless of caller's project.",
+    "root_cause": "Graph resolution hard-coded in coderef-mcp-server.ts (entry point) or the query layer — currently loads `.coderef/graph.json` from CODEREF-CORE only.",
+    "solution_shape": "Add dynamic project_root resolution to each MCP tool, with three tiers: (1) explicit project_root parameter (caller chooses), (2) cwd-inferred root (walk up from caller's cwd to find .coderef), (3) configurable fallback (env var / config file). All tools keep identical query contract; only the graph source changes.",
+    "affected_surface": "src/cli/coderef-mcp-server.ts (the MCP entry point) + src/pipeline/orchestrator.ts (the query dispatch layer) + potentially src/scanner/scanner.ts if graph loading is there.",
+    "test_surface": "Any indexed project (automation/, ASSISTANT/, primary-sources/) should be queryable via the repo-agnostic MCP; today only CODEREF-CORE works.",
+    "blocking_use_case": "The standards-identify --with-inventory bridge (doc-gaps + scatter detection) cannot feed .coderef census into other projects' gap analyses until the MCP serves any repo."
+  }
+}
