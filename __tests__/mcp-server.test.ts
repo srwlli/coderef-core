@@ -821,6 +821,83 @@ describe('type_hierarchy', () => {
       fs.rmSync(proj, { recursive: true, force: true });
     }
   });
+
+  // item_format:"lsp" (WO-EXTEND-THE-CLONE-SURFACE-P10-SRC-QUERY-CLONES-001 P3):
+  // additive LSP 3.17 projection — default envelope unchanged; endLine joins from
+  // the index substrate; unresolved endpoints excluded + counted.
+  it('item_format:"lsp" additively attaches spec items; default output is unchanged', () => {
+    const proj = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-mcp-typehier-lsp-'));
+    try {
+      const cr = path.join(proj, '.coderef');
+      fs.mkdirSync(cr, { recursive: true });
+      // Dog extends Animal (both real nodes); Dog implements ExternalPet (string-only endpoint).
+      const graph: ExportedGraph = {
+        version: '1.0.0', exportedAt: 1,
+        nodes: [
+          { id: '@Class/src/a.ts#Animal:5', type: 'class', name: 'Animal', file: 'src/a.ts', line: 5, metadata: {} },
+          { id: '@Class/src/d.ts#Dog:1', type: 'class', name: 'Dog', file: 'src/d.ts', line: 1, metadata: {} },
+        ],
+        edges: [
+          {
+            id: 'h1', sourceId: '@Class/src/d.ts#Dog:1', targetId: '@Class/src/a.ts#Animal:5',
+            relationship: 'call', resolutionStatus: 'resolved', sourceLocation: { file: 'src/d.ts', line: 1 },
+            source: '@Class/src/d.ts#Dog:1', target: '@Class/src/a.ts#Animal:5', type: 'extends',
+          },
+          {
+            id: 'h2', sourceId: '@Class/src/d.ts#Dog:1',
+            relationship: 'call', resolutionStatus: 'unresolved', sourceLocation: { file: 'src/d.ts', line: 1 },
+            source: '@Class/src/d.ts#Dog:1', target: 'ExternalPet', type: 'implements',
+          },
+        ],
+        statistics: { nodeCount: 2, edgeCount: 2, edgesByType: { extends: 1, implements: 1 }, densityRatio: 0 },
+      };
+      // Index carries the P1 substrate endLine for Animal but NOT Dog -> Dog's
+      // seed item degrades to a disclosed single-line range.
+      const index = {
+        elements: [
+          { file: 'src/a.ts', line: 5, endLine: 42, codeRefId: '@Class/src/a.ts#Animal:5', name: 'Animal', type: 'class' },
+          { file: 'src/d.ts', line: 1, codeRefId: '@Class/src/d.ts#Dog:1', name: 'Dog', type: 'class' },
+        ],
+      };
+      fs.writeFileSync(path.join(cr, 'graph.json'), JSON.stringify(graph));
+      fs.writeFileSync(path.join(cr, 'index.json'), JSON.stringify(index));
+      fs.writeFileSync(path.join(cr, 'validation-report.json'), JSON.stringify({ ok: true }));
+      const future = new Date(Date.now() + 60_000);
+      fs.utimesSync(path.join(cr, 'graph.json'), future, future);
+      fs.utimesSync(path.join(cr, 'index.json'), future, future);
+
+      const h = buildToolHandlers(proj);
+
+      // Default envelope: NO lsp key (byte-identical to pre-P3 output).
+      const plain = h.type_hierarchy({ element: '@Class/src/d.ts#Dog:1', direction: 'up' }) as any;
+      expect(plain.error).toBeUndefined();
+      expect(plain.lsp).toBeUndefined();
+
+      // Opt-in: lsp block with seed item + supertype items + disclosure counters.
+      const lsp = h.type_hierarchy({ element: '@Class/src/d.ts#Dog:1', direction: 'up', item_format: 'lsp' }) as any;
+      expect(lsp.lsp).toBeDefined();
+      // Seed (prepare) item: Dog — class kind 5, no endLine -> single-line disclosed.
+      expect(lsp.lsp.item.name).toBe('Dog');
+      expect(lsp.lsp.item.kind).toBe(5);
+      expect(lsp.lsp.item.uri).toMatch(/^file:\/\//);
+      expect(lsp.lsp.item.data.range_source).toBe('line_only');
+      // Animal supertype: endLine 42 -> 0-based whole-line span [4, 42).
+      expect(lsp.lsp.supertypes).toHaveLength(1);
+      const animal = lsp.lsp.supertypes[0];
+      expect(animal.name).toBe('Animal');
+      expect(animal.range).toEqual({ start: { line: 4, character: 0 }, end: { line: 42, character: 0 } });
+      expect(animal.data.heritage).toBe('extends');
+      expect(animal.data.range_source).toBe('endLine');
+      // ExternalPet has no node/file -> excluded from items, counted.
+      expect(lsp.lsp.excluded_unresolved).toBe(1);
+      expect(lsp.lsp.degraded_single_line).toBe(1); // the seed item
+      expect(lsp.lsp.note).toMatch(/0-based/);
+      // The non-lsp envelope fields still carry BOTH endpoints (resolved:false kept).
+      expect(lsp.supertype_count).toBe(2);
+    } finally {
+      fs.rmSync(proj, { recursive: true, force: true });
+    }
+  });
 });
 
 // api_diff (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P6). Self-contained

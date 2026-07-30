@@ -659,19 +659,20 @@ async function main(): Promise<void> {
     {
       title: 'Class/interface type hierarchy',
       description:
-        'Supertypes and subtypes of a class or interface, over the extends/implements heritage edges the pipeline extracts. direction:"up" returns what the element EXTENDS/IMPLEMENTS (its ancestors); "down" returns what extends/implements the element (its descendants); "both" (default) returns each. Every related type carries its depth (1 = direct) and the heritage kind (extends|implements), attributed to a codeRefId so it pipes into what_calls / impact_of / symbol_context. Surfaces, NOT verdicts. Absence is NO-DATA: empty supertypes/subtypes means the graph has no recorded heritage edge for this element (e.g. it is not a class/interface, or its base is an external/unresolved type), NEVER "this type is flat". A supertype that did not resolve to a project element is returned with resolved:false rather than dropped.',
+        'Supertypes and subtypes of a class or interface, over the extends/implements heritage edges the pipeline extracts. direction:"up" returns what the element EXTENDS/IMPLEMENTS (its ancestors); "down" returns what extends/implements the element (its descendants); "both" (default) returns each. Every related type carries its depth (1 = direct) and the heritage kind (extends|implements), attributed to a codeRefId so it pipes into what_calls / impact_of / symbol_context. item_format:"lsp" ADDITIVELY attaches an LSP 3.17 TypeHierarchyItem projection (name, numeric SymbolKind, file:// uri, 0-based whole-line range/selectionRange; the seed element is the prepareTypeHierarchy item) — range spans the element when the index carries endLine, degrading to a DISCLOSED single-line range on older indexes; the default envelope is unchanged when the param is absent. Surfaces, NOT verdicts. Absence is NO-DATA: empty supertypes/subtypes means the graph has no recorded heritage edge for this element (e.g. it is not a class/interface, or its base is an external/unresolved type), NEVER "this type is flat". A supertype that did not resolve to a project element is returned with resolved:false rather than dropped (LSP items require a uri, so such endpoints are excluded from the lsp block and counted in excluded_unresolved).',
       inputSchema: {
         project_root: projectRootArg,
         element: z.string().describe('The class/interface to walk — a codeRefId or a bare type name resolved against the graph.'),
         direction: z.enum(['up', 'down', 'both']).optional().describe('up = supertypes (ancestors), down = subtypes (descendants), both = each. Default both.'),
         max_depth: z.number().int().positive().optional().describe('Max heritage-walk depth (default 10, clamped 1..25).'),
+        item_format: z.enum(['lsp']).optional().describe('"lsp" additively attaches LSP 3.17 TypeHierarchyItem arrays (seed item + paged supertypes/subtypes) with disclosure counters; absent = default envelope only.'),
         limit: limitArg,
         offset: offsetArg,
         response_format: responseFormatArg,
       },
     },
-    async ({ project_root, element, direction, max_depth, limit, offset, response_format }) =>
-      perRepo(project_root, h => h.type_hierarchy({ element, direction, max_depth, limit, offset, response_format })),
+    async ({ project_root, element, direction, max_depth, item_format, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.type_hierarchy({ element, direction, max_depth, item_format, limit, offset, response_format })),
   );
 
   server.registerTool(

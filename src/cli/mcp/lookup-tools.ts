@@ -16,9 +16,16 @@
 
 import * as fs from 'fs';
 import * as path from 'path';
+import { pathToFileURL } from 'url';
 import type { ValidationReport } from '../../pipeline/output-validator.js';
 import { type SymbolContext, assembleSymbolContext } from '../../query/symbol-context.js';
-import { computeTypeHierarchy, type TypeHierarchyDirection } from '../../query/type-hierarchy.js';
+import {
+  LSP_PROJECTION_NOTE,
+  computeTypeHierarchy,
+  toLspItem,
+  toLspTypeHierarchyItems,
+  type TypeHierarchyDirection,
+} from '../../query/type-hierarchy.js';
 import { normalizeSlashes } from '../../utils/path-normalize.js';
 import { isConcise, paginate, shapeResponse } from '../mcp-response-format.js';
 import {
@@ -145,7 +152,9 @@ export function buildLookupTools(ctx: HandlerContext): LookupTools {
     // type_hierarchy (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P5): supertypes
     // (extends/implements a type points UP to) + subtypes (types pointing DOWN to it),
     // over the heritage edges the pipeline now populates. Absence=no-data.
-    type_hierarchy({ element, direction, max_depth, limit, offset, response_format }) {
+    // item_format:"lsp" (WO-EXTEND-THE-CLONE-SURFACE-P10-SRC-QUERY-CLONES-001 P3):
+    // additive LSP 3.17 TypeHierarchyItem projection; default envelope unchanged.
+    type_hierarchy({ element, direction, max_depth, item_format, limit, offset, response_format }) {
       const graph = loadGraph(projectDir, cache);
       const { nodes: matches, byFile } = resolveNodes(element, graph);
       if (matches.length === 0) return notFound(element);
@@ -203,6 +212,51 @@ export function buildLookupTools(ctx: HandlerContext): LookupTools {
         truncated: result.truncated || pagedSuper.has_more || pagedSub.has_more,
         note: result.note,
       };
+
+      // Opt-in LSP 3.17 item projection (P3, STUB-7BVGJ5). Projects the PAGED
+      // slices (pagination semantics unchanged) + the seed as the prepare item.
+      // endLine joins from the index's Phase 1 substrate by codeRefId; an index
+      // without it (or an unreadable index) degrades to single-line ranges —
+      // disclosed, never faked.
+      if (item_format === 'lsp') {
+        let endLineById: Map<string, number> | undefined;
+        try {
+          const index = loadIndex(projectDir, cache);
+          endLineById = new Map(
+            index.elements
+              .filter(e => e.codeRefId !== undefined && typeof e.endLine === 'number')
+              .map(e => [e.codeRefId as string, e.endLine as number] as const),
+          );
+        } catch {
+          endLineById = undefined; // no index -> all ranges degrade (disclosed below)
+        }
+        const projInputs = {
+          projectRoot: projectDir,
+          endLineOf: (n: { id: string }) => endLineById?.get(n.id),
+          toUri: (file: string) => pathToFileURL(path.resolve(projectDir, file)).href,
+        };
+        const seedNode = cache.nodeById.get(seedId);
+        const item = seedNode
+          ? toLspItem(
+              { id: seedId, name: seedNode.name, type: seedNode.type, file: seedNode.file, line: seedNode.line },
+              {},
+              projInputs,
+            )
+          : null;
+        const superProj = toLspTypeHierarchyItems(pagedSuper.page, projInputs);
+        const subProj = toLspTypeHierarchyItems(pagedSub.page, projInputs);
+        envelope.lsp = {
+          item,
+          supertypes: superProj.items,
+          subtypes: subProj.items,
+          excluded_unresolved: superProj.excluded_unresolved + subProj.excluded_unresolved,
+          degraded_single_line:
+            superProj.degraded_single_line +
+            subProj.degraded_single_line +
+            (item?.data.range_source === 'line_only' ? 1 : 0),
+          note: LSP_PROJECTION_NOTE,
+        };
+      }
       return shapeResponse(envelope, response_format, ['supertypes', 'subtypes']);
     },
 

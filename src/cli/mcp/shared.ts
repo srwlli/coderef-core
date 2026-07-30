@@ -492,7 +492,7 @@ export interface ToolHandlers {
   // structural AST pattern search (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P3)
   ast_search(args: { query: string; lang: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Promise<Record<string, unknown>>;
   // class/interface supertype+subtype hierarchy (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P5)
-  type_hierarchy(args: { element: string; direction?: 'up' | 'down' | 'both'; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
+  type_hierarchy(args: { element: string; direction?: 'up' | 'down' | 'both'; max_depth?: number; item_format?: 'lsp'; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // exported-API-surface diff over a snapshot baseline (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P6)
   api_diff(args: { before?: string; after?: string; snapshot?: boolean; snapshot_label?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // declared architecture-constraint check over observed layer edges (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P7)

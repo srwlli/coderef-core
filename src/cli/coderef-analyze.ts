@@ -32,7 +32,15 @@ import { parseDiffToChangedElements, type ChangedElement } from '../query/change
 import { isTestLikeFile } from '../map/graph-analytics.js';
 import { searchAst, computeNotSearchedCounts, type AstSearchFile, type AstSearchElement } from '../search/ast-search.js';
 import { listLanguageFilesOnDisk } from '../search/language-files.js';
-import { computeTypeHierarchy, type TypeHierarchyDirection } from '../query/type-hierarchy.js';
+import {
+  LSP_PROJECTION_NOTE,
+  computeTypeHierarchy,
+  toLspItem,
+  toLspTypeHierarchyItems,
+  type TypeHierarchyDirection,
+} from '../query/type-hierarchy.js';
+import { pathToFileURL } from 'node:url';
+import { readFileSync } from 'node:fs';
 import { extractExportsManifest, diffApiSurface, type ExportsManifest, type ManifestElement } from '../query/api-diff.js';
 import {
   parseRulesSpec, projectLayerEdges, checkDependencyRules,
@@ -82,6 +90,7 @@ Options:
   --similarity-threshold=<F>  near_miss minimum fingerprint similarity in [0,1] (clones; default 0.9)
   --min-body-length=<N>       Exclude elements with a normalized body shorter than N from
                               the lexical/near_miss passes (clones; default 0, disclosed)
+  --lsp              Additively attach the LSP 3.17 TypeHierarchyItem projection (type-hierarchy)
   --help             Print this help
 
 Analysis types:
@@ -96,6 +105,11 @@ Analysis types:
   complexity         Score element complexity
   impact             Blast radius for a changed element (requires --element)
   multi-hop          Traverse multi-hop relationships (requires --element)
+  type-hierarchy     Class/interface supertypes + subtypes over the extends/
+                     implements heritage edges (requires --element; opt:
+                     --direction, --depth, --lsp for the LSP 3.17
+                     TypeHierarchyItem projection). Absence is no-data (no
+                     recorded heritage edge), never "flat hierarchy".
   breaking-changes   Exported-API-surface diff over a snapshot baseline. Snapshot
                      the current exports (--to=<label>), change the API, then diff
                      (--from=<label>, default "baseline") into added / removed /
@@ -236,6 +250,7 @@ async function main(): Promise<void> {
       'similarity-threshold': { type: 'string' },
       'min-body-length': { type: 'string' },
       scip:    { type: 'string' },
+      lsp:     { type: 'boolean', default: false },
       gate:    { type: 'boolean', default: false },
       help:    { type: 'boolean', default: false },
     },
@@ -540,7 +555,7 @@ async function main(): Promise<void> {
         subtypeEdges,
         maxDepth,
       });
-      emit({
+      const out: Record<string, unknown> = {
         element: result.element,
         element_resolved: result.element_resolved,
         direction: result.direction,
@@ -550,7 +565,53 @@ async function main(): Promise<void> {
         subtypes: result.subtypes,
         truncated: result.truncated,
         note: result.note,
-      });
+      };
+
+      // --lsp (WO-EXTEND-THE-CLONE-SURFACE-P10-SRC-QUERY-CLONES-001 P3): additive
+      // LSP 3.17 TypeHierarchyItem projection — parity with the MCP tool's
+      // item_format:"lsp". Default output unchanged when the flag is absent.
+      if (values.lsp) {
+        let endLineById: Map<string, number> | undefined;
+        try {
+          const idx = JSON.parse(readFileSync(join(project, '.coderef', 'index.json'), 'utf-8')) as {
+            elements?: Array<{ codeRefId?: string; endLine?: number }>;
+          };
+          endLineById = new Map(
+            (idx.elements ?? [])
+              .filter(e => e.codeRefId !== undefined && typeof e.endLine === 'number')
+              .map(e => [e.codeRefId as string, e.endLine as number] as const),
+          );
+        } catch {
+          endLineById = undefined; // no/unreadable index -> single-line ranges, disclosed
+        }
+        const projInputs = {
+          projectRoot: resolve(project),
+          endLineOf: (n: { id: string }) => endLineById?.get(n.id),
+          toUri: (file: string) => pathToFileURL(resolve(project, file)).href,
+        };
+        const seedNode = nodeById.get(result.element);
+        const item = seedNode
+          ? toLspItem(
+              { id: result.element, name: seedNode.name, type: seedNode.type, file: seedNode.file, line: seedNode.line },
+              {},
+              projInputs,
+            )
+          : null;
+        const superProj = toLspTypeHierarchyItems(result.supertypes, projInputs);
+        const subProj = toLspTypeHierarchyItems(result.subtypes, projInputs);
+        out.lsp = {
+          item,
+          supertypes: superProj.items,
+          subtypes: subProj.items,
+          excluded_unresolved: superProj.excluded_unresolved + subProj.excluded_unresolved,
+          degraded_single_line:
+            superProj.degraded_single_line +
+            subProj.degraded_single_line +
+            (item?.data.range_source === 'line_only' ? 1 : 0),
+          note: LSP_PROJECTION_NOTE,
+        };
+      }
+      emit(out);
       break;
     }
     case 'breaking-changes': {

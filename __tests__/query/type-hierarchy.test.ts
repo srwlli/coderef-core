@@ -13,9 +13,15 @@
 
 import { describe, it, expect } from 'vitest';
 import {
+  LSP_PROJECTION_NOTE,
+  LSP_SYMBOL_KIND,
+  LSP_SYMBOL_KIND_FALLBACK,
   computeTypeHierarchy,
+  toLspItem,
+  toLspTypeHierarchyItems,
   TYPE_HIERARCHY_DEFAULT_DEPTH,
   type TypeHierarchyInputs,
+  type TypeHierarchyNode,
 } from '../../src/query/type-hierarchy.js';
 
 // Minimal ExportedGraph-shaped fixtures. Only the fields the projection reads are
@@ -155,5 +161,112 @@ describe('computeTypeHierarchy', () => {
 
   it('default depth is TYPE_HIERARCHY_DEFAULT_DEPTH', () => {
     expect(TYPE_HIERARCHY_DEFAULT_DEPTH).toBe(10);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// LSP 3.17 TypeHierarchyItem projection (P3, STUB-7BVGJ5). PURE — no disk.
+// ---------------------------------------------------------------------------
+describe('toLspItem / toLspTypeHierarchyItems', () => {
+  const ROOT = 'C:/proj';
+  const withEnd = (map: Record<string, number>) => ({
+    projectRoot: ROOT,
+    endLineOf: (n: { id: string }) => map[n.id],
+  });
+
+  const hNode = (over: Partial<TypeHierarchyNode> & { id: string }): TypeHierarchyNode => ({
+    name: over.id,
+    type: 'class',
+    file: `src/${over.id}.ts`,
+    line: 10,
+    depth: 1,
+    kind: 'extends',
+    resolved: true,
+    ...over,
+  });
+
+  it('maps element types to numeric LSP SymbolKind with a documented fallback', () => {
+    expect(LSP_SYMBOL_KIND.class).toBe(5);
+    expect(LSP_SYMBOL_KIND.interface).toBe(11);
+    expect(LSP_SYMBOL_KIND.enum).toBe(10);
+    expect(LSP_SYMBOL_KIND.function).toBe(12);
+    expect(LSP_SYMBOL_KIND.method).toBe(6);
+    const item = toLspItem(
+      { id: 'X', name: 'X', type: 'weird-new-kind', file: 'src/x.ts', line: 3 },
+      {},
+      { projectRoot: ROOT },
+    );
+    expect(item?.kind).toBe(LSP_SYMBOL_KIND_FALLBACK); // Object=19
+    expect(item?.data.coderef_type).toBe('weird-new-kind'); // raw type preserved
+  });
+
+  it('kind mapping is case-insensitive over the recorded element type', () => {
+    const item = toLspItem({ id: 'X', name: 'X', type: 'Class', file: 'src/x.ts', line: 1 }, {}, { projectRoot: ROOT });
+    expect(item?.kind).toBe(5);
+  });
+
+  it('converts 1-based lines to 0-based whole-line ranges spanning line..endLine', () => {
+    const item = toLspItem(
+      { id: 'A', name: 'A', type: 'class', file: 'src/a.ts', line: 10 },
+      {},
+      withEnd({ A: 25 }),
+    );
+    // range: start of line 10 (0-based 9) .. exclusive at start of line 26 (0-based 25).
+    expect(item?.range).toEqual({ start: { line: 9, character: 0 }, end: { line: 25, character: 0 } });
+    // selectionRange: the declaration line only.
+    expect(item?.selectionRange).toEqual({ start: { line: 9, character: 0 }, end: { line: 10, character: 0 } });
+    expect(item?.data.range_source).toBe('endLine');
+  });
+
+  it('degrades to a DISCLOSED single-line range when endLine is unknown', () => {
+    const item = toLspItem({ id: 'A', name: 'A', type: 'class', file: 'src/a.ts', line: 10 }, {}, { projectRoot: ROOT });
+    expect(item?.range).toEqual(item?.selectionRange); // single line
+    expect(item?.data.range_source).toBe('line_only');
+  });
+
+  it('builds a file:// uri from projectRoot + the recorded file path', () => {
+    const item = toLspItem({ id: 'A', name: 'A', type: 'class', file: 'src/a.ts', line: 1 }, {}, { projectRoot: ROOT });
+    expect(item?.uri).toMatch(/^file:\/\//);
+    expect(item?.uri).toContain('src/a.ts');
+    // A caller-supplied toUri (the Node surfaces use pathToFileURL) wins verbatim.
+    const custom = toLspItem(
+      { id: 'A', name: 'A', type: 'class', file: 'src/a.ts', line: 1 },
+      {},
+      { projectRoot: ROOT, toUri: f => `file:///custom/${f}` },
+    );
+    expect(custom?.uri).toBe('file:///custom/src/a.ts');
+  });
+
+  it('excludes unresolved (fileless) endpoints and COUNTS them — absence disclosed, never dropped silently', () => {
+    const nodes: TypeHierarchyNode[] = [
+      hNode({ id: 'Real', depth: 1 }),
+      { id: 'ExternalBase', depth: 1, kind: 'extends', resolved: false }, // string-only endpoint
+    ];
+    const proj = toLspTypeHierarchyItems(nodes, { projectRoot: ROOT });
+    expect(proj.items).toHaveLength(1);
+    expect(proj.items[0].data.coderef_id).toBe('Real');
+    expect(proj.excluded_unresolved).toBe(1);
+  });
+
+  it('carries depth + heritage provenance in the spec data slot and counts degraded ranges', () => {
+    const nodes: TypeHierarchyNode[] = [
+      hNode({ id: 'A', depth: 1, kind: 'implements' }),
+      hNode({ id: 'B', depth: 2, kind: 'extends' }),
+    ];
+    const proj = toLspTypeHierarchyItems(nodes, withEnd({ A: 20 }));
+    expect(proj.items.map(i => i.data.heritage)).toEqual(['implements', 'extends']);
+    expect(proj.items.map(i => i.data.depth)).toEqual([1, 2]);
+    expect(proj.items[0].data.range_source).toBe('endLine');
+    expect(proj.items[1].data.range_source).toBe('line_only');
+    expect(proj.degraded_single_line).toBe(1);
+    expect(LSP_PROJECTION_NOTE).toContain('0-based');
+  });
+
+  it('is deterministic and preserves walk order', () => {
+    const nodes: TypeHierarchyNode[] = [hNode({ id: 'B', depth: 1 }), hNode({ id: 'A', depth: 2 })];
+    const a = toLspTypeHierarchyItems(nodes, withEnd({ A: 12, B: 15 }));
+    const b = toLspTypeHierarchyItems(nodes, withEnd({ A: 12, B: 15 }));
+    expect(JSON.stringify(a)).toBe(JSON.stringify(b));
+    expect(a.items.map(i => i.name)).toEqual(['B', 'A']);
   });
 });
