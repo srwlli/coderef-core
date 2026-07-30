@@ -1,6 +1,6 @@
 /**
  * @coderef-semantic: 1.0.0
- * @layer service
+ * @layer utility
  * @capability lru-cache-cache-entry
  * @exports LRUCache, ScanCacheEntry, createScannerCache
  * @used_by src/scanner/scanner.ts, src/scanner/__tests__/lru-cache.test.ts

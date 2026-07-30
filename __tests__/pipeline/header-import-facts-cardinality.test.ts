@@ -1,7 +1,7 @@
 /**
  * @coderef-semantic: 1.0.0
- * @layer utility
- * @capability foo-bar
+ * @layer test_support
+ * @capability header-import-facts-cardinality-tests
  */
 
 import * as fs from 'fs/promises';

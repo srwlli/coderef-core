@@ -50,6 +50,7 @@
     "dev": "npx tsc --watch",
     "typecheck:pipeline": "tsc -p tsconfig.pipeline-strict.json",
     "clean": "rimraf dist",
+    "arch:gate": "node dist/src/cli/coderef-analyze.js --project=. --type=dependency-rules --gate",
     "test": "npx vitest",
     "test:watch": "npx vitest --watch",
     "test:coverage": "npx vitest --coverage",

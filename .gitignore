@@ -30,8 +30,12 @@ coverage/
 *.tmp
 nul
 
-# Generated coderef artifacts directory (all scanner/RAG/index output)
-.coderef/
+# Generated coderef artifacts directory (all scanner/RAG/index output).
+# Contents-glob + negation (NOT a bare `.coderef/` dir pattern): git cannot
+# re-include a file beneath an excluded DIRECTORY, and rules.json is declared
+# architecture (source-of-truth for the dependency-rules CI gate), not output.
+.coderef/*
+!.coderef/rules.json
 
 # RAG incremental-index state file (written next to the indexed tree)
 .coderef-rag-index.json

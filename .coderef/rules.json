@@ -1,0 +1,12 @@
+{
+  "forbid": [
+    { "from": "utility", "to": "service" },
+    { "from": "utility", "to": "cli" },
+    { "from": "utility", "to": "integration" },
+    { "from": "parser", "to": "service" },
+    { "from": "service", "to": "cli" },
+    { "from": "integration", "to": "cli" },
+    { "from": "validation", "to": "cli" }
+  ],
+  "allow": []
+}

@@ -24,5 +24,16 @@ jobs:
       - name: Build
         run: npm run build
 
+      # .coderef/ is gitignored (rules.json is the ONE committed exception), so a
+      # CI checkout must populate before the architecture gate can read the graph.
+      # scan+populate only — the docs/RAG legs need Ollama, absent in CI.
+      - name: Populate .coderef (scan + populate)
+        run: node dist/src/cli/coderef-pipeline.js --project-dir . --only scan,populate
+
+      # Dependency-rules gate: declared layer constraints (.coderef/rules.json)
+      # vs the observed @layer edge matrix. Exit 2 on any violation.
+      - name: Architecture gate (dependency-rules)
+        run: npm run arch:gate
+
       - name: Test
         run: npx vitest run
