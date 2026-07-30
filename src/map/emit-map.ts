@@ -21,6 +21,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { MapData, projectMapData, ProjectMapDataOptions } from './project-map-data.js';
 import { extractGitHistory, ExtractGitHistoryOptions } from './git-history.js';
+import { extractSubprocessTestContents } from './subprocess-linkage.js';
 
 export const MAP_DATA_PLACEHOLDER = '/*__CODEREF_MAP_DATA__*/null';
 
@@ -79,6 +80,11 @@ export interface GenerateMapResult {
    * when the history could not be extracted (non-git repo, git absent, empty).
    */
   gitReason?: string;
+  /**
+   * Subprocess-linkage extraction outcome (present only when the extractor ran
+   * and DEGRADED — index.json absent/unreadable). Absent on success.
+   */
+  subprocessReason?: string;
 }
 
 /**
@@ -91,6 +97,14 @@ export interface GenerateMapOptions extends ProjectMapDataOptions {
   git?: boolean;
   /** Extraction window bounds forwarded to git-history.ts. */
   gitExtractOptions?: ExtractGitHistoryOptions;
+  /**
+   * Run the subprocess test-linkage extractor (default true — the ONE impure
+   * read of test-file contents, mirrored on the git-history pattern; see
+   * src/map/subprocess-linkage.ts). Feeds the pure projection via
+   * options.subprocessTestContents; degraded extraction => block absent +
+   * subprocessReason. Set false to skip. No-op when metrics === false.
+   */
+  subprocessLinkage?: boolean;
 }
 
 /**
@@ -109,11 +123,17 @@ export function generateMap(
   options?: GenerateMapOptions,
 ): GenerateMapResult {
   let gitReason: string | undefined;
+  let subprocessReason: string | undefined;
   let projectionOptions: ProjectMapDataOptions | undefined = options;
   if (options?.git) {
     const extraction = extractGitHistory(projectRoot, options.gitExtractOptions);
     gitReason = extraction.reason;
     projectionOptions = { ...options, git: true, gitHistory: extraction.history };
+  }
+  if (options?.subprocessLinkage !== false && options?.metrics !== false) {
+    const subprocess = extractSubprocessTestContents(projectRoot);
+    subprocessReason = subprocess.reason;
+    projectionOptions = { ...(projectionOptions ?? {}), subprocessTestContents: subprocess.contents };
   }
   const data = projectMapData(projectRoot, projectionOptions);
   const out = outDir || path.join(projectRoot, '.coderef', 'map');
@@ -124,5 +144,6 @@ export function generateMap(
     dataPath: path.join(out, 'data.json'),
     htmlPath: path.join(out, 'graph.html'),
     ...(gitReason ? { gitReason } : {}),
+    ...(subprocessReason ? { subprocessReason } : {}),
   };
 }

@@ -32,6 +32,9 @@
  */
 
 import { isTestLikeFile } from './graph-analytics.js';
+import { computeSubprocessLinkage, SubprocessTestContent, MapMetricsSubprocessLinkage } from './subprocess-linkage.js';
+
+export type { MapMetricsSubprocessLinkage, SubprocessTestContent } from './subprocess-linkage.js';
 
 export interface MapMetricsTestLinkage {
   summary: {
@@ -48,6 +51,13 @@ export interface MapMetricsTestLinkage {
   zeroTestInEdge: string[];
   zeroTestInEdgeTruncated: boolean;
   note: string;
+  /**
+   * ADDITIVE subprocess-linkage disclosure (absent = no contents supplied —
+   * no-data, never a fabricated zero). The summary keys above stay UNTOUCHED:
+   * they count direct resolved graph edges only, and metrics-delta diffs them
+   * generically.
+   */
+  subprocess?: MapMetricsSubprocessLinkage;
 }
 
 export interface MapMetricsDocumentation {
@@ -113,6 +123,12 @@ export interface EngineeringMetricsOptions {
   rankingCap?: number;
   /** Max zero-test-in-edge files listed. Default 200. */
   zeroTestCap?: number;
+  /**
+   * Pre-extracted test-file contents (the caller-run impure step — see
+   * src/map/subprocess-linkage.ts). Non-empty => testLinkage.subprocess is
+   * computed; null/absent/empty => the block is absent (no-data).
+   */
+  subprocessTestContents?: SubprocessTestContent[] | null;
 }
 
 interface MetricsNodeInput {
@@ -218,6 +234,9 @@ export function computeEngineeringMetrics(
     warnings.push(
       `metrics: zero-test-in-edge files truncated to ${zeroTestCap} of ${zeroAll.length} (zeroTestCap)`,
     );
+  }
+  if (options.subprocessTestContents && options.subprocessTestContents.length > 0) {
+    testLinkage.subprocess = computeSubprocessLinkage(options.subprocessTestContents, srcFiles);
   }
 
   // ---- documentation ---------------------------------------------------------

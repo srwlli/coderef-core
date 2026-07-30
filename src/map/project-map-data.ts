@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability map-data-projection
- * @exports MapElement, MapNode, MapEdge, MapHotspot, MapOverlays, MapMeta, MapData, MapProjectionError, projectMapData
+ * @exports MapElement, MapNode, MapEdge, MapHotspot, MapOverlays, MapMeta, MapData, MapProjectionError, ProjectMapDataOptions, projectMapData
  * @used_by src/cli/coderef-map.ts, src/cli/coderef-mcp-server.ts, src/map/emit-map.ts
  */
 
@@ -60,7 +60,7 @@ import { normalizeSlashes } from '../utils/path-normalize.js';
 import { computeGraphAnalytics, MapAnalytics } from './graph-analytics.js';
 import { computeEdgeEvidence, MapEdgeEvidence } from './edge-evidence.js';
 import { computeLayerDrift, MapLayerDrift, LayersSpec } from './layer-drift.js';
-import { computeEngineeringMetrics, MapMetrics } from './engineering-metrics.js';
+import { computeEngineeringMetrics, MapMetrics, SubprocessTestContent } from './engineering-metrics.js';
 import { computeGitBehavioral, GitBehavioral } from './git-behavioral.js';
 import { computeOwnership, MapOwnership } from './ownership.js';
 import { GitHistory } from './git-history.js';
@@ -204,6 +204,14 @@ export interface ProjectMapDataOptions {
   gitRankingCap?: number;
   /** Co-change count floor for coupling drift (default 2). */
   gitMinCoChange?: number;
+  /**
+   * Pre-extracted test-file contents for subprocess-aware test linkage (the
+   * caller-run impure step — generateMap invokes the extractor in
+   * src/map/subprocess-linkage.ts, gitHistory precedent). Null/absent => the
+   * testLinkage.subprocess block is absent (no-data). This projection stays
+   * PURE — it only forwards the plain record to engineering-metrics.
+   */
+  subprocessTestContents?: SubprocessTestContent[] | null;
 }
 
 const HOTSPOT_CAP_DEFAULT = 25;
@@ -568,6 +576,9 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
       edges,
       headerTallies,
       unresolvedCounts,
+      options.subprocessTestContents !== undefined
+        ? { subprocessTestContents: options.subprocessTestContents }
+        : {},
     );
     warnings.push(...metrics.warnings);
   }
