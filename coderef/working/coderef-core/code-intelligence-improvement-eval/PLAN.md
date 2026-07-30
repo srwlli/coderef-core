@@ -1,7 +1,7 @@
 ---
 title: Code-Intelligence Improvement Eval — Four Surfaces
 domain: CODEREF-CORE
-status: draft
+status: resolved
 created: 2026-07-18
 stub_ref: null
 ---
@@ -35,9 +35,22 @@ Operator-requested (2026-07-18) four-surface evaluation of the CodeRef code-inte
 
 ## Decision
 
-Pending operator ruling: **(A)** quick-wins batch first, **(B)** per-category tracks, or **(C)** one rolling program. (Recommendation on request; C mirrors the pattern that just shipped 11/11 phases cleanly.)
+**RESOLVED 2026-07-30 (operator ruling: no new WO).** Between 2026-07-19 and 2026-07-21 the four surfaces shipped through existing WOs — effectively Option C, executed as two programs plus two rolling WOs. A `/create-workorder` run on 2026-07-30 verified the live tree, found the scope ~95% shipped, and halted at the scope gate instead of authoring a duplicate.
+
+## Shipped ledger (verified against live tree 2026-07-30)
+
+- **Cat-1** → `WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001` (promoted from this eval 2026-07-18/19), **CLOSED + ARCHIVED 2026-07-20 at 11/12 phases**. `src/map/ownership.ts` live; tests_for_change / ast_search / api_diff / type_hierarchy / clones / docstrings / dependency_rules / scip_resolution_delta all registered — the MCP server is now **36 tools**. P12 cross-repo deferred by operator ruling 2026-07-19 → STUB-6PGFZ3. Remainders with owners: decompose-monolith WO P3–P7 deferred stubs (rules.json / test-linkage / coderefignore / docstrings / cleanups), clone-surface WO P3 (type-hierarchy follow-on, STUB-7BVGJ5).
+- **Cat-2 + Cat-3 + Cat-4** → `WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001` (created 2026-07-20 01:42 from the same-day /discover leverage report; companion USING-CODEREF.md shipped that session). **All 6 phases executed 2026-07-20 06:53–08:40 UTC** (commits a0eff4e / 4dfa071c / c18cd8b2 / 7602eab / 16154db / 9b516b50): P1 MCP `instructions` string; P2 entry-doc estate (USING-CODEREF.md + CONTEXT.md refresh); P3 /discover graph wiring (dead RAG leg fixed, skeleton orientation, BM25 element lookup, real coderef-query walks, graph-risk table, `--help`); P4 `orient` composite + vector-staleness WARN; P5 verify-loop (`change_dossier` + runnable test commands); P6 wrapper front-doors (coderef-query + coderef-intel skills, populate flags refresh, MCP-twin sections). **Status: complete, AWAITING /close-workorder** — its registry row still reads `plan_created`; truth lives in communication.json + git. Sibling: `WO-SKILLS-CORE-PLAYBOOK-ALIGNMENT-001` (/coderef-rename front-door).
+
+## Residuals (verified unowned, small)
+
+1. `generate-project-context`: no "Code intelligence" template section (Cat-4 rec 4) — M
+2. `PROJECT-CONTEXT/CODEREF-CORE/CONTEXT.md` tool table re-drift 34→36 (`orient`, `change_dossier` missing) — S
+3. `SKILLS/CORE/index.md` header counts 16 vs 17 dirs (generate-foundation-docs registered in skills.json; index not regenerated) — S
+4. `/use-coderef` onboarding skill (Cat-4 rec 5) unshipped as named; plausibly superseded by coderef-intel + `orient` + USING-CODEREF.md — needs ship-or-supersede ruling — S
 
 ## Next Step
 
-- Operator rules A/B/C → promote: `/stub code-intelligence-improvement-eval --category=feature` (or per-category stubs under B), then `/create-workorder from the stub`.
-- Planning folders are pre-stub; this folder's terminal artifact is the promotion.
+- `/close-workorder WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001` (complete since 2026-07-20, never closed)
+- Then the rolling gates: decompose-monolith `/plan-next-phase --phase=3`; clone-surface `/plan-next-phase --phase=3`
+- Residuals above: fold into the leverage close's follow-up candidates or a future light WO

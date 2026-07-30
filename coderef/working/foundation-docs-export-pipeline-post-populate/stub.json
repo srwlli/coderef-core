@@ -1,0 +1,11 @@
+{
+  "stub_id": "STUB-244",
+  "feature_name": "foundation-docs-export-pipeline-post-populate",
+  "description": "/analyze-coderef-semantics falls back to degraded mode in CODEREF-CORE because .coderef/exports/foundation-docs/, .coderef/header-index.json, and manifest.json are not produced post-populate. Either bake scripts/doc-gen/* + header-index + manifest generation into the canonical post-populate close-out, or formally document degraded mode as the expected mid-pipeline contract. Surfaced by WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001 Phase 4.",
+  "category": "infrastructure",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-01T20:45:00Z"
+}

@@ -1,0 +1,62 @@
+{
+  "workorder_id": "WO-RESCAN-PRIMARY-SOURCES-CODEBASE-OLLAMA-LOCAL-001",
+  "feature_name": "rescan-primary-sources-codebase-ollama-local",
+  "created": "2026-06-07T05:38:47Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "primary-sources",
+  "originating_dispatch": "DISPATCH-2026-06-07-CODEREF-CORE-001",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "RE-SCAN REQUEST (operator-directed, routed via ASSISTANT GO dispatch CODEREF-CORE-002). CodeRef Core's .coderef/ index on PROJECTS/primary-sources is stale (dated 2026-05-14 16:53, 3+ weeks old). Repo changed enormously since: STAFF/ multi-agent tree (PS-API, PS-ARCHIVE, PS-PIPELINE, PS-REVIEWER, PS-RESEARCH, SOURCE-MATERIAL), curator/keying scripts, FastAPI scanner backend, reviewer UI, search lane, ~50 STAFF docs. Run a fresh CodeRef Core scan to rebuild .coderef/ index + graph + semantic-registry + RAG over current HEAD. LOCAL-ONLY (Ollama, no cloud provider, standing rule). Report scan stats + drift findings to both PRIMARY-SOURCES (requester) and ASSISTANT."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Operational CodeRef intelligence rescan: runs scan + rag-index tooling against an external target repo to regenerate .coderef/ artifacts. Produces index/graph/semantic-registry/RAG vectors; modifies NO source files in coderef-core or primary-sources, has no code blast radius, and requires no foundation-docs discovery. Light is the correct plan_type for a tool-execution/index-refresh job.",
+    "plan_type_decided_by": "create-workorder@2.15.0 (agent-classified, manual)",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "execution_prereqs": {
+    "ollama_endpoint": "http://localhost:11434",
+    "ollama_status": "UP (verified 2026-06-07T05:38Z)",
+    "models_available": ["nomic-embed-text:latest", "qwen2.5-coder:3b"],
+    "embedding_model": "nomic-embed-text:latest",
+    "code_model": "qwen2.5-coder:3b",
+    "provider_policy": "LOCAL-ONLY — no cloud provider, ever (standing operator rule)"
+  },
+  "scan_target": {
+    "project_id": "primary-sources",
+    "repo_path": "C:/Users/willh/Desktop/CODEREF/PROJECTS/primary-sources",
+    "current_branch": "wo/source-material-hsca-ia-stub-repoint",
+    "current_head": "261b523d",
+    "dispatch_referenced_head": "19394cc6 (main per PS-001; repo has since advanced)",
+    "existing_index_mtime": "2026-05-14T16:53 (stale, to be rebuilt)",
+    "path_confirmation_note": "Repo path is unambiguous and verified present with existing .coderef/. Branch is a wo/* branch, not main; scanning checked-out HEAD per GO dispatch ('current HEAD'). Branch noted in report for PRIMARY-SOURCES to confirm if main was specifically wanted."
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "Run coderef-scan against the primary-sources repo to rebuild index.json + graph.json + semantic-registry.json + reports/",
+      "Run rag-index with nomic-embed-text (local Ollama) to rebuild RAG vectors",
+      "Capture scan stats: files scanned, symbols, index size, drift vs the May-14 baseline",
+      "Report results to PRIMARY-SOURCES and ASSISTANT"
+    ],
+    "out_of_scope": [
+      "Modifying any source file in primary-sources or coderef-core",
+      "Using any cloud LLM provider (local Ollama only)",
+      "Scanning the ASSISTANT repo (target is the PS source tree)",
+      "Restructuring or curating PS data/content"
+    ]
+  },
+  "constraints": [
+    "LOCAL-ONLY provider policy (Ollama localhost:11434) — no cloud, ever",
+    "If Ollama drops mid-scan: andon-pull to ASSISTANT (operator can restart it)",
+    "If scan target / PS repo path becomes ambiguous: ask PRIMARY-SOURCES, do not guess"
+  ]
+}

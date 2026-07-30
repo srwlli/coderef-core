@@ -1,0 +1,47 @@
+{
+  "workorder_id": "WO-CODEREF-SEMANTIC-INTEGRATION-001",
+  "feature_name": "coderef-semantic-integration-001",
+  "analysis_authored_at": "2026-04-29T20:45:45Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/cli/populate.ts"
+    ],
+    "files_created": [
+      "src/cli/semantic-integration.ts (dry-run wrapper)"
+    ],
+    "downstream_consumers": [
+      "populate-coderef CLI",
+      "SemanticOrchestrator module"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Dry-run mode implementation incomplete",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Test dry-run flag thoroughly before production integration"
+    },
+    {
+      "id": "RISK-002",
+      "title": "Idempotency validation complexity",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Run twice on same input, compare stdout byte-for-byte"
+    }
+  ],
+  "candidates": [
+    "src/cli/populate.ts - add SemanticOrchestrator invocation",
+    "src/semantic/orchestrator.ts - pass through validateOnly flag",
+    "src/cli/semantic-integration.ts - new dry-run wrapper"
+  ],
+  "dependencies": [
+    "SemanticOrchestrator class from src/semantic/orchestrator.ts",
+    "Existing populate CLI argument parsing"
+  ],
+  "public_api_hits": [
+    "populate --semantic (existing flag)",
+    "populate --llm-enrich (existing flag)",
+    "New: populate --dry-run (for testing)"
+  ]
+}

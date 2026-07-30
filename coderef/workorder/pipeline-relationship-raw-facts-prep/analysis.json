@@ -1,0 +1,91 @@
+﻿{
+  "blast_radius": {
+    "files_modified": [
+      {
+        "path": "src/pipeline/types.ts",
+        "reason": "Define RawImportFact, RawCallFact, and updated GraphEdge schema with resolutionStatus."
+      },
+      {
+        "path": "src/pipeline/extractors/relationship-extractor.ts",
+        "reason": "Update AST traversal to extract aliases, receivers, scope paths, and language-specific metadata."
+      },
+      {
+        "path": "src/pipeline/orchestrator.ts",
+        "reason": "Refactor buildGraph to implement the resolution pass and bind raw facts to canonical IDs."
+      },
+      {
+        "path": "src/scanner/semantic-analyzer.ts",
+        "reason": "Clean up or refactor legacy resolution heuristics in favor of the new pipeline-native resolvers."
+      },
+      {
+        "path": "src/types/types.ts",
+        "reason": "Align ElementData fields with the new relationship fact/edge structure."
+      }
+    ],
+    "files_created": [
+      {
+        "path": "src/pipeline/relationship-resolver.ts",
+        "purpose": "New service to encapsulate import and call resolution logic (uncertain - flag for plan author)."
+      }
+    ],
+    "files_deleted": []
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "description": "Cross-language resolution complexity (TS vs Python vs Go scoping rules).",
+      "mitigation": "Focus on TypeScript first to satisfy Phase 0 ground-truth; follow language-specific resolution patterns sequentially.",
+      "severity": "medium"
+    },
+    {
+      "id": "R2",
+      "description": "Ambiguity in obj.method() calls without full type inference.",
+      "mitigation": "Explicitly implement 'ambiguous' status with candidate IDs as per Phase 0 contract.",
+      "severity": "high"
+    },
+    {
+      "id": "R3",
+      "description": "Performance regression from additional resolution pass.",
+      "mitigation": "Maintain single-pass AST traversal; use optimized symbol lookup indexes in the resolution pass.",
+      "severity": "low"
+    }
+  ],
+  "decision_records": [
+    {
+      "decision": "Introduce explicit RawImportFact and RawCallFact interfaces.",
+      "rationale": "Clear separation between scanner observations and inference results prevents early-binding bugs.",
+      "alternatives_considered": ["Extend existing ImportRelationship", "Build graph directly from AST"]
+    },
+    {
+      "decision": "Restore Phase 0 ground-truth tests as the primary verification signal.",
+      "rationale": "Phase 1 erroneously reported these as missing; they are present and define the core contract for this phase.",
+      "alternatives_considered": ["Author new tests", "Ignore Phase 0"]
+    }
+  ],
+  "ground_truth_test_mapping": [
+    {
+      "test_assertion": "requires resolved import and call edges to use graph node IDs as endpoints",
+      "phase_2_change_that_satisfies_it": "Resolution pass will bind raw module/symbol names to canonical codeRefId and use these as edge source/target."
+    },
+    {
+      "test_assertion": "requires unresolved imports and calls to be explicit graph facts",
+      "phase_2_change_that_satisfies_it": "Orchestrator will emit edges with resolutionStatus: 'unresolved' when resolution fails, preserving metadata for auditing."
+    },
+    {
+      "test_assertion": "requires duplicate function name calls to be marked ambiguous with candidate IDs",
+      "phase_2_change_that_satisfies_it": "Call resolver will detect multiple potential targets and return 'ambiguous' status with candidates array."
+    },
+    {
+      "test_assertion": "requires alias imports to bind the local alias back to the exported source symbol",
+      "phase_2_change_that_satisfies_it": "Import resolver will build local name-to-target mappings, accounting for 'as' aliases in raw facts."
+    },
+    {
+      "test_assertion": "requires nested functions and class method calls to preserve qualified context",
+      "phase_2_change_that_satisfies_it": "RelationshipExtractor will capture scopePath (e.g., 'Class.method') in raw facts for precise symbol matching."
+    },
+    {
+      "test_assertion": "requires graph validation to distinguish resolved, unresolved, and ambiguous edges",
+      "phase_2_change_that_satisfies_it": "Every graph edge will carry a mandatory resolutionStatus field from the resolver."
+    }
+  ]
+}

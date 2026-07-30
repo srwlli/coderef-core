@@ -1,0 +1,38 @@
+{
+  "workorder_id": "WO-CODEREF-SEMANTIC-INTEGRATION-001",
+  "feature_name": "coderef-semantic-integration-001",
+  "created": "2026-04-29T20:45:30Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-04-29-011",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Wire SemanticOrchestrator into populate CLI and test with DRY-RUN on single code file. NO live code changes. Validate header generation and idempotent refresh before integration."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Single-phase integration testing with dry-run validation. No discovery needed, focused on CLI wiring and validation.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery": null
+  },
+  "scope": {
+    "in_scope": [
+      "Wire SemanticOrchestrator into populate CLI",
+      "Add dry-run mode flag to prevent file writes",
+      "Test header generation on sample file",
+      "Validate idempotent refresh behavior",
+      "Verify no production code files modified"
+    ],
+    "out_of_scope": [
+      "Live integration with populate pipeline",
+      "Production header generation",
+      "Scanner integration validation"
+    ]
+  },
+  "constraints": [
+    "DRY-RUN mode MUST prevent all file writes",
+    "Headers generated only in memory for validation",
+    "No changes to existing populate.ts logic",
+    "Idempotency verified via output comparison"
+  ]
+}

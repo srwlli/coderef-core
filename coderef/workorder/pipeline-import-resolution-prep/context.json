@@ -1,0 +1,45 @@
+{
+  "scope": {
+    "in": [
+      "Build a two-pass import resolver in src/pipeline/import-resolver.ts (pass 1: export tables; pass 2: resolve imports + header imports against export tables)",
+      "Resolve relative imports, extensionless imports, index files, and node_modules package imports",
+      "Read tsconfig.json compilerOptions.paths at startup and apply path-alias resolution when present (no-op when absent in current tsconfig)",
+      "Build per-file export tables from RawExportFact[] including named, default, namespace, and re-exports (transitive lookup for re-export chains)",
+      "Bind imported local names (incl. aliases, namespace, default) to exported element codeRefIds",
+      "Resolve @imports header entries (HeaderImportFact). Verify <symbol> is exported by <module>; mark stale when not",
+      "Classify every import (AST + header) into exactly one of: resolved, unresolved, external, ambiguous, dynamic, typeOnly, stale",
+      "Write resolved-import edges into PipelineState.graph using canonical codeRefIds as endpoints (first phase emitting graph edges)",
+      "Remove RawHeaderImportFact type and rawHeaderImports field from PipelineState (deprecated in Phase 2.5)",
+      "Delete or rewrite __tests__/pipeline/raw-header-import-placeholders.test.ts to assert against HeaderImportFact instead",
+      "Add invariant test no-call-resolution.test.ts asserting NO call resolution leaks into Phase 3 (Phase 4 boundary enforcer)"
+    ],
+    "out": [
+      "Call resolution (Phase 4)",
+      "Graph endpoint construction beyond resolved-import edges (Phase 5)",
+      "--strict-headers gate (Phase 6)",
+      "Indexing / RAG facets (Phase 7)",
+      "Documentation sync (Phase 8)"
+    ]
+  },
+  "project_id": "coderef-core",
+  "phase": "Phase 3 - Import Resolution",
+  "workorder_id": "WO-PIPELINE-IMPORT-RESOLUTION-001",
+  "feature_name": "pipeline-import-resolution",
+  "acceptance_criteria": [
+    "AC-01: Every RawImportFact and HeaderImportFact in PipelineState produces exactly one resolution record with kind in {resolved, unresolved, external, ambiguous, dynamic, typeOnly, stale} — no import is silently dropped",
+    "AC-02: Relative imports (`./x`, `../y`), extensionless imports (`./x` for `./x.ts`), and index-file imports (`./x` for `./x/index.ts`) all resolve to the correct file's codeRefId when the target file is in the project",
+    "AC-03: Imports of packages listed in package.json dependencies or located under node_modules/ are classified `external` and not flagged as unresolved",
+    "AC-04: Bare specifiers NOT in package.json and NOT under node_modules/ are classified `unresolved` (not external) — surfaces drift between code and manifest",
+    "AC-05: When tsconfig.json compilerOptions.paths is present, path-alias matches take precedence over relative resolution; when absent (current state), resolver falls back cleanly with no errors",
+    "AC-06: `import { foo as bar } from './x'` binds local name `bar` to the codeRefId of `./x`'s exported `foo` (alias binding, covers Phase 0 ground-truth alias-imports test)",
+    "AC-07: Namespace imports (`import * as ns from './x'`) bind local name `ns` to the module's full export set; default imports (`import myDefault from './x'`) bind to the codeRefId of `./x`'s default export",
+    "AC-08: Re-exports (`export { foo } from './bar'` and `export * from './bar'`) are resolved transitively — the re-exporting module's export table includes symbols from `./bar` with the correct origin codeRefIds",
+    "AC-09: Two files importing different `helpers` symbols from different modules each resolve to distinct codeRefIds (no cross-module collision)",
+    "AC-10: HeaderImportFact entries of form `<module>:<symbol>` resolve <module> identically to AST imports; <symbol> is verified against the module's export table; missing symbol → kind=stale with structured mismatch record",
+    "AC-11: Resolution is deterministic (idempotent across runs on identical input) and the resolver is a pure function over PipelineState (no file IO during pass 2; pass 1 reads tsconfig.json once at startup) — INVARIANT",
+    "AC-12: Pass 1 (build export tables) MUST complete for ALL files before pass 2 (resolve imports) begins for ANY file. Resolver MUST NEVER process imports against a partially-built export table — INVARIANT",
+    "AC-13: Phase 3's export-table builder produces the SAME export set Phase 2.5's @exports cross-check uses — both consume RawExportFact[] with no filtering or normalization beyond what Phase 2 applied (cross-phase consistency)",
+    "AC-14: NO call resolution work (resolved call edges, scope-aware symbol tables, method dispatch resolution) ships in Phase 3 — INVARIANT (Phase 4 boundary enforcer; field-inspection test asserts absence of resolvedCallTargetId, callEdgeId, etc.)",
+    "AC-15: Phase 0 ground-truth tests `requires resolved import and call edges to use graph node IDs as endpoints` and `requires unresolved imports and calls to be explicit graph facts` and `requires alias imports to bind the local alias back to the exported source symbol` and `requires graph validation to distinguish resolved, unresolved, and ambiguous edges` — the IMPORT-RELATED assertions in each MUST flip from FAIL to PASS in Phase 3 (call-related assertions remain failing until Phase 4)"
+  ]
+}

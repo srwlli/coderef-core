@@ -1,0 +1,70 @@
+{
+  "workorder_id": "WO-RESCAN-PRIMARY-SOURCES-CODEBASE-OLLAMA-LOCAL-001",
+  "feature_name": "rescan-primary-sources-codebase-ollama-local",
+  "analysis_authored_at": "2026-06-07T05:38:47Z",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [
+      "PROJECTS/primary-sources/.coderef/index.json (regenerated)",
+      "PROJECTS/primary-sources/.coderef/graph.json (regenerated)",
+      "PROJECTS/primary-sources/.coderef/semantic-registry.json (regenerated)",
+      "PROJECTS/primary-sources/.coderef/reports/* (regenerated)",
+      "PROJECTS/primary-sources/.coderef RAG vector store (rebuilt via rag-index)"
+    ],
+    "downstream_consumers": [
+      "PS spine agents (PS-API, PS-ARCHIVE, PS-PIPELINE, PS-REVIEWER, PS-RESEARCH, SOURCE-MATERIAL) that read the CodeRef intelligence index",
+      "rag-search consumers querying the PS index"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-OLLAMA-DROP",
+      "title": "Ollama becomes unavailable mid-scan (rag-index embedding step depends on localhost:11434)",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Verified UP before start. If it drops, andon-pull to ASSISTANT for restart; coderef-scan (structural) can complete independently of embeddings, so partial progress (index/graph) is preserved and only rag-index need re-run."
+    },
+    {
+      "id": "RISK-BRANCH-MISMATCH",
+      "title": "PS repo is on wo/source-material-hsca-ia-stub-repoint (261b523d), not main; PS-001 referenced main@19394cc6",
+      "likelihood": "high",
+      "impact": "low",
+      "mitigation": "GO dispatch says scan 'current HEAD'. Scan checked-out HEAD and surface the branch/commit in the report so PRIMARY-SOURCES can confirm if a main-specific scan was intended."
+    },
+    {
+      "id": "RISK-SCAN-DURATION",
+      "title": "Repo grew substantially (STAFF/ tree + ~50 docs + multiple backends); scan + embed is long-running",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Dispatch acknowledges long-running, high-value. Drive to a completed indexed scan; report duration in stats."
+    }
+  ],
+  "candidates": [
+    "coderef-scan (structural index + graph + semantic-registry rebuild)",
+    "rag-index (RAG vector rebuild via nomic-embed-text local embeddings)",
+    "rag-status (verify index health post-build)"
+  ],
+  "dependencies": [
+    "@coderef/core CLI at C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+    "Ollama localhost:11434 with nomic-embed-text:latest + qwen2.5-coder:3b",
+    "/coderef-scan, /rag-index, /rag-status skills"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-LIGHT-PLAN",
+      "decision": "Classified as light plan_type",
+      "rationale": "Tool-execution / index-refresh job. No source modification, no code blast radius, no foundation-docs discovery needed. .coderef prereqs (Step 3) are waived for light per category mapping."
+    },
+    {
+      "id": "DR-LOCAL-ONLY",
+      "decision": "Provider locked to local Ollama; no cloud fallback",
+      "rationale": "Standing operator rule restated in GO dispatch CODEREF-CORE-002. nomic-embed-text for RAG embeddings, qwen2.5-coder:3b for code, both confirmed present locally."
+    },
+    {
+      "id": "DR-DUAL-REPORT",
+      "decision": "Report completion to BOTH PRIMARY-SOURCES (requester) and ASSISTANT (GO dispatcher)",
+      "rationale": "Per CODEREF-CORE-002 instructions: requester needs the result; ASSISTANT needs close-out confirmation."
+    }
+  ]
+}

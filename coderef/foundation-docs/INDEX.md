@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-17  
+**Generated:** 2026-07-20  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 2,682 |
-| **Total Files** | 421 |
-| **Total Lines** | 113,142 |
+| **Total Elements** | 3,156 |
+| **Total Files** | 487 |
+| **Total Lines** | 130,760 |
 | **Languages** | ts, js, py |
 
 ---
@@ -22,13 +22,13 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 881 | 32.8% |
-| method | 992 | 37.0% |
-| interface | 451 | 16.8% |
-| class | 107 | 4.0% |
-| type | 66 | 2.5% |
+| function | 1,092 | 34.6% |
+| method | 1,009 | 32.0% |
+| interface | 581 | 18.4% |
+| class | 109 | 3.5% |
+| type | 93 | 2.9% |
 | component | 2 | 0.1% |
-| constant | 183 | 6.8% |
+| constant | 270 | 8.6% |
 
 ---
 
@@ -38,15 +38,15 @@
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
 | 2 | `src/scanner/tree-sitter-scanner.ts` | 57 | 🔴 Very High |
-| 3 | `src/cli/coderef-mcp-server.ts` | 42 | 🟡 High |
-| 4 | `assets/map-viewer/viewer.js` | 40 | 🟡 High |
-| 5 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
-| 6 | `src/query/canonical-graph.ts` | 32 | 🟡 High |
-| 7 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
-| 8 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
-| 9 | `src/search/search-engine.ts` | 31 | 🟡 High |
-| 10 | `src/indexer/index-store.ts` | 30 | 🟡 High |
-| 11 | `src/pipeline/extractors/relationship-extractor.ts` | 30 | 🟡 High |
+| 3 | `assets/map-viewer/viewer.js` | 40 | 🟡 High |
+| 4 | `src/pipeline/extractors/relationship-extractor.ts` | 36 | 🟡 High |
+| 5 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
+| 6 | `src/query/canonical-graph.ts` | 34 | 🟡 High |
+| 7 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
+| 8 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
+| 9 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
+| 10 | `src/search/search-engine.ts` | 31 | 🟡 High |
+| 11 | `src/indexer/index-store.ts` | 30 | 🟡 High |
 | 12 | `src/scanner/scanner.ts` | 30 | 🟡 High |
 | 13 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
 | 14 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
@@ -89,7 +89,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 2,682 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 3,156 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

@@ -1,0 +1,11 @@
+{
+  "stub_id": "STUB-243",
+  "feature_name": "rag-chunk-converter-element-level-enrichment",
+  "description": "RAG chunk-converter currently emits file-level chunks with dependencyCount=0/dependentCount=0 even though .coderef/index.json carries usedBy[] for 1486 elements (post-merge fe6bdc9). Either (a) extend chunk-converter to include element-level chunks with relationship metadata so semantic queries can leverage usedBy/imports/exports, or (b) formally ratify file-level chunking as by-design and document the rationale (semantic relationship search → query index.json directly, not RAG). Surfaced by WO-CODEREF-CORE-POST-MERGE-SCANNER-VALIDATION-001 Phase 3.",
+  "category": "feature",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-01T20:45:00Z"
+}

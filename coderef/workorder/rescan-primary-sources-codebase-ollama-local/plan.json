@@ -1,0 +1,67 @@
+{
+  "plan_type": "light",
+  "goal": "Rebuild CodeRef Core intelligence index (index.json + graph.json + semantic-registry.json + reports + RAG vectors) for the primary-sources repo over its current HEAD, using local Ollama only, then report scan stats + drift findings to PRIMARY-SOURCES and ASSISTANT.",
+  "plan_type_rationale": "Operational index-refresh job: runs scan + rag-index tooling against an external target repo. No source modification, no code blast radius, no foundation-docs discovery. Light is correct.",
+  "plan_type_decided_by": "create-workorder@2.15.0 (agent-classified, manual)",
+  "workorder_id": "WO-RESCAN-PRIMARY-SOURCES-CODEBASE-OLLAMA-LOCAL-001",
+  "feature_name": "rescan-primary-sources-codebase-ollama-local",
+  "created": "2026-06-07T05:38:47Z",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Rescan + reindex primary-sources (local Ollama)",
+      "hard_stop": false,
+      "description": "Verify prereqs, run structural scan, rebuild RAG vectors locally, verify index health, capture stats vs the May-14 baseline, and report to both requester and dispatcher.",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "CHECK",
+          "description": "Confirm Ollama is UP at localhost:11434 with nomic-embed-text:latest + qwen2.5-coder:3b, and confirm scan target path C:/Users/willh/Desktop/CODEREF/PROJECTS/primary-sources exists with current HEAD. (Pre-verified at WO authoring; re-confirm at execution start.)"
+        },
+        {
+          "id": "P1-T2",
+          "verb": "READ",
+          "description": "Read the existing .coderef/index.json + reports baseline (May-14) to capture pre-rescan stats (file count, symbol count, index size) for the drift comparison."
+        },
+        {
+          "id": "P1-T3",
+          "verb": "RUN",
+          "description": "Run coderef-scan against the primary-sources repo to rebuild .coderef/index.json + graph.json + semantic-registry.json + reports/. Provider: local only.",
+          "touches": ["PROJECTS/primary-sources/.coderef/"]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "RUN",
+          "description": "Run rag-index for primary-sources using nomic-embed-text via local Ollama to rebuild the RAG vector store. If Ollama drops mid-embed, STOP and andon-pull to ASSISTANT.",
+          "touches": ["PROJECTS/primary-sources/.coderef/"]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "CHECK",
+          "description": "Run rag-status / inspect rebuilt artifacts to verify index health: confirm index.json, graph.json, semantic-registry.json freshly written (new mtime), RAG vectors present, no scan errors."
+        },
+        {
+          "id": "P1-T6",
+          "verb": "WRITE",
+          "description": "Capture scan stats (files scanned, symbols, index size, RAG chunks/vectors, wall-clock elapsed) and compute drift vs the May-14 baseline (delta file/symbol counts, notable new subtrees: STAFF/, curator scripts, FastAPI backend, reviewer UI). Record into communication.json result + an execution-notes.md."
+        },
+        {
+          "id": "P1-T7",
+          "verb": "WRITE",
+          "description": "Report completion + stats + drift findings to BOTH PRIMARY-SOURCES (requester, via dispatch result) and ASSISTANT (GO dispatcher CODEREF-CORE-002 result field)."
+        }
+      ]
+    }
+  ],
+  "hard_stops": [],
+  "plan_adjustments_needed": [],
+  "discovery_required": false,
+  "foundation_docs_gate": false,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "RUN", "TEST", "COMMIT", "CHECK", "STOP", "DELETE"],
+  "discovery_ref": null,
+  "workorder_hooks": {
+    "post_plan": [],
+    "post_execute": [],
+    "plan_gaps": []
+  }
+}

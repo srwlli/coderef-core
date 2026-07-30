@@ -1,0 +1,11 @@
+{
+  "stub_id": "STUB-271",
+  "feature_name": "cli-core-feature-coverage",
+  "description": "Several core modules have no CLI entry point: context generation (ContextGenerator, ComplexityScorer, BreakingChangeDetector), graph export (GraphExporter), advanced query engine (QueryEngine, RelationshipIndex), configuration presets, plugin management, and file generation utilities (analyzeCoverage, detectDrift, generateDiagrams). Expose these as standalone CLI commands so all core capabilities are accessible without writing code.",
+  "category": "feature",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-10T00:00:00Z"
+}

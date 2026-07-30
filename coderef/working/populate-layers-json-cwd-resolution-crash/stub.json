@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-W8S124",
+  "ulid": "01KV6NRKG95KVSJP1ZN74ZGTP5",
+  "feature_name": "populate-layers-json-cwd-resolution-crash",
+  "description": "populate-coderef (dist/src/cli/populate.js) crashes with exit 1 — NO .coderef/ written — whenever the scan target is a nested subdirectory, because it loads the layer enum from a path computed RELATIVE TO process.cwd() instead of a reliable root. In dist/src/pipeline/element-taxonomy.js:57 the fallback is `path.resolve(process.cwd(), '..', 'ASSISTANT', 'STANDARDS', 'layers.json')`. Running from e.g. services/primary-sources-api/ makes cwd/.. = services/, so it looks for services/ASSISTANT/STANDARDS/layers.json (ENOENT) and the whole populate aborts before any scanning. REPRO: cd <repo>/services/<svc> && node <CORE>/dist/src/cli/populate.js . --lang py -> 'Failed to load layer enum from STANDARDS/layers.json: ENOENT ... services/ASSISTANT/STANDARDS/layers.json', exit 1, no artifacts. WORKAROUND (confirmed): set CODEREF_LAYERS_PATH=<abs path to ASSISTANT/STANDARDS/layers.json> (the only env override that works — checked at element-taxonomy.js:54). BUGS: (1) layer-enum load failure should be NON-FATAL (warn + continue with layer-tagging disabled) — a missing optional standards file must not block the core scan. (2) The cwd-relative root guess is fragile from any nested cwd; resolve from the scan target or an explicit root, or honor CODEREF_ASSISTANT_ROOT (which is currently IGNORED for this path — only CODEREF_LAYERS_PATH is read). (3) CODEREF_LAYERS_PATH is undocumented in CLI.md / populate-coderef SKILL.md. FIX SURFACE: dist/src/pipeline/element-taxonomy.js:54-57 + the loader caller at dist/src/cli/populate.js:286 (wrap in try/continue). Found 2026-06-15 while scanning services/primary-sources-api for the PS-API OCR-scan-GUI analysis.",
+  "category": "fix",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-06-15T22:20:00Z"
+}

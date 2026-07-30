@@ -1,0 +1,101 @@
+{
+  "workorder_id": "WO-CORE-TEST-SUITE-STABILIZATION-001",
+  "feature_name": "core-test-suite-stabilization",
+  "analysis_authored_at": "2026-05-15T19:45:00Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/context/__tests__/breaking-change-detector.test.ts",
+      "src/context/breaking-change-detector/index.ts",
+      "__tests__/generators/helpers.ts",
+      "__tests__/generators/complexity-generator.test.ts",
+      "__tests__/generators/coverage-generator.test.ts",
+      "__tests__/generators/drift-generator.test.ts",
+      "__tests__/generators/export-generator.test.ts",
+      "__tests__/generators/graph-generator.test.ts",
+      "__tests__/generators/index-generator.test.ts",
+      "__tests__/generators/pattern-generator.test.ts",
+      "__tests__/generators/root-cause-alignment.test.ts",
+      "__tests__/generators/validation-generator.test.ts",
+      "src/semantic/header-generator.test.ts",
+      "src/semantic/header-generator.ts",
+      "src/tests/route-detection-integration.test.ts",
+      "__tests__/scanner-export.test.ts",
+      "__tests__/pipeline-snapshot.test.ts",
+      "__tests__/populate-cli.test.ts",
+      "__tests__/integration/rag/indexing-orchestrator.test.ts",
+      "__tests__/chroma-store.test.ts",
+      "__tests__/pinecone-store.test.ts",
+      "src/integration/llm/__tests__/ollama-provider-unreachable.test.ts",
+      "vitest.config.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-01",
+      "title": "Breaking-change-detector class may need refactor",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "If compareSignatures cannot be exposed as a private method pattern, add as instance method delegating to module-level function"
+    },
+    {
+      "id": "RISK-02",
+      "title": "helpers.ts vitest config fix may break include pattern for other files",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "Use vitest exclude pattern specifically for helpers.ts rather than global include"
+    },
+    {
+      "id": "RISK-03",
+      "title": "Route detection count changes may indicate real scanner behavioral change",
+      "likelihood": "medium",
+      "impact": "low",
+      "mitigation": "Verify actual route count by reading fixture file — update assertions to match actual scanner output if behavior is correct"
+    },
+    {
+      "id": "RISK-04",
+      "title": "indexing-orchestrator stale check happens before sourceDir is read",
+      "likelihood": "high",
+      "impact": "medium",
+      "mitigation": "Mock or spy on the stale-check method in the test; or pass a custom project root that has no .coderef/graph.json"
+    }
+  ],
+  "candidates": [
+    "src/context/breaking-change-detector/index.ts",
+    "src/context/__tests__/breaking-change-detector.test.ts",
+    "__tests__/generators/helpers.ts",
+    "src/semantic/header-generator.ts",
+    "src/tests/route-detection-integration.test.ts",
+    "__tests__/integration/rag/indexing-orchestrator.test.ts"
+  ],
+  "dependencies": [
+    "vitest@4.1.4",
+    "src/context/breaking-change-detector/signature-comparator.ts",
+    "src/context/breaking-change-detector/diff-analyzer.ts",
+    "src/context/breaking-change-detector/impact-assessor.ts"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-01",
+      "decision": "Fix breaking-change-detector by adding private instance methods to BreakingChangeDetector class that delegate to module-level functions",
+      "rationale": "Test uses detector['compareSignatures'] — the modular refactor broke this. Adding private methods to the class preserves the test pattern without requiring large test rewrites."
+    },
+    {
+      "id": "DR-02",
+      "decision": "Fix helpers.ts vitest issue via vitest.config.ts exclude, not by renaming the file",
+      "rationale": "helpers.ts has no describe/test blocks so vitest fails with 'No test suite found'. Adding it to exclude list is the minimal fix."
+    },
+    {
+      "id": "DR-03",
+      "decision": "Fix generator test assertions that fail due to helpers.ts having 4 elements not 3",
+      "rationale": "The listen element was added to createMockEnvironment() but totalElements assertions were not updated."
+    },
+    {
+      "id": "DR-04",
+      "decision": "Skip cloud-service mock tests via vitest.skip (test.skip in test file), not vitest.config exclude",
+      "rationale": "Dispatch specifies vitest skip annotation; this preserves test existence while skipping network-dependent tests."
+    }
+  ]
+}

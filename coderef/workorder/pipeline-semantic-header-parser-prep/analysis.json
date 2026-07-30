@@ -1,0 +1,104 @@
+{
+  "blast_radius": {
+    "files_modified": [
+      {
+        "path": "src/pipeline/extractors/relationship-extractor.ts",
+        "reason": "Modify extractRawHeaderImports to use new BNF parser instead of placeholder regex logic."
+      },
+      {
+        "path": "src/pipeline/types.ts",
+        "reason": "Introduce new HeaderFact interface and update RawHeaderImportFact to reflect structured parsing. Add HeaderFact to PipelineState."
+      },
+      {
+        "path": "src/types/types.ts",
+        "reason": "Update ElementData interface to potentially include structured HeaderFact and ensure headerStatus field is correctly handled."
+      }
+    ],
+    "files_created": [
+      {
+        "path": "src/pipeline/semantic-header-parser.ts",
+        "purpose": "New file to house the core semantic header parsing logic based on BNF grammar."
+      },
+      {
+        "path": "src/pipeline/header-fact.ts",
+        "purpose": "New file defining the HeaderFact interface and related types."
+      }
+    ],
+    "files_deleted": []
+  },
+  "risks": [
+    {
+      "id": "R1",
+      "description": "Parser might not correctly interpret all valid header variations as per BNF, leading to 'partial' status for correctly formed headers.",
+      "mitigation": "Thorough unit testing with a wide range of valid and invalid header examples, including edge cases and diverse comment styles (e.g., Python docstrings, Go line comments).",
+      "severity": "high"
+    },
+    {
+      "id": "R2",
+      "description": "Performance impact of parsing every file's header, especially if the parsing logic is complex or regex-heavy.",
+      "mitigation": "Optimize parsing logic for efficiency; consider caching parsed headers for unchanged files. Leverage existing AST where possible to locate comment blocks efficiently.",
+      "severity": "medium"
+    },
+    {
+      "id": "R3",
+      "description": "Drift between STANDARDS/layers.json and actual layer usage not being detected or handled gracefully.",
+      "mitigation": "Ensure robust runtime validation against loaded layers.json. Implement clear error reporting for invalid layer values.",
+      "severity": "medium"
+    },
+    {
+      "id": "R4",
+      "description": "Incorrect cross-checking of @exports against AST exports, leading to false positives/negatives for 'stale' headerStatus.",
+      "mitigation": "Develop comprehensive test cases that cover various export scenarios (named, default, re-exports) and compare parser output with AST-derived exports accurately.",
+      "severity": "high"
+    }
+  ],
+  "decision_records": [
+    {
+      "decision": "No changes to the canonical BNF grammar or STANDARDS/layers.json.",
+      "rationale": "The brief explicitly states these are canonical and not to be modified. Any ambiguities found will be documented for the orchestrator.",
+      "alternatives_considered": ["Proposing grammar changes (rejected per brief)"]
+    },
+    {
+      "decision": "Prioritize robust error reporting for malformed headers.",
+      "rationale": "The brief specifies 'partial' status with a 'structured parse-error record'. This indicates a need for detailed feedback on parsing failures.",
+      "alternatives_considered": ["Silent failure or generic 'partial' status (rejected due to lack of diagnostic information)"]
+    }
+  ],
+  "parser_surface": {
+    "tag_types": [
+      "@coderef-semantic",
+      "@layer",
+      "@capability",
+      "@constraint",
+      "@exports",
+      "@imports",
+      "@generated"
+    ],
+    "error_states": [
+      {
+        "status": "defined",
+        "description": "Header present, all required tags valid, @exports matches AST exports."
+      },
+      {
+        "status": "stale",
+        "description": "Header present but @exports lists symbols not in the AST."
+      },
+      {
+        "status": "partial",
+        "description": "Header present but malformed (parse error in one or more tags); structured parse-error record attached."
+      },
+      {
+        "status": "missing",
+        "description": "No header block in the file at all."
+      }
+    ],
+    "cross_checks": [
+      "Cross-check @exports against AST-derived exports (RawExportFact[]).",
+      "Validate @layer against the 13 canonical values in STANDARDS/layers.json at runtime.",
+      "Validate @capability is kebab-case.",
+      "Validate @constraint items are kebab-case within the JSON array.",
+      "Validate @generated is a valid ISO 8601 timestamp."
+    ]
+  },
+  "test_planning_notes": "The /plan-tests-for-workorder skill should focus on: comprehensive unit tests for the BNF parser covering all tag types and their validation rules (especially @layer, @exports, @imports, @generated); integration tests to ensure correct headerStatus transitions for 'missing', 'partial', 'stale', and 'defined' cases; tests for the replacement of RawHeaderImportFact placeholder logic with structured parsing; and performance tests for the parsing overhead."
+}

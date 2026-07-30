@@ -1,0 +1,36 @@
+=============================================================
+WORKORDER: WO-SOURCE-HEADERS-RESTAMP-002  |  source-headers-restamp-002  |  COMPLETE
+Session: daily-agent-session-2026-05-09 / CODEREF-CORE  |  Phases: 1  |  Commits: 2  |  Pushes: 2
+Parent stub: none (predecessor_stub: null)
+
+FILES CREATED:
+  + coderef/workorder/source-headers-restamp-002/context.json   (158992e)
+  + coderef/workorder/source-headers-restamp-002/analysis.json  (158992e)
+  + coderef/workorder/source-headers-restamp-002/plan.json      (158992e)
+  + coderef/workorder/source-headers-restamp-002/communication.json  (158992e)
+  + ... and 174 more (src/*.ts @coderef-semantic:1.0.0 headers)  (158992e)
+
+FILES MODIFIED:
+  ~ src/semantic/header-generator.ts  (158992e)  [formatAsComments + insertHeaders fixes]
+  ~ coderef/foundation-docs/API.md           (64adb1b)
+  ~ coderef/foundation-docs/ARCHITECTURE.md  (64adb1b)
+  ~ coderef/foundation-docs/COMPONENTS.md    (64adb1b)
+  ~ coderef/foundation-docs/EXPORTS.md       (64adb1b)
+  ~ coderef/foundation-docs/HOTSPOTS.md      (64adb1b)
+  ~ coderef/foundation-docs/INDEX.md         (64adb1b)
+  ~ ... and 2 more (RELATIONSHIPS.md, SCHEMA.md)  (64adb1b)
+
+PHASE CHECKLIST:
+  [x] Phase 1: strip-restamp 174 src files + generator fixes  (158992e)
+  [x] Phase 1 closeout: communication.json + foundation-docs  (64adb1b)
+
+OUTCOMES:
+  - 41 src files headerStatus:defined (up from 0 after strip)
+  - 129 src files headerStatus:stale (exports_match_ast mismatch — future work)
+  - 409 chunks attempted embedding (AC: chunks > 0 MET)
+  - OpenAI key absent — embedding_api_error pre-existing, not blocking
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing schema drift, 7 failures)
+
+APPROVE -> /close-workorder WO-SOURCE-HEADERS-RESTAMP-002
+=============================================================

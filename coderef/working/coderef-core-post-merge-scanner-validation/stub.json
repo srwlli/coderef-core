@@ -1,0 +1,11 @@
+{
+  "stub_id": "STUB-241",
+  "feature_name": "coderef-core-post-merge-scanner-validation",
+  "description": "Validate downstream consumers (RAG embeddings, analysis skills, snapshot tests) against the post-fix scanner output AFTER wo/rag-index-chunk-converter-impl merges to main. Closes the consumer-side validation gap left by WO-POPULATE-SEMANTIC-RELATIONSHIPS-HEADERS-001 which scoped acceptance to scanner output correctness only. Tasks: (1) full npm test suite — not focused, (2) re-index RAG against new scanner output to refresh embeddings (closes F5 RAG quality regression), (3) spot-check three analysis skills in order — analyze-coderef-semantics, coderef-analyze, data-source-report-use-case-analyzer, (4) regenerate any committed index.json/semantic-registry.json snapshots via vitest --update-snapshot. Validation steps include sampling an element with rich relationships from the post-fix index, verifying RAG vector index timestamp post-fix, and confirming each analysis skill runs without throwing. Pre-existing 3 invalid UUID anchors and ASSISTANT tracking-validator FAIL are explicitly out of scope (separate stub).",
+  "category": "test",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-01T17:00:00Z"
+}

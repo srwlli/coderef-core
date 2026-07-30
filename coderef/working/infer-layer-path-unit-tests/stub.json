@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-308",
+  "feature_name": "infer-layer-path-unit-tests",
+  "description": "inferLayerFromPath() and inferCapabilityFromPath() were shipped in the dogfood header WO with 50+ path patterns but zero unit tests. A regression in pattern ordering would silently downgrade layer coverage from 99% with no failing test.",
+  "category": "test",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-17T06:30:00Z",
+  "related_improvement": "IMP-CORE-092"
+}

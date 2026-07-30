@@ -1,0 +1,30 @@
+﻿{
+  "workorder_id": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001",
+  "feature_name": "pipeline-relationship-raw-facts",
+  "project_id": "coderef-core",
+  "predecessor": "WO-PIPELINE-SCANNER-IDENTITY-TAXONOMY-001",
+  "objective": "Split relationship extraction into raw vs derived facts. Land import resolution and call resolution. Make the 6 Phase-0 ground-truth tests pass.",
+  "scope": {
+    "in": [
+      "Define RawImportFact and RawCallFact types to distinguish scanner observations from resolution results.",
+      "Update RelationshipExtractor to capture complete raw fact metadata (aliases, receiver text, scope path, etc.) for all supported languages.",
+      "Implement Import Resolver supporting relative paths, extensionless imports, index files, and package classification.",
+      "Implement scope-aware Call Resolver supporting local symbols, enclosing scopes, class members, and imported bindings.",
+      "Refactor PipelineOrchestrator to separate raw fact extraction from the resolution pass.",
+      "Update ExportedGraph schema to support resolutionStatus, evidence, and candidate IDs for ambiguous edges.",
+      "Make the 6 Phase-0 ground-truth tests pass: identity-anchored endpoints, explicit unresolved/ambiguous states, alias binding, and qualified context preservation."
+    ],
+    "out": [
+      "Header parser (Phase 2.5) - no parsing of @imports or @exports in source comments.",
+      "Graph validation contract (Phase 6) - no runtime rejection of invalid artifacts (audit only).",
+      "RAG facets (Phase 7) - no indexing or search changes.",
+      "--strict-headers gate (Phase 6)."
+    ]
+  },
+  "hard_constraints": [
+    "Read-only role for prep agent - no source code edits, staging, or commits.",
+    "Must preserve receiver context in call facts (e.g., obj.save() must record 'obj' as receiver).",
+    "Must use canonical CodeRef IDs for all resolved endpoints in the graph.",
+    "No suggestions about HOW to implement; focus on WHAT changes and WHY."
+  ]
+}

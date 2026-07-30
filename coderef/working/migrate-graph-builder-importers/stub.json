@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-309",
+  "feature_name": "migrate-graph-builder-importers",
+  "description": "Migrate 10 active source files off the deprecated src/analyzer/graph-builder.ts to src/pipeline/graph-builder.ts. The two schemas are structurally incompatible (Map-based vs ExportedGraph), so each consumer (graph-to-elements.ts, chunk-converter.ts, indexing-orchestrator.ts, ai-prompt-generator.ts, and 6 others) must be individually adapted before the legacy module can be deleted.",
+  "category": "refactor",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-05-17T07:30:00Z",
+  "related_improvement": "IMP-CORE-094"
+}

@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability output-validation-real-world-noregress-test-repo-root
+ */
+
+/**
  * Phase 6 — output-validation-real-world-noregress integration test
  * (AC-01, AC-10).
  *

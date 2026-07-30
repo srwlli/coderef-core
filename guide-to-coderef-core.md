@@ -188,8 +188,8 @@ function visitTsNode(node: ts.Node, sourceFile: ts.SourceFile): void {
 - **Future-Proof**: Supports latest language features automatically
 - **Industry Standard**: Same engine used by VS Code and TypeScript tools
 
-#### **Scanner Export from @coderef/core** *(New in v2.1.0)*
-The scanner is now exported from the main `@coderef/core` package for external consumption:
+#### **Scanner Export from @coderef/core**
+The scanner is exported from the main `@coderef/core` package for external consumption:
 
 ```typescript
 import { scanCurrentElements, LANGUAGE_PATTERNS } from '@coderef/core';
@@ -523,12 +523,14 @@ import { tagFile } from 'coderef-cli/tagger';
 - **Configurable Options**: Extensive customization for enterprise environments
 - **Cross-Platform**: Windows/Unix path handling
 
-## Recent Enhancements (v2.1.0)
+## Recent Enhancements
 
 ### **Completed Features**
 1. ✅ **Canonical Graph Queries**: `loadCanonicalGraph()` / `CanonicalGraphQuery` over the persisted `.coderef/graph.json`
 2. ✅ **Scanner Export**: Public API for `scanCurrentElements` from @coderef/core
 3. ✅ **Comprehensive Testing**: scanner-export and canonical-graph query coverage in the vitest suite
+4. ✅ **Repo Map Projection**: universal file-level map (MapData v1.4) with analytics, edge evidence, layer drift, and engineering-metrics overlays — via the `coderef-map` CLI, the MCP `map` tool, and the interactive viewer (see §6 and [docs/MAP-USER-GUIDE.md](docs/MAP-USER-GUIDE.md))
+5. ✅ **Repo-agnostic MCP server**: `coderef-mcp-server` exposes 26 intelligence tools over `.coderef/` artifacts; every tool takes a required `project_root`
 
 ## Future Roadmap
 

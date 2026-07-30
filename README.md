@@ -1,7 +1,7 @@
 ---
 title: @coderef/core
 status: living
-updated: 2026-07-12
+updated: 2026-07-18
 documents: package.json
 ---
 
@@ -89,7 +89,7 @@ The 9-phase pipeline rebuild (Phase 0 through Phase 7) is complete and archived.
 - A Phase 7 `rag-index` that **refuses to run** when the validation report's `ok=false` (no more silent `chunksIndexed=0`). `IndexingResult` carries top-level `status: 'success' | 'partial' | 'failed'` plus per-entry `SkipReason` / `FailReason`.
 - `rag-search --layer` and `--capability` filter flags for facet-scoped semantic search.
 - **Local-first embeddings**: `rag-index` / `rag-search` default to `ollama`/`nomic-embed-text` unless `OPENAI_API_KEY` is set — cloud embedding is opt-in, never a silent default. `rag-index --include-headerless` indexes repos that were never header-annotated, tagging those chunks `header:false`.
-- **`coderef-mcp-server`** — a REPO-AGNOSTIC MCP stdio server (registered as the `coderef-core` domain in `.mcp.json`) exposing 24 intelligence tools over `.coderef/` artifacts. One running server serves ANY indexed repo: every tool takes a required `project_root` naming the target repo — pure CLI semantics, no default repo (the `--project-dir` launcher arg is only an anchor for relative paths). Most tools are read-only (`what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`, `what_exports`, `hotspots`, `cycles`, `diff_impact`, `rag_search`, `pack_context`, `rename_preview`, `rag_status`, `map`, …); two (`reindex`, `rag_index`) WRITE, but every write is confined to `<project_root>/.coderef/` per tool call (they delegate to the populate / rag-index pipelines — never source mutation). Resolution failures return structured `{ error, project_root, hint }` envelopes — never another repo's data. Source-mutating rename stays CLI-only; MCP exposes it as the dry-run `rename_preview`. Typed against `ExportedGraph`, so graph-schema drift is a compile error. See [docs/CLI.md](docs/CLI.md#coderef-mcp-server) (§ Per-repo queries). *(WO-MCP-REPO-AGNOSTIC-ANY-REPO-001)*
+- **`coderef-mcp-server`** — a REPO-AGNOSTIC MCP stdio server (registered as the `coderef-core` domain in `.mcp.json`) exposing 26 intelligence tools over `.coderef/` artifacts. One running server serves ANY indexed repo: every tool takes a required `project_root` naming the target repo — pure CLI semantics, no default repo (the `--project-dir` launcher arg is only an anchor for relative paths). Most tools are read-only (`what_calls`, `what_imports`, `impact_of`, `find_element`, `codebase_summary`, `validation_status`, `what_exports`, `hotspots`, `cycles`, `diff_impact`, `rag_search`, `pack_context`, `rename_preview`, `rag_status`, `map`, `symbol_context`, the outbound `what_this_calls`/`what_this_imports`/`what_this_depends_on` mirrors, `source_of`, `find_all_references`, `path_between`, `unresolved_edges`, …); two (`reindex`, `rag_index`) WRITE, but every write is confined to `<project_root>/.coderef/` per tool call (they delegate to the populate / rag-index pipelines — never source mutation). Resolution failures return structured `{ error, project_root, hint }` envelopes — never another repo's data. Source-mutating rename stays CLI-only; MCP exposes it as the dry-run `rename_preview`. Typed against `ExportedGraph`, so graph-schema drift is a compile error. See [docs/CLI.md](docs/CLI.md#coderef-mcp-server) (§ Per-repo queries). *(WO-MCP-REPO-AGNOSTIC-ANY-REPO-001)*
 - **`coderef-map`** — a universal repo map projected from `.coderef/` artifacts (MapData v1.4): a file-level dependency graph enriched with graph analytics (communities, centrality, bridges, dead-code candidates), per-edge evidence, declared-vs-detected layer drift, and engineering-metrics overlays (test linkage, header coverage, unresolved refs, module size, dependency counts). `npx coderef-map .` emits a self-contained static bundle to `.coderef/map/` (`data.json` + interactive `graph.html` viewer, no CDN); `--serve` opens the live viewer. Agents consume the identical data via the MCP `map` tool (summary fields like `untested_src_count` / `undocumented_file_count` + `data_path`). All blocks are **surfaces, not verdicts**. See [docs/MAP-USER-GUIDE.md](docs/MAP-USER-GUIDE.md) and [docs/CLI.md](docs/CLI.md#coderef-map). *(WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001, WO-MAP-GRAPH-ANALYTICS-MODULE-001)*
 
 Real-world post-remediation baseline (from coderef-core's own scan, close `4cd33af`): `valid_edge_count=5154`, `header_missing_count=7`, `header_coverage_pct=95.33`, ground-truth tests PASS.
@@ -118,8 +118,8 @@ npm run build:cli
 ```
 
 ### Requirements
-- Node.js 16+
-- TypeScript 5.0+ (for TypeScript projects)
+- Node.js >= 20 (enforced by `engines` in package.json)
+- TypeScript 5.9+ (for building from source)
 
 ### Usage
 
@@ -528,7 +528,7 @@ See **[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)** for the post-rebuild archit
 │  Integration Module                             │
 │  ├── RAG (Retrieval-Augmented Generation)      │
 │  ├── Vector stores (Pinecone, Chroma, JSON)    │
-│  ├── LLM providers (OpenAI, Anthropic)         │
+│  ├── Embeddings (local Ollama by default)       │
 │  └── AI prompt generation                      │
 └─────────────────────────────────────────────────┘
 ```
@@ -741,6 +741,13 @@ const elements = await scanCurrentElements('./src', 'ts', options);
 ---
 
 ## Roadmap
+
+> **Currency note (2026-07-18):** the version headings below are aspirational planning
+> buckets, not shipped-release truth — the published package is **v2.0.0** (see
+> `package.json`). Several listed items have already landed post-rebuild (tree-sitter
+> Python, timeout guards, the RAG pipeline, `coderef-map`, the 26-tool MCP server). Treat
+> `roadmap.md`, `improvements.json`, and the workorder registry as the authoritative
+> forward plan; this section is a high-level sketch.
 
 ### v2.1.0 (Q1 2026)
 - [ ] Add C++ and Ruby language support

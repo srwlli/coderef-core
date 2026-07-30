@@ -1,3 +1,9 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability no-phase-8-docs-leak-test-forbidden-phase-8-fields
+ */
+
 import { describe, expect, it } from 'vitest';
 import * as fs from 'fs/promises';
 import * as path from 'path';

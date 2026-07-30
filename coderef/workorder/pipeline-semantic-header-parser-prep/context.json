@@ -1,0 +1,35 @@
+{
+  "workorder_id": "WO-PIPELINE-SEMANTIC-HEADER-PARSER-001",
+  "feature_name": "pipeline-semantic-header-parser",
+  "project_id": "coderef-core",
+  "predecessor": "WO-PIPELINE-RELATIONSHIP-RAW-FACTS-001",
+  "objective": "Implement the canonical semantic header parser. Every source file walked produces a HeaderFact and a headerStatus. @layer validates against STANDARDS/layers.json at runtime. @exports cross-checks against AST exports. Files transition out of headerStatus='missing'.",
+  "scope": {
+    "in": [
+      "Implement a header parser in src/pipeline/ that consumes the BNF defined in analyze-coderef-semantics/SKILL.md.",
+      "Extract @coderef-semantic:<version>, @layer, @capability, @constraint, @exports, @imports, @generated tags.",
+      "Emit raw header facts (new HeaderFact structure) alongside raw import/call/export facts.",
+      "Cross-check @exports against the AST's actual exports; set headerStatus = 'stale' for mismatches.",
+      "Set headerStatus = 'missing' for files with no header.",
+      "Set headerStatus = 'partial' for files with malformed headers and attach a structured parse-error record.",
+      "Validate @layer against STANDARDS/layers.json enum at runtime using src/pipeline/element-taxonomy.ts.",
+      "Replace RawHeaderImportFact placeholders with structured HeaderImportFact records (each <module>:<symbol> becomes parsed fields)."
+    ],
+    "out": [
+      "@imports resolution (Phase 3)",
+      "Graph validation contract (Phase 6)",
+      "--strict-headers gate (Phase 6)",
+      "RAG facets (Phase 7)",
+      "Grammar changes (BNF is canonical)",
+      "Hardcoding @layer enum in TypeScript (STANDARDS/layers.json is canonical and loaded at runtime)"
+    ]
+  },
+  "hard_constraints": [
+    "Read-only agent, no source code edits, no staging, no commits.",
+    "Produce context.json and analysis.json in the current directory.",
+    "Adhere to the canonical BNF grammar for semantic headers.",
+    "Validate @layer against STANDARDS/layers.json at runtime using src/pipeline/element-taxonomy.ts.",
+    "Do not resolve @imports; that is Phase 3's responsibility.",
+    "Do not implement --strict-headers validation; that is Phase 6's responsibility."
+  ]
+}

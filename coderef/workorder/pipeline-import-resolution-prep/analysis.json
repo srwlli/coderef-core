@@ -1,0 +1,114 @@
+{
+  "blast_radius": [
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\roadmap.md",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\tsconfig.json",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\graph-ground-truth.test.ts",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\archived\\pipeline-relationship-raw-facts\\plan.json",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\archived\\pipeline-relationship-raw-facts\\execution-notes.md",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\archived\\pipeline-semantic-header-parser\\plan.json",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\archived\\pipeline-semantic-header-parser\\execution-notes.md",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\types.ts",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\src\\pipeline\\header-fact.ts",
+    "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\__tests__\\pipeline\\raw-header-import-placeholders.test.ts"
+  ],
+  "risks": [
+    {
+      "id": "R-PHASE-3-A",
+      "description": "RawHeaderImportFact removal breaks raw-header-import-placeholders.test.ts. The Phase 2 test asserts placeholder cardinality. If Phase 3 removes the type, the test fails. Mitigation must address this — either delete the test or rewrite it against HeaderImportFact (Phase 2.5 structured replacement)."
+    },
+    {
+      "id": "R-PHASE-3-B",
+      "description": "Export-table consistency. Phase 2.5 already added an @exports cross-check at orchestrator level. Phase 3's export-table builder must produce the SAME export set Phase 2.5's cross-check uses, or one of them is wrong. Document how the two seams reconcile."
+    },
+    {
+      "id": "R-PHASE-3-C",
+      "description": "Stale header imports require export tables built first. This creates a phase-internal ordering dependency: pass 1 must finish before pass 2 runs. If the orchestrator runs them in parallel, stale detection is non-deterministic."
+    },
+    {
+      "id": "R-PHASE-3-D",
+      "description": "Phase 0 ground-truth tests transitioning to PASS. This is the FIRST phase where any test flips. The test framework expects them to fail. Plan author needs to know: does Phase 3 delete the failing assertions, modify them to pass, or add new now-passing assertions while keeping the old ones as backstops?"
+    }
+  ],
+  "decision_records": [
+    {
+      "id": "DR-PHASE-3-A",
+      "description": "External-vs-unresolved heuristic: When does an import classify as `external` vs `unresolved`? Proposed rule: anything in `node_modules/` or listed in `package.json` dependencies → external; anything that should resolve relatively but doesn't → unresolved. Bare specifiers not in package.json fall to unresolved (not external) to surface drift between code and manifest."
+    },
+    {
+      "id": "DR-PHASE-3-B",
+      "description": "Path alias precedence: When tsconfig has both `paths` AND a relative-resolve match, `paths` wins (matches tsc behavior). Current tsconfig.json has no `paths` field, so this is a forward-compatibility decision; document the rule even though it's unexercised in this phase."
+    },
+    {
+      "id": "DR-PHASE-3-C",
+      "description": "Resolver pass timing: TWO-pass approach. Pass 1 builds export tables across all files (consumes RawExportFact[] from Phase 2). Pass 2 resolves imports against those tables (consumes RawImportFact[] and HeaderImportFact[] from Phase 2/2.5, emits resolved/unresolved/external/ambiguous edges). Per-file streaming during AST walk is rejected because it cannot resolve forward references."
+    },
+    {
+      "id": "DR-PHASE-3-D",
+      "description": "Stale @imports detection requires the export table from pass 1 to be fully populated. A header @imports entry of form `<module>:<symbol>` is stale iff the module resolves but the symbol is not in that module's export set. This makes stale detection a pass-2 concern strictly downstream of pass 1, not parallelizable."
+    }
+  ],
+  "resolution_surface": {
+    "import_kinds": [
+      "resolved",
+      "unresolved",
+      "external",
+      "ambiguous",
+      "dynamic",
+      "typeOnly",
+      "stale"
+    ],
+    "resolution_states": [
+      "resolved",
+      "unresolved",
+      "external",
+      "ambiguous",
+      "dynamic",
+      "typeOnly",
+      "stale"
+    ],
+    "edge_cases": [
+      "Re-exports: `export { foo } from './bar'`. Resolving `bar` here is normal; resolving the re-export requires a transitive lookup.",
+      "Namespace imports: `import * as ns from './x'`. The local name `ns` resolves to the entire module, not a single export.",
+      "Default exports with renaming: `import myDefault from './x'` where x exports `default`. The local name binds to the default export.",
+      "Same-name imports from different modules: two files each importing a different `helpers` from different paths. Both resolve to distinct codeRefIds.",
+      "Self-referential exports: `export * from './x'` — re-exports require following the chain."
+    ],
+    "tsconfig_paths_strategy": "The current tsconfig.json at C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\tsconfig.json does not contain a `paths` field. Phase 3 resolver therefore relies entirely on relative-path resolution and node_modules lookup. The resolver MUST still read tsconfig.json at startup and check for `compilerOptions.paths` so that future addition of aliases is handled without code change — the absence of paths today is a current-state fact, not an architectural shortcut."
+  },
+  "ground_truth_test_mapping": [
+    {
+      "test_description": "it('requires resolved import and call edges to use graph node IDs as endpoints')",
+      "type": "both",
+      "details": "Tests both import and call resolution. Import side expected to pass in Phase 3. Call side waits for Phase 4."
+    },
+    {
+      "test_description": "it('requires unresolved imports and calls to be explicit graph facts')",
+      "type": "both",
+      "details": "Tests both import and call resolution. Import side expected to pass in Phase 3. Call side waits for Phase 4."
+    },
+    {
+      "test_description": "it('requires duplicate function name calls to be marked ambiguous with candidate IDs')",
+      "type": "call-related",
+      "details": "Tests call resolution ambiguity. Waits for Phase 4."
+    },
+    {
+      "test_description": "it('requires alias imports to bind the local alias back to the exported source symbol')",
+      "type": "import-related",
+      "details": "Tests import alias binding. Expected to pass in Phase 3."
+    },
+    {
+      "test_description": "it('requires nested functions and class method calls to preserve qualified context')",
+      "type": "call-related",
+      "details": "Tests call resolution in nested contexts. Waits for Phase 4."
+    },
+    {
+      "test_description": "it('requires graph validation to distinguish resolved, unresolved, and ambiguous edges')",
+      "type": "both",
+      "details": "Import-related aspects expected to pass in Phase 3. Call-related aspects wait for Phase 4."
+    }
+  ],
+  "cross_phase_dependencies": {
+    "description": "Phase 2.5's orchestrator performs an `@exports` cross-check where HeaderFact.exports is compared against the RawExportFact[].exportedName set. Phase 3's pass-1 export-table builder consumes the SAME RawExportFact[] stream, so its output must be a deterministic projection of that stream — anything else means the Phase 2.5 cross-check and the Phase 3 stale-import check disagree on what 'exports' means. Recommended seam: Phase 3 export table is `Map<moduleId, Set<exportedName>>` built directly from RawExportFact[], with no filtering or normalization beyond what Phase 2 already applied. If Phase 2.5's cross-check ever needs different semantics, that divergence is a Phase 2.5 bug, not a Phase 3 license to deviate."
+  },
+  "test_planning_notes": "The existing __tests__/pipeline/raw-header-import-placeholders.test.ts asserts properties of RawHeaderImportFact. Since Phase 3 removes RawHeaderImportFact (per scope.in), this test must be either deleted entirely OR rewritten against HeaderImportFact (Phase 2.5's structured replacement). Recommended: rewrite + relocate to sit alongside Phase 2.5's HeaderFact tests, since the cardinality assertion is still meaningful against HeaderImportFact. Phase 3 plan must call this disposition out explicitly so it's not silently dropped. Also: Phase 3 is the FIRST phase where ground-truth assertions flip from FAIL to PASS — plan must specify the mechanism (delete failing assertion vs. add new passing assertion) to avoid disguising a regression as a phase win."
+}

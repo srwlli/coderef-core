@@ -1,3 +1,9 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability graph-construction-traversal-defaults-test-forbidden-traversal-helpers
+ */
+
 import { describe, expect, it } from 'vitest';
 
 describe('Phase 5 graph traversal defaults (AC-06)', () => {

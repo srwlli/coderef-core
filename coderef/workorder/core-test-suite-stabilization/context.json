@@ -1,0 +1,51 @@
+{
+  "workorder_id": "WO-CORE-TEST-SUITE-STABILIZATION-001",
+  "feature_name": "core-test-suite-stabilization",
+  "created": "2026-05-15T19:45:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatch": "DISPATCH-2026-05-15-005",
+  "intake": {
+    "trigger": "dispatch",
+    "user_request": "Fix all remaining real test failures in CODEREF-CORE per DISPATCH-2026-05-15-005: breaking-change-detector suite (30 tests), generators suite (helpers.ts fixture issue), route-detection-integration (Flask/FastAPI), header-generator CRLF/preserve cases, scanner-export timeout, pipeline-snapshot, populate-cli, indexing-orchestrator AC-02. Skip cloud-service mocks (chroma, pinecone, ollama). Target: 0 real failures."
+  },
+  "classification": {
+    "plan_type": "light",
+    "plan_type_rationale": "Targeted test stabilization — specific test files with known failure modes, no architectural changes, no new features. All fixes are test alignment (wrong expectation) or implementation gap (missing class method). Light plan: no discovery required.",
+    "plan_type_decided_by": "create-workorder@2.4.0",
+    "discovery_ref": null,
+    "discovery": null
+  },
+  "semantic_scan": {
+    "layer_distribution": {},
+    "hotspot_files": [],
+    "pattern_inventory": {},
+    "dependency_cycles": [],
+    "errors": []
+  },
+  "scope": {
+    "in_scope": [
+      "src/context/__tests__/breaking-change-detector.test.ts — add compareSignatures/findCallSites/scoreConfidence as private methods or expose via BreakingChangeDetector class",
+      "__tests__/generators/helpers.ts — vitest include/exclude config so helpers.ts is not collected as a test suite",
+      "__tests__/generators/*.test.ts — fix totalElements assertion (4 not 3) if caused by helpers.ts fixture update",
+      "src/semantic/header-generator.test.ts — fix CRLF insertion and preserve-existing cases",
+      "src/tests/route-detection-integration.test.ts — fix Flask/FastAPI route count assertions (scanner now detects more routes)",
+      "__tests__/scanner-export.test.ts — increase timeout or scope down the scan to avoid 5s timeout",
+      "__tests__/pipeline-snapshot.test.ts — fix undefined indexOutput.length (indexOutput not an array)",
+      "__tests__/populate-cli.test.ts — fix @semantic count assertion",
+      "__tests__/integration/rag/indexing-orchestrator.test.ts — AC-02: mock or skip stale-graph check for the non-existent-dir test",
+      "__tests__/chroma-store.test.ts, __tests__/pinecone-store.test.ts, src/integration/llm/__tests__/ollama-provider-unreachable.test.ts — add vitest.skip annotation"
+    ],
+    "out_of_scope": [
+      "Do not change scanner.ts call detection logic",
+      "Do not change header-generator.ts production logic",
+      "Do not change IndexingOrchestrator.indexCodebase() production logic",
+      "Do not change route detection implementation — fix test counts only"
+    ]
+  },
+  "constraints": [
+    "Do not break previously-passing tests",
+    "Cloud-service mock tests (chroma, pinecone, ollama) must be skipped not deleted",
+    "Strict task vocabulary: READ, WRITE, EDIT, RUN, TEST, COMMIT, CHECK, STOP, DELETE"
+  ]
+}

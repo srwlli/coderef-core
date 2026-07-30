@@ -1,0 +1,43 @@
+{
+  "workorder_id": "WO-CORE-TEST-SUITE-STABILIZATION-001",
+  "feature_name": "core-test-suite-stabilization",
+  "created": "2026-05-15T19:45:00Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": ["DISPATCH-2026-05-15-005"],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "updated": "2026-05-15T19:50:00Z",
+  "plan_file": "coderef/workorder/core-test-suite-stabilization/plan.json",
+  "context_file": "coderef/workorder/core-test-suite-stabilization/context.json",
+  "analysis_file": "coderef/workorder/core-test-suite-stabilization/analysis.json",
+  "handoff": {
+    "from": "create-workorder",
+    "to": "execute-workorder",
+    "reason": "Plan authored; ready for implementation"
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "inter_phase_halts": false,
+    "terminal_hard_stop": true
+  },
+  "hard_constraints": [
+    "Do not change scanner.ts call detection logic",
+    "Do not break previously-passing tests",
+    "Cloud-service mock tests must be skipped not deleted"
+  ],
+  "blockers": [],
+  "decisions_log": [],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "event": "workorder_created",
+      "at": "2026-05-15T19:45:00Z",
+      "by": "create-workorder",
+      "note": "Plan created from DISPATCH-2026-05-15-005. 6 phases, 22 tasks. Light plan. 64 target failures across 20+ test files."
+    }
+  ]
+}

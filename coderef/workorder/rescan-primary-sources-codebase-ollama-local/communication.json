@@ -1,0 +1,82 @@
+{
+  "workorder_id": "WO-RESCAN-PRIMARY-SOURCES-CODEBASE-OLLAMA-LOCAL-001",
+  "feature_name": "rescan-primary-sources-codebase-ollama-local",
+  "created": "2026-06-07T05:38:47Z",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "primary-sources",
+  "originating_dispatches": [
+    "DISPATCH-2026-06-07-CODEREF-CORE-001",
+    "DISPATCH-2026-06-07-CODEREF-CORE-002"
+  ],
+  "parent_stub_id": null,
+  "predecessor_for": null,
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rescan-primary-sources-codebase-ollama-local/plan.json",
+  "context_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rescan-primary-sources-codebase-ollama-local/context.json",
+  "analysis_file": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/rescan-primary-sources-codebase-ollama-local/analysis.json",
+  "handoff": {
+    "from": "PRIMARY-SOURCES (requester via PS-001) + ASSISTANT (GO via CODEREF-CORE-002)",
+    "to": "CODEREF-CORE",
+    "reason": "PS .coderef intelligence index stale since 2026-05-14; rebuild over current HEAD using local Ollama."
+  },
+  "execution_rules": {
+    "plan_type": "light",
+    "provider_policy": "LOCAL-ONLY (Ollama localhost:11434) — no cloud provider, ever",
+    "on_ollama_drop": "andon-pull to ASSISTANT (operator can restart Ollama)",
+    "on_path_ambiguity": "ask PRIMARY-SOURCES; do not guess the scan target path"
+  },
+  "hard_constraints": [
+    "No cloud LLM provider under any circumstance",
+    "Do not modify source files in primary-sources or coderef-core",
+    "Scan the PS source tree, NOT the ASSISTANT repo"
+  ],
+  "blockers": [],
+  "decisions_log": [
+    {
+      "event": "plan_type_classified",
+      "value": "light",
+      "reason": "operational index-refresh; no code blast radius",
+      "at": "2026-06-07T05:38:47Z"
+    },
+    {
+      "event": "scan_target_confirmed",
+      "value": "C:/Users/willh/Desktop/CODEREF/PROJECTS/primary-sources",
+      "head": "261b523d",
+      "branch": "wo/source-material-hsca-ia-stub-repoint",
+      "at": "2026-06-07T05:38:47Z"
+    },
+    {
+      "event": "prereqs_verified",
+      "ollama": "UP",
+      "models": [
+        "nomic-embed-text:latest",
+        "qwen2.5-coder:3b"
+      ],
+      "at": "2026-06-07T05:38:47Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "git_branch": "wo/rescan-primary-sources-codebase-ollama-local",
+  "communication_log": [
+    {
+      "at": "2026-06-07T05:38:47Z",
+      "actor": "CODEREF-CORE",
+      "event": "workorder_created",
+      "note": "Authored from accepted dispatch PS-001 under ASSISTANT GO CODEREF-CORE-002. Light plan, local-only rescan of primary-sources."
+    },
+    {
+      "at": "2026-06-07T07:30:45Z",
+      "actor": "CODEREF-CORE",
+      "event": "scan_executed_main",
+      "note": "Re-scanned PS main tip 216db19c per PRIMARY-SOURCES ruling (DISPATCH-CODEREF-CORE-007, option B). Prior spawn scanned feature branch d899893f; tree diff showed 15 files/801 insertions main had that the branch lacked (NOT patch-equivalent as PS assumed) — entity_index_materializer.py + tests, search_service.py, reviewer/search UI, 5 PS-RESEARCH roster docs. Scanned via non-disruptive git worktree of main (PS checkout untouched), output written to canonical PROJECTS/primary-sources/.coderef via -o. Headers OFF (default, per DISPATCH-006 correction); NO rag-index (header-less repo = 0% coverage, abandoned). Stats: 506 files, 3057 elements, graph 3615 nodes/33221 edges, 247 entry points, coverage 18% (84/472). drift.json regenerated correctly (totalCurrent 3057, the earlier stale-baseline 122/42 reading is cleared). FLAG: semantic-registry.json 209MB (~47x the prior 4.6MB) — valid structure, verbose projection, flagged for follow-up not a scan failure."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

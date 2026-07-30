@@ -1,0 +1,76 @@
+{
+  "$schema": "http://json-schema.org/draft-2020-12/schema#",
+  "workorder_id": "WO-CODEREF-SEMANTIC-INTEGRATION-001",
+  "feature_name": "coderef-semantic-integration-001",
+  "created": "2026-04-29T20:45:50Z",
+  "plan_type": "light",
+  "plan_type_rationale": "Single-phase integration testing with dry-run validation. No discovery needed.",
+  "plan_type_decided_by": "create-workorder@2.4.0",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Semantic CLI Integration & Dry-Run Testing",
+      "description": "Wire SemanticOrchestrator into populate CLI with dry-run mode for validation",
+      "status": "completed",
+      "completed_at": "2026-04-29T21:15:00Z",
+      "hard_stop": false,
+      "tasks": [
+        {
+          "id": "TASK-1.1",
+          "name": "Create semantic-integration wrapper",
+          "description": "Create src/cli/semantic-integration.ts with dry-run mode support",
+          "verb": "WRITE",
+          "status": "completed",
+          "completed_at": "2026-04-29T21:15:00Z",
+          "acceptance_criteria": [
+            "Module exports SemanticIntegration class",
+            "Dry-run flag prevents file writes",
+            "Headers generated in memory only",
+            "Output to stdout for validation"
+          ]
+        },
+        {
+          "id": "TASK-1.2",
+          "name": "Wire into populate CLI",
+          "description": "Integrate SemanticIntegration into src/cli/populate.ts --semantic flow",
+          "verb": "EDIT",
+          "status": "completed",
+          "completed_at": "2026-04-29T21:15:00Z",
+          "acceptance_criteria": [
+            "populate --semantic invokes SemanticOrchestrator",
+            "populate --semantic --dry-run prevents file writes",
+            "Headers output to stdout",
+            "No changes to existing populate logic"
+          ]
+        },
+        {
+          "id": "TASK-1.3",
+          "name": "Test dry-run on sample file",
+          "description": "Run populate --semantic --dry-run on single test file",
+          "verb": "TEST",
+          "status": "completed",
+          "completed_at": "2026-04-29T21:15:00Z",
+          "acceptance_criteria": [
+            "Headers generated successfully in memory",
+            "No files modified on disk",
+            "Output matches expected format",
+            "Idempotent: running twice yields identical output"
+          ]
+        },
+        {
+          "id": "TASK-1.4",
+          "name": "Validate and commit",
+          "description": "Final validation and git commit",
+          "verb": "COMMIT",
+          "status": "completed",
+          "completed_at": "2026-04-29T21:15:00Z",
+          "acceptance_criteria": [
+            "All acceptance criteria verified",
+            "Code committed with proper message",
+            "Tests pass"
+          ]
+        }
+      ]
+    }
+  ]
+}
