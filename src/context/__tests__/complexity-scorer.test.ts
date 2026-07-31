@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability complexity-scorer-tests
+ */
+
+/**
  * Tests for ComplexityScorer
  *
  * WO-EXTEND-THE-CLONE-SURFACE-P10 P2 contract:

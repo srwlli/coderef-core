@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability change-dossier-tests
+ */
+
+/**
  * change-dossier + run_command tests
  * (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P5, REC-004 + REC-007).
  *

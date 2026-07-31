@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability search-router-tests
+ */
+
+/**
  * search-router tests (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 Phase 9,
  * lexical-first-search-router, STUB-014M9C).
  *

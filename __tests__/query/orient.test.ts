@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability orient-tests
+ */
+
+/**
  * orient composite + vector-staleness tests
  * (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P4, REC-003 + REC-006).
  *

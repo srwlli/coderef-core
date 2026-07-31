@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability mcp-rag-tools
- * @exports buildRagTools
+ * @exports RagTools, buildRagTools
+ * @used_by src/cli/coderef-mcp-server.ts
  */
 
 /**

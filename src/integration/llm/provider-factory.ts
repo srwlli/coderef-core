@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer integration
  * @capability llm-provider-store-factory
- * @exports resolveRagProvider, createLLMProvider, createVectorStore, embeddingDimensionsForModel
- * @used_by src/cli/rag-index.ts, src/cli/rag-search.ts, src/cli/rag-eval.ts, src/cli/coderef-mcp-server.ts, src/cli/coderef-rag-server.ts
+ * @exports resolveRagProvider, CreateLLMProviderOptions, createLLMProvider, createVectorStore, embeddingDimensionsForModel
+ * @used_by src/cli/coderef-rag-server.ts, src/cli/mcp/rag-tools.ts, src/cli/rag-eval.ts, src/cli/rag-index.ts, src/cli/rag-search.ts, src/integration/vector/__tests__/json-store.test.ts, __tests__/rag-provider-default.test.ts
  */
 
 /**

@@ -2,7 +2,9 @@
  * @coderef-semantic: 1.0.0
  * @layer test_support
  * @capability rag-provider-default-regression
- *
+ */
+
+/**
  * WO-RAG-INDEX-DEFAULTS-TO-CLOUD-OPENAI-ON-LOCAL-001 (STUB-MN7E0G).
  *
  * Locks the operator-ruled provider-resolution contract: local Ollama is the

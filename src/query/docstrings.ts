@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability docstrings
- * @exports DocstringItem, DocstringSummary, DocstringSurface, DocstringInputs, computeDocstringSurface, DOCSTRING_SCHEMA_VERSION
- * @used_by src/cli/coderef-mcp-server.ts, src/cli/coderef-analyze.ts
+ * @exports DOCSTRING_SCHEMA_VERSION, DOCSTRING_CAPTURED_LANGUAGES, DocstringElement, DocstringItem, DocstringSummary, DocstringSurface, DocstringInputs, computeDocstringSurface
+ * @used_by src/cli/coderef-analyze.ts, src/cli/mcp/verify-tools.ts
  */
 
 /**

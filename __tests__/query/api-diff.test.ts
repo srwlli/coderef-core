@@ -1,3 +1,9 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability api-diff-tests
+ */
+
 import { describe, it, expect } from 'vitest';
 import {
   extractExportsManifest,

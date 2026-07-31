@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability shared-cli-flag-parsing
- * @constraint no process.exit inside parseFlags (pure); failUsage is the only exit point
+ * @constraint ["no-process-exit-in-parseflags", "failusage-only-exit-point"]
  * @exports FlagKind, FlagSpec, ParsedFlags, parseFlags, failUsage
  * @used_by src/cli/rag-search.ts, src/cli/rag-index.ts, src/cli/rag-eval.ts, src/cli/rag-status.ts
  * @generated 2026-07-02T00:00:00Z

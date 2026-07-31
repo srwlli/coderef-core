@@ -1,9 +1,9 @@
 /**
  * @coderef-semantic: 1.0.0
  * @layer integration
- * @capability ollama-provider-ollama-embed-response
- * @exports OllamaProvider, createOllamaProvider
- * @used_by src/cli/coderef-rag-server.ts, src/cli/rag-index.ts, src/cli/rag-search.ts
+ * @capability ollama-llm-provider
+ * @exports OLLAMA_EMBED_CONCURRENCY_DEFAULT, OLLAMA_EMBED_CONCURRENCY_MAX, resolveEmbedConcurrency, OllamaProvider, createOllamaProvider
+ * @used_by src/cli/coderef-rag-server.ts, src/integration/llm/provider-factory.ts, __tests__/integration/rag/embedding-concurrency.test.ts
  */
 
 /**

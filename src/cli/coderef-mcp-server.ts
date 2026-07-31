@@ -3,7 +3,8 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability coderef-mcp-server
- * @exports buildToolHandlers, handlersFor, errorPayload, ToolHandlers
+ * @exports SERVER_TOOL_COUNT, SERVER_INSTRUCTIONS, buildToolHandlers, handlersFor, errorPayload
+ * @used_by __tests__/map/mcp-map-parity.test.ts, __tests__/mcp-server-build-if-missing.test.ts, __tests__/mcp-server-repo-agnostic.test.ts, __tests__/mcp-server.test.ts
  */
 
 /**

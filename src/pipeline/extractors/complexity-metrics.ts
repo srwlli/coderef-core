@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability ast-complexity-metrics
- * @constraint single depth-tracking walk over the P1-resolved body node; zero extra I/O
+ * @constraint ["single-depth-tracking-walk", "p1-resolved-body-node", "zero-extra-io"]
  * @exports computeComplexityMetrics, captureComplexity, GrammarFamily, AstComplexity
  * @used_by src/pipeline/extractors/element-extractor.ts
  */

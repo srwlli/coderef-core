@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability mcp-context-tools
- * @exports buildContextTools
+ * @exports ContextTools, buildContextTools
+ * @used_by src/cli/coderef-mcp-server.ts
  */
 
 /**

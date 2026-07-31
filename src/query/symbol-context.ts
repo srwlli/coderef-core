@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability symbol-context-card
- * @exports SymbolHeader, SymbolReferences, SymbolTestLinkage, SymbolStaleness, SymbolContext, SymbolContextInputs, SymbolContextOptions, assembleSymbolContext
+ * @exports SymbolIdentity, SymbolHeader, SymbolRefSite, SymbolReferences, SymbolTestLinkage, SymbolStaleness, SymbolContext, SymbolContextInputs, SymbolContextOptions, assembleSymbolContext
+ * @used_by src/cli/mcp/lookup-tools.ts, __tests__/query/symbol-context.test.ts
  */
 
 /**

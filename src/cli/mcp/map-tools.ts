@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability mcp-map-tools
- * @exports buildMapTools
+ * @exports MapTools, MapToolSiblings, buildMapTools
+ * @used_by src/cli/coderef-mcp-server.ts
  */
 
 /**

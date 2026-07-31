@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability rename-applier
- * @exports FilePreview, ApplyResult, writeTextAtomic, applyRename
+ * @exports FilePreview, ApplyResult, escapeRegExp, writeTextAtomic, applyRename
+ * @used_by src/cli/coderef-rename.ts, src/refactor/__tests__/rename.test.ts
  */
 
 /**

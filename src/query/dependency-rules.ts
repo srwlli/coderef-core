@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability dependency-rules-gate
- * @exports RulePair, RulesSpec, LayerEdge, DependencyRuleResult, DependencyRulesReport, DEPENDENCY_RULES_SCHEMA_VERSION, parseRulesSpec, projectLayerEdges, checkDependencyRules
- * @used_by src/cli/coderef-analyze.ts, src/cli/coderef-mcp-server.ts
+ * @exports DEPENDENCY_RULES_SCHEMA_VERSION, RulePair, RulesSpec, LayerEdge, RuleStatus, DependencyRuleResult, DependencyRulesReport, DependencyRulesNode, DependencyRulesEdge, ProjectLayerEdgesOptions, parseRulesSpec, projectLayerEdges, checkDependencyRules
+ * @used_by src/cli/coderef-analyze.ts, src/cli/mcp/verify-tools.ts, __tests__/query/dependency-rules-dogfood.test.ts, __tests__/query/dependency-rules.test.ts
  */
 
 /**

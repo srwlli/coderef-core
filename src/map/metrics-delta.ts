@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability map-metrics-delta
- * @exports ScalarDelta, SummaryDeltas, RankingChange, MetricsFamilyDelta, MapMetricsDelta, diffMapMetrics
- * @used_by src/cli/coderef-mcp-server.ts
+ * @exports ScalarDelta, SummaryDeltas, RankingChange, FamilyDirection, MetricsFamilyDelta, MapMetricsDelta, diffMapMetrics
+ * @used_by src/cli/mcp/map-tools.ts, __tests__/map/metrics-delta.test.ts
  */
 
 /**

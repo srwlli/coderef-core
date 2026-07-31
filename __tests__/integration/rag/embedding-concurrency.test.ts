@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability embedding-concurrency-tests
+ */
+
+/**
  * OllamaProvider.embed() bounded-concurrency worker-pool tests
  * (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P5).
  *

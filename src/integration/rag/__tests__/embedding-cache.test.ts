@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability embedding-cache-tests
+ */
+
+/**
  * EmbeddingCache — content-addressed chunk-grain embedding cache tests
  * (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P5).
  *

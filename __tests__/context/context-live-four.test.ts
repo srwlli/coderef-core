@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability context-live-four-tests
+ */
+
+/**
  * Context cluster — behavior tests for the LIVE-CONSUMED untested four
  * (WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 Phase 4, cluster C):
  *

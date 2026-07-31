@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability api-surface-diff
- * @exports ExportSignature, ExportsManifest, ApiChange, ApiChangeType, ApiDiff, extractExportsManifest, diffApiSurface, API_MANIFEST_SCHEMA_VERSION
- * @used_by src/cli/coderef-mcp-server.ts, src/cli/coderef-analyze.ts
+ * @exports API_MANIFEST_SCHEMA_VERSION, ManifestElement, ExportSignature, ExportsManifest, ApiChangeType, ApiChange, ApiDiff, extractExportsManifest, diffApiSurface
+ * @used_by src/cli/coderef-analyze.ts, src/cli/mcp/verify-tools.ts, __tests__/query/api-diff.test.ts
  */
 
 /**

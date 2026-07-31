@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability framework-detectors-tests
+ */
+
+/**
  * Framework detector suite — table-driven behavior tests for all 7 registered
  * detectors plus barrel/registry integrity.
  *

@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability map-skeleton-render
- * @exports SkeletonElement, SkeletonMapOptions, SkeletonMapResult, renderSkeletonMap, emitSkeleton
- * @used_by src/cli/coderef-map.ts, src/cli/coderef-mcp-server.ts
+ * @exports SkeletonElement, SkeletonMapOptions, SkeletonMapResult, renderSkeletonMap, EmitSkeletonResult, emitSkeleton
+ * @used_by src/cli/coderef-map.ts, src/cli/coderef-query.ts, src/cli/mcp/map-tools.ts, __tests__/map/skeleton-map.test.ts
  */
 
 /**

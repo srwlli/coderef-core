@@ -2,9 +2,9 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability ast-structural-search
- * @constraint one tree-sitter parse per file; content is caller-supplied (no disk re-read); grammar load is the single impure edge (mirrors scanner/tree-sitter-file-scan.ts)
- * @exports searchAst, AstSearchMatch, AstSearchResult, AstSearchOptions, AstSearchElement
- * @imports pipeline/grammar-registry:GrammarRegistry, pipeline/types:EXTENSION_TO_LANGUAGE
+ * @constraint ["one-parse-per-file", "caller-supplied-content-no-disk-reread", "grammar-load-single-impure-edge"]
+ * @exports searchAst, computeNotSearchedCounts, AstSearchMatch, AstSearchFile, AstSearchResult, AstSearchOptions, AstSearchElement, NotSearchedCounts, AST_SEARCH_DEFAULT_LIMIT, AST_SEARCH_LANG_EXTENSIONS
+ * @imports ["../pipeline/grammar-registry.js:GrammarRegistry", "../pipeline/types.js:EXTENSION_TO_LANGUAGE"]
  * @used_by src/cli/coderef-mcp-server.ts, src/cli/coderef-analyze.ts
  */
 

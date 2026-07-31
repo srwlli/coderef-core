@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability mcp-lookup-tools
- * @exports buildLookupTools
+ * @exports LookupTools, buildLookupTools
+ * @used_by src/cli/coderef-mcp-server.ts
  */
 
 /**

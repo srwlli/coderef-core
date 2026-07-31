@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability clone-substrate-capture
- * @constraint zero extra I/O; computed from the defining node already in the extractor's hand
+ * @constraint ["zero-extra-io", "defining-node-in-hand"]
  * @exports captureCloneSubstrate, resolveBodyNode, CLONE_FINGERPRINT_KINDS, CloneSubstrate
  * @used_by src/pipeline/extractors/element-extractor.ts, src/pipeline/extractors/complexity-metrics.ts
  */

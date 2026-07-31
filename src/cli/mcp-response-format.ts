@@ -1,3 +1,11 @@
+/**
+ * @coderef-semantic: 1.0.0
+ * @layer cli
+ * @capability mcp-response-format
+ * @exports DEFAULT_LIMIT, MAX_LIMIT, clampLimit, clampOffset, Page, paginate, ResponseFormat, ConciseIdentity, resolveResponseFormat, isConcise, conciseItem, projectConcise, shapeResponse
+ * @used_by src/cli/mcp/graph-tools.ts, src/cli/mcp/lookup-tools.ts, src/cli/mcp/map-tools.ts, src/cli/mcp/rag-tools.ts, src/cli/mcp/shared.ts, src/cli/mcp/verify-tools.ts
+ */
+
 // mcp-response-format.ts — the PURE, reusable response-shaping module for the
 // coderef-core MCP server (Phase 6, STUB-8H3YV0).
 //

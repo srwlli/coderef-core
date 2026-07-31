@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability map-git-history-extraction
- * @exports GitFileChurn, GitCoChangePair, GitHistoryWindow, GitHistory, GitHistoryResult, ExtractGitHistoryOptions, extractGitHistory, parseGitLogNumstat
- * @used_by src/map/emit-map.ts
+ * @exports GitFileChurn, GitCoChangePair, GitFileAuthorCount, GitFileAuthorship, GitHistoryWindow, GitHistory, GitHistoryResult, ExtractGitHistoryOptions, GIT_DEGRADE_NOT_A_REPO, GIT_DEGRADE_GIT_ABSENT, GIT_DEGRADE_EMPTY_HISTORY, GIT_DEGRADE_EXTRACTION_FAILED, parseGitLogNumstat, extractGitHistory
+ * @used_by src/map/emit-map.ts, src/map/git-behavioral.ts, src/map/ownership.ts, src/map/project-map-data.ts, __tests__/map/git-behavioral.test.ts, __tests__/map/git-history.test.ts, __tests__/map/ownership.test.ts
  */
 
 /**

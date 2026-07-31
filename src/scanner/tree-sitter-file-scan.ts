@@ -2,9 +2,9 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability single-parse-tree-sitter-file-scan
- * @constraint one tree-sitter parse per file; content is caller-supplied (no disk re-read)
+ * @constraint ["one-parse-per-file", "caller-supplied-content-no-disk-reread"]
  * @exports scanFileWithTreeSitter
- * @imports pipeline/grammar-registry:GrammarRegistry, pipeline/extractors/element-extractor:ElementExtractor, pipeline/extractors/relationship-extractor:RelationshipExtractor, analyzer/js-call-detector:JSCallDetector
+ * @imports ["../pipeline/grammar-registry.js:GrammarRegistry", "../pipeline/extractors/element-extractor.js:ElementExtractor", "../pipeline/extractors/relationship-extractor.js:RelationshipExtractor", "../analyzer/js-call-detector.js:JSCallDetector"]
  * @used_by src/scanner/scanner.ts, src/scanner/scanner-worker.ts
  * @generated 2026-07-02T00:00:00Z
  */

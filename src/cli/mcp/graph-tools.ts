@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability mcp-graph-tools
- * @exports buildGraphTools
+ * @exports GraphTools, buildGraphTools
+ * @used_by src/cli/coderef-mcp-server.ts
  */
 
 /**

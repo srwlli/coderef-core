@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability mcp-verify-tools
- * @exports buildVerifyTools
+ * @exports VerifyTools, buildVerifyTools
+ * @used_by src/cli/coderef-mcp-server.ts
  */
 
 /**

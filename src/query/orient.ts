@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability orient-composite
- * @exports OrientInputs, OrientEnvelope, OrientHotspot, ORIENT_DEFAULT_TOKEN_BUDGET, skeletonBudgetFor, rankHotspotsFromGraph, condenseSummary, condenseValidation, composeOrient
+ * @exports OrientGraphEdge, OrientGraphNode, OrientHotspot, OrientSkeletonBlock, OrientInputs, OrientEnvelope, ORIENT_DEFAULT_TOKEN_BUDGET, ORIENT_STRUCTURED_RESERVE, skeletonBudgetFor, rankHotspotsFromGraph, condenseSummary, condenseValidation, composeOrient
+ * @used_by src/cli/coderef-query.ts, src/cli/mcp/map-tools.ts, __tests__/query/orient.test.ts
  */
 
 /**

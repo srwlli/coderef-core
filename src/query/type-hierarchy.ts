@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability type-hierarchy
- * @exports TypeHierarchyNode, TypeHierarchy, TypeHierarchyInputs, TypeHierarchyDirection, computeTypeHierarchy, LspPosition, LspRange, LspTypeHierarchyItem, LspProjectionInputs, LspHierarchyProjection, LSP_SYMBOL_KIND, LSP_SYMBOL_KIND_FALLBACK, LSP_PROJECTION_NOTE, toLspItem, toLspTypeHierarchyItems
- * @used_by src/cli/coderef-mcp-server.ts, src/cli/coderef-analyze.ts
+ * @exports TypeHierarchyDirection, TYPE_HIERARCHY_DEFAULT_DEPTH, TypeHierarchyNode, TypeHierarchy, TypeHierarchyInputs, computeTypeHierarchy, LspPosition, LspRange, LspTypeHierarchyItem, LSP_SYMBOL_KIND, LSP_SYMBOL_KIND_FALLBACK, LspProjectionInputs, LspHierarchyProjection, toLspItem, toLspTypeHierarchyItems
+ * @used_by src/cli/coderef-analyze.ts, src/cli/mcp/lookup-tools.ts, __tests__/query/type-hierarchy.test.ts
  */
 
 /**

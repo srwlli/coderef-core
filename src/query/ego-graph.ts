@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability ego-graph-retrieval
- * @exports EgoGraphDirection, EgoGraphNeighbor, EgoGraph, EgoGraphOptions, EGO_GRAPH_DIRECTIONS, egoGraphOf
+ * @exports EgoGraphDirection, EGO_GRAPH_DIRECTIONS, EgoGraphNeighbor, EgoGraphDirectionResult, EgoGraph, EgoGraphOptions, egoGraphOf
+ * @used_by src/cli/mcp/rag-tools.ts, src/context/context-packer.ts, src/query/symbol-context.ts, __tests__/query/ego-graph.test.ts
  */
 
 /**

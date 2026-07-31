@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability staleness-manifest
- * @exports StalenessManifestEntry, StalenessManifest, ManifestDiff, STALENESS_MANIFEST_VERSION, buildManifest, diffManifest
+ * @exports STALENESS_MANIFEST_VERSION, StalenessManifestEntry, StalenessManifest, ManifestDiff, ManifestSourceFile, buildManifest, diffManifest
+ * @used_by src/pipeline/generators/graph-generator.ts, src/query/staleness-check.ts, __tests__/mcp-server.test.ts, __tests__/pipeline/staleness-manifest.test.ts, __tests__/query/staleness-check.test.ts
  */
 
 /**

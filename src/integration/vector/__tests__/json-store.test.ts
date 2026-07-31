@@ -2,9 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer integration
  * @capability json-vector-store-atomic-write-and-alias-tests
- * @constraint no network, no external services; filesystem in temp dir only
- * @exports none
- * @imports vector/json-store:JsonVectorStore, llm/provider-factory:createVectorStore
+ * @constraint ["no-network", "no-external-services", "temp-dir-filesystem-only"]
+ * @imports ["../json-store.js:JsonVectorStore", "../../llm/provider-factory.js:createVectorStore"]
  * @generated 2026-07-02T00:00:00Z
  */
 

@@ -1,4 +1,10 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer test_support
+ * @capability subprocess-linkage-tests
+ */
+
+/**
  * Subprocess-aware test linkage v1 (WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001
  * Phase 4) — unit tests for the PURE core (dist->src mapping, slash handling,
  * marker gate, aggregation, determinism), the IMPURE extractor's degradation

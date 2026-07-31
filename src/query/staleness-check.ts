@@ -2,7 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability staleness-check
- * @exports StalenessResult, checkStaleness, VectorStaleness, compareVectorStamps, readVectorStaleness
+ * @exports StalenessResult, CheckStalenessOptions, checkStaleness, VectorStaleness, compareVectorStamps, readVectorStaleness
+ * @used_by src/cli/coderef-query.ts, src/cli/mcp/map-tools.ts, src/cli/mcp/rag-tools.ts, src/cli/mcp/shared.ts, __tests__/query/orient.test.ts, __tests__/query/staleness-check.test.ts
  */
 
 /**

@@ -1,4 +1,12 @@
 /**
+ * @coderef-semantic: 1.0.0
+ * @layer service
+ * @capability language-files-skip-dirs
+ * @exports listLanguageFilesOnDisk
+ * @used_by src/cli/coderef-analyze.ts, src/cli/mcp/verify-tools.ts
+ */
+
+/**
  * @fileoverview Bounded on-disk language-file enumeration for ast_search's
  * not-searched visibility (REC-002, WO-...-GENRE-FEATURES-PROGRAM-001 P3
  * remediation).

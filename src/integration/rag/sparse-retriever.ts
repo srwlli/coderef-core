@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer integration
  * @capability sparse-bm25-retriever
- * @exports SparseDoc, SparseHit, BM25Params, tokenizeLexical, SparseRetriever, reciprocalRankFusion
- * @used_by src/integration/rag/semantic-search.ts
+ * @exports SparseDoc, SparseHit, BM25Params, tokenizeLexical, lexicalSurface, SparseRetriever, RankedList, reciprocalRankFusion
+ * @used_by src/integration/rag/search-router.ts, src/integration/rag/semantic-search.ts, __tests__/integration/rag/hybrid-fusion.test.ts
  */
 
 /**
