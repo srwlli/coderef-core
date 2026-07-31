@@ -77,6 +77,41 @@
       + nf(shown) + of + '</span>';
   }
 
+  /**
+   * A slice the RENDERER imposes is a truncation too. The bundle may carry 25
+   * ranked rows while a panel draws 8 — undisclosed, that reads as "these are
+   * all of them". Fires only when the slice actually drops rows.
+   */
+  function sliceBadge(shown, total) {
+    return truncBadge(typeof total === 'number' && total > shown, shown, total);
+  }
+
+  /**
+   * Disclosures are collected from EVERY block that emits them, not just meta.
+   * meta/analytics/metrics/drift each carry an independent warnings[], and a
+   * cap disclosed by one block but dropped on the floor is the same defect as
+   * no disclosure at all — the panel would read as complete while the bundle
+   * says it is not. Entries are LABELLED by origin rather than deduped: two
+   * blocks independently reporting a cap is real signal, and collapsing them
+   * under-reports. Every array is Array.isArray-guarded — an older or partial
+   * bundle omitting one block contributes zero entries, never a crash.
+   */
+  function collectWarnings(d) {
+    var out = [];
+    [
+      ['meta', d.meta],
+      ['analytics', d.analytics],
+      ['metrics', d.metrics],
+      ['drift', d.drift],
+    ].forEach(function (pair) {
+      var block = pair[1];
+      var list = block && block.warnings;
+      if (!Array.isArray(list)) return;
+      list.forEach(function (text) { out.push({ origin: pair[0], text: text }); });
+    });
+    return out;
+  }
+
   function rankRows(rows, cols) {
     return rows.map(function (r) {
       return '<tr>' + cols.map(function (c) {
@@ -145,9 +180,16 @@
         sub: tl.srcWithoutTestEdgeCount != null ? nf(tl.srcWithoutTestEdgeCount) + ' without edge' : null,
       },
       {
+        // communityCount is the TOTAL; communities[] is the capped emission.
+        // Showing "135" over "50 emitted" with no badge read as complete —
+        // analytics.warnings says "communities truncated to 50 of 135" and that
+        // disclosure was being dropped on the floor (see collectWarnings).
         label: 'communities',
         value: analytics.communityCount != null ? analytics.communityCount : null,
         sub: analytics.communities ? nf(analytics.communities.length) + ' emitted' : null,
+        badge: analytics.communities
+          ? sliceBadge(analytics.communities.length, analytics.communityCount)
+          : '',
       },
       {
         label: 'drift outliers',
@@ -163,6 +205,7 @@
         + '<div class="stat__label">' + esc(c.label) + '</div>'
         + '<div class="stat__value">' + (c.value === null || c.value === undefined ? NO_DATA : esc(String(c.value))) + '</div>'
         + '<div class="stat__sub">' + (c.sub === null || c.sub === undefined ? '&mdash;' : c.sub) + '</div>'
+        + (c.badge ? '<div class="stat__badge">' + c.badge + '</div>' : '')
         + '</div>';
     }).join('');
 
@@ -183,7 +226,8 @@
     out.push('<div class="grid">'
       + panel('Centrality',
           '<span class="panel__count">' + (analytics.centrality && analytics.centrality.betweennessApproximated
-            ? 'betweenness approximated' : 'betweenness exact') + '</span>',
+            ? 'betweenness approximated' : 'betweenness exact') + '</span>'
+          + sliceBadge(Math.min(8, centrality.length), centrality.length),
           table('<th>file</th><th class="num">deg</th><th class="num">in</th><th class="num">out</th><th class="num">btw</th>',
             rankRows(centrality.slice(0, 8), [
               pathCol,
@@ -193,7 +237,8 @@
               { get: function (r) { return typeof r.betweenness === 'number' ? r.betweenness.toFixed(1) : NO_DATA; }, cls: 'num' },
             ])))
       + panel('Coupling',
-          '<span class="panel__count">I = efferent / (efferent + afferent)</span>',
+          '<span class="panel__count">I = efferent / (efferent + afferent)</span>'
+          + sliceBadge(Math.min(8, coupling.length), coupling.length),
           table('<th>file</th><th class="num">aff</th><th class="num">eff</th><th class="num">I</th>',
             rankRows(coupling.slice(0, 8), [
               pathCol,
@@ -241,14 +286,16 @@
 
     out.push('<div class="grid">'
       + panel('Largest modules',
-          truncBadge(metrics.largestModules && metrics.largestModules.topTruncated, largest.length, null),
+          truncBadge(metrics.largestModules && metrics.largestModules.topTruncated, largest.length, null)
+          + sliceBadge(Math.min(8, largest.length), largest.length),
           table('<th>file</th><th class="num">elements</th>',
             rankRows(largest.slice(0, 8), [
               pathCol,
               { get: function (r) { return nf(r.elementCount); }, cls: 'num' },
             ])))
       + panel('Most dependencies',
-          truncBadge(metrics.mostDependencies && metrics.mostDependencies.topTruncated, mostDeps.length, null),
+          truncBadge(metrics.mostDependencies && metrics.mostDependencies.topTruncated, mostDeps.length, null)
+          + sliceBadge(Math.min(8, mostDeps.length), mostDeps.length),
           table('<th>file</th><th class="num">eff</th><th class="num">aff</th>',
             rankRows(mostDeps.slice(0, 8), [
               pathCol,
@@ -266,11 +313,14 @@
       + '</div>',
       dc.note));
 
+    var outliers = drift.outliers || [];
     out.push(panel('Layer drift',
       '<span class="panel__count">' + stat(drift.coverage && drift.coverage.declaredFileCount) + ' declared &middot; '
-        + stat(drift.coverage && drift.coverage.undeclaredFileCount) + ' undeclared</span>',
+        + stat(drift.coverage && drift.coverage.undeclaredFileCount) + ' undeclared</span>'
+        + truncBadge(drift.outliersTruncated, outliers.length, null)
+        + sliceBadge(Math.min(10, outliers.length), outliers.length),
       table('<th>file</th><th>declared</th><th>detected (dominant)</th>',
-        rankRows((drift.outliers || []).slice(0, 10), [
+        rankRows(outliers.slice(0, 10), [
           pathCol,
           { get: function (r) { return '<span class="tri tri--absent">' + esc(r.layer || '—') + '</span>'; } },
           { get: function (r) {
@@ -281,11 +331,15 @@
       drift.note));
 
     // Disclosures stay visible: truncation must never read as completeness.
-    var warnings = Array.isArray(meta.warnings) ? meta.warnings : [];
+    // All four emitting blocks are collected, each entry tagged with its origin.
+    var warnings = collectWarnings(d);
     if (warnings.length) {
       out.push('<section class="disclose"><div class="disclose__title">&#9888; disclosures ('
         + warnings.length + ')</div><ul>'
-        + warnings.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('')
+        + warnings.map(function (x) {
+            return '<li><span class="disclose__origin">' + esc(x.origin) + '</span>'
+              + esc(x.text) + '</li>';
+          }).join('')
         + '</ul></section>');
     }
 

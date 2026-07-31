@@ -94,6 +94,121 @@ describe('map-dashboard static asset', () => {
   });
 });
 
+/**
+ * Renders dashboard.js against a payload and returns the HTML each mount point
+ * received. There is no DOM environment in this suite (no jsdom/happy-dom, and
+ * adding one for a 300-line static asset is not worth the dependency), so the
+ * script runs under `vm` against a stub exposing only what it touches:
+ * getElementById, textContent/innerHTML, document.title, and an absent `fetch`
+ * so the static path is taken.
+ *
+ * This is what makes the assertions below CONTRACT tests rather than substring
+ * greps over the source — they read what the renderer actually produced.
+ */
+function renderDashboard(data: unknown, validation: unknown = null): Record<string, string> {
+  const sinks: Record<string, string> = {};
+  const el = (id: string) => ({
+    set innerHTML(v: string) { sinks[id] = (sinks[id] ?? '') + v; },
+    get innerHTML() { return sinks[id] ?? ''; },
+    set textContent(v: string) { sinks[id] = v; },
+    get textContent() { return sinks[id] ?? ''; },
+    set hidden(v: boolean) { sinks[id + ':hidden'] = String(v); },
+  });
+  const cache: Record<string, ReturnType<typeof el>> = {};
+  const sandbox = {
+    window: { __CODEREF_MAP_DATA__: data, __CODEREF_VALIDATION__: validation },
+    document: {
+      title: '',
+      getElementById: (id: string) => (cache[id] ??= el(id)),
+    },
+    location: { protocol: 'file:' },
+  };
+  vm.createContext(sandbox);
+  new vm.Script(js, { filename: 'dashboard.js' }).runInContext(sandbox);
+  return sinks;
+}
+
+/** Everything the renderer emitted, concatenated — for whole-output assertions. */
+const allOutput = (sinks: Record<string, string>) => Object.values(sinks).join('\n');
+
+describe('dashboard disclosure contract (WO-RENDER-THE-UNRENDERED-MAPDATA-BLOCKS P1)', () => {
+  it('surfaces warnings from ALL FOUR emitting blocks, not just meta', () => {
+    const out = allOutput(renderDashboard({
+      meta: { warnings: ['meta-cap-alpha'], source: {} },
+      analytics: { warnings: ['analytics-cap-bravo'] },
+      metrics: { warnings: ['metrics-cap-charlie'] },
+      drift: { warnings: ['drift-cap-delta'] },
+      overlays: {},
+    }));
+    // The defect this replaces: only meta.warnings reached the panel, so a cap
+    // disclosed by analytics/metrics/drift was dropped on the floor.
+    expect(out).toContain('meta-cap-alpha');
+    expect(out).toContain('analytics-cap-bravo');
+    expect(out).toContain('metrics-cap-charlie');
+    expect(out).toContain('drift-cap-delta');
+    expect(out).toContain('disclosures (4)');
+  });
+
+  it('labels each disclosure with its origin block', () => {
+    const out = allOutput(renderDashboard({
+      meta: { warnings: ['w'], source: {} },
+      analytics: { warnings: ['w'] },
+      metrics: {}, drift: {}, overlays: {},
+    }));
+    expect(out).toContain('disclose__origin');
+    // Same text from two blocks is NOT deduped — independent disclosure of the
+    // same cap is real signal, and collapsing it under-reports.
+    expect(out).toContain('disclosures (2)');
+  });
+
+  it('renders remaining blocks when a warnings array is absent entirely', () => {
+    // An older or partial bundle omitting a block contributes zero entries.
+    const out = allOutput(renderDashboard({
+      meta: { warnings: ['only-one'], source: {} },
+      overlays: {},
+    }));
+    expect(out).toContain('only-one');
+    expect(out).toContain('disclosures (1)');
+  });
+
+  it('omits the disclosure panel when no block emits a warning', () => {
+    const out = allOutput(renderDashboard({ meta: { source: {} }, overlays: {} }));
+    expect(out).not.toContain('disclosures (');
+  });
+
+  it('BADGES a capped community emission so the total never reads as complete', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} },
+      analytics: { communityCount: 135, communities: new Array(50).fill({}) },
+      overlays: {},
+    }));
+    // 135 over "50 emitted" with no badge was the live defect.
+    expect(out).toContain('showing 50 of 135');
+  });
+
+  it('does NOT badge an uncapped emission', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} },
+      analytics: { communityCount: 12, communities: new Array(12).fill({}) },
+      overlays: {},
+    }));
+    expect(out).not.toContain('showing 12 of 12');
+  });
+
+  it('badges a renderer-imposed slice, not only bundle-level truncation', () => {
+    // The panel draws 8 rows; a 25-row bundle is truncated BY THE RENDERER.
+    const rows = Array.from({ length: 25 }, (_, i) => ({
+      file: `src/f${i}.ts`, degree: i, inDegree: i, outDegree: 0, betweenness: i,
+    }));
+    const out = allOutput(renderDashboard({
+      meta: { source: {} },
+      analytics: { centrality: { top: rows } },
+      overlays: {},
+    }));
+    expect(out).toContain('showing 8 of 25');
+  });
+});
+
 describe('emitViewer dashboard emission', () => {
   it('emits dashboard.html plus its sibling assets alongside the graph', () => {
     const { dir } = emitTo(null);

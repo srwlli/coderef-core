@@ -50,6 +50,8 @@ a.chip:focus-visible { box-shadow:0 0 0 3px color-mix(in srgb, var(--accent-ci) 
 .stat__value { font-family:var(--mono); font-size:1.6rem; font-weight:600;
                font-variant-numeric:tabular-nums; margin:.15rem 0; }
 .stat__sub { font-family:var(--mono); font-size:.72rem; color:var(--dim); }
+/* A capped stat carries its badge inline so the number is never read as a total. */
+.stat__badge { margin-top:.35rem; }
 .rates { font-family:var(--mono); font-size:.76rem; color:var(--dim); margin-bottom:2rem; }
 
 .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:1.25rem; }
@@ -98,6 +100,10 @@ td.path, span.path { font-family:var(--mono); font-size:.76rem; word-break:break
                    letter-spacing:.08em; color:var(--absent); margin-bottom:.5rem; }
 .disclose ul { margin:0; padding-left:1.1rem; }
 .disclose li { font-family:var(--mono); font-size:.75rem; color:var(--dim); margin:.25rem 0; line-height:1.45; }
+/* Origin tag: which block emitted this disclosure. Two blocks reporting the same
+   cap is real signal, so entries are labelled rather than deduped. */
+.disclose__origin { display:inline-block; min-width:5.2rem; color:var(--accent-ci);
+                    font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; }
 
 .legend { display:flex; flex-wrap:wrap; gap:1.25rem; margin-top:1.5rem; padding-top:1rem;
           border-top:1px solid var(--line); font-family:var(--mono); font-size:.72rem; color:var(--dim); }
