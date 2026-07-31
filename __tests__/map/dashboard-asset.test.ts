@@ -29,6 +29,9 @@ import {
   MAP_DATA_PLACEHOLDER,
   VALIDATION_PLACEHOLDER,
 } from '../../src/map/emit-map.js';
+// ONE fixture, shared with the projection suite — and kept in lockstep with the
+// real pipeline output by an assertion in api-surface.test.ts.
+import { apiSurfaceFixture } from '../fixtures/api-surface-repo/index.js';
 
 const ASSET_DIR = path.resolve(__dirname, '..', '..', 'assets', 'map-viewer');
 
@@ -661,6 +664,138 @@ describe('shared token standard: tokens.css is the single source of truth', () =
 
   it('adds no external reference — the bundle stays offline-only', () => {
     expect(tokensCss).not.toMatch(/https?:|\/\/[a-z]|@import|url\(/i);
+  });
+});
+
+/**
+ * WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001 P1-T8/T9/T10.
+ *
+ * The api block reached the bundle at MapData 1.7.0 and BOTH consumers walked
+ * past it: dashboard.js contained zero references to `api`. These assertions
+ * are written against the RENDERED output, and they are driven by the shared
+ * fixture (__tests__/fixtures/api-surface-repo) rather than the host repo —
+ * coderef-core serves zero endpoints, so a host-repo assertion would be
+ * expect(0).toBe(0) and could not tell a dead wiring from a correct empty one.
+ */
+describe('API surface panel — the tri-state, which is the whole point', () => {
+  it('ABSENT api block renders UNKNOWN, never "no API" and never clean', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} }, nodes: [], edges: [],
+      analytics: {}, metrics: {}, drift: {}, overlays: {},
+    }));
+    expect(out).toContain('API surface');
+    expect(out).toContain('unknown');
+    expect(out).toContain('has not run');
+    // The distinguishing claim: absent is NOT a measured zero.
+    expect(out).toContain('does NOT mean');
+    expect(out).toContain('tri--nodata');
+  });
+
+  it('PRESENT-but-zero renders a MEASURED zero, distinguishable from absent', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} }, nodes: [], edges: [],
+      analytics: {}, metrics: {}, drift: {}, overlays: {},
+      api: {
+        endpoints: [], unmatchedCalls: [], networkEdges: [],
+        summary: {
+          endpointCount: 0, orphanedCount: 0, resolvedCallCount: 0,
+          unmatchedCallCount: 0, byFramework: {}, byReason: {},
+        },
+        warnings: [],
+      },
+    }));
+    expect(out).toContain('No endpoints served');
+    expect(out).toContain('measured');
+    // ...and it must NOT claim the producer never ran. That is the other state.
+    expect(out).not.toContain('has not run');
+  });
+
+  it('POPULATED renders endpoint rows from the shared fixture', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} }, nodes: [], edges: [],
+      analytics: {}, metrics: {}, drift: {}, overlays: {},
+      api: apiSurfaceFixture(),
+    }));
+    expect(out).toContain('/api/users/{}');
+    expect(out).toContain('/api/reports');
+    expect(out).toContain('express');
+    expect(out).toContain('flask');
+    expect(out).toContain('server/users.ts');
+    expect(out).toContain('src/client.ts');
+  });
+
+  it('the three states produce THREE distinguishable renderings', () => {
+    const base = {
+      meta: { source: {} }, nodes: [], edges: [],
+      analytics: {}, metrics: {}, drift: {}, overlays: {},
+    };
+    const absent = allOutput(renderDashboard({ ...base }));
+    const zero = allOutput(renderDashboard({
+      ...base,
+      api: {
+        endpoints: [], unmatchedCalls: [], networkEdges: [],
+        summary: {
+          endpointCount: 0, orphanedCount: 0, resolvedCallCount: 0,
+          unmatchedCallCount: 0, byFramework: {}, byReason: {},
+        },
+        warnings: [],
+      },
+    }));
+    const populated = allOutput(renderDashboard({ ...base, api: apiSurfaceFixture() }));
+    // Pairwise distinct. A tri-state that collapses to two is the defect.
+    expect(absent).not.toEqual(zero);
+    expect(zero).not.toEqual(populated);
+    expect(absent).not.toEqual(populated);
+  });
+
+  it('orphaned is a NEUTRAL surface, never warning or error styling', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} }, nodes: [], edges: [],
+      analytics: {}, metrics: {}, drift: {}, overlays: {},
+      api: apiSurfaceFixture(),
+    }));
+    // "No caller in this repo" is the CORRECT state for a public API, a mobile
+    // client, or a server-to-server caller. Styling it as a problem would ship
+    // a false verdict into every repo with an externally-consumed API.
+    expect(out).toContain('none in this repo');
+    expect(out).toContain('tri--absent');
+    const panelStart = out.indexOf('API surface');
+    const orphanIdx = out.indexOf('none in this repo');
+    const between = out.slice(panelStart, orphanIdx + 200);
+    expect(between).not.toMatch(/tri--warn|tri--error|class="[^"]*\b(warn|error|danger|bad)\b/);
+    // And the caveat is stated in prose, not left to the reader to infer.
+    expect(out).toContain('is not dead code');
+  });
+
+  it('every unmatched reason is spelled out in prose, not left as an enum', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} }, nodes: [], edges: [],
+      analytics: {}, metrics: {}, drift: {}, overlays: {},
+      api: apiSurfaceFixture(),
+    }));
+    expect(out).toContain('endpoint_not_in_project');
+    expect(out).toContain('404-shaped');
+    expect(out).toContain('absolute_url_external_origin');
+    expect(out).toContain('external host');
+  });
+
+  it('api warnings reach the disclosure block (a dropped cap == no disclosure)', () => {
+    const withCap = apiSurfaceFixture();
+    withCap.warnings = ['api-surface: unmatchedCalls truncated to 1 of 2'];
+    const out = allOutput(renderDashboard({
+      meta: { source: {} }, nodes: [], edges: [],
+      analytics: {}, metrics: {}, drift: {}, overlays: {},
+      api: withCap,
+    }));
+    expect(out).toContain('unmatchedCalls truncated');
+    expect(out).toContain('disclosures');
+  });
+
+  it('a pre-1.7.0 payload with NO api key does not throw on the dashboard', () => {
+    expect(() => renderDashboard({
+      meta: { schemaVersion: '1.6.0', source: {} }, nodes: [], edges: [],
+      analytics: {}, metrics: {}, drift: {}, overlays: { hotspots: [], cycles: [] },
+    })).not.toThrow();
   });
 });
 

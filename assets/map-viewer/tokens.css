@@ -100,6 +100,7 @@
   --data-drift-ring: #ffb300;   /* layer-drift ring           */
   --data-metric-lo:  #1e88e5;   /* metrics-gradient low stop  */
   --data-metric-hi:  #ffca28;   /* metrics-gradient high stop */
+  --data-api-edge:   #26a69a;   /* cross-process HTTP hop     */
 }
 
 /* Manual theme override. light-dark() resolves against `color-scheme`, so the

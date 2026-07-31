@@ -30,93 +30,24 @@ import * as path from 'path';
 import { buildToolHandlers } from '../../src/cli/coderef-mcp-server.js';
 import { projectMapData } from '../../src/map/project-map-data.js';
 import { computeApiSurface } from '../../src/map/api-surface.js';
+// ONE fixture definition, shared with the asset suites that render this block
+// (WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001 P1-T2 / ADJ-01). It lived
+// here first; it moved so the viewer and dashboard tests assert against the
+// same repo these projection tests do, rather than a second copy that can drift.
+import {
+  CLIENT,
+  HANDLER,
+  ORPHAN_HANDLER,
+  EP_USERS,
+  EP_ORPHAN,
+  graphFixture,
+  writeFixtureRepo,
+  apiSurfaceFixture,
+} from '../fixtures/api-surface-repo/index.js';
 
-const CLIENT = '@File/src/client.ts';
-const HANDLER = '@File/server/users.ts';
-const ORPHAN_HANDLER = '@File/server/reports.ts';
-const EP_USERS = '@Endpoint/api/users/{}#GET';
-const EP_ORPHAN = '@Endpoint/api/reports#GET';
-
-function graphFixture() {
-  return {
-    version: '1.0.0',
-    exportedAt: '2026-01-01T00:00:00.000Z',
-    nodes: [
-      { id: CLIENT, type: 'file', name: 'client.ts', file: 'src/client.ts', line: 1 },
-      { id: HANDLER, type: 'file', name: 'users.ts', file: 'server/users.ts', line: 1 },
-      { id: ORPHAN_HANDLER, type: 'file', name: 'reports.ts', file: 'server/reports.ts', line: 1 },
-      {
-        id: EP_USERS, type: 'endpoint', name: 'GET /api/users/{}',
-        metadata: { path: '/api/users/{}', method: 'GET', frameworks: ['express'], endpoint: true },
-      },
-      {
-        id: EP_ORPHAN, type: 'endpoint', name: 'GET /api/reports',
-        metadata: { path: '/api/reports', method: 'GET', frameworks: ['flask'], endpoint: true },
-      },
-    ],
-    edges: [
-      {
-        id: 'se1', sourceId: EP_USERS, targetId: HANDLER,
-        relationship: 'serves_endpoint', resolutionStatus: 'resolved', confidence: 'exact',
-        sourceLocation: { file: 'server/users.ts', line: 0 },
-        evidence: { kind: 'serves-endpoint', endpointPath: '/api/users/{}', method: 'GET', framework: 'express', declaredMethods: ['GET'] },
-      },
-      {
-        id: 'se2', sourceId: EP_ORPHAN, targetId: ORPHAN_HANDLER,
-        relationship: 'serves_endpoint', resolutionStatus: 'resolved', confidence: 'exact',
-        sourceLocation: { file: 'server/reports.ts', line: 0 },
-        evidence: { kind: 'serves-endpoint', endpointPath: '/api/reports', method: 'GET', framework: 'flask', declaredMethods: ['GET'] },
-      },
-      {
-        id: 'ce1', sourceId: CLIENT, targetId: EP_USERS,
-        relationship: 'calls_endpoint', resolutionStatus: 'resolved', confidence: 'exact',
-        sourceLocation: { file: 'src/client.ts', line: 12 },
-        evidence: { kind: 'calls-endpoint', endpointPath: '/api/users/{}', method: 'GET', callType: 'fetch', detectionConfidence: 80, rawPath: '/api/users/{id}' },
-      },
-      {
-        id: 'ce2', sourceId: CLIENT,
-        relationship: 'calls_endpoint', resolutionStatus: 'unresolved', confidence: 'inferred',
-        reason: 'endpoint_not_in_project',
-        sourceLocation: { file: 'src/client.ts', line: 20 },
-        evidence: { kind: 'calls-endpoint', endpointPath: '/api/ghost', method: 'GET', callType: 'fetch', detectionConfidence: 100, rawPath: '/api/ghost' },
-      },
-      {
-        id: 'ce3', sourceId: CLIENT,
-        relationship: 'calls_endpoint', resolutionStatus: 'external', confidence: 'strong',
-        reason: 'absolute_url_external_origin',
-        sourceLocation: { file: 'src/client.ts', line: 25 },
-        evidence: { kind: 'calls-endpoint', endpointPath: '/v1/models', method: 'GET', callType: 'fetch', detectionConfidence: 100, rawPath: 'https://vendor.example/v1/models' },
-      },
-    ],
-    statistics: { nodeCount: 5, edgeCount: 5 },
-  };
-}
-
-function writeFixtureRepo(root: string, withRoutesArtifact: boolean): void {
-  const coderefDir = path.join(root, '.coderef');
-  fs.mkdirSync(coderefDir, { recursive: true });
-  fs.writeFileSync(path.join(coderefDir, 'graph.json'), JSON.stringify(graphFixture()), 'utf-8');
-  fs.writeFileSync(
-    path.join(coderefDir, 'index.json'),
-    JSON.stringify({
-      schemaVersion: '1.0.0',
-      projectPath: root,
-      totalElements: 2,
-      elements: [
-        { type: 'function', name: 'loadUsers', file: 'src/client.ts', line: 3, exported: true },
-        { type: 'function', name: 'handler', file: 'server/users.ts', line: 5, exported: true },
-      ],
-    }),
-    'utf-8',
-  );
-  if (withRoutesArtifact) {
-    fs.writeFileSync(
-      path.join(coderefDir, 'routes.json'),
-      JSON.stringify({ totalRoutes: 2, projectPath: root, byFramework: {} }),
-      'utf-8',
-    );
-  }
-}
+// Referenced by the AMENDMENT 3 blocks below; re-exported names keep those
+// assertions reading exactly as they did before the extraction.
+void ORPHAN_HANDLER;
 
 let repo: string;
 let repoNoRoutes: string;
@@ -186,6 +117,16 @@ describe('api-surface projection', () => {
     expect(data.api).toBeUndefined();
     expect(data.meta.warnings.some(w => w.includes('api block omitted'))).toBe(true);
     expect(data.meta.warnings.some(w => w.includes('UNKNOWN'))).toBe(true);
+  });
+
+  it('the shared apiSurfaceFixture() matches what the pipeline actually emits', () => {
+    // The asset suites render apiSurfaceFixture() directly — they drive the
+    // browser renderers, not the pipeline, so they never touch projectMapData.
+    // That convenience copy is only trustworthy while it equals the real
+    // projection. Without this assertion the fixture could drift and every
+    // viewer/dashboard test would keep passing against a shape the pipeline no
+    // longer produces (WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001 P1-T2).
+    expect(projectMapData(repo).api).toStrictEqual(apiSurfaceFixture());
   });
 
   it('is deterministic and declares truncation rather than implying completeness', () => {

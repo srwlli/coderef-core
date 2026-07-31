@@ -92,6 +92,10 @@
       ['analytics', d.analytics],
       ['metrics', d.metrics],
       ['drift', d.drift],
+      // api emits its own warnings[] — notably the unmatchedCap truncation
+      // disclosure. Omitting it here would drop exactly the cap notice this
+      // function exists to surface.
+      ['api', d.api],
     ].forEach(function (pair) {
       var block = pair[1];
       var list = block && block.warnings;
@@ -497,6 +501,125 @@
         + 'integration path is invisible to the file-level graph &mdash; a file can be '
         + 'thoroughly tested and still appear in this list.</p>',
         metrics.testLinkage && metrics.testLinkage.note));
+    }
+
+    // ---------- API surface ----------
+    // THE TRI-STATE IS THE WHOLE POINT OF THIS PANEL (P1-T9). Three states,
+    // three distinguishable renderings, and they must never collapse:
+    //   d.api ABSENT      -> UNKNOWN. The route producer never ran. This is
+    //                        NO-DATA and is rendered with the no-data marker,
+    //                        never as "no API" and never as a clean zero.
+    //   d.api, count 0    -> a MEASURED zero. This project serves no routes.
+    //   d.api, count > 0  -> the tables.
+    // The middle and top states look nearly identical if written carelessly —
+    // "0 endpoints" for both — which is exactly the failure this contract
+    // exists to prevent.
+    var api = d.api || null;
+    if (!api) {
+      out.push(panel('API surface',
+        '<span class="panel__count">' + NO_DATA + '</span>',
+        '<div class="legend-rows"><div class="legend-row">'
+        + '<span class="tri tri--nodata">&#9678;&nbsp;unknown</span>'
+        + '<span>The route producer has not run for this project, so the API '
+        + 'surface was never measured. This is missing data &mdash; it does '
+        + 'NOT mean the project serves no endpoints.</span>'
+        + '</div></div>',
+        'Run the scanner with route detection enabled to populate this block.'));
+    } else {
+      var asum = api.summary || {};
+      var endpoints = api.endpoints || [];
+      var unmatched = api.unmatchedCalls || [];
+      var netEdges = api.networkEdges || [];
+
+      var apiBody;
+      if (!endpoints.length) {
+        // MEASURED zero — deliberately worded so it cannot be mistaken for the
+        // absent case above.
+        apiBody = '<div class="legend-rows"><div class="legend-row">'
+          + '<span class="tri tri--absent">&#9675; 0 &mdash; measured</span>'
+          + '<span>No endpoints served: route detection ran and found this '
+          + 'project serves zero routes.</span>'
+          + '</div></div>';
+      } else {
+        apiBody = table(
+          '<th>path</th><th>method</th><th>frameworks</th><th>handlers</th>'
+          + '<th>callers</th><th>callers found</th>',
+          rankRows(endpoints.slice(0, 25), [
+            { get: function (r) { return '<span class="path">' + esc(r.path || '—') + '</span>'; } },
+            { get: function (r) { return esc(r.method || 'ANY'); } },
+            { get: function (r) { return esc((r.frameworks || []).join(', ') || '—'); } },
+            { get: function (r) { return esc((r.handlers || []).join(', ') || '—'); } },
+            { get: function (r) { return esc((r.callers || []).join(', ') || '—'); } },
+            // ORPHANED IS A SURFACE, NOT A VERDICT. It means no resolved caller
+            // was found IN THIS REPO — the expected, correct state for a public
+            // API, a mobile client, or a server-to-server caller. Rendered with
+            // the neutral tri--absent marker, deliberately NOT a warning or
+            // error style: styling it as a problem would ship a false verdict
+            // into every repo with an externally-consumed API.
+            { get: function (r) {
+                return r.orphaned
+                  ? '<span class="tri tri--absent">&#9675; none in this repo</span>'
+                  : '<span class="tri tri--fact">' + nf((r.callers || []).length) + '</span>';
+              } },
+          ]))
+          + sliceBadge(Math.min(25, endpoints.length), endpoints.length);
+      }
+
+      // Unmatched calls: every reason spelled out in prose. A bare enum name
+      // tells a reader nothing about whether it is their bug or a limit of the
+      // detector.
+      var REASONS = {
+        endpoint_not_in_project: '404-shaped — the path is served nowhere in this project',
+        endpoint_method_not_served: '405-shaped — the path is served, but not for this verb',
+        client_path_origin_unresolved: 'interpolated base URL (`${base}/x`) — the origin cannot be known statically',
+        absolute_url_external_origin: 'an external host — a different authority, correctly not matched here',
+      };
+      var byReason = asum.byReason || {};
+      var reasonKeys = Object.keys(byReason).sort();
+      var unmatchedBody = reasonKeys.length
+        ? table('<th>reason</th><th class="num">calls</th><th>what it means</th>',
+            rankRows(reasonKeys, [
+              { get: function (k) { return '<span class="tri tri--absent">' + esc(k) + '</span>'; } },
+              { get: function (k) { return stat(byReason[k]); }, cls: 'num' },
+              { get: function (k) { return esc(REASONS[k] || 'unrecognized reason code'); } },
+            ]))
+          + (unmatched.length
+              ? '<details class="filelist"><summary class="legend-row filelist__head">'
+                + '<span>call sites</span><span>' + nf(unmatched.length) + '</span></summary>'
+                + '<ul class="filelist__items">'
+                + unmatched.slice(0, 50).map(function (c) {
+                    return '<li><span class="path">' + esc(c.file) + ':' + esc(c.line) + '</span> '
+                      + esc(c.method || '') + ' ' + esc(c.path || '')
+                      + (c.rawPath && c.rawPath !== c.path
+                          ? ' <span class="panel__count">as written: ' + esc(c.rawPath) + '</span>'
+                          : '')
+                      + '</li>';
+                  }).join('')
+                + '</ul></details>'
+                + sliceBadge(Math.min(50, unmatched.length), unmatched.length)
+              : '')
+        : '<div class="legend-rows"><div class="legend-row">'
+          + '<span class="tri tri--absent">&#9675; 0 &mdash; measured</span>'
+          + '<span>every detected client call bound to a served endpoint</span>'
+          + '</div></div>';
+
+      out.push(panel('API surface',
+        '<span class="panel__count">' + stat(asum.endpointCount) + ' endpoints &middot; '
+          + stat(asum.orphanedCount) + ' with no in-repo caller &middot; '
+          + nf(netEdges.length) + ' network hops</span>',
+        apiBody
+        + '<p class="panel__note"><span class="panel__note-mark">surfaces</span>'
+        + '&ldquo;No callers in this repo&rdquo; is not dead code. A public API, a '
+        + 'mobile client, or a server-to-server caller lives outside this '
+        + 'repository and cannot be seen from here.</p>',
+        null));
+
+      out.push(panel('API calls that did not bind',
+        '<span class="panel__count">' + stat(asum.unmatchedCallCount) + ' unmatched &middot; '
+          + stat(asum.resolvedCallCount) + ' resolved</span>',
+        unmatchedBody,
+        'Each reason distinguishes a never-built endpoint from a wrong-verb call '
+        + 'from an origin that cannot be resolved statically.'));
     }
 
     // Disclosures stay visible: truncation must never read as completeness.

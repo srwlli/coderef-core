@@ -60,8 +60,14 @@
   var metricRange = { min: 0, max: 0 };
   var metricNoData = 0;        // nodes with no data for the selected family
   var testFileSet = new Set(); // metrics.testLinkage.testFiles
+  var api = null;              // data.api (absent on pre-1.7.0 data.json)
+  var apiNodes = new Set();    // files on either end of a network edge
+  var apiEdgeKeys = new Set(); // "source target" for each network edge
+  var apiNetEdges = [];        // network edges resolved to node refs, drawn separately
+  var apiServes = new Map();   // file -> [endpoint] it handles
+  var apiCalls = new Map();    // file -> [endpoint] it calls
 
-  var mode = { hotspots: false, cycles: false, communities: false, deadcode: false, drift: false, metrics: false, blast: false };
+  var mode = { hotspots: false, cycles: false, communities: false, deadcode: false, drift: false, metrics: false, blast: false, api: false };
   var selected = null;
   var hovered = null;
   var blastDepths = new Map(); // id -> 1|2 when blast mode active
@@ -76,6 +82,33 @@
   var PALETTE = ['#4fc3f7', '#81c784', '#ffb74d', '#e57373', '#ba68c8',
     '#4db6ac', '#f06292', '#a1887f', '#90a4ae', '#dce775', '#7986cb', '#ff8a65'];
   var dirColor = new Map();
+
+  /**
+   * Read a --data-* token from CSS so the canvas and the stylesheet cannot
+   * disagree. Canvas has no access to custom properties without an explicit
+   * getComputedStyle call (OBS-001 on the token workorder flagged the absence
+   * of one as the reason viewer.js re-hardcodes hues the palette already owns).
+   * The fallback is only for a bundle served without tokens.css.
+   */
+  function cssToken(name, fallback) {
+    try {
+      var v = getComputedStyle(document.documentElement).getPropertyValue(name);
+      return (v && v.trim()) || fallback;
+    } catch (err) {
+      return fallback;
+    }
+  }
+
+  /** Parsed once at init: read per-frame this would run on every edge. */
+  var apiEdgeRGB = '38,166,154';
+
+  /** '#26a69a' -> '38,166,154', so an alpha can be composed into rgba(). */
+  function hexToRGB(hex, fallback) {
+    var m = /^#?([0-9a-f]{6})$/i.exec((hex || '').trim());
+    if (!m) return fallback;
+    var n = parseInt(m[1], 16);
+    return ((n >> 16) & 255) + ',' + ((n >> 8) & 255) + ',' + (n & 255);
+  }
 
   function colorForDir(dir) {
     var top = (dir || '').split('/')[0] || '(root)';
@@ -149,6 +182,68 @@
       var driftBtn = document.getElementById('toggle-drift');
       driftBtn.disabled = true;
       driftBtn.title += ' — unavailable: no drift block in this data.json (regenerate the map)';
+    }
+    // API surface (optional, schema-additive): pre-1.7.0 data.json has no api
+    // block — the toggle disables gracefully.
+    //
+    // THE TOGGLE CARRIES THE TRI-STATE. A disabled button with no explanation
+    // and a live button over an empty overlay look identical to a reader, so
+    // the three states are spelled out in the title:
+    //   absent      -> UNKNOWN; the route producer never ran for this project.
+    //   present, 0  -> a MEASURED zero; this project serves no endpoints.
+    //   present, n  -> the overlay is live.
+    // Absence must never render as clean (see src/map/api-surface.ts).
+    api = data.api || null;
+    apiEdgeRGB = hexToRGB(cssToken('--data-api-edge', '#26a69a'), '38,166,154');
+    var apiBtn = document.getElementById('toggle-api');
+    if (api) {
+      (api.networkEdges || []).forEach(function (ne) {
+        apiNodes.add(ne.source);
+        apiNodes.add(ne.target);
+        apiEdgeKeys.add(ne.source + ' ' + ne.target);
+      });
+      // Endpoints indexed per file for the detail panel: a file can SERVE a
+      // route, CALL one, or both, and the two relationships are not the same
+      // fact — they are labelled separately rather than merged.
+      (api.endpoints || []).forEach(function (ep) {
+        (ep.handlers || []).forEach(function (f) {
+          if (!apiServes.has(f)) apiServes.set(f, []);
+          apiServes.get(f).push(ep);
+        });
+        (ep.callers || []).forEach(function (f) {
+          if (!apiCalls.has(f)) apiCalls.set(f, []);
+          apiCalls.get(f).push(ep);
+        });
+      });
+      // Network edges are drawn from their OWN list, not by re-styling module
+      // edges: an HTTP hop frequently has no corresponding import edge at all
+      // (that is the whole point of a process boundary), so filtering `edges`
+      // would silently draw nothing for exactly the hops worth seeing.
+      apiNetEdges = (api.networkEdges || [])
+        .filter(function (ne) { return nodeById.has(ne.source) && nodeById.has(ne.target); })
+        .map(function (ne) {
+          return { source: ne.source, target: ne.target, endpoints: ne.endpoints || [],
+                   a: nodeById.get(ne.source), b: nodeById.get(ne.target) };
+        });
+      if (apiBtn) {
+        var served = (api.summary && api.summary.endpointCount) || 0;
+        if (!served) {
+          apiBtn.disabled = true;
+          apiBtn.title += ' — no endpoints served: this project serves zero routes '
+            + '(a measured zero, not missing data)';
+        } else if (!apiEdgeKeys.size) {
+          // Endpoints exist but nothing in-repo was resolved calling them. The
+          // overlay would be blank, which reads as "no API" unless it is said.
+          apiBtn.disabled = true;
+          apiBtn.title += ' — ' + served + ' endpoint(s) served, but no resolved '
+            + 'in-repo caller: nothing to draw as a network hop (callers may be '
+            + 'external — a surface, not a verdict)';
+        }
+      }
+    } else if (apiBtn) {
+      apiBtn.disabled = true;
+      apiBtn.title += ' — unavailable: API surface UNKNOWN, the route producer '
+        + 'has not run for this project (this is missing data, NOT zero endpoints)';
     }
     // Engineering metrics (optional, schema-additive): pre-1.4 data.json has
     // no metrics block — the toggle + select disable gracefully.
@@ -267,6 +362,7 @@
       var depth = blastDepths.get(n.id);
       return depth === 1 ? 0.95 : depth === 2 ? 0.7 : 0.08;
     }
+    if (mode.api) return apiNodes.has(n.id) ? 1 : 0.12;
     if (mode.cycles) return cycleNodes.has(n.id) ? 1 : 0.12;
     if (mode.deadcode) return deadSet.has(n.id) ? 1 : 0.12;
     if (mode.drift) return n.layer ? 1 : 0.18;
@@ -280,6 +376,7 @@
       var g = Math.round(210 - t * 170);
       return 'rgb(255,' + g + ',60)';
     }
+    if (mode.api && apiNodes.has(n.id)) return 'rgb(' + apiEdgeRGB + ')';
     if (mode.cycles && cycleNodes.has(n.id)) return '#ff5252';
     if (mode.communities && communityOf[n.id] !== undefined) {
       return PALETTE[communityOf[n.id] % PALETTE.length];
@@ -395,6 +492,10 @@
       if (mode.cycles) {
         ea = cycleEdgeKeys.has(e.source + ' ' + e.target) ? 0.95 : 0.05;
       }
+      // In api mode the module edges recede — the network hops drawn in the
+      // pass below are the figure, and an import edge left at full strength
+      // competes with them for exactly the wrong reading.
+      if (mode.api) ea = Math.min(ea, 0.06);
       if (ea < 0.02) continue;
       p = worldToScreen(e.a.x, e.a.y);
       q = worldToScreen(e.b.x, e.b.y);
@@ -419,6 +520,51 @@
         ctx.fillStyle = ctx.strokeStyle;
         ctx.fill();
       }
+    }
+    // network edges — DASHED, and drawn from api.networkEdges rather than by
+    // re-styling a module edge.
+    //
+    // THE DASH IS SEMANTIC, NOT DECORATION. An import and an HTTP request are
+    // categorically different kinds of coupling: one is resolved at build time
+    // inside one process, the other crosses a process boundary at runtime and
+    // can fail independently. Drawing them with the same solid stroke would
+    // assert they are the same kind of dependency. They are not, and the map
+    // must not imply it (see the module note in src/map/api-surface.ts).
+    if (mode.api && apiNetEdges.length) {
+      ctx.save();
+      ctx.setLineDash([6, 4]);
+      for (i = 0; i < apiNetEdges.length; i++) {
+        var ne = apiNetEdges[i];
+        p = worldToScreen(ne.a.x, ne.a.y);
+        q = worldToScreen(ne.b.x, ne.b.y);
+        ctx.strokeStyle = 'rgba(' + apiEdgeRGB + ',0.95)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(p.x, p.y);
+        ctx.lineTo(q.x, q.y);
+        ctx.stroke();
+        // Direction matters more here than on a module edge: it is the
+        // difference between calling a handler and being called by one.
+        if (view.k > 0.5) {
+          var ndx = q.x - p.x, ndy = q.y - p.y;
+          var nlen = Math.sqrt(ndx * ndx + ndy * ndy) + 0.01;
+          var nux = ndx / nlen, nuy = ndy / nlen;
+          var nbx = q.x - nux * (ne.b.r * view.k + 4);
+          var nby = q.y - nuy * (ne.b.r * view.k + 4);
+          ctx.setLineDash([]);
+          ctx.beginPath();
+          ctx.moveTo(nbx, nby);
+          ctx.lineTo(nbx - nux * 7 - nuy * 3.5, nby - nuy * 7 + nux * 3.5);
+          ctx.lineTo(nbx - nux * 7 + nuy * 3.5, nby - nuy * 7 - nux * 3.5);
+          ctx.closePath();
+          ctx.fillStyle = 'rgba(' + apiEdgeRGB + ',0.95)';
+          ctx.fill();
+          ctx.setLineDash([6, 4]);
+        }
+      }
+      // Restore rather than assume: a stray dash pattern would silently
+      // re-style every stroke drawn after this pass.
+      ctx.restore();
     }
     // nodes
     for (i = 0; i < nodes.length; i++) {
@@ -508,6 +654,23 @@
     addRow(meta, 'Elements', String(selected.elementCount));
     addRow(meta, 'Hotspot score', selected.hotspotScore + '  (in ' + selected.inWeight + ' / out ' + selected.outWeight + ')');
     if (cycleNodes.has(selected.id)) addRow(meta, 'Cycle', 'member of a dependency cycle');
+    // API surface. SERVES and CALLS are separate rows because they are separate
+    // facts — one file can do both, and collapsing them would lose the
+    // direction, which is the only thing that distinguishes a handler from a
+    // client. A file on neither side gets NO row: it is simply not on the API
+    // surface, and that absence needs no marker.
+    if (apiServes.has(selected.id)) {
+      // addRow uses createTextNode, so a '\n' would collapse to a space —
+      // the separator has to be a visible character.
+      addRow(meta, 'Serves', apiServes.get(selected.id).map(function (ep) {
+        return ep.method + ' ' + ep.path + (ep.orphaned ? ' (no in-repo caller found)' : '');
+      }).join(' · '));
+    }
+    if (apiCalls.has(selected.id)) {
+      addRow(meta, 'Calls over HTTP', apiCalls.get(selected.id).map(function (ep) {
+        return ep.method + ' ' + ep.path;
+      }).join(' · '));
+    }
     if (analytics && communityOf[selected.id] !== undefined) {
       var cid = communityOf[selected.id];
       var community = (analytics.communities || []).filter(function (c) { return c.id === cid; })[0];
@@ -740,7 +903,7 @@
     function exclusiveToggle(key) {
       mode[key] = !mode[key];
       if (mode[key]) {
-        ['hotspots', 'cycles', 'communities', 'deadcode', 'drift', 'metrics', 'blast'].forEach(function (other) {
+        ['hotspots', 'cycles', 'communities', 'deadcode', 'drift', 'metrics', 'blast', 'api'].forEach(function (other) {
           if (other !== key) mode[other] = false;
         });
         if (key === 'blast') computeBlast();
@@ -762,6 +925,7 @@
       }
       renderDetail();
     });
+    document.getElementById('toggle-api').addEventListener('click', function () { exclusiveToggle('api'); });
     document.getElementById('toggle-blast').addEventListener('click', function () { exclusiveToggle('blast'); });
     document.getElementById('reset-view').addEventListener('click', function () {
       fitView();
@@ -834,6 +998,7 @@
     setToggle(document.getElementById('toggle-deadcode'), mode.deadcode);
     setToggle(document.getElementById('toggle-drift'), mode.drift);
     setToggle(document.getElementById('toggle-metrics'), mode.metrics);
+    setToggle(document.getElementById('toggle-api'), mode.api);
     setToggle(document.getElementById('toggle-blast'), mode.blast);
     document.getElementById('drift-legend').hidden = !(mode.drift && drift);
     document.getElementById('metrics-legend').hidden = !(mode.metrics && metrics);
