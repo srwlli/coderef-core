@@ -308,6 +308,134 @@ describe('dashboard renders the blocks that already ship (P2)', () => {
   });
 });
 
+describe('names, not just counts (P3)', () => {
+  const base = { meta: { source: {} }, analytics: {}, metrics: {}, drift: {}, overlays: {} };
+
+  it('expands dead-code candidates to their file names via static <details>', () => {
+    const out = allOutput(renderDashboard({
+      ...base,
+      analytics: { deadCode: { isolated: ['src/orphan.ts', 'src/unused.ts'], zeroInDegreeCandidates: [] } },
+    }));
+    expect(out).toContain('<details class="filelist">');
+    expect(out).toContain('src/orphan.ts');
+    expect(out).toContain('src/unused.ts');
+  });
+
+  it('expands the zero-test-edge list to names', () => {
+    const out = allOutput(renderDashboard({
+      ...base,
+      metrics: {
+        testLinkage: {
+          summary: { srcFileCount: 2, srcWithTestEdgeCount: 1, srcWithoutTestEdgeCount: 1 },
+          zeroTestInEdge: ['src/lonely.ts'],
+          zeroTestInEdgeTruncated: false,
+        },
+      },
+    }));
+    expect(out).toContain('src/lonely.ts');
+  });
+
+  it('does NOT badge a COMPLETE list, and DOES badge a capped one', () => {
+    const complete = allOutput(renderDashboard({
+      ...base,
+      metrics: { testLinkage: { summary: {}, zeroTestInEdge: ['a.ts'], zeroTestInEdgeTruncated: false } },
+    }));
+    expect(complete).not.toMatch(/showing 1 of/);
+
+    const capped = allOutput(renderDashboard({
+      ...base,
+      metrics: {
+        testLinkage: {
+          summary: { srcWithoutTestEdgeCount: 90 },
+          zeroTestInEdge: ['a.ts'], zeroTestInEdgeTruncated: true,
+        },
+      },
+    }));
+    expect(capped).toContain('showing 1 of 90');
+  });
+
+  it('renders an empty list as measured-zero and an absent one as no-data', () => {
+    const empty = allOutput(renderDashboard({
+      ...base, analytics: { deadCode: { isolated: [], zeroInDegreeCandidates: [] } },
+    }));
+    expect(empty).toContain('0 &mdash; measured');
+
+    const absent = allOutput(renderDashboard({ ...base, analytics: { deadCode: {} } }));
+    expect(absent).toContain('no data');
+  });
+
+  it('uses no framework, no fetch, and no external network for the lists', () => {
+    // Native <details> only — the asset rule is no CDN, no runtime dependency.
+    expect(js).toContain('<details class="filelist">');
+    expect(js).not.toMatch(/https?:\/\//);
+  });
+});
+
+describe('the cross-reference is a read-list, NEVER a coverage verdict', () => {
+  const withBoth = {
+    meta: { source: {} }, analytics: {}, drift: {},
+    overlays: { hotspots: [{ file: 'src/mcp/shared.ts', score: 154 }, { file: 'src/other.ts', score: 12 }] },
+    metrics: {
+      testLinkage: {
+        summary: {}, zeroTestInEdge: ['src/mcp/shared.ts'], zeroTestInEdgeTruncated: false,
+        note: 'Zero test in-edges is an observation, not an untested verdict — transitive and integration coverage are invisible to the file graph.',
+      },
+    },
+  };
+
+  it('intersects the two published lists', () => {
+    const out = allOutput(renderDashboard(withBoth));
+    expect(out).toContain('Worth reading');
+    expect(out).toContain('src/mcp/shared.ts');
+    expect(out).toContain('1 of 2 ranked files');
+  });
+
+  it('never labels a file "untested" in its own framing', () => {
+    // THE guard for RISK-003. Three of four real-world members of this
+    // intersection are covered through a barrel import the file graph cannot
+    // see; "untested" would be a false verdict shipped to every repo. The word
+    // may appear ONLY inside the quoted testLinkage note, which says the
+    // opposite ("not an untested verdict").
+    const out = allOutput(renderDashboard(withBoth));
+    const outsideNote = out.replace(/Zero test in-edges is an observation[^<]*/g, '');
+    expect(outsideNote).not.toMatch(/untested/i);
+  });
+
+  it('carries the testLinkage note and the barrel caveat in-panel', () => {
+    const out = allOutput(renderDashboard(withBoth));
+    expect(out).toContain('not an untested verdict');
+    expect(out).toContain('barrel');
+    expect(out).toContain('candidate to READ');
+  });
+
+  it('reports an empty intersection as measured-zero, not as absence', () => {
+    const out = allOutput(renderDashboard({
+      ...withBoth,
+      metrics: { testLinkage: { summary: {}, zeroTestInEdge: [], zeroTestInEdgeTruncated: false } },
+    }));
+    expect(out).toContain('no ranked file lacks a test edge');
+  });
+
+  it('omits the panel entirely when either input list is absent', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} }, analytics: {}, metrics: {}, drift: {}, overlays: { hotspots: [] },
+    }));
+    expect(out).not.toContain('Worth reading');
+  });
+});
+
+describe('the explicit non-goal holds: no composite score', () => {
+  it('renders no grade, health score, or single-number summary', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: { nodeCount: 1, edgeCount: 2 } },
+      analytics: { communityCount: 3, communities: [{}], deadCode: { isolated: ['a.ts'] } },
+      metrics: { testLinkage: { summary: {}, zeroTestInEdge: ['a.ts'] } },
+      drift: {}, overlays: { hotspots: [{ file: 'a.ts', score: 9 }], cycles: [] },
+    }));
+    expect(out).not.toMatch(/health score|overall score|grade[: ]|composite/i);
+  });
+});
+
 describe('no measurement ever renders as the literal string "undefined"', () => {
   it('a validation report missing a count renders no-data, not "undefined"', () => {
     // Lived case: byStatus.missing drops out of the bundle once nothing is

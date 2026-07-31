@@ -100,6 +100,19 @@ td.path, span.path { font-family:var(--mono); font-size:.76rem; word-break:break
                    letter-spacing:.08em; color:var(--absent); margin-bottom:.5rem; }
 .disclose ul { margin:0; padding-left:1.1rem; }
 .disclose li { font-family:var(--mono); font-size:.75rem; color:var(--dim); margin:.25rem 0; line-height:1.45; }
+
+/* Expandable file lists — native <details>, no framework and no fetch. Collapsed
+   the row reads exactly as the bare count it replaced; open, it is a read-list. */
+.filelist { border-top:1px solid var(--line); }
+.filelist__head { cursor:pointer; list-style:none; }
+.filelist__head::-webkit-details-marker { display:none; }
+.filelist__head::before { content:"\25B8"; color:var(--dim); margin-right:.4rem;
+                          display:inline-block; transition:transform .12s ease; }
+.filelist[open] > .filelist__head::before { transform:rotate(90deg); }
+.filelist__items { margin:.15rem 0 .5rem; padding:0 0 0 1.1rem; list-style:none;
+                   max-height:15rem; overflow-y:auto; }
+.filelist__items li { font-family:var(--mono); font-size:.72rem; color:var(--dim);
+                      line-height:1.5; }
 /* Origin tag: which block emitted this disclosure. Two blocks reporting the same
    cap is real signal, so entries are labelled rather than deduped. */
 .disclose__origin { display:inline-block; min-width:5.2rem; color:var(--accent-ci);

@@ -121,6 +121,30 @@
       + bodyHtml + '</tbody></table></div>';
   }
 
+  /**
+   * A count sends you back to the CLI; a list is something you can act on.
+   * Native <details> keeps this static — no framework, no fetch, no new
+   * network. `truncated` is passed through rather than inferred: a COMPLETE
+   * list must not carry a cap badge, and a capped one must.
+   */
+  function fileList(label, files, truncated, total) {
+    if (!Array.isArray(files)) {
+      return '<div class="legend-row"><span>' + esc(label) + '</span><span>' + NO_DATA + '</span></div>';
+    }
+    if (!files.length) {
+      return '<div class="legend-row"><span>' + esc(label) + '</span>'
+        + '<span class="tri tri--absent">&#9675; 0 &mdash; measured</span></div>';
+    }
+    return '<details class="filelist"><summary class="legend-row filelist__head">'
+      + '<span>' + esc(label) + '</span>'
+      + '<span>' + nf(files.length) + truncBadge(truncated, files.length, total) + '</span>'
+      + '</summary><ul class="filelist__items">'
+      + files.map(function (f) {
+          return '<li><span class="path">' + esc(typeof f === 'string' ? f : (f && f.file)) + '</span></li>';
+        }).join('')
+      + '</ul></details>';
+  }
+
   // ---------- render ----------
   function render(d, v) {
     var meta = d.meta || {};
@@ -259,6 +283,12 @@
         + (tlTotal ? ' &middot; ' + (tlHas / tlTotal * 100).toFixed(1) + '%' : '') + '</span></div>'
       + '<div class="legend-row"><span class="tri tri--absent">&#9675; no test edge (measured)</span><span>' + nf(tlNone) + '</span></div>'
       + '<div class="legend-row"><span class="tri tri--nodata">&#9678; no data</span><span>' + nf(tlUnknown) + '</span></div>'
+      // The names behind the count. zeroTestInEdgeTruncated drives the badge —
+      // on this repo the list is COMPLETE, so it must not carry one.
+      + fileList('files with no test edge',
+          metrics.testLinkage && metrics.testLinkage.zeroTestInEdge,
+          metrics.testLinkage && metrics.testLinkage.zeroTestInEdgeTruncated,
+          tl.srcWithoutTestEdgeCount)
       + '</div>'
       + (subm ? '<p class="panel__note"><span class="panel__note-mark">subprocess</span>'
           + nf(subm.linkedSrcFileCount) + ' src files linked via ' + nf(subm.spawnRefCount) + ' spawn refs ('
@@ -409,8 +439,8 @@
     out.push(panel('Dead code &mdash; candidates',
       '<span class="panel__count">' + stat(dc.entrypointExcludedCount) + ' entrypoints filtered out</span>',
       '<div class="legend-rows">'
-      + '<div class="legend-row"><span>isolated (no edges either way)</span><span>' + stat(dc.isolated && dc.isolated.length) + '</span></div>'
-      + '<div class="legend-row"><span>zero in-degree candidates</span><span>' + stat(dc.zeroInDegreeCandidates && dc.zeroInDegreeCandidates.length) + '</span></div>'
+      + fileList('isolated (no edges either way)', dc.isolated, dc.isolatedTruncated)
+      + fileList('zero in-degree candidates', dc.zeroInDegreeCandidates, dc.zeroInDegreeCandidatesTruncated)
       + '</div>',
       dc.note));
 
@@ -430,6 +460,44 @@
             } },
         ])),
       drift.note));
+
+    // ---------- Worth reading: hotspot ∩ no-test-edge ----------
+    // A CROSS-REFERENCE of two published lists, NOT a derived score and NOT a
+    // coverage verdict.
+    //
+    // WHY THE FRAMING IS LOAD-BEARING: on this repo the intersection returns 4
+    // files and THREE are false positives. src/cli/mcp/{shared,graph-tools,
+    // verify-tools}.ts are exercised by 154 passing MCP tests — but the coverage
+    // arrives through a barrel (mcp-server.test.ts imports coderef-mcp-server.js,
+    // which imports all six mcp/* modules), and the FILE-level graph cannot
+    // traverse that hop. Labelling these "untested" would ship a false verdict
+    // into every indexed repo. They are files worth READING, nothing more.
+    var hotspotList = (d.overlays && d.overlays.hotspots) || null;
+    var zeroTest = metrics.testLinkage && metrics.testLinkage.zeroTestInEdge;
+    if (Array.isArray(hotspotList) && Array.isArray(zeroTest)) {
+      var zeroSet = {};
+      zeroTest.forEach(function (f) { zeroSet[typeof f === 'string' ? f : (f && f.file)] = true; });
+      var both = hotspotList.filter(function (h) { return zeroSet[h.file]; });
+      out.push(panel('Worth reading &mdash; ranked high, no test edge recorded',
+        '<span class="panel__count">' + nf(both.length) + ' of ' + nf(hotspotList.length)
+          + ' ranked files</span>',
+        (both.length
+          ? table('<th>file</th><th class="num">hotspot score</th>',
+              rankRows(both.slice(0, 15), [
+                pathCol,
+                { get: function (r) { return stat(r.score); }, cls: 'num' },
+              ]))
+            + sliceBadge(Math.min(15, both.length), both.length)
+          : '<div class="legend-rows"><div class="legend-row">'
+            + '<span class="tri tri--absent">&#9675; 0 &mdash; measured</span>'
+            + '<span>no ranked file lacks a test edge</span></div></div>')
+        + '<p class="panel__note"><span class="panel__note-mark">read first</span>'
+        + 'A file here is a candidate to READ, not a coverage verdict. Coverage that '
+        + 'reaches a module through a re-exporting barrel, a subprocess, or an '
+        + 'integration path is invisible to the file-level graph &mdash; a file can be '
+        + 'thoroughly tested and still appear in this list.</p>',
+        metrics.testLinkage && metrics.testLinkage.note));
+    }
 
     // Disclosures stay visible: truncation must never read as completeness.
     // All four emitting blocks are collected, each entry tagged with its origin.
