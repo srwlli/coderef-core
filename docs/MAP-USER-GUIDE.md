@@ -27,7 +27,9 @@ Use the map when you want to *see* a codebase instead of grepping it: which file
 
 Two audiences share one identical data set (`MapData`, schema v1.5):
 
-- **Humans** use the bundled viewer (`graph.html`) — canvas force layout, search, detail panel, and exclusive overlay toggles.
+- **Humans** use the two bundled views, which link to each other and render from the same bundle:
+  - `graph.html` — canvas force layout, search, detail panel, and exclusive overlay toggles.
+  - `dashboard.html` — the same MapData read as ranked tables: centrality, coupling, hotspots, cycles, bridges, documentation and test-linkage coverage, layer drift, and dead-code candidates. Counts expand to the file names behind them, every capped ranking carries a truncation badge, and disclosures from all four emitting blocks (`meta`/`analytics`/`metrics`/`drift`) are collected into one panel labelled by origin.
 - **Agents** use the MCP `map` tool, which returns triage-ready summary counts plus `data_path` to the full `data.json`, or — with `format: "skeleton"` — a token-budgeted, centrality-ranked plaintext repo map returned inline for fast orientation (step 8). The `/coderef-map` skill wraps the same surface.
 
 One framing rule governs everything here: **every block is a surface, not a verdict.** The map tells you *where to look*, never *what is wrong*. A file with zero test in-edges is a candidate for attention, not proven-untested; a missing block is missing data, not a zero.
@@ -196,6 +198,7 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 | 2026-07-17 | Added the skeleton map (step 8): token-budgeted, centrality-ranked plaintext repo map via `coderef-map --skeleton` and the MCP `map` tool's `format:"skeleton"` (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P1) |
 | 2026-07-17 | Added the git-behavioral block (step 9): opt-in churn×size hotspots + change-coupling drift via `coderef-map --git` and the MCP `map` tool's `git:true` — MapData v1.5 (WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 P2) |
 | 2026-07-18 | Added the ownership / knowledge block (step 9): per-file author concentration (bus-factor proxy), distinct authors, last-touched age — rides the same `--git` / `git:true` switch — MapData v1.6 (WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 P2) |
+| 2026-07-31 | `dashboard.html` now renders the blocks it already received but never drew — hotspots, cycles (measured-zero distinct from no-data), documentation coverage, and bridges — plus expandable file lists behind the dead-code and test-linkage counts, and a `hotspot ∩ no-test-edge` cross-reference framed as a read-list, never a coverage verdict. Disclosures now collect from all four emitting blocks instead of `meta` alone, and renderer-imposed slices badge as truncations. `graph.html` gained the return link, so the two views navigate both ways. No schema change (WO-RENDER-THE-UNRENDERED-MAPDATA-BLOCKS-IN-THE-DASHBOARD-001) |
 
 ---
 

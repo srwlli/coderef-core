@@ -21,9 +21,9 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 476 |
-| **Total Elements** | 3,155 |
-| **Total Lines** | 130,909 |
+| **Total Files** | 480 |
+| **Total Elements** | 3,180 |
+| **Total Lines** | 131,987 |
 | **Entry Points** | 76 |
 | **Critical Functions** | 20 |
 
@@ -40,8 +40,8 @@ This document identifies high-risk areas in the codebase based on complexity ana
 | 3 | <!-- coderef:uuid= --> `scanCurrentElements` | 🔴 103 (Critical) | `src/scanner/scanner.ts` | 0 dependents |
 | 4 | <!-- coderef:uuid= --> `buildLookupTools` | 🔴 96 (Critical) | `src/cli/mcp/lookup-tools.ts` | 0 dependents |
 | 5 | <!-- coderef:uuid= --> `ContextGenerator.generateMarkdown` | 🔴 95 (Critical) | `src/pipeline/generators/context-generator.ts` | 0 dependents |
-| 6 | <!-- coderef:uuid= --> `computeGraphAnalytics` | 🔴 87 (Critical) | `src/map/graph-analytics.ts` | 0 dependents |
-| 7 | <!-- coderef:uuid= --> `buildMapTools` | 🔴 86 (Critical) | `src/cli/mcp/map-tools.ts` | 0 dependents |
+| 6 | <!-- coderef:uuid= --> `buildMapTools` | 🔴 87 (Critical) | `src/cli/mcp/map-tools.ts` | 0 dependents |
+| 7 | <!-- coderef:uuid= --> `computeGraphAnalytics` | 🔴 87 (Critical) | `src/map/graph-analytics.ts` | 0 dependents |
 | 8 | <!-- coderef:uuid= --> `buildVerifyTools` | 🔴 78 (Critical) | `src/cli/mcp/verify-tools.ts` | 0 dependents |
 | 9 | <!-- coderef:uuid= --> `runRagIndex` | 🔴 73 (Critical) | `src/cli/rag-index.ts` | 0 dependents |
 | 10 | <!-- coderef:uuid= --> `buildNewInitializerMap` | 🔴 70 (Critical) | `src/pipeline/call-resolver.ts` | 0 dependents |
@@ -127,8 +127,8 @@ Focus on 🔴 Critical complexity functions:
 - `scanCurrentElements` (src/scanner/scanner.ts) - complexity 103
 - `buildLookupTools` (src/cli/mcp/lookup-tools.ts) - complexity 96
 - `ContextGenerator.generateMarkdown` (src/pipeline/generators/context-generator.ts) - complexity 95
+- `buildMapTools` (src/cli/mcp/map-tools.ts) - complexity 87
 - `computeGraphAnalytics` (src/map/graph-analytics.ts) - complexity 87
-- `buildMapTools` (src/cli/mcp/map-tools.ts) - complexity 86
 - `buildVerifyTools` (src/cli/mcp/verify-tools.ts) - complexity 78
 - `runRagIndex` (src/cli/rag-index.ts) - complexity 73
 - `buildNewInitializerMap` (src/pipeline/call-resolver.ts) - complexity 70
