@@ -2,8 +2,8 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-20  
-**Total Exported:** 1,120 elements  
+**Generated:** 2026-07-31  
+**Total Exported:** 1,131 elements  
 <!-- coderef:uuid=exports-root -->
 
 ---
@@ -18,16 +18,15 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **401** | 691 | 1092 |
-| interface | **489** | 92 | 581 |
-| constant | **61** | 209 | 270 |
-| type | **63** | 30 | 93 |
-| component | **2** | 0 | 2 |
+| function | **395** | 653 | 1048 |
+| constant | **64** | 229 | 293 |
+| interface | **503** | 97 | 600 |
+| type | **65** | 26 | 91 |
 | class | **104** | 5 | 109 |
 
 ---
 
-## Exported Functions (401)
+## Exported Functions (395)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
@@ -49,8 +48,8 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=6acb9bfa-c799-5ef2-96ba-0a1c2713bda5 --> `parseCustomApiCalls` | `src/analyzer/frontend-call-parsers.ts` | ❌ | code, filePath | `6acb9bfa...` |
 | <!-- coderef:uuid=7e95a1d5-7e23-5b1b-b7f2-fffec7f0f3bd --> `extractHttpMethod` | `src/analyzer/frontend-call-parsers.ts` | ❌ | optionsArg | `7e95a1d5...` |
 | <!-- coderef:uuid=f35b6f77-86c8-56a5-a467-834efe98a2ef --> `extractCallLocation` | `src/analyzer/frontend-call-parsers.ts` | ❌ | node, filePath | `f35b6f77...` |
-| <!-- coderef:uuid=beb46fb9-38d0-5348-a77e-1a83a2bbde00 --> `buildCallEdges` | `src/analyzer/js-call-detector/analyzer.ts` | ❌ | filePaths, callDetector, elementMap | `beb46fb9...` |
-| <!-- coderef:uuid=e5802853-2e4a-5d65-8d78-6677aa4f2351 --> `analyzeCallPatterns` | `src/analyzer/js-call-detector/analyzer.ts` | ❌ | filePaths, callDetector | `e5802853...` |
+| <!-- coderef:uuid=8cefb59c-0cb9-5a39-bf1f-2b2bd3c0404c --> `buildCallEdges` | `src/analyzer/js-call-detector/analyzer.ts` | ❌ | callsByFile, elementMap | `8cefb59c...` |
+| <!-- coderef:uuid=bbb97f89-2064-5b94-857b-cd35418a2c06 --> `analyzeCallPatterns` | `src/analyzer/js-call-detector/analyzer.ts` | ❌ | callsByFile | `bbb97f89...` |
 | <!-- coderef:uuid=d5f1273b-6b4c-5e54-abc8-5708042bc67f --> `extractImportsFromAST` | `src/analyzer/js-call-detector/module-analyzer.ts` | ❌ | ast, imports | `d5f1273b...` |
 | <!-- coderef:uuid=740f9bae-6aa9-5759-8cbc-76376e3a32c7 --> `extractExportsFromAST` | `src/analyzer/js-call-detector/module-analyzer.ts` | ❌ | ast, exports | `740f9bae...` |
 | <!-- coderef:uuid=d255720b-cde2-560b-a2ec-a17c15c7943d --> `parseCallExpression` | `src/analyzer/js-call-detector/parser.ts` | ❌ | node, filePath, context | `d255720b...` |
@@ -82,7 +81,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=640edcae-5798-5444-a325-2b34810d298c --> `parseRemixRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, exports | `640edcae...` |
 | <!-- coderef:uuid=2eac99ad-00a7-506f-82d2-9c9ab7583d96 --> `extractRouteMetadata` | `src/analyzer/route-parsers.ts` | ❌ | code, filePath, exports, line, fileContent | `2eac99ad...` |
 
-*... and 351 more functions. See index.json for complete list.*
+*... and 345 more functions. See index.json for complete list.*
 
 ---
 
@@ -104,11 +103,11 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=51bf0532-1274-508c-9d40-41004475f4c5 --> `MigrationRouteAnalyzer` | `src/analyzer/migration-route-analyzer.ts` | `51bf0532...` |
 | <!-- coderef:uuid=280ca531-3cc3-54ac-9908-5d4009c86f58 --> `ProjectClassifier` | `src/analyzer/project-classifier.ts` | `280ca531...` |
 | <!-- coderef:uuid=d2339bcb-849f-5b13-8e4c-7df3ae823569 --> `IncrementalCache` | `src/cache/incremental-cache.ts` | `d2339bcb...` |
-| <!-- coderef:uuid=d0190039-f1b9-572e-938a-e16b89ca7797 --> `BuildHintError` | `src/cli/mcp/shared.ts` | `d0190039...` |
-| <!-- coderef:uuid=f81c0542-bc80-59b2-ab52-968484e37dc0 --> `DryRunSemanticOrchestrator` | `src/cli/semantic-integration.ts` | `f81c0542...` |
+| <!-- coderef:uuid=9215a8e0-545b-57fa-81a1-e572f1cc2b62 --> `BuildHintError` | `src/cli/mcp/shared.ts` | `9215a8e0...` |
+| <!-- coderef:uuid=c8c1d36f-a3f2-51a2-990b-8208ba05bd9f --> `DryRunSemanticOrchestrator` | `src/cli/semantic-integration.ts` | `c8c1d36f...` |
 | <!-- coderef:uuid=87f6aa4b-dfac-55b7-a7a5-f770d4dbb159 --> `AgenticFormatter` | `src/context/agentic-formatter.ts` | `87f6aa4b...` |
 | <!-- coderef:uuid=124ff4c2-d634-5465-83e3-c3b2b089aee5 --> `BreakingChangeDetector` | `src/context/breaking-change-detector/index.ts` | `124ff4c2...` |
-| <!-- coderef:uuid=44a322ca-c90d-5ef7-babc-cc07290e7b69 --> `ComplexityScorer` | `src/context/complexity-scorer.ts` | `44a322ca...` |
+| <!-- coderef:uuid=ab4438a4-59b3-5a3b-a755-9209d1a26861 --> `ComplexityScorer` | `src/context/complexity-scorer.ts` | `ab4438a4...` |
 | <!-- coderef:uuid=c8753c42-69b2-50d8-b058-f5e123779ce2 --> `ContextGenerator` | `src/context/context-generator.ts` | `c8753c42...` |
 | <!-- coderef:uuid=73006523-3288-5d25-9dd5-d9294dfa00a4 --> `ContextTracker` | `src/context/context-tracker.ts` | `73006523...` |
 | <!-- coderef:uuid=bf214a1d-2789-573e-ab26-00c79a4f2d09 --> `EdgeCaseDetector` | `src/context/edge-case-detector.ts` | `bf214a1d...` |
@@ -159,9 +158,9 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=daddac9a-eebf-52bf-a860-1dd4f318de33 --> `VectorStoreError` | `src/integration/vector/vector-store.ts` | `daddac9a...` |
 | <!-- coderef:uuid=7c2eefc8-bb4e-5272-ac78-55a9fd9af95d --> `MapProjectionError` | `src/map/project-map-data.ts` | `7c2eefc8...` |
 | <!-- coderef:uuid=559101b1-1016-5357-b066-fe95e2c4ffc4 --> `CodeRefParser` | `src/parser/parser.ts` | `559101b1...` |
-| <!-- coderef:uuid=a5812cff-a10a-534b-8d8e-7389449760ff --> `ElementExtractor` | `src/pipeline/extractors/element-extractor.ts` | `a5812cff...` |
+| <!-- coderef:uuid=cceb75a6-7dac-548a-8b68-24ba5998c408 --> `ElementExtractor` | `src/pipeline/extractors/element-extractor.ts` | `cceb75a6...` |
 | <!-- coderef:uuid=f10a5be1-34a6-5b8e-bfd7-6985a436e4dc --> `RelationshipExtractor` | `src/pipeline/extractors/relationship-extractor.ts` | `f10a5be1...` |
-| <!-- coderef:uuid=bfbec462-9397-52af-bb79-679342d467ea --> `ComplexityGenerator` | `src/pipeline/generators/complexity-generator.ts` | `bfbec462...` |
+| <!-- coderef:uuid=0ef9b097-35f1-5d83-be25-98bb0edc1755 --> `ComplexityGenerator` | `src/pipeline/generators/complexity-generator.ts` | `0ef9b097...` |
 | <!-- coderef:uuid=ce5bbcaa-b802-51f3-9785-a27955070592 --> `ContextGenerator` | `src/pipeline/generators/context-generator.ts` | `ce5bbcaa...` |
 | <!-- coderef:uuid=56a3d644-1146-5980-809f-28270cc31739 --> `CoverageGenerator` | `src/pipeline/generators/coverage-generator.ts` | `56a3d644...` |
 | <!-- coderef:uuid=86e36102-f829-57c0-9553-cf5213d88820 --> `DiagramGenerator` | `src/pipeline/generators/diagram-generator.ts` | `86e36102...` |
@@ -174,7 +173,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=309fe7ed-022e-5ec9-af42-33689522ca0e --> `RegistryGenerator` | `src/pipeline/generators/registry-generator.ts` | `309fe7ed...` |
 | <!-- coderef:uuid=cf737e57-b7a5-5c8b-9bd3-62a7f2c44dd7 --> `ValidationGenerator` | `src/pipeline/generators/validation-generator.ts` | `cf737e57...` |
 | <!-- coderef:uuid=1a11187a-f26e-594c-8fb4-9dc643c295e0 --> `GrammarRegistry` | `src/pipeline/grammar-registry.ts` | `1a11187a...` |
-| <!-- coderef:uuid=429df1ad-c667-5341-9dc8-e5759fb8c61b --> `PipelineOrchestrator` | `src/pipeline/orchestrator.ts` | `429df1ad...` |
+| <!-- coderef:uuid=5ce9ff8c-3e1e-5f30-a6b8-b8319561ab40 --> `PipelineOrchestrator` | `src/pipeline/orchestrator.ts` | `5ce9ff8c...` |
 | <!-- coderef:uuid=56a52ab8-2fb0-5d6c-81cc-95252da6f911 --> `CanonicalGraphError` | `src/query/canonical-graph.ts` | `56a52ab8...` |
 | <!-- coderef:uuid=195a482a-5f88-502c-8d05-a03c4555638d --> `CanonicalGraphQuery` | `src/query/canonical-graph.ts` | `195a482a...` |
 | <!-- coderef:uuid=9f492d46-06a3-5b0a-8a18-4c2b1cfdf6da --> `EntityRegistry` | `src/registry/entity-registry.ts` | `9f492d46...` |
@@ -197,7 +196,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 ---
 
-## Exported Interfaces (489)
+## Exported Interfaces (503)
 
 | Interface | File | UUID |
 |-----------|------|------|
@@ -232,11 +231,11 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=d0fa2d27-e6be-5757-8b98-37be3b8659fe --> `PrismaField` | `src/analyzer/database-detector.ts` | `d0fa2d27...` |
 | <!-- coderef:uuid=d61b4ee1-44e2-5e0f-a8d9-80ee84f11c9d --> `PrismaRelation` | `src/analyzer/database-detector.ts` | `d61b4ee1...` |
 
-*... and 459 more interfaces. See index.json for complete list.*
+*... and 473 more interfaces. See index.json for complete list.*
 
 ---
 
-## Exported Type Aliases (63)
+## Exported Type Aliases (65)
 
 | Type | File | UUID |
 |------|------|------|
@@ -246,15 +245,15 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=96331f7b-b03c-5977-8999-0e03b98a0673 --> `ApiServiceType` | `src/analyzer/project-classifier.ts` | `96331f7b...` |
 | <!-- coderef:uuid=547081e0-c789-5db8-896a-cf7299131c29 --> `WebAppType` | `src/analyzer/project-classifier.ts` | `547081e0...` |
 | <!-- coderef:uuid=135d36bc-cbf3-5e0c-aeaf-87ba423c406a --> `SupportedCliLanguage` | `src/cli/detect-languages.ts` | `135d36bc...` |
-| <!-- coderef:uuid=9d7913e4-d6f1-5dc4-a69d-72b2513b4847 --> `ResponseFormat` | `src/cli/mcp-response-format.ts` | `9d7913e4...` |
-| <!-- coderef:uuid=5db175c5-061f-5e9c-8b5d-3658ca457df5 --> `ContextTools` | `src/cli/mcp/context-tools.ts` | `5db175c5...` |
-| <!-- coderef:uuid=0bf51884-18a2-531d-98a7-a379bda3d683 --> `GraphTools` | `src/cli/mcp/graph-tools.ts` | `0bf51884...` |
-| <!-- coderef:uuid=c23ec7ee-509c-5e73-920b-97dcefaa51d9 --> `LookupTools` | `src/cli/mcp/lookup-tools.ts` | `c23ec7ee...` |
-| <!-- coderef:uuid=bae7ce18-cccf-587c-8e46-96af83fba9b5 --> `MapTools` | `src/cli/mcp/map-tools.ts` | `bae7ce18...` |
-| <!-- coderef:uuid=e4eaf79c-25b9-513b-b818-e47257bb008e --> `RagTools` | `src/cli/mcp/rag-tools.ts` | `e4eaf79c...` |
-| <!-- coderef:uuid=c268d8e1-cafa-5c86-97a1-4a2a4c743c5a --> `ExportedNode` | `src/cli/mcp/shared.ts` | `c268d8e1...` |
-| <!-- coderef:uuid=67d9f28f-5f0a-5cf8-af5f-677c85b4890e --> `ExportedEdge` | `src/cli/mcp/shared.ts` | `67d9f28f...` |
-| <!-- coderef:uuid=4e57626a-c150-525b-a6a0-20220e321d82 --> `VerifyTools` | `src/cli/mcp/verify-tools.ts` | `4e57626a...` |
+| <!-- coderef:uuid=ce42f401-9598-5a97-b72c-8f4dcc6f0eef --> `ResponseFormat` | `src/cli/mcp-response-format.ts` | `ce42f401...` |
+| <!-- coderef:uuid=77467868-fa09-52e5-9784-31e1a7af6165 --> `ContextTools` | `src/cli/mcp/context-tools.ts` | `77467868...` |
+| <!-- coderef:uuid=ec2ccbef-866b-5d6c-b31c-7ecd2da4eb5a --> `GraphTools` | `src/cli/mcp/graph-tools.ts` | `ec2ccbef...` |
+| <!-- coderef:uuid=7ba858c7-c278-5bc4-a7e6-97a51fe24aa9 --> `LookupTools` | `src/cli/mcp/lookup-tools.ts` | `7ba858c7...` |
+| <!-- coderef:uuid=3522589c-4dbc-50c2-b4b8-69b772c67437 --> `MapTools` | `src/cli/mcp/map-tools.ts` | `3522589c...` |
+| <!-- coderef:uuid=2a71481a-f56c-5834-ab85-30ef798056bb --> `RagTools` | `src/cli/mcp/rag-tools.ts` | `2a71481a...` |
+| <!-- coderef:uuid=49990bc2-c1f7-5807-88e6-e6475f4ae45c --> `ExportedNode` | `src/cli/mcp/shared.ts` | `49990bc2...` |
+| <!-- coderef:uuid=185a9d84-6238-545e-9b22-bebe1ea0cd4a --> `ExportedEdge` | `src/cli/mcp/shared.ts` | `185a9d84...` |
+| <!-- coderef:uuid=635b98cb-284e-58d4-b6eb-14b62b2be3ff --> `VerifyTools` | `src/cli/mcp/verify-tools.ts` | `635b98cb...` |
 | <!-- coderef:uuid=657bc756-1c6e-5e46-8b9f-9f12d7c5b002 --> `FlagKind` | `src/cli/shared/cli-args.ts` | `657bc756...` |
 | <!-- coderef:uuid=0be23141-4534-5c5d-8496-9d15e7d02613 --> `ExportFormat` | `src/export/graph-exporter.ts` | `0be23141...` |
 | <!-- coderef:uuid=ec4d0421-181d-5a9a-ac54-f7554b5b549e --> `ExportedGraphEdgeRelationship` | `src/export/graph-exporter.ts` | `ec4d0421...` |
@@ -286,17 +285,19 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=1ee44c6e-eefc-5268-b956-9635e9c47241 --> `EdgeConfidenceTier` | `src/pipeline/edge-confidence.ts` | `1ee44c6e...` |
 | <!-- coderef:uuid=4c496708-f0f3-5a30-bab5-1d6567dbdb2f --> `LayerEnum` | `src/pipeline/element-taxonomy.ts` | `4c496708...` |
 | <!-- coderef:uuid=b80de943-3115-53cb-90f4-d7acdefa0791 --> `HeaderStatus` | `src/pipeline/element-taxonomy.ts` | `b80de943...` |
+| <!-- coderef:uuid=56a78d3b-3aad-50f5-b1cf-fd090b332409 --> `GrammarFamily` | `src/pipeline/extractors/complexity-metrics.ts` | `56a78d3b...` |
 | <!-- coderef:uuid=e2daf99d-be4e-52b6-b559-5c6b690450b5 --> `FieldIndex` | `src/pipeline/field-index.ts` | `e2daf99d...` |
 | <!-- coderef:uuid=7cc97163-7da6-55a5-a43a-0c76c1cf21d2 --> `EdgeRelationship` | `src/pipeline/graph-builder.ts` | `7cc97163...` |
 | <!-- coderef:uuid=bf00aac1-48a8-5312-b8d9-ae1e1b636084 --> `EdgeResolutionStatus` | `src/pipeline/graph-builder.ts` | `bf00aac1...` |
 | <!-- coderef:uuid=1db899f3-f151-58db-afaf-86c61e2371e8 --> `EdgeEvidence` | `src/pipeline/graph-builder.ts` | `1db899f3...` |
 | <!-- coderef:uuid=61131750-9315-5e71-8e8c-377299fe5bbc --> `ImportResolutionKind` | `src/pipeline/import-resolver.ts` | `61131750...` |
 | <!-- coderef:uuid=d175c932-c821-511d-88fc-0c6cc81579ee --> `ExportTable` | `src/pipeline/import-resolver.ts` | `d175c932...` |
-| <!-- coderef:uuid=49bd75c9-2547-5948-9328-4e96362d017c --> `LanguageExtension` | `src/pipeline/types.ts` | `49bd75c9...` |
-| <!-- coderef:uuid=226f3d9f-8c71-5e81-8689-b0e491163b61 --> `RawExportKind` | `src/pipeline/types.ts` | `226f3d9f...` |
+| <!-- coderef:uuid=95296c49-6eeb-52a4-b2e8-dfe83710b3f2 --> `LanguageExtension` | `src/pipeline/types.ts` | `95296c49...` |
+| <!-- coderef:uuid=7354baa4-50bc-501a-b7a1-ccb6be0e3b9f --> `RawExportKind` | `src/pipeline/types.ts` | `7354baa4...` |
 | <!-- coderef:uuid=c13c7ac6-faf6-5342-b476-f64b4453835e --> `ApiChangeType` | `src/query/api-diff.ts` | `c13c7ac6...` |
+| <!-- coderef:uuid=06d161d7-f1ac-5e96-a229-5191eae879cc --> `ClonePass` | `src/query/clones.ts` | `06d161d7...` |
 | <!-- coderef:uuid=0f384ba4-c0aa-5f62-99f8-3481c066c634 --> `RuleStatus` | `src/query/dependency-rules.ts` | `0f384ba4...` |
-| <!-- coderef:uuid=830d8bc4-a4fe-53ec-9a65-7855d4d944de --> `EgoGraphDirection` | `src/query/ego-graph.ts` | `830d8bc4...` |
+| <!-- coderef:uuid=1d4e52f8-df4c-5343-95fc-3454ee9b1fec --> `EgoGraphDirection` | `src/query/ego-graph.ts` | `1d4e52f8...` |
 | <!-- coderef:uuid=52f47c63-ee80-53b1-bd90-e0b0fc7d29ce --> `TypeHierarchyDirection` | `src/query/type-hierarchy.ts` | `52f47c63...` |
 | <!-- coderef:uuid=1ce94088-4c5e-5666-b492-fcb31f005850 --> `ScanErrorType` | `src/scanner/error-reporter.ts` | `1ce94088...` |
 | <!-- coderef:uuid=ee0535e8-c87c-591c-8309-ba36bc7575b3 --> `ScanErrorSeverity` | `src/scanner/error-reporter.ts` | `ee0535e8...` |

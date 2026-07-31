@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-20  
+**Generated:** 2026-07-31  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,10 +11,10 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 3,156 |
-| **Total Files** | 487 |
-| **Total Lines** | 130,760 |
-| **Languages** | ts, js, py |
+| **Total Elements** | 3,155 |
+| **Total Files** | 476 |
+| **Total Lines** | 130,909 |
+| **Languages** | ts, py |
 
 ---
 
@@ -22,13 +22,12 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 1,092 | 34.6% |
-| method | 1,009 | 32.0% |
-| interface | 581 | 18.4% |
+| function | 1,048 | 33.2% |
+| method | 1,014 | 32.1% |
+| interface | 600 | 19.0% |
 | class | 109 | 3.5% |
-| type | 93 | 2.9% |
-| component | 2 | 0.1% |
-| constant | 270 | 8.6% |
+| type | 91 | 2.9% |
+| constant | 293 | 9.3% |
 
 ---
 
@@ -38,22 +37,22 @@
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
 | 2 | `src/scanner/tree-sitter-scanner.ts` | 57 | 🔴 Very High |
-| 3 | `assets/map-viewer/viewer.js` | 40 | 🟡 High |
-| 4 | `src/pipeline/extractors/relationship-extractor.ts` | 36 | 🟡 High |
-| 5 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
-| 6 | `src/query/canonical-graph.ts` | 34 | 🟡 High |
-| 7 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
-| 8 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
-| 9 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
-| 10 | `src/search/search-engine.ts` | 31 | 🟡 High |
-| 11 | `src/indexer/index-store.ts` | 30 | 🟡 High |
-| 12 | `src/scanner/scanner.ts` | 30 | 🟡 High |
-| 13 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
-| 14 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
-| 15 | `src/cli/coderef-rag-server.ts` | 28 | 🟢 Medium |
-| 16 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
-| 17 | `src/indexer/relationship-index.ts` | 28 | 🟢 Medium |
-| 18 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
+| 3 | `src/pipeline/extractors/relationship-extractor.ts` | 37 | 🟡 High |
+| 4 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
+| 5 | `src/query/canonical-graph.ts` | 34 | 🟡 High |
+| 6 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
+| 7 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
+| 8 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
+| 9 | `src/search/search-engine.ts` | 31 | 🟡 High |
+| 10 | `src/indexer/index-store.ts` | 30 | 🟡 High |
+| 11 | `src/scanner/scanner.ts` | 30 | 🟡 High |
+| 12 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
+| 13 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
+| 14 | `src/cli/coderef-rag-server.ts` | 28 | 🟢 Medium |
+| 15 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
+| 16 | `src/indexer/relationship-index.ts` | 28 | 🟢 Medium |
+| 17 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
+| 18 | `src/query/clones.ts` | 28 | 🟢 Medium |
 | 19 | `src/cli/coderef-watch.ts` | 27 | 🟢 Medium |
 | 20 | `src/pipeline/call-resolver.ts` | 27 | 🟢 Medium |
 | 21 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
@@ -89,7 +88,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 3,156 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 3,155 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 
