@@ -7,6 +7,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-07-31] — MCP-server decomposition + structural integrity: SCIP live overlay, dependency-rules dogfood, headers @100%, cycles 2 → 0
+
+WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 (7-phase rolling; commits `50ac709`, `f8b4bb0`, `50e5b36`, `237952d`, `dc00fda`, `986a863`, `88fd3df`). Suite at close: 2271 passed / 26 skipped / 0 failed; both tsconfigs build clean; arch gate 7/7 exit 0.
+
+### Changed
+- **P1 — Decomposition** (`50ac709`): `src/cli/coderef-mcp-server.ts` 3,998 → 1,087 lines; per-family handler modules under `src/cli/mcp/` (`context-tools`, `graph-tools`, `lookup-tools`, `map-tools`, `rag-tools`, `verify-tools`, `shared`). All 36 `registerTool` blocks — names, input schemas, behavior — byte-compatible.
+- **P7 — Small structural cleanups** (`88fd3df`): js-call-detector SCC broken structurally (analyzer↔index cycle gone); type-position `import()` annotations no longer emit runtime CALL facts (10 spurious SCIP-flipped resolved edges removed); layer-drift excludes `test_support` from dominance votes (drift schemaVersion 1.0.0 → 1.1.0); noregress test output redirected to a temp dir (suite-scale clobber hazard killed, byte-identity machine-proven); `utils/fs.ts` family + `demo-all-modules.ts` deleted. **Census after-proof: dependency cycles 2 → 0 (repo is cycle-free); headers 358/358 files @ 100.00%; resolution 23.42 → 23.39 (the removed edges were fake-resolved — a rate-honesty improvement).**
+
+### Added
+- **P2 — SCIP live resolution overlay** (`f8b4bb0`): opt-in `populate-coderef --scip <path-to-.scip>` post-resolution overlay flips co-located unresolved/ambiguous **call** edges to `resolved` with SCIP provenance (`evidence.kind:'scip'`, confidence tier `heuristic`). No-regress by construction: already-resolved edges untouched, no edges invented, no `.scip` = zero change.
+- **P3 — Dependency-rules dogfood** (`50e5b36`): the repo commits its own `.coderef/rules.json` (7 forbid rules) and gates CI via `npm run arch:gate`.
+- **P4 — Subprocess-aware test linkage** (`237952d`): CLI subprocess tests (spawned bins) now produce visible test→src edges instead of vanishing from `tests_for_change`/testLinkage.
+- **P5 — `.coderefignore` scan scope** (`dc00fda`): self-scan noise excluded at the ignore layer + a dogfood suite pinning the patterns.
+- **P6 — Semantic headers** (`986a863`): header coverage driven to 358/358 files @ 100.00% on the scan universe.
+- **P7 — Provider offline tests** (`88fd3df`): 9 no-network tests pin the provider contract — `createLLMProvider` constructs OLLAMA by default even with cloud keys present in env; explicit cloud opt-ins fail loudly. `@anthropic-ai/sdk` is NOT a dependency (AnthropicProvider is quarantined by absence; an ambient type stub satisfies tsc).
+
+## [2026-07-30] — Clone surface extension: true near-miss detection, AST-accurate complexity, LSP 3.17 type hierarchy
+
+WO-EXTEND-THE-CLONE-SURFACE-P10-SRC-QUERY-CLONES-001 (3 phases; commits `ea982d7`, `13b1bb3`, `1cc426c`). Suite at close: 2191 passed / 26 skipped.
+
+### Added
+- **P1 — Near-miss clone passes** (`ea982d7`): `clones` gains three passes (`pass`: `structural` | `lexical` | `near_miss`). Lexical groups elements with IDENTICAL persisted `normalizedBodyHash` (byte-level copy-paste, same-body-different-name); near_miss (opt-in, Deckard-style) pairs elements whose persisted `astFingerprint` vectors meet `similarity_threshold` (default 0.9, normalized-L1). CLI mirrors: `--pass`, `--similarity-threshold`, `--min-body-length`.
+- **P2 — AST-accurate metrics** (`13b1bb3`): the scanner fills `ElementData.complexity` from real AST metrics, giving the clone/complexity surfaces a persisted substrate.
+- **P3 — LSP 3.17 type hierarchy** (`1cc426c`): `type_hierarchy` gains `item_format:"lsp"` (CLI `--lsp`) — an additive LSP 3.17 `TypeHierarchyItem` projection (numeric SymbolKind, `file://` uri, 0-based ranges), degrading to a disclosed single-line range on older indexes.
+
+## [2026-07-20] — Leverage wiring: one-call orientation + pre-commit dossier (MCP 34 → 36 tools)
+
+WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 core legs (commits `a0eff4e`, `7602eab`, `16154db`; the program's other phases were fleet-side skill/playbook sync).
+
+### Added
+- **`orient`** (`7602eab`): one-call first-turn orientation — ONE token-budgeted envelope composing the skeleton map, `codebase_summary` toplines, validation trust numbers, both staleness axes, and top-10 hotspots. `rag_search` gains an in-band `vector_staleness` WARN when vectors lag the index.
+- **`change_dossier`** (`16154db`): the pre-commit pre-flight in one call — `diff_impact` + `tests_for_change` + `api_diff` (delta mode) + `dependency_rules`, composed with per-leg no-data honesty. `tests_for_change` now emits a ready-to-run `run_command` when a runner is detectable.
+- **Server self-declaration** (`a0eff4e`): the MCP `initialize` instructions string declares the repo-agnostic contract and write scope.
+
+## [2026-07-19] — Genre features program: verify + lookup tool families (MCP 26 → 34 tools)
+
+WO-CODE-INTELLIGENCE-GENRE-FEATURES-PROGRAM-001 (11 shipped phases; core commits `1e02d22`, `76bbff9`, `2062ca3`+`d41a6b0`, `e1c2ada`, `8cc63d1`+`92ae446`, `1dbb781`, `843476e`+`5c5acc2`, `d87308e`, `185c2ca`). Eight new MCP tools, each with a `coderef-analyze --type` CLI mirror; all surfaces-not-verdicts with explicit no-data:
+
+### Added
+- `tests_for_change` — diff-to-test-selection ranked by directness (P1, `1e02d22`)
+- Ownership/knowledge map block on the map surface (P2, `76bbff9`)
+- `ast_search` — tree-sitter S-expression structural search (P3, `2062ca3` + lang-enum remediation `d41a6b0`)
+- `type_hierarchy` — supertypes/subtypes over newly-populated `extends`/`implements` heritage edges (P5, `e1c2ada`)
+- `api_diff` — exported-API-surface diff over a snapshot baseline (P6, `8cc63d1` + `92ae446`)
+- `dependency_rules` — declared-architecture constraint gate over `.coderef/rules.json` (P7, `1dbb781`)
+- `docstrings` — per-element docstring surface with per-language capture disclosure (P8, `843476e` + `5c5acc2`)
+- `clones` — signature-clone surface (P10, `d87308e`)
+- `scip_resolution_delta` — SCIP-vs-CodeRef resolution delta, scope-A read-only (P11, `185c2ca`)
+
+P12 (cross-repo) deferred — carried as STUB-6PGFZ3.
+
+## [2026-07-18] — populate `--source-headers` path scope
+
+WO-ADD-A-PATH-SCOPE-ALLOWLIST-DENYLIST-TO-POPULATE-001 (commits `eefd44e`, docs `2e5796a`): `populate-coderef --source-headers` gains `--include` / `--exclude` glob path-scope (minimatch, filter at the WRITE loop) so header stamping can target or spare subtrees.
+
 ## [2026-07-17] — Agentic Coding Intelligence Program: 11-phase agent-orientation, retrieval, and trust upgrade (MCP 24 → 26 tools; MapData 1.4.0 → 1.5.0)
 
 WO-AGENTIC-CODING-INTELLIGENCE-PROGRAM-001 (11-phase rolling program; commits `3a38d58`, `83183a3`, `d872add`, `ccaf089`, `7dde915`, `997656a`, `2ca67ec`, `2c05405`, `25e5930`, `4b211be`, `b1b9ba2`). Each phase maps a validated best-in-class system (Aider repo-map, CodeScene, SCIP/Glean, RepoGraph, Cursor Merkle sync, Anthropic tool-design, Serena, Sourcegraph Cody, Feldthaus ACG) onto a concrete coderef-core gap. Every block is **surfaces, not verdicts** and additive (omitting a new flag preserves prior behavior byte-for-byte). Suite at close: 1931 passed / 26 skipped (190 files); zero regressions.

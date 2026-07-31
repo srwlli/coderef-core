@@ -1,9 +1,9 @@
 # CodeRef Core Architecture
 
-**Last updated:** 2026-05-05 (Phase 8 — pipeline rebuild close)
+**Last updated:** 2026-07-31 (consumer-surfaces addendum; pipeline narrative from the 2026-05-05 Phase 8 rebuild close)
 **Status:** post-rebuild canonical reference
 
-This document describes the architecture of `@coderef/core` after the 9-phase pipeline rebuild. It focuses on the phase ordering, the artifacts each phase produces, and the boundaries between internal pipeline state and exported consumer artifacts. For schema details see [docs/SCHEMA.md](./SCHEMA.md); for the public API surface see [docs/API.md](./API.md).
+This document describes the architecture of `@coderef/core` after the 9-phase pipeline rebuild. It focuses on the phase ordering, the artifacts each phase produces, and the boundaries between internal pipeline state and exported consumer artifacts. The pipeline narrative below is unchanged since the rebuild; the consumer surfaces built on top of it since (query projections, map, MCP server, SCIP overlay) are described in **Consumer surfaces over the substrate**. For schema details see [docs/SCHEMA.md](./SCHEMA.md); for the public API surface see [docs/API.md](./API.md).
 
 ---
 
@@ -172,7 +172,20 @@ The CLI (`populate-coderef`) loads `layerEnum` from `ASSISTANT/STANDARDS/layers.
 - Emits an `IndexingResult` with the top-level `status: 'success' | 'partial' | 'failed'` per the DR-PHASE-7-C threshold table.
 - Wires `--layer` / `--capability` filter pass-through to the vector store metadata filter (DR-PHASE-7-D — capped at two new flags on `rag-search`; no new flags on `rag-index`).
 
-The post-Phase-7 baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`): `valid_edge_count=3464`, `header_missing_count=262`, all other counts `0`.
+The post-Phase-7 baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`): `valid_edge_count=3464`, `header_missing_count=262`, all other counts `0`. (Current self-scan, 2026-07-31: `valid_edge_count=9680`, `resolution_rate=23.39%`, headers 358/358 files @ 100.00%, dependency cycles 0.)
+
+---
+
+## Consumer surfaces over the substrate (2026-05 → 2026-07)
+
+Everything below is a **read-side projection over the exported artifacts** the pipeline produces (`index.json`, `graph.json`, `validation-report.json`) — none of it feeds back into pipeline state.
+
+- **`src/query/`** — genre-feature projections over `ExportedGraph`/`index.json`: what-calls/imports/depends walks, impact BFS, hotspots, cycles (Tarjan SCC), clones (three passes over the extract-time body substrate), tests-for-change, docstrings, ownership, api-diff (exports-manifest differ), type-hierarchy (heritage edges), scip-resolution-delta. Each projection has an MCP tool and a `coderef-analyze --type` CLI mirror emitting the same envelope.
+- **`src/map/`** — the universal repo map (MapData 1.5): file-level dependency projection plus graph analytics (communities, centrality, bridges), per-edge evidence, declared-vs-detected layer drift, and engineering-metrics overlays; emitted as a self-contained static bundle under `.coderef/map/`.
+- **MCP server** — `src/cli/coderef-mcp-server.ts` is a thin registrar (36 `registerTool` blocks) delegating to per-family handler modules under `src/cli/mcp/` (`context-tools`, `graph-tools`, `lookup-tools`, `map-tools`, `rag-tools`, `verify-tools`, `shared`) — decomposed from a 3,998-line monolith (WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 P1). Repo-agnostic: every tool requires `project_root`; typed against `ExportedGraph` so schema drift is a compile error. Write scope is `.coderef/`-confined (`reindex`, `rag_index`, `map`, `api_diff` snapshot mode).
+- **SCIP overlay seam** — `populate-coderef --scip <path>` runs an opt-in **post-resolution overlay** after Phase 4: co-located unresolved/ambiguous call edges flip to `resolved` with `evidence.kind:'scip'` (confidence `heuristic`). It never touches already-resolved edges and never runs without a `.scip` file — the pipeline's own resolution passes are unchanged.
+- **Extract-time body substrate** — the scanner persists `normalizedBodyHash`, `astFingerprint`, and AST-accurate `ElementData.complexity` at extract time (Phases 1–2), which is what makes the lexical/near-miss clone passes and complexity surfaces possible without re-parsing.
+- **Heritage edges** — the pipeline populates `extends`/`implements` edges (Phase 5 input), consumed by `type_hierarchy` (including the additive LSP 3.17 `TypeHierarchyItem` projection).
 
 ---
 
@@ -198,7 +211,8 @@ Header grammar is similarly canonical in ASSISTANT (`SKILLS/ANALYSIS/analyze-cod
 
 - [docs/SCHEMA.md](./SCHEMA.md) — full type reference (scanner, relationship, resolution, graph, validation, indexing)
 - [docs/HEADER-GRAMMAR.md](./HEADER-GRAMMAR.md) — `@coderef-semantic:1.0.0` BNF mirror
-- [docs/CLI.md](./CLI.md) — CLI flag reference for the post-rebuild surface (`--strict-headers`, `--layer`, `--capability`)
+- [docs/CLI.md](./CLI.md) — CLI reference for all 19 bins + the 36-tool MCP server section
+- [docs/AGENT-CONTRACT.md](./AGENT-CONTRACT.md) — the agent-consumer contract over the artifacts
 - [docs/API.md](./API.md) — programmatic API contract
 - [/AGENTS.md](../AGENTS.md) — agent usage contract
 - Phase archives: `coderef/archived/pipeline-*/ARCHIVED.md`

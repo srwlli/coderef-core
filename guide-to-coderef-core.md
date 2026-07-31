@@ -1,5 +1,13 @@
 # Guide to Coderef-Core: The Engine Behind Semantic Code References
 
+> **STATUS: HISTORICAL (banner added 2026-07-31).** This guide predates the pipeline
+> rebuild, the 19-bin CLI family, and the 36-tool repo-agnostic MCP server, and is kept
+> as background reading only. For current truth use: [README.md](./README.md) (feature
+> tour), [docs/CLI.md](./docs/CLI.md) (all bins + the MCP tool table),
+> [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) (pipeline + consumer surfaces), and
+> [docs/AGENT-CONTRACT.md](./docs/AGENT-CONTRACT.md) (agent consumption contract).
+> Where this file and those disagree, those win.
+
 This guide provides a comprehensive overview of the coderef-core module, the foundational library that powers the entire Coderef2 semantic reference system.
 
 ## Overview
