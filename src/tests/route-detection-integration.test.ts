@@ -7,6 +7,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { scanCurrentElements } from '../scanner/scanner.js';
 import { generateRoutes } from '../generator/generateRoutes.js';
+import { PipelineOrchestrator } from '../pipeline/orchestrator.js';
+import { RoutesGenerator } from '../pipeline/generators/routes-generator.js';
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import * as os from 'os';
@@ -539,6 +541,224 @@ function normalFunction() {
 
       expect(routes.totalRoutes).toBe(0);
       expect(Object.keys(routes.byFramework)).toHaveLength(0);
+    });
+  });
+
+  // ==========================================================================
+  // WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 Phase 1 (REC-001)
+  //
+  // The blocks above exercise the LEGACY library path (scanCurrentElements ->
+  // generateRoutes). That path still works and stays supported — but it had no
+  // production caller, which is why .coderef/routes.json went stale in March 2026
+  // and .coderef/frontend-calls.json was never written at all.
+  //
+  // These tests cover the PIPELINE path: PipelineOrchestrator carries route +
+  // frontend-call facts on its single pass, and RoutesGenerator emits both
+  // artifacts during a normal populate run.
+  // ==========================================================================
+  describe('Populate-pipeline route production (WO-API-SURFACE-MAPPING P1)', () => {
+    it('emits routes.json and frontend-calls.json from a pipeline run', async () => {
+      // Multi-framework fixture: an Express server, a Next.js App Router handler,
+      // and a React client that calls both.
+      await fs.writeFile(
+        path.join(testDir, 'server.js'),
+        `const express = require('express');\n` +
+          `const app = express();\n` +
+          `app.get('/api/users', (req, res) => res.json([]));\n` +
+          `app.post('/api/users', (req, res) => res.json({}));\n`,
+      );
+
+      const apiDir = path.join(testDir, 'app', 'api', 'items');
+      await fs.mkdir(apiDir, { recursive: true });
+      await fs.writeFile(
+        path.join(apiDir, 'route.ts'),
+        `export async function GET() { return new Response('[]'); }\n` +
+          `export async function POST() { return new Response('{}'); }\n`,
+      );
+
+      await fs.writeFile(
+        path.join(testDir, 'client.tsx'),
+        `export function Users() {\n` +
+          `  const load = () => fetch('/api/users');\n` +
+          `  const create = () => fetch('/api/users', { method: 'POST' });\n` +
+          `  const items = () => axios.get('/api/items');\n` +
+          `  return null;\n` +
+          `}\n`,
+      );
+
+      const orchestrator = new PipelineOrchestrator();
+      const state = await orchestrator.run(testDir, { languages: ['js', 'ts', 'tsx'] });
+
+      // The facts ride pipeline state...
+      expect(state.routes).toBeDefined();
+      expect(state.frontendCalls).toBeDefined();
+      expect(state.routes!.length).toBeGreaterThan(0);
+      expect(state.frontendCalls!.length).toBeGreaterThan(0);
+
+      // ...and MUST NOT pollute the element inventory. Stamping carrier elements
+      // into state.elements would move index.json counts and every coverage /
+      // complexity denominator derived from it.
+      expect(state.elements.some(e => e.route !== undefined)).toBe(false);
+      expect(state.elements.some(e => e.frontendCall !== undefined)).toBe(false);
+
+      const outputDir = path.join(testDir, '.coderef');
+      await new RoutesGenerator().generate(state, outputDir);
+
+      const routes = JSON.parse(
+        await fs.readFile(path.join(outputDir, 'routes.json'), 'utf-8'),
+      );
+      const calls = JSON.parse(
+        await fs.readFile(path.join(outputDir, 'frontend-calls.json'), 'utf-8'),
+      );
+
+      // Framework grouping survives the pipeline path.
+      expect(routes.totalRoutes).toBeGreaterThan(0);
+      expect(Object.keys(routes.byFramework).length).toBeGreaterThan(0);
+
+      // totalRoutes MUST equal the number of routes actually present. Until P1 this
+      // could diverge: byFramework was typed to only flask/fastapi/express/nextjs while
+      // the registry also ships sveltekit/nuxt/remix detectors, and formatRoutesJson
+      // pushed through an optional chain — so a SvelteKit route was counted and then
+      // dropped, producing an artifact that contradicted its own header.
+      const emitted = Object.values(routes.byFramework).flat();
+      expect(emitted).toHaveLength(routes.totalRoutes);
+
+      // The detectors reached the file-based frameworks, not just the content-regex
+      // ones. nextjs-detector matches on '/app/api/' — a literal forward-slash segment —
+      // so this assertion is what catches a regression to native-path handoff, under
+      // which every file-based framework silently detects nothing on Windows.
+      const detected = Object.keys(routes.byFramework);
+      expect(detected).toContain('nextjs');
+      expect(detected).toContain('express');
+
+      // The metadata records THIS project, not whatever checkout last ran a scan.
+      // The artifact this producer replaces carried a foreign projectPath, which let
+      // a passing validate-routes run assert against a five-month-old inventory.
+      expect(routes.metadata.projectPath).toBe(testDir);
+      expect(calls.metadata.projectPath).toBe(testDir);
+
+      // Client calls are grouped by call type with confidence carried verbatim.
+      expect(calls.totalCalls).toBeGreaterThan(0);
+      const allCalls = Object.values(calls.byCallType).flat() as Array<{
+        path: string;
+        confidence: number;
+      }>;
+      expect(allCalls.some(c => c.path === '/api/users')).toBe(true);
+      expect(allCalls.every(c => c.confidence === 100 || c.confidence === 80)).toBe(true);
+    });
+
+    it('does NOT harvest route-shaped literals out of test files', async () => {
+      // THE REGRESSION THIS GUARDS. The artifact Phase 1 deleted claimed 34 express
+      // routes in a repo that is a CLI library exposing zero HTTP endpoints. All 34
+      // were regex matches on route-shaped STRING LITERALS inside test fixtures. The
+      // express detector matches /(?:app|router)\.(get|post|...)/ against raw content,
+      // so a test that merely DESCRIBES a route is indistinguishable from one that
+      // SERVES it — unless test-origin files are excluded up front.
+      const testsDir = path.join(testDir, '__tests__');
+      await fs.mkdir(testsDir, { recursive: true });
+      await fs.writeFile(
+        path.join(testsDir, 'orphan-detection.test.js'),
+        `it('detects orphans', () => {\n` +
+          `  const code = "app.get('/api/phantom', handler)";\n` +
+          `  expect(detect(code)).toBe(true);\n` +
+          `});\n`,
+      );
+      await fs.writeFile(
+        path.join(testDir, 'report-generator.test.js'),
+        `const sample = "router.post('/api/also-phantom', handler)";\n`,
+      );
+
+      const orchestrator = new PipelineOrchestrator();
+      const state = await orchestrator.run(testDir, { languages: ['js'] });
+
+      expect(state.routes ?? []).toHaveLength(0);
+
+      const outputDir = path.join(testDir, '.coderef');
+      await new RoutesGenerator().generate(state, outputDir);
+
+      const routes = JSON.parse(
+        await fs.readFile(path.join(outputDir, 'routes.json'), 'utf-8'),
+      );
+      expect(routes.totalRoutes).toBe(0);
+    });
+
+    it('does NOT harvest routes out of comments and JSDoc examples', async () => {
+      // The second phantom class, found by running the reconnected producer against
+      // CODEREF-CORE itself: it reported 7 endpoints for a CLI library that exposes
+      // none. Every one came from a comment in the DETECTORS' OWN SOURCE — e.g.
+      // route-parsers.ts:81 ` * Parse Express route: app.get('/path', handler)` and
+      // scanner.ts:200 ` // Flask: @app.route('/path', methods=['GET'])`.
+      //
+      // A test-origin filter cannot reach these: they live in production source. The
+      // content-regex detectors match raw text and cannot distinguish a route
+      // DEFINITION from prose DESCRIBING one, so comment bodies are blanked first.
+      await fs.writeFile(
+        path.join(testDir, 'documented.js'),
+        `/**\n` +
+          ` * Parse Express route: app.get('/path', handler)\n` +
+          ` * @example\n` +
+          ` *   parseExpressRoute("app.get('/api/users', getUsers)", 28)\n` +
+          ` */\n` +
+          `// Flask: @app.route('/api/commented', methods=['GET'])\n` +
+          `export function parseRoute(line) { return line; }\n`,
+      );
+      await fs.writeFile(
+        path.join(testDir, 'documented.py'),
+        `# @app.route('/api/py-commented')\n` +
+          `def helper():\n` +
+          `    return 1\n`,
+      );
+
+      const orchestrator = new PipelineOrchestrator();
+      const state = await orchestrator.run(testDir, { languages: ['js', 'py'] });
+
+      expect(state.routes ?? []).toHaveLength(0);
+    });
+
+    it('still detects a real route on a line carrying a trailing comment', async () => {
+      // The guard above must not over-reach. Blanking is line-oriented and only fires
+      // on lines that are ENTIRELY comment, so a genuine definition with a trailing
+      // note stays visible.
+      await fs.writeFile(
+        path.join(testDir, 'srv.js'),
+        `const app = require('express')();\n` +
+          `app.get('/api/real', handler); // still a real route\n`,
+      );
+
+      const orchestrator = new PipelineOrchestrator();
+      const state = await orchestrator.run(testDir, { languages: ['js'] });
+
+      expect((state.routes ?? []).length).toBeGreaterThan(0);
+      expect((state.routes ?? [])[0].route.path).toBe('/api/real');
+    });
+
+    it('emits an honest empty artifact for a project with no API surface', async () => {
+      // A CLI library legitimately exposes zero HTTP routes. Zero is a VALID result —
+      // but it must be written as a real artifact with correct metadata, not skipped.
+      // An absent file reads as "never scanned"; an empty one reads as "scanned, none
+      // found". Those are different facts and the consumer needs to tell them apart.
+      await fs.writeFile(
+        path.join(testDir, 'util.ts'),
+        `export function add(a: number, b: number): number { return a + b; }\n`,
+      );
+
+      const orchestrator = new PipelineOrchestrator();
+      const state = await orchestrator.run(testDir, { languages: ['ts'] });
+
+      const outputDir = path.join(testDir, '.coderef');
+      await new RoutesGenerator().generate(state, outputDir);
+
+      const routes = JSON.parse(
+        await fs.readFile(path.join(outputDir, 'routes.json'), 'utf-8'),
+      );
+      const calls = JSON.parse(
+        await fs.readFile(path.join(outputDir, 'frontend-calls.json'), 'utf-8'),
+      );
+
+      expect(routes.totalRoutes).toBe(0);
+      expect(routes.metadata.projectPath).toBe(testDir);
+      expect(calls.totalCalls).toBe(0);
+      expect(calls.metadata.projectPath).toBe(testDir);
     });
   });
 });

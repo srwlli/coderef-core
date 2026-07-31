@@ -32,18 +32,22 @@ export interface RouteElement {
 }
 
 /**
- * Grouped routes by framework
+ * Grouped routes by framework.
+ *
+ * Keyed by the FULL RouteMetadata['framework'] union, not a subset.
+ * WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 P1: this interface
+ * previously declared only flask/fastapi/express/nextjs while the registry has shipped
+ * sveltekit, nuxt, and remix detectors since IMP-CORE-004. formatRoutesJson pushes via
+ * `byFramework[framework]?.push(...)`, so a SvelteKit route was counted in totalRoutes
+ * and then silently discarded by the optional chain — the artifact reported
+ * `totalRoutes: 4` while containing 3. Nothing exercised the producer end-to-end
+ * (saveIndex had no live caller), so the inconsistency was never observable.
  */
 export interface RoutesOutput {
   /** Total number of routes detected */
   totalRoutes: number;
   /** Routes grouped by framework */
-  byFramework: {
-    flask?: RouteElement[];
-    fastapi?: RouteElement[];
-    express?: RouteElement[];
-    nextjs?: RouteElement[];
-  };
+  byFramework: Partial<Record<RouteMetadata['framework'], RouteElement[]>>;
   /** Generation metadata */
   metadata: {
     generatedAt: string;
@@ -90,17 +94,15 @@ export function formatRoutesJson(
   routeElements: RouteElement[],
   projectPath?: string
 ): RoutesOutput {
-  // Group routes by framework
-  const byFramework: RoutesOutput['byFramework'] = {
-    flask: [],
-    fastapi: [],
-    express: [],
-    nextjs: []
-  };
+  // Group routes by framework. Buckets are created on demand rather than
+  // pre-declared, so a framework the detectors support can never be dropped
+  // because this function forgot to list it (the defect fixed in
+  // WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 P1).
+  const byFramework: RoutesOutput['byFramework'] = {};
 
   for (const routeElement of routeElements) {
     const framework = routeElement.route.framework;
-    byFramework[framework]?.push(routeElement);
+    (byFramework[framework] ??= []).push(routeElement);
   }
 
   // Remove empty framework groups

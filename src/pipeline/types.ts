@@ -34,6 +34,7 @@ import type {
   SymbolTable,
   SymbolTableEntry,
 } from './call-resolver.js';
+import type { RouteFact, FrontendCallFact } from './extractors/route-extractor.js';
 import type {
   ValidationError,
   ValidationWarning,
@@ -187,6 +188,20 @@ export interface PipelineState {
    * NOT mutate it.
    */
   callResolutions: CallResolution[];
+  /**
+   * API-surface facts (WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 P1).
+   * Server routes detected by the registered framework detectors, and client-side API
+   * calls detected by the Babel call parsers, both collected on the SAME single pass
+   * that produces elements/imports/calls.
+   *
+   * Deliberately separate from `elements`: stamping carrier elements into the element
+   * inventory would move index.json counts and every coverage/complexity denominator
+   * derived from it. Optional so a PipelineState assembled by a pre-P1 code path (or a
+   * test) still type-checks; a missing/empty value means the extractor did not run,
+   * which is NO-DATA, not "this project exposes no endpoints".
+   */
+  routes?: RouteFact[];
+  frontendCalls?: FrontendCallFact[];
   /** Dependency graph with nodes and edges */
   graph: ExportedGraph;
   /** Source code content indexed by file path */

@@ -32,6 +32,7 @@ import logger from '../utils/logger.js';
 import { GrammarRegistry } from './grammar-registry.js';
 import { ElementExtractor } from './extractors/element-extractor.js';
 import { RelationshipExtractor } from './extractors/relationship-extractor.js';
+import { RouteExtractor, type RouteFact, type FrontendCallFact } from './extractors/route-extractor.js';
 import { loadIgnorePatterns, shouldIgnorePath } from './ignore-rules.js';
 import { globalRegistry } from '../registry/entity-registry.js';
 import { IncrementalCache } from '../cache/incremental-cache.js';
@@ -74,11 +75,13 @@ export class PipelineOrchestrator {
   private registry: GrammarRegistry;
   private elementExtractor: ElementExtractor;
   private relationshipExtractor: RelationshipExtractor;
+  private routeExtractor: RouteExtractor;
 
   constructor() {
     this.registry = GrammarRegistry.getInstance();
     this.elementExtractor = new ElementExtractor();
     this.relationshipExtractor = new RelationshipExtractor();
+    this.routeExtractor = new RouteExtractor();
   }
 
   /**
@@ -163,6 +166,10 @@ export class PipelineOrchestrator {
     const allHeaderFacts = new Map<string, HeaderFact>();
     const allHeaderImportFacts: HeaderImportFact[] = [];
     const allHeaderParseErrors: HeaderParseError[] = [];
+    // API-surface facts (WO-API-SURFACE-MAPPING-...-001 P1). Accumulated exactly like
+    // the arrays above so routes ride the single pass rather than a second file walk.
+    const allRoutes: RouteFact[] = [];
+    const allFrontendCalls: FrontendCallFact[] = [];
     const sources = new Map<string, string>();
     // P5 (ADJ-03): capture the per-file fact bundle + file order so a full build
     // can persist the complete fact set for a later graph-safe incremental pass.
@@ -194,6 +201,8 @@ export class PipelineOrchestrator {
           if (result.headerFact.parseErrors) {
             allHeaderParseErrors.push(...result.headerFact.parseErrors);
           }
+          allRoutes.push(...result.routes);
+          allFrontendCalls.push(...result.frontendCalls);
           sources.set(filePath, result.content);
           fileOrder.push(filePath);
           factBundles.set(filePath, {
@@ -207,6 +216,8 @@ export class PipelineOrchestrator {
             rawExports: result.rawExports,
             headerFact: result.headerFact,
             headerImportFacts: result.headerImportFacts,
+            routes: result.routes,
+            frontendCalls: result.frontendCalls,
             content: result.content,
           });
           filesScanned++;
@@ -248,6 +259,8 @@ export class PipelineOrchestrator {
       headerParseErrors: allHeaderParseErrors,
       importResolutions: [],
       callResolutions: [],
+      routes: allRoutes,
+      frontendCalls: allFrontendCalls,
       graph,
       sources,
       options,
@@ -456,6 +469,8 @@ export class PipelineOrchestrator {
           rawExports: result.rawExports,
           headerFact: result.headerFact,
           headerImportFacts: result.headerImportFacts,
+          routes: result.routes,
+          frontendCalls: result.frontendCalls,
           content: result.content,
         });
       } catch (error) {
@@ -505,6 +520,11 @@ export class PipelineOrchestrator {
     const allHeaderFacts = new Map<string, HeaderFact>();
     const allHeaderImportFacts: HeaderImportFact[] = [];
     const allHeaderParseErrors: HeaderParseError[] = [];
+    // API-surface facts must survive the incremental path too, or a `--incremental`
+    // populate would silently emit an EMPTY routes.json over a correct one — a
+    // no-data artifact indistinguishable from "this project exposes no endpoints".
+    const allRoutes: RouteFact[] = [];
+    const allFrontendCalls: FrontendCallFact[] = [];
     const sources = new Map<string, string>();
 
     for (const filePath of set.order) {
@@ -524,6 +544,8 @@ export class PipelineOrchestrator {
       allHeaderFacts.set(filePath, bundle.headerFact);
       allHeaderImportFacts.push(...bundle.headerImportFacts);
       if (bundle.headerFact.parseErrors) allHeaderParseErrors.push(...bundle.headerFact.parseErrors);
+      allRoutes.push(...(bundle.routes ?? []));            // optional pre-P1 cache field
+      allFrontendCalls.push(...(bundle.frontendCalls ?? []));
       sources.set(filePath, bundle.content);
     }
 
@@ -535,6 +557,7 @@ export class PipelineOrchestrator {
       rawImports: allRawImports, rawCalls: allRawCalls, rawExports: allRawExports,
       headerFacts: allHeaderFacts, headerImportFacts: allHeaderImportFacts,
       headerParseErrors: allHeaderParseErrors,
+      routes: allRoutes, frontendCalls: allFrontendCalls,
       importResolutions: [], callResolutions: [], graph, sources, options,
       metadata: {
         startTime, filesScanned: set.order.length,
@@ -670,10 +693,18 @@ export class PipelineOrchestrator {
     headerFact: HeaderFact;
     headerStatus: HeaderStatus;
     headerImportFacts: HeaderImportFact[];
+    routes: RouteFact[];
+    frontendCalls: FrontendCallFact[];
     content: string;
   }> {
     // Read file content
     const content = await fs.readFile(filePath, 'utf-8');
+
+    // API-surface facts ride this same pass (WO-API-SURFACE-MAPPING-...-001 P1).
+    // Extracted BEFORE the parser check on purpose: route + frontend-call detection is
+    // regex/Babel-based and does not depend on a tree-sitter grammar being available,
+    // so a file whose language has no loaded grammar can still contribute route facts.
+    const apiSurface = this.routeExtractor.extract(filePath, content);
 
     // Get parser for this language
     const parser = await this.registry.getParser(language);
@@ -692,6 +723,8 @@ export class PipelineOrchestrator {
         headerFact: { sourceFile: filePath },
         headerStatus: 'missing',
         headerImportFacts: [],
+        routes: apiSurface.routes,
+        frontendCalls: apiSurface.frontendCalls,
         content,
       };
     }
@@ -748,6 +781,8 @@ export class PipelineOrchestrator {
       headerFact,
       headerStatus,
       headerImportFacts,
+      routes: apiSurface.routes,
+      frontendCalls: apiSurface.frontendCalls,
       content,
     };
   }

@@ -27,6 +27,7 @@ import { DiagramGenerator } from '../pipeline/generators/diagram-generator.js';
 import { ExportGenerator } from '../pipeline/generators/export-generator.js';
 import { ContextGenerator } from '../pipeline/generators/context-generator.js';
 import { RegistryGenerator } from '../pipeline/generators/registry-generator.js';
+import { RoutesGenerator } from '../pipeline/generators/routes-generator.js';
 import {
   detectProjectLanguages,
   formatSupportedLanguages,
@@ -408,6 +409,7 @@ GENERATORS:
   diagrams     - diagrams/*.mmd, *.dot (visual graphs)
   exports      - exports/graph.json, graph.jsonld
   context      - context.json, context.md (project overview)
+  routes       - routes.json, frontend-calls.json (API surface)
 
 EXAMPLES:
   # Scan current directory (minimal mode)
@@ -658,6 +660,10 @@ export async function runPopulate(
       { name: 'diagrams', instance: new DiagramGenerator() },
       { name: 'exports', instance: new ExportGenerator() },
       { name: 'context', instance: new ContextGenerator() },
+      // WO-API-SURFACE-MAPPING-...-001 P1: the route + frontend-call producer.
+      // Runs in `full` mode only — the API surface is enrichment, not core
+      // structure, so `minimal` and `context` modes stay unchanged.
+      { name: 'routes', instance: new RoutesGenerator() },
     ];
 
     // Determine which generators to run

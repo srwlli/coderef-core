@@ -44,11 +44,12 @@ import type {
   HeaderFact,
   HeaderImportFact,
 } from './types.js';
+import type { RouteFact, FrontendCallFact } from './extractors/route-extractor.js';
 
 /** Canonical on-disk filename under .coderef/. */
 export const FACT_SET_FILENAME = 'incremental-facts.json';
 /** Bump when the persisted shape changes so stale caches are ignored, not misread. */
-const FACT_SET_VERSION = 2; // v2: FileFactBundle.heritage (WO-...-GENRE-FEATURES-PROGRAM-001 P5)
+const FACT_SET_VERSION = 3; // v3: FileFactBundle.routes + .frontendCalls (WO-API-SURFACE-MAPPING-...-001 P1)
 
 /**
  * The complete per-file output of PipelineOrchestrator.processFile() — every
@@ -73,6 +74,15 @@ export interface FileFactBundle {
   rawExports: RawExportFact[];
   headerFact: HeaderFact;
   headerImportFacts: HeaderImportFact[];
+  /**
+   * API-surface facts (WO-API-SURFACE-MAPPING-...-001 P1). Optional for the same reason
+   * heritage is: a bundle read from a pre-v3 cache still deserializes, and a missing field
+   * reads as "the route extractor did not run for this file" (absence=no-data), never as
+   * "this file exposes no endpoints". FACT_SET_VERSION is bumped to 3 so a pre-v3 cache is
+   * ignored on load rather than misread as an empty API surface.
+   */
+  routes?: RouteFact[];
+  frontendCalls?: FrontendCallFact[];
   content: string;
 }
 
