@@ -28,17 +28,6 @@
     render(d, val);
   }
 
-  // Serve mode leaves the placeholder null; fetch the sibling bundle. The
-  // validation report has no served counterpart and stays no-data.
-  if (!data && typeof fetch === 'function' && location.protocol !== 'file:') {
-    fetch('./data.json')
-      .then(function (r) { return r.ok ? r.json() : null; })
-      .then(boot)
-      .catch(function () { boot(null); });
-  } else {
-    boot(data);
-  }
-
   // ---------- helpers ----------
   function esc(s) {
     return String(s === null || s === undefined ? '' : s)
@@ -113,9 +102,9 @@
   }
 
   function rankRows(rows, cols) {
-    return rows.map(function (r) {
+    return rows.map(function (r, i) {
       return '<tr>' + cols.map(function (c) {
-        return '<td class="' + (c.cls || '') + '">' + c.get(r) + '</td>';
+        return '<td class="' + (c.cls || '') + '">' + c.get(r, i + 1) + '</td>';
       }).join('') + '</tr>';
     }).join('');
   }
@@ -171,7 +160,10 @@
       {
         label: 'headers',
         value: v && v.header_coverage_pct != null ? v.header_coverage_pct + '%' : null,
-        sub: v ? nf(v.header_defined_count) + ' defined &middot; ' + nf(v.header_missing_count) + ' missing' : null,
+        // stat(), not nf(): a report present but missing one COUNT renders that
+        // count as no-data. Bare nf() emitted the string "undefined" on screen —
+        // the same contract break as an unrendered disclosure, one row over.
+        sub: v ? stat(v.header_defined_count) + ' defined &middot; ' + stat(v.header_missing_count) + ' missing' : null,
       },
       {
         label: 'test-linked',
@@ -231,9 +223,9 @@
           table('<th>file</th><th class="num">deg</th><th class="num">in</th><th class="num">out</th><th class="num">btw</th>',
             rankRows(centrality.slice(0, 8), [
               pathCol,
-              { get: function (r) { return nf(r.degree); }, cls: 'num' },
-              { get: function (r) { return nf(r.inDegree); }, cls: 'num' },
-              { get: function (r) { return nf(r.outDegree); }, cls: 'num' },
+              { get: function (r) { return stat(r.degree); }, cls: 'num' },
+              { get: function (r) { return stat(r.inDegree); }, cls: 'num' },
+              { get: function (r) { return stat(r.outDegree); }, cls: 'num' },
               { get: function (r) { return typeof r.betweenness === 'number' ? r.betweenness.toFixed(1) : NO_DATA; }, cls: 'num' },
             ])))
       + panel('Coupling',
@@ -242,8 +234,8 @@
           table('<th>file</th><th class="num">aff</th><th class="num">eff</th><th class="num">I</th>',
             rankRows(coupling.slice(0, 8), [
               pathCol,
-              { get: function (r) { return nf(r.afferent); }, cls: 'num' },
-              { get: function (r) { return nf(r.efferent); }, cls: 'num' },
+              { get: function (r) { return stat(r.afferent); }, cls: 'num' },
+              { get: function (r) { return stat(r.efferent); }, cls: 'num' },
               { get: function (r) { return typeof r.instability === 'number' ? r.instability.toFixed(2) : NO_DATA; }, cls: 'num' },
             ])))
       + '</div>');
@@ -291,7 +283,7 @@
           table('<th>file</th><th class="num">elements</th>',
             rankRows(largest.slice(0, 8), [
               pathCol,
-              { get: function (r) { return nf(r.elementCount); }, cls: 'num' },
+              { get: function (r) { return stat(r.elementCount); }, cls: 'num' },
             ])))
       + panel('Most dependencies',
           truncBadge(metrics.mostDependencies && metrics.mostDependencies.topTruncated, mostDeps.length, null)
@@ -299,10 +291,119 @@
           table('<th>file</th><th class="num">eff</th><th class="num">aff</th>',
             rankRows(mostDeps.slice(0, 8), [
               pathCol,
-              { get: function (r) { return nf(r.efferent); }, cls: 'num' },
-              { get: function (r) { return nf(r.afferent); }, cls: 'num' },
+              { get: function (r) { return stat(r.efferent); }, cls: 'num' },
+              { get: function (r) { return stat(r.afferent); }, cls: 'num' },
             ])))
       + '</div>');
+
+    // ---------- Hotspots ----------
+    // overlays.hotspots is [{file, score}] — the ranked change-risk surface.
+    var hotspots = (d.overlays && d.overlays.hotspots) || null;
+    out.push(panel('Hotspots',
+      Array.isArray(hotspots)
+        ? '<span class="panel__count">' + nf(hotspots.length) + ' ranked</span>'
+        : '',
+      Array.isArray(hotspots)
+        ? (hotspots.length
+            ? table('<th>file</th><th class="num">score</th>',
+                rankRows(hotspots.slice(0, 25), [
+                  pathCol,
+                  { get: function (r) { return stat(r.score); }, cls: 'num' },
+                ]))
+            : '<div class="legend-rows"><div class="legend-row">'
+              + '<span class="tri tri--absent">&#9675; no hotspots (measured)</span>'
+              + '<span>0</span></div></div>')
+        : '<div class="legend-rows"><div class="legend-row"><span>hotspots</span><span>'
+          + NO_DATA + '</span></div></div>',
+      d.overlays && d.overlays.hotspotsNote));
+
+    // ---------- Cycles ----------
+    // THREE states, and the distinction is the point: a populated array lists
+    // the cycles; an EMPTY array is a measured zero (this repo drove cycles
+    // 2 -> 0, which is a real result worth stating); an ABSENT block is no-data.
+    // Collapsing measured-zero into no-data would erase evidence of the fix.
+    var cycles = (d.overlays && d.overlays.cycles) || null;
+    out.push(panel('Cycles',
+      Array.isArray(cycles)
+        ? '<span class="panel__count">file-level dependency cycles</span>' : '',
+      !Array.isArray(cycles)
+        ? '<div class="legend-rows"><div class="legend-row"><span>cycles</span><span>'
+          + NO_DATA + '</span></div></div>'
+        : (cycles.length
+            ? table('<th class="num">#</th><th>cycle</th>',
+                rankRows(cycles.slice(0, 20), [
+                  { get: function (_r, i) { return String(i); }, cls: 'num' },
+                  { get: function (r) {
+                      var members = Array.isArray(r) ? r : (r && r.path) || [];
+                      return '<span class="path">' + esc(members.join(' → ')) + '</span>';
+                    }, cls: 'path' },
+                ]))
+              + sliceBadge(Math.min(20, cycles.length), cycles.length)
+            : '<div class="legend-rows"><div class="legend-row">'
+              + '<span class="tri tri--absent">&#9675; 0 &mdash; measured</span>'
+              + '<span>no cycles detected</span></div></div>')));
+
+    // ---------- Documentation ----------
+    var docs = metrics.documentation || null;
+    var docSum = (docs && docs.summary) || {};
+    var nonDef = (docs && docs.topNonDefined) || null;
+    out.push(panel('Documentation',
+      docs ? '<span class="panel__count">semantic-header coverage</span>' : '',
+      !docs
+        ? '<div class="legend-rows"><div class="legend-row"><span>documentation</span><span>'
+          + NO_DATA + '</span></div></div>'
+        : '<div class="legend-rows">'
+          + '<div class="legend-row"><span>elements defined</span><span>'
+            + stat(docSum.byStatus && docSum.byStatus.defined) + ' / ' + stat(docSum.totalElements)
+            + '</span></div>'
+          + '<div class="legend-row"><span>missing</span><span>'
+            + stat(docSum.byStatus && docSum.byStatus.missing) + '</span></div>'
+          + '<div class="legend-row"><span>indexed files</span><span>'
+            + stat(docSum.indexedFileCount) + '</span></div>'
+          + '<div class="legend-row"><span>files with non-defined</span><span>'
+            + stat(docSum.filesWithNonDefinedCount) + '</span></div>'
+          + '</div>'
+          // A populated count with an EMPTY list means the names were not
+          // emitted — that is no-data for the names, never "no such files".
+          + (Array.isArray(nonDef) && nonDef.length
+              ? table('<th>file</th><th class="num">non-defined</th><th class="num">total</th>',
+                  rankRows(nonDef.slice(0, 10), [
+                    pathCol,
+                    { get: function (r) { return stat(r.nonDefined); }, cls: 'num' },
+                    { get: function (r) { return stat(r.total); }, cls: 'num' },
+                  ]))
+                + truncBadge(docs.topNonDefinedTruncated, nonDef.length, docSum.filesWithNonDefinedCount)
+              : (docSum.filesWithNonDefinedCount
+                  ? '<p class="panel__note"><span class="panel__note-mark">names</span>'
+                    + 'file names not emitted in this bundle &mdash; ' + NO_DATA + '</p>'
+                  : '')),
+      docs && docs.note));
+
+    // ---------- Bridges ----------
+    // NOTE: members are BARE STRINGS, not {file} objects. pathCol would read
+    // r.file and render blanks that look like no-data.
+    var bridges = analytics.bridges || null;
+    out.push(panel('Bridges',
+      Array.isArray(bridges)
+        ? '<span class="panel__count">' + nf(bridges.length) + ' cross-community seams</span>'
+          + truncBadge(
+              /bridges truncated/i.test((analytics.warnings || []).join(' ')),
+              bridges.length, null)
+        : '',
+      !Array.isArray(bridges)
+        ? '<div class="legend-rows"><div class="legend-row"><span>bridges</span><span>'
+          + NO_DATA + '</span></div></div>'
+        : (bridges.length
+            ? table('<th>file</th>',
+                rankRows(bridges.slice(0, 15), [
+                  { get: function (r) {
+                      return '<span class="path">' + esc(typeof r === 'string' ? r : (r && r.file)) + '</span>';
+                    }, cls: 'path' },
+                ]))
+              + sliceBadge(Math.min(15, bridges.length), bridges.length)
+            : '<div class="legend-rows"><div class="legend-row">'
+              + '<span class="tri tri--absent">&#9675; 0 &mdash; measured</span>'
+              + '<span>no bridges detected</span></div></div>')));
 
     var dc = analytics.deadCode || {};
     out.push(panel('Dead code &mdash; candidates',
@@ -348,5 +449,22 @@
     if (metrics.note) {
       document.getElementById('foot').innerHTML += '<br>' + esc(metrics.note);
     }
+  }
+
+  // ---------- boot ----------
+  // Deliberately LAST. `var NO_DATA` (and the helper vars) hoist as `undefined`,
+  // so booting above their assignments made every no-data marker render as the
+  // literal string "undefined" — a tri-state break that only surfaced once
+  // panels started emitting NO_DATA from the top level of render().
+  //
+  // Serve mode leaves the placeholder null; fetch the sibling bundle. The
+  // validation report has no served counterpart and stays no-data.
+  if (!data && typeof fetch === 'function' && location.protocol !== 'file:') {
+    fetch('./data.json')
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(boot)
+      .catch(function () { boot(null); });
+  } else {
+    boot(data);
   }
 })();

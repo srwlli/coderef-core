@@ -209,6 +209,154 @@ describe('dashboard disclosure contract (WO-RENDER-THE-UNRENDERED-MAPDATA-BLOCKS
   });
 });
 
+describe('dashboard renders the blocks that already ship (P2)', () => {
+  const base = { meta: { source: {} }, analytics: {}, metrics: {}, drift: {}, overlays: {} };
+
+  it('renders the hotspots ranking from overlays.hotspots', () => {
+    const out = allOutput(renderDashboard({
+      ...base,
+      overlays: { hotspots: [{ file: 'src/a.ts', score: 284 }, { file: 'src/b.ts', score: 96 }] },
+    }));
+    expect(out).toContain('Hotspots');
+    expect(out).toContain('src/a.ts');
+    expect(out).toContain('284');
+  });
+
+  it('distinguishes MEASURED-ZERO cycles from absent cycle data', () => {
+    // This distinction is the whole reason the panel exists: this repo drove
+    // cycles 2 -> 0, and "0 measured" is a result, not an absence.
+    const measured = allOutput(renderDashboard({ ...base, overlays: { cycles: [] } }));
+    expect(measured).toContain('0 &mdash; measured');
+    expect(measured).toContain('no cycles detected');
+
+    const absent = allOutput(renderDashboard({ ...base, overlays: {} }));
+    expect(absent).not.toContain('0 &mdash; measured');
+    expect(absent).toContain('no data');
+  });
+
+  it('lists cycles when the overlay carries them', () => {
+    const out = allOutput(renderDashboard({
+      ...base, overlays: { cycles: [['src/a.ts', 'src/b.ts', 'src/a.ts']] },
+    }));
+    expect(out).toContain('src/a.ts → src/b.ts → src/a.ts');
+    expect(out).not.toContain('0 &mdash; measured');
+  });
+
+  it('renders documentation coverage from metrics.documentation', () => {
+    const out = allOutput(renderDashboard({
+      ...base,
+      metrics: {
+        documentation: {
+          summary: {
+            totalElements: 3155, byStatus: { defined: 3143, missing: 12 },
+            indexedFileCount: 361, filesWithNonDefinedCount: 2,
+          },
+          topNonDefined: [{ file: 'src/x.test.ts', nonDefined: 7, total: 7 }],
+          topNonDefinedTruncated: false,
+        },
+      },
+    }));
+    expect(out).toContain('3,143');
+    expect(out).toContain('3,155');
+    expect(out).toContain('src/x.test.ts');
+  });
+
+  it('discloses absent non-defined NAMES as no-data when the count is nonzero', () => {
+    // A populated count with an empty list must never read as "no such files".
+    const out = allOutput(renderDashboard({
+      ...base,
+      metrics: {
+        documentation: {
+          summary: { totalElements: 10, byStatus: { defined: 8, missing: 2 }, filesWithNonDefinedCount: 2 },
+          topNonDefined: [],
+        },
+      },
+    }));
+    expect(out).toContain('file names not emitted');
+    expect(out).toContain('no data');
+  });
+
+  it('renders bridges from a BARE STRING array without blanking the paths', () => {
+    // Guards the pathCol trap: bridges are strings, not {file} objects, so a
+    // renderer reading r.file emits empty cells that look like no-data.
+    const out = allOutput(renderDashboard({
+      ...base, analytics: { bridges: ['__tests__/integration.test.ts', 'src/seam.ts'] },
+    }));
+    expect(out).toContain('__tests__/integration.test.ts');
+    expect(out).toContain('src/seam.ts');
+    expect(out).not.toContain('<span class="path"></span>');
+  });
+
+  it('badges a capped bridges emission from the analytics disclosure', () => {
+    const out = allOutput(renderDashboard({
+      ...base,
+      analytics: {
+        bridges: new Array(50).fill('src/f.ts'),
+        warnings: ['bridges truncated to 50 of 82 (bridgeCap)'],
+      },
+    }));
+    expect(out).toContain('Bridges');
+    expect(out).toMatch(/showing 50/);
+  });
+
+  it('reports each absent block as no-data rather than omitting the panel', () => {
+    const out = allOutput(renderDashboard(base));
+    for (const title of ['Hotspots', 'Cycles', 'Documentation', 'Bridges']) {
+      expect(out, `${title} panel missing`).toContain(title);
+    }
+    expect(out).toContain('no data');
+  });
+});
+
+describe('no measurement ever renders as the literal string "undefined"', () => {
+  it('a validation report missing a count renders no-data, not "undefined"', () => {
+    // Lived case: byStatus.missing drops out of the bundle once nothing is
+    // missing, and a bare nf() printed the string "undefined" on the page.
+    const out = allOutput(renderDashboard(
+      { meta: { source: {} }, analytics: {}, metrics: {}, drift: {}, overlays: {} },
+      { header_coverage_pct: 100, header_defined_count: 365 }, // header_missing_count absent
+    ));
+    expect(out).toContain('no data');
+    expect(out).not.toMatch(/>undefined</);
+  });
+
+  it('a ranking row missing one field renders no-data for that cell only', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: {} }, metrics: {}, drift: {}, overlays: {},
+      analytics: { centrality: { top: [{ file: 'src/a.ts', degree: 5 }] } }, // in/out/btw absent
+    }));
+    expect(out).toContain('src/a.ts');
+    expect(out).not.toMatch(/>undefined</);
+  });
+
+  it('the live-shaped payload renders no "undefined" anywhere', () => {
+    const out = allOutput(renderDashboard({
+      meta: { source: { nodeCount: 1, edgeCount: 2, resolvedEdgeCount: 1, elementCount: 3 } },
+      analytics: { communityCount: 4, communities: [{}], bridges: ['a.ts'], deadCode: {} },
+      metrics: {
+        documentation: { summary: { totalElements: 10, byStatus: { defined: 10 } } },
+        testLinkage: { summary: {} }, unresolvedRefs: { summary: {} },
+      },
+      drift: { coverage: {} },
+      overlays: { hotspots: [{ file: 'a.ts', score: 1 }], cycles: [] },
+    }));
+    expect(out).not.toMatch(/>undefined</);
+  });
+});
+
+describe('graph <-> dashboard navigation is bidirectional', () => {
+  it('graph.html links BACK to the dashboard (not one-way)', () => {
+    const graph = fs.readFileSync(path.join(ASSET_DIR, 'graph.html'), 'utf-8');
+    expect(graph).toContain('href="./dashboard.html"');
+    // One-hop sibling on both sides — no relative-depth assumption to break.
+    expect(graph).not.toMatch(/href="\.\.\/[^"]*dashboard\.html"/);
+  });
+
+  it('dashboard.html still links to the graph', () => {
+    expect(html).toContain('href="./graph.html"');
+  });
+});
+
 describe('emitViewer dashboard emission', () => {
   it('emits dashboard.html plus its sibling assets alongside the graph', () => {
     const { dir } = emitTo(null);

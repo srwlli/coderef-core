@@ -35,6 +35,12 @@
     </select>
     <button id="toggle-blast" title="Highlight blast radius (depth 1-2) of the selected node">Blast radius</button>
     <button id="reset-view" title="Fit graph to screen">Reset view</button>
+    <!-- Sibling hop back to the dashboard. The dashboard has always linked HERE;
+         without this the pair navigated one way only. One-hop relative href, the
+         same shape dashboard.html uses - no relative-depth assumption to break
+         if the bundle is copied elsewhere. -->
+    <a id="dashboard-link" href="./dashboard.html"
+       title="Open the metrics dashboard">dashboard &#8599;</a>
     <span id="stats"></span>
   </div>
   <div id="search-results" hidden></div>
