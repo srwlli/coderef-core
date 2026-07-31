@@ -64,6 +64,8 @@ This writes a self-contained bundle to `.coderef/map/`:
 | `data.json` | The full MapData document (nodes, edges, analytics, evidence, drift, metrics) |
 | `graph.html` | The viewer with the data **inlined** — double-click to open, no server needed |
 | `viewer.js` / `viewer.css` | Viewer assets referenced by `graph.html` |
+| `dashboard.html` / `dashboard.js` / `dashboard.css` | The dashboard surface, linked from the graph and back |
+| `tokens.css` | The shared palette both stylesheets read — the graph and the dashboard render from ONE token set, and it follows your light/dark preference |
 
 ### 3. Or serve it live
 
@@ -169,7 +171,9 @@ The **same `--git` switch** also attaches the **ownership / knowledge block** (`
 
 ## Verification
 
-After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, viewer.css}`. Open the viewer and check:
+After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, viewer.css, tokens.css, dashboard.html, dashboard.js, dashboard.css}`. Open the viewer and check:
+
+- The page is **styled**. Unstyled text on a white background means `tokens.css` is missing from the output — both stylesheets read their palette from it.
 
 - The stats bar shows non-zero files/edges/elements counts.
 - All toggles are enabled. A **disabled** toggle with a tooltip like *"unavailable: no metrics block in this data.json (regenerate the map)"* means your `data.json` predates that block's schema version — re-run `coderef-map` (the viewer intentionally degrades instead of breaking on old data).

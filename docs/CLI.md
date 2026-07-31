@@ -184,6 +184,8 @@ npx coderef-map /path/to/any/repo --git --no-open
 | `.coderef/map/data.json` | File-level MapData v1.6: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below), and — with `--git` — the `git` block **and** the `ownership` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
+| `.coderef/map/dashboard.html` / `dashboard.js` / `dashboard.css` | Dashboard surface with the same data inlined; emitted always, linked from the graph |
+| `.coderef/map/tokens.css` | Shared UI palette both stylesheets consume — one source of truth for the graph and the dashboard, theme-aware via `light-dark()` |
 | `.coderef/map/skeleton.md` | **`--skeleton` only.** Token-budgeted plaintext repo map (below). Same renderer the MCP `map` tool's `format:"skeleton"` returns inline. |
 
 ### Skeleton map (`--skeleton`, `.coderef/map/skeleton.md`)
