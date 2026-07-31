@@ -43,6 +43,7 @@ interface CliArgs {
   ollamaBaseUrl: string;
   ollamaModel: string;
   ragReset: boolean;
+  ragIncludeHeaderless: boolean;
 }
 
 const LEG_NAMES = ['scan', 'populate', 'docs', 'rag'] as const;
@@ -67,6 +68,11 @@ OPTIONS:
                              or env CODEREF_LLM_BASE_URL).
   --ollama-model <name>      Ollama embedding model (default:
                              nomic-embed-text or env CODEREF_LLM_MODEL).
+  --rag-include-headerless   Pass --include-headerless to the rag leg so
+                             elements without @coderef headers are still
+                             embedded. Required for header-less repos, which
+                             otherwise index almost nothing and still exit 0.
+                             (Alias: --include-headerless)
   --rag-reset                Reset the RAG vector store before indexing
                              (use when changing embedding dimensions).
   -v, --verbose              Forward verbose flag to sub-commands.
@@ -94,6 +100,7 @@ function parseArgs(argv: string[]): CliArgs {
     ollamaBaseUrl: process.env.CODEREF_LLM_BASE_URL || 'http://localhost:11434',
     ollamaModel: process.env.CODEREF_LLM_MODEL || 'nomic-embed-text',
     ragReset: false,
+    ragIncludeHeaderless: false,
   };
 
   for (let i = 0; i < argv.length; i++) {
@@ -124,6 +131,10 @@ function parseArgs(argv: string[]): CliArgs {
         break;
       case '--rag-reset':
         args.ragReset = true;
+        break;
+      case '--rag-include-headerless':
+      case '--include-headerless':
+        args.ragIncludeHeaderless = true;
         break;
       case '-v':
       case '--verbose':
@@ -170,6 +181,10 @@ function resolveLegs(args: CliArgs): Leg[] {
 interface LegResult {
   leg: Leg;
   status: 'ok' | 'fail' | 'skip' | 'dry-run';
+  /** Non-fatal advisories: the leg succeeded but the result deserves a look. */
+  warnings?: string[];
+  /** rag leg only: chunks embedded. null = not parseable (no data), never 0. */
+  chunksIndexed?: number | null;
   durationMs: number;
   exitCode?: number;
   stderrTail?: string;
@@ -192,7 +207,7 @@ function docGenDir(): string {
   return path.resolve(__dirname, '..', '..', '..', 'scripts', 'doc-gen');
 }
 
-function runNode(script: string, args: string[], opts: { env?: NodeJS.ProcessEnv; cwd?: string; verbose?: boolean }): { code: number; stderr: string } {
+function runNode(script: string, args: string[], opts: { env?: NodeJS.ProcessEnv; cwd?: string; verbose?: boolean }): { code: number; stderr: string; stdout: string } {
   const fullArgs = [script, ...args];
   const res = spawnSync(process.execPath, fullArgs, {
     stdio: opts.verbose ? 'inherit' : ['ignore', 'pipe', 'pipe'],
@@ -200,7 +215,19 @@ function runNode(script: string, args: string[], opts: { env?: NodeJS.ProcessEnv
     cwd: opts.cwd,
   });
   const stderr = res.stderr ? res.stderr.toString() : '';
-  return { code: res.status ?? 1, stderr };
+  const stdout = res.stdout ? res.stdout.toString() : '';
+  return { code: res.status ?? 1, stderr, stdout };
+}
+
+/**
+ * Read `Chunks indexed: N` out of the rag-index summary.
+ *
+ * Returns null when the line is absent (verbose mode inherits stdio, so there
+ * is nothing to parse) — null means NO DATA and must never be reported as zero.
+ */
+function parseChunksIndexed(stdout: string): number | null {
+  const m = /Chunks indexed:\s*(\d+)/i.exec(stdout);
+  return m ? Number(m[1]) : null;
 }
 
 async function runLeg(leg: Leg, args: CliArgs): Promise<LegResult> {
@@ -277,10 +304,27 @@ async function runLeg(leg: Leg, args: CliArgs): Promise<LegResult> {
       };
       const ragArgs = ['--project-dir', args.projectDir];
       if (args.ragReset) ragArgs.push('--reset');
+      // Without this passthrough a header-less repo indexes almost nothing while
+      // the leg still exits 0 (FU-PIPELINE-HEADERLESS): observed 56 chunks vs
+      // 1,781 vectors for the same repo once the flag was supplied by hand.
+      if (args.ragIncludeHeaderless) ragArgs.push('--include-headerless');
       const r = runNode(bin, ragArgs, { env, verbose: args.verbose });
+
+      // A green exit must not hide a near-empty index.
+      const warnings: string[] = [];
+      const chunks = parseChunksIndexed(r.stdout);
+      if (r.code === 0 && chunks !== null && chunks === 0) {
+        warnings.push(
+          'rag-index embedded 0 chunks. The vector index is EMPTY despite a clean exit.' +
+          (args.ragIncludeHeaderless ? '' : ' If this repo lacks @coderef headers, re-run with --rag-include-headerless.'),
+        );
+      }
+
       return {
         leg,
         status: r.code === 0 ? 'ok' : 'fail',
+        warnings: warnings.length ? warnings : undefined,
+        chunksIndexed: chunks,
         durationMs: Date.now() - started,
         exitCode: r.code,
         stderrTail: r.stderr.split('\n').slice(-20).join('\n'),
@@ -313,6 +357,7 @@ async function main(): Promise<void> {
   console.log(`  dry-run: ${args.dryRun}`);
   if (legs.includes('rag')) {
     console.log(`  ollama:   ${args.ollamaBaseUrl} (model: ${args.ollamaModel}; LOCAL-ONLY)`);
+    console.log(`  rag:      include-headerless=${args.ragIncludeHeaderless}${args.ragReset ? ', reset=true' : ''}`);
   }
   console.log('');
 
@@ -324,7 +369,10 @@ async function main(): Promise<void> {
     const r = await runLeg(leg, args);
     results.push(r);
     const tag = r.status === 'ok' ? 'OK' : r.status.toUpperCase();
-    console.log(`${tag} (${r.durationMs}ms)${r.exitCode !== undefined ? ` [exit=${r.exitCode}]` : ''}`);
+    const chunkNote = r.chunksIndexed !== undefined && r.chunksIndexed !== null
+      ? ` [chunks=${r.chunksIndexed}]` : '';
+    console.log(`${tag} (${r.durationMs}ms)${r.exitCode !== undefined ? ` [exit=${r.exitCode}]` : ''}${chunkNote}`);
+    for (const w of r.warnings ?? []) console.warn(`  WARNING: ${w}`);
     if (r.status === 'fail') {
       failed = r;
       if (r.stderrTail) console.error(r.stderrTail);
@@ -335,7 +383,15 @@ async function main(): Promise<void> {
   console.log('');
   console.log('Summary:');
   for (const r of results) {
-    console.log(`  ${r.leg.padEnd(10)} ${r.status.padEnd(8)} ${r.durationMs}ms`);
+    const extra = r.chunksIndexed !== undefined && r.chunksIndexed !== null
+      ? `  chunks=${r.chunksIndexed}` : '';
+    console.log(`  ${r.leg.padEnd(10)} ${r.status.padEnd(8)} ${r.durationMs}ms${extra}`);
+  }
+
+  const allWarnings = results.flatMap(r => (r.warnings ?? []).map(w => `[${r.leg}] ${w}`));
+  if (allWarnings.length) {
+    console.warn('\nWarnings (exit stays 0 — these are advisories, not failures):');
+    for (const w of allWarnings) console.warn(`  - ${w}`);
   }
 
   if (failed) {
