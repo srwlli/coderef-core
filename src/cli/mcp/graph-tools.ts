@@ -51,6 +51,41 @@ export type GraphTools = Pick<
   | 'unresolved_edges' | 'find_all_references'
 >;
 
+/**
+ * Call-shaped relationships (WO-API-SURFACE-MAPPING-...-001 P3).
+ *
+ * The MCP server keeps its OWN adjacency index (cache.inbound) rather than
+ * routing every tool through CanonicalGraphQuery, so widening the query engine
+ * in P2 was NOT enough — what_calls and impact_of read this filter instead, and
+ * returned nothing for an endpoint until it was widened here too. That split is
+ * exactly what Amendment 3's cross-boundary MCP test exists to catch: a library
+ * test can pass while the surface agents actually consume stays blind.
+ *
+ * An HTTP request is a call that crosses a process boundary instead of a module
+ * one. Widening is safe for existing results: `calls_endpoint` only ever targets
+ * an `@Endpoint/...` node and `serves_endpoint` only ever sources from one, so
+ * no element-to-element answer changes.
+ */
+const CALL_KINDS: ReadonlySet<string> = new Set(['call', 'calls_endpoint', 'serves_endpoint']);
+
+/**
+ * Relationships a dependency/blast-radius walk may traverse. Endpoint kinds are
+ * included so `impact_of(handler)` names the CLIENTS that call it over HTTP —
+ * REC-002's headline claim.
+ *
+ * Deliberately NOT applied to `cycles` or `hotspots`: those answer questions
+ * about MODULE structure ("which code is most connected", "which imports form a
+ * loop"), and mixing a network hop into either would silently change what the
+ * metric means. A client->endpoint->handler->import->client loop is a real
+ * thing, but it is not the module cycle `cycles` reports.
+ */
+const DEPENDS_KINDS: ReadonlySet<string> = new Set([
+  'call',
+  'import',
+  'calls_endpoint',
+  'serves_endpoint',
+]);
+
 export function buildGraphTools(ctx: HandlerContext): GraphTools {
   const { projectDir, cache } = ctx;
 
@@ -74,7 +109,11 @@ export function buildGraphTools(ctx: HandlerContext): GraphTools {
     const all: Array<Record<string, unknown>> = [];
     for (const node of matches) {
       for (const edge of cache.inbound.get(node.id) ?? []) {
-        if (edge.relationship !== kind) continue;
+        // 'call' admits the endpoint kinds too — see CALL_KINDS.
+        const kindMatches = kind === 'call'
+          ? CALL_KINDS.has(edge.relationship ?? '')
+          : edge.relationship === kind;
+        if (!kindMatches) continue;
         // Phase 3: confidence tier is a within-resolved-set filter. cache.inbound
         // holds only resolved edges, so min_confidence differentiates exact vs
         // heuristic (provisional single-candidate); it never resurfaces
@@ -312,7 +351,9 @@ export function buildGraphTools(ctx: HandlerContext): GraphTools {
         const next: string[] = [];
         for (const id of frontier) {
           for (const edge of cache.inbound.get(id) ?? []) {
-            if (edge.relationship !== 'call' && edge.relationship !== 'import') continue;
+            // Endpoint kinds included: blast radius must cross the network
+            // boundary, or a handler change reports only its importers.
+            if (!DEPENDS_KINDS.has(edge.relationship ?? '')) continue;
             if (!meetsMinConfidence(edgeConfidenceOf(edge), min_confidence)) continue;
             const src = edge.sourceId!;
             if (visited.has(src)) continue;
@@ -611,7 +652,12 @@ export function buildGraphTools(ctx: HandlerContext): GraphTools {
         // Facet filters (all AND-combined).
         if (wantStatus ? st !== wantStatus : st !== 'unresolved' && st !== 'ambiguous') continue;
         if (relationship && edge.relationship !== relationship) continue;
-        if (edge.relationship !== 'call' && edge.relationship !== 'import') continue;
+        // Endpoint kinds are enumerable here too. The server's own usage
+        // contract tells agents to "check unresolved_edges before trusting a
+        // negative" — so a client call that bound to NO endpoint has to be
+        // reachable from this tool, or the one instruction meant to prevent a
+        // false negative would itself produce one.
+        if (!DEPENDS_KINDS.has(edge.relationship ?? '')) continue;
         if (normFile) {
           const ef = normalizeSlashes(edge.sourceLocation?.file ?? '');
           if (ef !== normFile && !ef.includes(normFile)) continue;

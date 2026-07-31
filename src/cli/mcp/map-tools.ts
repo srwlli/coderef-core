@@ -34,7 +34,7 @@ import {
 } from '../../query/orient.js';
 import { checkStaleness, readVectorStaleness } from '../../query/staleness-check.js';
 import { normalizeSlashes } from '../../utils/path-normalize.js';
-import { isConcise } from '../mcp-response-format.js';
+import { isConcise, paginate } from '../mcp-response-format.js';
 import {
   type HandlerContext,
   type ToolHandlers,
@@ -42,7 +42,7 @@ import {
   loadValidationReport,
 } from './shared.js';
 
-export type MapTools = Pick<ToolHandlers, 'map' | 'orient' | 'map_metrics_delta'>;
+export type MapTools = Pick<ToolHandlers, 'map' | 'orient' | 'map_metrics_delta' | 'api_surface'>;
 
 /** Sibling handlers orient composes across families (injected by the composer). */
 export interface MapToolSiblings {
@@ -384,6 +384,100 @@ export function buildMapTools(ctx: HandlerContext, siblings: MapToolSiblings): M
           mostDependencies: dir(delta.mostDependencies),
           warnings: delta.warnings,
           note: delta.note,
+        };
+      }
+      return envelope;
+    },
+
+    /**
+     * api_surface — the project's HTTP endpoint inventory as a graph surface
+     * (WO-API-SURFACE-MAPPING-...-001 P3).
+     *
+     * Reads the `api` block the map projection computes from the endpoint nodes
+     * and endpoint edges in graph.json. Nothing is recomputed here; this is the
+     * same substrate the viewer reads, exposed to agents.
+     *
+     * ABSENCE IS NO-DATA, NOT ZERO. Three distinct negatives are reported
+     * distinctly, because conflating them is how a tool lies:
+     *   - the map has no `api` block  -> `.coderef/routes.json` was never
+     *     produced, so the API surface is UNKNOWN. `no_data: true`.
+     *   - the block exists, 0 endpoints -> a real measurement: this project
+     *     serves no detected HTTP endpoints.
+     *   - endpoints exist, 0 callers   -> orphaned IN THIS REPO, which for a
+     *     public API or a non-browser client is the expected state.
+     */
+    api_surface({ filter, orphaned_only, limit, offset, response_format } = {}) {
+      loadGraph(projectDir, cache);
+      const graphPath = path.join(projectDir, '.coderef', 'graph.json');
+      const dataPath = path.join(projectDir, '.coderef', 'map', 'data.json');
+      const stale =
+        !fs.existsSync(dataPath) ||
+        fs.statSync(dataPath).mtimeMs < fs.statSync(graphPath).mtimeMs;
+      const data = stale
+        ? generateMap(projectDir).data
+        : JSON.parse(fs.readFileSync(dataPath, 'utf8'));
+
+      const api = data.api;
+      if (!api) {
+        return {
+          no_data: true,
+          reason: 'routes_artifact_absent',
+          warning:
+            'The API surface is UNKNOWN for this project, not empty: .coderef/routes.json has not ' +
+            'been produced, so no route detection has run. This is NOT a report of zero endpoints.',
+          hint: 'Run the populate pipeline in full mode (populate-coderef <path> --mode full), then retry.',
+        };
+      }
+
+      const needle = filter ? filter.toLowerCase() : undefined;
+      const matched = (api.endpoints as any[]).filter(e => {
+        if (orphaned_only && !e.orphaned) return false;
+        if (!needle) return true;
+        return (
+          String(e.path).toLowerCase().includes(needle) ||
+          String(e.method).toLowerCase().includes(needle) ||
+          String(e.id).toLowerCase().includes(needle)
+        );
+      });
+
+      const paged = paginate(matched, offset, limit);
+
+      const envelope: Record<string, unknown> = {
+        summary: api.summary,
+        total: paged.total,
+        offset: paged.offset,
+        limit: paged.limit,
+        // A cap must never read as completeness.
+        has_more: paged.has_more,
+        endpoints: paged.page,
+        // Every client call that did NOT bind, with WHY. Kept in the same
+        // envelope because "which endpoints exist" and "which calls missed" are
+        // one question for an agent auditing an API surface.
+        unmatched_calls: api.unmatchedCalls,
+        // File-to-file hops that cross the network boundary — deliberately NOT
+        // part of the module-dependency edge set.
+        network_edges: api.networkEdges,
+        warnings: [...(api.warnings ?? []), ...(data.meta?.warnings ?? [])].filter(
+          (w: string) => typeof w === 'string' && w.startsWith('api'),
+        ),
+        note:
+          'Surfaces, not verdicts. `orphaned` means NO RESOLVED CALLER WAS FOUND IN THIS REPO — for a ' +
+          'public API, a separate client repo, or a server-to-server caller it is the expected state, ' +
+          'not dead code. Server-side HTTP calls are invisible to the frontend-call detector ' +
+          '(browser-reachable extensions only), which bounds any completeness claim.',
+      };
+
+      if (isConcise(response_format)) {
+        return {
+          format: 'concise',
+          summary: api.summary,
+          total: matched.length,
+          endpoints: paged.page.map((e: any) => ({
+            id: e.id,
+            orphaned: e.orphaned,
+            handlers: e.handlers.length,
+            callers: e.callers.length,
+          })),
         };
       }
       return envelope;

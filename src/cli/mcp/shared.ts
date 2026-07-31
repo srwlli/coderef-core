@@ -511,7 +511,7 @@ export interface ToolHandlers {
   path_between(args: { source: string; target: string; mode?: 'shortest' | 'all'; max_depth?: number; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   // agent-native non-resolved-edge exposure (WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P2)
   unresolved_edges(args: {
-    relationship?: 'call' | 'import';
+    relationship?: 'call' | 'import' | 'calls_endpoint' | 'serves_endpoint';
     status?: 'unresolved' | 'ambiguous' | 'external' | 'builtin';
     file?: string;
     reason?: string;
@@ -556,6 +556,20 @@ export interface ToolHandlers {
     after?: string;
     snapshot?: boolean;
     snapshot_label?: string;
+    response_format?: ResponseFormat;
+  }): Record<string, unknown>;
+  // HTTP endpoint inventory as a graph surface
+  // (WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 P3): which
+  // endpoints exist, which files serve them, which files call them, which are
+  // orphaned, and every client call that did NOT bind with the reason it did
+  // not. Reads the map projection's `api` block — no recomputation. An absent
+  // block is reported as no_data (route detection never ran), NEVER as zero
+  // endpoints.
+  api_surface(args: {
+    filter?: string;
+    orphaned_only?: boolean;
+    limit?: number;
+    offset?: number;
     response_format?: ResponseFormat;
   }): Record<string, unknown>;
 }

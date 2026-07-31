@@ -111,7 +111,7 @@ const SERVER_VERSION = '1.0.0';
 // Registered-tool count surfaced in the instructions string + startup log.
 // Bump when adding/removing a tool registration below — the mcp-server test
 // counts registrations in this file and fails on drift.
-export const SERVER_TOOL_COUNT = 36;
+export const SERVER_TOOL_COUNT = 37;
 // Agent-facing usage contract delivered through the MCP initialize handshake
 // (ServerOptions.instructions). This is the ONE surface every connected agent
 // receives automatically, so it carries the load-bearing rules that were
@@ -577,6 +577,31 @@ async function main(): Promise<void> {
   );
 
   server.registerTool(
+    'api_surface',
+    {
+      title: 'HTTP API surface',
+      description:
+        "[.coderef-WRITE (map regeneration only), confined to .coderef/map/] The project's HTTP endpoint inventory as a GRAPH surface, not a lint report. Returns every detected endpoint (canonical identity `@Endpoint/<path>#<METHOD>` with parameter NAMES erased per the OpenAPI 3.1 path-identity rule, so a client's `${id}` interpolation and a server's `<int:user_id>` are ONE endpoint), the files that SERVE each one, the files that CALL each one over HTTP, and `network_edges` — the file-to-file hops that cross the process boundary, deliberately kept OUT of the module-dependency edge set because an import and an HTTP request are different kinds of coupling. Also returns `unmatched_calls`: every client call that did NOT bind, WITH the reason — endpoint_not_in_project (404-shaped: the path is served nowhere), endpoint_method_not_served (405-shaped: path served, this verb is not), client_path_origin_unresolved (a `${baseUrl}` interpolation whose origin is genuinely unknowable, so it is not guessed), absolute_url_external_origin (a different authority per RFC 3986 s3.2). SURFACES, NOT VERDICTS: `orphaned` means NO RESOLVED CALLER WAS FOUND IN THIS REPO — for a public API, a client living in another repo, or a server-to-server caller that is the EXPECTED state, never a dead-code verdict. ABSENCE = NO-DATA: when .coderef/routes.json has not been produced the result is no_data:true, NEVER a false 'zero endpoints'. Known bound on completeness: the frontend-call detector gates on browser-reachable file extensions, so server-to-server HTTP callers are invisible to it. Traverse the same edges with what_calls / impact_of / path_between — an @Endpoint node is a first-class graph node.",
+      inputSchema: {
+        project_root: projectRootArg,
+        filter: z
+          .string()
+          .optional()
+          .describe('Case-insensitive substring match against the endpoint path, method, or node id.'),
+        orphaned_only: z
+          .boolean()
+          .optional()
+          .describe('Return only endpoints with no resolved caller in this repo. See the orphaned caveat above.'),
+        limit: limitArg,
+        offset: offsetArg,
+        response_format: responseFormatArg,
+      },
+    },
+    async ({ project_root, filter, orphaned_only, limit, offset, response_format }) =>
+      perRepo(project_root, h => h.api_surface({ filter, orphaned_only, limit, offset, response_format })),
+  );
+
+  server.registerTool(
     'what_exports',
     {
       title: 'What a file exports',
@@ -902,11 +927,11 @@ async function main(): Promise<void> {
     {
       title: 'List non-resolved edges',
       description:
-        'Enumerate call/import edges that did NOT resolve, with their persisted evidence — the detail behind validation_status\'s aggregate counts. Default lists unresolved + ambiguous edges (the honesty dispositions); status=external|builtin surface expected npm/stdlib noise. For ambiguous edges, candidates[] shows the competing symbols the resolver could not choose between. Facets: relationship, status, file, reason (substring). Always paginated — total + status_breakdown reflect the full set; edges[] is one offset/limit page (default 25, cap 100).',
+        'Enumerate call/import/endpoint edges that did NOT resolve, with their persisted evidence — the detail behind validation_status\'s aggregate counts. Default lists unresolved + ambiguous edges (the honesty dispositions); status=external|builtin surface expected npm/stdlib noise. For ambiguous edges, candidates[] shows the competing symbols the resolver could not choose between. Facets: relationship, status, file, reason (substring). relationship=calls_endpoint enumerates client HTTP calls that bound to NO endpoint, with reason endpoint_not_in_project (404-shaped), endpoint_method_not_served (405-shaped), or client_path_origin_unresolved (an interpolated base URL whose origin is genuinely unknowable). Always paginated — total + status_breakdown reflect the full set; edges[] is one offset/limit page (default 25, cap 100).',
       inputSchema: {
         project_root: projectRootArg,
         relationship: z
-          .enum(['call', 'import'])
+          .enum(['call', 'import', 'calls_endpoint', 'serves_endpoint'])
           .optional()
           .describe('Restrict to one edge kind (default: both)'),
         status: z

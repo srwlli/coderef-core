@@ -745,7 +745,7 @@ const elements = await scanCurrentElements('./src', 'ts', options);
 > **Currency note (2026-07-18):** the version headings below are aspirational planning
 > buckets, not shipped-release truth — the published package is **v2.0.0** (see
 > `package.json`). Several listed items have already landed post-rebuild (tree-sitter
-> Python, timeout guards, the RAG pipeline, `coderef-map`, the 36-tool MCP server). Treat
+> Python, timeout guards, the RAG pipeline, `coderef-map`, the 37-tool MCP server). Treat
 > `roadmap.md`, `improvements.json`, and the workorder registry as the authoritative
 > forward plan; this section is a high-level sketch.
 

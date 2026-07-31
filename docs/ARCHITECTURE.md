@@ -211,7 +211,7 @@ Header grammar is similarly canonical in ASSISTANT (`SKILLS/ANALYSIS/analyze-cod
 
 - [docs/SCHEMA.md](./SCHEMA.md) — full type reference (scanner, relationship, resolution, graph, validation, indexing)
 - [docs/HEADER-GRAMMAR.md](./HEADER-GRAMMAR.md) — `@coderef-semantic:1.0.0` BNF mirror
-- [docs/CLI.md](./CLI.md) — CLI reference for all 19 bins + the 36-tool MCP server section
+- [docs/CLI.md](./CLI.md) — CLI reference for all 19 bins + the 37-tool MCP server section
 - [docs/AGENT-CONTRACT.md](./AGENT-CONTRACT.md) — the agent-consumer contract over the artifacts
 - [docs/API.md](./API.md) — programmatic API contract
 - [/AGENTS.md](../AGENTS.md) — agent usage contract

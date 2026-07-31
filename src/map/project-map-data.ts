@@ -64,6 +64,7 @@ import { computeEngineeringMetrics, MapMetrics, SubprocessTestContent } from './
 import { computeGitBehavioral, GitBehavioral } from './git-behavioral.js';
 import { computeOwnership, MapOwnership } from './ownership.js';
 import { GitHistory } from './git-history.js';
+import { computeApiSurface, MapApiSurface } from './api-surface.js';
 
 export interface MapElement {
   name: string;
@@ -157,6 +158,16 @@ export interface MapData {
    * fields, and by default.
    */
   ownership?: MapOwnership;
+  /**
+   * HTTP API surface — endpoints, their handlers and clients, the file-to-file
+   * hops that cross the network boundary, and every client call that did NOT
+   * bind, with its reason (WO-API-SURFACE-MAPPING-...-001 P3).
+   *
+   * ABSENT means the API surface is UNKNOWN (the populate pipeline's routes
+   * generator has not run for this project), never that the project has no API.
+   * A present block with `endpointCount: 0` is a real measurement.
+   */
+  api?: MapApiSurface;
 }
 
 export class MapProjectionError extends Error {
@@ -212,6 +223,13 @@ export interface ProjectMapDataOptions {
    * PURE — it only forwards the plain record to engineering-metrics.
    */
   subprocessTestContents?: SubprocessTestContent[] | null;
+  /**
+   * Compute the api block (default true). Gated additionally on the presence of
+   * `.coderef/routes.json` — see the MapData.api note.
+   */
+  api?: boolean;
+  /** Max unmatched-call entries retained in the api block (default 200). */
+  apiUnmatchedCap?: number;
 }
 
 const HOTSPOT_CAP_DEFAULT = 25;
@@ -626,10 +644,34 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     }
   }
 
+  // ---- api surface (WO-API-SURFACE-MAPPING-...-001 P3) ----------------------
+  //
+  // Presence is gated on `.coderef/routes.json`, NOT on finding endpoints. The
+  // distinction is the whole point: a repo with zero endpoints and a repo whose
+  // producer never ran look identical in the graph, and reporting the second as
+  // "0 endpoints" would be a false clean bill. routes.json exists only after the
+  // populate pipeline's routes generator runs, so its absence is exactly the
+  // no-data signal, and its presence makes a zero count a real measurement.
+  let api: MapApiSurface | undefined;
+  if (options.api !== false) {
+    if (fs.existsSync(path.join(coderefDir, 'routes.json'))) {
+      api = computeApiSurface(graphNodes, graphEdges, nodeFile, {
+        ...(options.apiUnmatchedCap !== undefined ? { unmatchedCap: options.apiUnmatchedCap } : {}),
+      });
+      warnings.push(...api.warnings);
+    } else {
+      warnings.push(
+        'api block omitted: .coderef/routes.json is absent, so the API surface is UNKNOWN for this ' +
+        'project (not empty). Re-run the populate pipeline in full mode to produce it.',
+      );
+    }
+  }
+
   const projectPath = normalizeSlashes(path.resolve(projectRoot));
   return {
     meta: {
-      schemaVersion: '1.6.0',
+      // 1.6.0 -> 1.7.0: additive `api` block. Legacy consumers ignore it.
+      schemaVersion: '1.7.0',
       projectPath,
       repoName: path.basename(projectPath),
       generatedAt: new Date().toISOString(),
@@ -649,5 +691,6 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     ...(metrics ? { metrics } : {}),
     ...(git ? { git } : {}),
     ...(ownership ? { ownership } : {}),
+    ...(api ? { api } : {}),
   };
 }
