@@ -2,9 +2,9 @@
   "project": "coderef-core-next",
   "owner": "CODEREF-CORE",
   "created": "2026-06-12T12:20:00Z",
-  "updated": "2026-06-13T09:42:00Z",
+  "updated": "2026-07-31T23:59:00Z",
   "current_phase": 5,
-  "status": "active",
+  "status": "archived",
   "phases": [
     {
       "phase": 1,
@@ -69,7 +69,7 @@
         },
         {
           "id": "UNRESOLVED-EDGE-AUDIT",
-          "description": "Self-scan shows unresolved_count=20701 vs valid_edge_count=4293 \u2014 characterize unresolved edges by evidence/reason variant, separate expected externals from resolver gaps, file targeted resolver-fix stubs with measured counts [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed] [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed]",
+          "description": "Self-scan shows unresolved_count=20701 vs valid_edge_count=4293 — characterize unresolved edges by evidence/reason variant, separate expected externals from resolver gaps, file targeted resolver-fix stubs with measured counts [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed] [SHIPPED via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001: 4 rolling phases (91d8ac7/4dcb742/7975e08/fe7920a); unresolved 20701->17551, src-only truth 5854; stubs XK82Z2/QT400D/K5YBFN/XX4JBC closed]",
           "status": "complete",
           "shipped_commit": "fe7920a",
           "depends_on": []
@@ -115,14 +115,14 @@
       "items": [
         {
           "id": "REGISTRY-RAWFACTS-DEDUP",
-          "description": "STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) \u2014 move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts [DESIGN AUTHORED 2026-06-13: phase3-storage-design.md awaiting operator (A)/(B) ruling; tracker STUB-JAH69F] [SHIPPED 2026-06-13 ruling A: registry 2.0.0 rawFactsByFile; core 124.4MB->14.9MB (88%), PS 56.8MB->12.5MB (78%)]",
+          "description": "STUB-BQDXJ0: semantic-registry duplicates file-grain rawFacts per element (98% of bytes; 209MB observed on PS repo) — move to file-keyed rawFactsByFile, registry version 2.0.0, drop pretty-print above 10MB; only consumer is projections.ts [DESIGN AUTHORED 2026-06-13: phase3-storage-design.md awaiting operator (A)/(B) ruling; tracker STUB-JAH69F] [SHIPPED 2026-06-13 ruling A: registry 2.0.0 rawFactsByFile; core 124.4MB->14.9MB (88%), PS 56.8MB->12.5MB (78%)]",
           "status": "complete",
           "shipped_commit": "fade035",
           "depends_on": []
         },
         {
           "id": "VECTOR-STORE-PATH-FIX",
-          "description": "Fallback JSON vector store writes .coderef/rag-vectors.sqlite as a DIRECTORY containing coderef-vectors.json \u2014 make the fallback path honest (name reflects store type) and document store resolution in rag-status [SHIPPED: rag-status defaulted to never-written rag-vectors.sqlite; fixed to coderef-vectors.json]",
+          "description": "Fallback JSON vector store writes .coderef/rag-vectors.sqlite as a DIRECTORY containing coderef-vectors.json — make the fallback path honest (name reflects store type) and document store resolution in rag-status [SHIPPED: rag-status defaulted to never-written rag-vectors.sqlite; fixed to coderef-vectors.json]",
           "status": "complete",
           "shipped_commit": "02f75bf",
           "depends_on": []
@@ -161,7 +161,7 @@
         },
         {
           "id": "TOOL-DIFF-IMPACT",
-          "description": "diff_impact tool: map a git diff (or staged changes) to changed elements via index.json line ranges, then union impact_of over the set \u2014 PR blast-radius in one call",
+          "description": "diff_impact tool: map a git diff (or staged changes) to changed elements via index.json line ranges, then union impact_of over the set — PR blast-radius in one call",
           "status": "complete",
           "shipped_commit": "b4c31a4",
           "depends_on": []
@@ -195,14 +195,14 @@
         },
         {
           "id": "CHUNK-ENRICHMENT",
-          "description": "Embed header semantics (layer/capability/constraints) and leading docstring in the chunk text, not just raw code \u2014 measured against EVAL-HARNESS",
+          "description": "Embed header semantics (layer/capability/constraints) and leading docstring in the chunk text, not just raw code — measured against EVAL-HARNESS",
           "status": "not_started",
           "shipped_commit": null,
           "depends_on": []
         },
         {
           "id": "PROVENANCE-RANKING",
-          "description": "Downweight header:false chunks at query time (post-score multiplier) instead of hard-filtering \u2014 headerless repos stay searchable but annotated code ranks first",
+          "description": "Downweight header:false chunks at query time (post-score multiplier) instead of hard-filtering — headerless repos stay searchable but annotated code ranks first",
           "status": "not_started",
           "shipped_commit": null,
           "depends_on": []
@@ -228,7 +228,7 @@
     },
     {
       "id": "P2-P4-DEP",
-      "description": "TOOL-HOTSPOTS is the replacement path for intelligence-server's drifted handleHotspots \u2014 needs the INTEL-SERVER-SCHEMA port-vs-retire ruling first",
+      "description": "TOOL-HOTSPOTS is the replacement path for intelligence-server's drifted handleHotspots — needs the INTEL-SERVER-SCHEMA port-vs-retire ruling first",
       "depends_on": [
         "PHASE-2.INTEL-SERVER-SCHEMA"
       ]
@@ -244,5 +244,12 @@
       "id": "P2-AUDIT-SHIPPED",
       "description": "UNRESOLVED-EDGE-AUDIT item shipped via WO-IMPORT-RESOLVER-MEMBERSHIP-CHECK-BUG-001 (rolling 4-phase: 91d8ac7/4dcb742/7975e08/fe7920a; closed 35df9bc). unresolved 20701->17551 with src-only truth 5854; all 4 audit stubs closed. Phase 2 stays active: INTEL-SERVER-SCHEMA + WIN-PATH-NORMALIZATION remain."
     }
-  ]
+  ],
+  "metadata": {
+    "closure": {
+      "reason": "Roadmap was physically moved under ARCHIVED/ but its status field still read \"active\", so the structure-roadmap checker treated it as the project's one LIVE roadmap and FAILed all three vision-binding checks against a frozen artifact. Stamped archived (parked/frozen, not superseded) to make the field agree with the location.",
+      "archived_at": "2026-07-31T23:59:00Z",
+      "unfinished": "Phase 5 (RAG quality) carries 3 not_started items: CHUNK-ENRICHMENT, PROVENANCE-RANKING, INDEX-FRESHNESS. Phases 1-4 complete."
+    }
+  }
 }

@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
-/**
- * @coderef-semantic: 1.0.0
- * @exports create_structure
- */
-
-
-/**
- * @coderef-semantic: 1.0.0
- * @exports: [create_structure]
- */
+# @coderef-semantic: 1.0.0
+# @exports create_structure
 
 """
 ---
@@ -39,7 +31,7 @@ Directories Created:
        - archived/
        - foundation-docs/
        - knowledge/
-       - resources-sheets/
+       - resource-sheets/
        - schemas/
        - standards/
        - working/
@@ -69,7 +61,7 @@ DIRECTORY_STRUCTURE = {
         'archived',
         'foundation-docs',
         'knowledge',
-        'resources-sheets',
+        'resource-sheets',
         'schemas',
         'standards',
         'working',

@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-FYR4J9",
+  "ulid": "01KXZKVS17W2G2GNBYCCWWYB0A",
+  "feature_name": "living-graph-overlay-pack",
+  "description": "Living Graph overlay pack for the shipped coderef-map viewer: port the useful parts of the Entity code-city experiment (graph style, not city blocks) as data-grounded canvas layers — animated BFS blast pulse, lens presets (Risk/Structure/Hygiene/History), weight-tiered highway edges with flow particles and edge-evidence click-through, labeled community hulls with drift-outlier marks. Phase-1 items need zero engine changes (MapData v1.4 already ships the data); the decay lens rides the existing opt-in git-behavioral block; every layer encodes measured surfaces, never verdicts. Ref: Entity apps/web/app/coderef/city + coderef/working/code-city-living-system/ROADMAP.md.",
+  "category": "feature",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-07-20T11:16:30Z"
+}

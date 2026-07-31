@@ -50,7 +50,7 @@ py C:\Users\willh\Desktop\CODEREF\CODEREF-CORE\scripts\setup-coderef-dir\setup_c
 - `archived/` - Completed workorders moved here
 - `foundation-docs/` - Generated docs (README, API, ARCHITECTURE, SCHEMA, COMPONENTS)
 - `knowledge/` - Project-specific knowledge base
-- `resources-sheets/` - Resource sheet documents
+- `resource-sheets/` - Resource sheet documents
 - `schemas/` - JSON schemas for validation
 - `standards/` - Project standards documents
 - `working/` - Active stubs and working notes

@@ -1,7 +1,7 @@
 ---
 title: Graph Viewer Living-Overlay Pack + Graphify-Derived Improvements
 domain: CODEREF-CORE
-status: draft
+status: open
 created: 2026-07-20
 updated: 2026-07-21
 stub_ref: STUB-FYR4J9

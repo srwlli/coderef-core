@@ -1,7 +1,5 @@
-/**
- * @coderef-semantic: 1.0.0
- * @exports: [TestSetupCoderefDirs]
- */
+# @coderef-semantic: 1.0.0
+# @exports: [TestSetupCoderefDirs]
 
 """
 ---
@@ -35,7 +33,7 @@ EXPECTED_DIRS = [
     'coderef/archived',
     'coderef/foundation-docs',
     'coderef/knowledge',
-    'coderef/resources-sheets',
+    'coderef/resource-sheets',
     'coderef/schemas',
     'coderef/standards',
     'coderef/working',

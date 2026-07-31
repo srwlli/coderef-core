@@ -1,7 +1,7 @@
 ---
 title: 3D WebGL Multi-Domain Workspace (SURFACES-HTML & D3.js 2D/3D Parity Plan)
 domain: CODEREF-CORE
-status: draft
+status: open
 created: 2026-07-24
 stub_ref: null
 ---
