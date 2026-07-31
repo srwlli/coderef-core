@@ -372,7 +372,7 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     const sourceFile = nodeFile.get(e.sourceId);
     const targetFile = nodeFile.get(e.targetId);
     if (!sourceFile || !targetFile || sourceFile === targetFile) continue;
-    const key = sourceFile + ' ' + targetFile;
+    const key = sourceFile + '\u0000' + targetFile;
     let agg = edgeAgg.get(key);
     if (!agg) {
       agg = { source: sourceFile, target: targetFile, weight: 0, kinds: {} };

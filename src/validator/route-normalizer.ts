@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer validation
  * @capability route-normalizer-normalized-route
- * @exports NormalizedRoute, normalizeFlaskRoute, normalizeFastAPIRoute, normalizeExpressRoute, normalizeNextJsRoute, extractDynamicSegments, normalizeRoutePath
- * @used_by src/validator/route-matcher.ts, src/validator/route-validator.ts
+ * @exports NormalizedRoute, normalizeFlaskRoute, normalizeFastAPIRoute, normalizeExpressRoute, normalizeNextJsRoute, normalizeSvelteKitRoute, normalizeNuxtRoute, normalizeRemixRoute, extractDynamicSegments, normalizeRoutePath
+ * @used_by src/pipeline/endpoint-identity.ts, src/validator/route-matcher.ts, src/validator/route-validator.ts
  */
 
 /**
@@ -129,6 +129,104 @@ export function normalizeNextJsRoute(path: string): NormalizedRoute {
 }
 
 /**
+ * Normalize a SvelteKit route to common format
+ * SvelteKit uses [param] for dynamic segments and [...rest] for catch-alls,
+ * plus [[optional]] for optional params and (group) for layout groups that
+ * contribute NO url segment.
+ *
+ * WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 Phase 2. Before this,
+ * 'sveltekit' hit normalizeRoutePath's `default:` arm and came back UNCHANGED —
+ * so a SvelteKit `[id]` never became `{id}` and never matched a client `{id}`.
+ *
+ * @param path - SvelteKit route path (file-based routing)
+ * @returns Normalized route with {param} placeholders
+ *
+ * @example
+ * normalizeSvelteKitRoute('/api/users/[id]')
+ * // Returns: { path: '/api/users/{id}', dynamicSegments: ['id'], ... }
+ */
+export function normalizeSvelteKitRoute(path: string): NormalizedRoute {
+  // Layout groups `(admin)` are organisational only — they contribute no URL
+  // segment, so a route inside one must normalize to the path WITHOUT it.
+  let normalizedPath = path.replace(/\/\([^)]*\)(?=\/|$)/g, '');
+  // Optional parameter `[[lang]]` -> `{lang}`. Treated as present: an optional
+  // segment that is omitted is a DIFFERENT path, and we cannot know which the
+  // caller used, so we record the declared shape rather than guessing both.
+  normalizedPath = normalizedPath.replace(/\[\[([^\]]+)\]\]/g, '{$1}');
+  // Catch-all `[...rest]` -> `{...rest}`; the ellipsis is preserved so the
+  // identity layer can distinguish a splat from a single-segment param.
+  normalizedPath = normalizedPath.replace(/\[\.\.\.([^\]]+)\]/g, '{...$1}');
+  // Single-segment `[id]` -> `{id}`.
+  normalizedPath = normalizedPath.replace(/\[([^\]]+)\]/g, '{$1}');
+
+  return {
+    path: normalizedPath,
+    dynamicSegments: extractDynamicSegments(normalizedPath),
+    methods: [],
+    framework: 'sveltekit'
+  };
+}
+
+/**
+ * Normalize a Nuxt route to common format
+ * Nuxt server routes use [param] and [...slug], matching SvelteKit's bracket
+ * dialect. Nuxt additionally spells a catch-all as `[...]` with no name.
+ *
+ * @param path - Nuxt route path (file-based routing)
+ * @returns Normalized route with {param} placeholders
+ *
+ * @example
+ * normalizeNuxtRoute('/api/users/[id]')
+ * // Returns: { path: '/api/users/{id}', dynamicSegments: ['id'], ... }
+ */
+export function normalizeNuxtRoute(path: string): NormalizedRoute {
+  let normalizedPath = path.replace(/\[\.\.\.([^\]]*)\]/g, (_m, name) =>
+    `{...${name || 'rest'}}`);
+  normalizedPath = normalizedPath.replace(/\[([^\]]+)\]/g, '{$1}');
+
+  return {
+    path: normalizedPath,
+    dynamicSegments: extractDynamicSegments(normalizedPath),
+    methods: [],
+    framework: 'nuxt'
+  };
+}
+
+/**
+ * Normalize a Remix route to common format
+ * Remix v2 uses `$param` for dynamic segments, a bare `$` for a splat, and dots
+ * as segment separators in the FILE name. parseRemixRoute already converts the
+ * dot-delimited filename into a slash path and rewrites `$` into brackets, so
+ * this handles both the bracket output it produces and raw `$` spellings that
+ * reach us from another source.
+ *
+ * @param path - Remix route path
+ * @returns Normalized route with {param} placeholders
+ *
+ * @example
+ * normalizeRemixRoute('/users/$id')
+ * // Returns: { path: '/users/{id}', dynamicSegments: ['id'], ... }
+ */
+export function normalizeRemixRoute(path: string): NormalizedRoute {
+  // Bracket forms first (what parseRemixRoute emits).
+  let normalizedPath = path.replace(/\[\.\.\.([^\]]+)\]/g, '{...$1}');
+  normalizedPath = normalizedPath.replace(/\[([^\]]+)\]/g, '{$1}');
+  // A bare `$` segment is Remix's splat (matches the remainder of the path).
+  normalizedPath = normalizedPath.replace(/(^|\/)\$(?=\/|$)/g, '$1{...splat}');
+  // `$param` -> `{param}`.
+  normalizedPath = normalizedPath.replace(/\$([a-zA-Z0-9_]+)/g, '{$1}');
+  // A leading underscore names a pathless layout route — no URL segment.
+  normalizedPath = normalizedPath.replace(/\/_[^/]*(?=\/|$)/g, '');
+
+  return {
+    path: normalizedPath,
+    dynamicSegments: extractDynamicSegments(normalizedPath),
+    methods: [],
+    framework: 'remix'
+  };
+}
+
+/**
  * Extract dynamic segments from normalized path
  *
  * @param normalizedPath - Path with {param} placeholders
@@ -177,6 +275,20 @@ export function normalizeRoutePath(
       return normalizeExpressRoute(path);
     case 'nextjs':
       return normalizeNextJsRoute(path);
+    // WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 Phase 2: these
+    // three arms close a real gap. RouteMetadata['framework'] has admitted
+    // seven values since WO-API-ROUTE-DETECTION-001, but only four were
+    // dispatched here — sveltekit, nuxt, and remix fell through to `default:`
+    // and were returned UNCHANGED. Their bracket/`$` dialects therefore never
+    // became `{param}`, so a SvelteKit `[id]` route could not match a client
+    // call to `/api/users/{id}` no matter how correct both sides were. The
+    // gap was invisible until Phase 1 gave the subsystem a live producer.
+    case 'sveltekit':
+      return normalizeSvelteKitRoute(path);
+    case 'nuxt':
+      return normalizeNuxtRoute(path);
+    case 'remix':
+      return normalizeRemixRoute(path);
     default:
       // Unknown framework, return as-is
       return {

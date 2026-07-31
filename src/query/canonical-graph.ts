@@ -488,9 +488,39 @@ export class CanonicalGraphQuery {
   }
 }
 
-const CALL: ReadonlySet<string> = new Set(['call']);
+/**
+ * Call-shaped relationships (WO-API-SURFACE-MAPPING-...-001 P2).
+ *
+ * `calls_endpoint` and `serves_endpoint` join this set because an HTTP request
+ * IS a call — it just crosses a network boundary instead of a module one, and
+ * every question `what_calls` answers about a function is the same question a
+ * reader has about an endpoint. Widening the set is safe for existing results:
+ * a `calls_endpoint` edge only ever TARGETS an `@Endpoint/...` node and a
+ * `serves_endpoint` edge only ever SOURCES from one, so no element-to-element
+ * query gains or loses a neighbour it had before. What changes is that
+ * `callersOf(handlerFile)` now returns the endpoints served by that file, and
+ * `callersOf(endpoint)` returns its clients — both previously unanswerable.
+ */
+const CALL: ReadonlySet<string> = new Set(['call', 'calls_endpoint', 'serves_endpoint']);
 const IMPORT: ReadonlySet<string> = new Set(['import']);
-const DEPENDS: ReadonlySet<string> = new Set(['call', 'import']);
+/**
+ * Relationships a dependency walk (impact_of / path_between / dependents) may
+ * traverse. Including the endpoint kinds is what makes blast radius cross the
+ * network boundary: the directed chain
+ *
+ *     client file --calls_endpoint--> endpoint --serves_endpoint--> handler file
+ *
+ * means changing a handler now surfaces the CLIENTS that call it, not just the
+ * modules that import it. Only resolved edges are indexed (constructor
+ * invariant), so an endpoint whose client could not be matched is reported by
+ * unresolved_edges and never silently walked.
+ */
+const DEPENDS: ReadonlySet<string> = new Set([
+  'call',
+  'import',
+  'calls_endpoint',
+  'serves_endpoint',
+]);
 
 /**
  * Upper bound on paths returned by allPaths() (bounded DFS). Exported as the

@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability graph-builder-edge-relationship
- * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived, isTestOriginFile
+ * @exports EdgeRelationship, EdgeResolutionStatus, EdgeEvidence, GraphEdgeV2, constructGraph, buildNodes, EndpointRecord, collectEndpoints, fileGrainNodeId, buildEdges, computeEdgeId, isHeaderDerived, isTestOriginFile
  * @used_by src/pipeline/orchestrator.ts, __tests__/pipeline/graph-construction-determinism.test.ts
  */
 
@@ -65,6 +65,12 @@ import { createCodeRefId } from '../utils/coderef-id.js';
 import { globalRegistry } from '../registry/entity-registry.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 import { classifyEdgeConfidence } from './edge-confidence.js';
+import {
+  METHOD_UNSPECIFIED,
+  canonicalEndpointPath,
+  classifyClientPath,
+  endpointNodeId,
+} from './endpoint-identity.js';
 
 /**
  * Canonical edge relationship enum (AC-03 + AC-04).
@@ -85,8 +91,25 @@ import { classifyEdgeConfidence } from './edge-confidence.js';
  *                   state.heritage (subtype extends supertype).
  *   implements    — interface-conformance heritage edge. Sourced via
  *                   state.heritage (subtype implements supertype).
+ *   calls_endpoint  — a client-side API call crossing the network
+ *                   boundary. Source is the calling element's
+ *                   file-grain node, target is an `@Endpoint/...`
+ *                   node. Sourced via state.frontendCalls.
+ *   serves_endpoint — an endpoint dispatching to the handler that
+ *                   serves it. Source is the `@Endpoint/...` node,
+ *                   target is the handler's file-grain node. Sourced
+ *                   via state.routes.
  */
-export type EdgeRelationship = 'import' | 'call' | 'export' | 'header-import' | 'extends' | 'implements';
+export type EdgeRelationship =
+  | 'import'
+  | 'call'
+  | 'export'
+  | 'header-import'
+  | 'extends'
+  | 'implements'
+  // WO-API-SURFACE-MAPPING-...-001 P2 (REC-002): HTTP endpoint edges.
+  | 'calls_endpoint'
+  | 'serves_endpoint';
 
 /**
  * Canonical edge resolution status (AC-03).
@@ -129,6 +152,26 @@ export type EdgeEvidence = (
   | { kind: 'builtin-call'; calleeName: string; receiverText: string }
   | { kind: 'header-import'; module: string; symbol: string; resolvedModuleFile?: string }
   | { kind: 'stale-header-import'; module: string; symbol: string; reason: string }
+  // WO-API-SURFACE-MAPPING-...-001 P2. `detectionConfidence` is deliberately NOT
+  // named `confidence`: the intersection below already owns that key with the
+  // literal type 'provisional', and FrontendCall.confidence is a 0-100 NUMBER
+  // (100 static string / 80 template literal). Reusing the name would collapse
+  // two unrelated signals into one field.
+  | {
+      kind: 'calls-endpoint';
+      endpointPath: string;
+      method: string;
+      callType: string;
+      detectionConfidence: number;
+      rawPath: string;
+    }
+  | {
+      kind: 'serves-endpoint';
+      endpointPath: string;
+      method: string;
+      framework: string;
+      declaredMethods: string[];
+    }
 ) & {
   /**
    * Additive evidence-level tag (STUB-K5YBFN, operator ruling option A):
@@ -330,8 +373,32 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
   for (const cr of state.callResolutions) {
     if (cr.sourceFile) seenFiles.add(cr.sourceFile);
   }
+  // WO-API-SURFACE-MAPPING-...-001 P2: same guarantee for the API-surface facts.
+  // A `serves_endpoint` edge targets the handler's file-grain node and a
+  // `calls_endpoint` edge sources from the caller's, so both files need a node
+  // for AC-02 to hold. A route handler with no extracted elements is not
+  // hypothetical — a Python module-level Flask app or a Next.js route file whose
+  // only export is an arrow constant can land here.
+  for (const route of state.routes ?? []) {
+    if (route.file) seenFiles.add(route.file);
+  }
+  for (const call of state.frontendCalls ?? []) {
+    if (call.file) seenFiles.add(call.file);
+  }
+  // Dedupe on the NODE ID, not on the raw path string. `seenFiles` accumulates
+  // whatever spelling each fact source recorded, and those spellings differ:
+  // state.elements carries native platform paths (`C:\...\src\a.ts`) while
+  // RouteFact/FrontendCallFact carry the POSIX form the route extractor
+  // normalized to (`C:/.../src/a.ts`). Both collapse to the same
+  // `@File/src/a.ts` id, so keying the Set on the path emitted the node twice
+  // and tripped GI-1 node_id_uniqueness. Identity is the id; uniqueness has to
+  // be enforced there. First spelling wins, which keeps `node.file` on the
+  // native-path value elements already supplied.
+  const emittedFileNodeIds = new Set<string>();
   for (const file of seenFiles) {
     const id = fileGrainNodeId(file, projectPath);
+    if (emittedFileNodeIds.has(id)) continue;
+    emittedFileNodeIds.add(id);
     const fileGrainMeta: Record<string, unknown> = { codeRefId: id, codeRefIdNoLine: id, fileGrain: true };
     const hs = fileHeaderStatus.get(file);
     if (hs !== undefined) fileGrainMeta.headerStatus = hs;
@@ -345,7 +412,141 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
     });
   }
 
+  // Emit endpoint pseudo-nodes (WO-API-SURFACE-MAPPING-...-001 P2, REC-002).
+  //
+  // An endpoint is a first-class NODE, not merely edge metadata, because the
+  // single most valuable thing this subsystem can report is an endpoint that
+  // NOTHING calls. Modelling the network hop as an edge from client element
+  // straight to handler element would make an uncalled endpoint literally
+  // unrepresentable — no edge, no trace — which is the exact blindness REC-002
+  // exists to remove. With a node, an orphan is an endpoint carrying a
+  // `serves_endpoint` out-edge and zero `calls_endpoint` in-edges: visible,
+  // countable, and queryable.
+  //
+  // Endpoint nodes carry NO `file` and NO `line`. They are not located in source
+  // — several handler files may serve the same endpoint, and a client that calls
+  // one has no relationship to any particular file. Consumers already handle
+  // this: GI-6's duplicate-identity check skips nodes without file+line,
+  // project-map-data skips nodes without a file, and canonical-graph indexes
+  // them by id while leaving them out of file-grain expansion.
+  //
+  // Sorted by id so node ORDER is deterministic (AC-08) regardless of file-scan
+  // order.
+  for (const record of collectEndpoints(state).values()) {
+    nodes.push({
+      id: record.id,
+      type: 'endpoint',
+      name: `${record.method} ${record.path}`,
+      metadata: {
+        codeRefId: record.id,
+        codeRefIdNoLine: record.id,
+        endpoint: true,
+        path: record.path,
+        method: record.method,
+        frameworks: record.frameworks,
+        declaredMethods: record.declaredMethods,
+        // Node IDS, not raw paths — a consumer reading this metadata can follow
+        // them straight into graph.nodes without re-deriving the file-grain id.
+        handlers: record.handlerFiles.map(f => fileGrainNodeId(f, projectPath)),
+      },
+    });
+  }
+
   return nodes;
+}
+
+/**
+ * One canonical HTTP endpoint, aggregated across every route declaration that
+ * produced it.
+ */
+export interface EndpointRecord {
+  /** `@Endpoint/<path-sans-leading-slash>#<METHOD>`. */
+  id: string;
+  /** Canonical path with parameter names erased (`/api/users/{}`). */
+  path: string;
+  /** Uppercase HTTP method, or METHOD_UNSPECIFIED when none was declared. */
+  method: string;
+  /** Frameworks that declared this endpoint. Sorted; usually one entry. */
+  frameworks: string[];
+  /** Every method the underlying route declarations listed. Sorted. */
+  declaredMethods: string[];
+  /** Files whose route declaration produced this endpoint. Sorted. */
+  handlerFiles: string[];
+}
+
+/**
+ * Fold state.routes into the canonical endpoint set.
+ *
+ * One RouteFact declaring `methods: ['GET','POST']` yields TWO endpoints, per
+ * RFC 9110's separation of target from method — `GET /api/users` and
+ * `POST /api/users` are different operations that can be independently orphaned,
+ * and 405 exists precisely because a server can know the path and reject the
+ * verb.
+ *
+ * Two declarations that canonicalize to the same (path, method) MERGE into one
+ * node with both handler files recorded. That is not deduplication for tidiness:
+ * two files serving one endpoint is a real condition a reader needs to see, and
+ * hiding one of them would make the graph lie about the surface.
+ *
+ * Deterministic: the returned Map is built in sorted-id order and every array
+ * field is sorted, so the node list is byte-stable across runs (AC-08).
+ *
+ * Public so tests can assert the fold without reconstructing a whole graph.
+ */
+export function collectEndpoints(state: PipelineState): Map<string, EndpointRecord> {
+  const acc = new Map<string, {
+    id: string;
+    path: string;
+    method: string;
+    frameworks: Set<string>;
+    declaredMethods: Set<string>;
+    handlerFiles: Set<string>;
+  }>();
+
+  for (const fact of state.routes ?? []) {
+    const framework = fact.route.framework;
+    const path = canonicalEndpointPath(fact.route.path, framework);
+    const declared = (fact.route.methods ?? [])
+      .map(m => m.trim().toUpperCase())
+      .filter(m => m.length > 0);
+    // No declared method is NO-DATA about which verbs are served. Mint the
+    // single METHOD_UNSPECIFIED node rather than fanning out to all verbs,
+    // which would invent endpoints the producer never claimed.
+    const methods = declared.length > 0 ? declared : [METHOD_UNSPECIFIED];
+
+    for (const method of methods) {
+      const id = endpointNodeId(path, method);
+      let entry = acc.get(id);
+      if (!entry) {
+        entry = {
+          id,
+          path,
+          method,
+          frameworks: new Set(),
+          declaredMethods: new Set(),
+          handlerFiles: new Set(),
+        };
+        acc.set(id, entry);
+      }
+      entry.frameworks.add(framework);
+      for (const m of declared) entry.declaredMethods.add(m);
+      if (fact.file) entry.handlerFiles.add(normalizeSlashes(fact.file));
+    }
+  }
+
+  const sorted = new Map<string, EndpointRecord>();
+  for (const id of Array.from(acc.keys()).sort()) {
+    const entry = acc.get(id)!;
+    sorted.set(id, {
+      id: entry.id,
+      path: entry.path,
+      method: entry.method,
+      frameworks: Array.from(entry.frameworks).sort(),
+      declaredMethods: Array.from(entry.declaredMethods).sort(),
+      handlerFiles: Array.from(entry.handlerFiles).sort(),
+    });
+  }
+  return sorted;
 }
 
 /**
@@ -715,12 +916,12 @@ export function buildEdges(
       if (elem.name === undefined) continue;
       if (!typeKinds.has(elem.type)) continue;
       const id = elem.codeRefId ?? createCodeRefId(elem, state.projectPath, { includeLine: true });
-      idByFileName.set(`${normalizeSlashes(elem.file)} ${elem.name}`, id);
+      idByFileName.set(`${normalizeSlashes(elem.file)}\u0000${elem.name}`, id);
       const list = idsByName.get(elem.name);
       if (list) list.push(id); else idsByName.set(elem.name, [id]);
     }
     const resolveName = (name: string, sameFile: string): string | undefined => {
-      const inFile = idByFileName.get(`${normalizeSlashes(sameFile)} ${name}`);
+      const inFile = idByFileName.get(`${normalizeSlashes(sameFile)}\u0000${name}`);
       if (inFile) return inFile;
       const byName = idsByName.get(name);
       return byName && byName.length === 1 ? byName[0] : undefined; // unique-only; no guessing
@@ -756,6 +957,178 @@ export function buildEdges(
         ...(targetId ? {} : { reason: 'supertype_not_in_project' }),
       }));
     }
+  }
+
+  // === API-surface edges (WO-API-SURFACE-MAPPING-...-001 P2, REC-002) ===
+  //
+  // Direction mirrors runtime control flow and the existing `call` edge
+  // convention (caller -> callee), so a directed walk crosses the network
+  // boundary in one continuous chain:
+  //
+  //     @File/src/client.ts  --calls_endpoint-->  @Endpoint/api/users/{}#GET
+  //     @Endpoint/api/users/{}#GET  --serves_endpoint-->  @File/server/users.ts
+  //
+  // Pointing `serves_endpoint` from the handler at the endpoint instead would
+  // have produced client -> endpoint <- handler, which no directed traversal can
+  // walk end to end, and `path_between(clientFile, handlerFile)` would have
+  // stayed empty for a connection that plainly exists.
+  //
+  // Both endpoints anchor at FILE grain. RouteFact carries line 0 (detectors
+  // report route identity, not a source anchor) and FrontendCall gives a call
+  // site but not its enclosing element. Picking "the nearest element declared
+  // above this line" would be a guess that names the wrong function whenever a
+  // call sits inside a nested callback. File grain is what we actually know.
+  const endpointRecords = collectEndpoints(state);
+
+  // --- serves_endpoint: endpoint -> handler file ---
+  for (const record of endpointRecords.values()) {
+    for (const handlerFile of record.handlerFiles) {
+      const targetId = fileGrainNodeId(handlerFile, state.projectPath);
+      const id = computeEdgeId({
+        sourceId: record.id,
+        relationship: 'serves_endpoint',
+        targetId,
+        originSpecifier: record.path,
+        sourceFile: handlerFile,
+        line: 0,
+      });
+      edges.push(buildEdgeRecord({
+        id,
+        sourceId: record.id,
+        targetId,
+        relationship: 'serves_endpoint',
+        resolutionStatus: 'resolved',
+        evidence: {
+          kind: 'serves-endpoint',
+          endpointPath: record.path,
+          method: record.method,
+          framework: record.frameworks.join(','),
+          declaredMethods: record.declaredMethods,
+        },
+        sourceLocation: { file: handlerFile, line: 0 },
+      }));
+    }
+  }
+
+  // --- calls_endpoint: caller file -> endpoint ---
+  //
+  // Because the identity grammar erases parameter NAMES, matching a client path
+  // to a server route is now exact-string equality on the canonical path —
+  // precisely the semantics route-matcher.dynamicMatch implements by walking
+  // segments, but as a single Map probe instead of an O(routes x calls) scan.
+  //
+  // EVERY client call produces an edge. A call with no matching endpoint is
+  // recorded unresolved with a reason that says WHICH way it failed; it is never
+  // dropped. Silence would read as "this client calls nothing", which is a
+  // verdict, and a false one.
+  const endpointsByPath = new Map<string, Set<string>>();
+  for (const record of endpointRecords.values()) {
+    const set = endpointsByPath.get(record.path);
+    if (set) set.add(record.method);
+    else endpointsByPath.set(record.path, new Set([record.method]));
+  }
+
+  for (const call of state.frontendCalls ?? []) {
+    const sourceId = fileGrainNodeId(call.file, state.projectPath);
+    const classified = classifyClientPath(call.path, call.method);
+    const evidence: EdgeEvidence = {
+      kind: 'calls-endpoint',
+      endpointPath: classified.path,
+      method: classified.method,
+      callType: call.callType,
+      detectionConfidence: call.confidence,
+      rawPath: call.path,
+    };
+
+    // Off-origin or unknown-origin calls never get a targetId (AC-05: no
+    // synthetic placeholders). They are still real, recorded call sites.
+    if (classified.kind !== 'local') {
+      const id = computeEdgeId({
+        sourceId,
+        relationship: 'calls_endpoint',
+        originSpecifier: `${classified.method} ${classified.path}`,
+        sourceFile: call.file,
+        line: call.line,
+      });
+      edges.push(buildEdgeRecord({
+        id,
+        sourceId,
+        relationship: 'calls_endpoint',
+        // An absolute URL is DETERMINISTICALLY out-of-project (a distinct
+        // authority per RFC 3986 s3.2) — that is a classification, not a
+        // resolution failure, so it earns 'external' and the `strong`
+        // confidence tier. An interpolated origin genuinely could not be
+        // resolved and stays 'unresolved'.
+        resolutionStatus: classified.kind === 'external' ? 'external' : 'unresolved',
+        evidence,
+        sourceLocation: { file: call.file, line: call.line },
+        reason: classified.reason,
+      }));
+      continue;
+    }
+
+    const servedMethods = endpointsByPath.get(classified.path);
+    // Method resolution order: the exact verb, then a route that declared no
+    // methods at all (METHOD_UNSPECIFIED serves any verb we cannot disprove).
+    const matchedMethod =
+      servedMethods?.has(classified.method) ? classified.method
+      : servedMethods?.has(METHOD_UNSPECIFIED) ? METHOD_UNSPECIFIED
+      : undefined;
+
+    if (matchedMethod === undefined) {
+      // Distinguish 404-shaped from 405-shaped absence. Both are unresolved,
+      // but they send a reader to completely different places: a missing path
+      // means the endpoint was never built; a served path with the wrong verb
+      // means it was built and the client is calling it wrong.
+      const reason = servedMethods
+        ? 'endpoint_method_not_served'
+        : 'endpoint_not_in_project';
+      const id = computeEdgeId({
+        sourceId,
+        relationship: 'calls_endpoint',
+        originSpecifier: `${classified.method} ${classified.path}`,
+        sourceFile: call.file,
+        line: call.line,
+      });
+      edges.push(buildEdgeRecord({
+        id,
+        sourceId,
+        relationship: 'calls_endpoint',
+        resolutionStatus: 'unresolved',
+        evidence,
+        sourceLocation: { file: call.file, line: call.line },
+        reason,
+      }));
+      continue;
+    }
+
+    const targetId = endpointNodeId(classified.path, matchedMethod);
+    // A path matched only because the SERVER declared no methods is a weaker
+    // binding than a verb-for-verb match. Reuse the existing provisional
+    // mechanism (STUB-6CWWHQ) rather than inventing a parallel one: setting
+    // evidence.confidence routes the edge to the `heuristic` tier through
+    // classifyEdgeConfidence unchanged — resolved and traversable, but labelled.
+    const methodInferred =
+      matchedMethod === METHOD_UNSPECIFIED && classified.method !== METHOD_UNSPECIFIED;
+    if (methodInferred) evidence.confidence = 'provisional';
+    const id = computeEdgeId({
+      sourceId,
+      relationship: 'calls_endpoint',
+      targetId,
+      originSpecifier: `${classified.method} ${classified.path}`,
+      sourceFile: call.file,
+      line: call.line,
+    });
+    edges.push(buildEdgeRecord({
+      id,
+      sourceId,
+      targetId,
+      relationship: 'calls_endpoint',
+      resolutionStatus: 'resolved',
+      evidence,
+      sourceLocation: { file: call.file, line: call.line },
+      ...(methodInferred ? { reason: 'endpoint_method_undeclared_by_server' } : {}),
+    }));
   }
 
   // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3: dedupe by edge id.

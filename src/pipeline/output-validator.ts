@@ -259,6 +259,9 @@ const VALID_RELATIONSHIPS = new Set<string>([
   // WO-...-GENRE-FEATURES-PROGRAM-001 P5: class/interface heritage edges.
   'extends',
   'implements',
+  // WO-API-SURFACE-MAPPING-...-001 P2 (REC-002): HTTP endpoint edges.
+  'calls_endpoint',
+  'serves_endpoint',
 ]);
 
 /** Canonical EdgeResolutionStatus enum (mirrors graph-builder.ts EdgeResolutionStatus). */

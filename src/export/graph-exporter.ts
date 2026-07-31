@@ -42,7 +42,12 @@ export type ExportedGraphEdgeRelationship =
   | 'header-import'
   // WO-...-GENRE-FEATURES-PROGRAM-001 P5: class/interface heritage edges.
   | 'extends'
-  | 'implements';
+  | 'implements'
+  // WO-API-SURFACE-MAPPING-...-001 P2 (REC-002): HTTP endpoint edges. These are
+  // the only relationships whose endpoints may be `@Endpoint/...` pseudo-nodes,
+  // and the only ones that cross a network boundary rather than a module one.
+  | 'calls_endpoint'
+  | 'serves_endpoint';
 
 export type ExportedGraphEdgeResolutionStatus =
   | 'resolved'
