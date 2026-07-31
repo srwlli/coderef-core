@@ -68,6 +68,23 @@ export class SemanticOrchestrator {
   }
 
   /**
+   * Resolve a pipeline-reported path to a real filesystem path.
+   *
+   * Pipeline artifacts store REPO-RELATIVE paths on purpose (normalizeProjectPath
+   * keeps `.coderef/` portable across machines). Handing those straight to
+   * `fs.readFileSync` resolves them against `process.cwd()` instead of the target
+   * repo, so running the CLI from anywhere but inside `--project` produced ENOENT
+   * on every source file — while the run still reported "Generated N headers" and
+   * exited 0. Absolute paths are passed through untouched, so `--file=<abs>` and
+   * any already-resolved caller keep working.
+   */
+  private resolveInProject(filePath: string): string {
+    return path.isAbsolute(filePath)
+      ? filePath
+      : path.resolve(this.options.projectDir, filePath);
+  }
+
+  /**
    * Process entire project directory
    */
   async processProject(): Promise<PipelineResult> {
@@ -103,7 +120,7 @@ export class SemanticOrchestrator {
           // Generate headers if enabled
           if (this.options.generateHeaders) {
             await this.headerGenerator.insertHeaders(
-              extraction.file,
+              this.resolveInProject(extraction.file),
               this.headerGenerator.generateHeaders(
                 extraction.exports,
                 extraction.imports,
@@ -172,8 +189,11 @@ export class SemanticOrchestrator {
         this.options.projectDir,
         { outputDir: this.options.outputDir },
       );
+      // Compare on both sides resolved against the project, so a repo-relative
+      // extraction path matches a caller-supplied absolute --file (and vice versa).
+      const targetPath = this.resolveInProject(filePath);
       const extraction = this.createExtractionsFromState(state)
-        .find(item => path.resolve(item.file) === path.resolve(filePath));
+        .find(item => this.resolveInProject(item.file) === targetPath);
 
       if (!extraction) {
         throw new Error(`No pipeline extraction found for ${filePath}`);
@@ -181,7 +201,7 @@ export class SemanticOrchestrator {
 
       if (this.options.generateHeaders) {
         await this.headerGenerator.insertHeaders(
-          filePath,
+          targetPath,
           this.headerGenerator.generateHeaders(
             extraction.exports,
             extraction.imports,
