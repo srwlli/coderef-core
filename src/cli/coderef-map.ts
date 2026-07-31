@@ -85,6 +85,11 @@ OUTPUT:
   <out>/data.json    file-level map data (also consumed by the MCP 'map' tool)
   <out>/graph.html   static viewer with the data inlined (double-clickable)
   <out>/viewer.js|css  viewer runtime assets
+  <out>/dashboard.html  static analytics + engineering-metrics dashboard,
+                        data inlined (double-clickable). Always emitted:
+                        rendering the map renders the dashboard. Costs a
+                        second inlined copy of the bundle (~= graph.html).
+  <out>/dashboard.js|css  dashboard runtime assets
   <out>/skeleton.md  plaintext skeleton map (--skeleton only)
 
 SCAN-IF-ABSENT:
@@ -339,6 +344,7 @@ function main(): void {
 
   const htmlPath = path.join(outDir, 'graph.html');
   console.log(`[coderef-map] open ${htmlPath}`);
+  console.log(`[coderef-map] dashboard ${result.dashboardPath}`);
   if (args.open) openInBrowser(htmlPath);
 }
 

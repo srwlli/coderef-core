@@ -111,10 +111,16 @@
     var chip = document.getElementById('graph-link');
     chip.innerHTML = 'MapData ' + esc(meta.schemaVersion || '?') + ' <span class="chip__arrow">&#8599;</span>';
 
+    // Provenance line — the equivalent of the retired source.json sidecar:
+    // which bundle, which schema, when generated, and whether the validation
+    // report was actually present. Kept ON the artifact so a dashboard that
+    // gets copied somewhere still says what it was rendered from.
     document.getElementById('meta-line').innerHTML =
       '<span>generated ' + esc(meta.generatedAt || 'unknown') + '</span>'
+      + '<span>MapData ' + esc(meta.schemaVersion || '?') + '</span>'
       + '<span>' + stat(src.nodeCount) + ' nodes / ' + stat(src.edgeCount) + ' edges</span>'
-      + '<span>' + stat(src.elementCount) + ' elements</span>';
+      + '<span>' + stat(src.elementCount) + ' elements</span>'
+      + '<span>validation-report: ' + (v ? 'present' : '<span class="tri tri--nodata">absent</span>') + '</span>';
 
     var tl = (metrics.testLinkage && metrics.testLinkage.summary) || {};
     var ur = (metrics.unresolvedRefs && metrics.unresolvedRefs.summary) || {};

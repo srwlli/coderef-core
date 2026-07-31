@@ -8,11 +8,13 @@
 /**
  * coderef-pipeline - Unified CodeRef orchestration CLI.
  *
- * Chains the four standard legs in order against a target project:
+ * Chains the five standard legs in order against a target project:
  *   1. scan            - element discovery (coderef-scan)
  *   2. populate        - generate all .coderef/ artifacts (populate-coderef)
- *   3. foundation-docs - render docs/foundation/*.md via scripts/doc-gen/
- *   4. rag-index       - build the RAG vector index (Ollama-only in this path)
+ *   3. map             - emit .coderef/map/ (data.json + graph.html +
+ *                        dashboard.html) via coderef-map --no-open
+ *   4. foundation-docs - render docs/foundation/*.md via scripts/doc-gen/
+ *   5. rag-index       - build the RAG vector index (Ollama-only in this path)
  *
  * Design:
  *   - Each leg runs as a child process so leg-local argv + env stay isolated.
@@ -24,7 +26,7 @@
  *   - Per-leg timing + failure short-circuit. --dry-run prints the plan
  *     without executing.
  *   - --only=<legs> and --skip=<legs> allow subset runs (comma-separated leg
- *     names: scan, populate, docs, rag).
+ *     names: scan, populate, map, docs, rag).
  *
  * Workorder: WO-UNIFIED-CODEREF-PIPELINE-001 (STUB-A).
  */
@@ -46,7 +48,11 @@ interface CliArgs {
   ragIncludeHeaderless: boolean;
 }
 
-const LEG_NAMES = ['scan', 'populate', 'docs', 'rag'] as const;
+// Order matters: `map` runs AFTER populate deliberately. coderef-map has its
+// own scan-if-absent path (it re-runs scan+populate when .coderef/graph.json is
+// missing), so placing it later means graph.json already exists and the leg
+// never triggers a redundant second scan.
+const LEG_NAMES = ['scan', 'populate', 'map', 'docs', 'rag'] as const;
 type Leg = (typeof LEG_NAMES)[number];
 
 function printHelp(): void {
@@ -61,7 +67,7 @@ OPTIONS:
                              Can also be supplied as the first positional arg.
                              Example: coderef-pipeline --project-dir /path/to/project
   --only <legs>              Comma-separated subset of legs to run.
-                             Valid: scan, populate, docs, rag
+                             Valid: scan, populate, map, docs, rag
   --skip <legs>              Comma-separated legs to skip.
   --dry-run                  Print the plan; do not execute.
   --ollama-base-url <url>    Ollama endpoint (default: http://localhost:11434
@@ -259,6 +265,28 @@ async function runLeg(leg: Leg, args: CliArgs): Promise<LegResult> {
         status: r.code === 0 ? 'ok' : 'fail',
         durationMs: Date.now() - started,
         exitCode: r.code,
+        stderrTail: r.stderr.split('\n').slice(-20).join('\n'),
+      };
+    }
+
+    if (leg === 'map') {
+      // Emits .coderef/map/{data.json,graph.html,dashboard.html,+assets}.
+      // --no-open: a pipeline run must never pop a browser.
+      const bin = coderefBin('coderef-map');
+      const r = runNode(bin, [args.projectDir, '--no-open'], { verbose: args.verbose });
+      const dashboard = path.join(args.projectDir, '.coderef', 'map', 'dashboard.html');
+      const warnings: string[] = [];
+      // The leg can exit 0 having written nothing useful; say so rather than
+      // letting a green leg imply a rendered dashboard.
+      if (r.code === 0 && !fs.existsSync(dashboard)) {
+        warnings.push('map leg exited 0 but .coderef/map/dashboard.html is absent');
+      }
+      return {
+        leg,
+        status: r.code === 0 ? 'ok' : 'fail',
+        durationMs: Date.now() - started,
+        exitCode: r.code,
+        ...(warnings.length ? { warnings } : {}),
         stderrTail: r.stderr.split('\n').slice(-20).join('\n'),
       };
     }
