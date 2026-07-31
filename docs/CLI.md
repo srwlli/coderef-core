@@ -132,9 +132,9 @@ a file-level `.coderef/map/data.json` and emits the bundled browser viewer —
 dependency graph, search (files + elements), node-detail panel, hotspots and
 cycles overlays, communities and dead-code overlays (graph analytics), layer-drift
 overlay (declared vs detected), engineering-metrics overlay (test linkage,
-header coverage, unresolved refs, module size, dependencies), blast-radius
-mode. Header-less repos degrade gracefully (the map renders from the
-dependency graph alone).
+header coverage, unresolved refs, module size, dependencies), API overlay
+(cross-process HTTP hops, drawn dashed), blast-radius mode. Header-less repos
+degrade gracefully (the map renders from the dependency graph alone).
 
 ### Usage
 
@@ -181,7 +181,7 @@ npx coderef-map /path/to/any/repo --git --no-open
 
 | File | Purpose |
 |------|---------|
-| `.coderef/map/data.json` | File-level MapData v1.6: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below), and — with `--git` — the `git` block **and** the `ownership` block (below). Same file the MCP `map` tool returns to agents. |
+| `.coderef/map/data.json` | File-level MapData v1.7: nodes = files (embedded element detail, dominant layer, hotspot score), edges = aggregated **resolved** deps with per-kind weights + per-edge `evidence` blocks (below), hotspot/cycle overlays, `analytics` block (below), `drift` block (below), `metrics` block (below), `api` block (below), and — with `--git` — the `git` block **and** the `ownership` block (below). Same file the MCP `map` tool returns to agents. |
 | `.coderef/map/graph.html` | Static viewer with the data inlined (safe `<`-escaped embedding) |
 | `.coderef/map/viewer.js` / `viewer.css` | Viewer runtime (vanilla JS canvas force-graph, zero network/CDN) |
 | `.coderef/map/dashboard.html` / `dashboard.js` / `dashboard.css` | Dashboard surface with the same data inlined; emitted always, linked from the graph |
@@ -311,6 +311,35 @@ with a legend strip showing the range endpoints and the no-data count;
 no-data nodes render neutral gray (distinct from an observed zero); the node
 detail panel gains a `Metrics` row (per-family values for the selected file).
 Pre-1.4 `data.json` disables the toggle + select gracefully.
+
+### API-surface block (`data.api`, MapData v1.7)
+
+The HTTP endpoint inventory folded to file grain (`src/map/api-surface.ts`,
+WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 P3). Present whenever
+route detection produced `.coderef/routes.json`.
+
+| Field | Contents |
+|-------|----------|
+| `endpoints[]` | `{id, path, method, frameworks[], handlers[], callers[], orphaned}`, id-sorted. `id` is the canonical `@Endpoint/<path>#<METHOD>` with parameter NAMES erased per the OpenAPI 3.1 path-identity rule, so a client's `${id}` and a server's `<int:user_id>` are ONE endpoint. `handlers` / `callers` are project-relative files. |
+| `networkEdges[]` | `{source, target, endpoints[]}` — file-to-file hops that cross the process boundary. Both ends are FILES that also exist as graph nodes, which is what lets the viewer draw them over the file graph. Deliberately kept OUT of `edges`: an import and an HTTP request are different kinds of coupling, and collapsing them would hide a process boundary from every consumer of the file graph. |
+| `unmatchedCalls[]` | Every client call that did NOT bind, WITH its reason — `endpoint_not_in_project` (404-shaped), `endpoint_method_not_served` (405-shaped), `client_path_origin_unresolved` (interpolated base URL, origin unknowable), `absolute_url_external_origin` (a different authority per RFC 3986 §3.2). Capped at `unmatchedCap` (default 200) with the truncation declared in `warnings[]`; `summary.unmatchedCallCount` stays complete. |
+| `summary` | `{endpointCount, orphanedCount, resolvedCallCount, unmatchedCallCount, byFramework, byReason}`. |
+
+**Surfaces, not verdicts.** `orphaned` means NO RESOLVED CALLER WAS FOUND IN THIS
+REPO — for a public API, a mobile client, or a server-to-server caller that is
+the expected and correct state, never a dead-code verdict. (Known bound: the
+frontend-call detector gates on browser-reachable extensions, so server-to-server
+callers are invisible to it.) Absence of the whole block means the producer never
+ran; it never means the project has no API.
+
+Viewer toggle: **API** dims to the files on either end of a network hop and draws
+those hops **dashed** — the dash distinguishes a runtime cross-process call from
+a build-time import. The node detail panel gains **Serves** and **Calls over
+HTTP** rows, kept separate because direction is what distinguishes a handler from
+a client. The dashboard renders the endpoint table plus the unmatched calls
+grouped by reason, each reason spelled out in prose. Pre-1.7 `data.json` disables
+the toggle gracefully; a repo that serves zero routes disables it with *"no
+endpoints served"* — a measured zero, worded so it cannot be read as missing data.
 
 ### Git-behavioral block (`data.git`, MapData v1.5, `--git` opt-in)
 

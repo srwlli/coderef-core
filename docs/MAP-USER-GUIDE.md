@@ -29,7 +29,7 @@ Two audiences share one identical data set (`MapData`, schema v1.5):
 
 - **Humans** use the two bundled views, which link to each other and render from the same bundle:
   - `graph.html` — canvas force layout, search, detail panel, and exclusive overlay toggles.
-  - `dashboard.html` — the same MapData read as ranked tables: centrality, coupling, hotspots, cycles, bridges, documentation and test-linkage coverage, layer drift, and dead-code candidates. Counts expand to the file names behind them, every capped ranking carries a truncation badge, and disclosures from all four emitting blocks (`meta`/`analytics`/`metrics`/`drift`) are collected into one panel labelled by origin.
+  - `dashboard.html` — the same MapData read as ranked tables: centrality, coupling, hotspots, cycles, bridges, documentation and test-linkage coverage, layer drift, dead-code candidates, and the API surface (endpoints with their handlers and callers, plus the client calls that did not bind and the reason each one did not). Counts expand to the file names behind them, every capped ranking carries a truncation badge, and disclosures from all five emitting blocks (`meta`/`analytics`/`metrics`/`drift`/`api`) are collected into one panel labelled by origin.
 - **Agents** use the MCP `map` tool, which returns triage-ready summary counts plus `data_path` to the full `data.json`, or — with `format: "skeleton"` — a token-budgeted, centrality-ranked plaintext repo map returned inline for fast orientation (step 8). The `/coderef-map` skill wraps the same surface.
 
 One framing rule governs everything here: **every block is a surface, not a verdict.** The map tells you *where to look*, never *what is wrong*. A file with zero test in-edges is a candidate for attention, not proven-untested; a missing block is missing data, not a zero.
@@ -89,7 +89,20 @@ Serve mode hosts the same viewer in fetch mode at `http://localhost:8123/graph.h
 | Dead code | isolated / zero-in-degree candidates | v1.1 |
 | Layer drift | declared layer, amber rings on outliers | v1.3 |
 | Metrics | selected metric family (gradient) | v1.4 |
+| API | files on either end of a cross-process HTTP hop | v1.7 |
 | Blast radius | 1–2 hop impact from the selected node | v1.0 |
+
+**API overlay.** Network hops are drawn **dashed**, from `api.networkEdges` — not by re-styling module edges. The dash is semantic: an import is resolved at build time inside one process, an HTTP call crosses a process boundary at runtime and can fail independently, so the two never share a stroke. A hop frequently has no import edge at all, which is exactly why it is drawn from its own list.
+
+The toggle carries the tri-state. It is **disabled with the reason in its tooltip** when there is nothing to draw, and the three cases are worded so they cannot be confused:
+
+| State | Toggle says |
+|---|---|
+| no `api` block | API surface **UNKNOWN** — the route producer has not run (missing data, **not** zero endpoints) |
+| `endpointCount: 0` | **no endpoints served** — a measured zero |
+| endpoints, no resolved in-repo caller | *n* endpoints served, but no network hop to draw — callers may be external |
+
+Selecting a node adds a **Serves** row (routes it handles) and a **Calls over HTTP** row (routes it calls). They are separate rows because direction is the only thing distinguishing a handler from a client.
 
 ### 5. Read the Metrics overlay
 
@@ -176,8 +189,9 @@ After step 2 you should have `.coderef/map/{data.json, graph.html, viewer.js, vi
 - The page is **styled**. Unstyled text on a white background means `tokens.css` is missing from the output — both stylesheets read their palette from it.
 
 - The stats bar shows non-zero files/edges/elements counts.
-- All toggles are enabled. A **disabled** toggle with a tooltip like *"unavailable: no metrics block in this data.json (regenerate the map)"* means your `data.json` predates that block's schema version — re-run `coderef-map` (the viewer intentionally degrades instead of breaking on old data).
+- All toggles are enabled. A **disabled** toggle with a tooltip like *"unavailable: no metrics block in this data.json (regenerate the map)"* means your `data.json` predates that block's schema version — re-run `coderef-map` (the viewer intentionally degrades instead of breaking on old data). The **API** toggle is the one exception: it is also disabled, with the reason spelled out, when the repo genuinely serves no routes or has no resolved in-repo caller. That is a measured result, not stale data — read the tooltip before regenerating.
 - Metrics on → legend shows the family name, its value range, a `no data (N)` chip, and the *surfaces, not verdicts* note; selecting a node shows the Metrics row in the detail panel.
+- API surface: the dashboard panel distinguishes **UNKNOWN** (no `api` block — the route producer never ran) from **no endpoints served** (a measured zero). On a repo that serves routes, endpoints list their handlers and callers, and *"no callers in this repo"* renders as a neutral surface — for a public API or a mobile client that is the correct state, not dead code.
 - For agents: the `map` tool response has non-null `untested_src_count` / `undocumented_file_count`.
 - Skeleton map: `npx coderef-map . --skeleton` prints a ranked plaintext map and writes `.coderef/map/skeleton.md`; `skeleton_estimated_tokens` stays at or under the budget, and any dropped content is named under `## truncation`.
 - Git block: `npx coderef-map . --git` on a git repo adds `data.git` with a stamped `window`, `churnHotspots`, and `couplingDrift`; on a non-git repo the block is absent and `meta.warnings` (or the MCP `git_block_reason`) says why — that absence is correct, not a failure.
