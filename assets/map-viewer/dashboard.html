@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!--
+  coderef map dashboard — prebuilt static asset (WO-WIRE-THE-MAPDATA-DASHBOARD-INTO-CODEREF-MAP-AND-001 P1).
+  Core analysis code never generates HTML: the coderef-map command only copies
+  this asset and substitutes the two data placeholders below. No network, no CDN.
+
+  Sibling of graph.html, and emitted beside it in <out>/ so the link across is a
+  plain one-hop ./graph.html — never a relative path that breaks when moved.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>coderef map dashboard</title>
+  <link rel="stylesheet" href="./dashboard.css">
+  <script id="coderef-map-data">
+    /* Static mode: the coderef-map CLI replaces the nulls below with the map
+       data JSON and the validation report. Serve mode leaves them null and
+       dashboard.js fetches ./data.json (the validation report has no served
+       counterpart — it renders as no-data, never as clean). */
+    window.__CODEREF_MAP_DATA__ = /*__CODEREF_MAP_DATA__*/null;
+    window.__CODEREF_VALIDATION__ = /*__CODEREF_VALIDATION__*/null;
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <header class="head">
+      <span class="head__repo" id="head-repo">coderef map</span>
+      <span class="head__sep">&middot;</span>
+      <span class="head__sub">code map</span>
+      <a class="chip" id="graph-link" href="./graph.html"
+         title="Open the interactive dependency graph">graph <span class="chip__arrow">&#8599;</span></a>
+    </header>
+
+    <div class="meta" id="meta-line"></div>
+
+    <div class="band" id="summary-band"></div>
+    <div class="rates" id="rates-line"></div>
+
+    <div id="panels"></div>
+
+    <div class="legend">
+      <span><span class="tri tri--fact">&#9679;</span> fact present</span>
+      <span><span class="tri tri--absent">&#9675;</span> absent (measured)</span>
+      <span><span class="tri tri--nodata">&#9678;</span> no data</span>
+      <span>&#9888; truncated / disclosed</span>
+    </div>
+
+    <p class="foot" id="foot">
+      Surfaces, not verdicts &mdash; every figure is a ranked observation from the projection and
+      scan artifacts. No composite score, no grade. Read the files before concluding.
+    </p>
+
+    <div id="empty-state" hidden>No map data. Run: coderef-map &lt;path&gt;</div>
+  </div>
+  <script src="./dashboard.js"></script>
+</body>
+</html>

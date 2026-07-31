@@ -66,9 +66,14 @@ export function buildMapTools(ctx: HandlerContext, siblings: MapToolSiblings): M
       const graphPath = path.join(projectDir, '.coderef', 'graph.json');
       const dataPath = path.join(projectDir, '.coderef', 'map', 'data.json');
       const htmlPath = path.join(projectDir, '.coderef', 'map', 'graph.html');
+      const dashboardPath = path.join(projectDir, '.coderef', 'map', 'dashboard.html');
+      // dashboard.html is part of the emitted set, so its absence is staleness
+      // too — without this a deleted (or never-generated, pre-dashboard)
+      // dashboard reads as fresh forever and is never regenerated.
       const stale =
         !fs.existsSync(dataPath) ||
         !fs.existsSync(htmlPath) ||
+        !fs.existsSync(dashboardPath) ||
         fs.statSync(dataPath).mtimeMs < fs.statSync(graphPath).mtimeMs;
       // The git-behavioral block is OPT-IN and only produced by a git-enabled
       // generation (extractGitHistory runs in generateMap). A cached data.json
@@ -102,6 +107,7 @@ export function buildMapTools(ctx: HandlerContext, siblings: MapToolSiblings): M
       return {
         data_path: normalizeSlashes(dataPath),
         graph_html_path: normalizeSlashes(htmlPath),
+        dashboard_path: normalizeSlashes(dashboardPath),
         refreshed,
         generated_at: data.meta?.generatedAt ?? null,
         node_count: data.nodes.length,

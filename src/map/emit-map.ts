@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability map-emit
- * @exports MAP_DATA_PLACEHOLDER, GenerateMapResult, GenerateMapOptions, viewerAssetDir, embedJson, emitViewer, generateMap
+ * @exports MAP_DATA_PLACEHOLDER, VALIDATION_PLACEHOLDER, GenerateMapResult, GenerateMapOptions, viewerAssetDir, readValidationReport, embedJson, emitViewer, generateMap
  * @used_by src/cli/coderef-map.ts, src/cli/coderef-mcp-server.ts
  */
 
@@ -14,7 +14,9 @@
  * <projectRoot>/.coderef/map/).
  *
  * Analysis code never constructs HTML: emitViewer copies the prebuilt
- * assets/map-viewer/ bundle and substitutes one data placeholder token.
+ * assets/map-viewer/ bundle and substitutes the data placeholder tokens —
+ * graph.html (the interactive viewer) and dashboard.html (the analytics +
+ * engineering-metrics render) are both prebuilt shells, never generated here.
  */
 
 import * as fs from 'fs';
@@ -24,6 +26,7 @@ import { extractGitHistory, ExtractGitHistoryOptions } from './git-history.js';
 import { extractSubprocessTestContents } from './subprocess-linkage.js';
 
 export const MAP_DATA_PLACEHOLDER = '/*__CODEREF_MAP_DATA__*/null';
+export const VALIDATION_PLACEHOLDER = '/*__CODEREF_VALIDATION__*/null';
 
 /**
  * Locate the bundled viewer asset dir. Works from dist (installed package /
@@ -44,6 +47,25 @@ export function viewerAssetDir(): string {
   );
 }
 
+/**
+ * Read <projectRoot>/.coderef/validation-report.json for the dashboard band.
+ *
+ * Returns the raw JSON text, or null when the report is absent OR unparseable.
+ * null is substituted verbatim into the validation placeholder, and the
+ * dashboard renders that as an explicit "no data" — NEVER as zero and never as
+ * a clean bill of health. An unreadable report must not read as a healthy one.
+ */
+export function readValidationReport(projectRoot: string): string | null {
+  const p = path.join(projectRoot, '.coderef', 'validation-report.json');
+  try {
+    const raw = fs.readFileSync(p, 'utf-8');
+    JSON.parse(raw); // parse-check only; malformed => no-data, not a crash
+    return raw;
+  } catch {
+    return null;
+  }
+}
+
 /** Escape JSON for safe embedding inside a <script> block. */
 export function embedJson(json: string): string {
   return json
@@ -52,13 +74,26 @@ export function embedJson(json: string): string {
     .replace(/\u2029/g, '\\u2029');
 }
 
-/** Copy the viewer bundle into outDir and inline the data into graph.html. */
-export function emitViewer(outDir: string, dataJson: string): void {
+/**
+ * Copy the viewer bundle into outDir and inline the data into graph.html and
+ * dashboard.html.
+ *
+ * The dashboard is emitted ALWAYS (operator ruling 2026-07-31) — there is no
+ * opt-in flag: rendering the map renders the dashboard. It costs a second
+ * copy of the inlined bundle, which is the same tradeoff graph.html already
+ * makes so the file stays double-clickable from file:// with no server and no
+ * CORS. `validationJson` is inlined as a second placeholder; null renders as a
+ * disclosed no-data band rather than a clean one.
+ */
+export function emitViewer(outDir: string, dataJson: string, validationJson?: string | null): void {
   const assetDir = viewerAssetDir();
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'data.json'), dataJson, 'utf-8');
   fs.copyFileSync(path.join(assetDir, 'viewer.js'), path.join(outDir, 'viewer.js'));
   fs.copyFileSync(path.join(assetDir, 'viewer.css'), path.join(outDir, 'viewer.css'));
+  fs.copyFileSync(path.join(assetDir, 'dashboard.js'), path.join(outDir, 'dashboard.js'));
+  fs.copyFileSync(path.join(assetDir, 'dashboard.css'), path.join(outDir, 'dashboard.css'));
+
   const html = fs.readFileSync(path.join(assetDir, 'graph.html'), 'utf-8');
   if (!html.includes(MAP_DATA_PLACEHOLDER)) {
     throw new Error('Bundled graph.html is missing the data placeholder token.');
@@ -68,6 +103,21 @@ export function emitViewer(outDir: string, dataJson: string): void {
     html.replace(MAP_DATA_PLACEHOLDER, embedJson(dataJson)),
     'utf-8',
   );
+
+  const dash = fs.readFileSync(path.join(assetDir, 'dashboard.html'), 'utf-8');
+  if (!dash.includes(MAP_DATA_PLACEHOLDER)) {
+    throw new Error('Bundled dashboard.html is missing the data placeholder token.');
+  }
+  if (!dash.includes(VALIDATION_PLACEHOLDER)) {
+    throw new Error('Bundled dashboard.html is missing the validation placeholder token.');
+  }
+  fs.writeFileSync(
+    path.join(outDir, 'dashboard.html'),
+    dash
+      .replace(MAP_DATA_PLACEHOLDER, embedJson(dataJson))
+      .replace(VALIDATION_PLACEHOLDER, validationJson ? embedJson(validationJson) : 'null'),
+    'utf-8',
+  );
 }
 
 export interface GenerateMapResult {
@@ -75,6 +125,8 @@ export interface GenerateMapResult {
   outDir: string;
   dataPath: string;
   htmlPath: string;
+  /** Always emitted alongside htmlPath — the dashboard render is not opt-in. */
+  dashboardPath: string;
   /**
    * Git extraction outcome (present only when git was requested). reason is set
    * when the history could not be extracted (non-git repo, git absent, empty).
@@ -137,12 +189,13 @@ export function generateMap(
   }
   const data = projectMapData(projectRoot, projectionOptions);
   const out = outDir || path.join(projectRoot, '.coderef', 'map');
-  emitViewer(out, JSON.stringify(data));
+  emitViewer(out, JSON.stringify(data), readValidationReport(projectRoot));
   return {
     data,
     outDir: out,
     dataPath: path.join(out, 'data.json'),
     htmlPath: path.join(out, 'graph.html'),
+    dashboardPath: path.join(out, 'dashboard.html'),
     ...(gitReason ? { gitReason } : {}),
     ...(subprocessReason ? { subprocessReason } : {}),
   };
