@@ -125,10 +125,15 @@ describe('coderefignore dogfood — the committed .coderefignore scan-scope bloc
   });
 
   it('root-unique filenames really are root-unique (nested-twin walk)', () => {
+    // The guard's invariant is "no NESTED twin may shadow a root-unique
+    // pattern" — zero copies is a safe state (P7 deleted the root
+    // demo-all-modules.ts; its pattern stays as a re-introduction guard).
     const hits = collectBasenameHits(new Set(ROOT_UNIQUE_ALLOWLIST));
     for (const name of ROOT_UNIQUE_ALLOWLIST) {
-      const matches = hits.filter((h) => h === name || h.endsWith(`/${name}`));
-      expect(matches, `expected exactly the root copy of ${name}, got: ${matches.join(', ')}`).toEqual([name]);
+      const nested = hits.filter((h) => h.endsWith(`/${name}`));
+      expect(nested, `nested twin(s) of root-unique pattern ${name}: ${nested.join(', ')}`).toEqual([]);
+      const rootCopies = hits.filter((h) => h === name);
+      expect(rootCopies.length, `duplicate root hits for ${name}`).toBeLessThanOrEqual(1);
     }
   });
 

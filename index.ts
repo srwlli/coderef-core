@@ -17,8 +17,9 @@ export * from './src/context/index.js';
 export * from './src/export/index.js';
 // export * from './src/integration/index.js'; // Temporarily disabled - missing AI dependencies
 
-// Utilities
-export * from './utils/fs.js';
+// Utilities retired (WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 Phase 7):
+// root utils/fs.ts had zero consumers beyond this re-export — deleted with
+// Tombstone; src/utils/path-normalize.ts is the live utility surface.
 
 // Error classes retired (WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3, P2-14):
 // src/errors/ had zero production importers — CodeRefError/FileNotFoundError/

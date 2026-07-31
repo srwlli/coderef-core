@@ -16,19 +16,20 @@
 import { CallExpression, CallEdge, CallPatternAnalysis } from './types.js';
 
 /**
- * Build call relationship edges from detected calls
+ * Build call relationship edges from detected calls.
+ *
+ * Takes precomputed per-file calls data rather than a detector object: the
+ * caller (JSCallDetector.buildCallEdges) runs detection and passes the
+ * results, keeping this module free of any coupling back to the detector.
  */
 export function buildCallEdges(
-  filePaths: string[],
-  callDetector: { detectCalls(filePath: string): CallExpression[] },
+  callsByFile: Map<string, CallExpression[]>,
   elementMap?: Map<string, { file: string; type: string }>
 ): CallEdge[] {
   const edges: CallEdge[] = [];
   const edgeMap = new Map<string, CallEdge>();
 
-  for (const filePath of filePaths) {
-    const calls = callDetector.detectCalls(filePath);
-
+  for (const [filePath, calls] of callsByFile) {
     for (const call of calls) {
       // Map callee function to element
       const calleeIdentifier = call.calleeObject
@@ -63,11 +64,10 @@ export function buildCallEdges(
 }
 
 /**
- * Analyze call frequency and patterns
+ * Analyze call frequency and patterns from precomputed per-file calls data.
  */
 export function analyzeCallPatterns(
-  filePaths: string[],
-  callDetector: { detectCalls(filePath: string): CallExpression[] }
+  callsByFile: Map<string, CallExpression[]>
 ): CallPatternAnalysis {
   let totalCalls = 0;
   const uniqueFunctions = new Set<string>();
@@ -76,9 +76,7 @@ export function analyzeCallPatterns(
   let asyncCalls = 0;
   let nestedCalls = 0;
 
-  for (const filePath of filePaths) {
-    const calls = callDetector.detectCalls(filePath);
-
+  for (const [, calls] of callsByFile) {
     for (const call of calls) {
       totalCalls++;
       uniqueFunctions.add(call.calleeFunction);

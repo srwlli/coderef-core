@@ -186,6 +186,65 @@ describe('computeLayerDrift — hermetic fixture', () => {
   });
 });
 
+describe('computeLayerDrift — test_support exclusion (schemaVersion 1.1.0)', () => {
+  const TS_NODES = [
+    // Community 0 — src-dominated: the two test files used to surface as outliers.
+    { id: 'src/x.ts', layer: 'service' },
+    { id: 'src/y.ts', layer: 'service' },
+    { id: '__tests__/x.test.ts', layer: 'test_support' },
+    { id: '__tests__/y.test.ts', layer: 'test_support' },
+    // Community 1 — test-DOMINATED: the old full-vote dominance inverted both
+    // src files into "outliers" of the test cluster.
+    { id: 'src/z.ts', layer: 'service' },
+    { id: 'src/w.ts', layer: 'utility' },
+    { id: '__tests__/z1.test.ts', layer: 'test_support' },
+    { id: '__tests__/z2.test.ts', layer: 'test_support' },
+    { id: '__tests__/z3.test.ts', layer: 'test_support' },
+    // Community 2 — pure test.
+    { id: '__tests__/pure1.test.ts', layer: 'test_support' },
+    { id: '__tests__/pure2.test.ts', layer: 'test_support' },
+  ];
+  const TS_ASSIGNMENTS: Record<string, number> = {
+    'src/x.ts': 0,
+    'src/y.ts': 0,
+    '__tests__/x.test.ts': 0,
+    '__tests__/y.test.ts': 0,
+    'src/z.ts': 1,
+    'src/w.ts': 1,
+    '__tests__/z1.test.ts': 1,
+    '__tests__/z2.test.ts': 1,
+    '__tests__/z3.test.ts': 1,
+    '__tests__/pure1.test.ts': 2,
+    '__tests__/pure2.test.ts': 2,
+  };
+
+  it('excludes test_support from dominance votes and outlier emission, with fallback for pure-test communities', () => {
+    const drift = computeLayerDrift(TS_NODES, [], TS_ASSIGNMENTS);
+
+    expect(drift.schemaVersion).toBe('1.1.0');
+
+    expect(drift.communities).toEqual([
+      // Full composition stays in layers; dominance votes exclude tests.
+      { id: 0, size: 4, layeredSize: 4, layers: { service: 2, test_support: 2 }, dominantLayer: 'service', purity: 1 },
+      // Test-dominated community: dominant comes from the non-test voters.
+      { id: 1, size: 5, layeredSize: 5, layers: { service: 1, test_support: 3, utility: 1 }, dominantLayer: 'service', purity: 0.5 },
+      // Pure-test community falls back to the full vote.
+      { id: 2, size: 2, layeredSize: 2, layers: { test_support: 2 }, dominantLayer: 'test_support', purity: 1 },
+    ]);
+
+    // No test file is ever an outlier; no src file is an outlier OF a test
+    // cluster; a genuinely cross-layer src file still surfaces.
+    expect(drift.outliers).toEqual([
+      { file: 'src/w.ts', layer: 'utility', communityId: 1, dominantLayer: 'service' },
+    ]);
+
+    expect(drift.warnings).toEqual([
+      'layer drift: 5 test_support members excluded from outlier emission (tests co-cluster with the code they test)',
+    ]);
+    expect(drift.note).toContain('test_support');
+  });
+});
+
 describe('layer drift — real-repo smoke (coderef-core, tmp copy)', () => {
   const graphPath = path.join(REPO_ROOT, '.coderef', 'graph.json');
   const hasArtifacts = fs.existsSync(graphPath);

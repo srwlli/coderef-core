@@ -6,8 +6,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "src/types/**/*.ts",
-    "utils/**/*.ts"
+    "src/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

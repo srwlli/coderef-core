@@ -574,10 +574,19 @@ export class RelationshipExtractor {
         }
 
         // Skip the dynamic-import keyword — that is captured by raw imports.
+        // Also skip TS import-type syntax: `import('m').T` in TYPE position
+        // (type annotation / alias / type arguments / typeof) is a type
+        // reference, not a runtime call — a call fact there lets downstream
+        // resolution (SCIP co-location) stamp a spurious file-level call
+        // edge (proven on types.ts:490, which closed the incremental-cache/
+        // lru-cache/types cycle). Runtime `import()` (await / .then /
+        // argument position) never sits under a type context, so it keeps
+        // emitting.
         const skip =
-          fn.type === 'identifier' &&
-          calleeName === 'import' &&
-          node.parent?.type !== 'arguments';
+          (fn.type === 'identifier' &&
+            calleeName === 'import' &&
+            node.parent?.type !== 'arguments') ||
+          (calleeName === 'import' && this.isTypePositionImport(node));
 
         if (calleeName && !skip) {
           facts.push({
@@ -618,6 +627,46 @@ export class RelationshipExtractor {
     }
 
     if (pushed) scopePath.pop();
+  }
+
+  /**
+   * True when a dynamic-import-shaped call (`import('m')`) sits in TYPE
+   * position (TS import-type syntax, e.g. `cache?: import('./c.js').C`).
+   * Walks ancestors until a type context or an expression/statement boundary
+   * decides it; for `as`/`satisfies` the type side is the last named child.
+   */
+  private isTypePositionImport(node: Parser.SyntaxNode): boolean {
+    const typeContexts = new Set([
+      'type_annotation',        // `x: import('m').T`
+      'type_alias_declaration', // `type A = import('m').T`
+      'type_arguments',         // `Promise<import('m').T>`
+      'type_query',             // `typeof import('m')`
+      'type_predicate',         // `x is import('m').T`
+      'constraint',             // `<T extends import('m').T>`
+      'default_type',           // `<T = import('m').T>`
+    ]);
+    let child: Parser.SyntaxNode = node;
+    let cur = node.parent;
+    while (cur) {
+      if (typeContexts.has(cur.type)) return true;
+      if (cur.type === 'as_expression' || cur.type === 'satisfies_expression') {
+        const typeSide = cur.namedChild(cur.namedChildCount - 1);
+        return typeSide !== null &&
+          typeSide.startIndex === child.startIndex &&
+          typeSide.endIndex === child.endIndex;
+      }
+      if (
+        cur.type === 'statement_block' ||
+        cur.type === 'expression_statement' ||
+        cur.type === 'arguments' ||
+        cur.type === 'program'
+      ) {
+        return false;
+      }
+      child = cur;
+      cur = cur.parent;
+    }
+    return false;
   }
 
   // ========================================================================

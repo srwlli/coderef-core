@@ -23,6 +23,8 @@
  * than exactly 3290 because the source tree drifts as new commits land.
  */
 
+import * as fs from 'fs';
+import * as os from 'os';
 import * as path from 'path';
 import { describe, expect, it } from 'vitest';
 import { PipelineOrchestrator } from '../../src/pipeline/orchestrator.js';
@@ -33,12 +35,22 @@ const REPO_ROOT = path.resolve(__dirname, '..', '..');
 
 describe('Phase 6 real-world no-regression (AC-01, AC-10)', () => {
   it('coderef-core source produces zero validator false positives', async () => {
-    const orchestrator = new PipelineOrchestrator();
-    const state = await orchestrator.run(REPO_ROOT, {
-      languages: ['ts'],
-      mode: 'minimal',
-      outputDir: path.join(REPO_ROOT, '.coderef'),
-    });
+    // Per-run temp outputDir: this test consumes only the in-memory state —
+    // writing into the canonical .coderef/ rewrote it WITHOUT the scip
+    // overlay on every suite run (the Phase 5/6 "suite before repopulate"
+    // ordering hazard). The temp dir kills that clobber class permanently.
+    const tmpOut = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-noregress-'));
+    let state;
+    try {
+      const orchestrator = new PipelineOrchestrator();
+      state = await orchestrator.run(REPO_ROOT, {
+        languages: ['ts'],
+        mode: 'minimal',
+        outputDir: tmpOut,
+      });
+    } finally {
+      fs.rmSync(tmpOut, { recursive: true, force: true });
+    }
     const layerEnum = loadLayerEnum();
     const result = validatePipelineState(state, state.graph, {
       strictHeaders: false,

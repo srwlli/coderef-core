@@ -213,20 +213,33 @@ export class JSCallDetector {
   }
 
   /**
+   * Precompute per-file calls for the standalone analyzer functions, which
+   * take calls data rather than a detector object (keeps analyzer.ts free of
+   * coupling back to this class).
+   */
+  private collectCalls(filePaths: string[]): Map<string, CallExpression[]> {
+    const callsByFile = new Map<string, CallExpression[]>();
+    for (const filePath of filePaths) {
+      callsByFile.set(filePath, this.detectCalls(filePath));
+    }
+    return callsByFile;
+  }
+
+  /**
    * Build call relationship edges from detected calls
    */
   buildCallEdges(
     filePaths: string[],
     elementMap?: Map<string, { file: string; type: string }>
   ): CallEdge[] {
-    return buildCallEdges(filePaths, this, elementMap);
+    return buildCallEdges(this.collectCalls(filePaths), elementMap);
   }
 
   /**
    * Analyze call frequency and patterns
    */
   analyzeCallPatterns(filePaths: string[]) {
-    return analyzeCallPatterns(filePaths, this);
+    return analyzeCallPatterns(this.collectCalls(filePaths));
   }
 
   /**
