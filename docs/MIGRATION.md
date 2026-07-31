@@ -36,10 +36,10 @@ Database migrations can become a major source of technical debt, production inci
 npm run build:cli
 
 # Scan for migrations
-npx coderef-scan --dir ./src --lang py,rb,ts,js
+npx coderef-scan --project-dir ./src --lang py,rb,ts,js
 
 # Detect and validate migrations
-npx validate-routes --dir ./src --detect-migrations
+npx coderef-validate-routes --project-dir ./src
 ```
 
 **Programmatic Usage:**
@@ -242,11 +242,11 @@ Generate reports on migration trends:
 
 ```bash
 # Full migration analysis
-npx validate-routes --dir ./src --migration-report
+npx coderef-validate-routes --project-dir ./src --output ./migration-report.md
 
 # Output format options
-npx validate-routes --dir ./src --migration-report --format json
-npx validate-routes --dir ./src --migration-report --format markdown
+npx coderef-validate-routes --project-dir ./src --output ./migration-report.md --format json
+npx coderef-validate-routes --project-dir ./src --output ./migration-report.md --format markdown
 ```
 
 **Sample Report:**
@@ -301,8 +301,8 @@ jobs:
         
       - name: Validate Migrations
         run: |
-          npx validate-routes \
-            --dir ./src \
+          npx coderef-validate-routes \
+            --project-dir ./src \
             --detect-migrations \
             --fail-on-high-risk
 ```

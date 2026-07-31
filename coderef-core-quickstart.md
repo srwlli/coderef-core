@@ -95,7 +95,7 @@ Built to `dist/src/cli/` and exposed as `bin` entries (available on PATH after `
 | `coderef-rag-server` | Long-running RAG query server |
 | `coderef-mcp-server` | MCP stdio server exposing the CodeRef tool surface |
 | `coderef-detect-languages` / `coderef-semantic-integration` | Language detection and semantic integration helpers |
-| `validate-routes` / `scan-frontend-calls` | Route validation and frontend-call scanning |
+| `coderef-validate-routes` / `coderef-scan-frontend-calls` | Route validation and frontend-call scanning |
 
 ## Common Issues
 

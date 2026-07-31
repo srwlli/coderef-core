@@ -1,5 +1,22 @@
 # Frontend Call Detection & Generation
 
+> ## Status — read this first
+>
+> **Updated 2026-07-31 (WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001).** Between March 2026 and this update, everything described below was **built but unreachable**: the detectors, parsers, matcher and validator all existed and were integration-tested, but their only producer (`saveIndex` / `scanCodebase`) lost its production call site when `PipelineOrchestrator` replaced the legacy scan. `.coderef/routes.json` went stale, `.coderef/frontend-calls.json` stopped being written, and `coderef-validate-routes` exited 2. Three things below were therefore wrong, and are now corrected:
+>
+> 1. **The producer is `populate-coderef <path> --mode full`.** It emits `.coderef/routes.json` and `.coderef/frontend-calls.json` on its existing single pass. The `scanCurrentElements` + `saveIndex` recipes some sections still show are the DEAD path — they no longer run in production.
+> 2. **Seven frameworks are supported, not four:** Flask, FastAPI, Express, Next.js (App + Pages Router), SvelteKit, Nuxt, and Remix.
+> 3. **The two CLIs were renamed** to `coderef-validate-routes` and `coderef-scan-frontend-calls`. The old names still work for one minor version and print a deprecation notice.
+>
+> **New in this release:** an HTTP endpoint is now a first-class **graph node** (`@Endpoint/<path>#<METHOD>`), so `what_calls`, `impact_of` and `path_between` cross the network boundary — a handler change surfaces the CLIENTS that call it, not just the modules that import it. The same surface is available as the `api_surface` MCP tool and the `api` block of `.coderef/map/data.json`. See [CLI.md](./CLI.md#coderef-validate-routes).
+>
+> **Known bounds, stated rather than implied:**
+> - Each detector reports at most **one route per file**, so a single Express file declaring thirty routes yields one endpoint. Every count here is a **lower bound** on the real surface.
+> - Frontend-call detection gates on browser-reachable file extensions, so **server-to-server HTTP calls are invisible**. An endpoint with no detected caller means NO CALLER WAS FOUND IN THIS REPO — never that none exists.
+> - Route detection reads comment-blanked content and skips test files, because a route mentioned in a JSDoc `@example` or asserted in a fixture is documentation, not an exposed endpoint.
+
+---
+
 **Part of WO-ROUTE-VALIDATION-ENHANCEMENT-001**
 
 ## Overview
@@ -12,13 +29,13 @@ This module automatically detects frontend API calls in your codebase and genera
 
 ```bash
 # Scan project and generate frontend-calls.json
-npx scan-frontend-calls
+npx coderef-scan-frontend-calls
 
 # Custom options
-npx scan-frontend-calls --project-dir ./my-app --output ./custom/calls.json
+npx coderef-scan-frontend-calls --project-dir ./my-app --output ./custom/calls.json
 
 # Scan only TypeScript files
-npx scan-frontend-calls --extensions .ts,.tsx
+npx coderef-scan-frontend-calls --extensions .ts,.tsx
 ```
 
 ### Programmatic Usage
@@ -111,7 +128,7 @@ httpClient.delete('/users')
 ### Step 1: Generate Frontend Calls
 
 ```bash
-npx scan-frontend-calls
+npx coderef-scan-frontend-calls
 ```
 
 **Output:**
@@ -136,13 +153,13 @@ Project: /path/to/project
 💡 Next steps:
   1. Review the generated frontend-calls.json
   2. Run route validation:
-     validate-routes --project-dir /path/to/project
+     coderef-validate-routes --project-dir /path/to/project
 ```
 
 ### Step 2: Validate Routes
 
 ```bash
-npx validate-routes --project-dir ./my-project --fail-on-critical
+npx coderef-validate-routes --project-dir ./my-project --fail-on-critical
 ```
 
 See [ROUTE-VALIDATION.md](./ROUTE-VALIDATION.md) for full validation guide.
@@ -213,11 +230,11 @@ The generated `frontend-calls.json` is used by the route validation tool:
 
 ```bash
 # Complete workflow
-npx scan-frontend-calls                  # Generate frontend-calls.json
-npx validate-routes --fail-on-critical   # Validate against routes.json
+npx coderef-scan-frontend-calls                  # Generate frontend-calls.json
+npx coderef-validate-routes --fail-on-critical   # Validate against routes.json
 
 # CI/CD pipeline
-scan-frontend-calls && validate-routes --fail-on-critical || exit 1
+coderef-scan-frontend-calls && coderef-validate-routes --fail-on-critical || exit 1
 ```
 
 ## Programmatic API Reference
@@ -328,7 +345,7 @@ If not, consider renaming or use standard fetch/axios.
 ## CLI Options
 
 ```
-scan-frontend-calls [OPTIONS] [PROJECT_DIR]
+coderef-scan-frontend-calls [OPTIONS] [PROJECT_DIR]
 
 OPTIONS:
   -p, --project-dir <path>     Project directory to scan (default: current directory)
@@ -337,10 +354,10 @@ OPTIONS:
   -h, --help                   Show help message
 
 EXAMPLES:
-  scan-frontend-calls
-  scan-frontend-calls /path/to/project
-  scan-frontend-calls --output ./custom.json
-  scan-frontend-calls --extensions .ts,.tsx
+  coderef-scan-frontend-calls
+  coderef-scan-frontend-calls /path/to/project
+  coderef-scan-frontend-calls --output ./custom.json
+  coderef-scan-frontend-calls --extensions .ts,.tsx
 ```
 
 ## See Also

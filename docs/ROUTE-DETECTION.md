@@ -1,5 +1,22 @@
 # API Route Detection Guide
 
+> ## Status — read this first
+>
+> **Updated 2026-07-31 (WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001).** Between March 2026 and this update, everything described below was **built but unreachable**: the detectors, parsers, matcher and validator all existed and were integration-tested, but their only producer (`saveIndex` / `scanCodebase`) lost its production call site when `PipelineOrchestrator` replaced the legacy scan. `.coderef/routes.json` went stale, `.coderef/frontend-calls.json` stopped being written, and `coderef-validate-routes` exited 2. Three things below were therefore wrong, and are now corrected:
+>
+> 1. **The producer is `populate-coderef <path> --mode full`.** It emits `.coderef/routes.json` and `.coderef/frontend-calls.json` on its existing single pass. The `scanCurrentElements` + `saveIndex` recipes some sections still show are the DEAD path — they no longer run in production.
+> 2. **Seven frameworks are supported, not four:** Flask, FastAPI, Express, Next.js (App + Pages Router), SvelteKit, Nuxt, and Remix.
+> 3. **The two CLIs were renamed** to `coderef-validate-routes` and `coderef-scan-frontend-calls`. The old names still work for one minor version and print a deprecation notice.
+>
+> **New in this release:** an HTTP endpoint is now a first-class **graph node** (`@Endpoint/<path>#<METHOD>`), so `what_calls`, `impact_of` and `path_between` cross the network boundary — a handler change surfaces the CLIENTS that call it, not just the modules that import it. The same surface is available as the `api_surface` MCP tool and the `api` block of `.coderef/map/data.json`. See [CLI.md](./CLI.md#coderef-validate-routes).
+>
+> **Known bounds, stated rather than implied:**
+> - Each detector reports at most **one route per file**, so a single Express file declaring thirty routes yields one endpoint. Every count here is a **lower bound** on the real surface.
+> - Frontend-call detection gates on browser-reachable file extensions, so **server-to-server HTTP calls are invisible**. An endpoint with no detected caller means NO CALLER WAS FOUND IN THIS REPO — never that none exists.
+> - Route detection reads comment-blanked content and skips test files, because a route mentioned in a JSDoc `@example` or asserted in a fixture is documentation, not an exposed endpoint.
+
+---
+
 **WO-API-ROUTE-DETECTION-001**
 
 Multi-framework API route detection for Flask, FastAPI, Express, and Next.js applications.
@@ -8,7 +25,7 @@ Multi-framework API route detection for Flask, FastAPI, Express, and Next.js app
 
 ## Overview
 
-The CodeRef scanner automatically detects API route definitions across four popular frameworks:
+The CodeRef scanner automatically detects API route definitions across seven frameworks:
 
 - **Flask** (Python) - `@app.route()`, `@blueprint.route()`
 - **FastAPI** (Python) - `@app.get()`, `@app.post()`, etc.

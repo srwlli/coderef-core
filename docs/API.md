@@ -201,7 +201,7 @@ These are stable public surfaces but unrelated to the pipeline rebuild. They ret
 |--------|--------------|-------|
 | Route normalizer | `normalizeRoutePath`, `normalizeFlaskRoute`, `normalizeFastAPIRoute`, `normalizeExpressRoute`, `normalizeNextJsRoute`, `extractDynamicSegments` | WO-ROUTE-VALIDATION-ENHANCEMENT-001 |
 | Route matcher | `exactMatch`, `dynamicMatch`, `partialMatch`, `calculateMatchConfidence`, `findBestMatch`, `matchHttpMethods` | |
-| Route validator | `loadFrontendCalls`, `loadServerRoutes`, `detectMissingRoutes`, `detectUnusedRoutes`, `detectMethodMismatches`, `classifyIssue`, `generateValidationReport`, `saveValidationReport` | (Distinct from `validatePipelineState` — these are the route-validation helpers for the `validate-routes` CLI.) |
+| Route validator | `loadFrontendCalls`, `loadServerRoutes`, `detectMissingRoutes`, `detectUnusedRoutes`, `detectMethodMismatches`, `classifyIssue`, `generateValidationReport`, `saveValidationReport` | (Distinct from `validatePipelineState` — these are the route-validation helpers for the `coderef-validate-routes` CLI.) |
 | Report generator | `formatIssueSummary`, `formatIssueDetails`, `formatRecommendations`, `formatAutoFixSection`, `generateMarkdownReport`, `saveMarkdownReport` | |
 | Migration validation | `validateMigrationConfig`, `applyMappings`, `applyExplicitMapping`, `applyPatternMapping`, `calculateMigrationCoverage`, `findUnmappedCalls`, `findDeprecatedCalls`, `loadMigrationMapping`, `validateMigration` | WO-MIGRATION-VALIDATION-001 |
 | Frontend update generator | `generateUpdateSuggestions`, `batchProcessCalls`, `generateGitPatch`, `applyModifications`, `generateUpdateReport`, `exportBatchResults` | IMP-CORE-044 |
@@ -222,8 +222,8 @@ The package binaries (`bin` in `package.json`) are the stable CLI surface:
 | `rag-index` | `src/cli/rag-index.ts` | Phase 7 indexer; reads `.coderef/validation-report.json`, refuses on `ok=false`. Exit codes: success→0, partial→0+stderr, failed→non-zero. |
 | `rag-search` | `src/cli/rag-search.ts` | Phase 7 query CLI; supports `--layer` and `--capability` filters. |
 | `rag-status` | `src/cli/rag-status.ts` | Health check |
-| `validate-routes` | `src/cli/validate-routes.ts` | Frontend-call vs. server-route validator (route-validation track, not the pipeline validator) |
-| `scan-frontend-calls` | `src/cli/scan-frontend-calls.ts` | Frontend API call detection |
+| `coderef-validate-routes` | `src/cli/validate-routes.ts` | Frontend-call vs. server-route validator (route-validation track, not the pipeline validator) |
+| `coderef-scan-frontend-calls` | `src/cli/scan-frontend-calls.ts` | Frontend API call detection |
 
 See [docs/CLI.md](./CLI.md) for full per-flag CLI reference and [docs/rag-http-api.md](./rag-http-api.md) for the RAG server HTTP endpoints.
 

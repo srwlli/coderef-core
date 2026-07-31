@@ -11,6 +11,7 @@
  */
 
 import { saveFrontendCalls } from '../fileGeneration/saveFrontendCalls.js';
+import { warnIfLegacyBinName } from './bin-alias.js';
 
 interface CliArgs {
   projectDir: string;
@@ -67,10 +68,10 @@ function parseArgs(argv: string[]): CliArgs {
  */
 function printHelp(): void {
   console.log(`
-scan-frontend-calls - Scan project for frontend API calls
+coderef-scan-frontend-calls - Scan project for frontend API calls
 
 USAGE:
-  scan-frontend-calls [OPTIONS] [PROJECT_DIR]
+  coderef-scan-frontend-calls [OPTIONS] [PROJECT_DIR]
 
 OPTIONS:
   -p, --project-dir <path>     Project directory to scan (default: current directory)
@@ -80,19 +81,19 @@ OPTIONS:
 
 EXAMPLES:
   # Scan current directory
-  scan-frontend-calls
+  coderef-scan-frontend-calls
 
   # Scan specific project
-  scan-frontend-calls /path/to/project
+  coderef-scan-frontend-calls /path/to/project
 
   # Custom output path
-  scan-frontend-calls --output ./output/calls.json
+  coderef-scan-frontend-calls --output ./output/calls.json
 
   # Scan only TypeScript files
-  scan-frontend-calls --extensions .ts,.tsx
+  coderef-scan-frontend-calls --extensions .ts,.tsx
 
   # Full example with all options
-  scan-frontend-calls --project-dir ./my-app \\
+  coderef-scan-frontend-calls --project-dir ./my-app \\
     --output ./reports/frontend-calls.json \\
     --extensions .ts,.tsx
 
@@ -115,10 +116,10 @@ OUTPUT:
   }
 
 INTEGRATION:
-  Use the generated frontend-calls.json with validate-routes:
+  Use the generated frontend-calls.json with coderef-validate-routes:
 
-  scan-frontend-calls
-  validate-routes --frontend-calls .coderef/frontend-calls.json \\
+  coderef-scan-frontend-calls
+  coderef-validate-routes --frontend-calls .coderef/frontend-calls.json \\
                   --server-routes .coderef/routes.json
 
 FRAMEWORKS SUPPORTED:
@@ -136,6 +137,10 @@ For more information, see:
  * Main CLI function
  */
 async function main(): Promise<void> {
+  // DR-007 option (A): both bin keys point here. Fires only when the caller
+  // typed the legacy name; stderr so a piped report stays clean.
+  warnIfLegacyBinName({ legacy: 'scan-frontend-calls', canonical: 'coderef-scan-frontend-calls' });
+
   try {
     const args = parseArgs(process.argv.slice(2));
 
@@ -191,7 +196,7 @@ async function main(): Promise<void> {
       console.log('💡 Next steps:');
       console.log('  1. Review the generated frontend-calls.json');
       console.log('  2. Run route validation:');
-      console.log(`     validate-routes --project-dir ${args.projectDir}`);
+      console.log(`     coderef-validate-routes --project-dir ${args.projectDir}`);
       console.log();
     } else {
       console.log('⚠️  No frontend API calls detected.');

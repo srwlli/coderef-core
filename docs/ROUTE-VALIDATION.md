@@ -1,5 +1,22 @@
 # Route Validation Guide
 
+> ## Status — read this first
+>
+> **Updated 2026-07-31 (WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001).** Between March 2026 and this update, everything described below was **built but unreachable**: the detectors, parsers, matcher and validator all existed and were integration-tested, but their only producer (`saveIndex` / `scanCodebase`) lost its production call site when `PipelineOrchestrator` replaced the legacy scan. `.coderef/routes.json` went stale, `.coderef/frontend-calls.json` stopped being written, and `coderef-validate-routes` exited 2. Three things below were therefore wrong, and are now corrected:
+>
+> 1. **The producer is `populate-coderef <path> --mode full`.** It emits `.coderef/routes.json` and `.coderef/frontend-calls.json` on its existing single pass. The `scanCurrentElements` + `saveIndex` recipes some sections still show are the DEAD path — they no longer run in production.
+> 2. **Seven frameworks are supported, not four:** Flask, FastAPI, Express, Next.js (App + Pages Router), SvelteKit, Nuxt, and Remix.
+> 3. **The two CLIs were renamed** to `coderef-validate-routes` and `coderef-scan-frontend-calls`. The old names still work for one minor version and print a deprecation notice.
+>
+> **New in this release:** an HTTP endpoint is now a first-class **graph node** (`@Endpoint/<path>#<METHOD>`), so `what_calls`, `impact_of` and `path_between` cross the network boundary — a handler change surfaces the CLIENTS that call it, not just the modules that import it. The same surface is available as the `api_surface` MCP tool and the `api` block of `.coderef/map/data.json`. See [CLI.md](./CLI.md#coderef-validate-routes).
+>
+> **Known bounds, stated rather than implied:**
+> - Each detector reports at most **one route per file**, so a single Express file declaring thirty routes yields one endpoint. Every count here is a **lower bound** on the real surface.
+> - Frontend-call detection gates on browser-reachable file extensions, so **server-to-server HTTP calls are invisible**. An endpoint with no detected caller means NO CALLER WAS FOUND IN THIS REPO — never that none exists.
+> - Route detection reads comment-blanked content and skips test files, because a route mentioned in a JSDoc `@example` or asserted in a fixture is documentation, not an exposed endpoint.
+
+---
+
 > **WO-ROUTE-VALIDATION-ENHANCEMENT-001** - Comprehensive guide to validating frontend API calls against server routes
 
 ## Table of Contents
@@ -53,14 +70,14 @@ npm install @coderef/core
 
 ```bash
 # This generates .coderef/routes.json and .coderef/frontend-calls.json
-npx coderef scan --project-dir ./my-project
+npx populate-coderef ./my-project --mode full
 ```
 
 ### 3. Run Validation
 
 ```bash
 # Validate routes
-npx validate-routes --project-dir ./my-project
+npx coderef-validate-routes --project-dir ./my-project
 ```
 
 ### 4. Review Results
@@ -176,15 +193,15 @@ Three validation checks are performed:
 
 ```bash
 # Validate using .coderef directory
-npx validate-routes --project-dir ./my-project
+npx coderef-validate-routes --project-dir ./my-project
 
 # Validate using explicit file paths
-npx validate-routes \
+npx coderef-validate-routes \
   --frontend-calls ./.coderef/frontend-calls.json \
   --server-routes ./.coderef/routes.json
 
 # Save report to custom location
-npx validate-routes --project-dir ./my-project \
+npx coderef-validate-routes --project-dir ./my-project \
   --output ./reports/validation-$(date +%Y%m%d).md
 ```
 
@@ -192,10 +209,10 @@ npx validate-routes --project-dir ./my-project \
 
 ```bash
 # Fail build on critical issues (exit code 1)
-npx validate-routes --project-dir ./my-project --fail-on-critical
+npx coderef-validate-routes --project-dir ./my-project --fail-on-critical
 
 # Use short flags
-npx validate-routes -p ./my-project -c -o ./reports/validation.md
+npx coderef-validate-routes -p ./my-project -c -o ./reports/validation.md
 ```
 
 ### CLI Options
@@ -559,7 +576,7 @@ name: Route Validation
 on: [push, pull_request]
 
 jobs:
-  validate-routes:
+  coderef-validate-routes:
     runs-on: ubuntu-latest
 
     steps:
@@ -574,10 +591,10 @@ jobs:
         run: npm install
 
       - name: Scan codebase
-        run: npx coderef scan --project-dir .
+        run: npx populate-coderef . --mode full
 
       - name: Validate routes
-        run: npx validate-routes --project-dir . --fail-on-critical
+        run: npx coderef-validate-routes --project-dir . --fail-on-critical
 
       - name: Upload validation report
         if: failure()
@@ -590,12 +607,12 @@ jobs:
 ### GitLab CI
 
 ```yaml
-validate-routes:
+coderef-validate-routes:
   stage: test
   script:
     - npm install
-    - npx coderef scan --project-dir .
-    - npx validate-routes --project-dir . --fail-on-critical
+    - npx populate-coderef . --mode full
+    - npx coderef-validate-routes --project-dir . --fail-on-critical
   artifacts:
     when: on_failure
     paths:
@@ -612,10 +629,10 @@ validate-routes:
 echo "Running route validation..."
 
 # Scan codebase
-npx coderef scan --project-dir .
+npx populate-coderef . --mode full
 
 # Validate routes
-npx validate-routes --project-dir . --fail-on-critical
+npx coderef-validate-routes --project-dir . --fail-on-critical
 
 if [ $? -ne 0 ]; then
   echo "❌ Route validation failed! Fix critical issues before committing."
@@ -693,7 +710,7 @@ export async function GET() {  // Only GET exported
 **Solution:**
 ```bash
 # Run frontend call detection first
-npx coderef scan --project-dir . --frontend-only
+npx populate-coderef . --mode full
 ```
 
 ### Issue: "False positive: Route marked as unused"
@@ -738,7 +755,7 @@ cat .coderef/frontend-calls.json
 cat .coderef/routes.json
 
 # Re-scan with verbose mode
-npx coderef scan --project-dir . --verbose
+npx populate-coderef . --mode full --verbose
 ```
 
 ### Issue: "Performance is slow on large codebases"
@@ -748,10 +765,10 @@ npx coderef scan --project-dir . --verbose
 **Solution:**
 ```bash
 # Exclude unnecessary directories
-npx coderef scan --project-dir . --exclude '**/node_modules/**' --exclude '**/dist/**'
+npx populate-coderef . --mode full
 
 # Use cached results (don't re-scan)
-npx validate-routes --frontend-calls ./.coderef/frontend-calls.json --server-routes ./.coderef/routes.json
+npx coderef-validate-routes --frontend-calls ./.coderef/frontend-calls.json --server-routes ./.coderef/routes.json
 ```
 
 ---
@@ -841,7 +858,7 @@ fetch(url);
 
 ```bash
 # Save reports with timestamps
-npx validate-routes --project-dir . --output ./reports/validation-$(date +%Y%m%d-%H%M%S).md
+npx coderef-validate-routes --project-dir . --output ./reports/validation-$(date +%Y%m%d-%H%M%S).md
 
 # Compare reports over time
 diff reports/validation-20260125.md reports/validation-20260126.md

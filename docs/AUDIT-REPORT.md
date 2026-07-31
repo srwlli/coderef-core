@@ -85,8 +85,8 @@ Current docs only show old commands, missing:
 - `coderef-rag-index`
 - `coderef-rag-search`
 - `coderef-rag-status`
-- `scan-frontend-calls`
-- `validate-routes`
+- `coderef-scan-frontend-calls`
+- `coderef-validate-routes`
 - `detect-languages`
 
 ---
@@ -137,7 +137,7 @@ Current docs only show old commands, missing:
 
 ```markdown
 # In ROUTE-VALIDATION.md:
-npx coderef scan --project-dir .  // WRONG
+npx populate-coderef . --mode full  // WRONG
 # Should be:
 npx coderef-scan --dir .
 ```

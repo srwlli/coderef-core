@@ -209,7 +209,7 @@ export function computeApiSurface(
 
       for (const handler of endpoint.handlers) {
         if (!file || file === handler) continue;
-        const key = `${file} ${handler}`;
+        const key = `${file}\u0000${handler}`;
         let agg = networkAgg.get(key);
         if (!agg) {
           agg = { source: file, target: handler, endpoints: [] };

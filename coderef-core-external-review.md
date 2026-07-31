@@ -28,7 +28,7 @@ A hand-rolled regex scanner (`src/scanner/scanner.ts`, 1,530 lines) is the prima
 - **Migration mapping** — `src/validator/migration-mapper.ts` maps old→new routes via explicit pairs and regex patterns, tracks coverage percentage and deprecation status.
 - **Dependency graph + traversal queries** — `AnalyzerService` exposes `getCallers`, `getCallees`, `getDependencies`, `detectCircularDependencies`, `findShortestPath`, `findAllPaths`.
 - **Pipeline orchestration** — `src/pipeline/orchestrator.ts` runs a single-pass scan with incremental caching and a registry of generators (index, graph, complexity, patterns, coverage, drift, validation, diagrams, context, health).
-- **CLI tools** — `populate-coderef`, `validate-routes`, `scan-frontend-calls`, `rag-index`, `rag-search`, `rag-status`.
+- **CLI tools** — `populate-coderef`, `coderef-validate-routes`, `coderef-scan-frontend-calls`, `rag-index`, `rag-search`, `rag-status`.
 - **Optional RAG layer** — Chunking, embedding via OpenAI, pluggable vector stores (SQLite/Pinecone/Chroma), incremental indexing, answer generation, graph-aware reranking. Interface-driven (`LLMProvider`, `VectorStore`) but currently disabled in the main export.
 - **Performance tooling** — 50 MB LRU cache in the scanner, optional worker-thread parallelization for large file batches, incremental scanning cache.
 

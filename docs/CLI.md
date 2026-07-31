@@ -35,8 +35,8 @@ node dist/src/cli/index.js <command>
 | [`coderef-pipeline`](#coderef-pipeline) | Unified scan→populate→docs→RAG orchestrator (Ollama-only RAG) | `--project-dir`, `--only`, `--skip`, `--ollama-base-url`, `--ollama-model`, `--rag-reset` |
 | [`coderef-watch`](#coderef-watch) | Workspace file-watcher daemon for foundation-docs freshness (incremental by default) | `--project-dir`, `--debounce-ms`, `--full`, `--once`, `--no-pipeline`, `--json` |
 | [`coderef-rag-server`](rag-http-api.md) | Always-on HTTP RAG server for cross-runtime callers (port 52849) | `--port`, `--help` |
-| [`scan-frontend-calls`](#scan-frontend-calls) | Detect frontend API calls | `--dir`, `--pattern`, `--output` |
-| [`validate-routes`](#validate-routes) | Validate API route definitions | `--dir`, `--strict`, `--fix` |
+| [`coderef-scan-frontend-calls`](#coderef-scan-frontend-calls) | Scan a project for frontend API calls -> `.coderef/frontend-calls.json` (aliased from the deprecated `scan-frontend-calls`) | `--project-dir`, `--output`, `--extensions` |
+| [`coderef-validate-routes`](#coderef-validate-routes) | Validate detected frontend calls against detected server routes (404/405/unused) (aliased from the deprecated `validate-routes`) | `--project-dir`, `--frontend-calls`, `--server-routes`, `--fail-on-critical`, `--output` |
 | [`coderef-analyze`](#coderef-analyze) | Run a single analysis pass (config, contracts, DB, patterns, complexity, impact, breaking-changes, etc.) | `--project`, `--type`, `--output`, `--element`, `--depth`, `--from`, `--to` |
 | [`coderef-query`](#coderef-query) | Execute a relationship query over canonical `.coderef/graph.json` (calls, imports, depends-on, shortest-path, all-paths) | `--project`, `--type`, `--target`, `--source`, `--depth`, `--format` |
 | [`coderef-detect-languages`](#coderef-detect-languages) | Detect programming languages used in a project | `--project`, `--ignore-file`, `--json` |
@@ -1116,122 +1116,170 @@ The `--project-dir` launcher arg is optional and acts only as a **default anchor
 
 ---
 
-## scan-frontend-calls
+## coderef-scan-frontend-calls
 
-Detect and analyze frontend API calls.
+Scan a project for frontend API calls and write `.coderef/frontend-calls.json`.
+
+> **Renamed.** This bin was `scan-frontend-calls`. The old name still works for one minor version and prints a deprecation notice to stderr; use the `coderef-` name.
+>
+> **You usually do not need this bin.** `populate-coderef <path> --mode full` produces `frontend-calls.json` (and `routes.json`) on its normal single pass. Reach for this one only when you want the client-call scan on its own — a different output path, a narrower extension set, or without a full populate.
 
 ### Usage
 
 ```bash
-npx scan-frontend-calls --dir ./src --pattern "fetch|axios"
+npx coderef-scan-frontend-calls --project-dir ./my-app
 ```
 
 ### Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-d, --dir <path>` | Directory to scan | Current directory |
-| `-p, --pattern <regex>` | Call pattern to match | `fetch\|axios\|http` |
-| `--output <path>` | Output file | stdout |
-| `--group-by <field>` | Group results by file/route | `file` |
-| `-v, --verbose` | Verbose output | `false` |
+| `-p, --project-dir <path>` | Project directory to scan (also accepts a bare positional argument) | Current directory |
+| `-o, --output <path>` | Output file path | `<project>/.coderef/frontend-calls.json` |
+| `-e, --extensions <exts>` | Comma-separated file extensions | `.js,.jsx,.ts,.tsx,.vue` |
+| `-h, --help` | Show help | — |
+
+There is no `--dir`, `--pattern`, `--group-by`, or `--verbose`. Unknown flags are ignored by this bin (a bare non-flag argument is taken as the project directory).
 
 ### Examples
 
 ```bash
-# Scan for all API calls
-npx scan-frontend-calls --dir ./src
+# Scan the current directory
+npx coderef-scan-frontend-calls
 
-# Custom pattern
-npx scan-frontend-calls --dir ./src --pattern "api\.get|api\.post"
+# Scan a specific project (positional form)
+npx coderef-scan-frontend-calls ./my-app
 
-# Output to file
-npx scan-frontend-calls --dir ./src --output ./api-calls.json
+# Custom output path
+npx coderef-scan-frontend-calls --project-dir ./my-app --output ./reports/frontend-calls.json
 
-# Group by API route
-npx scan-frontend-calls --dir ./src --group-by route
+# TypeScript sources only
+npx coderef-scan-frontend-calls --project-dir ./my-app --extensions .ts,.tsx
 ```
+
+### Detected patterns
+
+`fetch()`, axios (all methods), React Query (`useQuery` / `useMutation`), and custom clients (`api.*`, `apiClient.*`, `client.*`, `http.*`). Paths are parsed from a Babel AST, not by regex: a static string literal is recorded at confidence 100, and a template literal collapses its interpolation to a `{id}` placeholder at confidence 80.
+
+**Known bound:** detection gates on browser-reachable file extensions, so a SERVER-side module calling another service over HTTP is not recorded. An empty result is no-data, never proof that no calls exist.
 
 ### Output Format
 
 ```json
 {
+  "totalCalls": 23,
+  "byType": {
+    "fetch": [],
+    "axios": [],
+    "reactQuery": [],
+    "custom": []
+  },
   "calls": [
     {
+      "path": "/api/users",
+      "method": "GET",
       "file": "src/services/user.ts",
       "line": 45,
-      "pattern": "fetch",
-      "target": "/api/users",
-      "method": "GET",
-      "context": "fetch('/api/users')"
+      "callType": "fetch",
+      "confidence": 100
     }
   ],
-  "summary": {
-    "totalCalls": 23,
-    "uniqueEndpoints": 8
+  "metadata": {
+    "generatedAt": "2026-07-31T10:30:00.000Z",
+    "projectPath": "/abs/path/to/project",
+    "scanVersion": "1.0.0"
   }
 }
 ```
 
 ---
 
-## validate-routes
+## coderef-validate-routes
 
-Validate API route definitions for consistency and correctness.
+Validate detected frontend API calls against detected server routes, reporting missing routes (404-shaped), unused routes, and HTTP method mismatches (405-shaped).
+
+> **Renamed.** This bin was `validate-routes`. The old name still works for one minor version and prints a deprecation notice to stderr; use the `coderef-` name.
+>
+> Reads two artifacts that `populate-coderef <path> --mode full` produces: `.coderef/routes.json` and `.coderef/frontend-calls.json`. **Run populate first** — with either artifact missing this bin exits 2.
 
 ### Usage
 
 ```bash
-npx validate-routes --dir ./src --strict
+npx coderef-validate-routes --project-dir ./my-app
 ```
 
 ### Options
 
 | Flag | Description | Default |
 |------|-------------|---------|
-| `-d, --dir <path>` | Directory to scan | Current directory |
-| `--strict` | Strict validation mode | `false` |
-| `--fix` | Auto-fix issues where possible | `false` |
-| `--include <patterns>` | Include patterns | All files |
-| `--exclude <patterns>` | Exclude patterns | `node_modules,tests` |
-| `--output <path>` | Report output | stdout |
+| `-p, --project-dir <path>` | Project root (reads `<path>/.coderef/routes.json` + `frontend-calls.json`) | — |
+| `-f, --frontend-calls <path>` | Explicit path to `frontend-calls.json` (use with `-s`) | — |
+| `-s, --server-routes <path>` | Explicit path to `routes.json` (use with `-f`) | — |
+| `-c, --fail-on-critical` | Exit 1 when critical issues are found (CI gate) | `false` |
+| `-o, --output <path>` | Write the markdown report to this path | stdout summary only |
+| `-h, --help` | Show help | — |
+
+There is no `--dir`, `--strict`, `--fix`, `--include`, or `--exclude`. **Any unrecognized flag is a hard error:** the bin prints `Unknown option: <flag>` and exits 1.
+
+Either `--project-dir` **or** both `--frontend-calls` and `--server-routes` are required.
 
 ### Examples
 
 ```bash
-# Basic validation
-npx validate-routes --dir ./src
+# Validate from a project's .coderef artifacts
+npx coderef-validate-routes --project-dir ./my-app
 
-# Strict mode
-npx validate-routes --dir ./src --strict
+# Validate from explicit artifact paths
+npx coderef-validate-routes   --frontend-calls ./.coderef/frontend-calls.json   --server-routes ./.coderef/routes.json
 
-# Auto-fix issues
-npx validate-routes --dir ./src --fix
+# Gate CI on critical issues
+npx coderef-validate-routes --project-dir ./my-app --fail-on-critical
 
-# Output report
-npx validate-routes --dir ./src --output ./route-report.json
+# Save the markdown report
+npx coderef-validate-routes --project-dir ./my-app --output ./reports/validation.md
 ```
 
-### Validation Rules
+### Validation rules
 
-- Route path format consistency
-- HTTP method validation
-- Parameter naming conventions
-- Duplicate route detection
-- Missing handler detection
+| Issue | Severity | Meaning |
+|-------|----------|---------|
+| `missing_route` | critical | A frontend call whose path matches no detected server route (404-shaped) |
+| `method_mismatch` | critical | The path is served but not for that HTTP verb (405-shaped) |
+| `unused_route` | warning | A server route no detected frontend call reaches |
+
+**Surfaces, not verdicts.** `unused_route` means NO CALLER WAS FOUND IN THIS REPO — for a public API, a client living in another repo, or a server-to-server caller, that is the expected state and not dead code. Likewise a `missing_route` on a call whose base URL came from a variable may simply mean the origin could not be determined.
+
+### Exit codes
+
+| Code | Meaning |
+|------|---------|
+| `0` | Completed (issues may still be reported; only `--fail-on-critical` turns them into a failure) |
+| `1` | Critical issues found **and** `--fail-on-critical` was set, or an unknown flag was passed |
+| `2` | Invalid arguments, or `.coderef/routes.json` / `frontend-calls.json` not found |
 
 ### Output
 
 ```
-Route Validation Report
-======================
-✓ Valid routes: 42
-⚠ Warnings: 3
-✗ Errors: 1
+============================================================
+ROUTE VALIDATION SUMMARY
+============================================================
 
-Errors:
-  - src/routes/user.ts:23: Duplicate route '/api/users/:id'
+Statistics:
+  Frontend API Calls: 5
+  Server Routes:      4
+  Matched Routes:     2
+  Match Rate:         40%
+
+Issues Found:
+  Critical: 3
+  Warnings: 4
+  Info:     0
+  Total:    7
 ```
+
+### See also
+
+The same surface is available to agents as the **`api_surface`** MCP tool and as the `api` block of `.coderef/map/data.json` — both expressed as graph facts (endpoints, handlers, callers, unmatched calls with reasons) rather than as pass/fail verdicts. Use this CLI when you want an exit code; use `api_surface` when you want to explore.
 
 ---
 

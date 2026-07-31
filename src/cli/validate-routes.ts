@@ -10,24 +10,24 @@
  * Command-line interface for validating frontend API calls against server routes
  *
  * Usage:
- *   validate-routes --project-dir <path>
- *   validate-routes --frontend-calls <path> --server-routes <path>
- *   validate-routes --project-dir <path> --fail-on-critical
- *   validate-routes --project-dir <path> --output report.md
+ *   coderef-validate-routes --project-dir <path>
+ *   coderef-validate-routes --frontend-calls <path> --server-routes <path>
+ *   coderef-validate-routes --project-dir <path> --fail-on-critical
+ *   coderef-validate-routes --project-dir <path> --output report.md
  *
  * @example
  * ```bash
  * # Validate using .coderef files
- * validate-routes --project-dir ./my-project
+ * coderef-validate-routes --project-dir ./my-project
  *
  * # Validate using specific files
- * validate-routes --frontend-calls frontend-calls.json --server-routes routes.json
+ * coderef-validate-routes --frontend-calls frontend-calls.json --server-routes routes.json
  *
  * # Fail CI/CD on critical issues
- * validate-routes --project-dir ./my-project --fail-on-critical
+ * coderef-validate-routes --project-dir ./my-project --fail-on-critical
  *
  * # Save report to custom location
- * validate-routes --project-dir ./my-project --output ./reports/validation.md
+ * coderef-validate-routes --project-dir ./my-project --output ./reports/validation.md
  * ```
  */
 
@@ -35,6 +35,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import { generateValidationReport, saveValidationReport } from '../validator/route-validator.js';
 import { generateMarkdownReport, saveMarkdownReport } from '../validator/report-generator.js';
+import { warnIfLegacyBinName } from './bin-alias.js';
 
 /**
  * CLI Arguments interface
@@ -112,9 +113,9 @@ Validates frontend API calls against server routes to detect:
 - HTTP method mismatches (405 errors)
 
 USAGE:
-  validate-routes --project-dir <path>
-  validate-routes --frontend-calls <path> --server-routes <path>
-  validate-routes [options]
+  coderef-validate-routes --project-dir <path>
+  coderef-validate-routes --frontend-calls <path> --server-routes <path>
+  coderef-validate-routes [options]
 
 OPTIONS:
   -p, --project-dir <path>      Project root directory (looks for .coderef/)
@@ -126,16 +127,16 @@ OPTIONS:
 
 EXAMPLES:
   # Validate using .coderef directory
-  validate-routes --project-dir ./my-project
+  coderef-validate-routes --project-dir ./my-project
 
   # Validate using specific files
-  validate-routes -f ./.coderef/frontend-calls.json -s ./.coderef/routes.json
+  coderef-validate-routes -f ./.coderef/frontend-calls.json -s ./.coderef/routes.json
 
   # Fail CI/CD pipeline on critical issues
-  validate-routes -p ./my-project --fail-on-critical
+  coderef-validate-routes -p ./my-project --fail-on-critical
 
   # Save report to custom location
-  validate-routes -p ./my-project -o ./reports/validation-report.md
+  coderef-validate-routes -p ./my-project -o ./reports/validation-report.md
 
 EXIT CODES:
   0 - Success (no critical issues or --fail-on-critical not set)
@@ -174,7 +175,7 @@ async function resolveFilePaths(args: CliArgs): Promise<{ frontendCalls: string;
     serverRoutesPath = args.serverRoutes;
   } else {
     console.error('Error: Must specify either --project-dir or both --frontend-calls and --server-routes');
-    console.error('Run "validate-routes --help" for usage information.');
+    console.error('Run "coderef-validate-routes --help" for usage information.');
     process.exit(2);
   }
 
@@ -247,6 +248,10 @@ function printSummary(report: any): void {
  * Main CLI entry point
  */
 async function main(): Promise<void> {
+  // DR-007 option (A): both bin keys point here. Fires only when the caller
+  // typed the legacy name; stderr so a piped report stays clean.
+  warnIfLegacyBinName({ legacy: 'validate-routes', canonical: 'coderef-validate-routes' });
+
   const args = parseArgs(process.argv.slice(2));
 
   // Show help if requested or no args provided

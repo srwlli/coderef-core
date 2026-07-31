@@ -14,7 +14,9 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
+    "coderef-validate-routes": "./dist/src/cli/validate-routes.js",
     "validate-routes": "./dist/src/cli/validate-routes.js",
+    "coderef-scan-frontend-calls": "./dist/src/cli/scan-frontend-calls.js",
     "scan-frontend-calls": "./dist/src/cli/scan-frontend-calls.js",
     "populate-coderef": "./dist/src/cli/populate.js",
     "coderef-scan": "./dist/src/cli/scan.js",
