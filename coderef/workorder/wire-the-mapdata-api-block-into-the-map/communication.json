@@ -1,0 +1,142 @@
+{
+  "workorder_id": "WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001",
+  "feature_name": "wire-the-mapdata-api-block-into-the-map",
+  "created": "2026-07-31T23:08:50.783268+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "closed",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\wire-the-mapdata-api-block-into-the-map\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\wire-the-mapdata-api-block-into-the-map\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\wire-the-mapdata-api-block-into-the-map\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-7AHXK4",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-7AHXK4",
+      "plan_type": "strict",
+      "timestamp": "2026-07-31T23:08:50.783268+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 13,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/fe1932e9-0c55-47fb-9d0a-7d240a328db7/scratchpad/api-viewer-wiring-tasks.json",
+      "at": "2026-07-31T23:08:50.783268+00:00"
+    },
+    {
+      "event": "git_branch_set",
+      "value": "main",
+      "reason": "SKILL.md Step 7: wo/* lane retired 2026-06-15 (STUB-TEYF02); MAIN-only + commit-by-path. Engine emitted null.",
+      "at": "2026-07-31T23:12:00+00:00"
+    },
+    {
+      "event": "writer_path_resolution_defect",
+      "detail": "write-phase-transition.cjs resolveRegistryPath() strips the scheme from a registry path then anchors unconditionally to ASSISTANT_ROOT. This WO row path is coderef-core:coderef/workorder/... so it resolves into the ASSISTANT tree, misses, and the soft-fail contract returns exit 0 no-op. phase_transitions[] would stay silently empty. Same class as predecessor FU-1. Worked around by writing communication.json directly at the correct owner-project root; logged as kaizen + follow-up. Fixing the shared runner is out of scope for this WO.",
+      "at": "2026-07-31T23:24:17.774711+00:00"
+    },
+    {
+      "event": "mutation_verified",
+      "task": "P1-T11",
+      "at": "2026-07-31T23:32:36.019230+00:00",
+      "discipline": "A test never seen to fail is a claim, not evidence. Both guards were deliberately broken and observed RED before being trusted.",
+      "mutations": [
+        {
+          "guard": "api ingest block (P1-T4)",
+          "mutation": "assets/map-viewer/viewer.js: 'api = data.api || null' -> 'api = null'",
+          "observed_red": "FAIL __tests__/map/viewer-asset.test.ts:115 — expect(js).toContain('data.api || null'); 1 failed | 13 passed (14)",
+          "restored": "byte-clean, md5 95be6fcc524131441cfa811c1d3ee0ab matches pre-mutation"
+        },
+        {
+          "guard": "pre-1.7.0 absent-api guard (P1-T9)",
+          "mutation": "assets/map-viewer/dashboard.js: 'if (!api) {' -> 'if (false) {'",
+          "observed_red": "FAIL dashboard-asset.test.ts:798 — \"a pre-1.7.0 payload with NO api key does not throw\" threw TypeError; 31 failed | 30 passed (61). The guard prevents a real crash, not a cosmetic assertion.",
+          "restored": "byte-clean, md5 6e2ef125b7f16a28554a01f064de54ee matches pre-mutation"
+        }
+      ],
+      "post_restore": "75 passed (2 files) — dashboard-asset + viewer-asset, up from 62 before this WO"
+    },
+    {
+      "event": "foundation_docs_reverted",
+      "at": "2026-07-31T23:37:55.122747+00:00",
+      "decision": "Regenerated foundation-docs were REVERTED rather than committed.",
+      "rationale": "Deltas were 3,180->3,233 elements / 480->487 files and NO doc mentioned any symbol this WO added (api-surface-repo, toggle-api, data-api-edge). That is a snapshot of the foreign uncommitted drift in the tree, not of this change; committing it would attribute 53 elements of someone else other work to this WO. Same ruling the predecessor token WO made at 3,180->3,208. Gate itself PASSED (validator_exit 0; 23 UUID-anchor warnings are documented pre-existing drift)."
+    }
+  ],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "3f0868b",
+      "verdict": "PASS",
+      "at": "2026-07-31T23:37:55.122747+00:00"
+    }
+  ],
+  "plan_adjustments": [
+    {
+      "id": "ADJ-01",
+      "tasks": [
+        "P1-T2",
+        "P1-T3"
+      ],
+      "at": "2026-07-31T23:25:54.375471+00:00",
+      "applied": true,
+      "adjustment": "P1-T2 asked for a NEW fixture repo at __tests__/fixtures/api-surface-repo/. An equivalent fixture ALREADY EXISTS in-repo at __tests__/map/api-surface.test.ts:40-135 (graphFixture + writeFixtureRepo) and already satisfies all four required properties: 2 served routes (express + flask), a resolving fetch call, an orphan handler with no caller, and 2 unmatched calls (endpoint_not_in_project + absolute_url_external_origin). Verified green 16/16 before relying on it.",
+      "rationale": "Authoring a second fixture for the same contract would create two sources of truth that can silently diverge. Instead the proven fixture is EXTRACTED to a shared module (__tests__/fixtures/api-surface-repo/) and imported by both the existing projection tests and the new asset tests, so one definition backs both. This satisfies the INTENT of P1-T2/T3 (falsifiable non-empty api data, since the host repo serves zero endpoints) without duplicating it."
+    }
+  ],
+  "communication_log": [
+    {
+      "timestamp": "2026-07-31T23:08:50.783268+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-7AHXK4"
+    },
+    {
+      "timestamp": "2026-07-31T23:37:55.122747+00:00",
+      "event": "workorder_complete",
+      "message": "Phase 1 (13 tasks) complete. api block now rendered on BOTH map surfaces: viewer overlay (8th toggle, dashed network hops drawn from api.networkEdges, Serves/Calls detail rows) and dashboard (endpoint table + unmatched-calls-by-reason, orphaned as a neutral surface). Tri-state honored on both: absent=UNKNOWN, present-zero=measured zero, populated=tables. Core commits 3f0868b (P1) + 22e1b6a (docs), pushed to origin/main. Suite 2449/26/0 across 232 files (baseline 2422/26/0). Both guards mutation-verified RED then restored byte-clean. ADJ-01: fixture EXTRACTED to __tests__/fixtures/api-surface-repo rather than authored twice, with a lockstep test binding it to real projectMapData output. emit-map.ts untouched per non-goal."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "git_branch": "main",
+  "completed_at": "2026-07-31T23:37:55.122747+00:00",
+  "closed_at": "2026-07-31T23:55:15Z",
+  "closed_via": "/close-workorder",
+  "close_metadata": {
+    "review_status": "PASS",
+    "archive_disposition": "close-only (v2.8.0 default); CROSS-PROJECT (target_project=coderef-core) so PHASE D would be skipped regardless",
+    "audit": {
+      "tracking_validator_scoped": "18 passed / 0 failed",
+      "standards_validate_wo_scoped": "pass (0 fail / 0 warning)",
+      "standards_validate_repo_wide": "fail (pre-existing culture debt from other WOs; gate-separation KZ-01KX4FV2 binds on wo_scoped)",
+      "doc_code_tie": "PASS (no doc_binding declared)",
+      "phased_terminal_guard": "inert (plan_type=strict)"
+    },
+    "close_warnings": [
+      {
+        "id": "session-log-self-heal-cross-project",
+        "detail": "check-session-log.mjs anchored to ASSISTANT/.coderef/sessions and self-healed a sparse 0-commit fallback, while the rich 20201-byte log authored at execute Step 5.5.1 lives at CODEREF-CORE/.coderef/sessions. Same ASSISTANT_ROOT cross-project path class as KZ-01KYX7WG. Rich log intact; fallback is a spurious artifact."
+      }
+    ]
+  },
+  "events": [
+    {
+      "type": "workorder_closed",
+      "at": "2026-07-31T23:55:15Z",
+      "note": "close-only; WO flipped to complete"
+    }
+  ]
+}

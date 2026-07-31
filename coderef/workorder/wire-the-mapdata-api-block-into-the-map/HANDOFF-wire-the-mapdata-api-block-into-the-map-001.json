@@ -1,0 +1,91 @@
+{
+  "workorder_id": "WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001",
+  "feature_name": "wire-the-mapdata-api-block-into-the-map",
+  "session_id": "daily-agent-session-2026-07-31",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "state": "executed_pending_close",
+  "plan_type": "strict",
+  "close_priority": "risky",
+  "close_priority_rationale": "plan_type === 'strict' — strict plans close at risky priority by contract.",
+  "phases_total": 1,
+  "phases_complete": 1,
+  "tasks_total": 13,
+  "tasks_complete": 13,
+  "parent_stub": "STUB-7AHXK4",
+  "parent_stub_status": "closed",
+  "commits": [
+    {
+      "hash": "3f0868b",
+      "subject": "feat(wire-the-mapdata-api-block-into-the-map): P1 - render the api block on both map surfaces",
+      "files_changed": 8
+    },
+    {
+      "hash": "22e1b6a",
+      "subject": "docs(wire-the-mapdata-api-block-into-the-map): document the api block and the API overlay",
+      "files_changed": 2
+    }
+  ],
+  "push": {
+    "range": "3d97c38..22e1b6a",
+    "remote": "origin/main",
+    "unpushed_after_fetch": 0
+  },
+  "tests": {
+    "passed": 2449,
+    "skipped": 26,
+    "failed": 0,
+    "files": 232,
+    "baseline": "2422 passed / 26 skipped / 0 failed across 231 files",
+    "asset_suites": "62 -> 75",
+    "api_surface_suite": "16 -> 17"
+  },
+  "registry": {
+    "verified_against": "registry.db (DB-verified, not view-verified)",
+    "workorder_status": "complete",
+    "workorder_completed": "2026-07-31",
+    "stub_status": "closed",
+    "active_work_rows": 0
+  },
+  "validator": {
+    "result": "FAIL",
+    "passed": 14,
+    "failed": 4,
+    "this_workorder_in_failures": false,
+    "note": "All 4 failures pre-existing and attributable to other workorders (project_id 'source-material' on two unrelated WOs; dangling June dispatch paths)."
+  },
+  "non_goals_honored": [
+    "src/map/emit-map.ts untouched — verified absent from the diff (no new asset FILE introduced)."
+  ],
+  "follow_ups": [
+    {
+      "id": "KZ-01KYX7WG",
+      "category": "correctness",
+      "note": "write-phase-transition.cjs resolveRegistryPath() anchors cross-project registry paths to ASSISTANT_ROOT, so a cross-project row resolves into the wrong repo and the soft-fail contract turns the miss into a silent exit-0 no-op; phase_transitions[] stays empty for every cross-project WO."
+    },
+    {
+      "id": "KZ-01KYX8X2",
+      "category": "ergonomics",
+      "note": "Cross-project session-log placement — owner-project-root rule is easy to miss."
+    },
+    {
+      "id": "STUB-DMRPRH",
+      "category": "routed-to-DEBUG",
+      "note": "Cross-project path resolution defect; two instances observed same day."
+    }
+  ],
+  "hard_stop": {
+    "reached": true,
+    "next_command": "/close-workorder WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001",
+    "note": "Close is a separate explicit decision. /close-workorder was NOT invoked automatically."
+  },
+  "close_gate_preflight": {
+    "stuck_accepted_dispatches": 0,
+    "note": "checkAcceptedDispatches('daily-agent-session-2026-07-31','CODEREF-CORE') returns [] — close-workorder Step 0 hard block is clear."
+  },
+  "emit_render": {
+    "ran": true,
+    "exit": 0,
+    "result": "surfaces-html-output failed (render server down at localhost:8772); graceful by contract, non-blocking."
+  }
+}

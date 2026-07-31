@@ -1,0 +1,40 @@
+=============================================================
+WORKORDER: WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001  |  wire-the-mapdata-api-block-into-the-map  |  COMPLETE
+Session: daily-agent-session-2026-07-31  |  Phases: 1  |  Commits: 2  |  Pushes: 1
+Parent stub: STUB-7AHXK4 (closed)
+
+FILES CREATED:
+  + __tests__/fixtures/api-surface-repo/index.ts  (3f0868b)
+
+FILES MODIFIED:
+  ~ assets/map-viewer/viewer.js  (3f0868b)
+  ~ assets/map-viewer/dashboard.js  (3f0868b)
+  ~ assets/map-viewer/graph.html  (3f0868b)
+  ~ assets/map-viewer/tokens.css  (3f0868b)
+  ~ __tests__/map/api-surface.test.ts  (3f0868b)
+  ~ __tests__/map/viewer-asset.test.ts  (3f0868b)
+  ~ __tests__/map/dashboard-asset.test.ts  (3f0868b)
+  ~ docs/CLI.md  (22e1b6a)
+  ~ docs/MAP-USER-GUIDE.md  (22e1b6a)
+
+PHASE CHECKLIST:
+  [x] Phase 1: render the api block on both map surfaces  (3f0868b, 22e1b6a)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (4 pre-existing, this WO in ZERO failures)
+
+APPROVE -> /close-workorder WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001
+=============================================================
+
+--- audit notes (not part of the rendered block) ---
+Push range: 3d97c38..22e1b6a to origin/main; 0 unpushed after fetch.
+Tests: 2449 passed / 26 skipped / 0 failed across 232 files (baseline 2422/26/0 across 231).
+Asset suites 62 -> 75; api-surface 16 -> 17.
+Validator: 14 passed / 4 failed. All 4 failures pre-existing and attributable to other
+workorders (project_id 'source-material' on two unrelated WOs; dangling June dispatch
+paths). This workorder appears in ZERO validator failure lines.
+Registry (DB-verified, not view-verified): workorders row status=complete completed=2026-07-31;
+STUB-7AHXK4 status=closed; active_work count 0.
+Non-goal honored: src/map/emit-map.ts untouched, verified absent from the diff.
+Field sources: workorder_id/feature_name/phases/tasks from plan.json; parent stub from
+plan.json.phases[0].stub_ref (context.json carries no parent_stub key); commit file lists
+from git show --stat.

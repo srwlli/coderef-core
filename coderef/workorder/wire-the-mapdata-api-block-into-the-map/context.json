@@ -1,0 +1,94 @@
+{
+  "workorder_id": "WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001",
+  "feature_name": "wire-the-mapdata-api-block-into-the-map",
+  "created": "2026-07-31T23:08:50.783268+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub_promotion",
+    "user_request": "Wire the MapData api block into the map viewer and dashboard so the API surface is visible where the rest of the code intelligence already is. Target project: coderef-core (cross-project WO - authored in ASSISTANT, executed against CODEREF-CORE). ORIGIN: WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 close-time follow-up FU-6, which deferred P3-T4/T5 because the host repo serves zero endpoints so there was nothing to render and no way to no-regress a visual change. VERIFIED ON-DISK 2026-07-31: producer, projection and MCP tool are all LIVE (routes.json generated; .coderef/map/data.json carries a populated api block at MapData 1.7.0; api_surface registered as MCP tool 37). Both CONSUMERS are dark - grep for api in assets/map-viewer/dashboard.js returns 0 matches, and endpoint/apiSurface/networkEdge in viewer.js returns 0 matches. The data reaches the viewer and both surfaces walk past it. DESIGN RULING - OVERLAY, NOT MODE: MapApiNetworkEdge is {source, target, endpoints} where source and target are project-relative FILE paths, so both ends already exist as graph nodes and the overlay rides the existing node space as a 7th toggle copy-shaped from cycles. A mode would require a second node space (all 470 node ids are file paths; zero @Endpoint nodes reach the map by design, since endpoint nodes carry no file). Endpoint-to-endpoint topology is better served by a dashboard TABLE than a graph. SCOPE: api overlay toggle on graph.html + viewer.js (dashed stroke so an HTTP hop is never confusable with an import edge), endpoint/unmatched-call tables on dashboard.js, detail-panel endpoint rows, tri-state no-data handling, and a fixture repo with real routes. NON-GOALS: no endpoint-node graph mode; no --api CLI flag; no changes to api-surface.ts, the MCP tool, or the pipeline (all three are already correct); no new network reference (file-safe static output is absolute); no new asset file so emit-map.ts should NOT change; no restyle - the shared tokens.css palette governs.",
+    "stub_id": "STUB-7AHXK4"
+  },
+  "classification": {
+    "plan_type": "strict",
+    "plan_type_rationale": "Category improvement maps to strict",
+    "plan_type_decided_by": "create-workorder-engine@1.0.0",
+    "discovery_ref": "planning-discovery-20260731T230859Z",
+    "discovery": {
+      "candidates": [
+        "LLOYD/tests/test_model_queue.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/dispatch_seed_assembler.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/foundation_docs_query_api.py",
+        "SKILLS/UTILITIES/agent-pulse/test/test_multi_agent_render.py",
+        "SKILLS/WORKFLOW/_shared/planner/tests/test_discovery_mirrors.py",
+        "SKILLS/WORKFLOW/_shared/planner/tests/test_map_seed.py",
+        "SKILLS/WORKFLOW/_shared/planner/tests/test_phase6_gate_decoupling.py",
+        "TRACKING/tests/test_improvements_schema_imp080.py",
+        "coderef/ARCHIVED/.legacy-archive/openclaw-detached-execute/plugin-snapshot/index.ts",
+        "coderef/ARCHIVED/.legacy-archive/openclaw-dispatch-expansion/plugin-snapshot/index.ts",
+        "coderef/ARCHIVED/surfaces-openclaw-consolidated-superseded/webhooks/coderef-status-webhook-monitor.js",
+        "coderef/ARCHIVED/surfaces-openclaw-superseded/services/coderef-status-webhook-monitor.js",
+        "scripts/legacy-export.py",
+        "scripts/test/test_projects_table.py",
+        "SKILLS/ARCHIVED/archive-stub/__tests__/test_archive_status_invariant.py",
+        "SKILLS/DOCUMENTATION/generate-project-context/scripts/validate_context_output.py",
+        "SKILLS/META/coderef-skill/test/test_help_and_standards_gate.py",
+        "SKILLS/PRIMARY-SOURCES/ps-seeder/scripts/analyze-entities-artifact.py",
+        "SKILLS/STANDARDS/align-coderef-culture/scripts/detect-drift.py",
+        "SKILLS/TRACKING/registry-db/__tests__/test_registry_db.py",
+        "SKILLS/UTILITIES/active-work/render.py",
+        "SKILLS/UTILITIES/agent-pulse/__tests__/test_multi_handoff.py",
+        "SKILLS/UTILITIES/agent-pulse/run.py",
+        "SKILLS/UTILITIES/wheres-it-at/scripts/wheres-it-at.py",
+        "SKILLS/WORKFLOW/_shared/planner/tests/test_briefing.py"
+      ],
+      "blast_radius": [
+        "LLOYD/client/lloyd_client.py",
+        "LLOYD/client/streaming.py",
+        "LLOYD/examples/basic_usage.py",
+        "LLOYD/src/api/mcp_server.py",
+        "LLOYD/src/bots/discord_listener.py",
+        "LLOYD/src/models/ollama_bridge.py",
+        "LLOYD/tests/test_client.py",
+        "LLOYD/tests/test_integration.py",
+        "LLOYD/tests/test_mcp_server.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/__init__.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/cli.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/dispatch_seed_assembler.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/header_query_api.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/tests/test_dispatch_seed_assembler.py",
+        "SURFACES/notifiers/python/discord_notifier.py",
+        "coderef/ARCHIVED/surfaces-openclaw-consolidated-superseded/api.py"
+      ],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "call_chain_hits": [
+        "LLOYD/client/lloyd_client.py",
+        "LLOYD/client/streaming.py",
+        "LLOYD/src/api/mcp_server.py",
+        "LLOYD/src/models/ollama_bridge.py",
+        "SURFACES/notifiers/python/discord_notifier.py",
+        "LLOYD/src/bots/discord_listener.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/cli.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/tests/test_dispatch_seed_assembler.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/dispatch_seed_assembler.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/header_query_api.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/__init__.py"
+      ],
+      "warnings": [
+        "planner.discovery: candidate list capped at 25 of 268 keyword matches (ranked by goal-keyword specificity) - the remainder are LOWER-RANKED, not proven irrelevant",
+        "planner.discovery: blast_radius probed the first 10 of 25 candidates (latency cap) - the remainder are UNPROBED, not proven clean",
+        "planner.discovery: hotspot ranking returned no rows at the probe budget - no-data, not 'no hotspots'",
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260731T230859Z"
+    }
+  },
+  "scope": {
+    "in_scope": [],
+    "out_of_scope": []
+  },
+  "constraints": [],
+  "pre_existing_drift": false
+}

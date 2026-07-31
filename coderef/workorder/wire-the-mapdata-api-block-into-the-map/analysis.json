@@ -1,0 +1,15 @@
+{
+  "workorder_id": "WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001",
+  "feature_name": "wire-the-mapdata-api-block-into-the-map",
+  "analysis_authored_at": "2026-07-31T23:08:50.783268+00:00",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": []
+}

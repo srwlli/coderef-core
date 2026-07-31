@@ -1,0 +1,148 @@
+{
+  "plan_type": "strict",
+  "goal": "Wire the MapData api block into the map viewer and dashboard so the API surface is visible where the rest of the code intelligence already is. Target project: coderef-core (cross-project WO - authored in ASSISTANT, executed against CODEREF-CORE). ORIGIN: WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 close-time follow-up FU-6, which deferred P3-T4/T5 because the host repo serves zero endpoints so there was nothing to render and no way to no-regress a visual change. VERIFIED ON-DISK 2026-07-31: producer, projection and MCP tool are all LIVE (routes.json generated; .coderef/map/data.json carries a populated api block at MapData 1.7.0; api_surface registered as MCP tool 37). Both CONSUMERS are dark - grep for api in assets/map-viewer/dashboard.js returns 0 matches, and endpoint/apiSurface/networkEdge in viewer.js returns 0 matches. The data reaches the viewer and both surfaces walk past it. DESIGN RULING - OVERLAY, NOT MODE: MapApiNetworkEdge is {source, target, endpoints} where source and target are project-relative FILE paths, so both ends already exist as graph nodes and the overlay rides the existing node space as a 7th toggle copy-shaped from cycles. A mode would require a second node space (all 470 node ids are file paths; zero @Endpoint nodes reach the map by design, since endpoint nodes carry no file). Endpoint-to-endpoint topology is better served by a dashboard TABLE than a graph. SCOPE: api overlay toggle on graph.html + viewer.js (dashed stroke so an HTTP hop is never confusable with an import edge), endpoint/unmatched-call tables on dashboard.js, detail-panel endpoint rows, tri-state no-data handling, and a fixture repo with real routes. NON-GOALS: no endpoint-node graph mode; no --api CLI flag; no changes to api-surface.ts, the MCP tool, or the pipeline (all three are already correct); no new network reference (file-safe static output is absolute); no new asset file so emit-map.ts should NOT change; no restyle - the shared tokens.css palette governs.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "READ the four seams before editing: src/map/api-surface.ts (MapApiEndpoint/MapApiNetworkEdge/MapApiSummary shapes and the module note on why networkEdges is separate from edges), assets/map-viewer/viewer.js lines 44-64 (overlay state vars + the mode object) and 105-130 (the cycles/hotspots overlay ingest block), assets/map-viewer/dashboard.js render() around line 149-515 (how panels are composed into #panels), and .coderef/map/data.json api block. Confirm on-disk that MapApiNetworkEdge is {source, target, endpoints} where source and target are project-relative FILE paths. This is the load-bearing premise of the whole workorder: both ends are files that already exist as graph nodes, which is what makes an overlay possible without a second node space.",
+          "touches": [
+            "src/map/api-surface.ts",
+            "assets/map-viewer/viewer.js",
+            "assets/map-viewer/dashboard.js"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "WRITE",
+          "description": "CREATE the fixture repo at __tests__/fixtures/api-surface-repo/ \u2014 a minimal project with (a) at least two served routes via a supported framework detector (Express-style app.get/app.post), (b) at least one frontend fetch call that RESOLVES to one of those routes, (c) at least one served route with NO caller so orphaned=true is exercised, and (d) at least one unresolvable call so unmatchedCalls is non-empty. This fixture is the ONLY thing that makes the rest of this workorder falsifiable: the host repo serves zero endpoints, so without it every assertion is expect(0).toBe(0) and a dead wiring is indistinguishable from a correct empty state. This is the precondition FU-6 named when it deferred this work.",
+          "touches": [
+            "__tests__/fixtures/api-surface-repo/"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "TEST",
+          "description": "PROVE the fixture produces real data BEFORE any viewer code is written. Drive the fixture through the real projection (buildProjectMapData or computeApiSurface as the existing __tests__/map/api-surface.test.ts does) and assert: api.summary.endpointCount > 0, api.networkEdges.length > 0, at least one endpoint with orphaned===true, and at least one unmatchedCall. If this task cannot go green, STOP and report \u2014 the fixture is wrong and every downstream assertion would be vacuous.",
+          "touches": [
+            "__tests__/map/api-surface.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "WIRE the api overlay state into assets/map-viewer/viewer.js, copying the shape of the existing cycles overlay verbatim: add `api: false` to the `mode` object (line ~64), and add module-scope `apiEdgeKeys = new Set()` + `apiNodes = new Set()` + `apiEndpointsByFile = new Map()` alongside cycleEdgeKeys/cycleNodes (lines ~48-50). In the ingest block (~line 119, next to the overlays.cycles and overlays.hotspots forEach loops), populate them from (data.api && data.api.networkEdges || []) keying edges as source + ' ' + target to match the existing cycleEdgeKeys convention. Guard exactly as the analytics block does at line ~127 (`data.analytics || null`) \u2014 pre-1.7.0 data.json has no api key and the toggle must disable gracefully rather than throw.",
+          "touches": [
+            "assets/map-viewer/viewer.js"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "DRAW the overlay in viewer.js: in the node-alpha branch (~line 270, beside `if (mode.cycles)`) dim non-participating nodes; in the edge-draw branch (~line 395-401) raise alpha on edges whose key is in apiEdgeKeys. Network edges MUST be drawn with a DASHED stroke (ctx.setLineDash) and reset after, so an HTTP hop is never visually confusable with an import edge \u2014 they are categorically different dependencies and the graph must not imply otherwise. Use tokens from the shared palette; do NOT introduce a new hardcoded hex (OBS-001 from the token WO already flagged viewer.js's 23 hardcoded values as a standing defect \u2014 do not add a 24th).",
+          "touches": [
+            "assets/map-viewer/viewer.js"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "EDIT",
+          "description": "ADD the toggle button to assets/map-viewer/graph.html as an 8th control after toggle-metrics (line ~29): <button id=\"toggle-api\" title=\"Highlight cross-process HTTP hops: which file calls which handler over the network (surfaces, not verdicts)\">API</button>. Wire it in viewer.js: an addEventListener calling exclusiveToggle('api') beside the existing six (~line 751), add 'api' to the exclusiveToggle sibling-clear list (~line 743), and a setToggle line in syncToggles (~line 831). Verify the sibling-clear list edit is present \u2014 omitting it leaves the api overlay stuck on when another toggle is pressed.",
+          "touches": [
+            "assets/map-viewer/graph.html",
+            "assets/map-viewer/viewer.js"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "EDIT",
+          "description": "EXTEND the viewer detail panel (~line 509, where Hotspot score and Cycle rows are added) so a selected file that participates in the API surface shows its endpoints: the routes it SERVES when it is a handler, and the routes it CALLS when it is a caller. Label the two relationships distinctly. When the selected file participates in neither, render nothing (absence of a row is correct here \u2014 the file simply is not on the API surface).",
+          "touches": [
+            "assets/map-viewer/viewer.js"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "EDIT",
+          "description": "ADD the API section to assets/map-viewer/dashboard.js as a panel in the existing #panels composition (~line 515): an endpoints table (path, method, frameworks, handlers, callers, orphaned) and an unmatched-calls table grouped by reason with each reason spelled out in prose (endpoint_not_in_project = 404-shaped, endpoint_method_not_served = 405-shaped, client_path_origin_unresolved = interpolated base URL, absolute_url_external_origin = external host). Render `orphaned` as a neutral SURFACE label, never as a warning or error style \u2014 orphaned means no resolved caller was found IN THIS REPO, which is the expected and correct state for a public API, a mobile client, or a server-to-server caller.",
+          "touches": [
+            "assets/map-viewer/dashboard.js"
+          ]
+        },
+        {
+          "id": "P1-T9",
+          "verb": "EDIT",
+          "description": "IMPLEMENT the tri-state no-data contract on BOTH surfaces. The three states must be distinguishable in the rendered output and must NOT collapse into one another: (a) api block ABSENT entirely -> 'API surface unknown - the route producer has not run for this project' (this is no-data, never 'no API'); (b) api present with endpointCount 0 -> 'no endpoints served' (a measured zero); (c) api present with endpoints -> the tables. On the graph, the toggle must communicate which of these it is rather than silently doing nothing when pressed. Absence must never render as clean.",
+          "touches": [
+            "assets/map-viewer/dashboard.js",
+            "assets/map-viewer/viewer.js"
+          ]
+        },
+        {
+          "id": "P1-T10",
+          "verb": "TEST",
+          "description": "ADD asset-level tests to __tests__/map/dashboard-asset.test.ts and __tests__/map/viewer-asset.test.ts covering: the api toggle exists in graph.html and is registered in the exclusiveToggle sibling list; the dashboard renders endpoint rows from a fixture-derived api block; all THREE tri-state branches from P1-T9 render distinguishable text; a pre-1.7.0 data.json with NO api key does not throw on either surface; and orphaned is not rendered with warning/error styling. Assert against the emitted bundle where the existing tests do, not only against source.",
+          "touches": [
+            "__tests__/map/dashboard-asset.test.ts",
+            "__tests__/map/viewer-asset.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T11",
+          "verb": "CHECK",
+          "description": "MUTATION-VERIFY the two guards that a green suite would otherwise hide, per the discipline established by the predecessor token WO. (1) Delete the api ingest block added in P1-T4 -> the overlay test MUST go RED; restore and re-verify byte-clean. (2) Remove the pre-1.7.0 absent-api guard -> the legacy-data test MUST go RED; restore and re-verify byte-clean. Record both observed RED outputs in communication.json. A test that has never been seen to fail is a claim, not evidence.",
+          "touches": [
+            "__tests__/map/dashboard-asset.test.ts",
+            "__tests__/map/viewer-asset.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T12",
+          "verb": "RUN",
+          "description": "RUN the full suite via npx vitest and READ THE ACTUAL COUNTS from the runner's own output \u2014 do not infer pass/fail from the exit code alone (KZ-01KYTSCY: vitest 4 rejects --reporter=basic and the resulting startup crash reads as a suite failure). Baseline to beat: 2422 passed / 26 skipped / 0 failed across 231 files. Then regenerate the map bundle with coderef-map against the host repo and confirm BOTH emitted surfaces still load with the api block present-but-empty (endpointCount 0) rendering as the measured-zero branch from P1-T9, NOT as an error and NOT as blank.",
+          "touches": []
+        },
+        {
+          "id": "P1-T13",
+          "verb": "COMMIT",
+          "description": "COMMIT via the guarded runner with EXPLICIT pathspecs only \u2014 assets/map-viewer/viewer.js, assets/map-viewer/dashboard.js, assets/map-viewer/graph.html, __tests__/map/, __tests__/fixtures/api-surface-repo/. Never git add -A. The working tree carries heavy foreign drift; verify the commit contains exactly the intended files before pushing. No emit-map.ts change is expected in this workorder (no new asset FILE is introduced) \u2014 if that file appears in the diff, stop and explain why.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-7AHXK4"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260731T230859Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-WIRE-THE-MAPDATA-API-BLOCK-INTO-THE-MAP-001",
+  "feature_name": "wire-the-mapdata-api-block-into-the-map",
+  "created": "2026-07-31T23:08:50.783268+00:00",
+  "plan_type_rationale": "Category improvement maps to strict"
+}
