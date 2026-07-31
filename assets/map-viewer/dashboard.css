@@ -2,23 +2,13 @@
  * coderef map dashboard — prebuilt static stylesheet.
  * Ported from the ASSISTANT-side renderer's inline CSS so the emitted asset
  * carries no external font, no CDN, no network reference of any kind.
+ *
+ * The palette lives in tokens.css, which dashboard.html links FIRST — this file
+ * only consumes var() and declares no colour of its own
+ * (WO-UNIFY-THE-MAP-VIEWER-UI-TOKEN-STANDARD-SO-001). Theme switching, both the
+ * OS preference and the manual data-theme toggle, is handled there via
+ * color-scheme; it is not re-implemented here.
  */
-
-:root {
-  --ground: #fbfbfa; --ink: #1b1d21; --dim: #6a6f78; --line: #e2e2df;
-  --card-bg: #ffffff; --accent-ci: #2f6f6a;
-  --fact: #2f6f6a; --absent: #8a6d1f; --nodata: #7a7f88;
-  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
-  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-}
-@media (prefers-color-scheme: dark) {
-  :root { --ground:#14161a; --ink:#e6e7e9; --dim:#9198a3; --line:#2a2e35;
-          --card-bg:#191c21; --accent-ci:#5aa9a1; --fact:#5aa9a1; --absent:#c9a227; --nodata:#7d848f; }
-}
-:root[data-theme="dark"] { --ground:#14161a; --ink:#e6e7e9; --dim:#9198a3; --line:#2a2e35;
-  --card-bg:#191c21; --accent-ci:#5aa9a1; --fact:#5aa9a1; --absent:#c9a227; --nodata:#7d848f; }
-:root[data-theme="light"] { --ground:#fbfbfa; --ink:#1b1d21; --dim:#6a6f78; --line:#e2e2df;
-  --card-bg:#ffffff; --accent-ci:#2f6f6a; --fact:#2f6f6a; --absent:#8a6d1f; --nodata:#7a7f88; }
 
 * { box-sizing: border-box; }
 body { margin:0; background:var(--ground); color:var(--ink); font-family:var(--sans);

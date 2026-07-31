@@ -89,6 +89,11 @@ export function emitViewer(outDir: string, dataJson: string, validationJson?: st
   const assetDir = viewerAssetDir();
   fs.mkdirSync(outDir, { recursive: true });
   fs.writeFileSync(path.join(outDir, 'data.json'), dataJson, 'utf-8');
+  // tokens.css carries the shared palette BOTH stylesheets consume; graph.html
+  // and dashboard.html link it first. Omitting it here ships two stylesheets
+  // pointing at a file that does not exist and renders both surfaces unstyled,
+  // which is invisible in the source tree — hence the emitted-bundle test.
+  fs.copyFileSync(path.join(assetDir, 'tokens.css'), path.join(outDir, 'tokens.css'));
   fs.copyFileSync(path.join(assetDir, 'viewer.js'), path.join(outDir, 'viewer.js'));
   fs.copyFileSync(path.join(assetDir, 'viewer.css'), path.join(outDir, 'viewer.css'));
   fs.copyFileSync(path.join(assetDir, 'dashboard.js'), path.join(outDir, 'dashboard.js'));

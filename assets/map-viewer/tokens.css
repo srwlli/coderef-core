@@ -1,0 +1,109 @@
+/*
+ * coderef map-viewer — shared UI token standard.
+ * WO-UNIFY-THE-MAP-VIEWER-UI-TOKEN-STANDARD-SO-001
+ *
+ * SINGLE SOURCE OF TRUTH for both emitted surfaces: dashboard.html and
+ * graph.html link this file FIRST, then their own consumer stylesheet. Neither
+ * consumer declares a palette of its own — a colour that is not here does not
+ * exist. That is the whole point: the sibling nav hop between the two surfaces
+ * used to be a visible jump between two differently-coloured products.
+ *
+ * The palette is the DASHBOARD's warm-neutral + teal (operator ruling: the
+ * dashboard's look is the baseline, and any visual delta on the dashboard is a
+ * defect, not an improvement). graph.html shifts from its former cool-blue onto
+ * this palette — that shift IS the intended change.
+ *
+ * Each token is declared EXACTLY ONCE via light-dark(), replacing the four-way
+ * duplication the dashboard used to carry (:root + prefers-color-scheme +
+ * two data-theme selectors, each restating the whole palette).
+ *
+ * THEMING CONTRACT — read before editing:
+ *   light-dark() resolves against the `color-scheme` PROPERTY, not against
+ *   re-declared custom properties. So the manual theme toggle works by setting
+ *   `color-scheme` on :root (see the data-theme rules at the bottom of this
+ *   file), NOT by restating colours. Re-declaring a colour under a data-theme
+ *   selector would silently do nothing.
+ *
+ * No build step, no preprocessor, no CDN, no webfont, no network reference of
+ * any kind — these are emitted static assets and that constraint is absolute.
+ */
+
+:root {
+  /* Enables light-dark() and makes the OS preference the default theme. */
+  color-scheme: light dark;
+
+  /* ---- Dashboard palette — the source of truth, one declaration each ---- */
+  --ground:     light-dark(#fbfbfa, #14161a);   /* page ground              */
+  --ink:        light-dark(#1b1d21, #e6e7e9);   /* primary text             */
+  --dim:        light-dark(#6a6f78, #9198a3);   /* secondary text           */
+  --line:       light-dark(#e2e2df, #2a2e35);   /* rules and borders        */
+  --card-bg:    light-dark(#ffffff, #191c21);   /* raised surface           */
+  --accent-ci:  light-dark(#2f6f6a, #5aa9a1);   /* teal accent              */
+
+  /* Tri-state encodings (True / False / None). These are dashboard-semantic:
+     they say WHICH of the three states a measurement is in, so they are part of
+     the palette rather than the fixed --data-* block below — they still need to
+     stay legible against both grounds. */
+  --fact:       light-dark(#2f6f6a, #5aa9a1);   /* measured true            */
+  --absent:     light-dark(#8a6d1f, #c9a227);   /* measured false / capped  */
+  --nodata:     light-dark(#7a7f88, #7d848f);   /* not measured             */
+
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  /* ---- Viewer six-bucket catalog, mapped onto the palette above ----
+     These names are the graph viewer's consumer contract (every var() call site
+     in viewer.css reads them), so they are kept verbatim and re-pointed at the
+     dashboard palette. Where a bucket has no dashboard equivalent it is DERIVED
+     via color-mix from the nearest token rather than introducing a new hue —
+     that keeps the palette closed at nine colours. */
+
+  /* bucket: ground + text */
+  --background:          var(--ground);
+  --foreground:          var(--ink);
+  --text-strong:         var(--ink);
+  --text-muted:          var(--dim);
+  --text-evidence:       var(--dim);
+  --text-evidence-head:  var(--ink);
+
+  /* bucket: surfaces. Panel and strip keep a slight translucency so the graph
+     canvas reads faintly through them, as it did before this consolidation. */
+  --surface-toolbar:     var(--card-bg);
+  --surface-panel:       color-mix(in srgb, var(--card-bg) 97%, transparent);
+  --surface-strip:       color-mix(in srgb, var(--card-bg) 94%, transparent);
+  --surface-input:       var(--card-bg);
+  --surface-evidence:    color-mix(in srgb, var(--line) 45%, var(--ground));
+  --surface-button:      color-mix(in srgb, var(--line) 55%, var(--card-bg));
+
+  /* bucket: interaction. --hover borrows the dashboard's own chip-hover idiom
+     (a low-percentage accent wash) so both surfaces respond identically. */
+  --hover:               color-mix(in srgb, var(--accent-ci) 12%, transparent);
+  --active:              var(--accent-ci);
+  --on-active:           var(--card-bg);
+
+  /* bucket: borders */
+  --border:              var(--line);
+  --border-strong:       color-mix(in srgb, var(--dim) 30%, var(--line));
+  --border-evidence:     color-mix(in srgb, var(--dim) 45%, var(--line));
+
+  /* bucket: accent + link */
+  --accent:              var(--accent-ci);
+  --link:                var(--accent-ci);
+
+  /* ---- data / semantic encodings ------------------------------------------
+     DELIBERATELY OUTSIDE light-dark(). These hues encode MEANING, not chrome:
+     a drift ring and a metrics gradient must read identically in both modes,
+     because the reader is decoding a value from the colour itself.
+     Do NOT "complete the tokenization" by wrapping these in light-dark() — a
+     data hue that flips with the background is a data hue that lies. Guarded by
+     a test in __tests__/map/dashboard-asset.test.ts. */
+  --data-drift-ring: #ffb300;   /* layer-drift ring           */
+  --data-metric-lo:  #1e88e5;   /* metrics-gradient low stop  */
+  --data-metric-hi:  #ffca28;   /* metrics-gradient high stop */
+}
+
+/* Manual theme override. light-dark() resolves against `color-scheme`, so the
+   toggle flips that property and every token above re-resolves. Restating the
+   colours here — the obvious-looking approach — would silently do nothing. */
+:root[data-theme="dark"]  { color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }

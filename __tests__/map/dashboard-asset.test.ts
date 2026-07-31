@@ -35,6 +35,9 @@ const ASSET_DIR = path.resolve(__dirname, '..', '..', 'assets', 'map-viewer');
 const html = fs.readFileSync(path.join(ASSET_DIR, 'dashboard.html'), 'utf-8');
 const js = fs.readFileSync(path.join(ASSET_DIR, 'dashboard.js'), 'utf-8');
 const css = fs.readFileSync(path.join(ASSET_DIR, 'dashboard.css'), 'utf-8');
+const tokensCss = fs.readFileSync(path.join(ASSET_DIR, 'tokens.css'), 'utf-8');
+const viewerCss = fs.readFileSync(path.join(ASSET_DIR, 'viewer.css'), 'utf-8');
+const graphHtml = fs.readFileSync(path.join(ASSET_DIR, 'graph.html'), 'utf-8');
 
 /** Minimal MapData-shaped payload; only what the dashboard reads. */
 const DATA = JSON.stringify({
@@ -525,6 +528,139 @@ describe('emitViewer dashboard emission', () => {
     expect(dash).not.toContain('</script><script>x');
     expect(dash).toContain('\\u003c');
     fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+/* Shared UI token standard — WO-UNIFY-THE-MAP-VIEWER-UI-TOKEN-STANDARD-SO-001.
+   Both emitted surfaces render from ONE palette in tokens.css. */
+describe('shared token standard: tokens.css is the single source of truth', () => {
+  it('both HTML surfaces link tokens.css BEFORE their own stylesheet', () => {
+    // Cascade order is load-bearing: tokens must be defined before a consumer
+    // reads them. A link tag (not @import) keeps the two sheets parallel-fetched.
+    for (const [name, doc, consumer] of [
+      ['dashboard.html', html, 'dashboard.css'],
+      ['graph.html', graphHtml, 'viewer.css'],
+    ] as const) {
+      const tokensAt = doc.indexOf('href="./tokens.css"');
+      const consumerAt = doc.indexOf(`href="./${consumer}"`);
+      expect(tokensAt, `${name} must link tokens.css`).toBeGreaterThan(-1);
+      expect(consumerAt, `${name} must link ${consumer}`).toBeGreaterThan(-1);
+      expect(tokensAt, `${name}: tokens.css must come first`).toBeLessThan(consumerAt);
+      expect(doc).not.toContain('@import');
+    }
+  });
+
+  it('EMITS tokens.css into the bundle beside every asset both surfaces need', () => {
+    // The one hard failure mode: emit-map.ts hardcodes its copy list, so a
+    // source-only assertion would pass while every emitted bundle shipped two
+    // stylesheets pointing at a file that does not exist — both surfaces
+    // rendering completely unstyled. This drives the REAL emit path.
+    const { dir } = emitTo(null);
+    for (const f of [
+      'tokens.css', 'viewer.js', 'viewer.css', 'dashboard.js', 'dashboard.css',
+      'graph.html', 'dashboard.html', 'data.json',
+    ]) {
+      expect(fs.existsSync(path.join(dir, f)), `missing ${f} in emitted bundle`).toBe(true);
+    }
+
+    // Every stylesheet each emitted HTML references must actually EXIST in the
+    // output — the assertion that would have caught a missing copyFileSync.
+    for (const page of ['graph.html', 'dashboard.html']) {
+      const doc = fs.readFileSync(path.join(dir, page), 'utf-8');
+      const hrefs = [...doc.matchAll(/<link[^>]+href="\.\/([^"]+\.css)"/g)].map((m) => m[1]);
+      expect(hrefs.length, `${page} references no stylesheet`).toBeGreaterThan(0);
+      for (const href of hrefs) {
+        expect(fs.existsSync(path.join(dir, href)), `${page} -> missing ${href}`).toBe(true);
+      }
+    }
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('declares each palette token EXACTLY once, via light-dark()', () => {
+    // Replaces the dashboard's former four-way duplication (:root +
+    // prefers-color-scheme + two data-theme blocks each restating the palette).
+    for (const token of ['--ground', '--ink', '--dim', '--line', '--card-bg', '--accent-ci']) {
+      const declarations = tokensCss.match(new RegExp(`^\\s*${token}\\s*:`, 'gm')) ?? [];
+      expect(declarations.length, `${token} must be declared once`).toBe(1);
+      expect(tokensCss).toMatch(new RegExp(`${token}\\s*:\\s*light-dark\\(`));
+    }
+    expect(tokensCss).toContain('color-scheme: light dark');
+  });
+
+  it('keeps BOTH theme paths alive: OS preference AND the manual toggle', () => {
+    // light-dark() resolves against the color-scheme PROPERTY, not against
+    // re-declared colours. A naive port re-states colours under the data-theme
+    // selectors, which silently does nothing: the OS path keeps working while
+    // the manual toggle is dead, so a default-settings smoke test still passes.
+    expect(tokensCss).toMatch(/:root\[data-theme="dark"\]\s*\{\s*color-scheme:\s*dark;?\s*\}/);
+    expect(tokensCss).toMatch(/:root\[data-theme="light"\]\s*\{\s*color-scheme:\s*light;?\s*\}/);
+
+    // The dead-toggle regression, asserted directly: a data-theme block must
+    // never try to drive the theme by re-declaring a palette colour.
+    const themeBlocks = tokensCss.match(/:root\[data-theme="[^"]+"\]\s*\{[^}]*\}/g) ?? [];
+    expect(themeBlocks.length).toBe(2);
+    for (const block of themeBlocks) {
+      expect(block, 'data-theme block must not re-declare colours').not.toMatch(/--[\w-]+\s*:\s*#/);
+    }
+  });
+
+  it('holds the --data-* hues OUTSIDE light-dark()', () => {
+    // These encode MEANING, not chrome: a drift ring and a metrics gradient are
+    // read as values, so they must be identical in both modes. Guards against a
+    // future edit that "completes" the tokenization.
+    for (const [token, hex] of [
+      ['--data-drift-ring', '#ffb300'],
+      ['--data-metric-lo', '#1e88e5'],
+      ['--data-metric-hi', '#ffca28'],
+    ] as const) {
+      expect(tokensCss).toMatch(new RegExp(`${token}\\s*:\\s*${hex}\\s*;`));
+      const decl = tokensCss.match(new RegExp(`${token}\\s*:[^;]+;`))![0];
+      expect(decl, `${token} must not be theme-conditional`).not.toContain('light-dark');
+    }
+  });
+
+  it('leaves NO raw colour outside tokens.css in either consumer stylesheet', () => {
+    // The enforcement mechanism: this is what stops the palette re-drifting
+    // back into two products. Scoped to colour-bearing declarations so a
+    // non-colour hex (an escape like \25B8) does not false-positive.
+    for (const [name, sheet] of [
+      ['dashboard.css', css],
+      ['viewer.css', viewerCss],
+    ] as const) {
+      expect(sheet, `${name} must declare no hex colour`).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
+      expect(sheet, `${name} must declare no rgb()/hsl() colour`).not.toMatch(/\b(?:rgba?|hsla?)\(/);
+      // Declarations, not prose: these files may still DISCUSS the theming
+      // mechanism in a comment pointing at tokens.css, but must not implement it.
+      const declarations = sheet.replace(/\/\*[\s\S]*?\*\//g, '');
+      expect(declarations, `${name} must not re-declare the palette`).not.toContain('light-dark(');
+      expect(declarations, `${name} must not own color-scheme`).not.toMatch(/^\s*color-scheme\s*:/m);
+    }
+  });
+
+  it('maps every viewer bucket viewer.css consumes onto the shared palette', () => {
+    // The bucket NAMES are the graph viewer's consumer contract. Any var() the
+    // viewer reads must resolve, or that rule silently renders unstyled.
+    const consumed = new Set(
+      [...viewerCss.matchAll(/var\((--[\w-]+)\)/g)].map((m) => m[1]),
+    );
+    expect(consumed.size).toBeGreaterThan(15);
+    for (const token of consumed) {
+      expect(tokensCss, `viewer.css consumes ${token}; tokens.css must define it`)
+        .toMatch(new RegExp(`^\\s*${token}\\s*:`, 'm'));
+    }
+  });
+
+  it('defines every token dashboard.css consumes', () => {
+    const consumed = new Set([...css.matchAll(/var\((--[\w-]+)\)/g)].map((m) => m[1]));
+    expect(consumed.size).toBeGreaterThan(5);
+    for (const token of consumed) {
+      expect(tokensCss, `dashboard.css consumes ${token}; tokens.css must define it`)
+        .toMatch(new RegExp(`^\\s*${token}\\s*:`, 'm'));
+    }
+  });
+
+  it('adds no external reference — the bundle stays offline-only', () => {
+    expect(tokensCss).not.toMatch(/https?:|\/\/[a-z]|@import|url\(/i);
   });
 });
 

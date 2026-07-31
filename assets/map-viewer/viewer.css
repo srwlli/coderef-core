@@ -1,38 +1,12 @@
 /* coderef map viewer — WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001 P2 */
-/* Tokenized to the static-html-ui standard (WO-VIEWER-CSS-STATIC-HTML-UI-TOKENIZATION-001):
-   chrome derives from the :root six-bucket catalog via var(); data-semantic hues
-   (drift ring, metrics gradient) are fixed by design in the --data-* block. */
-:root {
-  color-scheme: light dark;
-
-  /* BUCKET 1: colors — chrome, theme-aware via light-dark() (light fallback derived) */
-  --background:          light-dark(#f4f7fb, #10151c);
-  --foreground:          light-dark(#1a2733, #e6eef5);
-  --surface-toolbar:     light-dark(#eef2f8, #161d27);
-  --surface-panel:       light-dark(rgba(238, 242, 248, 0.97), rgba(22, 29, 39, 0.97));
-  --surface-strip:       light-dark(rgba(238, 242, 248, 0.94), rgba(22, 29, 39, 0.94));
-  --surface-evidence:    light-dark(#e4ebf4, #16202c);
-  --surface-input:       light-dark(#ffffff, #0d1219);
-  --surface-button:      light-dark(#e7edf5, #1d2632);
-  --hover:               light-dark(#dbe4ef, #243040);
-  --active:              light-dark(#1565c0, #0d47a1);
-  --on-active:           light-dark(#ffffff, #ffffff);
-  --text-strong:         light-dark(#3a4a5c, #cfd8e3);
-  --text-muted:          light-dark(#5c6f82, #8fa3b8);
-  --text-evidence:       light-dark(#42556a, #b8c7d9);
-  --text-evidence-head:  light-dark(#2c3d50, #d5e1ef);
-  --border:              light-dark(#d3dce7, #232d3a);
-  --border-strong:       light-dark(#c3cedb, #2b3644);
-  --border-evidence:     light-dark(#b6c2d1, #334152);
-  --accent:              light-dark(#0277bd, #4fc3f7);
-  --link:                light-dark(#1565c0, #9ecbff);
-
-  /* data / semantic encodings — fixed by design, meaningful, NOT theme chrome.
-     NO light-dark() here: a data hue must read the same in both modes. */
-  --data-drift-ring: #ffb300;   /* layer-drift ring */
-  --data-metric-lo:  #1e88e5;   /* metrics-gradient low stop  */
-  --data-metric-hi:  #ffca28;   /* metrics-gradient high stop */
-}
+/* The six-bucket token catalog this file consumes now lives in tokens.css, which
+   graph.html links FIRST, shared with the dashboard so both surfaces render from
+   ONE palette (WO-UNIFY-THE-MAP-VIEWER-UI-TOKEN-STANDARD-SO-001). The bucket
+   NAMES are unchanged — every var() call site below is untouched — but they now
+   resolve to the dashboard's warm-neutral + teal rather than this file's former
+   cool-blue. That shift is the intended change, not a regression.
+   Data-semantic hues (drift ring, metrics gradient) remain fixed by design and
+   also live in tokens.css, deliberately outside light-dark(). */
 
 * { box-sizing: border-box; }
 
