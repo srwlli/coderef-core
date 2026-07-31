@@ -32,3 +32,39 @@ coverage/
 # OS files
 .DS_Store
 Thumbs.db
+
+# ----------------------------------------------------------------------
+# Scan-scope noise exclusions (WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 P5)
+#
+# RULE (load-bearing): every pattern below must be PATH-QUALIFIED (contain
+# an interior slash, e.g. scripts/doc-gen/) or be a filename VERIFIED unique
+# to the repo root. NEVER add a bare top-level directory name (utils/,
+# tools/, examples/, assets/): shouldIgnorePath matches the bare basename
+# of every walked entry at ANY depth, so a bare "utils/" would silently
+# drop src/utils/ from the scan universe.
+# Guarded by __tests__/pipeline/coderefignore-dogfood.test.ts.
+# Comments must be OWN-LINE: the parser only strips lines starting with #,
+# never inline trailing comments.
+#
+# Dead-letter research scripts (dead-code noise rows)
+coderef/DEAD-LETTER/
+# Doc-gen tooling cluster, 8 files / 60 elements (test-linkage + dead-code noise;
+# the doc-gen bins stay on disk and runnable - foundation-docs tests spawn them)
+scripts/doc-gen/
+# Setup helper scripts (dead-code noise rows)
+scripts/setup-coderef-dir/
+# Intelligence-report generator (zero-edge tooling, 15 elements)
+scripts/generate-intelligence.js
+# Map viewer bundle, 40 elements (viewer-asset test reads it from DISK, not the graph)
+assets/map-viewer/
+# Orphaned compiled-twin pair at repo root, 0 fan-in/out (git-rm ruling -> Phase 7)
+utils/fs.ts
+utils/fs.js
+# Demo/example fixtures (hotspot + dead-code noise; the read-layer isDemoFile
+# filter in hotspots src_only STAYS - it protects scans of OTHER repos)
+examples/nextjs-api-route.ts
+# Root-unique filenames, nested-twin-verified (bare-name match is safe for these)
+demo-all-modules.ts
+create_wo.py
+# UI helper script (dead-code noise row)
+tools/coderef_ui.py
