@@ -1,6 +1,6 @@
 {
   "plan_type": "strict",
-  "goal": "Resolve 62% of Unresolved Calls via Scope-Stack Type Inference: extend scope binding pass in call-resolver.ts and scope-binding.ts for factory returns and chained calls",
+  "goal": "Reduce the honest receiver-unresolved population by dispositioning receivers whose root is provably external/builtin, and by binding the class-field and qualified-type receivers that ARE project structure. Baseline measured 2026-08-01 at HEAD 41293bc on a clean scan: 547 non-test src receiver_not_in_symbol_table edges = 67% of the entire honest unresolved population (813). The title 62% / 10,691 figure and the discovery report 5,050 figure are BOTH dead - never quote either as a target.",
   "phases": [
     {
       "phase": 1,
@@ -68,15 +68,15 @@
     },
     {
       "phase": 2,
-      "name": "Phase 2: Scope-stack type inference for factory returns and chained calls",
+      "name": "Phase 2: Chain-root, qualified-type and field-path receiver disposition",
       "hard_stop": true,
       "phase_risk": "medium",
-      "description": "Implementation phase — the WO's original single phase, renumbered when discovery was inserted ahead of it. Its task list still reflects the engine's generated candidate ranking and MUST be re-grounded from Phase 1's analysis.json before execution. Do not execute this phase until the Phase 1 STOP is answered.",
+      "description": "Implementation phase, RE-GROUNDED after Phase 1 discovery and the 2026-08-01 clean re-populate. Three findings reshaped it. (1) The original premise was measured against a polluted scan: dist-preXR contributed 3,049 of 4,753 unresolved edges, and because unresolved_src_count is computed as NOT-testOrigin with no build-output exclusion at all, the \"stratified honest\" metric carried 3,049 of its 3,862 from build output. SCOPE-001 / TKT-HZF70M closed that; resolved_of_resolvable recovered 54.62 -> 74.83. (2) The true target is 547 edges, not 10,691 or 5,050 or 2,137. (3) About 85% of that population can never be a project edge - z.string() is zod, ts.Node is the TypeScript compiler API. The work is therefore DISPOSITION first (moving edges out of the unresolved denominator into honest external/builtin) and RESOLUTION second, and acceptance is written that way. Framing this as \"resolve N edges\" guarantees a false failure verdict no matter how good the code is.",
       "tasks": [
         {
           "id": "P2-T1",
           "verb": "READ",
-          "description": "Read the defect sites confirmed by Phase 1 (analysis.json candidates), NOT the engine's original 25-candidate list. The generated list is superseded: it ranked dist-old/ build artifacts alongside source. Confirm which files actually carry the factory-return and chained-call inference gap.",
+          "description": "Read the defect sites named in analysis.json and in the lever list above. The engine original 25-candidate ranking is SUPERSEDED - it ranked dist-old/ build artifacts alongside source, the same contamination SCOPE-001 fixed.",
           "touches": [
             "src/pipeline/scope-binding.ts",
             "src/pipeline/call-resolver.ts"
@@ -85,34 +85,100 @@
         {
           "id": "P2-T2",
           "verb": "CHECK",
-          "description": "Analyze blast radius against the dependents recorded in Phase 1's analysis.json. The engine's original figure was 92 dependent files; verify that against the real candidate set rather than inheriting it, since the candidate set changed.",
-          "touches": [
-            "__tests__/pipeline/graph-ground-truth.test.ts",
-            "__tests__/map/engineering-metrics.test.ts"
-          ]
+          "description": "Capture a before-report on a fingerprinted tree (HEAD plus dirty-diff sha256) BEFORE editing. AC-6 makes the pairing, not the number, the evidence.",
+          "touches": []
         },
         {
           "id": "P2-T3",
           "verb": "WRITE",
-          "description": "Record the intended change in analysis.json: exact defect site, the minimal edit, and what is deliberately OUT of scope. Out-of-scope must explicitly name the test-DSL reclassify (REC-R1) unless the Phase 1 ruling folded it in — it is a separate lever with its own operator ruling.",
+          "description": "Implement lever 2, then lever 3. Lever 1 is SHIPPED at be2b832. Each lever lands with its own contract test authored BEFORE the delta is measured.",
           "touches": [
-            "analysis.json"
+            "src/pipeline/scope-binding.ts",
+            "src/pipeline/call-resolver.ts"
           ]
         },
         {
           "id": "P2-T4",
-          "verb": "COMMIT",
-          "description": "Commit Phase 2 through the guarded runner with explicit --paths.",
+          "verb": "CHECK",
+          "description": "Rebuild, re-populate the SAME tree, diff the report, and attribute every valid_edge_count movement edge by edge (AC-2). Confirm test_dsl_count did not fall (AC-3).",
           "touches": []
         },
         {
           "id": "P2-T5",
+          "verb": "COMMIT",
+          "description": "Commit through the guarded runner with explicit --paths. Peer-modified files stay out.",
+          "touches": []
+        },
+        {
+          "id": "P2-T6",
           "verb": "STOP",
-          "description": "Hard stop: final approval. Report yield stratified — unresolved_src_count and resolved_of_resolvable alongside the raw totals, per REC-R2. Quoting the raw headline alone overstates the production blind spot by roughly 19x.",
+          "description": "Hard stop: final approval. Report stratified per AC-5 and name the tree fingerprint. Quoting the raw headline alone overstates the production blind spot by roughly 19x.",
           "touches": []
         }
       ],
-      "stub_ref": "STUB-3B88N1"
+      "stub_ref": "STUB-3B88N1",
+      "measured_baseline": {
+        "measured_at": "2026-08-01",
+        "head": "41293bc908a7926c143f8617062fca6c95087630",
+        "tree_note": "working tree carried 10 peer-modified src files (semantic-header comment blocks only, invisible to call resolution) plus 5 peer test files; dirty-diff sha256 b1458ab47655805d0fe17512109f3abdcda2057ba1cea716a6a64a0be5d6e869",
+        "unresolved_count": 1704,
+        "unresolved_src_count": 813,
+        "receiver_not_in_symbol_table_nontest_src": 547,
+        "share_of_honest_unresolved_pct": 67.3,
+        "resolved_of_resolvable": 74.83,
+        "receiver_shape_census": {
+          "C_bare_identifier": 298,
+          "A1_call_expression_chain": 173,
+          "A2_new_expression": 43,
+          "B_dotted_path": 33
+        },
+        "stale_figures_DO_NOT_USE": [
+          "62%",
+          "10691",
+          "5050",
+          "2137",
+          "1788",
+          "1203"
+        ]
+      },
+      "acceptance_criteria": [
+        "AC-1 (disposition): unresolved_src_count falls, and every edge that leaves it is accounted for as external, builtin, or resolved. No edge may simply disappear.",
+        "AC-2 (no fabrication): the change adds ZERO resolved edges arising from resolver behaviour. Any valid_edge_count increase must be attributable, edge by edge, to new call sites introduced by the change itself.",
+        "AC-3 (test_dsl held): test_dsl_count does not fall. The chain root of expect(x) is a vitest import and applyTestDslReclassify fires only on unresolved results, so an ungated widening silently moves about 6.5k edges out of test_dsl with the suite still green.",
+        "AC-4 (refusal bias): receivers whose root is not provable (ternary, nullish-coalesce, second bare identifier) stay unresolved. Guessing a root to book a metric win is a defect.",
+        "AC-5 (reporting): report stratified - unresolved_src_count and resolved_of_resolvable alongside raw totals (REC-R2), and state the tree fingerprint the run was measured on.",
+        "AC-6 (attribution): the before/after pair must be measured on the SAME tree. A number measured across a peer edit or a build-tree rename is not evidence."
+      ],
+      "levers": [
+        {
+          "id": "lever-1",
+          "name": "chain-root receiver disposition",
+          "target_edges": 216,
+          "actual_edges": 214,
+          "status": "SHIPPED",
+          "commit": "be2b832",
+          "note": "call-expression and new-expression chains fed to the existing 3.5/3.7 branches. unresolved_src_count 813 -> 599, resolved_of_resolvable 74.83 -> 76.81."
+        },
+        {
+          "id": "lever-2",
+          "name": "qualified-type annotations bind to external",
+          "target_edges": 160,
+          "status": "PENDING",
+          "note": "usableAnnotationType (scope-binding.ts:106) matches a bare PascalCase identifier only, so ts.Node, fs.Dirent and http.Server are all rejected and (node: ts.Node) produces NO binding. Accept Root.Member and disposition external when Root is an external import. Covers node/entry/res/child/server/worker/spec."
+        },
+        {
+          "id": "lever-3",
+          "name": "this.<field> receiver binding (the real FU-2 field-path walk)",
+          "target_edges": 33,
+          "status": "PENDING",
+          "note": "Bind declared class fields (private index: X) so branch 3 own-methods plus heritage lookup fires. SMALLEST but the only lever producing new PROJECT structure - this and the h-object slice are the ones that make the graph better rather than only making the metric honest."
+        }
+      ],
+      "regrounded": {
+        "at": "2026-08-01",
+        "by": "Phase 1 discovery plus clean re-populate",
+        "supersedes": "the 62% / 10,691-edge premise carried in goal_original and the WO title"
+      }
     }
   ],
   "hard_stops": [
@@ -157,5 +223,6 @@
   "workorder_id": "WO-RESOLVE-62-OF-UNRESOLVED-CALLS-VIA-SCOPE-STACK-001",
   "feature_name": "resolve-62-of-unresolved-calls-via-scope-stack",
   "created": "2026-08-01T12:31:00.991692+00:00",
-  "plan_type_rationale": "Category feature maps to strict"
+  "plan_type_rationale": "Category feature maps to strict",
+  "goal_original": "Resolve 62% of Unresolved Calls via Scope-Stack Type Inference: extend scope binding pass in call-resolver.ts and scope-binding.ts for factory returns and chained calls"
 }
