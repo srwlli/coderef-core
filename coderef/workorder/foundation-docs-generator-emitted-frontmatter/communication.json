@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "implementing",
+  "status": "checkpoint_ready",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\foundation-docs-generator-emitted-frontmatter\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\foundation-docs-generator-emitted-frontmatter\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\foundation-docs-generator-emitted-frontmatter\\analysis.json",
@@ -50,15 +50,50 @@
       "event": "phase_transition_writer_noop",
       "note": "write-phase-transition.cjs resolves ASSISTANT root only (coderef-core: anchor gap, KZ-01KYY49T class) — transitions hand-written per docs-to-graph precedent",
       "at": "2026-08-01T09:44:57.936Z"
+    },
+    {
+      "event": "design_note",
+      "summary": "Additive DocFact.documentsPaths (list-form documents:) unioned with the scalar via new docTargets() seam; sheet+report lanes gain it too — list-form claims were previously parsed then silently dropped. Foundation docStatus stays lane-decided generated regardless of frontmatter status (poison-pill tested).",
+      "at": "2026-08-01T09:56:26.115Z"
+    },
+    {
+      "event": "verify_gate",
+      "phase": 1,
+      "targeted_tests": "doc-ingest 18/18",
+      "full_suite": "2515 passed / 26 skipped / 0 failed (vitest exit 0, runner output)",
+      "graph": "documents edges 14->54 (foundation +40, all resolved), 0 unresolved, 0 dangling, documented files 14->49, validate-docs exit 0 (23 pre-existing anchor warnings), enhancer idempotence proven (2nd run zero diff)",
+      "at": "2026-08-01T09:56:26.115Z"
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "note": "ran as P1-T8 (generators + enhance + meta-json + validate-docs)",
+      "at": "2026-08-01T09:56:26.115Z"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "fe02d25",
+      "verdict": "PASS",
+      "at": "2026-08-01T09:56:26.115Z",
+      "note": "hand-written: write-phase-transition.cjs no-ops on cross-project WO dirs (coderef-core: anchor gap, KZ-01KYY49T class)"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
       "timestamp": "2026-08-01T09:37:12.243935+00:00",
       "event": "creation",
       "message": "Workorder created from stub STUB-VDZNPF"
+    },
+    {
+      "timestamp": "2026-08-01T09:56:26.115Z",
+      "event": "workorder_complete",
+      "message": "Phase 1/1 complete: commit fe02d25 (22 files) pushed+verified. Frontmatter emission live on all 8 foundation docs; foundation documents edges in graph; REC-005 fixed. Awaiting /close-workorder."
     }
   ],
   "required_skills": [

@@ -61,6 +61,20 @@ node scripts/doc-gen/validate-docs.js [--strict]
 
 ---
 
+## Frontmatter Emission (WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001)
+
+Every generator emits a YAML frontmatter block (`foundationFrontmatter()` in `utils.js`):
+
+- `status: generated` always — generated prose never outranks reviewed resource sheets in retrieval ranking, but the docs now bear graph edges.
+- `documents:` — mechanically-derived file lists (HOTSPOTS: its analyzed files; EXPORTS: top export-bearing files). Each entry becomes a `documents` edge (`@Doc` → `@File`) on the next scan. Caps are disclosed via `documents_truncated:`.
+- `related_files:` — non-edge-bearing context (INDEX/RELATIONSHIPS rankings; enhanced docs derive from their UUID anchors).
+- No timestamps inside the block — regen with unchanged inputs is byte-identical.
+- `enhance-existing-docs.js` UPSERTS its block idempotently (it patches in place); re-running is byte-stable.
+
+Hand-editing frontmatter on these files is futile — the next regen overwrites it.
+
+---
+
 ## Generated Documentation
 
 ### New Auto-Generated Docs
