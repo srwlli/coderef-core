@@ -1,0 +1,122 @@
+{
+  "plan_type": "strict",
+  "goal": "GX-002 scope-stack receiver type inference: build a local-variable type-inference pass on top of call-resolver.ts so method calls on locals and prototypes (x.toFixed(), element.slice()) resolve deterministically - a scope-chain binding table tracking const x = new Foo() so x.method() resolves to Foo.method(). Targets the receiver_not_in_symbol_table class: ~62% (10,691) of coderef-core's ~17,280 unresolved edges; current resolution rate 22.32%. Program: core-improvements-731 PLAN.md Option A (GX-002 first, ruled). Honors the 2026-07-09 js_prototype_member builtin-reclassify ruling; both adjacency indexes + incremental parity apply",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Read the receiver-resolution path end-to-end and confirm exactly where locals fail: call-resolver.ts resolution ladder, the symbol-table construction it queries, field-index.ts, and the graph-builder call-edge emission incl. the 2026-07-09 js_prototype_member builtin-reclassify site (ordering must be preserved). Record the failure taxonomy of receiver_not_in_symbol_table edges (local const/let bindings, params, this, destructuring).",
+          "touches": [
+            "src/pipeline/call-resolver.ts",
+            "src/pipeline/field-index.ts",
+            "src/pipeline/graph-builder.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "CHECK",
+          "description": "Capture the BEFORE baseline explicitly (KZ-01KYTSCY): validation_status resolution_rate (22.32%), total unresolved (18069), and the receiver_not_in_symbol_table count (~10691) broken down by reason; persist the numbers in analysis.json so the after-diff is a real diff, not a recollection.",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "WRITE",
+          "description": "Record the design in analysis.json: a scope-chain binding table (scope-stack) tracking local variable types from `const x = new Foo()`, typed params, and annotated declarations, consulted by the resolution ladder BEFORE the builtin/js_prototype_member reclassify. State what is deliberately OUT of scope (cross-file dataflow, generics narrowing, union receivers).",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "WRITE",
+          "description": "Implement the scope-stack binding pass as a new module (e.g. src/pipeline/scope-binding.ts): per-file scope tree with variable->type bindings from new-expressions, annotations, and typed params; pure and deterministic; exported API consumed by call-resolver.",
+          "touches": [
+            "src/pipeline/scope-binding.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "Wire the binding table into call-resolver.ts: on receiver lookup miss, consult the scope-stack binding before falling through to js_prototype_member/builtin reclassify, resolving x.method() to Foo.method() when the binding is unambiguous; emit resolved-call evidence with scopePath.",
+          "touches": [
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "CHECK",
+          "description": "Incremental parity: a full scan and a --incremental rescan of the same tree must produce identical resolution results (edge counts and statuses); also confirm no new edge KIND was introduced (so the two adjacency indexes need no change) - if one was, both canonical-graph.ts and cli/mcp/graph-tools.ts must learn it in this same phase.",
+          "touches": [
+            "src/query/canonical-graph.ts",
+            "src/cli/mcp/graph-tools.ts"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "TEST",
+          "description": "Author unit tests for the binding pass (new-expr binding, param typing, shadowing, reassignment, miss->fallthrough) and run tests_for_change plus the full suite; suite must be green (confirm actual counts - vitest startup crash reads as fail, verify numbers).",
+          "touches": [
+            "__tests__/pipeline/scope-binding.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "CHECK",
+          "description": "Capture the AFTER metrics on a fresh self-scan and diff against the P1-T2 baseline: resolution_rate delta, receiver_not_in_symbol_table count delta, zero regressions in previously-resolved edges (scip_resolution_delta as the independent cross-check); persist the diff in analysis.json.",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P1-T9",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1 with the metrics delta in the commit body.",
+          "touches": []
+        },
+        {
+          "id": "P1-T10",
+          "verb": "STOP",
+          "description": "Hard stop: report the before/after resolution numbers to the operator for final approval before close.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-4PTW4G"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": true,
+      "reason": "strict phase gate",
+      "approved_by": "operator directive 2026-08-01 (they are working that, we own the one here -> execute GX-002)"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T064642Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-GX-002-SCOPE-STACK-RECEIVER-TYPE-INFERENCE-BUILD-001",
+  "feature_name": "gx-002-scope-stack-receiver-type-inference-build",
+  "created": "2026-08-01T06:46:32.258471+00:00",
+  "plan_type_rationale": "Category feature maps to strict"
+}

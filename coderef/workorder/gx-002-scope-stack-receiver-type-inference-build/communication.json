@@ -1,0 +1,74 @@
+{
+  "workorder_id": "WO-GX-002-SCOPE-STACK-RECEIVER-TYPE-INFERENCE-BUILD-001",
+  "feature_name": "gx-002-scope-stack-receiver-type-inference-build",
+  "created": "2026-08-01T06:46:32.258471+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-002-scope-stack-receiver-type-inference-build\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-002-scope-stack-receiver-type-inference-build\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-002-scope-stack-receiver-type-inference-build\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-4PTW4G",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-4PTW4G",
+      "plan_type": "strict",
+      "timestamp": "2026-08-01T06:46:32.258471+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 10,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/b2c4b05d-34f6-46c3-bf81-a42459146225/scratchpad/gx-002-tasks.json",
+      "at": "2026-08-01T06:46:32.258471+00:00"
+    },
+    {
+      "event": "hard_stop_approved",
+      "phase": 1,
+      "timestamp": "2026-08-01T07:05:00Z",
+      "approved_by": "operator",
+      "note": "phase-1 strict gate approved via operator execute directive"
+    },
+    {
+      "event": "plan_deviation",
+      "task": "P1-T6",
+      "timestamp": "2026-08-01T07:55:00Z",
+      "deviation": "Incremental-vs-full parity could not be proven end-to-end: the incremental graph writeback re-keys changed files ABSOLUTE while incremental-facts.json byFile is RELATIVE-keyed, so eviction misses, node_id_uniqueness duplicates trip the fail-closed output validator (exit 1, graph.json not written).",
+      "evidence": "Reproduced on a CLEAN store with a single changed file (src/pipeline/call-resolver.ts -> store gains C:-absolute row) AND with an unrelated unchanged file (control). Orthogonal to GX-002: no incremental/eviction code touched.",
+      "classification": "pre-existing defect, STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 class (AC-09 dynamic gap)",
+      "parity_argument": "Resolution-logic parity holds by construction: both orchestrator entry points (full line ~298, incremental line ~569) call the same pure resolveCalls(state); GX-002 changed only code inside that seam. No new edge KIND introduced (resolved-call evidence only) - adjacency indexes untouched, verified."
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T06:46:32.258471+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-4PTW4G"
+    },
+    {
+      "at": "2026-08-01T06:52:13Z",
+      "by": "CODEREF-CORE",
+      "event": "alignment_gate",
+      "verdict": "warn",
+      "reason": "alignment_missing"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

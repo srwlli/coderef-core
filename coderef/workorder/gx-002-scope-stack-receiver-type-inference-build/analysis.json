@@ -1,0 +1,108 @@
+{
+  "workorder_id": "WO-GX-002-SCOPE-STACK-RECEIVER-TYPE-INFERENCE-BUILD-001",
+  "feature_name": "gx-002-scope-stack-receiver-type-inference-build",
+  "analysis_authored_at": "2026-08-01T06:46:32.258471+00:00",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "risk": "Incremental graph writeback re-keys changed files ABSOLUTE vs the relative-keyed incremental-facts byFile store; eviction misses, node_id_uniqueness dupes, output validator fail-closes (graph not written). Pre-existing (reproduced clean-store with unrelated file); STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 class."
+    }
+  ],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-GX002-A",
+      "decision": "Extend the EXISTING buildNewInitializerMap brace-tracking pass into a scope-binding module rather than building parallel machinery",
+      "rationale": "classifyMethodCall branch 3 + NewInitializerMap already implement the const x = new Y() scope-stack pattern (module-private type, safe to reshape). Gaps found in T1: (1) class METHOD bodies never get scope frames, so bindings inside methods are silently dropped - the largest coverage hole; (2) no let/var; (3) no TS type-annotated declarations (const x: Foo); (4) no typed parameters (function f(x: Foo))."
+    },
+    {
+      "id": "DR-GX002-B",
+      "decision": "Bindings carry provenance kind (new | annotation | param); resolution strictness varies by kind",
+      "rationale": "new-expression bindings are PROVEN instances: own-methods miss returns unresolved (method_not_in_class_own_methods), current semantics. annotation/param bindings may name interfaces or supertypes: own-methods miss FALLS THROUGH to the field-index ACG tail instead of returning, so no existing provisional resolution is lost (no-regress guard). Successful annotation/param matches resolve at FULL confidence with reason scope_binding_annotation / scope_binding_param - the annotation is declared truth modulo subtyping."
+    },
+    {
+      "id": "DR-GX002-C",
+      "decision": "OUT OF SCOPE (explicit)",
+      "rationale": "cross-file dataflow inference; factory returns (const x = makeY()); reassignment tracking (x = new Z() after decl - first binding wins per scope, existing guardrail 2); generics narrowing (Foo<T> strips to Foo); union/intersection annotations (skipped); interface member resolution (interfaces are single elements, not method-bearing); destructuring; Python (JS/TS only, language-guarded like all prior reclassify work). No new edge KIND is introduced - resolved-call evidence only, so adjacency indexes need no change."
+    }
+  ],
+  "baseline_metrics_before": {
+    "captured_at": "2026-08-01T07:20:00Z",
+    "source": ".coderef/graph.json self-scan generated 2026-08-01T01:54Z",
+    "total_edges": 43606,
+    "status_counts": {
+      "external": 318,
+      "builtin": 13436,
+      "resolved": 9643,
+      "typeOnly": 286,
+      "unresolved": 18176,
+      "dynamic": 45,
+      "stale": 1,
+      "ambiguous": 1701
+    },
+    "resolved_rate_pct": 22.11,
+    "receiver_not_in_symbol_table": 7699,
+    "callee_not_in_symbol_table": 10392,
+    "field_based_acg_ambiguous": 1447,
+    "note": "PLAN.md cited 10,691 receiver_not_in_symbol_table from an older scan; ACG field-index + js_prototype_member reclassify (shipped since) already reduced it to 7,699. GX-002 targets this remaining class. callee_not_in_symbol_table (bare calls) is OUT of GX-002 scope."
+  },
+  "after_metrics": {
+    "captured_at": "2026-08-01T08:05:00Z",
+    "source": "fresh full self-scan, clean dist + clean incremental store (reproduced twice, edge-multiset hash 077731ff2ce8eed8)",
+    "total_edges": 43832,
+    "status_counts": {
+      "external": 319,
+      "builtin": 13457,
+      "resolved": 9749,
+      "typeOnly": 290,
+      "unresolved": 18249,
+      "dynamic": 45,
+      "stale": 1,
+      "ambiguous": 1722
+    },
+    "resolved_rate_pct": 22.24,
+    "receiver_not_in_symbol_table": 7739,
+    "method_not_in_class_own_methods": 44,
+    "scope_binding_resolutions": {
+      "scope_binding_param": 10,
+      "scope_binding_annotation": 4
+    },
+    "field_based_acg_resolved": 1241
+  },
+  "metrics_diff": {
+    "resolved_rate": "22.11% -> 22.24% (+0.13pp)",
+    "resolved_count": "9,643 -> 9,749 (+106; includes ~90 edges from the two NEW files added by this WO)",
+    "direct_scope_binding_wins": 14,
+    "reason_sharpening": "method_not_in_class_own_methods 63 -> 44 (fall-through resolves some), proven-instance misses now carry the precise reason",
+    "churn_caveat": "total edges +226 from the new module + test file; the test file contains DELIBERATE unresolvable fixture calls (Foo/Bar/Baz) that inflate raw unresolved counts (+40 receiver_not_in_symbol_table is largely self-inflicted fixtures)",
+    "honest_assessment": "PLAN.md framed this class at 62%/10,691 from a stale scan; the live class was 7,699 and is dominated by receiver shapes scope-binding CANNOT address by design: dotted receivers 5,050 (65% - expect(result), vi.fn(), z.string(), new Date()) and test-framework vocabulary. Local class-instance receivers - the Stack-Graphs pattern - are structurally rare in this repo. The pass ships correct and tested; its ceiling HERE is low, and its value scales with codebases that use typed locals over factories/namespaces."
+  },
+  "follow_up_candidates": [
+    {
+      "id": "FU-1",
+      "size": "M",
+      "desc": "Test-framework receiver vocabulary reclassify: expect(...)/vi/vi.fn() receivers dominate the remaining tail (expect* alone ~700+ edges, vi ~250). A vitest/jest matcher-vocabulary builtin reclassify (language- and test-file-guarded) would cut receiver_not_in_symbol_table by ~15-20% honestly."
+    },
+    {
+      "id": "FU-2",
+      "size": "L",
+      "desc": "Dotted-receiver field-path resolution (this.cache.get, obj.prop.method): 5,050 of 7,739 are dotted - needs member-chain type walking, the true Stack-Graphs frontier."
+    },
+    {
+      "id": "FU-3",
+      "size": "M",
+      "desc": "Heritage-aware own-methods lookup: branch 3 is inheritance-blind (guardrail 3); state.heritage exists since genre-features P5 - threading it into classifyMethodCall would upgrade ACG-provisional inherited-method hits to full-confidence resolved."
+    },
+    {
+      "id": "FU-4",
+      "size": "S",
+      "desc": "Fix incremental writeback path keying (absolute vs relative byFile) - repro recipe in communication.json plan_deviation event; pairs with STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001."
+    }
+  ]
+}
