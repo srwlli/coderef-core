@@ -1,113 +1,100 @@
-# CodeRef System — Scripts Resource Sheet
-
-**Last Updated:** 2026-01-03  
-**Status:** Authoritative Script Inventory  
-**Total Scripts:** 65+ across 10 categories
-
+---
+agent: Claude Fable 5
+date: 2026-08-01
+task: STUB-CC9094
+subject: scripts
+parent_project: coderef-core
+category: CLI
+version: 1.0.0
+related_files:
+  - scripts/README.md
+  - scripts/doc-gen/README.md
+  - scripts/doc-gen/utils.js
+  - scripts/doc-gen/generate-index-md.js
+  - scripts/doc-gen/generate-exports-md.js
+  - scripts/doc-gen/generate-hotspots-md.js
+  - scripts/doc-gen/generate-relationships-md.js
+  - scripts/doc-gen/enhance-existing-docs.js
+  - scripts/doc-gen/validate-docs.js
+  - scripts/doc-gen/generate-meta-json.js
+  - scripts/scan-cli/scan.cjs
+  - scripts/setup-coderef-dir/setup_coderef_dirs.py
+  - scripts/bench-index-parse.mjs
+  - scripts/check-header-coverage.mjs
+  - scripts/deduplicate-headers.mjs
+  - scripts/fix-stale-exports-v3.mjs
+  - scripts/generate-intelligence.js
+  - scripts/real-semantic-dryrun.mjs
+  - scripts/test-semantic-dryrun.mjs
+status: approved
 ---
 
-## 1. Structure Creators
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `create-coderef-structure.py` | Create `coderef/` directory structure (workorder, archived, etc.) | Orchestrator | `...\assistant\scripts\` |
-| `scan-all.py` | Generate minimal `.coderef/` structure (index.json, context.md) | System | `...\coderef-system\scripts\` |
-| `populate-coderef.py` | Generate complete `.coderef/` structure (reports, diagrams, exports) | System | `...\coderef-system\scripts\` |
+# scripts Resource Sheet
 
-## 2. Documentation Generators
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `generate_docs.py` | Generate foundation docs from `.coderef/` data | System | `...\coderef-system\.coderef\` |
-| `foundation_generator.py` | Generate foundation docs (traditional source-reading approach) | Workflow/Docs | `...\coderef-workflow\generators\` |
-| `coderef_foundation_generator.py` | Generate foundation docs (hybrid approach - preferred) | Workflow/Docs | `...\coderef-workflow\generators\` |
-| `enhance-standards.py` | Generate UI/behavior/UX standards using `.coderef/` data | System | `...\coderef-system\scripts\` |
-| `standards_generator.py` | Generate standards via MCP tool integration | Workflow | `...\coderef-workflow\generators\` |
-| `diagram-generator.py` | Generate visual diagrams (Mermaid/DOT) | System | `...\coderef-system\scripts\` |
-| `mermaid_formatter.py` | Format Mermaid diagrams | Workflow | `...\coderef-workflow\generators\` |
+## Executive Summary
 
-## 3. Data Processing
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `parse_coderef_data.py` | Preprocess large index files for optimization | System | `...\coderef-system\packages\` |
-| `extract-context.py` | Extract context from files for analysis | System | `...\coderef-system\scripts\` |
-| `extractors.py` | Extract data from existing documentation | Docs | `...\coderef-docs\` |
-| `export_processor.py` | Export data to JSON/JSON-LD/Mermaid formats | Context | `...\coderef-context\processors\` |
+`scripts/` is the maintenance and one-off tooling directory for `@coderef/core`. It is explicitly **not** the package's shipped surface — that is `src/cli/` plus the `bin` map in `package.json`; nothing under `scripts/` is published and nothing is imported by `src/` [ref](scripts/README.md:3). The directory holds three tool families: the foundation-doc generator suite (`doc-gen/`), scan/bootstrap helpers (`scan-cli/`, `setup-coderef-dir/`), and loose repo-maintenance scripts (header enforcement, stale-export repair, benchmarks, semantic-writer rehearsal harnesses) [ref](scripts/README.md:13).
 
-## 4. Validation & Quality
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `validate-docs.py` | Validate documentation (completeness, links, diagrams) | System | `...\coderef-system\scripts\` |
-| `validate-stubs.py` | Validate stub.json files against schema | Orchestrator | `...\assistant\` |
-| `plan_validator.py` | Validate implementation plans (0-100 scoring) | Workflow | `...\coderef-workflow\generators\` |
-| `plan_format_validator.py` | Validate plan JSON structure | Workflow | `...\coderef-workflow\helpers\` |
-| `schema_validator.py` | Validate JSON schemas and UDS enforcement | Workflow | `...\coderef-workflow\helpers\` |
-| `validation.py` | General cross-cutting validation helpers | Workflow | `...\coderef-workflow\helpers\` |
+## Audience and Intent
 
-## 5. Planning & Workflow
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `planning_analyzer.py` | Analyze project for planning (foundation/standards discovery) | Workflow | `...\coderef-workflow\generators\` |
-| `planning_generator.py` | Generate 10-section implementation plans | Workflow | `...\coderef-workflow\generators\` |
-| `quick_plan_generator.py` | Rapid plan creation for todo lists | Personas | `...\coderef-personas\src\generators\` |
-| `interactive_plan_executor.py` | Execute plans step-by-step interactively | Personas | `...\coderef-personas\src\executors\` |
-| `plan_execution_tracker.py` | Track plan execution progress and status | Personas | `...\coderef-personas\src\trackers\` |
-| `changelog_generator.py` | Auto-detect git changes for changelog entries | Workflow | `...\coderef-workflow\generators\` |
-| `quickref_generator.py` | Interactive guide generation (interview-based) | Workflow | `...\coderef-workflow\generators\` |
-| `handoff_generator.py` | Generate agent handoff context (claude.md) | Workflow | `...\coderef-workflow\generators\` |
-| `risk_generator.py` | Risk assessment across 5 dimensions | Workflow | `...\coderef-workflow\generators\` |
-| `audit_generator.py` | Audit plans in workorder/ directory | Workflow | `...\coderef-workflow\generators\` |
-| `consistency_checker.py` | Check code against established standards | Workflow | `...\coderef-workflow\generators\` |
-| `review_formatter.py` | Generate plan review reports | Workflow | `...\coderef-workflow\generators\` |
-| `features_inventory_generator.py` | Generate feature inventory from workorder/archived | Workflow | `...\coderef-workflow\generators\` |
-| `todo_list_generator.py` | Generate TodoWrite task lists from plans | Personas | `...\coderef-personas\src\generators\` |
+For maintainers of coderef-core who need to (a) regenerate or validate the foundation docs, (b) run repo-hygiene passes (semantic-header coverage, stale `@exports` repair, duplicate-header cleanup), or (c) bootstrap a `.coderef/` tree in another repo. Open this sheet to find which script owns a job, its invocation contract, and the safety conventions (dry-run-first, no cloud keys) that govern anything added here. The per-script authority is `scripts/README.md`, whose index is grounded in each script's own docstring [ref](scripts/README.md:10).
 
-## 6. Personas & Agents
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `persona_manager.py` | Persona activation and management | Personas | `...\coderef-personas\src\` |
-| `persona_generator.py` | Create custom personas with guided workflow | Personas | `...\coderef-personas\src\` |
+## Architecture / Behavior
 
-## 7. Testing
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `test_runner.py` | Run tests and analyze results | Testing | `...\coderef-testing\src\` |
-| `framework_detector.py` | Detect testing framework (pytest/jest/vitest/etc) | Testing | `...\coderef-testing\src\` |
-| `result_analyzer.py` | Parse test results and coverage data | Testing | `...\coderef-testing\src\` |
-| `proof_generator.py` | Generate completion proof and deliverables | Testing | `...\coderef-testing\src\` |
-| `test_scan_all.py` | Regression testing for scan-all.py | System | `...\coderef-system\scripts\` |
+Three subdirectories and a set of loose scripts:
 
-## 8. Build & Utilities
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `build-exe.py` | Build standalone executable via PyInstaller | System | `...\coderef-system\scripts\` |
-| `update_lloyd.py` | Update Lloyd persona definitions | Personas | `...\coderef-personas\build_scripts\` |
-| `build_phase2.py` / `phase3` | Persona build pipeline phases | Personas | `...\coderef-personas\build_scripts\` |
-| `create_research_scout.py` | Create research scout persona (STUB-024) | Personas | `...\coderef-personas\build_scripts\` |
-| `scan-emojis.py` | Scan for emoji usage in codebase | System | `...\coderef-system\scripts\` |
-| `remove-emojis.py` | Remove emoji characters from documentation | Orchestrator | `...\assistant\scripts\` |
-| `scan-gui.py` | Desktop UI wrapper for scan-all.py | System | `...\coderef-system\scripts\` |
-| `scan-all-fixed.py` | Improved/Bugfix version of scan-all.py | System | `...\coderef-system\scripts\` |
-| `cli_utils.py` | CLI helper utilities for documentation tools | Docs | `...\coderef-docs\` |
+- **`doc-gen/`** — the foundation-doc pipeline: four generators (`generate-index-md.js`, `generate-exports-md.js`, `generate-hotspots-md.js`, `generate-relationships-md.js`), the enhancer (`enhance-existing-docs.js`), the meta emitter (`generate-meta-json.js`), and the CI gate (`validate-docs.js`). They read `.coderef/index.json`, `graph.json`, and `context.json` and write `coderef/foundation-docs/*.md` [ref](scripts/doc-gen/README.md:54). Since WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001, every generator emits a YAML frontmatter block via `foundationFrontmatter()` in `utils.js` (`status: generated`, edge-bearing `documents:` lists, timestamp-free for byte-stable regen); the enhancer upserts its block idempotently [ref](scripts/doc-gen/README.md:64). `coderef/foundation-docs/INDEX.md` is DERIVED — regenerate it here, never hand-edit; the generator/verify pair is declared in the `derived-index` mapping table [ref](scripts/README.md:17).
+- **`scan-cli/`** — `scan.cjs`, a CLI wrapper around the TypeScript scanner: scans a project directory and prints element statistics (`node scan.cjs <project_path>`) [ref](scripts/scan-cli/scan.cjs:4).
+- **`setup-coderef-dir/`** — `setup_coderef_dirs.py`, bootstraps a `.coderef/` tree in a target repo [ref](scripts/README.md:19).
 
-## 9. MCP Server Core
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `server.py (context)` | Code Intelligence MCP server (13 tools) | Context | `...\coderef-context\` |
-| `server.py (workflow)`| Planning & Orchestration MCP server (28 tools) | Workflow | `...\coderef-workflow\` |
-| `server.py (docs)` | Documentation MCP server (12 tools) | Docs | `...\coderef-docs\` |
-| `server.py (personas)`| Expert Agents MCP server (8 tools) | Personas | `...\coderef-personas\` |
-| `server.py (testing)` | Test Automation MCP server (4 tools) | Testing | `...\coderef-testing\` |
-| `tool_handlers.py` | Core implementations for workflow MCP tools | Workflow | `...\coderef-workflow\` |
+Loose scripts [ref](scripts/README.md:21):
 
-## 10. Helpers & Support
-| Script | Description | Component | Location |
-|:-------|:------------|:----------|:---------|
-| `base_generator.py` | Base class for all generator scripts | Workflow | `...\coderef-workflow\generators\` |
-| `handler_helpers.py` | MCP tool handler helper functions | Workflow | `...\coderef-workflow\helpers\` |
-| `handler_decorators.py` | Error handling/logging decorators | Workflow | `...\coderef-workflow\helpers\` |
-| `uds_helpers.py` | Universal Documentation Standards (UDS) helpers | Workflow | `...\coderef-workflow\helpers\` |
-| `logger_config.py` | Centralized logging configuration | Workflow | `...\coderef-workflow\helpers\` |
-| `error_responses.py` | Standardized error response handling | Workflow | `...\coderef-workflow\helpers\` |
-| `constants.py` | Shared constants and configuration enums | Workflow | `...\coderef-workflow\helpers\` |
+| Script | Purpose |
+|---|---|
+| `bench-index-parse.mjs` | Parse-throughput benchmark over `.coderef/index.json` |
+| `check-header-coverage.mjs` | Pre-commit-hook backend: fails if a source file lacks a canonical `@coderef-semantic` header — the per-file PREVENTION layer, backstopped by the rag-index coverage floor [ref](scripts/check-header-coverage.mjs:12) |
+| `deduplicate-headers.mjs` | Removes duplicate `@coderef-semantic` blocks |
+| `fix-stale-exports.mjs` / `-v2` / `-v3` | Stale-`@exports` repair; v3 is current (uses the built tree-sitter extractor — the same extraction path as the orchestrator [ref](scripts/fix-stale-exports-v3.mjs:4)); v1/v2 kept for provenance |
+| `generate-intelligence.js` | Builds the intelligence artifacts consumed by the dashboard |
+| `real-semantic-dryrun.mjs`, `test-semantic-dryrun.mjs` | Rehearsal harnesses for the semantic-header writer — run before any `--apply` |
 
----
-**Note:** All paths are relative to the user's home or project root as indicated in the source reference.
+## Source of Truth
+
+- `scripts/README.md` is the directory's authoritative index; every entry is grounded in the script's own docstring or header, by rule [ref](scripts/README.md:10).
+- For `doc-gen/`: `scripts/doc-gen/README.md` documents the generator suite, data sources, and the frontmatter-emission contract [ref](scripts/doc-gen/README.md:64).
+- The generated docs themselves are derived artifacts: hand-editing foundation-doc frontmatter is futile — the next regen overwrites it [ref](scripts/doc-gen/README.md:74).
+- **Graph coverage note:** `scripts/doc-gen/`, `scripts/setup-coderef-dir/`, and `scripts/generate-intelligence.js` are deliberately excluded from the `.coderef` scan via `.coderefignore` (dead-code noise rows) [ref](.coderefignore:53). This sheet therefore carries `related_files` only — a `documents:` claim to a scan-excluded path would mint only an unresolved row.
+
+## Public API / Contracts
+
+None published — no `scripts/` entry appears in the package `bin` map, and `src/` never imports from here [ref](scripts/README.md:3). The operative contracts are invocation contracts:
+
+- `node scripts/doc-gen/generate-*.js` then `node scripts/doc-gen/validate-docs.js [--strict]` — regenerate + CI-gate the foundation docs; validator exits 0/1 [ref](scripts/doc-gen/README.md:47).
+- `node scripts/scan-cli/scan.cjs <project_path>` — scan and report element statistics [ref](scripts/scan-cli/scan.cjs:9).
+- `node scripts/check-header-coverage.mjs <files...>` — non-zero exit on any header-less source file (pre-commit backend) [ref](scripts/check-header-coverage.mjs:12).
+- Mutating scripts (`fix-stale-exports-v3.mjs`, semantic-writer passes) follow the rehearse-before-write convention: a dry-run path exists and `--apply` is the exception, not the default [ref](scripts/README.md:34).
+
+## Dependencies
+
+- **Internal (data):** `.coderef/index.json`, `.coderef/graph.json`, `.coderef/context.json` — the doc-gen suite and benchmarks read these; regenerate with populate/reindex before running against a stale tree [ref](scripts/doc-gen/README.md:54).
+- **Internal (code):** `fix-stale-exports-v3.mjs` imports the **built** extractor from `dist/src/pipeline/extractors/relationship-extractor.js` [ref](scripts/fix-stale-exports-v3.mjs:16) — it requires a fresh `npm run build` first.
+- **External:** Node stdlib (`fs`, `path`); `tree-sitter` + `tree-sitter-typescript` for the AST-based repair pass [ref](scripts/fix-stale-exports-v3.mjs:17); Python 3 for `setup_coderef_dirs.py`.
+- **Prohibited:** cloud LLM keys — this project is local-Ollama-only; no script may require an OpenAI/Anthropic key to run [ref](scripts/README.md:36).
+
+## Risks & Edge Cases
+
+- **Stale-dist trap:** scripts that import from `dist/` (fix-stale-exports-v3) silently operate on old logic if the build is stale — rebuild before any `--apply`.
+- **Scan exclusion is intentional but invisible:** graph queries return nothing for most of `scripts/` — that is `.coderefignore` policy [ref](.coderefignore:49), not missing data; do not "fix" it by re-including without revisiting the dead-code noise rationale.
+- **Derived-file hazard:** hand edits to `coderef/foundation-docs/INDEX.md` or to generated frontmatter are clobbered on the next regen [ref](scripts/README.md:17).
+- **Bypassable prevention:** the header pre-commit hook can be skipped (`--no-verify`); the rag-index coverage floor is the intentional backstop [ref](scripts/check-header-coverage.mjs:18).
+- **Version graveyard:** `fix-stale-exports.mjs` and `-v2` are provenance-only — running them instead of v3 applies superseded repair rules [ref](scripts/README.md:28).
+- **cwd-independence rule:** scripts resolve the repo from their own location, not `process.cwd()`; a nested-subdirectory invocation must behave identically to a root one [ref](scripts/README.md:38).
+
+## Validation Checklist
+
+- [x] All 9 required frontmatter fields present; `category: CLI` maps to the "Scripts / Entry points" artifact-kind header
+- [x] Every `related_files` path verified on disk (2026-08-01)
+- [x] Claims cited to source (`[ref](path:line)`); no reliance on archived tools or legacy command behavior
+- [x] Script inventory matches `scripts/README.md` (the docstring-grounded authority) as of 2026-08-01
+- [x] Scan-exclusion status of `scripts/` verified against `.coderefignore` (lines 49–57)
+- [ ] Re-verify after any change to `scripts/README.md` or `.coderefignore` scope
