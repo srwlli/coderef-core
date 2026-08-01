@@ -7,7 +7,38 @@ This document describes the architecture of `@coderef/core` after the 9-phase pi
 
 ---
 
-## High-level shape
+## Module boundaries
+
+`src/` is organized by pipeline role, not by file type. The dependency direction is
+one-way — substrate never imports from a consumer — and the cycle count is **0**, enforced
+by the `cycles` check.
+
+| Module group | Owns | May depend on |
+|---|---|---|
+| `types/`, `config/`, `utils/` | Shared type declarations, config presets, path helpers | nothing in `src/` |
+| `scanner/`, `parser/`, `analyzer/` | Reading source into elements and raw facts | shared only |
+| `pipeline/` | Phase 0–6 orchestration, resolvers, graph builder, validator | scanner/parser/analyzer + shared |
+| `export/`, `registry/`, `cache/`, `indexer/` | Persisting and reloading `.coderef/` artifacts | pipeline + shared |
+| `integration/rag/`, `search/`, `semantic/`, `map/`, `query/` | Consumer surfaces over the exported graph | exported artifacts only — **never** `PipelineState` |
+| `cli/`, `mcp` server entry, `adapter/` | Process boundaries: argv, stdio, exit codes | anything below |
+
+The hard rule: **consumer surfaces read exported artifacts, not pipeline internals.** A
+consumer that reaches into `PipelineState` has crossed the boundary the
+*Internal vs exported boundary* section defines, and the boundary tests will fail it.
+
+## Stack decisions
+
+| Decision | Choice | Why |
+|---|---|---|
+| Language | TypeScript, compiled to ESM | The graph's own types are the product; an untyped substrate cannot enforce the additive-only contracts. |
+| Parsing | Per-language parsers behind a `ScannerRegistry` | New languages register rather than fork the pipeline. |
+| Graph storage | Plain JSON under `.coderef/` | Diffable, version-controllable, and readable without a running service. No database to install. |
+| Embeddings | **Local Ollama only** | Standing constraint: no cloud LLM key is ever a required default. The whole pipeline must run offline. |
+| Vector search | Local index + BM25 fusion | Keeps retrieval in-process and keyless, consistent with the embedding decision. |
+| Agent transport | MCP over stdio | No port, no auth surface, no network exposure for the agent path. |
+| Test runner | Vitest | Matches the ESM build; the boundary tests above are ordinary test files, not a bespoke linter. |
+
+## Data flow
 
 The system is a **single-pass pipeline** over a project tree, driven by `PipelineOrchestrator` (`src/pipeline/orchestrator.ts`). Each phase reads `PipelineState` and writes its output into a dedicated field, then the next phase consumes that field. All phases are pure-ish: they mutate `PipelineState`, but they never call into the next phase, never reach the network, and (with the validator's purity rule) never reach `process.exit`.
 
