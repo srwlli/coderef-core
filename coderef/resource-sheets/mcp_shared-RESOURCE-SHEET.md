@@ -147,7 +147,7 @@ _Semantic header (projected): layer `cli` · capability `mcp-shared-substrate` �
 
 5. **Validate Build Hint Error Handling**:
    - Confirm that `BuildHintError` is used to handle scenarios where auto-builds cannot be performed, providing actionable hints to the agent [ref](src/cli/mcp/shared.ts:235).
-   - Ensure that `ensureArtifacts` checks for missing or stale artifacts and either builds them or throws a `BuildHintError` if appropriate [ref](src/cli/mcp/shared.ts:250).
+   - Ensure that `ensureArtifacts` checks for missing or stale artifacts and either builds them or throws a `BuildHintError` if appropriate [ref](src/cli/mcp/shared.ts) — `ensureArtifacts` is module-private, so it carries no indexed line anchor by design.
 
 6. **Verify File Path Normalization**:
    - Confirm that `normalizeSlashes` correctly normalizes file paths across different operating systems [ref](src/cli/mcp/shared.ts).
