@@ -13,7 +13,7 @@ related_files:
   - packages/dashboard/src/app/api/scanner/scan/[scanId]/status/route.ts
   - packages/dashboard/src/app/api/scanner/scan/[scanId]/cancel/route.ts
   - packages/dashboard/src/app/api/scanner/types.ts
-status: APPROVED
+status: approved
 ---
 
 # ScanExecutor — Authoritative Documentation

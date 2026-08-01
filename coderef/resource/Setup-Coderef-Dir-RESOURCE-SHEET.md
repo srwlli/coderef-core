@@ -9,7 +9,7 @@ version: 1.0.0
 related_files:
   - scripts/setup-coderef-dir/setup_coderef_dirs.py
   - scripts/setup-coderef-dir/test_setup_coderef_dirs.py
-status: APPROVED
+status: approved
 ---
 
 # Setup-Coderef-Dir Resource Sheet

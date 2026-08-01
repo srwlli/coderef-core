@@ -9,7 +9,7 @@ version: "1.0.0"
 related_files:
   - packages/coderef-core/src/fileGeneration/buildDependencyGraph.ts
   - packages/coderef-core/src/types/types.ts
-status: APPROVED
+status: approved
 ---
 
 # Dependency Graph Builder — Authoritative Documentation

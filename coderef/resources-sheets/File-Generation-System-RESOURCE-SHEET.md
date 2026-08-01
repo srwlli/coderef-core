@@ -15,7 +15,7 @@ related_files:
   - packages/coderef-core/src/fileGeneration/validateReferences.ts
   - packages/coderef-core/src/fileGeneration/detectDrift.ts
   - packages/coderef-core/src/fileGeneration/generateDiagrams.ts
-status: APPROVED
+status: approved
 ---
 
 # File Generation System — Authoritative Documentation

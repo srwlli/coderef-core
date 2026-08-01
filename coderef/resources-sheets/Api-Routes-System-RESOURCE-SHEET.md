@@ -16,7 +16,7 @@ related_files:
   - packages/dashboard/src/app/api/coderef/tree/route.ts
   - packages/dashboard/src/app/api/coderef/file/route.ts
   - packages/dashboard/src/app/api/scan/route.ts
-status: APPROVED
+status: approved
 ---
 
 # API Routes System — Authoritative Documentation

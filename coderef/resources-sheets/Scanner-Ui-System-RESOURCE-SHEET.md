@@ -13,7 +13,7 @@ related_files:
   - packages/dashboard/src/components/Scanner/ActionBar.tsx
   - packages/dashboard/src/components/Scanner/ConfirmationDialog.tsx
   - packages/dashboard/src/app/scanner/page.tsx
-status: APPROVED
+status: approved
 ---
 
 # Scanner UI System — Authoritative Documentation

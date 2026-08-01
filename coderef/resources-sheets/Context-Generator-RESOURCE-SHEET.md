@@ -12,7 +12,7 @@ related_files:
   - packages/coderef-core/src/context/markdown-formatter.ts
   - packages/coderef-core/src/scanner/scanner.ts
   - packages/coderef-core/src/analyzer/analyzer-service.ts
-status: APPROVED
+status: approved
 ---
 
 # Context Generator — Authoritative Documentation

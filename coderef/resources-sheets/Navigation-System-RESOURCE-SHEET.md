@@ -10,7 +10,7 @@ related_files:
   - packages/dashboard/src/components/Sidebar.tsx
   - packages/dashboard/src/components/Header.tsx
   - packages/dashboard/src/components/MobileNav.tsx
-status: APPROVED
+status: approved
 ---
 
 # Navigation System — Authoritative Documentation

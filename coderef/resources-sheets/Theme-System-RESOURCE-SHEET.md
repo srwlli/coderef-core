@@ -12,7 +12,7 @@ related_files:
   - packages/dashboard/src/components/ThemeToggle.tsx
   - packages/dashboard/src/components/ThemePanel.tsx
   - packages/dashboard/src/components/AccentColorPicker.tsx
-status: APPROVED
+status: approved
 ---
 
 # Theme System — Authoritative Documentation

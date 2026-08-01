@@ -12,7 +12,7 @@ related_files:
   - packages/coderef-core/src/fileGeneration/detectPatterns.ts
   - packages/coderef-core/src/fileGeneration/validateReferences.ts
   - packages/coderef-core/src/fileGeneration/buildDependencyGraph.ts
-status: APPROVED
+status: approved
 ---
 
 # Scanner Effectiveness Improvements — Authoritative Analysis
