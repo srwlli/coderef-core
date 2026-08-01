@@ -1,6 +1,17 @@
 # Build artifacts
 node_modules/
 dist/
+# Sibling/renamed build trees (dist-old/, dist-preXR/, ...). TKT-HZF70M: a
+# renamed dist/ re-entered the scan universe and contributed 3,049 of 4,753
+# unresolved edges (64%), plus a compiled twin for every class method that
+# manufactured ambiguity across the member-access population. Both land INSIDE
+# unresolved_src_count / ambiguous_src_count, which exclude tests but not build
+# output, so the stratified honest metric is polluted too.
+# Trailing slash is load-bearing: buildCandidates only appends '/' for
+# directories, so this cannot match a future dist-*.md file.
+# Verified 2026-08-01: no dist-* directory exists at any nested depth, so the
+# bare-basename match this relies on is safe per the RULE below.
+dist-*/
 build/
 out/
 *.min.js
