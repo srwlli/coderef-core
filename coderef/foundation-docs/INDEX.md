@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 3,169 |
-| **Total Files** | 485 |
-| **Total Lines** | 133,146 |
+| **Total Elements** | 3,174 |
+| **Total Files** | 489 |
+| **Total Lines** | 133,351 |
 | **Languages** | ts, py |
 
 ---
@@ -22,12 +22,12 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 1,073 | 33.9% |
-| method | 972 | 30.7% |
-| interface | 611 | 19.3% |
-| class | 109 | 3.4% |
+| function | 1,082 | 34.1% |
+| method | 965 | 30.4% |
+| interface | 610 | 19.2% |
+| class | 108 | 3.4% |
 | type | 92 | 2.9% |
-| constant | 312 | 9.8% |
+| constant | 317 | 10.0% |
 
 ---
 
@@ -88,7 +88,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 3,169 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 3,174 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

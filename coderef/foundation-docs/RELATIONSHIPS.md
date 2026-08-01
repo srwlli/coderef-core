@@ -3,8 +3,8 @@
 **Project:** @coderef/core  
 **Version:** 2.0.0  
 **Generated:** 2026-08-01  
-**Nodes:** 3,637 elements  
-**Edges:** 43,421 dependencies  
+**Nodes:** 3,644 elements  
+**Edges:** 43,606 dependencies  
 <!-- coderef:uuid=relationships-root -->
 
 ---
@@ -24,11 +24,11 @@ This document visualizes the dependency graph between code elements. Understandi
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 3,637 |
-| **Total Dependencies** | 43,421 |
+| **Total Elements** | 3,644 |
+| **Total Dependencies** | 43,606 |
 | **Avg Dependencies/Element** | (edges.length / nodes.length).toFixed(2) |
 | **Entry Points** | 15 |
-| **Most Referenced** | 33802 refs |
+| **Most Referenced** | 33963 refs |
 
 ---
 
@@ -40,12 +40,12 @@ This document visualizes the dependency graph between code elements. Understandi
 |------|---------|------------|------|------|
 | 2 | <!-- coderef:uuid=c49cb7d2-c4a8-5d2e-8606-0623263aa1df --> `LRUCache.has` | **282** | method | `src/scanner/lru-cache.ts` |
 | 3 | <!-- coderef:uuid=95eec01b-dd97-5474-9a55-c67f7826716e --> `normalizeSlashes` | **141** | function | `src/utils/path-normalize.ts` |
-| 4 | <!-- coderef:uuid=ec329b04-7830-5162-b84f-fccf7cdcf863 --> `scanCurrentElements` | **136** | function | `src/scanner/scanner.ts` |
+| 4 | <!-- coderef:uuid=ec329b04-7830-5162-b84f-fccf7cdcf863 --> `scanCurrentElements` | **134** | function | `src/scanner/scanner.ts` |
 | 5 | <!-- coderef:uuid=c9a5fbff-f698-5b84-9c01-8aef8c2300a7 --> `PipelineOrchestrator.run` | **96** | method | `src/pipeline/orchestrator.ts` |
 | 6 | <!-- coderef:uuid=68ac8c54-9ac0-5824-b4d0-34eff251ffa8 --> `GrammarRegistry.getParser` | **86** | method | `src/pipeline/grammar-registry.ts` |
 | 7 | <!-- coderef:uuid=21fa4531-1341-5ae4-bf29-ddcb5836af48 --> `CodeRefParser.parse` | **63** | method | `src/parser/parser.ts` |
 | 8 | <!-- coderef:uuid=71b1de28-a58a-55fb-80ce-8ec1118d579a --> `PipelineOrchestrator` | **55** | class | `src/pipeline/orchestrator.ts` |
-| 9 | <!-- coderef:uuid=a0c5a238-c471-5624-ac78-1bae816ae34a --> `buildToolHandlers` | **51** | function | `src/cli/coderef-mcp-server.ts` |
+| 9 | <!-- coderef:uuid=a7146a2d-9096-59a3-a803-815014dd5521 --> `buildToolHandlers` | **51** | function | `src/cli/coderef-mcp-server.ts` |
 | 10 | <!-- coderef:uuid=c49914c7-5e1e-5b8f-b679-5e7f2337dd15 --> `createCodeRefId` | **49** | function | `src/utils/coderef-id.ts` |
 | 11 | <!-- coderef:uuid=23c374e5-af97-5020-b41d-fc475c587b14 --> `isLineCommented` | **49** | function | `src/scanner/scanner.ts` |
 | 12 | <!-- coderef:uuid=d07a83e5-70a2-5333-9584-b96eaab6a623 --> `validatePipelineState` | **47** | function | `src/pipeline/output-validator.ts` |
@@ -76,7 +76,7 @@ This document visualizes the dependency graph between code elements. Understandi
 | <!-- coderef:uuid=02f18237-859a-5c38-9c27-a3e8c5f6d3db --> `IncrementalCache.load` | method | `src/cache/incremental-cache.ts` | 6 |
 | <!-- coderef:uuid=bb3b6c82-9d1c-5476-b75f-5e198ddb285f --> `IncrementalCache.save` | method | `src/cache/incremental-cache.ts` | 8 |
 | <!-- coderef:uuid=0d6be37b-8fd6-59c2-912e-4e966c5ea836 --> `IncrementalCache.clear` | method | `src/cache/incremental-cache.ts` | 3 |
-| <!-- coderef:uuid=dd92706c-120a-5e3d-910d-98decf89a361 --> `RootResolutionError` | class | `src/cli/coderef-mcp-server.ts` | 1 |
+| <!-- coderef:uuid=a8f0da0b-662d-52f0-986c-d0434cf1e3b6 --> `RootResolutionError` | class | `src/cli/coderef-mcp-server.ts` | 1 |
 | <!-- coderef:uuid=37e3fc15-2496-542f-aa31-15b8d3a5d3d3 --> `DryRunSemanticOrchestrator.processProject` | method | `src/cli/semantic-integration.ts` | 2 |
 | <!-- coderef:uuid=6a04de21-3608-5070-85c2-1b82332ae57a --> `DryRunSemanticOrchestrator.processFile` | method | `src/cli/semantic-integration.ts` | 2 |
 | <!-- coderef:uuid=93b7ce58-f81f-50ea-bda4-a45346e9339b --> `AgenticFormatter.formatContext` | method | `src/context/agentic-formatter.ts` | 19 |

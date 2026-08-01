@@ -18,15 +18,15 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 | Type | Exported | Internal | Total |
 |------|----------|----------|-------|
-| function | **409** | 664 | 1073 |
-| constant | **70** | 242 | 312 |
-| interface | **514** | 97 | 611 |
+| function | **411** | 671 | 1082 |
+| constant | **70** | 247 | 317 |
+| interface | **513** | 97 | 610 |
 | type | **66** | 26 | 92 |
-| class | **105** | 4 | 109 |
+| class | **104** | 4 | 108 |
 
 ---
 
-## Exported Functions (409)
+## Exported Functions (411)
 
 | Function | File | Async | Parameters | UUID |
 |----------|------|-------|------------|------|
@@ -81,11 +81,11 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=2b39d675-7591-57b5-8259-926704bcb825 --> `parseRemixRoute` | `src/analyzer/route-parsers.ts` | ❌ | filePath, exports | `2b39d675...` |
 | <!-- coderef:uuid=9bf05c2f-b986-5309-a031-c352cb8432ab --> `extractRouteMetadata` | `src/analyzer/route-parsers.ts` | ❌ | code, filePath, exports, line, fileContent | `9bf05c2f...` |
 
-*... and 359 more functions. See index.json for complete list.*
+*... and 361 more functions. See index.json for complete list.*
 
 ---
 
-## Exported Classes (105)
+## Exported Classes (104)
 
 | Class | File | UUID |
 |-------|------|------|
@@ -108,7 +108,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=50ad9ecf-bb54-5c2a-92e6-96c47bc7635c --> `AgenticFormatter` | `src/context/agentic-formatter.ts` | `50ad9ecf...` |
 | <!-- coderef:uuid=f6a3c8f5-54cc-57d6-8efc-cab4a3562105 --> `BreakingChangeDetector` | `src/context/breaking-change-detector/index.ts` | `f6a3c8f5...` |
 | <!-- coderef:uuid=5b7c63b3-49c4-5ba1-b988-8c068267120d --> `ComplexityScorer` | `src/context/complexity-scorer.ts` | `5b7c63b3...` |
-| <!-- coderef:uuid=e1229fcb-3366-54bb-8043-e6eeb4267b38 --> `ContextGenerator` | `src/context/context-generator.ts` | `e1229fcb...` |
+| <!-- coderef:uuid=b43d147c-1707-5838-8d6b-c666e844c777 --> `CodebaseContextService` | `src/context/context-generator.ts` | `b43d147c...` |
 | <!-- coderef:uuid=a1e11a52-97fa-5b7e-afc9-8bf375db207a --> `ContextTracker` | `src/context/context-tracker.ts` | `a1e11a52...` |
 | <!-- coderef:uuid=4a643d43-c9a4-5e55-9c7a-9a2e7c8b68ce --> `EdgeCaseDetector` | `src/context/edge-case-detector.ts` | `4a643d43...` |
 | <!-- coderef:uuid=c6105ae7-a8e1-561a-891d-4b7cf0b30d5f --> `EntryPointDetector` | `src/context/entry-point-detector.ts` | `c6105ae7...` |
@@ -162,7 +162,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=5ec5e359-9292-538f-a9a3-3f03e5ce43d9 --> `RelationshipExtractor` | `src/pipeline/extractors/relationship-extractor.ts` | `5ec5e359...` |
 | <!-- coderef:uuid=c3dc4e53-99f7-5ac8-b892-9079e2f0c55f --> `RouteExtractor` | `src/pipeline/extractors/route-extractor.ts` | `c3dc4e53...` |
 | <!-- coderef:uuid=2bb85030-b9cd-5a32-b5c1-da28c5e0d87c --> `ComplexityGenerator` | `src/pipeline/generators/complexity-generator.ts` | `2bb85030...` |
-| <!-- coderef:uuid=3c386af0-461e-57b0-aa04-dbbe9caa4048 --> `ContextGenerator` | `src/pipeline/generators/context-generator.ts` | `3c386af0...` |
+| <!-- coderef:uuid=43058a35-ed9e-537e-a90d-ed8d084a5992 --> `PipelineContextGenerator` | `src/pipeline/generators/context-generator.ts` | `43058a35...` |
 | <!-- coderef:uuid=f2cd84fe-5352-59a2-a3a6-3a5629efa150 --> `CoverageGenerator` | `src/pipeline/generators/coverage-generator.ts` | `f2cd84fe...` |
 | <!-- coderef:uuid=7d80d49c-957c-5bf3-9701-95ec368fc8a4 --> `DiagramGenerator` | `src/pipeline/generators/diagram-generator.ts` | `7d80d49c...` |
 | <!-- coderef:uuid=9a9ad609-64c3-5e50-85d0-da7253e05fc0 --> `DriftGenerator` | `src/pipeline/generators/drift-generator.ts` | `9a9ad609...` |
@@ -179,7 +179,6 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=1fa32245-cd82-562b-92ee-fd02291139b8 --> `CanonicalGraphError` | `src/query/canonical-graph.ts` | `1fa32245...` |
 | <!-- coderef:uuid=991e3cb2-4e61-55f4-b3b4-8e3fd2c080a9 --> `CanonicalGraphQuery` | `src/query/canonical-graph.ts` | `991e3cb2...` |
 | <!-- coderef:uuid=eb83d35c-0592-5483-a2ce-d8b49ff2a284 --> `EntityRegistry` | `src/registry/entity-registry.ts` | `eb83d35c...` |
-| <!-- coderef:uuid=337c0f6a-8536-58ed-b54d-0371a01b594e --> `FileWatcher` | `src/scanner/file-watcher.ts` | `337c0f6a...` |
 | <!-- coderef:uuid=ed6d5e33-f0ce-5e87-9125-74cc31e4e24b --> `LRUCache` | `src/scanner/lru-cache.ts` | `ed6d5e33...` |
 | <!-- coderef:uuid=9489323f-68f6-5814-972b-65bde7c83843 --> `SearchIndex` | `src/search/search-engine.ts` | `9489323f...` |
 | <!-- coderef:uuid=bcdc7adf-b7f2-5619-9104-d262c4a033a3 --> `SearchEngine` | `src/search/search-engine.ts` | `bcdc7adf...` |
@@ -197,7 +196,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 
 ---
 
-## Exported Interfaces (514)
+## Exported Interfaces (513)
 
 | Interface | File | UUID |
 |-----------|------|------|
@@ -232,7 +231,7 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=edbc2aa3-efe5-5bef-a4bc-0dc073b79348 --> `PrismaField` | `src/analyzer/database-detector.ts` | `edbc2aa3...` |
 | <!-- coderef:uuid=419a9b3f-dae7-5c78-9d74-a4c9cd65efc3 --> `PrismaRelation` | `src/analyzer/database-detector.ts` | `419a9b3f...` |
 
-*... and 484 more interfaces. See index.json for complete list.*
+*... and 483 more interfaces. See index.json for complete list.*
 
 ---
 
@@ -245,6 +244,8 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=fa6f3f80-424e-5bcd-bf6a-d445d692ec4d --> `ProjectCategory` | `src/analyzer/project-classifier.ts` | `fa6f3f80...` |
 | <!-- coderef:uuid=593ae025-fc3a-5893-8029-30400733604a --> `ApiServiceType` | `src/analyzer/project-classifier.ts` | `593ae025...` |
 | <!-- coderef:uuid=9d197f51-8669-58d8-8f17-c340bb4fad30 --> `WebAppType` | `src/analyzer/project-classifier.ts` | `9d197f51...` |
+| <!-- coderef:uuid=3e6e72e9-0514-5ec4-9c11-253d94305d46 --> `IndexSchemaVersion` | `src/artifacts/index-storage.ts` | `3e6e72e9...` |
+| <!-- coderef:uuid=aad705fc-4bee-517f-b8ba-6a4714fd0610 --> `IndexFormat` | `src/artifacts/index-storage.ts` | `aad705fc...` |
 | <!-- coderef:uuid=fe6953e4-8d96-55d9-a133-2af95265cfc3 --> `SupportedCliLanguage` | `src/cli/detect-languages.ts` | `fe6953e4...` |
 | <!-- coderef:uuid=5a7d617c-b655-5ed6-b8a3-c661113b8884 --> `ResponseFormat` | `src/cli/mcp-response-format.ts` | `5a7d617c...` |
 | <!-- coderef:uuid=044e34d9-ea08-5b8c-9fff-f140ba63534e --> `ContextTools` | `src/cli/mcp/context-tools.ts` | `044e34d9...` |
@@ -259,8 +260,6 @@ This document lists all **publicly exported** APIs from @coderef/core. These are
 | <!-- coderef:uuid=81eaa57b-3a7a-56fa-be3a-d795b485c682 --> `ExportFormat` | `src/export/graph-exporter.ts` | `81eaa57b...` |
 | <!-- coderef:uuid=2f30bc04-b658-5b69-ab2d-f10f7e79a10f --> `ExportedGraphEdgeRelationship` | `src/export/graph-exporter.ts` | `2f30bc04...` |
 | <!-- coderef:uuid=2b14659a-6a83-5ba7-9330-6b59fcac31bc --> `ExportedGraphEdgeResolutionStatus` | `src/export/graph-exporter.ts` | `2b14659a...` |
-| <!-- coderef:uuid=bbfc4150-1679-58b8-84e7-172f740a39ad --> `IndexSchemaVersion` | `src/fileGeneration/index-storage.ts` | `bbfc4150...` |
-| <!-- coderef:uuid=e73bff20-64ed-59a2-af8b-377104f943a4 --> `IndexFormat` | `src/fileGeneration/index-storage.ts` | `e73bff20...` |
 | <!-- coderef:uuid=c4d922e2-5bed-59e7-bd55-bd42d06ab1de --> `IndexingStage` | `src/indexer/indexer-service.ts` | `c4d922e2...` |
 | <!-- coderef:uuid=de06b035-cd7c-58a9-9423-2c8d495869dd --> `MetadataCategory` | `src/indexer/metadata-index.ts` | `de06b035...` |
 | <!-- coderef:uuid=e42b5036-2b3a-5e26-adf2-0fd0a467a014 --> `QueryFilter` | `src/indexer/query-engine.ts` | `e42b5036...` |

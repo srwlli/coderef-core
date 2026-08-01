@@ -6,7 +6,7 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "checkpoint_ready",
+  "status": "closed",
   "current_phase": 4,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\plan.json",
@@ -195,6 +195,11 @@
       "timestamp": "2026-08-01T06:47:08.434Z",
       "event": "workorder_complete",
       "message": "All 4 phases executed this run. Commits: P1 1853426, P2 27d36ab, P3 f986791, P4 ccaa32e (all pushed+verified). Suite 2458 passed / 26 skipped vs baseline 2436/26 (+22 = new boundary tests). ADJ-01: pipeline-map-leg.test updated to single-parse default. Terminal Phase-4 hard stop is UNAPPROVED -> checkpoint_ready awaiting operator /close-workorder. Evidence: phase1-boundary-inventory.md, final-surface-inventory.md, contract suites __tests__/boundary/ (22 tests, 0 expected-fail). Validator: 5 pre-existing drift failures (STUB-QXH23Q class), none on this WO rows."
+    },
+    {
+      "timestamp": "2026-08-01T06:57:24.191Z",
+      "event": "workorder_closed",
+      "message": "Close-only ceremony complete: audit PASS, status -> complete in registry, WO remains in coderef/workorder/ pending --archive. STUB-J2BYDN flips at archive."
     }
   ],
   "required_skills": [
@@ -203,5 +208,41 @@
     "/log-session"
   ],
   "git_branch": "main",
-  "execution_completed_at": "2026-08-01T06:47:08.434Z"
+  "execution_completed_at": "2026-08-01T06:47:08.434Z",
+  "closed_at": "2026-08-01T06:57:24.191Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "close_type": "close-only",
+    "closed_via": "/close-workorder",
+    "audit": {
+      "phased_terminal_guard": "PASS (phase 4 of 4)",
+      "standards_validate": "WO-scoped PASS (repo-wide baseline FAILs pre-existing, non-halting)",
+      "tracking_validator_scoped": "18 passed / 0 failed",
+      "doc_code_tie": "PASS (no doc_binding declared)",
+      "dependency_rules": "all satisfied, 0 warnings",
+      "quality_diagrams": "N/A (no diagrams touched)",
+      "route_validation": "N/A (no route-patterns.json)",
+      "session_log": "rich YAML present in CORE .coderef/sessions; assistant-side gate self-healed a sparse duplicate (cross-repo path-resolution class)",
+      "git": "HEAD==origin/main pre-close (5b89255); foundation-docs regen folded into close commit"
+    },
+    "suite_final": "2458 passed / 26 skipped (baseline 2436/26; +22 boundary tests)",
+    "metrics_delta": {
+      "before": "WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001-before",
+      "schema_version_match": true,
+      "families": {
+        "testLinkage": "regressed*",
+        "documentation": "regressed*",
+        "unresolvedRefs": "regressed*",
+        "largestModules": "unchanged",
+        "mostDependencies": "unchanged"
+      },
+      "vintage": {
+        "status": "mismatch",
+        "before_map_generated_at": "2026-08-01T02:32:09.432Z",
+        "after_map_generated_at": "2026-08-01T06:58:21.074Z"
+      },
+      "interpretation": "VINTAGE MISMATCH - the delta window spans two map generations, so the three regressed* directions are CONFOUNDED by index growth this WO did not cause (22 new boundary-test files arrive without headers/test-edges/resolved-refs, plus peer working dirs). Not attributable regressions; largestModules/mostDependencies unchanged. Surfaces, not verdicts."
+    },
+    "follow_up_capture": "workorder-follow-up runner failed gracefully (cross-repo anchored-path gap, coderef-core: prefix joined to ASSISTANT_ROOT) - no candidates lost; kaizen class already logged"
+  }
 }
