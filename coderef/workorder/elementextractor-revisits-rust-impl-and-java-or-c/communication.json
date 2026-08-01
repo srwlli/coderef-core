@@ -6,8 +6,8 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "status": "plan_created",
-  "current_phase": 1,
-  "phase_status": "complete",
+  "current_phase": 2,
+  "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\analysis.json",
@@ -121,6 +121,45 @@
       "additional_defect_found": "Java interface_declaration (:564-575) never traverses its body scoped AND never returns, so interface members are attributed to the ENCLOSING class (`Outer.gamma`). Fixing the class branch alone would NOT fix this; the interface branch needs its own scoped traverse + return to make the member `Contract.gamma`.",
       "dead_code_confirmed": "Rust `parentScope`/`implType` is threaded but never read (lines 451-507), and the C++ branch never reads `parentScope` either. Neither language has qualification to preserve, so both are dedup-only under ruling A; introducing scoped names there would be NEW behavior and is OUT of scope for this phase.",
       "at": "2026-08-01T21:05:00Z"
+    },
+    {
+      "event": "p2_t1_findings",
+      "summary": "The bare-name contract at tree-sitter-file-scan.ts:63-66 is REAL, but not for the reason the comment gives - and the plan's consumer list was incomplete.",
+      "consumers_verdict": [
+        {
+          "consumer": "src/cli/scan.ts:75",
+          "keys_on_name": false,
+          "verdict": "SAFE under any option - counts elements and unique files only, never touches element.name."
+        },
+        {
+          "consumer": "src/fileGeneration/saveIndex.ts",
+          "keys_on_name": false,
+          "verdict": "SAFE - zero .name/.calls/.imports references; it hands the array to writeIndexVariants and saveRoutesToFile."
+        },
+        {
+          "consumer": "src/context/context-generator.ts:191",
+          "keys_on_name": false,
+          "verdict": "SAFE - reads `func.calls?.length` only. Counts, never matches."
+        },
+        {
+          "consumer": "src/fileGeneration/buildDependencyGraph.ts:96,125",
+          "keys_on_name": true,
+          "verdict": "LOAD-BEARING BOTH WAYS. :96 builds `element:{file}:{name}`, so two same-named methods in one file COLLIDE into a single node id - already broken by the bare form today. :125 then resolves call targets by BARE callee name within the file. Qualifying element.name would fix the collision and simultaneously break :125."
+        },
+        {
+          "consumer": "src/fileGeneration/validateReferences.ts:66,76-77",
+          "keys_on_name": true,
+          "verdict": "NOT IN THE PLAN'S LIST. Indexes elementMap BY BARE NAME and warns \"Function X is called but not found in codebase\" when a callee misses. Under option (B) every method would be indexed as `Outer.alpha` while callees stay bare `alpha`, turning EVERY method call into a false undefined-call warning. This is the finding that decides the ruling."
+        },
+        {
+          "consumer": "src/fileGeneration/generateDiagrams.ts:96",
+          "keys_on_name": true,
+          "verdict": "NOT IN THE PLAN'S LIST. Keys `${file}:${name}`, so same-named methods merge into one diagram node AND their callee sets union - the same symptom as the extractor defect, manifesting in a second place."
+        }
+      ],
+      "decisive_asymmetry": "CALLEES must stay BARE - all three name-keyed consumers resolve a callee by its bare name, and cross-file resolution has nothing else to key on. ELEMENT IDENTITY must become unique - the same three consumers collide on it today. Those pull in opposite directions, which is why \"just qualify everything\" (option B) is not merely larger, it is WRONG: it would break validateReferences outright.",
+      "scope_note": "All three name-keyed consumers live in src/fileGeneration/ and ALL THREE are legacy-quarantined behind assertLegacyWriteAllowed (2 refs each). Their own identity collisions are PRE-EXISTING and are not what TKT-XGZA82 describes - the ticket is about tree-sitter-file-scan fabricating edges, which happens upstream of all of them. Fixing their collisions is a separate piece of work against quarantined code.",
+      "at": "2026-08-01T23:05:00Z"
     }
   ],
   "phase_transitions": [
