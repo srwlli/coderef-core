@@ -1031,7 +1031,41 @@ export function classifyMethodCall(
   if (receiver !== null && callerCodeRefId) {
     const perScope = newInitMap.get(callerCodeRefId);
     const binding = perScope?.get(receiver);
-    if (binding) {
+    // (3.0) FU-2 lever 2: a QUALIFIED annotation (`node: ts.Node`) binds the
+    // namespace ROOT, not a project class. `ts.Node` is the TypeScript compiler
+    // API — there is no own-methods lookup to attempt and never will be. Resolve
+    // the root against this file's imports and take the same disposition
+    // branches 3.5/3.7 would give the bare receiver. A root that is NOT an
+    // import falls through untouched: a project namespace object keeps every
+    // existing path, so this can only ever move edges that were already headed
+    // for the honest tail.
+    if (binding && binding.kind === 'qualified') {
+      const nsRoot = binding.className;
+      const nsBinding = importResolutions.find(
+        ir => ir.sourceFile === fact.sourceFile && ir.localName === nsRoot,
+      );
+      if (nsBinding) {
+        // A type annotation's namespace is idiomatically imported with
+        // `import type`, which short-circuits classification in Phase 3 — so
+        // the origin is read from typeOnlyOrigin when present, and from the
+        // value-import fields otherwise. Both spellings must agree, or the
+        // dominant real-world case (`import type Parser from 'tree-sitter'`,
+        // 89 edges on this repo alone) silently misses.
+        const origin = nsBinding.kind === 'typeOnly'
+          ? nsBinding.typeOnlyOrigin
+          : (nsBinding.kind === 'external' ? (nsBinding.reason ?? 'external') : undefined);
+        if (origin === 'node_builtin') {
+          return { kind: 'builtin', reason: 'builtin_module_receiver' };
+        }
+        if (origin === 'python_stdlib') {
+          return { kind: 'builtin', reason: 'python_stdlib_receiver' };
+        }
+        if (origin !== undefined && origin !== 'project') {
+          return { kind: 'external', reason: 'external_annotation_receiver' };
+        }
+      }
+    }
+    if (binding && binding.kind !== 'qualified') {
       const className = binding.className;
       const qualifiedName = `${className}.${callee}`;
       const entries = symbolTable.get(qualifiedName) ?? [];

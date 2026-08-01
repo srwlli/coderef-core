@@ -24,6 +24,11 @@
  *                  unions/intersections/arrays/primitives skipped).
  *   'param'      — `x: Y` pairs inside a function/method parameter list,
  *                  same Y restrictions as 'annotation'.
+ *   'qualified'  — `x: ns.Y` (FU-2 lever 2, WO-RESOLVE-62). Binds the
+ *                  namespace ROOT, not a class: `ts.Node` -> root `ts`.
+ *                  These are NOT project types, so the consumer uses the
+ *                  root purely to reach a DISPOSITION (external / builtin)
+ *                  and never attempts an own-methods lookup with it.
  *
  * The walk fixes the T1-found coverage hole: class METHOD bodies now get
  * scope frames (`ClassName.methodName`), so bindings inside methods
@@ -49,14 +54,23 @@ import { createCodeRefId } from '../utils/coderef-id.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 
 /** Provenance of a binding — drives consumer strictness (DR-GX002-B). */
-export type ScopeBindingKind = 'new' | 'annotation' | 'param';
+export type ScopeBindingKind = 'new' | 'annotation' | 'param' | 'qualified';
 
 /** One local-name → type-name binding inside a scope. */
 export interface ScopeBinding {
-  /** PascalCase class/type name the local is bound to (generics stripped). */
+  /**
+   * PascalCase class/type name the local is bound to (generics stripped).
+   * For kind 'qualified' this is instead the namespace ROOT (`ts` in
+   * `ts.Node`) — the identifier the consumer resolves against imports.
+   */
   className: string;
   /** How the binding was established. */
   kind: ScopeBindingKind;
+  /**
+   * Kind 'qualified' only: the member type name (`Node` in `ts.Node`).
+   * Carried for provenance/auditing; the disposition turns on the root.
+   */
+  qualifiedMember?: string;
 }
 
 /**
@@ -113,6 +127,40 @@ function usableAnnotationType(raw: string): string | null {
 }
 
 /**
+ * FU-2 lever 2: extract the NAMESPACE ROOT of a QUALIFIED type annotation —
+ * `ts.Node` -> {root:'ts', member:'Node'}, `fs.Dirent`, `http.Server`,
+ * `ts.factory.NodeFactory` (root is the leftmost identifier).
+ *
+ * usableAnnotationType above deliberately accepts only a BARE PascalCase
+ * identifier, so every qualified annotation was rejected and
+ * `(node: ts.Node)` produced NO binding at all — the receiver then fell all
+ * the way to the honest tail. Measured 2026-08-01 on a clean scan, locals
+ * typed this way were ~160 of the 547 receiver_not_in_symbol_table edges
+ * (`node` 92, `entry` 22, `res` 12, `child` 10, `spec` 9, `worker` 7,
+ * `server` 6).
+ *
+ * Such a local is NOT project structure — `ts.Node` is the TypeScript
+ * compiler API. The binding therefore exists to reach a DISPOSITION, and the
+ * consumer resolves the root against that file's imports: an external package
+ * yields external, a node builtin yields builtin, and anything else falls
+ * through untouched. Nothing here resolves an edge.
+ *
+ * Shape rules, deliberately strict: at least two dot-separated segments, every
+ * segment a plain identifier, and the LAST segment PascalCase (a type name, so
+ * a value path like `foo.bar` never binds). Generics are stripped. Arrays,
+ * unions, intersections and object literals are rejected by the regex.
+ */
+function usableQualifiedAnnotation(raw: string): { root: string; member: string } | null {
+  const text = raw.trim();
+  const m = /^([A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*)+)\s*(?:<[^]*?>)?\s*$/.exec(text);
+  if (!m) return null;
+  const parts = m[1].split('.');
+  const member = parts[parts.length - 1];
+  if (!/^[A-Z]/.test(member)) return null;
+  return { root: parts[0], member };
+}
+
+/**
  * Parse `name: Type` pairs out of a parameter-list string (the text between
  * the fn's outer parentheses). Pragmatic split on top-level commas with
  * bracket/paren/angle depth tracking; per-param regex extracts
@@ -121,8 +169,16 @@ function usableAnnotationType(raw: string): string | null {
  * (`x: Foo = ...`) both bind. Destructured/rest params never match the
  * leading identifier and are skipped (DR-GX002-C).
  */
-function parseParamBindings(paramText: string): Array<[string, string]> {
-  const out: Array<[string, string]> = [];
+/** One parsed parameter binding, carrying its provenance kind. */
+interface ParamBinding {
+  name: string;
+  className: string;
+  kind: ScopeBindingKind;
+  qualifiedMember?: string;
+}
+
+function parseParamBindings(paramText: string): ParamBinding[] {
+  const out: ParamBinding[] = [];
   const parts: string[] = [];
   let depth = 0;
   let cur = '';
@@ -145,7 +201,20 @@ function parseParamBindings(paramText: string): Array<[string, string]> {
     const name = m[1];
     if (name === 'this') continue; // TS `this` parameter — not a local.
     const typeName = usableAnnotationType(m[2]);
-    if (typeName) out.push([name, typeName]);
+    if (typeName) {
+      out.push({ name, className: typeName, kind: 'param' });
+      continue;
+    }
+    // FU-2 lever 2: `(node: ts.Node)` — bind the namespace root for disposition.
+    const qualified = usableQualifiedAnnotation(m[2]);
+    if (qualified) {
+      out.push({
+        name,
+        className: qualified.root,
+        kind: 'qualified',
+        qualifiedMember: qualified.member,
+      });
+    }
   }
   return out;
 }
@@ -259,7 +328,12 @@ export function buildScopeBindingMap(
       return null;
     };
 
-    const addBinding = (localName: string, className: string, kind: ScopeBindingKind): void => {
+    const addBinding = (
+      localName: string,
+      className: string,
+      kind: ScopeBindingKind,
+      qualifiedMember?: string,
+    ): void => {
       const codeRefId = currentScopeCodeRefId();
       if (!codeRefId) return;
       let perScope = map.get(codeRefId);
@@ -269,7 +343,9 @@ export function buildScopeBindingMap(
       }
       // G2: first binding wins per (scope, name).
       if (!perScope.has(localName)) {
-        perScope.set(localName, { className, kind });
+        perScope.set(localName, qualifiedMember === undefined
+          ? { className, kind }
+          : { className, kind, qualifiedMember });
       }
     };
 
@@ -346,8 +422,8 @@ export function buildScopeBindingMap(
             while (p < len && /\s/.test(source[p])) p++;
             const parens = readBalancedParens(source, p);
             if (parens) {
-              for (const [pname, ptype] of parseParamBindings(parens.inner)) {
-                addBinding(pname, ptype, 'param');
+              for (const pb of parseParamBindings(parens.inner)) {
+                addBinding(pb.name, pb.className, pb.kind, pb.qualifiedMember);
               }
               i = parens.end;
             }
@@ -405,8 +481,8 @@ export function buildScopeBindingMap(
             if (source[q] === '{') {
               const qualifiedName = `${classFrame.classCtx}.${methodName}`;
               scopeStack.push({ name: qualifiedName, depth: depth + 1, classCtx: null });
-              for (const [pname, ptype] of parseParamBindings(parens.inner)) {
-                addBinding(pname, ptype, 'param');
+              for (const pb of parseParamBindings(parens.inner)) {
+                addBinding(pb.name, pb.className, pb.kind, pb.qualifiedMember);
               }
               i = parens.end;
               continue;
@@ -434,7 +510,15 @@ export function buildScopeBindingMap(
           const mAnn = new RegExp(`^${kw}\\s+([A-Za-z_$][\\w$]*)\\s*:\\s*([^=;\\n]{1,120})`).exec(remainder);
           if (mAnn) {
             const typeName = usableAnnotationType(mAnn[2]);
-            if (typeName) addBinding(mAnn[1], typeName, 'annotation');
+            if (typeName) {
+              addBinding(mAnn[1], typeName, 'annotation');
+            } else {
+              // FU-2 lever 2: `const sf: ts.SourceFile` — namespace root for disposition.
+              const qualified = usableQualifiedAnnotation(mAnn[2]);
+              if (qualified) {
+                addBinding(mAnn[1], qualified.root, 'qualified', qualified.member);
+              }
+            }
             i += mAnn[0].length;
             break;
           }

@@ -145,6 +145,23 @@ export interface ImportResolution {
    */
   reason?: string;
   /**
+   * kind === 'typeOnly' ONLY: where the type-only import would have resolved
+   * had it been a value import (FU-2 lever 2, WO-RESOLVE-62).
+   *
+   * `import type` short-circuits classification — a typeOnly resolution is
+   * emitted before the external/builtin/project branches ever run, so its
+   * ORIGIN was previously unrecoverable by consumers. That matters because
+   * type annotations are idiomatically imported this way: `import type Parser
+   * from 'tree-sitter'` is the normal form, not an edge case, and it left
+   * every `node: Parser.SyntaxNode` receiver undispositionable.
+   *
+   * PURELY ADDITIVE: `kind` stays 'typeOnly' and `reason` stays
+   * 'type_only_import', so every existing consumer and edge-confidence tier is
+   * byte-identical. This field only lets a consumer that cares ask the
+   * question, with the classification logic staying in ONE place — here.
+   */
+  typeOnlyOrigin?: 'project' | 'external' | 'node_builtin' | 'python_stdlib';
+  /**
    * Workspace linkage (WO-CROSS-REPO-WORKSPACE-LINKAGE-001, opt-in via
    * .coderef/workspace.json). Set when the bare specifier's package name is
    * mapped in the workspace registry: the package name and the ABSOLUTE
@@ -547,6 +564,19 @@ function resolveAstImportsInternal(
         base.kind = 'typeOnly';
         base.reason = 'type_only_import';
         if (moduleFile) base.resolvedModuleFile = moduleFile;
+        // Record the origin this specifier WOULD have classified as (FU-2
+        // lever 2). Additive only — kind and reason above are untouched.
+        if (moduleFile) {
+          base.typeOnlyOrigin = 'project';
+        } else if (isBareSpecifier(fact.moduleSpecifier)) {
+          if (isBuiltin(fact.moduleSpecifier)) {
+            base.typeOnlyOrigin = 'node_builtin';
+          } else if (isPythonStdlib(fact.moduleSpecifier)) {
+            base.typeOnlyOrigin = 'python_stdlib';
+          } else if (classifyBareSpecifier(fact.moduleSpecifier, externalSet) === 'external') {
+            base.typeOnlyOrigin = 'external';
+          }
+        }
         out.push(base);
         continue;
       }
