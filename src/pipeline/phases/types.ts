@@ -55,6 +55,8 @@ export interface PipelineContext {
   startTime: number;
 
   files: Map<string, string[]>;
+  /** Pre-cache-filter file total — scan-progress logging denominator. */
+  totalFiles: number;
   elements: ElementData[];
   imports: ImportRelationship[];
   calls: CallRelationship[];

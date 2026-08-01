@@ -54,7 +54,14 @@ import type {
 import { runPhases, pipelineStateOf, type PipelineContext } from './phases/types.js';
 import { resolveTailPhases } from './phases/resolve-tail.js';
 import {
-  buildFactSet,
+  resetRegistryPhase,
+  discoverFilesPhase,
+  cacheFilterPhases,
+  preloadGrammarsPhase,
+  scanFilesPhase,
+  persistFactSetPhase,
+} from './phases/scan-front.js';
+import {
   canonicalFactKey,
   dedupeFactSet,
   mergeChangedFacts,
@@ -103,178 +110,61 @@ export class PipelineOrchestrator {
       logger.info(`[PipelineOrchestrator] Languages: ${languages.join(', ')}`);
     }
 
-    // Reset global registry for this run (WO-CODEREF-CORE-REGISTRY-001)
-    globalRegistry.clear();
-
-    // Step 1: Discover files
-    if (verbose) logger.info('[PipelineOrchestrator] Discovering files...');
-    const files = await this.discoverFiles(projectPath, languages, options);
-    const totalFiles = Array.from(files.values()).reduce((sum, arr) => sum + arr.length, 0);
-
-    if (verbose) {
-      logger.info(`[PipelineOrchestrator] Found ${totalFiles} files across ${files.size} languages`);
-    }
-
-    // IMP-CORE-028: Initialize incremental cache
+    // The full pipeline is a phase-list literal over the shared executor
+    // (WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-
+    // ORCHESTRATOR-TS-001 Phase 2): scan front (registry reset -> Step 1
+    // discovery -> Step 1b IMP-CORE-028 cache filter -> Step 2 grammar
+    // preload -> Step 3 single-pass scan) feeding the shared resolve tail
+    // (Steps 4-4.8, Phase 1). The persistence phases (Step 5 cache update,
+    // Step 5.5 fact-set write) run after the completion logs below,
+    // preserving the historical step order exactly.
     const incrementalEnabled = options.incremental ?? false;
     const cache = new IncrementalCache(projectPath, incrementalEnabled);
-    let allFilesUnchanged: string[] = [];
-    let cacheHitRatio = 0;
+    const cachePair = cacheFilterPhases(cache, incrementalEnabled);
 
-    if (incrementalEnabled) {
-      await cache.load();
-
-      // Flatten all file paths for cache check
-      const allFilePaths: string[] = [];
-      for (const filePaths of files.values()) {
-        allFilePaths.push(...filePaths);
-      }
-
-      // Check which files need re-scanning
-      const cacheCheck = await cache.checkFiles(allFilePaths);
-      allFilesUnchanged = cacheCheck.filesUnchanged;
-      cacheHitRatio = cacheCheck.hitRatio;
-
-      // Filter files map to only include files that need scanning
-      const filesToScanSet = new Set(cacheCheck.filesToScan);
-      for (const [lang, filePaths] of files.entries()) {
-        const filtered = filePaths.filter(fp => filesToScanSet.has(fp));
-        files.set(lang, filtered);
-      }
-
-      // Remove deleted files from cache
-      cache.removeDeletedFiles(cacheCheck.filesDeleted);
-
-      if (verbose) {
-        logger.info(`[PipelineOrchestrator] Incremental mode: ${cacheCheck.filesToScan.length} to scan, ${cacheCheck.filesUnchanged.length} cached`);
-      }
-    }
-
-    // Step 2: Preload grammars for detected languages
-    const detectedLanguages = Array.from(files.keys());
-    await this.registry.preloadGrammars(detectedLanguages);
-
-    // Step 3: Process files in single pass
-    if (verbose) logger.info('[PipelineOrchestrator] Processing files...');
-    const allElements: ElementData[] = [];
-    const allImports: ImportRelationship[] = [];
-    const allCalls: CallRelationship[] = [];
-    const allHeritage: HeritageRelationship[] = [];
-    const allRawImports: RawImportFact[] = [];
-    const allRawCalls: RawCallFact[] = [];
-    const allRawExports: RawExportFact[] = [];
-    const allHeaderFacts = new Map<string, HeaderFact>();
-    const allHeaderImportFacts: HeaderImportFact[] = [];
-    const allHeaderParseErrors: HeaderParseError[] = [];
-    // API-surface facts (WO-API-SURFACE-MAPPING-...-001 P1). Accumulated exactly like
-    // the arrays above so routes ride the single pass rather than a second file walk.
-    const allRoutes: RouteFact[] = [];
-    const allFrontendCalls: FrontendCallFact[] = [];
-    const sources = new Map<string, string>();
-    // P5 (ADJ-03): capture the per-file fact bundle + file order so a full build
-    // can persist the complete fact set for a later graph-safe incremental pass.
-    // Additive — does not alter the accumulation of the all* arrays above.
-    const factBundles = new Map<string, FileFactBundle>();
-    const fileOrder: string[] = [];
-
-    let filesScanned = 0;
-
-    for (const [language, filePaths] of files.entries()) {
-      for (const filePath of filePaths) {
-        try {
-          const result = await this.processFile(filePath, language, verbose);
-
-          // Register all elements with the global registry (WO-CODEREF-CORE-REGISTRY-001)
-          for (const elem of result.elements) {
-            globalRegistry.register(elem);
-          }
-
-          allElements.push(...result.elements);
-          allImports.push(...result.imports);
-          allCalls.push(...result.calls);
-          allHeritage.push(...result.heritage);
-          allRawImports.push(...result.rawImports);
-          allRawCalls.push(...result.rawCalls);
-          allRawExports.push(...result.rawExports);
-          allHeaderFacts.set(filePath, result.headerFact);
-          allHeaderImportFacts.push(...result.headerImportFacts);
-          if (result.headerFact.parseErrors) {
-            allHeaderParseErrors.push(...result.headerFact.parseErrors);
-          }
-          allRoutes.push(...result.routes);
-          allFrontendCalls.push(...result.frontendCalls);
-          sources.set(filePath, result.content);
-          fileOrder.push(filePath);
-          factBundles.set(filePath, {
-            language,
-            elements: result.elements,
-            imports: result.imports,
-            calls: result.calls,
-            heritage: result.heritage,
-            rawImports: result.rawImports,
-            rawCalls: result.rawCalls,
-            rawExports: result.rawExports,
-            headerFact: result.headerFact,
-            headerImportFacts: result.headerImportFacts,
-            routes: result.routes,
-            frontendCalls: result.frontendCalls,
-            content: result.content,
-          });
-          filesScanned++;
-
-          if (verbose && filesScanned % 10 === 0) {
-            logger.info(`[PipelineOrchestrator] Processed ${filesScanned}/${totalFiles} files`);
-          }
-        } catch (error) {
-          logger.error(`[PipelineOrchestrator] Error processing ${filePath}:`, error);
-          // Continue processing other files
-        }
-      }
-    }
-
-    // Steps 4–4.8 run as the shared resolve-tail phase list (WO-DECOUPLE-
-    // PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001
-    // Phase 1): legacy graph -> doc facts -> resolveImports (Phase 3) ->
-    // resolveCalls (Phase 4) -> constructGraph + atomic swap (Phase 5) ->
-    // SCIP overlay (Step 4.8, self-gated on options.scipIndex). The phases
-    // are thin adapters over the same pure functions in the same order —
-    // see src/pipeline/phases/resolve-tail.ts for the per-step contracts
-    // (two-pass purity, dual-source-ambiguity removal, atomic swap,
-    // no-regress overlay).
     const ctx: PipelineContext = {
       projectPath,
       options,
       verbose,
       chainLogs: true,
       startTime,
-      files,
-      elements: allElements,
-      imports: allImports,
-      calls: allCalls,
-      heritage: allHeritage,
-      rawImports: allRawImports,
-      rawCalls: allRawCalls,
-      rawExports: allRawExports,
-      headerFacts: allHeaderFacts,
-      headerImportFacts: allHeaderImportFacts,
-      headerParseErrors: allHeaderParseErrors,
-      routes: allRoutes,
-      frontendCalls: allFrontendCalls,
-      sources,
-      factBundles,
-      fileOrder,
+      files: new Map(),
+      totalFiles: 0,
+      elements: [],
+      imports: [],
+      calls: [],
+      heritage: [],
+      rawImports: [],
+      rawCalls: [],
+      rawExports: [],
+      headerFacts: new Map(),
+      headerImportFacts: [],
+      headerParseErrors: [],
+      routes: [],
+      frontendCalls: [],
+      sources: new Map(),
+      factBundles: new Map(),
+      fileOrder: [],
       docs: [],
       // Seeded by the legacy-graph phase (first in the tail list).
       graph: undefined as unknown as ExportedGraph,
       importResolutions: [],
       callResolutions: [],
-      filesScanned,
+      filesScanned: 0,
     };
+
     await runPhases(
-      resolveTailPhases(
-        (e, i, c, h, p) => this.buildGraph(e, i, c, h, p),
-        { includeScipOverlay: true },
-      ),
+      [
+        resetRegistryPhase(),
+        discoverFilesPhase((p, l, o) => this.discoverFiles(p, l, o), languages),
+        cachePair.filter,
+        preloadGrammarsPhase(this.registry),
+        scanFilesPhase((f, l, v) => this.processFile(f, l, v)),
+        ...resolveTailPhases(
+          (e, i, c, h, p) => this.buildGraph(e, i, c, h, p),
+          { includeScipOverlay: true },
+        ),
+      ],
       ctx,
     );
     const graph = ctx.graph;
@@ -285,40 +175,18 @@ export class PipelineOrchestrator {
 
     if (verbose) {
       logger.info(`[PipelineOrchestrator] Pipeline complete in ${endTime - startTime}ms`);
-      logger.info(`[PipelineOrchestrator] Elements: ${allElements.length}`);
-      logger.info(`[PipelineOrchestrator] Imports: ${allImports.length}`);
-      logger.info(`[PipelineOrchestrator] Calls: ${allCalls.length}`);
+      logger.info(`[PipelineOrchestrator] Elements: ${ctx.elements.length}`);
+      logger.info(`[PipelineOrchestrator] Imports: ${ctx.imports.length}`);
+      logger.info(`[PipelineOrchestrator] Calls: ${ctx.calls.length}`);
       logger.info(`[PipelineOrchestrator] Import resolutions: ${importResolutions.length}`);
       logger.info(`[PipelineOrchestrator] Call resolutions: ${callResolutions.length}`);
       logger.info(`[PipelineOrchestrator] Graph nodes: ${graph.nodes.length}`);
       logger.info(`[PipelineOrchestrator] Graph edges: ${graph.edges.length}`);
     }
 
-    // Step 5: Update cache with newly scanned files
-    if (incrementalEnabled) {
-      const scannedFiles: string[] = [];
-      for (const filePaths of files.values()) {
-        scannedFiles.push(...filePaths);
-      }
-      await cache.updateCache(scannedFiles);
-      await cache.save();
-    }
-
-    // Step 5.5 (P5, ADJ-03): persist the full-project fact set after a FULL,
-    // NON-incremental build. This is the input a later graph-safe incremental
-    // pass merges changed-file rescans into. Guarded on !incrementalEnabled so
-    // the persisted set always reflects a COMPLETE universe (an incremental
-    // orchestrator.run() would filter `files` and produce a partial set — never
-    // persist that). Best-effort: a write failure must not fail the build.
-    if (!incrementalEnabled && options.outputDir) {
-      try {
-        const factSet = buildFactSet(projectPath, fileOrder, factBundles);
-        writeFactSet(projectPath, factSet);
-        if (verbose) logger.info(`[PipelineOrchestrator] Persisted incremental fact set (${fileOrder.length} files).`);
-      } catch (e) {
-        logger.warn(`[PipelineOrchestrator] Failed to persist incremental fact set: ${e instanceof Error ? e.message : String(e)}`);
-      }
-    }
+    // Step 5 (cache update) + Step 5.5 (fact-set persistence) as phases —
+    // after the completion logs, exactly where they always ran.
+    await runPhases([cachePair.persist, persistFactSetPhase(incrementalEnabled)], ctx);
 
     // Step 6: Return populated state
     const state: PipelineState = {
@@ -326,12 +194,12 @@ export class PipelineOrchestrator {
       metadata: {
         startTime,
         endTime,
-        filesScanned,
-        elementsExtracted: allElements.length,
-        relationshipsExtracted: allImports.length + allCalls.length,
+        filesScanned: ctx.filesScanned,
+        elementsExtracted: ctx.elements.length,
+        relationshipsExtracted: ctx.imports.length + ctx.calls.length,
         incremental: incrementalEnabled ? {
-          filesSkipped: allFilesUnchanged.length,
-          hitRatio: cacheHitRatio,
+          filesSkipped: cachePair.stats.filesUnchanged.length,
+          hitRatio: cachePair.stats.hitRatio,
           enabled: true,
         } : undefined,
       },
@@ -518,6 +386,7 @@ export class PipelineOrchestrator {
       chainLogs: false,
       startTime,
       files,
+      totalFiles: set.order.length,
       elements: allElements,
       imports: allImports,
       calls: allCalls,

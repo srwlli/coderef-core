@@ -6,7 +6,7 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "status": "implementing",
-  "current_phase": 1,
+  "current_phase": 2,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts\\context.json",
@@ -52,7 +52,15 @@
       "detail": "P1-T1/P1-T6 fingerprint instrument corrected: before/after populate on the LIVE self-hosting repo cannot be id-identical across a source edit (new files + line shifts). Binding parity proof = frozen-tree A/B (old dist vs new dist over one immutable tree copy): PASS, byte-identical node/edge/resolved id sets. Applies to P2-T4 and P3-T3 equally (prev-phase dist snapshot = OLD)."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "30d9e08a1be1",
+      "verdict": "PASS",
+      "at": "2026-08-01T12:27:26Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
