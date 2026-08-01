@@ -125,7 +125,17 @@ export class CanonicalGraphQuery {
     const noLine = nodes.filter(n => (n.metadata as any)?.codeRefIdNoLine === query);
     if (noLine.length > 0) return { nodes: noLine, byFile: false };
 
-    const byName = nodes.filter(n => n.name === query);
+    // Doc SECTION nodes are excluded from name-based resolution
+    // (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001). A section's
+    // `name` is its heading text, and resource sheets routinely head a section
+    // with the exact name of the symbol it documents — so including sections
+    // here made `resolve('normalizeSlashes')` return the prose ALONGSIDE the
+    // function, silently changing what every name-keyed query (what_calls,
+    // impact_of, find_element, symbol_context) answers about real code.
+    // Sections stay fully addressable by their exact id (matched above) and
+    // reachable via `contains` / docReferences(); they simply never shadow or
+    // join a code symbol that happens to share their heading.
+    const byName = nodes.filter(n => n.name === query && !isDocSectionNode(n));
     if (byName.length > 0) return { nodes: byName, byFile: false };
 
     const qPath = normalizeSlashes(query).replace(/^@File\//, '');
@@ -144,9 +154,10 @@ export class CanonicalGraphQuery {
     return {
       nodes: nodes.filter(
         n =>
-          n.id.toLowerCase().includes(q) ||
-          (n.name ?? '').toLowerCase().includes(q) ||
-          (n.file ?? '').toLowerCase().includes(q),
+          !isDocSectionNode(n) &&
+          (n.id.toLowerCase().includes(q) ||
+            (n.name ?? '').toLowerCase().includes(q) ||
+            (n.file ?? '').toLowerCase().includes(q)),
       ),
       byFile: false,
     };
@@ -592,6 +603,17 @@ const IMPORT: ReadonlySet<string> = new Set(['import']);
  * invariant), so an endpoint whose client could not be matched is reported by
  * unresolved_edges and never silently walked.
  */
+/**
+ * Is this node a doc SECTION (`@Doc/x.md#slug`) rather than a code element or
+ * a whole-file doc? Section nodes carry `metadata.docSection === true`; the id
+ * shape is a corroborating signal, never the test on its own.
+ *
+ * Used to keep sections OUT of name-keyed resolution — see resolve().
+ */
+function isDocSectionNode(node: { id: string; metadata?: unknown }): boolean {
+  return (node.metadata as { docSection?: boolean } | undefined)?.docSection === true;
+}
+
 const DEPENDS: ReadonlySet<string> = new Set([
   'call',
   'import',

@@ -1,0 +1,18 @@
+{
+  "id": "DEFECT-1",
+  "found": "2026-08-01, post-P3, while demonstrating the feature to the operator",
+  "found_by": "operator question \u2014 a live blast-radius demo disagreed with the claim being made about it",
+  "severity": "high (silent wrong answers on real code queries)",
+  "symptom": "dependentsOf('normalizeSlashes') returned 332 nodes post-WO vs 331 pre-WO, including a @Doc node",
+  "root_cause": "Doc SECTION nodes carry the heading text as node.name, and resource sheets routinely head a section with the EXACT name of the symbol they document. Name-keyed resolution (CanonicalGraphQuery.resolve + the MCP resolveNodes twin) matched the prose section ALONGSIDE the real element, so every name-keyed query \u2014 what_calls, impact_of, find_element, symbol_context \u2014 silently gained doc nodes in its answer about real code.",
+  "why_the_original_reasoning_missed_it": "The design lock reasoned about EDGE traversal ('contains can only land on doc nodes, so it cannot perturb an element-to-element answer') and never considered NODE RESOLUTION. The perturbation entered before traversal began, at the seed set.",
+  "fix": "Doc section nodes are excluded from name-keyed resolution in BOTH resolvers (src/query/canonical-graph.ts resolve(), src/cli/mcp/shared.ts resolveNodes()) \u2014 both the exact-name branch and the substring fallback. Sections remain fully addressable by exact id and reachable via contains / docReferences(). isDocSectionNode() keys on metadata.docSection, never on the id shape alone.",
+  "verification": {
+    "differential": "pre-WO graph reconstructed by stripping exactly what this WO adds (section nodes, contains, references), then resolve / dependentsOf / callersOf compared across 403 element names including ALL 3 names that collide with a section heading",
+    "result": "0 differing answers in 1209 query comparisons",
+    "regression_tests": "4 added (collision minted, both resolvers return only the element, id still addressable, no @Doc in blast radius)",
+    "suite": "2567 passed / 35 skipped / 0 failed",
+    "graph_unchanged": "query-side fix only \u2014 code universe still byte-identical (3741 nodes / 45305 edges), section nodes unchanged"
+  },
+  "lesson": "A new node KIND has two blast surfaces, not one: which edges are walked, and what name-based lookup returns. The second is invisible to edge-level reasoning and is where this defect lived."
+}

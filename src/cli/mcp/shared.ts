@@ -410,6 +410,11 @@ export interface Resolution {
  * path (slash-normalized — returns ALL elements of the file), then
  * case-insensitive substring over id/name/file.
  */
+/** Doc SECTION node (`@Doc/x.md#slug`)? Kept out of name-keyed resolution. */
+function isDocSectionNode(node: { metadata?: Record<string, unknown> | undefined }): boolean {
+  return (node.metadata as { docSection?: boolean } | undefined)?.docSection === true;
+}
+
 export function resolveNodes(query: string, graph: ExportedGraph): Resolution {
   const exact = graph.nodes.filter(n => n.id === query);
   if (exact.length > 0) return { nodes: exact, byFile: false };
@@ -417,7 +422,14 @@ export function resolveNodes(query: string, graph: ExportedGraph): Resolution {
   const noLine = graph.nodes.filter(n => n.metadata?.codeRefIdNoLine === query);
   if (noLine.length > 0) return { nodes: noLine, byFile: false };
 
-  const byName = graph.nodes.filter(n => n.name === query);
+  // Doc SECTION nodes never participate in name-keyed resolution
+  // (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001). A resource
+  // sheet routinely heads a section with the exact name of the symbol it
+  // documents, so including sections here would make resolveNodes('foo')
+  // return the prose alongside the function and change what every name-keyed
+  // MCP tool answers about real code. MUST stay in lockstep with
+  // CanonicalGraphQuery.resolve() — two resolvers, one contract.
+  const byName = graph.nodes.filter(n => n.name === query && !isDocSectionNode(n));
   if (byName.length > 0) return { nodes: byName, byFile: false };
 
   const qPath = normalizeSlashes(query).replace(/^@File\//, '');
@@ -428,9 +440,10 @@ export function resolveNodes(query: string, graph: ExportedGraph): Resolution {
   return {
     nodes: graph.nodes.filter(
       n =>
-        n.id.toLowerCase().includes(q) ||
-        (n.name ?? '').toLowerCase().includes(q) ||
-        (n.file ?? '').toLowerCase().includes(q),
+        !isDocSectionNode(n) &&
+        (n.id.toLowerCase().includes(q) ||
+          (n.name ?? '').toLowerCase().includes(q) ||
+          (n.file ?? '').toLowerCase().includes(q)),
     ),
     byFile: false,
   };

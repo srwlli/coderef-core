@@ -49,7 +49,7 @@ import {
 import { constructGraph } from '../../src/pipeline/graph-builder.js';
 import { CanonicalGraphQuery } from '../../src/query/canonical-graph.js';
 import { condenseSummary } from '../../src/query/orient.js';
-import { emptyCache, loadGraph } from '../../src/cli/mcp/shared.js';
+import { emptyCache, loadGraph, resolveNodes } from '../../src/cli/mcp/shared.js';
 import type { PipelineState } from '../../src/pipeline/types.js';
 import type { ExportedGraph } from '../../src/export/graph-exporter.js';
 
@@ -794,5 +794,48 @@ describe('fenced-block identifiers (DL-4 quarantine)', () => {
       .edges.filter(e => e.relationship === 'references');
     expect(refs).toHaveLength(1);
     expect((refs[0].evidence as { origin: string }).origin).toBe('prose');
+  });
+});
+
+/**
+ * REGRESSION (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001).
+ *
+ * Resource sheets routinely head a section with the exact name of the symbol
+ * they document, so a section node's `name` can collide with a real element's.
+ * Caught live: `resolve('normalizeSlashes')` returned the prose section
+ * ALONGSIDE the function, which silently changed every name-keyed answer
+ * (what_calls / impact_of / find_element) about real code. Sections must be
+ * addressable by id and unreachable by name.
+ */
+describe('doc sections never shadow a code symbol by name', () => {
+  const sheetPath = 'coderef/resource-sheets/client-RESOURCE-SHEET.md';
+  const docId = docNodeId(sheetPath);
+  // A heading named EXACTLY like the element in makeState().
+  const sections = extractDocSections(docId, '## loadUsers\nProse about it.\n');
+  const graph = constructGraph(makeState([sheetFact({ sections })]));
+  const sectionId = `${docId}#loadusers`;
+
+  it('mints the colliding section node (the hazard is real, not hypothetical)', () => {
+    expect(graph.nodes.find(n => n.id === sectionId)?.name).toBe('loadUsers');
+  });
+
+  it('resolve() by name returns ONLY the code element, in both resolvers', () => {
+    const q = new CanonicalGraphQuery(graph as unknown as ExportedGraph);
+    expect(q.resolve('loadUsers').nodes.map(n => n.id)).toEqual(['@Fn/src/client.ts#loadUsers:3']);
+    expect(resolveNodes('loadUsers', graph as unknown as ExportedGraph).nodes.map(n => n.id))
+      .toEqual(['@Fn/src/client.ts#loadUsers:3']);
+  });
+
+  it('the section is still addressable by its exact id', () => {
+    const q = new CanonicalGraphQuery(graph as unknown as ExportedGraph);
+    expect(q.resolve(sectionId).nodes.map(n => n.id)).toEqual([sectionId]);
+    expect(resolveNodes(sectionId, graph as unknown as ExportedGraph).nodes.map(n => n.id))
+      .toEqual([sectionId]);
+  });
+
+  it('blast radius for the symbol contains no doc node at all', () => {
+    const q = new CanonicalGraphQuery(graph as unknown as ExportedGraph);
+    const deps = q.dependentsOf(q.resolve('loadUsers')).map(n => n.id);
+    expect(deps.filter(id => id.startsWith('@Doc/'))).toEqual([]);
   });
 });

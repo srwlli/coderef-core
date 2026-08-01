@@ -70,6 +70,12 @@
       "validator_exit": 0,
       "at": "2026-08-01T15:45:00Z",
       "note": "6 generators + validate-docs exit 0 with the known 25-invalid-UUID-anchor warning (STUB-48QPYN, pre-existing). Regenerated API/EXPORTS/HOTSPOTS/INDEX/RELATIONSHIPS."
+    },
+    {
+      "event": "defect_found_and_fixed",
+      "id": "DEFECT-1",
+      "at": "2026-08-01T16:30:00Z",
+      "detail": "Doc section nodes shadowed code symbols in NAME-keyed resolution (resource sheets head sections with the documented symbol's exact name), silently changing what_calls/impact_of/find_element answers about real code. Surfaced by an operator-facing demo, NOT by the phase gates \u2014 the parity instrument compares GRAPH CONTENT and is blind to query semantics. Fixed in both resolvers; 0 diffs across 1209 query comparisons incl. all 3 colliding names; 4 regression tests; suite 2567/35/0. See defect-1-name-collision.json."
     }
   ],
   "phase_transitions": [
