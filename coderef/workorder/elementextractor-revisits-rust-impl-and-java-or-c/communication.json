@@ -211,6 +211,16 @@
       "worse_than_the_ticket_said": "The ticket predicted an unresolved symbol. True on the AST leg. On the HEADER leg the same miss reaches import-resolver.ts:710-713 and becomes kind=stale, reason=symbol_not_in_module_exports - a CORRECT header re-exporting through a rename was reported as stale source. A false accusation, not just a dropped edge.",
       "suite": "2614 passed / 26 skipped / 0 failed (baseline 2609 + exactly the 5 new cases). tsc --noEmit exit 0.",
       "at": "2026-08-01T23:45:00Z"
+    },
+    {
+      "event": "p4_findings",
+      "summary": "JsonVectorStore committed every mutation to memory before committing it to disk. Fixed with one snapshot/rollback wrapper across all three mutation paths.",
+      "scope_call": "WIDENED beyond the ticket, deliberately. TKT-2ZSHSZ names upsert. delete() and clear() have the identical shape, and the mid-batch dimension check diverges the store with NO filesystem failure at all. Fixing upsert alone would have left two live instances of the same defect and a test suite that looked green.",
+      "design_note": "Rollback over \"mark the store unusable\": the instance stays consistent AND usable, so a caller that handles the error can retry - pinned as its own test case. The snapshot is SHALLOW, and that is load-bearing: every mutation replaces a whole record entry or deletes a key, none reaches inside an existing record. Stated in the code so a future in-place edit does not silently escape the guard. Cost cannot dominate - save() already JSON.stringify-s the entire store on every mutation, so an O(n) key copy is strictly cheaper than the write it guards.",
+      "failure_injection": "REAL, not mocked. vitest cannot spy on ESM fs exports; a mocked filesystem would prove only the test's own fiction. The tests create a DIRECTORY at the <storagePath>.tmp path save() writes to, so the real writeFileSync fails with a real EISDIR while the real store file keeps its real prior contents.",
+      "ac1_proof": "RAN. Reverted json-store.ts to HEAD: the 4 defect cases fail, both guards pass.",
+      "suite": "2620 passed / 26 skipped / 0 failed (2614 phase-3 baseline + the 6 new cases). tsc --noEmit exit 0.",
+      "at": "2026-08-02T00:15:00Z"
     }
   ],
   "phase_transitions": [

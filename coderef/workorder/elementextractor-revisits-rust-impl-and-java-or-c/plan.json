@@ -260,17 +260,71 @@
     },
     {
       "phase": 4,
-      "name": "json-vector-store-save-failure-leaves-memory-and — DEFERRED",
+      "name": "json-vector-store-save-failure-leaves-memory-and-disk-divergent",
       "hard_stop": true,
       "stub_ref": "STUB-X6ZVGC",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P4-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 4 tasks not yet authored. Pre-condition: Phase 3 must be COMPLETED + REVIEWED before this phase's plan is authored."
+          "id": "P4-T1",
+          "verb": "READ",
+          "description": "src/integration/vector/json-store.ts save/upsert/delete/clear. Confirm all three mutations share the mutate-then-save shape."
+        },
+        {
+          "id": "P4-T2",
+          "verb": "EDIT",
+          "description": "Add snapshot/rollback and a single mutateAndSave wrapper; route upsert, delete and clear through it. One mechanism, uniform across all three, rather than a separate guard per path."
+        },
+        {
+          "id": "P4-T3",
+          "verb": "TEST",
+          "description": "New __tests__/integration/rag/json-store-durability.contract.test.ts - four defect cases plus two guards (store stays usable after rollback; a successful mutation still persists, so the guard is not a no-op)."
+        },
+        {
+          "id": "P4-T4",
+          "verb": "VERIFY",
+          "description": "Revert the source to HEAD and re-run: the four defect cases must fail and both guards must pass."
+        },
+        {
+          "id": "P4-T5",
+          "verb": "VERIFY",
+          "description": "tsc + full suite against the 2614 phase-3 baseline."
         }
-      ]
+      ],
+      "authored_at": "2026-08-01",
+      "ticket_ref": "TKT-2ZSHSZ",
+      "measured_baseline": {
+        "measured_at": "2026-08-01",
+        "method": "Throwaway probe against the real JsonVectorStore. Failure injection is REAL, not mocked: vitest cannot spy on ESM fs exports (\"Module namespace is not configurable in ESM\"), and a mocked filesystem would only prove the test's own fiction. Instead a DIRECTORY is created at the <storagePath>.tmp path save() writes to, so the real writeFileSync fails with a real EISDIR while the real store file keeps its real prior contents.",
+        "observed": [
+          {
+            "shape": "upsert + failed save",
+            "memory": "{a,b}",
+            "disk": "{a}"
+          },
+          {
+            "shape": "delete + failed save",
+            "memory": "{b}",
+            "disk": "{a,b}"
+          },
+          {
+            "shape": "upsert, bad dimension mid-batch",
+            "memory": "{good}",
+            "disk": "{}",
+            "note": "NO injected failure. The dimension check throws partway through the loop, after earlier records are already in memory and before anything reaches disk. One wrong-length vector from a caller was enough to desynchronise the store."
+          }
+        ],
+        "not_in_the_ticket": "The ticket describes upsert only. clear() and delete() have the same shape, and the mid-batch validation case is reachable without any filesystem failure at all - so the defect is not \"save can fail\", it is \"every mutation path commits to memory before it commits to disk\"."
+      },
+      "status": "complete",
+      "verdict": "PASS",
+      "completed_at": "2026-08-01",
+      "evidence": {
+        "source_change": "src/integration/vector/json-store.ts +109/-47 (most of it re-indentation of the three mutation bodies into the wrapper)",
+        "tests": "__tests__/integration/rag/json-store-durability.contract.test.ts, 6 cases",
+        "ac1_revert_proof": "4 defect cases fail at HEAD, 2 guards pass",
+        "suite": "2620 / 26 skipped / 0 failed"
+      }
     },
     {
       "phase": 5,
@@ -423,6 +477,11 @@
       "id": "ADJ-15",
       "applied": true,
       "description": "Phase 3 authored 2026-08-01 from a live source read plus a three-shape probe against the real pipeline. The probe upgraded the ticket: the miss is not only an unresolved AST import, it also makes the HEADER leg report a correct header as STALE (import-resolver.ts:710-713). Recorded as measured_baseline.worse_than_the_ticket_says."
+    },
+    {
+      "id": "ADJ-16",
+      "applied": true,
+      "description": "Phase 4 authored and executed 2026-08-01. Scope widened from the ticket ON PURPOSE and stated: the ticket names upsert, but delete() and clear() have the identical mutate-then-save shape, and the mid-batch dimension failure reaches divergence with no filesystem failure at all. Fixing only upsert would have left two live instances of the same defect behind."
     }
   ],
   "discovery_required": true,

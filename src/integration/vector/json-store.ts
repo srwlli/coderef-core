@@ -254,6 +254,68 @@ export class JsonVectorStore implements VectorStore {
   }
 
   /**
+   * Snapshot of everything a mutation can touch (TKT-2ZSHSZ).
+   *
+   * SHALLOW on purpose, and that is load-bearing: every mutation path replaces
+   * a whole record entry (`this.data.records[id] = {...}`) or deletes a key —
+   * none of them reaches INSIDE an existing record to edit it. So copying the
+   * key map is enough to undo any of them. If a future mutation ever edits a
+   * record in place, this snapshot silently stops protecting it.
+   *
+   * `updatedAt` is included because save() advances it BEFORE writing, so a
+   * failed save would otherwise leave the timestamp claiming a write that
+   * never landed.
+   */
+  private snapshot(): { records: StorageData['records']; namespaces: string[]; updatedAt: string } {
+    return {
+      records: { ...this.data.records },
+      namespaces: [...this.data.namespaces],
+      updatedAt: this.data.updatedAt,
+    };
+  }
+
+  private rollback(snap: ReturnType<JsonVectorStore['snapshot']>): void {
+    this.data.records = snap.records;
+    this.data.namespaces = snap.namespaces;
+    this.data.updatedAt = snap.updatedAt;
+  }
+
+  /**
+   * Apply an in-memory mutation and persist it as one unit (TKT-2ZSHSZ).
+   *
+   * Previously each mutation edited `this.data` and THEN called save(). When
+   * save() threw — a full disk, a read-only volume, a lock on the temp file —
+   * the running instance kept records the valid on-disk file did not have, and
+   * nothing said so. The store went on answering queries from a state no
+   * reload could ever reproduce. Measured, all three shapes:
+   *   upsert + failed save  -> memory {a,b}, disk {a}
+   *   delete + failed save  -> memory {b},   disk {a,b}
+   *   upsert with a bad dimension mid-batch -> memory {good}, disk {}
+   *
+   * The third needs NO injected failure at all: the dimension check throws
+   * partway through the loop, after earlier records were already written into
+   * memory and before anything was written to disk. A caller passing one bad
+   * vector was enough to desynchronise the store.
+   *
+   * Rolling back beats marking the store unusable: the instance stays
+   * consistent AND stays usable, so a caller that handles the error can retry.
+   *
+   * The snapshot cannot dominate cost — save() already serialises the ENTIRE
+   * store with JSON.stringify on every single mutation, so an O(n) key copy is
+   * strictly cheaper than the write it guards.
+   */
+  private async mutateAndSave(mutate: () => void): Promise<void> {
+    const snap = this.snapshot();
+    try {
+      mutate();
+      await this.save();
+    } catch (error) {
+      this.rollback(snap);
+      throw error;
+    }
+  }
+
+  /**
    * Ensure store is initialized
    */
   private ensureInitialized(): void {
@@ -272,30 +334,30 @@ export class JsonVectorStore implements VectorStore {
     this.ensureInitialized();
 
     try {
-      for (const record of records) {
-        // Validate dimension
-        if (record.values.length !== this.data.dimension) {
-          throw new VectorStoreError(
-            `Invalid vector dimension: expected ${this.data.dimension}, got ${record.values.length}`,
-            VectorStoreErrorCode.INVALID_DIMENSIONS
-          );
+      await this.mutateAndSave(() => {
+        for (const record of records) {
+          // Validate dimension
+          if (record.values.length !== this.data.dimension) {
+            throw new VectorStoreError(
+              `Invalid vector dimension: expected ${this.data.dimension}, got ${record.values.length}`,
+              VectorStoreErrorCode.INVALID_DIMENSIONS
+            );
+          }
+
+          // Store record
+          this.data.records[record.id] = {
+            id: record.id,
+            values: record.values,
+            metadata: record.metadata,
+            namespace
+          };
+
+          // Track namespace
+          if (namespace && !this.data.namespaces.includes(namespace)) {
+            this.data.namespaces.push(namespace);
+          }
         }
-
-        // Store record
-        this.data.records[record.id] = {
-          id: record.id,
-          values: record.values,
-          metadata: record.metadata,
-          namespace
-        };
-
-        // Track namespace
-        if (namespace && !this.data.namespaces.includes(namespace)) {
-          this.data.namespaces.push(namespace);
-        }
-      }
-
-      await this.save();
+      });
     } catch (error) {
       if (error instanceof VectorStoreError) throw error;
       throw new VectorStoreError(
@@ -393,18 +455,18 @@ export class JsonVectorStore implements VectorStore {
     this.ensureInitialized();
 
     try {
-      for (const id of ids) {
-        const record = this.data.records[id];
+      await this.mutateAndSave(() => {
+        for (const id of ids) {
+          const record = this.data.records[id];
 
-        // Check namespace if specified
-        if (namespace && record?.namespace !== namespace) {
-          continue;
+          // Check namespace if specified
+          if (namespace && record?.namespace !== namespace) {
+            continue;
+          }
+
+          delete this.data.records[id];
         }
-
-        delete this.data.records[id];
-      }
-
-      await this.save();
+      });
     } catch (error) {
       throw new VectorStoreError(
         `Failed to delete vectors: ${error}`,
@@ -421,23 +483,23 @@ export class JsonVectorStore implements VectorStore {
     this.ensureInitialized();
 
     try {
-      if (namespace) {
-        // Clear only specified namespace
-        for (const [id, record] of Object.entries(this.data.records)) {
-          if (record.namespace === namespace) {
-            delete this.data.records[id];
+      await this.mutateAndSave(() => {
+        if (namespace) {
+          // Clear only specified namespace
+          for (const [id, record] of Object.entries(this.data.records)) {
+            if (record.namespace === namespace) {
+              delete this.data.records[id];
+            }
           }
+
+          // Remove namespace from list
+          this.data.namespaces = this.data.namespaces.filter(ns => ns !== namespace);
+        } else {
+          // Clear all
+          this.data.records = {};
+          this.data.namespaces = [];
         }
-
-        // Remove namespace from list
-        this.data.namespaces = this.data.namespaces.filter(ns => ns !== namespace);
-      } else {
-        // Clear all
-        this.data.records = {};
-        this.data.namespaces = [];
-      }
-
-      await this.save();
+      });
     } catch (error) {
       throw new VectorStoreError(
         `Failed to clear vectors: ${error}`,
