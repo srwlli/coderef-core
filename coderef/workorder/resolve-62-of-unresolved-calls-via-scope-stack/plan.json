@@ -1,0 +1,161 @@
+{
+  "plan_type": "strict",
+  "goal": "Resolve 62% of Unresolved Calls via Scope-Stack Type Inference: extend scope binding pass in call-resolver.ts and scope-binding.ts for factory returns and chained calls",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1: Discovery — reconcile scope against the 731 program evidence",
+      "hard_stop": false,
+      "phase_risk": "medium",
+      "description": "Discovery phase inserted ahead of implementation per operator directive (2026-08-01). ROOT INFO ALREADY EXISTS — do not re-derive it. This WO is GX-002's successor in the Core Improvements 731 program; the program root is coderef/working/coderef-core/core-improvements-731/PLAN.md and two /discover reports in that same folder already characterize this exact question at depth medium and thorough. This phase reads that evidence, re-measures against live numbers, and reconciles the WO's stated scope before any code is touched. It exists because the WO's headline premise is known to be stale: PLAN.md cites 62% / 10,691 edges failing on receiver_not_in_symbol_table, while discovery-resolution-core-issue.md (2026-08-01T08:18Z) measured that class at 7,739 and found 94.8% of ALL unresolved edges (17,301 of 18,249) live in test files as vitest ambient globals and expect()-matcher chains — a denominator artifact no symbol-table resolver can resolve. The engine's own candidate ranking for this WO is separately unusable: it ranked dist-old/src/pipeline/scope-binding.{d.ts,js}, which are stale build artifacts, not source.",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Read the 731 program root and its two existing discovery reports IN FULL before anything else. PLAN.md gives the GX-002..GX-005 program framing and the original 62% claim. discovery-resolution-core-issue.md (depth=medium) carries the denominator-artifact finding and REC-R1..R4. discovery-edge-resolution-program.md (depth=thorough) carries the lever disposition and names the real post-reclassify frontier: FU-2 dotted-chain receiver field-path walking at ~5,050 edges (size L) and FU-3 heritage-aware own-method lookup (size M). Do NOT re-run /discover on this question — it has been run twice and the artifacts are on disk.",
+          "touches": [
+            "coderef/working/coderef-core/core-improvements-731/PLAN.md",
+            "coderef/working/coderef-core/core-improvements-731/discovery-resolution-core-issue.md",
+            "coderef/working/coderef-core/core-improvements-731/discovery-edge-resolution-program.md"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "CHECK",
+          "description": "Re-measure the live unresolved population so this WO works against current numbers rather than PLAN.md's. Read .coderef/validation-report.json for resolution_rate, unresolved, unresolved_src_count, ambiguous, ambiguous_src, builtin, external, provisional. Then facet the unresolved_edges surface by reason (receiver_not_in_symbol_table vs callee_not_in_symbol_table) and by file (*.test.* vs src). Record the drift: the two discovery runs 55 minutes apart already moved unresolved 18,249 -> 18,527 and unresolved_src 948 -> 959, so a third reading is expected to differ again. What matters is the src-scoped figure, not the headline.",
+          "touches": [
+            ".coderef/validation-report.json"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "CHECK",
+          "description": "Discard the engine-generated candidate set and establish the real defect sites by reading them. The generated list named 25 candidates including dist-old/src/pipeline/scope-binding.d.ts and dist-old/src/pipeline/scope-binding.js — compiled output under dist-old/, which is not source and must never be edited. The genuine surfaces named by the thorough discovery are src/pipeline/scope-binding.ts (where GX-002 shipped the scope-stack pass for +14 edges), src/pipeline/call-resolver.ts (home of the P3c js_prototype_member reclassify precedent), and src/pipeline/edge-confidence.ts plus the field-index surface for the FU-2 dotted-receiver lever. Read them and confirm which actually carries the work this WO describes.",
+          "touches": [
+            "src/pipeline/scope-binding.ts",
+            "src/pipeline/call-resolver.ts",
+            "src/pipeline/edge-confidence.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "CHECK",
+          "description": "Resolve the sequencing question this WO cannot answer for itself. REC-R1 (test_dsl reclassify of ambient callees and expect()-rooted matcher receivers) is a disposition change requiring an operator ruling in the P3c shape — it changes zero graph edges but removes ~95% of the denominator. REC-R3 states plainly that the resolver levers should be sequenced AFTER that reclassify so their yield is measured against an honest denominator. Determine whether this WO's factory-returns-and-chained-calls work is (a) the FU-2 lever, which REC-R3 sequences after REC-R1, (b) genuinely independent of the denominator question, or (c) a restatement of work GX-002 already shipped. State which, with evidence.",
+          "touches": []
+        },
+        {
+          "id": "P1-T5",
+          "verb": "WRITE",
+          "description": "Write the reconciled scope into analysis.json, which is currently an empty skeleton (empty blast_radius, risks, candidates, decision_records). Populate: the real defect sites from P1-T3 with the dist-old/ candidates explicitly listed as ruled out and why; the live measurements from P1-T2 as the baseline this WO will be judged against; blast_radius from the actual dependents; a decision record for the P1-T4 sequencing verdict; and a risk entry for the measurement trap — that any yield reported against the raw 18k denominator will read as ~0.1pp regardless of real effect, exactly as GX-002's +106 resolved edges did.",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "COMMIT",
+          "description": "Commit the discovery phase — analysis.json and plan.json only, no source. Route through the guarded runner with explicit --paths; never git add -A in the shared checkout.",
+          "touches": []
+        },
+        {
+          "id": "P1-T7",
+          "verb": "STOP",
+          "description": "HALT and report before Phase 2. Phase 2 as written implements against the original 62% premise. If P1-T4 concluded (a) or (c), that premise no longer holds and Phase 2's goal must be restated or the WO folded into the REC-R1 sequence — either is an operator ruling, not an executor decision. Surface the reconciled scope, the live numbers, and the sequencing verdict, then wait.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-3B88N1"
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2: Scope-stack type inference for factory returns and chained calls",
+      "hard_stop": true,
+      "phase_risk": "medium",
+      "description": "Implementation phase — the WO's original single phase, renumbered when discovery was inserted ahead of it. Its task list still reflects the engine's generated candidate ranking and MUST be re-grounded from Phase 1's analysis.json before execution. Do not execute this phase until the Phase 1 STOP is answered.",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "READ",
+          "description": "Read the defect sites confirmed by Phase 1 (analysis.json candidates), NOT the engine's original 25-candidate list. The generated list is superseded: it ranked dist-old/ build artifacts alongside source. Confirm which files actually carry the factory-return and chained-call inference gap.",
+          "touches": [
+            "src/pipeline/scope-binding.ts",
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "CHECK",
+          "description": "Analyze blast radius against the dependents recorded in Phase 1's analysis.json. The engine's original figure was 92 dependent files; verify that against the real candidate set rather than inheriting it, since the candidate set changed.",
+          "touches": [
+            "__tests__/pipeline/graph-ground-truth.test.ts",
+            "__tests__/map/engineering-metrics.test.ts"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "WRITE",
+          "description": "Record the intended change in analysis.json: exact defect site, the minimal edit, and what is deliberately OUT of scope. Out-of-scope must explicitly name the test-DSL reclassify (REC-R1) unless the Phase 1 ruling folded it in — it is a separate lever with its own operator ruling.",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P2-T4",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2 through the guarded runner with explicit --paths.",
+          "touches": []
+        },
+        {
+          "id": "P2-T5",
+          "verb": "STOP",
+          "description": "Hard stop: final approval. Report yield stratified — unresolved_src_count and resolved_of_resolvable alongside the raw totals, per REC-R2. Quoting the raw headline alone overstates the production blind spot by roughly 19x.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-3B88N1"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [
+    {
+      "id": "ADJ-01",
+      "description": "Discovery phase inserted ahead of the original implementation phase per operator directive 2026-08-01; original Phase 1 renumbered to Phase 2 and its tasks re-keyed P1-T* -> P2-T*. Root program evidence is coderef/working/coderef-core/core-improvements-731/ and is to be READ, not re-derived.",
+      "applied": true
+    },
+    {
+      "id": "ADJ-02",
+      "description": "The engine's discovery_ref candidate ranking (planning-discovery-20260801T123134Z) is recorded as unusable: it ranked dist-old/src/pipeline/scope-binding.{d.ts,js} — compiled build output, not source. Phase 1 re-establishes the candidate set from the 731 thorough discovery instead.",
+      "applied": true
+    },
+    {
+      "id": "ADJ-03",
+      "description": "The WO's headline premise (62% / 10,691 edges on receiver_not_in_symbol_table, from PLAN.md) is superseded by discovery-resolution-core-issue.md: the class measured 7,739 and 94.8% of all unresolved edges are test-framework DSL. Phase 1 P1-T4 resolves whether the WO's scope survives that finding; Phase 2 must not execute against the stale premise.",
+      "applied": false
+    }
+  ],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T123134Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-RESOLVE-62-OF-UNRESOLVED-CALLS-VIA-SCOPE-STACK-001",
+  "feature_name": "resolve-62-of-unresolved-calls-via-scope-stack",
+  "created": "2026-08-01T12:31:00.991692+00:00",
+  "plan_type_rationale": "Category feature maps to strict"
+}

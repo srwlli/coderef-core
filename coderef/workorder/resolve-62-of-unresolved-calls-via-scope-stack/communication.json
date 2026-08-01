@@ -1,0 +1,62 @@
+{
+  "workorder_id": "WO-RESOLVE-62-OF-UNRESOLVED-CALLS-VIA-SCOPE-STACK-001",
+  "feature_name": "resolve-62-of-unresolved-calls-via-scope-stack",
+  "created": "2026-08-01T12:31:00.991692+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\resolve-62-of-unresolved-calls-via-scope-stack\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\resolve-62-of-unresolved-calls-via-scope-stack\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\resolve-62-of-unresolved-calls-via-scope-stack\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-3B88N1",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-3B88N1",
+      "plan_type": "strict",
+      "timestamp": "2026-08-01T12:31:00.991692+00:00"
+    },
+    {
+      "event": "plan_restructured",
+      "at": "2026-08-01T12:39:44.914209Z",
+      "change": "discovery_phase_inserted",
+      "phases_before": 1,
+      "phases_after": 2,
+      "task_ids_renumbered": "P1-T1..P1-T5 -> P2-T1..P2-T5",
+      "root_info_ref": "coderef-core:coderef/working/coderef-core/core-improvements-731/",
+      "discovery_artifacts_referenced": [
+        "PLAN.md",
+        "discovery-resolution-core-issue.md",
+        "discovery-edge-resolution-program.md"
+      ],
+      "schema_gate": "validate-plan-schema.py PASS (exit 0)",
+      "authorized_by": "operator directive 2026-08-01",
+      "note": "Discovery phase inserted ahead of implementation per operator directive. Program root evidence at coderef/working/coderef-core/core-improvements-731/ is to be READ, not re-derived. Headline premise (62%/10,691 receiver_not_in_symbol_table) is superseded by discovery-resolution-core-issue.md (class measured 7,739; 94.8% of unresolved edges are test-framework DSL). Engine discovery_ref candidate ranking discarded: it ranked dist-old/ build artifacts."
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T12:31:00.991692+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-3B88N1"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

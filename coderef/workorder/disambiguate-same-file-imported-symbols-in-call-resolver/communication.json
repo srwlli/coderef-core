@@ -1,0 +1,62 @@
+{
+  "workorder_id": "WO-DISAMBIGUATE-SAME-FILE-IMPORTED-SYMBOLS-IN-CALL-RESOLVER-001",
+  "feature_name": "disambiguate-same-file-imported-symbols-in-call-resolver",
+  "created": "2026-08-01T12:12:05.769783+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\disambiguate-same-file-imported-symbols-in-call-resolver\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\disambiguate-same-file-imported-symbols-in-call-resolver\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\disambiguate-same-file-imported-symbols-in-call-resolver\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-7TJ00Z",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-7TJ00Z",
+      "plan_type": "strict",
+      "timestamp": "2026-08-01T12:12:05.769783+00:00"
+    },
+    {
+      "event": "plan_restructured",
+      "at": "2026-08-01T12:39:44.914209Z",
+      "change": "discovery_phase_inserted",
+      "phases_before": 1,
+      "phases_after": 2,
+      "task_ids_renumbered": "P1-T1..P1-T6 -> P2-T1..P2-T6",
+      "root_info_ref": "coderef-core:coderef/working/coderef-core/core-improvements-731/",
+      "discovery_artifacts_referenced": [
+        "PLAN.md",
+        "discovery-resolution-core-issue.md",
+        "discovery-edge-resolution-program.md"
+      ],
+      "schema_gate": "validate-plan-schema.py PASS (exit 0)",
+      "authorized_by": "operator directive 2026-08-01",
+      "note": "Discovery phase inserted ahead of implementation per operator directive. Program root evidence at coderef/working/coderef-core/core-improvements-731/ is to be READ, not re-derived. Premise SURVIVES the 731 denominator-artifact finding: ambiguity is src-heavy (1,189 of 1,722 in src) unlike the unresolved population. P1-T2 reconciles the objective 1,203 figure against measured facets before Phase 2 measures a delta."
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T12:12:05.769783+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-7TJ00Z"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

@@ -1,0 +1,158 @@
+{
+  "plan_type": "strict",
+  "goal": "Disambiguate Same-File & Imported Symbols in Call Resolver: add file proximity scoring to classifyBareCall to resolve same-file and imported candidate symbols",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1: Discovery — ground the ambiguous-edge population against the 731 program evidence",
+      "hard_stop": false,
+      "phase_risk": "low",
+      "description": "Discovery phase inserted ahead of implementation per operator directive (2026-08-01). ROOT INFO ALREADY EXISTS — do not re-derive it. This WO belongs to the Core Improvements 731 edge-resolution program; the program root is coderef/working/coderef-core/core-improvements-731/PLAN.md and two /discover reports in that same folder (depth medium and thorough) already characterize the unresolved and ambiguous populations. Unlike its sibling WO-RESOLVE-62, this WO's premise SURVIVES that evidence: the discovery found the raw unresolved headline to be a test-DSL denominator artifact, but ambiguity is a separate and genuinely src-heavy population — 1,189 of 1,722 ambiguous edges are in src (69%), against only 948 of 18,249 unresolved. This is the cleaner lever of the two. This phase confirms that reading against live numbers and pins a measurable baseline before any edit.",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Read the 731 program root and its two existing discovery reports before anything else. PLAN.md gives the program framing. discovery-resolution-core-issue.md carries the denominator-artifact finding that separates the ambiguous population from the unresolved one. discovery-edge-resolution-program.md (thorough) carries the lever disposition and confirms call-resolver.ts as the surface. Do NOT re-run /discover on this question — it has been run twice and the artifacts are on disk.",
+          "touches": [
+            "coderef/working/coderef-core/core-improvements-731/PLAN.md",
+            "coderef/working/coderef-core/core-improvements-731/discovery-resolution-core-issue.md",
+            "coderef/working/coderef-core/core-improvements-731/discovery-edge-resolution-program.md"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "CHECK",
+          "description": "Pin the baseline this WO will be judged against, and reconcile the count discrepancy. The WO objective claims 1,203 ambiguous call edges; the 731 discovery measured ambiguous=1,722 total with ambiguous_src=1,189 at 08:18Z and ambiguous=1,730 at 09:13Z. Determine which facet 1,203 refers to — total, src-scoped, or bare-call-only — and record the exact figure and facet that Phase 2 must move. An unstated facet is how a real improvement gets reported as a regression.",
+          "touches": [
+            ".coderef/validation-report.json"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "READ",
+          "description": "Read classifyBareCall in src/pipeline/call-resolver.ts and confirm the defect site directly. Establish how candidate symbols are currently collected and returned when more than one matches, what the existing kind/confidence vocabulary is, and where the same-file and imported bindings are already known to the resolver — the import-resolver output is the source of the 'imported' tier, so confirm what it makes available at this point in the pass. Note that this file is also home to the P3c js_prototype_member reclassify precedent; read enough of it to avoid colliding with that classification path.",
+          "touches": [
+            "src/pipeline/call-resolver.ts",
+            "src/pipeline/import-resolver.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "CHECK",
+          "description": "Test the RISK-001 shadowing hypothesis already recorded in analysis.json against real data before writing code. Sample the actual ambiguous edges whose candidates include a same-file symbol and check how often the same-file candidate is the correct target versus a shadowed or coincidental name match. Proximity scoring is only safe if same-file wins are near-universal; if the sample shows meaningful shadowing, the mitigation needs to be stronger than 'keep confidence=strong'. Record the sample size and the hit rate.",
+          "touches": []
+        },
+        {
+          "id": "P1-T5",
+          "verb": "WRITE",
+          "description": "Update analysis.json with what discovery established: the pinned baseline figure and its facet from P1-T2, the confirmed defect site and current behavior from P1-T3, the shadowing sample and hit rate from P1-T4, and a decision record stating whether the 3-tier scheme survives contact with the data as designed. The existing RISK-001 entry stays but gains an evidence field rather than remaining an assertion.",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "COMMIT",
+          "description": "Commit the discovery phase — analysis.json and plan.json only, no source. Route through the guarded runner with explicit --paths; never git add -A in the shared checkout.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-7TJ00Z"
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2: File-Proximity Symbol Disambiguation",
+      "hard_stop": true,
+      "phase_risk": "medium",
+      "description": "Implement file proximity scoring in classifyBareCall to prioritize same-file and imported symbols over distant global duplicates. The WO's original single phase, renumbered when discovery was inserted ahead of it. Execute against Phase 1's analysis.json, not the original assumptions.",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "READ",
+          "description": "Read src/pipeline/call-resolver.ts lines 700-1000 and the classifyBareCall implementation, alongside Phase 1's analysis.json findings.",
+          "touches": [
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "EDIT",
+          "description": "Implement proximity scoring in classifyBareCall: rank candidate symbols by locality (same_file = 0, imported = 1, global = 2). If a single candidate has minimum proximity, return kind: 'resolved', resolvedTargetCodeRefId, and confidence: 'strong'. Honor whatever guard P1-T4's shadowing sample showed to be necessary — if same-file wins were not near-universal, the elevation must be narrower than the original design.",
+          "touches": [
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "TEST",
+          "description": "Run unit tests: npm test -- __tests__/pipeline/call-resolution-determinism.test.ts to verify call resolution determinism and proximity scoring. Take the verdict from the runner's own output, not a piped exit code.",
+          "touches": [
+            "__tests__/pipeline/call-resolution-determinism.test.ts"
+          ]
+        },
+        {
+          "id": "P2-T4",
+          "verb": "RUN",
+          "description": "Run pipeline validation: node dist/cli/coderef-pipeline.js . --stages=scan,populate,validate to measure the reduction in ambiguous_count in .coderef/validation-report.json. Compare against the exact baseline figure and facet pinned in P1-T2 — not against the WO objective's 1,203, and not against the raw headline.",
+          "touches": []
+        },
+        {
+          "id": "P2-T5",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2 through the guarded runner with explicit --paths.",
+          "touches": []
+        },
+        {
+          "id": "P2-T6",
+          "verb": "STOP",
+          "description": "Hard stop: final phase verification and operator approval. Report the ambiguous-edge delta stratified src vs total, per REC-R2.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-7TJ00Z"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "strict phase gate: verify determinism tests and validation-report ambiguous edge reduction before close"
+    }
+  ],
+  "plan_adjustments_needed": [
+    {
+      "id": "ADJ-01",
+      "description": "Discovery phase inserted ahead of the original implementation phase per operator directive 2026-08-01; original Phase 1 renumbered to Phase 2 and its tasks re-keyed P1-T* -> P2-T*. Root program evidence is coderef/working/coderef-core/core-improvements-731/ and is to be READ, not re-derived.",
+      "applied": true
+    },
+    {
+      "id": "ADJ-02",
+      "description": "The WO objective's '1,203 ambiguous call edges' does not match either figure the 731 discovery measured (ambiguous=1,722 total / ambiguous_src=1,189 at 08:18Z; ambiguous=1,730 at 09:13Z). P1-T2 reconciles the facet and pins the baseline before Phase 2 measures against it.",
+      "applied": false
+    },
+    {
+      "id": "ADJ-03",
+      "description": "RISK-001 (over-eager same-file resolution on shadowed names) was recorded as an assertion with a likelihood but no evidence. P1-T4 samples real ambiguous edges to measure the shadowing rate before the edit, so the mitigation is sized to data rather than assumed.",
+      "applied": false
+    }
+  ],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T121215Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-DISAMBIGUATE-SAME-FILE-IMPORTED-SYMBOLS-IN-CALL-RESOLVER-001",
+  "feature_name": "disambiguate-same-file-imported-symbols-in-call-resolver",
+  "created": "2026-08-01T12:12:05.769783+00:00",
+  "plan_type_rationale": "Category feature maps to strict"
+}
