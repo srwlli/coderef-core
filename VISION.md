@@ -67,6 +67,34 @@ must absorb the coming `CODEREF_LAYERS_PATH` env-pin migration (standards-single
 program) rather than duplicate the `loadLayerEnum` → `ASSISTANT/STANDARDS/layers.json`
 coupling.
 
+## Goals
+
+1. **Own the graph.** Elements, calls, imports, endpoints, and impact are first-class
+   resolved nodes and edges — not text matches. A relationship question is answered from
+   the graph or it is answered as *no resolved data*, never guessed.
+2. **Answer cheaply.** A query returns a compact, graph-shaped result that costs fewer
+   tokens than reading the underlying files. Response bloat is a regression.
+3. **Serve both audiences from one source.** The same artifact renders legibly in a
+   terminal for a person and as a structured tool result for an agent.
+4. **Stay local-first.** The full pipeline — scan, populate, validate, embed, search —
+   runs with no cloud credential. Ollama supplies embeddings.
+5. **Render current reality.** Builds, routes, topology, and drift reflect what the
+   ecosystem *is right now*, sourced from the scan rather than from a doc that claims it.
+
+## Non-goals
+
+These are ruled-out on purpose. Each is a capability CODEREF-CORE could plausibly grow and
+has deliberately declined.
+
+| Non-goal | Why it is excluded |
+|---|---|
+| Cloud LLM dependency | Local-Ollama-only is a standing constraint. No OpenAI/Anthropic key is ever a required default; a feature that cannot run offline does not ship. |
+| Emitting verdicts | Tools surface **where** to look, never **what is wrong**. Grading code quality would make the output a claim the graph cannot support. |
+| Writing source from a query surface | No MCP tool writes source files. Index writes are confined to `.coderef/`; `rename --apply` stays CLI-only by design. |
+| Replacing grep or the linter | Lexical search and style enforcement are solved. Competing there is the first failure mode this vision is defined against. |
+| Multi-modal ingestion | Images, notebooks, and binary assets are parked. The graph is over code and its declared contracts. |
+| Treating empty as absence | An empty result means *no resolved data*. The system will not report "none exist" — that would be a verdict it cannot ground. |
+
 ## Completion — how we know we've arrived
 
 - An agent or developer consults CODEREF-CORE to understand unfamiliar code and gets a
