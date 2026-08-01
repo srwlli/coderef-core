@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "plan_created",
+  "status": "cancelled",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "cancelled",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\disambiguate-same-file-imported-symbols-in-call-resolver\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\disambiguate-same-file-imported-symbols-in-call-resolver\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\disambiguate-same-file-imported-symbols-in-call-resolver\\analysis.json",
@@ -45,6 +45,27 @@
       "note": "Discovery phase inserted ahead of implementation per operator directive. Program root evidence at coderef/working/coderef-core/core-improvements-731/ is to be READ, not re-derived. Premise SURVIVES the 731 denominator-artifact finding: ambiguity is src-heavy (1,189 of 1,722 in src) unlike the unresolved population. P1-T2 reconciles the objective 1,203 figure against measured facets before Phase 2 measures a delta."
     }
   ],
+  "cancel_metadata": {
+    "cancelled_at": "2026-08-01T13:00:32Z",
+    "cancelled_by": "CODEREF-CORE",
+    "status_at_cancel": "plan_created",
+    "cancelled_orphan": true,
+    "cancel_marker_path": "E:/ARCHIVED/cancelled/_orphans/disambiguate-same-file-imported-symbols-in-call-resolver",
+    "originating_stub": "STUB-7TJ00Z",
+    "stub_flip": "promoted -> abandoned (abandoned_at=2026-08-01T13:00:32Z)",
+    "active_work_row_removed": "verified against registry.db, COUNT(*)=0",
+    "cancelled_reason": "Already-satisfied. Phase 1 discovery (commit c497b8e) found the WO's entire proposed change already shipped: the 3-tier same_file > imported > global proximity scheme exists at src/pipeline/call-resolver.ts:1199-1243, with a qualifierPath/scopePath refinement beyond what the WO proposes. Two further findings: (1) 10 of 12 sampled src ambiguous edges carry reason=field_based_acg with a non-empty receiver, so they are classified by the member-access branch (call-resolver.ts:680) and never reach classifyBareCall at all - the WO targets a function that does not produce its target population; (2) those same 10 are ambiguous ONLY because the stale dist-preXR compiled tree is in the scan universe, pairing every class method with a compiled twin. The objective's 1,203-edge baseline matches no measurement ever taken (1,722 at 08:18Z, 1,730 at 09:13Z, 4,833 at 12:52Z). Genuine residue is 2 same-file duplicate `visit` functions in src/analyzer/ast-element-scanner.ts (:162, :469) - too small and too different in kind to carry this WO.",
+    "authorized_by": "operator ruling 2026-08-01 (cancel as already-satisfied)",
+    "evidence": [
+      "coderef-core:coderef/workorder/disambiguate-same-file-imported-symbols-in-call-resolver/analysis.json (Phase 1 discovery, commit c497b8e)",
+      "src/pipeline/call-resolver.ts:1154-1253"
+    ],
+    "successor_work": [
+      "TKT-HZF70M / STUB-VCW01X - .coderefignore misses the dist-preXR compiled tree (the actual cause of the ambiguity this WO targeted)"
+    ],
+    "block_written_by": "hand, not by cancel-workorder run.mjs",
+    "why_by_hand": "The registry `path` for this WO is anchor-prefixed ('coderef-core:coderef/workorder/...'). cancel-workorder's path resolver does not expand the anchor, so it took the ORPHAN branch and reported orphan=true even though the directory exists on disk. The orphan branch writes only a synthetic CANCEL-MARKER and skips the communication.json cancel_metadata block, so this block was added by hand and the directory was left in place rather than moved. Filed separately."
+  },
   "phase_transitions": [],
   "plan_adjustments": [],
   "communication_log": [
