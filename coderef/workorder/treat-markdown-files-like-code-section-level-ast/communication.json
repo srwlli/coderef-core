@@ -5,7 +5,7 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "checkpoint_ready",
+  "status": "closed",
   "current_phase": 3,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\plan.json",
@@ -112,6 +112,11 @@
       "event": "workorder_executed",
       "at": "2026-08-01T15:45:00Z",
       "detail": "All 3 phases complete: 7971aa8 (section nodes + contains), d72e7c1 (symbol-gated references), 292442e (quarantined fenced lane + E2E + docs). Markdown is now scanned at section grain: 1031 @Doc section nodes, 1031 contains edges, 1254 gated references edges on this repo's own doc surface. Every phase proven additive-only via the DL-6 filtered frozen-tree A/B (code universe byte-identical at 3741 nodes / 45305 edges, sha unchanged); DL-5 full-vs-incremental byte-identical; DL-4 quarantine contract-proven. Full suite 2563 passed / 35 skipped / 0 failed. Terminal hard stop reached - awaiting /close-workorder."
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-08-01T17:10:00Z",
+      "detail": "Close-only ceremony complete: audit PASS (WO-scoped), registry row -> complete via canonical writer, WO dir retained in coderef/workorder/ pending --archive."
     }
   ],
   "required_skills": [
@@ -119,5 +124,52 @@
     "/close-workorder",
     "/log-session"
   ],
-  "completed_at": "2026-08-01T15:45:00Z"
+  "completed_at": "2026-08-01T15:45:00Z",
+  "closed_at": "2026-08-01T17:10:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "closed_via": "/close-workorder (close-only, cross-project target=coderef-core)",
+    "audit": {
+      "phased_terminal_guard": "PASS (terminal phase 3 of 3)",
+      "standards_validate_wo_scoped": "pass (0 fail on the WO axis; repo-wide kind drift pre-existing/informational per KZ-01KX4FV2)",
+      "tracking_validator_scoped": "18 passed / 0 failed",
+      "doc_code_tie": "PASS (no doc_binding declared)",
+      "session_log": "VERIFIED by gate (rich YAML, CORE original + ASSISTANT gate-path copy)",
+      "git": "5 commits on CORE main, all origin-verified: 7971aa8 / d72e7c1 / 292442e / 3308546 / daf4899 (+ 6a62651 wording, 723da7a docs)"
+    },
+    "what_shipped": "Markdown scanned at section grain: @Doc/<path>#<slug> nodes from headings (1031 on this repo), 'contains' edges carrying the heading outline, and symbol-gated 'references' edges (1254; 1140 resolved / 73 ambiguous / 638 distinct tokens) from prose backticks and quarantined fenced ts/js identifiers. Doc content cannot perturb answers about code: three exclusions (snippets never enter the symbol table, references not walked as a dependency, sections excluded from name-keyed resolution). Query surface: CanonicalGraphQuery.docReferences().",
+    "defects": [
+      {
+        "id": "DEFECT-1",
+        "status": "fixed_in_wo",
+        "commit": "daf4899f9716",
+        "summary": "Doc section nodes shadowed code symbols in NAME-keyed resolution, silently changing what_calls / impact_of / find_element / symbol_context for real code. Shipped through all three phase gates; surfaced by an operator-facing demo. Root cause: the design reasoned about EDGE traversal and missed NODE RESOLUTION \u2014 the perturbation entered at the seed set. Fixed in both resolvers, verified differentially (0 diffs / 1209 query comparisons incl. all 3 colliding names), +4 regression tests. Docs corrected in 6a62651."
+      }
+    ],
+    "follow_ups": [
+      {
+        "id": "FU-1",
+        "status": "candidate",
+        "summary": "Parity-instrument gap: the frozen-tree A/B compares GRAPH CONTENT and is structurally blind to QUERY SEMANTICS. A WO that adds a new NODE KIND should gate on a differential QUERY comparison (same queries, pre vs post graph) as well. Kaizen-logged."
+      },
+      {
+        "id": "FU-2",
+        "status": "candidate",
+        "summary": "Edge-kind churn: one new relationship requires teaching FIVE enumerations (graph-builder, graph-exporter, output-validator GI-4 runtime gate, both adjacency DEPENDS sets). A single exported const consumed by all five would collapse it. Kaizen-logged."
+      },
+      {
+        "id": "FU-3",
+        "status": "candidate",
+        "summary": "Operator ruling available: widen DEPENDS to include 'references' now that real doc-impact data exists (deliberately excluded in v1 to keep impact_of answers unchanged)."
+      },
+      {
+        "id": "FU-4",
+        "status": "candidate",
+        "summary": "Scope v1 covers the three existing doc lanes only (DL-8); docs/*.md and root markdown remain out."
+      }
+    ],
+    "adjustments": [
+      "ADJ-1: build/proof sandbox worktree \u2014 shared checkout non-compiling from peer WIP"
+    ]
+  }
 }
