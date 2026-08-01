@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "status": "plan_created",
   "current_phase": 2,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\analysis.json",
@@ -160,6 +160,32 @@
       "decisive_asymmetry": "CALLEES must stay BARE - all three name-keyed consumers resolve a callee by its bare name, and cross-file resolution has nothing else to key on. ELEMENT IDENTITY must become unique - the same three consumers collide on it today. Those pull in opposite directions, which is why \"just qualify everything\" (option B) is not merely larger, it is WRONG: it would break validateReferences outright.",
       "scope_note": "All three name-keyed consumers live in src/fileGeneration/ and ALL THREE are legacy-quarantined behind assertLegacyWriteAllowed (2 refs each). Their own identity collisions are PRE-EXISTING and are not what TKT-XGZA82 describes - the ticket is about tree-sitter-file-scan fabricating edges, which happens upstream of all of them. Fixing their collisions is a separate piece of work against quarantined code.",
       "at": "2026-08-01T23:05:00Z"
+    },
+    {
+      "event": "p2_t7_real_repo_verification",
+      "note": "Run AFTER phase 2 was marked complete - the CHECK task was skipped in the run and is recorded here rather than quietly dropped.",
+      "scope": "All 316 .ts files under src/, scanned through scanFileWithTreeSitter (the scanner path, not the pipeline path - the live .coderef/index.json shows ZERO same-named methods because it is produced by the pipeline, which keeps names qualified. The collision only ever existed on the scanner path).",
+      "results": {
+        "files_scanned": 316,
+        "grammar_failures": 0,
+        "elements_carrying_calls": 1535,
+        "same_name_groups_with_2plus_call_carrying_elements": 3,
+        "identical_call_sets_UNION_BUG_SIGNATURE": 0,
+        "distinct_call_sets": 3,
+        "nested_functions_with_qualified_names": 5
+      },
+      "verdict": "PASS. No element carries a callee set identical to a same-named sibling, which is the signature the union bug left. The 5 qualified nested functions are the recovered class that previously received no callees at all.",
+      "phase_3_handoff": {
+        "for": "TKT-AF2FYQ / STUB-PTB2ZC renamed re-export resolution",
+        "settled_identity_shape": [
+          "element.name is BARE for type=method (ruling A; validateReferences.ts:66 indexes by bare name).",
+          "element.name stays QUALIFIED for a nested type=function (outer.inner) - the dequalify step is scoped to methods only. Phase 3 must not assume every element name is bare.",
+          "Call matching keys on COMPOSED scope, available only via extractCalls(..., qualifyScopes=true). The default remains bare-overwrite because orchestrator.ts:463 -> resolve-tail.ts:47 feeds the canonical graph builder.",
+          "element.imports is still the FILE import list copied onto every element (D3, ruled out of scope). Phase 3 resolves aliases and WILL touch import data - do not read element.imports as per-element truth."
+        ],
+        "open_risk": "The three name-keyed consumers (buildDependencyGraph:96, generateDiagrams:96, validateReferences:66) still collide on identity for same-named methods. Pre-existing, legacy-quarantined, unrouted."
+      },
+      "at": "2026-08-01T23:40:00Z"
     }
   ],
   "phase_transitions": [
@@ -169,6 +195,13 @@
       "commit": "3d81268",
       "verdict": "PASS",
       "at": "2026-08-01T22:20:43.698Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "fb3eadc",
+      "verdict": "PASS",
+      "at": "2026-08-01T23:09:35.083Z"
     }
   ],
   "plan_adjustments": [],
