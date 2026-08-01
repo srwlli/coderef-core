@@ -8,7 +8,7 @@ This document is the canonical schema reference for `@coderef/core` after the 9-
 1. **Scanner schema** — `ElementData` (per-element record after raw scanning + Phase 1 + Phase 2.5 enrichment)
 2. **Relationship schema** — raw fact types (Phase 2) and resolved relationships (Phase 3 + Phase 4)
 3. **Resolution statuses** — `ImportResolutionKind`, `CallResolutionKind`, `EdgeResolutionStatus`
-4. **Graph schema** — `GraphEdgeV2` (8-field edge), `EdgeEvidence` (10-variant union), `GraphNode` shape (with Phase 7 facet propagation), `ExportedGraph`
+4. **Graph schema** — `GraphEdgeV2` (8-field edge), `EdgeEvidence` (15-variant union), `GraphNode` shape (with Phase 7 facet propagation), `ExportedGraph`
 
 Header grammar (`@coderef-semantic:1.0.0` block) is canonical in the ASSISTANT repo and mirrored at [docs/HEADER-GRAMMAR.md](./HEADER-GRAMMAR.md). Public API contract is at [docs/API.md](./API.md). Agent usage contract is at [/AGENTS.md](../AGENTS.md).
 
@@ -331,11 +331,11 @@ interface GraphEdgeV2 {
   sourceId: string;
   /** Conditional. Canonical codeRefId of target. Present only when resolutionStatus='resolved' (DR-PHASE-5-A: omitted, not synthetic, for non-resolved). */
   targetId?: string;
-  /** Required. import | call | export | header-import. */
+  /** Required. See the EdgeRelationship union below (12 kinds). */
   relationship: EdgeRelationship;
   /** Required. resolved | unresolved | ambiguous | external | builtin | dynamic | typeOnly | stale. */
   resolutionStatus: EdgeResolutionStatus;
-  /** Conditional. Discriminated-union evidence (10 variants). */
+  /** Conditional. Discriminated-union evidence (15 variants). */
   evidence?: EdgeEvidence;
   /** Conditional. {file, line} of the import/call statement. */
   sourceLocation?: { file: string; line: number };
@@ -351,29 +351,53 @@ interface GraphEdgeV2 {
   metadata?: Record<string, unknown>;
 }
 
-type EdgeRelationship = 'import' | 'call' | 'export' | 'header-import';
+type EdgeRelationship =
+  | 'import' | 'call' | 'export' | 'header-import'
+  | 'extends' | 'implements'            // genre-features P5: heritage edges
+  | 'calls_endpoint' | 'serves_endpoint' // API-surface P2: HTTP edges (@Endpoint/... pseudo-nodes)
+  | 'documents'                          // docs-to-graph P1: @Doc/... -> @File/...
+  | 'contains'                           // markdown-AST P1: @Doc/x.md -> @Doc/x.md#slug
+  | 'references';                        // markdown-AST P2/P3: @Doc/x.md#slug -> code element
 
 type EdgeResolutionStatus =
   | 'resolved' | 'unresolved' | 'ambiguous' | 'external'
   | 'builtin' | 'dynamic' | 'typeOnly' | 'stale';
 ```
 
-### `EdgeEvidence` (10-variant discriminated union)
+### `EdgeEvidence` (15-variant discriminated union)
 
-Truth source: `src/pipeline/graph-builder.ts` lines 104–114.
+Truth source: `src/pipeline/graph-builder.ts` (`EdgeRelationship` + `EdgeEvidence`). Counts here are kept in step with that file — it is the authority, this is the mirror.
 
 ```typescript
 type EdgeEvidence = (
   | { kind: 'resolved-import';     resolvedModuleFile: string; originSpecifier: string; localName: string }
   | { kind: 'unresolved-import';   originSpecifier: string;    reason: string }
   | { kind: 'ambiguous-import';    originSpecifier: string;    candidates: string[] }
-  | { kind: 'external-import';     originSpecifier: string;    packageName?: string }
+  | { kind: 'external-import';     originSpecifier: string;    packageName?: string;
+                                   workspacePackage?: string;  workspaceRoot?: string }
   | { kind: 'resolved-call';       calleeName: string; receiverText: string; scopePath: string }
   | { kind: 'unresolved-call';     calleeName: string; receiverText: string; reason: string }
   | { kind: 'ambiguous-call';      calleeName: string; receiverText: string; candidates: string[] }
   | { kind: 'builtin-call';        calleeName: string; receiverText: string }
   | { kind: 'header-import';       module: string; symbol: string; resolvedModuleFile?: string }
   | { kind: 'stale-header-import'; module: string; symbol: string; reason: string }
+  // API-surface P2 — HTTP edges. `detectionConfidence` is deliberately not named
+  // `confidence`: the intersection below already owns that key.
+  | { kind: 'calls-endpoint';  endpointPath: string; method: string; callType: string;
+                               detectionConfidence: number; rawPath: string }
+  | { kind: 'serves-endpoint'; endpointPath: string; method: string; framework: string;
+                               declaredMethods: string[] }
+  // docs-to-graph P1 — docStatus/placeholderSections ride the EDGE so a consumer
+  // holding one edge can apply the retrieval ranking contract without a node lookup.
+  | { kind: 'documents';  sheetPath: string; docStatus: string;
+                          placeholderSections: number; documentsPath: string }
+  // markdown-AST P1 — doc outline; depth+order rebuild the heading tree from edges alone.
+  | { kind: 'contains';   sheetPath: string; slug: string; depth: number; order: number }
+  // markdown-AST P2/P3 — a doc section naming a symbol the table backs. `origin`
+  // separates the two lanes: a stale sentence and a stale example are different findings.
+  // `candidates` is present only on the ambiguous disposition.
+  | { kind: 'doc-reference'; sheetPath: string; slug: string; token: string;
+                             origin: 'prose' | 'code-block'; candidates?: string[] }
 ) & {
   testOrigin?: boolean;            // additive (STUB-K5YBFN): edge's source file is a test file
                                    // (__tests__|.test.|.spec.); feeds the *_src_count report fields
@@ -384,6 +408,8 @@ type EdgeEvidence = (
 ```
 
 Phase 6's validator reads `edge.evidence.{field}` for invariant checks; the discriminator lets TypeScript enforce the shape per `(relationship, resolutionStatus)` combination at the validator boundary. The two cross-variant flags (`testOrigin`, `probableBuiltinMember`) are additive evidence-level tags — they never change `resolutionStatus`, edge ids, or totals.
+
+**Pseudo-node endpoints.** Five relationships do not join two code elements: `calls_endpoint` / `serves_endpoint` touch `@Endpoint/<path>#<METHOD>` nodes, `documents` sources from `@Doc/<path>`, and `contains` / `references` involve `@Doc/<path>#<slug>` SECTION nodes. Doc and endpoint nodes are file-less by design — consumers that expand `node.file` already skip them. Doc section nodes carry `metadata.docSection === true` and are deliberately excluded from name-keyed resolution in both resolvers, so a section headed with a symbol's exact name never joins or shadows that symbol in a query answer.
 
 `dynamic` / `typeOnly` / `stale` (non-header) imports use the `unresolved-import` variant with appropriate `reason` strings (Phase 5 maps them to that variant rather than introducing more variants).
 
