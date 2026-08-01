@@ -1,0 +1,97 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-STANDARDS-CONFORMANCE-BURN-DOWN-8-STANDARDS-001",
+  "feature_name": "coderef-core-standards-conformance-burn-down-8-standards",
+  "created": "2026-08-01T01:48:53.356493+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub_promotion",
+    "user_request": "CODEREF-CORE standards conformance burn-down: 8 standards authored 2026-07-09 (structure/data/execution/structure-roadmap/agent-docs-structure/collection-index/derived-index/documentation, WO-STANDARDS-ENGINES-P1-DOC-TAXONOMY-REVIEW-LOCK-001 P2 \u2014 gate predicate AUTHORED satisfied; collection-index already PASS). Burn down to green: tailor the data/execution/structure bundle declarations+inventories from template placeholders to CORE's real surfaces, bind the 1 live roadmap per structure-roadmap, re-derive stale foundation docs (derived-index correctly FAILs: validate-docs --strict exit 1), and work the documentation v3 findings (48 fail/36 warn: doc frontmatter envelopes, API/ARCHITECTURE/COMPONENTS/guide sections).",
+    "stub_id": "STUB-GD163J"
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Category fix maps to phased",
+    "plan_type_decided_by": "create-workorder-engine@1.0.0",
+    "discovery_ref": "planning-discovery-20260801T014907Z",
+    "discovery": {
+      "candidates": [
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/foundation_docs_query_api.py",
+        "SKILLS/STANDARDS/kinds/documentation/generators/validate-docs.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/enhance-existing-docs.js",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/dispatch_seed_assembler.py",
+        "SKILLS/STANDARDS/kinds/documentation/generators/utils.js",
+        "SKILLS/META/coderef-skill/test/test_help_and_standards_gate.py",
+        "coderef/ARCHIVED/2026-06-16/new-coderef-skill/test/test_help_and_standards_gate.py",
+        "tests/test_create_workorder_e2e.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/__init__.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/header_query_api.py",
+        "SKILLS/META/coderef-skill/scripts/validate_skill_surfaces.py",
+        "SKILLS/META/coderef-skill/test/test_script_ref_existence.py",
+        "coderef/ARCHIVED/2026-06-16/new-coderef-skill/scripts/validate_skill_surfaces.py",
+        "coderef/ARCHIVED/2026-06-16/new-coderef-skill/test/test_script_ref_existence.py",
+        "SKILLS/DOCUMENTATION/generate-project-context/scripts/validate_context_output.py",
+        "SKILLS/META/coderef-skill/scripts/test_frontmatter_shape.py",
+        "SURFACES/monitors/python/documentation_monitor.py",
+        "coderef/ARCHIVED/2026-06-16/new-coderef-skill/scripts/test_frontmatter_shape.py",
+        "scripts/frontmatter_helpers.py",
+        "scripts/generate-foundation-doc-exports.py",
+        "SKILLS/STANDARDS/align-coderef-culture/scripts/detect-drift.py",
+        "SKILLS/WORKFLOW/_shared/planner/discovery.py",
+        "SKILLS/WORKFLOW/_shared/planner/orient_intake.py",
+        "SKILLS/WORKFLOW/_shared/planner/tests/test_briefing.py",
+        "SKILLS/WORKFLOW/_shared/planner/tests/test_discovery_rag_l2b.py"
+      ],
+      "blast_radius": [
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/__init__.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/cli.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/dispatch_seed_assembler.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/header_query_api.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/tests/test_dispatch_seed_assembler.py",
+        "SKILLS/STANDARDS/kinds/documentation/generators/enhance-existing-docs.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/generate-exports-md.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/generate-hotspots-md.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/generate-index-md.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/generate-relationships-md.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/validate-docs.js",
+        "scripts/auto-dispatch/__tests__/test_classifier.py",
+        "scripts/auto-dispatch/__tests__/test_dispatch_arm.py",
+        "scripts/auto-dispatch/detector.py"
+      ],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "call_chain_hits": [
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/dispatch_seed_assembler.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/header_query_api.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/__init__.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/cli.py",
+        "SKILLS/ANALYSIS/analyze-coderef-semantics/tests/test_dispatch_seed_assembler.py",
+        "SKILLS/STANDARDS/kinds/documentation/generators/enhance-existing-docs.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/generate-exports-md.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/generate-hotspots-md.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/generate-index-md.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/generate-relationships-md.js",
+        "SKILLS/STANDARDS/kinds/documentation/generators/validate-docs.js",
+        "scripts/auto-dispatch/detector.py",
+        "scripts/auto-dispatch/__tests__/test_classifier.py",
+        "scripts/auto-dispatch/__tests__/test_dispatch_arm.py"
+      ],
+      "warnings": [
+        "planner.discovery: 334 candidate(s) came from the UNINDEXED-PATH pass (the index carries no elements for them). They are ranked on PATH evidence alone - weaker than a symbol match, and not reachable by blast_radius or public_api probes.",
+        "planner.discovery: candidate list capped at 25 of 622 matches (ranked by goal-keyword specificity) - the remainder are LOWER-RANKED, not proven irrelevant",
+        "planner.discovery: .coderef/index.json has ZERO elements for .cjs, .mjs (covers .js, .py, .ts, .tsx across 517 file(s)). Files with those extensions CANNOT appear in candidates by name or path - their absence is NO-DATA, not evidence of irrelevance.",
+        "planner.discovery: blast_radius probed the first 10 of 25 candidates (latency cap) - the remainder are UNPROBED, not proven clean",
+        "planner.discovery: hotspot ranking returned no rows at the probe budget - no-data, not 'no hotspots'",
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260801T014907Z"
+    }
+  },
+  "scope": {
+    "in_scope": [],
+    "out_of_scope": []
+  },
+  "constraints": [],
+  "pre_existing_drift": false
+}

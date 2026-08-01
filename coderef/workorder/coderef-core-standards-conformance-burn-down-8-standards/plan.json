@@ -1,0 +1,399 @@
+{
+  "plan_type": "phased",
+  "goal": "CODEREF-CORE standards conformance burn-down: 8 standards authored 2026-07-09 (structure/data/execution/structure-roadmap/agent-docs-structure/collection-index/derived-index/documentation, WO-STANDARDS-ENGINES-P1-DOC-TAXONOMY-REVIEW-LOCK-001 P2 \u2014 gate predicate AUTHORED satisfied; collection-index already PASS). Burn down to green: tailor the data/execution/structure bundle declarations+inventories from template placeholders to CORE's real surfaces, bind the 1 live roadmap per structure-roadmap, re-derive stale foundation docs (derived-index correctly FAILs: validate-docs --strict exit 1), and work the documentation v3 findings (48 fail/36 warn: doc frontmatter envelopes, API/ARCHITECTURE/COMPONENTS/guide sections).",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "READ the 12 documentation-kind failures and the doctype required_sections they are graded against (SKILLS/STANDARDS/kinds/documentation/kind.json). Establish for each doc whether the required section is MISSING CONTENT or merely a heading the doctype does not recognize -- the readme sweep found 5 of 6 were the latter. Do not author new prose where a rename is the honest fix.",
+          "touches": [
+            "docs/API.md",
+            "docs/ARCHITECTURE.md",
+            "VISION.md",
+            "roadmap.md"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "EDIT docs/API.md to carry the api doctype's required sections: request, auth, example. Ground every statement in the actual exported surface (src/index.ts exports, docs/SCHEMA.md types). If coderef-core's programmatic API genuinely has no auth concept, say so explicitly under an Auth heading rather than inventing one.",
+          "touches": [
+            "docs/API.md"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "EDIT",
+          "description": "EDIT docs/ARCHITECTURE.md to carry: module boundaries, stack decisions, data flow. Source module boundaries from the real src/ tree (scanner, analyzer, pipeline, integration/rag, cli, mcp) and the cycles=0 result from the decompose WO; source data flow from the scan -> populate -> validate -> rag-index phase ordering the doc already describes.",
+          "touches": [
+            "docs/ARCHITECTURE.md"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "EDIT VISION.md to carry goals and non-goals. Non-goals must be real exclusions this project has actually ruled on -- e.g. no cloud LLM dependency (local-Ollama-only), no multi-modal ingestion (explicitly parked in the graph-viewer plan), surfaces-not-verdicts as a deliberate limit on what the tool will claim.",
+          "touches": [
+            "VISION.md"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "EDIT roadmap.md to carry a phases section conformant with the roadmap doctype. Reflect actual live state, not aspiration: the archived coderef-core-next roadmap's phases 1-4 are complete and phase 5 (RAG quality) carries 3 not_started items. Do not resurrect the archived roadmap's status -- this is the live root roadmap.",
+          "touches": [
+            "roadmap.md"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "EDIT",
+          "description": "EDIT docs/AGENT-WORKFLOW-GUIDE.md to carry the guide doctype's required sections: steps, verification, troubleshooting. The verification section must name the actual commands an agent runs to confirm each step landed, not a generic 'check it worked'.",
+          "touches": [
+            "docs/AGENT-WORKFLOW-GUIDE.md"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "EDIT",
+          "description": "EDIT docs/AUDIT-REPORT.md (missing: findings) and docs/COMPONENTS.md (missing: component tree, styling). For AUDIT-REPORT, the findings section must reflect the audit's real conclusions. For COMPONENTS, if coderef-core has no UI component tree, evaluate whether the doc is mis-typed as the components doctype rather than forcing a styling section onto a non-UI doc -- record that determination either way.",
+          "touches": [
+            "docs/AUDIT-REPORT.md",
+            "docs/COMPONENTS.md"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "EDIT",
+          "description": "EDIT coderef/resource/GRAPH-HELPERS-MIGRATION.md (missing: breaking changes, rollback) and src/coderef/migration-strategy.md (missing: overview, breaking changes, migration steps) to the migration doctype. A migration doc with no rollback section is the specific gap the doctype exists to catch.",
+          "touches": [
+            "coderef/resource/GRAPH-HELPERS-MIGRATION.md",
+            "src/coderef/migration-strategy.md"
+          ]
+        },
+        {
+          "id": "P1-T9",
+          "verb": "CHECK",
+          "description": "CHECK coderef-core-quickstart.md's missing frontmatter keys (title, status, updated). The file carries generated_at, so it is machine-produced: per the engineering doctrine node 'generated-view is derived', fix the /generate-quickstart TEMPLATE rather than hand-editing the output, then regenerate. If the template is ASSISTANT-owned and out of this WO's scope, record the finding and file it rather than hand-patching the generated file.",
+          "touches": [
+            "coderef-core-quickstart.md"
+          ]
+        },
+        {
+          "id": "P1-T10",
+          "verb": "CHECK",
+          "description": "CHECK coderef/working/repo-review-2026-07-remediation/context.md (2 of the 12 fails: missing sections + no frontmatter block). The standing operator amendment forbids editing anything under coderef/working/ -- these are historical records. Record this as a DECLARED EXEMPTION in communication.json with the amendment quoted, and confirm whether the documentation kind can scope-exclude coderef/working/ the way it already excludes ARCHIVED/. Do NOT edit the file.",
+          "touches": []
+        },
+        {
+          "id": "P1-T11",
+          "verb": "RUN",
+          "description": "RUN node SKILLS/STANDARDS/kinds/documentation/check.mjs --project-root=C:/Users/willh/Desktop/CODEREF/CODEREF-CORE from the ASSISTANT root and record the exact before/after fail counts. Target is 12 -> 2 (the two exempted coderef/working/ failures). Then COMMIT via the guarded runner with explicit --paths and --repo.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-GD163J"
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "READ",
+          "description": "READ the raw material CORE already has for the data kind before writing a word: docs/SCHEMA.md (full type reference), the EdgeEvidence 10-variant discriminated union, the element/endpoint id grammar (@Endpoint/<path>#<METHOD>, param names erased per OpenAPI 3.1), and docs/standards/data/README.md + ENTITIES/TEMPLATE.md for the shape the bundle expects. This is a declaration gap, not a knowledge gap -- the content exists and must be cited, not re-derived.",
+          "touches": [
+            "docs/SCHEMA.md",
+            "docs/standards/data/README.md"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "WRITE",
+          "description": "WRITE the entities sub-type doc under docs/standards/data/ declaring what CORE's core objects ARE: ElementData, GraphNode, GraphEdgeV2, EdgeEvidence, the chunk, the endpoint node. One entry per entity with its authority file cited as [ref](path:line).",
+          "touches": [
+            "docs/standards/data/"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "WRITE",
+          "description": "WRITE the keying sub-type doc declaring how each entity gets its canonical id: the element id grammar, the @Endpoint/<path>#<METHOD> form with param-name erasure, edge id construction, and the dedup rule that keeps 0 duplicate edge ids. Name the collision behavior explicitly.",
+          "touches": [
+            "docs/standards/data/"
+          ]
+        },
+        {
+          "id": "P2-T4",
+          "verb": "WRITE",
+          "description": "WRITE the schema sub-type doc declaring the field shapes and archetypes, anchored to docs/SCHEMA.md rather than duplicating it -- the standard states the CONTRACT (what must hold, what may be added additively) and points at SCHEMA.md for the types. Apply the additive-over-breaking doctrine node explicitly.",
+          "touches": [
+            "docs/standards/data/"
+          ]
+        },
+        {
+          "id": "P2-T5",
+          "verb": "WRITE",
+          "description": "WRITE the provenance sub-type doc declaring source-of-record and chain-of-custody. EdgeEvidence IS the provenance model -- document its 10 variants as the evidence taxonomy, plus the 8-value resolution status and 4-tier confidence, and state the absence=no-data rule as a provenance invariant (an empty result is NO RESOLVED DATA, never proof of absence).",
+          "touches": [
+            "docs/standards/data/"
+          ]
+        },
+        {
+          "id": "P2-T6",
+          "verb": "RUN",
+          "description": "RUN the data kind checker; confirm 4 fail -> 0. Then COMMIT via the guarded runner. If the checker matches sub-type docs by filename hint, confirm the actual filenames it accepts BEFORE committing rather than guessing at the naming convention.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Phase 3",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P3-T1",
+          "verb": "READ",
+          "description": "READ docs/standards/execution/README.md + SURFACES/TEMPLATE.md for the expected bundle shape, and the raw material: the populate/scan/rag-index CLI surface, .coderef/ artifact inventory, the pathing resolver, and the rehearse -> reconcile -> commit -> independent-verify loop the project already practices.",
+          "touches": [
+            "docs/standards/execution/README.md"
+          ]
+        },
+        {
+          "id": "P3-T2",
+          "verb": "WRITE",
+          "description": "WRITE the generation sub-type doc: how an artifact or id is deterministically produced. Cover the scan -> populate -> validate ordering, index/graph regeneration, ULID-derived id minting, and what makes a regeneration reproducible.",
+          "touches": [
+            "docs/standards/execution/"
+          ]
+        },
+        {
+          "id": "P3-T3",
+          "verb": "WRITE",
+          "description": "WRITE the contracts sub-type doc: the machine-validated artifact contracts. Name each validator that actually gates (plan.schema.json, stubs.schema.json additionalProperties:false, validation-report.json, the standards kind checkers) and what each refuses.",
+          "touches": [
+            "docs/standards/execution/"
+          ]
+        },
+        {
+          "id": "P3-T4",
+          "verb": "WRITE",
+          "description": "WRITE the topology sub-type doc: the on-disk artifact inventory and canonical path resolvers. Enumerate .coderef/ (index, graph, map, reports, sessions) and coderef/ (workorder, working, foundation-docs, resource-sheets, standards, archived, DEAD-LETTER), and state the stored-paths-name-their-base rule -- resolve through the shared resolver, prefer the anchored {anchor}:{relative} form.",
+          "touches": [
+            "docs/standards/execution/"
+          ]
+        },
+        {
+          "id": "P3-T5",
+          "verb": "WRITE",
+          "description": "WRITE the write-discipline sub-type doc: the rehearse -> reconcile -> commit -> independent-verify loop. Cover dry-run-before-apply, commit-by-explicit-pathspec (never git add -A), the guarded runner's refusal gates, and verify-before-done (verify the artifact in a SEPARATE step from the one that performed the write).",
+          "touches": [
+            "docs/standards/execution/"
+          ]
+        },
+        {
+          "id": "P3-T6",
+          "verb": "RUN",
+          "description": "RUN the execution kind checker; confirm 4 fail -> 0. Then COMMIT via the guarded runner.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "Phase 4",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P4-T1",
+          "verb": "READ",
+          "description": "READ the real front doors before declaring any: package.json bin map, .mcp.json, the MCP server entrypoint src/cli/coderef-mcp-server.ts, CONTEXT.md's advertised tool/bin counts, and any USING-*.md guide. The entry-point kind grades two invariants -- every declared door RESOLVES on disk, and the advertised surface COUNT matches reality -- so the read must produce actual counts, not estimates.",
+          "touches": [
+            "package.json",
+            ".mcp.json"
+          ]
+        },
+        {
+          "id": "P4-T2",
+          "verb": "RUN",
+          "description": "RUN /standards-establish --kind=entry-point against CODEREF-CORE to scaffold the 8-doc bundle under docs/standards/entry-point/. The kind is atomic:true so the bundle lands whole. Do NOT stop here -- an unfilled scaffold is exactly the failure mode data/execution are already in, and shipping a ninth untailored bundle would make the count worse while looking like progress.",
+          "touches": [
+            "docs/standards/entry-point/"
+          ]
+        },
+        {
+          "id": "P4-T3",
+          "verb": "WRITE",
+          "description": "WRITE ENTRY-POINT-INVENTORY.md with one row per REAL front door (variant, door, target it resolves to, surface it advertises). No blanket rows. Cover all three audience variants the project actually serves: agent (MCP initialize handshake + usage contract), user (README/quickstart/USING guide), context (CONTEXT.md's tool+bin surface statement).",
+          "touches": [
+            "docs/standards/entry-point/"
+          ]
+        },
+        {
+          "id": "P4-T4",
+          "verb": "EDIT",
+          "description": "EDIT the remaining scaffolded bundle docs to CORE's real surface -- README authority root, AGENT-ENTRY-POINT, CONTEXT-SURFACE, AGENT-CHECKLIST, audit procedure + report template. Verify the advertised tool count matches the live MCP surface; a stale count is the 'lying door' half of the defining invariant.",
+          "touches": [
+            "docs/standards/entry-point/"
+          ]
+        },
+        {
+          "id": "P4-T5",
+          "verb": "RUN",
+          "description": "RUN the entry-point checker; confirm 2 fail -> 0 and check whether the quickstart WARN for src/cli/coderef-mcp-server.ts can be cleared with /generate-quickstart in the same pass. Then COMMIT via the guarded runner.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "Phase 5",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P5-T1",
+          "verb": "READ",
+          "description": "READ all 25 resource sheets and build the provenance table: which declare parent_project coderef-dashboard (6), coderef-core (4), none (5 under systems/), and what the canonical coderef/resource-sheets/ already holds (3 LLOYD sheets). 22 of 25 fail all three core checks -- location, status enum, required sections. The relocation cannot proceed without this table.",
+          "touches": [
+            "coderef/resources-sheets/",
+            "coderef/resource-sheets/"
+          ]
+        },
+        {
+          "id": "P5-T2",
+          "verb": "EDIT",
+          "description": "EDIT the status frontmatter on every sheet declaring APPROVED to the enum's lowercase approved. This half needs NO ruling -- it is a pure enum-casing fix that is correct regardless of where the sheets end up -- so it ships ahead of the relocation decision.",
+          "touches": [
+            "coderef/resources-sheets/"
+          ]
+        },
+        {
+          "id": "P5-T3",
+          "verb": "STOP",
+          "description": "STOP for operator ruling on relocation. Surface the provenance table from P5-T1 and the named options: (A) relocate only the coderef-core-owned sheets into coderef/resource-sheets/ and route the dashboard-owned ones to that project, (B) relocate all 25 and accept mixed provenance under one roof, (C) leave location as-is and scope the kind's homeDir to the real layout. Do not choose unilaterally -- moving 6 dashboard-owned sheets into CORE's canonical home makes the wrong content canonical.",
+          "touches": []
+        },
+        {
+          "id": "P5-T4",
+          "verb": "EDIT",
+          "description": "EDIT the sheets per the ruling: apply the relocation option chosen at P5-T3, then add the missing required sections (Executive Summary, Audience and Intent, Architecture / Behavior, Source of Truth, Public API / Contracts, Dependencies, Risks & Edge Cases, Validation Checklist) to the sheets that remain in CORE's scope. Ground claims in [ref](path:line) or mark them [inference] -- 8 sheets currently carry ungrounded prose.",
+          "touches": []
+        },
+        {
+          "id": "P5-T5",
+          "verb": "RUN",
+          "description": "RUN the resource-sheet checker; record the fail delta. Then COMMIT via the guarded runner. If the ruling routes sheets to another project, that move is a separate cross-repo commit -- core commits and peer-repo commits stay distinct.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "Phase 6",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P6-T1",
+          "verb": "STOP",
+          "description": "STOP for the STUB-CT0DRT posture ruling before touching any hook. The three postures are (A) per-repo vendored hooks, (B) one shared ASSISTANT-owned .githooks/ with each repo pointing core.hooksPath at it, (C) the guarded runner stays the single enforcement point and the git kind learns to recognize a runner-enforced posture. This is a fleet convention, not a CORE-local fix.",
+          "touches": []
+        },
+        {
+          "id": "P6-T2",
+          "verb": "CHECK",
+          "description": "CHECK that no peer agent is mid-commit in coderef-core before landing any change to commit behavior. The standing constraint on STUB-CT0DRT is that no commit-behavior change lands mid-flight. Confirm the working tree and any in-flight peer workorder state first.",
+          "touches": []
+        },
+        {
+          "id": "P6-T3",
+          "verb": "WRITE",
+          "description": "WRITE the hook layer per the ruling: satisfy hooks.dir-present, hooks.commit-location-gate-present, and push-verify.present. Whichever posture is chosen, the core.hooksPath bootstrap MUST be documented in a reachable GIT-STANDARD doc -- hooks.path-bootstrap-documented already WARNs that a fresh clone which never runs the bootstrap is silently ungated, which the checker names the 2026-06-15 loss class.",
+          "touches": []
+        },
+        {
+          "id": "P6-T4",
+          "verb": "RUN",
+          "description": "RUN the git and bootstrap checkers; confirm git 3 fail -> 0 and that bootstrap.standards-passing clears its git-standard-passing dependency. Bootstrap's second failure is charter-present (no charter object on the domain row) -- resolve or record it separately. Then COMMIT via the guarded runner.",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "Phase 7",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P7-T1",
+          "verb": "CHECK",
+          "description": "CHECK the planning-folder blocker: archive-planning-folder/run.mjs resolves srcDir and destDir against ASSISTANT_ROOT (lines 201/219), so the 2 CORE folders (code-intelligence-improvement-eval status=resolved, graphify-alignment-projections status=promoted) have no legal archive path and never appear under --candidates. SKILL.md forbids hand-performing the stamp/move/regen. Confirm the diagnosis against the current file before proposing a fix.",
+          "touches": []
+        },
+        {
+          "id": "P7-T2",
+          "verb": "WRITE",
+          "description": "WRITE the fix or the ticket for the cross-repo archive-runner gap (KZ-01KYX9P7, same ASSISTANT-rooted-path family as TKT-D26E4K). If the runner fix is in scope, teach it to resolve against the owner project's root the way /stub and /create-workorder already do. If not, file the ticket and record planning-folder as blocked-with-owner rather than silently unfinished.",
+          "touches": []
+        },
+        {
+          "id": "P7-T3",
+          "verb": "CHECK",
+          "description": "CHECK the derived-index defect (KZ-01KYX9P4): the checker reports 'INDEX.md is STALE -- re-derive it', but validate-docs.js prints all docs present and up-to-date and exits 1 solely on 309 UUID anchors (311 found, 2 valid) that do not resolve against .coderef/index.json. Re-deriving cannot fix it. Determine whether the anchors are stale references to removed elements or a resolver defect, and route accordingly -- do not re-derive on the checker's wrong advice.",
+          "touches": []
+        },
+        {
+          "id": "P7-T4",
+          "verb": "RUN",
+          "description": "RUN the full standards-validate aggregator with --project-root and --domain=CODEREF-CORE and record the final counts against the 10 fail / 2 warning / 6 pass / 23 n-a baseline this WO opened at. Report per-kind before/after, and state plainly which kinds were left non-green and why -- a burn-down that reports only its wins is the failure mode this WO exists to correct.",
+          "touches": []
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 5,
+      "approved": false,
+      "reason": "phased gate"
+    },
+    {
+      "phase": 6,
+      "approved": false,
+      "reason": "phased gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T014907Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-CODEREF-CORE-STANDARDS-CONFORMANCE-BURN-DOWN-8-STANDARDS-001",
+  "feature_name": "coderef-core-standards-conformance-burn-down-8-standards",
+  "created": "2026-08-01T01:48:53.356493+00:00",
+  "plan_type_rationale": "Category fix maps to phased"
+}

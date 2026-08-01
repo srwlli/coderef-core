@@ -1,0 +1,51 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-STANDARDS-CONFORMANCE-BURN-DOWN-8-STANDARDS-001",
+  "feature_name": "coderef-core-standards-conformance-burn-down-8-standards",
+  "created": "2026-08-01T01:48:53.356493+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-standards-conformance-burn-down-8-standards\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-standards-conformance-burn-down-8-standards\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-standards-conformance-burn-down-8-standards\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-GD163J",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-GD163J",
+      "plan_type": "phased",
+      "timestamp": "2026-08-01T01:48:53.356493+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 41,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/b6925717-3dcc-4c8d-b419-1ea1cda6fce7/scratchpad/standards-burndown-tasks.json",
+      "at": "2026-08-01T01:48:53.356493+00:00"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T01:48:53.356493+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-GD163J"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "workorder_id": "WO-CODEREF-CORE-STANDARDS-CONFORMANCE-BURN-DOWN-8-STANDARDS-001",
+  "feature_name": "coderef-core-standards-conformance-burn-down-8-standards",
+  "analysis_authored_at": "2026-08-01T01:48:53.356493+00:00",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": []
+}
