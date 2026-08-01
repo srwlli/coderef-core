@@ -1,4 +1,10 @@
 ---
+title: coderef-core — Quick Start
+status: living
+updated: 2026-07-18T17:12:56Z
+derived: true
+generated_by: SKILLS/DOCUMENTATION/generate-quickstart
+documents: package.json
 skill_name: coderef-core-quickstart
 version: 1.0.0
 category: WORKFLOW
