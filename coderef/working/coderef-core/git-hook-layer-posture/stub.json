@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-CT0DRT",
+  "ulid": "01KYXF3FD66BR1TVBP2QMWNMZT",
+  "feature_name": "git-hook-layer-posture",
+  "description": "CODEREF-CORE ships NO git hook layer: no .githooks/, core.hooksPath unset, no commit-location gate, no push-and-verify script. Sibling ASSISTANT carries the full set. Nothing has broken only because every core commit routes through the ASSISTANT guarded runner SKILLS/GIT/git-commit/run.mjs -- a fresh clone of coderef-core, or any commit made outside that runner, is SILENTLY UNGATED (the 2026-06-15 loss class). git kind FAILs 3 core checks (hooks.dir-present, hooks.commit-location-gate-present, push-verify.present) and cascades into bootstrap.standards-passing, so one fix flips two kinds green. RULE THE POSTURE: (A) per-repo vendored hooks, (B) shared canonical hooks dir with each repo pointing core.hooksPath at it, or (C) runner-as-single-enforcement-point and teach the git kind to recognize a runner-enforced posture. Constraint: a peer agent is actively committing in coderef-core, so no commit-behavior change may land mid-flight.",
+  "category": "fix",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T01:30:32Z"
+}
