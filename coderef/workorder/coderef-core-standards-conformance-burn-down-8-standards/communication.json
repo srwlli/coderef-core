@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "plan_created",
-  "current_phase": 1,
-  "phase_status": "ready",
+  "status": "closed",
+  "current_phase": 7,
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-standards-conformance-burn-down-8-standards\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-standards-conformance-burn-down-8-standards\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\coderef-core-standards-conformance-burn-down-8-standards\\analysis.json",
@@ -229,18 +229,158 @@
       "detail": "FINAL AGGREGATOR after all three rulings applied: 6 fail / 3 warning / 9 pass / 23 n-a, against the opening baseline of 10 fail / 2 warning / 6 pass / 23 n-a. FOUR kinds reached zero fails: data 4->0 (PASS 12/0/0), execution 4->0 (PASS 13/0/0), entry-point 2->0 (PASS 9/0/0), documentation 12->0 (WARNING 290/142/0 -- warn-only, no fails). SIX REMAIN NON-GREEN, each with a named reason: git 3 and bootstrap 2 (BY DECISION, deferred at the P6-T1 ruling, ECO-050); resource-sheet 3 (location only, the non-CORE sheets the P5 ruling leaves in place); derived-index 1 (23 unresolvable UUID anchors, ECO-033/034, not fixable by the remediation the checker prints); planning-folder 1 (checker/runner status deadlock, ECO-005/022/024, blocked-with-owner); culture 2 (alignment-gate axis, outside this WO's kinds). Net: 10 -> 6 fails, +3 passing kinds, and every remaining failure is attributable to a ruling, an exemption, or a filed ecosystem issue rather than to unfinished work."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "b4c2b09",
+      "verdict": "PASS",
+      "at": "2026-07-31T22:06:14-04:00",
+      "reconciled_at": "2026-08-01T12:20:00Z",
+      "reconciliation_note": "P1 complete; coderef/working exemption + quickstart defect recorded"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "a436fdd",
+      "verdict": "PASS",
+      "at": "2026-07-31T22:17:44-04:00",
+      "reconciled_at": "2026-08-01T12:20:00Z",
+      "reconciliation_note": "data kind 4 fail -> 0 (12/0/0 PASS); 4 sub-types declared"
+    },
+    {
+      "phase": 3,
+      "to_status": "complete",
+      "commit": "24c200b",
+      "verdict": "PASS",
+      "at": "2026-07-31T22:23:38-04:00",
+      "reconciled_at": "2026-08-01T12:20:00Z",
+      "reconciliation_note": "execution kind 4 fail -> 0 (13/0/0 PASS); 4 sub-types declared"
+    },
+    {
+      "phase": 4,
+      "to_status": "complete",
+      "commit": "3e67601",
+      "verdict": "PASS",
+      "at": "2026-07-31T22:32:55-04:00",
+      "reconciled_at": "2026-08-01T12:20:00Z",
+      "reconciliation_note": "entry-point kind 2 fail -> 0 (9/0/0 PASS); bundle established + tailored"
+    },
+    {
+      "phase": 5,
+      "to_status": "complete",
+      "commit": "5d85f6d",
+      "verdict": "PASS",
+      "at": "2026-07-31T22:52:32-04:00",
+      "reconciled_at": "2026-08-01T12:20:00Z",
+      "reconciliation_note": "PARTIAL BY RULING: status enum lowercased, CORE-owned sheets relocated; resource-sheet keeps 3 location-only fails on non-CORE sheets the ruling leaves in place"
+    },
+    {
+      "phase": 6,
+      "to_status": "complete",
+      "commit": "d2af1c8",
+      "verdict": "PASS",
+      "at": "2026-07-31T22:53:16-04:00",
+      "reconciled_at": "2026-08-01T12:20:00Z",
+      "reconciliation_note": "DEFERRED BY RULING: posture (B) shared .githooks adopted 'for now, needs properly addressed'; P6-T3 deliberately NOT executed, logged ECO-050; git 3 + bootstrap 2 remain non-green by decision"
+    },
+    {
+      "phase": 7,
+      "to_status": "complete",
+      "commit": "d2af1c8",
+      "verdict": "PASS",
+      "at": "2026-07-31T22:53:16-04:00",
+      "reconciled_at": "2026-08-01T12:20:00Z",
+      "reconciliation_note": "FINAL aggregator 6 fail / 3 warn / 9 pass / 23 n-a vs baseline 10/2/6/23; four kinds to zero fails"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
       "timestamp": "2026-08-01T01:48:53.356493+00:00",
       "event": "creation",
       "message": "Workorder created from stub STUB-GD163J"
+    },
+    {
+      "timestamp": "2026-08-01T12:25:00Z",
+      "event": "workorder_closed",
+      "message": "Closed close-only at terminal phase 7. All 7 phases executed 2026-07-31 across 21 commits; phase_transitions[] was backfilled at close because the canonical writer cannot reach a coderef-core:-anchored WO. Two phases carry documented rulings: P5 partial, P6 deferred.",
+      "review_status": "PASS",
+      "gates": {
+        "check-phased-terminal": "PASS (terminal phase 7)",
+        "check-doc-code-tie": "PASS (no doc_binding declared)",
+        "tracking-validator (scoped)": "18 passed / 0 failed",
+        "standards-validate (wo_scoped)": "pass (0 fail / 0 warn / 1 pass)",
+        "check-session-log": "SELF-HEALED"
+      },
+      "cross_project": "target_project=coderef-core -> PHASE D (archive) not applicable; close-only"
     }
   ],
   "required_skills": [
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "closed_at": "2026-08-01T12:25:00Z",
+  "completed_at": "2026-08-01T12:25:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "close_type": "close-only (no --archive)",
+    "closed_by": "ASSISTANT (cross-domain close; WO owner_domain=CODEREF-CORE)",
+    "reconciliation": {
+      "what": "phase_transitions[] was EMPTY at close time despite all 7 phases having executed on 2026-07-31.",
+      "root_cause": "write-phase-transition.cjs resolveRegistryPath() strips the registry anchor (`coderef-core:`) and then unconditionally joins ASSISTANT_ROOT, so a foreign-repo WO resolves to a path that does not exist. The writer's soft-fail contract turns that into `[OK] no-op (comm_not_found)` at exit 0 — the executing agent had no signal that its 7 phase writes went nowhere.",
+      "action": "Backfilled all 7 transitions from decisions_log + the 21 `docs(standards-burn-down):` commits, using the canonical writer's exact field shape. `at` carries the REAL commit time; `reconciled_at` marks the backfill so it is never mistaken for a live write.",
+      "defect_filed": "see follow_ups[0]",
+      "gate_after": "check-phased-terminal.mjs PASS (terminal phase 7) — the guard now passes on truth, not on a bypass"
+    },
+    "final_ledger": {
+      "aggregator": "6 fail / 3 warning / 9 pass / 23 n-a",
+      "baseline": "10 fail / 2 warning / 6 pass / 23 n-a",
+      "kinds_to_zero_fails": {
+        "data": "4 -> 0 (12/0/0 PASS)",
+        "execution": "4 -> 0 (13/0/0 PASS)",
+        "entry-point": "2 -> 0 (9/0/0 PASS)",
+        "documentation": "12 -> 0 (290/142/0 WARNING, warn-only)"
+      },
+      "remaining_non_green": {
+        "git": "3 fail — BY DECISION (P6-T1 ruling, ECO-050)",
+        "bootstrap": "2 fail — BY DECISION (P6-T1 ruling, ECO-050)",
+        "resource-sheet": "3 fail — location only, non-CORE sheets the P5 ruling leaves in place",
+        "derived-index": "1 fail — 23 unresolvable UUID anchors (ECO-033/034), not fixable by the printed remediation",
+        "planning-folder": "1 fail — checker/runner status deadlock (ECO-005/022/024), blocked-with-owner",
+        "culture": "2 fail — alignment-gate axis, outside this WO's scope"
+      }
+    },
+    "deferred_at_close": [
+      {
+        "phase": 5,
+        "disposition": "PARTIAL BY RULING",
+        "detail": "resource-sheet keeps 3 location-only fails on sheets the P5 operator ruling deliberately leaves in place. Not remediable inside this WO's scope."
+      },
+      {
+        "phase": 6,
+        "disposition": "DEFERRED BY RULING",
+        "detail": "Operator adopted posture (B) — one shared ASSISTANT-owned .githooks/ with each repo pointing core.hooksPath at it — 'for now', with the explicit instruction that it needs to be properly addressed. P6-T3 was deliberately NOT executed: a deferral is not an authorization to implement a cross-repo hook layer. Logged as ECO-050. git (3 fail) and bootstrap (2 fail) are therefore non-green BY DECISION, not by omission."
+      }
+    ],
+    "follow_ups": [
+      {
+        "id": "FU-1",
+        "status": "candidate",
+        "summary": "DEFECT: write-phase-transition.cjs silently no-ops for any WO whose registry `path` carries a non-`assistant:` anchor. resolveRegistryPath() parses the anchor but discards its MEANING, always joining ASSISTANT_ROOT. Every cross-repo WO loses its phase_transitions at exit 0. This WO is the proof case.",
+        "owner_hint": "the fix belongs at the resolver seam (SKILLS/WORKFLOW/_shared/pathing.mjs has the canonical parser; the CJS copy is the drifted one)"
+      },
+      {
+        "id": "FU-2",
+        "status": "candidate",
+        "summary": "ECO-050: the shared-.githooks posture needs properly addressing; hooks.path-bootstrap-documented already WARNs — a shared hooks dir is only as good as its bootstrap step, and a fresh clone that never runs it is exactly as ungated as today."
+      },
+      {
+        "id": "FU-3",
+        "status": "candidate",
+        "summary": "derived-index 1 fail = 23 unresolvable UUID anchors (ECO-033/034). The checker's printed remediation does not fix this class; needs its own diagnosis."
+      }
+    ]
+  }
 }
