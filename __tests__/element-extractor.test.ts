@@ -460,4 +460,135 @@ export class Scanner {
       expect(new Set(lines).size).toBe(2); // distinct lines, no dups
     });
   });
+
+  /**
+   * WO-ELEMENTEXTRACTOR-REVISITS-RUST-IMPL-AND-JAVA-OR-C-001 phase 1
+   * (TKT-ZMVP33 / STUB-WWR793).
+   *
+   * The Rust `impl_item`, Java `class_declaration` and C/C++ `class_specifier`
+   * branches each traversed a scoped body and then FELL THROUGH to the
+   * unconditional child loop, re-walking the same subtree. Python
+   * (`class_definition`) and TypeScript already carried the `return` guard;
+   * these three did not.
+   *
+   * ONE root cause, THREE defects — the ticket named only the first:
+   *   (i)   exact duplicates, MULTIPLICATIVE with nesting depth (a C++ method
+   *         at depth 2 was emitted x4, not x2);
+   *   (ii)  MIS-SCOPED names — a nested type's members were attributed to the
+   *         ENCLOSING type (`Outer.gamma` for a member of `Contract`). These
+   *         are false facts, not inflated counts;
+   *   (iii) a bare/qualified identity fork in Java (`Outer.alpha` as `method`
+   *         AND `alpha` as `function`).
+   *
+   * Operator ruling (A), 2026-08-01: QUALIFIED ONLY. The bare Java form is
+   * dropped, not shimmed. Rust and C/C++ have no qualification to introduce
+   * here — `parentScope` is dead code in both — so they are dedup-only;
+   * scoped names for those two would be new behavior and are out of scope.
+   *
+   * Why this survived: the pre-existing Java cases asserted only
+   * `expect(elements).toBeDefined()` and the C/C++ cases used `.find()`, which
+   * returns the first match and is structurally blind to duplicates. Every one
+   * of them passed WITH the bug present. The cases below therefore assert exact
+   * cardinality and exact name strings, and they REFUSE to skip on a missing
+   * grammar — the `if (!parser) return;` pattern used elsewhere in this file
+   * silently green-washes the whole case.
+   *
+   * The exact qualified strings asserted here are the PHASE-2 HANDOFF SPEC:
+   * phase 2 (TKT-XGZA82) is the bare-name reduction at
+   * tree-sitter-file-scan.ts:63 and consumes these identities.
+   */
+  describe('duplicate-traversal fix: identity and cardinality', () => {
+    /** Fails loudly rather than silently skipping — the grammar IS the fixture. */
+    async function requireParser(lang: string): Promise<Parser> {
+      const parser = await registry.getParser(lang as never);
+      expect(parser, `grammar for "${lang}" must load; a missing parser is a FAILURE, not a skip`)
+        .toBeTruthy();
+      return parser!;
+    }
+
+    function identities(elements: ReturnType<ElementExtractor['extract']>): string[] {
+      return elements.map(e => `${e.type}|${e.name}`).sort();
+    }
+
+    it('rust: an impl body is walked once, including nested fns', async () => {
+      const code = ['struct Foo;', 'impl Foo {', '    fn alpha(&self) { fn helper() {} }', '}'].join('\n');
+      const parser = await requireParser('rs');
+      const elements = extractor.extract(parser.parse(code).rootNode, 'p.rs', code, 'rs');
+
+      // Pre-fix this emitted 5 for 3 declarations: alpha and helper both x2.
+      expect(identities(elements)).toEqual(['class|Foo', 'function|alpha', 'function|helper']);
+    });
+
+    it('java: members scope to their LEXICALLY ENCLOSING type, with no bare fork', async () => {
+      const code = [
+        'public class Outer {',
+        '    public int alpha() { return 1; }',
+        '    class Inner {',
+        '        public int beta() { return 2; }',
+        '    }',
+        '    interface Contract { int gamma(); }',
+        '}',
+      ].join('\n');
+      const parser = await requireParser('java');
+      const elements = extractor.extract(parser.parse(code).rootNode, 'P.java', code, 'java');
+
+      // Pre-fix this emitted 13 for 6 declarations.
+      expect(identities(elements)).toEqual([
+        'class|Inner',
+        'class|Outer',
+        'interface|Contract',
+        'method|Contract.gamma',
+        'method|Inner.beta',
+        'method|Outer.alpha',
+      ]);
+
+      // (ii) the two FALSE facts must be gone: Inner's and Contract's members
+      // were both attributed to Outer.
+      expect(elements.map(e => e.name)).not.toContain('Outer.beta');
+      expect(elements.map(e => e.name)).not.toContain('Outer.gamma');
+
+      // (iii) ruling (A): no bare unqualified twin accompanies a qualified method.
+      expect(elements.filter(e => e.type === 'function')).toHaveLength(0);
+    });
+
+    it('cpp: duplication does not grow with nesting depth', async () => {
+      const code = [
+        'class Outer {',
+        'public:',
+        '    int alpha() { return 1; }',
+        '    class Inner { public: int beta() { return 2; } };',
+        '};',
+      ].join('\n');
+      const parser = await requireParser('cpp');
+      const elements = extractor.extract(parser.parse(code).rootNode, 'p.cpp', code, 'cpp');
+
+      // Pre-fix: 9 for 4 declarations, with `beta` at depth 2 emitted x4.
+      expect(identities(elements)).toEqual([
+        'class|Inner',
+        'class|Outer',
+        'function|alpha',
+        'function|beta',
+      ]);
+      expect(elements.filter(e => e.name === 'beta')).toHaveLength(1);
+    });
+
+    it('cpp: an ANONYMOUS struct still yields its members', async () => {
+      // The early return is deliberately gated on nameNode: an unnamed
+      // struct_specifier pushes no class element, so it must keep falling
+      // through to the unconditional loop or its members disappear.
+      const code = ['typedef struct {', '    int helper() { return 1; }', '} Handle;'].join('\n');
+      const parser = await requireParser('cpp');
+      const elements = extractor.extract(parser.parse(code).rootNode, 'h.cpp', code, 'cpp');
+
+      expect(elements.filter(e => e.name === 'helper')).toHaveLength(1);
+    });
+
+    it('python: the reference shape these three now mirror is unchanged', async () => {
+      const code = ['class Svc:', '    def alpha(self):', '        pass'].join('\n');
+      const parser = await requireParser('py');
+      const elements = extractor.extract(parser.parse(code).rootNode, 'p.py', code, 'py');
+
+      expect(identities(elements)).toEqual(['class|Svc', 'method|Svc.alpha']);
+    });
+  });
 });

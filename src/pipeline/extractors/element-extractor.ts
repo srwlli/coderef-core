@@ -480,6 +480,7 @@ export class ElementExtractor {
         for (const child of node.children) {
           traverse(child, implType);
         }
+        return; // Don't double-traverse impl children (mirrors Python class_definition).
       }
 
       // Struct definitions: struct Foo {}
@@ -557,6 +558,7 @@ export class ElementExtractor {
           if (body) {
             traverse(body, name);
           }
+          return; // Don't double-traverse class children (mirrors Python class_definition).
         }
       }
 
@@ -564,13 +566,24 @@ export class ElementExtractor {
       if (node.type === 'interface_declaration') {
         const nameNode = node.childForFieldName('name');
         if (nameNode) {
+          const name = nameNode.text;
           elements.push({
             type: 'interface',
-            name: nameNode.text,
+            name,
             file: filePath,
             line: nameNode.startPosition.row + 1,
             ...captureCloneSubstrate(node, 'interface'),
           });
+
+          // Traverse interface body so its members scope to the INTERFACE.
+          // Without this the unconditional loop below reached them carrying the
+          // ENCLOSING type's scope, emitting `Outer.gamma` for a member of
+          // `Contract` — a false fact, not a duplicate.
+          const body = node.childForFieldName('body');
+          if (body) {
+            traverse(body, name);
+          }
+          return;
         }
       }
 
@@ -633,6 +646,11 @@ export class ElementExtractor {
           if (body) {
             traverse(body, name);
           }
+          // Don't double-traverse class children (mirrors Python class_definition).
+          // Guarded by nameNode on purpose: an ANONYMOUS struct_specifier
+          // (`typedef struct { ... } Foo;`) pushes no class element and must
+          // still fall through to the unconditional loop, or its members vanish.
+          return;
         }
       }
 
