@@ -1,0 +1,5 @@
+Retired: 2026-08-01 (STUB-CC9094 resource-sheet program, Lane A triage)
+- adapter-RESOURCE-SHEET.md: documents src/adapter/ which is now EMPTY (module
+  deleted); sheet described dead code. Retired, not regenerated.
+- CONSOLIDATED-SCANNER-RESOURCE-SHEET.md: duplicate coverage of
+  src/scanner/scanner.ts; canonical sheet is resource-sheets/scanner-RESOURCE-SHEET.md.
