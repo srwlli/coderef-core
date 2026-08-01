@@ -5,7 +5,7 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "checkpoint_ready",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\foundation-docs-generator-emitted-frontmatter\\plan.json",
@@ -48,12 +48,12 @@
     },
     {
       "event": "phase_transition_writer_noop",
-      "note": "write-phase-transition.cjs resolves ASSISTANT root only (coderef-core: anchor gap, KZ-01KYY49T class) — transitions hand-written per docs-to-graph precedent",
+      "note": "write-phase-transition.cjs resolves ASSISTANT root only (coderef-core: anchor gap, KZ-01KYY49T class) \u2014 transitions hand-written per docs-to-graph precedent",
       "at": "2026-08-01T09:44:57.936Z"
     },
     {
       "event": "design_note",
-      "summary": "Additive DocFact.documentsPaths (list-form documents:) unioned with the scalar via new docTargets() seam; sheet+report lanes gain it too — list-form claims were previously parsed then silently dropped. Foundation docStatus stays lane-decided generated regardless of frontmatter status (poison-pill tested).",
+      "summary": "Additive DocFact.documentsPaths (list-form documents:) unioned with the scalar via new docTargets() seam; sheet+report lanes gain it too \u2014 list-form claims were previously parsed then silently dropped. Foundation docStatus stays lane-decided generated regardless of frontmatter status (poison-pill tested).",
       "at": "2026-08-01T09:56:26.115Z"
     },
     {
@@ -94,11 +94,39 @@
       "timestamp": "2026-08-01T09:56:26.115Z",
       "event": "workorder_complete",
       "message": "Phase 1/1 complete: commit fe02d25 (22 files) pushed+verified. Frontmatter emission live on all 8 foundation docs; foundation documents edges in graph; REC-005 fixed. Awaiting /close-workorder."
+    },
+    {
+      "timestamp": "2026-08-01T10:21:44.374676+00:00",
+      "event": "workorder_closed",
+      "message": "Close-only ceremony: audit PASS (wo-scoped standards pass, tracking 18/18, deps vuln 0, doc-code-tie inert, session log VERIFIED). WO flips to complete in registry; archive deferred to --archive."
     }
   ],
   "required_skills": [
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "closed_at": "2026-08-01T10:21:44.374676+00:00",
+  "completed_at": "2026-08-01T10:21:44.374676+00:00",
+  "close_metadata": {
+    "close_type": "close-only",
+    "closed_via": "/close-workorder",
+    "audit_verdict": "PASS",
+    "wo_scoped_standards_verdict": "pass",
+    "tracking_validator": "18 passed / 0 failed (scoped)",
+    "dependency_audit": {
+      "vulnerabilityCount": 0,
+      "note": "coderef-analyze --type=dependency; outdated/unused/license counts informational"
+    },
+    "metrics_delta": {
+      "no_data": "before_snapshot_absent",
+      "note": "WO predates plan-time snapshots for this feature; no metrics-snapshot-<WO>-before.json in target .coderef/map/"
+    },
+    "session_yaml": ".coderef/sessions/SES-2026-08-01-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER.yaml (ASSISTANT, execute-authored, gate VERIFIED)",
+    "kaizen_logged": [
+      "U+200B zero-width-space Edit-injection into regex literal (KZ family of KZ-01KYV8QE), logged during execution"
+    ],
+    "follow_ups": [],
+    "follow_up_capture_note": "workorder-follow-up runner no-ops on cross-project WO dirs (coderef-core: anchor gap, KZ-01KYY49T class); hand-audited execution notes/decisions_log: no deferred work recorded"
+  }
 }

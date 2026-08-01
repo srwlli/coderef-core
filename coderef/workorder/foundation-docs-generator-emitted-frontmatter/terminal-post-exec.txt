@@ -1,0 +1,35 @@
+================================================================
+  EXECUTION COMPLETE — TERMINAL HARD STOP
+  WORKORDER: WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001
+  feature: foundation-docs-generator-emitted-frontmatter
+  Phases: 1/1   Commits: 2   Pushes: 2 (verified on origin)
+  Parent stub: STUB-VDZNPF
+================================================================
+FILES MODIFIED (fe02d25, 22 files):
+  scripts/doc-gen/utils.js              (foundationFrontmatter + upsertFrontmatter)
+  scripts/doc-gen/enhance-existing-docs.js (REC-005 fix x4 + idempotent upsert x4)
+  scripts/doc-gen/generate-{index,exports,hotspots,relationships}-md.js
+  src/pipeline/doc-ingest.ts            (documentsPaths + docTargets, hold flipped)
+  src/pipeline/graph-builder.ts         (per-target edges, foundation skip removed)
+  __tests__/pipeline/doc-ingest.test.ts (14 -> 18 tests)
+  coderef/foundation-docs/*.md x8       (frontmatter live, suffixes collapsed)
+CLOSE-OUT (bcdfb5e):
+  scripts/doc-gen/README.md             (frontmatter contract section)
+  coderef/workorder/.../communication.json (checkpoint_ready)
+PHASE CHECKLIST:
+  [x] P1 T1-T10 — commits fe02d25 + bcdfb5e (pushed, origin-verified)
+RESULTS:
+  documents edges: 14 -> 54 (+40 foundation-sourced, ALL resolved)
+  unresolved: 0   dangling resolved: 0 (GI-3 safe)
+  documented files: 14 -> 49   @Doc nodes: 27 (8 foundation, all 'generated')
+  REC-005: fixed at 4 sites; ~48 runaway suffixes collapsed to 1 per doc
+  Idempotence: enhancer 2nd run = zero byte diff (PROVEN)
+  validate-docs: exit 0 (23 invalid-anchor warnings = pre-existing drift)
+  Suite: 2515 passed / 26 skipped / 0 failed (vitest exit 0)
+NOTES:
+  ADJ-none — plan executed as written; additive documentsPaths list support
+  also fixed a latent silent claim-drop in the sheet/report lanes.
+  Alignment recorded PASS at work-start (COMMS/CODEREF-CORE journal).
+Session: logged (rich YAML)   Registry: heartbeat live   Validator: see close
+APPROVE -> /close-workorder WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001
+================================================================
