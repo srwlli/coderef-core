@@ -156,6 +156,49 @@
       "task": "P4-T5",
       "at": "2026-08-01",
       "detail": "P4-T5's open question ANSWERED NO, with evidence: /generate-quickstart CANNOT clear the entry-point quickstart WARN. surfaceHasQuickstart() requires a *-quickstart.md in the runnable surface's OWN directory (src/cli/), and the check explicitly rejects a shared ancestor doc as per-surface coverage; /generate-quickstart emits a project-ROOT quickstart. Independently, invoking the generator would have been the wrong call anyway -- discover.cjs still mis-derives project_name ('-coderef-core') and project_description (leaks the frontmatter key), the unfixed P1-T9 finding. Hand-authored src/cli/coderef-mcp-server-quickstart.md instead. NOTE for the generate-quickstart skill owner: this is a second, independent gap in that skill -- it has no per-runnable-surface mode, which the entry-point kind's ratified quickstart contract (STUB-8ZRVSN) now requires."
+    },
+    {
+      "event": "finding",
+      "phase": 5,
+      "task": "P5-T1",
+      "at": "2026-08-01",
+      "detail": "PROVENANCE TABLE BUILT -- and it CORRECTS several WO premises. Reality is 27 sheets across SIX locations, not '25 sheets' in two. By location: coderef/resource-sheets/ (CANONICAL) 3 = all parent_project:lloyd, status:draft; coderef/resources-sheets/ (TYPO DIR) 10 = 6 coderef-dashboard + 4 coderef-core; coderef/resources-sheets/systems/ 5 = ALL ZERO-BYTE EMPTY FILES; coderef/resource/ 3 = 1 coderef-core + 2 no-frontmatter; src/ 5 = sheets living BESIDE the code they document, no frontmatter; scripts/ 1 = no frontmatter. Corrections to the WO text: (a) it said coderef-core owns 4 sheets, actual is 5 (Setup-Coderef-Dir, Context-Generator, Dependency-Graph-Builder, File-Generation-System, Pattern-Detection-System); (b) coderef-dashboard 6 CONFIRMED; (c) it described the 5 under systems/ as sheets with 'none' provenance -- they are 0-byte EMPTY FILES duplicating five top-level sheet names, not sheets at all; (d) it did not account for the 5 src/ sheets, the scripts/ sheet, or the 2 unfrontmattered coderef/resource/ docs. The empty-file discovery materially changes the relocation question: those 5 are a deletion candidate, not a provenance case."
+    },
+    {
+      "event": "phase_partial",
+      "phase": 5,
+      "task": "P5-T2",
+      "at": "2026-08-01",
+      "detail": "Enum-casing half SHIPPED ahead of the ruling (33f15396a): status APPROVED -> approved on 11 sheets, correct regardless of where the sheets land. sheet.frontmatter-complete went 22-of-25 failing -> 11-of-25. The kind still reports FAIL because the check is binary AND because the remaining 11 fail for a different reason (missing agent/date/subject/parent_project). Two other core checks remain and are BLOCKED on the P5-T3 ruling: sheet.filename-and-location (22/25 not under the canonical home) and sheet.required-sections (22/25). resource-sheet is therefore left NON-GREEN at 3 core FAILs, by design, pending the operator decision -- not silently unfinished."
+    },
+    {
+      "event": "finding",
+      "phase": 7,
+      "task": "P7-T1",
+      "at": "2026-08-01",
+      "detail": "P7-T1's DIAGNOSIS IS STALE -- verified against the current file as the task instructed. archive-planning-folder/run.mjs no longer resolves srcDir/destDir against ASSISTANT_ROOT; that was fixed by WO-DISPATCH-SESSION-REQUEST-...-MSYS-001 P5-T1 (recorded as ECO-022). run.mjs:221-226 now takes --project, resolves via workingRoot(projectId), and REFUSES an unknown id rather than falling back. Confirmed empirically: --project=coderef-core resolves to CORE's root (the registry key is lowercase; 'CODEREF-CORE' returns null). Also note only 3 planning folders remain and graphify-alignment-projections is already gone, so the WO's '2 CORE folders' premise is stale too.",
+      "follow_up": "none -- the runner gap the task was written against is closed."
+    },
+    {
+      "event": "finding",
+      "phase": 7,
+      "task": "P7-T2",
+      "at": "2026-08-01",
+      "detail": "The single remaining planning-folder FAIL is a genuine DEADLOCK between two ecosystem tools, already known: the checker's VALID_STATUS is exactly ['open'] (check.mjs:42) so a folder with status 'resolved' FAILs, while the archive runner REFUSES to archive anything whose status is not 'open' (run.mjs:78-79, 'only live planning folders archive'). coderef-core/code-intelligence-improvement-eval is therefore neither passable nor archivable, and the standing amendment forbids hand-editing under coderef/working/. NOT re-filed as a new issue: ECO-024 records this folder by name, ECO-005 records the missing disposition value, and ECO-022 the cross-root half. Recorded as blocked-with-owner rather than silently unfinished."
+    },
+    {
+      "event": "finding",
+      "phase": 7,
+      "task": "P7-T3",
+      "at": "2026-08-01",
+      "detail": "DERIVED-INDEX defect diagnosed; the checker's advice is WRONG and was NOT followed. Current measurement: validate-docs.js --strict reports 'Found 310 UUID anchors (287 valid)' and fails on 23 invalid -- NOT the 309-of-311 the WO was scoped against, so the bulk was repaired by intervening work and only a tail remains. The checker says 'INDEX.md is STALE -- re-derive it: node scripts/doc-gen/validate-docs.js', but that script contains NO write path and self-reports 'Run generation scripts to fix' -- it is a validator, so re-deriving with it can never clear the FAIL. The real producers are scripts/doc-gen/generate-*.js. Two issues filed: ECO-026 (ASSISTANT log) for the checker phrasing a generator's exit code as a staleness verdict, and ECO-034 (CORE log) for the 23 anchors themselves, with the hypothesis that they are elements whose LINE moved -- the ECO-033 two-id-shapes instability -- rather than removed elements. Left non-green deliberately; re-deriving on the checker's advice would have been a no-op that looked like action."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 7,
+      "task": "P7-T4",
+      "at": "2026-08-01",
+      "detail": "FINAL AGGREGATOR (standards-validate --domain=CODEREF-CORE): 7 fail / 2 warning / 9 pass / 23 n-a, against the WO's opening baseline of 10 fail / 2 warning / 6 pass / 23 n-a. THREE KINDS FLIPPED TO GREEN, all three from a standing start: data 4 FAIL -> 0 (12 pass/0 warn), execution 4 FAIL -> 0 (13 pass/0 warn), entry-point 2 FAIL -> 0 (9 pass/0 warn). documentation went 12 FAIL -> 2 but the kind still reports FAIL because those 2 are the declared exemption. SEVEN REMAIN NON-GREEN, stated plainly: (1) documentation 2 -- the coderef/working/ exemption, unfixable without violating the standing amendment; (2) resource-sheet 3 -- BLOCKED on the P5-T3 relocation ruling (the enum half shipped, 22->11 bad-frontmatter sheets); (3) git 3 -- BLOCKED on the STUB-CT0DRT hook-posture ruling, never started per P6-T1's STOP; (4) bootstrap 2 -- one is git-standard-passing, so it clears only when git does; the other is charter-present; (5) planning-folder 1 -- the checker/runner status deadlock, blocked-with-owner; (6) derived-index 1 -- 23 unresolvable UUID anchors, not fixable by the remediation the checker prints; (7) culture 2 -- the alignment-gate axis, outside this WO's kinds (ECO-003 family). A burn-down that reports only its wins is the failure mode this WO exists to correct, so: 3 of the 8 targeted kinds are green, 1 is at its exemption floor, and 4 are open with named owners or pending rulings."
     }
   ],
   "phase_transitions": [],
