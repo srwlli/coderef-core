@@ -199,6 +199,34 @@
       "task": "P7-T4",
       "at": "2026-08-01",
       "detail": "FINAL AGGREGATOR (standards-validate --domain=CODEREF-CORE): 7 fail / 2 warning / 9 pass / 23 n-a, against the WO's opening baseline of 10 fail / 2 warning / 6 pass / 23 n-a. THREE KINDS FLIPPED TO GREEN, all three from a standing start: data 4 FAIL -> 0 (12 pass/0 warn), execution 4 FAIL -> 0 (13 pass/0 warn), entry-point 2 FAIL -> 0 (9 pass/0 warn). documentation went 12 FAIL -> 2 but the kind still reports FAIL because those 2 are the declared exemption. SEVEN REMAIN NON-GREEN, stated plainly: (1) documentation 2 -- the coderef/working/ exemption, unfixable without violating the standing amendment; (2) resource-sheet 3 -- BLOCKED on the P5-T3 relocation ruling (the enum half shipped, 22->11 bad-frontmatter sheets); (3) git 3 -- BLOCKED on the STUB-CT0DRT hook-posture ruling, never started per P6-T1's STOP; (4) bootstrap 2 -- one is git-standard-passing, so it clears only when git does; the other is charter-present; (5) planning-folder 1 -- the checker/runner status deadlock, blocked-with-owner; (6) derived-index 1 -- 23 unresolvable UUID anchors, not fixable by the remediation the checker prints; (7) culture 2 -- the alignment-gate axis, outside this WO's kinds (ECO-003 family). A burn-down that reports only its wins is the failure mode this WO exists to correct, so: 3 of the 8 targeted kinds are green, 1 is at its exemption floor, and 4 are open with named owners or pending rulings."
+    },
+    {
+      "event": "ruling_applied",
+      "phase": 5,
+      "task": "P5-T3/T4/T5",
+      "at": "2026-08-01",
+      "detail": "OPERATOR RULING: option (A) relocate CORE-owned only. APPLIED (5d85f6dc3). Moved the 5 coderef-core-owned sheets into coderef/resource-sheets/ via git mv (Context-Generator, Dependency-Graph-Builder, File-Generation-System, Pattern-Detection-System, Setup-Coderef-Dir); left the 6 coderef-dashboard-owned in place; DELETED the 5 zero-byte files under coderef/resources-sheets/systems/ (operator-approved as part of the option). Sheet count 25 -> 20. Then filled every section the relocation brought into scope: CORE-scope offenders on sheet.frontmatter-complete and sheet.required-sections are now NONE. Setup-Coderef-Dir additionally required a factual correction -- its documented directory list had drifted from DIRECTORY_STRUCTURE (setup_coderef_dirs.py:50), naming coderef/documents|reference|user|notes which the script does NOT create while omitting foundation-docs, knowledge, resource-sheets, schemas, working and 4 .coderef/ entries it does. Kind REMAINS FAIL on sheet.filename-and-location (12 of 20) -- the 6 dashboard-owned, 5 under src/, 1 under scripts/, 1 under coderef/resource/ -- all left in place BY the ruling, not by omission."
+    },
+    {
+      "event": "ruling_applied",
+      "phase": 1,
+      "task": "P1-T10",
+      "at": "2026-08-01",
+      "detail": "OPERATOR RULING: add **/coderef/working/** to the documentation kind's exclusion globs. APPLIED at the ecosystem source (ASSISTANT ba77cc44a, kind.json v4.3.0 -> v4.4.0, rationale recorded in exclusions.note per the file's convention). Data-driven change only -- the checker reads the glob list, so no checker code was touched. DOCUMENTATION KIND IS NOW 0 FAIL (290 pass / 142 warn / 0 fail), completing 12 -> 0 across the two sessions. This resolves the contradiction that a doc under coderef/working/ was graded while a standing amendment forbade editing it, which gave every project with a working folder a permanent non-zero floor."
+    },
+    {
+      "event": "ruling_applied",
+      "phase": 6,
+      "task": "P6-T1",
+      "at": "2026-08-01",
+      "detail": "OPERATOR RULING: posture (B) -- one shared ASSISTANT-owned .githooks/ with each repo pointing core.hooksPath at it -- adopted FOR NOW, with the explicit instruction to log that it needs to be properly addressed. LOGGED as ECO-050 in ASSISTANT/ecosystem-issues.md (on origin at fa051ce9f). P6-T3 was deliberately NOT executed: 'for now' plus 'needs addressed' is a deferral, not an authorization to implement a cross-repo hook layer. git (3 fail) and bootstrap (2 fail) therefore remain NON-GREEN BY DECISION. ECO-050 records for the implementer that hooks.path-bootstrap-documented already WARNs -- a shared hooks dir is only as good as its bootstrap step, and a fresh clone that never runs it is exactly as ungated as today."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 7,
+      "task": "P7-T4-final",
+      "at": "2026-08-01",
+      "detail": "FINAL AGGREGATOR after all three rulings applied: 6 fail / 3 warning / 9 pass / 23 n-a, against the opening baseline of 10 fail / 2 warning / 6 pass / 23 n-a. FOUR kinds reached zero fails: data 4->0 (PASS 12/0/0), execution 4->0 (PASS 13/0/0), entry-point 2->0 (PASS 9/0/0), documentation 12->0 (WARNING 290/142/0 -- warn-only, no fails). SIX REMAIN NON-GREEN, each with a named reason: git 3 and bootstrap 2 (BY DECISION, deferred at the P6-T1 ruling, ECO-050); resource-sheet 3 (location only, the non-CORE sheets the P5 ruling leaves in place); derived-index 1 (23 unresolvable UUID anchors, ECO-033/034, not fixable by the remediation the checker prints); planning-folder 1 (checker/runner status deadlock, ECO-005/022/024, blocked-with-owner); culture 2 (alignment-gate axis, outside this WO's kinds). Net: 10 -> 6 fails, +3 passing kinds, and every remaining failure is attributable to a ruling, an exemption, or a filed ecosystem issue rather than to unfinished work."
     }
   ],
   "phase_transitions": [],
