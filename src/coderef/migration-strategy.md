@@ -1,5 +1,17 @@
 # Complete CodeRef System Consolidation Plan
 
+## Overview
+
+**Status: COMPLETED — this is a historical record.** The consolidation described here was
+carried out; all three implementations were merged into the single `src/` tree that ships
+today. It is retained as the rationale for the current layout, not as an open plan. Do not
+execute the steps below against the current codebase — the starting state they assume no
+longer exists.
+
+The plan consolidated three parallel CodeRef implementations (root, `src/`, and
+`coderef-core-updates/`) into one system, unifying the parser, the type system, and both
+scanner families behind a common `ElementData[]` output contract.
+
 ## Objective
 Consolidate all three CodeRef implementations (root, `src/`, `coderef-core-updates/`) into **one complete, unified system** with:
 - ✅ Working regex scanner (multi-language)
@@ -280,7 +292,23 @@ Consolidate all three CodeRef implementations (root, `src/`, `coderef-core-updat
    - Update `CODEBASE-AUDIT-REPORT.md` to reflect final state
    - Update any architecture docs referencing root files
 
-## Implementation Steps
+## Breaking changes
+
+The consolidation was **source-breaking for internal importers and non-breaking for the
+published surface**, which is why it could land without a major version bump.
+
+| Change | Broke | Mitigation applied |
+|---|---|---|
+| Three implementations collapsed to one under `src/` | Any import path pointing at the root or `coderef-core-updates/` copies | Both copies were deleted; nothing outside this repo imported them |
+| Single unified type system | Callers holding the older per-implementation element shapes | All shapes were converged onto `ElementData`; see `src/types/types.ts` |
+| AST scanner output routed through an adapter | Direct consumers of the raw AST graph | The adapter converts AST graph → `ElementData[]`, so consumers keep one shape |
+| Parser unified on EBNF-based CodeRef2 | Tags relying on pre-CodeRef2 grammar quirks | The grammar is a superset for valid input; malformed tags that previously parsed loosely now fail validation — deliberately |
+
+No published `@coderef/core` export was removed by this migration. The legacy graph
+projection was retained under `@legacy` rather than deleted; see
+[docs/ARCHITECTURE.md](../../docs/ARCHITECTURE.md).
+
+## Migration steps
 
 ### Step 0: Review coderef-core-updates/ (NEW)
 - Review `coderef-core-updates/coderef-core/scanner.ts` for useful features
