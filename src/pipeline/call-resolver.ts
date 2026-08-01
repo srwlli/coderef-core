@@ -743,8 +743,14 @@ const PURE_DOTTED_CHAIN_RE = /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)+$/;
  */
 export function isBuiltinRootReceiver(receiverText: string | null): boolean {
   if (receiverText === null) return false;
-  if (!PURE_DOTTED_CHAIN_RE.test(receiverText)) return false;
-  return BUILTIN_RECEIVERS.has(receiverText.split('.')[0]);
+  if (PURE_DOTTED_CHAIN_RE.test(receiverText)) {
+    return BUILTIN_RECEIVERS.has(receiverText.split('.')[0]);
+  }
+  // FU-2 lever 1: call-expression chains rooted on a builtin constructor or
+  // global — `new Date().toISOString()`, `JSON.parse(raw).map(...)`. Branch 1
+  // has already claimed the exact-match case, so this only ever widens.
+  const chainRoot = receiverChainRoot(receiverText);
+  return chainRoot !== null && BUILTIN_RECEIVERS.has(chainRoot);
 }
 
 /**
@@ -766,6 +772,107 @@ function receiverRootIdentifier(receiverText: string): string | null {
     return core.split('.')[0];
   }
   return null;
+}
+
+/**
+ * Root used by the import-binding disposition branches (3.5 / 3.7): the P2
+ * shapes first, then the FU-2 lever-1 CHAIN root as a widening fallback.
+ *
+ * The fallback is SUPPRESSED for matcher-side receivers in test files, because
+ * the P1 test_dsl disposition owns them and cannot reclaim them afterwards —
+ * applyTestDslReclassify fires only on results still marked 'unresolved'. Left
+ * ungated, `expect(x).toBe(y)` roots on `expect`, which is a vitest import, and
+ * ~6.5k edges silently migrate from builtin/test_dsl to external, gutting the
+ * shipped test_dsl_count. The gate covers ONLY the new fallback: P2's own
+ * shapes (bare `vi`, `jest`, dotted chains) keep the exact disposition they
+ * have always had.
+ */
+function receiverDispositionRoot(sourceFile: string, receiver: string): string | null {
+  const p2Root = receiverRootIdentifier(receiver);
+  if (p2Root !== null) return p2Root;
+  if (isTestDslFile(sourceFile) && isTestDslReceiver(receiver)) return null;
+  return receiverChainRoot(receiver);
+}
+
+/** Roots that are scope constructs, never import bindings — branch 2 owns them. */
+const NON_BINDING_ROOTS = new Set<string>(['this', 'super']);
+
+/**
+ * Extract the ROOT identifier of a member/call CHAIN receiver (FU-2 lever 1,
+ * WO-RESOLVE-62-OF-UNRESOLVED-CALLS-VIA-SCOPE-STACK-001). Sees through call
+ * expressions, index access, non-null assertions, optional chaining, `new`,
+ * and the embedded CRLF that fluent builders produce:
+ *
+ *   `z\r\n    .string()\r\n    .optional()`      -> `z`
+ *   `createHash('sha256').update(content)`       -> `createHash`
+ *   `fs.lstatSync(resolved)`                     -> `fs`
+ *   `new Date()`                                 -> `Date`
+ *
+ * Measured on this repo, receivers of these shapes were 216 of the 547 honest
+ * `receiver_not_in_symbol_table` edges (A1 call-expr 173 + A2 new-expr 43).
+ * They are not project edges and never could be — `z.string()` is zod — so the
+ * root is fed to the EXISTING import-binding branches (3.5 node_builtin, 3.7
+ * external) and the builtin allowlist, which already carry the right
+ * disposition. No new resolution path, no fabricated edges.
+ *
+ * Only the TOP LEVEL is inspected: anything inside (), [] or {} is call or
+ * index ARGUMENT territory and is skipped wholesale (string literals too), so
+ * an argument containing arbitrary syntax never disqualifies the chain. At
+ * depth 0 the sole legal tokens are chain punctuation (`.`, `!`, `?.`) and
+ * identifier runs that FOLLOW a dot. Anything else — a ternary, `??`, `||`,
+ * arithmetic, a stray second identifier — means the root would be a guess
+ * rather than a fact, so the function returns null and the receiver keeps its
+ * existing classification path (the same conservative contract
+ * receiverRootIdentifier has always had for shapes it cannot prove).
+ */
+function receiverChainRoot(receiverText: string): string | null {
+  let core = receiverText.trim();
+  const ctor = /^new\s+/.exec(core);
+  if (ctor) core = core.slice(ctor[0].length).trim();
+
+  const head = /^[A-Za-z_$][\w$]*/.exec(core);
+  if (!head) return null;
+  const root = head[0];
+  if (NON_BINDING_ROOTS.has(root)) return null;
+
+  let depth = 0;
+  let afterDot = false;
+  let inIdent = false;
+  for (let i = root.length; i < core.length; i++) {
+    const ch = core[i];
+    if (ch === '"' || ch === "'" || ch === '`') {
+      const quote = ch;
+      i++;
+      while (i < core.length) {
+        if (core[i] === '\\') { i++; }
+        else if (core[i] === quote) break;
+        i++;
+      }
+      continue;
+    }
+    if (ch === '(' || ch === '[' || ch === '{') { depth++; continue; }
+    if (ch === ')' || ch === ']' || ch === '}') {
+      depth--;
+      if (depth < 0) return null; // closes more than it opens — not self-contained
+      continue;
+    }
+    if (depth > 0) continue;
+    if (/\s/.test(ch)) { inIdent = false; continue; }
+    if (ch === '.') { afterDot = true; inIdent = false; continue; }
+    if (ch === '!') { inIdent = false; continue; }
+    if (ch === '?') {
+      if (core[i + 1] === '.') { i++; afterDot = true; inIdent = false; continue; }
+      return null; // ternary or `??` — the root is not determinable
+    }
+    if (/[\w$]/.test(ch)) {
+      if (!afterDot && !inIdent) return null; // a second bare identifier
+      inIdent = true;
+      afterDot = false;
+      continue;
+    }
+    return null; // any other top-level operator
+  }
+  return depth === 0 ? root : null;
 }
 
 /**
@@ -989,9 +1096,15 @@ export function classifyMethodCall(
   //     resolution carries reason='node_builtin' (STUB-QT400D); the call
   //     is honestly a builtin-module member call, not a project edge.
   if (receiver !== null) {
+    // FU-2 lever 1: the root is consulted alongside the exact receiver text so
+    // a builtin-module CALL chain (`fs.lstatSync(p).isDirectory()`,
+    // `createHash('sha256').update(x)`) reaches the same disposition its bare
+    // form already had. Root extraction is refusal-biased — an expression whose
+    // root cannot be proven yields null and matches nothing.
+    const builtinRoot = receiverDispositionRoot(fact.sourceFile, receiver);
     const builtinBinding = importResolutions.find(
       ir => ir.sourceFile === fact.sourceFile
-        && ir.localName === receiver
+        && (ir.localName === receiver || (builtinRoot !== null && ir.localName === builtinRoot))
         && ir.reason === 'node_builtin',
     );
     if (builtinBinding) {
@@ -1031,7 +1144,7 @@ export function classifyMethodCall(
   //     this class was 726 bare + 377 cast-wrapped receiver_not_in_symbol_table
   //     edges on this repo (`ts.*` alone dominating).
   if (receiver !== null) {
-    const externalRoot = receiverRootIdentifier(receiver);
+    const externalRoot = receiverDispositionRoot(fact.sourceFile, receiver);
     if (externalRoot !== null) {
       const externalBinding = importResolutions.find(
         ir => ir.sourceFile === fact.sourceFile
