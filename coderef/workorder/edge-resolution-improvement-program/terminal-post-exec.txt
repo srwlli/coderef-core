@@ -1,20 +1,23 @@
 =============================================================
-WORKORDER: WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001  |  edge-resolution-improvement-program  |  PHASE 3 of 4 COMPLETE (checkpoint_ready)
-Session: SES-2026-08-01-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM  |  Phases run: 3 (rolling single-phase mode, one per invocation)  |  Commits: 6  |  Pushes: 6
-Parent stub: STUB-EVR39N (promoted)  |  Promoted: STUB-VYBKRV (P2, pivoted) / STUB-9B66EN (P3)  |  Deferred: STUB-QPAAY0 (P4)
+WORKORDER: WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001  |  edge-resolution-improvement-program  |  PHASE 4 of 4 COMPLETE (FINAL - checkpoint_ready, close_after_phase=4)
+Session: SES-2026-08-01-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM  |  Phases run: 4 (rolling single-phase mode, one per invocation)  |  Commits: 8  |  Pushes: 8
+Parent stub: STUB-EVR39N (promoted)  |  Promoted: STUB-VYBKRV (P2, pivoted) / STUB-9B66EN (P3) / STUB-QPAAY0 (P4)
 
 FILES CREATED:
   + src/pipeline/heritage-index.ts  (25d696d - BFS chain walk, nearest-level-wins, cycle guard, MAX_HERITAGE_DEPTH=16)
+  + __tests__/pipeline/incremental-path-keying.contract.test.ts  (fb6e987 - 8 tests, red-first: 4 defect-shaped failures pre-fix)
   + __tests__/pipeline/heritage-method-lookup.contract.test.ts  (25d696d - 9 tests)
   + __tests__/pipeline/test-dsl-reclassify.contract.test.ts  (d03a61d)
   + __tests__/pipeline/external-receiver-disposition.contract.test.ts  (419d532)
-  + coderef/workorder/.../metrics-{before,after,p2-*,p3-*}.json + 3 diff.md  (per phase)
+  + coderef/workorder/.../metrics-{before,after,p2-*,p3-*,p4-*}.json + 4 diff.md + p4-repro-evidence.txt  (per phase)
 
 FILES MODIFIED:
   ~ src/pipeline/call-resolver.ts  (d03a61d P1 test_dsl; 419d532 P2 branches 3.7 + 1b; 25d696d P3 heritage wiring in branches 1/2/3)
+  ~ src/pipeline/symbol-table-cache.ts  (fb6e987 P4 - canonicalFactKey + dedupeFactSet exports)
+  ~ src/pipeline/orchestrator.ts  (fb6e987 P4 - storeKeyFor wiring in runIncremental: all input forms translate to the store's own key form)
   ~ src/pipeline/output-validator.ts + src/cli/mcp/context-tools.ts  (d03a61d)
   ~ docs/CLI.md + docs/ARCHITECTURE.md + README.md + USING-CODEREF.md + CHANGELOG.md  (all phases)
-  ~ communication.json + plan.json (P2+P3 authored in-place at their planning gates)
+  ~ communication.json + plan.json (P2+P3+P4 authored in-place at their planning gates)
 
 PHASE CHECKLIST:
   [x] Phase 1: test_dsl reclassify, 8/8 tasks  (d03a61d)  suite 2503/26/0
@@ -22,17 +25,21 @@ PHASE CHECKLIST:
       (planning-gate PIVOT from FU-2 field-path walking - data-backed, recorded in decisions_log)
   [x] Phase 3: heritage-aware method lookup, 8/8 tasks  (25d696d)  suite 2524/26/0
       (guardrail-3 retired; new reasons heritage_method_lookup EXACT + super_method_not_in_heritage)
-  [ ] Phase 4: incremental path-keying fix - DEFERRED (planning gate, STUB-QPAAY0)
+  [x] Phase 4: incremental path-keying fix, 8/8 tasks  (fb6e987)  suite 2532/26/0
+      (STUB-QPAAY0 / GX-002 FU-4; mixed-form --changed-files no longer double-keys the fact set)
 
-RESULTS (cumulative): unresolved 18,527 -> 1,674  |  unresolved_src 959 -> 783  |  resolved_of_resolvable 32.83% -> 74.67%
-P3 SPECIFIC: self-scan flips ZERO - proven by controlled A/B (heritage neutralized vs live, identical resolved-id sets;
-  raw before/after diff was confounded by peer src commits turning over line-anchored ids). 22-edge heritage estate here;
-  value is repo-agnostic (super.x(), inherited this.x(), typed-receiver inherited methods EXACT) pinned by the 9-test contract.
-GUARDS:  zero fabricated targets  |  zero lost resolutions (A/B: A-only 0, B-only 0)  |  external supertypes never resolve
+RESULTS (cumulative): unresolved 18,527 -> 1,674  |  unresolved_src 959 -> 783  |  resolved_of_resolvable 32.83% -> 74.8%
+P4 SPECIFIC: incremental populate --changed-files is now byte-identical to a full rebuild - proven three ways:
+  (1) red-first contract envelope 4 fail -> 8/8 green; (2) live repro flipped exit 1 -> exit 0 with store
+  self-heal 499 -> 498 keys (the pre-fix failing run had POISONED the store - persist precedes validation,
+  recorded as follow-up candidate 3); (3) E2E parity: identical all_edge_ids_sha256 + resolved_edge_ids_sha256,
+  full rebuild vs incremental on the same tree - the exact proof GX-002 P1-T6 could not run.
+  Repo-agnostic: key form follows the originating populate invocation (CORE store relative-keyed, ASSISTANT absolute-keyed).
+GUARDS:  zero semantics change (canonicalization only)  |  out-of-project paths keep absolute form  |  no FACT_SET_VERSION bump
 
-Session: logged (rich, all three phases)  |  Registry: active_work heartbeat live  |  Follow-ups: 2 candidates in close_metadata
-Audit sidecars metrics-p3-*.resolved-ids.txt on disk only (id-vintage-bound, excluded from commit by design)
+Session: logged (rich, all four phases)  |  Registry: active_work heartbeat live  |  Follow-ups: 3 candidates in close_metadata
+Audit sidecars metrics-p{3,4}-*.resolved-ids.txt on disk only (id-vintage-bound, excluded from commit by design)
 
-NEXT: review the P3 result, then P4 planning gate + /execute-workorder WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 --phase=4
-      (close_after_phase=4: after P4 the close ceremony follows via /close-workorder - operator-invoked, never automatic)
+NEXT: /close-workorder WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001
+      (close_after_phase=4 reached: 4/4 phases complete - close ceremony is OPERATOR-INVOKED, never automatic)
 =============================================================

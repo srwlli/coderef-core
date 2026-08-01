@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "implementing",
+  "status": "checkpoint_ready",
   "current_phase": 4,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\analysis.json",
@@ -137,6 +137,13 @@
       "commit": "25d696d",
       "verdict": "PASS",
       "at": "2026-08-01T10:36:00Z"
+    },
+    {
+      "phase": 4,
+      "to_status": "complete",
+      "commit": "fb6e987",
+      "verdict": "PASS",
+      "at": "2026-08-01T12:05:00Z"
     }
   ],
   "plan_adjustments": [],
@@ -160,6 +167,11 @@
       "timestamp": "2026-08-01T10:36:00Z",
       "event": "phase3_complete_holding",
       "detail": "P3 heritage-aware method lookup 8/8 tasks (STUB-9B66EN, guardrail-3 retired); heritage-index module (BFS, nearest-level-wins, cycle guard, depth 16) wired into all three classifyMethodCall branches; new reason heritage_method_lookup (EXACT) + super_method_not_in_heritage; self-scan flips ZERO proven by controlled A/B (raw diff confounded by peer-commit id turnover); metrics valid 10049 / unresolved 1674 / ror 74.67; 9-test contract envelope; suite 2524/26/0; commit 25d696d pushed+verified; rolling-plan hard stop before P4 planning gate (STUB-QPAAY0 incremental path-keying)"
+    },
+    {
+      "timestamp": "2026-08-01T12:05:00Z",
+      "event": "phase4_complete_holding",
+      "detail": "P4 incremental path-keying fix 8/8 tasks (STUB-QPAAY0, GX-002 FU-4); canonicalFactKey + dedupeFactSet (symbol-table-cache) + storeKeyFor wiring (runIncremental) - all --changed-files input forms translate to the store's own key form so merge REPLACES instead of double-keying; red-first 8-test contract envelope (4 defect-shaped failures pre-fix); live repro flipped exit 1 -> exit 0 with store self-heal 499->498 keys; E2E parity byte-identical (identical all_edge_ids_sha256 + resolved_edge_ids_sha256, full rebuild vs incremental same tree) - the proof GX-002 P1-T6 could not run; metrics valid 10133 / unresolved 1674 / ror 74.8 (delta = the WO's own new test file entering the scan universe); suite 2532/26/0; commit fb6e987 pushed+verified; FINAL phase 4/4 (close_after_phase=4) - awaiting operator /close-workorder"
     }
   ],
   "required_skills": [
