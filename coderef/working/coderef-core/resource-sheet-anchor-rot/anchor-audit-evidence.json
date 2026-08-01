@@ -1,0 +1,548 @@
+{
+  "totals": {
+    "anchors_checked": 403,
+    "anchors_stale": 43,
+    "anchors_unverifiable": 50,
+    "sheets_with_anchors": 65,
+    "sheets_stale": 7
+  },
+  "sheets": [
+    {
+      "sheet": "call_resolver-RESOURCE-SHEET.md",
+      "checked": 14,
+      "stale": 14,
+      "unverifiable": 0,
+      "examples": [
+        [
+          "CallResolutionKind",
+          "85",
+          86
+        ],
+        [
+          "CallResolution",
+          "97",
+          98
+        ],
+        [
+          "SymbolTableEntry",
+          "157",
+          158
+        ]
+      ]
+    },
+    {
+      "sheet": "graph_builder-RESOURCE-SHEET.md",
+      "checked": 14,
+      "stale": 13,
+      "unverifiable": 3,
+      "examples": [
+        [
+          "constructGraph",
+          "271",
+          302
+        ],
+        [
+          "EdgeResolutionStatus",
+          "121",
+          130
+        ],
+        [
+          "EdgeEvidence",
+          "148",
+          157
+        ]
+      ]
+    },
+    {
+      "sheet": "import_resolver-RESOURCE-SHEET.md",
+      "checked": 12,
+      "stale": 10,
+      "unverifiable": 0,
+      "examples": [
+        [
+          "ExportTableEntry",
+          "166",
+          183
+        ],
+        [
+          "ExportTable",
+          "176",
+          193
+        ],
+        [
+          "resolveImports",
+          "189",
+          206
+        ]
+      ]
+    },
+    {
+      "sheet": "canonical_graph-RESOURCE-SHEET.md",
+      "checked": 7,
+      "stale": 2,
+      "unverifiable": 2,
+      "examples": [
+        [
+          "ALL_PATHS_MAX",
+          "573",
+          635
+        ],
+        [
+          "loadCanonicalGraph",
+          "581",
+          643
+        ]
+      ]
+    },
+    {
+      "sheet": "coderef_mcp_server-RESOURCE-SHEET.md",
+      "checked": 2,
+      "stale": 2,
+      "unverifiable": 5,
+      "examples": [
+        [
+          "SERVER_INSTRUCTIONS",
+          "84",
+          132
+        ],
+        [
+          "SERVER_TOOL_COUNT",
+          "6",
+          127
+        ]
+      ]
+    },
+    {
+      "sheet": "graph_tools-RESOURCE-SHEET.md",
+      "checked": 1,
+      "stale": 1,
+      "unverifiable": 1,
+      "examples": [
+        [
+          "buildGraphTools",
+          "90",
+          101
+        ]
+      ]
+    },
+    {
+      "sheet": "orchestrator-RESOURCE-SHEET.md",
+      "checked": 1,
+      "stale": 1,
+      "unverifiable": 1,
+      "examples": [
+        [
+          "PipelineOrchestrator",
+          "75",
+          74
+        ]
+      ]
+    },
+    {
+      "sheet": "answer_generation_service-RESOURCE-SHEET.md",
+      "checked": 3,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "ast_element_scanner-RESOURCE-SHEET.md",
+      "checked": 4,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "bin_alias-RESOURCE-SHEET.md",
+      "checked": 3,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "breaking_change_detector-RESOURCE-SHEET.md",
+      "checked": 2,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "chunk_converter-RESOURCE-SHEET.md",
+      "checked": 1,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "coderef_id-RESOURCE-SHEET.md",
+      "checked": 4,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "complexity_scorer-RESOURCE-SHEET.md",
+      "checked": 1,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "context_generator-RESOURCE-SHEET.md",
+      "checked": 12,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "dependency_analyzer-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "detect_languages-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "dynamic_import_detector-RESOURCE-SHEET.md",
+      "checked": 3,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "edge_confidence-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "element_taxonomy-RESOURCE-SHEET.md",
+      "checked": 8,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "embedding_text_generator-RESOURCE-SHEET.md",
+      "checked": 2,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "emit_map-RESOURCE-SHEET.md",
+      "checked": 9,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "formatter-RESOURCE-SHEET.md",
+      "checked": 3,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "framework_registry-RESOURCE-SHEET.md",
+      "checked": 2,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "frontend_call_parsers-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 1,
+      "examples": []
+    },
+    {
+      "sheet": "generate_routes-RESOURCE-SHEET.md",
+      "checked": 14,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "git_history-RESOURCE-SHEET.md",
+      "checked": 14,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "grammar_registry-RESOURCE-SHEET.md",
+      "checked": 1,
+      "stale": 0,
+      "unverifiable": 1,
+      "examples": []
+    },
+    {
+      "sheet": "graph_reranker-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "guard-RESOURCE-SHEET.md",
+      "checked": 3,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "impact_simulator-RESOURCE-SHEET.md",
+      "checked": 4,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "index_storage-RESOURCE-SHEET.md",
+      "checked": 12,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "index_store-RESOURCE-SHEET.md",
+      "checked": 6,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "indexing_orchestrator-RESOURCE-SHEET.md",
+      "checked": 19,
+      "stale": 0,
+      "unverifiable": 1,
+      "examples": []
+    },
+    {
+      "sheet": "js_parser-RESOURCE-SHEET.md",
+      "checked": 8,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "json_store-RESOURCE-SHEET.md",
+      "checked": 1,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "lookup_tools-RESOURCE-SHEET.md",
+      "checked": 2,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "lru_cache-RESOURCE-SHEET.md",
+      "checked": 3,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "map_tools-RESOURCE-SHEET.md",
+      "checked": 3,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "mcp_response_format-RESOURCE-SHEET.md",
+      "checked": 15,
+      "stale": 0,
+      "unverifiable": 2,
+      "examples": []
+    },
+    {
+      "sheet": "mcp_shared-RESOURCE-SHEET.md",
+      "checked": 35,
+      "stale": 0,
+      "unverifiable": 4,
+      "examples": []
+    },
+    {
+      "sheet": "metrics_delta-RESOURCE-SHEET.md",
+      "checked": 7,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "migration_mapper-RESOURCE-SHEET.md",
+      "checked": 14,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "ollama_provider-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "parser-RESOURCE-SHEET.md",
+      "checked": 7,
+      "stale": 0,
+      "unverifiable": 2,
+      "examples": []
+    },
+    {
+      "sheet": "path_normalize-RESOURCE-SHEET.md",
+      "checked": 2,
+      "stale": 0,
+      "unverifiable": 1,
+      "examples": []
+    },
+    {
+      "sheet": "populate-RESOURCE-SHEET.md",
+      "checked": 4,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "project_map_data-RESOURCE-SHEET.md",
+      "checked": 11,
+      "stale": 0,
+      "unverifiable": 2,
+      "examples": []
+    },
+    {
+      "sheet": "provider_factory-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "query_engine-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "rag_eval-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "rag_index-RESOURCE-SHEET.md",
+      "checked": 4,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "rag_tools-RESOURCE-SHEET.md",
+      "checked": 2,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "route_parsers-RESOURCE-SHEET.md",
+      "checked": 8,
+      "stale": 0,
+      "unverifiable": 9,
+      "examples": []
+    },
+    {
+      "sheet": "save_frontend_calls-RESOURCE-SHEET.md",
+      "checked": 6,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "scanner-RESOURCE-SHEET.md",
+      "checked": 7,
+      "stale": 0,
+      "unverifiable": 7,
+      "examples": []
+    },
+    {
+      "sheet": "scip_schema-RESOURCE-SHEET.md",
+      "checked": 7,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "SCRIPTS-RESOURCE-SHEET.md",
+      "checked": 0,
+      "stale": 0,
+      "unverifiable": 3,
+      "examples": []
+    },
+    {
+      "sheet": "search_router-RESOURCE-SHEET.md",
+      "checked": 9,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "semantic_integration-RESOURCE-SHEET.md",
+      "checked": 4,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "Setup-Coderef-Dir-RESOURCE-SHEET.md",
+      "checked": 0,
+      "stale": 0,
+      "unverifiable": 4,
+      "examples": []
+    },
+    {
+      "sheet": "tree_sitter_file_scan-RESOURCE-SHEET.md",
+      "checked": 1,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "validator-RESOURCE-SHEET.md",
+      "checked": 5,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "vector_store-RESOURCE-SHEET.md",
+      "checked": 10,
+      "stale": 0,
+      "unverifiable": 0,
+      "examples": []
+    },
+    {
+      "sheet": "verify_tools-RESOURCE-SHEET.md",
+      "checked": 2,
+      "stale": 0,
+      "unverifiable": 1,
+      "examples": []
+    }
+  ]
+}
