@@ -53,7 +53,7 @@ off. Both are governed in depth by
 
 ## 2. The tool front doors
 
-All 37 tools are reached through **one** door — the MCP server — rather than through
+All 38 tools are reached through **one** door — the MCP server — rather than through
 per-tool wrappers. That is deliberate: a single registration surface means a tool
 cannot exist without appearing in the handshake count.
 

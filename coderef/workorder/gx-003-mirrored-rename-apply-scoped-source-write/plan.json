@@ -1,0 +1,119 @@
+{
+  "plan_type": "strict",
+  "goal": "GX-003 mirrored CLI/MCP rename_apply - the FIRST scoped source-write MCP capability. Operator ruled 2026-08-01: the scoped supersession of the MCP-never-writes-source contract ships AS PART of this workorder, confined to exactly one tool (rename_apply). Build the MCP tool as a thin mirror delegating to the existing planRename/applyRename modules (src/refactor/) with ZERO forked logic; CLI coderef-rename unchanged. Safety envelope per discovery REC-002: apply:false default (pure preview), explicit apply:true opt-in, project_root required, shadow-ambiguous lines NEVER rewritten over MCP (no force-ambiguous mirror - CLI-only escape hatch), atomic writes via writeTextAtomic, response carries per-file rewrite counts + skipped-ambiguity list + unresolved_edges blind-spot disclosure (graph resolution 22.41 pct bounds rename recall). Out of scope per REC-004/005/006: column-precise spans, GX-002 recall slices, extract/inline/move verbs. Program: core-improvements-731; discovery: coderef/working/coderef-core/core-improvements-731/discovery-gx-003.md",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Read the scoped inputs: coderef/working/coderef-core/core-improvements-731/discovery-gx-003.md (operator design inputs in section 1; REC-001..003 in scope, REC-004/005/006 out of scope) AND discovery-resolution-core-issue.md (the denominator-artifact finding that reshapes the disclosure task), src/refactor/rename-planner.ts, src/refactor/rename-applier.ts, src/cli/coderef-rename.ts, and the rename_preview implementation in src/cli/mcp/context-tools.ts. Confirm the delegation seam (planRename/applyRename) and the existing preview envelope shape before writing anything.",
+          "touches": [
+            "src/refactor/rename-planner.ts",
+            "src/refactor/rename-applier.ts",
+            "src/cli/coderef-rename.ts",
+            "src/cli/mcp/context-tools.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "WRITE",
+          "description": "Record the write-scope supersession ruling (operator, 2026-08-01) in the repo's contract surfaces: amend the MCP write-scope statement (server instructions text + docs) to state that rename_apply is the SINGLE sanctioned source-write MCP tool - apply:false default, ambiguous lines never rewritten over MCP - and that this is a scoped supersession of the prior 'no MCP tool writes source files' rule for exactly this tool. All other tools remain .coderef-confined.",
+          "touches": [
+            "src/cli/mcp/server.ts",
+            "docs/CLI.md"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "WRITE",
+          "description": "Author contract tests __tests__/mcp/rename-apply.contract.test.ts BEFORE the implementation: (a) apply omitted/false is a pure preview - zero filesystem writes, site plan equivalent to rename_preview; (b) apply:true rewrites atomically and returns per-file rewrite counts; (c) shadow-ambiguous lines are NEVER rewritten over MCP and are listed in the response - the tool schema exposes NO force-ambiguous parameter; (d) the response carries the unresolved_edges/resolution_rate blind-spot disclosure; (e) project_root is required (repo-agnostic contract).",
+          "touches": [
+            "__tests__/mcp/rename-apply.contract.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "Implement the rename_apply MCP tool as a thin schema+dispatch wrapper alongside rename_preview, delegating to the SAME planRename/applyRename modules with zero forked rewrite logic. Parameters: project_root (required), old, new, apply (default false), min_confidence (optional passthrough). Deliberately NO force_ambiguous parameter. Register the tool in the server tool registry (post-decomposition module layout).",
+          "touches": [
+            "src/cli/mcp/context-tools.ts",
+            "src/refactor/rename-planner.ts",
+            "src/refactor/rename-applier.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "Blind-spot disclosure, STRATIFIED per discovery-resolution-core-issue.md REC-R2: the rename_apply response envelope reports unresolved_src_count (948 at discovery time) and resolved_of_resolvable (32.8 pct) ALONGSIDE the raw totals (22.41 pct / 18,249), with a note that ~95 pct of raw unresolved edges are test-DSL calls (denominator artifact, pending the test_dsl reclassify ruling). Quoting the raw headline alone overstates the production blind spot ~19x. Surfaces-not-verdicts framing; preview and apply modes both carry it.",
+          "touches": [
+            "src/cli/mcp/context-tools.ts"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "TEST",
+          "description": "Run the new contract suite, then the full vitest suite. Confirm the delta over the pre-WO baseline is exactly the new rename-apply tests (baseline 2471 passed / 26 skipped at GX-002 close; re-baseline first if peers have landed since). Any unrelated failure halts for triage before commit.",
+          "touches": [
+            "__tests__/mcp/rename-apply.contract.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "EDIT",
+          "description": "Doc sync: docs/CLI.md and README.md - MCP tool count increments by one, the write-scope section states the rename_apply exception and its envelope, and the coderef-rename CLI section cross-references the MCP mirror. Assistant-side SKILL surface updates (if any) are prose-only per the wrapper-parity deadlock gotcha.",
+          "touches": [
+            "docs/CLI.md",
+            "README.md"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "CHECK",
+          "description": "Parity and packaging audit: verify MCP tool and CLI share the exact refactor modules (grep for duplicated rewrite logic - none allowed), npm pack --dry-run OK, MCP server starts and lists the new tool, scan CLI smoke OK. Record the audit result in communication.json decisions_log.",
+          "touches": [
+            "package.json"
+          ]
+        },
+        {
+          "id": "P1-T9",
+          "verb": "COMMIT",
+          "description": "Commit on main by explicit pathspec via the guarded git-commit runner (never git add -A): subject carries the WO-ID, body names the supersession ruling and the safety envelope. Push and verify origin.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-6TY0WJ"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T082228Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001",
+  "feature_name": "gx-003-mirrored-rename-apply-scoped-source-write",
+  "created": "2026-08-01T08:22:10.983032+00:00",
+  "plan_type_rationale": "Category feature maps to strict"
+}

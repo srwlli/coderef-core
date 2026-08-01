@@ -7,7 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [2026-07-31] — API surface mapping: route producer reconnected, endpoints as first-class graph nodes (MCP 36 → 37 tools)
+## [2026-08-01] — rename_apply: the first scoped source-write MCP tool (MCP 37 → 38 tools)
+
+WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001 (core-improvements-731 program, GX-003). **Scoped supersession of the "no MCP tool writes source files" rule** (operator ruling 2026-08-01), confined to exactly one tool:
+
+- **New MCP tool `rename_apply`** — a thin mirror of the `coderef-rename` CLI delegating to the SAME `planRename`/`applyRename` modules (zero forked rewrite logic). Safety envelope, pinned by `__tests__/mcp/rename-apply.contract.test.ts` (11 contract tests): `apply:false` default is a pure preview (byte-identical plan to `rename_preview`, zero filesystem writes); `apply:true` performs atomic per-file writes (`writeTextAtomic`) and returns per-file rewrite counts + `applied_files`; shadow-ambiguous lines are NEVER rewritten over MCP and are listed in `files[].ambiguous` — the schema exposes no force parameter (`--force-ambiguous` stays CLI-only); `project_root` required (repo-agnostic contract).
+- **Stratified blind-spot disclosure** (discovery-resolution-core-issue.md REC-R2): every `rename_apply` response carries `resolution_disclosure` reporting `unresolved_src_count` (948 at discovery) and `resolved_of_resolvable` (32.8%) ALONGSIDE the raw totals (22.41% / 18,249) — ~95% of raw unresolved edges are test-DSL calls (vitest ambient globals + matcher chains), a denominator artifact pending the `test_dsl` reclassify ruling; the raw headline alone overstates the production blind spot ~19×.
+- Contract surfaces updated: `SERVER_INSTRUCTIONS` rule 6, server header, docs/CLI.md, README.md, USING-CODEREF.md write-scope rule, entry-point standards docs. `rename_preview` remains read-only; every other tool still writes no source.
 
 WO-API-SURFACE-MAPPING-RECONNECT-AND-GRAPH-ELEVATION-001 (4-phase rolling). The route-detection subsystem — 7 framework detectors, AST-level frontend-call parsing, route matching, 404/405 validation — had existed and been integration-tested since WO-API-ROUTE-DETECTION-001 but had **no live producer**: its only caller (`saveIndex`/`scanCodebase`) lost its production call site when `PipelineOrchestrator` replaced the legacy scan. `.coderef/routes.json` went stale in March 2026, `.coderef/frontend-calls.json` stopped being written at all, and `validate-routes` exited 2.
 

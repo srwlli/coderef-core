@@ -110,7 +110,7 @@ foreground process.
 Successful start (on **stderr**, not stdout):
 
 ```
-[coderef-mcp] v1.0.0 on stdio — 37 tools, per-repo; project_root required per call; anchor: <anchor>
+[coderef-mcp] v1.0.0 on stdio — 38 tools, per-repo; project_root required per call; anchor: <anchor>
 ```
 
 The tool-count drift guard passing:

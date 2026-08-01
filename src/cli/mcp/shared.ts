@@ -533,6 +533,11 @@ export interface ToolHandlers {
   // READ tools — wrap a clean substrate export, return synchronously.
   pack_context(args: { element: string; token_budget?: number; full_deps?: boolean; include_callers?: boolean }): Record<string, unknown>;
   rename_preview(args: { old_name: string; new_name: string; min_confidence?: EdgeConfidenceTier }): Record<string, unknown>;
+  // The SINGLE sanctioned source-write tool (scoped supersession, operator
+  // ruling 2026-08-01, WO-GX-003): thin mirror of coderef-rename delegating to
+  // planRename/applyRename. apply defaults to false (pure preview); NO
+  // force-ambiguous parameter by design (CLI-only escape hatch).
+  rename_apply(args: { old_name: string; new_name: string; apply?: boolean; min_confidence?: EdgeConfidenceTier }): Record<string, unknown>;
   // .coderef-WRITE / status tools — async (delegate to the extracted pipelines /
   // async status readout). Writes are confined to <projectDir>/.coderef/.
   rag_status(): Promise<Record<string, unknown>>;

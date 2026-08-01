@@ -28,7 +28,7 @@ checker; this one cannot.
 
 ## What the loaded estate must state
 
-1. **The true surface — 37 tools, 21 bin entries (19 distinct CLI targets).** This is the
+1. **The true surface — 38 tools, 21 bin entries (19 distinct CLI targets).** This is the
    number `entry-point.advertises-true-surface` compares against reality. The MCP count is
    machine-guarded in code (`SERVER_TOOL_COUNT`, with a test that counts `registerTool`
    registrations and fails on drift), but **that guard does not extend across the repo

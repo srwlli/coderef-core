@@ -1,0 +1,98 @@
+{
+  "workorder_id": "WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001",
+  "feature_name": "gx-003-mirrored-rename-apply-scoped-source-write",
+  "created": "2026-08-01T08:22:10.983032+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-003-mirrored-rename-apply-scoped-source-write\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-003-mirrored-rename-apply-scoped-source-write\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-003-mirrored-rename-apply-scoped-source-write\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-6TY0WJ",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-6TY0WJ",
+      "plan_type": "strict",
+      "timestamp": "2026-08-01T08:22:10.983032+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 9,
+      "source": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/.coderef/tmp/gx-003-rename-apply-tasks.json",
+      "at": "2026-08-01T08:22:10.983032+00:00"
+    },
+    {
+      "event": "discovery_findings_folded",
+      "reports": [
+        "coderef/working/coderef-core/core-improvements-731/discovery-gx-003.md",
+        "coderef/working/coderef-core/core-improvements-731/discovery-resolution-core-issue.md"
+      ],
+      "note": "Resolution-core-issue discovery (2026-08-01): 94.8% of the 18,249 unresolved edges are test-DSL calls (17,301 in *.test.*; callee_not_in_symbol_table=10,444 vitest ambient globals; receiver class 7,739 incl. expect() matcher chains). True production gap = 948 unresolved + 1,189 ambiguous in src. P1-T5 disclosure is therefore STRATIFIED (unresolved_src_count + resolved_of_resolvable alongside raw totals) per REC-R2. The test_dsl reclassify itself (REC-R1) is OUT of this WO - separate stub candidate, successor to GX-002 FU-1, needs a P3c-shaped operator ruling.",
+      "at": "2026-08-01T08:23:01.500Z"
+    },
+    {
+      "event": "metrics_before_snapshot",
+      "path": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/.coderef/map/metrics-snapshot-WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001-before.json",
+      "note": "taken agent-side post-create (engine Step 6.8 left no sidecar); MCP snapshot mode, schema 1.0.0, staleness clean",
+      "at": "2026-08-01T08:23:21.078Z"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-08-01T08:29:13.106Z"
+    },
+    {
+      "event": "phase_transition_writer_anchor_gap",
+      "note": "write-phase-transition.cjs no-oped (coderef-core: anchored row path resolves against ASSISTANT_ROOT); writer semantics applied agent-side on the CORE comm.json — known cross-repo gap class",
+      "at": "2026-08-01T08:29:13.107Z"
+    },
+    {
+      "event": "alignment_gate",
+      "verdict": "ok",
+      "recorded": "2026-08-01T08:27:51Z",
+      "at": "2026-08-01T08:29:13.107Z"
+    },
+    {
+      "event": "parity_packaging_audit",
+      "task": "P1-T8",
+      "result": "PASS",
+      "parity": "planRename/applyRename consumed by exactly 2 surfaces (coderef-rename CLI + mcp/context-tools) — zero forked rewrite logic (grep-verified)",
+      "registrations": 38,
+      "server_tool_count": 38,
+      "npm_pack_dry_run": "OK (30.2 MB, 1853 files)",
+      "mcp_server_smoke": "started on stdio; tools/list returned 38 tools incl. rename_apply",
+      "scan_cli_smoke": "3 files scanned 396ms OK; coderef-rename --help exit 0",
+      "suite": "2482 passed / 26 skipped effective (13 load-contention timeouts re-ran green in isolation; delta over 2471 baseline = exactly the 11 new rename-apply contract tests)",
+      "verify_gate": "tests_for_change selected mcp-server family — all green in full-suite run",
+      "plan_touch_note": "ADJ: plan named src/cli/mcp/server.ts; the real contract surface is src/cli/coderef-mcp-server.ts (+ mcp/shared.ts, mcp/context-tools.ts)",
+      "at": "2026-08-01T08:41:03.206Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T08:22:10.983032+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-6TY0WJ"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

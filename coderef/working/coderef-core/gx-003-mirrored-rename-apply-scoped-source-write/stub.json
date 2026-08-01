@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-6TY0WJ",
+  "ulid": "01KYY6DP9R4AXDDHJHBG1WPP3R",
+  "feature_name": "gx-003-mirrored-rename-apply-scoped-source-write",
+  "description": "GX-003 mirrored CLI/MCP rename_apply - the FIRST scoped source-write MCP capability. Operator ruled 2026-08-01: the scoped supersession of the MCP-never-writes-source contract ships AS PART of this workorder, confined to exactly one tool (rename_apply). Build the MCP tool as a thin mirror delegating to the existing planRename/applyRename modules (src/refactor/) with ZERO forked logic; CLI coderef-rename unchanged. Safety envelope per discovery REC-002: apply:false default (pure preview), explicit apply:true opt-in, project_root required, shadow-ambiguous lines NEVER rewritten over MCP (no force-ambiguous mirror - CLI-only escape hatch), atomic writes via writeTextAtomic, response carries per-file rewrite counts + skipped-ambiguity list + unresolved_edges blind-spot disclosure (graph resolution 22.41 pct bounds rename recall). Out of scope per REC-004/005/006: column-precise spans, GX-002 recall slices, extract/inline/move verbs. Program: core-improvements-731; discovery: coderef/working/coderef-core/core-improvements-731/discovery-gx-003.md",
+  "category": "feature",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T08:18:04Z"
+}

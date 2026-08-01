@@ -1,0 +1,146 @@
+{
+  "discover": {
+    "meta": {
+      "topic": "core issue: graph resolution rate 22.41 percent, 18249 unresolved edges - unresolved reason classes, receiver_not_in_symbol_table, scope binding pass yield",
+      "generated": "2026-08-01T08:18:58Z",
+      "depth": "medium",
+      "output_dest": "working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/working/coderef-core/core-improvements-731/discovery-resolution-core-issue.md",
+      "dispatch": "none"
+    },
+    "scope": {
+      "asked": "core issue: graph resolution rate 22.41 percent, 18249 unresolved edges - unresolved reason classes, receiver_not_in_symbol_table, scope binding pass yield",
+      "bounded": "unbounded — full project root"
+    },
+    "surfaces_audited": [
+      {
+        "line": "- [tool: skeleton-map]          present (cached), 32 lines"
+      },
+      {
+        "line": "- [tool: rg]                    queries=1, hits=0"
+      },
+      {
+        "line": "- [tool: rag-search]            top-k=10, ms=4317, lane=hybrid, fallback_used=false"
+      },
+      {
+        "line": "- [tool: element-lookup]        source=symbol-table (rag-search --lexical), candidates=10, elements_indexed=3190"
+      },
+      {
+        "line": "- [tool: header-index]          defined=366, missing=5, stale=1, coverage=98.12% (validation-report.json)"
+      },
+      {
+        "line": "- [tool: foundation-docs]       sections_matched=8"
+      },
+      {
+        "line": "- [tool: codebase_summary]      elements=3190, top types: function=1092, method=965, interface=611, generated=2026-08-01T07:13:03.585Z"
+      },
+      {
+        "line": "- [tool: validation_status]     resolution_rate=22.41%, unresolved=18249, ambiguous=1722, header_coverage=98.12%"
+      }
+    ],
+    "findings": [
+      {
+        "id": "F-001",
+        "surface": "src/pipeline/scope-binding.ts:55",
+        "observation": "Element lookup match: `ScopeBinding`",
+        "severity": "info",
+        "evidence": "name=ScopeBinding, type=interface, score=26.24"
+      },
+      {
+        "id": "F-002",
+        "surface": "src/pipeline/scope-binding.ts:52",
+        "observation": "Element lookup match: `ScopeBindingKind`",
+        "severity": "info",
+        "evidence": "name=ScopeBindingKind, type=type, score=25.56"
+      },
+      {
+        "id": "F-003",
+        "surface": "src/pipeline/scope-binding.ts:67",
+        "observation": "Element lookup match: `ScopeBindingMap`",
+        "severity": "info",
+        "evidence": "name=ScopeBindingMap, type=type, score=25.56"
+      },
+      {
+        "id": "F-004",
+        "surface": "src/pipeline/scope-binding.ts:208",
+        "observation": "Element lookup match: `buildScopeBindingMap`",
+        "severity": "info",
+        "evidence": "name=buildScopeBindingMap, type=function, score=24.93"
+      },
+      {
+        "id": "F-005",
+        "surface": "src/pipeline/scope-binding.ts:262",
+        "observation": "Element lookup match: `addBinding`",
+        "severity": "info",
+        "evidence": "name=addBinding, type=function, score=24.52"
+      },
+      {
+        "id": "F-006",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "The `resolutionStatus` values that indicate the edge could NOT be bound to a\nsingle confirmed target — the lowest-proven"
+      },
+      {
+        "id": "F-007",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.02",
+        "severity": "info",
+        "evidence": "3. `resolved` (no provisional flag, no ACG reason)     → `exact`\n  4. external | builtin | typeOnly | dynamic"
+      },
+      {
+        "id": "F-008",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.02",
+        "severity": "info",
+        "evidence": "? @ line ?"
+      },
+      {
+        "id": "F-009",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.02",
+        "severity": "info",
+        "evidence": "'typeOnly'/'stale' → sourceId set, targetId OMITTED, evidence\n    populated per discriminated union variant. No syntheti"
+      },
+      {
+        "id": "F-010",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.02",
+        "severity": "info",
+        "evidence": "Classification of a single resolved call. Every RawCallFact yields exactly\none CallResolution carrying one of these kind"
+      }
+    ],
+    "divergences": [],
+    "recommendations": [
+      {
+        "rec_id": "REC-001",
+        "priority": "low",
+        "action": "Review 10 info-level hit(s) for context.",
+        "owner": "(operator)"
+      }
+    ],
+    "severity_chart": [
+      {
+        "label": "critical",
+        "value": 0,
+        "variant": "fail"
+      },
+      {
+        "label": "warning",
+        "value": 0,
+        "variant": "accent"
+      },
+      {
+        "label": "info",
+        "value": 10,
+        "variant": "info"
+      }
+    ],
+    "orientation": {
+      "present": true,
+      "source": "cached",
+      "excerpt": "# repo map (skeleton): CODEREF-CORE — 472 files, 844 edges — budget ~400 tokens\n# ranked by dependency centrality (most depended-on first); in/out = distinct dependents/dependencies. surfaces, not verdicts.\n\nsrc/scanner/lru-cache.ts  (in 102 / out 1)\n  class LRUCache\n  interface ScanCacheEntry\n  fn createScannerCache(maxSizeBytes)\n\nsrc/pipeline/orchestrator.ts  (in 54 / out 14)\n  class PipelineOrchestrator\n\nsrc/utils/path-normalize.ts  (in 36 / out 0)\n  fn normalizeSlashes(p)\n  fn toRepoRelativePosix(file, projectPath)"
+    },
+    "graph_risk": null,
+    "reuse_note": "Reproduce: /discover \"core issue: graph resolution rate 22.41 percent, 18249 unresolved edges - unresolved reason classes, receiver_not_in_symbol_table, scope binding pass yield\" --depth=medium --output-dest=working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/working/coderef-core/core-improvements-731/discovery-resolution-core-issue.md"
+  }
+}

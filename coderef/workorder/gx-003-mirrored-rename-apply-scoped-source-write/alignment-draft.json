@@ -1,0 +1,109 @@
+{
+  "event": "culture_alignment_recorded",
+  "domain": "CODEREF-CORE",
+  "skill": "align-coderef-culture",
+  "schema_version": "2.0.0",
+  "workorder_id": "WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001",
+  "target_project": "coderef-core",
+  "intended_work": "GX-003 mirrored CLI/MCP rename_apply - the FIRST scoped source-write MCP capability. Operator ruled 2026-08-01: the scoped supersession of the MCP-never-writes-source contract ships AS PART of this wo",
+  "plan_digest": "sha256:b82b071ba773c059d966521db6f80be5fa538abbfa6334b86e8bf80256652619",
+  "inventory_digest": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+  "source_digests": {
+    "STANDARDS/layers.json": "sha256:2d5e1202a74e36d326978aa7fd86135ae425d181eb724e5f255d248c9feaa4e2",
+    "STANDARDS/VOCABULARY.json": "sha256:f426b702bf8e0cd8f0659dbbb0f954a21b4fddab5ed80892d540530272c66d9a",
+    "TRACKING/registries.json": "sha256:8b0f86c7696f6984565538e02ebbb1538bd6ed12b1ff2866377f9998c9ab0bfc",
+    "TRACKING/skills.json": "sha256:868cb0daee67703a26591f1954bf376e5c98e2aac9b034a4b684ba6d95940ed7",
+    "STANDARDS/coderef-inventory.json": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+    "TRACKING/agent-domains.json": "sha256:15568aa8c132c323e676b1f8cbe68b2dc76e97ca4349d1d508b8121b20c48ff9",
+    "SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json": "sha256:86f17257381a2d21cb199b5c1ee881dcce19d6030ed5865ad25933cb2241181d",
+    "DOCS/standards/data/COMMS-DATA-STANDARD.md": "sha256:2b3289c9ed81322e9d244620d0df780214933f65138e72d870987887bbae75c7",
+    "STANDARDS/event-catalog.md": "sha256:4cc6fe172b3df18f67f1cb9075da9a111ef20b5325f14a092a561df0e4e180ba",
+    "SKILLS/META/coderef-skill/references/SKILL-CONTRACTS.md": "sha256:c86b97bbce08a3655ba9f3a9efd95e1846197b8761874cc46817a740e5203508",
+    "SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md": "sha256:52bed3bd718b08d7b65e468eb7f5942cfbc29c10a53e44871b19ccda1f4f9040"
+  },
+  "rows": [
+    {
+      "task_id": "P1-T1",
+      "step": "Read the scoped inputs: coderef/working/coderef-core/core-improvements-731/discovery-gx-003.md (operator design inputs in section 1; REC-001..003 in scope, REC-004/005/006 out of scope) AND discovery-resolution-core-issue.md (the denominator-artifact finding that reshapes the disclosure task), src/refactor/rename-planner.ts, src/refactor/rename-applier.ts, src/cli/coderef-rename.ts, and the rename_preview implementation in src/cli/mcp/context-tools.ts. Confirm the delegation seam (planRename/applyRename) and the existing preview envelope shape before writing anything.",
+      "tools": ["coderef-query", "rag-search"],
+      "communication": ["GAP"],
+      "closure": ["GAP"],
+      "tracking": ["GAP"],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T2",
+      "step": "Record the write-scope supersession ruling (operator, 2026-08-01) in the repo's contract surfaces: amend the MCP write-scope statement (server instructions text + docs) to state that rename_apply is the SINGLE sanctioned source-write MCP tool - apply:false default, ambiguous lines never rewritten over MCP - and that this is a scoped supersession of the prior 'no MCP tool writes source files' rule for exactly this tool. All other tools remain .coderef-confined.",
+      "tools": ["execute-workorder"],
+      "communication": ["communication.json decisions_log: supersession_ruling_recorded (operator 2026-08-01, scope=rename_apply only)"],
+      "closure": ["close-workorder doc-code-tie check covers server.ts instructions + docs/CLI.md"],
+      "tracking": ["GAP"],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T3",
+      "step": "Author contract tests __tests__/mcp/rename-apply.contract.test.ts BEFORE the implementation: (a) apply omitted/false is a pure preview - zero filesystem writes, site plan equivalent to rename_preview; (b) apply:true rewrites atomically and returns per-file rewrite counts; (c) shadow-ambiguous lines are NEVER rewritten over MCP and are listed in the response - the tool schema exposes NO force-ambiguous parameter; (d) the response carries the unresolved_edges/resolution_rate blind-spot disclosure; (e) project_root is required (repo-agnostic contract).",
+      "tools": ["execute-workorder"],
+      "communication": ["GAP"],
+      "closure": ["suite delta over baseline verified at P1-T6 and again at close"],
+      "tracking": ["GAP"],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T4",
+      "step": "Implement the rename_apply MCP tool as a thin schema+dispatch wrapper alongside rename_preview, delegating to the SAME planRename/applyRename modules with zero forked rewrite logic. Parameters: project_root (required), old, new, apply (default false), min_confidence (optional passthrough). Deliberately NO force_ambiguous parameter. Register the tool in the server tool registry (post-decomposition module layout).",
+      "tools": ["execute-workorder"],
+      "communication": ["GAP"],
+      "closure": ["GAP"],
+      "tracking": ["GAP"],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T5",
+      "step": "Blind-spot disclosure, STRATIFIED per discovery-resolution-core-issue.md REC-R2: the rename_apply response envelope reports unresolved_src_count (948 at discovery time) and resolved_of_resolvable (32.8 pct) ALONGSIDE the raw totals (22.41 pct / 18,249), with a note that ~95 pct of raw unresolved edges are test-DSL calls (denominator artifact, pending the test_dsl reclassify ruling). Quoting the raw headline alone overstates the production blind spot ~19x. Surfaces-not-verdicts framing; preview and apply modes both carry it.",
+      "tools": ["execute-workorder", "coderef-query"],
+      "communication": ["GAP"],
+      "closure": ["GAP"],
+      "tracking": ["GAP"],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T6",
+      "step": "Run the new contract suite, then the full vitest suite. Confirm the delta over the pre-WO baseline is exactly the new rename-apply tests (baseline 2471 passed / 26 skipped at GX-002 close; re-baseline first if peers have landed since). Any unrelated failure halts for triage before commit.",
+      "tools": ["execute-workorder"],
+      "communication": ["communication.json history: test verdict + counts vs baseline"],
+      "closure": ["close-workorder Step 2 reads phase_transitions[] verdict PASS"],
+      "tracking": ["GAP"],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T7",
+      "step": "Doc sync: docs/CLI.md and README.md - MCP tool count increments by one, the write-scope section states the rename_apply exception and its envelope, and the coderef-rename CLI section cross-references the MCP mirror. Assistant-side SKILL surface updates (if any) are prose-only per the wrapper-parity deadlock gotcha.",
+      "tools": ["execute-workorder"],
+      "communication": ["GAP"],
+      "closure": ["close-workorder doc-code-tie check"],
+      "tracking": ["GAP"],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T8",
+      "step": "Parity and packaging audit: verify MCP tool and CLI share the exact refactor modules (grep for duplicated rewrite logic - none allowed), npm pack --dry-run OK, MCP server starts and lists the new tool, scan CLI smoke OK. Record the audit result in communication.json decisions_log.",
+      "tools": ["execute-workorder", "coderef-scan"],
+      "communication": ["communication.json decisions_log: parity_packaging_audit result"],
+      "closure": ["GAP"],
+      "tracking": ["GAP"],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T9",
+      "step": "Commit on main by explicit pathspec via the guarded git-commit runner (never git add -A): subject carries the WO-ID, body names the supersession ruling and the safety envelope. Push and verify origin.",
+      "tools": ["git-commit"],
+      "communication": ["communication.json phase_transitions[] via write-phase-transition.cjs"],
+      "closure": ["close-workorder finalizes; registry row flip at close"],
+      "tracking": ["registry-db workorders/sessions rows; tracking-validator scoped pass at close"],
+      "status": "resolved"
+    }
+  ],
+  "gaps": [],
+  "verdict": "PASS"
+}

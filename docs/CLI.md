@@ -31,7 +31,8 @@ node dist/src/cli/index.js <command>
 | [`coderef-populate`](#coderef-populate) | Generate .coderef/ artifacts (Phase 6 chokepoint) | `--mode`, `--strict-headers`, `--source-headers` |
 | [`coderef-rag-index`](#coderef-rag-index) | Index code for RAG search (gated on `validation-report.json.ok`) | `--provider`, `--store`, `--include-headerless`, `--coverage-floor` |
 | [`coderef-rag-search`](#coderef-rag-search) | Search indexed code with optional facet filters | `--top-k`, `--type`, `--layer`, `--capability` |
-| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 37 tools (read + `.coderef`-write); `project_root` required per call | `--project-dir` (anchor) |
+| [`coderef-mcp-server`](#coderef-mcp-server) | Repo-agnostic MCP stdio server exposing `.coderef` intelligence as 38 tools (read + `.coderef`-write + the scoped `rename_apply` source-write); `project_root` required per call | `--project-dir` (anchor) |
+| `coderef-rename` | Project-wide symbol rename over `.coderef/graph.json` (dry-run default, atomic `--apply`, shadow-ambiguity guard). Mirrored over MCP as `rename_preview` + `rename_apply` (same planner/applier modules); `--force-ambiguous` stays CLI-only | `--apply`, `--force-ambiguous`, `--min-confidence`, `--project-dir` |
 | [`coderef-map`](#coderef-map) | Interactive file-level dependency map of ANY repo (scan-if-absent); static `graph.html`, `--serve`, or `--skeleton` plaintext | `--serve`, `--port`, `--no-open`, `--force-scan`, `--out`, `--layers`, `--skeleton`, `--tokens`, `--git` |
 | `rag-eval` | Golden-query eval harness: hit@1/hit@5/MRR against `eval/golden-queries.json`; committed baseline at `eval/baseline.json` | `--project-dir`, `--golden`, `--top-k`, `--json`, `--min-mrr` |
 | [`coderef-rag-status`](#coderef-rag-status) | Check RAG index status | `--project-dir`, `--json` |
@@ -961,11 +962,13 @@ Status: ✓ Connected
 
 ## coderef-mcp-server
 
-MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 37 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
+MCP (Model Context Protocol) stdio server that exposes `.coderef/` intelligence artifacts as 38 tools. Lets MCP clients (Claude Code, Claude Desktop, any MCP-compatible agent) query call graphs, impact analysis, and element lookups directly instead of parsing `graph.json` by hand.
 
 **Repo-agnostic (WO-MCP-REPO-AGNOSTIC-ANY-REPO-001):** one running server serves ANY indexed repo. Every tool takes a **required `project_root`** argument naming the target repo root (the directory containing `.coderef/`) — pure CLI semantics, exactly as if the caller had the CLI. There is no default repo, no cwd inference, no env fallback; omitting `project_root` is a schema-level rejection.
 
-Most tools are **read-only**. Three are **`.coderef`-write** tools — `reindex` (regenerate the substrate), `rag_index` (build the RAG index over local Ollama), and `map` (emit/refresh the file-level map + bundled viewer under `.coderef/map/`) — and every write they perform is confined to `<projectDir>/.coderef/`: they delegate to the `populate` / `rag-index` / `emit-map` pipelines and never mutate source. Source-mutating rename is deliberately **not** exposed here; MCP offers only the dry-run `rename_preview` (the `coderef-rename --apply` CLI owns source mutation).
+Most tools are **read-only**. Three are **`.coderef`-write** tools — `reindex` (regenerate the substrate), `rag_index` (build the RAG index over local Ollama), and `map` (emit/refresh the file-level map + bundled viewer under `.coderef/map/`) — and every write they perform is confined to `<projectDir>/.coderef/`: they delegate to the `populate` / `rag-index` / `emit-map` pipelines and never mutate source.
+
+**Source-write supersession (operator ruling 2026-08-01, WO-GX-003).** `rename_apply` is the **single sanctioned source-write MCP tool** — a scoped supersession of the prior "no MCP tool writes source files" rule, confined to exactly this one tool. The ruling is conditioned on its safety envelope: `apply` defaults to `false` (pure preview — identical plan to `rename_preview`); `apply:true` performs **atomic** writes; shadow-ambiguous lines are **never** rewritten over MCP and the tool schema exposes **no** force parameter (`--force-ambiguous` stays CLI-only on `coderef-rename`); the response reports per-file rewrite counts, the skipped-ambiguity list, and the graph-resolution blind-spot disclosure. `rename_preview` remains read-only, and every other tool still writes no source.
 
 Built inside coderef-core and typed against `ExportedGraph` — schema drift between the graph exporter and the MCP surface is a compile error, not a runtime mystery (the failure mode that killed the previous external Python server).
 
@@ -1055,7 +1058,8 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 | `rag_status` | RAG index metadata + staleness (embedding model, chunk count, vectors-vs-index lag) — read-only; check before trusting `rag_search` results |
 | `rag_index` | Build/refresh the vector index over local Ollama (**`.coderef`-write**, confined to `<project_root>/.coderef/`); `concurrency` + `embed_cache` throughput knobs — see above |
 | `reindex` | Regenerate the `.coderef/` substrate for the target repo (**`.coderef`-write**; delegates to the populate pipeline, never mutates source) |
-| `rename_preview` | Dry-run symbol rename: every affected site grouped by file with a `confidence` tier per site; accepts `min_confidence`. Source-mutating apply stays on the `coderef-rename --apply` CLI by design |
+| `rename_preview` | Dry-run symbol rename: every affected site grouped by file with a `confidence` tier per site; accepts `min_confidence`. Read-only — the write path is the sibling `rename_apply` tool (or the `coderef-rename --apply` CLI) |
+| `rename_apply` | The **single sanctioned source-write MCP tool** (scoped supersession, operator ruling 2026-08-01). Thin mirror of `coderef-rename` over the same planner/applier: `apply:false` default = pure preview (identical plan to `rename_preview`); `apply:true` = atomic rewrite with per-file rewrite counts + `applied_files`. Shadow-ambiguous lines are never rewritten over MCP (no force parameter — CLI-only escape hatch) and are listed in `files[].ambiguous`. Response always carries the stratified `resolution_disclosure` (`unresolved_src_count` + `resolved_of_resolvable` alongside the raw totals) |
 
 Every tool additionally requires `project_root` (string, absolute or anchor-relative path to the target repo root) — see **Per-repo queries** above. Element queries accept a `codeRefId` (`@Fn/src/foo.ts#bar:12`), a line-less codeRefId, a bare element name, or a file path fragment (file queries aggregate over all elements in the file). Ambiguous names return up to 5 candidates instead of guessing. Only `resolved` edges are traversed — unresolved/external edges never appear in results.
 

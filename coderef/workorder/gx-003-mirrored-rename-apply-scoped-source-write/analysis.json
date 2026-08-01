@@ -1,0 +1,15 @@
+{
+  "workorder_id": "WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001",
+  "feature_name": "gx-003-mirrored-rename-apply-scoped-source-write",
+  "analysis_authored_at": "2026-08-01T08:22:10.983032+00:00",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": []
+}

@@ -22,14 +22,25 @@
  * paths. Resolution failures return structured { error, project_root, hint }
  * envelopes (see RESOLUTION-DESIGN.md taxonomy) — never another repo's data.
  *
- * WRITE CONFINEMENT (contract): all writes (reindex, rag_index) are confined
- * to <project_root>/.coderef/ PER TOOL CALL — writes are per-repo, never
- * cached to the launch root. It NEVER mutates arbitrary source. This is
- * guaranteed structurally by DELEGATING to the existing populate / rag-index
- * pipelines (which only ever write .coderef/) rather than opening a new write
- * path or an output-dir argument. SOURCE mutation (coderef-rename --apply) is
- * deliberately NOT exposed: MCP offers rename only as a dry-run PREVIEW
- * (rename_preview).
+ * WRITE CONFINEMENT (contract): all index writes (reindex, rag_index) are
+ * confined to <project_root>/.coderef/ PER TOOL CALL — writes are per-repo,
+ * never cached to the launch root. This is guaranteed structurally by
+ * DELEGATING to the existing populate / rag-index pipelines (which only ever
+ * write .coderef/) rather than opening a new write path or an output-dir
+ * argument.
+ *
+ * SOURCE-WRITE SUPERSESSION (operator ruling 2026-08-01, WO-GX-003 —
+ * WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001): rename_apply is
+ * the SINGLE sanctioned source-write tool, a scoped supersession of the prior
+ * "no MCP tool writes source files" rule confined to exactly this tool. Its
+ * safety envelope is a ruling CONDITION, not an implementation detail:
+ * apply:false default (pure preview — same plan as rename_preview),
+ * apply:true atomic writes (writeTextAtomic), project_root required,
+ * shadow-ambiguous lines NEVER rewritten over MCP (no force-ambiguous
+ * parameter — that escape hatch stays CLI-only on coderef-rename), and the
+ * response carries per-file rewrite counts + the skipped-ambiguity list +
+ * the graph-resolution blind-spot disclosure. rename_preview stays read-only;
+ * every OTHER tool still writes no source.
  *
  * WO-CODEREF-CORE-MCP-SERVER-AND-INTELLIGENCE-FIXES-001 Phase 3;
  * CLI/MCP parity Phase 6 (pack_context, rename_preview, rag_status, reindex,
@@ -59,6 +70,8 @@
  *   validation_status    - the locked 14-field validation report verbatim
  *   pack_context         - focus + dependency-closure context bundle (read)
  *   rename_preview       - dry-run symbol-rename plan (read; NO apply path)
+ *   rename_apply         - [SOURCE-WRITE, scoped supersession 2026-08-01]
+ *                          mirrored rename; apply:false default = pure preview
  *   rag_status           - RAG index/vector metadata + health (read)
  *   reindex              - [.coderef-WRITE] regenerate the .coderef/ substrate
  *   rag_index            - [.coderef-WRITE] build the RAG index (local Ollama)
@@ -111,7 +124,7 @@ const SERVER_VERSION = '1.0.0';
 // Registered-tool count surfaced in the instructions string + startup log.
 // Bump when adding/removing a tool registration below — the mcp-server test
 // counts registrations in this file and fails on drift.
-export const SERVER_TOOL_COUNT = 37;
+export const SERVER_TOOL_COUNT = 38;
 // Agent-facing usage contract delivered through the MCP initialize handshake
 // (ServerOptions.instructions). This is the ONE surface every connected agent
 // receives automatically, so it carries the load-bearing rules that were
@@ -126,7 +139,7 @@ USAGE CONTRACT:
 4. Prefer graph tools over grep for structure questions: what_calls / impact_of (who breaks if I change X), cycles / hotspots (risk), find_element + symbol_context (definitions and neighbors), rag_search (concept search — check rag_status freshness first).
 4b. Verify before you commit: tests_for_change returns the ranked tests reaching your diff PLUS a ready-to-run command — run those first, not the whole suite. change_dossier composes the full pre-flight (blast radius + selected tests + exported-API delta + rule mismatches) in one call.
 5. Surfaces, not verdicts: results show WHERE to look, never WHAT is wrong — read the files before concluding. An empty result means NO RESOLVED DATA, not "none exist"; check unresolved_edges and validation_status before trusting a negative.
-6. Write scope: no tool here writes source files. rename --apply is CLI-only by design; MCP exposes rename_preview only. Index writes (reindex, rag_index, map) are confined to .coderef/.`;
+6. Write scope: rename_apply is the SINGLE tool here sanctioned to write source files — a SCOPED SUPERSESSION (operator ruling 2026-08-01, WO-GX-003) of the prior "no MCP tool writes source" rule, confined to exactly that one tool. Its envelope: apply defaults to false (pure preview, identical plan to rename_preview); apply:true performs atomic writes; shadow-ambiguous lines are NEVER rewritten over MCP (no force parameter — that escape hatch stays CLI-only on coderef-rename --force-ambiguous). Every other tool writes NO source; index writes (reindex, rag_index, map) remain confined to .coderef/.`;
 
 // ---- tool handlers (composed from the mcp/ per-family modules) ------------------
 
@@ -1044,6 +1057,24 @@ async function main(): Promise<void> {
     },
     async ({ project_root, old_name, new_name, min_confidence }) =>
       perRepo(project_root, h => h.rename_preview({ old_name, new_name, min_confidence })),
+  );
+
+  server.registerTool(
+    'rename_apply',
+    {
+      title: 'Rename apply (scoped source-write)',
+      description:
+        'WRITE (source — the SINGLE sanctioned source-write tool; scoped supersession of the "no MCP tool writes source" rule, operator ruling 2026-08-01, confined to exactly this tool). Thin mirror of the coderef-rename CLI delegating to the SAME planner/applier modules (zero forked rewrite logic). apply defaults to FALSE: a pure preview, identical plan to rename_preview, writing NOTHING. apply:true performs the rewrite with ATOMIC per-file writes and returns per-file rewrite counts + applied_files. Shadow-ambiguous lines (more textual tokens on a line than the graph attributed) are NEVER rewritten over MCP — they are skipped and listed in files[].ambiguous; the CLI-only override is deliberately not mirrored here. The response always carries resolution_disclosure — the STRATIFIED graph-resolution blind-spot numbers (unresolved_src_count + resolved_of_resolvable alongside the raw totals): sites the graph did not resolve silently survive a rename. Pass min_confidence=exact to rewrite only auto-apply-safe sites.',
+      inputSchema: {
+        project_root: projectRootArg,
+        old_name: z.string().describe('Existing symbol name (or codeRefId) to rename'),
+        new_name: z.string().describe('New name to write'),
+        apply: z.boolean().optional().describe('Default false = pure preview (writes nothing). true = perform the atomic rewrite.'),
+        min_confidence: minConfidenceArg,
+      },
+    },
+    async ({ project_root, old_name, new_name, apply, min_confidence }) =>
+      perRepo(project_root, h => h.rename_apply({ old_name, new_name, apply, min_confidence })),
   );
 
   server.registerTool(
