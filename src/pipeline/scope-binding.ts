@@ -30,6 +30,17 @@
  *                  root purely to reach a DISPOSITION (external / builtin)
  *                  and never attempts an own-methods lookup with it.
  *
+ * Two further sources land the receiver classes levers 1-2 could not reach
+ * (FU-2, WO-RESOLVE-62):
+ *
+ *   `this.<field>` — declared class FIELD types (`private index: X`) are
+ *                    projected into every method scope of that class after
+ *                    the walk, so `this.index.query()` binds. ONE level only;
+ *                    `this.a.b` is never guessed at.
+ *   arrow frames   — `const NAME = (params) => {` now pushes a scope frame,
+ *                    so its typed parameters bind. Brace-bodied only: an
+ *                    expression-bodied arrow has no `}` to pop the frame.
+ *
  * The walk fixes the T1-found coverage hole: class METHOD bodies now get
  * scope frames (`ClassName.methodName`), so bindings inside methods
  * attribute to the method element instead of being dropped.
@@ -310,7 +321,30 @@ export function buildScopeBindingMap(
       if (!elemByName.has(bareName)) elemByName.set(bareName, elem);
     }
 
-    type ScopeFrame = { name: string; depth: number; classCtx: string | null };
+    /**
+     * `transparent` frames track braces but never OWN bindings — lookup walks
+     * straight through them to the nearest enclosing declared function/method.
+     *
+     * Arrow functions need this (FU-2 lever 4). The element extractor DOES
+     * emit `const traverse = (...) => {}` as a function element, but the
+     * raw-call extractor does NOT descend into arrow scopes — a call inside
+     * `traverse` is recorded with scopePath ["extract"], its enclosing
+     * declared function. So a binding attributed to the arrow's own element
+     * would sit in a scope the resolver never looks in: measured, `node`
+     * bound into `@Fn/src/main.ts#traverse:3` while the call resolved against
+     * `@Fn/src/main.ts#extract:2`, and the lever moved nothing.
+     *
+     * Aligning the binding with call attribution is the narrow fix. Making
+     * the raw-call extractor descend would be the deep one, but it changes
+     * callerCodeRefId for every call in every arrow across the graph — an
+     * edge-identity change, not a resolution change, and out of scope here.
+     */
+    type ScopeFrame = {
+      name: string;
+      depth: number;
+      classCtx: string | null;
+      transparent?: boolean;
+    };
     const scopeStack: ScopeFrame[] = [];
     let depth = 0;
     let i = 0;
@@ -319,6 +353,7 @@ export function buildScopeBindingMap(
     const currentScopeCodeRefId = (): string | null => {
       for (let s = scopeStack.length - 1; s >= 0; s--) {
         const frame = scopeStack[s];
+        if (frame.transparent) continue;
         const elem = elemByName.get(frame.name);
         if (elem) {
           return elem.codeRefId
@@ -326,6 +361,20 @@ export function buildScopeBindingMap(
         }
       }
       return null;
+    };
+
+    /** Write a binding into an EXPLICIT scope. G2: first binding wins. */
+    const putBinding = (
+      codeRefId: string,
+      localName: string,
+      binding: ScopeBinding,
+    ): void => {
+      let perScope = map.get(codeRefId);
+      if (!perScope) {
+        perScope = new Map();
+        map.set(codeRefId, perScope);
+      }
+      if (!perScope.has(localName)) perScope.set(localName, binding);
     };
 
     const addBinding = (
@@ -336,18 +385,21 @@ export function buildScopeBindingMap(
     ): void => {
       const codeRefId = currentScopeCodeRefId();
       if (!codeRefId) return;
-      let perScope = map.get(codeRefId);
-      if (!perScope) {
-        perScope = new Map();
-        map.set(codeRefId, perScope);
-      }
-      // G2: first binding wins per (scope, name).
-      if (!perScope.has(localName)) {
-        perScope.set(localName, qualifiedMember === undefined
-          ? { className, kind }
-          : { className, kind, qualifiedMember });
-      }
+      putBinding(codeRefId, localName, qualifiedMember === undefined
+        ? { className, kind }
+        : { className, kind, qualifiedMember });
     };
+
+    /**
+     * FU-2 lever 3: declared class FIELD types, per class — `private index: X`
+     * -> {index: X}. Collected during the walk and applied AFTER it, because a
+     * field may be declared below the methods that use it and this is a
+     * single forward pass. Applying at method-frame-push time would silently
+     * drop every field declared later in the body.
+     */
+    const classFields = new Map<string, Map<string, ScopeBinding>>();
+    /** Method scope id -> owning class, recorded as frames are pushed. */
+    const methodScopes: Array<{ codeRefId: string; className: string }> = [];
 
     /** Innermost frame, when it is a class body at exactly one level in. */
     const enclosingClassAtMethodDepth = (): ScopeFrame | null => {
@@ -481,11 +533,49 @@ export function buildScopeBindingMap(
             if (source[q] === '{') {
               const qualifiedName = `${classFrame.classCtx}.${methodName}`;
               scopeStack.push({ name: qualifiedName, depth: depth + 1, classCtx: null });
+              // FU-2 lever 3: remember which class owns this method scope so
+              // `this.<field>` bindings can be applied after the walk.
+              const methodScopeId = currentScopeCodeRefId();
+              if (methodScopeId && classFrame.classCtx) {
+                methodScopes.push({ codeRefId: methodScopeId, className: classFrame.classCtx });
+              }
               for (const pb of parseParamBindings(parens.inner)) {
                 addBinding(pb.name, pb.className, pb.kind, pb.qualifiedMember);
               }
               i = parens.end;
               continue;
+            }
+          }
+        }
+
+        // FU-2 lever 3: class FIELD declaration — `private index: X;`,
+        // `readonly client: Y = ...`, `name?: Z`. A method is excluded by
+        // construction: this requires a `:` where a method has `(`. Records
+        // the declared type so `this.index.foo()` can bind; nothing is written
+        // to a scope here (see the post-walk pass below) because fields may be
+        // declared BELOW the methods that use them.
+        if (classFrame.classCtx && /[A-Za-z_$]/.test(ch) && (i === 0 || /[^.\w$]/.test(source[i - 1]))) {
+          const fm = /^(?:(?:private|public|protected|readonly|static|declare|abstract)\s+)*([A-Za-z_$][\w$]*)\s*[?!]?\s*:\s*([^=;\n]{1,120})\s*[=;\n]/
+            .exec(source.slice(i, i + 300));
+          if (fm && !METHOD_NAME_BLOCKLIST.has(fm[1])) {
+            const fieldName = fm[1];
+            const bare = usableAnnotationType(fm[2]);
+            const qualified = bare === null ? usableQualifiedAnnotation(fm[2]) : null;
+            if (bare !== null || qualified !== null) {
+              let perClass = classFields.get(classFrame.classCtx);
+              if (!perClass) {
+                perClass = new Map();
+                classFields.set(classFrame.classCtx, perClass);
+              }
+              if (!perClass.has(fieldName)) {
+                perClass.set(fieldName, bare !== null
+                  ? { className: bare, kind: 'annotation' }
+                  : {
+                      className: qualified!.root,
+                      kind: 'qualified',
+                      qualifiedMember: qualified!.member,
+                    });
+              }
             }
           }
         }
@@ -505,6 +595,65 @@ export function buildScopeBindingMap(
             addBinding(mNew[1], mNew[2], 'new');
             i += mNew[0].length;
             break;
+          }
+          // FU-2 lever 4: `const NAME = (params) => {` / `= async (params) => {`
+          // — a brace-bodied ARROW function assigned to a binding.
+          //
+          // The walk previously pushed frames only for `function NAME(`
+          // declarations and class methods, so an arrow's parameter list was
+          // never even parsed. Measured 2026-08-01: `const traverse = (node:
+          // Parser.SyntaxNode) => {...}` in the two extractor files held 54 of
+          // the 282 remaining receiver_not_in_symbol_table edges — the single
+          // largest residual class after levers 1-2.
+          //
+          // The arrow itself is usually NOT an extracted element (the element
+          // extractor deliberately skips arrow expressions), and that is
+          // exactly why the frame works: currentScopeCodeRefId walks past any
+          // frame with no matching element, so bindings and the call sites
+          // inside the arrow BOTH attribute to the nearest enclosing
+          // function/method. They land in the same scope, which is the whole
+          // requirement.
+          //
+          // Brace-bodied only. An expression-bodied arrow (`= (x: Foo) => x.y()`)
+          // has no `}` to pop the frame, so pushing one would leak its bindings
+          // into every following sibling scope.
+          const mArrow = new RegExp(`^${kw}\\s+([A-Za-z_$][\\w$]*)\\s*(?::\\s*([^=]{0,120}?))?\\s*=\\s*(?:async\\s+)?\\(`).exec(remainder);
+          if (mArrow) {
+            const parens = readBalancedParens(source, i + mArrow[0].length - 1);
+            if (parens) {
+              // Require `=>` then `{` (an optional `: ReturnType` may sit between).
+              let q = parens.end;
+              const scanCap = Math.min(len, q + 200);
+              while (q < scanCap && !(source[q] === '=' && source[q + 1] === '>')) q++;
+              if (q < scanCap) {
+                q += 2;
+                while (q < len && /\s/.test(source[q])) q++;
+                if (source[q] === '{') {
+                  // Bind the variable's own declared type when it has one, since
+                  // the annotation branch below is skipped on this path.
+                  if (mArrow[2]) {
+                    const declared = usableAnnotationType(mArrow[2]);
+                    if (declared) {
+                      addBinding(mArrow[1], declared, 'annotation');
+                    } else {
+                      const dq = usableQualifiedAnnotation(mArrow[2]);
+                      if (dq) addBinding(mArrow[1], dq.root, 'qualified', dq.member);
+                    }
+                  }
+                  scopeStack.push({
+                    name: mArrow[1],
+                    depth: depth + 1,
+                    classCtx: null,
+                    transparent: true,
+                  });
+                  for (const pb of parseParamBindings(parens.inner)) {
+                    addBinding(pb.name, pb.className, pb.kind, pb.qualifiedMember);
+                  }
+                  i = parens.end;
+                  break;
+                }
+              }
+            }
           }
           // `const X: Y` (no `new`) — declared-type binding.
           const mAnn = new RegExp(`^${kw}\\s+([A-Za-z_$][\\w$]*)\\s*:\\s*([^=;\\n]{1,120})`).exec(remainder);
@@ -526,6 +675,24 @@ export function buildScopeBindingMap(
       }
 
       i++;
+    }
+
+    // FU-2 lever 3, post-walk: project each class's declared field types into
+    // every method scope of that class as `this.<field>` bindings, so
+    // `this.index.query()` reaches branch 3's own-methods + heritage lookup
+    // exactly as a local would. Deferred to here because the walk is a single
+    // forward pass and a field may be declared below its users.
+    //
+    // The key is the FULL receiver text (`this.index`), matching how the
+    // resolver looks a receiver up — no dotted-path walking is introduced.
+    // Only ONE level is bound: `this.a.b` is not a declared field and stays
+    // unresolved rather than being guessed at.
+    for (const { codeRefId, className } of methodScopes) {
+      const fields = classFields.get(className);
+      if (!fields) continue;
+      for (const [fieldName, binding] of fields) {
+        putBinding(codeRefId, `this.${fieldName}`, binding);
+      }
     }
   }
 

@@ -798,6 +798,35 @@ function receiverDispositionRoot(sourceFile: string, receiver: string): string |
 const NON_BINDING_ROOTS = new Set<string>(['this', 'super']);
 
 /**
+ * Where a local NAME imported into `sourceFile` actually comes from, collapsing
+ * the value-import and `import type` spellings into one answer (FU-2 levers 2/3).
+ *
+ * `import type` short-circuits classification in Phase 3, so a type-only import
+ * carries kind='typeOnly' and its real origin only on typeOnlyOrigin. Since type
+ * positions are exactly where `import type` is idiomatic, any consumer asking
+ * "is this name external?" about an annotation MUST read both spellings or it
+ * misses the common case. Returns undefined when the name is not imported here.
+ */
+function importOriginOf(
+  importResolutions: readonly ImportResolution[],
+  sourceFile: string,
+  localName: string,
+): 'project' | 'external' | 'node_builtin' | 'python_stdlib' | undefined {
+  const ir = importResolutions.find(
+    r => r.sourceFile === sourceFile && r.localName === localName,
+  );
+  if (!ir) return undefined;
+  if (ir.kind === 'typeOnly') return ir.typeOnlyOrigin;
+  if (ir.kind === 'external') {
+    if (ir.reason === 'node_builtin') return 'node_builtin';
+    if (ir.reason === 'python_stdlib') return 'python_stdlib';
+    return 'external';
+  }
+  if (ir.kind === 'resolved' || ir.kind === 'stale') return 'project';
+  return undefined;
+}
+
+/**
  * Extract the ROOT identifier of a member/call CHAIN receiver (FU-2 lever 1,
  * WO-RESOLVE-62-OF-UNRESOLVED-CALLS-VIA-SCOPE-STACK-001). Sees through call
  * expressions, index access, non-null assertions, optional chaining, `new`,
@@ -1040,29 +1069,15 @@ export function classifyMethodCall(
     // existing path, so this can only ever move edges that were already headed
     // for the honest tail.
     if (binding && binding.kind === 'qualified') {
-      const nsRoot = binding.className;
-      const nsBinding = importResolutions.find(
-        ir => ir.sourceFile === fact.sourceFile && ir.localName === nsRoot,
-      );
-      if (nsBinding) {
-        // A type annotation's namespace is idiomatically imported with
-        // `import type`, which short-circuits classification in Phase 3 — so
-        // the origin is read from typeOnlyOrigin when present, and from the
-        // value-import fields otherwise. Both spellings must agree, or the
-        // dominant real-world case (`import type Parser from 'tree-sitter'`,
-        // 89 edges on this repo alone) silently misses.
-        const origin = nsBinding.kind === 'typeOnly'
-          ? nsBinding.typeOnlyOrigin
-          : (nsBinding.kind === 'external' ? (nsBinding.reason ?? 'external') : undefined);
-        if (origin === 'node_builtin') {
-          return { kind: 'builtin', reason: 'builtin_module_receiver' };
-        }
-        if (origin === 'python_stdlib') {
-          return { kind: 'builtin', reason: 'python_stdlib_receiver' };
-        }
-        if (origin !== undefined && origin !== 'project') {
-          return { kind: 'external', reason: 'external_annotation_receiver' };
-        }
+      const origin = importOriginOf(importResolutions, fact.sourceFile, binding.className);
+      if (origin === 'node_builtin') {
+        return { kind: 'builtin', reason: 'builtin_module_receiver' };
+      }
+      if (origin === 'python_stdlib') {
+        return { kind: 'builtin', reason: 'python_stdlib_receiver' };
+      }
+      if (origin === 'external') {
+        return { kind: 'external', reason: 'external_annotation_receiver' };
       }
     }
     if (binding && binding.kind !== 'qualified') {
@@ -1119,6 +1134,20 @@ export function classifyMethodCall(
       // or external ancestor) that the field-index resolves by name.
       // A proven-instance miss only sharpens the final unresolved reason
       // (see newBindingMissed at the tail).
+      // FU-2 lever 3: the bound type is a BARE PascalCase name that resolves
+      // to an EXTERNAL package import (`private client: Pinecone`). Own
+      // methods and heritage both missed because the class is not ours and
+      // never will be — this is honestly an external member call, not an
+      // unresolvable project edge. Measured: `this.client` in the vector-store
+      // adapters. Project-imported classes return origin 'project' and are
+      // untouched, so no first-party edge can be swept out this way.
+      const boundOrigin = importOriginOf(importResolutions, fact.sourceFile, className);
+      if (boundOrigin === 'node_builtin' || boundOrigin === 'python_stdlib') {
+        return { kind: 'builtin', reason: 'builtin_module_receiver' };
+      }
+      if (boundOrigin === 'external') {
+        return { kind: 'external', reason: 'external_annotation_receiver' };
+      }
       if (binding.kind === 'new') {
         newBindingMissed = true;
       }
