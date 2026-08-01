@@ -1,0 +1,93 @@
+{
+  "workorder_id": "WO-ELEMENTEXTRACTOR-REVISITS-RUST-IMPL-AND-JAVA-OR-C-001",
+  "feature_name": "elementextractor-revisits-rust-impl-and-java-or-c",
+  "analysis_authored_at": "2026-08-01T20:30:09.925366+00:00",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/extractors/element-extractor.ts",
+      "src/scanner/tree-sitter-file-scan.ts",
+      "src/pipeline/import-resolver.ts",
+      "src/integration/vector/json-store.ts",
+      "src/integration/rag/graph-reranker.ts",
+      "src/cli/rag-index.ts",
+      "src/indexer/query-engine.ts",
+      "src/integration/rag/answer-generation-service.ts"
+    ],
+    "files_created": [],
+    "downstream_consumers": [
+      "PipelineOrchestrator and graph construction",
+      "scanner main-thread and worker paths",
+      "RAG indexing, search, and answer generation",
+      "multi-index query consumers and diagnostic readers"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Upstream element identity changes invalidate downstream relationship assumptions",
+      "likelihood": "high",
+      "impact": "high",
+      "mitigation": "Complete and review Phase 1 before authoring the tree-sitter relationship phase."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Low graph resolution can make dependency absence look authoritative",
+      "likelihood": "high",
+      "impact": "medium",
+      "mitigation": "Use direct imports, targeted rg, and tests for load-bearing negative conclusions."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Vector-store mutation can diverge from durable state on persistence failure",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Make Phase 4 rollback-safe and add forced-write-failure tests before ranking work."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Deferred phase plans can go stale if authored early",
+      "likelihood": "high",
+      "impact": "medium",
+      "mitigation": "Retain STOP placeholders and run fresh discovery after each predecessor review."
+    }
+  ],
+  "candidates": [
+    "src/pipeline/extractors/element-extractor.ts",
+    "src/scanner/tree-sitter-file-scan.ts",
+    "src/pipeline/import-resolver.ts",
+    "src/integration/vector/json-store.ts",
+    "src/integration/rag/graph-reranker.ts",
+    "src/cli/rag-index.ts",
+    "src/indexer/query-engine.ts",
+    "src/integration/rag/answer-generation-service.ts"
+  ],
+  "dependencies": [
+    "ElementExtractor -> scanFileWithTreeSitter",
+    "extraction/raw facts -> resolveImports",
+    "provider-factory/rag-index -> JsonVectorStore",
+    "AnswerGenerationService -> GraphReRanker"
+  ],
+  "public_api_hits": [
+    "ElementExtractor",
+    "scanFileWithTreeSitter",
+    "resolveImports",
+    "JsonVectorStore",
+    "GraphReRanker",
+    "QueryEngine",
+    "AnswerGenerationService"
+  ],
+  "decision_records": [
+    {
+      "decision": "Use one ticket-linked stub per rolling phase.",
+      "rationale": "It preserves ticket ownership and lets each next-phase plan consume fresh predecessor evidence."
+    },
+    {
+      "decision": "Move ElementExtractor ahead of tree-sitter-file-scan.",
+      "rationale": "The scanner directly instantiates and consumes ElementExtractor, so relationship fixes need stable upstream element identity and cardinality."
+    },
+    {
+      "decision": "Place test and telemetry hygiene after runtime correctness.",
+      "rationale": "The stale CLI parser test and diagnostic metrics do not corrupt persisted graph or vector facts."
+    }
+  ]
+}

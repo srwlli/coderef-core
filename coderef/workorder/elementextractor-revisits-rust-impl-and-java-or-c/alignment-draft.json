@@ -1,0 +1,134 @@
+{
+  "event": "culture_alignment_recorded",
+  "domain": "CODEREF-CORE",
+  "skill": "align-coderef-culture",
+  "schema_version": "2.0.0",
+  "workorder_id": "WO-ELEMENTEXTRACTOR-REVISITS-RUST-IMPL-AND-JAVA-OR-C-001",
+  "target_project": "coderef-core",
+  "intended_work": "[from TKT-ZMVP33] ElementExtractor revisits Rust impl and Java or C++ class bodies",
+  "plan_digest": "sha256:a33df5f3758fea23960109d5fbf77b34f375dc8ebaba2c70251a50e4691ea95d",
+  "inventory_digest": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+  "source_digests": {
+    "STANDARDS/layers.json": "sha256:2d5e1202a74e36d326978aa7fd86135ae425d181eb724e5f255d248c9feaa4e2",
+    "STANDARDS/VOCABULARY.json": "sha256:f426b702bf8e0cd8f0659dbbb0f954a21b4fddab5ed80892d540530272c66d9a",
+    "TRACKING/registries.json": "sha256:8b0f86c7696f6984565538e02ebbb1538bd6ed12b1ff2866377f9998c9ab0bfc",
+    "TRACKING/skills.json": "sha256:d402cb0e9711bbc21ef90cbb9964a52225bff65423ec93485d32dfe6fff02480",
+    "STANDARDS/coderef-inventory.json": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+    "TRACKING/agent-domains.json": "sha256:15568aa8c132c323e676b1f8cbe68b2dc76e97ca4349d1d508b8121b20c48ff9",
+    "SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json": "sha256:86f17257381a2d21cb199b5c1ee881dcce19d6030ed5865ad25933cb2241181d",
+    "DOCS/standards/data/COMMS-DATA-STANDARD.md": "sha256:2b3289c9ed81322e9d244620d0df780214933f65138e72d870987887bbae75c7",
+    "STANDARDS/event-catalog.md": "sha256:4cc6fe172b3df18f67f1cb9075da9a111ef20b5325f14a092a561df0e4e180ba",
+    "SKILLS/META/coderef-skill/references/SKILL-CONTRACTS.md": "sha256:c86b97bbce08a3655ba9f3a9efd95e1846197b8761874cc46817a740e5203508",
+    "SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md": "sha256:bdabb1ed33860aff929ae5e720ff3f4c148ac1502d46d46c74c9b68d31e12d16"
+  },
+  "rows": [
+    {
+      "task_id": "P1-T1",
+      "step": "Trace Rust impl_item and Java/C++ class-body traversal in ElementExtractor plus its direct tests; success means every double-visit path and required scoped-name behavior is explicitly identified.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T2",
+      "step": "Make scoped Rust impl and Java/C++ class-body traversal single-pass while preserving method extraction, qualification, clone substrate, and complexity metadata; success means each AST node is visited once in its correct scope.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T3",
+      "step": "Add focused Rust, Java, and C/C++ fixtures asserting unique element cardinality and correct scoped method names; success means the old implementation fails the new assertions and the corrected implementation passes them.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T4",
+      "step": "Run ElementExtractor, complexity-metrics, clone-substrate, and scanner regression suites; success means all targeted suites exit zero without snapshot or cardinality regressions.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T5",
+      "step": "Re-run a quick discovery and inspect emitted element identities before authoring Phase 2; success means duplicate elements are absent and the tree-sitter relationship phase can be planned against stable upstream facts.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P2-T0",
+      "step": "PLACEHOLDER. Phase 2 tasks not yet authored. Pre-condition: Phase 1 must be COMPLETED + REVIEWED before this phase's plan is authored.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P3-T0",
+      "step": "PLACEHOLDER. Phase 3 tasks not yet authored. Pre-condition: Phase 2 must be COMPLETED + REVIEWED before this phase's plan is authored.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P4-T0",
+      "step": "PLACEHOLDER. Phase 4 tasks not yet authored. Pre-condition: Phase 3 must be COMPLETED + REVIEWED before this phase's plan is authored.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P5-T0",
+      "step": "PLACEHOLDER. Phase 5 tasks not yet authored. Pre-condition: Phase 4 must be COMPLETED + REVIEWED before this phase's plan is authored.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P6-T0",
+      "step": "PLACEHOLDER. Phase 6 tasks not yet authored. Pre-condition: Phase 5 must be COMPLETED + REVIEWED before this phase's plan is authored.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P7-T0",
+      "step": "PLACEHOLDER. Phase 7 tasks not yet authored. Pre-condition: Phase 6 must be COMPLETED + REVIEWED before this phase's plan is authored.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    }
+  ],
+  "gaps": [],
+  "verdict": "PASS",
+  "_draft": true,
+  "_note": "DRAFT — fill tools, communication, closure, and tracking for each row, then record before execution.",
+  "_instructions": [
+    "WORK-START ALIGNMENT DRAFT — fill this in BEFORE writing any code.",
+    "For every row, map active tools and the communication, closure, and tracking obligations.",
+    "Record with align-coderef-culture record before /execute-workorder begins."
+  ]
+}

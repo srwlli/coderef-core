@@ -1,0 +1,84 @@
+{
+  "workorder_id": "WO-ELEMENTEXTRACTOR-REVISITS-RUST-IMPL-AND-JAVA-OR-C-001",
+  "feature_name": "elementextractor-revisits-rust-impl-and-java-or-c",
+  "created": "2026-08-01T20:30:09.925366+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub_promotion",
+    "user_request": "[from TKT-ZMVP33] ElementExtractor revisits Rust impl and Java or C++ class bodies",
+    "stub_id": "STUB-WWR793"
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Discovery-backed rolling program ordered by direct source dependencies and failure blast radius.",
+    "plan_type_decided_by": "create-workorder-engine@1.0.0",
+    "discovery_ref": "coderef/working/core-ticket-remediation-program/discovery.md",
+    "discovery": {
+      "candidates": [
+        "src/pipeline/extractors/element-extractor.ts",
+        "src/scanner/tree-sitter-file-scan.ts",
+        "src/pipeline/import-resolver.ts",
+        "src/integration/vector/json-store.ts",
+        "src/integration/rag/graph-reranker.ts",
+        "src/cli/rag-index.ts",
+        "src/indexer/query-engine.ts",
+        "src/integration/rag/answer-generation-service.ts"
+      ],
+      "blast_radius": [
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/phases/resolve-tail.ts",
+        "src/scanner/scanner.ts",
+        "src/scanner/scanner-worker.ts",
+        "src/cli/mcp/rag-tools.ts",
+        "src/integration/rag/indexing-orchestrator.ts",
+        "src/integration/rag/answer-generation-service.ts"
+      ],
+      "public_api_hits": [
+        "ElementExtractor",
+        "scanFileWithTreeSitter",
+        "resolveImports",
+        "JsonVectorStore",
+        "GraphReRanker",
+        "QueryEngine",
+        "AnswerGenerationService"
+      ],
+      "hotspot_hits": [
+        "src/pipeline/orchestrator.ts",
+        "src/scanner/scanner.ts"
+      ],
+      "foundation_anchors": [
+        "coderef/working/core-ticket-remediation-program/discovery.md"
+      ],
+      "call_chain_hits": [
+        "scanFileWithTreeSitter -> ElementExtractor.extract",
+        "resolveImportsPhase -> resolveImports",
+        "createVectorStore -> JsonVectorStore",
+        "AnswerGenerationService -> GraphReRanker"
+      ],
+      "warnings": [
+        "The scripted discover rg leg rejected the comma-heavy topic; agent-added targeted rg and direct source reads supplied the ordering evidence.",
+        "Graph resolution is 22.66%; direct imports and control flow outrank absent graph edges for dependency ordering."
+      ],
+      "summary_ref": "coderef/working/core-ticket-remediation-program/discovery.md"
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "Seven CODEREF-CORE ticket-linked fix stubs in discovery order",
+      "Focused regression coverage for each repaired contract",
+      "Fresh discovery and review before every deferred phase is authored"
+    ],
+    "out_of_scope": [
+      "The ecosystem-owned zero-export resource-sheet checker ticket",
+      "Unrelated feature development or public API expansion",
+      "Resolving deferred phases before their predecessor is reviewed"
+    ]
+  },
+  "constraints": [
+    "Preserve unrelated user worktree changes.",
+    "Do not bypass deferred-phase hard stops.",
+    "Use direct source reads when graph resolution cannot support a negative conclusion."
+  ],
+  "pre_existing_drift": false
+}

@@ -1,0 +1,148 @@
+{
+  "workorder_id": "WO-ELEMENTEXTRACTOR-REVISITS-RUST-IMPL-AND-JAVA-OR-C-001",
+  "feature_name": "elementextractor-revisits-rust-impl-and-java-or-c",
+  "created": "2026-08-01T20:30:09.925366+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "complete",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-WWR793",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-WWR793",
+      "plan_type": "phased",
+      "timestamp": "2026-08-01T20:30:09.925366+00:00"
+    },
+    {
+      "event": "plan_type_forced",
+      "from": "strict",
+      "to": "phased",
+      "reason": "--phased-stubs implies phased",
+      "timestamp": "2026-08-01T20:30:09.925366+00:00"
+    },
+    {
+      "event": "rolling_plan_authored",
+      "deferred_stubs": [
+        "STUB-BD0MZY",
+        "STUB-PTB2ZC",
+        "STUB-X6ZVGC",
+        "STUB-T7RJJT",
+        "STUB-5SBBAT",
+        "STUB-V0HQ5J"
+      ],
+      "close_after_phase": 7,
+      "timestamp": "2026-08-01T20:30:09.925366+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 5,
+      "source": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\working\\core-ticket-remediation-program\\phase-1-tasks.json",
+      "at": "2026-08-01T20:30:09.925366+00:00"
+    },
+    {
+      "event": "discovery_order_adopted",
+      "source": "coderef/working/core-ticket-remediation-program/discovery.md",
+      "phase_order": [
+        "STUB-WWR793",
+        "STUB-BD0MZY",
+        "STUB-PTB2ZC",
+        "STUB-X6ZVGC",
+        "STUB-T7RJJT",
+        "STUB-5SBBAT",
+        "STUB-V0HQ5J"
+      ],
+      "at": "2026-08-01T20:30:09.925366+00:00"
+    },
+    {
+      "event": "artifact_rehomed",
+      "from": "assistant:coderef/workorder/elementextractor-revisits-rust-impl-and-java-or-c",
+      "to": "coderef-core:coderef/workorder/elementextractor-revisits-rust-impl-and-java-or-c",
+      "reason": "create-workorder received a ticket-minted stub with no target_project and incorrectly defaulted the artifact and discovery root to ASSISTANT",
+      "at": "2026-08-01T20:30:09.925366+00:00"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-08-01T21:05:00Z"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 1,
+      "at": "2026-08-01T21:05:00Z"
+    },
+    {
+      "event": "alignment_gate",
+      "verdict": "warn",
+      "reason": "alignment_missing",
+      "at": "2026-08-01T21:05:00Z"
+    },
+    {
+      "event": "operator_ruling",
+      "ruling": "A",
+      "question": "Java bare-vs-qualified method identity after the duplicate-traversal fix",
+      "decision": "QUALIFIED ONLY. Java keeps `Outer.alpha` as type `method`; the bare `alpha` function element is DROPPED, not shimmed.",
+      "decided_by": "operator",
+      "decided_at": "2026-08-01",
+      "rationale": "A nested-construct probe against HEAD showed the double-walk causes THREE defects from ONE root cause, not the one the ticket described: (i) exact duplicates, multiplicative with nesting depth - a C++ method at depth 2 emitted x4; (ii) MIS-SCOPED names - a nested type's members attributed to the OUTER type (`Outer.beta` for a method on `Inner`, `Outer.gamma` for a method on `Contract`), which are false facts rather than inflated counts; (iii) the bare/qualified fork. Because all three share the root cause they are not separable: any fix that removes the duplicates also removes the bare names, so preserving them would mean deliberately RE-EMITTING them as a shim - strictly more work than (A), built in phase 1 and deleted in phase 2 by this same program, since phase 2 (TKT-XGZA82) IS the bare-name reduction at tree-sitter-file-scan.ts:63. Nothing in CODEREF-CORE itself consumes Java/C++/Rust elements (this repo is TypeScript), so exposure is downstream repos scanning those languages across a one-phase window.",
+      "rejected_alternatives": [
+        "B - bare only: Java would stop producing methods and diverge from every other language.",
+        "C - keep both via a compatibility shim: considered and rejected as more work than A, with the shim scheduled for deletion in the very next phase."
+      ],
+      "at": "2026-08-01T21:05:00Z"
+    },
+    {
+      "event": "p1_t1_findings",
+      "summary": "Exactly three double-visit sites; the canonical fix already exists twice in this same file.",
+      "broken_sites": [
+        "element-extractor.ts:480-483 Rust impl_item - scoped traverse then falls through to the unconditional child loop.",
+        "element-extractor.ts:556-560 Java class_declaration - same shape.",
+        "element-extractor.ts:631-637 C++ class_specifier/struct_specifier - same shape."
+      ],
+      "already_correct": [
+        "element-extractor.ts:346 Python class_definition carries `return; // Don't double-traverse class children` - this IS the fix shape.",
+        "element-extractor.ts:141 + :206 TypeScript function_declaration and class_declaration carry the same guard (the prior recursion-leak fix).",
+        "Go (extractGoElements) has no scoped sub-traverse at all - unaffected."
+      ],
+      "additional_defect_found": "Java interface_declaration (:564-575) never traverses its body scoped AND never returns, so interface members are attributed to the ENCLOSING class (`Outer.gamma`). Fixing the class branch alone would NOT fix this; the interface branch needs its own scoped traverse + return to make the member `Contract.gamma`.",
+      "dead_code_confirmed": "Rust `parentScope`/`implType` is threaded but never read (lines 451-507), and the C++ branch never reads `parentScope` either. Neither language has qualification to preserve, so both are dedup-only under ruling A; introducing scoped names there would be NEW behavior and is OUT of scope for this phase.",
+      "at": "2026-08-01T21:05:00Z"
+    }
+  ],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "3d81268",
+      "verdict": "PASS",
+      "at": "2026-08-01T22:20:43.698Z"
+    }
+  ],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T20:30:09.925366+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-WWR793"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}
