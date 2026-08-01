@@ -42,6 +42,8 @@ consumer that reaches into `PipelineState` has crossed the boundary the
 
 The system is a **single-pass pipeline** over a project tree, driven by `PipelineOrchestrator` (`src/pipeline/orchestrator.ts`). Each phase reads `PipelineState` and writes its output into a dedicated field, then the next phase consumes that field. All phases are pure-ish: they mutate `PipelineState`, but they never call into the next phase, never reach the network, and (with the validator's purity rule) never reach `process.exit`.
 
+Since WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001 (2026-08-01) the orchestrator is a **sequential phase-list executor** over `src/pipeline/phases/` (`types.ts` — `PipelineContext`/`PipelinePhase`/`runPhases`; `scan-front.ts` — discovery, cache filter, grammar preload, single-pass scan, persistence; `resolve-tail.ts` — the shared Phase 3/4/5 + SCIP tail; `incremental-front.ts` — rescan/merge/assemble + the STUB-QPAAY0 path-keying seam). Both `run()` and `runIncremental()` compose explicit phase-list literals feeding the SAME resolve-tail phase objects, so full/incremental parity is by shared code. Phase modules are thin adapters over the pure functions named in the diagram below — the diagram's phase semantics are unchanged. A new pipeline pass (e.g. cross-repo workspace linkage) is one phase-list insertion.
+
 ```
    project tree
        │

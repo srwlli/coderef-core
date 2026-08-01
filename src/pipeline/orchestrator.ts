@@ -61,15 +61,8 @@ import {
   scanFilesPhase,
   persistFactSetPhase,
 } from './phases/scan-front.js';
-import {
-  canonicalFactKey,
-  dedupeFactSet,
-  mergeChangedFacts,
-  readFactSet,
-  writeFactSet,
-  type FileFactBundle,
-  type IncrementalFactSet,
-} from './symbol-table-cache.js';
+import { makeStoreKeyFor, incrementalFrontPhases } from './phases/incremental-front.js';
+import { dedupeFactSet, readFactSet } from './symbol-table-cache.js';
 import type { HeaderStatus } from './element-taxonomy.js';
 import type { ElementData } from '../types/types.js';
 import type { ExportedGraph } from '../export/graph-exporter.js';
@@ -238,190 +231,78 @@ export class PipelineOrchestrator {
       return this.run(projectPath, options);
     }
 
-    // P4 keying seam (STUB-QPAAY0): the store's byFile keys carry whatever
-    // path form the ORIGINATING full build's projectPath produced (relative
-    // for a '.'-invoked populate, absolute for an absolute one), while our
-    // callers pass absolutized paths. Translate every incoming path to the
-    // store's own key form so the merge REPLACES bundles instead of adding
-    // the same file under a second key (duplicate elements →
-    // node_id_uniqueness → fail-closed exit 1). Rescans are labeled with the
-    // exact form the originating build used, so rescanned fact internals
-    // match the cached universe byte-for-byte (full-rebuild parity).
+    // The incremental path is its own phase-list literal over the same
+    // executor (WO-DECOUPLE-...-001 Phase 3): registry reset -> rescan
+    // changed (P4 keying seam relocated verbatim to phases/incremental-
+    // front.ts) -> merge into the store -> assemble the full universe ->
+    // the SAME shared resolve tail run() uses (chainLogs and the SCIP leg
+    // stay off — historical behavior of this path) -> re-persist the merged
+    // store. The old assembleAndResolve() helper is gone; parity is by
+    // shared code.
     const store = dedupeFactSet(cached, projectPath);
-    const keyByCanonical = new Map<string, string>();
-    for (const key of Object.keys(store.byFile)) {
-      keyByCanonical.set(canonicalFactKey(projectPath, key), key);
-    }
-    const sampleKey = store.order[0] ?? Object.keys(store.byFile)[0];
-    const storeIsAbsolute = sampleKey !== undefined && path.isAbsolute(sampleKey);
-    const storeKeyFor = (p: string): string => {
-      const canonical = canonicalFactKey(projectPath, p);
-      const existing = keyByCanonical.get(canonical);
-      if (existing !== undefined) return existing;
-      if (canonical.startsWith('..')) {
-        // Outside the project root — keep the absolute form; folding it into
-        // a project-relative key would fabricate an in-project identity.
-        return path.isAbsolute(p) ? path.normalize(p) : path.resolve(path.resolve(projectPath), p);
-      }
-      const platformRel = canonical.split('/').join(path.sep);
-      return storeIsAbsolute
-        ? path.join(path.resolve(projectPath), platformRel)
-        : path.join(projectPath, platformRel);
-    };
+    const storeKeyFor = makeStoreKeyFor(projectPath, store);
+    const front = incrementalFrontPhases({
+      store,
+      storeKeyFor,
+      changedFiles,
+      deletedFiles,
+      languageOf: (p) => this.languageOf(p),
+      preloadGrammars: (langs) => this.registry.preloadGrammars(langs),
+      processFile: (f, l, v) => this.processFile(f, l, v),
+    });
 
-    // Reset the registry (parity with run(): run() clears it at the top).
-    globalRegistry.clear();
-
-    // Re-scan ONLY the changed files. Language is derived from the cached
-    // bundle when known, else from the extension via getDefaultLanguages match.
-    const rescanned = new Map<string, FileFactBundle>();
-    for (const filePath of changedFiles) {
-      const scanPath = storeKeyFor(filePath);
-      const language = store.byFile[scanPath]?.language ?? this.languageOf(scanPath);
-      if (!language) continue; // unsupported extension — skip
-      try {
-        await this.registry.preloadGrammars([language]);
-        const result = await this.processFile(scanPath, language, verbose);
-        rescanned.set(scanPath, {
-          language,
-          elements: result.elements,
-          imports: result.imports,
-          calls: result.calls,
-          rawImports: result.rawImports,
-          rawCalls: result.rawCalls,
-          rawExports: result.rawExports,
-          headerFact: result.headerFact,
-          headerImportFacts: result.headerImportFacts,
-          routes: result.routes,
-          frontendCalls: result.frontendCalls,
-          content: result.content,
-        });
-      } catch (error) {
-        logger.error(`[PipelineOrchestrator] Incremental rescan error for ${filePath}:`, error);
-      }
-    }
-
-    // Merge changed/deleted into the cached full set — the graph-safe step.
-    // Deleted paths are translated to the store's own key form too, so an
-    // absolutized deletion actually evicts the relative-keyed bundle.
-    const merged = mergeChangedFacts(store, rescanned, deletedFiles.map(storeKeyFor));
-
-    // Reassemble the FULL fact arrays in the merged file order, register every
-    // element (parity with run()), then run the identical resolve/construct
-    // chain over the complete universe.
-    const state = await this.assembleAndResolve(projectPath, merged, options, startTime);
-
-    // Re-persist the merged set so the NEXT delta builds on this one.
-    if (options.outputDir !== undefined) {
-      try {
-        writeFactSet(projectPath, merged);
-      } catch (e) {
-        logger.warn(`[PipelineOrchestrator] Failed to re-persist fact set: ${e instanceof Error ? e.message : String(e)}`);
-      }
-    }
-    return state;
-  }
-
-  /**
-   * Assemble the full fact arrays from a (merged) fact set in its file order,
-   * then run resolveImports → resolveCalls → constructGraph — the EXACT chain
-   * run() uses. Factored so both the full and incremental paths resolve through
-   * identical code (structural parity).
-   */
-  private async assembleAndResolve(
-    projectPath: string,
-    set: IncrementalFactSet,
-    options: PipelineOptions,
-    startTime: number,
-  ): Promise<PipelineState> {
-    const files = new Map<string, string[]>();
-    const allElements: ElementData[] = [];
-    const allImports: ImportRelationship[] = [];
-    const allCalls: CallRelationship[] = [];
-    const allHeritage: HeritageRelationship[] = [];
-    const allRawImports: RawImportFact[] = [];
-    const allRawCalls: RawCallFact[] = [];
-    const allRawExports: RawExportFact[] = [];
-    const allHeaderFacts = new Map<string, HeaderFact>();
-    const allHeaderImportFacts: HeaderImportFact[] = [];
-    const allHeaderParseErrors: HeaderParseError[] = [];
-    // API-surface facts must survive the incremental path too, or a `--incremental`
-    // populate would silently emit an EMPTY routes.json over a correct one — a
-    // no-data artifact indistinguishable from "this project exposes no endpoints".
-    const allRoutes: RouteFact[] = [];
-    const allFrontendCalls: FrontendCallFact[] = [];
-    const sources = new Map<string, string>();
-
-    for (const filePath of set.order) {
-      const bundle = set.byFile[filePath];
-      if (!bundle) continue;
-      const list = files.get(bundle.language) ?? [];
-      list.push(filePath);
-      files.set(bundle.language, list);
-      for (const elem of bundle.elements) globalRegistry.register(elem);
-      allElements.push(...bundle.elements);
-      allImports.push(...bundle.imports);
-      allCalls.push(...bundle.calls);
-      allHeritage.push(...(bundle.heritage ?? [])); // optional pre-v2 cache field
-      allRawImports.push(...bundle.rawImports);
-      allRawCalls.push(...bundle.rawCalls);
-      allRawExports.push(...bundle.rawExports);
-      allHeaderFacts.set(filePath, bundle.headerFact);
-      allHeaderImportFacts.push(...bundle.headerImportFacts);
-      if (bundle.headerFact.parseErrors) allHeaderParseErrors.push(...bundle.headerFact.parseErrors);
-      allRoutes.push(...(bundle.routes ?? []));            // optional pre-P1 cache field
-      allFrontendCalls.push(...(bundle.frontendCalls ?? []));
-      sources.set(filePath, bundle.content);
-    }
-
-    // The resolve/construct chain now runs through the SAME shared tail
-    // phases as run() (WO-DECOUPLE-...-001 P1) — parity by shared code
-    // instead of hand-kept duplication. Two historical differences are
-    // preserved deliberately: no chain step-logs on this path, and NO SCIP
-    // overlay leg (this path never applied it).
     const ctx: PipelineContext = {
       projectPath,
       options,
-      verbose: options.verbose ?? false,
+      verbose,
       chainLogs: false,
       startTime,
-      files,
-      totalFiles: set.order.length,
-      elements: allElements,
-      imports: allImports,
-      calls: allCalls,
-      heritage: allHeritage,
-      rawImports: allRawImports,
-      rawCalls: allRawCalls,
-      rawExports: allRawExports,
-      headerFacts: allHeaderFacts,
-      headerImportFacts: allHeaderImportFacts,
-      headerParseErrors: allHeaderParseErrors,
-      routes: allRoutes,
-      frontendCalls: allFrontendCalls,
-      sources,
-      factBundles: new Map(Object.entries(set.byFile)),
-      fileOrder: [...set.order],
+      files: new Map(),
+      totalFiles: 0,
+      elements: [],
+      imports: [],
+      calls: [],
+      heritage: [],
+      rawImports: [],
+      rawCalls: [],
+      rawExports: [],
+      headerFacts: new Map(),
+      headerImportFacts: [],
+      headerParseErrors: [],
+      routes: [],
+      frontendCalls: [],
+      sources: new Map(),
+      factBundles: new Map(),
+      fileOrder: [],
       docs: [],
       // Seeded by the legacy-graph phase (first in the tail list).
       graph: undefined as unknown as ExportedGraph,
       importResolutions: [],
       callResolutions: [],
-      filesScanned: set.order.length,
+      filesScanned: 0,
     };
+
     await runPhases(
-      resolveTailPhases(
-        (e, i, c, h, p) => this.buildGraph(e, i, c, h, p),
-        { includeScipOverlay: false },
-      ),
+      [
+        resetRegistryPhase(),
+        front.rescanChanged,
+        front.mergeFacts,
+        front.assembleFacts,
+        ...resolveTailPhases(
+          (e, i, c, h, p) => this.buildGraph(e, i, c, h, p),
+          { includeScipOverlay: false },
+        ),
+        front.persistMerged,
+      ],
       ctx,
     );
+
     return {
       ...pipelineStateOf(ctx),
       metadata: {
-        startTime, endTime: Date.now(), filesScanned: set.order.length,
-        elementsExtracted: allElements.length,
-        relationshipsExtracted: allImports.length + allCalls.length,
+        startTime, endTime: Date.now(), filesScanned: ctx.filesScanned,
+        elementsExtracted: ctx.elements.length,
+        relationshipsExtracted: ctx.imports.length + ctx.calls.length,
         incremental: { filesSkipped: 0, hitRatio: 0, enabled: true },
       },
     };

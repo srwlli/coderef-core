@@ -1,0 +1,20 @@
+{
+  "phase": 3,
+  "generated": "2026-08-01T12:42:27Z",
+  "legs": {
+    "frozen_tree_p2_vs_p3": "PASS - identical node/edge/resolved id sha256 (same values as P1/P2 baselines)",
+    "full_vs_incremental_same_tree": "PASS - incremental --changed-files (2 files, 13.5s) byte-identical to full rebuild (52.6s): nodes 3740, edges 45305, all three sha256 equal",
+    "suite": "2532 passed / 26 skipped / 0 failed (incl. incremental-path-keying 8 contract tests + incremental-parity)"
+  },
+  "shape": {
+    "orchestrator_lines": "1029 -> 700",
+    "phase_modules": {
+      "types.ts": 132,
+      "resolve-tail.ts": 170,
+      "scan-front.ts": 241,
+      "incremental-front.ts": 194
+    },
+    "note": "scan-front.ts at 241 lines exceeds the ~200 aspiration by 41 - it carries the verbatim scan loop; splitting further would fragment one coherent concern"
+  },
+  "verdict": "PASS"
+}
