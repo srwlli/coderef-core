@@ -36,6 +36,48 @@
 
 ---
 
+## Steps
+
+Every scenario below is a specialization of the same five steps. Read this section once;
+the scenarios then only differ in which inputs they gather and how they interpret the
+report.
+
+1. **Understand context.** Determine what the user is actually migrating — old route
+   system, new route system, and the frontend that calls both. Do not proceed on an
+   assumed migration shape.
+2. **Check prerequisites.** Confirm the package is installed, the frontend call scan has
+   run, and both route sets are readable. A missing prerequisite produces a low-coverage
+   report that looks like a finding but is an artifact.
+3. **Establish the migration config.** Read the existing config, or build one *with the
+   user* from the observed route patterns. Never invent mappings unilaterally.
+4. **Run validation.** Execute the validator against the config and capture the report.
+5. **Interpret and report.** Translate coverage numbers and unmapped routes into what the
+   user should do next — and state which numbers are measured versus inferred.
+
+## Verification
+
+Each step has a command that proves it landed. Run the check, do not assume the step
+succeeded because it printed no error.
+
+| After step | Run this | Confirms |
+|---|---|---|
+| 2 — prerequisites | `npx coderef-scan --dir . && ls .coderef/index.json` | The scan produced an index; without it every downstream count is empty-as-no-data. |
+| 2 — prerequisites | `npx coderef-scan-frontend-calls --dir .` | Frontend calls were actually detected. Zero calls means the validator has nothing to map, not that the migration is complete. |
+| 3 — config | `npx coderef-validate-routes --config <path> --dry-run` | The config parses and its route patterns compile before you rely on a coverage number. |
+| 4 — validation | Read `.coderef/validation-report.json` and check `ok` plus `unresolved_src_count` | The run completed the Phase 6 gate. A non-zero unresolved count means unmapped routes may be *unresolved*, not *absent*. |
+
+## Troubleshooting
+
+| Symptom | Likely cause | Fix |
+|---|---|---|
+| Coverage reports 0% but the migration is real | The frontend call scan never ran, so there are no calls to map | Run `coderef-scan-frontend-calls` and re-validate |
+| Routes the user knows exist show as unmapped | Pattern in the config does not match the actual route string (trailing slash, param syntax) | Compare against the raw scanned routes before editing the config |
+| Validation exits non-zero with no errors listed | The Phase 6 gate refused; the report is on disk even though the run "failed" | Read `.coderef/validation-report.json` — `validationGateRefused` names the reason |
+| Report looks correct but is from a previous run | Stale `.coderef/` artifacts | Re-run the scan; check the staleness block before trusting any read |
+| Empty result interpreted as "no such route" | Absence in output means **no resolved data** | Check `unresolved_src_count` before concluding a route does not exist |
+
+---
+
 ## Scenario 1: User Wants to Validate a Migration
 
 ### User Request
