@@ -1,0 +1,237 @@
+{
+  "discover": {
+    "meta": {
+      "topic": "GX-005 standards-to-code rule-graph: StandardNode governed_by violates edges in graph.json via src/indexer and src/export/graph-exporter.ts, surfaced through pack_context and dependency_rules",
+      "generated": "2026-08-01T06:08:51Z",
+      "depth": "thorough",
+      "output_dest": "working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/working/coderef-core/core-improvements-731/discovery-gx-005.md",
+      "dispatch": "none"
+    },
+    "scope": {
+      "asked": "GX-005 standards-to-code rule-graph: StandardNode governed_by violates edges in graph.json via src/indexer and src/export/graph-exporter.ts, surfaced through pack_context and dependency_rules",
+      "bounded": "unbounded — full project root"
+    },
+    "surfaces_audited": [
+      {
+        "line": "- [tool: skeleton-map]          present (cached), 158 lines"
+      },
+      {
+        "line": "- [tool: rg]                    queries=1, hits=0"
+      },
+      {
+        "line": "- [tool: rag-search]            top-k=10, ms=797, lane=hybrid, fallback_used=false"
+      },
+      {
+        "line": "- [tool: element-lookup]        source=symbol-table (rag-search --lexical), candidates=10, elements_indexed=3169"
+      },
+      {
+        "line": "- [tool: header-index]          defined=369, missing=0, stale=0, coverage=100% (validation-report.json)"
+      },
+      {
+        "line": "- [tool: foundation-docs]       sections_matched=8"
+      },
+      {
+        "line": "- [tool: codebase_summary]      elements=3169, top types: function=1073, method=972, interface=611, generated=2026-08-01T01:54:11.554Z"
+      },
+      {
+        "line": "- [tool: validation_status]     resolution_rate=22.32%, unresolved=18069, ambiguous=1707, header_coverage=100%"
+      },
+      {
+        "line": "- [tool: coderef-query]         walks=10, divergence_rows=5"
+      },
+      {
+        "line": "- [tool: graph-risk]            hotspots_top=5, cycles=0 (largest=0), edges=43421"
+      }
+    ],
+    "findings": [
+      {
+        "id": "F-001",
+        "surface": "src/export/graph-exporter.ts:194",
+        "observation": "Element lookup match: `GraphExporter.exportAsJSON`",
+        "severity": "info",
+        "evidence": "name=GraphExporter.exportAsJSON, type=method, score=28.38"
+      },
+      {
+        "id": "F-002",
+        "surface": "src/query/dependency-rules.ts:76",
+        "observation": "Element lookup match: `DependencyRuleResult`",
+        "severity": "info",
+        "evidence": "name=DependencyRuleResult, type=interface, score=27.70"
+      },
+      {
+        "id": "F-003",
+        "surface": "src/query/dependency-rules.ts:228",
+        "observation": "Element lookup match: `ruleKey`",
+        "severity": "info",
+        "evidence": "name=ruleKey, type=function, score=27.04"
+      },
+      {
+        "id": "F-004",
+        "surface": "src/query/dependency-rules.ts:43",
+        "observation": "Element lookup match: `RulePair`",
+        "severity": "info",
+        "evidence": "name=RulePair, type=interface, score=27.04"
+      },
+      {
+        "id": "F-005",
+        "surface": "src/query/dependency-rules.ts:73",
+        "observation": "Element lookup match: `RuleStatus`",
+        "severity": "info",
+        "evidence": "name=RuleStatus, type=type, score=27.04"
+      },
+      {
+        "id": "F-006",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Phase 5 canonical edge relationship (re-exported from\nsrc/pipeline/graph-builder.ts via type-only import to avoid a\ncirc"
+      },
+      {
+        "id": "F-007",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Graph Exporter - Serialize dependency graph to multiple formats\nPhase 5, Task P5-T5: Graph Export (JSON, Protobuf for vi"
+      },
+      {
+        "id": "F-008",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "? @ line ?"
+      },
+      {
+        "id": "F-009",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Export graph as JSON"
+      },
+      {
+        "id": "F-010",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Export format options"
+      }
+    ],
+    "divergences": [
+      {
+        "caller": "GraphExporter.export (src/export/graph-exporter.ts)",
+        "callee": "GraphExporter.exportAsJSON (src/export/graph-exporter.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=1, transitive_dependents=1",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "DependencyRuleResult (src/query/dependency-rules.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "checkDependencyRules (src/query/dependency-rules.ts)",
+        "callee": "ruleKey (src/query/dependency-rules.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=1, transitive_dependents=13",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "RulePair (src/query/dependency-rules.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "RuleStatus (src/query/dependency-rules.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      }
+    ],
+    "recommendations": [
+      {
+        "rec_id": "REC-001",
+        "priority": "low",
+        "action": "Review 10 info-level hit(s) for context.",
+        "owner": "(operator)"
+      }
+    ],
+    "severity_chart": [
+      {
+        "label": "critical",
+        "value": 0,
+        "variant": "fail"
+      },
+      {
+        "label": "warning",
+        "value": 0,
+        "variant": "accent"
+      },
+      {
+        "label": "info",
+        "value": 10,
+        "variant": "info"
+      }
+    ],
+    "orientation": {
+      "present": true,
+      "source": "cached",
+      "excerpt": "# repo map (skeleton): CODEREF-CORE — 455 files, 850 edges — budget ~1600 tokens\n# ranked by dependency centrality (most depended-on first); in/out = distinct dependents/dependencies. surfaces, not verdicts.\n\nsrc/scanner/lru-cache.ts  (in 97 / out 1)\n  class LRUCache\n  interface ScanCacheEntry\n  fn createScannerCache(maxSizeBytes)\n\nsrc/pipeline/orchestrator.ts  (in 53 / out 15)\n  class PipelineOrchestrator\n\nsrc/utils/path-normalize.ts  (in 33 / out 0)\n  fn normalizeSlashes(p)\n  fn toRepoRelativePosix(file, projectPath)"
+    },
+    "graph_risk": {
+      "hotspots": [
+        {
+          "id": "@M/src/scanner/lru-cache.ts#LRUCache.has:114",
+          "in": 281,
+          "out": 0,
+          "total": 281
+        },
+        {
+          "id": "@File/__tests__/indexer.test.ts",
+          "in": 0,
+          "out": 197,
+          "total": 197
+        },
+        {
+          "id": "@Fn/src/scanner/scanner.ts#scanCurrentElements:908",
+          "in": 135,
+          "out": 32,
+          "total": 167
+        },
+        {
+          "id": "@Fn/src/utils/path-normalize.ts#normalizeSlashes:21",
+          "in": 140,
+          "out": 0,
+          "total": 140
+        },
+        {
+          "id": "@File/__tests__/pipeline/scip-overlay.test.ts",
+          "in": 0,
+          "out": 122,
+          "total": 122
+        }
+      ],
+      "cycles": {
+        "count": 0,
+        "largest": 0,
+        "sample": []
+      },
+      "resolution": {
+        "external": 318,
+        "builtin": 13376,
+        "resolved": 9619,
+        "typeOnly": 287,
+        "unresolved": 18069,
+        "dynamic": 44,
+        "stale": 1,
+        "ambiguous": 1707
+      },
+      "edge_total": 43421
+    },
+    "reuse_note": "Reproduce: /discover \"GX-005 standards-to-code rule-graph: StandardNode governed_by violates edges in graph.json via src/indexer and src/export/graph-exporter.ts, surfaced through pack_context and dependency_rules\" --depth=thorough --output-dest=working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/working/coderef-core/core-improvements-731/discovery-gx-005.md"
+  }
+}

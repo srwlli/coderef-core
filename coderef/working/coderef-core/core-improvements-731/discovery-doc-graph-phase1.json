@@ -1,0 +1,237 @@
+{
+  "discover": {
+    "meta": {
+      "topic": "doc-to-graph wiring: documentation surfaces (resource sheets, foundation docs, docstrings, headers) attached to graph.json nodes, hotspot centrality ranking seeds doc coverage priority",
+      "generated": "2026-08-01T06:17:05Z",
+      "depth": "thorough",
+      "output_dest": "working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/working/coderef-core/core-improvements-731/discovery-doc-graph-phase1.md",
+      "dispatch": "none"
+    },
+    "scope": {
+      "asked": "doc-to-graph wiring: documentation surfaces (resource sheets, foundation docs, docstrings, headers) attached to graph.json nodes, hotspot centrality ranking seeds doc coverage priority",
+      "bounded": "unbounded — full project root"
+    },
+    "surfaces_audited": [
+      {
+        "line": "- [tool: skeleton-map]          present (cached), 158 lines"
+      },
+      {
+        "line": "- [tool: rg]                    queries=1, hits=0"
+      },
+      {
+        "line": "- [tool: rag-search]            top-k=10, ms=795, lane=hybrid, fallback_used=false"
+      },
+      {
+        "line": "- [tool: element-lookup]        source=symbol-table (rag-search --lexical), candidates=10, elements_indexed=3169"
+      },
+      {
+        "line": "- [tool: header-index]          defined=369, missing=0, stale=0, coverage=100% (validation-report.json)"
+      },
+      {
+        "line": "- [tool: foundation-docs]       sections_matched=8"
+      },
+      {
+        "line": "- [tool: codebase_summary]      elements=3169, top types: function=1073, method=972, interface=611, generated=2026-08-01T01:54:11.554Z"
+      },
+      {
+        "line": "- [tool: validation_status]     resolution_rate=22.32%, unresolved=18069, ambiguous=1707, header_coverage=100%"
+      },
+      {
+        "line": "- [tool: coderef-query]         walks=10, divergence_rows=5"
+      },
+      {
+        "line": "- [tool: graph-risk]            hotspots_top=5, cycles=0 (largest=0), edges=43421"
+      }
+    ],
+    "findings": [
+      {
+        "id": "F-001",
+        "surface": "src/integration/rag/graph-reranker.ts:36",
+        "observation": "Element lookup match: `CentralityIndex`",
+        "severity": "info",
+        "evidence": "name=CentralityIndex, type=interface, score=21.61"
+      },
+      {
+        "id": "F-002",
+        "surface": "src/analyzer/docs-analyzer.ts:86",
+        "observation": "Element lookup match: `DocumentationQuality`",
+        "severity": "info",
+        "evidence": "name=DocumentationQuality, type=interface, score=20.85"
+      },
+      {
+        "id": "F-003",
+        "surface": "src/integration/rag/graph-reranker.ts:358",
+        "observation": "Element lookup match: `GraphReRanker.calculateCentrality`",
+        "severity": "info",
+        "evidence": "name=GraphReRanker.calculateCentrality, type=method, score=20.52"
+      },
+      {
+        "id": "F-004",
+        "surface": "src/analyzer/docs-analyzer.ts:285",
+        "observation": "Element lookup match: `DocsAnalyzer.analyzeJSDocCoverage`",
+        "severity": "info",
+        "evidence": "name=DocsAnalyzer.analyzeJSDocCoverage, type=method, score=17.20"
+      },
+      {
+        "id": "F-005",
+        "surface": "src/integration/rag/__tests__/coverage-floor-gate.test.ts:38",
+        "observation": "Element lookup match: `writeGraphJson`",
+        "severity": "info",
+        "evidence": "name=writeGraphJson, type=function, score=17.14"
+      },
+      {
+        "id": "F-006",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Calculate node centrality (simplified PageRank)"
+      },
+      {
+        "id": "F-007",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Lightweight centrality index derived from an ExportedGraph. The re-ranker\nonly needs (a) the count of dependents per tar"
+      },
+      {
+        "id": "F-008",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "? @ line ?"
+      },
+      {
+        "id": "F-009",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.02",
+        "severity": "info",
+        "evidence": "Analyze JSDoc/TSDoc coverage across TypeScript/JavaScript files"
+      },
+      {
+        "id": "F-010",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.02",
+        "severity": "info",
+        "evidence": "? @ line ?"
+      }
+    ],
+    "divergences": [
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "CentralityIndex (src/integration/rag/graph-reranker.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "DocumentationQuality (src/analyzer/docs-analyzer.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=14",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "GraphReRanker.calculateCentrality (src/integration/rag/graph-reranker.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "DocsAnalyzer.analyze (src/analyzer/docs-analyzer.ts)",
+        "callee": "DocsAnalyzer.analyzeJSDocCoverage (src/analyzer/docs-analyzer.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=1, transitive_dependents=9",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "writeGraphJson (src/integration/rag/__tests__/coverage-floor-gate.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      }
+    ],
+    "recommendations": [
+      {
+        "rec_id": "REC-001",
+        "priority": "low",
+        "action": "Review 10 info-level hit(s) for context.",
+        "owner": "(operator)"
+      }
+    ],
+    "severity_chart": [
+      {
+        "label": "critical",
+        "value": 0,
+        "variant": "fail"
+      },
+      {
+        "label": "warning",
+        "value": 0,
+        "variant": "accent"
+      },
+      {
+        "label": "info",
+        "value": 10,
+        "variant": "info"
+      }
+    ],
+    "orientation": {
+      "present": true,
+      "source": "cached",
+      "excerpt": "# repo map (skeleton): CODEREF-CORE — 455 files, 850 edges — budget ~1600 tokens\n# ranked by dependency centrality (most depended-on first); in/out = distinct dependents/dependencies. surfaces, not verdicts.\n\nsrc/scanner/lru-cache.ts  (in 97 / out 1)\n  class LRUCache\n  interface ScanCacheEntry\n  fn createScannerCache(maxSizeBytes)\n\nsrc/pipeline/orchestrator.ts  (in 53 / out 15)\n  class PipelineOrchestrator\n\nsrc/utils/path-normalize.ts  (in 33 / out 0)\n  fn normalizeSlashes(p)\n  fn toRepoRelativePosix(file, projectPath)"
+    },
+    "graph_risk": {
+      "hotspots": [
+        {
+          "id": "@M/src/scanner/lru-cache.ts#LRUCache.has:114",
+          "in": 281,
+          "out": 0,
+          "total": 281
+        },
+        {
+          "id": "@File/__tests__/indexer.test.ts",
+          "in": 0,
+          "out": 197,
+          "total": 197
+        },
+        {
+          "id": "@Fn/src/scanner/scanner.ts#scanCurrentElements:908",
+          "in": 135,
+          "out": 32,
+          "total": 167
+        },
+        {
+          "id": "@Fn/src/utils/path-normalize.ts#normalizeSlashes:21",
+          "in": 140,
+          "out": 0,
+          "total": 140
+        },
+        {
+          "id": "@File/__tests__/pipeline/scip-overlay.test.ts",
+          "in": 0,
+          "out": 122,
+          "total": 122
+        }
+      ],
+      "cycles": {
+        "count": 0,
+        "largest": 0,
+        "sample": []
+      },
+      "resolution": {
+        "external": 318,
+        "builtin": 13376,
+        "resolved": 9619,
+        "typeOnly": 287,
+        "unresolved": 18069,
+        "dynamic": 44,
+        "stale": 1,
+        "ambiguous": 1707
+      },
+      "edge_total": 43421
+    },
+    "reuse_note": "Reproduce: /discover \"doc-to-graph wiring: documentation surfaces (resource sheets, foundation docs, docstrings, headers) attached to graph.json nodes, hotspot centrality ranking seeds doc coverage priority\" --depth=thorough --output-dest=working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/working/coderef-core/core-improvements-731/discovery-doc-graph-phase1.md"
+  }
+}
