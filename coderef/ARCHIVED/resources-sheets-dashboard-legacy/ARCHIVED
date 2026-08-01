@@ -1,0 +1,8 @@
+Archived: 2026-08-01
+By: CODEREF-CORE session (operator directive)
+Reason: STUB-BJNH79 / ECO-035 — plural-typo twin of coderef/resource-sheets/.
+Content is a January 2026 RSMS-v2.0-era archive documenting parent_project
+coderef-dashboard (packages/dashboard/src/... paths not present in this repo).
+Not merged into canonical resource-sheets/ because it documents a different
+project. Canonical home for this repo's sheets: coderef/resource-sheets/.
+Scaffold source of the typo (coderef-init SKILL.md) fixed same day.
