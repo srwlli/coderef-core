@@ -1,0 +1,38 @@
+=============================================================
+WORKORDER: WO-CROSS-REPO-WORKSPACE-LINKAGE-001  |  cross-repo-workspace-linkage  |  1 of 1 PHASE COMPLETE (terminal hard stop)
+Session: SES-2026-08-01-CROSS-REPO-WORKSPACE-LINKAGE  |  Commits: 1 (+1 close-out)  |  Parent stub: STUB-6PGFZ3 (promoted; was deferred_phase from genre-features P12)
+
+FILES CREATED:
+  + src/pipeline/workspace-registry.ts             (44ad05d - opt-in .coderef/workspace.json loader; absent = byte-identical)
+  + src/query/workspace-stitch.ts                  (44ad05d - query-time cross-repo projection, outbound+inbound per sibling)
+  + __tests__/pipeline/workspace-linkage.contract.test.ts  (44ad05d - 7 contracts on a synthesized sibling pair)
+
+FILES MODIFIED:
+  ~ src/pipeline/import-resolver.ts    (applyWorkspaceLinkage in pass 1; workspacePackage/workspaceRoot on ImportResolution)
+  ~ src/pipeline/graph-builder.ts      (external-import evidence carries the two optional workspace fields)
+  ~ src/cli/mcp/{graph-tools,shared}.ts + coderef-mcp-server.ts  (impact_of workspace:true)
+  ~ src/cli/coderef-query.ts           (--workspace on relationship walks - CLI mirror, zero forked logic)
+  ~ docs/CLI.md, docs/ARCHITECTURE.md, USING-CODEREF.md, CHANGELOG.md
+
+TASK CHECKLIST: 10/10  (44ad05dcd692)
+  [x] no-regress fingerprints  [x] registry loader  [x] resolver tagging  [x] fixture+contracts 7/7
+  [x] impact_of stitching CLI+MCP  [x] suite green  [x] A/B parity  [x] docs  [x] commit  [x] stop
+
+PROOFS:
+  No-regress: frozen-tree A/B (pre-feature vs feature dist, NO registry) -> identical
+  node/edge/resolved id sha256 (3740 nodes / 45305 edges). P12 deferral blockers RESOLVED:
+  pass-2 purity (registry loads pass-1 beside loadExternalSet), no-regress provable
+  (absent-registry byte-identity). Suite 2532/26 (populate-cli 10s hook timeout = load
+  flake, 7/7 isolated; kaizen-logged). ADJ-2: live ASSISTANT smoke deferred to
+  ASSISTANT-side adoption (author its own .coderef/workspace.json + repopulate).
+
+DESIGN LOCKS: kind 'external' + metadata tags (NO new ImportResolutionKind/edge kind);
+  stitching is query-time only (GX-005 persisted-vs-projection split); package-grain v1.
+
+Session: logged (rich)  |  Registry: checkpoint_ready  |  Active-work: removed
+Predecessor: WO-DECOUPLE-PIPELINEORCHESTRATOR-...-001 (checkpoint_ready, executed first per ruling A)
+
+NEXT: /close-workorder WO-CROSS-REPO-WORKSPACE-LINKAGE-001
+      /close-workorder WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001
+      (close ceremonies are OPERATOR-INVOKED, never automatic)
+=============================================================

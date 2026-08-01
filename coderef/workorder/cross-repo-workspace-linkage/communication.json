@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "implementing",
+  "status": "checkpoint_ready",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\cross-repo-workspace-linkage\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\cross-repo-workspace-linkage\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\cross-repo-workspace-linkage\\analysis.json",
@@ -46,18 +46,32 @@
       "detail": "P1-T7 live CORE+ASSISTANT smoke replaced by the C7 contract leg (two real populates on a synthesized sibling pair + bidirectional stitch): a CORE-side registry smoke is vacuous because CORE imports no sibling by package name, and an ASSISTANT-side registry + full repopulate belongs to the ASSISTANT agent's adoption (peer-active repo). The machinery is fully proven by C7; live adoption = author ASSISTANT/.coderef/workspace.json later."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "44ad05dcd692",
+      "verdict": "PASS",
+      "at": "2026-08-01T13:00:41Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
       "timestamp": "2026-08-01T12:01:43.685556+00:00",
       "event": "creation",
       "message": "Workorder created from stub STUB-6PGFZ3"
+    },
+    {
+      "event": "workorder_executed",
+      "at": "2026-08-01T13:00:41Z",
+      "detail": "Phase 1 complete (10/10 tasks) @ 44ad05dcd692. Workspace registry + resolver tagging + query-time stitching (CLI+MCP mirrored) + 7 contract tests + docs. No-regress frozen-tree A/B PASS; P12 deferral blockers (pass-2 purity, no-regress unprovable) both resolved by design. ADJ-2: live ASSISTANT smoke deferred to ASSISTANT-side adoption. Terminal hard stop - awaiting /close-workorder."
     }
   ],
   "required_skills": [
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "completed_at": "2026-08-01T13:00:41Z"
 }
