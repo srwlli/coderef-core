@@ -1,0 +1,66 @@
+{
+  "workorder_id": "WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER-001",
+  "feature_name": "retire-or-quarantine-src-scanner-tree-sitter-scanner",
+  "created": "2026-08-01T01:33:47.300485+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub_promotion",
+    "user_request": "retire or quarantine src/scanner/tree-sitter-scanner.ts \u2014 orphaned scanner (no src/ import of TreeSitterScanner; only __tests__/tree-sitter-scanner.test.ts references it). Its extractPythonDocstring reference logic was ported into the LIVE extractor (element-extractor.ts) in P8 of the genre-features program, so the old scanner is fully dead relative to the canonical pipeline. Decide: delete-with-test-removal vs keep-as-documented-reference. Verify no other consumer before deleting (blast-radius: the one test file).",
+    "stub_id": "STUB-A98SW1"
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Category refactor maps to phased",
+    "plan_type_decided_by": "create-workorder-engine@1.0.0",
+    "discovery_ref": "planning-discovery-20260801T013356Z",
+    "discovery": {
+      "candidates": [
+        "coderef/ARCHIVED/surfaces-openclaw-consolidated-superseded/monitors/coderef-projects-status.js",
+        "coderef/ARCHIVED/surfaces-openclaw-superseded/services/coderef-projects-status.js",
+        "scripts/generate-audit-report.py",
+        "scripts/supersede-pending-dispatches.py",
+        "SKILLS/TRACKING/registry-db/__tests__/test_registry_db_bootstrap.py",
+        "SKILLS/WORKFLOW/create-workorder/__tests__/test_active_work_writer.py",
+        "scripts/__tests__/test_legacy_export_active_work.py",
+        "scripts/__tests__/test_legacy_export_check.py",
+        "scripts/convert-installed-wrappers-to-thin.py",
+        "scripts/add-cli-reference-to-skills.py",
+        "scripts/document-pipeline.py",
+        "scripts/migrate-dispatch-ids-to-canonical.py",
+        "ENGINES/keying-core/keying_core.py",
+        "LLOYD/tests/test_model_queue.py",
+        "SKILLS/ARCHIVED/archive-stub/__tests__/test_archive_status_invariant.py",
+        "SKILLS/DOCUMENTATION/generate-project-context/scripts/validate_context_output.py",
+        "SKILLS/META/coderef-skill/scripts/validate_skill_surfaces.py",
+        "SKILLS/META/coderef-skill/test/test_script_ref_existence.py",
+        "SKILLS/PRIMARY-SOURCES/ps-seeder/scripts/analyze-entities-artifact.py",
+        "SKILLS/TRACKING/registry-db/__tests__/conftest.py",
+        "SKILLS/TRACKING/registry-db/__tests__/test_connect_refuses_to_mint_decoy.py",
+        "SKILLS/TRACKING/registry-db/__tests__/test_registry_db.py",
+        "SKILLS/UTILITIES/agent-pulse/__tests__/test_multi_handoff.py",
+        "SKILLS/WORKFLOW/_shared/planner/__tests__/semantic-validator.test.js",
+        "SKILLS/WORKFLOW/_shared/planner/__tests__/test_approved_tasks.py"
+      ],
+      "blast_radius": [],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "call_chain_hits": [],
+      "warnings": [
+        "planner.discovery: candidate list capped at 25 of 68 keyword matches (ranked by goal-keyword specificity) - the remainder are LOWER-RANKED, not proven irrelevant",
+        "planner.discovery: .coderef/index.json has ZERO elements for .cjs, .mjs (covers .js, .py, .ts, .tsx across 517 file(s)). Files with those extensions CANNOT appear in candidates by name or path - their absence is NO-DATA, not evidence of irrelevance.",
+        "planner.discovery: blast_radius probed the first 10 of 25 candidates (latency cap) - the remainder are UNPROBED, not proven clean",
+        "planner.discovery: hotspot ranking returned no rows at the probe budget - no-data, not 'no hotspots'",
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260801T013356Z"
+    }
+  },
+  "scope": {
+    "in_scope": [],
+    "out_of_scope": []
+  },
+  "constraints": [],
+  "pre_existing_drift": false
+}

@@ -1,0 +1,141 @@
+{
+  "plan_type": "phased",
+  "goal": "retire or quarantine src/scanner/tree-sitter-scanner.ts \u2014 orphaned scanner (no src/ import of TreeSitterScanner; only __tests__/tree-sitter-scanner.test.ts references it). Its extractPythonDocstring reference logic was ported into the LIVE extractor (element-extractor.ts) in P8 of the genre-features program, so the old scanner is fully dead relative to the canonical pipeline. Decide: delete-with-test-removal vs keep-as-documented-reference. Verify no other consumer before deleting (blast-radius: the one test file).",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Re-verify the orphan premise against live code before deleting anything. Confirm ZERO src/ imports of TreeSitterScanner (grep for actual import/require statements, not textual mentions), confirm it is absent from the public barrel, and confirm src/scanner/tree-sitter-file-scan.ts is the live successor (its header at line 15 declares it replaces the TreeSitterScanner path). An empty graph answer is NO-DATA, not proof of absence \u2014 use rg/find_all_references, not only the graph.",
+          "touches": [
+            "src/scanner/tree-sitter-scanner.ts",
+            "src/scanner/tree-sitter-file-scan.ts",
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "CHECK",
+          "description": "Confirm GrammarLoader coverage survives the delete. GrammarLoader is a module-private class (tree-sitter-scanner.ts:67) exported ONLY for testing (:1668-1670) and imported by __tests__/tree-sitter-scanner.test.ts:10. Read __tests__/grammar-registry.test.ts and src/pipeline/grammar-registry.ts and decide whether grammar-loading behavior is already covered there. If a genuine coverage gap exists, port the specific cases forward BEFORE deleting \u2014 do not trade dead code for a coverage hole.",
+          "touches": [
+            "__tests__/grammar-registry.test.ts",
+            "src/pipeline/grammar-registry.ts",
+            "__tests__/tree-sitter-scanner.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "CHECK",
+          "description": "Enumerate the @used_by header manifests that name this file. src/pipeline/element-taxonomy.ts:6 and src/types/types.ts:6 both list src/scanner/tree-sitter-scanner.ts in their @used_by lines. These are LIVE semantic-header manifests validated by the header gates \u2014 deleting the file without updating them leaves dangling references. Produce the exact edit list before any deletion.",
+          "touches": [
+            "src/pipeline/element-taxonomy.ts",
+            "src/types/types.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "TEST",
+          "description": "Capture the BEFORE baseline: run the full suite and record passed/skipped/failed and file count. Also record the current header-coverage figure. This is the comparison point for P2 \u2014 there is no delta without a before.",
+          "touches": []
+        },
+        {
+          "id": "P1-T5",
+          "verb": "STOP",
+          "description": "Hard stop: report the verified blast radius (src import count, GrammarLoader coverage verdict, @used_by manifest edit list, BEFORE baseline) and get approval on delete-vs-quarantine before any file is removed. The stub left this decision open; the operator's stated lean is delete-with-test-removal.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-A98SW1"
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "DELETE",
+          "description": "Delete src/scanner/tree-sitter-scanner.ts (1,670 LOC) and __tests__/tree-sitter-scanner.test.ts (215 LOC). Use git rm so the removal is staged as a deletion rather than left as an untracked absence.",
+          "touches": [
+            "src/scanner/tree-sitter-scanner.ts",
+            "__tests__/tree-sitter-scanner.test.ts"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "EDIT",
+          "description": "Remove src/scanner/tree-sitter-scanner.ts from the @used_by manifests identified in P1-T3 (src/pipeline/element-taxonomy.ts:6, src/types/types.ts:6). Edit only the manifest entries \u2014 do not reformat the surrounding headers.",
+          "touches": [
+            "src/pipeline/element-taxonomy.ts",
+            "src/types/types.ts"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "TEST",
+          "description": "Run the full suite and compare against the P1-T4 baseline. Expect the total to drop by exactly the tests removed with tree-sitter-scanner.test.ts and ZERO new failures. Any other delta means something did depend on the file \u2014 stop and investigate rather than adjusting the expectation.",
+          "touches": []
+        },
+        {
+          "id": "P2-T4",
+          "verb": "RUN",
+          "description": "Run the header/semantic validators and the standards-validate gate to confirm no dangling reference to the deleted path survives anywhere in the header layer. Regenerate foundation-docs ONLY if the WO's own deletion is the cause of the delta; foreign uncommitted drift must not be snapshotted into this WO (same ruling as the predecessor map WOs).",
+          "touches": [
+            "coderef/foundation-docs/EXPORTS.md",
+            "coderef/foundation-docs/INDEX.md"
+          ]
+        },
+        {
+          "id": "P2-T5",
+          "verb": "COMMIT",
+          "description": "Commit the deletion via the guarded runner with an explicit pathspec (never git add -A). Deletions need a Tombstone: trailer per the archive-move convention.",
+          "touches": []
+        },
+        {
+          "id": "P2-T6",
+          "verb": "STOP",
+          "description": "Hard stop: report the AFTER metrics against the P1-T4 baseline (suite counts, LOC removed, header coverage) and hand off to /close-workorder. Close is a separate explicit decision.",
+          "touches": []
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "phased gate"
+    },
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "phased gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T013356Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER-001",
+  "feature_name": "retire-or-quarantine-src-scanner-tree-sitter-scanner",
+  "created": "2026-08-01T01:33:47.300485+00:00",
+  "plan_type_rationale": "Category refactor maps to phased"
+}

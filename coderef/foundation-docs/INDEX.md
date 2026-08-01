@@ -2,7 +2,7 @@
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  
-**Generated:** 2026-07-31  
+**Generated:** 2026-08-01  
 <!-- coderef:uuid=index-root -->
 
 ---
@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 3,180 |
-| **Total Files** | 480 |
-| **Total Lines** | 131,987 |
+| **Total Elements** | 3,169 |
+| **Total Files** | 485 |
+| **Total Lines** | 133,146 |
 | **Languages** | ts, py |
 
 ---
@@ -22,12 +22,12 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 1,057 | 33.2% |
-| method | 1,018 | 32.0% |
-| interface | 602 | 18.9% |
-| class | 111 | 3.5% |
+| function | 1,073 | 33.9% |
+| method | 972 | 30.7% |
+| interface | 611 | 19.3% |
+| class | 109 | 3.4% |
 | type | 92 | 2.9% |
-| constant | 300 | 9.4% |
+| constant | 312 | 9.8% |
 
 ---
 
@@ -36,30 +36,30 @@
 | Rank | File | Elements | Density |
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
-| 2 | `src/scanner/tree-sitter-scanner.ts` | 57 | 🔴 Very High |
-| 3 | `src/pipeline/extractors/relationship-extractor.ts` | 37 | 🟡 High |
-| 4 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
-| 5 | `src/query/canonical-graph.ts` | 34 | 🟡 High |
-| 6 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
-| 7 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
-| 8 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
-| 9 | `src/search/search-engine.ts` | 31 | 🟡 High |
-| 10 | `src/indexer/index-store.ts` | 30 | 🟡 High |
-| 11 | `src/scanner/scanner.ts` | 30 | 🟡 High |
-| 12 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
-| 13 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
-| 14 | `src/cli/coderef-rag-server.ts` | 28 | 🟢 Medium |
-| 15 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
-| 16 | `src/indexer/relationship-index.ts` | 28 | 🟢 Medium |
-| 17 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
-| 18 | `src/query/clones.ts` | 28 | 🟢 Medium |
-| 19 | `src/cli/coderef-watch.ts` | 27 | 🟢 Medium |
-| 20 | `src/pipeline/call-resolver.ts` | 27 | 🟢 Medium |
-| 21 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
-| 22 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
-| 23 | `src/types/types.ts` | 24 | 🟢 Medium |
-| 24 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
-| 25 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
+| 2 | `src/pipeline/extractors/relationship-extractor.ts` | 37 | 🟡 High |
+| 3 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
+| 4 | `src/query/canonical-graph.ts` | 34 | 🟡 High |
+| 5 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
+| 6 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
+| 7 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
+| 8 | `src/search/search-engine.ts` | 31 | 🟡 High |
+| 9 | `src/indexer/index-store.ts` | 30 | 🟡 High |
+| 10 | `src/scanner/scanner.ts` | 30 | 🟡 High |
+| 11 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
+| 12 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
+| 13 | `src/cli/coderef-rag-server.ts` | 28 | 🟢 Medium |
+| 14 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
+| 15 | `src/indexer/relationship-index.ts` | 28 | 🟢 Medium |
+| 16 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
+| 17 | `src/query/clones.ts` | 28 | 🟢 Medium |
+| 18 | `src/cli/coderef-watch.ts` | 27 | 🟢 Medium |
+| 19 | `src/pipeline/call-resolver.ts` | 27 | 🟢 Medium |
+| 20 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
+| 21 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
+| 22 | `src/types/types.ts` | 24 | 🟢 Medium |
+| 23 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
+| 24 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
+| 25 | `src/indexer/metadata-index.ts` | 23 | 🟢 Medium |
 
 ---
 
@@ -88,7 +88,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 3,180 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 3,169 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

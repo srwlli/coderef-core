@@ -1,0 +1,78 @@
+{
+  "workorder_id": "WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER-001",
+  "feature_name": "retire-or-quarantine-src-scanner-tree-sitter-scanner",
+  "created": "2026-08-01T01:33:47.300485+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\retire-or-quarantine-src-scanner-tree-sitter-scanner\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\retire-or-quarantine-src-scanner-tree-sitter-scanner\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\retire-or-quarantine-src-scanner-tree-sitter-scanner\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-A98SW1",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-A98SW1",
+      "plan_type": "phased",
+      "timestamp": "2026-08-01T01:33:47.300485+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 11,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/fe1932e9-0c55-47fb-9d0a-7d240a328db7/scratchpad/a98sw1-tasks.json",
+      "at": "2026-08-01T01:33:47.300485+00:00"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-08-01T01:50:29.528208Z"
+    },
+    {
+      "event": "hard_stop_approved",
+      "phase": 1,
+      "approved_by": "agent (operator delegated: \"you own approval\")",
+      "at": "2026-08-01T01:50:29.528208Z",
+      "basis": "P1-T1 zero src imports + absent from barrel/build config; P1-T2 GrammarRegistry supersets GrammarLoader (8 langs vs 2) and element/docstring/complexity have live successor suites - no cases to port; P1-T3 blast radius = 2 @used_by manifest edits (element-taxonomy.ts:6, types.ts:6); 2 further live refs in docstring.ts and route-extractor.ts ruled HISTORICAL PROVENANCE and deliberately preserved; P1-T4 baseline 2449/26/0 across 232 files, deleted file holds exactly 13 tests"
+    },
+    {
+      "event": "decision",
+      "id": "ADJ-01",
+      "choice": "delete-with-test-removal over keep-as-documented-reference",
+      "at": "2026-08-01T01:50:29.528208Z",
+      "reason": "docstring.ts already inlines the ported Python-docstring logic, so the file s documentary value is spent; the prose citations that remain preserve the provenance without keeping 1670 LOC alive in every complexity and god-file report."
+    },
+    {
+      "event": "phase_transition_writer_bypassed",
+      "phase": 1,
+      "reason": "KZ-01KYX7WG: write-phase-transition.cjs resolveRegistryPath() anchors cross-project paths to ASSISTANT_ROOT, missed, and soft-failed to exit-0 no-op. Wrote comm.json directly at the owner-project root (same workaround as WO-WIRE-THE-MAPDATA-API-BLOCK predecessor).",
+      "at": "2026-08-01T01:50:38.613620Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T01:33:47.300485+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-A98SW1"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "git_branch": "main"
+}

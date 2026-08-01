@@ -1,0 +1,15 @@
+{
+  "workorder_id": "WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER-001",
+  "feature_name": "retire-or-quarantine-src-scanner-tree-sitter-scanner",
+  "analysis_authored_at": "2026-08-01T01:33:47.300485+00:00",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": []
+}
