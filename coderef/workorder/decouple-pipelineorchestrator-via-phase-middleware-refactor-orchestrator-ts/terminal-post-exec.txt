@@ -1,0 +1,37 @@
+=============================================================
+WORKORDER: WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001  |  decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts  |  3 of 3 PHASES COMPLETE (terminal hard stop)
+Session: SES-2026-08-01-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE  |  Commits: 4  |  Pushes: 4  |  Parent stub: STUB-HPRR3V (promoted)
+
+FILES CREATED:
+  + src/pipeline/phases/types.ts            (30d9e08 - PipelineContext + PipelinePhase + runPhases + pipelineStateOf; 132 lines)
+  + src/pipeline/phases/resolve-tail.ts     (30d9e08 - shared Phase 3/4/5 + SCIP tail as thin adapters; 170 lines)
+  + src/pipeline/phases/scan-front.ts       (ae64f11 - discovery/cache-filter/preload/scan-loop/persistence; 241 lines)
+  + src/pipeline/phases/incremental-front.ts (60ea413 - rescan/merge/assemble + STUB-QPAAY0 keying seam verbatim; 194 lines)
+
+FILES MODIFIED:
+  ~ src/pipeline/orchestrator.ts  (all 3 commits - 1,029 -> 700 lines; run() + runIncremental() are phase-list literals; assembleAndResolve DELETED)
+  ~ docs/ARCHITECTURE.md          (60ea413 - phase-executor shape recorded)
+  ~ coderef/foundation-docs/*     (f81911d - Phase-6 gate regeneration, validator exit 0)
+
+PHASE CHECKLIST:
+  [x] Phase 1: contract + shared resolve tail, 7/7 tasks  (30d9e08a1be1)  suite 2532/26/0
+  [x] Phase 2: scan front as phases; run() executor, 5/5  (ae64f11769db)  suite 2532/26/0
+  [x] Phase 3: incremental on executor + E2E proof, 6/6   (60ea413091de)  suite 2532/26/0
+  [x] Close-out: comm + foundation docs                    (f81911d7a1c0)
+
+PARITY (zero behavior change - the WO's core obligation):
+  Frozen-tree A/B at EVERY phase: previous dist vs new dist over one immutable
+  tree copy -> identical node_ids/edge_ids/resolved_ids sha256 (3740 nodes,
+  45305 edges) at P1, P2, P3. Full-vs-incremental byte-identity re-proven
+  (--changed-files x2, 13.5s vs 52.6s full). ADJ-1: live-repo before/after
+  fingerprint invalidated (self-hosting id-vintage class), frozen-tree A/B is
+  the binding instrument. Evidence: parity-p{1,2,3}-*.json in the WO folder.
+
+Session: logged (rich)  |  Registry: checkpoint_ready (canonical writer)  |  Active-work: removed (DB=0)
+Validator: FAIL (pre-existing peer drift only - 2 legacy additionalProperties rows + unknown project_id on WO-R1-ONE-FORMAT...; this WO's rows verified clean)
+Alignment: recorded PASS (18-row mapping)
+
+NEXT: /close-workorder WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001
+      (close ceremony is OPERATOR-INVOKED, never automatic)
+      Successor executing now per operator ruling A: WO-CROSS-REPO-WORKSPACE-LINKAGE-001
+=============================================================

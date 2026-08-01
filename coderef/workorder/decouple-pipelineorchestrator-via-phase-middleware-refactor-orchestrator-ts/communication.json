@@ -5,7 +5,7 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "checkpoint_ready",
+  "status": "closed",
   "current_phase": 3,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts\\plan.json",
@@ -94,6 +94,11 @@
       "event": "workorder_executed",
       "at": "2026-08-01T12:42:58Z",
       "detail": "All 3 phases complete: 30d9e08 (contract + shared tail), ae64f11 (scan front, run() executor), 60ea413 (incremental front + E2E proof). Zero behavior change proven per phase via frozen-tree A/B (identical node/edge/resolved id sha256 across all phases) + full-vs-incremental byte-identity; suite 2532/26/0 every phase. orchestrator.ts 1029->700 lines; 4 phase modules. Terminal hard stop reached - awaiting /close-workorder. Successor WO-CROSS-REPO-WORKSPACE-LINKAGE-001 lands on the new seam."
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-08-01T13:20:00Z",
+      "detail": "Close-only ceremony complete: audit PASS (WO-scoped), registry row -> complete via canonical writer, WO dir retained in coderef/workorder/ pending --archive. Successor WO-CROSS-REPO-WORKSPACE-LINKAGE-001 awaits its own close."
     }
   ],
   "required_skills": [
@@ -102,5 +107,23 @@
     "/log-session"
   ],
   "predecessor_for": "WO-CROSS-REPO-WORKSPACE-LINKAGE-001",
-  "completed_at": "2026-08-01T12:42:58Z"
+  "completed_at": "2026-08-01T12:42:58Z",
+  "closed_at": "2026-08-01T13:20:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "closed_via": "/close-workorder (close-only, cross-project target=coderef-core)",
+    "audit": {
+      "phased_terminal_guard": "PASS (terminal phase 3 of 3)",
+      "standards_validate_wo_scoped": "pass (repo-wide fails = pre-existing kind drift: bootstrap/derived-index/git/planning-folder, informational per KZ-01KX4FV2 gate separation)",
+      "tracking_validator_scoped": "18 passed / 0 failed",
+      "doc_code_tie": "PASS (no doc_binding declared)",
+      "session_log": "rich YAML .coderef/sessions/SES-2026-08-01-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE.yaml (+ gate-slug copy); ASSISTANT-side self-heal fallback authored by gate",
+      "git": "phase commits 30d9e08a1be1/ae64f11769db/60ea413091de + close-out f81911d7a1c0 all on CORE main, origin-verified"
+    },
+    "what_shipped": "orchestrator.ts 1029->700 lines; phase-executor architecture (src/pipeline/phases/{types,scan-front,resolve-tail,incremental-front}.ts); run()+runIncremental() as phase-list literals over runPhases; assembleAndResolve deleted; zero behavior change proven per phase via frozen-tree A/B (identical node/edge/resolved id sha256: nodes 3740, edges 45305) plus full-vs-incremental byte-identity; suite 2532/26/0 every phase.",
+    "follow_ups": [],
+    "adjustments": [
+      "ADJ-1: frozen-tree A/B replaces live-repo before/after fingerprints as the binding parity instrument (self-hosting repo id-shift, KZ-01KYYEH1 class)"
+    ]
+  }
 }
