@@ -19,6 +19,28 @@
 
 ---
 
+## Findings
+
+> **This is a snapshot taken 2026-04-23, not a statement of current state.** Several
+> findings below were acted on afterward (the migration and route docs were consolidated;
+> CLI.md was created). Read it as the audit's conclusions at that date, and verify against
+> the tree before acting on any row.
+
+| ID | Finding | Evidence | Severity |
+|----|---------|----------|----------|
+| F-1 | **Staleness is concentrated, not diffuse.** 5 of 14 docs had not been touched in over three months, and all 5 are the load-bearing ones — SCHEMA, API, README, COMPONENTS, ARCHITECTURE. | *File Status → Stale* below | High |
+| F-2 | **The documented CLI surface understated the real one.** README listed only the older commands and omitted six shipped binaries, so a reader could not discover the RAG, frontend-call, or route-validation entry points from the docs. | *Stale Content → README.md* | High |
+| F-3 | **Four content patterns were duplicated across docs with no single owner**, including installation instructions in 4 files and the architecture diagram in 3. Duplicated content drifts independently; each copy becomes a separate wrong answer. | *Duplicated Content* | Medium |
+| F-4 | **Three references were broken or actively misleading** — a wrong CLI invocation, an unpublished package name presented as installable, and a completed workorder cited in user-facing docs. | *Broken/Misleading References* | Medium |
+| F-5 | **Six topics had no documentation at all**, two of them (scanner architecture, cache system) covering subsystems users are expected to configure. | *Missing Documentation* | Medium |
+
+The through-line: **the docs described an earlier version of the tool and nothing detected
+the drift.** Every individual finding is cheap to fix; the absence of a mechanism that
+notices staleness is the finding that matters, and it is what the recommendations below are
+ordered against.
+
+---
+
 ## File Status
 
 ### ✅ Fresh (Recently Updated)
