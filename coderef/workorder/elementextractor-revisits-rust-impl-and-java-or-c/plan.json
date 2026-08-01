@@ -1,0 +1,250 @@
+{
+  "plan_type": "phased",
+  "goal": "CORE ticket remediation program (7 tickets, rolling): stabilize the shared graph fact producers first (ElementExtractor identity/cardinality, then tree-sitter relationship attachment, then renamed re-export resolution), then RAG durability and ranking, then test and telemetry hygiene. Phase 1 is TKT-ZMVP33; the WO id and feature_name remain ElementExtractor-derived because they are registry keys and renaming them would orphan the row, the active-work entry and 7 stub refs.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Element extraction identity and cardinality",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Trace Rust impl_item and Java/C++ class-body traversal in ElementExtractor plus its direct tests; success means every double-visit path and required scoped-name behavior is explicitly identified.",
+          "touches": [
+            "src/pipeline/extractors/element-extractor.ts",
+            "__tests__/element-extractor.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T1a",
+          "verb": "CHECK",
+          "description": "HALT FOR OPERATOR RULING before any edit to the Java or C/C++ branch. Rust and C++ emit byte-identical duplicate pairs, so dedup there is unambiguous. JAVA DOES NOT: element-extractor.ts:558 traverses the class body scoped (emitting `Svc.alpha` as type `method`) and the unconditional child loop at :578 re-walks the same body unscoped (emitting `alpha` as type `function`). Removing the second pass therefore DELETES the bare-name element - it is a semantic change, not a dedup. This matters downstream: the phase-2 ticket (TKT-XGZA82) exists because tree-sitter-file-scan.ts:63 reduces qualified method names to bare names before call matching, so whichever identity survives here defines what phase 2 must do. Paths: (A) keep the QUALIFIED `Svc.alpha` method only - matches the TS/Python class-method convention, but any consumer keyed on the bare name loses its match until phase 2 lands; (B) keep the BARE `alpha` function only - preserves current call-matching behavior, but Java classes stop producing methods and diverge from every other language; (C) keep BOTH deliberately, dropping only the exact-duplicate Rust/C++ pairs, and defer the Java identity question to phase 2 where the consumer lives. Record the choice and its rationale in communication.json decisions_log; do not choose unilaterally.",
+          "touches": [
+            "src/pipeline/extractors/element-extractor.ts",
+            "src/scanner/tree-sitter-file-scan.ts",
+            "coderef/workorder/elementextractor-revisits-rust-impl-and-java-or-c/communication.json"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "Make the scoped-then-unconditional traversal single-pass at the three confirmed sites: element-extractor.ts:480 (Rust impl_item), :558 (Java class_declaration) and :634 (C++ class_specifier/struct_specifier). Each traverses a scoped body and then re-walks the SAME children via the unconditional loop that follows. SCOPE CORRECTION: do NOT describe this as preserving qualification for Rust - `parentScope` is threaded through extractRustElements and NEVER READ (verified against every reference in the function, lines 451-507), so Rust has no scoped naming to preserve and its duplicates are exact. Introducing Rust scoped names would be NEW behavior and is explicitly OUT of scope for this phase; if wanted, mint it separately. Clone substrate and complexity metadata must survive on the element that is kept. Java and C/C++ follow the P1-T1a ruling.",
+          "touches": [
+            "src/pipeline/extractors/element-extractor.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "TEST",
+          "description": "Add Rust, Java and C/C++ fixtures asserting exact element cardinality and the ruled scoped-name behavior; success means the pre-edit implementation FAILS the new assertions and the corrected one passes. The new cases MUST NOT use the existing `if (!parser) return;` skip pattern - an unloadable grammar has to fail the test, not silently green it. That guard is why this class of bug survived: the current Java cases assert only `expect(elements).toBeDefined()` (element-extractor.test.ts:319, :340) and the C/C++ cases use `.find()`, which returns the first match and is structurally blind to duplicates - all of them pass today WITH the bug present. Note the grammar registry key for Rust is `rs`, not `rust`; getParser(\"rust\") returns undefined with no error and would silently disable the whole Rust case.",
+          "touches": [
+            "__tests__/element-extractor.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "RUN",
+          "description": "Run ElementExtractor, complexity-metrics, clone-substrate, and scanner regression suites; success means all targeted suites exit zero without snapshot or cardinality regressions.",
+          "touches": [
+            "__tests__/element-extractor.test.ts",
+            "__tests__/pipeline/complexity-metrics.test.ts",
+            "__tests__/pipeline/clone-substrate.test.ts",
+            "src/scanner/tree-sitter-file-scan.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "CHECK",
+          "description": "Re-run a quick discovery and inspect emitted element identities before authoring Phase 2; success means duplicate elements are absent and the tree-sitter relationship phase can be planned against stable upstream facts.",
+          "touches": [
+            "src/pipeline/extractors/element-extractor.ts",
+            "src/scanner/tree-sitter-file-scan.ts"
+          ]
+        }
+      ],
+      "stub_ref": "STUB-WWR793",
+      "acceptance_criteria": [
+        "AC-1 REPRODUCE FIRST: a fixture-based test asserts the CURRENT duplicate emission and is seen to FAIL only after the P1-T2 edit. Measured 2026-08-01 on HEAD: a Rust `impl Foo` with 2 fns emits 5 elements (alpha, beta, alpha, beta + class); the same C++ class emits 5 (alpha, beta, alpha, beta + class); the same Java class emits 5 (class Svc, method Svc.alpha, method Svc.beta, function alpha, function beta).",
+        "AC-2 CARDINALITY: after the edit each of the three fixtures emits exactly one element per declared construct — Rust 3, C++ 3, Java 3.",
+        "AC-3 NO SILENT SKIP: every new language assertion FAILS when its grammar is absent. The existing `if (!parser) return;` guard is banned in the new cases.",
+        "AC-4 NO TS REGRESSION: the \"Phase 1 regression: class_declaration recursion leak\" block (element-extractor.test.ts:425) still passes unchanged — the TS path was already fixed for this exact shape and must not be re-broken.",
+        "AC-5 IDENTITY RULING RECORDED: the P1-T1a ruling is written into communication.json decisions_log before P1-T2 edits Java or C++."
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "tree-sitter-scan-silently-drops-relationships-and-cross — DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-BD0MZY",
+      "plan_deferred": true,
+      "tasks": [
+        {
+          "id": "P2-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 2 tasks not yet authored. Pre-condition: Phase 1 must be COMPLETED + REVIEWED before this phase's plan is authored."
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "renamed-re-exports-resolve-against-the-downstream-alias — DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-PTB2ZC",
+      "plan_deferred": true,
+      "tasks": [
+        {
+          "id": "P3-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 3 tasks not yet authored. Pre-condition: Phase 2 must be COMPLETED + REVIEWED before this phase's plan is authored."
+        }
+      ]
+    },
+    {
+      "phase": 4,
+      "name": "json-vector-store-save-failure-leaves-memory-and — DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-X6ZVGC",
+      "plan_deferred": true,
+      "tasks": [
+        {
+          "id": "P4-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 4 tasks not yet authored. Pre-condition: Phase 3 must be COMPLETED + REVIEWED before this phase's plan is authored."
+        }
+      ]
+    },
+    {
+      "phase": 5,
+      "name": "graph-re-ranking-emits-non-finite-scores-for — DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-T7RJJT",
+      "plan_deferred": true,
+      "tasks": [
+        {
+          "id": "P5-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 5 tasks not yet authored. Pre-condition: Phase 4 must be COMPLETED + REVIEWED before this phase's plan is authored."
+        }
+      ]
+    },
+    {
+      "phase": 6,
+      "name": "rag-index-cli-tests-validate-a-stale-reimplemented — DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-5SBBAT",
+      "plan_deferred": true,
+      "tasks": [
+        {
+          "id": "P6-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 6 tasks not yet authored. Pre-condition: Phase 5 must be COMPLETED + REVIEWED before this phase's plan is authored."
+        }
+      ]
+    },
+    {
+      "phase": 7,
+      "name": "query-and-answer-diagnostics-can-report-incomplete-or — DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-V0HQ5J",
+      "plan_deferred": true,
+      "tasks": [
+        {
+          "id": "P7-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 7 tasks not yet authored. Pre-condition: Phase 6 must be COMPLETED + REVIEWED before this phase's plan is authored."
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "Phase 2 plan_deferred=true. Hard stop fires at phase planning gate."
+    },
+    {
+      "phase": 3,
+      "approved": false,
+      "reason": "Phase 3 plan_deferred=true. Hard stop fires at phase planning gate."
+    },
+    {
+      "phase": 4,
+      "approved": false,
+      "reason": "Phase 4 plan_deferred=true. Hard stop fires at phase planning gate."
+    },
+    {
+      "phase": 5,
+      "approved": false,
+      "reason": "Phase 5 plan_deferred=true. Hard stop fires at phase planning gate."
+    },
+    {
+      "phase": 6,
+      "approved": false,
+      "reason": "Phase 6 plan_deferred=true. Hard stop fires at phase planning gate."
+    },
+    {
+      "phase": 7,
+      "approved": false,
+      "reason": "Phase 7 plan_deferred=true. Hard stop fires at phase planning gate."
+    }
+  ],
+  "plan_adjustments_needed": [
+    {
+      "id": "ADJ-1",
+      "applied": true,
+      "description": "REC-004: goal rewritten from TKT-ZMVP33 to the 7-ticket program. workorder_id/feature_name intentionally NOT renamed (registry keys)."
+    },
+    {
+      "id": "ADJ-2",
+      "applied": true,
+      "description": "REC-001: added P1-T1a operator-ruling halt - the Java duplicate is an identity fork (Svc.alpha method vs alpha function), not a dedup, and it determines phase 2 scope."
+    },
+    {
+      "id": "ADJ-3",
+      "applied": true,
+      "description": "REC-003: P1-T2 rewritten - Rust parentScope is dead code, so there is no qualification to preserve; scoped Rust names ruled OUT of phase 1."
+    },
+    {
+      "id": "ADJ-4",
+      "applied": true,
+      "description": "REC-002: P1-T3 must fail loudly on a missing grammar; documented why the existing Java/C++ assertions are vacuous and the `rs` vs `rust` key trap."
+    },
+    {
+      "id": "ADJ-5",
+      "applied": true,
+      "description": "Added phase-1 acceptance_criteria AC-1..AC-5 with the measured pre-edit cardinalities, so the phase is gradeable against a recorded baseline."
+    }
+  ],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "coderef/working/core-ticket-remediation-program/discovery.md",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "rolling_plan": {
+    "mode": "rolling",
+    "close_after_phase": 7,
+    "report_back_required_after_each_phase": true,
+    "next_phase_authoring": "ad-hoc plan.json edit until /plan-next-phase skill exists (STUB-358)"
+  },
+  "workorder_id": "WO-ELEMENTEXTRACTOR-REVISITS-RUST-IMPL-AND-JAVA-OR-C-001",
+  "feature_name": "elementextractor-revisits-rust-impl-and-java-or-c",
+  "created": "2026-08-01T20:30:09.925366+00:00",
+  "plan_type_rationale": "Discovery-backed rolling program: stabilize shared graph fact producers first, then RAG durability and ranking, then test and telemetry hygiene.",
+  "plan_amended": {
+    "at": "2026-08-01",
+    "by": "/discover readiness audit",
+    "evidence": "Duplicate emission reproduced live against HEAD for rs/java/cpp via a throwaway probe over ElementExtractor.extract; probe removed after use."
+  }
+}
