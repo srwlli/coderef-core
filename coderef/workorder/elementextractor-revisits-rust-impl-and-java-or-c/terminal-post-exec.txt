@@ -1,0 +1,65 @@
+================================================================
+  WORKORDER: WO-ELEMENTEXTRACTOR-REVISITS-RUST-IMPL-AND-JAVA-OR-C-001
+  Feature:   elementextractor-revisits-rust-impl-and-java-or-c
+  Mode:      --phase=1 (single-phase; rolling plan, close_after_phase=7)
+  Phases:    1 of 7 complete
+  Commits:   2   Pushes: 2
+  Stub:      STUB-WWR793 (parent), TKT-ZMVP33
+================================================================
+
+PHASE CHECKLIST
+  [x] 1  Element extraction identity and cardinality   3d81268 / b90536b
+  [ ] 2  tree-sitter relationship drops                DEFERRED (unauthored)
+  [ ] 3  renamed re-export resolution                  DEFERRED (unauthored)
+  [ ] 4  json vector store durability                  DEFERRED (unauthored)
+  [ ] 5  graph re-ranking non-finite scores            DEFERRED (unauthored)
+  [ ] 6  rag-index CLI stale parser test               DEFERRED (unauthored)
+  [ ] 7  query/answer diagnostics                      DEFERRED (unauthored)
+
+TASKS
+  [x] P1-T1   READ   Traced traversal; 3 double-visit sites identified
+  [x] P1-T1a  READ   Ruling (A) + rationale transcribed to decisions_log
+  [x] P1-T2   EDIT   Single-pass scoped traversal (rust/java/c++)
+  [x] P1-T3   TEST   5 cases: exact cardinality + exact qualified strings
+  [x] P1-T4   RUN    Suite 2602 passed / 26 skipped / 0 failed
+  [x] P1-T5   CHECK  0 duplicate identities in live index (3316 elements)
+
+FILES MODIFIED
+  src/pipeline/extractors/element-extractor.ts      3d81268  (+19 -1)
+  __tests__/element-extractor.test.ts               3d81268  (+5 cases)
+  coderef/workorder/.../communication.json          b90536b
+
+FILES CREATED
+  coderef/workorder/.../terminal-post-exec.txt      (this file)
+
+RESULT
+  Java 13 -> 6 elements for 6 declarations (nested fixture)
+  C++   9 -> 4 for 4   (function beta was emitted x4 at depth 2)
+  Rust  5 -> 3 for 3
+  API delta 0 added / 0 removed / 0 changed. tsc exit 0.
+
+ACCEPTANCE
+  AC-1 PASS  3 defect cases FAIL at HEAD, pass after (verified by revert)
+  AC-2 PASS  no dup identity; scope = lexically enclosing type; no bare
+             twin; duplication does not grow with nesting depth
+  AC-3 PASS  requireParser() fails loudly; no `if (!parser) return;`
+  AC-4 PASS  TS recursion-leak block (test:425) unchanged and green
+  AC-5 PASS  ruling transcribed before P1-T2 edited anything
+  AC-6 PASS  qualified strings asserted as the phase-2 handoff spec
+
+GATES
+  plan-schema         PASS
+  alignment           WARN alignment_missing (advisory, non-blocking)
+  verify/tests        NO-DATA (0 selected) - fell through to full suite
+  verify/dossier      API delta 0/0/0
+  phase transition    complete, verdict=PASS, commit=3d81268
+
+NOT DONE (deliberate)
+  No wake-poll re-arm. Phase 2 is a STOP placeholder with an unapproved
+  hard stop - there is no authored plan to advance into. Auto-advancing
+  would enter an empty phase.
+
+NEXT ACTION
+  Author phase 2 against the handoff spec, then
+  /execute-workorder WO-ELEMENTEXTRACTOR-REVISITS-RUST-IMPL-AND-JAVA-OR-C-001 --phase=2
+  (or /close-workorder to stop the program at phase 1)
