@@ -74,28 +74,16 @@
       "description": "Implementation phase, RE-GROUNDED after Phase 1 discovery and the 2026-08-01 clean re-populate. Three findings reshaped it. (1) The original premise was measured against a polluted scan: dist-preXR contributed 3,049 of 4,753 unresolved edges, and because unresolved_src_count is computed as NOT-testOrigin with no build-output exclusion at all, the \"stratified honest\" metric carried 3,049 of its 3,862 from build output. SCOPE-001 / TKT-HZF70M closed that; resolved_of_resolvable recovered 54.62 -> 74.83. (2) The true target is 547 edges, not 10,691 or 5,050 or 2,137. (3) About 85% of that population can never be a project edge - z.string() is zod, ts.Node is the TypeScript compiler API. The work is therefore DISPOSITION first (moving edges out of the unresolved denominator into honest external/builtin) and RESOLUTION second, and acceptance is written that way. Framing this as \"resolve N edges\" guarantees a false failure verdict no matter how good the code is.",
       "tasks": [
         {
-          "id": "P2-T1",
-          "verb": "READ",
-          "description": "Read the defect sites named in analysis.json and in the lever list above. The engine original 25-candidate ranking is SUPERSEDED - it ranked dist-old/ build artifacts alongside source, the same contamination SCOPE-001 fixed.",
-          "touches": [
-            "src/pipeline/scope-binding.ts",
-            "src/pipeline/call-resolver.ts"
-          ]
+          "id": "P2-T7",
+          "verb": "CHECK",
+          "description": "FINAL RE-MEASURE, owed. Once the peer docs-to-graph work settles and the tree is clean, re-run build + populate and record the full validation report against a fingerprinted tree per AC-6. Only then quote aggregate numbers. The per-lever targeted figures in `ledger` are sound and need no re-run.",
+          "touches": []
         },
         {
           "id": "P2-T2",
           "verb": "CHECK",
           "description": "Capture a before-report on a fingerprinted tree (HEAD plus dirty-diff sha256) BEFORE editing. AC-6 makes the pairing, not the number, the evidence.",
           "touches": []
-        },
-        {
-          "id": "P2-T3",
-          "verb": "WRITE",
-          "description": "Implement lever 2, then lever 3. Lever 1 is SHIPPED at be2b832. Each lever lands with its own contract test authored BEFORE the delta is measured.",
-          "touches": [
-            "src/pipeline/scope-binding.ts",
-            "src/pipeline/call-resolver.ts"
-          ]
         },
         {
           "id": "P2-T4",
@@ -153,31 +141,88 @@
         {
           "id": "lever-1",
           "name": "chain-root receiver disposition",
-          "target_edges": 216,
-          "actual_edges": 214,
+          "predicted": 216,
+          "actual": 214,
           "status": "SHIPPED",
           "commit": "be2b832",
-          "note": "call-expression and new-expression chains fed to the existing 3.5/3.7 branches. unresolved_src_count 813 -> 599, resolved_of_resolvable 74.83 -> 76.81."
+          "note": "call-expression and new-expression chains fed to the existing 3.5/3.7 branches. 547 -> 333."
         },
         {
           "id": "lever-2",
           "name": "qualified-type annotations bind to external",
-          "target_edges": 160,
-          "status": "PENDING",
-          "note": "usableAnnotationType (scope-binding.ts:106) matches a bare PascalCase identifier only, so ts.Node, fs.Dirent and http.Server are all rejected and (node: ts.Node) produces NO binding. Accept Root.Member and disposition external when Root is an external import. Covers node/entry/res/child/server/worker/spec."
+          "predicted": 160,
+          "actual": 51,
+          "status": "SHIPPED",
+          "commit": "84f51ad",
+          "note": "Two blockers, not one. usableAnnotationType rejecting dotted names was the visible half; the real one was that `import type` short-circuits classification at import-resolver.ts:546, so a type-only namespace had NO recoverable origin. Type annotations are idiomatically imported that way - `import type Parser from tree-sitter` alone was 89 edges. First cut measured -18; adding the additive typeOnlyOrigin field took it to -51. 333 -> 282."
         },
         {
           "id": "lever-3",
-          "name": "this.<field> receiver binding (the real FU-2 field-path walk)",
-          "target_edges": 33,
-          "status": "PENDING",
-          "note": "Bind declared class fields (private index: X) so branch 3 own-methods plus heritage lookup fires. SMALLEST but the only lever producing new PROJECT structure - this and the h-object slice are the ones that make the graph better rather than only making the metric honest."
+          "name": "this.<field> binding + external-typed binding disposition",
+          "predicted": 33,
+          "actual": 31,
+          "status": "SHIPPED",
+          "commit": "135c873",
+          "note": "Post-walk projection of declared field types into every method scope of the owning class (fields are routinely declared below their users, so binding at frame-push time would drop them). Extended mid-flight: a binding whose type resolves to an EXTERNAL import now dispositions external rather than falling to the tail - own-methods and heritage can never match a third-party class. THE ONLY LEVER PRODUCING NEW RESOLVED PROJECT EDGES."
+        },
+        {
+          "id": "lever-4",
+          "name": "arrow-function scope frames (TRANSPARENT)",
+          "predicted": 54,
+          "actual": 24,
+          "status": "SHIPPED",
+          "commit": "135c873",
+          "note": "const NAME = (params) => { now pushes a frame so typed params bind. The frame is TRANSPARENT because the two extractors disagree: the element extractor emits the arrow as a function element, but the raw-call extractor does NOT descend into arrow scopes. Diagnosed live - `node` bound into #traverse:3 while the call resolved against #extract:2, so the first cut moved NOTHING. Binding attribution now matches call attribution. Brace-bodied only: an expression-bodied arrow has no closing brace to pop the frame."
         }
       ],
       "regrounded": {
         "at": "2026-08-01",
         "by": "Phase 1 discovery plus clean re-populate",
         "supersedes": "the 62% / 10,691-edge premise carried in goal_original and the WO title"
+      },
+      "ledger": {
+        "measured_at": "2026-08-01",
+        "metric": "receiver_not_in_symbol_table, non-test, under src/",
+        "trajectory": [
+          {
+            "point": "clean baseline (post SCOPE-001)",
+            "value": 547
+          },
+          {
+            "point": "after lever 1",
+            "value": 333
+          },
+          {
+            "point": "after lever 2",
+            "value": 282
+          },
+          {
+            "point": "after levers 3+4",
+            "value": 251
+          }
+        ],
+        "total_reduction": 296,
+        "total_reduction_pct": 54.1,
+        "suite": "2597 passed / 26 skipped / 0 failed",
+        "CAVEAT_aggregates_contaminated": "valid_edge_count, test_dsl_count, ambiguous_count and external_count all moved from a PEER docs-to-graph change landing mid-run (graph-builder.ts +80, doc-ingest.ts, canonical-graph.ts, new `contains` edge kind). Those aggregates violate AC-6 (same-tree pairing) and are NOT quoted as this work's result. The targeted metric above is insensitive to doc edges and is the honest figure. A clean end-to-end re-measure is owed once the peer settles.",
+        "residual_understood": {
+          "h": {
+            "count": 37,
+            "nature": "project handler object - genuine recall gap"
+          },
+          "node": {
+            "count": 32,
+            "nature": "arrows the frame rule still misses (nested/property-assigned forms)"
+          },
+          "entry": {
+            "count": 22,
+            "nature": "fs.Dirent-typed, destructured or untyped"
+          },
+          "this.index": {
+            "count": 8,
+            "nature": "declared `private index: any` - no type to bind. An HONEST miss, not a defect."
+          }
+        }
       }
     }
   ],
