@@ -40,7 +40,12 @@ Every phase below is written against this reality. Do not reintroduce work alrea
 
 ---
 
-## Refactor Order
+## Phases
+
+The refactor order below is strict: each phase depends on the ground truth the previous one
+established. Phases 0 through 7 are ARCHIVED — landed, verified, and no longer open for
+edit. Phase 8 (documentation) is the live phase; downstream work now routes through
+per-workorder plans rather than through this file.
 
 ## Phase 0 - Establish Ground Truth ✅ ARCHIVED 2026-05-02
 
