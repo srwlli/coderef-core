@@ -5,9 +5,57 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "implementing",
+  "status": "closed",
+  "closed_at": "2026-08-01T12:20:00Z",
+  "closed_via": "/close-workorder",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
+  "close_metadata": {
+    "review_status": "PASS",
+    "close_mode": "close-only",
+    "audit": {
+      "phased_terminal_guard": "inert (plan_type=strict)",
+      "standards_validate_wo_scoped": "pass (repo-wide fail = pre-existing drift, informational per KZ-01KX4FV2 gate separation)",
+      "tracking_validator_scoped": "18 passed / 0 failed",
+      "doc_code_tie": "inert (no doc_binding)",
+      "session_log": "SELF-HEALED sparse fallback SES-2026-08-01-DOCS-TO-GRAPH-P1-DOCS-PHASE-OF-THE.yaml (rich /log-session at execute Step 5.5.1 was skipped)"
+    },
+    "metrics_delta": {
+      "no_data": "before_snapshot_absent",
+      "note": "No .coderef/map/metrics-snapshot-WO-DOCS-TO-GRAPH-P1-DOCS-PHASE-OF-THE-001-before.json in target repo (WO promoted from stub without plan-time snapshot). Hand-measured deltas live in analysis.json before_metrics/after_metrics: doc_nodes 0->27, documents_edges 0->14."
+    },
+    "follow_up_runner_note": "workorder-follow-up run.mjs failed on the coderef-core: registry anchor (path mis-joined onto ASSISTANT root — known KZ-01KYY49T anchor-gap class); follow_ups[] below hand-authored instead.",
+    "follow_ups": [
+      {
+        "id": "FU-1",
+        "title": "GX-005 P2 standards overlay rides this machinery",
+        "detail": "@Standard nodes + governed_by edges = one more EdgeRelationship + evidence variant through the same doc-ingest seam; GX-005 verdict already ruled governed_by persisted.",
+        "size": "M",
+        "status": "candidate"
+      },
+      {
+        "id": "FU-2",
+        "title": "REC-005 foundation-docs '(auto-enhanced)' runaway append defect",
+        "detail": "Foundation-docs 'Last Updated' line carries ~47 non-idempotent '(auto-enhanced)' suffixes; separate /ticket candidate (DEBUG-class enhancer bug).",
+        "size": "S",
+        "status": "candidate"
+      },
+      {
+        "id": "FU-3",
+        "title": "Foundation-docs frontmatter upgrade (operator-requested /discover 2026-08-01)",
+        "detail": "Foundation docs currently ingest as docStatus='generated' with zero documents edges (G1 policy). Operator asked for a discovery pass on giving them frontmatter so they can bear edges + real status.",
+        "size": "S",
+        "status": "candidate"
+      },
+      {
+        "id": "FU-4",
+        "title": "Incremental byFile keying defect blocks E2E parity checks (pre-existing)",
+        "detail": "ADJ-01: absolute-vs-relative byFile merge -> duplicate node ids -> GI-1 fail-close. STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 class; third WO in a row to hit it at verify time.",
+        "size": "M",
+        "status": "candidate"
+      }
+    ]
+  },
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\docs-to-graph-p1-docs-phase-of-the\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\docs-to-graph-p1-docs-phase-of-the\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\docs-to-graph-p1-docs-phase-of-the\\analysis.json",
@@ -61,15 +109,52 @@
       "peer": "WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001",
       "overlap": "none (touch sets disjoint; this WO avoids src/cli/mcp/context-tools.ts + server.ts)",
       "at": "2026-08-01T08:42:00Z"
+    },
+    {
+      "event": "plan_deviation",
+      "id": "ADJ-01",
+      "summary": "Incremental E2E parity check BLOCKED by the PRE-EXISTING incremental-store keying defect (absolute-vs-relative byFile merge -> duplicate node ids -> GI-1 fail-close; STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 class; identical to GX-002's deviation). Doc facts bypass the byFile store by design (DR-DOCS-C) — parity by construction, unit-proven. Artifacts restored via full scan.",
+      "at": "2026-08-01T09:04:00Z"
+    },
+    {
+      "event": "mid_execution_extension",
+      "summary": "Concurrent contributor extended doc-ingest.ts with an opt-in 'report' docType lane (ingestion_candidate: true frontmatter, recursive coderef/ discovery, reserved-path dedupe) + matching tests during execution; adopted into verify scope; full suite green over the union (2496/26/0).",
+      "at": "2026-08-01T09:00:00Z"
+    },
+    {
+      "event": "design_note",
+      "summary": "CALL_KINDS/DEPENDS_KINDS deliberately NOT widened with 'documents' in either adjacency surface — a doc is not a call and must not enter blast-radius walks. MCP adjacency learns the kind via kind-agnostic cache.inbound; surfaced through symbol_context.governing_docs + pack_context (engine-level, wrappers untouched per GX-003 constraint).",
+      "at": "2026-08-01T09:00:00Z"
+    },
+    {
+      "event": "verify_gate",
+      "phase": 1,
+      "targeted_tests": "endpoint-template/incremental-parity/context-packer 40/40 + doc-ingest 14/14",
+      "full_suite": "2496 passed / 26 skipped / 0 failed (vitest exit 0, runner artifact verified — first two runs had 21-26 spurious CLI-spawn timeouts under concurrent Ollama batch CPU load)",
+      "at": "2026-08-01T09:00:00Z"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "0603db7",
+      "verdict": "PASS",
+      "at": "2026-08-01T09:10:00Z",
+      "note": "hand-written entry: write-phase-transition.cjs no-ops on coderef-core: registry anchors (KZ-01KYY49T class)"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
       "timestamp": "2026-08-01T07:57:06.064008+00:00",
       "event": "creation",
       "message": "Workorder created from stub STUB-MA13M5"
+    },
+    {
+      "timestamp": "2026-08-01T12:20:00Z",
+      "event": "workorder_closed",
+      "message": "Close-only close via /close-workorder (v2.8.0 default): audit PASS (wo-scoped culture pass, tracking 18/0, doc-code-tie inert, session log self-healed), status -> complete in registry, WO remains in coderef/workorder/ pending --archive."
     }
   ],
   "required_skills": [

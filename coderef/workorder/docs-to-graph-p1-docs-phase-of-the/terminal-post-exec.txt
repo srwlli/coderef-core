@@ -1,0 +1,37 @@
+================================================================
+  EXECUTION COMPLETE — TERMINAL HARD STOP
+  WORKORDER: WO-DOCS-TO-GRAPH-P1-DOCS-PHASE-OF-THE-001
+  feature: docs-to-graph-p1-docs-phase-of-the
+  Phases: 1/1   Commits: 1   Pushes: 1 (verified on origin)
+  Parent stub: STUB-MA13M5
+================================================================
+FILES CREATED (0603db7):
+  src/pipeline/doc-ingest.ts            (sheet/foundation/report lanes, G1-G4 tolerances)
+  __tests__/pipeline/doc-ingest.test.ts (14 tests)
+FILES MODIFIED (0603db7):
+  src/pipeline/types.ts                 (PipelineState.docs seam)
+  src/pipeline/orchestrator.ts          (BOTH call sites collect doc facts)
+  src/pipeline/graph-builder.ts         (@Doc minting, documents edges, G3-safe)
+  src/export/graph-exporter.ts          (relationship union)
+  src/pipeline/output-validator.ts      (VALID_RELATIONSHIPS)
+  src/query/canonical-graph.ts          (governingDocs, ranked)
+  src/cli/mcp/lookup-tools.ts           (symbol_context.governing_docs)
+  src/context/context-packer.ts         (governing-docs block + manifest)
+  src/query/orient.ts                   (docs topline)
+  src/map/project-map-data.ts           (1.8.0 docs block + coverage queue)
+  __tests__/map/*.test.ts x4            (schemaVersion pins 1.7.0 -> 1.8.0)
+PHASE CHECKLIST:
+  [x] P1 T1-T10 — commit 0603db7 (pushed, origin-verified)
+RESULTS:
+  Doc surface:  27 @Doc nodes (19 sheets / 8 foundation) — was 0
+  Edges:        14 resolved documents edges, 0 unresolved, 14 documented files
+  Queue (top):  grammar-registry.ts (124), mcp-response-format.ts (109),
+                mcp/graph-tools.ts (109), mcp/verify-tools.ts (103)
+  Suite:        2496 passed / 26 skipped / 0 failed (vitest exit 0)
+  Deviation:    ADJ-01 incremental E2E parity blocked by PRE-EXISTING
+                keying defect (FU-4 class); doc facts bypass that store
+GX-005 READINESS (P2): @Standard nodes + governed_by edges ride this exact
+  machinery (new relationship + evidence variant + same ingestion seam).
+Session: updated   Registry: heartbeat live   Validator: see close
+APPROVE -> /close-workorder WO-DOCS-TO-GRAPH-P1-DOCS-PHASE-OF-THE-001
+================================================================
