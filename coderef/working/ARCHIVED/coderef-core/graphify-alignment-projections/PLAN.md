@@ -1,10 +1,13 @@
 ---
 title: Graphify Alignment — Projections, Graph Explorer, Analytics
 domain: CODEREF-CORE
-status: promoted
+status: open
 created: 2026-07-16
 stub_ref: STUB-BXW070
 workorder_ref: WO-GRAPHIFY-ALIGNMENT-PROJECTIONS-001
+archived: 2026-08-01
+disposition: shipped
+successor: STUB-BXW070
 ---
 
 # Graphify Alignment — Projections, Graph Explorer, Analytics
