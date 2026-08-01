@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-QPAAY0",
+  "ulid": "01KYY9VG52EQJMW51QKAVMVARQ",
+  "feature_name": "incremental-path-keying-fix",
+  "description": "Incremental writeback path-keying fix: absolute-vs-relative incremental-facts keying defect blocks incremental E2E parity (GX-002 FU-4, pairs with STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001)",
+  "category": "fix",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T09:18:03Z"
+}

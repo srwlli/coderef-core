@@ -1,0 +1,237 @@
+{
+  "discover": {
+    "meta": {
+      "topic": "edge-resolution improvement program: test-DSL reclassify + dotted-chain receivers + heritage-aware lookup + incremental keying (REC-R1, GX-002 FU-1..4)",
+      "generated": "2026-08-01T09:13:34Z",
+      "depth": "thorough",
+      "output_dest": "working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/working/coderef-core/core-improvements-731/discovery-edge-resolution-program.md",
+      "dispatch": "none"
+    },
+    "scope": {
+      "asked": "edge-resolution improvement program: test-DSL reclassify + dotted-chain receivers + heritage-aware lookup + incremental keying (REC-R1, GX-002 FU-1..4)",
+      "bounded": "unbounded — full project root"
+    },
+    "surfaces_audited": [
+      {
+        "line": "- [tool: skeleton-map]          present (cached), 156 lines"
+      },
+      {
+        "line": "- [tool: rg]                    queries=1, hits=0"
+      },
+      {
+        "line": "- [tool: rag-search]            top-k=10, ms=1131, lane=hybrid, fallback_used=false"
+      },
+      {
+        "line": "- [tool: element-lookup]        source=symbol-table (rag-search --lexical), candidates=10, elements_indexed=3215"
+      },
+      {
+        "line": "- [tool: header-index]          defined=369, missing=5, stale=1, coverage=98.14% (validation-report.json)"
+      },
+      {
+        "line": "- [tool: foundation-docs]       sections_matched=8"
+      },
+      {
+        "line": "- [tool: codebase_summary]      elements=3215, top types: function=1109, method=966, interface=615, generated=2026-08-01T09:10:22.971Z"
+      },
+      {
+        "line": "- [tool: validation_status]     resolution_rate=22.42%, unresolved=18527, ambiguous=1730, header_coverage=98.14%"
+      },
+      {
+        "line": "- [tool: coderef-query]         walks=10, divergence_rows=5"
+      },
+      {
+        "line": "- [tool: graph-risk]            hotspots_top=5, cycles=0 (largest=0), edges=44495"
+      }
+    ],
+    "findings": [
+      {
+        "id": "F-001",
+        "surface": "__tests__/pipeline/output-validation-graph-integrity.test.ts:100",
+        "observation": "Element lookup match: `rEdge`",
+        "severity": "info",
+        "evidence": "name=rEdge, type=function, score=22.77"
+      },
+      {
+        "id": "F-002",
+        "surface": "__tests__/pipeline/call-resolution-builtin.test.ts:19",
+        "observation": "Element lookup match: `ALL_BUILTIN_RECEIVERS`",
+        "severity": "info",
+        "evidence": "name=ALL_BUILTIN_RECEIVERS, type=constant, score=21.70"
+      },
+      {
+        "id": "F-003",
+        "surface": "__tests__/integration/rag/hybrid-fusion.test.ts:59",
+        "observation": "Element lookup match: `rec`",
+        "severity": "info",
+        "evidence": "name=rec, type=function, score=17.70"
+      },
+      {
+        "id": "F-004",
+        "surface": "src/pipeline/call-resolver.ts:208",
+        "observation": "Element lookup match: `BUILTIN_RECEIVERS`",
+        "severity": "info",
+        "evidence": "name=BUILTIN_RECEIVERS, type=constant, score=16.99"
+      },
+      {
+        "id": "F-005",
+        "surface": "__tests__/pipeline/incremental-parity.test.ts:54",
+        "observation": "Element lookup match: `fullEdgeSignature`",
+        "severity": "info",
+        "evidence": "name=fullEdgeSignature, type=function, score=16.30"
+      },
+      {
+        "id": "F-006",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Canonical edge relationship enum (AC-03 + AC-04).\n\n  import        — AST-derived ImportResolution (came from a"
+      },
+      {
+        "id": "F-007",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "? @ line ?"
+      },
+      {
+        "id": "F-008",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Canonical edge resolution status (AC-03)."
+      },
+      {
+        "id": "F-009",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "? @ line ?"
+      },
+      {
+        "id": "F-010",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "The FULL resolver reason taxonomy paired with the resolutionStatus the graph\nbuilder maps it onto, and the tier this mod"
+      }
+    ],
+    "divergences": [
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "rEdge (__tests__/pipeline/output-validation-graph-integrity.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "ALL_BUILTIN_RECEIVERS (__tests__/pipeline/call-resolution-builtin.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "rec (__tests__/integration/rag/hybrid-fusion.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "BUILTIN_RECEIVERS (src/pipeline/call-resolver.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=1",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "fullEdgeSignature (__tests__/pipeline/incremental-parity.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      }
+    ],
+    "recommendations": [
+      {
+        "rec_id": "REC-001",
+        "priority": "low",
+        "action": "Review 10 info-level hit(s) for context.",
+        "owner": "(operator)"
+      }
+    ],
+    "severity_chart": [
+      {
+        "label": "critical",
+        "value": 0,
+        "variant": "fail"
+      },
+      {
+        "label": "warning",
+        "value": 0,
+        "variant": "accent"
+      },
+      {
+        "label": "info",
+        "value": 10,
+        "variant": "info"
+      }
+    ],
+    "orientation": {
+      "present": true,
+      "source": "cached",
+      "excerpt": "# repo map (skeleton): CODEREF-CORE — 476 files, 855 edges — budget ~1600 tokens\n# ranked by dependency centrality (most depended-on first); in/out = distinct dependents/dependencies. surfaces, not verdicts.\n\nsrc/scanner/lru-cache.ts  (in 103 / out 1)\n  class LRUCache\n  interface ScanCacheEntry\n  fn createScannerCache(maxSizeBytes)\n\nsrc/pipeline/orchestrator.ts  (in 54 / out 15)\n  class PipelineOrchestrator\n\nsrc/utils/path-normalize.ts  (in 37 / out 0)\n  fn normalizeSlashes(p)\n  fn toRepoRelativePosix(file, projectPath)"
+    },
+    "graph_risk": {
+      "hotspots": [
+        {
+          "id": "@M/src/scanner/lru-cache.ts#LRUCache.has:114",
+          "in": 302,
+          "out": 0,
+          "total": 302
+        },
+        {
+          "id": "@File/__tests__/indexer.test.ts",
+          "in": 0,
+          "out": 197,
+          "total": 197
+        },
+        {
+          "id": "@Fn/src/scanner/scanner.ts#scanCurrentElements:908",
+          "in": 133,
+          "out": 32,
+          "total": 165
+        },
+        {
+          "id": "@Fn/src/utils/path-normalize.ts#normalizeSlashes:21",
+          "in": 149,
+          "out": 0,
+          "total": 149
+        },
+        {
+          "id": "@File/__tests__/pipeline/scip-overlay.test.ts",
+          "in": 0,
+          "out": 122,
+          "total": 122
+        }
+      ],
+      "cycles": {
+        "count": 0,
+        "largest": 0,
+        "sample": []
+      },
+      "resolution": {
+        "external": 321,
+        "builtin": 13676,
+        "resolved": 9901,
+        "typeOnly": 294,
+        "unresolved": 18527,
+        "dynamic": 45,
+        "stale": 1,
+        "ambiguous": 1730
+      },
+      "edge_total": 44495
+    },
+    "reuse_note": "Reproduce: /discover \"edge-resolution improvement program: test-DSL reclassify + dotted-chain receivers + heritage-aware lookup + incremental keying (REC-R1, GX-002 FU-1..4)\" --depth=thorough --output-dest=working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/working/coderef-core/core-improvements-731/discovery-edge-resolution-program.md"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-9B66EN",
+  "ulid": "01KYY9VEM23KC8CFDTCM0BBC0K",
+  "feature_name": "heritage-aware-method-lookup",
+  "description": "Heritage-aware own-method lookup: resolve method calls through the heritage graph so inherited methods hit the symbol table (GX-002 FU-3)",
+  "category": "improvement",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T09:18:01Z"
+}

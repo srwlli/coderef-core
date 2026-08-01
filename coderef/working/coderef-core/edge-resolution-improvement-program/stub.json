@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-EVR39N",
+  "ulid": "01KYY9TMAVZAXTNRFN4SKXAG3S",
+  "feature_name": "edge-resolution-improvement-program",
+  "description": "Edge-resolution improvement program: test_dsl reclassify (both-sides, operator-delegated ruling A) then dotted-chain receiver walking, heritage-aware method lookup, incremental path-keying fix",
+  "category": "improvement",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T09:17:34Z"
+}

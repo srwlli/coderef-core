@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-VYBKRV",
+  "ulid": "01KYY9VCZ9APD3572FQGMF58YW",
+  "feature_name": "dotted-chain-receiver-walking",
+  "description": "Dotted-chain receiver field-path walking in the call resolver (~5,050 unresolved edges, largest recall lever, GX-002 FU-2)",
+  "category": "improvement",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T09:17:59Z"
+}
