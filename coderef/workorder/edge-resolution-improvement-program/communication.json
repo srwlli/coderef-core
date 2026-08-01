@@ -5,7 +5,8 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "checkpoint_ready",
+  "status": "closed",
+  "closed_at": "2026-08-01T11:24:28Z",
   "current_phase": 4,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\plan.json",
@@ -172,6 +173,11 @@
       "timestamp": "2026-08-01T12:05:00Z",
       "event": "phase4_complete_holding",
       "detail": "P4 incremental path-keying fix 8/8 tasks (STUB-QPAAY0, GX-002 FU-4); canonicalFactKey + dedupeFactSet (symbol-table-cache) + storeKeyFor wiring (runIncremental) - all --changed-files input forms translate to the store's own key form so merge REPLACES instead of double-keying; red-first 8-test contract envelope (4 defect-shaped failures pre-fix); live repro flipped exit 1 -> exit 0 with store self-heal 499->498 keys; E2E parity byte-identical (identical all_edge_ids_sha256 + resolved_edge_ids_sha256, full rebuild vs incremental same tree) - the proof GX-002 P1-T6 could not run; metrics valid 10133 / unresolved 1674 / ror 74.8 (delta = the WO's own new test file entering the scan universe); suite 2532/26/0; commit fb6e987 pushed+verified; FINAL phase 4/4 (close_after_phase=4) - awaiting operator /close-workorder"
+    },
+    {
+      "timestamp": "2026-08-01T11:24:28Z",
+      "event": "workorder_closed",
+      "detail": "Full close at terminal phase 4/4 via operator /close-workorder (close-only default, no --archive). Audit PASS: phased-terminal guard pass; standards-validate wo_scoped=pass (repo-wide fail = pre-existing kind drift, informational per KZ-01KX4FV2 gate separation); tracking-validator 18/18 pass; dependency audit vulnerabilityCount=0; doc-code-tie inert (no doc_binding); git clean-for-WO, HEAD bb9b9b2 == origin/main. Rich session YAML verified in CORE .coderef/sessions (the ASSISTANT-side check-session-log gate resolved its OWN repo root and authored a sparse self-heal duplicate there - cross-repo path seam, KZ-01KYY49T family). Timestamp note: same-day phase stamps 09:42-12:05Z recorded LOCAL time as Z; this event and closed_at use true UTC, so it reads earlier than the phase-4 transition stamp - the transitions are historically committed, left as-is."
     }
   ],
   "required_skills": [
@@ -180,6 +186,13 @@
     "/log-session"
   ],
   "close_metadata": {
+    "closed_via": "/close-workorder",
+    "close_mode": "close-only",
+    "review_status": "PASS",
+    "metrics_delta": {
+      "no_data": "before_snapshot_absent",
+      "note": "WO predates plan-time snapshots for this feature; no .coderef/map/metrics-snapshot-WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001-before.json in target repo"
+    },
     "follow_ups": [
       {
         "status": "candidate",
