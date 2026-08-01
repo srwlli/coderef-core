@@ -3,6 +3,8 @@ subject: Public API Documentation — @coderef/core
 status: generated
 generator: scripts/doc-gen/enhance-existing-docs.js
 related_files:
+  - dist-old/src/analyzer/ast-element-scanner.js
+  - dist-old/src/scanner/scanner.js
   - src/analyzer/ast-element-scanner.ts
   - src/scanner/scanner.ts
 ---
@@ -52,6 +54,7 @@ related_files:
 <!-- coderef:uuid=8989852d-ebaa-52b4-852d-813d2a6d33be -->
 <!-- coderef:uuid=ec329b04-7830-5162-b84f-fccf7cdcf863 -->
 <!-- coderef:uuid=7c9b7ea0-070c-5509-a24a-f12fbfb87353 -->
+<!-- coderef:uuid=9c87b354-14ea-54a3-99e2-6fe3462ea07a -->
 ### `scanCurrentElements()`
 
 Scan code elements from a directory using regex patterns.
@@ -100,6 +103,7 @@ interface ScanOptions {
 <!-- coderef:uuid=e7fe444a-67bb-5ba7-9a53-592f4d6abaa7 -->
 <!-- coderef:uuid=c1cd9634-498b-583f-a1b9-6e97967397b5 -->
 <!-- coderef:uuid=815dc249-b434-5924-9b3b-2d854d74c4da -->
+<!-- coderef:uuid=abd7bf27-e92f-5eb1-9e32-166cbc51b0d9 -->
 ### `scanFilesWithAST()`
 
 Scan files using AST-based analysis for accurate element detection.

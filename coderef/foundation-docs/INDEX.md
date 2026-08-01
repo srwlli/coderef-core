@@ -3,26 +3,26 @@ subject: Master Element Registry — @coderef/core
 status: generated
 generator: scripts/doc-gen/generate-index-md.js
 related_files:
+  - dist-old/src/indexer/index-store.js
+  - dist-old/src/indexer/indexer-service.js
+  - dist-old/src/pipeline/extractors/element-extractor.js
+  - dist-old/src/pipeline/extractors/relationship-extractor.js
+  - dist-old/src/pipeline/generators/context-generator.js
+  - dist-old/src/pipeline/import-resolver.js
+  - dist-old/src/query/canonical-graph.js
   - src/analyzer/contract-detector.ts
   - src/analyzer/database-detector.ts
   - src/analyzer/middleware-detector.ts
-  - src/analyzer/migration-route-analyzer.ts
   - src/cli/coderef-rag-server.ts
-  - src/cli/coderef-watch.ts
   - src/cli/mcp/shared.ts
-  - src/context/context-tracker.ts
   - src/export/graph-exporter.ts
   - src/indexer/index-store.ts
   - src/indexer/indexer-service.ts
-  - src/indexer/metadata-index.ts
-  - src/indexer/query-engine.ts
   - src/indexer/relationship-index.ts
   - src/pipeline/call-resolver.ts
   - src/pipeline/extractors/element-extractor.ts
   - src/pipeline/extractors/relationship-extractor.ts
   - src/pipeline/generators/context-generator.ts
-  - src/pipeline/import-resolver.ts
-  - src/query/canonical-graph.ts
 ---
 
 # Element Index
@@ -38,10 +38,10 @@ related_files:
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 3,221 |
-| **Total Files** | 495 |
-| **Total Lines** | 135,777 |
-| **Languages** | ts, py |
+| **Total Elements** | 6,046 |
+| **Total Files** | 1,018 |
+| **Total Lines** | 227,528 |
+| **Languages** | ts, js, py |
 
 ---
 
@@ -49,12 +49,13 @@ related_files:
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 1,114 | 34.6% |
-| method | 966 | 30.0% |
-| interface | 615 | 19.1% |
-| class | 108 | 3.4% |
-| type | 93 | 2.9% |
-| constant | 325 | 10.1% |
+| function | 1,970 | 32.6% |
+| method | 1,939 | 32.1% |
+| interface | 1,166 | 19.3% |
+| class | 315 | 5.2% |
+| type | 176 | 2.9% |
+| component | 1 | 0.0% |
+| constant | 479 | 7.9% |
 
 ---
 
@@ -63,30 +64,30 @@ related_files:
 | Rank | File | Elements | Density |
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
-| 2 | `src/pipeline/extractors/relationship-extractor.ts` | 37 | 🟡 High |
-| 3 | `src/query/canonical-graph.ts` | 36 | 🟡 High |
-| 4 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
-| 5 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
-| 6 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
-| 7 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
-| 8 | `src/search/search-engine.ts` | 31 | 🟡 High |
-| 9 | `src/indexer/index-store.ts` | 30 | 🟡 High |
-| 10 | `src/scanner/scanner.ts` | 30 | 🟡 High |
-| 11 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
-| 12 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
-| 13 | `src/cli/coderef-rag-server.ts` | 28 | 🟢 Medium |
-| 14 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
-| 15 | `src/indexer/relationship-index.ts` | 28 | 🟢 Medium |
-| 16 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
-| 17 | `src/query/clones.ts` | 28 | 🟢 Medium |
-| 18 | `src/cli/coderef-watch.ts` | 27 | 🟢 Medium |
-| 19 | `src/pipeline/call-resolver.ts` | 27 | 🟢 Medium |
-| 20 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
-| 21 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
-| 22 | `src/types/types.ts` | 24 | 🟢 Medium |
-| 23 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
-| 24 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
-| 25 | `src/indexer/metadata-index.ts` | 23 | 🟢 Medium |
+| 2 | `dist-old/src/pipeline/generators/context-generator.js` | 48 | 🟡 High |
+| 3 | `dist-old/src/pipeline/extractors/relationship-extractor.js` | 37 | 🟡 High |
+| 4 | `src/pipeline/extractors/relationship-extractor.ts` | 37 | 🟡 High |
+| 5 | `src/query/canonical-graph.ts` | 36 | 🟡 High |
+| 6 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
+| 7 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
+| 8 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
+| 9 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
+| 10 | `src/search/search-engine.ts` | 31 | 🟡 High |
+| 11 | `dist-old/src/query/canonical-graph.js` | 30 | 🟡 High |
+| 12 | `src/indexer/index-store.ts` | 30 | 🟡 High |
+| 13 | `src/pipeline/call-resolver.ts` | 30 | 🟡 High |
+| 14 | `src/scanner/scanner.ts` | 30 | 🟡 High |
+| 15 | `dist-old/src/pipeline/import-resolver.js` | 29 | 🟢 Medium |
+| 16 | `src/analyzer/contract-detector.ts` | 29 | 🟢 Medium |
+| 17 | `dist-old/src/pipeline/extractors/element-extractor.js` | 28 | 🟢 Medium |
+| 18 | `src/analyzer/database-detector.ts` | 28 | 🟢 Medium |
+| 19 | `src/cli/coderef-rag-server.ts` | 28 | 🟢 Medium |
+| 20 | `src/export/graph-exporter.ts` | 28 | 🟢 Medium |
+| 21 | `src/indexer/relationship-index.ts` | 28 | 🟢 Medium |
+| 22 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
+| 23 | `src/query/clones.ts` | 28 | 🟢 Medium |
+| 24 | `dist-old/src/indexer/index-store.js` | 27 | 🟢 Medium |
+| 25 | `dist-old/src/indexer/indexer-service.js` | 27 | 🟢 Medium |
 
 ---
 
@@ -115,7 +116,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 3,221 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 6,046 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 
