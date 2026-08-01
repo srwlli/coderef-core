@@ -51,7 +51,8 @@
   },
   "query_semantics": {
     "contains": "IN the DEPENDS set on both indexes \u2014 cannot touch an element-to-element answer.",
-    "references": "DELIBERATELY OUT of DEPENDS on both indexes; exposed via CanonicalGraphQuery.docReferences() so existing impact_of answers are unchanged."
+    "references": "DELIBERATELY OUT of DEPENDS on both indexes. NOTE (corrected post-P3): edge exclusion alone did NOT keep existing answers unchanged \u2014 doc section nodes also had to be excluded from NAME-keyed resolution (DEFECT-1, fixed daf4899). See defect-1-name-collision.json.",
+    "instrument_limitation": "This filtered A/B compares graph CONTENT and cannot detect a query-semantics change; it passed byte-identical while DEFECT-1 was live."
   },
   "tests": {
     "doc_ingest_suite": "37/37 passed (30 + 7 new P2 gate contracts)"
