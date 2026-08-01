@@ -54,6 +54,7 @@ import type {
 import { resolveImports } from './import-resolver.js';
 import { resolveCalls } from './call-resolver.js';
 import { constructGraph } from './graph-builder.js';
+import { collectDocFacts } from './doc-ingest.js';
 import { applyScipOverlay } from './scip-overlay.js';
 import {
   buildFactSet,
@@ -236,6 +237,17 @@ export class PipelineOrchestrator {
     if (verbose) logger.info('[PipelineOrchestrator] Building dependency graph...');
     const graph = this.buildGraph(allElements, allImports, allCalls, allHeritage, projectPath);
 
+    // Step 4.4: governing-doc facts (WO-DOCS-TO-GRAPH-P1-...-001). Repo-global
+    // collection — deliberately NOT part of the per-file bundles above, so the
+    // incremental path re-collects identically (parity by construction).
+    const docIngest = collectDocFacts(projectPath);
+    if (verbose && (docIngest.docs.length > 0 || docIngest.skipped.length > 0)) {
+      logger.info(
+        `[PipelineOrchestrator] Doc ingest: ${docIngest.docs.length} doc fact(s), ` +
+          `${docIngest.skipped.length} skipped.`,
+      );
+    }
+
     // Step 4.5: Phase 3 — resolve imports against export tables and emit
     // resolved-import graph edges. resolveImports is a pure function over
     // state; it consumes rawExports / rawImports / headerImportFacts and
@@ -261,6 +273,7 @@ export class PipelineOrchestrator {
       callResolutions: [],
       routes: allRoutes,
       frontendCalls: allFrontendCalls,
+      docs: docIngest.docs,
       graph,
       sources,
       options,
@@ -550,6 +563,10 @@ export class PipelineOrchestrator {
     }
 
     const graph = this.buildGraph(allElements, allImports, allCalls, allHeritage, projectPath);
+    // Governing-doc facts: same repo-global collection the full path runs
+    // (Step 4.4) — the incremental path re-collects rather than caching, which
+    // is what keeps doc nodes/edges byte-identical to a full rebuild.
+    const docIngest = collectDocFacts(projectPath);
     const preResolveState: PipelineState = {
       projectPath, files,
       elements: allElements, imports: allImports, calls: allCalls,
@@ -558,6 +575,7 @@ export class PipelineOrchestrator {
       headerFacts: allHeaderFacts, headerImportFacts: allHeaderImportFacts,
       headerParseErrors: allHeaderParseErrors,
       routes: allRoutes, frontendCalls: allFrontendCalls,
+      docs: docIngest.docs,
       importResolutions: [], callResolutions: [], graph, sources, options,
       metadata: {
         startTime, filesScanned: set.order.length,

@@ -1,0 +1,130 @@
+{
+  "plan_type": "strict",
+  "goal": "Docs-to-graph P1 (docs phase of the standards rule-graph program): ingest resource-sheet + foundation-doc frontmatter as @Doc nodes with documents edges in graph.json (both adjacency indexes, full + incremental scan paths, repo-agnostic per-repo glob); centrality-ranked doc-coverage queue surfaced via map/orient; pack_context returns governing docs ranked projected-facts > approved prose > draft, never placeholder sections; includes 7-legacy-sheet frontmatter/sections backfill via generate-resource-sheet scaffold-then-review. Design + evidence: coderef/working/coderef-core/core-improvements-731/discovery-doc-graph-phase1.md",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Read the @Endpoint non-code-node template end-to-end as the implementation pattern: graph-builder.ts (EdgeRelationship union, node minting, evidence variants), graph-exporter.ts, BOTH adjacency indexes (query/canonical-graph.ts + cli/mcp/graph-tools.ts), output-validator.ts, context-packer.ts, and the resource-sheet/foundation-doc frontmatter shapes (documents:, related_files:, status:).",
+          "touches": [
+            "src/pipeline/graph-builder.ts",
+            "src/export/graph-exporter.ts",
+            "src/query/canonical-graph.ts",
+            "src/cli/mcp/graph-tools.ts",
+            "src/pipeline/output-validator.ts",
+            "src/context/context-packer.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "CHECK",
+          "description": "Baseline: confirm zero doc nodes/edges in the current graph; count sheets carrying documents: frontmatter and their status values; record the resource-sheet kind-checker verdict; persist all in analysis.json (explicit before-metrics, KZ-01KYTSCY).",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "WRITE",
+          "description": "Design record in analysis.json: @Doc/<slug> node id shape; new `documents` EdgeRelationship (doc -> file-grain node) + evidence variant carrying frontmatter provenance (status draft|approved, placeholder_sections count, sheet path); REPO-AGNOSTIC source config (per-repo glob over coderef/resource-sheets/ + coderef/foundation-docs/, never a hardcoded fleet layout); retrieval ranking contract projected-facts > approved prose > draft, placeholders never authority; OUT of scope: standards overlay (GX-005 P2 rides this machinery later), doc-content indexing (RAG owns content).",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "WRITE",
+          "description": "Implement the doc-ingestion module (e.g. src/pipeline/doc-ingest.ts): parse sheet frontmatter into DocNode facts + documents-edge facts. REMEDIATED per discovery.md (2026-08-01): (G1) foundation docs have NO frontmatter — ingest them as @Doc nodes anyway (slug from filename, doc_type='foundation', NO documents edges; sheets are the edge-bearing class); (G3) missing-target policy — documents: targets outside the scan universe are SKIPPED with a counted skip-reason, never a dangling resolved edge (GI-3 validator fail-close); (G4) legacy tolerances — missing status: defaults to 'draft', frontmatter-less sheets skip+count, parent_project ignored; (seam) doc-ingest does filesystem IO so it runs in BOTH orchestrator call sites (run() + runIncremental()) BEFORE the shared resolveFromMergedState/constructGraph chain, passing doc facts through state — constructGraph stays pure; incremental parity by construction.",
+          "touches": [
+            "src/pipeline/doc-ingest.ts",
+            "src/pipeline/orchestrator.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "Teach every graph surface the new node/edge kind: graph-builder emission, graph-exporter serialization, canonical-graph adjacency, mcp/graph-tools adjacency (the TWO-indexes gotcha), and output-validator invariants for @Doc nodes and documents edges. REMEDIATED (G2): file-grain nodes are minted ON-DEMAND today (endpoint edges only) — documents edges mint file-grain nodes for documented files via the SAME fileGrainNodeId helper, deduped by node id against endpoint-minted nodes. CONCURRENCY: GX-003 (live, other agent) edits src/cli/mcp/context-tools.ts + server.ts — do NOT touch those two files in this WO.",
+          "touches": [
+            "src/pipeline/graph-builder.ts",
+            "src/export/graph-exporter.ts",
+            "src/query/canonical-graph.ts",
+            "src/cli/mcp/graph-tools.ts",
+            "src/pipeline/output-validator.ts"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "EDIT",
+          "description": "Surface the leverage: pack_context returns a governing-docs block for the focus element (ranked by the T3 contract, provenance fields included); orient/codebase_summary report doc-coverage; map projection exposes the centrality-ranked doc-coverage gap queue (the identify-targets logic promoted into core where every agent hits it).",
+          "touches": [
+            "src/context/context-packer.ts",
+            "src/query/orient.ts",
+            "src/map/project-map-data.ts"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "TEST",
+          "description": "Unit tests for frontmatter parsing, node/edge minting, ranking order, placeholder exclusion, and both adjacency indexes returning documents edges; then tests_for_change and the full suite green with verified counts.",
+          "touches": [
+            "__tests__/pipeline/doc-ingest.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "CHECK",
+          "description": "After-metrics on a fresh self-scan diffed against T2: doc node/edge counts, coverage percentage, per-status breakdown; CLI/MCP parity spot-check (pack_context + one adjacency walk each side); persist diff in analysis.json.",
+          "touches": [
+            "analysis.json"
+          ]
+        },
+        {
+          "id": "P1-T9",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1 with the doc-coverage numbers in the body.",
+          "touches": []
+        },
+        {
+          "id": "P1-T10",
+          "verb": "STOP",
+          "description": "Hard stop: report doc-node counts, coverage queue, and readiness of the GX-005 standards overlay (P2) to the operator. NOTE: original sheets-first sequencing SUPERSEDED by operator instruction 2026-08-01 (/discover 'remediate then execute') — safe because the ranking contract is status-aware and ingestion re-runs on every scan, so post-review status flips are picked up by the next scan.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-MA13M5"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T075715Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-DOCS-TO-GRAPH-P1-DOCS-PHASE-OF-THE-001",
+  "feature_name": "docs-to-graph-p1-docs-phase-of-the",
+  "created": "2026-08-01T07:57:06.064008+00:00",
+  "plan_type_rationale": "Category feature maps to strict"
+}

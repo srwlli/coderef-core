@@ -193,6 +193,49 @@ export class CanonicalGraphQuery {
     return this.fileNodeId.get(normalizeSlashes(node.file));
   }
 
+  /**
+   * Governing docs for a query (WO-DOCS-TO-GRAPH-P1-...-001): the `@Doc/...`
+   * nodes whose resolved `documents` edges target the query's file(s).
+   *
+   * Ordered by the retrieval ranking contract (DR-DOCS-E): approved prose
+   * before draft, placeholder-free before placeholder-bearing within a
+   * status, deterministic id tiebreak. Placeholder-bearing docs are still
+   * RETURNED (surfaces, not verdicts) — `placeholderSections` on the result
+   * lets a consumer refuse them authority; ordering alone must not hide them.
+   *
+   * Only resolved edges are indexed (constructor invariant), so a sheet whose
+   * `documents:` target is outside the scan universe never appears here — it
+   * is reported by unresolved_edges instead.
+   */
+  governingDocs(query: string): Array<{ doc: ExportedNode; edge: ExportedEdge }> {
+    const resolution = this.resolve(query);
+    const fileIds = new Set<string>();
+    for (const node of resolution.nodes) {
+      if (node.id.startsWith('@File/')) fileIds.add(node.id);
+      const fileId = node.file ? this.fileNodeId.get(normalizeSlashes(node.file)) : undefined;
+      if (fileId) fileIds.add(fileId);
+    }
+    const hits: Array<{ doc: ExportedNode; edge: ExportedEdge }> = [];
+    const seenDocIds = new Set<string>();
+    for (const fileId of fileIds) {
+      for (const edge of this.inbound.get(fileId) ?? []) {
+        if (edge.relationship !== 'documents' || !edge.sourceId) continue;
+        if (seenDocIds.has(edge.sourceId)) continue;
+        const doc = this.nodeById.get(edge.sourceId);
+        if (!doc) continue;
+        seenDocIds.add(edge.sourceId);
+        hits.push({ doc, edge });
+      }
+    }
+    const rank = (h: { doc: ExportedNode }): number => {
+      const meta = (h.doc.metadata ?? {}) as { docStatus?: string; placeholderSections?: number };
+      const statusRank = meta.docStatus === 'approved' ? 0 : 1;
+      const placeholderRank = (meta.placeholderSections ?? 0) > 0 ? 1 : 0;
+      return statusRank * 2 + placeholderRank;
+    };
+    return hits.sort((a, b) => rank(a) - rank(b) || (a.doc.id < b.doc.id ? -1 : 1));
+  }
+
   private collectNeighbors(
     ids: Set<string>,
     direction: 'inbound' | 'outbound',

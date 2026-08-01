@@ -480,6 +480,22 @@ export function buildLookupTools(ctx: HandlerContext): LookupTools {
         }
       }
 
+      // Governing docs (WO-DOCS-TO-GRAPH-P1-...-001): resolved `documents`
+      // edges targeting this element's file, ranked by the retrieval contract
+      // (approved > draft; placeholder-bearing last, and flagged — placeholder
+      // prose is never authority). Empty array when the repo has no doc nodes.
+      const governingDocs = engine.governingDocs(node.id).map(({ doc, edge }) => {
+        const meta = (doc.metadata ?? {}) as Record<string, unknown>;
+        return {
+          id: doc.id,
+          sheet_path: meta.sheetPath,
+          doc_status: meta.docStatus,
+          placeholder_sections: meta.placeholderSections ?? 0,
+          doc_type: meta.docType,
+          edge_id: (edge as { id?: string }).id,
+        };
+      });
+
       const envelope: Record<string, unknown> = {
         element: node.id,
         identity: card.identity,
@@ -488,6 +504,7 @@ export function buildLookupTools(ctx: HandlerContext): LookupTools {
         references: card.references,
         test_linkage: card.test_linkage,
         staleness: card.staleness,
+        governing_docs: governingDocs,
         ...(source ? { source } : {}),
       };
       // Concise is a genuine token cut, not a marker: it keeps every COUNT +
@@ -520,6 +537,8 @@ export function buildLookupTools(ctx: HandlerContext): LookupTools {
           },
           test_linkage: { test_ref_count: card.test_linkage.test_ref_count },
           staleness: card.staleness,
+          // Count survives concise (surfaces-not-verdicts: totals never lost).
+          governing_docs: { total: governingDocs.length },
           format: 'concise' as const,
         };
       }

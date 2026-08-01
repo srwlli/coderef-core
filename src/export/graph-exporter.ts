@@ -47,7 +47,10 @@ export type ExportedGraphEdgeRelationship =
   // the only relationships whose endpoints may be `@Endpoint/...` pseudo-nodes,
   // and the only ones that cross a network boundary rather than a module one.
   | 'calls_endpoint'
-  | 'serves_endpoint';
+  | 'serves_endpoint'
+  // WO-DOCS-TO-GRAPH-P1-...-001: governing-doc edge; source is always a
+  // `@Doc/...` pseudo-node, target (when resolved) a `@File/...` node.
+  | 'documents';
 
 export type ExportedGraphEdgeResolutionStatus =
   | 'resolved'

@@ -55,6 +55,20 @@ export interface PackManifest {
    * bundle. Falls back to 1 when the uncompressed baseline is 0.
    */
   compressionRatio: number;
+  /**
+   * Governing docs for the focus element's file (WO-DOCS-TO-GRAPH-P1-...-001),
+   * ranked by the retrieval contract: approved > draft, placeholder-bearing
+   * last. STRUCTURE ONLY — paths + provenance, never doc content (RAG owns
+   * content). `placeholderSections > 0` means the sheet's prose contains
+   * unregenerated placeholder sections: never treat it as authority.
+   */
+  governingDocs: Array<{
+    id: string;
+    sheetPath?: string;
+    docStatus?: string;
+    docType?: string;
+    placeholderSections: number;
+  }>;
 }
 
 export interface PackResult {
@@ -174,6 +188,37 @@ export function packContext(
     compressed: false,
   });
 
+  // --- Governing docs (WO-DOCS-TO-GRAPH-P1-...-001): a structure-only block
+  // right after the focus. Lists WHICH sheets govern the focus file with
+  // ranked provenance — never their prose (the graph carries structure; RAG
+  // carries content). Emitted only when docs exist, so bundles for repos
+  // without doc nodes are byte-unchanged.
+  const governing = q.governingDocs(focusSummary.id);
+  const governingDocs = governing.map(({ doc }) => {
+    const meta = (doc.metadata ?? {}) as Record<string, unknown>;
+    return {
+      id: doc.id,
+      sheetPath: meta.sheetPath as string | undefined,
+      docStatus: meta.docStatus as string | undefined,
+      docType: meta.docType as string | undefined,
+      placeholderSections: (meta.placeholderSections as number | undefined) ?? 0,
+    };
+  });
+  if (governingDocs.length > 0) {
+    const docLines = governingDocs.map(d => {
+      const flags = [d.docStatus ?? 'unknown', d.docType ?? 'doc'];
+      if (d.placeholderSections > 0) flags.push(`${d.placeholderSections} placeholder section(s) — not authority`);
+      return `//   ${d.sheetPath ?? d.id} [${flags.join(', ')}]`;
+    });
+    const docBlock =
+      `// === governing docs (ranked: approved > draft; placeholders never authority) ===\n` +
+      docLines.join('\n');
+    blocks.push(docBlock);
+    const docBlockTokens = estimateTokens(docBlock);
+    runningTokens += docBlockTokens;
+    uncompressedIncludedTokens += docBlockTokens;
+  }
+
   // Track ids already emitted so a caller that is also a dependency (mutual
   // reference) is not double-counted in the bundle.
   const seenIds = new Set<string>([focusSummary.id]);
@@ -239,6 +284,7 @@ export function packContext(
       estTokens: bundleTokens,
       budget: tokenBudget,
       compressionRatio,
+      governingDocs,
     },
   };
 }

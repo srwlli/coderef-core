@@ -109,7 +109,10 @@ export type EdgeRelationship =
   | 'implements'
   // WO-API-SURFACE-MAPPING-...-001 P2 (REC-002): HTTP endpoint edges.
   | 'calls_endpoint'
-  | 'serves_endpoint';
+  | 'serves_endpoint'
+  // WO-DOCS-TO-GRAPH-P1-...-001: a governing doc (`@Doc/...` node) documenting
+  // a source file (`@File/...` node). Sourced via state.docs.
+  | 'documents';
 
 /**
  * Canonical edge resolution status (AC-03).
@@ -171,6 +174,18 @@ export type EdgeEvidence = (
       method: string;
       framework: string;
       declaredMethods: string[];
+    }
+  // WO-DOCS-TO-GRAPH-P1-...-001: provenance for a `documents` edge. docStatus
+  // and placeholderSections are what the retrieval ranking contract reads
+  // (projected-facts > approved > draft; placeholders never authority), so
+  // they ride the EDGE, not just the node — a consumer holding one edge can
+  // rank it without a second node lookup.
+  | {
+      kind: 'documents';
+      sheetPath: string;
+      docStatus: string;
+      placeholderSections: number;
+      documentsPath: string;
     }
 ) & {
   /**
@@ -385,6 +400,24 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
   for (const call of state.frontendCalls ?? []) {
     if (call.file) seenFiles.add(call.file);
   }
+  // WO-DOCS-TO-GRAPH-P1-...-001: same guarantee for documented files — but
+  // ONLY those inside the scan universe (state.sources). A resolved
+  // `documents` edge needs its `@File/...` target in graph.nodes (GI-2/GI-3),
+  // and a scanned file can lack elements/imports/calls. A `documents:` target
+  // OUTSIDE the universe must NOT mint a phantom file node — its edge is
+  // emitted unresolved instead (discovery G3 policy, buildEdges).
+  // Optional-chained: PipelineState declares sources, but pre-existing test
+  // states (and any legacy assembly) omit it — absence means "universe
+  // membership unknowable", which correctly yields zero in-universe targets.
+  const scannedFileIds = new Set<string>();
+  for (const sourceFile of state.sources?.keys() ?? []) {
+    scannedFileIds.add(fileGrainNodeId(sourceFile, projectPath));
+  }
+  for (const doc of state.docs ?? []) {
+    if (doc.documentsPath && scannedFileIds.has(fileGrainNodeId(doc.documentsPath, projectPath))) {
+      seenFiles.add(doc.documentsPath);
+    }
+  }
   // Dedupe on the NODE ID, not on the raw path string. `seenFiles` accumulates
   // whatever spelling each fact source recorded, and those spellings differ:
   // state.elements carries native platform paths (`C:\...\src\a.ts`) while
@@ -449,6 +482,35 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
         // them straight into graph.nodes without re-deriving the file-grain id.
         handlers: record.handlerFiles.map(f => fileGrainNodeId(f, projectPath)),
       },
+    });
+  }
+
+  // Emit doc pseudo-nodes (WO-DOCS-TO-GRAPH-P1-...-001). Like endpoint nodes
+  // they carry NO file and NO line — a doc is not a code location, and the
+  // file-less shape is what existing consumers (GI-6 duplicate-identity,
+  // project-map-data, canonical-graph file expansion) already know to skip.
+  // The artifact's own path lives in metadata.sheetPath. Sorted by id so node
+  // order is deterministic (AC-08); collectDocFacts already sorts, but the
+  // graph must not depend on a producer's ordering discipline.
+  for (const doc of [...(state.docs ?? [])].sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0))) {
+    const docMeta: Record<string, unknown> = {
+      codeRefId: doc.id,
+      codeRefIdNoLine: doc.id,
+      doc: true,
+      docType: doc.docType,
+      sheetPath: doc.sheetPath,
+      docStatus: doc.docStatus,
+      placeholderSections: doc.placeholderSections,
+    };
+    if (doc.subject !== undefined) docMeta.subject = doc.subject;
+    if (doc.task !== undefined) docMeta.task = doc.task;
+    if (doc.documentsPath !== undefined) docMeta.documentsPath = doc.documentsPath;
+    if (doc.relatedFiles.length > 0) docMeta.relatedFiles = doc.relatedFiles;
+    nodes.push({
+      id: doc.id,
+      type: 'doc',
+      name: doc.subject ?? doc.slug,
+      metadata: docMeta,
     });
   }
 
@@ -1128,6 +1190,50 @@ export function buildEdges(
       evidence,
       sourceLocation: { file: call.file, line: call.line },
       ...(methodInferred ? { reason: 'endpoint_method_undeclared_by_server' } : {}),
+    }));
+  }
+
+  // === documents edges (WO-DOCS-TO-GRAPH-P1-...-001) ===
+  //
+  // Direction: doc -> documented file, so `inbound(@File/x)` answers "which
+  // docs govern this file" — the query pack_context asks. Frontmatter-keyed
+  // resource sheets and explicitly opted-in reports may bear edges; foundation
+  // docs are generated repo-level nodes without per-file claims (DR-DOCS-D).
+  //
+  // A `documents:` target OUTSIDE the scan universe (deleted file, a scripts/
+  // dir, a typo) emits an UNRESOLVED edge — endpoint precedent: the claim is
+  // real and recorded, never dropped, and never a dangling resolved edge
+  // (GI-3 fail-close, discovery G3). buildNodes minted the `@File/...` target
+  // for every in-universe documented file, so nodeIdSet membership IS the
+  // universe test.
+  for (const doc of state.docs ?? []) {
+    if (doc.docType === 'foundation' || !doc.documentsPath) continue;
+    const targetId = fileGrainNodeId(doc.documentsPath, state.projectPath);
+    const inUniverse = nodeIdSet.has(targetId);
+    const evidence: EdgeEvidence = {
+      kind: 'documents',
+      sheetPath: doc.sheetPath,
+      docStatus: doc.docStatus,
+      placeholderSections: doc.placeholderSections,
+      documentsPath: doc.documentsPath,
+    };
+    const id = computeEdgeId({
+      sourceId: doc.id,
+      relationship: 'documents',
+      ...(inUniverse ? { targetId } : {}),
+      originSpecifier: doc.documentsPath,
+      sourceFile: doc.sheetPath,
+      line: 1,
+    });
+    edges.push(buildEdgeRecord({
+      id,
+      sourceId: doc.id,
+      ...(inUniverse ? { targetId } : {}),
+      relationship: 'documents',
+      resolutionStatus: inUniverse ? 'resolved' : 'unresolved',
+      evidence,
+      sourceLocation: { file: doc.sheetPath, line: 1 },
+      ...(inUniverse ? {} : { reason: 'documents_target_not_in_scan' }),
     }));
   }
 

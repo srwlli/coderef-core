@@ -1,0 +1,80 @@
+{
+  "workorder_id": "WO-DOCS-TO-GRAPH-P1-DOCS-PHASE-OF-THE-001",
+  "feature_name": "docs-to-graph-p1-docs-phase-of-the",
+  "created": "2026-08-01T07:57:06.064008+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\docs-to-graph-p1-docs-phase-of-the\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\docs-to-graph-p1-docs-phase-of-the\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\docs-to-graph-p1-docs-phase-of-the\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-MA13M5",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-MA13M5",
+      "plan_type": "strict",
+      "timestamp": "2026-08-01T07:57:06.064008+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 10,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/b2c4b05d-34f6-46c3-bf81-a42459146225/scratchpad/ma13m5-tasks.json",
+      "at": "2026-08-01T07:57:06.064008+00:00"
+    },
+    {
+      "event": "plan_remediation",
+      "source": "discovery.md gap-focused /discover (operator: remediate then execute)",
+      "gaps_closed": ["G1 foundation-docs-no-frontmatter", "G2 file-grain-on-demand", "G3 GI-3 missing-target policy", "G4 legacy frontmatter tolerances", "SEAM both-call-sites"],
+      "at": "2026-08-01T08:41:00Z"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-08-01T08:42:00Z"
+    },
+    {
+      "event": "alignment_gate",
+      "verdict": "warn",
+      "reason": "alignment_missing",
+      "at": "2026-08-01T08:42:00Z"
+    },
+    {
+      "event": "sequencing_supersession",
+      "note": "Operator instruction 2026-08-01 supersedes sheets-first parking (T10 note updated); STUB-CC9094 batch + frontier review still in flight; ingestion is status-aware and re-runs per scan.",
+      "at": "2026-08-01T08:42:00Z"
+    },
+    {
+      "event": "concurrency_check",
+      "peer": "WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001",
+      "overlap": "none (touch sets disjoint; this WO avoids src/cli/mcp/context-tools.ts + server.ts)",
+      "at": "2026-08-01T08:42:00Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T07:57:06.064008+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-MA13M5"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

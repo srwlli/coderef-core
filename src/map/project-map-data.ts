@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability map-data-projection
- * @exports MapElement, MapNode, MapEdge, MapHotspot, MapOverlays, MapMeta, MapData, MapProjectionError, ProjectMapDataOptions, projectMapData
+ * @exports MapElement, MapNode, MapEdge, MapHotspot, MapOverlays, MapDocCoverage, MapMeta, MapData, MapProjectionError, ProjectMapDataOptions, projectMapData
  * @used_by src/cli/coderef-map.ts, src/cli/coderef-mcp-server.ts, src/map/emit-map.ts
  */
 
@@ -120,6 +120,32 @@ export interface MapOverlays {
   cycles: string[][];
 }
 
+/**
+ * Doc-coverage block (WO-DOCS-TO-GRAPH-P1-...-001): the governing-doc surface
+ * projected to file grain, plus the centrality-ranked authoring queue — the
+ * identify-targets "which file deserves a sheet next" logic promoted into
+ * core, where every agent reading the map hits it.
+ */
+export interface MapDocCoverage {
+  /** `@Doc/...` nodes in the graph. */
+  docNodes: number;
+  /** Doc nodes by docStatus (draft/approved/generated/...). */
+  byStatus: Record<string, number>;
+  /** Resolved `documents` edges (doc -> in-scan file). */
+  documentsEdges: number;
+  /** Sheets whose `documents:` target left the scan universe. */
+  unresolvedDocumentsEdges: number;
+  /** Distinct files with at least one governing doc. */
+  documentedFiles: number;
+  /**
+   * Files with NO governing doc, ranked by hotspotScore descending — the
+   * doc-coverage gap queue. Surfaces, not verdicts: rank says WHERE doc
+   * leverage is, not that a doc is required.
+   */
+  coverageQueue: Array<{ file: string; hotspotScore: number }>;
+  coverageQueueTruncated: boolean;
+}
+
 export interface MapMeta {
   schemaVersion: string;
   projectPath: string;
@@ -168,6 +194,13 @@ export interface MapData {
    * A present block with `endpointCount: 0` is a real measurement.
    */
   api?: MapApiSurface;
+  /**
+   * Governing-doc coverage + authoring queue (WO-DOCS-TO-GRAPH-P1-...-001).
+   * ABSENT means the graph carries no `@Doc` nodes — either the populate
+   * pipeline predates doc ingestion or the repo has no documentation surface
+   * (a declared warning distinguishes nothing further; both are no-data).
+   */
+  docs?: MapDocCoverage;
 }
 
 export class MapProjectionError extends Error {
@@ -667,11 +700,59 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     }
   }
 
+  // ---- doc coverage (WO-DOCS-TO-GRAPH-P1-...-001) ---------------------------
+  //
+  // Presence gated on the graph actually carrying `@Doc` nodes: a graph built
+  // before doc ingestion shipped and a repo with no documentation surface both
+  // yield zero doc nodes, and both are NO-DATA, not "fully undocumented".
+  let docsBlock: MapDocCoverage | undefined;
+  {
+    const docGraphNodes = graphNodes.filter(
+      n => typeof n.id === 'string' && n.id.startsWith('@Doc/'),
+    );
+    if (docGraphNodes.length > 0) {
+      const byStatus: Record<string, number> = {};
+      for (const n of docGraphNodes) {
+        const status = String((n.metadata as { docStatus?: unknown } | undefined)?.docStatus ?? 'unknown');
+        byStatus[status] = (byStatus[status] || 0) + 1;
+      }
+      const documentsEdges = graphEdges.filter(e => e.relationship === 'documents');
+      const resolvedDocEdges = documentsEdges.filter(
+        e => e.resolutionStatus === 'resolved' && typeof e.targetId === 'string',
+      );
+      // `@File/<rel>` locator === MapNode.id (both are project-relative posix).
+      const documentedFiles = new Set(
+        resolvedDocEdges.map(e => (e.targetId as string).replace(/^@File\//, '')),
+      );
+      const queueCap = 25;
+      const undocumented = nodes
+        .filter(n => !documentedFiles.has(n.id))
+        .sort((a, b) => b.hotspotScore - a.hotspotScore || (a.id < b.id ? -1 : 1));
+      docsBlock = {
+        docNodes: docGraphNodes.length,
+        byStatus,
+        documentsEdges: resolvedDocEdges.length,
+        unresolvedDocumentsEdges: documentsEdges.length - resolvedDocEdges.length,
+        documentedFiles: documentedFiles.size,
+        coverageQueue: undocumented
+          .slice(0, queueCap)
+          .map(n => ({ file: n.id, hotspotScore: n.hotspotScore })),
+        coverageQueueTruncated: undocumented.length > queueCap,
+      };
+    } else {
+      warnings.push(
+        'docs block omitted: graph carries no @Doc nodes (populate predates doc ingestion, or the ' +
+        'repo has no coderef/resource-sheets|foundation-docs surface). No-data, not "undocumented".',
+      );
+    }
+  }
+
   const projectPath = normalizeSlashes(path.resolve(projectRoot));
   return {
     meta: {
       // 1.6.0 -> 1.7.0: additive `api` block. Legacy consumers ignore it.
-      schemaVersion: '1.7.0',
+      // 1.7.0 -> 1.8.0: additive `docs` block (WO-DOCS-TO-GRAPH-P1-...-001).
+      schemaVersion: '1.8.0',
       projectPath,
       repoName: path.basename(projectPath),
       generatedAt: new Date().toISOString(),
@@ -692,5 +773,6 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     ...(git ? { git } : {}),
     ...(ownership ? { ownership } : {}),
     ...(api ? { api } : {}),
+    ...(docsBlock ? { docs: docsBlock } : {}),
   };
 }

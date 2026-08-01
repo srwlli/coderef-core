@@ -35,6 +35,7 @@ import type {
   SymbolTableEntry,
 } from './call-resolver.js';
 import type { RouteFact, FrontendCallFact } from './extractors/route-extractor.js';
+import type { DocFact } from './doc-ingest.js';
 import type {
   ValidationError,
   ValidationWarning,
@@ -202,6 +203,14 @@ export interface PipelineState {
    */
   routes?: RouteFact[];
   frontendCalls?: FrontendCallFact[];
+  /**
+   * Governing-documentation facts (WO-DOCS-TO-GRAPH-P1-...-001). Repo-global —
+   * re-collected fresh by BOTH pipeline paths via collectDocFacts(projectPath),
+   * never stored in the incremental byFile fact set. Optional so pre-existing
+   * state assemblies and tests type-check; missing/empty means the collector
+   * did not run (NO-DATA), not "this repo has no docs".
+   */
+  docs?: DocFact[];
   /** Dependency graph with nodes and edges */
   graph: ExportedGraph;
   /** Source code content indexed by file path */

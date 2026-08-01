@@ -262,6 +262,8 @@ const VALID_RELATIONSHIPS = new Set<string>([
   // WO-API-SURFACE-MAPPING-...-001 P2 (REC-002): HTTP endpoint edges.
   'calls_endpoint',
   'serves_endpoint',
+  // WO-DOCS-TO-GRAPH-P1-...-001: governing-doc edges (@Doc -> @File).
+  'documents',
 ]);
 
 /** Canonical EdgeResolutionStatus enum (mirrors graph-builder.ts EdgeResolutionStatus). */

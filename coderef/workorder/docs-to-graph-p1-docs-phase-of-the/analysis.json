@@ -1,0 +1,122 @@
+{
+  "workorder_id": "WO-DOCS-TO-GRAPH-P1-DOCS-PHASE-OF-THE-001",
+  "feature_name": "docs-to-graph-p1-docs-phase-of-the",
+  "analysis_authored_at": "2026-08-01T07:57:06.064008+00:00",
+  "plan_remediation": {
+    "remediated_at": "2026-08-01T08:40:00Z",
+    "source": "discovery.md (gap-focused /discover, depth=medium, 2026-08-01)",
+    "gaps_closed": [
+      {
+        "id": "G1",
+        "severity": "critical",
+        "finding": "All 8 foundation docs are plain markdown with NO frontmatter; plan assumed documents:/related_files: keys there.",
+        "remediation": "T4: foundation docs ingest as @Doc nodes from filename slug with doc_type='foundation' and NO documents edges; resource sheets are the edge-bearing class."
+      },
+      {
+        "id": "G2",
+        "severity": "warning",
+        "finding": "File-grain nodes are minted on-demand for endpoint edges only (graph-builder.ts:345-378), not universally.",
+        "remediation": "T5: documents edges mint file-grain nodes via the SAME fileGrainNodeId helper, deduped by id against endpoint-minted nodes."
+      },
+      {
+        "id": "G3",
+        "severity": "critical",
+        "finding": "output-validator GI-3 fail-closes on dangling resolved edges; a documents: target outside the scan universe would leave graph.json unwritten.",
+        "remediation": "T4: missing-target policy — skip with counted skip-reason, never emit a dangling resolved edge."
+      },
+      {
+        "id": "G4",
+        "severity": "warning",
+        "finding": "Legacy sheets missing status: (scanner also parent_project: lloyd); SCRIPTS sheet has no frontmatter at all.",
+        "remediation": "T4: missing status defaults to 'draft'; frontmatter-less sheets skip+count; parent_project ignored."
+      },
+      {
+        "id": "SEAM",
+        "severity": "info",
+        "finding": "run() and runIncremental() converge on resolveFromMergedState -> constructGraph (orchestrator.ts:502-570); constructGraph is pure/sync.",
+        "remediation": "T4: doc-ingest (filesystem IO) runs in BOTH orchestrator call sites before the shared chain, passing doc facts through state."
+      }
+    ],
+    "concurrency_note": "GX-003 rename-apply WO live under another agent: zero file overlap with this WO's touch set; this WO must NOT edit src/cli/mcp/context-tools.ts or src/cli/mcp/server.ts; metrics scans taken atomically with freshness checks (shared dist/ + .coderef/ state).",
+    "sequencing_note": "Original sheets-first parking superseded by operator instruction 2026-08-01 ('remediate then execute'); safe because ranking is status-aware and ingestion re-runs each scan.",
+    "out_of_scope_defect": "foundation-docs 'Last Updated' line carries ~47 runaway '(auto-enhanced)' suffixes (non-idempotent enhancer append) — separate ticket candidate, REC-005."
+  },
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/orchestrator.ts",
+      "src/pipeline/graph-builder.ts",
+      "src/export/graph-exporter.ts",
+      "src/query/canonical-graph.ts",
+      "src/cli/mcp/graph-tools.ts",
+      "src/pipeline/output-validator.ts",
+      "src/context/context-packer.ts",
+      "src/query/orient.ts",
+      "src/map/project-map-data.ts"
+    ],
+    "files_created": [
+      "src/pipeline/doc-ingest.ts",
+      "__tests__/pipeline/doc-ingest.test.ts"
+    ],
+    "downstream_consumers": [
+      "mcp pack_context / orient / map tools",
+      "CLI coderef-query + coderef-map mirrors",
+      "GX-005 standards overlay (P2 rides this machinery)"
+    ]
+  },
+  "risks": [
+    "GI-3 validator fail-close if missing-target policy regresses (graph.json unwritten)",
+    "TWO adjacency indexes must both learn documents edges (canonical-graph + mcp/graph-tools)",
+    "incremental store keying defect (FU-4, pre-existing) — doc facts must not route through byFile absolute-key writeback"
+  ],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "before_metrics": {
+    "captured_at": "2026-08-01T08:52:00Z",
+    "graph": { "nodes": 3662, "edges": 43832, "doc_nodes": 0, "documents_edges": 0, "node_types": ["class", "constant", "file", "function", "interface", "method", "type"] },
+    "sheets": { "total": 18, "with_documents_key": 12, "no_frontmatter": 1, "status_counts": { "approved": 5, "draft": 12, "missing": 0 } },
+    "foundation_docs": 8,
+    "caveat": "STUB-CC9094 batch + frontier review IN FLIGHT during this WO — sheet counts/statuses are a moving snapshot; T8 re-censuses at after-metrics time.",
+    "kind_checker_snapshot": "mid-batch: pass=3 warn=1 fail=2 skip=3 (SCRIPTS sheet = known frontmatter-less FAIL)"
+  },
+  "after_metrics": {
+    "captured_at": "2026-08-01T09:05:00Z",
+    "graph": { "nodes": 3718, "edges": 44495, "doc_nodes": 27, "documents_edges_resolved": 14, "documents_edges_unresolved": 0, "documented_files": 14 },
+    "doc_nodes_by_type": { "resource-sheet": 19, "foundation": 8, "report": 0 },
+    "doc_nodes_by_status": { "approved": 5, "draft": 14, "generated": 8 },
+    "diff_vs_before": { "doc_nodes": "+27 (was 0)", "documents_edges": "+14 (was 0)", "nodes": "3662 -> 3718", "edges": "43832 -> 44495 (includes this WO's own new code)" },
+    "surface_spot_checks": {
+      "governingDocs_engine": "governingDocs('src/parser/parser.ts') -> parser sheet (draft) — PASS",
+      "pack_context": "manifest.governingDocs populated + ranked bundle block present — PASS (flows to CLI+MCP wrappers untouched)",
+      "map_projection": "docs block schemaVersion 1.8.0: 27 nodes / 14 edges / coverage queue live (top gap: grammar-registry.ts hotspot 124, mcp graph-tools 109) — PASS",
+      "mcp_adjacency": "cache.inbound documents-edge lookup unit-tested (adjacency index 2) + symbol_context.governing_docs wired — PASS",
+      "orient": "condenseSummary docs block unit-tested (emitted only when @Doc nodes exist) — PASS"
+    },
+    "incremental_parity": "BLOCKED at E2E by the PRE-EXISTING incremental-store keying defect (absolute-vs-relative byFile merge -> duplicate node ids -> GI-1 fail-close; STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 class, same as GX-002 deviation). NOT introduced by this WO: doc facts deliberately bypass the byFile store and are re-collected identically in both call sites (unit-proven determinism). Artifacts restored via full scan after the repro.",
+    "suite": "2496 passed / 26 skipped / 0 failed (vitest exit 0) — includes 14 doc-ingest tests; 4 map-test schemaVersion pins updated 1.7.0 -> 1.8.0",
+    "mid_execution_extension": "A concurrent contributor extended doc-ingest with an opt-in 'report' lane (ingestion_candidate: true frontmatter, recursive coderef/ discovery, reserved-path dedupe) + matching tests; adopted into this WO's verify scope, suite green over the union.",
+    "environmental_note": "First two suite runs showed 21/26 spurious CLI-spawn timeouts caused by the concurrent Ollama sheet-batch CPU load; all passed on the quiet machine."
+  },
+  "decision_records": [
+    {
+      "id": "DR-DOCS-A",
+      "decision": "@Doc node id = '@Doc/<repo-relative-posix-path>' (full sheet/doc path, extension kept), mirroring @File/<path> exactly. Zero collision risk, deterministic, invertible. Node type='doc'; NO file/line on the node (endpoint precedent — GI-6/map/canonical-graph consumers already skip file-less nodes); metadata carries sheetPath, docType ('resource-sheet'|'foundation'), docStatus, placeholderSections, subject, task, relatedFiles."
+    },
+    {
+      "id": "DR-DOCS-B",
+      "decision": "'documents' EdgeRelationship: @Doc node -> @File/<documented-file> file-grain node (direction: doc documents file; walk docsFor(file) via inbound index). Resolved ONLY when the documented file is in the scan universe (state.sources); otherwise emitted UNRESOLVED with reason 'documents_target_not_in_scan' — endpoint precedent: never dropped, never a dangling resolved edge (GI-3 safe). Evidence variant { kind: 'documents', sheetPath, docStatus, placeholderSections, documentsPath }. Documented in-universe files are added to the file-grain seenFiles set (same guarantee pattern as routes/frontendCalls) via the SAME fileGrainNodeId helper."
+    },
+    {
+      "id": "DR-DOCS-C",
+      "decision": "Doc facts are REPO-GLOBAL, not per-file bundle facts: collected fresh each scan (sync fs, deterministic sorted glob over coderef/resource-sheets/*.md + coderef/foundation-docs/*.md relative to projectPath — repo-agnostic per-repo convention, no fleet layout). They deliberately do NOT enter the incremental byFile fact store (sidesteps the FU-4 absolute-key writeback defect entirely); collection runs in BOTH orchestrator call sites (run() + assembleAndResolve()) before constructGraph, passed through state.docs — constructGraph stays pure, incremental parity by construction."
+    },
+    {
+      "id": "DR-DOCS-D",
+      "decision": "Foundation docs (no frontmatter, G1): ingested as @Doc nodes with docType='foundation', slug from filename, docStatus='generated', NO documents edges — resource sheets are the edge-bearing class. Frontmatter-less sheets (SCRIPTS): skipped with counted skip-reason. Missing status: defaults 'draft'. parent_project ignored."
+    },
+    {
+      "id": "DR-DOCS-E",
+      "decision": "Retrieval ranking contract (pack_context governing-docs block): projected-facts > approved prose > draft; placeholder sections NEVER authority (placeholderSections>0 flagged; block orders approved before draft, annotates provenance). Surfacing lives in the ENGINES (packContext, condenseSummary, projectMapData) so CLI+MCP wrappers inherit with zero wrapper edits — required by the GX-003 concurrency constraint (context-tools.ts/server.ts untouchable this WO). OUT of scope: standards overlay (GX-005 P2), doc-content indexing (RAG owns content)."
+    }
+  ]
+}

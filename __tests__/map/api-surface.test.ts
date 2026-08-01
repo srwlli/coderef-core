@@ -68,7 +68,7 @@ afterAll(() => {
 describe('api-surface projection', () => {
   it('folds endpoints, handlers, callers and network edges', () => {
     const data = projectMapData(repo);
-    expect(data.meta.schemaVersion).toBe('1.7.0');
+    expect(data.meta.schemaVersion).toBe('1.8.0');
     const api = data.api!;
     expect(api.summary.endpointCount).toBe(2);
     expect(api.summary.resolvedCallCount).toBe(1);

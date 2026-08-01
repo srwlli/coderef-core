@@ -174,7 +174,11 @@ export function rankHotspotsFromGraph(
  */
 export function condenseSummary(
   index: { totalElements?: number; elements?: unknown[]; elementsByType?: Record<string, number>; generatedAt?: string } | null,
-  graph: { statistics?: { nodeCount?: number; edgeCount?: number; edgesByType?: Record<string, number> } } | null,
+  graph: {
+    statistics?: { nodeCount?: number; edgeCount?: number; edgesByType?: Record<string, number> };
+    nodes?: Array<{ id?: string; metadata?: Record<string, unknown> }>;
+    edges?: Array<{ relationship?: string; resolutionStatus?: string; targetId?: string }>;
+  } | null,
 ): Record<string, unknown> | null {
   if (!index && !graph) return null;
   const out: Record<string, unknown> = {};
@@ -189,6 +193,32 @@ export function condenseSummary(
       edges: graph.statistics?.edgeCount ?? null,
       edges_by_type: graph.statistics?.edgesByType ?? {},
     };
+    // Doc-coverage topline (WO-DOCS-TO-GRAPH-P1-...-001). Emitted ONLY when
+    // the graph carries doc nodes, so orient envelopes for repos without a
+    // documented surface are byte-unchanged. Counts, not verdicts: an
+    // unresolved documents edge is a sheet whose target left the scan
+    // universe — surfaced here, detailed by unresolved_edges.
+    if (Array.isArray(graph.nodes)) {
+      const docNodes = graph.nodes.filter(n => typeof n?.id === 'string' && n.id.startsWith('@Doc/'));
+      if (docNodes.length > 0) {
+        const byStatus: Record<string, number> = {};
+        for (const n of docNodes) {
+          const status = String((n.metadata as { docStatus?: unknown } | undefined)?.docStatus ?? 'unknown');
+          byStatus[status] = (byStatus[status] || 0) + 1;
+        }
+        const documentsEdges = Array.isArray(graph.edges)
+          ? graph.edges.filter(e => e?.relationship === 'documents')
+          : [];
+        const resolved = documentsEdges.filter(e => e.resolutionStatus === 'resolved');
+        out.docs = {
+          doc_nodes: docNodes.length,
+          by_status: byStatus,
+          documents_edges: resolved.length,
+          unresolved_documents_edges: documentsEdges.length - resolved.length,
+          documented_files: new Set(resolved.map(e => e.targetId)).size,
+        };
+      }
+    }
   }
   return out;
 }
