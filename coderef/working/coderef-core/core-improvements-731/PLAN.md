@@ -16,7 +16,9 @@ Track, plan, and execute the remaining high-leverage feature extraction gaps ide
 ## Detailed Breakdown of Where coderef-core Lacks
 
 ### 1. Scope-Stack Receiver Type Inference (GX-002 — Critical Gap)
-* **What's missing:** Currently, `coderef-core` cannot resolve method calls on local variables or prototypes (`x.toFixed()`, `element.slice()`). Out of ~17,280 unresolved edges in `coderef-core`, **62% (10,691 edges)** fail because of `receiver_not_in_symbol_table`.
+* **What's missing:** Currently, `coderef-core` cannot resolve method calls on local variables or prototypes (`x.toFixed()`, `element.slice()`). ~~Out of ~17,280 unresolved edges in `coderef-core`, **62% (10,691 edges)** fail because of `receiver_not_in_symbol_table`.~~
+
+  > **CORRECTED 2026-08-01 — do not quote the struck figure.** Measured on a clean scan at HEAD `41293bc`, the real population is **547 non-test src `receiver_not_in_symbol_table` edges**, which is **67% of the honest unresolved total (813)**. The 17,280 / 10,691 pair was taken against a scan universe polluted by the stale `dist-preXR` build tree (3,049 unresolved edges, 79% of `unresolved_src_count`) and before the test-DSL population was dispositioned. Intermediate figures 5,050 / 2,137 / 1,788 / 1,203 are all dead too. The share held (62% → 67%); only the absolute collapsed, by ~19x. See `EVIDENCE-scope-001-repopulate.md` and the `measured_baseline` block in the WO-RESOLVE-62 plan.
 * **The Comp (Stack Graphs by GitHub):** Stack Graphs builds a scope-chain binding table (e.g., tracking `const x = new Foo()`) so that subsequent `x.method()` calls resolve deterministically to `Foo.method()`.
 * **Fix:** Build a local-variable type inference pass on top of `call-resolver.ts`.
 
@@ -44,7 +46,7 @@ Track, plan, and execute the remaining high-leverage feature extraction gaps ide
 ## Approach Options
 
 1. **Option A: Phased Implementation via Sub-Workorders**
-   * Execute `GX-002` first (highest leverage, resolves 62% of unresolved call edges).
+   * Execute `GX-002` first (highest leverage — the `receiver_not_in_symbol_table` class is 67% of the honest unresolved population; see the CORRECTED note above for why the old "62% of 10,691" absolute is dead).
    * Follow with `GX-003` (symbol-level rename apply path).
    * Follow with `GX-004` (Tree-sitter context compression).
    * Conclude with `GX-005` (Standards-to-Code GraphRAG & Refactoring Alignment Layer).
