@@ -51,6 +51,7 @@ import type {
 } from './types.js';
 import type { ElementData } from '../types/types.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
+import { loadWorkspaceRegistry, type WorkspaceRegistry } from './workspace-registry.js';
 
 /**
  * Classification of a single resolved import binding. Every RawImportFact
@@ -140,8 +141,19 @@ export interface ImportResolution {
    *   'symbol_not_in_module_exports'      (stale header)
    *   'dynamic_import'                    (dynamic kind)
    *   'type_only_import'                  (typeOnly kind)
+   *   'workspace_package'                 (external via workspace registry)
    */
   reason?: string;
+  /**
+   * Workspace linkage (WO-CROSS-REPO-WORKSPACE-LINKAGE-001, opt-in via
+   * .coderef/workspace.json). Set when the bare specifier's package name is
+   * mapped in the workspace registry: the package name and the ABSOLUTE
+   * sibling project root it maps to. kind stays 'external' — no new
+   * ImportResolutionKind, no new edge kind; cross-repo traversal is a
+   * query-time projection over these tags, never a persisted edge.
+   */
+  workspacePackage?: string;
+  workspaceRoot?: string;
 }
 
 /**
@@ -178,6 +190,7 @@ export function resolveImports(state: PipelineState): ImportResolution[] {
   // Pass 1: build export tables (and load tsconfig + package.json once).
   const exportTables = buildExportTables(state);
   const externalSet = loadExternalSet(state.projectPath);
+  const workspace = loadWorkspaceRegistry(state.projectPath);
   const pathsMap = loadTsconfigPaths(state.projectPath);
   const projectFiles = collectProjectFiles(state);
 
@@ -197,7 +210,37 @@ export function resolveImports(state: PipelineState): ImportResolution[] {
     projectFiles,
   );
 
-  return [...astResolutions, ...headerResolutions];
+  const resolutions = [...astResolutions, ...headerResolutions];
+  applyWorkspaceLinkage(resolutions, workspace);
+  return resolutions;
+}
+
+/**
+ * Workspace-linkage enrichment (WO-CROSS-REPO-WORKSPACE-LINKAGE-001). For
+ * each resolution whose bare specifier's package name is mapped in the
+ * workspace registry, stamp workspacePackage/workspaceRoot; an 'unresolved'
+ * bare specifier (workspace sibling not npm-installed) upgrades to
+ * 'external' with reason='workspace_package'. Builtin/stdlib dispositions
+ * are never touched. Empty registry (the default) = provable no-op.
+ */
+export function applyWorkspaceLinkage(
+  resolutions: ImportResolution[],
+  workspace: WorkspaceRegistry,
+): void {
+  if (workspace.size === 0) return;
+  for (const r of resolutions) {
+    if (r.kind !== 'external' && r.kind !== 'unresolved') continue;
+    if (r.reason === 'node_builtin' || r.reason === 'python_stdlib') continue;
+    if (!isBareSpecifier(r.originSpecifier)) continue;
+    const root = workspace.get(extractPackageName(r.originSpecifier));
+    if (root === undefined) continue;
+    r.workspacePackage = extractPackageName(r.originSpecifier);
+    r.workspaceRoot = root;
+    if (r.kind === 'unresolved') {
+      r.kind = 'external';
+      r.reason = 'workspace_package';
+    }
+  }
 }
 
 /**

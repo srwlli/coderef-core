@@ -1,0 +1,60 @@
+{
+  "workorder_id": "WO-CROSS-REPO-WORKSPACE-LINKAGE-001",
+  "feature_name": "cross-repo-workspace-linkage",
+  "analysis_authored_at": "2026-08-01T12:12:22Z",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [
+    {
+      "id": "RISK-1",
+      "title": "Behavior change with no registry present",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "absent-file short-circuit; P1-T1 vs P1-T7 fingerprint identity is the acceptance gate"
+    },
+    {
+      "id": "RISK-2",
+      "title": "Pass-2 purity regression (P12 deferral blocker)",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "registry read joins pass 1 beside loadExternalSet; pass 2 stays pure lookup"
+    },
+    {
+      "id": "RISK-3",
+      "title": "Adjacency-index miss if a new edge kind were added",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "v1 adds NO kinds - metadata-only tagging; stitching is query-time"
+    },
+    {
+      "id": "RISK-4",
+      "title": "Stale sibling graph yields stale cross-repo impact",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "impact_of --workspace surfaces each sibling's staleness block; documented trust rule"
+    }
+  ],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-1",
+      "decision": "kind:'external' + metadata tagging, NOT a new ImportResolutionKind or edge kind (v1)",
+      "rationale": "avoids AC-01 enumeration churn and the dual adjacency-index trap; upgrade path to a first-class kind stays open"
+    },
+    {
+      "id": "DR-2",
+      "decision": "cross-repo traversal is QUERY-TIME stitching, never persisted edges",
+      "rationale": "same persisted-fact vs projection split as the GX-005 governed_by/violates ruling; sibling graphs age independently"
+    },
+    {
+      "id": "DR-3",
+      "decision": "executes after WO-DECOUPLE-PIPELINEORCHESTRATOR-... (operator ruling A 2026-08-01)",
+      "rationale": "lands on a parity-proven pipeline and reuses its fingerprint instrument"
+    }
+  ]
+}

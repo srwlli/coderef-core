@@ -149,7 +149,7 @@ export type EdgeEvidence = (
   | { kind: 'resolved-import'; resolvedModuleFile: string; originSpecifier: string; localName: string }
   | { kind: 'unresolved-import'; originSpecifier: string; reason: string }
   | { kind: 'ambiguous-import'; originSpecifier: string; candidates: string[] }
-  | { kind: 'external-import'; originSpecifier: string; packageName?: string }
+  | { kind: 'external-import'; originSpecifier: string; packageName?: string; workspacePackage?: string; workspaceRoot?: string }
   | { kind: 'resolved-call'; calleeName: string; receiverText: string; scopePath: string }
   | { kind: 'unresolved-call'; calleeName: string; receiverText: string; reason: string }
   | { kind: 'ambiguous-call'; calleeName: string; receiverText: string; candidates: string[] }
@@ -825,7 +825,18 @@ export function buildEdges(
     });
     let evidence: EdgeEvidence;
     if (ir.kind === 'external') {
-      evidence = { kind: 'external-import', originSpecifier: ir.originSpecifier };
+      // Workspace linkage rides evidence as OPTIONAL fields (WO-CROSS-REPO-
+      // WORKSPACE-LINKAGE-001): absent registry = absent fields = byte-
+      // identical edges. No new evidence variant, no new edge kind — the
+      // adjacency indexes learn nothing new.
+      evidence = ir.workspacePackage !== undefined
+        ? {
+            kind: 'external-import',
+            originSpecifier: ir.originSpecifier,
+            workspacePackage: ir.workspacePackage,
+            workspaceRoot: ir.workspaceRoot,
+          }
+        : { kind: 'external-import', originSpecifier: ir.originSpecifier };
     } else if (ir.kind === 'ambiguous' && ir.candidates && ir.candidates.length > 0) {
       evidence = {
         kind: 'ambiguous-import',

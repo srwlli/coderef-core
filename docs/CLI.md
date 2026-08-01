@@ -42,7 +42,7 @@ node dist/src/cli/index.js <command>
 | [`coderef-scan-frontend-calls`](#coderef-scan-frontend-calls) | Scan a project for frontend API calls -> `.coderef/frontend-calls.json` (aliased from the deprecated `scan-frontend-calls`) | `--project-dir`, `--output`, `--extensions` |
 | [`coderef-validate-routes`](#coderef-validate-routes) | Validate detected frontend calls against detected server routes (404/405/unused) (aliased from the deprecated `validate-routes`) | `--project-dir`, `--frontend-calls`, `--server-routes`, `--fail-on-critical`, `--output` |
 | [`coderef-analyze`](#coderef-analyze) | Run a single analysis pass (config, contracts, DB, patterns, complexity, impact, breaking-changes, etc.) | `--project`, `--type`, `--output`, `--element`, `--depth`, `--from`, `--to` |
-| [`coderef-query`](#coderef-query) | Execute a relationship query over canonical `.coderef/graph.json` (calls, imports, depends-on, shortest-path, all-paths) | `--project`, `--type`, `--target`, `--source`, `--depth`, `--format` |
+| [`coderef-query`](#coderef-query) | Execute a relationship query over canonical `.coderef/graph.json` (calls, imports, depends-on, shortest-path, all-paths) | `--project`, `--type`, `--target`, `--source`, `--depth`, `--format`, `--workspace` |
 | [`coderef-detect-languages`](#coderef-detect-languages) | Detect programming languages used in a project | `--project`, `--ignore-file`, `--json` |
 | [`coderef-semantic-integration`](#coderef-semantic-integration) | Run semantic header generation and registry sync | `--project`, `--output`, `--registry`, `--dry-run`, `--file`, `--validate-idempotency` |
 
@@ -1024,7 +1024,7 @@ The three `.coderef`-WRITE tools (`reindex`, `rag_index`, `map`) are likewise pe
 |------|---------------------|
 | `what_calls` | Which resolved call sites invoke this element? (inbound call edges, with `file:line` locations + a `confidence` tier per caller). `min_confidence` (`exact`\|`strong`\|`heuristic`\|`inferred`) keeps only callers at/above a tier |
 | `what_imports` | Which modules/elements import this element? (inbound resolved import edges) |
-| `impact_of` | What breaks if this changes? Transitive inbound dependents via reverse BFS (depth 1–10, default 3), with dependents-by-depth and affected files. `min_confidence` tightens the traversal to a tier floor (counts shrink monotonically as the floor rises) |
+| `impact_of` | What breaks if this changes? Transitive inbound dependents via reverse BFS (depth 1–10, default 3), with dependents-by-depth and affected files. `min_confidence` tightens the traversal to a tier floor (counts shrink monotonically as the floor rises). `workspace: true` (opt-in) appends a cross-repo `workspace` block: `.coderef/workspace.json` composed with sibling graphs — per-sibling outbound/inbound package-grain links, disclosed skips, nothing persisted |
 | `find_element` | Look up elements in `index.json` by name, codeRefId, or file substring; optional type filter; returns layer/capability when annotated |
 | `codebase_summary` | Project totals: elements by type, header coverage, graph node/edge counts by relationship |
 | `validation_status` | The 14-field locked `ValidationReport` verbatim, plus a pass/fail summary |

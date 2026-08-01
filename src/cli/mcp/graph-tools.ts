@@ -18,6 +18,7 @@
  */
 
 import { ALL_PATHS_MAX } from '../../query/canonical-graph.js';
+import { stitchWorkspace } from '../../query/workspace-stitch.js';
 import { type EdgeConfidenceTier, meetsMinConfidence } from '../../pipeline/edge-confidence.js';
 import { normalizeSlashes } from '../../utils/path-normalize.js';
 import {
@@ -329,7 +330,7 @@ export function buildGraphTools(ctx: HandlerContext): GraphTools {
       return inboundByKind(element, 'import', limit, undefined, offset, response_format);
     },
 
-    impact_of({ element, max_depth, limit, offset, min_confidence, response_format }) {
+    impact_of({ element, max_depth, limit, offset, min_confidence, workspace, response_format }) {
       const graph = loadGraph(projectDir, cache);
       const cap = clampLimit(limit);
       const depthCap = Math.max(1, Math.min(10, max_depth ?? 3));
@@ -397,6 +398,12 @@ export function buildGraphTools(ctx: HandlerContext): GraphTools {
         has_more: paged.has_more,
         sample_dependents: dependents.slice(0, Math.min(10, paged.limit)).map(nodeSummary),
       };
+      // Opt-in cross-repo stitching (WO-CROSS-REPO-WORKSPACE-LINKAGE-001):
+      // a query-time projection over workspace-tagged external edges +
+      // sibling graphs — package-grain, disclosed skips, never persisted.
+      if (workspace) {
+        envelope.workspace = stitchWorkspace(projectDir);
+      }
       return shapeResponse(envelope, response_format, ['files', 'sample_dependents']);
     },
 

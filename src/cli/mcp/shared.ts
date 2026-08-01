@@ -478,7 +478,7 @@ export interface ToolHandlers {
   // generalized offset for pagination. Absent params preserve current behavior.
   what_calls(args: { element: string; limit?: number; offset?: number; min_confidence?: EdgeConfidenceTier; response_format?: ResponseFormat }): Record<string, unknown>;
   what_imports(args: { element: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
-  impact_of(args: { element: string; max_depth?: number; limit?: number; offset?: number; min_confidence?: EdgeConfidenceTier; response_format?: ResponseFormat }): Record<string, unknown>;
+  impact_of(args: { element: string; max_depth?: number; limit?: number; offset?: number; min_confidence?: EdgeConfidenceTier; workspace?: boolean; response_format?: ResponseFormat }): Record<string, unknown>;
   find_element(args: { query: string; type?: string; limit?: number; offset?: number; response_format?: ResponseFormat }): Record<string, unknown>;
   codebase_summary(): Record<string, unknown>;
   validation_status(): Record<string, unknown>;

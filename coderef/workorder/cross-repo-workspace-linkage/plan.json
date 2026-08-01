@@ -1,0 +1,117 @@
+{
+  "plan_type": "strict",
+  "goal": "P12 of genre-features program: cross-repo workspace linkage \u2014 workspace registry file (package name to project root), hook src/pipeline/import-resolver.ts to upgrade external edges, impact_of gains workspace:true opt-in",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Workspace linkage: registry + resolver tagging + query-time stitching + fixture",
+      "hard_stop": true,
+      "description": "Repo-local .coderef/workspace.json registry; pass-1 load beside loadExternalSet; workspace hits keep kind:'external' + gain workspacePackage/workspaceRoot metadata (no new kinds, no adjacency-index churn); impact_of workspace:true stitches sibling graphs at query time (CLI+MCP mirrored); sibling-pair fixture proves upgrade + no-regress; absent registry = byte-identical graph.",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "RUN",
+          "description": "BEFORE fingerprint: full populate, record all_edge_ids_sha256 + resolved_edge_ids_sha256 to a WO sidecar (no workspace.json present -> this doubles as the no-regress baseline)",
+          "touches": []
+        },
+        {
+          "id": "P1-T2",
+          "verb": "WRITE",
+          "description": "Workspace registry loader src/pipeline/workspace-registry.ts: parse .coderef/workspace.json {version, packages{name->root}}, roots resolved relative to the file; absent/malformed = empty registry + one WARN. Loads in resolveImports pass 1 beside loadExternalSet (purity preserved).",
+          "touches": [
+            "src/pipeline/workspace-registry.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "EDIT",
+          "description": "import-resolver: thread registry through classifyBareSpecifier call sites (:518,:523,:526,:614,:617,:620); workspace-package hits keep kind:'external' and set workspacePackage + workspaceRoot on ImportResolution; graph-builder carries both onto edge metadata. NO new ImportResolutionKind, NO new edge kind.",
+          "touches": [
+            "src/pipeline/import-resolver.ts",
+            "src/pipeline/graph-builder.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "WRITE",
+          "description": "Sibling-pair fixture __tests__/fixtures/workspace-pair/ (pkg A imports pkg B by name) + contract tests: no-registry unchanged / registry tags / out-of-workspace untouched / malformed registry degrades gracefully.",
+          "touches": [
+            "__tests__/pipeline/workspace-linkage.contract.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "impact_of workspace:true opt-in (CLI + MCP mirrored, zero forked logic): load sibling .coderef/graph.json per registry root, continue traversal through workspace-tagged external edges; sibling graph absent = disclosed skip, never a fabricated negative. Contract test on the fixture pair.",
+          "touches": [
+            "src/query/impact.ts",
+            "src/cli/mcp/graph-tools.ts"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "TEST",
+          "description": "Full suite green (baseline 2532/26/0 + new contracts; vitest 4 - confirm counts)",
+          "touches": []
+        },
+        {
+          "id": "P1-T7",
+          "verb": "RUN",
+          "description": "AFTER fingerprint with NO workspace.json: byte-identical to P1-T1 (no-regress proven). Then a CORE+ASSISTANT smoke: author workspace.json mapping the sibling, re-populate, confirm external edges to the sibling carry workspaceRoot and impact_of --workspace traverses.",
+          "touches": []
+        },
+        {
+          "id": "P1-T8",
+          "verb": "EDIT",
+          "description": "Docs: CLI.md (impact_of --workspace), ARCHITECTURE.md (workspace registry), USING-CODEREF.md trust rules (workspace stitching is query-time; sibling staleness is the sibling's), CHANGELOG.md",
+          "touches": [
+            "docs/CLI.md",
+            "docs/ARCHITECTURE.md",
+            "USING-CODEREF.md",
+            "CHANGELOG.md"
+          ]
+        },
+        {
+          "id": "P1-T9",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1",
+          "touches": []
+        },
+        {
+          "id": "P1-T10",
+          "verb": "STOP",
+          "description": "Hard stop: review fingerprints + fixture evidence before close",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-6PGFZ3"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "Terminal gate: no-regress fingerprint + sibling smoke reviewed before close (operator pre-approved execution 2026-08-01 ruling A)"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T120154Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-CROSS-REPO-WORKSPACE-LINKAGE-001",
+  "feature_name": "cross-repo-workspace-linkage",
+  "created": "2026-08-01T12:01:43.685556+00:00",
+  "plan_type_rationale": "Category feature maps to strict"
+}

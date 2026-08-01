@@ -1,0 +1,237 @@
+{
+  "discover": {
+    "meta": {
+      "topic": "cross-repo workspace linkage: workspace registry file package-name to project-root, import-resolver external edge upgrade, impact_of workspace opt-in, sibling-repo fixture",
+      "generated": "2026-08-01T12:10:53Z",
+      "depth": "thorough",
+      "output_dest": "working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/cross-repo-workspace-linkage/discovery.md",
+      "dispatch": "none"
+    },
+    "scope": {
+      "asked": "cross-repo workspace linkage: workspace registry file package-name to project-root, import-resolver external edge upgrade, impact_of workspace opt-in, sibling-repo fixture",
+      "bounded": "unbounded — full project root"
+    },
+    "surfaces_audited": [
+      {
+        "line": "- [tool: skeleton-map]          present (cached), 31 lines"
+      },
+      {
+        "line": "- [tool: rg]                    queries=1, hits=0"
+      },
+      {
+        "line": "- [tool: rag-search]            top-k=10, ms=930, lane=hybrid, fallback_used=false"
+      },
+      {
+        "line": "- [tool: element-lookup]        source=symbol-table (rag-search --lexical), candidates=10, elements_indexed=3246"
+      },
+      {
+        "line": "- [tool: header-index]          defined=374, missing=5, stale=1, coverage=98.16% (validation-report.json)"
+      },
+      {
+        "line": "- [tool: foundation-docs]       sections_matched=8"
+      },
+      {
+        "line": "- [tool: codebase_summary]      elements=3246, top types: function=1133, method=966, interface=616, generated=2026-08-01T10:59:00.173Z"
+      },
+      {
+        "line": "- [tool: validation_status]     resolution_rate=22.53%, unresolved=1674, ambiguous=1740, header_coverage=98.16%"
+      },
+      {
+        "line": "- [tool: coderef-query]         walks=10, divergence_rows=5"
+      },
+      {
+        "line": "- [tool: graph-risk]            hotspots_top=5, cycles=0 (largest=0), edges=45331"
+      }
+    ],
+    "findings": [
+      {
+        "id": "F-001",
+        "surface": "src/pipeline/import-resolver.ts:777",
+        "observation": "Element lookup match: `extractPackageName`",
+        "severity": "info",
+        "evidence": "name=extractPackageName, type=function, score=29.26"
+      },
+      {
+        "id": "F-002",
+        "surface": "src/pipeline/import-resolver.ts:167",
+        "observation": "Element lookup match: `PROJECT_FILE_KEY_SEP`",
+        "severity": "info",
+        "evidence": "name=PROJECT_FILE_KEY_SEP, type=constant, score=23.96"
+      },
+      {
+        "id": "F-003",
+        "surface": "src/pipeline/import-resolver.ts:927",
+        "observation": "Element lookup match: `loadExternalSet`",
+        "severity": "info",
+        "evidence": "name=loadExternalSet, type=function, score=23.77"
+      },
+      {
+        "id": "F-004",
+        "surface": "src/pipeline/import-resolver.ts:671",
+        "observation": "Element lookup match: `indexElementsByFileAndLocalName`",
+        "severity": "info",
+        "evidence": "name=indexElementsByFileAndLocalName, type=function, score=23.02"
+      },
+      {
+        "id": "F-005",
+        "surface": "__tests__/map/edge-evidence.test.ts:25",
+        "observation": "Element lookup match: `REPO_ROOT`",
+        "severity": "info",
+        "evidence": "name=REPO_ROOT, type=constant, score=21.63"
+      },
+      {
+        "id": "F-006",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Read package.json once; collect every package name from\ndependencies/devDependencies/peerDependencies/optionalDependenci"
+      },
+      {
+        "id": "F-007",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "? @ line ?"
+      },
+      {
+        "id": "F-008",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Resolve import path to project file\nHandles relative paths, absolute paths, and module names\n\n@param source Import sourc"
+      },
+      {
+        "id": "F-009",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "? @ line ?"
+      },
+      {
+        "id": "F-010",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Given a probe key that hit projectFiles, return the canonical (non-POSIX)\nfile key — the key the rest of the pipeline us"
+      }
+    ],
+    "divergences": [
+      {
+        "caller": "classifyBareSpecifier (src/pipeline/import-resolver.ts)",
+        "callee": "extractPackageName (src/pipeline/import-resolver.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=1, transitive_dependents=86",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "PROJECT_FILE_KEY_SEP (src/pipeline/import-resolver.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "resolveImports (src/pipeline/import-resolver.ts)",
+        "callee": "loadExternalSet (src/pipeline/import-resolver.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=3, transitive_dependents=92",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "buildExportTables (src/pipeline/import-resolver.ts)",
+        "callee": "indexElementsByFileAndLocalName (src/pipeline/import-resolver.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=1, transitive_dependents=86",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "REPO_ROOT (__tests__/map/edge-evidence.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      }
+    ],
+    "recommendations": [
+      {
+        "rec_id": "REC-001",
+        "priority": "low",
+        "action": "Review 10 info-level hit(s) for context.",
+        "owner": "(operator)"
+      }
+    ],
+    "severity_chart": [
+      {
+        "label": "critical",
+        "value": 0,
+        "variant": "fail"
+      },
+      {
+        "label": "warning",
+        "value": 0,
+        "variant": "accent"
+      },
+      {
+        "label": "info",
+        "value": 10,
+        "variant": "info"
+      }
+    ],
+    "orientation": {
+      "present": true,
+      "source": "cached",
+      "excerpt": "# repo map (skeleton): CODEREF-CORE — 485 files, 871 edges — budget ~400 tokens\n# ranked by dependency centrality (most depended-on first); in/out = distinct dependents/dependencies. surfaces, not verdicts.\n\nsrc/scanner/lru-cache.ts  (in 105 / out 1)\n  class LRUCache\n  interface ScanCacheEntry\n  fn createScannerCache(maxSizeBytes)\n\nsrc/pipeline/orchestrator.ts  (in 58 / out 15)\n  class PipelineOrchestrator\n\nsrc/utils/path-normalize.ts  (in 37 / out 0)\n  fn normalizeSlashes(p)\n  fn toRepoRelativePosix(file, projectPath)"
+    },
+    "graph_risk": {
+      "hotspots": [
+        {
+          "id": "@M/src/scanner/lru-cache.ts#LRUCache.has:114",
+          "in": 312,
+          "out": 0,
+          "total": 312
+        },
+        {
+          "id": "@File/__tests__/indexer.test.ts",
+          "in": 0,
+          "out": 197,
+          "total": 197
+        },
+        {
+          "id": "@Fn/src/scanner/scanner.ts#scanCurrentElements:908",
+          "in": 133,
+          "out": 32,
+          "total": 165
+        },
+        {
+          "id": "@Fn/src/utils/path-normalize.ts#normalizeSlashes:21",
+          "in": 153,
+          "out": 0,
+          "total": 153
+        },
+        {
+          "id": "@File/__tests__/pipeline/scip-overlay.test.ts",
+          "in": 0,
+          "out": 122,
+          "total": 122
+        }
+      ],
+      "cycles": {
+        "count": 0,
+        "largest": 0,
+        "sample": []
+      },
+      "resolution": {
+        "external": 719,
+        "builtin": 30719,
+        "resolved": 10133,
+        "typeOnly": 300,
+        "unresolved": 1674,
+        "dynamic": 45,
+        "stale": 1,
+        "ambiguous": 1740
+      },
+      "edge_total": 45331
+    },
+    "reuse_note": "Reproduce: /discover \"cross-repo workspace linkage: workspace registry file package-name to project-root, import-resolver external edge upgrade, impact_of workspace opt-in, sibling-repo fixture\" --depth=thorough --output-dest=working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/cross-repo-workspace-linkage/discovery.md"
+  }
+}

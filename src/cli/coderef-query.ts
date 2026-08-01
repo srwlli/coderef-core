@@ -29,6 +29,7 @@ import {
   CanonicalGraphQuery,
   loadCanonicalGraph,
 } from '../query/canonical-graph.js';
+import { stitchWorkspace } from '../query/workspace-stitch.js';
 import { checkStaleness, readVectorStaleness } from '../query/staleness-check.js';
 import {
   type OrientGraphNode,
@@ -224,6 +225,7 @@ async function main(): Promise<void> {
       depth:    { type: 'string' },
       format:   { type: 'string' },
       'token-budget': { type: 'string' },
+      workspace: { type: 'boolean', default: false },
       patterns: { type: 'string' },
       help:     { type: 'boolean', default: false },
     },
@@ -312,6 +314,12 @@ async function main(): Promise<void> {
   }
 
   const result = runRelationshipQuery(engine, type, values.target as string, depth);
+  // Opt-in cross-repo stitching (WO-CROSS-REPO-WORKSPACE-LINKAGE-001) —
+  // mirrors the MCP impact_of workspace:true leg; same projection module,
+  // zero forked logic. Meaningful on the depends walks; harmless elsewhere.
+  if (values.workspace === true) {
+    (result as unknown as Record<string, unknown>).workspace = stitchWorkspace(project);
+  }
   if (format === 'summary') {
     // summary keeps the payload slim: drop the resolution echo
     const { resolved: _resolved, ...slim } = result;

@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-08-01] — cross-repo workspace linkage: opt-in `.coderef/workspace.json` + `impact_of workspace:true` (STUB-6PGFZ3, genre-features P12)
+
+WO-CROSS-REPO-WORKSPACE-LINKAGE-001 — external edges to sibling workspace repos stop being dead ends.
+
+- **`pipeline/workspace-registry.ts` (new)**: repo-local, OPT-IN `.coderef/workspace.json` (`{version, packages:{"<pkg>":"<root>"}}`; relative roots resolve against the registry file's directory). Absent file = byte-identical pipeline output (no-regress proven by frozen-tree A/B: pre/post-feature dists produce identical node/edge/resolved id sha256 with no registry). Malformed = one WARN + empty. Loads in resolveImports pass 1 beside `loadExternalSet` — pass-2 purity preserved (the P12 deferral blocker).
+- **`import-resolver.ts`**: workspace-mapped bare specifiers keep `kind:'external'` and gain `workspacePackage`/`workspaceRoot`; an unresolved bare specifier whose package is registry-mapped (sibling not npm-installed) upgrades to `external` with `reason:'workspace_package'`. NO new ImportResolutionKind, NO new edge kind — the dual adjacency indexes learn nothing new. Builtin/stdlib dispositions never touched.
+- **`graph-builder.ts`**: `external-import` evidence carries the two optional workspace fields.
+- **`query/workspace-stitch.ts` (new)**: query-time cross-repo projection — per sibling: outbound (my tagged edges into it) + inbound (its tagged edges resolving back to my root). Package-grain (v1), disclosed skips (absent sibling graph is never "no dependents"), nothing persisted (same persisted-fact vs projection split as the GX-005 governed_by/violates ruling).
+- **Surfaces (CLI+MCP mirrored, zero forked logic)**: MCP `impact_of` gains `workspace: true`; `coderef-query` gains `--workspace` on the relationship walks. Both append a `workspace` block.
+- Contract: `__tests__/pipeline/workspace-linkage.contract.test.ts` (7 tests: no-registry identity, upgrade+tags, out-of-workspace untouched, malformed degrade, builtin guard, edge evidence, bidirectional stitch on a synthesized sibling pair).
+
+---
+
 ## [2026-08-01] — incremental path-keying fix: `--changed-files` parity is now provable (edge-resolution P4)
 
 WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 Phase 4 (STUB-QPAAY0, final phase) — fixes the absolute-vs-relative fact-set keying defect that made `populate --changed-files` fail closed (GX-002 FU-4, `STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001` class).

@@ -425,11 +425,14 @@ async function main(): Promise<void> {
         limit: limitArg,
         offset: offsetArg,
         min_confidence: minConfidenceArg,
+        workspace: z.boolean().optional().describe(
+          'Opt-in cross-repo stitching: composes .coderef/workspace.json with sibling graphs to add a workspace block (outbound/inbound package-grain links per sibling, disclosed skips). Query-time projection — nothing persisted.',
+        ),
         response_format: responseFormatArg,
       },
     },
-    async ({ project_root, element, max_depth, limit, offset, min_confidence, response_format }) =>
-      perRepo(project_root, h => h.impact_of({ element, max_depth, limit, offset, min_confidence, response_format })),
+    async ({ project_root, element, max_depth, limit, offset, min_confidence, workspace, response_format }) =>
+      perRepo(project_root, h => h.impact_of({ element, max_depth, limit, offset, min_confidence, workspace, response_format })),
   );
 
   server.registerTool(
