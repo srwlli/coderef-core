@@ -5,13 +5,16 @@ task: DOCUMENT
 subject: Context Generator
 parent_project: coderef-core
 category: service
-version: "1.0.0"
+version: "1.0.1"
+documents:
+  - src/context/context-generator.ts
+  - src/context/entry-point-detector.ts
+  - src/context/markdown-formatter.ts
 related_files:
-  - packages/coderef-core/src/context/context-generator.ts
-  - packages/coderef-core/src/context/entry-point-detector.ts
-  - packages/coderef-core/src/context/markdown-formatter.ts
-  - packages/coderef-core/src/scanner/scanner.ts
-  - packages/coderef-core/src/analyzer/analyzer-service.ts
+  - src/context/context-generator.ts
+  - src/context/entry-point-detector.ts
+  - src/context/markdown-formatter.ts
+  - src/scanner/scanner.ts
 status: approved
 ---
 

@@ -5,10 +5,11 @@ task: DOCUMENT
 subject: Pattern Detection System
 parent_project: coderef-core
 category: service
-version: "1.0.0"
+version: "1.0.1"
+documents: src/fileGeneration/detectPatterns.ts
 related_files:
-  - packages/coderef-core/src/fileGeneration/detectPatterns.ts
-  - packages/coderef-core/src/types/types.ts
+  - src/fileGeneration/detectPatterns.ts
+  - src/types/types.ts
 status: approved
 ---
 

@@ -5,10 +5,11 @@ task: DOCUMENT
 subject: Dependency Graph Builder
 parent_project: coderef-core
 category: service
-version: "1.0.0"
+version: "1.0.1"
+documents: src/fileGeneration/buildDependencyGraph.ts
 related_files:
-  - packages/coderef-core/src/fileGeneration/buildDependencyGraph.ts
-  - packages/coderef-core/src/types/types.ts
+  - src/fileGeneration/buildDependencyGraph.ts
+  - src/types/types.ts
 status: approved
 ---
 

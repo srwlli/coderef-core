@@ -5,16 +5,25 @@ task: DOCUMENT
 subject: File Generation System
 parent_project: coderef-core
 category: system
-version: "1.0.0"
+version: "1.0.1"
+documents:
+  - src/fileGeneration/saveIndex.ts
+  - src/fileGeneration/generateContext.ts
+  - src/fileGeneration/buildDependencyGraph.ts
+  - src/fileGeneration/detectPatterns.ts
+  - src/fileGeneration/analyzeCoverage.ts
+  - src/fileGeneration/validateReferences.ts
+  - src/fileGeneration/detectDrift.ts
+  - src/fileGeneration/generateDiagrams.ts
 related_files:
-  - packages/coderef-core/src/fileGeneration/saveIndex.ts
-  - packages/coderef-core/src/fileGeneration/generateContext.ts
-  - packages/coderef-core/src/fileGeneration/buildDependencyGraph.ts
-  - packages/coderef-core/src/fileGeneration/detectPatterns.ts
-  - packages/coderef-core/src/fileGeneration/analyzeCoverage.ts
-  - packages/coderef-core/src/fileGeneration/validateReferences.ts
-  - packages/coderef-core/src/fileGeneration/detectDrift.ts
-  - packages/coderef-core/src/fileGeneration/generateDiagrams.ts
+  - src/fileGeneration/saveIndex.ts
+  - src/fileGeneration/generateContext.ts
+  - src/fileGeneration/buildDependencyGraph.ts
+  - src/fileGeneration/detectPatterns.ts
+  - src/fileGeneration/analyzeCoverage.ts
+  - src/fileGeneration/validateReferences.ts
+  - src/fileGeneration/detectDrift.ts
+  - src/fileGeneration/generateDiagrams.ts
 status: approved
 ---
 
