@@ -104,6 +104,11 @@
       "event": "workorder_complete",
       "at": "2026-08-01T01:56:29.754019Z",
       "summary": "Deleted the orphaned TreeSitterScanner (1670 LOC) + its test (215 LOC); 1885 lines removed. Commit 76ab967 pushed and origin-verified."
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-08-01T02:10:00Z",
+      "summary": "Closed via /close-workorder (close-only; NOT archived). PHASE A audit PASS on all binding gates, PHASE B finalize, PHASE C commit."
     }
   ],
   "required_skills": [
@@ -112,5 +117,75 @@
     "/log-session"
   ],
   "git_branch": "main",
-  "completed_at": "2026-08-01T01:56:29.754019Z"
+  "completed_at": "2026-08-01T01:56:29.754019Z",
+  "closed_at": "2026-08-01T02:10:00Z",
+  "closed_via": "/close-workorder",
+  "archived": false,
+  "close_metadata": {
+    "review_status": "PASS",
+    "close_mode": "close-only (no --archive supplied; v2.8.0 default)",
+    "archive_disposition": "NOT archived - remains at coderef/workorder/; cross-project WO (target_project=coderef-core), so PHASE D is owned by the core repo. Archive later via /close-workorder --archive.",
+    "gates": {
+      "step_1_5_phased_terminal": "PASS (exit 0) - WO already terminal, phase 2 of 2",
+      "step_3_standards_validate": "PASS on the BINDING verdict scoped.wo_scoped.verdict=pass (1 pass / 0 fail / 0 warning). Top-level verdict=fail is repo-wide structure-kind drift across 40 unrelated kinds - informational per KZ-01KX4FV2 gate-separation, never a HALT.",
+      "step_5_tracking_validator": "PASS 18/18, 0 failed (scoped). Contrast: the unscoped run at execute time showed 14/4 - this WO carries none of that pre-existing drift.",
+      "step_6_git_audit": "PASS - on main, 0 unpushed, 0 staged, both WO commits present and origin-verified",
+      "step_6_8_doc_code_tie": "PASS (inert) - no doc_binding declared",
+      "step_7_session_log": "VERIFIED via the canonical rich log at the OWNER-project root (CODEREF-CORE/.coderef/sessions/SES-2026-07-31-...yaml, 7553 bytes). The gate's own self-heal was REJECTED as false - see kaizen KZ-01KYXH47."
+    },
+    "session_log_false_selfheal": {
+      "detail": "check-session-log.mjs anchored .coderef/sessions/ to ASSISTANT_ROOT instead of the WO's owner-project root, missed the real 7553-byte rich log, and authored a 3717-byte fallback in the WRONG repo stamped self_healed:true with 'execute Step 5.5.1 log was not authored' - a false statement. It also derived the slug from UTC closed_at (2026-08-01) vs the rich log's 2026-07-31. Its own commit-linker reported only the ASSISTANT views commit, missing both core commits - direct evidence it searched the wrong repo. The false artifact was DELETED rather than left to contradict the record.",
+      "kaizen": "KZ-01KYXH47",
+      "family": "same cross-project root-anchoring bug as KZ-01KYX7WG (write-phase-transition.cjs)"
+    },
+    "outcomes": {
+      "lines_removed": 1885,
+      "tests_before": "2449 passed / 26 skipped / 0 failed across 232 files",
+      "tests_after": "2436 passed / 26 skipped / 0 failed across 231 files",
+      "tests_delta": "-13 tests / -1 file = EXACTLY the deleted file's own test count; zero new failures",
+      "typecheck": "tsc --noEmit exit 0",
+      "header_coverage": "100% (369/369)",
+      "doc_validator": "exit 0 (warnings only; pre-existing UUID anchors 309 -> 23)"
+    },
+    "commits": [
+      "76ab967 (coderef-core) refactor: P1+P2 delete the orphaned TreeSitterScanner - 16 files, 1885 lines removed",
+      "353ca4820 (assistant) chore(workorders): regen views after close",
+      "419d693 (coderef-core) docs: terminal render + WO artifacts post-execution"
+    ],
+    "blast_radius_correction": "The stub estimated 'the one test file'. Actual live references: 4. Two were @used_by manifests (EDITED: element-taxonomy.ts:6, types.ts:6); two were prose provenance PRESERVED by ruling DEC-02 (docstring.ts:23/:75, route-extractor.ts:120, output-validator.ts:354) because editing them would damage the historical record rather than clean it up.",
+    "metrics_delta": {
+      "no_data": "before_snapshot_absent",
+      "note": "No .coderef/map/metrics-snapshot-WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER-001-before.json exists in the target repo; this WO was promoted from a stub without a plan-time snapshot. No direction is reported rather than inferring one - absence is NO-DATA, never 'clean'.",
+      "vintage": "no_data:no_before_snapshot - attribution UNVERIFIED, not agreement"
+    },
+    "follow_up_capture": {
+      "status": "failed_advisory",
+      "reason": "workorder-follow-up/run.mjs exit 2 - resolved the WO dir as ASSISTANT\\coderef-core:coderef\\workorder\\... i.e. it joined the scheme-prefixed registry path ('coderef-core:coderef/...') onto ASSISTANT_ROOT instead of resolving the scheme via TRACKING/projects.json. Fourth instance of the cross-project root-anchoring family (KZ-01KYX7WG, KZ-01KYXH47). Graceful/additive per SKILL.md - never a gate. Follow-ups are recorded by hand under close_metadata instead.",
+      "kaizen": "KZ-01KYXH67"
+    },
+    "follow_ups": [
+      {
+        "id": "FU-1",
+        "status": "candidate",
+        "title": "Fix cross-project path resolution across the WORKFLOW skill scripts",
+        "detail": "FOUR scripts now mis-resolve a cross-project WO by anchoring to ASSISTANT_ROOT rather than the owner-project root / TRACKING/projects.json scheme map: write-phase-transition.cjs (KZ-01KYX7WG), check-session-log.mjs (KZ-01KYXH47), workorder-follow-up/run.mjs (KZ-01KYXH67), plus the alignment-gate 'no plan.json' artifact. projects.json ALREADY maps scheme -> root; a single shared resolver would fix all of them at once. Two of the four soft-fail to exit 0, so they are silent by default; one authored a FALSE self-healed artifact.",
+        "size": "M"
+      },
+      {
+        "id": "FU-2",
+        "status": "candidate",
+        "title": "check-session-log.mjs must not author a false self-heal",
+        "detail": "When the gate cannot find a log it stamps self_healed:true and 'execute Step 5.5.1 log was not authored' - an assertion about the past it has not verified. It should distinguish 'no log found at the path I searched' from 'no log was authored', and should report which root it searched. Filing separately from FU-1 because the honesty defect survives even after the path bug is fixed.",
+        "size": "S"
+      }
+    ],
+    "kaizen_entries": [
+      "KZ-01KYXFAR",
+      "KZ-01KYXFAS",
+      "KZ-01KYXGQC",
+      "KZ-01KYXGR3",
+      "KZ-01KYXGRE",
+      "KZ-01KYXH47"
+    ]
+  }
 }
