@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-1A10AV",
+  "ulid": "01KYXN45F7DYJAB1RQRD1PYT8H",
+  "feature_name": "docs-schema-md-documents-edgeevidence-as-10-variants",
+  "description": "docs/SCHEMA.md documents EdgeEvidence as 10 variants and EdgeRelationship as 4 values; graph-builder.ts declares 12 and 8 (ECO-032)",
+  "category": "fix",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T03:15:46Z"
+}

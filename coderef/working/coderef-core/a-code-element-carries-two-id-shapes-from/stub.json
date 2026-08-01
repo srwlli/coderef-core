@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-86ZCPA",
+  "ulid": "01KYXN476K4D633R0MMK5AZ0Q1",
+  "feature_name": "a-code-element-carries-two-id-shapes-from",
+  "description": "A code element carries TWO id shapes from one (file,name,line) triple - readable codeRefId and RFC-4122 v5 UUID - with nothing declaring which is canonical (ECO-033)",
+  "category": "fix",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T03:15:48Z"
+}

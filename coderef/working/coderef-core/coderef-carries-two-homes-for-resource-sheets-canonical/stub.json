@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-BJNH79",
+  "ulid": "01KYXN4AG7JWACJNPT72J90X1D",
+  "feature_name": "coderef-carries-two-homes-for-resource-sheets-canonical",
+  "description": "coderef/ carries two homes for resource sheets - canonical resource-sheets/ and the plural-typo resources-sheets/ - holding the resource-sheet kind at 3 core FAILs (ECO-035)",
+  "category": "fix",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T03:15:52Z"
+}

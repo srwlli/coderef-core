@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-48QPYN",
+  "ulid": "01KYXN48WP9GKRJE1DFG9PWMZ4",
+  "feature_name": "23-invalid-uuid-anchors-in-coderef-foundation-docs",
+  "description": "23 invalid UUID anchors in coderef/foundation-docs hold the derived-index standards kind at FAIL; validate-docs.js exits 1 and has no write path (ECO-034)",
+  "category": "fix",
+  "priority": "medium",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T03:15:50Z"
+}

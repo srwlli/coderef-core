@@ -59,6 +59,22 @@
 
 ## Issues
 
+<!-- ONE-TIME SEPARATION, 2026-08-01 (operator routing rule: ecosystem -> shared ASSISTANT
+     log; product -> this file).
+
+     ECO-001..ECO-029 below are a VERBATIM RESEED of ASSISTANT/ecosystem-issues.md
+     ECO-001..ECO-029 — byte-identical bodies at identical ids, confirmed by diff. They are
+     not originals that were misrouted; the whole shared log was copied into this file. All
+     29 are ecosystem-owned (skills, standards, dispatch registry, tracking), so the shared
+     log is the live record for every one of them.
+
+     No copies were appended to the shared log — the entries are already there, at the same
+     numbers. The 17 that are still OPEN are marked `superseded (duplicate of ASSISTANT
+     ECO-NNN)`. The 12 already FIXED were left untouched per the "skip closed issues" rule.
+     Nothing was deleted or renumbered.
+
+     CORE-OWNED entries in this file, which stay here: ECO-031..ECO-037. -->
+
 ### ECO-001 — execute-workorder Step 1.65 alignment gate existed only as prose
 
 - **date:** 2026-08-01
@@ -92,7 +108,7 @@
 - **surface:** SKILLS/STANDARDS/standards-validate/run.mjs
 - **category:** observability
 - **severity:** critical
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-003)
 - **summary:** Running `--scope` WITHOUT `--domain` makes the culture axis skip itself and report `warning`; adding `--domain` flips the identical WO-scoped verdict to `fail`.
 - **evidence:** Same WO, two invocations: without `--domain` → `wo_scoped.verdict=warning` (`alignment_gate_skipped`); with `--domain=ASSISTANT` → `wo_scoped.verdict=fail`, summary `{fail:1}`.
 - **impact:** A close bound to the no-domain form passes a gate that never ran. The weaker invocation is also the shorter one, so it is the one an agent reaches for.
@@ -105,7 +121,7 @@
 - **surface:** TRACKING/dispatches.json
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-004)
 - **summary:** 41 registry rows store `session_id` as the string `'null'` rather than a real null, failing the tracking-validator.
 - **evidence:** `tracking-validator all` → 14 passed, 4 failed. Baseline at `d1f9ff453` had 43 such rows; now 41.
 - **impact:** Whole-repo validator FAIL that is unrelated to any current WO; risks training agents to wave past a red validator.
@@ -118,7 +134,7 @@
 - **surface:** SKILLS/WORKFLOW/archive-planning-folder/run.mjs
 - **category:** ergonomics
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-005)
 - **summary:** A folder with no `stub_ref` may archive only as `abandoned` or `superseded`; neither fits an analysis that WAS actionable and shipped its findings.
 - **evidence:** `coderef-core/code-intelligence-improvement-eval` — a four-surface eval that delivered — could not be archived without recording a false disposition.
 - **impact:** Agents either mislabel another domain's delivered work or leave folders unarchivable. Both corrupt the record.
@@ -213,7 +229,7 @@
 - **surface:** SKILLS/SESSION/accept-session-dispatch/accept-session-dispatch-workflow.js
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-012)
 - **summary:** Writes terminal `completed` status across three branches and reaches no registry sink — same class as ECO-011.
 - **evidence:** Status writes at `:889`, `:933`, `:989`; registry sink absent. Found during the P3-T8 handler audit.
 - **impact:** Same silent drift as ECO-011, in a second writer. Two writers now missing one sink each; a third instance would make this a consolidation problem rather than a patch.
@@ -226,7 +242,7 @@
 - **surface:** SKILLS/SESSION/_shared/dispatch-class.mjs
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-013)
 - **summary:** `REPORT_OBJECTIVE_KEYWORDS` keeps its own list with `FYI`/`ADVISORY` matching anywhere, so the producer honors an explicit list and the shared classifier overrides it ~200 lines downstream.
 - **evidence:** The module's own comment: "Kept in sync with the producer's historical RECOMMENDATION_KEYWORDS." Console showed `CLASS-GUARD: classified report` after the producer had honored the list.
 - **impact:** ECO-008's fix is fully effective for `SEQUENCING`-class hits and **partially masked** for `FYI`/`ADVISORY`.
@@ -239,7 +255,7 @@
 - **surface:** TRACKING/dispatches.json
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-014)
 - **summary:** A full probe found 191 absent and 13 stale dispatch rows across 24 domains.
 - **evidence:** Scoped probe run during P3-T9: ABSENT=191, STALE=13, 24 domains.
 - **impact:** Not the same defect as ECO-011 — 9 of the 13 stale are `completed → pending`, i.e. REUSED dispatch numbers, not frozen rows. Needs a judgement call, not a writer re-run.
@@ -252,7 +268,7 @@
 - **surface:** SKILLS/SESSION/accept-session-dispatch/__tests__/
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-015)
 - **summary:** Five suites fail identically with and without this WO's changes; most fail at `cmdAccept` setup on fixture drift.
 - **evidence:** Proven by stash-and-compare — 1/4, 0/6, 0/2, 0/5, 0/9 both with and without the edit.
 - **impact:** A mutation check run against an already-failing suite proves nothing (the ISS-02 vacuous-gate pattern).
@@ -265,7 +281,7 @@
 - **surface:** SKILLS/WORKFLOW/create-workorder
 - **category:** correctness
 - **severity:** info
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-016)
 - **summary:** The plan's failing case led with "Implement", and the work-delegation verb already suppressed the downgrade — so the specified test PASSED against current code.
 - **evidence:** P3-T1's repro passed; a keyword-free control had to be constructed to isolate the real defect.
 - **impact:** The defect was real; the repro was not. Execution time is a bad moment to discover this.
@@ -278,7 +294,7 @@
 - **surface:** SKILLS/WORKFLOW/create-workorder
 - **category:** correctness
 - **severity:** info
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-017)
 - **summary:** The plan assumed `cancel`/`reject`/`block` handlers; there are three `cmd*` handlers plus a non-`cmd` sweep helper.
 - **evidence:** P3-T8 audit. Grepping for `cmd*` declarations would have missed ECO-012 entirely; mapping status-writes→sinks is what surfaced it.
 - **impact:** A plan premise taken on faith would have produced a confidently incomplete audit.
@@ -291,7 +307,7 @@
 - **surface:** SKILLS/SESSION/_shared/agent-paths.mjs
 - **category:** ergonomics
 - **severity:** info
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-018)
 - **summary:** `inboxScanRoots` derives COMMS from `logsRoot` by design (sandboxing) while `update-dispatches-registry.py` anchors `REPO_ROOT` unconditionally, so a TMP `logsRoot` points the two halves at different trees.
 - **evidence:** A registry fixture failed at exit 2 for a reason other than the one under test until the real `LOGS/SESSIONS` root was passed.
 - **impact:** Not a product defect — a genuine tension between two correct decisions — but a trap any future registry test will hit.
@@ -304,7 +320,7 @@
 - **surface:** .git/hooks/pre-commit (skill-doc-drift gate)
 - **category:** ergonomics
 - **severity:** info
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-019)
 - **summary:** Staging a skill's runner without its `skill.json` fails the commit, so version+docs work is pulled forward into every earlier phase that touches a runner.
 - **evidence:** Hit in Phase 2, recurred in Phase 3; P4-T6 had scheduled the bump late.
 - **impact:** A phased plan cannot schedule the version bump late, so plan order and gate order disagree.
@@ -317,7 +333,7 @@
 - **surface:** SKILLS/WORKFLOW/execute-workorder (Step 4.1)
 - **category:** observability
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-020)
 - **summary:** Step 4.1 requires appending a `single_phase_mode_invoked` event to `decisions_log[]` on every `--phase=N` entry; zero are on disk for phases 2–4.
 - **evidence:** `decisions_log[]` inspected directly — no such events. Halts remained provable from three commits and three transition timestamps.
 - **impact:** A gate-integrity postcheck that depends on a marker no executor reliably writes is checking something weaker than it looks. Same class as ECO-001: a documented step with no runtime.
@@ -330,7 +346,7 @@
 - **surface:** SKILLS/SESSION/dispatch-session-request/__tests__/contradiction-guard-weighting.test.mjs
 - **category:** correctness
 - **severity:** info
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-021)
 - **summary:** Reverting the explicit-list weighting alone left 11/12 passing because the anchoring fix independently blocked the primary case; reverting both gave 8 passed / 4 failed.
 - **evidence:** Mutation table — P3-T2 alone → 11/1; P3-T2 + P3-T3 → 8/4 including the primary case at `mode=none skills=[]`.
 - **impact:** Not a bug — defence-in-depth is defensible — but a future refactor removing ONE guard will not be caught by this suite alone.
@@ -401,7 +417,7 @@
 - **surface:** SKILLS/STANDARDS/kinds/derived-index/check.mjs
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-026)
 - **summary:** The FAIL message tells the agent to re-derive a stale index by running the project's declared generator command, but for CODEREF-CORE that command is a VALIDATOR with no write path, so following the advice can never clear the FAIL.
 - **evidence:** Checker output: "`coderef/foundation-docs/INDEX.md` is STALE — re-derive it: `node scripts/doc-gen/validate-docs.js` (drift: generator --strict exit 1)". That script contains no `writeFileSync` and self-reports "Validation failed. Run generation scripts to fix." The real producers are the sibling `scripts/doc-gen/generate-*.js` files.
 - **impact:** An agent that follows the remediation verbatim re-runs a read-only check, sees the same exit 1, and concludes the index is unfixable — or worse, loops. The FAIL's stated cause ("index is STALE") is also wrong here: the index is current, and the generator exits 1 for an unrelated reason (23 unresolvable UUID anchors).
@@ -414,7 +430,7 @@
 - **surface:** SKILLS/WORKFLOW/archive-planning-folder/run.mjs
 - **category:** ergonomics
 - **severity:** info
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-027)
 - **summary:** An unregistered `--project` value is a hard refusal on the move path and is silently ignored by `--candidates`, so the same flag value behaves as valid in one mode and invalid in the other.
 - **evidence:** `run.mjs --candidates --project=CODEREF-CORE` printed 3 candidates with no complaint; `run.mjs coderef-core/code-intelligence-improvement-eval --project=CODEREF-CORE` → exit 1, "unknown --project=\"CODEREF-CORE\" — not a registered project root (no silent fallback to ASSISTANT)". The registry key is the lowercase `coderef-core`; `projectRoot('CODEREF-CORE')` returns `null` while `projectRoot('coderef-core')` resolves.
 - **impact:** `--candidates` is the discovery step an agent runs first, so a casing or naming mistake is confirmed as working before it fails at the move. Minor, but it inverts the usual expectation that the read-only mode is the stricter one. Related to ECO-023, which fixed the *printed command* for cross-root rows; this is the *input validation* half.
@@ -427,7 +443,7 @@
 - **surface:** SKILLS/DOCUMENTATION/generate-quickstart
 - **category:** scope-creep
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-028)
 - **summary:** The entry-point kind requires a `*-quickstart.md` in each runnable surface's OWN directory, but the skill only emits a project-root quickstart, so its output can never clear the check it is named in the remediation for.
 - **evidence:** `entry-point.quickstart-present` WARN text says "Generate one with /generate-quickstart". The check's own resolver (`SKILLS/STANDARDS/kinds/entry-point/check.mjs`, `surfaceHasQuickstart`) reads only the surface's own directory and documents that "a shared ancestor README does NOT count as per-surface coverage". For CORE the surface is `src/cli/coderef-mcp-server.ts`, so the file must be `src/cli/*-quickstart.md`; the skill produces `<project>-quickstart.md` at the repo root.
 - **impact:** The remediation advice cannot be followed to completion. Cleared for CORE only by hand-authoring `src/cli/coderef-mcp-server-quickstart.md` (commit `a9477bc`); every other project hitting this WARN will hit the same wall.
@@ -440,7 +456,7 @@
 - **surface:** SKILLS/DOCUMENTATION/generate-quickstart (discover.cjs)
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** superseded (duplicate of ASSISTANT ECO-029)
 - **summary:** The discovery step emits a leading-dash project name and leaks a frontmatter key into the description, so regenerating a quickstart DEGRADES a previously-correct file.
 - **evidence:** Running the discover step against CODEREF-CORE returned `"project_name": "-coderef-core"` (leading dash) and `"project_description": "title: @coderef/core"` (the `title:` key included). The existing `coderef-core-quickstart.md` carries the correct `coderef-core` and a real description.
 - **impact:** The generated-view-is-derived doctrine says fix the template and regenerate — but here regeneration introduces two regressions, so the doctrine's normal remedy is unsafe until this is fixed. Found when the quickstart's missing frontmatter was traced to the template; the template was fixed at source (`ea0aa0c10`) but the output had to be synced by hand (`1781da6`) rather than regenerated.
@@ -453,7 +469,7 @@
 - **surface:** SKILLS/KAIZEN/kaizen-log/run.mjs
 - **category:** ergonomics
 - **severity:** info
-- **status:** open
+- **status:** superseded (re-filed as ASSISTANT ECO-060)
 - **summary:** `/kaizen-log` and `/ticket` tools were frozen by operator directive (2026-08-01) pending system refactor, transitioning logging to hand-edited ecosystem-issues.md.
 - **evidence:** PROMPTS/ecosystem-issues-freeze.md operator directive; ecosystem-issues.md created from template at project root.
 - **impact:** Agents must hand-edit ecosystem-issues.md using sequential ECO-NNN IDs instead of calling kaizen-log or ticket CLI runners.
@@ -467,10 +483,10 @@
 - **category:** docs
 - **severity:** info
 - **status:** open
-- **summary:** Created planning folder core-improvements-731 to track remaining code intelligence feature gaps (GX-002, GX-003, GX-004).
-- **evidence:** coderef/working/coderef-core/core-improvements-731/PLAN.md created on disk.
-- **impact:** Establishes clear pre-stub roadmap for scope-stack receiver resolution (62% unresolved call edges), Serena refactoring apply path, and Repomix context compression.
-- **fix:** Created planning folder and authored PLAN.md with full context and approach options.
+- **summary:** Created planning folder core-improvements-731 to track remaining code intelligence feature gaps (GX-002, GX-003, GX-004, GX-005).
+- **evidence:** coderef/working/coderef-core/core-improvements-731/PLAN.md created and updated on disk.
+- **impact:** Establishes clear pre-stub roadmap for scope-stack receiver resolution (62% unresolved call edges), Serena refactoring apply path, Repomix context compression, and Standards-to-Code Rule-Graph integration for automated refactoring alignment.
+- **fix:** Created planning folder and authored PLAN.md with full context, GraphRAG analysis, refactoring alignment breakdown, and approach options.
 
 <!-- ECO-032..ECO-036 recorded 2026-08-01 from
      WO-CODEREF-CORE-STANDARDS-CONFORMANCE-BURN-DOWN-8-STANDARDS-001 (phases 2-7).
@@ -486,7 +502,7 @@
 - **surface:** docs/SCHEMA.md
 - **category:** docs
 - **severity:** warning
-- **status:** open
+- **status:** open (STUB-1A10AV)
 - **summary:** The canonical schema reference documents `EdgeEvidence` as a 10-variant union and `EdgeRelationship` as 4 values; the code carries 12 and 8.
 - **evidence:** `docs/SCHEMA.md:361` heading reads "`EdgeEvidence` (10-variant discriminated union)" and `:354` lists `import | call | export | header-import`. Against source: `src/pipeline/graph-builder.ts:144` declares 12 variants (adds `calls-endpoint`, `serves-endpoint`) and `src/pipeline/graph-builder.ts:103` declares 8 relationships (adds `extends`, `implements`, `calls_endpoint`, `serves_endpoint`).
 - **impact:** SCHEMA.md is the doc every other standard cites as the authoritative field-shape reference, so an agent reading it builds an incomplete model of the edge surface and cannot know the endpoint variants exist. The drift is silent — nothing compares the prose counts to the union.
@@ -499,7 +515,7 @@
 - **surface:** src/utils/coderef-id.ts + src/registry/entity-registry.ts
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** open (STUB-86ZCPA)
 - **summary:** The same element is identified both by the readable `codeRefId` natural key and by an RFC-4122 v5 UUID, both derived from the same `(file, name, line)` triple.
 - **evidence:** `src/utils/coderef-id.ts:49` builds `@<Designator>/<file>#<name>:<line>`; `src/registry/entity-registry.ts:37` hashes `${normalizeSlashes(file)}:${name}:${line}` into a v5 UUID. Same inputs, two live outputs — `generateUUID` is called at `entity-registry.ts:62` and `:91`.
 - **impact:** The `data` standards kind requires ONE id format per object; two shapes for one object is the cross-surface alias hazard that sub-type exists to prevent. Neither is a bug in isolation (both deterministic and stable), but consumers must know which is canonical and nothing declares it. Plausibly the mechanism behind ECO-034, since both ids embed `line` and therefore change when an unrelated edit shifts an element.
@@ -512,7 +528,7 @@
 - **surface:** coderef/foundation-docs/ + scripts/doc-gen/validate-docs.js
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** open (STUB-48QPYN)
 - **summary:** Foundation docs cite 23 UUID anchors that no longer resolve against `.coderef/index.json`, so the doc validator exits 1 and the `derived-index` kind reports the index STALE.
 - **evidence:** `node scripts/doc-gen/validate-docs.js --strict` → "Found 310 UUID anchors (287 valid)" then "Errors: - 23 invalid UUID anchors found", exit 1. Named examples: `EXPORTS.md: a13dbe09-a3c4-53b0-99a1-4b0630dfe3c6`, `API.md: 23d01bc8-2217-52d2-a80a-fd5574eb3b75`. `derived-index` checker → 4 pass / 1 fail on `core.entry.index.current`.
 - **impact:** One standing core FAIL that re-running the validator can never clear. Materially better than the state the burn-down WO was scoped against, which recorded 309 invalid of 311 — most anchors have since been repaired and only a tail remains.
@@ -525,7 +541,7 @@
 - **surface:** coderef/resource-sheets/ and coderef/resources-sheets/
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** open (STUB-BJNH79)
 - **summary:** Resource sheets live under both `coderef/resource-sheets/` (canonical) and `coderef/resources-sheets/` (a plural-typo sibling), plus a third set under `coderef/resource/`.
 - **evidence:** `find . -name "*RESOURCE-SHEET*.md"` → 27 sheets across SIX locations: `coderef/resource-sheets/` 3, `coderef/resources-sheets/` 10, `coderef/resources-sheets/systems/` 5, `coderef/resource/` 3, `src/` 5, `scripts/` 1. The `resource-sheet` kind reports `sheet.filename-and-location: 22 of 25 sheet(s) violate naming/location (not under coderef/resource-sheets/)`.
 - **impact:** A reader cannot tell which directory is authoritative and a writer picks by coin-flip — precisely what a canonical location exists to preclude. Holds the `resource-sheet` kind at 3 core FAILs.
@@ -538,8 +554,25 @@
 - **surface:** coderef/resources-sheets/systems/
 - **category:** correctness
 - **severity:** warning
-- **status:** open
+- **status:** fixed
 - **summary:** All five files under `coderef/resources-sheets/systems/` are 0 bytes, and each duplicates the filename of a real, populated sheet one directory up.
 - **evidence:** `ls -la coderef/resources-sheets/systems/` → all five entries `0` bytes, dated Jan 13 2026 (`Context-Generator`, `Dependency-Graph-Builder`, `File-Generation-System`, `Scanner-UI-System`, `Theme-System`, each `-RESOURCE-SHEET.md`). Their populated twins one level up measure 18246B, 17783B, 19049B, 15572B and 13862B.
 - **impact:** They are counted by the `resource-sheet` checker and fail both `frontmatter-complete` and `required-sections` — an empty file can satisfy neither. They also make any name-based sheet lookup ambiguous. The burn-down WO's task text described these as sheets with "none" provenance, which reads as an attribution gap; they are empty placeholders, so the remedy is deletion, not attribution.
-- **fix:** Proposed — delete all five. NOT deleted unilaterally: deletion is irreversible and these sit inside the directory whose ownership is part of the pending ECO-035 ruling.
+- **fix:** Deleted all five, commit `5d85f6d`, under the operator relocation ruling that resolved the ECO-035 ownership question for CORE-owned sheets. Verified: `ls coderef/resources-sheets/systems/` → "No such file or directory"; the directory is now empty of tracked files. The populated twins one level up were not touched.
+
+<!-- ECO-037 moved here 2026-08-01 from the shared ASSISTANT log (ECO-040) under the
+     one-time separation: the fix lands in this repo's indexer, so it is CORE product
+     work. The ASSISTANT entry is retained and marked superseded — not deleted. -->
+
+### ECO-037 — the `.coderef` index carries zero `.mjs`/`.cjs` elements
+
+- **date:** 2026-08-01
+- **domain:** CODEREF-CORE
+- **surface:** .coderef/index.json
+- **category:** correctness
+- **severity:** critical
+- **status:** open (STUB-C5JEK5)
+- **summary:** The indexer never walks `.mjs`/`.cjs`, so an entire language surface is invisible to every index-backed query.
+- **evidence:** Measured while fixing planner discovery: `SKILLS/WORKFLOW/create-workorder/run.mjs` has ZERO indexed elements, and the extension has zero elements estate-wide. The workorder fixing that file's defect could not surface the file in its own discovery output.
+- **impact:** Far larger than the planner. Every consumer of the index reads absence as "clean" rather than "no data" — `find_element`, `what_calls`, RAG search. The planner was merely where it became visible.
+- **fix:** Add `.mjs`/`.cjs` to the indexer's walk. Until then, index-backed negatives on those extensions are not evidence. *(re-filed from ASSISTANT ECO-040.)*

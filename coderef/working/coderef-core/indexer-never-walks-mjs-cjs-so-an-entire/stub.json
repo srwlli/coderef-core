@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-C5JEK5",
+  "ulid": "01KYXN3PW756WN0VPYJPY1ZBCV",
+  "feature_name": "indexer-never-walks-mjs-cjs-so-an-entire",
+  "description": "Indexer never walks .mjs/.cjs, so an entire language surface is absent from .coderef/index.json and every index-backed query reads absence as clean (ECO-037)",
+  "category": "feature",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T03:15:31Z"
+}
