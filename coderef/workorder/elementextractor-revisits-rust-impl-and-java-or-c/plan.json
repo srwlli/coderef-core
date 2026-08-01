@@ -19,8 +19,8 @@
         },
         {
           "id": "P1-T1a",
-          "verb": "CHECK",
-          "description": "HALT FOR OPERATOR RULING before any edit to the Java or C/C++ branch. Rust and C++ emit byte-identical duplicate pairs, so dedup there is unambiguous. JAVA DOES NOT: element-extractor.ts:558 traverses the class body scoped (emitting `Svc.alpha` as type `method`) and the unconditional child loop at :578 re-walks the same body unscoped (emitting `alpha` as type `function`). Removing the second pass therefore DELETES the bare-name element - it is a semantic change, not a dedup. This matters downstream: the phase-2 ticket (TKT-XGZA82) exists because tree-sitter-file-scan.ts:63 reduces qualified method names to bare names before call matching, so whichever identity survives here defines what phase 2 must do. Paths: (A) keep the QUALIFIED `Svc.alpha` method only - matches the TS/Python class-method convention, but any consumer keyed on the bare name loses its match until phase 2 lands; (B) keep the BARE `alpha` function only - preserves current call-matching behavior, but Java classes stop producing methods and diverge from every other language; (C) keep BOTH deliberately, dropping only the exact-duplicate Rust/C++ pairs, and defer the Java identity question to phase 2 where the consumer lives. Record the choice and its rationale in communication.json decisions_log; do not choose unilaterally.",
+          "verb": "READ",
+          "description": "RULING RECORDED - operator ruled (A) QUALIFIED-ONLY on 2026-08-01, pre-execution. No halt remains; this task is now READ-and-confirm. Transcribe the ruling and its rationale into communication.json decisions_log before P1-T2 edits anything. THE RULING: Java keeps the qualified `Outer.alpha` method form only; the bare `alpha` function element is dropped, NOT shimmed. RATIONALE: a nested-construct probe run against HEAD showed the double-walk causes THREE defects from one root cause, not one - (i) exact duplicates, multiplicative with nesting depth (a C++ method at depth 2 emitted x4); (ii) MIS-SCOPED names, where a nested type's members are attributed to the OUTER type (`Outer.beta` for a method on `Inner`, `Outer.gamma` for a method on `Contract`) - false facts, not inflated counts; (iii) the bare/qualified fork. Because all three share the root cause they are not separable: any fix that removes the duplicates also removes the bare names, so preserving them would mean deliberately RE-EMITTING them as a shim. That is strictly more work than (A), and the shim would be built in phase 1 and deleted in phase 2 by this same program - phase 2 (TKT-XGZA82) IS the bare-name reduction at tree-sitter-file-scan.ts:63. Nothing in CODEREF-CORE itself consumes Java/C++/Rust elements (this repo is TypeScript), so the exposure is downstream repos scanning those languages across a one-phase window.",
           "touches": [
             "src/pipeline/extractors/element-extractor.ts",
             "src/scanner/tree-sitter-file-scan.ts",
@@ -30,7 +30,7 @@
         {
           "id": "P1-T2",
           "verb": "EDIT",
-          "description": "Make the scoped-then-unconditional traversal single-pass at the three confirmed sites: element-extractor.ts:480 (Rust impl_item), :558 (Java class_declaration) and :634 (C++ class_specifier/struct_specifier). Each traverses a scoped body and then re-walks the SAME children via the unconditional loop that follows. SCOPE CORRECTION: do NOT describe this as preserving qualification for Rust - `parentScope` is threaded through extractRustElements and NEVER READ (verified against every reference in the function, lines 451-507), so Rust has no scoped naming to preserve and its duplicates are exact. Introducing Rust scoped names would be NEW behavior and is explicitly OUT of scope for this phase; if wanted, mint it separately. Clone substrate and complexity metadata must survive on the element that is kept. Java and C/C++ follow the P1-T1a ruling.",
+          "description": "Replace the scoped-then-unconditional traversal with a SINGLE walk at the three confirmed sites: element-extractor.ts:480 (Rust impl_item), :558 (Java class_declaration) and :634 (C++ class_specifier/struct_specifier). Each currently traverses a scoped body and then re-walks the SAME children via the unconditional loop that follows, so every nested construct is visited once per enclosing scope. CAUTION - the naive fix is wrong in both directions: deleting the scoped traverse loses the scope, and deleting the unconditional loop loses general recursion entirely (nothing would descend into an interface body, and its members would vanish rather than be re-scoped). The shape that satisfies the ruling is ONE walk that computes the child scope as it descends, so scope is carried by the single recursion instead of by a second pass. SCOPE CORRECTION: do NOT describe this as preserving qualification for Rust - `parentScope` is threaded through extractRustElements and NEVER READ (verified against every reference, lines 451-507), so Rust has no scoped naming to preserve and its duplicates are exact. Introducing Rust scoped names is NEW behavior and is explicitly OUT of scope; mint it separately if wanted. Clone substrate and complexity metadata must survive on the element that is kept. Java and C/C++ follow ruling (A): qualified only.",
           "touches": [
             "src/pipeline/extractors/element-extractor.ts"
           ]
@@ -38,7 +38,7 @@
         {
           "id": "P1-T3",
           "verb": "TEST",
-          "description": "Add Rust, Java and C/C++ fixtures asserting exact element cardinality and the ruled scoped-name behavior; success means the pre-edit implementation FAILS the new assertions and the corrected one passes. The new cases MUST NOT use the existing `if (!parser) return;` skip pattern - an unloadable grammar has to fail the test, not silently green it. That guard is why this class of bug survived: the current Java cases assert only `expect(elements).toBeDefined()` (element-extractor.test.ts:319, :340) and the C/C++ cases use `.find()`, which returns the first match and is structurally blind to duplicates - all of them pass today WITH the bug present. Note the grammar registry key for Rust is `rs`, not `rust`; getParser(\"rust\") returns undefined with no error and would silently disable the whole Rust case.",
+          "description": "Add Rust, Java and C/C++ fixtures - each including a NESTED construct, since flat fixtures hide both the multiplicative duplication and the mis-scoping - asserting the AC-2 invariants below. Success means the pre-edit implementation FAILS the new assertions and the corrected one passes. The new cases MUST NOT use the existing `if (!parser) return;` skip pattern - an unloadable grammar has to fail the test, not silently green it. That guard is why this class of bug survived: the current Java cases assert only `expect(elements).toBeDefined()` (element-extractor.test.ts:319, :340) and the C/C++ cases use `.find()`, which returns the first match and is structurally blind to duplicates - all of them pass today WITH the bug present. Note the grammar registry key for Rust is `rs`, not `rust`; getParser(\"rust\") returns undefined with no error and would silently disable the whole Rust case. PHASE-2 HANDOFF (adopted from the /advise \"other angle\", 2026-08-01): assert the EXACT qualified name strings this phase settles on, so phase 2 inherits a written spec for what call-matching must reduce rather than re-deriving it from the implementation. This is the artifact that replaces the rejected compatibility shim.",
           "touches": [
             "__tests__/element-extractor.test.ts"
           ]
@@ -66,11 +66,12 @@
       ],
       "stub_ref": "STUB-WWR793",
       "acceptance_criteria": [
-        "AC-1 REPRODUCE FIRST: a fixture-based test asserts the CURRENT duplicate emission and is seen to FAIL only after the P1-T2 edit. Measured 2026-08-01 on HEAD: a Rust `impl Foo` with 2 fns emits 5 elements (alpha, beta, alpha, beta + class); the same C++ class emits 5 (alpha, beta, alpha, beta + class); the same Java class emits 5 (class Svc, method Svc.alpha, method Svc.beta, function alpha, function beta).",
-        "AC-2 CARDINALITY: after the edit each of the three fixtures emits exactly one element per declared construct — Rust 3, C++ 3, Java 3.",
+        "AC-1 REPRODUCE FIRST: nested-construct fixtures assert the CURRENT emission and are seen to FAIL only after the P1-T2 edit. Measured against HEAD on 2026-08-01 - Java `class Outer { alpha(); class Inner { beta(); } interface Contract { gamma(); } }` emits 13 elements for 6 declarations: class Inner x2, method Inner.beta x2, interface Contract x2, plus the FALSE method Outer.beta and method Outer.gamma, plus bare function alpha/beta/gamma. The equivalent C++ emits 9 for 4 declarations with function beta at x4. Rust `impl Foo { fn alpha() { fn helper() {} } }` emits 5 for 3, alpha and helper both x2.",
+        "AC-2 INVARIANTS (stated as invariants, not counts, because the correct element set for interface members is a P1-T2 design call): (i) NO element is emitted more than once for the same (type, name, line); (ii) every method name is scoped to its LEXICALLY ENCLOSING type - `Outer.beta` and `Outer.gamma` must not appear under any outcome; (iii) no bare unqualified duplicate accompanies a qualified method (ruling A); (iv) duplication does not grow with nesting depth - the depth-2 C++ case emits each construct once.",
         "AC-3 NO SILENT SKIP: every new language assertion FAILS when its grammar is absent. The existing `if (!parser) return;` guard is banned in the new cases.",
-        "AC-4 NO TS REGRESSION: the \"Phase 1 regression: class_declaration recursion leak\" block (element-extractor.test.ts:425) still passes unchanged — the TS path was already fixed for this exact shape and must not be re-broken.",
-        "AC-5 IDENTITY RULING RECORDED: the P1-T1a ruling is written into communication.json decisions_log before P1-T2 edits Java or C++."
+        "AC-4 NO TS REGRESSION: the \"Phase 1 regression: class_declaration recursion leak\" block (element-extractor.test.ts:425) still passes unchanged - the TS path was already fixed for this exact shape and must not be re-broken.",
+        "AC-5 RULING TRANSCRIBED: ruling (A) and its rationale are written into communication.json decisions_log before P1-T2 edits anything.",
+        "AC-6 PHASE-2 SPEC: the qualified name strings asserted by P1-T3 are the handoff contract for phase 2 (TKT-XGZA82). No compatibility shim is emitted - that was considered and rejected with the ruling."
       ]
     },
     {
@@ -215,6 +216,26 @@
       "id": "ADJ-5",
       "applied": true,
       "description": "Added phase-1 acceptance_criteria AC-1..AC-5 with the measured pre-edit cardinalities, so the phase is gradeable against a recorded baseline."
+    },
+    {
+      "id": "ADJ-6",
+      "applied": true,
+      "description": "Operator ruling (A) qualified-only recorded 2026-08-01 pre-execution; P1-T1a demoted from operator-halt to READ-and-transcribe."
+    },
+    {
+      "id": "ADJ-7",
+      "applied": true,
+      "description": "Nested-construct probe found TWO defects beyond the ticket: mis-scoped names (Outer.gamma on a Contract method) and depth-multiplicative duplication (C++ x4 at depth 2). Folded into P1 rather than filed - P1-T2 fixes them in the same edit."
+    },
+    {
+      "id": "ADJ-8",
+      "applied": true,
+      "description": "AC-2 restated as invariants rather than exact counts: interface-member extraction is a P1-T2 design call and must not be pre-committed by a cardinality number authored before the edit."
+    },
+    {
+      "id": "ADJ-9",
+      "applied": true,
+      "description": "P1-T3 gains the phase-2 handoff spec (advise \"other angle\") - assert the exact qualified strings so phase 2 inherits a contract, not a guess."
     }
   ],
   "discovery_required": true,
@@ -245,6 +266,12 @@
   "plan_amended": {
     "at": "2026-08-01",
     "by": "/discover readiness audit",
-    "evidence": "Duplicate emission reproduced live against HEAD for rs/java/cpp via a throwaway probe over ElementExtractor.extract; probe removed after use."
+    "evidence": "Duplicate emission reproduced live against HEAD for rs/java/cpp via a throwaway probe over ElementExtractor.extract; probe removed after use.",
+    "ruling": {
+      "question": "Java bare-vs-qualified method identity",
+      "decision": "A - qualified only, no shim",
+      "decided_by": "operator",
+      "decided_at": "2026-08-01"
+    }
   }
 }
