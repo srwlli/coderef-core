@@ -1,7 +1,7 @@
 ---
 title: @coderef/core
 status: living
-updated: 2026-07-18
+updated: 2026-08-01
 documents: package.json
 ---
 
@@ -16,7 +16,7 @@ documents: package.json
 ## Table of Contents
 
 - [Overview](#overview)
-- [Pipeline Rebuild Status](#pipeline-rebuild-status--complete-2026-05-05)
+- [Current State](#current-state)
 - [Installation](#installation)
 - [Quickstart](#quickstart)
 - [Core Modules](#core-modules)
@@ -39,33 +39,42 @@ documents: package.json
 
 ### Key Features
 
-- **🔍 Multi-Language Scanner** - AST-based Python parsing via tree-sitter + regex-based detection for TypeScript, JavaScript, Go, Rust, Java, C#, PHP, and more
+- **🔍 Multi-Language Scanner** - tree-sitter AST parsing for TypeScript, JavaScript, Python, Go, Rust, Java, C, and C++, with a SCIP overlay adding compiler-grade symbol resolution for TypeScript
 - **🛣️ API Route Detection** - Automatic detection of Flask, FastAPI, Express, and Next.js API routes with method extraction
 - **📊 Dependency Analysis** - Build comprehensive dependency graphs with import/export/call relationship tracking
 - **🧠 Intelligent Context** - Generate rich codebase context for AI-powered workflows and documentation
-- **📁 File Generation** - Automated creation of 17 analysis files (index, routes, context, diagrams, patterns, coverage, drift)
+- **📁 Artifact Generation** - `populate-coderef` runs 13 pipeline generators in one pass, emitting the `.coderef/` artifact set (index, graph, routes, context, exports, diagrams, patterns, coverage, complexity, drift, health, registry, validation report)
 - **🔗 Graph Queries** - Query codebase relationships (what-calls, what-imports, shortest-path, impact analysis)
 - **⚡ In-Process Scanning** - TypeScript scanning without subprocess overhead
-- **🎯 Type-Safe** - Complete TypeScript definitions with 26 type designators and validation
+- **🎯 Type-Safe** - Complete TypeScript definitions with 22 type designators and validation
 
-### Accuracy by Language
+### Supported Languages
 
-Transparency on parsing depth by language:
+Every supported language is parsed with a **tree-sitter AST grammar** — the regex-pattern
+scanner of the pre-pipeline era is retired. The authority for this list is
+`GRAMMAR_PACKAGES` / `EXTENSION_TO_LANGUAGE` in [`src/pipeline/types.ts`](src/pipeline/types.ts);
+a language absent from that mapping is not scanned at all.
 
-| Language | Method | Accuracy | Notes |
-|----------|--------|----------|-------|
-| **Python** | tree-sitter AST | ~99% | Full AST parsing - element classification, exports, async detection |
-| **TypeScript** | Regex patterns | ~85-90% | Fast but limited - may miss complex generics, decorators, re-exports |
-| **JavaScript** | Regex patterns | ~85-90% | Fast extraction - good for imports/exports, basic function detection |
-| **Go** | Regex patterns | ~80-85% | Structural detection - packages, functions, interfaces |
-| **Rust** | Regex patterns | ~80-85% | Pattern-based - modules, functions, traits |
-| **Java** | Regex patterns | ~80-85% | Class/method detection - may miss complex generics |
-| **C#** | Regex patterns | ~80-85% | Type and method extraction - limited generics support |
-| **PHP** | Regex patterns | ~80-85% | Function/class detection - basic namespace support |
+| Language | Extensions | Grammar | Resolution depth |
+|----------|-----------|---------|------------------|
+| **TypeScript** | `.ts` `.tsx` | `tree-sitter-typescript` | AST + optional SCIP overlay (compiler-grade symbols) |
+| **JavaScript** | `.js` `.jsx` | `tree-sitter-javascript` | AST |
+| **Python** | `.py` | `tree-sitter-python` | AST |
+| **Go** | `.go` | `tree-sitter-go` | AST |
+| **Rust** | `.rs` | `tree-sitter-rust` | AST |
+| **Java** | `.java` | `tree-sitter-java` | AST |
+| **C++** | `.cpp` `.cc` `.cxx` `.c++` | `tree-sitter-cpp` | AST |
+| **C** | `.c` `.h` | `tree-sitter-cpp` (shared) | AST |
 
-**Important:** Regex-based languages are optimized for common patterns. Complex meta-programming, heavy use of decorators, or advanced generics may have lower detection rates. For full type-aware analysis of TypeScript, consider tools like `ts-morph` (deeper but heavier).
+Default scan set when none is specified: `ts`, `tsx`, `js`, `jsx`.
 
-See [IMP-CORE-052](improvements.json) for planned tree-sitter expansion to all languages.
+**Not supported:** C# and PHP. Earlier revisions of this README listed both — they were never
+in the extension mapping and are not scanned.
+
+**On resolution quality, not "accuracy percentages."** Element extraction is AST-exact; what
+varies is *call-edge resolution* — whether a call site can be tied to a definition. That is
+measured and published per-scan in `.coderef/validation-report.json` as
+`resolved_of_resolvable`, and it is a surface, not a grade. See the self-scan baseline below.
 
 ### Use Cases
 
@@ -78,9 +87,11 @@ See [IMP-CORE-052](improvements.json) for planned tree-sitter expansion to all l
 
 ---
 
-## Pipeline Rebuild Status — Complete (2026-05-05)
+## Current State
 
-The 9-phase pipeline rebuild (Phase 0 through Phase 7) is complete and archived. Phase 8 (this WO) aligned the documentation to the post-rebuild reality. After rebuild close, `@coderef/core` ships:
+The 9-phase pipeline rebuild (Phase 0–7) closed on 2026-05-05 and is archived under
+`coderef/archived/pipeline-*/`; everything below describes what ships today, not that
+milestone. `@coderef/core` currently provides:
 
 - Canonical `codeRefId` per element + a Phase 1 identity taxonomy on `ElementData` (`layer`, `capability`, `constraints`, `headerStatus`).
 - Single-pass `PipelineOrchestrator` with deterministic phase ordering: discovery → scanner → raw facts → semantic header parser → import resolution → call resolution → graph construction.
@@ -198,7 +209,8 @@ console.log('Functions that call scanCurrentElements:', callers);
 
 ### 1. Scanner (`scanner/scanner.ts`)
 
-AST-based Python parsing (tree-sitter) + regex-based extraction for TypeScript, JavaScript, Go, Rust, Java, C#, PHP:
+tree-sitter AST extraction across all eight supported languages (see
+[Supported Languages](#supported-languages)):
 
 ```typescript
 import { scanCurrentElements, LANGUAGE_PATTERNS } from '@coderef/core';
@@ -215,7 +227,10 @@ const pyPatterns = LANGUAGE_PATTERNS.py; // Python patterns
 ```
 
 
-> **Python Scanner Quality:** AST-based parsing with tree-sitter delivers high accuracy for Python code analysis across element classification, export detection, test coverage linkage, async pattern detection, context summary precision, and testGaps filtering.
+> **Grammar loading is lazy and cached.** `GrammarRegistry` resolves a grammar on first use
+> per language, caches the parser, and negatively caches a failed load — so a grammar package
+> installed mid-process is not picked up until `clearCache()` runs. A missing optional grammar
+> degrades that language to unscanned; it never aborts the run.
 
 **Supported Types:** functions, classes, components, hooks, methods, constants, interfaces
 
@@ -417,7 +432,7 @@ const callees = engine.calleesOf(engine.resolve('myFunction'));
 const dependents = engine.dependentsOf(engine.resolve('src/scanner/scanner.ts'), 5);
 ```
 
-### 5. File Generation (`fileGeneration/`)
+### 6. File Generation (`fileGeneration/`) — legacy surface
 
 Generate 17 analysis files organized in 3 phases:
 
@@ -453,16 +468,16 @@ await generateDiagrams(projectPath, elements);
 // .coderef/diagrams/imports.mmd
 ```
 
-### 6. Query CLI (`cli/coderef-query.ts`)
+### 7. Query CLI (`cli/coderef-query.ts`)
 
 The `coderef-query` bin answers 8 relationship questions over the canonical
 graph — see [docs/CLI.md](docs/CLI.md#coderef-query). Direction contract:
 `-me` suffixed types are inbound (who calls/imports/depends on the target),
 bare types are outbound.
 
-### 7. Type System (`types/types.d.ts`)
+### 8. Type System (`types/types.ts`)
 
-26 type designators with validation and priorities:
+22 type designators (`TypeDesignator`) with validation and priorities:
 
 ```typescript
 import { TypeDesignator, isValidTypeDesignator, getTypeMetadata } from '@coderef/core';
@@ -493,7 +508,7 @@ See **[docs/API.md](docs/API.md)** for the complete public API contract (post-re
 | `PipelineOrchestrator` + generators | Classes | Canonical producers of every `.coderef/` artifact |
 | `ContextGenerator` (= `PipelineContextGenerator`) | Class | Canonical context artifact generator; the scanner-backed service is `CodebaseContextService` |
 | `saveIndex`, `generateContext`, `buildDependencyGraph`, `detectPatterns`, `analyzeCoverage`, `validateReferences`, `detectDrift`, `generateDiagrams` | Functions (`@coderef/core/legacy`) | Quarantined legacy writers — refuse to overwrite a pipeline-owned `.coderef/` without `{force:true}` |
-| `TypeDesignator` | Enum | 26 type designators |
+| `TypeDesignator` | Enum | 22 type designators |
 | `generateValidationReport` | Function | Validate frontend calls vs server routes |
 | `generateMarkdownReport` | Function | Generate validation report with fix suggestions |
 | `normalizeRoutePath` | Function | Normalize routes across frameworks |
@@ -751,30 +766,31 @@ const elements = await scanCurrentElements('./src', 'ts', options);
 
 ## Roadmap
 
-> **Currency note (2026-07-18):** the version headings below are aspirational planning
-> buckets, not shipped-release truth — the published package is **v2.0.0** (see
-> `package.json`). Several listed items have already landed post-rebuild (tree-sitter
-> Python, timeout guards, the RAG pipeline, `coderef-map`, the 38-tool MCP server). Treat
-> `roadmap.md`, `improvements.json`, and the workorder registry as the authoritative
-> forward plan; this section is a high-level sketch.
+> **The authoritative forward plan lives in `roadmap.md`, `improvements.json`, and the
+> workorder registry — not here.** This section is a coarse sketch. The published package is
+> **v2.0.0** (`package.json`); the version buckets that used to head this section were
+> aspirational and are removed, because several of them shipped while still displaying as
+> unchecked boxes.
 
-### v2.1.0 (Q1 2026)
-- [ ] Add C++ and Ruby language support
-- [ ] Incremental scanning (track file changes)
-- [ ] Performance optimizations (parallel file reading)
-- [ ] Enhanced TypeScript AST parsing (decorators, generics)
+**Shipped** (previously listed here as planned):
 
-### v2.2.0 (Q2 2026)
-- [ ] Real-time watch mode (auto-rescan on file changes)
-- [ ] Web worker support for browser environments
-- [ ] Enhanced diagram generation (D3.js, PlantUML)
+- tree-sitter AST parsing for all eight supported languages — not Python alone
+- Incremental scanning (`--changed-files`), with output proven byte-identical to a full rebuild
+- Watch mode (`coderef-watch`)
+- The RAG pipeline: local-first embeddings, semantic search, facet filters
+- `coderef-map` — graph analytics, engineering-metrics overlays, static bundle + live viewer
+- The 38-tool repo-agnostic MCP server
+- C and C++ language support
+- File I/O timeout guards (30s) and a 50MB file-size limit
 
-### v3.0.0 (Q3 2026) ✅ RELEASED
-- [x] Enhanced Python AST parsing (tree-sitter) + 6-loop quality campaign (element classification, export accuracy, test coverage, async detection, context precision, testGaps filtering)
-- [x] **Timeout Protection** - File I/O timeout guards (30s) and file size limits (50MB) prevent MCP tool hanging
-- [ ] Enhanced RAG integration (embeddings, semantic search)
-- [ ] Multi-repo analysis (monorepo support)
-- [ ] GraphQL API for remote scanning
+**Open, in no committed order:**
+
+- Ruby, Swift, and Kotlin grammars
+- Multi-repo / monorepo analysis across sibling checkouts
+- Parallel file reading
+- Richer diagram targets (D3.js, PlantUML)
+- Web-worker support for browser environments
+- A remote query API
 
 ---
 
@@ -824,7 +840,7 @@ How @coderef/core compares to existing code intelligence tools:
 **Parser generator for ASTs**
 - Precise incremental parsing across languages
 - Used by GitHub, Neovim, and others
-- Comparison: @coderef/core uses tree-sitter for Python; expanding to all languages (see IMP-CORE-052)
+- Comparison: @coderef/core is a tree-sitter *consumer* — it loads a grammar per language and builds a resolved cross-file graph on top; tree-sitter itself stops at the parse tree
 
 ### LangChain / RAG Tools
 **AI orchestration frameworks**
@@ -853,8 +869,7 @@ How @coderef/core compares to existing code intelligence tools:
 **TypeScript AST manipulation library**
 - Full TypeScript compiler API access for refactoring and analysis
 - Accurate type information and symbol resolution
-- Comparison: ts-morph has deeper TypeScript AST access; @coderef/core uses regex for TS/JS (lighter but less accurate for complex patterns)
-- See: IMP-CORE-052 for planned tree-sitter expansion to match ts-morph depth
+- Comparison: ts-morph gives full compiler-API type information; @coderef/core parses TS/JS with tree-sitter and can layer a SCIP overlay for compiler-grade symbol resolution, trading some type depth for multi-language reach and a persisted graph
 
 ### madge
 **Dependency graph generator for JavaScript/TypeScript**
