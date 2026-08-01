@@ -1,0 +1,120 @@
+{
+  "workorder_id": "WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001",
+  "feature_name": "unified-pipeline-legacy-surface-boundary",
+  "created": "2026-08-01T02:29:19.575214+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "predecessor_for": null,
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [
+    "Execute phases in order and honor the final Phase 4 hard stop.",
+    "Run each phase's discover hooks and resolve material findings before proceeding.",
+    "Commit only explicit workorder paths on main; never use git add -A.",
+    "Preserve compatibility until an inventory and contract test justify each retirement."
+  ],
+  "hard_constraints": [
+    "Do not remove scanCurrentElements.",
+    "Do not remove the shared index-storage or route/frontend-call serialization capability.",
+    "Do not change artifact semantics beyond the contract normalization required to establish one canonical writer.",
+    "Do not redo or reverse the completed TreeSitterScanner retirement workorder."
+  ],
+  "blockers": [],
+  "parent_stub_id": "STUB-J2BYDN",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-J2BYDN",
+      "plan_type": "phased",
+      "timestamp": "2026-08-01T02:29:19.575214+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 17,
+      "source": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\.coderef\\tmp\\unified-pipeline-legacy-boundary-tasks.json",
+      "at": "2026-08-01T02:29:19.575214+00:00"
+    },
+    {
+      "event": "inter_phase_hooks_populated",
+      "plan_type": "phased",
+      "phase_count": 4,
+      "source": "default",
+      "at": "2026-08-01T02:29:19.575214+00:00"
+    },
+    {
+      "event": "workorder_hooks_populated",
+      "plan_type": "phased",
+      "source": "default",
+      "at": "2026-08-01T02:29:19.575214+00:00"
+    },
+    {
+      "event": "plan_contract_hardened",
+      "reason": "Canonical runner injected approved tasks but omitted current phased hook, hard-stop, acceptance-criteria, and execution-boundary defaults.",
+      "at": "2026-08-01T02:29:19.575214+00:00"
+    },
+    {
+      "event": "metrics_before_snapshot",
+      "path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\.coderef\\map\\metrics-snapshot-WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001-before.json",
+      "vintage_path": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\.coderef\\map\\metrics-snapshot-WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001-before.vintage.json",
+      "map_generated_at": "2026-08-01T02:32:09.432Z",
+      "at": "2026-08-01T02:32:09.457Z"
+    },
+    {
+      "event": "discovery_target_repaired",
+      "from": "ASSISTANT",
+      "to": "CODEREF-CORE",
+      "reason": "The canonical cross-project engine persisted discovery candidates from the assistant root despite target_project=coderef-core. Context and analysis were replaced with the preceding CODEREF-CORE code audit.",
+      "debug_stub": "STUB-ZB10H4",
+      "at": "2026-08-01T02:37:00.000Z"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-08-01T06:24:30.537Z"
+    },
+    {
+      "event": "alignment_gate",
+      "verdict": "warn",
+      "reason": "alignment_missing",
+      "at": "2026-08-01T06:24:30.537Z"
+    },
+    {
+      "event": "alignment_recorded",
+      "verdict": "PASS",
+      "via": "align-coderef-culture record",
+      "at": "2026-08-01T06:24:30.537Z"
+    },
+    {
+      "event": "semantic_validation_gate",
+      "outcome": "pass",
+      "note": "no discovery_rag in context.json; constraints validated against plan tasks",
+      "at": "2026-08-01T06:24:30.537Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T02:29:19.575214+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-J2BYDN"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "git_branch": "main"
+}

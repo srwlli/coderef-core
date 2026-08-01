@@ -1,0 +1,96 @@
+{
+  "workorder_id": "WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001",
+  "feature_name": "unified-pipeline-legacy-surface-boundary",
+  "created": "2026-08-01T02:29:19.575214+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub_promotion",
+    "user_request": "Complete the CODEREF-CORE unified-pipeline migration boundary without removing the live lightweight scanner: make PipelineOrchestrator generators the only writers of canonical .coderef artifact paths; quarantine or deprecate competing src/fileGeneration public writers while retaining shared index-storage and route serializers; resolve the ContextGenerator and package-entrypoint export split; remove the redundant coderef-scan leg from default pipeline and full-watch execution; classify and migrate remaining legacy scanner callers; and add compatibility, overwrite-contract, orchestration, build, and package-entrypoint tests. Out of scope: removing scanCurrentElements, removing shared index or route helpers, changing artifact semantics beyond contract normalization, or redoing the completed TreeSitterScanner retirement.",
+    "stub_id": "STUB-J2BYDN"
+  },
+  "classification": {
+    "plan_type": "phased",
+    "plan_type_rationale": "Category refactor maps to phased",
+    "plan_type_decided_by": "create-workorder-engine@1.0.0",
+    "discovery_ref": "discover-20260801T021713Z",
+    "discovery": {
+      "candidates": [
+        "src/cli/populate.ts",
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/graph-builder.ts",
+        "src/pipeline/generators/",
+        "src/scanner/scanner.ts",
+        "src/scanner/file-watcher.ts",
+        "src/cli/scan.ts",
+        "src/cli/coderef-pipeline.ts",
+        "src/cli/coderef-watch.ts",
+        "src/context/context-generator.ts",
+        "src/pipeline/generators/context-generator.ts",
+        "src/fileGeneration/",
+        "src/generator/generateRoutes.ts",
+        "index.ts",
+        "src/index.ts",
+        "package.json"
+      ],
+      "blast_radius": [
+        "src/semantic/orchestrator.ts",
+        "src/mcp/",
+        "src/query/",
+        "src/rag/",
+        "__tests__/",
+        "external @coderef/core runtime and TypeScript consumers"
+      ],
+      "public_api_hits": [
+        "scanCurrentElements",
+        "ContextGenerator",
+        "legacy src/fileGeneration writer exports",
+        "package.json main/types/exports"
+      ],
+      "hotspot_hits": [
+        "src/cli/populate.ts",
+        "src/pipeline/orchestrator.ts",
+        "src/pipeline/graph-builder.ts",
+        "src/cli/coderef-pipeline.ts",
+        "src/index.ts"
+      ],
+      "foundation_anchors": [],
+      "call_chain_hits": [
+        "src/cli/scan.ts -> scanCurrentElements",
+        "src/context/context-generator.ts -> scanCurrentElements",
+        "src/scanner/file-watcher.ts -> scanCurrentElements",
+        "src/cli/populate.ts -> PipelineOrchestrator and canonical generators",
+        "src/pipeline/generators/index-generator.ts -> fileGeneration/index-storage",
+        "src/pipeline/generators/drift-generator.ts -> fileGeneration/index-storage",
+        "src/pipeline/generators/routes-generator.ts -> generator/generateRoutes"
+      ],
+      "warnings": [
+        "The canonical create-workorder runner initially resolved discovery against ASSISTANT instead of the target CODEREF-CORE project; this record replaces those false candidates with the preceding code audit.",
+        "Negative reachability claims must continue to use code search because dynamic/external package consumers are not fully represented in the graph."
+      ],
+      "summary_ref": "discover-20260801T021713Z"
+    }
+  },
+  "scope": {
+    "in_scope": [
+      "Canonical .coderef artifact writer ownership",
+      "Legacy fileGeneration export quarantine and compatibility",
+      "ContextGenerator and package entrypoint alignment",
+      "Default pipeline/full-watch double-scan removal",
+      "Remaining legacy scanner caller classification and tests"
+    ],
+    "out_of_scope": [
+      "Removing scanCurrentElements",
+      "Removing shared index-storage or route/frontend-call serialization capability",
+      "Changing artifact semantics beyond contract normalization",
+      "Redoing the completed TreeSitterScanner retirement workorder"
+    ]
+  },
+  "constraints": [
+    "Preserve explicit lightweight scanning and supported external API compatibility.",
+    "Protect canonical artifacts before changing orchestration or public exports.",
+    "Use code search to validate negative reachability claims.",
+    "Commit only explicit workorder paths on main."
+  ],
+  "pre_existing_drift": false
+}

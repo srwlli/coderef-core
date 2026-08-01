@@ -1,0 +1,123 @@
+{
+  "workorder_id": "WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001",
+  "feature_name": "unified-pipeline-legacy-surface-boundary",
+  "analysis_authored_at": "2026-08-01T02:29:19.575214+00:00",
+  "blast_radius": {
+    "files_modified": [
+      "src/cli/coderef-pipeline.ts",
+      "src/cli/coderef-watch.ts",
+      "src/cli/populate.ts",
+      "src/cli/scan.ts",
+      "src/scanner/scanner.ts",
+      "src/scanner/file-watcher.ts",
+      "src/context/context-generator.ts",
+      "src/pipeline/generators/context-generator.ts",
+      "src/pipeline/generators/index-generator.ts",
+      "src/pipeline/generators/drift-generator.ts",
+      "src/pipeline/generators/routes-generator.ts",
+      "src/fileGeneration/index-storage.ts",
+      "src/generator/generateRoutes.ts",
+      "index.ts",
+      "src/index.ts",
+      "package.json"
+    ],
+    "files_created": [
+      "Focused legacy-writer overwrite contract tests",
+      "Package-entrypoint and ContextGenerator identity tests",
+      "Single-scan pipeline/watch orchestration tests"
+    ],
+    "downstream_consumers": [
+      "populate-coderef and every canonical .coderef artifact consumer",
+      "coderef-pipeline and coderef-watch orchestration",
+      "coderef-scan lightweight diagnostic users",
+      "MCP, query, map, and RAG consumers of graph.json and index variants",
+      "External @coderef/core runtime and TypeScript consumers"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Legacy writer silently clobbers a canonical artifact",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Establish one writer per canonical path and add overwrite-contract tests before changing exports."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Package entrypoint alignment breaks an external consumer",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Inventory supported entrypoints, provide explicit compatibility aliases, and test runtime plus declarations through each entrypoint."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Shared serializer is mistaken for disposable legacy code",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "Move index-storage and route/frontend-call formatters behind a neutral module before quarantining legacy writers."
+    },
+    {
+      "id": "RISK-004",
+      "title": "Removing the pipeline scan leg changes an intentional diagnostic contract",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "Retain coderef-scan as an explicit command and test that default full orchestration invokes only populate's canonical scan."
+    },
+    {
+      "id": "RISK-005",
+      "title": "Legacy scanner caller has dynamic or external reachability",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Use code search plus package exports and tests before retiring FileWatcher or renaming scanner-backed context APIs."
+    }
+  ],
+  "candidates": [
+    {"path": "src/cli/populate.ts", "role": "canonical pipeline and generator composition root"},
+    {"path": "src/pipeline/orchestrator.ts", "role": "canonical parse, resolution, and PipelineState producer"},
+    {"path": "src/pipeline/graph-builder.ts", "role": "canonical graph contract owner"},
+    {"path": "src/pipeline/generators/", "role": "canonical artifact writers"},
+    {"path": "src/scanner/scanner.ts", "role": "retained lightweight ElementData scanner API"},
+    {"path": "src/scanner/file-watcher.ts", "role": "legacy scanner integration with no modern watch import found"},
+    {"path": "src/cli/scan.ts", "role": "standalone lightweight scan caller"},
+    {"path": "src/cli/coderef-pipeline.ts", "role": "default scan-then-populate double-scan orchestration"},
+    {"path": "src/cli/coderef-watch.ts", "role": "full and incremental orchestration consumer"},
+    {"path": "src/context/context-generator.ts", "role": "legacy scanner-backed ContextGenerator"},
+    {"path": "src/pipeline/generators/context-generator.ts", "role": "PipelineState ContextGenerator artifact writer"},
+    {"path": "src/fileGeneration/", "role": "legacy public writers plus actively shared index storage"},
+    {"path": "src/generator/generateRoutes.ts", "role": "shared route/frontend-call serializer"},
+    {"path": "index.ts", "role": "legacy root public barrel"},
+    {"path": "src/index.ts", "role": "export-map public barrel"},
+    {"path": "package.json", "role": "main/types/exports resolution contract"}
+  ],
+  "dependencies": [
+    "ElementData and PipelineState contracts",
+    "writeIndexVariants and loadIndexFromCoderefDir",
+    "saveRoutesToFile and saveFrontendCallsToFile",
+    "Node package main/types/exports resolution",
+    "populate, pipeline, watch, package, and fileGeneration integration tests"
+  ],
+  "public_api_hits": [
+    {"surface": "scanCurrentElements", "evidence": "Exported lightweight scanner with production CLI/context/FileWatcher callers"},
+    {"surface": "legacy src/fileGeneration writers", "evidence": "Exported by both public barrels despite no internal production writer calls"},
+    {"surface": "ContextGenerator", "evidence": "Name resolves to different classes/contracts across root and src entrypoints"},
+    {"surface": "package main/types/exports", "evidence": "main targets dist/index while export map targets dist/src/index"}
+  ],
+  "decision_records": [
+    {
+      "decision": "Preserve scanCurrentElements",
+      "rationale": "It remains a live lightweight scanning API and is not equivalent to the artifact-producing PipelineOrchestrator."
+    },
+    {
+      "decision": "Do not delete all of src/fileGeneration",
+      "rationale": "index-storage is imported by canonical index/drift generators and route formatters are reused by the canonical RoutesGenerator."
+    },
+    {
+      "decision": "Treat canonical-path ownership as the first phase of implementation",
+      "rationale": "Public legacy writers can currently overwrite richer pipeline artifacts under identical filenames."
+    },
+    {
+      "decision": "Exclude completed TreeSitterScanner retirement",
+      "rationale": "WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER-001 already completed that distinct orphan cleanup."
+    }
+  ]
+}

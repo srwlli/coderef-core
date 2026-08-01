@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-J2BYDN",
+  "ulid": "01KYXJF22AWTJZ92K9FNFXZ52F",
+  "feature_name": "unified-pipeline-legacy-surface-boundary",
+  "description": "Complete the CODEREF-CORE unified-pipeline migration boundary without removing the live lightweight scanner: make PipelineOrchestrator generators the only writers of canonical .coderef artifact paths; quarantine or deprecate competing src/fileGeneration public writers while retaining shared index-storage and route serializers; resolve the ContextGenerator and package-entrypoint export split; remove the redundant coderef-scan leg from default pipeline and full-watch execution; classify and migrate remaining legacy scanner callers; and add compatibility, overwrite-contract, orchestration, build, and package-entrypoint tests. Out of scope: removing scanCurrentElements, removing shared index or route helpers, changing artifact semantics beyond contract normalization, or redoing the completed TreeSitterScanner retirement.",
+  "category": "refactor",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T02:29:18Z"
+}
