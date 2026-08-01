@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "plan_created",
+  "status": "implementing",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\analysis.json",
@@ -32,9 +32,41 @@
       "at": "2026-08-01T14:05:00Z",
       "by": "/discover (discovery.md, medium) + agent design pass",
       "detail": "Engine strict skeleton (1 phase / 7 tasks) replaced with a 3-phase parity-gated plan (21 tasks, 8 design locks DL-1..DL-8): P1 section nodes + contains edges, P2 symbol-gated backtick references, P3 quarantined fenced-block identifiers + E2E proof. DL-4 SUPERSEDES the stub's original 'register snippets in the global symbol table' wording per discovery REC-001 (pollution risk). No-regress instrument = DL-6 filtered frozen-tree A/B (ADJ-1 precedent). Engine planning-discovery was dist-old-polluted (SCOPE-001 class) and is superseded by discovery.md. STANDBY: plan expanded only - execution awaits operator go."
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-08-01T14:20:00Z"
+    },
+    {
+      "event": "alignment_gate",
+      "verdict": "warn",
+      "reason": "alignment_missing",
+      "detail": "advisory, non-blocking per Step 1.65 WARN-first contract"
+    },
+    {
+      "event": "plan_adjustment",
+      "id": "ADJ-1",
+      "at": "2026-08-01T14:25:00Z",
+      "detail": "BUILD/PROOF SANDBOX. The shared checkout does not compile: a peer's uncommitted WIP (src/pipeline/scope-binding.ts, 2 TS2488 errors, plus framework detectors and 5 test files) is mid-edit, and tsconfig sets noEmitOnError:true so no dist can be produced. Touching another agent's WIP is out of bounds (file-partition), so every build, test, and parity proof for this WO runs in a DETACHED-HEAD git worktree at C:/Users/willh/AppData/Local/Temp/crsb containing HEAD + exactly this WO's files (synced by scratchpad/sync-sandbox.sh). Clean HEAD builds there with exit 0, which is what proves the breakage is peer WIP and not this WO. Edits and commits still land in the main checkout on main. Sandbox needed a short path (Windows MAX_PATH) and staged copies of ASSISTANT/STANDARDS/layers.json + the analyze-coderef-semantics SKILL.md, which the header tests resolve relative to cwd's parent."
+    },
+    {
+      "event": "finding",
+      "id": "FIND-1",
+      "at": "2026-08-01T14:30:00Z",
+      "detail": "A new edge kind must be taught FIVE enumerations, not the two the plan's DL-2 named: graph-builder EdgeRelationship, graph-exporter ExportedGraphEdgeRelationship, output-validator VALID_RELATIONSHIPS (a RUNTIME GI-4 gate that failed the populate, not just a type), canonical-graph DEPENDS, mcp/graph-tools DEPENDS_KINDS. Only the last two are compile-checked-adjacent; the validator one fails at scan time."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "7971aa87b7f6",
+      "verdict": "PASS",
+      "at": "2026-08-01T14:35:00Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {

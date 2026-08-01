@@ -278,6 +278,9 @@ const VALID_RELATIONSHIPS = new Set<string>([
   // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1: doc-to-own-
   // section containment (@Doc/x.md -> @Doc/x.md#slug).
   'contains',
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P2: doc section ->
+  // code element, gated on symbol-table membership.
+  'references',
 ]);
 
 /** Canonical EdgeResolutionStatus enum (mirrors graph-builder.ts EdgeResolutionStatus). */

@@ -65,7 +65,7 @@ import { createCodeRefId } from '../utils/coderef-id.js';
 import { globalRegistry } from '../registry/entity-registry.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 import { classifyEdgeConfidence } from './edge-confidence.js';
-import { docTargets } from './doc-ingest.js';
+import { docTargets, docReferenceClaims } from './doc-ingest.js';
 import {
   METHOD_UNSPECIFIED,
   canonicalEndpointPath,
@@ -118,7 +118,11 @@ export type EdgeRelationship =
   // (`@Doc/x.md`) containing one of its heading-delimited sections
   // (`@Doc/x.md#slug`). Structural containment, never a dependency — it only
   // ever sources from a doc node and targets that same doc's section node.
-  | 'contains';
+  | 'contains'
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P2: a doc section
+  // (`@Doc/x.md#slug`) naming a code element the symbol table backs. Source is
+  // always a section node; a resolved target is always an element node.
+  | 'references';
 
 /**
  * Canonical edge resolution status (AC-03).
@@ -202,6 +206,18 @@ export type EdgeEvidence = (
       slug: string;
       depth: number;
       order: number;
+    }
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P2/P3. `origin`
+  // separates the two lanes a doc-to-code claim can come from: prose backticks
+  // vs a fenced example. A stale example and a stale sentence are different
+  // findings, and collapsing them would make that undistinguishable.
+  | {
+      kind: 'doc-reference';
+      sheetPath: string;
+      slug: string;
+      token: string;
+      origin: 'prose' | 'code-block';
+      candidates?: string[];
     }
 ) & {
   /**
@@ -1335,6 +1351,68 @@ export function buildEdges(
         evidence,
         sourceLocation: { file: doc.sheetPath, line: section.line },
       }));
+    }
+  }
+
+  // === references edges (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-...-001 P2) ===
+  //
+  // DL-3 MEMBERSHIP GATE. A backtick span becomes an edge only when the symbol
+  // table backs the name. Prose wraps far more paths, flags and slugs in
+  // backticks than symbols, so an ungated extractor would bury the real claims
+  // under noise — and a graph edge has to be a claim something can back.
+  //
+  // The two miss modes are deliberately ASYMMETRIC:
+  //   no match   -> mint NOTHING. `--stale-only` is not a symbol claim at all,
+  //                 and recording thousands of non-claims as unresolved edges
+  //                 would flood the graph and skew resolution-rate reporting.
+  //   >1 match   -> mint an AMBIGUOUS edge carrying every candidate. Here the
+  //                 name IS a real symbol claim; we simply cannot pick which
+  //                 one, and guessing is exactly what this gate prevents
+  //                 (ambiguous-call precedent).
+  const elementNodeIds = new Map<string, string[]>();
+  for (const elem of state.elements ?? []) {
+    if (!elem.name) continue;
+    const id = elem.codeRefId ?? createCodeRefId(elem, state.projectPath, { includeLine: true });
+    const bucket = elementNodeIds.get(elem.name);
+    if (bucket) {
+      if (!bucket.includes(id)) bucket.push(id);
+    } else {
+      elementNodeIds.set(elem.name, [id]);
+    }
+  }
+
+  for (const doc of state.docs ?? []) {
+    for (const section of doc.sections ?? []) {
+      for (const { token, origin } of docReferenceClaims(section)) {
+        const candidates = elementNodeIds.get(token);
+        if (!candidates || candidates.length === 0) continue;
+        const unique = candidates.length === 1;
+        const evidence: EdgeEvidence = {
+          kind: 'doc-reference',
+          sheetPath: doc.sheetPath,
+          slug: section.slug,
+          token,
+          origin,
+          ...(unique ? {} : { candidates }),
+        };
+        edges.push(buildEdgeRecord({
+          id: computeEdgeId({
+            sourceId: section.id,
+            relationship: 'references',
+            ...(unique ? { targetId: candidates[0] } : {}),
+            originSpecifier: token,
+            sourceFile: doc.sheetPath,
+            line: section.line,
+          }),
+          sourceId: section.id,
+          ...(unique ? { targetId: candidates[0] } : {}),
+          relationship: 'references',
+          resolutionStatus: unique ? 'resolved' : 'ambiguous',
+          evidence,
+          sourceLocation: { file: doc.sheetPath, line: section.line },
+          ...(unique ? {} : { candidates, reason: 'doc_reference_ambiguous' }),
+        }));
+      }
     }
   }
 

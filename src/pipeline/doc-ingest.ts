@@ -132,6 +132,38 @@ export interface DocSectionFact {
   line: number;
   /** 1-based last line of this section's body (inclusive of the heading). */
   endLine: number;
+  /**
+   * Identifier-shaped inline backtick spans in this section (P2), deduped in
+   * document order. These are CANDIDATES only — a token becomes an edge solely
+   * when the symbol table backs it (DL-3). Fenced-block interiors are excluded
+   * here; they are P3's separate lane.
+   */
+  mentions: string[];
+  /**
+   * Identifiers lexed from this section's fenced ts/js blocks (P3), deduped in
+   * document order. QUARANTINED by DL-4: these never enter the global symbol
+   * table — they are candidates for the same membership gate as `mentions`,
+   * nothing more. Absent until P3 populates it.
+   */
+  codeIdentifiers?: string[];
+}
+
+/**
+ * Normalize an inline backtick span to a candidate symbol name, or null when
+ * it is not identifier-shaped.
+ *
+ * Backticks in prose wrap far more paths, flags, and kebab-slugs than symbols
+ * (`--source-headers`, `coderef/foundation-docs`, `npm run build`), so this
+ * pre-filter keeps the fact list honest before the symbol-table gate ever runs.
+ * A trailing call suffix is dropped so `run()` and `run` are the same claim.
+ *
+ * v1 deliberately does NOT resolve member expressions (`ctx.run()`): the
+ * receiver would have to be typed to know what it names, and guessing is the
+ * failure mode DL-3 exists to prevent.
+ */
+export function normalizeMention(raw: string): string | null {
+  const token = raw.trim().replace(/\(\s*\)$/, '');
+  return /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(token) ? token : null;
 }
 
 /** collectDocFacts output: facts plus counted skips (never silent drops). */
@@ -201,7 +233,28 @@ export function extractDocSections(docId: string, text: string): DocSectionFact[
 
   const sections: DocSectionFact[] = [];
   const slugCounts = new Map<string, number>();
+  const seenMentions = new Map<number, Set<string>>();
   let fence: string | null = null;
+
+  /** Collect identifier-shaped backtick spans on a line into its section. */
+  const harvest = (line: string): void => {
+    const current = sections[sections.length - 1];
+    if (!current) return; // prose before the first heading belongs to no section
+    let m: RegExpExecArray | null;
+    const re = /`([^`\n]+)`/g;
+    while ((m = re.exec(line)) !== null) {
+      const token = normalizeMention(m[1]);
+      if (token === null) continue;
+      let seen = seenMentions.get(current.order);
+      if (!seen) {
+        seen = new Set<string>();
+        seenMentions.set(current.order, seen);
+      }
+      if (seen.has(token)) continue;
+      seen.add(token);
+      current.mentions.push(token);
+    }
+  };
 
   for (let i = start; i < lines.length; i++) {
     const line = lines[i];
@@ -217,7 +270,10 @@ export function extractDocSections(docId: string, text: string): DocSectionFact[
     if (fence !== null) continue;
 
     const headingMatch = line.match(HEADING_RE);
-    if (!headingMatch) continue;
+    if (!headingMatch) {
+      harvest(line);
+      continue;
+    }
 
     const heading = headingMatch[2].trim();
     const base = headingSlug(heading) || `section-${sections.length + 1}`;
@@ -235,7 +291,10 @@ export function extractDocSections(docId: string, text: string): DocSectionFact[
       order: sections.length,
       line: i + 1,
       endLine: lines.length,
+      mentions: [],
     });
+    // A heading may itself name a symbol ("## The `run()` contract").
+    harvest(line);
   }
 
   return sections;
@@ -261,6 +320,37 @@ export function docTargets(doc: Pick<DocFact, 'documentsPath' | 'documentsPaths'
       seen.add(t);
       out.push(t);
     }
+  }
+  return out;
+}
+
+/** One doc-to-code claim a section makes, tagged with the lane it came from. */
+export interface DocReferenceClaim {
+  token: string;
+  origin: 'prose' | 'code-block';
+}
+
+/**
+ * Every symbol claim a section makes, prose lane first, deduped across lanes.
+ *
+ * The single seam graph-builder feeds through the DL-3 membership gate — one
+ * place decides what counts as a claim, so the prose and fenced-code lanes
+ * cannot drift apart in what they are allowed to assert. A token named in BOTH
+ * lanes is ONE claim, attributed to prose: a sentence naming a symbol is the
+ * stronger signal, and two edges for one mention would double-count it.
+ */
+export function docReferenceClaims(section: DocSectionFact): DocReferenceClaim[] {
+  const out: DocReferenceClaim[] = [];
+  const seen = new Set<string>();
+  for (const token of section.mentions) {
+    if (seen.has(token)) continue;
+    seen.add(token);
+    out.push({ token, origin: 'prose' });
+  }
+  for (const token of section.codeIdentifiers ?? []) {
+    if (seen.has(token)) continue;
+    seen.add(token);
+    out.push({ token, origin: 'code-block' });
   }
   return out;
 }

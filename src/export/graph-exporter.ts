@@ -54,7 +54,10 @@ export type ExportedGraphEdgeRelationship =
   // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1: doc-to-own-
   // section containment. Both endpoints are `@Doc/...` pseudo-nodes; the
   // target additionally carries a `#slug` suffix.
-  | 'contains';
+  | 'contains'
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P2: doc section ->
+  // symbol-table-backed code element.
+  | 'references';
 
 export type ExportedGraphEdgeResolutionStatus =
   | 'resolved'

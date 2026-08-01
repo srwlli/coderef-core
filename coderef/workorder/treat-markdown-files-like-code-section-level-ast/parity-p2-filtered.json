@@ -1,0 +1,60 @@
+{
+  "phase": 2,
+  "instrument": "DL-6 filtered frozen-tree A/B (P1 dist = OLD lineage; OLD baseline retained)",
+  "binding_claims": {
+    "code_universe_byte_identical_vs_pre_WO": {
+      "verdict": "PASS",
+      "node_count": [
+        3741,
+        3741
+      ],
+      "node_sha256_match": true,
+      "edge_count": [
+        45305,
+        45305
+      ],
+      "edge_sha256_match": true
+    },
+    "pre_existing_doc_rows_id_identical": {
+      "verdict": "PASS",
+      "doc_file_node_sha256_match": true,
+      "documents_edge_sha256_match": true
+    },
+    "p1_section_nodes_unperturbed": {
+      "verdict": "PASS",
+      "section_node_sha256_match": true,
+      "section_node_count": 1031
+    }
+  },
+  "additive_growth": {
+    "references_edges": 1213,
+    "doc_touching_edges": [
+      121,
+      1152,
+      2365
+    ]
+  },
+  "gate_quality_on_the_live_doc_surface": {
+    "note": "Evidence the DL-3 membership gate admits symbol claims and rejects prose noise.",
+    "resolved": 1140,
+    "ambiguous": 73,
+    "unresolved_minted": 0,
+    "distinct_tokens": 638,
+    "top_tokens": [
+      "ElementData(23)",
+      "scanCurrentElements(16)",
+      "LRUCache(15)",
+      "CanonicalGraphQuery(14)",
+      "ParsedCodeRef(14)"
+    ],
+    "reading": "Every admitted token is a real repo symbol; paths/flags/kebab-slugs minted nothing."
+  },
+  "query_semantics": {
+    "contains": "IN the DEPENDS set on both indexes \u2014 cannot touch an element-to-element answer.",
+    "references": "DELIBERATELY OUT of DEPENDS on both indexes; exposed via CanonicalGraphQuery.docReferences() so existing impact_of answers are unchanged."
+  },
+  "tests": {
+    "doc_ingest_suite": "37/37 passed (30 + 7 new P2 gate contracts)"
+  },
+  "verdict": "PASS"
+}

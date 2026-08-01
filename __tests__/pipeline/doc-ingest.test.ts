@@ -42,6 +42,7 @@ import {
   isDocNodeId,
   headingSlug,
   extractDocSections,
+  normalizeMention,
   type DocFact,
 } from '../../src/pipeline/doc-ingest.js';
 import { constructGraph } from '../../src/pipeline/graph-builder.js';
@@ -599,5 +600,99 @@ describe('section nodes + contains edges (constructGraph, DL-2)', () => {
     } finally {
       fs.rmSync(fixtureRoot, { recursive: true, force: true });
     }
+  });
+});
+
+/**
+ * WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P2.
+ *
+ * Symbol-gated backtick references (DL-3). The gate is the whole feature: a
+ * graph edge has to be a claim the symbol table can back, and prose wraps far
+ * more paths and flags in backticks than it does symbols.
+ */
+describe('doc references (DL-3 membership gate)', () => {
+  const sheetPath = 'coderef/resource-sheets/client-RESOURCE-SHEET.md';
+  const docId = docNodeId(sheetPath);
+
+  function graphFor(body: string) {
+    return constructGraph(makeState([sheetFact({ sections: extractDocSections(docId, body) })]));
+  }
+  const refs = (g: ReturnType<typeof constructGraph>) =>
+    g.edges.filter(e => e.relationship === 'references');
+
+  it('normalizeMention keeps identifier shapes and rejects prose/paths/flags', () => {
+    expect(normalizeMention('loadUsers')).toBe('loadUsers');
+    expect(normalizeMention('loadUsers()')).toBe('loadUsers'); // call suffix dropped
+    expect(normalizeMention('  _private$1  ')).toBe('_private$1');
+    for (const junk of ['--source-headers', 'src/client.ts', 'npm run build', 'a.b', '3things', '']) {
+      expect(normalizeMention(junk)).toBeNull();
+    }
+  });
+
+  it('collects identifier-shaped mentions per section, deduped, excluding fenced interiors', () => {
+    const sections = extractDocSections(
+      docId,
+      [
+        '## Alpha',
+        'Call `loadUsers` then `loadUsers` again; run `npm run build` and pass `--json`.',
+        '```ts',
+        'const fencedOnly = 1;',
+        '```',
+        '## Beta',
+        'See `saveUser`.',
+      ].join('\n'),
+    );
+    expect(sections[0].mentions).toEqual(['loadUsers']); // deduped; prose junk filtered
+    expect(sections[1].mentions).toEqual(['saveUser']);
+    // The fenced identifier is NOT a prose mention — that is P3's separate lane.
+    expect(sections.flatMap(s => s.mentions)).not.toContain('fencedOnly');
+  });
+
+  it('mints a resolved references edge ONLY for a symbol the table backs', () => {
+    const g = graphFor('## Usage\nCall `loadUsers` — not `nonExistentSymbol`, not `--flag`.\n');
+    const edges = refs(g);
+    expect(edges).toHaveLength(1);
+    expect(edges[0].resolutionStatus).toBe('resolved');
+    expect(edges[0].sourceId).toBe(`${docId}#usage`);
+    expect(edges[0].target ?? (edges[0] as { targetId?: string }).targetId)
+      .toBe('@Fn/src/client.ts#loadUsers:3');
+    const ev = edges[0].evidence as { kind: string; token: string; origin: string };
+    expect(ev).toMatchObject({ kind: 'doc-reference', token: 'loadUsers', origin: 'prose' });
+  });
+
+  it('a non-matching backtick mints NOTHING — not an unresolved edge (asymmetric by design)', () => {
+    const g = graphFor('## Usage\n`--stale-only` `coderef/foundation-docs` `totallyUnknownThing`\n');
+    expect(refs(g)).toHaveLength(0);
+    expect(g.edges.filter(e => e.reason === 'doc_reference_ambiguous')).toHaveLength(0);
+  });
+
+  it('an AMBIGUOUS name mints one ambiguous edge with candidates and no target', () => {
+    const twins = makeState([sheetFact({ sections: extractDocSections(docId, '## U\nsee `dup`\n') })]);
+    (twins as unknown as { elements: unknown[] }).elements = [
+      ...(twins.elements as unknown[]),
+      { type: 'function', name: 'dup', file: `${ROOT}/src/a.ts`, line: 1, codeRefId: '@Fn/src/a.ts#dup:1' },
+      { type: 'function', name: 'dup', file: `${ROOT}/src/b.ts`, line: 1, codeRefId: '@Fn/src/b.ts#dup:1' },
+    ];
+    const edges = refs(constructGraph(twins));
+    expect(edges).toHaveLength(1);
+    expect(edges[0].resolutionStatus).toBe('ambiguous');
+    expect((edges[0] as { targetId?: string }).targetId).toBeUndefined();
+    expect(edges[0].reason).toBe('doc_reference_ambiguous');
+    expect(edges[0].candidates).toEqual(['@Fn/src/a.ts#dup:1', '@Fn/src/b.ts#dup:1']);
+  });
+
+  it('docReferences() answers "which prose names this symbol" without widening blast radius', () => {
+    const g = graphFor('## Usage\nCall `loadUsers`.\n');
+    const q = new CanonicalGraphQuery(g as unknown as ExportedGraph);
+    const hits = q.docReferences('loadUsers');
+    expect(hits.map(h => h.section.id)).toEqual([`${docId}#usage`]);
+    // Blast radius is UNCHANGED: the doc section must not appear as a dependent.
+    expect(q.dependentsOf(q.resolve('loadUsers')).map(n => n.id))
+      .not.toContain(`${docId}#usage`);
+  });
+
+  it('extraction stays deterministic with mentions in play (AC-08)', () => {
+    const body = '## A\n`loadUsers` and `saveUser`\n## A\n`loadUsers`\n';
+    expect(extractDocSections(docId, body)).toEqual(extractDocSections(docId, body));
   });
 });

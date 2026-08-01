@@ -236,6 +236,40 @@ export class CanonicalGraphQuery {
     return hits.sort((a, b) => rank(a) - rank(b) || (a.doc.id < b.doc.id ? -1 : 1));
   }
 
+  /**
+   * Doc SECTIONS that name this query's element(s)
+   * (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P2) — "which
+   * prose has to change if I change this symbol".
+   *
+   * This is a DEDICATED accessor rather than a widening of the DEPENDS set on
+   * purpose. `references` edges target ordinary code elements, so folding them
+   * into the dependency walk would silently change what `impact_of` returns
+   * for every symbol any doc happens to mention. Callers that want doc impact
+   * ask for it here; blast radius keeps meaning what it meant before. (The
+   * `contains` kind IS in DEPENDS — it can only ever land on doc nodes, so it
+   * cannot perturb an element-to-element answer.)
+   *
+   * Ambiguous references are indexed but NOT returned: an ambiguous edge has
+   * no target, so it never lands in `inbound`. It is reported by
+   * unresolved_edges, the same disposition an ambiguous call gets.
+   */
+  docReferences(query: string): Array<{ section: ExportedNode; edge: ExportedEdge }> {
+    const resolution = this.resolve(query);
+    const hits: Array<{ section: ExportedNode; edge: ExportedEdge }> = [];
+    const seen = new Set<string>();
+    for (const node of resolution.nodes) {
+      for (const edge of this.inbound.get(node.id) ?? []) {
+        if (edge.relationship !== 'references' || !edge.sourceId) continue;
+        if (seen.has(edge.sourceId)) continue;
+        const section = this.nodeById.get(edge.sourceId);
+        if (!section) continue;
+        seen.add(edge.sourceId);
+        hits.push({ section, edge });
+      }
+    }
+    return hits.sort((a, b) => (a.section.id < b.section.id ? -1 : 1));
+  }
+
   private collectNeighbors(
     ids: Set<string>,
     direction: 'inbound' | 'outbound',

@@ -90,6 +90,12 @@ const DEPENDS_KINDS: ReadonlySet<string> = new Set([
   // indexes in this repo and a kind taught to only one of them is invisible on
   // the other surface (the lesson from the endpoint-kind wiring).
   'contains',
+  // NOT 'references' — deliberately. It targets ordinary code elements, so
+  // adding it here would change what impact_of returns for every symbol a doc
+  // mentions. Doc impact is asked for explicitly via
+  // CanonicalGraphQuery.docReferences(); the edges are still indexed on both
+  // surfaces, just not walked as dependencies. Mirrors the note on the DEPENDS
+  // set in src/query/canonical-graph.ts.
 ]);
 
 export function buildGraphTools(ctx: HandlerContext): GraphTools {
