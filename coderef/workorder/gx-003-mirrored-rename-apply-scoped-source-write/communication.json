@@ -5,7 +5,7 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "complete",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-003-mirrored-rename-apply-scoped-source-write\\plan.json",
@@ -56,7 +56,7 @@
     },
     {
       "event": "phase_transition_writer_anchor_gap",
-      "note": "write-phase-transition.cjs no-oped (coderef-core: anchored row path resolves against ASSISTANT_ROOT); writer semantics applied agent-side on the CORE comm.json — known cross-repo gap class",
+      "note": "write-phase-transition.cjs no-oped (coderef-core: anchored row path resolves against ASSISTANT_ROOT); writer semantics applied agent-side on the CORE comm.json \u2014 known cross-repo gap class",
       "at": "2026-08-01T08:29:13.107Z"
     },
     {
@@ -69,14 +69,14 @@
       "event": "parity_packaging_audit",
       "task": "P1-T8",
       "result": "PASS",
-      "parity": "planRename/applyRename consumed by exactly 2 surfaces (coderef-rename CLI + mcp/context-tools) — zero forked rewrite logic (grep-verified)",
+      "parity": "planRename/applyRename consumed by exactly 2 surfaces (coderef-rename CLI + mcp/context-tools) \u2014 zero forked rewrite logic (grep-verified)",
       "registrations": 38,
       "server_tool_count": 38,
       "npm_pack_dry_run": "OK (30.2 MB, 1853 files)",
       "mcp_server_smoke": "started on stdio; tools/list returned 38 tools incl. rename_apply",
       "scan_cli_smoke": "3 files scanned 396ms OK; coderef-rename --help exit 0",
       "suite": "2482 passed / 26 skipped effective (13 load-contention timeouts re-ran green in isolation; delta over 2471 baseline = exactly the 11 new rename-apply contract tests)",
-      "verify_gate": "tests_for_change selected mcp-server family — all green in full-suite run",
+      "verify_gate": "tests_for_change selected mcp-server family \u2014 all green in full-suite run",
       "plan_touch_note": "ADJ: plan named src/cli/mcp/server.ts; the real contract surface is src/cli/coderef-mcp-server.ts (+ mcp/shared.ts, mcp/context-tools.ts)",
       "at": "2026-08-01T08:41:03.206Z"
     },
@@ -112,6 +112,11 @@
       "timestamp": "2026-08-01T08:42:24.644Z",
       "event": "workorder_complete",
       "message": "Phase 1 complete 9/9 tasks; commit b9173c9 pushed+verified. Shipped: rename_apply MCP tool (37->38), scoped source-write supersession recorded in SERVER_INSTRUCTIONS/docs, 11 contract tests, stratified REC-R2 disclosure. Suite 2482/26 effective (13 load-contention timeouts re-ran green). ADJ: plan named src/cli/mcp/server.ts; real surface is coderef-mcp-server.ts + mcp/shared.ts + mcp/context-tools.ts."
+    },
+    {
+      "timestamp": "2026-08-01T09:11:05Z",
+      "event": "workorder_closed",
+      "detail": "close-only via /close-workorder; status complete retained in registry with closed_via; WO dir remains in coderef/workorder/ pending --archive"
     }
   ],
   "required_skills": [
@@ -119,5 +124,57 @@
     "/close-workorder",
     "/log-session"
   ],
-  "completed_at": "2026-08-01T08:42:24.644Z"
+  "completed_at": "2026-08-01T08:42:24.644Z",
+  "closed_at": "2026-08-01T09:11:05Z",
+  "close_metadata": {
+    "closed_via": "/close-workorder",
+    "close_mode": "close-only (no --archive)",
+    "review_status": "PASS",
+    "audit": {
+      "phased_terminal_guard": "inert (strict plan)",
+      "doc_code_tie": "inert (no doc_binding)",
+      "session_log_gate": "SELF-HEALED sparse fallback in ASSISTANT .coderef/sessions (rich CORE log exists at SES-2026-08-01-GX-003-MIRRORED-RENAME-APPLY.yaml under shorter slug)",
+      "tracking_validator_scoped": "18/18 PASS",
+      "standards_validate_wo_scoped": "pass (repo-wide fail = pre-existing drift, informational per KZ-01KX4FV2 gate separation)",
+      "dependency_audit": {
+        "event": "dependency_audit",
+        "vulnerable_count": 0,
+        "skipped": false,
+        "note": "exceeded the 45s contract (~90s) but completed clean"
+      },
+      "git": "CORE b9173c9+779b293 and ASSISTANT 70467fdab all pushed; HEAD==origin/main both repos at close time"
+    },
+    "follow_ups": [
+      {
+        "status": "candidate",
+        "captured_at": "2026-08-01T09:11:05Z",
+        "source": "close-time agent-side capture (workorder-follow-up runner hit the coderef-core: anchor gap, KZ-01KYY49T family)",
+        "title": "REC-R1 test_dsl reclassify",
+        "detail": "Reclassify test-DSL call edges (expect/describe/vitest vocabulary, ~95% of raw unresolved) out of unresolved \u2014 needs a P3c-shaped operator ruling; deliberately kept OUT of GX-003 scope."
+      },
+      {
+        "status": "candidate",
+        "captured_at": "2026-08-01T09:11:05Z",
+        "source": "close-time agent-side capture",
+        "title": "rename_apply post-write staleness ergonomics",
+        "detail": "After any real rename_apply {apply:true} the graph is stale until re-populate; consider an in-band staleness stamp or auto-reindex hint in the apply response."
+      }
+    ],
+    "metrics_delta": {
+      "before": "WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001-before",
+      "families": {
+        "testLinkage": "unchanged",
+        "documentation": "unchanged",
+        "unresolvedRefs": "regressed",
+        "largestModules": "unchanged",
+        "mostDependencies": "unchanged"
+      },
+      "vintage": {
+        "status": "no_data:vintage_absent",
+        "warning": "No vintage record for the BEFORE snapshot; delta window cannot be verified."
+      },
+      "interpretation": "unresolvedRefs direction is UNATTRIBUTED: vintage unverifiable and the window contains GX-002 populate runs + fleet sheet work; GX-003 itself added a test file and touched no resolver logic. Surface, not verdict."
+    },
+    "what_shipped": "Commit b9173c96 (main, pushed) - 22 files, +1463/-32. rename_apply shipped as the single sanctioned source-write MCP tool (37->38) under the 2026-08-01 scoped supersession ruling: thin mirror over planRename/applyRename, apply:false default, no force param over MCP, stratified resolution_disclosure. New __tests__/mcp/rename-apply.contract.test.ts (11 tests) + doc sync across CLI.md/README/USING-CODEREF/ARCHITECTURE/entry-point standards/quickstart/CHANGELOG. Validation: contract tests 11/11 PASS; full suite effective 2482/26; parity audit PASS (2 consumers, zero forked logic)."
+  }
 }

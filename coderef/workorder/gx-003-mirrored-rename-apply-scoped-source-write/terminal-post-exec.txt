@@ -1,0 +1,26 @@
+=============================================================
+WORKORDER: WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001  |  gx-003-mirrored-rename-apply-scoped-source-write  |  COMPLETE
+Session: SES-2026-08-01-GX-003-MIRRORED-RENAME-APPLY  |  Phases: 1  |  Commits: 3  |  Pushes: 3
+Parent stub: STUB-6TY0WJ (closed via registry flip)
+
+FILES CREATED:
+  + __tests__/mcp/rename-apply.contract.test.ts  (b9173c9)
+  + coderef/workorder/gx-003-mirrored-rename-apply-scoped-source-write/  (b9173c9)
+
+FILES MODIFIED:
+  ~ src/cli/coderef-mcp-server.ts  (b9173c9)
+  ~ src/cli/mcp/context-tools.ts  (b9173c9)
+  ~ src/cli/mcp/shared.ts  (b9173c9)
+  ~ docs/CLI.md  (b9173c9)
+  ~ README.md / USING-CODEREF.md / CHANGELOG.md  (b9173c9)
+  ~ docs/ARCHITECTURE.md + entry-point standards docs + quickstart  (b9173c9)
+  ~ coderef/foundation-docs/ (phase-6 regen)  (779b293)
+  ~ ASSISTANT TRACKING views (workorders/sessions/stubs/active-work)  (70467fdab)
+
+PHASE CHECKLIST:
+  [x] Phase 1: rename_apply scoped source-write (9/9 tasks)  (b9173c9)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (pre-existing foreign-row drift only; zero GX-003 rows implicated)
+
+APPROVE -> /close-workorder WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001
+=============================================================
