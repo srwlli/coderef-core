@@ -26,6 +26,71 @@ For schema types referenced below (`ElementData`, `PipelineState`, `ImportResolu
 
 ---
 
+## Request model
+
+This is an **in-process library API, not a network API.** Callers `import` from
+`@coderef/core` and invoke classes and functions directly; there is no request/response
+envelope, no base URL, and no wire protocol at this surface. "Request" here means *the call
+you make and what it costs*.
+
+| If you want to call CodeRef… | Use | Contract lives in |
+|---|---|---|
+| From TypeScript/JS, in-process | `import { … } from '@coderef/core'` — the surface documented below | this file |
+| Over HTTP | the RAG HTTP server | [rag-http-api.md](./rag-http-api.md) |
+| From an agent | the MCP server (`coderef-mcp-server`) over stdio | [.mcp.json](../.mcp.json), `src/cli/coderef-mcp-server.ts` |
+| From a shell | the `bin` entry points | [CLI.md](./CLI.md) |
+
+Two properties hold across every call in this document:
+
+- **Phases run in order and mutate one `PipelineState`.** A phase may only read facts an
+  earlier phase established. Calling out of order is a programming error, not a recoverable
+  condition.
+- **An empty result is `no resolved data`, never proof of absence.** Read
+  `ValidationReport.unresolved_src_count` before concluding that a relationship does not
+  exist.
+
+## Auth
+
+**There is none, by design.** No call in this API accepts a token, key, or credential, and
+none is required.
+
+- **No cloud credential.** Embeddings are produced by a local Ollama instance. No
+  `OPENAI_API_KEY` / `ANTHROPIC_API_KEY` is read, and wiring one as a required default is a
+  ruled-out non-goal (see [VISION.md](../VISION.md)).
+- **The HTTP and MCP surfaces are unauthenticated** and intended for `localhost` only.
+  Exposing them on a routable interface is out of contract — put your own gateway in front
+  if you need one.
+- **Authorization is the filesystem's.** The process reads and writes with the invoking
+  user's permissions. Writes are confined to `.coderef/` under the target project root;
+  no API in this document writes source files.
+
+## Example
+
+End-to-end: run the pipeline, then gate on validation before trusting a negative result.
+
+```typescript
+import { PipelineOrchestrator } from '@coderef/core';
+
+const orchestrator = new PipelineOrchestrator('/abs/path/to/project', {});
+const state = await orchestrator.run();
+
+console.log(state.elements.length, 'elements');
+console.log(state.graph.edges.length, 'edges');
+
+// Phase 6 is NOT run by orchestrator.run() — wire it yourself, or use the CLI.
+// Until you have a ValidationReport, an empty edge set means "not resolved",
+// not "no such relationship".
+```
+
+From a shell, the same graph is queryable without writing any code:
+
+```bash
+npx coderef-scan --dir .          # build .coderef/
+npx coderef-query what-calls someFunction
+```
+
+---
+
 ## 1. Pipeline orchestration
 
 ### `PipelineOrchestrator`
