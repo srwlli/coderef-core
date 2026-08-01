@@ -1,8 +1,17 @@
+---
+subject: Public API Documentation — @coderef/core
+status: generated
+generator: scripts/doc-gen/enhance-existing-docs.js
+related_files:
+  - src/analyzer/ast-element-scanner.ts
+  - src/scanner/scanner.ts
+---
+
 # API Reference
 
 **Project:** @coderef/core
 **Version:** 2.0.0
-**Last Updated:** 2026-08-01 (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced) (auto-enhanced)
+**Last Updated:** 2026-08-01 (auto-enhanced)
 
 ---
 

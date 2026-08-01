@@ -14,7 +14,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { resolveProjectRoot } = require('./utils');
+const { resolveProjectRoot, foundationFrontmatter, upsertFrontmatter } = require('./utils');
 
 const PROJECT_ROOT = resolveProjectRoot();
 const FOUNDATION_DOCS_DIR = path.join(PROJECT_ROOT, 'coderef', 'foundation-docs');
@@ -43,6 +43,23 @@ function complexityBadge(score) {
   return `⚪ ${score}`;
 }
 
+/**
+ * Mechanical related_files derivation: the UUID anchors this enhancer stamps
+ * resolve to index elements, whose files ARE the doc's related surface. No
+ * anchors (or no index) -> empty list -> key omitted. Never a documents:
+ * claim — these docs are hand-authored; coverage cannot be asserted.
+ */
+function relatedFilesFromAnchors(content, indexData, cap = 20) {
+  if (!indexData?.elements) return [];
+  const byUuid = new Map(indexData.elements.map(e => [e.uuid, e]));
+  const files = new Set();
+  for (const m of content.matchAll(/<!-- coderef:uuid=([a-f0-9-]+) -->/g)) {
+    const el = byUuid.get(m[1]);
+    if (el?.file) files.add(el.file);
+  }
+  return [...files].sort().slice(0, cap);
+}
+
 function enhanceAPIMd() {
   console.log('Enhancing API.md...');
   
@@ -54,12 +71,14 @@ function enhanceAPIMd() {
 
   let content = fs.readFileSync(path.join(FOUNDATION_DOCS_DIR, 'API.md'), 'utf8');
   
-  // Update date
+  // Update date. Consume the WHOLE stamp line: a date-only match left the old
+  // " (auto-enhanced)" tail in place, so every run appended another suffix
+  // (REC-005 — ~48 accumulated before the fix).
   content = content.replace(
-    /\*\*Last Updated:\*\* \d{4}-\d{2}-\d{2}/,
+    /\*\*Last Updated:\*\*.*$/m,
     `**Last Updated:** ${formatDate(new Date().toISOString())} (auto-enhanced)`
   );
-  
+
   // Add auto-generation notice after version line
   if (!content.includes('Auto-enhanced with UUID anchors')) {
     content = content.replace(
@@ -86,6 +105,12 @@ function enhanceAPIMd() {
     }
   }
   
+  content = upsertFrontmatter(content, foundationFrontmatter({
+    subject: 'Public API Documentation — @coderef/core',
+    generator: 'scripts/doc-gen/enhance-existing-docs.js',
+    relatedFiles: relatedFilesFromAnchors(content, indexData),
+  }));
+
   fs.writeFileSync(path.join(FOUNDATION_DOCS_DIR, 'API.md'), content);
   console.log('  ✓ API.md enhanced');
 }
@@ -103,12 +128,12 @@ function enhanceComponentsMd() {
 
   let content = fs.readFileSync(path.join(FOUNDATION_DOCS_DIR, 'COMPONENTS.md'), 'utf8');
   
-  // Update date
+  // Update date (whole-line replace — see REC-005 note in enhanceAPIMd)
   content = content.replace(
-    /\*\*Last Updated:\*\* \d{4}-\d{2}-\d+/,
+    /\*\*Last Updated:\*\*.*$/m,
     `**Last Updated:** ${formatDate(new Date().toISOString())} (auto-enhanced)`
   );
-  
+
   // Add complexity badges section if critical functions exist
   if (contextData?.criticalFunctions?.length > 0) {
     const complexitySection = `
@@ -142,6 +167,12 @@ function enhanceComponentsMd() {
     }
   }
   
+  content = upsertFrontmatter(content, foundationFrontmatter({
+    subject: 'Component Inventory — @coderef/core',
+    generator: 'scripts/doc-gen/enhance-existing-docs.js',
+    relatedFiles: relatedFilesFromAnchors(content, indexData),
+  }));
+
   fs.writeFileSync(path.join(FOUNDATION_DOCS_DIR, 'COMPONENTS.md'), content);
   console.log('  ✓ COMPONENTS.md enhanced');
 }
@@ -153,12 +184,12 @@ function enhanceArchitectureMd() {
   
   let content = fs.readFileSync(path.join(FOUNDATION_DOCS_DIR, 'ARCHITECTURE.md'), 'utf8');
   
-  // Update date
+  // Update date (whole-line replace — see REC-005 note in enhanceAPIMd)
   content = content.replace(
-    /\*\*Last Updated:\*\* \d{4}-\d{2}-\d+/,
+    /\*\*Last Updated:\*\*.*$/m,
     `**Last Updated:** ${formatDate(new Date().toISOString())} (auto-enhanced)`
   );
-  
+
   // Add dependency stats section
   if (graphData && !content.includes('## Dependency Graph Statistics')) {
     const statsSection = `
@@ -188,6 +219,12 @@ For interactive dependency visualization, see [RELATIONSHIPS.md](./RELATIONSHIPS
     );
   }
   
+  content = upsertFrontmatter(content, foundationFrontmatter({
+    subject: 'Architecture Overview — @coderef/core',
+    generator: 'scripts/doc-gen/enhance-existing-docs.js',
+    relatedFiles: relatedFilesFromAnchors(content, readJson('index.json')),
+  }));
+
   fs.writeFileSync(path.join(FOUNDATION_DOCS_DIR, 'ARCHITECTURE.md'), content);
   console.log('  ✓ ARCHITECTURE.md enhanced');
 }
@@ -204,12 +241,12 @@ function enhanceSchemamd() {
 
   let content = fs.readFileSync(path.join(FOUNDATION_DOCS_DIR, 'SCHEMA.md'), 'utf8');
   
-  // Update date
+  // Update date (whole-line replace — see REC-005 note in enhanceAPIMd)
   content = content.replace(
-    /\*\*Last Updated:\*\* \d{4}-\d{2}-\d+/,
+    /\*\*Last Updated:\*\*.*$/m,
     `**Last Updated:** ${formatDate(new Date().toISOString())} (auto-enhanced)`
   );
-  
+
   // Update element type statistics
   const byType = {};
   indexData.elements.forEach(el => {
@@ -244,6 +281,12 @@ function enhanceSchemamd() {
     );
   }
   
+  content = upsertFrontmatter(content, foundationFrontmatter({
+    subject: 'Data Schemas — @coderef/core',
+    generator: 'scripts/doc-gen/enhance-existing-docs.js',
+    relatedFiles: relatedFilesFromAnchors(content, indexData),
+  }));
+
   fs.writeFileSync(path.join(FOUNDATION_DOCS_DIR, 'SCHEMA.md'), content);
   console.log('  ✓ SCHEMA.md enhanced');
 }

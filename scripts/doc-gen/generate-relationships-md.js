@@ -15,6 +15,7 @@
 const {
   readCoderefFile,
   writeFoundationDoc,
+  foundationFrontmatter,
   formatDate,
   uuidAnchor,
   escapeMarkdown,
@@ -58,8 +59,19 @@ function generateRelationshipsMd() {
   const hasOutgoing = new Set(edges.map(e => e.source));
   const entryPoints = nodes.filter(n => !hasIncoming.has(n.id) && hasOutgoing.has(n.id)).slice(0, 15);
   
+  // related_files (NOT documents): repo-wide dependency overview — the
+  // most-referenced files it displays are related context, not per-file
+  // documentation claims.
+  const relatedFiles = [...new Set(
+    mostReferenced.map(r => r.node?.file).filter(Boolean)
+  )].sort().slice(0, 20);
+
   // Build markdown
-  let md = `# Component Relationships
+  let md = foundationFrontmatter({
+    subject: 'Dependency Relationships — @coderef/core',
+    generator: 'scripts/doc-gen/generate-relationships-md.js',
+    relatedFiles,
+  }) + `# Component Relationships
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  

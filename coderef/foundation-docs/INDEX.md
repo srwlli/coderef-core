@@ -1,3 +1,30 @@
+---
+subject: Master Element Registry — @coderef/core
+status: generated
+generator: scripts/doc-gen/generate-index-md.js
+related_files:
+  - src/analyzer/contract-detector.ts
+  - src/analyzer/database-detector.ts
+  - src/analyzer/middleware-detector.ts
+  - src/analyzer/migration-route-analyzer.ts
+  - src/cli/coderef-rag-server.ts
+  - src/cli/coderef-watch.ts
+  - src/cli/mcp/shared.ts
+  - src/context/context-tracker.ts
+  - src/export/graph-exporter.ts
+  - src/indexer/index-store.ts
+  - src/indexer/indexer-service.ts
+  - src/indexer/metadata-index.ts
+  - src/indexer/query-engine.ts
+  - src/indexer/relationship-index.ts
+  - src/pipeline/call-resolver.ts
+  - src/pipeline/extractors/element-extractor.ts
+  - src/pipeline/extractors/relationship-extractor.ts
+  - src/pipeline/generators/context-generator.ts
+  - src/pipeline/import-resolver.ts
+  - src/query/canonical-graph.ts
+---
+
 # Element Index
 
 **Project:** @coderef/core  
@@ -11,9 +38,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 3,190 |
-| **Total Files** | 490 |
-| **Total Lines** | 133,588 |
+| **Total Elements** | 3,221 |
+| **Total Files** | 495 |
+| **Total Lines** | 135,777 |
 | **Languages** | ts, py |
 
 ---
@@ -22,12 +49,12 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 1,092 | 34.2% |
-| method | 965 | 30.3% |
-| interface | 611 | 19.2% |
+| function | 1,114 | 34.6% |
+| method | 966 | 30.0% |
+| interface | 615 | 19.1% |
 | class | 108 | 3.4% |
 | type | 93 | 2.9% |
-| constant | 321 | 10.1% |
+| constant | 325 | 10.1% |
 
 ---
 
@@ -37,8 +64,8 @@
 |------|------|----------|---------|
 | 1 | `src/pipeline/generators/context-generator.ts` | 59 | 🔴 Very High |
 | 2 | `src/pipeline/extractors/relationship-extractor.ts` | 37 | 🟡 High |
-| 3 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
-| 4 | `src/query/canonical-graph.ts` | 34 | 🟡 High |
+| 3 | `src/query/canonical-graph.ts` | 36 | 🟡 High |
+| 4 | `src/cli/mcp/shared.ts` | 34 | 🟡 High |
 | 5 | `src/pipeline/import-resolver.ts` | 33 | 🟡 High |
 | 6 | `src/analyzer/middleware-detector.ts` | 31 | 🟡 High |
 | 7 | `src/indexer/indexer-service.ts` | 31 | 🟡 High |
@@ -53,13 +80,13 @@
 | 16 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
 | 17 | `src/query/clones.ts` | 28 | 🟢 Medium |
 | 18 | `src/cli/coderef-watch.ts` | 27 | 🟢 Medium |
-| 19 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
-| 20 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
-| 21 | `src/types/types.ts` | 24 | 🟢 Medium |
-| 22 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
-| 23 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
-| 24 | `src/indexer/metadata-index.ts` | 23 | 🟢 Medium |
-| 25 | `src/pipeline/call-resolver.ts` | 23 | 🟢 Medium |
+| 19 | `src/pipeline/call-resolver.ts` | 27 | 🟢 Medium |
+| 20 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
+| 21 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
+| 22 | `src/types/types.ts` | 24 | 🟢 Medium |
+| 23 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
+| 24 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
+| 25 | `src/indexer/metadata-index.ts` | 23 | 🟢 Medium |
 
 ---
 
@@ -88,7 +115,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 3,190 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 3,221 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

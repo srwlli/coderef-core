@@ -15,6 +15,7 @@
 const {
   readCoderefFile,
   writeFoundationDoc,
+  foundationFrontmatter,
   formatDate,
   uuidAnchor,
   groupByType,
@@ -43,8 +44,17 @@ function generateIndexMd() {
   // Get top files
   const topFiles = getTopFilesByDensity(elements, 25);
   
+  // related_files (NOT documents): INDEX is a repo-wide registry — claiming it
+  // "documents" specific files would be an invented per-file claim. The
+  // density-ranked top files it displays are related context only.
+  const relatedFiles = [...new Set(topFiles.map(f => f.file))].sort().slice(0, 20);
+
   // Build markdown
-  let md = `# Element Index
+  let md = foundationFrontmatter({
+    subject: 'Master Element Registry — @coderef/core',
+    generator: 'scripts/doc-gen/generate-index-md.js',
+    relatedFiles,
+  }) + `# Element Index
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  

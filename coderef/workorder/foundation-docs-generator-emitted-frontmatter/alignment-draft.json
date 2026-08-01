@@ -1,0 +1,218 @@
+{
+  "event": "culture_alignment_recorded",
+  "domain": "CODEREF-CORE",
+  "skill": "align-coderef-culture",
+  "schema_version": "2.0.0",
+  "workorder_id": "WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001",
+  "target_project": "coderef-core",
+  "intended_work": "Foundation docs generator-emitted frontmatter: teach scripts/doc-gen generators (both lanes) to emit YAML frontmatter (status: generated + mechanically-derived documents:/related_files: lists) on the ",
+  "plan_digest": "sha256:a69d72608a1acce6c6b3093a144733fe36dc84605b6712ff00d5ffbdb7e032bf",
+  "inventory_digest": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+  "source_digests": {
+    "STANDARDS/layers.json": "sha256:2d5e1202a74e36d326978aa7fd86135ae425d181eb724e5f255d248c9feaa4e2",
+    "STANDARDS/VOCABULARY.json": "sha256:f426b702bf8e0cd8f0659dbbb0f954a21b4fddab5ed80892d540530272c66d9a",
+    "TRACKING/registries.json": "sha256:8b0f86c7696f6984565538e02ebbb1538bd6ed12b1ff2866377f9998c9ab0bfc",
+    "TRACKING/skills.json": "sha256:d81af7442eca0b52c63b85309a9acfbf0c287094a2f5bc1114a4e8664df08e37",
+    "STANDARDS/coderef-inventory.json": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+    "TRACKING/agent-domains.json": "sha256:15568aa8c132c323e676b1f8cbe68b2dc76e97ca4349d1d508b8121b20c48ff9",
+    "SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json": "sha256:86f17257381a2d21cb199b5c1ee881dcce19d6030ed5865ad25933cb2241181d",
+    "DOCS/standards/data/COMMS-DATA-STANDARD.md": "sha256:2b3289c9ed81322e9d244620d0df780214933f65138e72d870987887bbae75c7",
+    "STANDARDS/event-catalog.md": "sha256:4cc6fe172b3df18f67f1cb9075da9a111ef20b5325f14a092a561df0e4e180ba",
+    "SKILLS/META/coderef-skill/references/SKILL-CONTRACTS.md": "sha256:c86b97bbce08a3655ba9f3a9efd95e1846197b8761874cc46817a740e5203508",
+    "SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md": "sha256:e1cce78463652bf8e399688bb8634c597d3572ae5e0ef016f97633819b3b677b"
+  },
+  "rows": [
+    {
+      "task_id": "P1-T1",
+      "step": "Confirm the touch surface: scripts/doc-gen/utils.js (writeFoundationDoc), the four lane-1 generators (generate-index-md.js, generate-exports-md.js, generate-hotspots-md.js, generate-relationships-md.js), enhance-existing-docs.js (lane 2, in-place patcher), validate-docs.js (CI gate contract), and src/pipeline/doc-ingest.ts foundation loop (docStatus hardcode + documentsPath: undefined hold at ~lines 249-260).",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "communication.json decisions_log: touch-surface confirmation"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "active_work heartbeat via register-active-work.cjs"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T2",
+      "step": "REC-005 fix: in scripts/doc-gen/enhance-existing-docs.js, widen the four Last-Updated replace regexes (lines ~60/109/159/210) to consume the ENTIRE stamp line (e.g. /\\*\\*Last Updated:\\*\\*.*$/m) so the '(auto-enhanced)' suffix is idempotent. Then one-time clean the ~48 accumulated suffixes in coderef/foundation-docs/API.md, ARCHITECTURE.md, COMPONENTS.md, SCHEMA.md (single suffix remains).",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "communication.json decisions_log: REC-005 regex fix + suffix cleanup"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T3",
+      "step": "Add a frontmatter-emission helper to scripts/doc-gen/utils.js: foundationFrontmatter({subject, documents, related_files}) returning a YAML block with status: generated + subject + optional documents:/related_files: lists (repo-relative posix paths). Deterministic ordering, no timestamps inside frontmatter (regen must be diff-stable when inputs are unchanged).",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T4",
+      "step": "Lane 1: prepend generator-derived frontmatter in all four full-regeneration generators. HOTSPOTS derives documents: from its own analyzed top-files list; EXPORTS from export-bearing files (cap the list; disclose truncation in a comment key if capped); INDEX and RELATIONSHIPS emit subject + status: generated with related_files only if a mechanical derivation exists (no invented claims). All paths repo-relative posix.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T5",
+      "step": "Lane 2: teach enhance-existing-docs.js an idempotent frontmatter UPSERT for API.md/ARCHITECTURE.md/COMPONENTS.md/SCHEMA.md (it patches in place, never rewrites): if a leading --- block exists, replace only the generator-owned keys; else prepend the block. Re-running must be byte-stable. Verify validate-docs.js still exits 0 (frontmatter must not break its presence/anchor/marker checks).",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "communication.json decisions_log: validate-docs exit recorded"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T6",
+      "step": "Flip the deliberate hold in src/pipeline/doc-ingest.ts foundation loop: read documents: from the parsed frontmatter (parseDocFrontmatter already runs) instead of hardcoding documentsPath: undefined. Keep docStatus: 'generated' (ranking contract DR-DOCS-E unchanged: generated never outranks approved/draft prose). G3 missing-target policy applies unchanged: out-of-scan target emits UNRESOLVED with reason documents_target_not_in_scan, never a dangling resolved edge. Update the header comment (the 'revisit when a producer actually stamps them' breadcrumb) to reflect the new contract.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T7",
+      "step": "Extend __tests__/pipeline/doc-ingest.test.ts: (a) foundation doc WITH frontmatter documents: mints documents edges; (b) foundation doc with out-of-scan target emits unresolved with the counted reason; (c) frontmatter-less foundation doc still mints a node with zero edges (G1 tolerance regression guard); (d) docStatus stays 'generated' with or without frontmatter.",
+      "tools": [
+        "execute-workorder",
+        "plan-tests-for-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T8",
+      "step": "Regenerate: run the four lane-1 generators + enhance-existing-docs.js against this repo (--project-dir .), run validate-docs.js (exit 0 required), run enhance-existing-docs.js TWICE to prove idempotence (second run = zero diff), then full scan and verify graph.json: 8 foundation @Doc nodes now carry documents edges where derivable, 0 dangling resolved edges, GI gates green.",
+      "tools": [
+        "coderef-pipeline",
+        "populate-coderef"
+      ],
+      "communication": [
+        "communication.json decisions_log: regen + graph verify outcomes"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T9",
+      "step": "Full suite green (vitest exit 0; confirm actual pass/fail counts from the runner artifact, not startup output â€” vitest 4 gotcha).",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "communication.json decisions_log: suite verdict from runner artifact"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T10",
+      "step": "Commit via the guarded runner (SKILLS/GIT/git-commit/run.mjs) with explicit --paths only; push and verify on origin.",
+      "tools": [
+        "git-commit"
+      ],
+      "communication": [
+        "communication.json phase_transitions via write-phase-transition.cjs"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json via registry_db (close-time)"
+      ],
+      "status": "resolved"
+    }
+  ],
+  "gaps": [],
+  "verdict": "PASS",
+  "_draft": true,
+  "_note": "DRAFT â€” the agent fills each row.tools/communication/closure/tracking, sets row.status, routes gaps to SKILLS with a dispatch_id, then feeds this to `record --input`.",
+  "_instructions": [
+    "WORK-START ALIGNMENT DRAFT — fill this in BEFORE writing any code.",
+    "1. For EVERY row: set tools[] to the canonical skills/scripts that task will use.",
+    "   Each entry must be an ACTIVE skill in STANDARDS/coderef-inventory.json or a",
+    "   real script path on disk. Use the literal \"GAP\" where no tool exists, and route",
+    "   that gap to SKILLS with a dispatch_id in gaps[].",
+    "2. Fill communication[]/closure[]/tracking[] per row (GAP if nothing is expected).",
+    "3. Record it:",
+    "   node SKILLS/STANDARDS/align-coderef-culture/run.mjs record \\",
+    "     --workorder-id=WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001 --domain=CODEREF-CORE \\",
+    "     --input=coderef/workorder/foundation-docs-generator-emitted-frontmatter/alignment-draft.json",
+    "Unrecorded, this becomes a HARD STOP at /close-workorder Step 3 — and by then",
+    "work-start has passed, so it can no longer be recorded honestly.",
+    "tools[] is deliberately EMPTY: `record` refuses empty tools, and auto-filling it",
+    "would fabricate a mapping nobody made."
+  ]
+}

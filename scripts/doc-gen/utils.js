@@ -96,6 +96,65 @@ function writeFoundationDoc(filename, content, projectRoot) {
 }
 
 /**
+ * Build the YAML frontmatter block for a generated foundation doc.
+ *
+ * Contract (WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001):
+ * - `status: generated` always — generated prose never outranks approved/draft
+ *   resource sheets in retrieval (doc-ingest DR-DOCS-E), but a `documents:`
+ *   list lets the doc bear graph edges to the files it actually analyzes.
+ * - Deterministic: lists are emitted in the order given (callers sort), and
+ *   NO timestamps live inside the block — regen with unchanged inputs must be
+ *   byte-identical so frontmatter never generates diff noise.
+ * - Paths must be repo-relative posix; normalized here as a backstop.
+ *
+ * @param {Object} opts
+ * @param {string} opts.subject - Human-friendly doc subject
+ * @param {string} opts.generator - Repo-relative generator script path
+ * @param {string[]} [opts.documents] - Files this doc documents (edge-bearing)
+ * @param {string} [opts.documentsTruncated] - Disclosure line when the
+ *   documents list is capped (e.g. "20 of 35 analyzed files listed")
+ * @param {string[]} [opts.relatedFiles] - Non-edge-bearing related files
+ * @returns {string} Frontmatter block ending with a blank line
+ */
+function foundationFrontmatter({ subject, generator, documents, documentsTruncated, relatedFiles }) {
+  const posix = p => String(p).replace(/\\/g, '/').replace(/^\.\//, '');
+  const lines = ['---'];
+  lines.push(`subject: ${subject}`);
+  lines.push('status: generated');
+  lines.push(`generator: ${posix(generator)}`);
+  if (documents && documents.length > 0) {
+    lines.push('documents:');
+    documents.forEach(d => lines.push(`  - ${posix(d)}`));
+  }
+  if (documentsTruncated) {
+    lines.push(`documents_truncated: ${documentsTruncated}`);
+  }
+  if (relatedFiles && relatedFiles.length > 0) {
+    lines.push('related_files:');
+    relatedFiles.forEach(f => lines.push(`  - ${posix(f)}`));
+  }
+  lines.push('---');
+  return lines.join('\n') + '\n\n';
+}
+
+/**
+ * Idempotently upsert a frontmatter block onto in-place-enhanced docs.
+ * The generator owns the ENTIRE leading `---` block on foundation docs: if one
+ * exists it is replaced wholesale, else the block is prepended. Re-running
+ * with unchanged inputs is byte-stable (lane-2 REC-005 discipline).
+ * @param {string} content - Current doc content
+ * @param {string} fmBlock - Block from foundationFrontmatter()
+ * @returns {string} Content with exactly one canonical frontmatter block
+ */
+function upsertFrontmatter(content, fmBlock) {
+  const existing = content.match(/^---\r?\n[\s\S]*?\r?\n---\r?\n(\r?\n)?/);
+  if (existing) {
+    return fmBlock + content.slice(existing[0].length);
+  }
+  return fmBlock + content;
+}
+
+/**
  * Format a date for display
  * @param {string} isoDate - ISO date string
  * @returns {string} Formatted date
@@ -191,6 +250,8 @@ module.exports = {
   readCoderefFile,
   ensureFoundationDocsDir,
   writeFoundationDoc,
+  foundationFrontmatter,
+  upsertFrontmatter,
   formatDate,
   uuidAnchor,
   complexityBadge,

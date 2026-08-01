@@ -15,6 +15,7 @@
 const {
   readCoderefFile,
   writeFoundationDoc,
+  foundationFrontmatter,
   formatDate,
   uuidAnchor,
   complexityBadge,
@@ -37,9 +38,28 @@ function generateHotspotsMd() {
   
   // Sort critical functions by complexity (descending)
   const sortedCritical = [...criticalFunctions].sort((a, b) => b.complexity - a.complexity);
-  
+
+  // documents: exactly the files the rendered tables analyze (critical-function
+  // rows + entry-point rows) — no claims beyond what the doc displays. Sorted +
+  // capped; the cap is DISCLOSED so a truncated list never reads as exhaustive.
+  const DOCUMENTS_CAP = 20;
+  const analyzedFiles = [...new Set(
+    [...sortedCritical.slice(0, 20), ...entryPoints.slice(0, 25)]
+      .map(x => x.file)
+      .filter(Boolean)
+  )].sort();
+  const documents = analyzedFiles.slice(0, DOCUMENTS_CAP);
+  const documentsTruncated = analyzedFiles.length > DOCUMENTS_CAP
+    ? `${DOCUMENTS_CAP} of ${analyzedFiles.length} analyzed files listed`
+    : undefined;
+
   // Build markdown
-  let md = `# Code Hotspots
+  let md = foundationFrontmatter({
+    subject: 'Complexity & Risk Analysis — @coderef/core',
+    generator: 'scripts/doc-gen/generate-hotspots-md.js',
+    documents,
+    documentsTruncated,
+  }) + `# Code Hotspots
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  

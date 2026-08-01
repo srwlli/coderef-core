@@ -13,8 +13,12 @@
  *   - a sheet whose `documents:` target left the scan universe is recorded
  *     UNRESOLVED, never dropped, and never mints a phantom @File node
  *     (discovery G3 — the GI-3 fail-close class);
- *   - foundation docs (no frontmatter, discovery G1) become nodes WITHOUT
- *     claims — no documents edges;
+ *   - foundation docs WITH generator-emitted frontmatter (WO-FOUNDATION-DOCS-
+ *     GENERATOR-EMITTED-FRONTMATTER-001) bear documents edges from their
+ *     documents: lists, but docStatus is ALWAYS lane-decided 'generated' —
+ *     a frontmatter status: value must never promote generated prose;
+ *   - foundation docs WITHOUT frontmatter (older generator output, G1) still
+ *     become nodes with no claims — no documents edges;
  *   - legacy sheets without `status:` default to draft (G4), and a
  *     frontmatter-less sheet is a counted skip, not an error;
  *   - the retrieval ranking contract holds: approved > draft, placeholder-
@@ -34,6 +38,7 @@ import {
   collectDocFacts,
   parseDocFrontmatter,
   docNodeId,
+  docTargets,
   isDocNodeId,
   type DocFact,
 } from '../../src/pipeline/doc-ingest.js';
@@ -115,6 +120,22 @@ describe('parseDocFrontmatter', () => {
     expect(fm!.lists.related_files).toEqual(['src/parser/parser.ts', 'src/types.ts']);
     expect(parseDocFrontmatter('# no frontmatter here\n')).toBeNull();
   });
+
+  it('reads list-form documents: into lists (the generator-emitted shape)', () => {
+    const fm = parseDocFrontmatter(
+      '---\nsubject: hotspots\nstatus: generated\ndocuments:\n  - src/a.ts\n  - src/b.ts\n---\n# body\n',
+    );
+    expect(fm!.scalars.documents).toBeUndefined();
+    expect(fm!.lists.documents).toEqual(['src/a.ts', 'src/b.ts']);
+  });
+});
+
+describe('docTargets', () => {
+  it('unions scalar + list forms, order-preserving, deduped', () => {
+    expect(docTargets({ documentsPath: 'src/a.ts', documentsPaths: ['src/b.ts', 'src/a.ts'] }))
+      .toEqual(['src/a.ts', 'src/b.ts']);
+    expect(docTargets({ documentsPath: undefined, documentsPaths: undefined })).toEqual([]);
+  });
 });
 
 describe('collectDocFacts (filesystem fixture)', () => {
@@ -139,8 +160,14 @@ describe('collectDocFacts (filesystem fixture)', () => {
     );
     // Frontmatter-less inventory sheet (the SCRIPTS class): counted skip.
     fs.writeFileSync(path.join(sheets, 'INVENTORY-SHEET.md'), '# scripts inventory\n| a | b |\n');
-    // Foundation doc: no frontmatter at all (discovery G1).
+    // Foundation doc: no frontmatter at all (older generator output, G1).
     fs.writeFileSync(path.join(foundation, 'API.md'), '# API Reference\n\nGenerated.\n');
+    // Foundation doc WITH generator-emitted frontmatter. The status: approved
+    // line is a deliberate poison pill: the lane must pin 'generated'.
+    fs.writeFileSync(
+      path.join(foundation, 'HOTSPOTS.md'),
+      '---\nsubject: Hotspots\nstatus: approved\ngenerator: scripts/doc-gen/generate-hotspots-md.js\ndocuments:\n  - src/alpha.ts\n  - src/beta.ts\ndocuments_truncated: 2 of 9 analyzed files listed\n---\n# Hotspots\n',
+    );
     // Genre/report lane: explicit opt-in only. The sibling report proves that
     // recursive discovery never implies ingestion by itself.
     fs.writeFileSync(
@@ -163,6 +190,7 @@ describe('collectDocFacts (filesystem fixture)', () => {
       'alpha-RESOURCE-SHEET',
       'beta-RESOURCE-SHEET',
       'API',
+      'HOTSPOTS',
       'code-intelligence-GENRE',
     ]);
 
@@ -181,9 +209,18 @@ describe('collectDocFacts (filesystem fixture)', () => {
     const api = docs[2];
     expect(api.docType).toBe('foundation');
     expect(api.docStatus).toBe('generated');
-    expect(api.documentsPath).toBeUndefined(); // DR-DOCS-D: no claims
+    expect(api.documentsPath).toBeUndefined(); // no frontmatter -> no claims
+    expect(api.documentsPaths).toBeUndefined();
 
-    const genre = docs[3];
+    const hotspots = docs[3];
+    expect(hotspots.docType).toBe('foundation');
+    // Lane-decided: the fixture's frontmatter says status: approved, but
+    // generated prose must never outrank reviewed sheets (DR-DOCS-E).
+    expect(hotspots.docStatus).toBe('generated');
+    expect(hotspots.documentsPaths).toEqual(['src/alpha.ts', 'src/beta.ts']);
+    expect(docTargets(hotspots)).toEqual(['src/alpha.ts', 'src/beta.ts']);
+
+    const genre = docs[4];
     expect(genre.docType).toBe('report');
     expect(genre.docStatus).toBe('living');
     expect(genre.subject).toBe('Code Intelligence');
@@ -238,7 +275,7 @@ describe('doc nodes + documents edges (constructGraph)', () => {
     expect(graph.nodes.find(n => n.id === '@File/scripts/gone.ts')).toBeUndefined();
   });
 
-  it('a foundation doc mints a node and ZERO edges (DR-DOCS-D)', () => {
+  it('a frontmatter-less foundation doc mints a node and ZERO edges (G1 tolerance)', () => {
     const graph = constructGraph(makeState([
       sheetFact({
         sheetPath: 'coderef/foundation-docs/API.md',
@@ -250,6 +287,47 @@ describe('doc nodes + documents edges (constructGraph)', () => {
     ]));
     expect(graph.nodes.filter(n => n.type === 'doc')).toHaveLength(1);
     expect(graph.edges.filter(e => e.relationship === 'documents')).toHaveLength(0);
+  });
+
+  it('a foundation doc with generator frontmatter bears one edge per documents: entry — in-universe resolved, out-of-scan unresolved (G3)', () => {
+    const graph = constructGraph(makeState([
+      sheetFact({
+        sheetPath: 'coderef/foundation-docs/HOTSPOTS.md',
+        id: docNodeId('coderef/foundation-docs/HOTSPOTS.md'),
+        docType: 'foundation',
+        docStatus: 'generated',
+        documentsPath: undefined,
+        documentsPaths: ['src/client.ts', 'scripts/gone.ts'],
+      }),
+    ]));
+    const docEdges = graph.edges.filter(e => e.relationship === 'documents');
+    expect(docEdges).toHaveLength(2);
+
+    const resolved = docEdges.find(e => e.resolutionStatus === 'resolved');
+    expect(resolved?.targetId).toBe('@File/src/client.ts');
+    expect((resolved?.evidence as any).docStatus).toBe('generated');
+    expect((resolved?.evidence as any).documentsPath).toBe('src/client.ts');
+
+    const unresolved = docEdges.find(e => e.resolutionStatus === 'unresolved');
+    expect(unresolved?.targetId).toBeUndefined();
+    expect(unresolved?.reason).toBe('documents_target_not_in_scan');
+    expect(graph.nodes.find(n => n.id === '@File/scripts/gone.ts')).toBeUndefined();
+    // node metadata carries the full claim list
+    const node = graph.nodes.find(n => n.type === 'doc');
+    expect((node!.metadata as any).documentsPaths).toEqual(['src/client.ts', 'scripts/gone.ts']);
+  });
+
+  it('a sheet with LIST-form documents: bears one edge per entry (previously a silent claim-drop)', () => {
+    const graph = constructGraph(makeState([
+      sheetFact({
+        documentsPath: undefined,
+        documentsPaths: ['src/client.ts'],
+      }),
+    ]));
+    const docEdges = graph.edges.filter(e => e.relationship === 'documents');
+    expect(docEdges).toHaveLength(1);
+    expect(docEdges[0].resolutionStatus).toBe('resolved');
+    expect(docEdges[0].targetId).toBe('@File/src/client.ts');
   });
 
   it('an opted-in report may carry a documents edge when its frontmatter names an in-universe file', () => {

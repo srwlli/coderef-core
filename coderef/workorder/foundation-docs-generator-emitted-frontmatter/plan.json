@@ -1,0 +1,131 @@
+{
+  "plan_type": "strict",
+  "goal": "Foundation docs generator-emitted frontmatter: teach scripts/doc-gen generators (both lanes) to emit YAML frontmatter (status: generated + mechanically-derived documents:/related_files: lists) on the 8 coderef/foundation-docs artifacts, flip the deliberate documentsPath hold in src/pipeline/doc-ingest.ts foundation loop so foundation @Doc nodes can bear documents edges (G3 missing-target safety unchanged, docStatus stays generated), and fix REC-005 non-idempotent '(auto-enhanced)' Last-Updated regex in enhance-existing-docs.js (lines 60/109/159/210) + one-time suffix cleanup. Closes the FU-3 follow-up from WO-DOCS-TO-GRAPH-P1-DOCS-PHASE-OF-THE-001 (operator ruled option B 2026-08-01).",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Confirm the touch surface: scripts/doc-gen/utils.js (writeFoundationDoc), the four lane-1 generators (generate-index-md.js, generate-exports-md.js, generate-hotspots-md.js, generate-relationships-md.js), enhance-existing-docs.js (lane 2, in-place patcher), validate-docs.js (CI gate contract), and src/pipeline/doc-ingest.ts foundation loop (docStatus hardcode + documentsPath: undefined hold at ~lines 249-260).",
+          "touches": [
+            "scripts/doc-gen/utils.js",
+            "scripts/doc-gen/enhance-existing-docs.js",
+            "src/pipeline/doc-ingest.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "REC-005 fix: in scripts/doc-gen/enhance-existing-docs.js, widen the four Last-Updated replace regexes (lines ~60/109/159/210) to consume the ENTIRE stamp line (e.g. /\\*\\*Last Updated:\\*\\*.*$/m) so the '(auto-enhanced)' suffix is idempotent. Then one-time clean the ~48 accumulated suffixes in coderef/foundation-docs/API.md, ARCHITECTURE.md, COMPONENTS.md, SCHEMA.md (single suffix remains).",
+          "touches": [
+            "scripts/doc-gen/enhance-existing-docs.js",
+            "coderef/foundation-docs/API.md",
+            "coderef/foundation-docs/ARCHITECTURE.md",
+            "coderef/foundation-docs/COMPONENTS.md",
+            "coderef/foundation-docs/SCHEMA.md"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "WRITE",
+          "description": "Add a frontmatter-emission helper to scripts/doc-gen/utils.js: foundationFrontmatter({subject, documents, related_files}) returning a YAML block with status: generated + subject + optional documents:/related_files: lists (repo-relative posix paths). Deterministic ordering, no timestamps inside frontmatter (regen must be diff-stable when inputs are unchanged).",
+          "touches": [
+            "scripts/doc-gen/utils.js"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "Lane 1: prepend generator-derived frontmatter in all four full-regeneration generators. HOTSPOTS derives documents: from its own analyzed top-files list; EXPORTS from export-bearing files (cap the list; disclose truncation in a comment key if capped); INDEX and RELATIONSHIPS emit subject + status: generated with related_files only if a mechanical derivation exists (no invented claims). All paths repo-relative posix.",
+          "touches": [
+            "scripts/doc-gen/generate-index-md.js",
+            "scripts/doc-gen/generate-exports-md.js",
+            "scripts/doc-gen/generate-hotspots-md.js",
+            "scripts/doc-gen/generate-relationships-md.js"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "Lane 2: teach enhance-existing-docs.js an idempotent frontmatter UPSERT for API.md/ARCHITECTURE.md/COMPONENTS.md/SCHEMA.md (it patches in place, never rewrites): if a leading --- block exists, replace only the generator-owned keys; else prepend the block. Re-running must be byte-stable. Verify validate-docs.js still exits 0 (frontmatter must not break its presence/anchor/marker checks).",
+          "touches": [
+            "scripts/doc-gen/enhance-existing-docs.js",
+            "scripts/doc-gen/validate-docs.js"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "EDIT",
+          "description": "Flip the deliberate hold in src/pipeline/doc-ingest.ts foundation loop: read documents: from the parsed frontmatter (parseDocFrontmatter already runs) instead of hardcoding documentsPath: undefined. Keep docStatus: 'generated' (ranking contract DR-DOCS-E unchanged: generated never outranks approved/draft prose). G3 missing-target policy applies unchanged: out-of-scan target emits UNRESOLVED with reason documents_target_not_in_scan, never a dangling resolved edge. Update the header comment (the 'revisit when a producer actually stamps them' breadcrumb) to reflect the new contract.",
+          "touches": [
+            "src/pipeline/doc-ingest.ts"
+          ]
+        },
+        {
+          "id": "P1-T7",
+          "verb": "TEST",
+          "description": "Extend __tests__/pipeline/doc-ingest.test.ts: (a) foundation doc WITH frontmatter documents: mints documents edges; (b) foundation doc with out-of-scan target emits unresolved with the counted reason; (c) frontmatter-less foundation doc still mints a node with zero edges (G1 tolerance regression guard); (d) docStatus stays 'generated' with or without frontmatter.",
+          "touches": [
+            "__tests__/pipeline/doc-ingest.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "RUN",
+          "description": "Regenerate: run the four lane-1 generators + enhance-existing-docs.js against this repo (--project-dir .), run validate-docs.js (exit 0 required), run enhance-existing-docs.js TWICE to prove idempotence (second run = zero diff), then full scan and verify graph.json: 8 foundation @Doc nodes now carry documents edges where derivable, 0 dangling resolved edges, GI gates green.",
+          "touches": [
+            "coderef/foundation-docs/INDEX.md",
+            "coderef/foundation-docs/EXPORTS.md",
+            "coderef/foundation-docs/HOTSPOTS.md",
+            "coderef/foundation-docs/RELATIONSHIPS.md"
+          ]
+        },
+        {
+          "id": "P1-T9",
+          "verb": "TEST",
+          "description": "Full suite green (vitest exit 0; confirm actual pass/fail counts from the runner artifact, not startup output \u2014 vitest 4 gotcha).",
+          "touches": []
+        },
+        {
+          "id": "P1-T10",
+          "verb": "COMMIT",
+          "description": "Commit via the guarded runner (SKILLS/GIT/git-commit/run.mjs) with explicit --paths only; push and verify on origin.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-VDZNPF"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T093722Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001",
+  "feature_name": "foundation-docs-generator-emitted-frontmatter",
+  "created": "2026-08-01T09:37:12.243935+00:00",
+  "plan_type_rationale": "Category feature maps to strict"
+}

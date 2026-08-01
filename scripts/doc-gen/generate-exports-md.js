@@ -15,6 +15,7 @@
 const {
   readCoderefFile,
   writeFoundationDoc,
+  foundationFrontmatter,
   formatDate,
   uuidAnchor,
   escapeMarkdown,
@@ -44,8 +45,29 @@ function generateExportsMd() {
     byType[el.type].push(el);
   });
   
+  // documents: the export-bearing files, ranked by exported-element count so
+  // the cap keeps the densest API surfaces. Cap is DISCLOSED — a truncated
+  // list must never read as the whole public surface.
+  const DOCUMENTS_CAP = 20;
+  const exportsByFile = {};
+  exportedElements.forEach(el => {
+    if (el.file) exportsByFile[el.file] = (exportsByFile[el.file] || 0) + 1;
+  });
+  const rankedFiles = Object.entries(exportsByFile)
+    .sort((a, b) => (b[1] - a[1]) || (a[0] < b[0] ? -1 : 1))
+    .map(([file]) => file);
+  const documents = rankedFiles.slice(0, DOCUMENTS_CAP).sort();
+  const documentsTruncated = rankedFiles.length > DOCUMENTS_CAP
+    ? `${DOCUMENTS_CAP} of ${rankedFiles.length} export-bearing files listed`
+    : undefined;
+
   // Build markdown
-  let md = `# Public API Reference
+  let md = foundationFrontmatter({
+    subject: 'Public API Reference — @coderef/core',
+    generator: 'scripts/doc-gen/generate-exports-md.js',
+    documents,
+    documentsTruncated,
+  }) + `# Public API Reference
 
 **Project:** @coderef/core  
 **Version:** 2.0.0  

@@ -65,6 +65,7 @@ import { createCodeRefId } from '../utils/coderef-id.js';
 import { globalRegistry } from '../registry/entity-registry.js';
 import { normalizeSlashes } from '../utils/path-normalize.js';
 import { classifyEdgeConfidence } from './edge-confidence.js';
+import { docTargets } from './doc-ingest.js';
 import {
   METHOD_UNSPECIFIED,
   canonicalEndpointPath,
@@ -414,8 +415,10 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
     scannedFileIds.add(fileGrainNodeId(sourceFile, projectPath));
   }
   for (const doc of state.docs ?? []) {
-    if (doc.documentsPath && scannedFileIds.has(fileGrainNodeId(doc.documentsPath, projectPath))) {
-      seenFiles.add(doc.documentsPath);
+    for (const target of docTargets(doc)) {
+      if (scannedFileIds.has(fileGrainNodeId(target, projectPath))) {
+        seenFiles.add(target);
+      }
     }
   }
   // Dedupe on the NODE ID, not on the raw path string. `seenFiles` accumulates
@@ -505,6 +508,9 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
     if (doc.subject !== undefined) docMeta.subject = doc.subject;
     if (doc.task !== undefined) docMeta.task = doc.task;
     if (doc.documentsPath !== undefined) docMeta.documentsPath = doc.documentsPath;
+    if (doc.documentsPaths !== undefined && doc.documentsPaths.length > 0) {
+      docMeta.documentsPaths = doc.documentsPaths;
+    }
     if (doc.relatedFiles.length > 0) docMeta.relatedFiles = doc.relatedFiles;
     nodes.push({
       id: doc.id,
@@ -1196,9 +1202,13 @@ export function buildEdges(
   // === documents edges (WO-DOCS-TO-GRAPH-P1-...-001) ===
   //
   // Direction: doc -> documented file, so `inbound(@File/x)` answers "which
-  // docs govern this file" — the query pack_context asks. Frontmatter-keyed
-  // resource sheets and explicitly opted-in reports may bear edges; foundation
-  // docs are generated repo-level nodes without per-file claims (DR-DOCS-D).
+  // docs govern this file" — the query pack_context asks. Every doc class may
+  // bear edges: frontmatter-keyed resource sheets, opted-in reports, and —
+  // since WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001 — foundation
+  // docs, whose generators now stamp mechanically-derived documents: lists
+  // (the original DR-DOCS-D foundation hold is resolved; a producer stamps
+  // them). One edge per claim target: docTargets() unions the scalar and
+  // list frontmatter forms.
   //
   // A `documents:` target OUTSIDE the scan universe (deleted file, a scripts/
   // dir, a typo) emits an UNRESOLVED edge — endpoint precedent: the claim is
@@ -1207,34 +1217,35 @@ export function buildEdges(
   // for every in-universe documented file, so nodeIdSet membership IS the
   // universe test.
   for (const doc of state.docs ?? []) {
-    if (doc.docType === 'foundation' || !doc.documentsPath) continue;
-    const targetId = fileGrainNodeId(doc.documentsPath, state.projectPath);
-    const inUniverse = nodeIdSet.has(targetId);
-    const evidence: EdgeEvidence = {
-      kind: 'documents',
-      sheetPath: doc.sheetPath,
-      docStatus: doc.docStatus,
-      placeholderSections: doc.placeholderSections,
-      documentsPath: doc.documentsPath,
-    };
-    const id = computeEdgeId({
-      sourceId: doc.id,
-      relationship: 'documents',
-      ...(inUniverse ? { targetId } : {}),
-      originSpecifier: doc.documentsPath,
-      sourceFile: doc.sheetPath,
-      line: 1,
-    });
-    edges.push(buildEdgeRecord({
-      id,
-      sourceId: doc.id,
-      ...(inUniverse ? { targetId } : {}),
-      relationship: 'documents',
-      resolutionStatus: inUniverse ? 'resolved' : 'unresolved',
-      evidence,
-      sourceLocation: { file: doc.sheetPath, line: 1 },
-      ...(inUniverse ? {} : { reason: 'documents_target_not_in_scan' }),
-    }));
+    for (const documentsPath of docTargets(doc)) {
+      const targetId = fileGrainNodeId(documentsPath, state.projectPath);
+      const inUniverse = nodeIdSet.has(targetId);
+      const evidence: EdgeEvidence = {
+        kind: 'documents',
+        sheetPath: doc.sheetPath,
+        docStatus: doc.docStatus,
+        placeholderSections: doc.placeholderSections,
+        documentsPath,
+      };
+      const id = computeEdgeId({
+        sourceId: doc.id,
+        relationship: 'documents',
+        ...(inUniverse ? { targetId } : {}),
+        originSpecifier: documentsPath,
+        sourceFile: doc.sheetPath,
+        line: 1,
+      });
+      edges.push(buildEdgeRecord({
+        id,
+        sourceId: doc.id,
+        ...(inUniverse ? { targetId } : {}),
+        relationship: 'documents',
+        resolutionStatus: inUniverse ? 'resolved' : 'unresolved',
+        evidence,
+        sourceLocation: { file: doc.sheetPath, line: 1 },
+        ...(inUniverse ? {} : { reason: 'documents_target_not_in_scan' }),
+      }));
+    }
   }
 
   // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3: dedupe by edge id.

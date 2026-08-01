@@ -1,0 +1,69 @@
+{
+  "workorder_id": "WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001",
+  "feature_name": "foundation-docs-generator-emitted-frontmatter",
+  "created": "2026-08-01T09:37:12.243935+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\foundation-docs-generator-emitted-frontmatter\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\foundation-docs-generator-emitted-frontmatter\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\foundation-docs-generator-emitted-frontmatter\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-VDZNPF",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-VDZNPF",
+      "plan_type": "strict",
+      "timestamp": "2026-08-01T09:37:12.243935+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 10,
+      "source": "C:\\Users\\willh\\AppData\\Local\\Temp\\claude\\C--Users-willh-Desktop-CODEREF-CODEREF-CORE\\b2c4b05d-34f6-46c3-bf81-a42459146225\\scratchpad\\foundation-frontmatter-tasks.json",
+      "at": "2026-08-01T09:37:12.243935+00:00"
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-08-01T09:44:21.593Z"
+    },
+    {
+      "event": "alignment_gate",
+      "verdict": "ok",
+      "reason": "ok",
+      "note": "work-start mapping recorded via align-coderef-culture record (verdict PASS) before execution",
+      "at": "2026-08-01T09:44:21.594Z"
+    },
+    {
+      "event": "phase_transition_writer_noop",
+      "note": "write-phase-transition.cjs resolves ASSISTANT root only (coderef-core: anchor gap, KZ-01KYY49T class) — transitions hand-written per docs-to-graph precedent",
+      "at": "2026-08-01T09:44:57.936Z"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T09:37:12.243935+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-VDZNPF"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

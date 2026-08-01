@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability doc-ingestion
- * @exports DOC_ID_PREFIX, DocFact, DocIngestResult, docNodeId, isDocNodeId, collectDocFacts, parseDocFrontmatter
+ * @exports DOC_ID_PREFIX, DocFact, DocIngestResult, docNodeId, docTargets, isDocNodeId, collectDocFacts, parseDocFrontmatter
  * @used_by src/pipeline/orchestrator.ts, src/pipeline/graph-builder.ts
  */
 
@@ -19,12 +19,16 @@
  *                       (documents:, status:, subject:); the `documents:` key
  *                       is what produces a `documents` edge to the documented
  *                       file's `@File/...` node. The EDGE-BEARING class.
- *   foundation docs   — coderef/foundation-docs/*.md. Generated, repo-level,
- *                       and (verified on disk, discovery G1) carry NO
- *                       frontmatter — so they mint nodes with
- *                       docStatus='generated' and NO edges. Absence of
- *                       frontmatter is NO-DATA about what they document,
- *                       never a parse error.
+ *   foundation docs   — coderef/foundation-docs/*.md. Generated, repo-level.
+ *                       Since WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER
+ *                       the doc-gen generators stamp frontmatter with
+ *                       mechanically-derived documents:/related_files: lists,
+ *                       so these docs bear `documents` edges too. docStatus is
+ *                       ALWAYS 'generated' (lane-decided — generated prose
+ *                       never outranks reviewed sheets, DR-DOCS-E). A
+ *                       frontmatter-less foundation doc (older generator
+ *                       output) still mints a node with no edges: absence of
+ *                       frontmatter is NO-DATA, never a parse error (G1).
  *   report candidates — any markdown below coderef/ whose frontmatter opts in
  *                       with `ingestion_candidate: true`. This lets living
  *                       genre reports and evaluation/planning reports join the
@@ -77,6 +81,13 @@ export interface DocFact {
   docStatus: string;
   /** Raw frontmatter `documents:` value (repo-relative path), when present. */
   documentsPath?: string;
+  /**
+   * List-form frontmatter `documents:` entries (repo-relative paths), when the
+   * key is written as a YAML list. Generator-emitted foundation docs use this
+   * shape (a HOTSPOTS doc documents many files); sheets/reports may too — the
+   * scalar and list forms are unioned at edge-minting time (docTargets).
+   */
+  documentsPaths?: string[];
   /** Frontmatter `related_files:` list entries, when present. */
   relatedFiles: string[];
   /**
@@ -101,6 +112,22 @@ const PLACEHOLDER_MARKER = 'This section is a placeholder pending regeneration';
 /** Build the doc node id from a repo-relative posix path. */
 export function docNodeId(relPosixPath: string): string {
   return `${DOC_ID_PREFIX}${relPosixPath.replace(/^\.\//, '')}`;
+}
+
+/**
+ * All `documents:` claim targets for a fact — scalar and list forms unioned,
+ * order-preserving, deduped. The single seam graph-builder mints edges from.
+ */
+export function docTargets(doc: Pick<DocFact, 'documentsPath' | 'documentsPaths'>): string[] {
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const t of [doc.documentsPath, ...(doc.documentsPaths ?? [])]) {
+    if (t && !seen.has(t)) {
+      seen.add(t);
+      out.push(t);
+    }
+  }
+  return out;
 }
 
 /** Is this graph node id a doc pseudo-node? */
@@ -219,6 +246,7 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
       continue;
     }
     const documentsRaw = fm.scalars['documents'];
+    const documentsList = fm.lists['documents'];
     docs.push({
       id: docNodeId(rel),
       slug: path.basename(rel, '.md'),
@@ -228,6 +256,11 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
       // Missing status is a legacy-sheet condition, not an approval claim.
       docStatus: fm.scalars['status'] ?? 'draft',
       documentsPath: documentsRaw ? normalizeSlashes(documentsRaw).replace(/^\.\//, '') : undefined,
+      // List-form documents: was previously parsed into fm.lists and then
+      // silently ignored — a latent claim-drop. Now carried.
+      documentsPaths: documentsList?.length
+        ? documentsList.map(d => normalizeSlashes(d).replace(/^\.\//, ''))
+        : undefined,
       relatedFiles: fm.lists['related_files'] ?? [],
       placeholderSections: text.split(PLACEHOLDER_MARKER).length - 1,
       task: fm.scalars['task'],
@@ -242,11 +275,20 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
       skipped.push({ path: rel, reason: 'unreadable' });
       continue;
     }
-    // Foundation docs are generated repo-level references with no frontmatter
-    // (discovery G1). If one ever grows a `documents:` key we still do NOT
-    // emit an edge from it here — resource sheets are the edge-bearing class
-    // (DR-DOCS-D); revisit when a producer actually stamps them.
+    // Foundation docs are GENERATED artifacts. Since
+    // WO-FOUNDATION-DOCS-GENERATOR-EMITTED-FRONTMATTER-001 the doc-gen
+    // generators stamp frontmatter (status: generated + mechanically-derived
+    // documents:/related_files:), so a foundation doc's documents: claims ARE
+    // trusted and bear edges — the original DR-DOCS-D hold ("revisit when a
+    // producer actually stamps them") is resolved: a producer now stamps them.
+    // A frontmatter-less foundation doc (older generator output) still mints a
+    // node with zero edges — absence of frontmatter is NO-DATA, never an error.
+    // docStatus stays 'generated' REGARDLESS of any frontmatter status: value:
+    // ranking (DR-DOCS-E) must never let generated prose outrank reviewed
+    // sheets, so the lane, not the file, decides the status.
     const fm = parseDocFrontmatter(text);
+    const documentsRaw = fm?.scalars['documents'];
+    const documentsList = fm?.lists['documents'];
     docs.push({
       id: docNodeId(rel),
       slug: path.basename(rel, '.md'),
@@ -254,7 +296,10 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
       sheetPath: rel,
       subject: fm?.scalars['subject'],
       docStatus: 'generated',
-      documentsPath: undefined,
+      documentsPath: documentsRaw ? normalizeSlashes(documentsRaw).replace(/^\.\//, '') : undefined,
+      documentsPaths: documentsList?.length
+        ? documentsList.map(d => normalizeSlashes(d).replace(/^\.\//, ''))
+        : undefined,
       relatedFiles: fm?.lists['related_files'] ?? [],
       placeholderSections: text.split(PLACEHOLDER_MARKER).length - 1,
       task: fm?.scalars['task'],
@@ -276,6 +321,7 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
     const fm = parseDocFrontmatter(text);
     if (fm?.scalars['ingestion_candidate']?.toLowerCase() !== 'true') continue;
     const documentsRaw = fm.scalars['documents'];
+    const documentsList = fm.lists['documents'];
     docs.push({
       id: docNodeId(rel),
       slug: path.basename(rel, '.md'),
@@ -288,6 +334,9 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
       docStatus: fm.scalars['status'] ?? 'draft',
       documentsPath: documentsRaw
         ? normalizeSlashes(documentsRaw).replace(/^\.\//, '')
+        : undefined,
+      documentsPaths: documentsList?.length
+        ? documentsList.map(d => normalizeSlashes(d).replace(/^\.\//, ''))
         : undefined,
       relatedFiles: fm.lists['related_files'] ?? [],
       placeholderSections: text.split(PLACEHOLDER_MARKER).length - 1,
