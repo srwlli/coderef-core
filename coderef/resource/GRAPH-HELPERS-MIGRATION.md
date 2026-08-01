@@ -277,6 +277,45 @@ const parsed = parseNodeId('services/auth.ts:AuthService');
 
 ---
 
+## Breaking changes
+
+**There are none.** This migration is purely additive: the graph query helpers are new
+exports alongside the existing surface, and nothing was removed, renamed, or given a
+changed signature to make room for them.
+
+| Concern | Status |
+|---|---|
+| Existing manual data-extraction code | **Still works.** The *Before* patterns above continue to compile and run; they are verbose, not deprecated-and-removed. |
+| `DependencyGraph` / `buildDependencyGraph` | **Retained, marked `@legacy`.** Kept for the transition window. New consumers should read `ExportedGraph`, but existing callers are not broken. |
+| Existing export signatures | **Unchanged.** No published export changed shape for this migration. |
+| Minimum version | Requires a build that includes the helpers; older versions simply lack the new imports and fail at import time, not at runtime with wrong behavior. |
+
+Because nothing is removed, **migration can be incremental** — convert one call site,
+verify, and leave the rest until later. There is no flag day.
+
+## Rollback
+
+Rolling back is deleting the new code, not restoring old behavior — the additive property
+above is what makes this cheap.
+
+1. **Revert the call site.** Replace the helper call with the manual extraction it
+   replaced (the *Before* section is the reference implementation). No other file needs to
+   change; the helpers are pure reads over `ExportedGraph`.
+2. **Remove the import.** Drop the helper names from the `@coderef/core` import statement.
+   Nothing else in the module depends on them.
+3. **Do not downgrade the package.** Reverting a call site does not require reverting
+   `@coderef/core` — the helpers are inert if unused. Downgrading would additionally lose
+   unrelated fixes.
+4. **Verify.** Re-run the test that covered the call site and confirm the same result as
+   before the migration. The helpers read the same graph the manual code read, so a
+   correct rollback produces identical output — a difference means the manual code and the
+   helper disagreed, which is a finding worth keeping rather than reverting.
+
+Rollback needs **no data migration and no reindex**: nothing under `.coderef/` changes
+shape when these helpers are adopted or abandoned.
+
+---
+
 ## Migration Steps
 
 ### Step 1: Install/Update @coderef/core
