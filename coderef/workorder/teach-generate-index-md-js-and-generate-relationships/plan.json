@@ -1,0 +1,108 @@
+{
+  "plan_type": "strict",
+  "goal": "Teach generate-index-md.js and generate-relationships-md.js the disclosed-cap documents: frontmatter stamping that generate-exports-md.js and generate-hotspots-md.js already do, so their foundation docs bind to code in the graph. MEASURED (CODEREF-CORE, 2026-08-01, live graph): 8 of 8 foundation docs ingest as @Doc nodes, but only 2 of 8 (EXPORTS, HOTSPOTS) bear documents edges. INDEX.md and RELATIONSHIPS.md are FULLY MECHANICAL - generated from .coderef/index.json and graph.json - so a documents: claim is assertable for them exactly as it is for EXPORTS/HOTSPOTS; today they emit related_files (20 and 17 entries) but no documents:, and related_files mints NO edge in doc-ingest. EXPLICITLY OUT OF SCOPE: enhance-existing-docs.js (API/ARCHITECTURE/COMPONENTS/SCHEMA). It deliberately refuses to stamp documents: - source comment: 'Never a documents: claim - these docs are hand-authored; coverage cannot be asserted'. That refusal is CORRECT and must not be undone; those four are hand-authored prose the enhancer only decorates with UUID anchors and mechanically-derived related_files. Reuse the DOCUMENTS_CAP=20 disclosed-truncation pattern from generate-exports-md.js so a capped list never reads as complete coverage. Expected effect: foundation-doc documents-edge coverage 2/8 -> 4/8, with the remaining 4 correctly unbound by design. SECONDARY (optional, larger): doc-ingest.ts mints edges from documents: only - related_files: is parsed into DocFact.relatedFiles and then never used to mint anything, so 37 related_files entries across INDEX/RELATIONSHIPS/API are inert metadata. Decide whether related_files should mint a weaker edge kind or stay advisory.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "Read the WORKING stamping pattern in scripts/doc-gen/generate-exports-md.js (DOCUMENTS_CAP=20, ranked by exported-element count, cap DISCLOSED via documents_truncated) and generate-hotspots-md.js. Then read the two targets, generate-index-md.js and generate-relationships-md.js, to find where each already computes its per-file coverage set. Also read scripts/doc-gen/enhance-existing-docs.js:46-51 to confirm the OUT-OF-SCOPE boundary in the source itself.",
+          "touches": [
+            "scripts/doc-gen/generate-exports-md.js",
+            "scripts/doc-gen/generate-hotspots-md.js",
+            "scripts/doc-gen/generate-index-md.js",
+            "scripts/doc-gen/generate-relationships-md.js",
+            "scripts/doc-gen/enhance-existing-docs.js"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "CHECK",
+          "description": "BEFORE snapshot: record foundation-doc documents-edge coverage from the live .coderef/graph.json (expected 2 of 8: EXPORTS, HOTSPOTS) plus the full node/edge id fingerprint, so the after-state proves the change is ADDITIVE and touches nothing else.",
+          "touches": []
+        },
+        {
+          "id": "P1-T3",
+          "verb": "EDIT",
+          "description": "generate-index-md.js: stamp a capped, DISCLOSED documents: frontmatter list reusing the generate-exports-md.js pattern verbatim (same cap constant, same documents_truncated disclosure key). INDEX.md is fully mechanical (projected from .coderef/index.json), so a coverage claim is assertable. Do NOT drop or reorder its existing related_files.",
+          "touches": [
+            "scripts/doc-gen/generate-index-md.js"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "generate-relationships-md.js: same capped, disclosed documents: stamping. RELATIONSHIPS.md is projected from graph.json + index.json, so its coverage claim is assertable on the same grounds.",
+          "touches": [
+            "scripts/doc-gen/generate-relationships-md.js"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "RUN",
+          "description": "Run the 6 doc-gen generators then scripts/doc-gen/validate-docs.js. Validator must exit 0 (the 25 invalid-UUID-anchor warnings are pre-existing, STUB-48QPYN). Confirm INDEX.md and RELATIONSHIPS.md now carry documents: and that EXPORTS/HOTSPOTS are unchanged in shape.",
+          "touches": []
+        },
+        {
+          "id": "P1-T6",
+          "verb": "CHECK",
+          "description": "AFTER proof: repopulate .coderef and verify (a) foundation-doc documents-edge coverage is 4 of 8, (b) the 4 enhance-existing-docs docs (API/ARCHITECTURE/COMPONENTS/SCHEMA) STILL carry zero documents: \u2014 the deliberate refusal must survive, (c) the non-doc code universe node/edge id sha256 is byte-identical to the P1-T2 before-snapshot, proving the change is confined to the doc lane.",
+          "touches": []
+        },
+        {
+          "id": "P1-T7",
+          "verb": "TEST",
+          "description": "Run __tests__/pipeline/doc-ingest.test.ts (the doc-ingestion contract surface) and confirm counts, not exit codes. Full suite only if doc-ingest surfaces a change.",
+          "touches": [
+            "__tests__/pipeline/doc-ingest.test.ts"
+          ]
+        },
+        {
+          "id": "P1-T8",
+          "verb": "COMMIT",
+          "description": "Commit via the guarded runner (commit-by-path, WO-ID in subject). Stage the two generators plus the regenerated foundation docs only.",
+          "touches": []
+        },
+        {
+          "id": "P1-T9",
+          "verb": "STOP",
+          "description": "Terminal hard stop: finalize communication.json to checkpoint_ready, flip the registry row via the canonical writer, author the session log, write terminal-post-exec.txt. Await operator /close-workorder.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-B6B0EH"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T232603Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-TEACH-GENERATE-INDEX-MD-JS-AND-GENERATE-RELATIONSHIPS-001",
+  "feature_name": "teach-generate-index-md-js-and-generate-relationships",
+  "created": "2026-08-01T23:25:51.207121+00:00",
+  "plan_type_rationale": "Category fix maps to strict"
+}

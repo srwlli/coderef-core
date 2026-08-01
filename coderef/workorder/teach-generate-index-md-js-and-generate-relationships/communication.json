@@ -1,0 +1,64 @@
+{
+  "workorder_id": "WO-TEACH-GENERATE-INDEX-MD-JS-AND-GENERATE-RELATIONSHIPS-001",
+  "feature_name": "teach-generate-index-md-js-and-generate-relationships",
+  "created": "2026-08-01T23:25:51.207121+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "cancelled",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\teach-generate-index-md-js-and-generate-relationships\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\teach-generate-index-md-js-and-generate-relationships\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\teach-generate-index-md-js-and-generate-relationships\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-B6B0EH",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-B6B0EH",
+      "plan_type": "strict",
+      "timestamp": "2026-08-01T23:25:51.207121+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 9,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/afe01006-6c4c-4a78-a71d-09665b82982b/scratchpad/b6b0eh-tasks.json",
+      "at": "2026-08-01T23:25:51.207121+00:00"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T23:25:51.207121+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-B6B0EH"
+    },
+    {
+      "event": "workorder_cancelled",
+      "at": "2026-08-01T21:30:00Z",
+      "detail": "Premise refuted by the source it proposed to change. No files edited."
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "cancelled_at": "2026-08-01T21:30:00Z",
+  "cancel_metadata": {
+    "reason": "already_satisfied_premise_false",
+    "cancelled_at": "2026-08-01T21:30:00Z",
+    "detail": "CANCELLED AT P1-T1 (READ), before any edit. The stub's premise was that INDEX.md and RELATIONSHIPS.md fail to stamp documents: through oversight, because they are 'fully mechanical so a documents: claim is assertable'. Reading the generators refutes that. BOTH already carry an explicit, reasoned refusal in source:\n  generate-index-md.js:47-49  \u2014 'related_files (NOT documents): INDEX is a repo-wide registry \u2014 claiming it \"documents\" specific files would be an invented per-file claim.'\n  generate-relationships-md.js:62-64 \u2014 'related_files (NOT documents): repo-wide dependency overview \u2014 the most-referenced files it displays are related context, not per-file documentation claims.'\nMECHANICAL != DOCUMENTING. A doc projected from the index is not thereby a doc that governs specific files. EXPORTS and HOTSPOTS make genuine per-file claims (export-bearing files; hotspot files); INDEX and RELATIONSHIPS are repo-wide overviews and a documents: list for them would be fabricated coverage \u2014 precisely the failure the doc lane exists to prevent.\nCONCLUSION: foundation-doc documents-edge coverage of 2/8 is CORRECT BY DESIGN, not a gap. All six unbound docs are deliberately unbound: 4 hand-authored (enhance-existing-docs.js refuses on the same grounds) + these 2 repo-wide overviews. Executing this WO would have REGRESSED the doc lane by minting invented claims.",
+    "residual_real_finding": "The genuine link-1 gap is different and remains open: related_files: is INERT. doc-ingest.ts parses it into DocFact.relatedFiles and never mints anything from it, so 39 entries across INDEX/RELATIONSHIPS/API declare related context that the graph discards. That is the operator ruling already recorded in ENFORCEMENT-PLAN.md gap #1 \u2014 mint a weaker edge kind, or state plainly that related_files is advisory.",
+    "cancelled_by": "CODEREF-CORE agent (self-caught at the READ gate)"
+  }
+}

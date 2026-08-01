@@ -1,0 +1,127 @@
+{
+  "event": "culture_alignment_recorded",
+  "domain": "CODEREF-CORE",
+  "skill": "align-coderef-culture",
+  "schema_version": "2.0.0",
+  "workorder_id": "WO-TEACH-GENERATE-INDEX-MD-JS-AND-GENERATE-RELATIONSHIPS-001",
+  "target_project": "coderef-core",
+  "intended_work": "Teach generate-index-md.js and generate-relationships-md.js the disclosed-cap documents: frontmatter stamping that generate-exports-md.js and generate-hotspots-md.js already do, so their foundation do",
+  "plan_digest": "sha256:0057d9de1c0848754626884a24adcdb92f4e03a15d087aae4b3e700a1f8b597d",
+  "inventory_digest": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+  "source_digests": {
+    "STANDARDS/layers.json": "sha256:2d5e1202a74e36d326978aa7fd86135ae425d181eb724e5f255d248c9feaa4e2",
+    "STANDARDS/VOCABULARY.json": "sha256:f426b702bf8e0cd8f0659dbbb0f954a21b4fddab5ed80892d540530272c66d9a",
+    "TRACKING/registries.json": "sha256:8b0f86c7696f6984565538e02ebbb1538bd6ed12b1ff2866377f9998c9ab0bfc",
+    "TRACKING/skills.json": "sha256:7ff55c897720f3ce6d3c1eff1cdce952d96298364c3451e0a820d82ebbf74b7b",
+    "STANDARDS/coderef-inventory.json": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+    "TRACKING/agent-domains.json": "sha256:15568aa8c132c323e676b1f8cbe68b2dc76e97ca4349d1d508b8121b20c48ff9",
+    "SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json": "sha256:654edd538307eddd798f5f145247c35f8b2933f3678ddd9477cd5757cd09a2ea",
+    "DOCS/standards/data/COMMS-DATA-STANDARD.md": "sha256:2b3289c9ed81322e9d244620d0df780214933f65138e72d870987887bbae75c7",
+    "STANDARDS/event-catalog.md": "sha256:4cc6fe172b3df18f67f1cb9075da9a111ef20b5325f14a092a561df0e4e180ba",
+    "SKILLS/META/coderef-skill/references/SKILL-CONTRACTS.md": "sha256:c86b97bbce08a3655ba9f3a9efd95e1846197b8761874cc46817a740e5203508",
+    "SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md": "sha256:bdabb1ed33860aff929ae5e720ff3f4c148ac1502d46d46c74c9b68d31e12d16"
+  },
+  "rows": [
+    {
+      "task_id": "P1-T1",
+      "step": "Read the WORKING stamping pattern in scripts/doc-gen/generate-exports-md.js (DOCUMENTS_CAP=20, ranked by exported-element count, cap DISCLOSED via documents_truncated) and generate-hotspots-md.js. Then read the two targets, generate-index-md.js and generate-relationships-md.js, to find where each already computes its per-file coverage set. Also read scripts/doc-gen/enhance-existing-docs.js:46-51 to confirm the OUT-OF-SCOPE boundary in the source itself.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T2",
+      "step": "BEFORE snapshot: record foundation-doc documents-edge coverage from the live .coderef/graph.json (expected 2 of 8: EXPORTS, HOTSPOTS) plus the full node/edge id fingerprint, so the after-state proves the change is ADDITIVE and touches nothing else.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T3",
+      "step": "generate-index-md.js: stamp a capped, DISCLOSED documents: frontmatter list reusing the generate-exports-md.js pattern verbatim (same cap constant, same documents_truncated disclosure key). INDEX.md is fully mechanical (projected from .coderef/index.json), so a coverage claim is assertable. Do NOT drop or reorder its existing related_files.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T4",
+      "step": "generate-relationships-md.js: same capped, disclosed documents: stamping. RELATIONSHIPS.md is projected from graph.json + index.json, so its coverage claim is assertable on the same grounds.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T5",
+      "step": "Run the 6 doc-gen generators then scripts/doc-gen/validate-docs.js. Validator must exit 0 (the 25 invalid-UUID-anchor warnings are pre-existing, STUB-48QPYN). Confirm INDEX.md and RELATIONSHIPS.md now carry documents: and that EXPORTS/HOTSPOTS are unchanged in shape.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T6",
+      "step": "AFTER proof: repopulate .coderef and verify (a) foundation-doc documents-edge coverage is 4 of 8, (b) the 4 enhance-existing-docs docs (API/ARCHITECTURE/COMPONENTS/SCHEMA) STILL carry zero documents: â€” the deliberate refusal must survive, (c) the non-doc code universe node/edge id sha256 is byte-identical to the P1-T2 before-snapshot, proving the change is confined to the doc lane.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T7",
+      "step": "Run __tests__/pipeline/doc-ingest.test.ts (the doc-ingestion contract surface) and confirm counts, not exit codes. Full suite only if doc-ingest surfaces a change.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T8",
+      "step": "Commit via the guarded runner (commit-by-path, WO-ID in subject). Stage the two generators plus the regenerated foundation docs only.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T9",
+      "step": "Terminal hard stop: finalize communication.json to checkpoint_ready, flip the registry row via the canonical writer, author the session log, write terminal-post-exec.txt. Await operator /close-workorder.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    }
+  ],
+  "gaps": [],
+  "verdict": "PASS",
+  "_draft": true,
+  "_note": "DRAFT â€” the agent fills each row.tools/communication/closure/tracking, sets row.status, routes gaps to SKILLS with a dispatch_id, then feeds this to `record --input`.",
+  "_instructions": [
+    "WORK-START ALIGNMENT DRAFT — fill this in BEFORE writing any code.",
+    "1. For EVERY row: set tools[] to the canonical skills/scripts that task will use.",
+    "   Each entry must be an ACTIVE skill in STANDARDS/coderef-inventory.json or a",
+    "   real script path on disk. Use the literal \"GAP\" where no tool exists, and route",
+    "   that gap to SKILLS with a dispatch_id in gaps[].",
+    "2. Fill communication[]/closure[]/tracking[] per row (GAP if nothing is expected).",
+    "3. Record it:",
+    "   node SKILLS/STANDARDS/align-coderef-culture/run.mjs record \\",
+    "     --workorder-id=WO-TEACH-GENERATE-INDEX-MD-JS-AND-GENERATE-RELATIONSHIPS-001 --domain=CODEREF-CORE \\",
+    "     --input=coderef/workorder/teach-generate-index-md-js-and-generate-relationships/alignment-draft.json",
+    "Unrecorded, this becomes a HARD STOP at /close-workorder Step 3 — and by then",
+    "work-start has passed, so it can no longer be recorded honestly.",
+    "tools[] is deliberately EMPTY: `record` refuses empty tools, and auto-filling it",
+    "would fabricate a mapping nobody made."
+  ]
+}

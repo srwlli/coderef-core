@@ -22,7 +22,7 @@ Enforcement needs all four. A break anywhere makes the rest decorative.
 
 | # | Link | What it means | Status today |
 |---|---|---|---|
-| 1 | **BIND** | a doc declares which code it governs (`documents:`) | **PARTIAL** — sheets 72/74; foundation docs **2/8** |
+| 1 | **BIND** | a doc declares which code it governs (`documents:`) | **AS GOOD AS IT GETS** — sheets 72/74; foundation docs 2/8 **BY DESIGN** (see below). Real gap is `related_files` inertness |
 | 2 | **DETECT** | something notices when the doc's claims stop matching code | **BUILT, BROKEN** — `check-sheet-drift.mjs` works but is CRLF-blind |
 | 3 | **GATE** | detection runs automatically at a moment that blocks drift landing | **ABSENT** — nothing re-runs it after authoring |
 | 4 | **REPAIR** | fixing is mechanical, or the gate gets ignored and bypassed | **BUILT, UNWIRED** — `project-spine.mjs` / `remediate-sheet.mjs` |
@@ -35,7 +35,7 @@ Measured evidence for each row is in `discovery.md` §3 and `drift-checker-sweep
 |---|---|---|---|
 | `TKT-017SAB` — CRLF + scalar-only frontmatter parsing | DEBUG | 2 | **blocks `STUB-34YBWR`** |
 | `STUB-34YBWR` — wire the drift checker into the recurring kind gate, WARN-first, `--fix` | STANDARDS | 3 + 4 | blocked by `TKT-017SAB` |
-| `STUB-B6B0EH` — teach `generate-index-md` + `generate-relationships-md` the `documents:` stamping | CODEREF-CORE | 1 | independent — **cheapest real win** |
+| ~~`STUB-B6B0EH`~~ — **ABANDONED 2026-08-01**, premise refuted (`WO-TEACH-...-001` cancelled at the READ gate) | CODEREF-CORE | 1 | — |
 | `STUB-XCBFHY` — frontier authoring path (no LLOYD/Ollama) | LLOYD | enabler | independent |
 | `STUB-B70KHC` — scoped claim-truth doc gate at close-workorder | ASSISTANT | 3 | blocked by `TKT-017SAB`; pairs with `STUB-34YBWR` |
 
@@ -46,7 +46,6 @@ Measured evidence for each row is in `discovery.md` §3 and `drift-checker-sweep
 TKT-017SAB ─────┤
                 └─▶ STUB-B70KHC ─▶ close-time gate  (stops drift LANDING)
 
-STUB-B6B0EH ──────────────────────▶ binding 2/8 ▶ 4/8   (parallel, CORE-owned)
 STUB-XCBFHY ──────────────────────▶ authoring without a local model (parallel)
 ```
 
@@ -61,9 +60,17 @@ Both gates hang off the same parser fix. `TKT-017SAB` is one small ticket gating
 
 ## Gaps with no owner yet — operator ruling needed
 
-1. **`related_files:` is inert.** `doc-ingest.ts` mints edges from `documents:` only. It parses `related_files:` into `DocFact.relatedFiles` and never uses it, so **39 entries across INDEX / RELATIONSHIPS / API look like a binding and are not.** Rule: mint a weaker edge kind, or state plainly that it is advisory. Leaving it as-is means a reader reasonably believes those docs are bound when they are not.
+1. **`related_files:` is inert — and with binding capped at 2/8 by design, this is now the ONLY remaining link-1 lever.** `doc-ingest.ts` mints edges from `documents:` only. It parses `related_files:` into `DocFact.relatedFiles` and never uses it, so **39 entries across INDEX / RELATIONSHIPS / API look like a binding and are not.** Rule: mint a weaker edge kind, or state plainly that it is advisory. Leaving it as-is means a reader reasonably believes those docs are bound when they are not.
 2. ~~**Close-time claim-truth gate.**~~ **FILED as `STUB-B70KHC`** (ASSISTANT): at close, resolve the docs that BIND each changed source file via `documents:` edges and run the drift checker over just those. Scoped by construction, so pre-existing drift elsewhere can never block an unrelated close. This is the difference between "drift is caught eventually" and "drift cannot land."
-3. **Four foundation docs have NO binding of any kind.** `ARCHITECTURE.md`, `COMPONENTS.md`, `SCHEMA.md` carry neither `documents:` nor `related_files:`. Correctly so — they are hand-authored and coverage cannot be mechanically asserted — but it means **no gate will ever protect them.** Their only tie to code is the section-level `references` edges added today, which is symbol-mention, not governance. Accept, or bind them by hand.
+3. **Foundation-doc binding is 2/8 BY DESIGN — this is not a gap, and trying to "fix" it would regress the doc lane.** I filed `STUB-B6B0EH` to raise it to 4/8, promoted it to `WO-TEACH-GENERATE-INDEX-MD-JS-AND-GENERATE-RELATIONSHIPS-001`, and **cancelled it at the first READ task** when the source refuted the premise. All three generators that omit `documents:` carry an explicit reasoned refusal:
+
+   - `generate-index-md.js:47` — *"INDEX is a repo-wide registry — claiming it 'documents' specific files would be an invented per-file claim."*
+   - `generate-relationships-md.js:62` — *"repo-wide dependency overview — related context, not per-file documentation claims."*
+   - `enhance-existing-docs.js:48` — *"Never a `documents:` claim — these docs are hand-authored; coverage cannot be asserted."*
+
+   **Mechanical ≠ documenting.** A doc projected from the index is not thereby a doc that *governs* particular files. EXPORTS and HOTSPOTS make genuine per-file claims; the other six do not, and a `documents:` list for them would be fabricated coverage — exactly the failure this lane exists to prevent. **The correct link-1 target is not 4/8; it is gap #1 below.**
+
+4. **Four foundation docs have NO binding of any kind.** `ARCHITECTURE.md`, `COMPONENTS.md`, `SCHEMA.md` carry neither `documents:` nor `related_files:`. Correctly so — they are hand-authored and coverage cannot be mechanically asserted — but it means **no gate will ever protect them.** Their only tie to code is the section-level `references` edges added today, which is symbol-mention, not governance. Accept, or bind them by hand.
 
 ## What today's workorder did and did not contribute
 
@@ -77,7 +84,7 @@ Enforcement is LIVE when, on a clean tree:
 1. `TKT-017SAB` closed — the drift checker reads CRLF and list-form frontmatter.
 2. `standards-validate` surfaces `sheet.anchors-resolve` with real counts on every run.
 3. `--fix` re-projects drifted anchors without hand-editing.
-4. Foundation-doc binding is 4/8, with the other 4 documented as unbindable by design.
+4. ~~Foundation-doc binding is 4/8~~ → **2/8 is correct and final**; the six unbound docs are documented as deliberately unbindable. Link 1's remaining work is the `related_files` ruling, not more `documents:` stamping.
 5. The `related_files` ruling is recorded either way.
 6. `STUB-B70KHC` closed — a WO that changes bound code cannot close with that doc's claims broken.
 
