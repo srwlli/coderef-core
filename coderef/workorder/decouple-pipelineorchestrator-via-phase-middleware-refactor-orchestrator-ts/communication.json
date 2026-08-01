@@ -1,0 +1,70 @@
+{
+  "workorder_id": "WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001",
+  "feature_name": "decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts",
+  "created": "2026-08-01T12:04:08.980342+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "implementing",
+  "current_phase": 1,
+  "phase_status": "in_progress",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-HPRR3V",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-HPRR3V",
+      "plan_type": "phased",
+      "timestamp": "2026-08-01T12:04:08.980342+00:00"
+    },
+    {
+      "event": "plan_expanded",
+      "at": "2026-08-01T12:10:37Z",
+      "by": "/discover + agent seam analysis (discovery.md section 7)",
+      "detail": "Generic 4-task skeleton replaced with 3-phase parity-gated plan (contract+tail / scan front / incremental+E2E proof). Operator ruling (A) 2026-08-01: this WO executes FIRST, then WO-CROSS-REPO-WORKSPACE-LINKAGE-001; operator pre-approved sequential phase execution, hard stop kept at terminal phase 3 only."
+    },
+    {
+      "event": "branch_context",
+      "branch": "main",
+      "mode": "main-direct",
+      "at": "2026-08-01T12:14:55Z"
+    },
+    {
+      "event": "alignment_gate",
+      "verdict": "ok",
+      "detail": "recorded 18-row mapping post plan-expansion (prepare had emitted stale 4-task rows - cross-repo stale-plan-source defect, kaizen pending)",
+      "at": "2026-08-01T12:14:55Z"
+    },
+    {
+      "event": "plan_adjustment",
+      "id": "ADJ-1",
+      "at": "2026-08-01T12:27:07Z",
+      "detail": "P1-T1/P1-T6 fingerprint instrument corrected: before/after populate on the LIVE self-hosting repo cannot be id-identical across a source edit (new files + line shifts). Binding parity proof = frozen-tree A/B (old dist vs new dist over one immutable tree copy): PASS, byte-identical node/edge/resolved id sets. Applies to P2-T4 and P3-T3 equally (prev-phase dist snapshot = OLD)."
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T12:04:08.980342+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-HPRR3V"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ],
+  "predecessor_for": "WO-CROSS-REPO-WORKSPACE-LINKAGE-001"
+}

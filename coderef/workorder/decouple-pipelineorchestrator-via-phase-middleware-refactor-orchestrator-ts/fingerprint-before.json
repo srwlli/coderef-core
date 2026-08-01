@@ -1,0 +1,19 @@
+{
+  "label": "WO-DECOUPLE-PIPELINEORCHESTRATOR-before",
+  "generated": "2026-08-01T12:16:28Z",
+  "nodes": 3765,
+  "edges": 45336,
+  "all_edge_ids_sha256": "ab2b0f9887987910994a24b15f93826fa8ff07fad98b5e6359b3154ab4a0f0e6",
+  "resolved_edge_ids_sha256": "ba799fb8475cc673c4ec47d57be12d1a47edc269d60440611063b04360c5c0d0",
+  "resolved_count": 10138,
+  "resolutionStatus_tally": {
+    "external": 719,
+    "builtin": 30719,
+    "resolved": 10138,
+    "typeOnly": 300,
+    "unresolved": 1674,
+    "dynamic": 45,
+    "stale": 1,
+    "ambiguous": 1740
+  }
+}

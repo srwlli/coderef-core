@@ -51,11 +51,8 @@ import type {
   ImportResolution,
   CallResolution,
 } from './types.js';
-import { resolveImports } from './import-resolver.js';
-import { resolveCalls } from './call-resolver.js';
-import { constructGraph } from './graph-builder.js';
-import { collectDocFacts } from './doc-ingest.js';
-import { applyScipOverlay } from './scip-overlay.js';
+import { runPhases, pipelineStateOf, type PipelineContext } from './phases/types.js';
+import { resolveTailPhases } from './phases/resolve-tail.js';
 import {
   buildFactSet,
   canonicalFactKey,
@@ -235,31 +232,21 @@ export class PipelineOrchestrator {
       }
     }
 
-    // Step 4: Build dependency graph
-    if (verbose) logger.info('[PipelineOrchestrator] Building dependency graph...');
-    const graph = this.buildGraph(allElements, allImports, allCalls, allHeritage, projectPath);
-
-    // Step 4.4: governing-doc facts (WO-DOCS-TO-GRAPH-P1-...-001). Repo-global
-    // collection — deliberately NOT part of the per-file bundles above, so the
-    // incremental path re-collects identically (parity by construction).
-    const docIngest = collectDocFacts(projectPath);
-    if (verbose && (docIngest.docs.length > 0 || docIngest.skipped.length > 0)) {
-      logger.info(
-        `[PipelineOrchestrator] Doc ingest: ${docIngest.docs.length} doc fact(s), ` +
-          `${docIngest.skipped.length} skipped.`,
-      );
-    }
-
-    // Step 4.5: Phase 3 — resolve imports against export tables and emit
-    // resolved-import graph edges. resolveImports is a pure function over
-    // state; it consumes rawExports / rawImports / headerImportFacts and
-    // produces ImportResolution[]. Pass 1 (export tables) completes for ALL
-    // files before pass 2 (resolution) begins for ANY file. Only kind ===
-    // 'resolved' resolutions emit graph edges; the rest stay as explicit
-    // facts on state.importResolutions.
-    if (verbose) logger.info('[PipelineOrchestrator] Resolving imports (Phase 3)...');
-    const preResolveState: PipelineState = {
+    // Steps 4–4.8 run as the shared resolve-tail phase list (WO-DECOUPLE-
+    // PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001
+    // Phase 1): legacy graph -> doc facts -> resolveImports (Phase 3) ->
+    // resolveCalls (Phase 4) -> constructGraph + atomic swap (Phase 5) ->
+    // SCIP overlay (Step 4.8, self-gated on options.scipIndex). The phases
+    // are thin adapters over the same pure functions in the same order —
+    // see src/pipeline/phases/resolve-tail.ts for the per-step contracts
+    // (two-pass purity, dual-source-ambiguity removal, atomic swap,
+    // no-regress overlay).
+    const ctx: PipelineContext = {
       projectPath,
+      options,
+      verbose,
+      chainLogs: true,
+      startTime,
       files,
       elements: allElements,
       imports: allImports,
@@ -271,105 +258,28 @@ export class PipelineOrchestrator {
       headerFacts: allHeaderFacts,
       headerImportFacts: allHeaderImportFacts,
       headerParseErrors: allHeaderParseErrors,
-      importResolutions: [],
-      callResolutions: [],
       routes: allRoutes,
       frontendCalls: allFrontendCalls,
-      docs: docIngest.docs,
-      graph,
       sources,
-      options,
-      metadata: {
-        startTime,
-        filesScanned,
-        elementsExtracted: allElements.length,
-        relationshipsExtracted: allImports.length + allCalls.length,
-      },
+      factBundles,
+      fileOrder,
+      docs: [],
+      // Seeded by the legacy-graph phase (first in the tail list).
+      graph: undefined as unknown as ExportedGraph,
+      importResolutions: [],
+      callResolutions: [],
+      filesScanned,
     };
-    const importResolutions: ImportResolution[] = resolveImports(preResolveState);
-    // Phase 5 (WO-PIPELINE-GRAPH-CONSTRUCTION-001): the inline
-    // resolved-import edge push and the legacy 'imports'-edge
-    // metadata enrichment that lived here in Phase 3 are now owned
-    // by src/pipeline/graph-builder.ts. constructGraph(state) below
-    // emits canonical 'import' edges with codeRefId endpoints and
-    // the 8-field schema; the pre-Phase-5 inline emission has been
-    // deleted to remove the dual-source ambiguity.
-
-    // Step 4.6: Phase 4 — resolve calls against the project-wide symbol
-    // table plus state.importResolutions (cross-phase seam from Phase 3).
-    // resolveCalls is a pure function over state; it consumes elements +
-    // rawCalls + importResolutions and produces CallResolution[]. Pass 1
-    // (symbol table) completes for ALL files before pass 2 (resolution)
-    // begins for ANY file. Only kind === 'resolved' resolutions emit
-    // resolved-call graph edges; the rest stay as explicit facts on
-    // state.callResolutions. Phase 4 does NOT modify endpoint format on
-    // legacy 'calls'-type edges — Phase 5 owns codeRefId-as-endpoint
-    // promotion across legacy edges.
-    if (verbose) logger.info('[PipelineOrchestrator] Resolving calls (Phase 4)...');
-    const preResolveCallsState: PipelineState = {
-      ...preResolveState,
-      importResolutions,
-    };
-    const callResolutions: CallResolution[] = resolveCalls(preResolveCallsState);
-    // Phase 5 (WO-PIPELINE-GRAPH-CONSTRUCTION-001): the inline
-    // resolved-call edge push and the legacy 'calls'-edge metadata
-    // enrichment (including importedAs / exportedName population)
-    // that lived here in Phase 4 are now owned by
-    // src/pipeline/graph-builder.ts. constructGraph(state) below
-    // emits canonical 'call' edges with codeRefId endpoints and
-    // the 8-field schema; the pre-Phase-5 inline emission has been
-    // deleted to remove the dual-source ambiguity.
-
-    // Step 4.7: Phase 5 — canonical graph construction. constructGraph
-    // produces an ExportedGraph from PipelineState (after Phase 3 +
-    // Phase 4 have populated importResolutions and callResolutions).
-    // Pass 1 builds nodes with id=canonical codeRefId; pass 2 builds
-    // edges with the 8-field schema (DR-PHASE-5-D), promoting
-    // 'imports'/'calls' to 'import'/'call' with codeRefId endpoints
-    // (Option B per R-PHASE-5-A) and emitting header-import edges
-    // distinctly (AC-04 / R-PHASE-5-C). state.graph is replaced with
-    // the constructGraph result; the legacy buildGraph() output
-    // (basic file-grain nodes + 'imports'/'calls' edges with
-    // path/specifier endpoints) is superseded.
-    if (verbose) logger.info('[PipelineOrchestrator] Constructing canonical graph (Phase 5)...');
-    const preGraphState: PipelineState = {
-      ...preResolveState,
-      importResolutions,
-      callResolutions,
-      graph,
-    };
-    const v2Graph = constructGraph(preGraphState);
-    // Replace state.graph with the canonical Phase 5 result. This is
-    // the atomic swap — all subsequent code reads from the new graph.
-    Object.assign(graph, {
-      nodes: v2Graph.nodes,
-      edges: v2Graph.edges,
-      statistics: v2Graph.statistics,
-      version: v2Graph.version,
-      exportedAt: v2Graph.exportedAt,
-    });
-
-    // Step 4.8: SCIP live resolution overlay (opt-in --scip,
-    // WO-DECOMPOSE-CODEREF-MCP-SERVER-MONOLITH-001 Phase 2, STUB-BQQJSY).
-    // Runs ONLY when a decoded SCIP index was threaded through options
-    // (the CLI decodes the .scip UPSTREAM — the resolver stays file-IO-free
-    // per AC-09). Post-resolution overlay: flips co-located unresolved/
-    // ambiguous edges to resolved with SCIP provenance; NEVER touches an
-    // already-resolved edge and NEVER invents an edge, so the graph is
-    // no-regress by construction. Absent options.scipIndex = zero behavior
-    // change (byte-identical graph).
-    if (options.scipIndex) {
-      const overlayStats = applyScipOverlay(graph, options.scipIndex, projectPath);
-      if (verbose) {
-        logger.info(
-          `[PipelineOrchestrator] SCIP overlay: flipped ${overlayStats.flipped_total} ` +
-            `edge(s) (unresolved ${overlayStats.flipped_unresolved}, ambiguous ` +
-            `${overlayStats.flipped_ambiguous}) over ${overlayStats.scip_references} ` +
-            `SCIP reference(s); ${overlayStats.already_resolved} site(s) already resolved; ` +
-            `${overlayStats.no_target_mapping} reference(s) had no unique node mapping (not flipped).`,
-        );
-      }
-    }
+    await runPhases(
+      resolveTailPhases(
+        (e, i, c, h, p) => this.buildGraph(e, i, c, h, p),
+        { includeScipOverlay: true },
+      ),
+      ctx,
+    );
+    const graph = ctx.graph;
+    const importResolutions: ImportResolution[] = ctx.importResolutions;
+    const callResolutions: CallResolution[] = ctx.callResolutions;
 
     const endTime = Date.now();
 
@@ -412,9 +322,7 @@ export class PipelineOrchestrator {
 
     // Step 6: Return populated state
     const state: PipelineState = {
-      ...preResolveState,
-      importResolutions,
-      callResolutions,
+      ...pipelineStateOf(ctx),
       metadata: {
         startTime,
         endTime,
@@ -533,7 +441,7 @@ export class PipelineOrchestrator {
     // Reassemble the FULL fact arrays in the merged file order, register every
     // element (parity with run()), then run the identical resolve/construct
     // chain over the complete universe.
-    const state = this.assembleAndResolve(projectPath, merged, options, startTime);
+    const state = await this.assembleAndResolve(projectPath, merged, options, startTime);
 
     // Re-persist the merged set so the NEXT delta builds on this one.
     if (options.outputDir !== undefined) {
@@ -552,12 +460,12 @@ export class PipelineOrchestrator {
    * run() uses. Factored so both the full and incremental paths resolve through
    * identical code (structural parity).
    */
-  private assembleAndResolve(
+  private async assembleAndResolve(
     projectPath: string,
     set: IncrementalFactSet,
     options: PipelineOptions,
     startTime: number,
-  ): PipelineState {
+  ): Promise<PipelineState> {
     const files = new Map<string, string[]>();
     const allElements: ElementData[] = [];
     const allImports: ImportRelationship[] = [];
@@ -598,36 +506,49 @@ export class PipelineOrchestrator {
       sources.set(filePath, bundle.content);
     }
 
-    const graph = this.buildGraph(allElements, allImports, allCalls, allHeritage, projectPath);
-    // Governing-doc facts: same repo-global collection the full path runs
-    // (Step 4.4) — the incremental path re-collects rather than caching, which
-    // is what keeps doc nodes/edges byte-identical to a full rebuild.
-    const docIngest = collectDocFacts(projectPath);
-    const preResolveState: PipelineState = {
-      projectPath, files,
-      elements: allElements, imports: allImports, calls: allCalls,
+    // The resolve/construct chain now runs through the SAME shared tail
+    // phases as run() (WO-DECOUPLE-...-001 P1) — parity by shared code
+    // instead of hand-kept duplication. Two historical differences are
+    // preserved deliberately: no chain step-logs on this path, and NO SCIP
+    // overlay leg (this path never applied it).
+    const ctx: PipelineContext = {
+      projectPath,
+      options,
+      verbose: options.verbose ?? false,
+      chainLogs: false,
+      startTime,
+      files,
+      elements: allElements,
+      imports: allImports,
+      calls: allCalls,
       heritage: allHeritage,
-      rawImports: allRawImports, rawCalls: allRawCalls, rawExports: allRawExports,
-      headerFacts: allHeaderFacts, headerImportFacts: allHeaderImportFacts,
+      rawImports: allRawImports,
+      rawCalls: allRawCalls,
+      rawExports: allRawExports,
+      headerFacts: allHeaderFacts,
+      headerImportFacts: allHeaderImportFacts,
       headerParseErrors: allHeaderParseErrors,
-      routes: allRoutes, frontendCalls: allFrontendCalls,
-      docs: docIngest.docs,
-      importResolutions: [], callResolutions: [], graph, sources, options,
-      metadata: {
-        startTime, filesScanned: set.order.length,
-        elementsExtracted: allElements.length,
-        relationshipsExtracted: allImports.length + allCalls.length,
-      },
+      routes: allRoutes,
+      frontendCalls: allFrontendCalls,
+      sources,
+      factBundles: new Map(Object.entries(set.byFile)),
+      fileOrder: [...set.order],
+      docs: [],
+      // Seeded by the legacy-graph phase (first in the tail list).
+      graph: undefined as unknown as ExportedGraph,
+      importResolutions: [],
+      callResolutions: [],
+      filesScanned: set.order.length,
     };
-    const importResolutions = resolveImports(preResolveState);
-    const callResolutions = resolveCalls({ ...preResolveState, importResolutions });
-    const v2Graph = constructGraph({ ...preResolveState, importResolutions, callResolutions, graph });
-    Object.assign(graph, {
-      nodes: v2Graph.nodes, edges: v2Graph.edges, statistics: v2Graph.statistics,
-      version: v2Graph.version, exportedAt: v2Graph.exportedAt,
-    });
+    await runPhases(
+      resolveTailPhases(
+        (e, i, c, h, p) => this.buildGraph(e, i, c, h, p),
+        { includeScipOverlay: false },
+      ),
+      ctx,
+    );
     return {
-      ...preResolveState, importResolutions, callResolutions,
+      ...pipelineStateOf(ctx),
       metadata: {
         startTime, endTime: Date.now(), filesScanned: set.order.length,
         elementsExtracted: allElements.length,

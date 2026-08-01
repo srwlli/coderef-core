@@ -1,0 +1,352 @@
+{
+  "event": "culture_alignment_recorded",
+  "domain": "CODEREF-CORE",
+  "skill": "align-coderef-culture",
+  "schema_version": "2.0.0",
+  "workorder_id": "WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001",
+  "target_project": "coderef-core",
+  "intended_work": "Decouple PipelineOrchestrator via Phase Middleware: refactor orchestrator.ts into a sequential phase execution pipeline (3-phase parity-gated plan, expanded 2026-08-01)",
+  "plan_digest": "sha256:88b3e4d4c1ba4edf4c6b8dbc442f5ce9c155233290782a54ad3802894464d0d2",
+  "inventory_digest": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+  "source_digests": {
+    "STANDARDS/layers.json": "sha256:2d5e1202a74e36d326978aa7fd86135ae425d181eb724e5f255d248c9feaa4e2",
+    "STANDARDS/VOCABULARY.json": "sha256:f426b702bf8e0cd8f0659dbbb0f954a21b4fddab5ed80892d540530272c66d9a",
+    "TRACKING/registries.json": "sha256:8b0f86c7696f6984565538e02ebbb1538bd6ed12b1ff2866377f9998c9ab0bfc",
+    "TRACKING/skills.json": "sha256:cabfad2766b796c6e7f0b66fc621e8ec6da24d3b084ac86579a29cdabb2af391",
+    "STANDARDS/coderef-inventory.json": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+    "TRACKING/agent-domains.json": "sha256:15568aa8c132c323e676b1f8cbe68b2dc76e97ca4349d1d508b8121b20c48ff9",
+    "SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json": "sha256:86f17257381a2d21cb199b5c1ee881dcce19d6030ed5865ad25933cb2241181d",
+    "DOCS/standards/data/COMMS-DATA-STANDARD.md": "sha256:2b3289c9ed81322e9d244620d0df780214933f65138e72d870987887bbae75c7",
+    "STANDARDS/event-catalog.md": "sha256:4cc6fe172b3df18f67f1cb9075da9a111ef20b5325f14a092a561df0e4e180ba",
+    "SKILLS/META/coderef-skill/references/SKILL-CONTRACTS.md": "sha256:c86b97bbce08a3655ba9f3a9efd95e1846197b8761874cc46817a740e5203508",
+    "SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md": "sha256:bdabb1ed33860aff929ae5e720ff3f4c148ac1502d46d46c74c9b68d31e12d16"
+  },
+  "rows": [
+    {
+      "task_id": "P1-T1",
+      "step": "BEFORE fingerprint: full populate of CODEREF-CORE, record all_edge_ids_sha256 + resolved_edge_ids_sha256 + node/edge counts to a workorder sidecar (parity instr",
+      "tools": [
+        "populate-coderef"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "active_work heartbeat via register-active-work.cjs"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T2",
+      "step": "Create src/pipeline/phases/types.ts: PipelineContext (the 14 fact accumulators + factBundles/fileOrder + graph + options + metadata) and PipelinePhase {name, ru",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T3",
+      "step": "Extract tail phases as thin adapters over the EXISTING pure functions (verbatim relocation, pass-1/pass-2 purity preserved): legacy-graph, collect-docs, resolve",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T4",
+      "step": "Wire run() Steps 4-4.8 and assembleAndResolve()'s duplicate chain (orchestrator.ts:601-628) through the shared tail phases; delete the duplication. Public surfa",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T5",
+      "step": "Full suite green (baseline 2532 passed / 26 skipped / 0 failed, vitest 4: confirm counts, not just exit code)",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T6",
+      "step": "AFTER fingerprint: full populate, sha256s byte-identical to P1-T1. Any delta = HALT and revert.",
+      "tools": [
+        "populate-coderef"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T7",
+      "step": "Commit Phase 1 (zero-semantics refactor, parity proven)",
+      "tools": [
+        "git-commit"
+      ],
+      "communication": [
+        "communication.json phase_transitions + decisions_log via write-phase-transition.cjs"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P2-T1",
+      "step": "Extract scan-front phases: discover-files, cache-filter (IMP-CORE-028 semantics intact), preload-grammars, scan-files (accumulator loop verbatim incl. globalReg",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "active_work heartbeat via register-active-work.cjs"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P2-T2",
+      "step": "run() becomes runPhases over the full phase list; keep verbose logging lines phase-local so CLI output is unchanged.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P2-T3",
+      "step": "Full suite green (2532/26/0 baseline)",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P2-T4",
+      "step": "Fingerprint parity vs P1-T1 sidecar (byte-identical). Any delta = HALT.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P2-T5",
+      "step": "Commit Phase 2",
+      "tools": [
+        "git-commit"
+      ],
+      "communication": [
+        "communication.json phase_transitions + decisions_log via write-phase-transition.cjs"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P3-T1",
+      "step": "Extract incremental-front phases (load-store/rescan-changed/merge-facts/assemble-facts); the P4 keying seam (storeKeyFor/canonicalFactKey, orchestrator.ts:465-4",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "active_work heartbeat via register-active-work.cjs"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P3-T2",
+      "step": "Full suite green incl. incremental-parity.contract + incremental-path-keying.contract (the 8 P4 tests)",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P3-T3",
+      "step": "E2E parity: full rebuild vs incremental --changed-files on the same tree -> identical all_edge_ids_sha256 + resolved_edge_ids_sha256 (re-run of the edge-resolut",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P3-T4",
+      "step": "Verify orchestrator.ts line count materially reduced and no phase module exceeds ~200 lines; docs touch: ARCHITECTURE.md pipeline section reflects the phase pip",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "GAP"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P3-T5",
+      "step": "Commit Phase 3",
+      "tools": [
+        "git-commit"
+      ],
+      "communication": [
+        "communication.json phase_transitions + decisions_log via write-phase-transition.cjs"
+      ],
+      "closure": [
+        "GAP"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P3-T6",
+      "step": "Hard stop: refactor complete + parity proven; successor WO-CROSS-REPO-WORKSPACE-LINKAGE-001 lands its workspace-resolution pass on the new phase seam.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "communication.json phase_transitions + decisions_log via write-phase-transition.cjs"
+      ],
+      "closure": [
+        "close-workorder Phase A audit reads phase_transitions"
+      ],
+      "tracking": [
+        "GAP"
+      ],
+      "status": "resolved"
+    }
+  ],
+  "gaps": [],
+  "verdict": "PASS",
+  "_draft": true,
+  "_note": "DRAFT \u00e2\u20ac\u201d the agent fills each row.tools/communication/closure/tracking, sets row.status, routes gaps to SKILLS with a dispatch_id, then feeds this to `record --input`.",
+  "_instructions": [
+    "WORK-START ALIGNMENT DRAFT \u2014 fill this in BEFORE writing any code.",
+    "1. For EVERY row: set tools[] to the canonical skills/scripts that task will use.",
+    "   Each entry must be an ACTIVE skill in STANDARDS/coderef-inventory.json or a",
+    "   real script path on disk. Use the literal \"GAP\" where no tool exists, and route",
+    "   that gap to SKILLS with a dispatch_id in gaps[].",
+    "2. Fill communication[]/closure[]/tracking[] per row (GAP if nothing is expected).",
+    "3. Record it:",
+    "   node SKILLS/STANDARDS/align-coderef-culture/run.mjs record \\",
+    "     --workorder-id=WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001 --domain=CODEREF-CORE \\",
+    "     --input=coderef/workorder/decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts/alignment-draft.json",
+    "Unrecorded, this becomes a HARD STOP at /close-workorder Step 3 \u2014 and by then",
+    "work-start has passed, so it can no longer be recorded honestly.",
+    "tools[] is deliberately EMPTY: `record` refuses empty tools, and auto-filling it",
+    "would fabricate a mapping nobody made."
+  ]
+}

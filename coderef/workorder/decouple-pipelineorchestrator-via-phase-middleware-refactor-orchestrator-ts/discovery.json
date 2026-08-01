@@ -1,0 +1,237 @@
+{
+  "discover": {
+    "meta": {
+      "topic": "decouple PipelineOrchestrator via phase middleware: orchestrator.ts sequential phase execution pipeline, extraction seams, runIncremental parity, middleware contract",
+      "generated": "2026-08-01T12:08:35Z",
+      "depth": "thorough",
+      "output_dest": "working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts/discovery.md",
+      "dispatch": "none"
+    },
+    "scope": {
+      "asked": "decouple PipelineOrchestrator via phase middleware: orchestrator.ts sequential phase execution pipeline, extraction seams, runIncremental parity, middleware contract",
+      "bounded": "unbounded — full project root"
+    },
+    "surfaces_audited": [
+      {
+        "line": "- [tool: skeleton-map]          present (cached), 31 lines"
+      },
+      {
+        "line": "- [tool: rg]                    queries=1, hits=0"
+      },
+      {
+        "line": "- [tool: rag-search]            top-k=10, ms=919, lane=hybrid, fallback_used=false"
+      },
+      {
+        "line": "- [tool: element-lookup]        source=symbol-table (rag-search --lexical), candidates=10, elements_indexed=3246"
+      },
+      {
+        "line": "- [tool: header-index]          defined=374, missing=5, stale=1, coverage=98.16% (validation-report.json)"
+      },
+      {
+        "line": "- [tool: foundation-docs]       sections_matched=8"
+      },
+      {
+        "line": "- [tool: codebase_summary]      elements=3246, top types: function=1133, method=966, interface=616, generated=2026-08-01T10:59:00.173Z"
+      },
+      {
+        "line": "- [tool: validation_status]     resolution_rate=22.53%, unresolved=1674, ambiguous=1740, header_coverage=98.16%"
+      },
+      {
+        "line": "- [tool: coderef-query]         walks=10, divergence_rows=5"
+      },
+      {
+        "line": "- [tool: graph-risk]            hotspots_top=5, cycles=0 (largest=0), edges=45331"
+      }
+    ],
+    "findings": [
+      {
+        "id": "F-001",
+        "surface": "src/pipeline/orchestrator.ts:450",
+        "observation": "Element lookup match: `PipelineOrchestrator.runIncremental`",
+        "severity": "info",
+        "evidence": "name=PipelineOrchestrator.runIncremental, type=method, score=26.23"
+      },
+      {
+        "id": "F-002",
+        "surface": "__tests__/pipeline/incremental-parity.test.ts:27",
+        "observation": "Element lookup match: `makeProject`",
+        "severity": "info",
+        "evidence": "name=makeProject, type=function, score=20.37"
+      },
+      {
+        "id": "F-003",
+        "surface": "__tests__/pipeline/incremental-parity.test.ts:54",
+        "observation": "Element lookup match: `fullEdgeSignature`",
+        "severity": "info",
+        "evidence": "name=fullEdgeSignature, type=function, score=19.73"
+      },
+      {
+        "id": "F-004",
+        "surface": "__tests__/pipeline/incremental-parity.test.ts:46",
+        "observation": "Element lookup match: `resolvedEdgeSignature`",
+        "severity": "info",
+        "evidence": "name=resolvedEdgeSignature, type=function, score=19.73"
+      },
+      {
+        "id": "F-005",
+        "surface": "src/pipeline/orchestrator.ts:97",
+        "observation": "Element lookup match: `PipelineOrchestrator.run`",
+        "severity": "info",
+        "evidence": "name=PipelineOrchestrator.run, type=method, score=19.08"
+      },
+      {
+        "id": "F-006",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Assemble the full fact arrays from a (merged) fact set in its file order,\nthen run resolveImports → resolveCalls → const"
+      },
+      {
+        "id": "F-007",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Convenience function to run full pipeline"
+      },
+      {
+        "id": "F-008",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Run the complete pipeline\n\n@param projectPath Absolute path to project root\n@param options Pipeline configuration option"
+      },
+      {
+        "id": "F-009",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "PipelineOrchestrator - Coordinate the entire analysis pipeline"
+      },
+      {
+        "id": "F-010",
+        "surface": "(rag)",
+        "observation": "RAG hit: `?` score=0.03",
+        "severity": "info",
+        "evidence": "Graph-safe incremental populate (P5, ADJ-03). Re-scan ONLY `changedFiles`,\nSWAP their fact bundles into the persisted fu"
+      }
+    ],
+    "divergences": [
+      {
+        "caller": "runPopulate (src/cli/populate.ts)",
+        "callee": "PipelineOrchestrator.runIncremental (src/pipeline/orchestrator.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=3, transitive_dependents=17",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "makeProject (__tests__/pipeline/incremental-parity.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "fullEdgeSignature (__tests__/pipeline/incremental-parity.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "(no inbound callers observed)",
+        "callee": "resolvedEdgeSignature (__tests__/pipeline/incremental-parity.test.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=0, transitive_dependents=0",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      },
+      {
+        "caller": "runPopulate (src/cli/populate.ts)",
+        "callee": "PipelineOrchestrator.run (src/pipeline/orchestrator.ts)",
+        "field": "call/dependency edges",
+        "shape": "callers_in=60, transitive_dependents=92",
+        "notes": "impact surface from graph walk — read the cited files before editing"
+      }
+    ],
+    "recommendations": [
+      {
+        "rec_id": "REC-001",
+        "priority": "low",
+        "action": "Review 10 info-level hit(s) for context.",
+        "owner": "(operator)"
+      }
+    ],
+    "severity_chart": [
+      {
+        "label": "critical",
+        "value": 0,
+        "variant": "fail"
+      },
+      {
+        "label": "warning",
+        "value": 0,
+        "variant": "accent"
+      },
+      {
+        "label": "info",
+        "value": 10,
+        "variant": "info"
+      }
+    ],
+    "orientation": {
+      "present": true,
+      "source": "cached",
+      "excerpt": "# repo map (skeleton): CODEREF-CORE — 485 files, 871 edges — budget ~400 tokens\n# ranked by dependency centrality (most depended-on first); in/out = distinct dependents/dependencies. surfaces, not verdicts.\n\nsrc/scanner/lru-cache.ts  (in 105 / out 1)\n  class LRUCache\n  interface ScanCacheEntry\n  fn createScannerCache(maxSizeBytes)\n\nsrc/pipeline/orchestrator.ts  (in 58 / out 15)\n  class PipelineOrchestrator\n\nsrc/utils/path-normalize.ts  (in 37 / out 0)\n  fn normalizeSlashes(p)\n  fn toRepoRelativePosix(file, projectPath)"
+    },
+    "graph_risk": {
+      "hotspots": [
+        {
+          "id": "@M/src/scanner/lru-cache.ts#LRUCache.has:114",
+          "in": 312,
+          "out": 0,
+          "total": 312
+        },
+        {
+          "id": "@File/__tests__/indexer.test.ts",
+          "in": 0,
+          "out": 197,
+          "total": 197
+        },
+        {
+          "id": "@Fn/src/scanner/scanner.ts#scanCurrentElements:908",
+          "in": 133,
+          "out": 32,
+          "total": 165
+        },
+        {
+          "id": "@Fn/src/utils/path-normalize.ts#normalizeSlashes:21",
+          "in": 153,
+          "out": 0,
+          "total": 153
+        },
+        {
+          "id": "@File/__tests__/pipeline/scip-overlay.test.ts",
+          "in": 0,
+          "out": 122,
+          "total": 122
+        }
+      ],
+      "cycles": {
+        "count": 0,
+        "largest": 0,
+        "sample": []
+      },
+      "resolution": {
+        "external": 719,
+        "builtin": 30719,
+        "resolved": 10133,
+        "typeOnly": 300,
+        "unresolved": 1674,
+        "dynamic": 45,
+        "stale": 1,
+        "ambiguous": 1740
+      },
+      "edge_total": 45331
+    },
+    "reuse_note": "Reproduce: /discover \"decouple PipelineOrchestrator via phase middleware: orchestrator.ts sequential phase execution pipeline, extraction seams, runIncremental parity, middleware contract\" --depth=thorough --output-dest=working:C:/Users/willh/Desktop/CODEREF/CODEREF-CORE/coderef/workorder/decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts/discovery.md"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "workorder_id": "WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001",
+  "feature_name": "decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts",
+  "analysis_authored_at": "2026-08-01T12:10:37Z",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/orchestrator.ts",
+      "docs/ARCHITECTURE.md"
+    ],
+    "files_created": [
+      "src/pipeline/phases/types.ts",
+      "src/pipeline/phases/resolve-tail.ts",
+      "src/pipeline/phases/scan-front.ts",
+      "src/pipeline/phases/incremental-front.ts"
+    ],
+    "downstream_consumers": "orchestrator in=54/out=15 (skeleton map); 88 dependent files per creation-time discovery; public surface (run/runIncremental/PipelineState) frozen so consumers see zero change"
+  },
+  "risks": [
+    {
+      "id": "RISK-1",
+      "title": "Silent graph delta during extraction",
+      "likelihood": "medium",
+      "impact": "high",
+      "mitigation": "sha256 edge-id fingerprint before/after EVERY phase commit (P1-T1 sidecar); any delta halts"
+    },
+    {
+      "id": "RISK-2",
+      "title": "Pass-1/pass-2 purity broken by relocation (export/symbol tables must complete before ANY resolution)",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "phases are thin adapters over the existing pure functions; no logic edits permitted"
+    },
+    {
+      "id": "RISK-3",
+      "title": "P4 keying-seam regression (storeKeyFor/canonicalFactKey)",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "seam relocates verbatim as one unit; P3-T2 runs the 8 P4 contract tests; P3-T3 re-proves E2E parity"
+    },
+    {
+      "id": "RISK-4",
+      "title": "CLI verbose-output drift breaks log-scraping consumers",
+      "likelihood": "low",
+      "impact": "low",
+      "mitigation": "logging lines move phase-local unchanged (P2-T2)"
+    }
+  ],
+  "candidates": [
+    {
+      "file": "src/pipeline/orchestrator.ts",
+      "reason": "the monolith: run() 336 lines with commented Steps 1-6; assembleAndResolve duplicates the resolve tail (601-628)"
+    },
+    {
+      "file": "src/pipeline/graph-builder.ts",
+      "reason": "constructGraph pure fn - relocated behind a phase adapter, not modified"
+    },
+    {
+      "file": "src/pipeline/import-resolver.ts",
+      "reason": "resolveImports pure fn - phase adapter only; successor WO hooks here"
+    },
+    {
+      "file": "src/pipeline/call-resolver.ts",
+      "reason": "resolveCalls pure fn - phase adapter only"
+    },
+    {
+      "file": "src/pipeline/symbol-table-cache.ts",
+      "reason": "canonicalFactKey/dedupeFactSet - P4 keying seam, relocates verbatim as a unit"
+    },
+    {
+      "file": "__tests__/pipeline/incremental-parity.test.ts",
+      "reason": "fullEdgeSignature - the parity instrument"
+    },
+    {
+      "file": "__tests__/pipeline/incremental-path-keying.contract.test.ts",
+      "reason": "8 P4 contract tests guarding the keying seam"
+    }
+  ],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-1",
+      "decision": "Sequential phase-list literal + minimal executor; NO middleware framework, hooks, or event bus",
+      "rationale": "the monolith's cost is duplication and un-insertable seams, not missing dynamism; smallest structure that gives the successor WO an insertion point"
+    },
+    {
+      "id": "DR-2",
+      "decision": "PipelineState stays the public return shape; PipelineContext is internal",
+      "rationale": "freezes the 54-dependent blast radius at zero"
+    },
+    {
+      "id": "DR-3",
+      "decision": "This WO precedes WO-CROSS-REPO-WORKSPACE-LINKAGE-001 (operator ruling A, 2026-08-01)",
+      "rationale": "cross-repo workspace pass lands as a phase-list insertion on the new seam instead of another hardwired block"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "phase": 1,
+  "generated": "2026-08-01T12:27:07Z",
+  "instrument": "frozen-tree A/B: OLD dist (HEAD orchestrator.ts) vs NEW dist (phase-middleware) over one immutable tree copy (scratchpad/fixtree, node_modules junction); no --source-headers so the tree never mutates between runs",
+  "old_and_new_identical": {
+    "nodes": 3740,
+    "edges": 45305,
+    "node_ids_sha256": "df1581142616da9b5f41402e310bc37b536b8ce164f60223d288a928b96a4165",
+    "edge_ids_sha256": "08be2c4dbf9cf6c7f245fca8a3e8bfbf5afcbc5ee2d21d7f2589757f4857e0f9",
+    "resolved_ids_sha256": "8eaf383ac26b03c64360b8968c0318afc8d08e3725112e1c3f905388603295b3"
+  },
+  "verdict": "PASS",
+  "note": "The plan-authored before/after-on-live-repo comparison (fingerprint-before.json) is INVALID for a self-hosting repo: the refactor adds 2 source files and shifts orchestrator.ts line numbers, so live-tree edge ids change by construction (KZ-01KYYEH1 vintage class). Kept for the record; the frozen-tree A/B above is the binding proof."
+}

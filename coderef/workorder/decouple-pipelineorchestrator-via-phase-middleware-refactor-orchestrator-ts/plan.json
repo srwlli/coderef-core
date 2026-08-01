@@ -1,0 +1,183 @@
+{
+  "plan_type": "phased",
+  "goal": "Decouple PipelineOrchestrator via Phase Middleware: refactor orchestrator.ts into a sequential phase execution pipeline",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase contract + shared resolve tail",
+      "hard_stop": false,
+      "stub_ref": "STUB-HPRR3V",
+      "description": "Define PipelineContext + PipelinePhase (sequential executor) and extract the resolve/construct tail (legacy buildGraph, collectDocFacts, resolveImports, resolveCalls, constructGraph, SCIP overlay) into shared phase modules consumed by BOTH run() and the incremental path, deleting the assembleAndResolve duplication. Zero behavior change.",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "RUN",
+          "description": "BEFORE fingerprint: full populate of CODEREF-CORE, record all_edge_ids_sha256 + resolved_edge_ids_sha256 + node/edge counts to a workorder sidecar (parity instrument from edge-resolution P4)",
+          "touches": []
+        },
+        {
+          "id": "P1-T2",
+          "verb": "WRITE",
+          "description": "Create src/pipeline/phases/types.ts: PipelineContext (the 14 fact accumulators + factBundles/fileOrder + graph + options + metadata) and PipelinePhase {name, run(ctx)} + runPhases sequential executor. No framework, no events.",
+          "touches": [
+            "src/pipeline/phases/types.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "WRITE",
+          "description": "Extract tail phases as thin adapters over the EXISTING pure functions (verbatim relocation, pass-1/pass-2 purity preserved): legacy-graph, collect-docs, resolve-imports, resolve-calls, construct-graph (with atomic swap), scip-overlay.",
+          "touches": [
+            "src/pipeline/phases/resolve-tail.ts"
+          ]
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "Wire run() Steps 4-4.8 and assembleAndResolve()'s duplicate chain (orchestrator.ts:601-628) through the shared tail phases; delete the duplication. Public surface (run/runIncremental signatures, PipelineState) frozen.",
+          "touches": [
+            "src/pipeline/orchestrator.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "TEST",
+          "description": "Full suite green (baseline 2532 passed / 26 skipped / 0 failed, vitest 4: confirm counts, not just exit code)",
+          "touches": []
+        },
+        {
+          "id": "P1-T6",
+          "verb": "RUN",
+          "description": "AFTER fingerprint: full populate, sha256s byte-identical to P1-T1. Any delta = HALT and revert.",
+          "touches": []
+        },
+        {
+          "id": "P1-T7",
+          "verb": "COMMIT",
+          "description": "Commit Phase 1 (zero-semantics refactor, parity proven)",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 2,
+      "name": "Scan front as phases; run() becomes executor",
+      "hard_stop": false,
+      "stub_ref": "STUB-HPRR3V",
+      "description": "Extract the scan front (discoverFiles, incremental-cache filter, preloadGrammars, per-file scan loop, cache persist, fact-set persist) into phases; run() collapses to a phase-list literal + executor call.",
+      "tasks": [
+        {
+          "id": "P2-T1",
+          "verb": "WRITE",
+          "description": "Extract scan-front phases: discover-files, cache-filter (IMP-CORE-028 semantics intact), preload-grammars, scan-files (accumulator loop verbatim incl. globalRegistry.register + factBundles capture), persist-cache, persist-fact-set (!incremental guard intact).",
+          "touches": [
+            "src/pipeline/phases/scan-front.ts"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "EDIT",
+          "description": "run() becomes runPhases over the full phase list; keep verbose logging lines phase-local so CLI output is unchanged.",
+          "touches": [
+            "src/pipeline/orchestrator.ts"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "TEST",
+          "description": "Full suite green (2532/26/0 baseline)",
+          "touches": []
+        },
+        {
+          "id": "P2-T4",
+          "verb": "RUN",
+          "description": "Fingerprint parity vs P1-T1 sidecar (byte-identical). Any delta = HALT.",
+          "touches": []
+        },
+        {
+          "id": "P2-T5",
+          "verb": "COMMIT",
+          "description": "Commit Phase 2",
+          "touches": []
+        }
+      ]
+    },
+    {
+      "phase": 3,
+      "name": "Incremental path on the executor + end-to-end parity proof",
+      "hard_stop": true,
+      "stub_ref": "STUB-HPRR3V",
+      "description": "runIncremental() composes its own phase list (load-store, rescan-changed with storeKeyFor translation moved as a unit, merge-facts, assemble-facts) feeding the SAME shared tail; remove assembleAndResolve. Final proof: full-vs-incremental sha256 identity.",
+      "tasks": [
+        {
+          "id": "P3-T1",
+          "verb": "EDIT",
+          "description": "Extract incremental-front phases (load-store/rescan-changed/merge-facts/assemble-facts); the P4 keying seam (storeKeyFor/canonicalFactKey, orchestrator.ts:465-494) relocates VERBATIM as one unit (STUB-QPAAY0 regression class). runIncremental() = executor over [incremental-front..., shared tail]. Delete assembleAndResolve.",
+          "touches": [
+            "src/pipeline/orchestrator.ts",
+            "src/pipeline/phases/incremental-front.ts"
+          ]
+        },
+        {
+          "id": "P3-T2",
+          "verb": "TEST",
+          "description": "Full suite green incl. incremental-parity.contract + incremental-path-keying.contract (the 8 P4 tests)",
+          "touches": []
+        },
+        {
+          "id": "P3-T3",
+          "verb": "RUN",
+          "description": "E2E parity: full rebuild vs incremental --changed-files on the same tree -> identical all_edge_ids_sha256 + resolved_edge_ids_sha256 (re-run of the edge-resolution P4 proof). Plus full-rebuild fingerprint parity vs P1-T1.",
+          "touches": []
+        },
+        {
+          "id": "P3-T4",
+          "verb": "CHECK",
+          "description": "Verify orchestrator.ts line count materially reduced and no phase module exceeds ~200 lines; docs touch: ARCHITECTURE.md pipeline section reflects the phase pipeline.",
+          "touches": [
+            "docs/ARCHITECTURE.md"
+          ]
+        },
+        {
+          "id": "P3-T5",
+          "verb": "COMMIT",
+          "description": "Commit Phase 3",
+          "touches": []
+        },
+        {
+          "id": "P3-T6",
+          "verb": "STOP",
+          "description": "Hard stop: refactor complete + parity proven; successor WO-CROSS-REPO-WORKSPACE-LINKAGE-001 lands its workspace-resolution pass on the new phase seam.",
+          "touches": []
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 3,
+      "approved": false,
+      "reason": "Terminal gate: full parity proof reviewed before close; operator pre-approved sequential execution of phases 1-3 (ruling 2026-08-01, option A)"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260801T120421Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-DECOUPLE-PIPELINEORCHESTRATOR-VIA-PHASE-MIDDLEWARE-REFACTOR-ORCHESTRATOR-TS-001",
+  "feature_name": "decouple-pipelineorchestrator-via-phase-middleware-refactor-orchestrator-ts",
+  "created": "2026-08-01T12:04:08.980342+00:00",
+  "plan_type_rationale": "Category refactor maps to phased"
+}
