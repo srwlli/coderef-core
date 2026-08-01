@@ -742,7 +742,7 @@ export function projectMapData(projectRoot: string, options: ProjectMapDataOptio
     } else {
       warnings.push(
         'docs block omitted: graph carries no @Doc nodes (populate predates doc ingestion, or the ' +
-        'repo has no coderef/resource-sheets|foundation-docs surface). No-data, not "undocumented".',
+        'repo has no resource-sheet, foundation-doc, or opted-in report surface). No-data, not "undocumented".',
       );
     }
   }

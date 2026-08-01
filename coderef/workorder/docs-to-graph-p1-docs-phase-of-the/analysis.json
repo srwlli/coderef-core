@@ -95,12 +95,26 @@
     "incremental_parity": "BLOCKED at E2E by the PRE-EXISTING incremental-store keying defect (absolute-vs-relative byFile merge -> duplicate node ids -> GI-1 fail-close; STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 class, same as GX-002 deviation). NOT introduced by this WO: doc facts deliberately bypass the byFile store and are re-collected identically in both call sites (unit-proven determinism). Artifacts restored via full scan after the repro.",
     "suite": "2496 passed / 26 skipped / 0 failed (vitest exit 0) — includes 14 doc-ingest tests; 4 map-test schemaVersion pins updated 1.7.0 -> 1.8.0",
     "mid_execution_extension": "A concurrent contributor extended doc-ingest with an opt-in 'report' lane (ingestion_candidate: true frontmatter, recursive coderef/ discovery, reserved-path dedupe) + matching tests; adopted into this WO's verify scope, suite green over the union.",
-    "environmental_note": "First two suite runs showed 21/26 spurious CLI-spawn timeouts caused by the concurrent Ollama sheet-batch CPU load; all passed on the quiet machine."
+    "environmental_note": "First two suite runs showed 21/26 spurious CLI-spawn timeouts caused by the concurrent Ollama sheet-batch CPU load; all passed on the quiet machine.",
+    "candidate_report_ingest": {
+      "source_repo": "C:/Users/willh/Desktop/CODEREF/ASSISTANT",
+      "scan": { "files": 950, "elements": 3783, "graph_nodes": 4425, "graph_edges": 39090, "doc_nodes": 27 },
+      "expected_candidates": 3,
+      "matched_candidates": 3,
+      "missing_ids": [],
+      "documents_edges": 0,
+      "edge_note": "The three genre reports are standalone @Doc nodes because none declares a same-repo documents: target.",
+      "nodes": [
+        { "id": "@Doc/coderef/genre-registry/code-intelligence-GENRE.md", "name": "Code Intelligence — Genre Registry", "doc_type": "report", "status": "living", "placeholder_sections": 0 },
+        { "id": "@Doc/coderef/genre-registry/api-surface-mapping-GENRE.md", "name": "API Surface Mapping — Genre Registry", "doc_type": "report", "status": "living", "placeholder_sections": 0 },
+        { "id": "@Doc/coderef/working/CODEREF-CORE/graph-viewer-living-overlay-pack/PLAN.md", "name": "Graph Viewer — Living Overlay Pack", "doc_type": "report", "status": "open", "placeholder_sections": 0 }
+      ]
+    }
   },
   "decision_records": [
     {
       "id": "DR-DOCS-A",
-      "decision": "@Doc node id = '@Doc/<repo-relative-posix-path>' (full sheet/doc path, extension kept), mirroring @File/<path> exactly. Zero collision risk, deterministic, invertible. Node type='doc'; NO file/line on the node (endpoint precedent — GI-6/map/canonical-graph consumers already skip file-less nodes); metadata carries sheetPath, docType ('resource-sheet'|'foundation'), docStatus, placeholderSections, subject, task, relatedFiles."
+      "decision": "@Doc node id = '@Doc/<repo-relative-posix-path>' (full sheet/doc path, extension kept), mirroring @File/<path> exactly. Zero collision risk, deterministic, invertible. Node type='doc'; NO file/line on the node (endpoint precedent — GI-6/map/canonical-graph consumers already skip file-less nodes); metadata carries sheetPath, docType ('resource-sheet'|'foundation'|'report'), docStatus, placeholderSections, subject, task, relatedFiles."
     },
     {
       "id": "DR-DOCS-B",
@@ -108,11 +122,15 @@
     },
     {
       "id": "DR-DOCS-C",
-      "decision": "Doc facts are REPO-GLOBAL, not per-file bundle facts: collected fresh each scan (sync fs, deterministic sorted glob over coderef/resource-sheets/*.md + coderef/foundation-docs/*.md relative to projectPath — repo-agnostic per-repo convention, no fleet layout). They deliberately do NOT enter the incremental byFile fact store (sidesteps the FU-4 absolute-key writeback defect entirely); collection runs in BOTH orchestrator call sites (run() + assembleAndResolve()) before constructGraph, passed through state.docs — constructGraph stays pure, incremental parity by construction."
+      "decision": "Doc facts are REPO-GLOBAL, not per-file bundle facts: collected fresh each scan (sync fs, deterministic sorted discovery over coderef/resource-sheets/*.md, coderef/foundation-docs/*.md, and recursively under coderef/ for Markdown explicitly marked ingestion_candidate: true; reserved-path dedupe prevents double ingestion). They deliberately do NOT enter the incremental byFile fact store (sidesteps the FU-4 absolute-key writeback defect entirely); collection runs in BOTH orchestrator call sites (run() + assembleAndResolve()) before constructGraph, passed through state.docs — constructGraph stays pure, incremental parity by construction."
     },
     {
       "id": "DR-DOCS-D",
-      "decision": "Foundation docs (no frontmatter, G1): ingested as @Doc nodes with docType='foundation', slug from filename, docStatus='generated', NO documents edges — resource sheets are the edge-bearing class. Frontmatter-less sheets (SCRIPTS): skipped with counted skip-reason. Missing status: defaults 'draft'. parent_project ignored."
+      "decision": "Foundation docs (no frontmatter, G1): ingested as @Doc nodes with docType='foundation', slug from filename, docStatus='generated', NO documents edges. Resource sheets remain edge-bearing; explicitly opted-in reports may also emit documents edges when they declare a valid same-repo documents: target. Frontmatter-less sheets (SCRIPTS): skipped with counted skip-reason. Missing status: defaults 'draft'. parent_project ignored."
+    },
+    {
+      "id": "DR-DOCS-F",
+      "decision": "Arbitrary Markdown report ingestion is fail-closed and opt-in: only files below repo-local coderef/ with frontmatter ingestion_candidate: true are eligible. This keeps planning and historical Markdown out of the graph by default while allowing reviewed genre reports to become deterministic docType='report' @Doc nodes."
     },
     {
       "id": "DR-DOCS-E",
