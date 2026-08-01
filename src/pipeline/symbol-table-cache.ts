@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability pipeline-symbol-table-cache
- * @exports FACT_SET_FILENAME, FileFactBundle, IncrementalFactSet, buildFactSet, serializeFactSet, deserializeFactSet, factSetPath, writeFactSet, readFactSet, mergeChangedFacts
+ * @exports FACT_SET_FILENAME, FileFactBundle, IncrementalFactSet, buildFactSet, serializeFactSet, deserializeFactSet, factSetPath, writeFactSet, readFactSet, mergeChangedFacts, canonicalFactKey, dedupeFactSet
  */
 
 /**
@@ -152,6 +152,65 @@ export function readFactSet(projectDir: string): IncrementalFactSet | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Canonical identity for a fact-set file key: project-relative with forward
+ * slashes, regardless of the form the originating build persisted (absolute,
+ * './'-joined relative, or mixed separators). Two paths denote the same file
+ * iff their canonical keys are equal. Relative inputs anchor at the RESOLVED
+ * project root, never the process cwd — deterministic across callers.
+ *
+ * This is the P4 keying seam (WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001,
+ * STUB-QPAAY0): `populate --changed-files` absolutizes inputs while a store
+ * persisted by a relative-projectPath full build is relative-keyed, so a raw
+ * key comparison ADDED the changed file under a second key instead of
+ * replacing its bundle — duplicate elements, node_id_uniqueness, fail-closed
+ * exit 1.
+ */
+export function canonicalFactKey(projectPath: string, filePath: string): string {
+  const projectAbs = path.resolve(projectPath);
+  const abs = path.isAbsolute(filePath)
+    ? path.normalize(filePath)
+    : path.resolve(projectAbs, filePath);
+  return path.relative(projectAbs, abs).split(path.sep).join('/');
+}
+
+/**
+ * Collapse a fact set whose byFile holds the SAME file under multiple key
+ * forms (the corruption a pre-fix failed incremental run persisted: the merge
+ * was written to disk before the CLI's validation halt, leaving e.g. both
+ * `src\a.ts` and `C:\...\src\a.ts`). Keeps the FIRST key in `order` for each
+ * canonical identity and drops the rest. Returns the input set unchanged when
+ * no collision exists.
+ */
+export function dedupeFactSet(set: IncrementalFactSet, projectPath: string): IncrementalFactSet {
+  const byCanonical = new Map<string, string>();
+  const drop = new Set<string>();
+  for (const key of set.order) {
+    const canonical = canonicalFactKey(projectPath, key);
+    if (byCanonical.has(canonical)) drop.add(key);
+    else byCanonical.set(canonical, key);
+  }
+  // Keys present in byFile but absent from order participate too.
+  for (const key of Object.keys(set.byFile)) {
+    if (byCanonical.has(canonicalFactKey(projectPath, key))) {
+      if (!set.order.includes(key) && byCanonical.get(canonicalFactKey(projectPath, key)) !== key) drop.add(key);
+    } else {
+      byCanonical.set(canonicalFactKey(projectPath, key), key);
+    }
+  }
+  if (drop.size === 0) return set;
+  const byFile: Record<string, FileFactBundle> = {};
+  for (const [key, bundle] of Object.entries(set.byFile)) {
+    if (!drop.has(key)) byFile[key] = bundle;
+  }
+  return {
+    version: set.version,
+    projectPath: set.projectPath,
+    order: set.order.filter(k => !drop.has(k)),
+    byFile,
+  };
 }
 
 /**

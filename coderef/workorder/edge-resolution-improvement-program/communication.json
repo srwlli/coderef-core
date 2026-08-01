@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "checkpoint_ready",
-  "current_phase": 3,
-  "phase_status": "complete",
+  "status": "implementing",
+  "current_phase": 4,
+  "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\analysis.json",
@@ -102,6 +102,18 @@
       "at": "2026-08-01T10:12:00Z",
       "decision": "EXECUTE AS STUBBED (heritage-aware method lookup) with honest expectations recorded: the direct unresolved tail this phase addresses is small (method_not_in_class_own_methods 45, imported_receiver_method_unknown 3) and the live heritage estate on this repo is only 22 extends/implements edges, so self-scan scalar deltas will be SMALL. The phase's value is repo-agnostic: super.x() resolution (today hard-unresolved), inherited this.x(), typed-receiver inherited methods resolved EXACT via the declared chain instead of provisionally via the bare-name ACG index (precision upgrade over field_based_acg), all carried by fixture contract tests. First RECALL phase - may add resolved edges; guards shift from 'zero edge change' to 'zero fabricated targets + zero lost resolutions'. Retires branch-3 guardrail-3 ('no parent-class walking') deliberately, with shadowing (own-method-wins) pinned by contract test.",
       "stub_ref": "STUB-9B66EN"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 4,
+      "at": "2026-08-01T10:55:00Z",
+      "note": "operator invoked /execute-workorder --phase=4 after the P3 checkpoint review"
+    },
+    {
+      "event": "p4_planning_gate",
+      "at": "2026-08-01T11:10:00Z",
+      "decision": "EXECUTE with seam-local design: canonicalize incremental fact-set keying and mirror the CACHED set's path form for rescan labels (reads resolve absolutely), making incremental output byte-identical to a full rebuild regardless of --changed-files input form. Defect chain confirmed live: populate.ts toAbs() absolutizes inputs; runIncremental keys byFile lookups + rescanned by absolute; the live store is projectPath='.' with RELATIVE backslash keys (inspected on disk) -> mergeChangedFacts adds a second key instead of replacing -> duplicate elements -> node_id_uniqueness -> fail-closed exit 1 (GX-002 P1-T6 plan_deviation repro, KZ-01KYY2S8). REJECTED alternative: resolving orchestrator projectPath absolute globally - would turn over every path-bearing id in every existing artifact repo-wide (id-churn blast). No FACT_SET_VERSION bump: shape unchanged, form mismatch handled by canonicalization. Repo-agnostic defect (form follows the originating populate invocation - the ASSISTANT set built today with an absolute projectDir is absolute-keyed, this repo's is relative-keyed). Closes GX-002 FU-4 / unblocks incremental E2E parity.",
+      "stub_ref": "STUB-QPAAY0"
     }
   ],
   "phase_transitions": [
@@ -170,6 +182,13 @@
         "source": "P2 residue analysis",
         "title": "branch 3.5 dotted-root matching for node-builtin receivers",
         "detail": "fs.promises.readFile()-style receivers (~22 edges) miss branch 3.5 (exact localName match only). Mirror the python_stdlib root-matching for node_builtin bindings."
+      },
+      {
+        "status": "candidate",
+        "captured_at": "2026-08-01T11:35:00Z",
+        "source": "P4 residue analysis",
+        "title": "runIncremental persists the merged fact set before the CLI validation halt",
+        "detail": "With correct keying (P4) the merge is sound so persist-early is benign, but a future scan-level defect could still persist bad facts on a failing run (the pre-fix repro poisoned the store this way). Moving the persist behind the validation verdict closes the class."
       }
     ]
   }

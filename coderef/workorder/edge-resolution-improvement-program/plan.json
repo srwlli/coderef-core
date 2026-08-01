@@ -237,15 +237,81 @@
     },
     {
       "phase": 4,
-      "name": "incremental-path-keying-fix \u2014 DEFERRED",
+      "name": "incremental path-keying fix (fact-set key normalization + rescan-form parity)",
       "hard_stop": true,
       "stub_ref": "STUB-QPAAY0",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P4-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 4 tasks not yet authored. Pre-condition: Phase 3 must be COMPLETED + REVIEWED before this phase's plan is authored."
+          "id": "P4-T1",
+          "verb": "READ",
+          "description": "Confirm the defect chain end-to-end: populate.ts toAbs() absolutizes --changed-files/--deleted-files before runIncremental; orchestrator.runIncremental keys cached.byFile lookups + rescanned map by those ABSOLUTE paths; the persisted fact set (symbol-table-cache.ts buildFactSet) is keyed in whatever form the originating full build's projectPath produced - live store on this repo: projectPath='.', RELATIVE backslash keys. mergeChangedFacts therefore ADDS the changed file under a second (absolute) key instead of replacing its relative-keyed bundle -> same elements twice -> node_id_uniqueness duplicate -> fail-closed exit 1, graph unwritten (GX-002 P1-T6 plan_deviation repro, KZ-01KYY2S8, STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 class). Also read coderef-watch.ts runIncrementalPopulate (the daemon spawn is a live consumer) and incremental-cache.ts (the OTHER incremental store - confirm in/out of scope).",
+          "touches": [
+            "src/cli/populate.ts",
+            "src/pipeline/orchestrator.ts",
+            "src/pipeline/symbol-table-cache.ts",
+            "src/cli/coderef-watch.ts"
+          ]
+        },
+        {
+          "id": "P4-T2",
+          "verb": "RUN",
+          "description": "BEFORE evidence: (a) reproduce the defect live against the current store - dist populate --changed-files on one file, expect exit 1 with node_id_uniqueness duplicate errors, capture the output tail as evidence in the WO dir; (b) capture metrics-p4-before.json (should be byte-equivalent to metrics-p3-after scalars - the full path is untouched this phase).",
+          "touches": [
+            ".coderef/validation-report.json"
+          ]
+        },
+        {
+          "id": "P4-T3",
+          "verb": "TEST",
+          "description": "Contract tests BEFORE implementation (__tests__/pipeline/incremental-path-keying.contract.test.ts), fixture-driven via full build -> persisted fact set -> runIncremental: (a) ABSOLUTE changed-file path: incremental completes, zero duplicate element ids, and the resolved state is IDENTICAL to a from-scratch full rebuild of the same tree (element count + resolved-edge id set - the parity GX-002 could not prove); (b) RELATIVE changed-file path input: same result (both input forms accepted); (c) forward-slash separators on input normalize (Windows); (d) deleted-file eviction works with absolute input (file's elements gone from the merged universe); (e) brand-new file added incrementally appears exactly once; (f) missing/absent fact set still falls back to a full build (existing contract preserved); (g) a changed-file path OUTSIDE the project root is handled without corrupting the store (skipped or scanned, but never double-keyed).",
+          "touches": [
+            "__tests__/pipeline/incremental-path-keying.contract.test.ts"
+          ]
+        },
+        {
+          "id": "P4-T4",
+          "verb": "EDIT",
+          "description": "Implement at the incremental seam (planning-gate design: mirror the CACHED set's form; do NOT globally absolutize orchestrator projectPath - that would churn every path-bearing id in existing artifacts): (i) symbol-table-cache.ts gains a canonical key helper (project-relative, separator-normalized) used for byFile lookup/merge key matching; (ii) orchestrator.runIncremental converts each incoming absolute path to the cached set's own key/label form (rel = relative(resolve(projectPath), abs); scan label = the form the originating build used, reconstructed from the stored set) so rescanned fact INTERNALS (element.file, import/call file fields) match the cached universe byte-for-byte; file READS resolve absolutely so cwd variance cannot break I/O; (iii) deletedFiles get the same canonicalization; (iv) mergeChangedFacts keying goes through the canonical helper so replace-not-add is guaranteed; (v) no FACT_SET_VERSION bump (shape unchanged; a form-mismatched legacy store is handled by canonicalization, not invalidation).",
+          "touches": [
+            "src/pipeline/symbol-table-cache.ts",
+            "src/pipeline/orchestrator.ts"
+          ]
+        },
+        {
+          "id": "P4-T5",
+          "verb": "RUN",
+          "description": "AFTER evidence: (a) the P4-T2 live repro now exits 0 and writes the graph; (b) E2E parity proof on the real repo: full rebuild vs incremental single-changed-file rebuild over the same tree -> identical resolved-edge id sets and scalars (the within-tree A/B, no cross-snapshot confound); (c) metrics-p4-after.json + metrics-p4-diff.md: full-path scalars UNCHANGED vs before (this phase is zero-flip on the full path by construction - guards: zero fabricated targets, zero lost resolutions, incremental==full).",
+          "touches": [
+            ".coderef/validation-report.json"
+          ]
+        },
+        {
+          "id": "P4-T6",
+          "verb": "EDIT",
+          "description": "Docs sync: CHANGELOG entry (incremental path-keying fix, parity now provable, GX-002 FU-4 closed); docs/ARCHITECTURE.md incremental section if it describes the keying; USING-CODEREF.md only if incremental guidance changes materially; record the p4_planning_gate design decision in communication.json decisions_log (seam-local mirror-the-cached-form over global absolutization, with rationale).",
+          "touches": [
+            "CHANGELOG.md",
+            "docs/ARCHITECTURE.md",
+            "USING-CODEREF.md"
+          ]
+        },
+        {
+          "id": "P4-T7",
+          "verb": "CHECK",
+          "description": "Full verification: new contract tests green; P1 test-dsl + P2 external-receiver + P3 heritage contract suites still green; tsc clean under both tsconfigs; full suite (isolate any 5s subprocess flakes by re-running failing files in isolation before calling them failures).",
+          "touches": [
+            "__tests__/pipeline/incremental-path-keying.contract.test.ts",
+            "__tests__/pipeline/heritage-method-lookup.contract.test.ts",
+            "__tests__/pipeline/test-dsl-reclassify.contract.test.ts",
+            "__tests__/pipeline/external-receiver-disposition.contract.test.ts"
+          ]
+        },
+        {
+          "id": "P4-T8",
+          "verb": "COMMIT",
+          "description": "Guarded commit with explicit --paths + --done; phase-transition record (agent-side on anchor-gap); FINAL-phase terminal surface at 4/4 (close_after_phase=4): render the terminal block and HARD STOP - the close ceremony is /close-workorder, operator-invoked, never automatic.",
+          "touches": []
         }
       ]
     }
@@ -263,8 +329,8 @@
     },
     {
       "phase": 4,
-      "approved": false,
-      "reason": "Phase 4 plan_deferred=true. Hard stop fires at phase planning gate."
+      "approved": true,
+      "reason": "P4 planning gate satisfied 2026-08-01: operator invoked --phase=4 after the P3 checkpoint review; plan authored at checkpoint (rolling contract) from the GX-002 P1-T6 repro + live-store inspection (projectPath='.', relative backslash byFile keys vs absolutized --changed-files). Design decision recorded in decisions_log: seam-local canonicalization mirroring the cached set's form; global projectPath absolutization REJECTED (would churn every path-bearing id in existing artifacts)."
     }
   ],
   "plan_adjustments_needed": [],

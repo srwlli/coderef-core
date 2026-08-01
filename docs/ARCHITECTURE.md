@@ -203,7 +203,7 @@ The CLI (`populate-coderef`) loads `layerEnum` from `ASSISTANT/STANDARDS/layers.
 - Emits an `IndexingResult` with the top-level `status: 'success' | 'partial' | 'failed'` per the DR-PHASE-7-C threshold table.
 - Wires `--layer` / `--capability` filter pass-through to the vector store metadata filter (DR-PHASE-7-D — capped at two new flags on `rag-search`; no new flags on `rag-index`).
 
-The post-Phase-7 baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`): `valid_edge_count=3464`, `header_missing_count=262`, all other counts `0`. (Current self-scan, 2026-08-01 post edge-resolution P3: `valid_edge_count=10049`, `resolved_of_resolvable=74.67%` (honest read; raw all-calls `resolution_rate=22.47%`), `test_dsl_count=16720` + `external_module_receiver` dispositions disclosed + heritage-chain method lookup (`heritage_method_lookup`), dependency cycles 0.)
+The post-Phase-7 baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`): `valid_edge_count=3464`, `header_missing_count=262`, all other counts `0`. (Current self-scan, 2026-08-01 post edge-resolution P4: `valid_edge_count=10133`, `resolved_of_resolvable=74.8%` (honest read; raw all-calls `resolution_rate=22.53%`), `test_dsl_count=16778` + `external_module_receiver` dispositions disclosed + heritage-chain method lookup (`heritage_method_lookup`); incremental `--changed-files` is keyed canonically against the persisted fact set and its output is byte-identical to a full rebuild (parity proven, edge-resolution P4), dependency cycles 0.)
 
 ---
 

@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-08-01] — incremental path-keying fix: `--changed-files` parity is now provable (edge-resolution P4)
+
+WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 Phase 4 (STUB-QPAAY0, final phase) — fixes the absolute-vs-relative fact-set keying defect that made `populate --changed-files` fail closed (GX-002 FU-4, `STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001` class).
+
+- **`symbol-table-cache.ts`**: new `canonicalFactKey` (project-relative, forward-slash, cwd-independent file identity) and `dedupeFactSet` (collapses stores a pre-fix failed run poisoned with the same file under two key forms — self-heals on next load).
+- **`orchestrator.ts` `runIncremental`**: every incoming changed/deleted path is translated to the persisted store's OWN key form (`storeKeyFor`), so `mergeChangedFacts` REPLACES the changed file's bundle instead of adding it under a second key (which duplicated every element → `node_id_uniqueness` → exit 1, graph unwritten — and re-persisted the corrupt merge). Rescans are labeled with the exact path form the originating full build used, so rescanned fact internals match the cached universe byte-for-byte; out-of-project paths keep their absolute form. Design note: globally absolutizing `projectPath` was rejected — it would churn every path-bearing id in existing artifacts.
+- **Effect**: zero resolution-semantics change. **E2E parity now proven on this repo**: full rebuild vs `--changed-files` incremental over the same tree → identical scalars and identical edge-id sha256 hashes. The live pre-fix repro (exit 1, duplicate ids) now exits 0 and self-heals the poisoned store on first contact. Repo-agnostic: the store's key form follows whatever projectDir form the originating populate used.
+- Contract: `__tests__/pipeline/incremental-path-keying.contract.test.ts` (8 tests, authored red-first — 4 failed pre-fix).
+
+---
+
 ## [2026-08-01] — heritage-aware method lookup (edge-resolution P3)
 
 WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 Phase 3 (STUB-9B66EN) — retires the 2026-05-03 guardrail-3 "no parent-class walking" restriction using the heritage facts extracted since genre-features P5.

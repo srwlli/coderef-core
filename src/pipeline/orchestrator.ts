@@ -58,6 +58,8 @@ import { collectDocFacts } from './doc-ingest.js';
 import { applyScipOverlay } from './scip-overlay.js';
 import {
   buildFactSet,
+  canonicalFactKey,
+  dedupeFactSet,
   mergeChangedFacts,
   readFactSet,
   writeFactSet,
@@ -460,6 +462,37 @@ export class PipelineOrchestrator {
       return this.run(projectPath, options);
     }
 
+    // P4 keying seam (STUB-QPAAY0): the store's byFile keys carry whatever
+    // path form the ORIGINATING full build's projectPath produced (relative
+    // for a '.'-invoked populate, absolute for an absolute one), while our
+    // callers pass absolutized paths. Translate every incoming path to the
+    // store's own key form so the merge REPLACES bundles instead of adding
+    // the same file under a second key (duplicate elements →
+    // node_id_uniqueness → fail-closed exit 1). Rescans are labeled with the
+    // exact form the originating build used, so rescanned fact internals
+    // match the cached universe byte-for-byte (full-rebuild parity).
+    const store = dedupeFactSet(cached, projectPath);
+    const keyByCanonical = new Map<string, string>();
+    for (const key of Object.keys(store.byFile)) {
+      keyByCanonical.set(canonicalFactKey(projectPath, key), key);
+    }
+    const sampleKey = store.order[0] ?? Object.keys(store.byFile)[0];
+    const storeIsAbsolute = sampleKey !== undefined && path.isAbsolute(sampleKey);
+    const storeKeyFor = (p: string): string => {
+      const canonical = canonicalFactKey(projectPath, p);
+      const existing = keyByCanonical.get(canonical);
+      if (existing !== undefined) return existing;
+      if (canonical.startsWith('..')) {
+        // Outside the project root — keep the absolute form; folding it into
+        // a project-relative key would fabricate an in-project identity.
+        return path.isAbsolute(p) ? path.normalize(p) : path.resolve(path.resolve(projectPath), p);
+      }
+      const platformRel = canonical.split('/').join(path.sep);
+      return storeIsAbsolute
+        ? path.join(path.resolve(projectPath), platformRel)
+        : path.join(projectPath, platformRel);
+    };
+
     // Reset the registry (parity with run(): run() clears it at the top).
     globalRegistry.clear();
 
@@ -467,12 +500,13 @@ export class PipelineOrchestrator {
     // bundle when known, else from the extension via getDefaultLanguages match.
     const rescanned = new Map<string, FileFactBundle>();
     for (const filePath of changedFiles) {
-      const language = cached.byFile[filePath]?.language ?? this.languageOf(filePath);
+      const scanPath = storeKeyFor(filePath);
+      const language = store.byFile[scanPath]?.language ?? this.languageOf(scanPath);
       if (!language) continue; // unsupported extension — skip
       try {
         await this.registry.preloadGrammars([language]);
-        const result = await this.processFile(filePath, language, verbose);
-        rescanned.set(filePath, {
+        const result = await this.processFile(scanPath, language, verbose);
+        rescanned.set(scanPath, {
           language,
           elements: result.elements,
           imports: result.imports,
@@ -492,7 +526,9 @@ export class PipelineOrchestrator {
     }
 
     // Merge changed/deleted into the cached full set — the graph-safe step.
-    const merged = mergeChangedFacts(cached, rescanned, deletedFiles);
+    // Deleted paths are translated to the store's own key form too, so an
+    // absolutized deletion actually evicts the relative-keyed bundle.
+    const merged = mergeChangedFacts(store, rescanned, deletedFiles.map(storeKeyFor));
 
     // Reassemble the FULL fact arrays in the merged file order, register every
     // element (parity with run()), then run the identical resolve/construct

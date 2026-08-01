@@ -1,0 +1,6 @@
+[validation error graph_integrity node_id_uniqueness] @I/src/pipeline/heritage-index.ts#HeritageIndex:38 {"duplicateId":"@I/src/pipeline/heritage-index.ts#HeritageIndex:38","count":2}
+[validation error graph_integrity node_id_uniqueness] @V/src/pipeline/heritage-index.ts#MAX_HERITAGE_DEPTH:46 {"duplicateId":"@V/src/pipeline/heritage-index.ts#MAX_HERITAGE_DEPTH:46","count":2}
+[validation error graph_integrity node_id_uniqueness] @Fn/src/pipeline/heritage-index.ts#buildHeritageIndex:53 {"duplicateId":"@Fn/src/pipeline/heritage-index.ts#buildHeritageIndex:53","count":2}
+[validation error graph_integrity node_id_uniqueness] @I/src/pipeline/heritage-index.ts#HeritageMethodMatch:69 {"duplicateId":"@I/src/pipeline/heritage-index.ts#HeritageMethodMatch:69","count":2}
+[validation error graph_integrity node_id_uniqueness] @Fn/src/pipeline/heritage-index.ts#heritageMethodLookup:90 {"duplicateId":"@Fn/src/pipeline/heritage-index.ts#heritageMethodLookup:90","count":2}
+--- real exit: 1; store after failed run: 499 byFile keys, src\pipeline\heritage-index.ts present under BOTH relative and absolute keys (write-before-validate persists the corrupt merge)
