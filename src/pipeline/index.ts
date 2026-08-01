@@ -19,4 +19,4 @@ export { DriftGenerator } from './generators/drift-generator.js';
 export { ValidationGenerator } from './generators/validation-generator.js';
 export { DiagramGenerator } from './generators/diagram-generator.js';
 export { ExportGenerator } from './generators/export-generator.js';
-export { ContextGenerator } from './generators/context-generator.js';
+export { PipelineContextGenerator, ContextGenerator } from './generators/context-generator.js';

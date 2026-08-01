@@ -21,7 +21,7 @@ export type { ElementComplexity, ComplexityMetrics } from './types.js';
 export { TestPatternAnalyzer } from './test-pattern-analyzer.js';
 export type { TestPatternAnalysis, TestPattern, TestFileInfo } from './types.js';
 
-export { ContextGenerator } from './context-generator.js';
+export { CodebaseContextService } from './context-generator.js';
 export type { ContextOptions } from './context-generator.js';
 
 export { BreakingChangeDetector } from './breaking-change-detector.js';

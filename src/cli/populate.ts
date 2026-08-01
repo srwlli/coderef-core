@@ -25,7 +25,7 @@ import { DriftGenerator } from '../pipeline/generators/drift-generator.js';
 import { ValidationGenerator } from '../pipeline/generators/validation-generator.js';
 import { DiagramGenerator } from '../pipeline/generators/diagram-generator.js';
 import { ExportGenerator } from '../pipeline/generators/export-generator.js';
-import { ContextGenerator } from '../pipeline/generators/context-generator.js';
+import { PipelineContextGenerator } from '../pipeline/generators/context-generator.js';
 import { RegistryGenerator } from '../pipeline/generators/registry-generator.js';
 import { RoutesGenerator } from '../pipeline/generators/routes-generator.js';
 import {
@@ -659,7 +659,7 @@ export async function runPopulate(
       { name: 'validation', instance: new ValidationGenerator() },
       { name: 'diagrams', instance: new DiagramGenerator() },
       { name: 'exports', instance: new ExportGenerator() },
-      { name: 'context', instance: new ContextGenerator() },
+      { name: 'context', instance: new PipelineContextGenerator() },
       // WO-API-SURFACE-MAPPING-...-001 P1: the route + frontend-call producer.
       // Runs in `full` mode only — the API surface is enrichment, not core
       // structure, so `minimal` and `context` modes stay unchanged.

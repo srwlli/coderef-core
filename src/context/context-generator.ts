@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability context-generator-context-options
- * @exports ContextOptions, ContextResult, ContextGenerator
+ * @exports ContextOptions, ContextResult, CodebaseContextService
  */
 
 /**
@@ -56,7 +56,7 @@ export interface ContextResult {
 /**
  * Generates comprehensive codebase context
  */
-export class ContextGenerator {
+export class CodebaseContextService {
   private entryPointDetector: EntryPointDetector;
   private markdownFormatter: MarkdownFormatter;
 
@@ -306,4 +306,10 @@ export class ContextGenerator {
   }
 }
 
-export default ContextGenerator;
+/**
+ * @deprecated Renamed — WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001 P3.
+ * The name `ContextGenerator` now belongs exclusively to the pipeline artifact
+ * generator (src/pipeline/generators/context-generator.ts). This scanner-backed
+ * service kept its behavior; only the name changed.
+ */
+export default CodebaseContextService;

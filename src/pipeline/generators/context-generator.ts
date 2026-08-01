@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability context-generator-call-graph-node
- * @exports CallGraphNode, CallGraphEdge, CallGraph, ExecutiveSummary, RiskHeatMap, WorkOrderPriority, DependencyRisk, DependencyRiskAnalysis, ArchitecturePattern, ArchitectureAnalysis, ProjectContext, ContextGenerator
+ * @exports CallGraphNode, CallGraphEdge, CallGraph, ExecutiveSummary, RiskHeatMap, WorkOrderPriority, DependencyRisk, DependencyRiskAnalysis, ArchitecturePattern, ArchitectureAnalysis, ProjectContext, PipelineContextGenerator, ContextGenerator
  * @used_by src/cli/populate.ts, __tests__/generators/root-cause-alignment.test.ts
  */
 
@@ -177,7 +177,7 @@ export interface ProjectContext {
 /**
  * ContextGenerator - Generate comprehensive project context
  */
-export class ContextGenerator {
+export class PipelineContextGenerator {
   async generate(state: PipelineState, outputDir: string): Promise<void> {
     // Load complexity data if available
     const complexityData = await this.loadComplexityData(outputDir);
@@ -2273,3 +2273,12 @@ export class ContextGenerator {
     return lines.join('\n');
   }
 }
+
+/**
+ * Canonical short-name alias — WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001 P3.
+ * `ContextGenerator` is the intentional public name of THIS class (the
+ * PipelineState-backed artifact generator), consistent across every package
+ * entrypoint. The scanner-backed service formerly sharing the name is
+ * `CodebaseContextService` (src/context/context-generator.ts).
+ */
+export { PipelineContextGenerator as ContextGenerator };

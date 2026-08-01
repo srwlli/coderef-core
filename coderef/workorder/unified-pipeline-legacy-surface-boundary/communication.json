@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "predecessor_for": null,
   "status": "implementing",
-  "current_phase": 2,
+  "current_phase": 3,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\context.json",
@@ -108,6 +108,18 @@
       "suite": "2436 passed / 26 skipped",
       "note": "contract tests use it.fails ratchets; flip schedule A/D/E=P2 B=P3 C=P4",
       "at": "2026-08-01T06:31:38.905Z"
+    },
+    {
+      "event": "phase_complete",
+      "phase": 2,
+      "commit": "27d36ab",
+      "tests": "116 passed / 5 expected-fail; dist-level guard+force proven",
+      "at": "2026-08-01T06:35:28.504Z"
+    },
+    {
+      "event": "naming_ruling",
+      "note": "ContextGenerator (canonical) = pipeline artifact generator, long name PipelineContextGenerator; legacy scanner-backed service renamed CodebaseContextService; root barrel = pure re-export of src barrel",
+      "at": "2026-08-01T06:38:12.529Z"
     }
   ],
   "phase_transitions": [
@@ -117,6 +129,13 @@
       "commit": "1853426",
       "verdict": "PASS",
       "at": "2026-08-01T06:31:38.905Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "27d36ab",
+      "verdict": "PASS",
+      "at": "2026-08-01T06:35:28.504Z"
     }
   ],
   "plan_adjustments": [],

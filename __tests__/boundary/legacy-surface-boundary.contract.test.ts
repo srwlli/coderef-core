@@ -101,16 +101,16 @@ describe('Contract A — legacy writers cannot clobber a pipeline-owned .coderef
 });
 
 describe('Contract B — one public ContextGenerator identity across entrypoints', () => {
-  // FLIP TO `it` IN PHASE 3 (entrypoint unification).
-  it.fails('root barrel and src barrel expose the SAME ContextGenerator class', async () => {
+  // Enforced since Phase 3 (entrypoint unification).
+  it('root barrel and src barrel expose the SAME ContextGenerator class', async () => {
     const root = await importRootBarrel();
     const src = await importSrcBarrel();
     expect(root.ContextGenerator).toBeDefined();
     expect(root.ContextGenerator).toBe(src.ContextGenerator);
   });
 
-  // FLIP TO `it` IN PHASE 3.
-  it.fails('both concrete classes are exported under unambiguous names', async () => {
+  // Enforced since Phase 3.
+  it('both concrete classes are exported under unambiguous names', async () => {
     const src = await importSrcBarrel();
     expect(src.PipelineContextGenerator).toBeDefined();
     expect(src.CodebaseContextService).toBeDefined();
@@ -119,8 +119,8 @@ describe('Contract B — one public ContextGenerator identity across entrypoints
     expect(src.ContextGenerator).toBe(src.PipelineContextGenerator);
   });
 
-  // FLIP TO `it` IN PHASE 3 (root barrel gains the pipeline surface).
-  it.fails('root barrel exposes the pipeline surface (PipelineOrchestrator)', async () => {
+  // Enforced since Phase 3 (root barrel gains the pipeline surface).
+  it('root barrel exposes the pipeline surface (PipelineOrchestrator)', async () => {
     const root = await importRootBarrel();
     expect(root.PipelineOrchestrator).toBeDefined();
   });

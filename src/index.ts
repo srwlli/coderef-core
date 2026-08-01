@@ -152,7 +152,7 @@ export * from './types/types.js';
  * @see {@link LANGUAGE_PATTERNS} - Pattern definitions by language
  * @see {@link DEFAULT_EXCLUDE_PATTERNS} - Default directory exclusions
  */
-export { scanCurrentElements, clearScanCache, getScanCacheStats, LANGUAGE_PATTERNS, DEFAULT_EXCLUDE_PATTERNS } from './scanner/scanner.js';
+export { scanCurrentElements, clearScanCache, getScanCacheStats, LANGUAGE_PATTERNS, DEFAULT_EXCLUDE_PATTERNS, Scanner, ScannerRegistry, isLineCommented } from './scanner/scanner.js';
 
 /**
  * Error Reporting module - Structured error handling for scanner
@@ -291,8 +291,11 @@ export { ValidationGenerator } from './pipeline/generators/validation-generator.
 export { DiagramGenerator } from './pipeline/generators/diagram-generator.js';
 export { ExportGenerator } from './pipeline/generators/export-generator.js';
 
-// IMP-CORE-029: Context Generator - MCP server programmatic access
-export { ContextGenerator } from './pipeline/generators/context-generator.js';
+// IMP-CORE-029 + P3 unification: ContextGenerator (canonical) IS the pipeline
+// artifact generator; PipelineContextGenerator is its unambiguous long name and
+// CodebaseContextService (via ./context/index.js star export above) is the
+// renamed scanner-backed service.
+export { PipelineContextGenerator, ContextGenerator } from './pipeline/generators/context-generator.js';
 export type {
   ProjectContext,
   CallGraph,
