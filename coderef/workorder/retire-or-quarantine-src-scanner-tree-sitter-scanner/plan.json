@@ -109,13 +109,17 @@
   "hard_stops": [
     {
       "phase": 1,
-      "approved": false,
-      "reason": "phased gate"
+      "approved": true,
+      "reason": "phased gate",
+      "approved_at": "2026-08-01T01:56:39.663426Z",
+      "approved_by": "agent (operator delegated: you own approval)"
     },
     {
       "phase": 2,
-      "approved": false,
-      "reason": "phased gate"
+      "approved": true,
+      "reason": "phased gate",
+      "approved_at": "2026-08-01T01:56:39.663426Z",
+      "approved_by": "agent (operator delegated: you own approval)"
     }
   ],
   "plan_adjustments_needed": [],

@@ -1,0 +1,61 @@
+=============================================================
+WORKORDER: WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER-001  |  retire-or-quarantine-src-scanner-tree-sitter-scanner  |  COMPLETE
+Session: SES-retire-or-quarantine-src-scanner-tree-sitter-scanner  |  Phases: 2  |  Commits: 2  |  Pushes: 2
+Parent stub: STUB-A98SW1 (closed)
+
+FILES DELETED:
+  - src/scanner/tree-sitter-scanner.ts        1670 LOC  (76ab967)
+  - __tests__/tree-sitter-scanner.test.ts      215 LOC, 13 tests  (76ab967)
+
+FILES MODIFIED:
+  ~ src/pipeline/element-taxonomy.ts   @used_by manifest, line 6  (76ab967)
+  ~ src/types/types.ts                 @used_by manifest, line 6  (76ab967)
+  ~ coderef/foundation-docs/{API,ARCHITECTURE,COMPONENTS,EXPORTS,HOTSPOTS,INDEX,RELATIONSHIPS,SCHEMA}.md  (76ab967)
+
+PHASE CHECKLIST:
+  [x] Phase 1: Verify the orphan premise  (5 tasks, no code change)  (76ab967)
+  [x] Phase 2: Delete and reconcile        (6 tasks)                 (76ab967)
+
+Session: updated  |  Registry: synced  |  Validator: FAIL (4 pre-existing, this WO in ZERO failures)
+
+APPROVE -> /close-workorder WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER-001
+=============================================================
+
+--- audit notes (not part of the rendered block) ---
+Tests: BEFORE 2449 passed / 26 skipped / 0 failed across 232 files.
+       AFTER  2436 passed / 26 skipped / 0 failed across 231 files.
+       Delta -13 tests / -1 file = EXACTLY the deleted file's own test count. Zero new failures.
+       Runner exit 0 both runs (default reporter; --reporter=line crashes vitest 4 at startup).
+Typecheck: tsc --noEmit exit 0. Build: both tsconfigs (main + tsconfig.cli.json) exit 0.
+Header coverage after reindex: 100% (369/369 defined).
+Doc validator: exit 0, warnings only; pre-existing UUID-anchor warnings fell 309 -> 23 as a
+  side effect of reindexing against the post-delete tree.
+Push: coderef-core 11235e7..76ab967 origin/main VERIFIED, 0 unpushed after fetch.
+      assistant 5a5884444..353ca4820 origin/main VERIFIED (views-only, exempt subject).
+Registry (DB-verified, not view-verified): workorders status=complete completed=2026-07-31;
+  STUB-A98SW1 status=closed; sessions status=complete; active_work count 0.
+
+BLAST RADIUS — the stub's estimate was wrong in BOTH directions:
+  Stub said "blast-radius: the one test file". Actual live references: 4, of which
+  2 are @used_by manifests (EDITED) and 2 are prose provenance (PRESERVED by ruling DEC-02:
+  docstring.ts:23/:75 record where the Python-docstring logic was ported FROM;
+  route-extractor.ts:120 cites the file as a past phantom-route false positive with its line
+  number; output-validator.ts:354 cites it as a duplicate-name example). Editing those would
+  damage the record, not clean it up.
+
+COVERAGE — no cases needed porting (P1-T2):
+  GrammarRegistry strictly supersets the deleted GrammarLoader: all 4 loader cases have direct
+  equivalents, plus 8 grammars vs 2, cache stats, preloading and singleton behaviour.
+  Element extraction / docstring / complexity each have live successor suites
+  (element-extractor.test.ts, element-extractor-docstring.test.ts, complexity-metrics.test.ts).
+
+FOREIGN DRIFT REVERTED (DEC-03): enhance-existing-docs.js injected 268+ pure insertions into 11
+  files with ZERO mentions of the deleted path (VISION.md, roadmap.md, docs/*, 2 test files,
+  GRAPH-HELPERS-MIGRATION.md, src/coderef/migration-strategy.md). All reverted. Only the balanced
+  108/108 foundation-docs diff was kept — it removes exactly the 3 TreeSitterScanner rows.
+
+FRICTION (logged as kaizen):
+  1. write-phase-transition.cjs cross-project no-op (KZ-01KYX7WG recurrence, 2nd instance).
+  2. vitest 4 rejects --reporter=line: startup crash reads as a test failure at the exit code.
+  3. guarded-runner deletion deadlock: cannot stage an already-staged deletion, but omitting it
+     trips the braid guard whose FIX text says to name it. Resolved via git restore --staged.

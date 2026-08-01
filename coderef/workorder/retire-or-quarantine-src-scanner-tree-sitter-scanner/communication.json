@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "implementing",
-  "current_phase": 1,
-  "phase_status": "in_progress",
+  "status": "complete",
+  "current_phase": 2,
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\retire-or-quarantine-src-scanner-tree-sitter-scanner\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\retire-or-quarantine-src-scanner-tree-sitter-scanner\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\retire-or-quarantine-src-scanner-tree-sitter-scanner\\analysis.json",
@@ -58,15 +58,52 @@
       "phase": 1,
       "reason": "KZ-01KYX7WG: write-phase-transition.cjs resolveRegistryPath() anchors cross-project paths to ASSISTANT_ROOT, missed, and soft-failed to exit-0 no-op. Wrote comm.json directly at the owner-project root (same workaround as WO-WIRE-THE-MAPDATA-API-BLOCK predecessor).",
       "at": "2026-08-01T01:50:38.613620Z"
+    },
+    {
+      "event": "hard_stop_approved",
+      "phase": 2,
+      "approved_by": "agent (operator delegated)",
+      "at": "2026-08-01T01:56:29.754019Z",
+      "basis": "suite delta exactly as predicted (2449->2436 = -13, the deleted file s own test count); tsc --noEmit exit 0; header coverage 100% 369/369; doc validator exit 0"
+    },
+    {
+      "event": "foreign_drift_reverted",
+      "at": "2026-08-01T01:56:29.754019Z",
+      "detail": "enhance-existing-docs.js injected 268+ pure insertions into 11 files with ZERO mentions of the deleted path (VISION.md, roadmap.md, docs/*, 2 test files, GRAPH-HELPERS-MIGRATION.md, src/coderef/migration-strategy.md). All reverted per predecessor ruling; only the balanced 108/108 foundation-docs diff (which removes exactly the 3 TreeSitterScanner rows) was kept."
+    },
+    {
+      "event": "guarded_runner_deletion_friction",
+      "at": "2026-08-01T01:56:29.754019Z",
+      "detail": "git-commit run.mjs could not stage already-staged deletions (git add cannot match a path absent from disk -> partial-stage REFUSED), but omitting them tripped the pre-staged braid guard. Resolved by git restore --staged then re-declaring all 6 paths in one --paths set. Both guards behaved correctly; the interaction has no documented path for deletions."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "76ab967",
+      "verdict": "PASS",
+      "at": "2026-08-01T01:56:29.754019Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "76ab967",
+      "verdict": "PASS",
+      "at": "2026-08-01T01:56:29.754019Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
       "timestamp": "2026-08-01T01:33:47.300485+00:00",
       "event": "creation",
       "message": "Workorder created from stub STUB-A98SW1"
+    },
+    {
+      "event": "workorder_complete",
+      "at": "2026-08-01T01:56:29.754019Z",
+      "summary": "Deleted the orphaned TreeSitterScanner (1670 LOC) + its test (215 LOC); 1885 lines removed. Commit 76ab967 pushed and origin-verified."
     }
   ],
   "required_skills": [
@@ -74,5 +111,6 @@
     "/close-workorder",
     "/log-session"
   ],
-  "git_branch": "main"
+  "git_branch": "main",
+  "completed_at": "2026-08-01T01:56:29.754019Z"
 }
