@@ -394,6 +394,20 @@ elements[] (Input)
     └─→ Source: ScanExecutor.scanResults cache
 ```
 
+
+## Validation Checklist
+
+Run before treating this sheet as current. Each item is checkable, not a judgement call.
+
+- [ ] **The cited source files still exist.** Every `path` named in §2 resolves on disk.
+- [ ] **The output artifact is produced.** The `.coderef/` file(s) named in §2 exist after a run and parse as JSON.
+- [ ] **Regeneration is byte-stable.** Re-running over unchanged source reproduces identical output — the determinism rule in [`docs/standards/execution/GENERATION-STANDARD.md`](../../docs/standards/execution/GENERATION-STANDARD.md).
+- [ ] **The suite passes for this surface.** `npx vitest` is green for the tests covering it.
+- [ ] **Claims are grounded.** Every factual claim carries a `[ref](path:line)` or is explicitly marked `[inference]`.
+- [ ] **Frontmatter is complete and governed.** `agent`, `date`, `subject`, `parent_project` present; `status` is one of `draft | review | approved | archived` (lowercase).
+- [ ] **Location is canonical.** The sheet lives under `coderef/resource-sheets/`.
+- [ ] **Absence is not read as evidence.** Any "none found" in this sheet is checked against `unresolved_edges` / `validation_status` before being reported as a finding.
+
 ## Conclusion
 
 The File Generation System is the authoritative source for understanding how CodeRef transforms scanned code elements into 16 persistent output files. This document defines the execution phases, file contracts, integration patterns, and failure modes that govern the system. Developers extending or maintaining this system must:

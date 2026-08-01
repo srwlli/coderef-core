@@ -454,6 +454,41 @@ Edges:
   - element:src/utils.ts:formatDate → element:src/utils.ts:parseDate (calls)
 ```
 
+
+## Dependencies
+
+Grounded in this sheet's own Source-of-Truth table (§2) and the pipeline surfaces it writes.
+
+**Inputs (consumed):**
+
+| Dependency | Why | Failure mode if absent |
+|---|---|---|
+| `ElementData[]` from the scanner | The sole input; every node and edge derives from it. Treated as authoritative and **not validated** (§2). | Garbage in, garbage out — a malformed element yields a malformed node with no error raised |
+| `element.calls[]` | The edge source. Only same-file calls are detected at this layer (§2). | Cross-file edges silently absent — read as "no relationship", which is NOT the same as "no such relationship" |
+| Canonical element ids | Node identity. See [`docs/standards/data/KEYING-STANDARD.md`](../../docs/standards/data/KEYING-STANDARD.md). | Duplicate or unstable nodes |
+
+**Outputs (written):** `.coderef/graph.json` and `.coderef/exports/graph.json`.
+
+**Ordering:** runs after `scan` and before `map`/`rag`, per the pinned leg order in
+[`docs/standards/execution/GENERATION-STANDARD.md`](../../docs/standards/execution/GENERATION-STANDARD.md).
+Building against a stale element set produces a confidently wrong graph rather than an error.
+
+**Nothing here is a source of record.** Every artifact is regenerable from source; a
+hand-edit to `graph.json` is a defect, not an override — the next run discards it.
+
+## Validation Checklist
+
+Run before treating this sheet as current. Each item is checkable, not a judgement call.
+
+- [ ] **The cited source files still exist.** Every `path` named in §2 resolves on disk.
+- [ ] **The output artifact is produced.** The `.coderef/` file(s) named in §2 exist after a run and parse as JSON.
+- [ ] **Regeneration is byte-stable.** Re-running over unchanged source reproduces identical output — the determinism rule in [`docs/standards/execution/GENERATION-STANDARD.md`](../../docs/standards/execution/GENERATION-STANDARD.md).
+- [ ] **The suite passes for this surface.** `npx vitest` is green for the tests covering it.
+- [ ] **Claims are grounded.** Every factual claim carries a `[ref](path:line)` or is explicitly marked `[inference]`.
+- [ ] **Frontmatter is complete and governed.** `agent`, `date`, `subject`, `parent_project` present; `status` is one of `draft | review | approved | archived` (lowercase).
+- [ ] **Location is canonical.** The sheet lives under `coderef/resource-sheets/`.
+- [ ] **Absence is not read as evidence.** Any "none found" in this sheet is checked against `unresolved_edges` / `validation_status` before being reported as a finding.
+
 ## Conclusion
 
 The Dependency Graph Builder is a core analysis function that transforms scanned code elements into a structured graph representation of code relationships. It creates file and element nodes, detects call relationships (within same file), and writes graph JSON files for consumption by MCP tools and analysis workflows. The system is simple, performant for medium-sized projects, and provides a foundation for cross-file analysis, though it currently has limitations (no cross-file import detection, no graph algorithms).

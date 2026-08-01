@@ -413,6 +413,42 @@ For each element in elements:
     └─→ API Pattern: name.includes('get'|'post'|'route'|...) || file.includes('/api/') || file.includes('route')
 ```
 
+
+## Dependencies
+
+Grounded in this sheet's own Source-of-Truth table (§2).
+
+**Inputs (consumed):**
+
+| Dependency | Why | Failure mode if absent |
+|---|---|---|
+| `ElementData[]` from the scanner | The sole input to `detectPatterns()`. Authoritative and **not validated** (§2). | Patterns are detected against an incomplete element set and under-report, with no signal |
+| Pattern-matching algorithms | Encode what counts as a match. | — |
+
+**Outputs (written):** `.coderef/reports/patterns.json`. The write **overwrites** and is
+not incremental (§2), so a partial input yields a wholesale-replaced, partial report.
+
+**Ordering:** consumes scanner output; runs before any surface that reads
+`patterns.json`.
+
+**Confidence, not verdicts.** Pattern matches are scored signals about where an
+architectural shape *appears*, never assertions that a codebase IS that architecture.
+A low-confidence match is a place to look. Absence of a pattern means it was **not
+detected**, never that it is absent from the code.
+
+## Validation Checklist
+
+Run before treating this sheet as current. Each item is checkable, not a judgement call.
+
+- [ ] **The cited source files still exist.** Every `path` named in §2 resolves on disk.
+- [ ] **The output artifact is produced.** The `.coderef/` file(s) named in §2 exist after a run and parse as JSON.
+- [ ] **Regeneration is byte-stable.** Re-running over unchanged source reproduces identical output — the determinism rule in [`docs/standards/execution/GENERATION-STANDARD.md`](../../docs/standards/execution/GENERATION-STANDARD.md).
+- [ ] **The suite passes for this surface.** `npx vitest` is green for the tests covering it.
+- [ ] **Claims are grounded.** Every factual claim carries a `[ref](path:line)` or is explicitly marked `[inference]`.
+- [ ] **Frontmatter is complete and governed.** `agent`, `date`, `subject`, `parent_project` present; `status` is one of `draft | review | approved | archived` (lowercase).
+- [ ] **Location is canonical.** The sheet lives under `coderef/resource-sheets/`.
+- [ ] **Absence is not read as evidence.** Any "none found" in this sheet is checked against `unresolved_edges` / `validation_status` before being reported as a finding.
+
 ## Conclusion
 
 The Pattern Detection System is a specialized analysis function that identifies common architectural patterns in codebases using simple string matching algorithms. It generates pattern reports for documentation and analysis workflows, providing insights into codebase structure and common patterns. The system is simple, performant for typical use cases, and fault-tolerant (part of Phase 3 parallel execution), though it has limitations (false positives, simple algorithms, no AST parsing) that are acceptable tradeoffs for the current implementation.

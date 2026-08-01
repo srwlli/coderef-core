@@ -445,6 +445,20 @@ ContextGenerator
     └─→ AnalyzerService (optional)
 ```
 
+
+## Validation Checklist
+
+Run before treating this sheet as current. Each item is checkable, not a judgement call.
+
+- [ ] **The cited source files still exist.** Every `path` named in §2 resolves on disk.
+- [ ] **The output artifact is produced.** The `.coderef/` file(s) named in §2 exist after a run and parse as JSON.
+- [ ] **Regeneration is byte-stable.** Re-running over unchanged source reproduces identical output — the determinism rule in [`docs/standards/execution/GENERATION-STANDARD.md`](../../docs/standards/execution/GENERATION-STANDARD.md).
+- [ ] **The suite passes for this surface.** `npx vitest` is green for the tests covering it.
+- [ ] **Claims are grounded.** Every factual claim carries a `[ref](path:line)` or is explicitly marked `[inference]`.
+- [ ] **Frontmatter is complete and governed.** `agent`, `date`, `subject`, `parent_project` present; `status` is one of `draft | review | approved | archived` (lowercase).
+- [ ] **Location is canonical.** The sheet lives under `coderef/resource-sheets/`.
+- [ ] **Absence is not read as evidence.** Any "none found" in this sheet is checked against `unresolved_edges` / `validation_status` before being reported as a finding.
+
 ## Conclusion
 
 The Context Generator is the primary orchestration layer for codebase comprehension, performing an 8-step analysis pipeline that transforms source code into structured context for AI agents and documentation. It integrates multiple analysis services (scanner, entry point detector, analyzer, formatter) into a unified workflow, handling errors gracefully and providing both human-readable (Markdown) and machine-readable (JSON) outputs. The system is stateless, performant for medium-sized projects, and fault-tolerant for optional analysis steps.
