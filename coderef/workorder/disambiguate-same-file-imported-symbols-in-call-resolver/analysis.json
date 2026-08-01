@@ -1,0 +1,140 @@
+{
+  "workorder_id": "WO-DISAMBIGUATE-SAME-FILE-IMPORTED-SYMBOLS-IN-CALL-RESOLVER-001",
+  "feature_name": "disambiguate-same-file-imported-symbols-in-call-resolver",
+  "analysis_authored_at": "2026-08-01T12:16:40.000000+00:00",
+  "phase_1_discovery_at": "2026-08-01T12:52:26Z",
+  "verdict": "premise_superseded — the 3-tier proximity scheme this WO proposes is ALREADY SHIPPED, and the residual ambiguity is dominated by a scan-scope artifact, not by a resolver defect",
+  "p1_t1_root_info_read": {
+    "artifacts": [
+      "coderef/working/coderef-core/core-improvements-731/PLAN.md",
+      "coderef/working/coderef-core/core-improvements-731/discovery-resolution-core-issue.md",
+      "coderef/working/coderef-core/core-improvements-731/discovery-edge-resolution-program.md"
+    ],
+    "material_change_since_authored": "Both discovery reports predate WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001, which shipped and CLOSED on 2026-08-01. REC-R1 (test_dsl reclassify) landed as d03a61d; external/builtin receiver disposition as 419d532; FU-3 heritage-aware method lookup as 25d696d; FU-4 incremental path-keying as fb6e987. The test_dsl disposition is now a first-class field in validation-report.json (test_dsl_count=16778) and is live in src/pipeline/call-resolver.ts, src/pipeline/output-validator.ts and src/cli/mcp/context-tools.ts."
+  },
+  "p1_t2_baseline": {
+    "status": "NOT PINNABLE — the index is being rewritten concurrently and the population is polluted",
+    "objective_claim": "1,203 ambiguous call edges",
+    "reconciliation": "The 1,203 figure matches NO reading taken at any point. Measured: 1,722 total / 1,189 src (08:18Z), 1,730 total (09:13Z), 4,833 total / 3,395 ambiguous_src_count / 3,896 matching file=src/ (12:45-12:52Z). The population has grown ~2.8x since the WO was authored, primarily because the edge-resolution program moved edges out of unresolved into other dispositions and because the scan universe expanded.",
+    "live_scalars_1252Z": {
+      "valid_edge_count": 11484,
+      "unresolved_count": 4751,
+      "ambiguous_count": 4833,
+      "unresolved_src_count": 3860,
+      "ambiguous_src_count": 3395,
+      "test_dsl_count": 16778,
+      "builtin_count": 39813,
+      "external_count": 752,
+      "resolution_rate": 18.63,
+      "resolved_of_resolvable": 54.52,
+      "header_coverage_pct": 55.75
+    },
+    "instability": "Four consecutive reads inside ~6 minutes returned unresolved 4703 -> 4714 -> 4751 -> 4753 and ambiguous 4849 -> 4825 -> 4832 -> 4833. A peer process is populating .coderef/ live (the working tree carries peer edits to src/pipeline/orchestrator.ts, src/analyzer/frameworks/*.ts, src/index.ts, src/search-client.ts under the decouple-pipelineorchestrator WO). No before/after measurement taken now would be trustworthy.",
+    "regression_note": "resolved_of_resolvable reads 54.52% against the 74.8% recorded at the edge-resolution program's close hours earlier. That drop is an artifact of the scan-scope defect below, not a resolver regression."
+  },
+  "p1_t3_defect_site": {
+    "site": "src/pipeline/call-resolver.ts:1169-1253 (classifyBareCall)",
+    "finding": "The WO's stated Phase 2 goal — rank candidates by locality same_file(0) > imported(1) > global(2) — is ALREADY the shipped behavior, and has been since the Phase 4 symbol-table collapse. The docblock at 1154-1168 states the priority explicitly and the implementation follows it: lines 1199-1223 take same-file entries first (with an additional qualifierPath/scopePath refinement that the WO does not propose), lines 1225-1234 take imported-scope entries bound to the calling file, lines 1236-1243 fall back to project-wide.",
+    "residual_ambiguity_shape": "What remains is WITHIN-tier ambiguity, which proximity ranking cannot break by construction: 2+ same-file candidates that scope-matching cannot separate (line 1219), 2+ imported candidates (1233), 2+ project-wide (1242).",
+    "note_on_import_resolutions": "classifyBareCall accepts importResolutions and deliberately discards it (void importResolutions, line 1179) because the symbol table already carries imported-scope rows produced by Phase 3 (the AC-07 seam at lines 599-608). Any redesign that reaches for the import-resolver output directly would be re-deriving data the table already holds."
+  },
+  "p1_t4_shadowing_sample": {
+    "method": "Detailed page of ambiguous edges filtered to file=src/, n=12, taken 12:50Z.",
+    "sample_size": 12,
+    "result": {
+      "ambiguous_because_of_compiled_twins": 10,
+      "genuinely_ambiguous": 2,
+      "reached_classify_bare_call_at_all": 2
+    },
+    "finding": "10 of 12 sampled src ambiguous edges are ambiguous ONLY because a stale compiled tree is in the scan universe. Each candidate set is the real symbol paired with its dist-preXR/ compiled twin: this.cache.has() -> {src/scanner/lru-cache.ts#LRUCache.has, dist-preXR/src/scanner/lru-cache.js#LRUCache.has}; scanner.scanFile() -> {src/analyzer/ast-element-scanner.ts#ASTElementScanner.scanFile, dist-preXR/.../ast-element-scanner.js#...}. Both would resolve cleanly with the twin removed. Where a name is genuinely polysemous the twin doubles it: this.cache.clear() returns 20 candidates = 10 real classes x 2 trees.",
+    "second_finding": "10 of 12 carry reason field_based_acg and a non-empty receiver, meaning they are classified by the MEMBER-ACCESS branch (branch 2, line 680), not by classifyBareCall at all. classifyBareCall is the no-receiver path. Only the 2 visit edges (receiver empty) reach it. The WO therefore proposes to change a function that does not produce the bulk of the population it targets.",
+    "genuine_residue": "The 2 real cases are same-file duplicates: two distinct local functions both named visit in src/analyzer/ast-element-scanner.ts at :162 and :469. Tier-1 ambiguity that the existing qualifierPath refinement did not separate. This is a real, small, and different problem from the one the WO describes.",
+    "risk_001_disposition": "RISK-001 (over-eager same-file resolution on shadowed names) cannot be measured as stated, because same-file elevation is already in production and has been for several phases. The risk it names is already carried by shipped code, not introduced by this WO."
+  },
+  "scan_scope_defect": {
+    "id": "SCOPE-001",
+    "severity": "critical",
+    "statement": "The scan universe contains a stale compiled build tree that .coderefignore does not exclude. .coderefignore lists dist/ and build/ but the repo currently also holds dist-preXR/ (520 .js/.d.ts files, untracked by git). It was named dist-old/ earlier in this same session and was renamed under us mid-measurement.",
+    "measured_impact": [
+      "3,049 of 4,753 unresolved edges (64%) originate in dist-preXR/ — almost all unresolved IMPORT edges from .d.ts files.",
+      "Every class method in the tree is duplicated as a candidate, manufacturing ambiguity across the member-access population (10/12 sampled).",
+      "Both pollutants land INSIDE unresolved_src_count and ambiguous_src_count, because those facets exclude test files, not build output. The stratified honest metric REC-R2 shipped in GX-003 is therefore itself polluted now.",
+      "resolved_of_resolvable reads 54.52% against 74.8% at the edge-resolution program's close."
+    ],
+    "shape": "This is the same class as the test-DSL denominator artifact the 731 program just spent four phases resolving, one layer down: a mechanically-detectable population that no resolver can or should resolve, inflating the denominator and depressing every headline.",
+    "candidate_fix": "Add the compiled trees to .coderefignore and re-populate. Note the load-bearing rule in that file: patterns must be PATH-QUALIFIED or a verified-unique root filename, because shouldIgnorePath matches bare basenames at any depth.",
+    "routing": "Not filed. Surfaced to the operator with the Phase 1 halt — it may belong to either WO, to the .coderefignore owner, or to its own ticket. Filing it unilaterally would presume the routing."
+  },
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": [
+      "src/pipeline/orchestrator.ts",
+      "src/cli/coderef-analyze.ts",
+      "src/cli/coderef-query.ts"
+    ]
+  },
+  "candidates": [
+    "src/pipeline/call-resolver.ts"
+  ],
+  "candidates_ruled_out": [
+    "The engine discovery_ref candidate ranking (planning-discovery-20260801T121215Z) — same defect class as its sibling WO: it ranks compiled build output alongside source.",
+    "src/pipeline/import-resolver.ts — named in P1-T3 as the source of the imported tier, but classifyBareCall reads that data from the symbol table, not from import-resolver output. Not a defect site."
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Over-eager SAME-FILE resolution on shadowed names",
+      "likelihood": "low",
+      "impact": "medium",
+      "evidence": "Not introduced by this WO — same-file elevation is already shipped at call-resolver.ts:1199-1223. Superseded by the P1-T4 finding.",
+      "mitigation": "n/a — carried by existing production code."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Any yield measured now is meaningless",
+      "likelihood": "high",
+      "impact": "high",
+      "evidence": "The index is mid-write by a peer, and 64% of the unresolved population plus the majority of the ambiguous population is build-output noise.",
+      "mitigation": "Resolve SCOPE-001 and let the peer populate settle before any before/after claim is made."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Phase 2 as written is a no-op reported as a failure",
+      "likelihood": "high",
+      "impact": "medium",
+      "evidence": "It would edit classifyBareCall to add tiering it already has, produce no measurable delta, and be reported against a moving polluted denominator.",
+      "mitigation": "Phase 1 halt. Phase 2's goal must be restated or the WO closed as already-satisfied."
+    }
+  ],
+  "dependencies": [
+    "src/pipeline/import-resolver.ts",
+    "src/pipeline/types.ts"
+  ],
+  "public_api_hits": [
+    "classifyBareCall",
+    "resolveCalls"
+  ],
+  "decision_records": [
+    {
+      "decision": "Use 3-tier proximity scoring (0=same_file, 1=imported, 2=global)",
+      "rationale": "Same-file and imported bindings are statically known to the caller file, whereas global duplicate symbols across disjoint files represent unintended ambiguity.",
+      "superseded_by": "DR-001"
+    },
+    {
+      "id": "DR-001",
+      "decision": "The WO's premise does not survive discovery. same_file > imported > global is shipped behavior at src/pipeline/call-resolver.ts:1199-1243.",
+      "rationale": "Read directly at the defect site named by the WO. The docblock states the priority and the code implements it, with a scope-path refinement beyond what the WO proposes."
+    },
+    {
+      "id": "DR-002",
+      "decision": "The ambiguous population this WO targets is mostly not produced by classifyBareCall.",
+      "rationale": "10 of 12 sampled src ambiguous edges carry reason=field_based_acg with a non-empty receiver and are classified by the member-access branch. classifyBareCall is the no-receiver path."
+    },
+    {
+      "id": "DR-003",
+      "decision": "Escalate SCOPE-001 rather than fold it in silently.",
+      "rationale": "It is a one-line ignore-list change with repo-wide metric consequences, and it invalidates the closing numbers of a program that closed today. Which WO owns it — and whether it reopens the edge-resolution program's reported yield — is an operator call, not an executor's."
+    }
+  ]
+}

@@ -1,0 +1,151 @@
+{
+  "workorder_id": "WO-RESOLVE-62-OF-UNRESOLVED-CALLS-VIA-SCOPE-STACK-001",
+  "feature_name": "resolve-62-of-unresolved-calls-via-scope-stack",
+  "analysis_authored_at": "2026-08-01T12:31:00.991692+00:00",
+  "phase_1_discovery_at": "2026-08-01T12:52:26Z",
+  "verdict": "premise_RESIZED, scope SURVIVES — this is the FU-2 lever, its sequencing gate is DISCHARGED (REC-R1 shipped), but the target is ~2.8x smaller than the 731 reports state and is currently unmeasurable",
+  "p1_t1_root_info_read": {
+    "artifacts": [
+      "coderef/working/coderef-core/core-improvements-731/PLAN.md",
+      "coderef/working/coderef-core/core-improvements-731/discovery-resolution-core-issue.md",
+      "coderef/working/coderef-core/core-improvements-731/discovery-edge-resolution-program.md"
+    ],
+    "material_change_since_authored": "Both discovery reports predate WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001, which shipped and CLOSED on 2026-08-01 — hours before this WO was created. Its four phases: P1 test_dsl reclassify (d03a61d) = REC-R1; P2 external/builtin receiver disposition (419d532); P3 heritage-aware method lookup (25d696d) = FU-3; P4 incremental path-keying (fb6e987) = FU-4. Close commits dbd32a5 / b5f4ee8 / e54a957. The test_dsl disposition is now a first-class validation-report field (test_dsl_count=16778)."
+  },
+  "p1_t2_live_measurement": {
+    "status": "measured, but NOT PINNABLE — the index is being rewritten concurrently and the population carries a new pollutant",
+    "scalars_1252Z": {
+      "valid_edge_count": 11484,
+      "unresolved_count": 4751,
+      "ambiguous_count": 4833,
+      "unresolved_src_count": 3860,
+      "ambiguous_src_count": 3395,
+      "test_dsl_count": 16778,
+      "builtin_count": 39813,
+      "external_count": 752,
+      "resolution_rate": 18.63,
+      "resolved_of_resolvable": 54.52
+    },
+    "reason_facets": {
+      "receiver_not_in_symbol_table_total": 2137,
+      "receiver_not_in_symbol_table_src": 1788,
+      "callee_not_in_symbol_table_total": 2412
+    },
+    "drift_history": {
+      "PLAN.md_claim": "10,691 receiver_not_in_symbol_table (62% of ~17,280 unresolved)",
+      "0818Z": "7,739 receiver / 10,444 callee / 18,249 unresolved / 948 unresolved_src",
+      "0913Z": "18,527 unresolved / 959 unresolved_src",
+      "1252Z": "2,137 receiver / 2,412 callee / 4,751 unresolved / 3,860 unresolved_src"
+    },
+    "instability": "Four consecutive reads inside ~6 minutes returned unresolved 4703 -> 4714 -> 4751 -> 4753. A peer process is populating .coderef/ live (working tree carries peer edits to src/pipeline/orchestrator.ts, src/analyzer/frameworks/*.ts, src/index.ts, src/search-client.ts under the decouple-pipelineorchestrator WO, commits 60ea413 / f81911d). No before/after measurement taken now would be trustworthy."
+  },
+  "p1_t3_defect_sites": {
+    "confirmed": [
+      "src/pipeline/scope-binding.ts — where GX-002 shipped the scope-stack pass; the surviving factory-return gap lives here",
+      "src/pipeline/call-resolver.ts — the member-access branch (line 680) and the receiver classification tail (lines 1050-1152); carries the js_prototype_member and test_dsl precedents",
+      "src/pipeline/edge-confidence.ts + the field-index surface — the FU-2 dotted-chain receiver walk"
+    ],
+    "gx_002_boundary": "GX-002 shipped `new`-binding receiver inference only. The proof is in call-resolver.ts:1145-1150: when a proven `new` binding matched but every avenue missed, the reason is narrowed to method_not_in_class_own_methods rather than receiver_not_in_symbol_table. Factory returns (`const x = makeFoo()`) have no equivalent branch. The factory half of this WO is genuinely unshipped work, not a restatement.",
+    "engine_candidates_discarded": "The engine's discovery ranked dist-old/src/pipeline/scope-binding.d.ts and dist-old/src/pipeline/scope-binding.js. Confirmed compiled build output, untracked by git, and — see SCOPE-001 — the direct cause of the current metric distortion. Never edit these."
+  },
+  "p1_t4_sequencing_verdict": {
+    "question": "Is this WO (a) the FU-2 lever REC-R3 sequences after REC-R1, (b) independent of the denominator question, or (c) a restatement of GX-002?",
+    "answer": "(a), with the gate already discharged.",
+    "evidence": [
+      "It is FU-2: the WO's own scope, 'chained calls', is REC-R3's dotted-chain receiver field-path walking verbatim.",
+      "The REC-R1 gate is DISCHARGED. REC-R3 said to sequence resolver levers after the test_dsl reclassify; that reclassify shipped as d03a61d and closed with the program. Nothing blocks this WO on that axis.",
+      "It is NOT (c). The edge-resolution program's four phases were test_dsl, external/builtin receiver disposition, FU-3 heritage, FU-4 keying. FU-2 was never one of them. It is the surviving frontier of the whole 731 program.",
+      "The factory-return half is additionally distinct from GX-002, which handled only `new` bindings (see gx_002_boundary)."
+    ],
+    "resizing": "REC-R3 scoped FU-2 at ~5,050 edges. receiver_not_in_symbol_table now measures 2,137 total / 1,788 src — roughly 2.8x smaller, because P2's external/builtin receiver disposition already absorbed part of that class. The lever is real and is still the largest one left, but no phase should be planned or judged against the 5,050 or 10,691 figures.",
+    "conclusion": "Phase 2's goal survives and does NOT need restating on premise grounds. It is blocked only on measurability — SCOPE-001 plus the concurrent peer populate."
+  },
+  "scan_scope_defect": {
+    "id": "SCOPE-001",
+    "severity": "critical",
+    "statement": "The scan universe contains a stale compiled build tree that .coderefignore does not exclude. .coderefignore lists dist/ and build/ but the repo currently also holds dist-preXR/ (520 .js/.d.ts files, untracked by git). It was named dist-old/ earlier in this same session and was renamed under us mid-measurement.",
+    "measured_impact": [
+      "3,049 of 4,753 unresolved edges (64%) originate in dist-preXR/ — almost all unresolved IMPORT edges from .d.ts files.",
+      "Every class method in the tree is duplicated as a resolution candidate, manufacturing ambiguity across the member-access population.",
+      "Both pollutants land INSIDE unresolved_src_count and ambiguous_src_count, because those facets exclude test files, not build output. The stratified honest metric REC-R2 shipped in GX-003 is therefore itself polluted now.",
+      "resolved_of_resolvable reads 54.52% against the 74.8% recorded at the edge-resolution program's close hours earlier — an artifact, not a resolver regression."
+    ],
+    "shape": "The same class as the test-DSL denominator artifact the 731 program just spent four phases resolving, one layer down: a mechanically-detectable population that no resolver can or should resolve, inflating the denominator and depressing every headline.",
+    "why_it_blocks_this_wo": "This WO's yield is measured in receiver_not_in_symbol_table edges. 349 of the 2,137 sit outside src/, and the ambiguity the twins manufacture competes for the same edges. Landing FU-2 against this baseline would produce a number nobody can defend — the exact failure mode REC-R2 and REC-R3 were written to prevent.",
+    "candidate_fix": "Add the compiled trees to .coderefignore and re-populate. Note the load-bearing rule in that file: patterns must be PATH-QUALIFIED or a verified-unique root filename, because shouldIgnorePath matches bare basenames at any depth.",
+    "routing": "Not filed. Surfaced with the Phase 1 halt — it may belong to this WO, to its sibling, to the .coderefignore owner, or to its own ticket."
+  },
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": [
+      "src/pipeline/orchestrator.ts — currently under concurrent peer edit; coordinate before touching the pipeline seam",
+      "__tests__/pipeline/scope-binding.test.ts — currently peer-modified",
+      "__tests__/pipeline/graph-ground-truth.test.ts",
+      "__tests__/map/engineering-metrics.test.ts"
+    ],
+    "note": "The engine's '92 dependent files' figure was inherited from a candidate set that included build output and is not carried forward."
+  },
+  "candidates": [
+    "src/pipeline/scope-binding.ts",
+    "src/pipeline/call-resolver.ts",
+    "src/pipeline/edge-confidence.ts"
+  ],
+  "candidates_ruled_out": [
+    "dist-old/src/pipeline/scope-binding.d.ts and dist-old/src/pipeline/scope-binding.js — compiled build output, untracked, since renamed to dist-preXR/. Ranked by the engine on path evidence alone.",
+    "The remaining 23 engine candidates from planning-discovery-20260801T123134Z — not re-derived; the candidate set is re-established here from the 731 thorough discovery instead."
+  ],
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Measurement trap",
+      "likelihood": "high",
+      "impact": "high",
+      "evidence": "GX-002 shipped a real +106 resolved edges and reported as +0.13pp because the denominator was polluted. SCOPE-001 recreates exactly that condition with build output in place of test DSL.",
+      "mitigation": "Fix SCOPE-001 and re-populate before Phase 2 measures anything. Report stratified per REC-R2: receiver_not_in_symbol_table src-scoped alongside the raw totals."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Concurrent peer populate",
+      "likelihood": "high",
+      "impact": "medium",
+      "evidence": "Four reads in six minutes returned four different edge counts; the peer decouple-pipelineorchestrator WO is editing src/pipeline/orchestrator.ts and re-indexing.",
+      "mitigation": "Let the peer's work settle before taking a baseline. Do not commit source from this WO while orchestrator.ts is peer-modified."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Stale target size",
+      "likelihood": "certain",
+      "impact": "medium",
+      "evidence": "PLAN.md says 10,691; the discovery reports say 7,739 and scope FU-2 at ~5,050; live measurement is 2,137 total / 1,788 src.",
+      "mitigation": "Phase 2 acceptance must be written against the live src-scoped figure, not against any figure in PLAN.md or the WO title. The WO's own name ('Resolve 62%') is now false on its face and should not be read as a target."
+    }
+  ],
+  "dependencies": [
+    "src/pipeline/import-resolver.ts",
+    "src/pipeline/types.ts"
+  ],
+  "public_api_hits": [],
+  "decision_records": [
+    {
+      "id": "DR-001",
+      "decision": "The WO's scope survives. It is the FU-2 dotted-chain receiver lever plus a genuinely-unshipped factory-return branch.",
+      "rationale": "FU-2 was not among the edge-resolution program's four shipped phases, and GX-002 covered only `new` bindings (call-resolver.ts:1145-1150 proves the boundary)."
+    },
+    {
+      "id": "DR-002",
+      "decision": "The REC-R1 sequencing gate is discharged; this WO is not blocked on the test_dsl ruling.",
+      "rationale": "REC-R1 shipped as d03a61d and closed with WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 on 2026-08-01. The operator ruling the 731 reports called for has already been taken and executed."
+    },
+    {
+      "id": "DR-003",
+      "decision": "Do not carry the 62% / 10,691 / 5,050 figures into Phase 2 acceptance.",
+      "rationale": "All three are superseded. Live is 2,137 total / 1,788 src. Writing acceptance against a stale figure guarantees the phase reads as a failure regardless of what it delivers."
+    },
+    {
+      "id": "DR-004",
+      "decision": "Escalate SCOPE-001 rather than fold it in silently.",
+      "rationale": "It is a one-line ignore-list change with repo-wide metric consequences, and it invalidates the closing numbers of a program that closed today. Which WO owns it — and whether it reopens the edge-resolution program's reported yield — is an operator call, not an executor's."
+    }
+  ]
+}
