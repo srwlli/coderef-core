@@ -34,6 +34,7 @@ import { GrammarRegistry } from '../pipeline/grammar-registry.js';
 import { ElementExtractor } from '../pipeline/extractors/element-extractor.js';
 import { RelationshipExtractor } from '../pipeline/extractors/relationship-extractor.js';
 import { JSCallDetector } from '../analyzer/js-call-detector.js';
+import logger from '../utils/logger.js';
 import type { ElementData } from '../types/types.js';
 
 const elementExtractor = new ElementExtractor();
@@ -60,24 +61,34 @@ export async function scanFileWithTreeSitter(
   const tree = parser.parse(content);
   const elements = elementExtractor.extract(tree.rootNode, file, content, realExt);
 
-  // Scanner-shape contract: the pipeline extractor qualifies methods as
-  // `Class.method`, but scanCurrentElements has always emitted BARE method
-  // names (consumers filter on `el.name === 'findUser'`), and the
-  // relationship attach below matches call sources against bare names too.
-  for (const element of elements) {
-    if (element.type === 'method' && element.name.includes('.')) {
-      element.name = element.name.split('.').pop()!;
-    }
-  }
-
+  // WO-ELEMENTEXTRACTOR-...-001 phase 2 (TKT-XGZA82).
+  //
+  // Relationship attach runs BEFORE dequalification, on purpose. It used to run
+  // after, matching `call.source === element.name` on names already collapsed to
+  // their bare form — so two same-named methods on different classes both matched
+  // every call from either, and each element was handed the UNION of both methods'
+  // callees. Both elements were then wrong, each carrying a fabricated edge.
+  //
+  // Matching on the qualified identity is only possible because extractCalls is
+  // now asked to COMPOSE method scope (`qualifyScopes`); by default it overwrites
+  // the class scope with the bare method name, which is where the identity was
+  // actually destroyed. That default is kept for the pipeline path, whose
+  // ctx.calls feeds the canonical graph builder.
   if (realExt === 'ts' || realExt === 'tsx') {
     try {
       const fileImports = relationshipExtractor.extractImports(tree.rootNode, file, content, realExt);
-      const fileCalls = relationshipExtractor.extractCalls(tree.rootNode, file, content, realExt);
+      const fileCalls = relationshipExtractor.extractCalls(
+        tree.rootNode, file, content, realExt, undefined, /* qualifyScopes */ true
+      );
       for (const element of elements) {
         const elementCalls = fileCalls
           .filter(call => call.source === element.name)
           .map(call => call.target);
+        // KNOWN, OUT OF SCOPE for TKT-XGZA82: this assigns the file's ENTIRE
+        // import list to every element in the file. That is over-assignment, not
+        // a dropped or fabricated relationship, and changing it redefines what
+        // the field means for six consumers — so it is left alone deliberately
+        // rather than absorbed into this fix.
         if (fileImports.length > 0) {
           element.imports = fileImports.map(imp => ({
             source: imp.target,
@@ -91,8 +102,16 @@ export async function scanFileWithTreeSitter(
           element.calls = [...new Set(elementCalls)];
         }
       }
-    } catch {
-      // Non-fatal: structural elements stand; relationship data is best-effort
+    } catch (error) {
+      // Non-fatal by policy: structural elements stand. But NOT silent — a bare
+      // `catch {}` made an extraction fault indistinguishable from a file that
+      // genuinely has no imports or calls, which is the "silently drops" half of
+      // TKT-XGZA82. Best-effort is a legitimate policy; unobservable is not.
+      logger.warn(
+        `[tree-sitter-file-scan] relationship attach failed for ${file} ` +
+        `(${realExt}): ${error instanceof Error ? error.message : String(error)} ` +
+        `— elements stand, imports/calls omitted for this file`
+      );
     }
   } else if (realExt === 'js' || realExt === 'jsx') {
     try {
@@ -102,7 +121,17 @@ export async function scanFileWithTreeSitter(
       const fileCalls = detector.detectCalls(file);
       for (const element of elements) {
         const elementCalls = fileCalls
-          .filter(call => call.callerFunction === element.name || call.callerClass === element.name)
+          .filter(call => {
+            // The detector already carries callerClass and callerFunction
+            // SEPARATELY, so the qualified identity was always available here.
+            // The old predicate ORed them, which matched a call inside
+            // `Alpha.run` against BOTH the method `run` and the class `Alpha`,
+            // and matched every same-named method besides.
+            const qualified = call.callerClass
+              ? `${call.callerClass}.${call.callerFunction ?? ''}`
+              : call.callerFunction;
+            return qualified === element.name;
+          })
           .map(call => call.calleeFunction);
         if (fileImports.length > 0) {
           element.imports = fileImports.map(imp => ({
@@ -114,11 +143,31 @@ export async function scanFileWithTreeSitter(
           }));
         }
         if (elementCalls.length > 0) {
-          element.calls = elementCalls;
+          // Deduped to match the ts leg. The two legs previously disagreed about
+          // whether element.calls could repeat — same function, same field, two
+          // contracts.
+          element.calls = [...new Set(elementCalls)];
         }
       }
-    } catch {
-      // Non-fatal: structural elements stand; relationship data is best-effort
+    } catch (error) {
+      logger.warn(
+        `[tree-sitter-file-scan] relationship attach failed for ${file} ` +
+        `(${realExt}): ${error instanceof Error ? error.message : String(error)} ` +
+        `— elements stand, imports/calls omitted for this file`
+      );
+    }
+  }
+
+  // Scanner-shape contract: the pipeline extractor qualifies methods as
+  // `Class.method`, but scanCurrentElements has always emitted BARE method
+  // names. Verified in P2-T1: three consumers depend on the bare form for
+  // CALLEE lookup — validateReferences.ts:66 indexes elementMap by bare name and
+  // would report every method call as "called but not found" if this were
+  // dropped. So the strip stays; it just no longer runs before the matching that
+  // needs the scope.
+  for (const element of elements) {
+    if (element.type === 'method' && element.name.includes('.')) {
+      element.name = element.name.split('.').pop()!;
     }
   }
 

@@ -110,6 +110,19 @@ export class RelationshipExtractor {
    * @param content Source code content
    * @param language Language extension
    * @param currentScope Current scope context (for tracking source element)
+   * @param qualifyScopes OPT-IN. When true, a method's `source` is COMPOSED as
+   *   `Class.method` instead of overwriting the class scope with the bare method
+   *   name. Default false — and that default is load-bearing, not politeness:
+   *   the other consumer of this method (orchestrator.ts:463) feeds `ctx.calls`
+   *   straight into the canonical graph builder (resolve-tail.ts:47), so
+   *   changing `source` semantics globally would move the graph. Only the
+   *   scanner path opts in.
+   *
+   *   WO-ELEMENTEXTRACTOR-...-001 phase 2 (TKT-XGZA82): without composition,
+   *   two same-named methods on different classes both emit `source: "run"`,
+   *   so tree-sitter-file-scan's `call.source === element.name` filter matched
+   *   BOTH and handed each element the UNION of both methods' callees. The
+   *   scope was not lost at the dequalify step — it was destroyed here.
    * @returns Array of call relationships
    */
   extractCalls(
@@ -117,7 +130,8 @@ export class RelationshipExtractor {
     filePath: string,
     content: string,
     language: string,
-    currentScope?: string
+    currentScope?: string,
+    qualifyScopes = false
   ): CallRelationship[] {
     const calls: CallRelationship[] = [];
 
@@ -126,7 +140,7 @@ export class RelationshipExtractor {
       case 'tsx':
       case 'js':
       case 'jsx':
-        this.extractTypeScriptCalls(rootNode, filePath, content, calls, currentScope);
+        this.extractTypeScriptCalls(rootNode, filePath, content, calls, currentScope, qualifyScopes);
         break;
       case 'py':
         this.extractPythonCalls(rootNode, filePath, content, calls, currentScope);
@@ -1163,7 +1177,8 @@ export class RelationshipExtractor {
     filePath: string,
     content: string,
     calls: CallRelationship[],
-    currentScope?: string
+    currentScope?: string,
+    qualifyScopes = false
   ): void {
     if (node.type === 'call_expression') {
       const func = node.childForFieldName('function');
@@ -1199,7 +1214,19 @@ export class RelationshipExtractor {
     if (node.type === 'function_declaration' || node.type === 'method_definition') {
       const name = node.childForFieldName('name');
       if (name) {
-        newScope = content.slice(name.startIndex, name.endIndex);
+        const bare = content.slice(name.startIndex, name.endIndex);
+        // A method_definition's enclosing class_declaration already set
+        // currentScope to the class name. The default path OVERWRITES it, which
+        // is what collapses Alpha.run and Beta.run to the same `run`. Under
+        // qualifyScopes we COMPOSE instead.
+        //
+        // Composition covers nested FUNCTIONS too, not just methods, because the
+        // element extractor already names them that way: a `function inner()`
+        // inside `outer()` is emitted as the element `outer.inner`. The call
+        // extractor's bare `inner` could never match it, so nested functions had
+        // silently never received their callees at all — a drop that predates
+        // this workorder and is invisible unless the two sides are compared.
+        newScope = qualifyScopes && currentScope ? `${currentScope}.${bare}` : bare;
       }
     } else if (node.type === 'class_declaration') {
       const name = node.childForFieldName('name');
@@ -1210,7 +1237,7 @@ export class RelationshipExtractor {
 
     // Recurse through children with updated scope
     for (const child of node.namedChildren) {
-      this.extractTypeScriptCalls(child, filePath, content, calls, newScope);
+      this.extractTypeScriptCalls(child, filePath, content, calls, newScope, qualifyScopes);
     }
   }
 
