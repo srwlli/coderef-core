@@ -5,7 +5,7 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "checkpoint_ready",
+  "status": "closed",
   "current_phase": 1,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\cross-repo-workspace-linkage\\plan.json",
@@ -66,6 +66,11 @@
       "event": "workorder_executed",
       "at": "2026-08-01T13:00:41Z",
       "detail": "Phase 1 complete (10/10 tasks) @ 44ad05dcd692. Workspace registry + resolver tagging + query-time stitching (CLI+MCP mirrored) + 7 contract tests + docs. No-regress frozen-tree A/B PASS; P12 deferral blockers (pass-2 purity, no-regress unprovable) both resolved by design. ADJ-2: live ASSISTANT smoke deferred to ASSISTANT-side adoption. Terminal hard stop - awaiting /close-workorder."
+    },
+    {
+      "event": "workorder_closed",
+      "at": "2026-08-01T13:30:00Z",
+      "detail": "Close-only ceremony complete: audit PASS (WO-scoped), registry row -> complete via canonical writer, WO dir retained in coderef/workorder/ pending --archive. Predecessor decouple WO closed earlier this session."
     }
   ],
   "required_skills": [
@@ -73,5 +78,29 @@
     "/close-workorder",
     "/log-session"
   ],
-  "completed_at": "2026-08-01T13:00:41Z"
+  "completed_at": "2026-08-01T13:00:41Z",
+  "closed_at": "2026-08-01T13:30:00Z",
+  "close_metadata": {
+    "review_status": "PASS",
+    "closed_via": "/close-workorder (close-only, cross-project target=coderef-core)",
+    "audit": {
+      "phased_terminal_guard": "inert (plan_type=strict)",
+      "standards_validate_wo_scoped": "pass (0 fail on WO axis; repo-wide kind drift pre-existing/informational per KZ-01KX4FV2)",
+      "tracking_validator_scoped": "18 passed / 0 failed",
+      "doc_code_tie": "PASS (no doc_binding declared)",
+      "session_log": "rich YAML SES-2026-08-01-CROSS-REPO-WORKSPACE-LINKAGE.yaml VERIFIED by gate (CORE original + ASSISTANT gate-path copy)",
+      "git": "feature 44ad05dcd692 + close-out 16d447a7546d on CORE main, origin-verified"
+    },
+    "what_shipped": "Cross-repo workspace linkage v1: opt-in .coderef/workspace.json registry (pkg->sibling root); workspace bare imports stay kind:external + gain workspacePackage/workspaceRoot evidence (no new edge kinds); unresolved workspace bares upgrade reason=workspace_package; query-time stitching src/query/workspace-stitch.ts surfaced as impact_of workspace:true (MCP) and coderef-query --workspace (CLI); 7/7 contracts on synthesized sibling pair; no-regress frozen-tree A/B PASS (absent-registry byte-identity). Both genre-features P12 deferral blockers resolved by design.",
+    "follow_ups": [
+      {
+        "id": "FU-1",
+        "status": "candidate",
+        "summary": "ASSISTANT-side adoption: author ASSISTANT/.coderef/workspace.json mapping its coderef-core imports, repopulate, and run the live CORE<->ASSISTANT stitch smoke (ADJ-2 deferred leg). Owner: ASSISTANT agent."
+      }
+    ],
+    "adjustments": [
+      "ADJ-2: live CORE+ASSISTANT smoke replaced by the C7 contract leg; ASSISTANT-side adoption deferred to that agent"
+    ]
+  }
 }
