@@ -1,6 +1,9 @@
 # CodeRef CLI Reference
 
-Complete reference for the CodeRef command-line interface.
+> **Agent Playbook:** Looking for agent-consumer patterns? See [USING-CODEREF.md](../USING-CODEREF.md) in the project root.
+
+The `@coderef/coderef-core` package provides CLI binaries for indexing, analyzing, querying, mapping, and serving context over code repositories.
+This document details all CLI binaries, their arguments, output formats, and example invocations.
 
 ---
 

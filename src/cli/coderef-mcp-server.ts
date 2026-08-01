@@ -117,6 +117,7 @@ export const SERVER_TOOL_COUNT = 37;
 // receives automatically, so it carries the load-bearing rules that were
 // previously learned only by failing (WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P1).
 export const SERVER_INSTRUCTIONS = `CodeRef code-intelligence server — ${SERVER_TOOL_COUNT} tools over a repo's .coderef/ artifacts (index, call/import graph, semantic map, RAG vectors).
+For complete agent playbook & decision guidance, see USING-CODEREF.md in the repo root.
 
 USAGE CONTRACT:
 1. Every tool REQUIRES project_root (absolute path to the target repo). There is no default repo — the server serves whichever indexed repo you name.
