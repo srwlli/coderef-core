@@ -1,7 +1,7 @@
 # /discover report — line-anchor rot in resource sheets, and the fix
 
 **Generated:** 2026-08-01T18:05:00Z
-**AMENDED:** 2026-08-01T19:20:00Z — see §0. The original REC-001 was WRONG and the original evidence UNDERCOUNTED.
+**AMENDED:** 2026-08-01T19:20:00Z and 2026-08-01T20:05:00Z — see §0. The original REC-001 was WRONG, the original evidence UNDERCOUNTED, and the second amendment's "7 unbindable/ERR sheets" turned out to be a CHECKER DEFECT, not sheet defects (TKT-017SAB).
 **Depth:** medium
 **Output dest:** working:coderef/working/coderef-core/resource-sheet-anchor-rot/discovery.md
 **Dispatch:** none
@@ -16,7 +16,19 @@ Three further corrections:
 2. **Ownership was too coarse.** Of CORE's 74 sheets, **53 were authored by Codex, 14 by LLOYD, 5 by Claude models**. Of the failing sheets, the split is mixed. The rot originates in the shared model-free projector (`project-spine.mjs`), so it is **authoring-path-agnostic** — not a LLOYD problem and not a local-model quality problem.
 3. **The strictness bit me.** Repairing the `mcp_shared` sheet by hand, I anchored `ensureArtifacts` to its source declaration line. The checker rejected it: a citation must resolve to an **INDEXED element**, and that function is module-private. Correct form is a bare path ref. Fixed in `da07589`.
 
-**Stubs filed:** `STUB-34YBWR` (STANDARDS — wire the gate) · `STUB-XCBFHY` (LLOYD — frontier authoring path).
+### Amendment 2 (2026-08-01T20:05Z) — the 7 "bad sheets" were 0 bad sheets
+
+Diagnosing the leftovers dissolved both groups:
+
+4. **The "3 ERR sheets" were WARN, not errors** — my sweep script only grepped for `PASS|FAIL|SKIP`, so `WARN` fell through to `ERR`. They are CLI entrypoints (`index.ts`, `coderef-analyze.ts`, `validate-routes.ts`) that export nothing, so "no Public API to validate" is honest no-data. `coderef_analyze` in fact PASSES anchors 33/33. **Instrument error, mine.**
+5. **The 4 `module-resolvable` failures are a CHECKER BUG, not missing frontmatter.** All four DO carry valid `documents:` frontmatter. `documentedModule()` matches `/^---
+…/` — **LF only** (check-sheet-drift.mjs:46) — so on a CRLF file the frontmatter block never matches and `documents:` is invisible. 6 of 74 sheets are CRLF. Sheets carrying `[ref]` citations bind through the fallback and mask it (`mcp_shared` is CRLF and PASSES); only citation-less sheets surface it. A second latent bug sits in the same function: the `documents:` key regex is **scalar-only**, so a list-form `documents:` also reads as absent. Filed **`TKT-017SAB`** (ecosystem, routed DEBUG).
+
+The corrected corpus verdict: **58 PASS · 9 genuinely-failing on stale anchors · 4 blocked by TKT-017SAB · 3 WARN/no-data**. Not one of the 74 sheets is defective in the way the first two drafts implied.
+
+**Ordering consequence:** `TKT-017SAB` now BLOCKS `STUB-34YBWR`. Wiring a CRLF-blind checker into the recurring gate would propagate a false "author didn't write frontmatter" verdict fleet-wide.
+
+**Stubs/tickets filed:** `STUB-34YBWR` (STANDARDS — wire the gate) · `STUB-XCBFHY` (LLOYD — frontier authoring path) · `TKT-017SAB` (DEBUG — CRLF/scalar frontmatter parsing).
 
 ## 1. Scope
 
@@ -31,7 +43,9 @@ What was bounded: the resource-sheet corpus in CODEREF-CORE, the STANDARDS-owned
 - [tool: rg + read] `kinds/resource-sheet/check.mjs` (8 checks), `author-sheet.mjs`, `project-spine.mjs`, `remediate-sheet.mjs`, `kind.json` v1.2.0
 - [tool: registry] `TRACKING/stubs.json` (9 resource-sheet stubs), `agent-domains.json` (LLOYD definition)
 - [tool: frontmatter scan] `agent:` field across all 74 sheets — authorship distribution
-- WARNING: 3 sheets ERR under the checker (`coderef-core`, `coderef_analyze`, `validate_routes`) — cause not diagnosed here; they are neither PASS nor a counted FAIL and must not be read as clean.
+- [tool: line-ending correlation] `
+` vs the checker's LF-only frontmatter regex across all 74 sheets — the decisive test for the `module-resolvable` failures
+- RESOLVED: the 3 sheets first reported as ERR are WARN (no exports to validate); the error was in my sweep's verdict parsing, not the sheets.
 
 ## 3. Findings table
 
@@ -40,8 +54,9 @@ What was bounded: the resource-sheet corpus in CODEREF-CORE, the STANDARDS-owned
 | 74-sheet corpus | **13 sheets FAIL the canonical drift checker; 68 stale citation lines** — one day after the corpus was authored | critical | checker sweep |
 | `call_resolver` / `graph_builder` / `coderef_mcp_server` | 14 / 12 / 12 stale citations each; drift up to 121 lines | critical | checker output |
 | `SCRIPTS`, `import_resolver`, `orchestrator`, `Setup-Coderef-Dir`, `canonical_graph`, `graph_tools` | 10 / 9 / 5 / 3 / 2 / 1 stale | warning | checker output |
-| 4 sheets (`Pattern-Detection-System`, `File-Generation-System`, `Dependency-Graph-Builder`, `Context-Generator`) | FAIL on a DIFFERENT check — `drift.module-resolvable`: no `documents:` frontmatter and no `[ref]` citations, so the module cannot be bound at all | warning | checker output |
-| 3 sheets | ERR under the checker — undiagnosed | warning | sweep |
+| 4 sheets (`Pattern-Detection-System`, `File-Generation-System`, `Dependency-Graph-Builder`, `Context-Generator`) | FAIL `drift.module-resolvable` — **NOT a sheet defect**. All four carry valid `documents:` frontmatter; the checker's frontmatter regex is LF-only and cannot see it on a CRLF file. TKT-017SAB | critical | check-sheet-drift.mjs:46 |
+| 6 of 74 sheets are CRLF | `[ref]`-bearing CRLF sheets bind via the citation fallback and MASK the bug (`mcp_shared` is CRLF and PASSES); only citation-less ones expose it | warning | line-ending correlation |
+| 3 sheets reported "ERR" | **Instrument error, mine** — they are WARN (no exports to validate: CLI entrypoints). My sweep grepped only PASS/FAIL/SKIP | info | re-run |
 | `SKILLS/STANDARDS/kinds/resource-sheet/check.mjs` | `sheet.claims-grounded` verifies a citation **EXISTS**, never that the line is **CORRECT**. Reports PASS 6/0/0 over a corpus with 68 false citations | critical | check.mjs:317-320 |
 | `check-sheet-drift.mjs` | **The detector already exists** and catches all of it — but is invoked only by `author-sheet.mjs` / `remediate-sheet.mjs` at authoring time. Nothing re-runs it after a sheet ships | critical | SKILL.md:112-114 |
 | `project-spine.mjs` | Anchors are **projected model-free** from `.coderef/index.json` (`ref: [ref](${relPath}:${e.line})`). They are a frozen snapshot of a moving index — line-accurate when written, stale on the next insertion | critical | project-spine.mjs:68 |
@@ -62,7 +77,7 @@ Not applicable for depth=medium.
 | REC-002 | **high** | `--fix` mode that re-projects anchors through the existing model-free `project-spine.mjs`. Without auto-repair, 68 stale lines become 68 hand-edits and the gate gets ignored. Folded into `STUB-34YBWR` | STANDARDS |
 | REC-003 | medium | **Remove the failure mode rather than police it**: migrate to symbol anchors — `[ref](path#symbol)` — which cannot rot on insertion. Touches RESOURCE-SHEET-RULES.md, `project-spine.mjs`, both checkers, and a one-time migration. REC-001/002 are the bridge; this is the destination | STANDARDS + owner of generate-resource-sheet |
 | REC-004 | **high** | **Frontier authoring path without LLOYD**: add `--prose=local\|frontier\|none` to `author-sheet.mjs`. Policy already allows it; only the flag is missing, and every other stage is model-free. → `STUB-XCBFHY` | LLOYD (current host of the runner) |
-| REC-005 | medium | Diagnose the 3 ERR sheets and the 4 `module-resolvable` failures — a sheet that cannot bind its module is ungradeable, which is worse than a stale anchor | STANDARDS |
+| REC-005 **(DONE)** | — | Diagnosed. 3 "ERR" were WARN/no-data (my sweep's parsing); the 4 `module-resolvable` failures are the CRLF checker bug → `TKT-017SAB`, which now **blocks** REC-001 | — |
 | REC-006 | low | Run the canonical checker against foundation docs and skill docs — same citation form, same rot mechanism, never measured | STANDARDS |
 | REC-007 | low | Record why `STUB-4PS8DJ` ("live doc-code drift-validation artifact", LLOYD, CLOSED) closed with the detector built but never wired, so the next such stub does not close on the same gap | LLOYD |
 
