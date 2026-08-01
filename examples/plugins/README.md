@@ -4,6 +4,12 @@ The plugin system for custom analyzers/detectors was **removed during the pipeli
 rebuild** (P2, commit `3bbd97a`). The former `example-detector/` sample lived here and is
 no longer functional against the current single-pass pipeline.
 
+## Usage
+
+There is nothing here to install or import. This directory exists only as a
+tombstone so a reader who follows an old link to the plugin example learns where
+it went instead of hitting a 404.
+
 If you need the original example for reference, recover it from git history:
 
 ```bash

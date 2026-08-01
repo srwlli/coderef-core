@@ -22,6 +22,22 @@ Yields:
 - `validation-report.json` carries `header_missing_count: 3` (matches file-grain)
 - `6 ≠ 3` → distinctness preserved
 
+## Usage
+
+The sole consumer is `__tests__/pipeline/indexing-gate-invariant.test.ts`. It
+loads this directory's `graph.json`, derives the two expected counts from that
+input, runs the rag-index pipeline against the fixture, and asserts both grains.
+
+Run it alone with:
+
+```bash
+npx vitest run __tests__/pipeline/indexing-gate-invariant.test.ts
+```
+
+Do not import this fixture from a new test without reading **Anti-tautology
+guard** below — a test that hardcodes 6/3 instead of re-deriving them from
+`graph.json` looks green while asserting nothing.
+
 ## Identity-not-numbers
 
 The numbers `2415 / 263` are real-codebase production values — they are NOT load-bearing for this fixture. The fixture asserts the **relationship**, not specific numerical values. If the fixture is later expanded to e.g. 5 files × 4 nodes, the same identity holds (20 element-grain, 5 file-grain) and tests against this fixture continue to pass without code change.

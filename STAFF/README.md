@@ -39,6 +39,20 @@ Shipped precedents across the estate: primary-sources `STAFF/` (PS-VAULT, PS-ARC
 PS-REPORT, …), next-scraper `STAFF/` (NFL-PIPELINE, NFL-REPORT, NFL-RESEARCH,
 NFL-GUI), football-stats `STAFF/NFL-APP`, ASSISTANT `STAFF/AS-VAULT`.
 
+## Usage
+
+To add a seat:
+
+1. Create `STAFF/<SEAT>/` and author its `README.md` charter — ownership, purpose,
+   git model, lineage. Copy the shape of an existing seat charter.
+2. Register the seat in `TRACKING/agent-domains.json` with `hosts_under:
+   CODEREF-CORE` and a `working_directory_glob` that resolves to the seat home.
+3. Add a row under **Seats** below.
+
+Steps 1 and 2 are both required: a charter with no registration is invisible to
+`/check-dispatch-inbox` (which filters by `owner_domain`), and a registration with
+no charter gives an agent no statement of what it owns.
+
 ## Seats
 
 _None yet._ The likely first seat is a **dashboard-owner** (e.g. `STAFF/DASHBOARD-APP`)

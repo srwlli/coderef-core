@@ -5,7 +5,12 @@ package's shipped surface — that is `src/cli/` (see `docs/CLI.md`) and the `bi
 map in `package.json`. Nothing here is published; nothing here is imported by
 `src/`.
 
-## Subdirectories
+## Script Index
+
+Every entry below is grounded in the script's own docstring or header — do not
+hand-author a description that the file does not itself claim.
+
+### Subdirectories
 
 | Path | What it is |
 |---|---|
@@ -13,7 +18,7 @@ map in `package.json`. Nothing here is published; nothing here is imported by
 | `scan-cli/` | Scan-pipeline entry helper. |
 | `setup-coderef-dir/` | Bootstraps a `.coderef/` tree in a target repo. |
 
-## Loose scripts
+### Loose scripts
 
 | Script | Purpose |
 |---|---|

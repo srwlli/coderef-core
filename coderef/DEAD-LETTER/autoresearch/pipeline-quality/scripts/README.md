@@ -9,10 +9,11 @@ record:
 > with current scanner state.
 > Last commit: e3c38eb
 
-## What these were
+## Script Index
 
 Verification passes for Loops 7-9 of the autoresearch campaign, each checking one
-pipeline-quality claim against ground-truth JSON captured at the time:
+pipeline-quality claim against ground-truth JSON captured at the time. Frozen at
+`e3c38eb` — none of these is runnable against the current scanner (see below).
 
 | Script | Claim it verified |
 |---|---|
