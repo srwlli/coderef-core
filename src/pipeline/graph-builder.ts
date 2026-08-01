@@ -113,7 +113,12 @@ export type EdgeRelationship =
   | 'serves_endpoint'
   // WO-DOCS-TO-GRAPH-P1-...-001: a governing doc (`@Doc/...` node) documenting
   // a source file (`@File/...` node). Sourced via state.docs.
-  | 'documents';
+  | 'documents'
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1: a doc
+  // (`@Doc/x.md`) containing one of its heading-delimited sections
+  // (`@Doc/x.md#slug`). Structural containment, never a dependency — it only
+  // ever sources from a doc node and targets that same doc's section node.
+  | 'contains';
 
 /**
  * Canonical edge resolution status (AC-03).
@@ -187,6 +192,16 @@ export type EdgeEvidence = (
       docStatus: string;
       placeholderSections: number;
       documentsPath: string;
+    }
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1: provenance for
+  // a `contains` edge. `order` + `depth` let a consumer rebuild the document's
+  // heading outline from edges alone, without re-reading the markdown.
+  | {
+      kind: 'contains';
+      sheetPath: string;
+      slug: string;
+      depth: number;
+      order: number;
     }
 ) & {
   /**
@@ -518,6 +533,35 @@ export function buildNodes(state: PipelineState): ExportedGraph['nodes'] {
       name: doc.subject ?? doc.slug,
       metadata: docMeta,
     });
+
+    // Section sub-nodes (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-...-001 P1). Same
+    // file-less `type: 'doc'` shape as their container — every consumer that
+    // already skips file-less doc nodes keeps skipping these — with
+    // `docSection: true` as the explicit discriminator so no reader has to
+    // parse the id string to tell a section from a whole document.
+    for (const section of doc.sections ?? []) {
+      nodes.push({
+        id: section.id,
+        type: 'doc',
+        name: section.heading,
+        metadata: {
+          codeRefId: section.id,
+          codeRefIdNoLine: section.id,
+          doc: true,
+          docSection: true,
+          docId: section.docId,
+          docType: doc.docType,
+          docStatus: doc.docStatus,
+          sheetPath: doc.sheetPath,
+          heading: section.heading,
+          slug: section.slug,
+          depth: section.depth,
+          order: section.order,
+          line: section.line,
+          endLine: section.endLine,
+        },
+      });
+    }
   }
 
   return nodes;
@@ -1255,6 +1299,41 @@ export function buildEdges(
         evidence,
         sourceLocation: { file: doc.sheetPath, line: 1 },
         ...(inUniverse ? {} : { reason: 'documents_target_not_in_scan' }),
+      }));
+    }
+  }
+
+  // === contains edges (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-...-001 P1) ===
+  //
+  // Direction: document -> its own section, so `outbound(@Doc/x.md)` reads back
+  // the heading outline in document order. Always RESOLVED: buildNodes minted
+  // the target section node from the same fact in the same pass, so the target
+  // cannot be out of universe (unlike a `documents:` frontmatter claim, which
+  // points at a file the scan may never have seen).
+  for (const doc of state.docs ?? []) {
+    for (const section of doc.sections ?? []) {
+      const evidence: EdgeEvidence = {
+        kind: 'contains',
+        sheetPath: doc.sheetPath,
+        slug: section.slug,
+        depth: section.depth,
+        order: section.order,
+      };
+      edges.push(buildEdgeRecord({
+        id: computeEdgeId({
+          sourceId: doc.id,
+          relationship: 'contains',
+          targetId: section.id,
+          originSpecifier: section.slug,
+          sourceFile: doc.sheetPath,
+          line: section.line,
+        }),
+        sourceId: doc.id,
+        targetId: section.id,
+        relationship: 'contains',
+        resolutionStatus: 'resolved',
+        evidence,
+        sourceLocation: { file: doc.sheetPath, line: section.line },
       }));
     }
   }

@@ -50,7 +50,11 @@ export type ExportedGraphEdgeRelationship =
   | 'serves_endpoint'
   // WO-DOCS-TO-GRAPH-P1-...-001: governing-doc edge; source is always a
   // `@Doc/...` pseudo-node, target (when resolved) a `@File/...` node.
-  | 'documents';
+  | 'documents'
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1: doc-to-own-
+  // section containment. Both endpoints are `@Doc/...` pseudo-nodes; the
+  // target additionally carries a `#slug` suffix.
+  | 'contains';
 
 export type ExportedGraphEdgeResolutionStatus =
   | 'resolved'

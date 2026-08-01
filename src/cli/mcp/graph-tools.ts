@@ -85,6 +85,11 @@ const DEPENDS_KINDS: ReadonlySet<string> = new Set([
   'import',
   'calls_endpoint',
   'serves_endpoint',
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-...-001 P1 — MUST stay in lockstep with
+  // the DEPENDS set in src/query/canonical-graph.ts. There are TWO adjacency
+  // indexes in this repo and a kind taught to only one of them is invisible on
+  // the other surface (the lesson from the endpoint-kind wiring).
+  'contains',
 ]);
 
 export function buildGraphTools(ctx: HandlerContext): GraphTools {

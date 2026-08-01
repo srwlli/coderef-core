@@ -275,6 +275,9 @@ const VALID_RELATIONSHIPS = new Set<string>([
   'serves_endpoint',
   // WO-DOCS-TO-GRAPH-P1-...-001: governing-doc edges (@Doc -> @File).
   'documents',
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1: doc-to-own-
+  // section containment (@Doc/x.md -> @Doc/x.md#slug).
+  'contains',
 ]);
 
 /** Canonical EdgeResolutionStatus enum (mirrors graph-builder.ts EdgeResolutionStatus). */

@@ -40,6 +40,8 @@ import {
   docNodeId,
   docTargets,
   isDocNodeId,
+  headingSlug,
+  extractDocSections,
   type DocFact,
 } from '../../src/pipeline/doc-ingest.js';
 import { constructGraph } from '../../src/pipeline/graph-builder.js';
@@ -104,6 +106,7 @@ function sheetFact(overrides: Partial<DocFact> = {}): DocFact {
     documentsPath: 'src/client.ts',
     relatedFiles: [],
     placeholderSections: 0,
+    sections: [],
     ...overrides,
   };
 }
@@ -437,5 +440,164 @@ describe('orient doc-coverage block', () => {
 
     const withoutDocs = constructGraph(makeState([]));
     expect((condenseSummary(null, withoutDocs as any) as any).docs).toBeUndefined();
+  });
+});
+
+/**
+ * WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1.
+ *
+ * Section-level AST nodes. The invariants that keep the section grain honest:
+ *   - slugs are stable under cosmetic heading edits and disambiguate on
+ *     collision, so two `## Usage` headings stay separately addressable;
+ *   - a `# comment` inside a fenced code block is a COMMENT — treating it as a
+ *     heading would mint phantom sections in every doc with a shell transcript;
+ *   - frontmatter is not prose and never yields sections;
+ *   - the whole-file @Doc node is RETAINED and its id is unchanged (additive);
+ *   - extraction is deterministic given identical bytes (AC-08 / DL-7).
+ */
+describe('doc sections (extractDocSections / DL-1 slug rules)', () => {
+  const DOC = '@Doc/coderef/foundation-docs/GUIDE.md';
+
+  it('slugs GitHub-style: lowercase, punctuation dropped, spaces hyphenated', () => {
+    expect(headingSlug('Getting Started')).toBe('getting-started');
+    expect(headingSlug('  API: the `run()` Contract!  ')).toBe('api-the-run-contract');
+    // Dropped punctuation must not leave a doubled separator.
+    expect(headingSlug('Phase 3 — Proof')).toBe('phase-3-proof');
+    // Cosmetic-only edits must NOT re-key the section.
+    expect(headingSlug('Getting started')).toBe(headingSlug('GETTING  STARTED'));
+  });
+
+  it('parses heading levels in document order with 1-based line spans', () => {
+    const sections = extractDocSections(DOC, '# Title\nintro\n\n## Setup\nbody\n### Deep\nmore\n');
+    expect(sections.map(s => [s.slug, s.depth, s.line])).toEqual([
+      ['title', 1, 1],
+      ['setup', 2, 4],
+      ['deep', 3, 6],
+    ]);
+    expect(sections[0].id).toBe(`${DOC}#title`);
+    expect(sections[0].docId).toBe(DOC);
+    expect(sections.map(s => s.order)).toEqual([0, 1, 2]);
+    // Each section ends where the next begins; the last runs to EOF.
+    expect(sections[0].endLine).toBe(3);
+    expect(sections[2].endLine).toBeGreaterThanOrEqual(7);
+  });
+
+  it('disambiguates duplicate headings in document order (-2, -3)', () => {
+    const sections = extractDocSections(DOC, '## Usage\na\n## Usage\nb\n## Usage\nc\n');
+    expect(sections.map(s => s.slug)).toEqual(['usage', 'usage-2', 'usage-3']);
+    expect(new Set(sections.map(s => s.id)).size).toBe(3);
+  });
+
+  it('does NOT treat a # comment inside a fenced block as a heading', () => {
+    const text = [
+      '# Real Heading',
+      '```bash',
+      '# not a heading — a shell comment',
+      'npm run build',
+      '```',
+      '~~~python',
+      '# also not a heading',
+      '~~~',
+      '## Second Real',
+    ].join('\n');
+    expect(extractDocSections(DOC, text).map(s => s.slug)).toEqual(['real-heading', 'second-real']);
+  });
+
+  it('closes a fence only on its own marker char (``` inside ~~~ is content)', () => {
+    const text = ['~~~text', '```', '# still inside the tilde fence', '~~~', '# After'].join('\n');
+    expect(extractDocSections(DOC, text).map(s => s.slug)).toEqual(['after']);
+  });
+
+  it('skips the frontmatter block and handles CRLF', () => {
+    const text = '---\r\nsubject: guide\r\nstatus: approved\r\n---\r\n# Body Heading\r\ntext\r\n';
+    expect(extractDocSections(DOC, text).map(s => s.slug)).toEqual(['body-heading']);
+  });
+
+  it('falls back to section-N when a heading slugs to empty, and is deterministic', () => {
+    const text = '## ---\nbody\n## +++\nbody\n';
+    const first = extractDocSections(DOC, text);
+    expect(first.map(s => s.slug)).toEqual(['section-1', 'section-2']);
+    expect(extractDocSections(DOC, text)).toEqual(first); // AC-08 determinism
+  });
+
+  it('a heading-less doc yields zero sections (NO-DATA, not an error)', () => {
+    expect(extractDocSections(DOC, 'just prose\nno headings at all\n')).toEqual([]);
+  });
+});
+
+describe('section nodes + contains edges (constructGraph, DL-2)', () => {
+  const sheetPath = 'coderef/resource-sheets/client-RESOURCE-SHEET.md';
+  const docId = docNodeId(sheetPath);
+  const sections = extractDocSections(docId, '# Overview\na\n## Usage\nb\n');
+  const graph = constructGraph(makeState([sheetFact({ sections })]));
+
+  it('retains the whole-file @Doc node unchanged and adds one node per section', () => {
+    const container = graph.nodes.find(n => n.id === docId);
+    expect(container).toBeDefined();
+    expect((container!.metadata as Record<string, unknown>).docSection).toBeUndefined();
+    const sectionNodes = graph.nodes.filter(
+      n => (n.metadata as Record<string, unknown> | undefined)?.docSection === true,
+    );
+    expect(sectionNodes.map(n => n.id)).toEqual([`${docId}#overview`, `${docId}#usage`]);
+    // File-less shape, same as the container — consumers that skip file-less
+    // doc nodes keep skipping these.
+    expect(sectionNodes[0].file).toBeUndefined();
+    expect(sectionNodes[0].name).toBe('Overview');
+    expect((sectionNodes[1].metadata as Record<string, unknown>).docId).toBe(docId);
+  });
+
+  it('mints a resolved contains edge per section carrying outline provenance', () => {
+    const contains = graph.edges.filter(e => e.relationship === 'contains');
+    expect(contains).toHaveLength(2);
+    expect(contains.every(e => e.resolutionStatus === 'resolved')).toBe(true);
+    expect(contains.map(e => e.sourceId)).toEqual([docId, docId]);
+    expect(contains.map(e => e.target ?? (e as { targetId?: string }).targetId)).toEqual([
+      `${docId}#overview`,
+      `${docId}#usage`,
+    ]);
+    const ev = contains[1].evidence as { kind: string; slug: string; depth: number; order: number };
+    expect(ev.kind).toBe('contains');
+    expect(ev.slug).toBe('usage');
+    expect(ev.depth).toBe(2);
+    expect(ev.order).toBe(1);
+  });
+
+  it('leaves the pre-existing documents edge and the code graph untouched', () => {
+    const documents = graph.edges.filter(e => e.relationship === 'documents');
+    expect(documents).toHaveLength(1);
+    const baseline = constructGraph(makeState([sheetFact()]));
+    const codeNodes = (g: typeof graph) =>
+      g.nodes.filter(n => !String(n.id).startsWith('@Doc/')).map(n => n.id).sort();
+    expect(codeNodes(graph)).toEqual(codeNodes(baseline));
+  });
+
+  it('is seen by BOTH adjacency indexes (CanonicalGraphQuery + MCP cache)', () => {
+    // Index 1: the canonical query engine walks contains as a dependency kind,
+    // so a walk that reaches a document enumerates its sections.
+    const q = new CanonicalGraphQuery(graph as unknown as ExportedGraph);
+    const section = q.resolve(`${docId}#usage`);
+    expect(q.dependentsOf(section).map(n => n.id)).toContain(docId);
+
+    // Index 2: the MCP cache — a kind taught to only one index is invisible on
+    // the other surface, which is the failure this assertion exists to catch.
+    const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'doc-sections-mcp-'));
+    try {
+      const coderefDir = path.join(fixtureRoot, '.coderef');
+      fs.mkdirSync(coderefDir, { recursive: true });
+      fs.writeFileSync(path.join(coderefDir, 'graph.json'), JSON.stringify(graph));
+      fs.writeFileSync(
+        path.join(coderefDir, 'index.json'),
+        JSON.stringify({ totalElements: 0, elements: [] }),
+      );
+      const cache = emptyCache();
+      loadGraph(fixtureRoot, cache);
+      const inbound = (cache.inbound.get(`${docId}#usage`) ?? []).filter(
+        e => e.relationship === 'contains',
+      );
+      expect(inbound).toHaveLength(1);
+      expect(inbound[0].sourceId).toBe(docId);
+    } finally {
+      fs.rmSync(fixtureRoot, { recursive: true, force: true });
+    }
   });
 });

@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability doc-ingestion
- * @exports DOC_ID_PREFIX, DocFact, DocIngestResult, docNodeId, docTargets, isDocNodeId, collectDocFacts, parseDocFrontmatter
+ * @exports DOC_ID_PREFIX, DocFact, DocSectionFact, DocIngestResult, docNodeId, docTargets, isDocNodeId, collectDocFacts, parseDocFrontmatter, headingSlug, extractDocSections
  * @used_by src/pipeline/orchestrator.ts, src/pipeline/graph-builder.ts
  */
 
@@ -98,12 +98,147 @@ export interface DocFact {
   placeholderSections: number;
   /** Frontmatter `task:` provenance (stub/WO id), when present. */
   task?: string;
+  /**
+   * Heading-delimited sections in document order
+   * (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1). Empty for a
+   * heading-less doc — absence of headings is NO-DATA, never an error.
+   */
+  sections: DocSectionFact[];
+}
+
+/**
+ * One heading-delimited section of a markdown doc
+ * (WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P1).
+ *
+ * Sections are ADDITIVE children of the whole-file `@Doc/...` node, which is
+ * retained unchanged — every existing consumer of doc nodes keeps working, and
+ * containment is a traversable `contains` edge rather than something a reader
+ * has to infer from the id string.
+ */
+export interface DocSectionFact {
+  /** `@Doc/<repo-relative-path>#<slug>` — the section node id (DL-1). */
+  id: string;
+  /** Owning document's node id (`@Doc/<repo-relative-path>`). */
+  docId: string;
+  /** Heading text verbatim, `#` markers and surrounding space stripped. */
+  heading: string;
+  /** Heading level, 1-6. */
+  depth: number;
+  /** Disambiguated GitHub-style slug (the `#...` half of `id`). */
+  slug: string;
+  /** 0-based position among this file's sections, document order. */
+  order: number;
+  /** 1-based line of the heading itself. */
+  line: number;
+  /** 1-based last line of this section's body (inclusive of the heading). */
+  endLine: number;
 }
 
 /** collectDocFacts output: facts plus counted skips (never silent drops). */
 export interface DocIngestResult {
   docs: DocFact[];
   skipped: Array<{ path: string; reason: string }>;
+}
+
+/**
+ * GitHub-style heading slug: lowercase, punctuation dropped, whitespace runs
+ * collapsed to single hyphens. Deliberately NOT reversible — it is an id
+ * component, not a display string, and `heading` carries the original text.
+ *
+ * Normalizing away case and punctuation is what keeps a section id stable
+ * across cosmetic heading edits; a genuine RENAME legitimately re-keys the
+ * section (the same accepted trade-off codeRefId makes with line numbers).
+ */
+export function headingSlug(heading: string): string {
+  return heading
+    .trim()
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .trim()
+    .replace(/\s+/g, '-')
+    // Collapse hyphen runs and drop edge hyphens, so a dropped punctuation
+    // mark ('Phase 3 — Proof') cannot leave a double separator and a
+    // rule-shaped heading ('## ---') slugs to '' and takes the section-N
+    // fallback rather than becoming the literal id '#---'.
+    .replace(/-{2,}/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+/** Opening/closing marker of a fenced code block (``` or ~~~, any indent). */
+const FENCE_RE = /^\s{0,3}(`{3,}|~{3,})/;
+const HEADING_RE = /^(#{1,6})\s+(.*\S)\s*$/;
+
+/**
+ * Parse a markdown body into its heading-delimited sections, in document
+ * order. Deterministic given identical bytes (AC-08 / DL-7): no clock, no
+ * randomness, single forward pass.
+ *
+ * TWO things are deliberately NOT headings:
+ *   - anything inside a fenced code block — a shell example's `# comment` is a
+ *     comment, not a section, and treating it as one would mint phantom nodes
+ *     in every doc that shows a terminal transcript;
+ *   - anything inside the leading frontmatter block — that surface is already
+ *     parsed by parseDocFrontmatter and is metadata, not prose.
+ *
+ * Duplicate slugs within one file disambiguate `-2`, `-3`, … in document
+ * order, so two `## Usage` headings stay addressable as distinct nodes. A
+ * heading that slugs to the empty string (e.g. `## ---`) falls back to
+ * `section-<n>` rather than colliding on ''.
+ */
+export function extractDocSections(docId: string, text: string): DocSectionFact[] {
+  const lines = text.split(/\r?\n/);
+
+  // Skip the leading frontmatter block, when present, by line index.
+  let start = 0;
+  if (lines[0]?.trim() === '---') {
+    for (let i = 1; i < lines.length; i++) {
+      if (lines[i].trim() === '---') {
+        start = i + 1;
+        break;
+      }
+    }
+  }
+
+  const sections: DocSectionFact[] = [];
+  const slugCounts = new Map<string, number>();
+  let fence: string | null = null;
+
+  for (let i = start; i < lines.length; i++) {
+    const line = lines[i];
+    const fenceMatch = line.match(FENCE_RE);
+    if (fenceMatch) {
+      const marker = fenceMatch[1][0];
+      // A fence closes only on its OWN marker char; ``` inside a ~~~ block is
+      // literal content, not a close.
+      if (fence === null) fence = marker;
+      else if (fence === marker) fence = null;
+      continue;
+    }
+    if (fence !== null) continue;
+
+    const headingMatch = line.match(HEADING_RE);
+    if (!headingMatch) continue;
+
+    const heading = headingMatch[2].trim();
+    const base = headingSlug(heading) || `section-${sections.length + 1}`;
+    const seen = slugCounts.get(base) ?? 0;
+    slugCounts.set(base, seen + 1);
+    const slug = seen === 0 ? base : `${base}-${seen + 1}`;
+
+    if (sections.length > 0) sections[sections.length - 1].endLine = i;
+    sections.push({
+      id: `${docId}#${slug}`,
+      docId,
+      heading,
+      depth: headingMatch[1].length,
+      slug,
+      order: sections.length,
+      line: i + 1,
+      endLine: lines.length,
+    });
+  }
+
+  return sections;
 }
 
 /** Marker line author-sheet.mjs writes into a section that failed generation. */
@@ -264,6 +399,7 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
       relatedFiles: fm.lists['related_files'] ?? [],
       placeholderSections: text.split(PLACEHOLDER_MARKER).length - 1,
       task: fm.scalars['task'],
+      sections: extractDocSections(docNodeId(rel), text),
     });
   }
 
@@ -303,6 +439,7 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
       relatedFiles: fm?.lists['related_files'] ?? [],
       placeholderSections: text.split(PLACEHOLDER_MARKER).length - 1,
       task: fm?.scalars['task'],
+      sections: extractDocSections(docNodeId(rel), text),
     });
   }
 
@@ -341,6 +478,7 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
       relatedFiles: fm.lists['related_files'] ?? [],
       placeholderSections: text.split(PLACEHOLDER_MARKER).length - 1,
       task: fm.scalars['task'] ?? fm.scalars['stub_ref'],
+      sections: extractDocSections(docNodeId(rel), text),
     });
   }
 

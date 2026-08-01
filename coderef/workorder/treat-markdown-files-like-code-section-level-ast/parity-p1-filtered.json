@@ -1,0 +1,68 @@
+{
+  "phase": 1,
+  "instrument": "DL-6 filtered frozen-tree A/B",
+  "method": "OLD dist (clean HEAD, built in a detached-HEAD sandbox worktree) vs NEW dist (HEAD + this WO's files) run over ONE immutable tree copy, populate WITHOUT --source-headers so the tree never mutates between runs. Live-repo before/after fingerprints are NOT valid on a self-hosting repo (ADJ-1 precedent, decouple WO).",
+  "fixture": {
+    "tree": "C:\\Users\\willh\\AppData\\Local\\Temp\\claude\\C--Users-willh-Desktop-CODEREF-CODEREF-CORE\\afe01006-6c4c-4a78-a71d-09665b82982b\\scratchpad\\fixtree",
+    "doc_surface": "74 resource sheets + 8 foundation docs"
+  },
+  "binding_claims": {
+    "code_universe_byte_identical": {
+      "verdict": "PASS",
+      "node_count": [
+        3741,
+        3741
+      ],
+      "node_sha256": "665dd7ce3d477007d573dec69155ed91b6f58e2af634e0268e54e2b85f19d272",
+      "node_sha256_match": true,
+      "edge_count": [
+        45305,
+        45305
+      ],
+      "edge_sha256": "08be2c4dbf9cf6c7f245fca8a3e8bfbf5afcbc5ee2d21d7f2589757f4857e0f9",
+      "edge_sha256_match": true
+    },
+    "pre_existing_doc_rows_id_identical": {
+      "verdict": "PASS",
+      "doc_file_nodes": [
+        82,
+        82
+      ],
+      "doc_file_node_sha256_match": true,
+      "documents_edges": [
+        121,
+        121
+      ],
+      "documents_edge_sha256_match": true
+    }
+  },
+  "additive_growth": {
+    "section_nodes": [
+      0,
+      1031
+    ],
+    "contains_edges": 1031,
+    "totals": [
+      {
+        "nodes": 3823,
+        "edges": 45426
+      },
+      {
+        "nodes": 4854,
+        "edges": 46457
+      }
+    ]
+  },
+  "tests": {
+    "doc_ingest_suite": "30/30 passed (23 pre-existing + 7 new section contracts)",
+    "neighbouring_surfaces": "__tests__/pipeline + __tests__/query + map/edge-evidence: 696 tests, 0 failed, 2 skipped"
+  },
+  "enumeration_sites_taught": [
+    "src/pipeline/graph-builder.ts EdgeRelationship",
+    "src/export/graph-exporter.ts ExportedGraphEdgeRelationship",
+    "src/pipeline/output-validator.ts VALID_RELATIONSHIPS (GI-4 runtime gate)",
+    "src/query/canonical-graph.ts DEPENDS",
+    "src/cli/mcp/graph-tools.ts DEPENDS_KINDS"
+  ],
+  "verdict": "PASS"
+}

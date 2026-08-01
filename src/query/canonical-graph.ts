@@ -563,6 +563,12 @@ const DEPENDS: ReadonlySet<string> = new Set([
   'import',
   'calls_endpoint',
   'serves_endpoint',
+  // WO-TREAT-MARKDOWN-FILES-LIKE-CODE-...-001 P1. Safe on the same argument the
+  // endpoint kinds use: a `contains` edge only ever sources from a `@Doc/...`
+  // node and targets that document's own `@Doc/...#section` node, so no
+  // element-to-element walk gains or loses a neighbour. What it adds is that a
+  // walk reaching a document can enumerate its sections.
+  'contains',
 ]);
 
 /**
