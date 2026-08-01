@@ -96,7 +96,7 @@
         {
           "id": "P2-T2",
           "verb": "CHECK",
-          "description": "HALT FOR OPERATOR RULING - two decisions, informed by P2-T1. DECISION 1, identity strategy: (A) KEEP the bare name on element.name but match calls on the qualified identity BEFORE stripping - smallest blast radius, consumers untouched, but element.name stays lossy and two same-named methods remain indistinguishable to anything downstream that only sees the name; (B) STOP dequalifying, let `Outer.alpha` reach consumers, and update whatever P2-T1 proved depends on the bare form - honest identity end-to-end, larger blast radius, only available if P2-T1 finds no hard production dependency; (C) CARRY BOTH - keep element.name bare for compatibility and add a separate qualified field that matching and future consumers use - additive and safe, but adds a field that must be threaded and eventually reconciled, which is the shim pattern phase 1 deliberately rejected. DECISION 2, scope: D3 (imports broadcast to every element) and D5 (ts leg dedups calls, js leg does not) are real and sit on the same lines, but neither is \"silently drops relationships or cross-links\". Fold them into this phase, or mint them separately? Default recommendation is D5 in (one line, same edit) and D3 out (it changes a field's meaning and deserves its own blast-radius check). Record both rulings in communication.json decisions_log before P2-T3.",
+          "description": "HALT FOR OPERATOR RULING. NOTE: this halt is NOT machine-enforced - the runner skips the hard_stops loop under --phase=N, so it holds only because the executing agent honors it. Do not treat reaching P2-T3 as proof the ruling happened. two decisions, informed by P2-T1. DECISION 1, identity strategy: (A) KEEP the bare name on element.name but match calls on the qualified identity BEFORE stripping - smallest blast radius, consumers untouched, but element.name stays lossy and two same-named methods remain indistinguishable to anything downstream that only sees the name; (B) STOP dequalifying, let `Outer.alpha` reach consumers, and update whatever P2-T1 proved depends on the bare form - honest identity end-to-end, larger blast radius, only available if P2-T1 finds no hard production dependency; (C) CARRY BOTH - keep element.name bare for compatibility and add a separate qualified field that matching and future consumers use - additive and safe, but adds a field that must be threaded and eventually reconciled, which is the shim pattern phase 1 deliberately rejected. DECISION 2, scope: D3 (imports broadcast to every element) and D5 (ts leg dedups calls, js leg does not) are real and sit on the same lines, but neither is \"silently drops relationships or cross-links\". Fold them into this phase, or mint them separately? Default recommendation is D5 in (one line, same edit) and D3 out (it changes a field's meaning and deserves its own blast-radius check). Record both rulings in communication.json decisions_log before P2-T3.",
           "touches": [
             "coderef/workorder/elementextractor-revisits-rust-impl-and-java-or-c/communication.json"
           ]
@@ -128,7 +128,7 @@
         {
           "id": "P2-T6",
           "verb": "RUN",
-          "description": "Full suite plus the scanner suites specifically (src/scanner/__tests__/ast-mode.test.ts, parallel-path-behavior.test.ts, relationship-tracking.test.ts - these are the tests that actually encode the bare-name assumption, so they are the ones most likely to move). Baseline to hold: 2602 passed / 26 skipped / 0 failed.",
+          "description": "Full suite plus the scanner suites specifically (src/scanner/__tests__/ast-mode.test.ts, parallel-path-behavior.test.ts, relationship-tracking.test.ts - these are the tests that actually encode the bare-name assumption, so they are the ones most likely to move). Baseline to hold: 2602 passed / 26 skipped / 0 failed. TRUST CAVEAT (ADJ-14): the tree carries peer WIP in 10 src/ files. Attribute any NEW failure by file before believing it; the scanner suites are the primary verdict because they are the ones this phase can actually break.",
           "touches": [
             "src/scanner/__tests__/ast-mode.test.ts",
             "src/scanner/__tests__/parallel-path-behavior.test.ts",
@@ -239,33 +239,34 @@
   "hard_stops": [
     {
       "phase": 2,
-      "approved": false,
-      "reason": "Phase 2 is now AUTHORED (2026-08-01, grounded in a live source read + two probes). The stop no longer guards an empty plan - it guards P2-T2, which needs an operator ruling on identity strategy and scope. Approve when you invoke --phase=2."
+      "approved": true,
+      "reason": "Phase 2 is AUTHORED (2026-08-01, from a live source read + two probes). Operator approved execution 2026-08-01. NOT RUNNER-ENFORCED: execute_workorder_engine.py:227-231 skips the ENTIRE hard_stops loop when --phase=N is passed (`if not phase_override`). Every phase in this rolling plan is driven that way, so no hard_stop here has ever been a machine gate. The real gate is P2-T2, which halts because the executing agent honors it - treat it as a discipline contract, not a guard rail. Recorded per /discover REC-002, 2026-08-01.",
+      "approved_at": "2026-08-01"
     },
     {
       "phase": 3,
       "approved": false,
-      "reason": "Phase 3 plan_deferred=true. Hard stop fires at phase planning gate."
+      "reason": "Phase 3 plan_deferred=true. Hard stop fires at phase planning gate. NOTE: not runner-enforced under --phase=N (execute_workorder_engine.py:227-231 skips the loop) - the halt depends on the executing agent honoring the plan."
     },
     {
       "phase": 4,
       "approved": false,
-      "reason": "Phase 4 plan_deferred=true. Hard stop fires at phase planning gate."
+      "reason": "Phase 4 plan_deferred=true. Hard stop fires at phase planning gate. NOTE: not runner-enforced under --phase=N (execute_workorder_engine.py:227-231 skips the loop) - the halt depends on the executing agent honoring the plan."
     },
     {
       "phase": 5,
       "approved": false,
-      "reason": "Phase 5 plan_deferred=true. Hard stop fires at phase planning gate."
+      "reason": "Phase 5 plan_deferred=true. Hard stop fires at phase planning gate. NOTE: not runner-enforced under --phase=N (execute_workorder_engine.py:227-231 skips the loop) - the halt depends on the executing agent honoring the plan."
     },
     {
       "phase": 6,
       "approved": false,
-      "reason": "Phase 6 plan_deferred=true. Hard stop fires at phase planning gate."
+      "reason": "Phase 6 plan_deferred=true. Hard stop fires at phase planning gate. NOTE: not runner-enforced under --phase=N (execute_workorder_engine.py:227-231 skips the loop) - the halt depends on the executing agent honoring the plan."
     },
     {
       "phase": 7,
       "approved": false,
-      "reason": "Phase 7 plan_deferred=true. Hard stop fires at phase planning gate."
+      "reason": "Phase 7 plan_deferred=true. Hard stop fires at phase planning gate. NOTE: not runner-enforced under --phase=N (execute_workorder_engine.py:227-231 skips the loop) - the halt depends on the executing agent honoring the plan."
     }
   ],
   "plan_adjustments_needed": [
@@ -318,6 +319,26 @@
       "id": "ADJ-10",
       "applied": true,
       "description": "Phase 2 authored from the STOP placeholder after phase 1 shipped. Five defects measured at HEAD 676161c: D2 cross-link confirmed as a UNION (both same-named elements get both call sets), D4 confirms this file flattens the identities phase 1 just fixed, D1 silent swallow, plus D3/D5 flagged as scope questions rather than silently absorbed."
+    },
+    {
+      "id": "ADJ-11",
+      "applied": true,
+      "description": "/discover REC-001: alignment re-prepared and RECORDED against the CURRENT plan. The pre-existing alignment-draft.json was stale - its plan_digest predated four plan amendments, so recording it would have attested to a plan that no longer existed. verify now returns ok/PASS, discharging the close-workorder Step 3 hard stop honestly at work-start rather than retroactively."
+    },
+    {
+      "id": "ADJ-12",
+      "applied": true,
+      "description": "/discover REC-002: hard_stops phase 2 approved, and every hard_stop reason now states that the runner does NOT enforce it under --phase=N."
+    },
+    {
+      "id": "ADJ-13",
+      "applied": false,
+      "description": "/discover REC-003 + REC-004 NOT APPLIED, deliberately. REC-004 (advance the workorders row plan_created -> implementing) has no canonical writer - the only status writers found are close-workorder's, and registry.db is canonical with the writer as its interface, so hand-writing the row would break the same discipline that makes the DB trustworthy. REC-003 (promote STUB-BD0MZY) is unnecessary: deferred_phase is the CORRECT state for an unexecuted deferred phase, and the close ceremony flips these (manually, per the known deferred_phase back-close gap). Neither blocks phase 2."
+    },
+    {
+      "id": "ADJ-14",
+      "applied": true,
+      "description": "/discover trust finding, carried into P2-T6: the working tree holds 23 peer-modified files (10 in src/, incl. every framework detector, plus 5 test files). No overlap with phase 2's target, and tsc is clean at authoring time - but a full-suite verdict during phase 2 runs against peer WIP, so any NEW failure must be attributed by file before it is believed. Baseline to diff against: 2602 passed / 26 skipped / 0 failed."
     }
   ],
   "discovery_required": true,
