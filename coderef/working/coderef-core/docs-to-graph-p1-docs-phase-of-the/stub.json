@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-MA13M5",
+  "ulid": "01KYY0TF1K13MT55025KED5ZQ3",
+  "feature_name": "docs-to-graph-p1-docs-phase-of-the",
+  "description": "Docs-to-graph P1 (docs phase of the standards rule-graph program): ingest resource-sheet + foundation-doc frontmatter as @Doc nodes with documents edges in graph.json (both adjacency indexes, full + incremental scan paths, repo-agnostic per-repo glob); centrality-ranked doc-coverage queue surfaced via map/orient; pack_context returns governing docs ranked projected-facts > approved prose > draft, never placeholder sections; includes 7-legacy-sheet frontmatter/sections backfill via generate-resource-sheet scaffold-then-review. Design + evidence: coderef/working/coderef-core/core-improvements-731/discovery-doc-graph-phase1.md",
+  "category": "feature",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T06:40:11Z"
+}

@@ -1,0 +1,12 @@
+{
+  "stub_id": "STUB-4PTW4G",
+  "ulid": "01KYY11TQA3ZSA8M18Q7V9DRT1",
+  "feature_name": "gx-002-scope-stack-receiver-type-inference-build",
+  "description": "GX-002 scope-stack receiver type inference: build a local-variable type-inference pass on top of call-resolver.ts so method calls on locals and prototypes (x.toFixed(), element.slice()) resolve deterministically - a scope-chain binding table tracking const x = new Foo() so x.method() resolves to Foo.method(). Targets the receiver_not_in_symbol_table class: ~62% (10,691) of coderef-core's ~17,280 unresolved edges; current resolution rate 22.32%. Program: core-improvements-731 PLAN.md Option A (GX-002 first, ruled). Honors the 2026-07-09 js_prototype_member builtin-reclassify ruling; both adjacency indexes + incremental parity apply",
+  "category": "feature",
+  "priority": "high",
+  "status": "stub",
+  "target_project": "coderef-core",
+  "owner_domain": "CODEREF-CORE",
+  "created": "2026-08-01T06:44:13Z"
+}
