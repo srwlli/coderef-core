@@ -1,0 +1,51 @@
+{
+  "workorder_id": "WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001",
+  "feature_name": "treat-markdown-files-like-code-section-level-ast",
+  "created": "2026-08-01T12:44:45.076940+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-XB3K8M",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-XB3K8M",
+      "plan_type": "strict",
+      "timestamp": "2026-08-01T12:44:45.076940+00:00"
+    },
+    {
+      "event": "plan_expanded",
+      "at": "2026-08-01T14:05:00Z",
+      "by": "/discover (discovery.md, medium) + agent design pass",
+      "detail": "Engine strict skeleton (1 phase / 7 tasks) replaced with a 3-phase parity-gated plan (21 tasks, 8 design locks DL-1..DL-8): P1 section nodes + contains edges, P2 symbol-gated backtick references, P3 quarantined fenced-block identifiers + E2E proof. DL-4 SUPERSEDES the stub's original 'register snippets in the global symbol table' wording per discovery REC-001 (pollution risk). No-regress instrument = DL-6 filtered frozen-tree A/B (ADJ-1 precedent). Engine planning-discovery was dist-old-polluted (SCOPE-001 class) and is superseded by discovery.md. STANDBY: plan expanded only - execution awaits operator go."
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T12:44:45.076940+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-XB3K8M"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

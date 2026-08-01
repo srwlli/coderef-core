@@ -1,0 +1,82 @@
+{
+  "plan_type": "phased",
+  "goal": "Treat Markdown Files Like Code: Section-level AST nodes (@Doc/path.md#slug), symbol-gated backtick reference edges, and quarantined fenced-code-block identifier extraction - additive to the shipped docs-to-graph machinery, zero behavior change on the non-doc graph.",
+  "design_locks": [
+    "DL-1 SECTION IDS: section node id = '@Doc/<path>#<slug>' where slug is the GitHub-style heading slug (lowercase, spaces->hyphens, punctuation stripped); duplicate slugs in one file disambiguate '-2','-3' in document order. Headings parsed at ALL levels (#..######); depth recorded in metadata. Whole-file '@Doc/<path>' node is RETAINED as the container - section nodes are additive children.",
+    "DL-2 CONTAINMENT: new edge kind 'contains' (@Doc/file -> @Doc/file#section, document order preserved in evidence). ANY new edge kind MUST be taught to BOTH adjacency indexes in the same task: src/query/canonical-graph.ts AND src/cli/mcp/graph-tools.ts (the dual-index trap from the API-surface WO).",
+    "DL-3 REFERENCE GATE: backtick tokens mint a 'references' edge (@Doc/file#section -> element/file node) ONLY when the token resolves in the scan's symbol table. Exact-name match; ambiguous (>1 candidate element) = disclosed skip counted in DocIngestResult-style skip ledger, NEVER a guessed edge. Non-resolving backticks (paths, flags, kebab-slugs) are silent non-facts. Evidence carries section id + match name.",
+    "DL-4 SNIPPET QUARANTINE: fenced code blocks NEVER enter the global symbol table (no scanner.ts symbol registration - supersedes the stub's original wording per discovery REC-001). Instead a lightweight identifier extractor (ts/js fences only, v1) feeds the SAME DL-3 membership gate to mint 'references' edges with a distinct evidence kind ('doc-code-block'). Call resolution, resolution-rate metrics, rename_preview/apply, and clone detection remain untouched by doc content.",
+    "DL-5 INCREMENTAL PARITY BY CONSTRUCTION: sections/references ride the existing collectDocsPhase lane - repo-global, re-collected fresh in BOTH run() and runIncremental(), never per-file incremental facts. No new keying seams.",
+    "DL-6 NO-REGRESS INSTRUMENT: frozen-tree A/B (old dist vs new dist over one immutable tree copy, no --source-headers) with comparison FILTERED to the non-'@Doc' id universe -> MUST be byte-identical sha256. Pre-existing @Doc whole-file nodes and 'documents' edges MUST also be id-identical (feature is strictly additive). Live-repo before/after fingerprints are NOT the instrument (self-hosting id-shift, ADJ-1 precedent).",
+    "DL-7 DETERMINISM (AC-08): heading walk is document-order over the raw text; slug disambiguation, identifier extraction, and edge order are all deterministic given identical bytes. No clock, no randomness.",
+    "DL-8 SCOPE v1: the three existing doc-ingest lanes ONLY (resource sheets, foundation docs, opted-in reports). docs/*.md, README.md, root markdown stay OUT until the grain proves out (discovery REC-006; operator may widen later)."
+  ],
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1: Section-level AST nodes + contains edges",
+      "hard_stop": false,
+      "description": "Parse heading hierarchy in doc-ingest.ts into section sub-nodes under the existing @Doc container nodes; mint 'contains' edges; teach both adjacency indexes; prove additive-only via filtered frozen-tree A/B.",
+      "tasks": [
+        { "id": "P1-T1", "verb": "READ", "description": "Read src/pipeline/doc-ingest.ts, src/pipeline/graph-builder.ts (doc seams ~496-520, ~1213-1260), src/query/canonical-graph.ts and src/cli/mcp/graph-tools.ts adjacency builders, and __tests__/pipeline/doc-ingest.test.ts. Snapshot current dist (OLD) for the DL-6 instrument.", "touches": ["src/pipeline/doc-ingest.ts", "src/pipeline/graph-builder.ts", "src/query/canonical-graph.ts", "src/cli/mcp/graph-tools.ts"] },
+        { "id": "P1-T2", "verb": "EDIT", "description": "doc-ingest.ts: add DocSectionFact extraction (heading text, depth, slug per DL-1, body line span, placeholder-marker count per section) to collectDocFacts output; extend DocIngestResult; keep parseDocFrontmatter untouched.", "touches": ["src/pipeline/doc-ingest.ts"] },
+        { "id": "P1-T3", "verb": "EDIT", "description": "graph-builder.ts: mint section nodes (@Doc/path#slug) + 'contains' edges with document-order evidence per DL-2; extend EdgeEvidence union.", "touches": ["src/pipeline/graph-builder.ts"] },
+        { "id": "P1-T4", "verb": "EDIT", "description": "Teach BOTH adjacency indexes the 'contains' kind (canonical-graph.ts + mcp/graph-tools.ts) so impact_of/what-calls traversal sees doc containment symmetrically.", "touches": ["src/query/canonical-graph.ts", "src/cli/mcp/graph-tools.ts"] },
+        { "id": "P1-T5", "verb": "TEST", "description": "Extend __tests__/pipeline/doc-ingest.test.ts: slug rules incl. duplicate-heading disambiguation and CRLF, section node + contains edge presence, determinism (two collects identical). Run the doc-ingest + graph-builder test files.", "touches": ["__tests__/pipeline/doc-ingest.test.ts"] },
+        { "id": "P1-T6", "verb": "CHECK", "description": "DL-6 filtered frozen-tree A/B: non-@Doc universe byte-identical; pre-existing @Doc nodes + documents edges id-identical; record parity artifact in the WO dir.", "touches": [] },
+        { "id": "P1-T7", "verb": "COMMIT", "description": "Commit Phase 1 via the guarded runner (commit-by-path, WO-ID in subject).", "touches": [] }
+      ],
+      "stub_ref": "STUB-XB3K8M"
+    },
+    {
+      "phase": 2,
+      "name": "Phase 2: Symbol-gated backtick 'references' edges",
+      "hard_stop": false,
+      "description": "Extract backtick tokens per section, gate on symbol-table membership (DL-3), mint 'references' edges from section nodes to code nodes; teach both adjacency indexes; disclosed-skip ledger for ambiguity.",
+      "tasks": [
+        { "id": "P2-T1", "verb": "READ", "description": "Read the symbol-table surface graph-builder resolves against (element name -> node id mapping) and the state fields available at doc-edge-minting time; confirm the gate can run at constructGraph time with no new pipeline phase.", "touches": ["src/pipeline/graph-builder.ts"] },
+        { "id": "P2-T2", "verb": "EDIT", "description": "doc-ingest.ts: per-section backtick token extraction (dedup per section, document order; skip fenced block interiors - those are Phase 3's lane).", "touches": ["src/pipeline/doc-ingest.ts"] },
+        { "id": "P2-T3", "verb": "EDIT", "description": "graph-builder.ts: DL-3 membership gate -> 'references' edges with evidence {kind:'doc-reference', section id, token}; ambiguous matches counted as disclosed skips, never guessed.", "touches": ["src/pipeline/graph-builder.ts"] },
+        { "id": "P2-T4", "verb": "EDIT", "description": "Teach BOTH adjacency indexes the 'references' kind (canonical-graph.ts + mcp/graph-tools.ts).", "touches": ["src/query/canonical-graph.ts", "src/cli/mcp/graph-tools.ts"] },
+        { "id": "P2-T5", "verb": "TEST", "description": "Contract tests: resolving token mints edge; path/flag/kebab backticks mint nothing; ambiguous name mints nothing + counted skip; determinism. Run doc-ingest + graph-builder test files.", "touches": ["__tests__/pipeline/doc-ingest.test.ts"] },
+        { "id": "P2-T6", "verb": "CHECK", "description": "DL-6 filtered frozen-tree A/B re-run (non-@Doc universe still byte-identical; Phase-1 dist = OLD).", "touches": [] },
+        { "id": "P2-T7", "verb": "COMMIT", "description": "Commit Phase 2 via the guarded runner.", "touches": [] }
+      ],
+      "stub_ref": "STUB-XB3K8M"
+    },
+    {
+      "phase": 3,
+      "name": "Phase 3: Quarantined fenced-block identifiers + E2E proof + docs",
+      "hard_stop": true,
+      "description": "Lightweight ts/js fence identifier extraction through the same DL-3 gate (DL-4 quarantine - no symbol-table writes), full-suite + incremental-parity proof, consumer smoke, docs. Terminal hard stop.",
+      "tasks": [
+        { "id": "P3-T1", "verb": "EDIT", "description": "doc-ingest.ts: fenced-block scanner (```ts/```js/```typescript/```javascript) extracting called/imported/declared identifier names via lightweight lexing (NOT scanner.ts, NOT the symbol table - DL-4); attach per-section.", "touches": ["src/pipeline/doc-ingest.ts"] },
+        { "id": "P3-T2", "verb": "EDIT", "description": "graph-builder.ts: route fence identifiers through the DL-3 gate -> 'references' edges with evidence kind 'doc-code-block' (distinct from 'doc-reference').", "touches": ["src/pipeline/graph-builder.ts"] },
+        { "id": "P3-T3", "verb": "TEST", "description": "Contract tests: fence identifiers gate correctly; snippet-only symbols (not in repo) mint NOTHING anywhere (quarantine proof - assert symbol table and call edges untouched); evidence kinds distinct. Run doc test files.", "touches": ["__tests__/pipeline/doc-ingest.test.ts"] },
+        { "id": "P3-T4", "verb": "CHECK", "description": "E2E: full suite (confirm counts vs 2532/26 baseline, vitest-4 discipline); DL-6 filtered A/B (Phase-2 dist = OLD); full-vs-incremental byte-identity on the fixture tree (DL-5); consumer smoke: orient + map + impact_of on a @Doc section id resolve without error.", "touches": [] },
+        { "id": "P3-T5", "verb": "EDIT", "description": "Docs: ARCHITECTURE.md doc-ingestion paragraph (section grain + edge kinds + quarantine), CHANGELOG.md entry, USING-CODEREF.md doc-node query note.", "touches": ["docs/ARCHITECTURE.md", "CHANGELOG.md", "USING-CODEREF.md"] },
+        { "id": "P3-T6", "verb": "COMMIT", "description": "Commit Phase 3 via the guarded runner.", "touches": [] },
+        { "id": "P3-T7", "verb": "STOP", "description": "Terminal hard stop: comm.json finalized to checkpoint_ready, registry row via canonical writer, session YAML, terminal artifact. Await operator /close-workorder.", "touches": [] }
+      ],
+      "stub_ref": "STUB-XB3K8M"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 3,
+      "approved": false,
+      "reason": "terminal gate: verify section nodes, gated reference edges, quarantine proof, and the filtered frozen-tree A/B before close"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "discovery_satisfied_by": "discovery.md (2026-08-01, medium depth - supersedes the dist-old-polluted engine discovery in context.json)",
+  "foundation_docs_gate": true,
+  "approved_verbs": ["READ", "WRITE", "EDIT", "RUN", "TEST", "COMMIT", "CHECK", "STOP", "DELETE"],
+  "discovery_ref": "planning-discovery-20260801T124501Z",
+  "workorder_id": "WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001",
+  "feature_name": "treat-markdown-files-like-code-section-level-ast",
+  "created": "2026-08-01T12:44:45.076940+00:00",
+  "plan_type_rationale": "Expanded from the engine's strict skeleton to a 3-phase parity-gated plan (2026-08-01): risk gradient runs additive-sectioning -> gated references -> quarantined fences, each phase provable additive-only via the DL-6 filtered frozen-tree A/B; terminal hard stop only, matching the decouple-WO precedent (operator still gates execution start).",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0 (skeleton); expanded by CODEREF-CORE agent per /discover 2026-08-01"
+}

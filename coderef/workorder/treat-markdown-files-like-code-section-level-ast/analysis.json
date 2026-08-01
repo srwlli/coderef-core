@@ -1,0 +1,98 @@
+{
+  "workorder_id": "WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001",
+  "feature_name": "treat-markdown-files-like-code-section-level-ast",
+  "analysis_authored_at": "2026-08-01T14:05:00Z",
+  "analysis_expanded_from": "engine skeleton of 2026-08-01T12:46:50Z (single RISK row, dist-old-polluted candidates)",
+  "blast_radius": {
+    "files_modified": [
+      "src/pipeline/doc-ingest.ts",
+      "src/pipeline/graph-builder.ts",
+      "src/query/canonical-graph.ts",
+      "src/cli/mcp/graph-tools.ts",
+      "__tests__/pipeline/doc-ingest.test.ts",
+      "docs/ARCHITECTURE.md",
+      "CHANGELOG.md",
+      "USING-CODEREF.md"
+    ],
+    "files_created": [],
+    "files_explicitly_NOT_touched": [
+      "src/scanner/scanner.ts (DL-4 quarantine supersedes the stub's original 'register snippets in the global symbol table' wording)",
+      "src/pipeline/call-resolver.ts",
+      "src/pipeline/phases/* (sections ride the existing collectDocsPhase lane, DL-5)"
+    ],
+    "downstream_consumers": [
+      "src/query/orient.ts (doc counts)",
+      "src/map/project-map-data.ts (node-kind tallies)",
+      "src/export/graph-exporter.ts",
+      "src/integration/rag/indexing-orchestrator.ts (future section-grain chunk alignment - OUT of this WO)",
+      "src/cli/coderef-query.ts (relationship walks over the two new kinds)"
+    ]
+  },
+  "risks": [
+    {
+      "id": "RISK-001",
+      "title": "Spurious backtick matches in prose (paths, flags, kebab-slugs)",
+      "likelihood": "high",
+      "impact": "medium",
+      "mitigation": "DL-3 membership gate: only tokens resolving in the symbol table mint edges; ambiguous names are disclosed skips, never guessed edges. Contract-tested (P2-T5)."
+    },
+    {
+      "id": "RISK-002",
+      "title": "Snippet symbols polluting call resolution / rename reach",
+      "likelihood": "high-if-unmitigated",
+      "impact": "high",
+      "mitigation": "DL-4: fenced blocks never enter the symbol table; lightweight identifier lexing feeds the DL-3 gate only. Quarantine proof is an explicit contract test (P3-T3: snippet-only symbols mint nothing anywhere)."
+    },
+    {
+      "id": "RISK-003",
+      "title": "Section id churn on heading edits",
+      "likelihood": "certain-by-design",
+      "impact": "low",
+      "mitigation": "DL-1 slug normalization keeps ids stable under cosmetic changes (case, punctuation); heading renames legitimately re-key the section - same class as codeRefId line-shift, accepted for v1 and documented."
+    },
+    {
+      "id": "RISK-004",
+      "title": "New edge kinds invisible to one of the two adjacency indexes",
+      "likelihood": "medium",
+      "impact": "medium",
+      "mitigation": "Dedicated tasks P1-T4/P2-T4 teach canonical-graph.ts AND mcp/graph-tools.ts in the same commit as the kind's introduction (API-surface WO gotcha)."
+    },
+    {
+      "id": "RISK-005",
+      "title": "Silent behavior change on the non-doc graph",
+      "likelihood": "low",
+      "impact": "high",
+      "mitigation": "DL-6 filtered frozen-tree A/B every phase (non-@Doc universe byte-identical; pre-existing @Doc nodes + documents edges id-identical) + full-vs-incremental byte-identity at P3-T4."
+    },
+    {
+      "id": "RISK-006",
+      "title": "Validation metrics skew (resolution rate) from doc edges",
+      "likelihood": "low",
+      "impact": "medium",
+      "mitigation": "references/contains edges are resolved-by-construction or carry doc-lane evidence kinds; P3-T4 consumer smoke confirms validation_status unchanged on the non-doc axes."
+    }
+  ],
+  "candidates": [
+    "src/pipeline/doc-ingest.ts",
+    "src/pipeline/graph-builder.ts",
+    "src/query/canonical-graph.ts",
+    "src/cli/mcp/graph-tools.ts"
+  ],
+  "dependencies": [
+    "shipped docs-to-graph machinery (collectDocFacts, docTargets, @Doc nodes, documents edges)",
+    "collectDocsPhase in src/pipeline/phases/resolve-tail.ts (phase-executor seam from the decouple WO)"
+  ],
+  "public_api_hits": [
+    "collectDocFacts (output type extended - additive)",
+    "docTargets (unchanged)",
+    "EdgeEvidence union (two new variants)"
+  ],
+  "decision_records": [
+    { "decision": "Section nodes are additive children of the retained @Doc container (DL-1/DL-2)", "rationale": "Preserves every existing consumer of @Doc whole-file nodes; containment is traversable, not inferred from id prefixes." },
+    { "decision": "Symbol-table membership gate for ALL doc-to-code reference minting (DL-3)", "rationale": "Backticks wrap paths/flags/slugs constantly; a graph edge must be a claim the symbol table can back. Ambiguity is disclosed, never guessed (surfaces-not-verdicts)." },
+    { "decision": "Fenced snippets are quarantined from the symbol table (DL-4), superseding the stub's original wording", "rationale": "Doc examples calling run() must never mint call edges into real code, skew resolution-rate metrics, or enter rename_apply's reach. Identifier lexing + the DL-3 gate captures the stale-example-detection value without the pollution." },
+    { "decision": "Scope v1 = the three existing doc-ingest lanes only (DL-8)", "rationale": "discovery REC-006; widening to docs/*.md or root markdown is an operator ruling after the grain proves out." },
+    { "decision": "Filtered frozen-tree A/B is the no-regress instrument (DL-6)", "rationale": "Feature is additive by design, so plain byte-identity cannot hold; the filtered comparison (non-@Doc universe identical + pre-existing doc rows id-identical) is the strongest provable claim. ADJ-1 precedent from the decouple WO." }
+  ],
+  "discovery_ref": "discovery.md (2026-08-01) - supersedes the dist-old-polluted planning-discovery-20260801T124501Z in context.json"
+}

@@ -1,0 +1,98 @@
+{
+  "workorder_id": "WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001",
+  "feature_name": "treat-markdown-files-like-code-section-level-ast",
+  "created": "2026-08-01T12:44:45.076940+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "intake": {
+    "trigger": "stub_promotion",
+    "user_request": "Treat Markdown Files Like Code: Section-level AST nodes, embedded code block scanning, and symbol link extraction in doc-ingest.ts and scanner.ts",
+    "stub_id": "STUB-XB3K8M"
+  },
+  "classification": {
+    "plan_type": "strict",
+    "plan_type_rationale": "Category feature maps to strict",
+    "plan_type_decided_by": "create-workorder-engine@1.0.0",
+    "discovery_ref": "planning-discovery-20260801T124501Z",
+    "discovery": {
+      "candidates": [
+        "dist-old/src/map/subprocess-linkage.d.ts",
+        "dist-old/src/query/symbol-context.d.ts",
+        "src/map/subprocess-linkage.ts",
+        "src/query/symbol-context.ts",
+        "__tests__/pipeline/doc-ingest.test.ts",
+        "dist-old/src/map/git-history.d.ts",
+        "dist-old/src/pipeline/doc-ingest.js",
+        "dist-old/src/pipeline/extractors/route-extractor.d.ts",
+        "dist-old/src/semantic/ast-extractor.d.ts",
+        "dist-old/src/semantic/orchestrator.js",
+        "src/map/git-history.ts",
+        "src/pipeline/doc-ingest.ts",
+        "src/pipeline/extractors/route-extractor.ts",
+        "src/semantic/ast-extractor.ts",
+        "src/semantic/orchestrator.ts",
+        "dist-old/src/analyzer/ast-element-scanner.d.ts",
+        "dist-old/src/analyzer/ast-element-scanner.js",
+        "dist-old/src/context/markdown-formatter.d.ts",
+        "dist-old/src/context/markdown-formatter.js",
+        "dist-old/src/map/subprocess-linkage.js",
+        "dist-old/src/query/symbol-context.js",
+        "dist-old/src/scanner/frontend-scanner.js",
+        "dist-old/src/scanner/lru-cache.js",
+        "dist-old/src/scanner/scanner.d.ts",
+        "dist-old/src/scanner/scanner.js"
+      ],
+      "blast_radius": [
+        "__tests__/map/api-surface.test.ts",
+        "__tests__/map/dashboard-asset.test.ts",
+        "__tests__/map/edge-evidence.test.ts",
+        "__tests__/map/engineering-metrics.test.ts",
+        "__tests__/map/graph-analytics.test.ts",
+        "__tests__/map/layer-drift.test.ts",
+        "__tests__/map/mcp-map-parity.test.ts",
+        "__tests__/map/project-map-data.test.ts",
+        "__tests__/map/skeleton-map.test.ts",
+        "__tests__/map/subprocess-linkage.test.ts",
+        "__tests__/mcp-server-build-if-missing.test.ts",
+        "__tests__/mcp-server-repo-agnostic.test.ts",
+        "__tests__/mcp-server.test.ts",
+        "__tests__/mcp/rename-apply.contract.test.ts",
+        "__tests__/query/symbol-context.test.ts",
+        "src/cli/coderef-map.ts",
+        "src/cli/coderef-mcp-server.ts",
+        "src/cli/mcp/lookup-tools.ts",
+        "src/cli/mcp/map-tools.ts",
+        "src/map/emit-map.ts",
+        "src/map/engineering-metrics.ts",
+        "src/map/project-map-data.ts",
+        "src/map/skeleton-map.ts"
+      ],
+      "public_api_hits": [],
+      "hotspot_hits": [],
+      "foundation_anchors": [],
+      "call_chain_hits": [
+        "src/map/engineering-metrics.ts",
+        "__tests__/map/subprocess-linkage.test.ts",
+        "src/map/emit-map.ts",
+        "src/map/project-map-data.ts",
+        "src/cli/mcp/lookup-tools.ts",
+        "__tests__/query/symbol-context.test.ts"
+      ],
+      "warnings": [
+        "planner.discovery: 24 candidate(s) came from the UNINDEXED-PATH pass (the index carries no elements for them). They are ranked on PATH evidence alone - weaker than a symbol match, and not reachable by blast_radius or public_api probes.",
+        "planner.discovery: candidate list capped at 25 of 140 matches (ranked by goal-keyword specificity) - the remainder are LOWER-RANKED, not proven irrelevant",
+        "planner.discovery: .coderef/index.json has ZERO elements for .cjs, .mjs, .py, .tsx (covers .js, .ts across 795 file(s)). Files with those extensions CANNOT appear in candidates by name or path - their absence is NO-DATA, not evidence of irrelevance.",
+        "planner.discovery: blast_radius probed the first 10 of 25 candidates (latency cap) - the remainder are UNPROBED, not proven clean",
+        "planner.discovery: hotspot ranking returned no rows at the probe budget - no-data, not 'no hotspots'",
+        "planner.discovery: docs/foundation/ absent; foundation-anchor enrichment skipped"
+      ],
+      "summary_ref": "planning-discovery-20260801T124501Z"
+    }
+  },
+  "scope": {
+    "in_scope": [],
+    "out_of_scope": []
+  },
+  "constraints": [],
+  "pre_existing_drift": false
+}
