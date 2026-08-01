@@ -21,8 +21,7 @@ Three further corrections:
 Diagnosing the leftovers dissolved both groups:
 
 4. **The "3 ERR sheets" were WARN, not errors** — my sweep script only grepped for `PASS|FAIL|SKIP`, so `WARN` fell through to `ERR`. They are CLI entrypoints (`index.ts`, `coderef-analyze.ts`, `validate-routes.ts`) that export nothing, so "no Public API to validate" is honest no-data. `coderef_analyze` in fact PASSES anchors 33/33. **Instrument error, mine.**
-5. **The 4 `module-resolvable` failures are a CHECKER BUG, not missing frontmatter.** All four DO carry valid `documents:` frontmatter. `documentedModule()` matches `/^---
-…/` — **LF only** (check-sheet-drift.mjs:46) — so on a CRLF file the frontmatter block never matches and `documents:` is invisible. 6 of 74 sheets are CRLF. Sheets carrying `[ref]` citations bind through the fallback and mask it (`mcp_shared` is CRLF and PASSES); only citation-less sheets surface it. A second latent bug sits in the same function: the `documents:` key regex is **scalar-only**, so a list-form `documents:` also reads as absent. Filed **`TKT-017SAB`** (ecosystem, routed DEBUG).
+5. **The 4 `module-resolvable` failures are a CHECKER BUG, not missing frontmatter.** All four DO carry valid `documents:` frontmatter. The frontmatter matcher in `documentedModule()` (check-sheet-drift.mjs:46) accepts a bare LF before and after the `---` fence only, so on a CRLF file the block never matches and `documents:` is invisible. 6 of 74 sheets are CRLF. Sheets carrying `[ref]` citations bind through the fallback and mask it (`mcp_shared` is CRLF and PASSES); only citation-less sheets surface it. A second latent bug sits in the same function: the `documents:` key matcher is **scalar-only**, so a list-form `documents:` also reads as absent. Filed **`TKT-017SAB`** (ecosystem, routed DEBUG).
 
 The corrected corpus verdict: **58 PASS · 9 genuinely-failing on stale anchors · 4 blocked by TKT-017SAB · 3 WARN/no-data**. Not one of the 74 sheets is defective in the way the first two drafts implied.
 
@@ -38,13 +37,12 @@ What was bounded: the resource-sheet corpus in CODEREF-CORE, the STANDARDS-owned
 
 ## 2. Surfaces audited
 
-- [tool: check-sheet-drift.mjs] **the canonical instrument**, run across all 74 sheets — 58 PASS / 13 FAIL / 3 ERR
+- [tool: check-sheet-drift.mjs] **the canonical instrument**, run across all 74 sheets — **58 PASS / 13 FAIL / 3 WARN** (9 of the 13 fail on genuinely stale anchors; the other 4 are TKT-017SAB)
 - [tool: ad-hoc anchor audit] `anchor-audit-prototype.py` — superseded by the above; retained only to show the undercount
 - [tool: rg + read] `kinds/resource-sheet/check.mjs` (8 checks), `author-sheet.mjs`, `project-spine.mjs`, `remediate-sheet.mjs`, `kind.json` v1.2.0
 - [tool: registry] `TRACKING/stubs.json` (9 resource-sheet stubs), `agent-domains.json` (LLOYD definition)
 - [tool: frontmatter scan] `agent:` field across all 74 sheets — authorship distribution
-- [tool: line-ending correlation] `
-` vs the checker's LF-only frontmatter regex across all 74 sheets — the decisive test for the `module-resolvable` failures
+- [tool: line-ending correlation] CRLF vs the checker's LF-only frontmatter regex across all 74 sheets — the decisive test for the `module-resolvable` failures
 - RESOLVED: the 3 sheets first reported as ERR are WARN (no exports to validate); the error was in my sweep's verdict parsing, not the sheets.
 
 ## 3. Findings table
