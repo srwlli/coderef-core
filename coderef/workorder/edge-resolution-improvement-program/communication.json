@@ -79,9 +79,22 @@
       "id": "ADJ-01",
       "at": "2026-08-01T09:37:55Z",
       "note": "P1-T5's authored expectation 'resolution_rate headline rises' was wrong about which scalar moves: resolution_rate's denominator is ALL emitted calls including builtin, so reclassification cannot move it by construction. The honest quality scalar resolved_of_resolvable moved 32.83 -> 73.38. Also dropped the devDependencies-based framework detection leg (task wording): symbol-table-priority + test-origin-file guard + vocabulary subsumes it without plumbing project-root into the pure resolver."
+    },
+    {
+      "event": "phase_transition_writer_anchor_gap",
+      "at": "2026-08-01T09:42:12Z",
+      "note": "write-phase-transition.cjs no-oped on the coderef-core: anchored registry path (KZ-01KYY49T family); writer semantics applied agent-side"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "d03a61d",
+      "verdict": "PASS",
+      "at": "2026-08-01T09:42:12Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
