@@ -11,9 +11,9 @@
 
 | Metric | Value |
 |--------|-------|
-| **Total Elements** | 3,174 |
-| **Total Files** | 489 |
-| **Total Lines** | 133,351 |
+| **Total Elements** | 3,190 |
+| **Total Files** | 490 |
+| **Total Lines** | 133,588 |
 | **Languages** | ts, py |
 
 ---
@@ -22,12 +22,12 @@
 
 | Type | Count | Percentage |
 |------|-------|------------|
-| function | 1,082 | 34.1% |
-| method | 965 | 30.4% |
-| interface | 610 | 19.2% |
+| function | 1,092 | 34.2% |
+| method | 965 | 30.3% |
+| interface | 611 | 19.2% |
 | class | 108 | 3.4% |
-| type | 92 | 2.9% |
-| constant | 317 | 10.0% |
+| type | 93 | 2.9% |
+| constant | 321 | 10.1% |
 
 ---
 
@@ -53,13 +53,13 @@
 | 16 | `src/pipeline/extractors/element-extractor.ts` | 28 | 🟢 Medium |
 | 17 | `src/query/clones.ts` | 28 | 🟢 Medium |
 | 18 | `src/cli/coderef-watch.ts` | 27 | 🟢 Medium |
-| 19 | `src/pipeline/call-resolver.ts` | 27 | 🟢 Medium |
-| 20 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
-| 21 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
-| 22 | `src/types/types.ts` | 24 | 🟢 Medium |
-| 23 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
-| 24 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
-| 25 | `src/indexer/metadata-index.ts` | 23 | 🟢 Medium |
+| 19 | `src/context/context-tracker.ts` | 25 | 🟢 Medium |
+| 20 | `src/indexer/query-engine.ts` | 25 | 🟢 Medium |
+| 21 | `src/types/types.ts` | 24 | 🟢 Medium |
+| 22 | `src/validator/migration-mapper.ts` | 24 | 🟢 Medium |
+| 23 | `src/analyzer/migration-route-analyzer.ts` | 23 | 🟢 Medium |
+| 24 | `src/indexer/metadata-index.ts` | 23 | 🟢 Medium |
+| 25 | `src/pipeline/call-resolver.ts` | 23 | 🟢 Medium |
 
 ---
 
@@ -88,7 +88,7 @@ Each element has a unique identifier. Use the UUID anchor to trace from docs to 
 
 ## Complete Element Listing
 
-*Note: For the complete listing of all 3,174 elements, use the .coderef/index.json file directly or query via the search API.*
+*Note: For the complete listing of all 3,190 elements, use the .coderef/index.json file directly or query via the search API.*
 
 ---
 

@@ -21,9 +21,9 @@ This document identifies high-risk areas in the codebase based on complexity ana
 
 | Metric | Value |
 |--------|-------|
-| **Total Files** | 489 |
-| **Total Elements** | 3,174 |
-| **Total Lines** | 133,351 |
+| **Total Files** | 490 |
+| **Total Elements** | 3,184 |
+| **Total Lines** | 133,588 |
 | **Entry Points** | 74 |
 | **Critical Functions** | 20 |
 
@@ -37,15 +37,15 @@ This document identifies high-risk areas in the codebase based on complexity ana
 |------|----------|------------|------|------|
 | 1 | <!-- coderef:uuid= --> `buildGraphTools` | 🔴 192 (Critical) | `src/cli/mcp/graph-tools.ts` | 0 dependents |
 | 2 | <!-- coderef:uuid= --> `projectMapData` | 🔴 122 (Critical) | `src/map/project-map-data.ts` | 0 dependents |
-| 3 | <!-- coderef:uuid= --> `scanCurrentElements` | 🔴 103 (Critical) | `src/scanner/scanner.ts` | 0 dependents |
-| 4 | <!-- coderef:uuid= --> `buildMapTools` | 🔴 100 (Critical) | `src/cli/mcp/map-tools.ts` | 0 dependents |
-| 5 | <!-- coderef:uuid= --> `buildLookupTools` | 🔴 96 (Critical) | `src/cli/mcp/lookup-tools.ts` | 0 dependents |
-| 6 | <!-- coderef:uuid= --> `PipelineContextGenerator.generateMarkdown` | 🔴 95 (Critical) | `src/pipeline/generators/context-generator.ts` | 0 dependents |
-| 7 | <!-- coderef:uuid= --> `computeGraphAnalytics` | 🔴 87 (Critical) | `src/map/graph-analytics.ts` | 0 dependents |
-| 8 | <!-- coderef:uuid= --> `buildVerifyTools` | 🔴 78 (Critical) | `src/cli/mcp/verify-tools.ts` | 0 dependents |
-| 9 | <!-- coderef:uuid= --> `runRagIndex` | 🔴 73 (Critical) | `src/cli/rag-index.ts` | 0 dependents |
-| 10 | <!-- coderef:uuid= --> `buildEdges` | 🔴 71 (Critical) | `src/pipeline/graph-builder.ts` | 0 dependents |
-| 11 | <!-- coderef:uuid= --> `buildNewInitializerMap` | 🔴 70 (Critical) | `src/pipeline/call-resolver.ts` | 0 dependents |
+| 3 | <!-- coderef:uuid= --> `buildScopeBindingMap` | 🔴 105 (Critical) | `src/pipeline/scope-binding.ts` | 0 dependents |
+| 4 | <!-- coderef:uuid= --> `scanCurrentElements` | 🔴 103 (Critical) | `src/scanner/scanner.ts` | 0 dependents |
+| 5 | <!-- coderef:uuid= --> `buildMapTools` | 🔴 100 (Critical) | `src/cli/mcp/map-tools.ts` | 0 dependents |
+| 6 | <!-- coderef:uuid= --> `buildLookupTools` | 🔴 96 (Critical) | `src/cli/mcp/lookup-tools.ts` | 0 dependents |
+| 7 | <!-- coderef:uuid= --> `PipelineContextGenerator.generateMarkdown` | 🔴 95 (Critical) | `src/pipeline/generators/context-generator.ts` | 0 dependents |
+| 8 | <!-- coderef:uuid= --> `computeGraphAnalytics` | 🔴 87 (Critical) | `src/map/graph-analytics.ts` | 0 dependents |
+| 9 | <!-- coderef:uuid= --> `buildVerifyTools` | 🔴 78 (Critical) | `src/cli/mcp/verify-tools.ts` | 0 dependents |
+| 10 | <!-- coderef:uuid= --> `runRagIndex` | 🔴 73 (Critical) | `src/cli/rag-index.ts` | 0 dependents |
+| 11 | <!-- coderef:uuid= --> `buildEdges` | 🔴 71 (Critical) | `src/pipeline/graph-builder.ts` | 0 dependents |
 | 12 | <!-- coderef:uuid= --> `computeLayerDrift` | 🔴 67 (Critical) | `src/map/layer-drift.ts` | 0 dependents |
 | 13 | <!-- coderef:uuid= --> `runPopulate` | 🔴 64 (Critical) | `src/cli/populate.ts` | 0 dependents |
 | 14 | <!-- coderef:uuid= --> `ASTElementScanner.visitNode` | 🔴 62 (Critical) | `src/analyzer/ast-element-scanner.ts` | 0 dependents |
@@ -124,6 +124,7 @@ Functions become hotspots through:
 Focus on 🔴 Critical complexity functions:
 - `buildGraphTools` (src/cli/mcp/graph-tools.ts) - complexity 192
 - `projectMapData` (src/map/project-map-data.ts) - complexity 122
+- `buildScopeBindingMap` (src/pipeline/scope-binding.ts) - complexity 105
 - `scanCurrentElements` (src/scanner/scanner.ts) - complexity 103
 - `buildMapTools` (src/cli/mcp/map-tools.ts) - complexity 100
 - `buildLookupTools` (src/cli/mcp/lookup-tools.ts) - complexity 96
@@ -132,7 +133,6 @@ Focus on 🔴 Critical complexity functions:
 - `buildVerifyTools` (src/cli/mcp/verify-tools.ts) - complexity 78
 - `runRagIndex` (src/cli/rag-index.ts) - complexity 73
 - `buildEdges` (src/pipeline/graph-builder.ts) - complexity 71
-- `buildNewInitializerMap` (src/pipeline/call-resolver.ts) - complexity 70
 - `computeLayerDrift` (src/map/layer-drift.ts) - complexity 67
 - `runPopulate` (src/cli/populate.ts) - complexity 64
 - `ASTElementScanner.visitNode` (src/analyzer/ast-element-scanner.ts) - complexity 62

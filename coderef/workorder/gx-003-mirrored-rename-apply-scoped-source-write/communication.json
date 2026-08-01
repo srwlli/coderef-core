@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "implementing",
+  "status": "complete",
   "current_phase": 1,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-003-mirrored-rename-apply-scoped-source-write\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-003-mirrored-rename-apply-scoped-source-write\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-003-mirrored-rename-apply-scoped-source-write\\analysis.json",
@@ -79,20 +79,45 @@
       "verify_gate": "tests_for_change selected mcp-server family — all green in full-suite run",
       "plan_touch_note": "ADJ: plan named src/cli/mcp/server.ts; the real contract surface is src/cli/coderef-mcp-server.ts (+ mcp/shared.ts, mcp/context-tools.ts)",
       "at": "2026-08-01T08:41:03.206Z"
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "artifact_paths": [
+        "coderef/foundation-docs/"
+      ],
+      "note": "23 invalid UUID anchors = warnings only (pre-existing class); validator exit 0",
+      "at": "2026-08-01T08:42:40.558Z"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "b9173c9",
+      "verdict": "PASS",
+      "at": "2026-08-01T08:42:24.644Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
       "timestamp": "2026-08-01T08:22:10.983032+00:00",
       "event": "creation",
       "message": "Workorder created from stub STUB-6TY0WJ"
+    },
+    {
+      "timestamp": "2026-08-01T08:42:24.644Z",
+      "event": "workorder_complete",
+      "message": "Phase 1 complete 9/9 tasks; commit b9173c9 pushed+verified. Shipped: rename_apply MCP tool (37->38), scoped source-write supersession recorded in SERVER_INSTRUCTIONS/docs, 11 contract tests, stratified REC-R2 disclosure. Suite 2482/26 effective (13 load-contention timeouts re-ran green). ADJ: plan named src/cli/mcp/server.ts; real surface is coderef-mcp-server.ts + mcp/shared.ts + mcp/context-tools.ts."
     }
   ],
   "required_skills": [
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "completed_at": "2026-08-01T08:42:24.644Z"
 }
