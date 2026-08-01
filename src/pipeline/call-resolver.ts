@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability call-resolver-call-resolution-kind
- * @exports CallResolutionKind, CallResolution, SymbolTableEntry, SymbolTable, BUILTIN_RECEIVERS, JS_GLOBAL_CALLEES, PYTHON_BUILTIN_CALLEES, JS_PROTOTYPE_METHODS, resolveCalls, buildSymbolTable, resolveCallsAgainstTable, isBuiltinReceiver, classifyMethodCall, deriveCallerCodeRefId
+ * @exports CallResolutionKind, CallResolution, SymbolTableEntry, SymbolTable, BUILTIN_RECEIVERS, JS_GLOBAL_CALLEES, PYTHON_BUILTIN_CALLEES, JS_PROTOTYPE_METHODS, TEST_DSL_AMBIENT_CALLEES, resolveCalls, buildSymbolTable, resolveCallsAgainstTable, isBuiltinReceiver, isBuiltinRootReceiver, classifyMethodCall, deriveCallerCodeRefId
  * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts, __tests__/pipeline/call-resolution-determinism.test.ts, __tests__/pipeline/call-resolution-pre-phase3-assertion.test.ts, __tests__/pipeline/call-resolution-two-pass-ordering.test.ts, __tests__/pipeline/call-resolver-current-scope-coderef-id.test.ts
  */
 
@@ -62,6 +62,7 @@ import type { ElementData } from '../types/types.js';
 import { createCodeRefId } from '../utils/coderef-id.js';
 import { buildFieldIndex, lookupField, type FieldIndex } from './field-index.js';
 import { buildScopeBindingMap, type ScopeBindingMap } from './scope-binding.js';
+import { buildHeritageIndex, heritageMethodLookup, type HeritageIndex } from './heritage-index.js';
 
 /**
  * Classification of a single resolved call. Every RawCallFact yields exactly
@@ -635,6 +636,10 @@ export function resolveCallsAgainstTable(
   // key = local variable / parameter name; value = {className, kind} where
   // kind is 'new' | 'annotation' | 'param' (DR-GX002-A/B).
   const newInitMap = buildScopeBindingMap(state, elementsByFile, projectPath);
+  // Subtype→supertypes index over the Phase-2 heritage facts (P3 heritage-aware
+  // method lookup, STUB-9B66EN). Absence=no-data: an estate with no extracted
+  // heritage yields an empty index and every walk reports hasHeritage=false.
+  const heritageIndex = buildHeritageIndex(state.heritage);
   const resolutions: CallResolution[] = [];
 
   for (const fact of state.rawCalls) {
@@ -681,6 +686,7 @@ export function resolveCallsAgainstTable(
         callerCodeRefId,
         newInitMap,
         resolvedFieldIndex,
+        heritageIndex,
       );
       resolutions.push({
         sourceFile: fact.sourceFile,
@@ -766,15 +772,19 @@ function receiverRootIdentifier(receiverText: string): string | null {
  * Branch dispatcher for member-access calls (DR-PHASE-4-B + ORCHESTRATOR
  * option-1 guardrails approved 2026-05-03):
  *
- *   1. `this.X()` → look up X in the enclosing class's own methods only
- *      (guardrail 3: own methods, no parent classes, no interfaces).
- *   2. `super.X()` → unresolved (parent-class hierarchy traversal is out
- *      of Phase 4 scope per guardrail 3).
- *   3. `obj.X()` where obj is bound by `const obj = new Y()` in the
- *      enclosing scope (guardrail 1: literal `const x = new Y()` pattern
- *      only, no factories) → resolve X against Y's own methods only.
- *      Factory pattern `const obj = makeY()` is NOT matched and stays
- *      ambiguous (guardrail 4).
+ *   1. `this.X()` → look up X in the enclosing class's own (same-file)
+ *      methods first, then the declared extends/implements chain (P3
+ *      heritage walk, STUB-9B66EN — guardrail 3's "no parent classes"
+ *      restriction retired 2026-08-01; own methods still shadow inherited).
+ *   2. `super.X()` → resolve against the enclosing class's PARENT chain
+ *      via the heritage walk. Miss-with-heritage →
+ *      'super_method_not_in_heritage'; no recorded heritage keeps the
+ *      original 'super_call_out_of_scope'.
+ *   3. `obj.X()` where obj is scope-bound to a class (new/annotation/param)
+ *      → resolve X against the class's own methods, then its heritage
+ *      chain (P3); a heritage single-match is EXACT (declared chain +
+ *      known receiver class). Factory pattern `const obj = makeY()` is
+ *      NOT matched and stays ambiguous (guardrail 4).
  *   4. `localName.X()` where localName is a Phase 3 ImportResolution
  *      binding to a resolved target — emit ambiguous (we don't know what
  *      X is on the target without type inference; guardrail 3 forbids
@@ -805,6 +815,7 @@ export function classifyMethodCall(
   callerCodeRefId: string | null,
   newInitMap: ScopeBindingMap,
   fieldIndex: FieldIndex = new Map(),
+  heritageIndex: HeritageIndex = new Map(),
 ): {
   kind: CallResolutionKind;
   resolvedTargetCodeRefId?: string;
@@ -814,6 +825,17 @@ export function classifyMethodCall(
 } {
   const receiver = fact.receiverText;
   const callee = fact.calleeName;
+  // Ancestor-level own-methods lookup for the P3 heritage walk: identical
+  // filter to branch 3's own-methods check (scope 'method', qualifierPath
+  // exactly [ancestorName]) so the walk resolves only real method elements.
+  const heritageOwnMethods = (ancestorName: string): string[] =>
+    (symbolTable.get(`${ancestorName}.${callee}`) ?? [])
+      .filter(
+        e => e.scope === 'method'
+          && e.qualifierPath?.length === 1
+          && e.qualifierPath[0] === ancestorName,
+      )
+      .map(e => e.codeRefId);
   // Set when a 'new' scope binding matched the receiver but the class's own
   // methods missed — the walk continues (ACG may still resolve through the
   // name, e.g. an inherited method own-methods lookup cannot see), and this
@@ -835,11 +857,55 @@ export function classifyMethodCall(
     if (sameFile.length > 1) {
       return { kind: 'ambiguous', candidates: uniqueIds(sameFile.map(e => e.codeRefId)) };
     }
+    // P3 heritage walk (STUB-9B66EN): the method is not among the enclosing
+    // class's own (same-file) methods — it may be INHERITED. Walk the declared
+    // extends/implements chain before giving up.
+    const inherited = heritageMethodLookup(enclosingClass, heritageIndex, heritageOwnMethods);
+    if (inherited.codeRefIds.length === 1) {
+      return {
+        kind: 'resolved',
+        resolvedTargetCodeRefId: inherited.codeRefIds[0],
+        reason: 'heritage_method_lookup',
+      };
+    }
+    if (inherited.codeRefIds.length > 1) {
+      return {
+        kind: 'ambiguous',
+        candidates: uniqueIds(inherited.codeRefIds),
+        reason: 'heritage_method_lookup',
+      };
+    }
     return { kind: 'unresolved', reason: 'this_method_not_in_class' };
   }
 
-  // (2) super.X() — out of scope per guardrail 3.
+  // (2) super.X() — heritage-chain resolution (P3, retiring the guardrail-3
+  //     hard-unresolved). The enclosing class's PARENT chain is exactly what
+  //     `super` denotes; own methods are deliberately not consulted. A miss
+  //     with heritage present is honestly 'super_method_not_in_heritage'; a
+  //     class with no recorded heritage keeps the original
+  //     'super_call_out_of_scope' (absence=no-data, classification unchanged).
   if (receiver === 'super') {
+    const enclosingClass = findEnclosingClassName(fact.scopePath);
+    if (enclosingClass) {
+      const parentMatch = heritageMethodLookup(enclosingClass, heritageIndex, heritageOwnMethods);
+      if (parentMatch.codeRefIds.length === 1) {
+        return {
+          kind: 'resolved',
+          resolvedTargetCodeRefId: parentMatch.codeRefIds[0],
+          reason: 'heritage_method_lookup',
+        };
+      }
+      if (parentMatch.codeRefIds.length > 1) {
+        return {
+          kind: 'ambiguous',
+          candidates: uniqueIds(parentMatch.codeRefIds),
+          reason: 'heritage_method_lookup',
+        };
+      }
+      if (parentMatch.hasHeritage) {
+        return { kind: 'unresolved', reason: 'super_method_not_in_heritage' };
+      }
+    }
     return { kind: 'unresolved', reason: 'super_call_out_of_scope' };
   }
 
@@ -884,11 +950,32 @@ export function classifyMethodCall(
       if (ownMethods.length > 1) {
         return { kind: 'ambiguous', candidates: uniqueIds(ownMethods.map(e => e.codeRefId)) };
       }
-      // Own-methods miss. ALL binding kinds fall through to the remaining
+      // Own-methods miss — try the INHERITED methods first (P3 heritage walk,
+      // STUB-9B66EN, retiring guardrail-3's "no parent-class walking"). The
+      // bound class is KNOWN and its extends/implements chain is declared
+      // truth, so a single ancestor match is an EXACT resolution — a strictly
+      // better answer than the bare-name ACG rescue below (which matches by
+      // name with the receiver type unproven, hence provisional).
+      const chainMatch = heritageMethodLookup(className, heritageIndex, heritageOwnMethods);
+      if (chainMatch.codeRefIds.length === 1) {
+        return {
+          kind: 'resolved',
+          resolvedTargetCodeRefId: chainMatch.codeRefIds[0],
+          reason: 'heritage_method_lookup',
+        };
+      }
+      if (chainMatch.codeRefIds.length > 1) {
+        return {
+          kind: 'ambiguous',
+          candidates: uniqueIds(chainMatch.codeRefIds),
+          reason: 'heritage_method_lookup',
+        };
+      }
+      // Heritage also missed. ALL binding kinds fall through to the remaining
       // branches — measured live (self-scan): hard-failing 'new' misses here
       // moved 645 edges from the ACG tier to unresolved, because own-methods
-      // lookup is blind to INHERITED methods (`const a = new A(); a.fromBase()`
-      // with `class A extends Base`) that the field-index resolves by name.
+      // lookup is blind to methods the walk cannot see either (an unextracted
+      // or external ancestor) that the field-index resolves by name.
       // A proven-instance miss only sharpens the final unresolved reason
       // (see newBindingMissed at the tail).
       if (binding.kind === 'new') {

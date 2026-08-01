@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "checkpoint_ready",
-  "current_phase": 2,
-  "phase_status": "complete",
+  "status": "implementing",
+  "current_phase": 3,
+  "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\analysis.json",
@@ -90,6 +90,18 @@
       "at": "2026-08-01T09:50:28Z",
       "decision": "PIVOT (data-backed): P2 re-scoped from dotted-chain field-path walking (FU-2 hypothesis, ~5,050-edge estimate) to external/builtin receiver disposition completion. Post-P1 characterization shows the FU-2 estimate was dominated by matcher chains P1 already flipped; the real remaining receiver tail is 726 external-namespace-import receivers (ts.*), 377 cast-wrapped ((ts as any).*), 27 dotted-builtin-root (process.stderr), 20 external-client this-chains. Same P3c disposition family: zero fabricated project edges. True field-path walking deferred - the genuinely project-typed chain population is near-zero post-P1.",
       "stub_ref": "STUB-VYBKRV"
+    },
+    {
+      "event": "single_phase_mode_invoked",
+      "phase": 3,
+      "at": "2026-08-01T10:12:00Z",
+      "note": "operator invoked /execute-workorder --phase=3 after the P2 checkpoint review"
+    },
+    {
+      "event": "p3_planning_gate",
+      "at": "2026-08-01T10:12:00Z",
+      "decision": "EXECUTE AS STUBBED (heritage-aware method lookup) with honest expectations recorded: the direct unresolved tail this phase addresses is small (method_not_in_class_own_methods 45, imported_receiver_method_unknown 3) and the live heritage estate on this repo is only 22 extends/implements edges, so self-scan scalar deltas will be SMALL. The phase's value is repo-agnostic: super.x() resolution (today hard-unresolved), inherited this.x(), typed-receiver inherited methods resolved EXACT via the declared chain instead of provisionally via the bare-name ACG index (precision upgrade over field_based_acg), all carried by fixture contract tests. First RECALL phase - may add resolved edges; guards shift from 'zero edge change' to 'zero fabricated targets + zero lost resolutions'. Retires branch-3 guardrail-3 ('no parent-class walking') deliberately, with shadowing (own-method-wins) pinned by contract test.",
+      "stub_ref": "STUB-9B66EN"
     }
   ],
   "phase_transitions": [

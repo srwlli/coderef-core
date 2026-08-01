@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-08-01] — heritage-aware method lookup (edge-resolution P3)
+
+WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 Phase 3 (STUB-9B66EN) — retires the 2026-05-03 guardrail-3 "no parent-class walking" restriction using the heritage facts extracted since genre-features P5.
+
+- **`heritage-index.ts`** (new): subtype→supertypes index over `state.heritage` + cycle-safe, depth-capped, nearest-level-wins BFS method lookup across the declared `extends`/`implements` chain.
+- **`call-resolver.ts`**: branch 1 — inherited `this.x()` resolves EXACT via the chain (was `this_method_not_in_class`); branch 2 — `super.x()` resolves to the parent's method (was hard-unresolved; heritage-present misses are honestly `super_method_not_in_heritage`, no-heritage keeps `super_call_out_of_scope`); branch 3 — scope-bound receivers (`new`/annotation/param) resolve inherited methods EXACT with reason=`heritage_method_lookup` before the bare-name ACG fall-through. Own methods still shadow inherited; multi-file ancestor-name collisions stay ambiguous; external/unextracted supertypes change nothing (no fabricated targets).
+- **Self-scan effect: ZERO flips — proven by controlled A/B** (populate with the index neutralized vs live: resolved sets byte-identical). Honest and expected: the live heritage estate here is 22 edges and the 45 residual own-methods misses all have unextractable ancestors. The value is repo-agnostic (class-heavy estates) and precision (type-proven EXACT vs ACG provisional), pinned by the 9-test contract envelope.
+- Contract: `__tests__/pipeline/heritage-method-lookup.contract.test.ts` (9 tests, authored before the implementation).
+
+---
+
 ## [2026-08-01] — external/builtin receiver disposition completion (edge-resolution P2)
 
 WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 Phase 2 (data-backed pivot from the FU-2 field-path-walking hypothesis, recorded at the P2 planning gate).

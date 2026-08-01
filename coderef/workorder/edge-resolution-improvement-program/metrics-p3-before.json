@@ -1,0 +1,50 @@
+{
+  "label": "P3-T2 before",
+  "scalars": {
+    "valid_edge_count": 10005,
+    "unresolved_count": 1673,
+    "ambiguous_count": 1730,
+    "external_count": 717,
+    "builtin_count": 30410,
+    "unresolved_src_count": 782,
+    "ambiguous_src_count": 1193,
+    "provisional_count": 1255,
+    "resolution_rate": 22.47,
+    "resolved_of_resolvable": 74.62,
+    "ambiguous_rate": 3.88,
+    "provisional_rate": 12.54,
+    "test_dsl_count": 16625
+  },
+  "edge_totals": {
+    "all_edges": 44878,
+    "call_edges": 40900,
+    "resolved_edges": 10005
+  },
+  "hashes": {
+    "all_edge_ids_sha256": "65a8a49dfa75fb6b8b893164015f1ac93b265b932d484baf5fc4c58869e772b7",
+    "resolved_edge_ids_sha256": "5eb410f81096e4c116c44ed7e966b0c209cd31b230e0a7a355d66de8d832bff3"
+  },
+  "unresolved_by_reason": {
+    "receiver_not_in_symbol_table": 953,
+    "callee_not_in_symbol_table": 653,
+    "method_not_in_class_own_methods": 45,
+    "symbol_not_in_module_exports": 13,
+    "relative_target_not_in_project": 3,
+    "imported_receiver_method_unknown": 3,
+    "client_path_origin_unresolved": 2,
+    "not_in_manifest_or_node_modules": 1
+  },
+  "ambiguous_by_reason": {
+    "field_based_acg": 1475,
+    "none": 255
+  },
+  "test_dsl_by_reason": {
+    "test_dsl_ambient_callee": 10036,
+    "test_dsl_matcher_receiver": 6589
+  },
+  "projection_ruling_A": {
+    "would_flip_ambient": 0,
+    "would_flip_matcher": 0,
+    "would_flip_total": 0
+  }
+}

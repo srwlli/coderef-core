@@ -158,15 +158,80 @@
     },
     {
       "phase": 3,
-      "name": "heritage-aware-method-lookup \u2014 DEFERRED",
+      "name": "heritage-aware method lookup (extends/implements chain walking)",
       "hard_stop": true,
       "stub_ref": "STUB-9B66EN",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P3-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 3 tasks not yet authored. Pre-condition: Phase 2 must be COMPLETED + REVIEWED before this phase's plan is authored."
+          "id": "P3-T1",
+          "verb": "READ",
+          "description": "Confirm the seams: classifyMethodCall branches 1 (this.X same-file own-methods only), 2 (super.X hard-unresolved 'super_call_out_of_scope'), 3 (scope-binding own-methods filter qualifierPath===[className], guardrail-3 'no parent-class walking' being retired by this phase), and the ACG fall-through interplay (the 645-edge note: 'new'-binding inherited-method misses currently rescued provisionally by the bare-name field index). Confirm state.heritage (HeritageRelationship[] subtypeName/supertypeName/kind, genre-features P5) threads through resolveCallsAgainstTable, and the module idiom (field-index.ts / scope-binding.ts siblings). Planning-gate honesty: this repo's live heritage estate is 22 extends/implements edges, so self-scan deltas will be SMALL; the phase's value is repo-agnostic recall + type-proven precision upgrades, carried by fixture contract tests.",
+          "touches": [
+            "src/pipeline/call-resolver.ts",
+            "src/pipeline/types.ts",
+            "src/pipeline/graph-builder.ts"
+          ]
+        },
+        {
+          "id": "P3-T2",
+          "verb": "RUN",
+          "description": "BEFORE metrics: capture the post-P2 state as metrics-p3-before.json (scalars + edge totals + resolved-ids hash + unresolved-by-reason + ambiguous-by-reason).",
+          "touches": [
+            ".coderef/validation-report.json"
+          ]
+        },
+        {
+          "id": "P3-T3",
+          "verb": "TEST",
+          "description": "Contract tests BEFORE implementation (__tests__/pipeline/heritage-method-lookup.contract.test.ts): (a) `const a = new A(); a.fromBase()` with `class A extends Base` resolves EXACT to Base.fromBase with reason='heritage_method_lookup'; (b) multi-level chain (A extends B extends C, method on C) resolves through the chain; (c) heritage cycle (A extends B, B extends A) terminates without hang and leaves the prior classification; (d) `super.x()` resolves to the parent's method; super with heritage present but method absent yields 'super_method_not_in_heritage'; super with NO heritage facts keeps 'super_call_out_of_scope'; (e) inherited `this.x()` (method on parent, call in child) resolves via the chain; (f) OWN method shadows inherited same-name (nearest-definition-wins, existing branch-1/3 exact resolution unchanged); (g) external/unknown supertype (extends from an unimported or external name) leaves the result exactly as today - no fabricated edges; (h) same-ancestor-name multi-file collisions yield ambiguous with candidates, never silent resolution; (i) annotation/param bindings (`const x: A`, `(x: A) =>`) get the same heritage walk as 'new' bindings.",
+          "touches": [
+            "__tests__/pipeline/heritage-method-lookup.contract.test.ts"
+          ]
+        },
+        {
+          "id": "P3-T4",
+          "verb": "EDIT",
+          "description": "Implement: new src/pipeline/heritage-index.ts (buildHeritageIndex: Map<subtypeName, supertype entries>; heritageMethodLookup: BFS up extends+implements with visited-set cycle guard + depth cap, per-level symbolTable lookup of `${ancestor}.${callee}` filtered scope==='method' && qualifierPath===[ancestor], nearest-level-wins shadowing, single->resolved / multi->ambiguous). Wire into call-resolver.ts: build the index in resolveCallsAgainstTable from state.heritage, thread into classifyMethodCall (optional param, default empty for direct test callers); branch 1 this.X() miss -> heritage walk before 'this_method_not_in_class'; branch 2 super.X() -> walk from enclosing class's parents (miss with heritage present -> 'super_method_not_in_heritage', no heritage -> unchanged 'super_call_out_of_scope'); branch 3 own-methods miss -> heritage walk BEFORE the ACG fall-through (all three binding kinds). Fires ONLY where today's result is a miss/fall-through - no existing exact resolution is ever displaced.",
+          "touches": [
+            "src/pipeline/heritage-index.ts",
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P3-T5",
+          "verb": "RUN",
+          "description": "AFTER metrics: rebuild, re-populate, diff vs metrics-p3-before.json as metrics-p3-diff.md. This phase MAY add resolved edges (first recall phase) - the guards change accordingly: every heritage-resolved target must be a REAL element codeRefId (zero fabricated nodes); no previously-resolved edge is LOST (before-resolved set minus after-resolved set attributed edge-by-edge, expected empty or documented ACG->heritage retarget upgrades); all changed edges carry reason='heritage_method_lookup' or the super/this variants. Record honest expectations: self-scan delta SMALL (22-edge heritage estate).",
+          "touches": [
+            ".coderef/validation-report.json"
+          ]
+        },
+        {
+          "id": "P3-T6",
+          "verb": "EDIT",
+          "description": "Docs sync: CHANGELOG entry (heritage-aware lookup, guardrail-3 retirement rationale, honest small-delta note), README/ARCHITECTURE baseline refresh if scalars shifted, USING-CODEREF trust rules if materially changed. Record the planning-gate decision (execute-as-stubbed with honest expectations; repo-agnostic value) in communication.json decisions_log.",
+          "touches": [
+            "CHANGELOG.md",
+            "README.md",
+            "docs/ARCHITECTURE.md",
+            "USING-CODEREF.md"
+          ]
+        },
+        {
+          "id": "P3-T7",
+          "verb": "CHECK",
+          "description": "Full verification: new contract tests green; the P1 test-dsl + P2 external-receiver contract suites still green (no cross-phase regression); tsc clean; full suite (isolate any 5s subprocess flakes by re-running failing files in isolation before calling them failures).",
+          "touches": [
+            "__tests__/pipeline/heritage-method-lookup.contract.test.ts",
+            "__tests__/pipeline/test-dsl-reclassify.contract.test.ts",
+            "__tests__/pipeline/external-receiver-disposition.contract.test.ts"
+          ]
+        },
+        {
+          "id": "P3-T8",
+          "verb": "COMMIT",
+          "description": "Guarded commit with explicit --paths + --done; phase-transition record (agent-side on anchor-gap); HARD STOP at the rolling-plan boundary with the before/after report; P4 remains deferred.",
+          "touches": []
         }
       ]
     },
@@ -193,8 +258,8 @@
     },
     {
       "phase": 3,
-      "approved": false,
-      "reason": "Phase 3 plan_deferred=true. Hard stop fires at phase planning gate."
+      "approved": true,
+      "reason": "P3 planning gate satisfied 2026-08-01: operator invoked --phase=3 after the P2 checkpoint review; plan authored at checkpoint (rolling contract) as stubbed (heritage-aware lookup, STUB-9B66EN) with honest small-delta expectations recorded in decisions_log (22-edge live heritage estate; value is repo-agnostic recall + precision)."
     },
     {
       "phase": 4,
