@@ -1,0 +1,68 @@
+{
+  "workorder_id": "WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001",
+  "feature_name": "edge-resolution-improvement-program",
+  "created": "2026-08-01T09:19:28.098847+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-EVR39N",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-EVR39N",
+      "plan_type": "phased",
+      "timestamp": "2026-08-01T09:19:28.098847+00:00"
+    },
+    {
+      "event": "plan_type_forced",
+      "from": "phased",
+      "to": "phased",
+      "reason": "--phased-stubs implies phased",
+      "timestamp": "2026-08-01T09:19:28.098847+00:00"
+    },
+    {
+      "event": "rolling_plan_authored",
+      "deferred_stubs": [
+        "STUB-VYBKRV",
+        "STUB-9B66EN",
+        "STUB-QPAAY0"
+      ],
+      "close_after_phase": 4,
+      "timestamp": "2026-08-01T09:19:28.098847+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 8,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/afe01006-6c4c-4a78-a71d-09665b82982b/scratchpad/gx-edge-p1-tasks.json",
+      "at": "2026-08-01T09:19:28.098847+00:00"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-01T09:19:28.098847+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-EVR39N"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}
