@@ -19,6 +19,7 @@ import * as path from 'path';
 import type { ElementData } from '../types/types.js';
 import { saveRoutesToFile } from '../generator/generateRoutes.js';
 import { writeIndexVariants } from './index-storage.js';
+import { assertLegacyWriteAllowed, type LegacyWriteOptions } from '../legacy/guard.js';
 
 /**
  * Save scan results to .coderef/index.json
@@ -36,8 +37,10 @@ import { writeIndexVariants } from './index-storage.js';
  */
 export async function saveIndex(
   projectPath: string,
-  elements: ElementData[]
+  elements: ElementData[],
+  options?: LegacyWriteOptions
 ): Promise<void> {
+  assertLegacyWriteAllowed(projectPath, '.coderef/index.json', options);
   const coderefDir = path.join(projectPath, '.coderef');
   await writeIndexVariants(coderefDir, elements, { projectPath });
 

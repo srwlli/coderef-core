@@ -20,6 +20,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
+import { assertLegacyWriteAllowed, type LegacyWriteOptions } from '../legacy/guard.js';
 
 interface ProjectContext {
   version: string;
@@ -51,8 +52,10 @@ interface ProjectContext {
  */
 export async function generateContext(
   projectPath: string,
-  elements: ElementData[]
+  elements: ElementData[],
+  options?: LegacyWriteOptions
 ): Promise<void> {
+  assertLegacyWriteAllowed(projectPath, '.coderef/context.json', options);
   // Analyze elements
   const stats = analyzeElements(elements);
 

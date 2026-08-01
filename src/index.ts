@@ -247,20 +247,13 @@ export type { ScanPreset } from './config/presets.js';
  * @see {@link generateContext} - Generate context.json and context.md
  * @see {@link buildDependencyGraph} - Build dependency graph
  */
-// Phase 1: Core file generation
-export { saveIndex } from './fileGeneration/saveIndex.js';
-export { generateContext } from './fileGeneration/generateContext.js';
-export { buildDependencyGraph } from './fileGeneration/buildDependencyGraph.js';
+// Legacy fileGeneration writers quarantined (WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001 P2):
+// the scanner-era writers competed with the pipeline generators for the same
+// canonical .coderef paths. Import them explicitly from '@coderef/core/legacy'
+// (src/legacy/file-generation.ts) — every writer now refuses to overwrite a
+// pipeline-owned .coderef dir unless passed {force:true}. Type-only exports for
+// the legacy graph shape remain for declaration compatibility.
 export type { DependencyGraph, GraphNode, GraphEdge } from './fileGeneration/buildDependencyGraph.js';
-
-// Phase 2: Analysis reports
-export { detectPatterns } from './fileGeneration/detectPatterns.js';
-export { analyzeCoverage } from './fileGeneration/analyzeCoverage.js';
-export { validateReferences } from './fileGeneration/validateReferences.js';
-export { detectDrift } from './fileGeneration/detectDrift.js';
-
-// Phase 3: Diagrams
-export { generateDiagrams } from './fileGeneration/generateDiagrams.js';
 
 // Phase 4: Frontend Call Detection (WO-ROUTE-VALIDATION-ENHANCEMENT-001)
 export {

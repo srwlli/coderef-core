@@ -44,6 +44,10 @@
     "./search-client": {
       "types": "./dist/src/search-client.d.ts",
       "default": "./dist/src/search-client.js"
+    },
+    "./legacy": {
+      "types": "./dist/src/legacy/file-generation.d.ts",
+      "default": "./dist/src/legacy/file-generation.js"
     }
   },
   "scripts": {

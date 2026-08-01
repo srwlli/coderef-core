@@ -22,6 +22,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
+import { assertLegacyWriteAllowed, type LegacyWriteOptions } from '../legacy/guard.js';
 
 /**
  * Generate diagram files in Mermaid and Graphviz formats
@@ -32,8 +33,10 @@ import type { ElementData } from '../types/types.js';
  */
 export async function generateDiagrams(
   projectPath: string,
-  elements: ElementData[]
+  elements: ElementData[],
+  options?: LegacyWriteOptions
 ): Promise<void> {
+  assertLegacyWriteAllowed(projectPath, '.coderef/diagrams', options);
   // Build file-level dependency map
   const fileDeps = buildFileDependencies(elements);
 

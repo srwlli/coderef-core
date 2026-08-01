@@ -20,7 +20,7 @@
 
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
-import { writeIndexVariants } from '../../fileGeneration/index-storage.js';
+import { writeIndexVariants } from '../../artifacts/index-storage.js';
 import { buildSemanticElementsFromState, normalizeRelatedField, normalizeRulesField } from '../semantic-elements.js';
 import logger from '../../utils/logger.js';
 

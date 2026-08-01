@@ -67,8 +67,8 @@ function makePipelineOwnedCoderefDir(): string {
 }
 
 describe('Contract A — legacy writers cannot clobber a pipeline-owned .coderef', () => {
-  // FLIP TO `it` IN PHASE 2 (guard ships with the legacy compatibility module).
-  it.fails('legacy buildDependencyGraph refuses to overwrite canonical graph.json', async () => {
+  // Enforced since Phase 2 (guard ships with the legacy compatibility module).
+  it('legacy buildDependencyGraph refuses to overwrite canonical graph.json', async () => {
     const projectDir = makePipelineOwnedCoderefDir();
     const legacy = (await import(/* @vite-ignore */ '../../src/legacy/file-generation.js')) as {
       buildDependencyGraph: (p: string, e: unknown[]) => Promise<unknown>;
@@ -79,8 +79,8 @@ describe('Contract A — legacy writers cannot clobber a pipeline-owned .coderef
     expect(after).toBe(before);
   });
 
-  // FLIP TO `it` IN PHASE 2.
-  it.fails('legacy saveIndex refuses to overwrite a pipeline-owned index', async () => {
+  // Enforced since Phase 2.
+  it('legacy saveIndex refuses to overwrite a pipeline-owned index', async () => {
     const projectDir = makePipelineOwnedCoderefDir();
     const legacy = (await import(/* @vite-ignore */ '../../src/legacy/file-generation.js')) as {
       saveIndex: (p: string, e: unknown[]) => Promise<unknown>;
@@ -88,9 +88,9 @@ describe('Contract A — legacy writers cannot clobber a pipeline-owned .coderef
     await expect(legacy.saveIndex(projectDir, [])).rejects.toThrow(/pipeline-owned|canonical/i);
   });
 
-  // FLIP TO `it` IN PHASE 2. On an unpopulated dir (no manifest.json) the
+  // Enforced since Phase 2. On an unpopulated dir (no manifest.json) the
   // legacy compatibility path still works — semver compatibility preserved.
-  it.fails('legacy writers still work against a non-pipeline directory', async () => {
+  it('legacy writers still work against a non-pipeline directory', async () => {
     const projectDir = fs.mkdtempSync(path.join(os.tmpdir(), 'coderef-boundary-free-'));
     const legacy = (await import(/* @vite-ignore */ '../../src/legacy/file-generation.js')) as {
       saveIndex: (p: string, e: unknown[]) => Promise<unknown>;
@@ -154,13 +154,13 @@ describe('Contract C — default pipeline performs one canonical parse', () => {
 });
 
 describe('Contract D — shared serializers live behind a neutral module', () => {
-  // FLIP TO `it` IN PHASE 2 (index-storage re-homed to src/artifacts/).
-  it.fails('index-storage is importable from the neutral artifacts module', () => {
+  // Enforced since Phase 2 (index-storage re-homed to src/artifacts/).
+  it('index-storage is importable from the neutral artifacts module', () => {
     expect(fs.existsSync(path.join(REPO_ROOT, 'src', 'artifacts', 'index-storage.ts'))).toBe(true);
   });
 
-  // FLIP TO `it` IN PHASE 2.
-  it.fails('pipeline generators do not import from the legacy fileGeneration dir', () => {
+  // Enforced since Phase 2.
+  it('pipeline generators do not import from the legacy fileGeneration dir', () => {
     const generatorsDir = path.join(REPO_ROOT, 'src', 'pipeline', 'generators');
     const offenders = fs
       .readdirSync(generatorsDir)
@@ -175,24 +175,24 @@ describe('Contract D — shared serializers live behind a neutral module', () =>
 });
 
 describe('Contract E — competing legacy writers are quarantined off the barrels', () => {
-  // FLIP TO `it` IN PHASE 2 (ambiguous root exports removed).
-  it.fails('src barrel no longer exports the competing legacy writers', async () => {
+  // Enforced since Phase 2 (ambiguous root exports removed).
+  it('src barrel no longer exports the competing legacy writers', async () => {
     const src = await importSrcBarrel();
     for (const name of LEGACY_WRITER_NAMES) {
       expect(src[name], `src barrel still exports ${name}`).toBeUndefined();
     }
   });
 
-  // FLIP TO `it` IN PHASE 2.
-  it.fails('root barrel no longer exports the competing legacy writers', async () => {
+  // Enforced since Phase 2.
+  it('root barrel no longer exports the competing legacy writers', async () => {
     const root = await importRootBarrel();
     for (const name of LEGACY_WRITER_NAMES) {
       expect(root[name], `root barrel still exports ${name}`).toBeUndefined();
     }
   });
 
-  // FLIP TO `it` IN PHASE 2 (documented compatibility path).
-  it.fails('the explicit legacy module exposes every quarantined writer', async () => {
+  // Enforced since Phase 2 (documented compatibility path).
+  it('the explicit legacy module exposes every quarantined writer', async () => {
     const legacy = (await import(/* @vite-ignore */ '../../src/legacy/file-generation.js')) as Record<
       string,
       unknown

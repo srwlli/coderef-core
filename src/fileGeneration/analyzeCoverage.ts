@@ -18,6 +18,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
+import { assertLegacyWriteAllowed, type LegacyWriteOptions } from '../legacy/guard.js';
 
 interface CoverageReport {
   version: string;
@@ -42,8 +43,10 @@ interface CoverageReport {
  */
 export async function analyzeCoverage(
   projectPath: string,
-  elements: ElementData[]
+  elements: ElementData[],
+  options?: LegacyWriteOptions
 ): Promise<void> {
+  assertLegacyWriteAllowed(projectPath, '.coderef/reports/coverage.json', options);
   // Get all unique source files (excluding test files)
   const sourceFiles = new Set<string>();
   const testFiles = new Set<string>();

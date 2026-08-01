@@ -19,6 +19,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
 import { loadIndexFromCoderefDir } from './index-storage.js';
+import { assertLegacyWriteAllowed, type LegacyWriteOptions } from '../legacy/guard.js';
 
 interface DriftReport {
   version: string;
@@ -48,8 +49,10 @@ interface DriftReport {
  */
 export async function detectDrift(
   projectPath: string,
-  elements: ElementData[]
+  elements: ElementData[],
+  options?: LegacyWriteOptions
 ): Promise<void> {
+  assertLegacyWriteAllowed(projectPath, '.coderef/reports/drift.json', options);
   // Try to load previous scan data
   const previousElements = await loadPreviousScan(projectPath);
 

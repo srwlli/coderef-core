@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "predecessor_for": null,
   "status": "implementing",
-  "current_phase": 1,
+  "current_phase": 2,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\context.json",
@@ -100,9 +100,25 @@
       "outcome": "pass",
       "note": "no discovery_rag in context.json; constraints validated against plan tasks",
       "at": "2026-08-01T06:24:30.537Z"
+    },
+    {
+      "event": "phase_complete",
+      "phase": 1,
+      "commit": "1853426",
+      "suite": "2436 passed / 26 skipped",
+      "note": "contract tests use it.fails ratchets; flip schedule A/D/E=P2 B=P3 C=P4",
+      "at": "2026-08-01T06:31:38.905Z"
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "1853426",
+      "verdict": "PASS",
+      "at": "2026-08-01T06:31:38.905Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {

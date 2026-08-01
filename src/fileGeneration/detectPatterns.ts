@@ -19,6 +19,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData, RouteMetadata } from '../types/types.js';
 import { extractAllRoutes, type MigrationRouteElement } from '../analyzer/migration-route-analyzer.js';
+import { assertLegacyWriteAllowed, type LegacyWriteOptions } from '../legacy/guard.js';
 
 interface PatternReport {
   version: string;
@@ -79,8 +80,10 @@ export interface ApiEndpoint {
  */
 export async function detectPatterns(
   projectPath: string,
-  elements: ElementData[]
+  elements: ElementData[],
+  options?: LegacyWriteOptions
 ): Promise<void> {
+  assertLegacyWriteAllowed(projectPath, '.coderef/reports/patterns.json', options);
   // Detect various patterns
   const handlers = detectHandlers(elements);
   const decorators = detectDecorators(elements);

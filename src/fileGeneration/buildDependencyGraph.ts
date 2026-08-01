@@ -20,6 +20,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
+import { assertLegacyWriteAllowed, type LegacyWriteOptions } from '../legacy/guard.js';
 
 export interface DependencyGraph {
   version: string;
@@ -67,8 +68,10 @@ export interface GraphEdge {
  */
 export async function buildDependencyGraph(
   projectPath: string,
-  elements: ElementData[]
+  elements: ElementData[],
+  options?: LegacyWriteOptions
 ): Promise<DependencyGraph> {
+  assertLegacyWriteAllowed(projectPath, '.coderef/graph.json', options);
   // Build graph structure
   const nodes: GraphNode[] = [];
   const edges: GraphEdge[] = [];

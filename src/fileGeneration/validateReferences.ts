@@ -18,6 +18,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { ElementData } from '../types/types.js';
+import { assertLegacyWriteAllowed, type LegacyWriteOptions } from '../legacy/guard.js';
 
 interface ValidationReport {
   version: string;
@@ -51,8 +52,10 @@ interface ValidationIssue {
  */
 export async function validateReferences(
   projectPath: string,
-  elements: ElementData[]
+  elements: ElementData[],
+  options?: LegacyWriteOptions
 ): Promise<void> {
+  assertLegacyWriteAllowed(projectPath, '.coderef/reports/validation.json', options);
   // Build element lookup map
   const elementMap = new Map<string, ElementData>();
   for (const element of elements) {

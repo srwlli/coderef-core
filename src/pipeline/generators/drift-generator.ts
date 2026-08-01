@@ -35,7 +35,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 import type { PipelineState } from '../types.js';
 import type { ElementData } from '../../types/types.js';
-import { loadIndexFromCoderefDir } from '../../fileGeneration/index-storage.js';
+import { loadIndexFromCoderefDir } from '../../artifacts/index-storage.js';
 import { createCodeRefId } from '../../utils/coderef-id.js';
 import logger from '../../utils/logger.js';
 import { normalizeSlashes } from '../../utils/path-normalize.js';

@@ -25,17 +25,10 @@ export * from './src/export/index.js';
 // src/errors/ had zero production importers — CodeRefError/FileNotFoundError/
 // IndexError/ParseError/ScanError/ValidationError are no longer exported.
 
-// File generation - Phase 1
-export { saveIndex } from './src/fileGeneration/saveIndex.js';
-export { generateContext } from './src/fileGeneration/generateContext.js';
-export { buildDependencyGraph } from './src/fileGeneration/buildDependencyGraph.js';
+// Legacy fileGeneration writers quarantined (WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001 P2):
+// saveIndex/generateContext/buildDependencyGraph/detectPatterns/analyzeCoverage/
+// validateReferences/detectDrift/generateDiagrams competed with the pipeline
+// generators for the same canonical .coderef paths. Import them explicitly from
+// '@coderef/core/legacy' (src/legacy/file-generation.ts) — every writer now
+// refuses to overwrite a pipeline-owned .coderef dir unless passed {force:true}.
 export type { DependencyGraph, GraphNode, GraphEdge } from './src/fileGeneration/buildDependencyGraph.js';
-
-// File generation - Phase 2
-export { detectPatterns } from './src/fileGeneration/detectPatterns.js';
-export { analyzeCoverage } from './src/fileGeneration/analyzeCoverage.js';
-export { validateReferences } from './src/fileGeneration/validateReferences.js';
-export { detectDrift } from './src/fileGeneration/detectDrift.js';
-
-// File generation - Phase 3
-export { generateDiagrams } from './src/fileGeneration/generateDiagrams.js';
