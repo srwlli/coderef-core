@@ -121,6 +121,41 @@
       "task": "P3-T4",
       "at": "2026-08-01",
       "detail": "TOPOLOGY DEFECT found while inventorying the on-disk layout: coderef/ carries BOTH resource-sheets/ AND resources-sheets/ (singular vs plural), and both hold sheets. Two homes for one artifact class is exactly what a canonical location is meant to preclude -- a reader cannot tell which is authoritative and a writer picks by coin-flip. Recorded in TOPOLOGY-STANDARD.md as a known defect and NOT repaired there, because consolidating requires the P5-T3 provenance ruling on which sheets belong to this project at all. This finding raises the stakes on that ruling: it is not only a relocation question, it resolves a live ambiguity in the canonical layout."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 4,
+      "task": "P4-T5",
+      "at": "2026-08-01",
+      "detail": "entry-point kind 2 FAIL -> 0, and fully PASS (9 pass / 0 warn / 0 fail / 1 skip) after the quickstart WARN was cleared. Scaffolded the atomic 8-doc bundle then TAILORED every doc (commit 140db7f) -- zero {FILL}/{PROJECT} placeholders remain outside the two docs that are templates by design (REPORT-TEMPLATE per-report fields, USING-TEMPLATE per-capability skeleton). ENTRY-POINT-INVENTORY declares 12 real doors across all three audience variants. Per-surface MCP quickstart at src/cli/coderef-mcp-server-quickstart.md (a9477bc)."
+    },
+    {
+      "event": "defect_found",
+      "phase": 4,
+      "task": "P4-T2",
+      "at": "2026-08-01",
+      "detail": "ECOSYSTEM DEFECT found and FIXED AT SOURCE. The entry-point kind's own template AUDITS/REPORT-TEMPLATE.md shipped 'status: dated', which is NOT in the documentation kind's governed envelope enum (living|historical|draft|superseded). Consequence: running /standards-establish --kind=entry-point in ANY project immediately introduced a documentation-kind FAIL, and standards-establish itself reported 'BLOCKED by documentation-kind conformance gate' -- the scaffold could not be authored without breaking a sibling kind. NOT an architecturally-loaded ruling: the ui-design kind ships the structurally identical template/AUDITS/REPORT-TEMPLATE.md with 'status: historical', so entry-point was the lone outlier and the fleet convention was already settled. Fixed at the ASSISTANT template source (0a9736346) rather than in the consuming project, plus a follow-up (5b677e06f) for the body prose that still instructed authors to use 'status: dated' after the frontmatter moved -- a doc contradicting its own frontmatter would have propagated the defect into every report authored from it. CORE's copy synced in the same phase."
+    },
+    {
+      "event": "finding",
+      "phase": 4,
+      "task": "P4-T1",
+      "at": "2026-08-01",
+      "detail": "ADVERTISED-SURFACE VERIFICATION (the 'lying door' half of the defining invariant) -- CLEAN, verified rather than assumed. Live MCP surface is 37 tools: SERVER_TOOL_COUNT=37 equals the 37 server.registerTool blocks in the same file, and __tests__/mcp-server.test.ts:2291 asserts that pairing AND that SERVER_INSTRUCTIONS contains the count, failing on drift. All in-repo advertised surfaces agree at 37 (README.md, docs/CLI.md, docs/ARCHITECTURE.md, CONTEXT.md). CHANGELOG.md's 36 and 34 are historical entries, correct as history, deliberately not updated. Bin surface: 21 package.json bin entries resolving to 19 DISTINCT CLI targets (two alias pairs: validate-routes/coderef-validate-routes and scan-frontend-calls/coderef-scan-frontend-calls); both numbers are defensible and the distinction is recorded in the inventory so neither later reads as an error."
+    },
+    {
+      "event": "finding",
+      "phase": 4,
+      "task": "P4-T3",
+      "at": "2026-08-01",
+      "detail": "STRUCTURAL GAP recorded, not resolved: coderef-core's project CONTEXT.md is ASSISTANT-owned and lives OUTSIDE this repo (reached via the CLAUDE.md @import), so no checker run in this repo can detect that door going stale. The SERVER_TOOL_COUNT drift test guards every IN-repo advertised surface; nothing guards the cross-repo one. A tool could therefore be added with all CORE checkers green while the out-of-repo context door silently lies. Declared in the inventory as PROSE (deliberately not as a repo-local path, which would have produced a false dangling-door FAIL) so its unvalidatable status is visible rather than assumed fine. Closing it means either a cross-repo check or relocating the context door -- a fleet-convention decision, not a CORE-local fix. Currently NOT a live defect: the out-of-repo CONTEXT.md does state 37."
+    },
+    {
+      "event": "finding",
+      "phase": 4,
+      "task": "P4-T5",
+      "at": "2026-08-01",
+      "detail": "P4-T5's open question ANSWERED NO, with evidence: /generate-quickstart CANNOT clear the entry-point quickstart WARN. surfaceHasQuickstart() requires a *-quickstart.md in the runnable surface's OWN directory (src/cli/), and the check explicitly rejects a shared ancestor doc as per-surface coverage; /generate-quickstart emits a project-ROOT quickstart. Independently, invoking the generator would have been the wrong call anyway -- discover.cjs still mis-derives project_name ('-coderef-core') and project_description (leaks the frontmatter key), the unfixed P1-T9 finding. Hand-authored src/cli/coderef-mcp-server-quickstart.md instead. NOTE for the generate-quickstart skill owner: this is a second, independent gap in that skill -- it has no per-runnable-surface mode, which the entry-point kind's ratified quickstart contract (STUB-8ZRVSN) now requires."
     }
   ],
   "phase_transitions": [],
