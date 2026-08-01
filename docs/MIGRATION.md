@@ -363,5 +363,5 @@ Create `.coderef/migration-config.json`:
 
 - [CLI Reference](./CLI.md) - All CLI commands
 - [Route Detection](./ROUTE.md) - API route detection
-- [Scanner Guide](./SCANNER.md) - How scanning works
+- [Scanner Guide](../coderef/resource/scanner/SCANNER-SYSTEM.md) - How scanning works
 - [API Reference](./API.md) - Programmatic API

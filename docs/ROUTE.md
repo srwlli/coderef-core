@@ -320,5 +320,5 @@ if (!result.valid) {
 ## See Also
 
 - [CLI Reference](./CLI.md) - All CLI commands
-- [Scanner Guide](./SCANNER.md) - How scanning works
+- [Scanner Guide](../coderef/resource/scanner/SCANNER-SYSTEM.md) - How scanning works
 - [API Reference](./API.md) - Programmatic API

@@ -1781,5 +1781,5 @@ To add a new CLI command:
 ## See Also
 
 - [Scanner Implementation](../coderef/reference/SCANNER-IMPLEMENTATION-REFERENCE.md)
-- [RAG System](../coderef/resource/RAG-SYSTEM.md)
+- [RAG HTTP API](./rag-http-api.md)
 - [API Reference](./API.md)

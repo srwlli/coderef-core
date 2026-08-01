@@ -56,7 +56,7 @@ The Phase 7 indexer returns an `IndexingResult`. The shape is **strictly additiv
 
 ### `ExportedGraph` (Phase 5)
 
-The canonical graph artifact. 8-field edges, 10-variant `EdgeEvidence` discriminated union, `GraphNode.metadata` carries `{ layer, capability, constraints, headerStatus }` for elements with semantic facets. See [docs/SCHEMA.md § 4](./docs/SCHEMA.md).
+The canonical graph artifact. 8-field edges, 10-variant `EdgeEvidence` discriminated union, `GraphNode.metadata` carries `{ layer, capability, constraints, headerStatus }` for elements with semantic facets. See [docs/SCHEMA.md § 4](./SCHEMA.md).
 
 **Edges where `resolutionStatus !== 'resolved'` have `targetId` OMITTED (not synthetic).** This is DR-PHASE-5-A — non-resolved edges declare their disposition through `evidence` and `reason` rather than fabricating a target.
 
@@ -229,12 +229,12 @@ If you find yourself reading any of the above, switch to the artifact contract i
 When integrating with `@coderef/core` for the first time, read in this order:
 
 1. This document (`docs/AGENT-CONTRACT.md`) — agent contract.
-2. [docs/SCHEMA.md](./docs/SCHEMA.md) — full type reference for `ElementData`, raw facts, resolutions, `GraphEdgeV2` / `EdgeEvidence` / `ExportedGraph`, `ValidationReport`, `IndexingResult`.
-3. [docs/CLI.md](./docs/CLI.md) — CLI flag reference for `populate-coderef`, `rag-index`, `rag-search`.
-4. [docs/HEADER-GRAMMAR.md](./docs/HEADER-GRAMMAR.md) — `@coderef-semantic:1.0.0` block grammar (mirror of ASSISTANT canonical).
-5. [docs/API.md](./docs/API.md) — programmatic entry points if you're writing a host other than the CLI.
-6. [docs/rag-http-api.md](./docs/rag-http-api.md) — RAG HTTP server contract.
-7. [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) — phase ordering and architecture overview.
+2. [docs/SCHEMA.md](./SCHEMA.md) — full type reference for `ElementData`, raw facts, resolutions, `GraphEdgeV2` / `EdgeEvidence` / `ExportedGraph`, `ValidationReport`, `IndexingResult`.
+3. [docs/CLI.md](./CLI.md) — CLI flag reference for `populate-coderef`, `rag-index`, `rag-search`.
+4. [docs/HEADER-GRAMMAR.md](./HEADER-GRAMMAR.md) — `@coderef-semantic:1.0.0` block grammar (mirror of ASSISTANT canonical).
+5. [docs/API.md](./API.md) — programmatic entry points if you're writing a host other than the CLI.
+6. [docs/rag-http-api.md](./rag-http-api.md) — RAG HTTP server contract.
+7. [docs/ARCHITECTURE.md](./ARCHITECTURE.md) — phase ordering and architecture overview.
 
 Phase archives (`coderef/archived/pipeline-*/ARCHIVED.md`) document each phase's rationale and acceptance criteria — read these only when you need historical context for *why* the contract is shaped this way.
 
