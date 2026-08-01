@@ -5,8 +5,8 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "implementing",
-  "current_phase": 2,
+  "status": "checkpoint_ready",
+  "current_phase": 3,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\context.json",
@@ -62,6 +62,14 @@
       "id": "DR-P2",
       "at": "2026-08-01T15:05:00Z",
       "detail": "'references' deliberately EXCLUDED from the DEPENDS traversal sets on both adjacency indexes. It targets ordinary code elements, so walking it would change what impact_of returns for every symbol any doc mentions - not additive. Exposed instead via a dedicated CanonicalGraphQuery.docReferences() accessor. 'contains' IS in DEPENDS: it can only land on doc nodes, so it cannot perturb an element-to-element answer. FOLLOW-UP CANDIDATE: operator may rule on widening DEPENDS once real doc-impact data exists."
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "at": "2026-08-01T15:45:00Z",
+      "note": "6 generators + validate-docs exit 0 with the known 25-invalid-UUID-anchor warning (STUB-48QPYN, pre-existing). Regenerated API/EXPORTS/HOTSPOTS/INDEX/RELATIONSHIPS."
     }
   ],
   "phase_transitions": [
@@ -78,6 +86,13 @@
       "commit": "d72e7c193f8f",
       "verdict": "PASS",
       "at": "2026-08-01T15:05:00Z"
+    },
+    {
+      "phase": 3,
+      "to_status": "complete",
+      "commit": "292442eca421",
+      "verdict": "PASS",
+      "at": "2026-08-01T15:45:00Z"
     }
   ],
   "plan_adjustments": [],
@@ -86,11 +101,17 @@
       "timestamp": "2026-08-01T12:44:45.076940+00:00",
       "event": "creation",
       "message": "Workorder created from stub STUB-XB3K8M"
+    },
+    {
+      "event": "workorder_executed",
+      "at": "2026-08-01T15:45:00Z",
+      "detail": "All 3 phases complete: 7971aa8 (section nodes + contains), d72e7c1 (symbol-gated references), 292442e (quarantined fenced lane + E2E + docs). Markdown is now scanned at section grain: 1031 @Doc section nodes, 1031 contains edges, 1254 gated references edges on this repo's own doc surface. Every phase proven additive-only via the DL-6 filtered frozen-tree A/B (code universe byte-identical at 3741 nodes / 45305 edges, sha unchanged); DL-5 full-vs-incremental byte-identical; DL-4 quarantine contract-proven. Full suite 2563 passed / 35 skipped / 0 failed. Terminal hard stop reached - awaiting /close-workorder."
     }
   ],
   "required_skills": [
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "completed_at": "2026-08-01T15:45:00Z"
 }

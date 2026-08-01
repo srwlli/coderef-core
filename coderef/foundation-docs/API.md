@@ -3,8 +3,6 @@ subject: Public API Documentation — @coderef/core
 status: generated
 generator: scripts/doc-gen/enhance-existing-docs.js
 related_files:
-  - dist-old/src/analyzer/ast-element-scanner.js
-  - dist-old/src/scanner/scanner.js
   - src/analyzer/ast-element-scanner.ts
   - src/scanner/scanner.ts
 ---

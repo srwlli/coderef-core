@@ -1,0 +1,49 @@
+=============================================================
+WORKORDER: WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001
+  treat-markdown-files-like-code-section-level-ast  |  3 of 3 PHASES COMPLETE (terminal hard stop)
+Session: SES-2026-08-01-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST
+Commits: 3  |  Pushes: 3 (all origin-verified)  |  Parent stub: STUB-XB3K8M
+
+FILES MODIFIED:
+  ~ src/pipeline/doc-ingest.ts        (7971aa8/d72e7c1/292442e - sections, slugs, mentions, fence lexer, claims seam)
+  ~ src/pipeline/graph-builder.ts     (7971aa8/d72e7c1 - section nodes, contains edges, DL-3 gated references)
+  ~ src/pipeline/output-validator.ts  (7971aa8/d72e7c1 - GI-4 runtime relationship enum)
+  ~ src/export/graph-exporter.ts      (7971aa8/d72e7c1 - exported relationship enum)
+  ~ src/query/canonical-graph.ts      (7971aa8/d72e7c1 - DEPENDS += contains; docReferences() accessor)
+  ~ src/cli/mcp/graph-tools.ts        (7971aa8/d72e7c1 - DEPENDS_KINDS += contains; references exclusion documented)
+  ~ __tests__/pipeline/doc-ingest.test.ts  (23 -> 42 contracts)
+  ~ docs/ARCHITECTURE.md, CHANGELOG.md, USING-CODEREF.md  (292442e)
+  ~ coderef/foundation-docs/{API,EXPORTS,HOTSPOTS,INDEX,RELATIONSHIPS}.md  (Phase 6 gate regen)
+
+PHASE CHECKLIST: 3/3
+  [x] P1 section-level AST nodes + contains edges          (7971aa87b7f6)
+  [x] P2 symbol-gated backtick references                  (d72e7c193f8f)
+  [x] P3 quarantined fenced identifiers + E2E + docs       (292442eca421)
+
+PROOFS:
+  DL-6 filtered frozen-tree A/B, every phase: CODE UNIVERSE BYTE-IDENTICAL
+    (3741 nodes sha 665dd7ce..., 45305 edges sha 08be2c4d...); pre-existing
+    82 @Doc nodes + 121 documents edges id-identical. Additive: 1031 section
+    nodes, 1031 contains edges, 1254 references edges.
+  DL-5 full-vs-incremental byte-identical (4854 nodes / 47711 edges).
+  DL-4 quarantine contract-proven: a snippet-only symbol mints NOTHING anywhere.
+  Gate quality on the live doc surface: 1140 resolved / 73 ambiguous,
+    638 distinct tokens, ZERO path/flag noise admitted.
+  Suite 2563 passed / 35 skipped / 0 failed. Consumer smoke: section nodes
+    resolve, a doc enumerates its 31 sections, orient unaffected.
+
+ADJUSTMENTS:
+  ADJ-1  Build/proof sandbox — the shared checkout does not compile (peer WIP
+         mid-edit in scope-binding.ts + detectors; noEmitOnError:true). All
+         builds/tests/parity ran in a detached-HEAD worktree at HEAD + this
+         WO's files; commits still landed on main. Clean HEAD builds exit 0,
+         which is what proves the breakage is peer WIP, not this WO.
+  FIND-1 A new edge kind needs FIVE enumerations taught, not the two DL-2
+         named — including the output-validator GI-4 RUNTIME gate.
+
+Session: logged (rich)  |  Registry: checkpoint_ready  |  Active-work: removed
+Validator: PASS (WO-scoped)
+
+NEXT: /close-workorder WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001
+      (close ceremonies are OPERATOR-INVOKED, never automatic)
+=============================================================
