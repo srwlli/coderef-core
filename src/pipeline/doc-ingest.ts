@@ -2,7 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability doc-ingestion
- * @exports DOC_ID_PREFIX, DocFact, DocSectionFact, DocIngestResult, docNodeId, docTargets, isDocNodeId, collectDocFacts, parseDocFrontmatter, headingSlug, extractDocSections
+ * @exports DOC_ID_PREFIX, DocFact, DocSectionFact, DocReferenceClaim, DocIngestResult, docNodeId, docTargets, isDocNodeId, collectDocFacts, parseDocFrontmatter, headingSlug, extractDocSections, normalizeMention, lexFencedIdentifiers, docReferenceClaims
  * @used_by src/pipeline/orchestrator.ts, src/pipeline/graph-builder.ts
  */
 
@@ -197,8 +197,72 @@ export function headingSlug(heading: string): string {
 }
 
 /** Opening/closing marker of a fenced code block (``` or ~~~, any indent). */
-const FENCE_RE = /^\s{0,3}(`{3,}|~{3,})/;
+const FENCE_RE = /^\s{0,3}(`{3,}|~{3,})\s*([A-Za-z0-9_+-]*)/;
 const HEADING_RE = /^(#{1,6})\s+(.*\S)\s*$/;
+
+/** Info-string languages whose fenced blocks P3 lexes. */
+const LEXED_FENCE_LANGS = new Set(['ts', 'tsx', 'js', 'jsx', 'typescript', 'javascript']);
+
+/**
+ * Reserved words that are identifier-shaped in a call/`new` position but never
+ * name a repo symbol. Filtering them keeps the candidate list meaningful; the
+ * DL-3 gate would reject them anyway, so this is honesty, not correctness.
+ */
+const JS_KEYWORDS = new Set([
+  'if', 'for', 'while', 'switch', 'catch', 'return', 'typeof', 'instanceof',
+  'await', 'new', 'delete', 'void', 'function', 'class', 'const', 'let', 'var',
+  'import', 'export', 'from', 'as', 'default', 'this', 'super', 'yield', 'in',
+  'of', 'do', 'else', 'try', 'finally', 'throw', 'case', 'break', 'continue',
+]);
+
+/**
+ * Lex the identifiers a fenced ts/js example REFERENCES — imported names, call
+ * callees, and `new` targets — in document order, deduped.
+ *
+ * DL-4 QUARANTINE, and it is the whole point of this function's shape: these
+ * names NEVER enter the global symbol table and never reach the scanner. A doc
+ * example calling `run()` must not mint a call edge into real code, must not
+ * move the resolution-rate denominator, and must not come within reach of
+ * rename_apply. What comes out of here is a list of CANDIDATES for the same
+ * membership gate prose mentions go through — nothing else.
+ *
+ * Deliberately a lexer, not a parser: string and comment bodies are blanked so
+ * a name mentioned in a string literal is not read as a reference, and member
+ * callees (`ctx.run()`) are skipped because the receiver would have to be
+ * typed to know what `run` names.
+ */
+export function lexFencedIdentifiers(code: string): string[] {
+  const scrubbed = code
+    .replace(/\/\*[\s\S]*?\*\//g, ' ')
+    .replace(/\/\/[^\n]*/g, ' ')
+    .replace(/'(?:[^'\\\n]|\\.)*'/g, "''")
+    .replace(/"(?:[^"\\\n]|\\.)*"/g, '""')
+    .replace(/`(?:[^`\\]|\\.)*`/g, '``');
+
+  const out: string[] = [];
+  const seen = new Set<string>();
+  const add = (raw: string): void => {
+    const token = raw.trim();
+    if (!token || JS_KEYWORDS.has(token) || seen.has(token)) return;
+    if (!/^[A-Za-z_$][A-Za-z0-9_$]*$/.test(token)) return;
+    seen.add(token);
+    out.push(token);
+  };
+
+  // Named import bindings: `import { a, b as c } from '...'` -> a, b.
+  for (const m of scrubbed.matchAll(/import\s+(?:type\s+)?\{([^}]*)\}/g)) {
+    for (const part of m[1].split(',')) add(part.split(/\s+as\s+/)[0]);
+  }
+  // Default / namespace imports: `import Foo from '...'`, `import * as Foo`.
+  for (const m of scrubbed.matchAll(/import\s+(?:type\s+)?(?:\*\s+as\s+)?([A-Za-z_$][\w$]*)\s+from/g)) {
+    add(m[1]);
+  }
+  // Call and construction sites, skipping member callees (preceded by `.`).
+  for (const m of scrubbed.matchAll(/(^|[^.\w$])([A-Za-z_$][\w$]*)\s*\(/g)) add(m[2]);
+  for (const m of scrubbed.matchAll(/\bnew\s+([A-Za-z_$][\w$]*)/g)) add(m[1]);
+
+  return out;
+}
 
 /**
  * Parse a markdown body into its heading-delimited sections, in document
@@ -256,6 +320,22 @@ export function extractDocSections(docId: string, text: string): DocSectionFact[
     }
   };
 
+  let fenceLang = '';
+  let fenceBody: string[] = [];
+  /** Attribute a closed ts/js fence's identifiers to its enclosing section. */
+  const flushFence = (): void => {
+    const current = sections[sections.length - 1];
+    if (current && LEXED_FENCE_LANGS.has(fenceLang) && fenceBody.length > 0) {
+      const found = lexFencedIdentifiers(fenceBody.join('\n'));
+      if (found.length > 0) {
+        const bucket = current.codeIdentifiers ?? (current.codeIdentifiers = []);
+        for (const token of found) if (!bucket.includes(token)) bucket.push(token);
+      }
+    }
+    fenceLang = '';
+    fenceBody = [];
+  };
+
   for (let i = start; i < lines.length; i++) {
     const line = lines[i];
     const fenceMatch = line.match(FENCE_RE);
@@ -263,11 +343,20 @@ export function extractDocSections(docId: string, text: string): DocSectionFact[
       const marker = fenceMatch[1][0];
       // A fence closes only on its OWN marker char; ``` inside a ~~~ block is
       // literal content, not a close.
-      if (fence === null) fence = marker;
-      else if (fence === marker) fence = null;
+      if (fence === null) {
+        fence = marker;
+        fenceLang = fenceMatch[2].toLowerCase();
+        fenceBody = [];
+      } else if (fence === marker) {
+        fence = null;
+        flushFence();
+      }
       continue;
     }
-    if (fence !== null) continue;
+    if (fence !== null) {
+      fenceBody.push(line);
+      continue;
+    }
 
     const headingMatch = line.match(HEADING_RE);
     if (!headingMatch) {

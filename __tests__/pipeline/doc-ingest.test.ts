@@ -43,6 +43,7 @@ import {
   headingSlug,
   extractDocSections,
   normalizeMention,
+  lexFencedIdentifiers,
   type DocFact,
 } from '../../src/pipeline/doc-ingest.js';
 import { constructGraph } from '../../src/pipeline/graph-builder.js';
@@ -694,5 +695,104 @@ describe('doc references (DL-3 membership gate)', () => {
   it('extraction stays deterministic with mentions in play (AC-08)', () => {
     const body = '## A\n`loadUsers` and `saveUser`\n## A\n`loadUsers`\n';
     expect(extractDocSections(docId, body)).toEqual(extractDocSections(docId, body));
+  });
+});
+
+/**
+ * WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 P3.
+ *
+ * Fenced-block identifiers, QUARANTINED (DL-4). The quarantine is the
+ * load-bearing invariant: a doc example calling run() must not mint a call
+ * edge into real code, must not move the resolution-rate denominator, and must
+ * not come within reach of rename_apply. Fence identifiers are candidates for
+ * the same membership gate as prose — nothing more.
+ */
+describe('fenced-block identifiers (DL-4 quarantine)', () => {
+  const sheetPath = 'coderef/resource-sheets/client-RESOURCE-SHEET.md';
+  const docId = docNodeId(sheetPath);
+
+  it('lexes imported names, call callees and new targets; skips members, strings, comments', () => {
+    const found = lexFencedIdentifiers([
+      "import { loadUsers, saveUser as persist } from './client.js';",
+      "import Orchestrator from './orch.js';",
+      'const c = new LRUCache();',
+      'loadUsers();',
+      'ctx.shouldBeSkipped();',        // member callee — receiver is untyped
+      "const s = 'notAnIdentifier()';", // inside a string literal
+      '// commentedCall();',
+      'if (x) { while (y) {} }',       // keywords in call position
+    ].join('\n'));
+    expect(found).toContain('loadUsers');
+    expect(found).toContain('saveUser');   // the pre-rename binding, not the alias
+    expect(found).toContain('Orchestrator');
+    expect(found).toContain('LRUCache');
+    for (const excluded of ['shouldBeSkipped', 'notAnIdentifier', 'commentedCall', 'if', 'while']) {
+      expect(found).not.toContain(excluded);
+    }
+  });
+
+  it('attaches identifiers to the enclosing section for ts/js fences only', () => {
+    const sections = extractDocSections(docId, [
+      '## Example',
+      '```ts',
+      'loadUsers();',
+      '```',
+      '## Shell',
+      '```bash',
+      'loadUsers --now',
+      '```',
+    ].join('\n'));
+    expect(sections[0].codeIdentifiers).toEqual(['loadUsers']);
+    expect(sections[1].codeIdentifiers).toBeUndefined(); // bash is not a lexed lang
+    expect(sections[0].mentions).toEqual([]);            // fence content is not prose
+  });
+
+  it('mints a references edge with origin=code-block when the symbol table backs it', () => {
+    const sections = extractDocSections(docId, '## Example\n```ts\nloadUsers();\n```\n');
+    const graph = constructGraph(makeState([sheetFact({ sections })]));
+    const refs = graph.edges.filter(e => e.relationship === 'references');
+    expect(refs).toHaveLength(1);
+    expect(refs[0].resolutionStatus).toBe('resolved');
+    expect((refs[0].evidence as { origin: string }).origin).toBe('code-block');
+  });
+
+  it('QUARANTINE PROOF: a snippet-only symbol mints nothing anywhere', () => {
+    const sections = extractDocSections(
+      docId,
+      '## Example\n```ts\nimport { ghostApi } from "nowhere";\nghostApi();\nnew PhantomThing();\n```\n',
+    );
+    // The lexer sees them...
+    expect(sections[0].codeIdentifiers).toEqual(expect.arrayContaining(['ghostApi', 'PhantomThing']));
+    const graph = constructGraph(makeState([sheetFact({ sections })]));
+    // ...but nothing about them reaches the graph: no node, no edge of any
+    // kind, and in particular no call/import edge into real code.
+    const ids = graph.nodes.map(n => n.id).join('|');
+    expect(ids).not.toContain('ghostApi');
+    expect(ids).not.toContain('PhantomThing');
+    expect(graph.edges.filter(e => e.relationship === 'references')).toHaveLength(0);
+    for (const e of graph.edges) {
+      const ev = (e.evidence ?? {}) as { calleeName?: string; originSpecifier?: string };
+      expect(ev.calleeName).not.toBe('ghostApi');
+      expect(ev.originSpecifier).not.toBe('nowhere');
+    }
+    // The code universe is exactly what it was with no doc at all.
+    const bare = constructGraph(makeState([]));
+    const codeIds = (g: typeof graph) =>
+      g.nodes.filter(n => !String(n.id).startsWith('@Doc/')).map(n => n.id).sort();
+    expect(codeIds(graph)).toEqual(codeIds(bare));
+    expect(graph.edges.filter(e => e.relationship === 'call')).toHaveLength(0);
+  });
+
+  it('a token named in BOTH lanes is ONE claim, attributed to prose', () => {
+    const sections = extractDocSections(
+      docId,
+      '## Both\nUse `loadUsers` like so:\n```ts\nloadUsers();\n```\n',
+    );
+    expect(sections[0].mentions).toContain('loadUsers');
+    expect(sections[0].codeIdentifiers).toContain('loadUsers');
+    const refs = constructGraph(makeState([sheetFact({ sections })]))
+      .edges.filter(e => e.relationship === 'references');
+    expect(refs).toHaveLength(1);
+    expect((refs[0].evidence as { origin: string }).origin).toBe('prose');
   });
 });

@@ -6,7 +6,7 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "status": "implementing",
-  "current_phase": 1,
+  "current_phase": 2,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\treat-markdown-files-like-code-section-level-ast\\context.json",
@@ -56,6 +56,12 @@
       "id": "FIND-1",
       "at": "2026-08-01T14:30:00Z",
       "detail": "A new edge kind must be taught FIVE enumerations, not the two the plan's DL-2 named: graph-builder EdgeRelationship, graph-exporter ExportedGraphEdgeRelationship, output-validator VALID_RELATIONSHIPS (a RUNTIME GI-4 gate that failed the populate, not just a type), canonical-graph DEPENDS, mcp/graph-tools DEPENDS_KINDS. Only the last two are compile-checked-adjacent; the validator one fails at scan time."
+    },
+    {
+      "event": "decision",
+      "id": "DR-P2",
+      "at": "2026-08-01T15:05:00Z",
+      "detail": "'references' deliberately EXCLUDED from the DEPENDS traversal sets on both adjacency indexes. It targets ordinary code elements, so walking it would change what impact_of returns for every symbol any doc mentions - not additive. Exposed instead via a dedicated CanonicalGraphQuery.docReferences() accessor. 'contains' IS in DEPENDS: it can only land on doc nodes, so it cannot perturb an element-to-element answer. FOLLOW-UP CANDIDATE: operator may rule on widening DEPENDS once real doc-impact data exists."
     }
   ],
   "phase_transitions": [
@@ -65,6 +71,13 @@
       "commit": "7971aa87b7f6",
       "verdict": "PASS",
       "at": "2026-08-01T14:35:00Z"
+    },
+    {
+      "phase": 2,
+      "to_status": "complete",
+      "commit": "d72e7c193f8f",
+      "verdict": "PASS",
+      "at": "2026-08-01T15:05:00Z"
     }
   ],
   "plan_adjustments": [],

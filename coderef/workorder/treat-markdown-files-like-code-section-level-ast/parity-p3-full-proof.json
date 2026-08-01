@@ -1,0 +1,63 @@
+{
+  "phase": 3,
+  "instrument": "DL-6 filtered frozen-tree A/B + DL-5 full-vs-incremental byte identity",
+  "binding_claims": {
+    "code_universe_byte_identical_vs_pre_WO": {
+      "verdict": "PASS",
+      "node_count": [
+        3741,
+        3741
+      ],
+      "node_sha256": "665dd7ce3d477007d573dec69155ed91b6f58e2af634e0268e54e2b85f19d272",
+      "node_sha256_match": true,
+      "edge_count": [
+        45305,
+        45305
+      ],
+      "edge_sha256": "08be2c4dbf9cf6c7f245fca8a3e8bfbf5afcbc5ee2d21d7f2589757f4857e0f9",
+      "edge_sha256_match": true
+    },
+    "pre_existing_doc_rows_id_identical": {
+      "verdict": "PASS",
+      "doc_file_node_sha256_match": true,
+      "documents_edge_sha256_match": true
+    },
+    "p2_section_nodes_unperturbed": {
+      "verdict": "PASS",
+      "section_node_sha256_match": true
+    },
+    "full_vs_incremental_byte_identity": {
+      "verdict": "PASS",
+      "nodes": 4854,
+      "node_sha256": "d0ff49e7149178ed...",
+      "edges": 47711,
+      "edge_sha256": "e31460f29011122f...",
+      "note": "DL-5 \u2014 doc facts are re-collected fresh on both paths, so section/reference parity holds by construction."
+    }
+  },
+  "quarantine_proof_DL4": {
+    "verdict": "PASS",
+    "contract": "a snippet-only symbol (ghostApi / PhantomThing, present only inside a fenced example) mints NO node, NO references edge, NO call edge, and leaves the code-node set identical to a no-doc build",
+    "consequence": "doc examples cannot move resolution-rate, cannot mint call edges into real code, and cannot be reached by rename --apply"
+  },
+  "additive_growth": {
+    "fenced_lane_references_added": 41,
+    "doc_touching_edges_by_phase": {
+      "pre_WO": 121,
+      "P2": 2365,
+      "P3": 2406
+    },
+    "section_nodes": 1031
+  },
+  "tests": {
+    "doc_ingest_suite": "42/42 passed (23 pre-existing + 19 new across P1/P2/P3)",
+    "full_suite": "2563 passed / 35 skipped / 0 failed (exit 0, sandbox worktree at HEAD + this WO's files)",
+    "vitest_reporter_note": "first full-suite attempt used --reporter=line, which vitest 4 cannot load -> startup crash, exit 1, ZERO tests run. Re-run with the default reporter. Counts, not exit codes (KZ class)."
+  },
+  "consumer_smoke": {
+    "section_node_resolves": "coderef-query what-depends-on-me on @Doc/.../API.md#api-reference returns its parent doc (contains walked)",
+    "doc_enumerates_sections": "what-depends-on on @Doc/.../API.md returns 31 section nodes",
+    "orient_unaffected": "orient renders normally, doc nodes do not perturb the skeleton map"
+  },
+  "verdict": "PASS"
+}

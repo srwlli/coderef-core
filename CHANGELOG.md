@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-08-01] — markdown at section grain: `@Doc/x.md#slug` nodes, `contains` + symbol-gated `references` edges (STUB-XB3K8M)
+
+WO-TREAT-MARKDOWN-FILES-LIKE-CODE-SECTION-LEVEL-AST-001 — docs stop being opaque whole-file nodes.
+
+- **Section nodes (P1)**: `doc-ingest.ts` parses heading hierarchy into `@Doc/<path>#<slug>` sub-nodes, ADDITIVE children of the retained whole-file node, joined by a new resolved `contains` edge carrying `{depth, order}`. GitHub-style slugs normalize case/punctuation so cosmetic heading edits do not re-key a section; duplicates disambiguate `-2`/`-3` in document order. Headings inside fenced blocks (a shell transcript's `# comment`) and inside frontmatter are correctly NOT headings.
+- **Symbol-gated references (P2)**: an identifier-shaped backtick span mints a `references` edge only when the symbol table backs the name. No match mints NOTHING (asymmetric by design — `--stale-only` is not a symbol claim); more than one match mints an `ambiguous` edge with all candidates rather than guessing. On this repo's own doc surface: 1213 edges, 1140 resolved / 73 ambiguous, 638 distinct tokens, zero path/flag noise.
+- **Quarantined fenced-block lane (P3)**: identifiers lexed from ` ```ts `/` ```js ` blocks feed the SAME gate, tagged `evidence.origin='code-block'`. They NEVER enter the global symbol table — a doc example calling `run()` cannot mint a call edge into real code, skew resolution-rate metrics, or reach `rename --apply`. Contract-tested: a snippet-only symbol mints nothing anywhere.
+- **Query surface**: `CanonicalGraphQuery.docReferences(query)` answers "which prose names this symbol". `references` is deliberately NOT in either adjacency index's dependency set, so existing `impact_of` answers are unchanged; `contains` IS (it can only land on doc nodes).
+- **Additive-only, proven**: filtered frozen-tree A/B at every phase — code universe byte-identical (3741 nodes, 45305 edges, unchanged sha256), pre-existing `@Doc` nodes and `documents` edges id-identical; full-vs-incremental output byte-identical. Five relationship enumerations taught (graph-builder, graph-exporter, the output-validator GI-4 runtime gate, and both adjacency indexes).
+
+---
+
 ## [2026-08-01] — cross-repo workspace linkage: opt-in `.coderef/workspace.json` + `impact_of workspace:true` (STUB-6PGFZ3, genre-features P12)
 
 WO-CROSS-REPO-WORKSPACE-LINKAGE-001 — external edges to sibling workspace repos stop being dead ends.
