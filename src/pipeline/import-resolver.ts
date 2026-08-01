@@ -2,8 +2,8 @@
  * @coderef-semantic: 1.0.0
  * @layer service
  * @capability import-resolver-import-resolution-kind
- * @exports ImportResolutionKind, ImportResolution, ExportTableEntry, ExportTable, resolveImports, buildExportTables, resolveAstImports, resolveHeaderImports, classifyBareSpecifier, resolveTransitiveReExport, resolveModuleSpecifier
- * @used_by src/pipeline/orchestrator.ts, src/pipeline/types.ts
+ * @exports ImportResolutionKind, ImportResolution, ExportTableEntry, ExportTable, resolveImports, applyWorkspaceLinkage, buildExportTables, resolveAstImports, resolveHeaderImports, classifyBareSpecifier, resolveTransitiveReExport, resolveModuleSpecifier
+ * @used_by src/pipeline/phases/resolve-tail.ts, src/pipeline/types.ts, __tests__/pipeline/builtin-classification.test.ts, __tests__/pipeline/chain-root-receiver-disposition.contract.test.ts, __tests__/pipeline/external-receiver-disposition.contract.test.ts, __tests__/pipeline/field-and-arrow-scope-binding.contract.test.ts, __tests__/pipeline/graph-test-origin-tagging.test.ts, __tests__/pipeline/heritage-method-lookup.contract.test.ts, __tests__/pipeline/qualified-annotation-receiver-disposition.contract.test.ts, __tests__/pipeline/test-dsl-reclassify.contract.test.ts
  */
 
 /**

@@ -238,6 +238,47 @@
       "summary": "Operator added two cross-cutting tasks mid-phase-5, 2026-08-01: (1) update the docs/headers of every file this WO touched, using coderef itself; (2) ensure the MCP and CLI surfaces carry the capabilities this WO adds.",
       "disposition": "Tracked as tasks #44 and #45. Task #45 must report honestly which changes are genuine capabilities with a surface to expose versus internal corrections with none - not every phase here adds a capability.",
       "at": "2026-08-02T00:50:00Z"
+    },
+    {
+      "event": "mcp_cli_surface_audit",
+      "summary": "Operator task #45. Traced every phase change to the CLI and MCP surfaces. HONEST HEADLINE: this workorder adds NO new user-facing capability. All five phases are corrections to existing behaviour, and every one of them reaches both surfaces already, through shared code - there is nothing to wire and nothing to flag.",
+      "per_phase": [
+        {
+          "phase": 1,
+          "change": "element-extractor scoped-traversal returns (Rust/Java/C++)",
+          "surface": "BOTH, via shared code. ElementExtractor is the single producer for the pipeline path (populate/coderef-pipeline) AND the scanner path (scanFileWithTreeSitter, used by coderef-scan). MCP find_element / symbol_context / what_this_calls read the artifacts both produce.",
+          "new_flag_needed": false,
+          "note": "The fix changes DATA QUALITY on surfaces that already exist. A flag would be wrong here - nobody wants to opt into duplicate elements."
+        },
+        {
+          "phase": 2,
+          "change": "qualifyScopes opt-in + observable relationship-attach failures",
+          "surface": "Scanner path only, BY DESIGN, and this is the one that needed real tracing.",
+          "new_flag_needed": false,
+          "finding": "The phase-2 note claimed the default is kept off because ctx.calls \"feeds the canonical graph builder\". That is IMPRECISE and I corrected it in the source and the test. orchestrator.ts:463 feeds ctx.calls into legacyGraphPhase (resolve-tail.ts:47), which builds a SEED graph object; constructGraphPhase (resolve-tail.ts:109) then Object.assign-s canonical nodes/edges over it, built from extractRawCalls - whose RawCallFact.scopePath is a string[] and therefore never lost the enclosing class. The canonical graph, which is what MCP graph tools and coderef-query actually read, was NEVER exposed to the fabrication defect. So: no CLI/MCP parity gap, and the default-off decision is still right, but for a narrower reason than phase 2 recorded."
+        },
+        {
+          "phase": 3,
+          "change": "renamed re-export resolution",
+          "surface": "BOTH. import-resolver runs inside the pipeline, so its output lands in .coderef and is read identically by coderef-query and by MCP what_imports / what_exports / find_all_references / unresolved_edges.",
+          "new_flag_needed": false
+        },
+        {
+          "phase": 4,
+          "change": "JsonVectorStore mutation durability",
+          "surface": "BOTH. JsonVectorStore is the default store for the rag-index CLI and the MCP rag_index tool. The guard is unconditional - a durability property, not an option.",
+          "new_flag_needed": false
+        },
+        {
+          "phase": 5,
+          "change": "GraphReRanker degenerate-input guards",
+          "surface": "NEITHER, and that is a finding rather than a gap.",
+          "new_flag_needed": false,
+          "finding": "GraphReRanker.rerank is called from exactly one place in src/ - answer-generation-service.ts:176 - passing options?.rerankingOptions. That field is NEVER populated anywhere in src/: it is declared at :57 and read at :178, and nothing else touches it. AnswerGenerationService itself has zero callers under src/cli/. So no CLI flag and no MCP parameter can reach the new throw today; it guards a library-level entry point only. Adding a --reranker-weight flag to make it reachable would be inventing a surface this workorder was not asked to build."
+        }
+      ],
+      "docs_updated": "Ran the real tool rather than hand-editing: populate --source-headers --include scoped to the six touched source files. Five were reported \"already has semantic headers, skipping\" - the generator does not overwrite an existing header. One, import-resolver.ts, was flagged stale by exports_match_ast and refreshed with --stale-only --include: applyWorkspaceLinkage was exported but absent from @exports (pre-existing drift from the cross-repo workspace-linkage WO, in a file this WO touched), and @used_by was rebuilt from reality. No CLI.md or ARCHITECTURE.md change is owed, because no flag, tool or option was added - see per_phase above.",
+      "at": "2026-08-02T01:30:00Z"
     }
   ],
   "phase_transitions": [

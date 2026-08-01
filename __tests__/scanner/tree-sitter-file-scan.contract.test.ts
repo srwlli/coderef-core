@@ -142,9 +142,15 @@ describe('tree-sitter-file-scan relationship contract (phase 2)', () => {
   });
 
   it('(g) the pipeline path is untouched — qualifyScopes defaults OFF', async () => {
-    // The default MUST stay bare-overwrite: orchestrator.ts:463 feeds ctx.calls
-    // into the canonical graph builder (resolve-tail.ts:47), so changing the
-    // default would move the graph.
+    // The default MUST stay bare-overwrite. Traced precisely during the phase-5
+    // surface audit: orchestrator.ts:463 feeds ctx.calls into legacyGraphPhase
+    // (resolve-tail.ts:47), which builds a SEED graph that constructGraphPhase
+    // (resolve-tail.ts:109) then overwrites with canonical nodes/edges built
+    // from extractRawCalls. RawCallFact.scopePath is a string[], so the
+    // canonical graph never lost the enclosing class and was never exposed to
+    // this defect. Pinning the default is about not re-specifying a legacy seam
+    // mid-fix — NOT, as the phase-2 note claimed, about protecting the
+    // canonical graph.
     const { GrammarRegistry } = await import('../../src/pipeline/grammar-registry.js');
     const parser = await GrammarRegistry.getInstance().getParser('ts');
     expect(parser, 'ts grammar must load; a missing parser is a FAILURE, not a skip').toBeTruthy();

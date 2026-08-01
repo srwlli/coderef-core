@@ -72,8 +72,17 @@ export async function scanFileWithTreeSitter(
   // Matching on the qualified identity is only possible because extractCalls is
   // now asked to COMPOSE method scope (`qualifyScopes`); by default it overwrites
   // the class scope with the bare method name, which is where the identity was
-  // actually destroyed. That default is kept for the pipeline path, whose
-  // ctx.calls feeds the canonical graph builder.
+  // actually destroyed.
+  //
+  // The default stays OFF for the pipeline path. Traced during the phase-5
+  // surface audit, more precisely than the phase-2 note claimed: orchestrator.ts:463
+  // feeds ctx.calls into legacyGraphPhase (resolve-tail.ts:47), which builds a
+  // SEED graph object — and constructGraphPhase (resolve-tail.ts:109) then
+  // Object.assign-s canonical nodes/edges over it, built from extractRawCalls,
+  // whose RawCallFact.scopePath is a string[] and so never lost the enclosing
+  // class in the first place. The canonical graph was never exposed to this
+  // defect. Keeping the default off is therefore about not re-specifying a
+  // legacy seam mid-fix, not about protecting the canonical graph from it.
   if (realExt === 'ts' || realExt === 'tsx') {
     try {
       const fileImports = relationshipExtractor.extractImports(tree.rootNode, file, content, realExt);
