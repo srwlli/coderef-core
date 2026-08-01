@@ -18,7 +18,17 @@
   },
   "execution_rules": [],
   "hard_constraints": [],
-  "blockers": [],
+  "blockers": [
+    {
+      "id": "BLK-PEER-INDEX",
+      "severity": "blocking",
+      "summary": "Shared checkout index held by peer WO; guarded-runner pre-staged-sweep guard will refuse any commit until it clears.",
+      "opened_at": "2026-07-31",
+      "status": "resolved",
+      "resolved_at": "2026-08-01",
+      "resolution": "Peer WO committed at 76ab967; staged count returned to 0. P1 re-executed with a commit after every single file edit, per execute-workorder Step 4.6."
+    }
+  ],
   "parent_stub_id": "STUB-GD163J",
   "decisions_log": [
     {
@@ -32,6 +42,33 @@
       "count": 41,
       "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/b6925717-3dcc-4c8d-b419-1ea1cda6fce7/scratchpad/standards-burndown-tasks.json",
       "at": "2026-08-01T01:48:53.356493+00:00"
+    },
+    {
+      "event": "execution_halted_peer_collision",
+      "phase": 1,
+      "at": "2026-01-01T00:00:00.000Z",
+      "detail": "P1 doc edits to VISION.md, roadmap.md, docs/API.md, docs/AUDIT-REPORT.md, docs/COMPONENTS.md, docs/ARCHITECTURE.md, docs/AGENT-WORKFLOW-GUIDE.md, coderef/resource/GRAPH-HELPERS-MIGRATION.md and src/coderef/migration-strategy.md were completed and then LOST before commit. Working tree returned clean, no stash, HEAD unchanged. A peer agent executing WO-RETIRE-OR-QUARANTINE-SRC-SCANNER-TREE-SITTER-SCANNER now holds 16 staged files in the shared index. Execution halted rather than rewriting into a tree another agent is actively restoring."
+    },
+    {
+      "event": "p1_complete",
+      "phase": 1,
+      "at": "2026-08-01",
+      "detail": "documentation kind 12 FAIL -> 2 FAIL (184 pass / 118 warn / 1 skip). Nine doc edits re-authored after the peer-collision loss, each committed individually: 81575db VISION, 3eb85fb roadmap, c9e1634 API, 4ba61b5 ARCHITECTURE, 9573c4c AGENT-WORKFLOW-GUIDE, 4d1521a AUDIT-REPORT, d910d60 COMPONENTS, 77d1a99 migration-strategy, b1ae276 GRAPH-HELPERS-MIGRATION, 1781da6 quickstart frontmatter."
+    },
+    {
+      "event": "declared_exemption",
+      "phase": 1,
+      "task": "P1-T10",
+      "at": "2026-08-01",
+      "detail": "The 2 remaining documentation FAILs are both coderef/working/repo-review-2026-07-remediation/context.md (missing sections + no frontmatter). NOT FIXED, deliberately. Standing operator amendment: \"Do NOT edit anything under coderef/archived/ or coderef/working/ -- those are historical records and must keep their original names.\" Editing the file to pass would violate the amendment; the FAIL is accepted as the honest state.",
+      "surfaced_question": "The documentation kind already excludes **/coderef/workorder/** as working artifacts, and **/ARCHIVED/** as frozen history. coderef/working/** is neither excluded nor editable, so it can only ever FAIL. Options: (A) add **/coderef/working/** to the kind exclusion globs on the same frozen-history rationale as ARCHIVED, (B) leave it graded and carry a permanent 2-FAIL floor in every core project with a working folder, (C) scope it to the specific doctype. This is a fleet-wide standards-kind change, not a CORE-local fix -- NOT decided unilaterally."
+    },
+    {
+      "event": "defect_found",
+      "phase": 1,
+      "task": "P1-T9",
+      "at": "2026-08-01",
+      "detail": "generate-quickstart template fixed at source (ASSISTANT ea0aa0c10) to emit title/status/updated + derived/generated_by/documents, per the generated-view-is-derived doctrine. The generated file was NOT regenerated: discover.cjs currently mis-derives project_name as \"-coderef-core\" (leading dash) and project_description as \"title: @coderef/core\" (leaks the frontmatter key), so a regeneration would DEGRADE the existing correct output. The output was instead synced to the fixed template by hand. discover.cjs defect is unfixed and belongs to the generate-quickstart skill owner."
     }
   ],
   "phase_transitions": [],
