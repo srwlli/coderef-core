@@ -8,13 +8,17 @@
 /**
  * coderef-pipeline - Unified CodeRef orchestration CLI.
  *
- * Chains the five standard legs in order against a target project:
- *   1. scan            - element discovery (coderef-scan)
- *   2. populate        - generate all .coderef/ artifacts (populate-coderef)
- *   3. map             - emit .coderef/map/ (data.json + graph.html +
+ * Chains the standard legs in order against a target project (default run —
+ * the scan leg is an explicit-only diagnostic since P4 of
+ * WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001; populate is the single
+ * canonical parse):
+ *   1. populate        - generate all .coderef/ artifacts (populate-coderef)
+ *   2. map             - emit .coderef/map/ (data.json + graph.html +
  *                        dashboard.html) via coderef-map --no-open
- *   4. foundation-docs - render docs/foundation/*.md via scripts/doc-gen/
- *   5. rag-index       - build the RAG vector index (Ollama-only in this path)
+ *   3. foundation-docs - render docs/foundation/*.md via scripts/doc-gen/
+ *   4. rag-index       - build the RAG vector index (Ollama-only in this path)
+ *   (scan             - lightweight element-count diagnostic; run explicitly
+ *                        with --only=scan; writes no artifacts)
  *
  * Design:
  *   - Each leg runs as a child process so leg-local argv + env stay isolated.
@@ -55,6 +59,13 @@ interface CliArgs {
 const LEG_NAMES = ['scan', 'populate', 'map', 'docs', 'rag'] as const;
 type Leg = (typeof LEG_NAMES)[number];
 
+// P4 (WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001): the scan leg is no
+// longer part of the DEFAULT run. coderef-scan writes no artifact — it was a
+// second full parse whose output was discarded before populate re-parsed the
+// project through PipelineOrchestrator. A default run now parses ONCE. The
+// scan leg remains a valid explicit diagnostic via --only=scan.
+const DEFAULT_LEG_NAMES: readonly Leg[] = ['populate', 'map', 'docs', 'rag'];
+
 function printHelp(): void {
   console.log(`coderef-pipeline - unified CodeRef orchestration
 
@@ -84,9 +95,9 @@ OPTIONS:
   -v, --verbose              Forward verbose flag to sub-commands.
   -h, --help                 Show this help.
 
-LEG ORDER:
-  1. scan            - coderef-scan <project-dir>
-  2. populate        - populate-coderef <project-dir>
+LEG ORDER (default; scan is explicit-only via --only=scan):
+  1. populate        - populate-coderef <project-dir>  (single canonical parse)
+  2. map             - coderef-map --no-open
   3. docs            - node scripts/doc-gen/generate-*.js --project-dir <path>
   4. rag             - rag-index --project-dir <path>  (local-only Ollama)
 
@@ -178,8 +189,11 @@ function parseArgs(argv: string[]): CliArgs {
 }
 
 function resolveLegs(args: CliArgs): Leg[] {
-  let legs: Leg[] = [...LEG_NAMES];
-  if (args.only) legs = legs.filter(l => args.only!.has(l));
+  // --only selects from ALL valid legs (so --only=scan still works as an
+  // explicit diagnostic); the default run excludes the redundant scan leg.
+  let legs: Leg[] = args.only
+    ? LEG_NAMES.filter(l => args.only!.has(l))
+    : [...DEFAULT_LEG_NAMES];
   if (args.skip) legs = legs.filter(l => !args.skip!.has(l));
   return legs;
 }

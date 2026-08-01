@@ -157,10 +157,16 @@ elements.forEach(el => {
 
 ### Generate Output Files
 
-```typescript
-import { saveIndex, generateContext, buildDependencyGraph } from '@coderef/core';
+The canonical producer of every `.coderef/` artifact is **`populate-coderef`**
+(the `PipelineOrchestrator` generators). The scanner-era writers remain
+available for unpopulated directories through the explicit legacy subpath —
+they refuse to overwrite a pipeline-owned `.coderef/` unless passed
+`{ force: true }` (WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001):
 
-// Scan and save to .coderef/index.json
+```typescript
+import { saveIndex, generateContext, buildDependencyGraph } from '@coderef/core/legacy';
+
+// Scan and save to .coderef/index.json (legacy compatibility path)
 const elements = await scanCurrentElements('./src', ['ts', 'tsx']);
 await saveIndex('./my-project', elements);
 
@@ -417,18 +423,18 @@ Generate 17 analysis files organized in 3 phases:
 
 **Phase 1 - Core Files:**
 ```typescript
-import { saveIndex, generateContext, buildDependencyGraph } from '@coderef/core';
+import { saveIndex, generateContext, buildDependencyGraph } from '@coderef/core/legacy';
 
 await saveIndex(projectPath, elements);          // .coderef/index.json + routes.json (NEW)
 await generateContext(projectPath, elements);    // .coderef/context.{json,md}
 await buildDependencyGraph(projectPath, elements); // .coderef/graph.json
 ```
 
-> **Note (corrected 2026-07-31):** `saveIndex()` is the LEGACY producer and has no production call site — `PipelineOrchestrator` replaced that path. `.coderef/routes.json` and `.coderef/frontend-calls.json` are produced by **`populate-coderef <path> --mode full`**, across all seven supported frameworks.
+> **Note (corrected 2026-07-31):** `saveIndex()` is the LEGACY producer and has no production call site — `PipelineOrchestrator` replaced that path. Since WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001 the legacy writers import from `@coderef/core/legacy` only, and each refuses to overwrite a pipeline-owned `.coderef/` without `{ force: true }`. `.coderef/routes.json` and `.coderef/frontend-calls.json` are produced by **`populate-coderef <path> --mode full`**, across all seven supported frameworks.
 
 **Phase 2 - Analysis Reports:**
 ```typescript
-import { detectPatterns, analyzeCoverage, validateReferences, detectDrift } from '@coderef/core';
+import { detectPatterns, analyzeCoverage, validateReferences, detectDrift } from '@coderef/core/legacy';
 
 await detectPatterns(projectPath, elements);     // .coderef/reports/patterns.json
 await analyzeCoverage(projectPath, elements);    // .coderef/reports/coverage.json
@@ -481,17 +487,12 @@ See **[docs/API.md](docs/API.md)** for the complete public API contract (post-re
 
 | Export | Type | Description |
 |--------|------|-------------|
-| `scanCurrentElements` | Function | Scan code elements from directory |
+| `scanCurrentElements` | Function | Scan code elements from directory (retained lightweight API) |
 | `LANGUAGE_PATTERNS` | Object | Pattern definitions by language |
 | `CanonicalGraphQuery` / `loadCanonicalGraph` | Class / Function | Relationship queries over canonical `.coderef/graph.json` |
-| `saveIndex` | Function | Save scan results to JSON |
-| `generateContext` | Function | Generate context files |
-| `buildDependencyGraph` | Function | Build dependency graph |
-| `detectPatterns` | Function | Detect code patterns (handlers, API, tests) |
-| `analyzeCoverage` | Function | Analyze test coverage |
-| `validateReferences` | Function | Validate references and imports |
-| `detectDrift` | Function | Detect changes since last scan |
-| `generateDiagrams` | Function | Generate Mermaid/Graphviz diagrams |
+| `PipelineOrchestrator` + generators | Classes | Canonical producers of every `.coderef/` artifact |
+| `ContextGenerator` (= `PipelineContextGenerator`) | Class | Canonical context artifact generator; the scanner-backed service is `CodebaseContextService` |
+| `saveIndex`, `generateContext`, `buildDependencyGraph`, `detectPatterns`, `analyzeCoverage`, `validateReferences`, `detectDrift`, `generateDiagrams` | Functions (`@coderef/core/legacy`) | Quarantined legacy writers — refuse to overwrite a pipeline-owned `.coderef/` without `{force:true}` |
 | `TypeDesignator` | Enum | 26 type designators |
 | `generateValidationReport` | Function | Validate frontend calls vs server routes |
 | `generateMarkdownReport` | Function | Generate validation report with fix suggestions |
@@ -625,7 +626,8 @@ npm run test:ui
 
 ```typescript
 // app/api/scanner/scan/route.ts
-import { scanCurrentElements, saveIndex } from '@coderef/core';
+import { scanCurrentElements } from '@coderef/core';
+import { saveIndex } from '@coderef/core/legacy';
 
 export async function POST(request: Request) {
   const { projectPath } = await request.json();

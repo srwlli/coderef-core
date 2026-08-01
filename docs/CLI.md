@@ -50,7 +50,7 @@ node dist/src/cli/index.js <command>
 ## coderef-pipeline
 
 Unified orchestrator that chains the four standard CodeRef legs in order
-against a single target project: **scan → populate → foundation-docs → RAG**.
+against a single target project: **populate → map → foundation-docs → RAG** (populate is the single canonical parse; the `scan` leg is an explicit-only diagnostic via `--only=scan` since WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001 P4).
 
 ### Usage
 
@@ -79,7 +79,7 @@ npx coderef-pipeline --project-dir /path/to/project --dry-run
 | Flag | Description | Default |
 |------|-------------|---------|
 | `--project-dir <path>` | Target project root (**required**). Propagated to populate, doc-gen, and rag-index. Also accepts first positional argument. | — |
-| `--only <legs>` | Comma-separated subset to run (`scan`, `populate`, `docs`, `rag`). | All legs |
+| `--only <legs>` | Comma-separated subset to run (`scan`, `populate`, `map`, `docs`, `rag`). | Default legs (`populate,map,docs,rag`; `scan` is explicit-only) |
 | `--skip <legs>` | Comma-separated legs to skip. | None |
 | `--ollama-base-url <url>` | Ollama endpoint used by the rag leg. | `http://localhost:11434` or `CODEREF_LLM_BASE_URL` |
 | `--ollama-model <name>` | Ollama embedding model. | `nomic-embed-text` or `CODEREF_LLM_MODEL` |
@@ -446,7 +446,7 @@ humans open `graph.html`.
 
 ## coderef-watch
 
-Workspace file-watcher daemon for foundation-docs freshness. Watches the project via chokidar, debounces edits (default 30s), and on each flush runs a **graph-safe incremental populate by default** (STUB-6TKGW7): the debounced changed-file snapshot goes to `populate --changed-files` (re-scan only changed files, resolve against the persisted full fact set — byte-identical to a full rebuild, proven by the RISK-02 parity gate; fail-closed to a full build on the first flush when no fact set exists yet), then the `docs` (and `rag`, unless RAG is skipped) legs refresh so **all** artifacts stay fresh, not just graph/index (STUB-9DN53Q). Pass `--full` to opt back into an always-full `coderef-pipeline --only scan,populate,docs[,rag]` on every flush. After every flush attempt, writes `{project-dir}/.coderef/last-scan.json` atomically (temp + rename) so LLOYD can compute `doc_age_seconds = now − last_scan_at` cheaply on every pre-prompt assembly.
+Workspace file-watcher daemon for foundation-docs freshness. Watches the project via chokidar, debounces edits (default 30s), and on each flush runs a **graph-safe incremental populate by default** (STUB-6TKGW7): the debounced changed-file snapshot goes to `populate --changed-files` (re-scan only changed files, resolve against the persisted full fact set — byte-identical to a full rebuild, proven by the RISK-02 parity gate; fail-closed to a full build on the first flush when no fact set exists yet), then the `docs` (and `rag`, unless RAG is skipped) legs refresh so **all** artifacts stay fresh, not just graph/index (STUB-9DN53Q). Pass `--full` to opt back into an always-full `coderef-pipeline --only populate,docs[,rag]` on every flush (the redundant scan leg was removed from full flushes in WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001 P4). After every flush attempt, writes `{project-dir}/.coderef/last-scan.json` atomically (temp + rename) so LLOYD can compute `doc_age_seconds = now − last_scan_at` cheaply on every pre-prompt assembly.
 
 WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001. Incremental leg: WO-AGENT-NATIVE-CAPABILITY-GAPS-001 P5/RISK-02 + WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001 follow-ups (STUB-9DN53Q docs/RAG refresh, STUB-6TKGW7 default flip).
 

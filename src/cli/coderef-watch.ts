@@ -11,7 +11,7 @@
  * WO-CHOKIDAR-DOC-FRESHNESS-DAEMON-001.
  *
  * Watches the project workspace via chokidar, debounces file-change events,
- * and on flush invokes the unified coderef-pipeline (scan -> populate -> docs,
+ * and on flush invokes the unified coderef-pipeline (populate -> docs,
  * skipping the RAG leg by default). On every flush attempt, writes a heartbeat
  * to .coderef/last-scan.json atomically (temp + rename) so LLOYD can read
  * doc_age_seconds = now - last_scan_at on every pre-prompt assembly.
@@ -103,7 +103,7 @@ OPTIONS:
                            kept for back-compat. First flush (no fact set yet)
                            falls back to a full build.
   --full, --no-incremental Opt out of incremental: run the always-full pipeline
-                           (scan,populate,docs[,rag]) on every flush.
+                           (populate,docs[,rag]) on every flush.
   --json                   Heartbeat-only structured output to stdout (one JSON line per flush).
   -v, --verbose            Verbose logging (forwarded to coderef-pipeline).
   -h, --help               Show this help.
@@ -293,7 +293,9 @@ function runPipeline(opts: {
   verbose: boolean;
 }): FlushResult {
   const start = Date.now();
-  const legs = opts.skipRag ? 'scan,populate,docs' : 'scan,populate,docs,rag';
+  // P4 (WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001): full flush no longer
+  // chains the redundant scan leg — populate is the single canonical parse.
+  const legs = opts.skipRag ? 'populate,docs' : 'populate,docs,rag';
   const result = spawnPipelineLegs(opts.projectDir, legs, opts.verbose);
 
   const duration = Date.now() - start;

@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "predecessor_for": null,
   "status": "implementing",
-  "current_phase": 3,
+  "current_phase": 4,
   "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\context.json",
@@ -120,6 +120,18 @@
       "event": "naming_ruling",
       "note": "ContextGenerator (canonical) = pipeline artifact generator, long name PipelineContextGenerator; legacy scanner-backed service renamed CodebaseContextService; root barrel = pure re-export of src barrel",
       "at": "2026-08-01T06:38:12.529Z"
+    },
+    {
+      "event": "verify_gate",
+      "phase": 4,
+      "note": "tests_for_change/change_dossier NO-DATA (self .coderef predates refactor; gitignored); full-suite is the verdict",
+      "at": "2026-08-01T06:43:55.690Z"
+    },
+    {
+      "event": "plan_adjustment",
+      "id": "ADJ-01",
+      "note": "pipeline-map-leg.test.ts asserted the pre-P4 default (scan in default legs) — expectation updated to the new single-parse contract",
+      "at": "2026-08-01T06:43:55.690Z"
     }
   ],
   "phase_transitions": [
@@ -136,6 +148,13 @@
       "commit": "27d36ab",
       "verdict": "PASS",
       "at": "2026-08-01T06:35:28.504Z"
+    },
+    {
+      "phase": 3,
+      "to_status": "complete",
+      "commit": "f986791",
+      "verdict": "PASS",
+      "at": "2026-08-01T06:38:23.672Z"
     }
   ],
   "plan_adjustments": [],

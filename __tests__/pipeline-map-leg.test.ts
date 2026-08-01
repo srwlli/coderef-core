@@ -54,9 +54,12 @@ suite('coderef-pipeline map leg', () => {
   });
 
   it('orders map AFTER populate so no redundant second scan fires', () => {
+    // P4 (WO-UNIFIED-PIPELINE-LEGACY-SURFACE-BOUNDARY-001): the scan leg left
+    // the default plan entirely — populate is the single canonical parse, and
+    // map still runs after it so its scan-if-absent path never triggers.
     const legs = legsOf(runPipeline([]).out);
+    expect(legs).not.toContain('scan');
     expect(legs.indexOf('map')).toBeGreaterThan(legs.indexOf('populate'));
-    expect(legs.indexOf('map')).toBeGreaterThan(legs.indexOf('scan'));
   });
 
   it('--only=map runs the map leg alone', () => {
@@ -67,8 +70,8 @@ suite('coderef-pipeline map leg', () => {
   it('--skip=map suppresses it while leaving the others intact', () => {
     const legs = legsOf(runPipeline(['--skip=map']).out);
     expect(legs).not.toContain('map');
-    expect(legs).toContain('scan');
     expect(legs).toContain('populate');
+    expect(legs).toContain('docs');
   });
 
   it('advertises map in --help as a valid --only/--skip value', () => {

@@ -132,15 +132,15 @@ describe('Contract C — default pipeline performs one canonical parse', () => {
   const watchSrc = () =>
     fs.readFileSync(path.join(REPO_ROOT, 'src', 'cli', 'coderef-watch.ts'), 'utf-8');
 
-  // FLIP TO `it` IN PHASE 4 (scan leg removed from default execution).
-  it.fails('coderef-pipeline default leg set excludes the scan leg', () => {
+  // Enforced since Phase 4 (scan leg removed from default execution).
+  it('coderef-pipeline default leg set excludes the scan leg', () => {
     // Post-P4 the CLI declares DEFAULT_LEG_NAMES without 'scan' (scan stays
     // available explicitly via --only=scan / --with-scan).
     expect(pipelineSrc()).toMatch(/DEFAULT_LEG_NAMES[^;]*=\s*\[\s*'populate'/);
   });
 
-  // FLIP TO `it` IN PHASE 4 (full-watch flush no longer double-parses).
-  it.fails('coderef-watch full flush does not chain the scan leg', () => {
+  // Enforced since Phase 4 (full-watch flush no longer double-parses).
+  it('coderef-watch full flush does not chain the scan leg', () => {
     expect(watchSrc()).not.toMatch(/'scan,populate/);
   });
 
