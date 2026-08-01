@@ -1,0 +1,136 @@
+{
+  "event": "culture_alignment_recorded",
+  "domain": "CODEREF-CORE",
+  "skill": "align-coderef-culture",
+  "schema_version": "2.0.0",
+  "workorder_id": "WO-GX-002-SCOPE-STACK-RECEIVER-TYPE-INFERENCE-BUILD-001",
+  "target_project": "coderef-core",
+  "intended_work": "GX-002 scope-stack receiver type inference: build a local-variable type-inference pass on top of call-resolver.ts so method calls on locals and prototypes (x.toFixed(), element.slice()) resolve determ",
+  "plan_digest": "sha256:419917d81a125bc6a34a606f817907f0d3c2ad7b4f80484bf9145f966983ed6a",
+  "inventory_digest": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+  "source_digests": {
+    "STANDARDS/layers.json": "sha256:2d5e1202a74e36d326978aa7fd86135ae425d181eb724e5f255d248c9feaa4e2",
+    "STANDARDS/VOCABULARY.json": "sha256:f426b702bf8e0cd8f0659dbbb0f954a21b4fddab5ed80892d540530272c66d9a",
+    "TRACKING/registries.json": "sha256:8b0f86c7696f6984565538e02ebbb1538bd6ed12b1ff2866377f9998c9ab0bfc",
+    "TRACKING/skills.json": "sha256:1e7e3f01fc395cb7784069e07716e82bb0bee189c2340d451820450b5961b3aa",
+    "STANDARDS/coderef-inventory.json": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+    "TRACKING/agent-domains.json": "sha256:15568aa8c132c323e676b1f8cbe68b2dc76e97ca4349d1d508b8121b20c48ff9",
+    "SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json": "sha256:86f17257381a2d21cb199b5c1ee881dcce19d6030ed5865ad25933cb2241181d",
+    "DOCS/standards/data/COMMS-DATA-STANDARD.md": "sha256:2b3289c9ed81322e9d244620d0df780214933f65138e72d870987887bbae75c7",
+    "STANDARDS/event-catalog.md": "sha256:4cc6fe172b3df18f67f1cb9075da9a111ef20b5325f14a092a561df0e4e180ba",
+    "SKILLS/META/coderef-skill/references/SKILL-CONTRACTS.md": "sha256:c86b97bbce08a3655ba9f3a9efd95e1846197b8761874cc46817a740e5203508",
+    "SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md": "sha256:575f232268d2c74664533270cc56b66d5604be5b6e2d771f40191906140d6643"
+  },
+  "rows": [
+    {
+      "task_id": "P1-T1",
+      "step": "Read the receiver-resolution path end-to-end and confirm exactly where locals fail: call-resolver.ts resolution ladder, the symbol-table construction it queries, field-index.ts, and the graph-builder call-edge emission incl. the 2026-07-09 js_prototype_member builtin-reclassify site (ordering must be preserved). Record the failure taxonomy of receiver_not_in_symbol_table edges (local const/let bindings, params, this, destructuring).",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T2",
+      "step": "Capture the BEFORE baseline explicitly (KZ-01KYTSCY): validation_status resolution_rate (22.32%), total unresolved (18069), and the receiver_not_in_symbol_table count (~10691) broken down by reason; persist the numbers in analysis.json so the after-diff is a real diff, not a recollection.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T3",
+      "step": "Record the design in analysis.json: a scope-chain binding table (scope-stack) tracking local variable types from `const x = new Foo()`, typed params, and annotated declarations, consulted by the resolution ladder BEFORE the builtin/js_prototype_member reclassify. State what is deliberately OUT of scope (cross-file dataflow, generics narrowing, union receivers).",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T4",
+      "step": "Implement the scope-stack binding pass as a new module (e.g. src/pipeline/scope-binding.ts): per-file scope tree with variable->type bindings from new-expressions, annotations, and typed params; pure and deterministic; exported API consumed by call-resolver.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T5",
+      "step": "Wire the binding table into call-resolver.ts: on receiver lookup miss, consult the scope-stack binding before falling through to js_prototype_member/builtin reclassify, resolving x.method() to Foo.method() when the binding is unambiguous; emit resolved-call evidence with scopePath.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T6",
+      "step": "Incremental parity: a full scan and a --incremental rescan of the same tree must produce identical resolution results (edge counts and statuses); also confirm no new edge KIND was introduced (so the two adjacency indexes need no change) - if one was, both canonical-graph.ts and cli/mcp/graph-tools.ts must learn it in this same phase.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T7",
+      "step": "Author unit tests for the binding pass (new-expr binding, param typing, shadowing, reassignment, miss->fallthrough) and run tests_for_change plus the full suite; suite must be green (confirm actual counts - vitest startup crash reads as fail, verify numbers).",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T8",
+      "step": "Capture the AFTER metrics on a fresh self-scan and diff against the P1-T2 baseline: resolution_rate delta, receiver_not_in_symbol_table count delta, zero regressions in previously-resolved edges (scip_resolution_delta as the independent cross-check); persist the diff in analysis.json.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T9",
+      "step": "Commit Phase 1 with the metrics delta in the commit body.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T10",
+      "step": "Hard stop: report the before/after resolution numbers to the operator for final approval before close.",
+      "tools": [],
+      "communication": [],
+      "closure": [],
+      "tracking": [],
+      "status": "resolved"
+    }
+  ],
+  "gaps": [],
+  "verdict": "PASS",
+  "_draft": true,
+  "_note": "DRAFT â€” the agent fills each row.tools/communication/closure/tracking, sets row.status, routes gaps to SKILLS with a dispatch_id, then feeds this to `record --input`.",
+  "_instructions": [
+    "WORK-START ALIGNMENT DRAFT — fill this in BEFORE writing any code.",
+    "1. For EVERY row: set tools[] to the canonical skills/scripts that task will use.",
+    "   Each entry must be an ACTIVE skill in STANDARDS/coderef-inventory.json or a",
+    "   real script path on disk. Use the literal \"GAP\" where no tool exists, and route",
+    "   that gap to SKILLS with a dispatch_id in gaps[].",
+    "2. Fill communication[]/closure[]/tracking[] per row (GAP if nothing is expected).",
+    "3. Record it:",
+    "   node SKILLS/STANDARDS/align-coderef-culture/run.mjs record \\",
+    "     --workorder-id=WO-GX-002-SCOPE-STACK-RECEIVER-TYPE-INFERENCE-BUILD-001 --domain=CODEREF-CORE \\",
+    "     --input=coderef/workorder/gx-002-scope-stack-receiver-type-inference-build/alignment-draft.json",
+    "Unrecorded, this becomes a HARD STOP at /close-workorder Step 3 — and by then",
+    "work-start has passed, so it can no longer be recorded honestly.",
+    "tools[] is deliberately EMPTY: `record` refuses empty tools, and auto-filling it",
+    "would fabricate a mapping nobody made."
+  ]
+}

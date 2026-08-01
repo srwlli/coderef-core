@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "plan_created",
+  "status": "complete",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-002-scope-stack-receiver-type-inference-build\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-002-scope-stack-receiver-type-inference-build\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\gx-002-scope-stack-receiver-type-inference-build\\analysis.json",
@@ -50,7 +50,15 @@
       "parity_argument": "Resolution-logic parity holds by construction: both orchestrator entry points (full line ~298, incremental line ~569) call the same pure resolveCalls(state); GX-002 changed only code inside that seam. No new edge KIND introduced (resolved-call evidence only) - adjacency indexes untouched, verified."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "0032e95",
+      "verdict": "PASS",
+      "at": "2026-08-01T08:10:00Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
@@ -64,11 +72,34 @@
       "event": "alignment_gate",
       "verdict": "warn",
       "reason": "alignment_missing"
+    },
+    {
+      "timestamp": "2026-08-01T08:10:00Z",
+      "event": "terminal_hard_stop",
+      "message": "P1-T10 STOP: phase 1 complete (commit 0032e95, suite 2471/26/0); before/after metrics reported to operator; awaiting close approval. Note: phase-transition writer no-ops on coderef-core: anchored paths (known gap) - this entry hand-written in the same schema."
+    },
+    {
+      "timestamp": "2026-08-01T08:35:00Z",
+      "event": "workorder_complete",
+      "message": "Close-only ceremony: phase 1/1 complete, commit 0032e95 pushed, suite 2471/26/0, wo-scoped standards PASS, scoped tracking 18/0, doc-tie PASS, session log self-healed. Follow-ups FU-1..4 in analysis.json."
     }
   ],
   "required_skills": [
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "completed_at": "2026-08-01T08:35:00Z",
+  "close_metadata": {
+    "closed_via": "/close-workorder (close-only default)",
+    "close_commit_pending": true,
+    "what_shipped_summary": "src/pipeline/scope-binding.ts scope-stack receiver binding pass (method-body frames, let/var, TS annotations, typed params, provenance-kinded new|annotation|param); call-resolver branch-3 consumption with no-regress ACG fall-through + sharpened method_not_in_class_own_methods reason; 13 unit tests. Metrics: resolved 22.11%->22.24%, +14 direct scope_binding wins, suite 2471/26/0. Core commit 0032e95.",
+    "metrics_delta": {
+      "no_data": "before_snapshot_absent",
+      "note": "no .coderef/map/metrics-snapshot-WO-GX-002-*-before.json (WO created before plan-time snapshot wiring ran for this repo); before/after resolution metrics captured manually in analysis.json baseline_metrics_before/after_metrics instead"
+    },
+    "deviations": [
+      "P1-T6 incremental E2E parity blocked by pre-existing absolute-vs-relative incremental-facts keying defect (fail-closed; STUB-INDEXING-ORCHESTRATOR-PATH-NORMALIZATION-001 class; repro in decisions_log plan_deviation event)"
+    ]
+  }
 }
