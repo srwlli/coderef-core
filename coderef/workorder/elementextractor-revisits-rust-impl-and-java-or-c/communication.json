@@ -186,6 +186,31 @@
         "open_risk": "The three name-keyed consumers (buildDependencyGraph:96, generateDiagrams:96, validateReferences:66) still collide on identity for same-named methods. Pre-existing, legacy-quarantined, unrouted."
       },
       "at": "2026-08-01T23:40:00Z"
+    },
+    {
+      "event": "p3_findings",
+      "summary": "Phase 3 fixed and verified. The fix is three lines of substance; the finding that matters is WHERE its value lands.",
+      "root_cause": "import-resolver.ts:301-306 dropped RawExportFact.localName when building the reExport ExportTableEntry, so resolveTransitiveReExport:413 recursed into the upstream module asking for the DOWNSTREAM alias. The extractor was never at fault - relationship-extractor.ts:745-748 splits nameNode from aliasNode correctly. The fact arrived well-formed and the table kept half of it. Same class as phase 1 and phase 2: two components disagree about a name and nothing tested the seam.",
+      "fix": "ExportTableEntry gains optional localName; the reexport/namespace branch carries fact.localName through; resolveTransitiveReExport recurses with `direct.localName ?? exportedName`. The wildcard branch is deliberately left alone - `export * from` cannot rename, so it must keep asking for the requested name. +30/-1 in one file.",
+      "ac1_proof": "RAN, not asserted. Reverted src/pipeline/import-resolver.ts to HEAD and re-ran the file: cases (a)(b)(c)(e) FAIL, and all four guards - un-renamed re-export, wildcard, a->b->a cycle, and the genuinely-missing-upstream case (d) - PASS. Restored after.",
+      "p3_t6_real_repo_measure": {
+        "method": "Full PipelineOrchestrator run over coderef-core, before and after, comparing importResolutions.",
+        "totalResolutions": 3814,
+        "byKind": {
+          "external": 1748,
+          "resolved": 1478,
+          "typeOnly": 486,
+          "unresolved": 32,
+          "dynamic": 69,
+          "stale": 1
+        },
+        "symbol_not_in_module_exports": 20,
+        "delta": "ZERO. Byte-identical before and after.",
+        "why_zero_and_why_it_is_not_a_null_result": "All six renamed re-exports in this repo are `export { default as X }` inside a sub-barrel, and NO internal file imports through them. They are reached only from src/index.ts via `export * from ./analyzer/index.js` and friends - the PACKAGE PUBLIC SURFACE. So the broken consumer was never inside this repo; it was anyone writing `import { GraphExporter } from \"@coderef/core\"`. That path is wildcard-then-rename, two branches composing, and it was broken at HEAD. Verified as test case (e), which fails at HEAD and passes after - it is NOT implied by (a)-(d) precisely because the wildcard branch is intentionally not localName-aware. Reporting the zero plainly: on THIS repo the fix is prophylactic, same posture as the dist-*/ rule in TKT-HZF70M. The fixture proof is the evidence, not the repo delta."
+      },
+      "worse_than_the_ticket_said": "The ticket predicted an unresolved symbol. True on the AST leg. On the HEADER leg the same miss reaches import-resolver.ts:710-713 and becomes kind=stale, reason=symbol_not_in_module_exports - a CORRECT header re-exporting through a rename was reported as stale source. A false accusation, not just a dropped edge.",
+      "suite": "2614 passed / 26 skipped / 0 failed (baseline 2609 + exactly the 5 new cases). tsc --noEmit exit 0.",
+      "at": "2026-08-01T23:45:00Z"
     }
   ],
   "phase_transitions": [

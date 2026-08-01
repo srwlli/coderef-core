@@ -167,17 +167,96 @@
     },
     {
       "phase": 3,
-      "name": "renamed-re-exports-resolve-against-the-downstream-alias — DEFERRED",
+      "name": "renamed-re-exports-resolve-against-the-downstream-alias",
       "hard_stop": true,
       "stub_ref": "STUB-PTB2ZC",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P3-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 3 tasks not yet authored. Pre-condition: Phase 2 must be COMPLETED + REVIEWED before this phase's plan is authored."
+          "id": "P3-T1",
+          "verb": "READ",
+          "description": "Confirm the fix surface has not moved since authoring. Read src/pipeline/import-resolver.ts:183-193 (ExportTableEntry), :287-308 (the reexport branch that drops localName), :387-426 (resolveTransitiveReExport) and :727-742 (lookupExport). Confirm the authoring-time finding that entry.exportedName is written but never READ outside the builder, which is what makes adding a sibling field safe."
+        },
+        {
+          "id": "P3-T2",
+          "verb": "EDIT",
+          "description": "src/pipeline/import-resolver.ts. (1) ExportTableEntry gains an optional localName, documented as the UPSTREAM name to ask for when chain-following - equal to exportedName except for a renamed re-export. (2) The reexport/namespace branch of buildExportTables carries fact.localName through. (3) resolveTransitiveReExport recurses with `direct.localName ?? exportedName`. The wildcard branch is NOT touched: its entry is keyed '*' with localName '*', and `export * from` cannot rename, so it must keep recursing with the requested name."
+        },
+        {
+          "id": "P3-T3",
+          "verb": "TEST",
+          "description": "Extend __tests__/pipeline/import-resolution-reexports.test.ts with the three measured defect shapes: (a) `export { x as y }`, (b) `export { default as Thing }`, (c) a two-hop rename chain where the middle name exists in NO other module. Each asserts kind=resolved AND resolvedTargetCodeRefId equal to the ORIGIN element's id - not merely 'not unresolved', since a wrong origin would satisfy that. Case (c) is the one that proves the recursion carries the rename at every hop rather than only the first."
+        },
+        {
+          "id": "P3-T4",
+          "verb": "TEST",
+          "description": "Guard the three behaviours that must NOT move: the un-renamed re-export, the `export * from` wildcard, and the a->b->a cycle (which must still terminate and still report unresolved). These already exist as the three cases in import-resolution-reexports.test.ts - assert they still pass unchanged rather than rewriting them. Add one NEW guard: a renamed re-export whose upstream genuinely lacks the local name must stay unresolved, so the fix cannot be read as \"renames always resolve now\"."
+        },
+        {
+          "id": "P3-T5",
+          "verb": "VERIFY",
+          "description": "Prove the defect-defining half of P3-T3 by REVERTING import-resolver.ts to HEAD and re-running the file: cases (a)(b)(c) must FAIL and every guard in P3-T4 must PASS. Restore afterwards. An assertion that the test \"would have failed\" is not evidence; run it."
+        },
+        {
+          "id": "P3-T6",
+          "verb": "MEASURE",
+          "description": "Real-repo verification, mirroring P2-T7. Resolve imports over this repo before and after, and report the delta in resolutions whose resolvedModuleFile is one of the six barrels and whose reason is 'symbol_not_in_module_exports'. Expected direction: strictly down, and any newly-resolved edge must point at a real element. Report the numbers whatever they are - including if the answer is zero because nothing in this repo imports those particular default-re-exports."
+        },
+        {
+          "id": "P3-T7",
+          "verb": "VERIFY",
+          "description": "Full suite. Baseline to diff against: 2609 passed / 26 skipped / 0 failed at the close of phase 2. The import-resolution-* and call-resolution-* suites are the ones this phase can actually break - a NEW failure anywhere else must be attributed by file to peer WIP before it is believed. Then record findings in communication.json and commit via the guarded runner."
         }
-      ]
+      ],
+      "authored_at": "2026-08-01",
+      "ticket_ref": "TKT-AF2FYQ",
+      "measured_baseline": {
+        "measured_at": "2026-08-01",
+        "method": "Three throwaway PipelineOrchestrator fixtures run at HEAD through the real Phase-3 import resolution, printing state.importResolutions verbatim. Probe deleted after measurement; its three shapes become P3-T3 cases (a)-(c).",
+        "defect_confirmed": true,
+        "observed": [
+          {
+            "shape": "export { x as y } from './m'",
+            "result": "kind='unresolved', reason='symbol_not_in_module_exports'",
+            "expected": "kind='resolved' pointing at m's x"
+          },
+          {
+            "shape": "export { default as Thing } from './m'",
+            "result": "kind='unresolved', reason='symbol_not_in_module_exports'",
+            "expected": "kind='resolved' pointing at m's default element"
+          },
+          {
+            "shape": "two-hop rename a{beta as gamma}<-b{alpha as beta}<-c.alpha",
+            "result": "kind='unresolved', reason='symbol_not_in_module_exports'",
+            "expected": "kind='resolved' pointing at c's alpha"
+          }
+        ],
+        "worse_than_the_ticket_says": "The ticket predicted 'an unresolved symbol'. On the AST leg that is what happens. On the HEADER leg the same miss lands at import-resolver.ts:710-713, which maps symbol_not_in_module_exports to kind='stale' with reason='symbol_not_in_module_exports' - i.e. a correct header that re-exports through a rename is reported as STALE. That is a false accusation against the source, not merely a dropped edge, and it is why this phase is worth more than its 6-site blast radius suggests.",
+        "real_repo_sites": {
+          "count": 6,
+          "pattern": "ALL SIX are the `export { default as X } from ...` barrel idiom",
+          "files": [
+            "src/export/index.ts:6",
+            "src/context/index.ts:6",
+            "src/context/index.ts:12",
+            "src/context/index.ts:15",
+            "src/analyzer/index.ts:16",
+            "src/integration/index.ts:6"
+          ],
+          "note": "Small here. But `export { default as X }` is the dominant barrel idiom in the wider JS ecosystem, and coderef-core is repo-agnostic - the figure that matters is not 6, it is that every consumer repo with a default-re-exporting barrel silently loses those edges."
+        },
+        "root_cause_verified_in_source": "import-resolver.ts:301-306 - the reexport/namespace branch of buildExportTables writes exportedName, originCodeRefId, kind and viaModule into the ExportTableEntry and DROPS fact.localName. The extractor had it right: relationship-extractor.ts:745-748 correctly splits nameNode (localName) from aliasNode (exportedName). The fact is well-formed; the table throws half of it away. Then resolveTransitiveReExport:413 recurses into the upstream module asking for the DOWNSTREAM exportedName, which the upstream module has never heard of."
+      },
+      "status": "complete",
+      "verdict": "PASS",
+      "completed_at": "2026-08-01",
+      "evidence": {
+        "source_change": "src/pipeline/import-resolver.ts +30/-1",
+        "tests": "__tests__/pipeline/import-resolution-reexports.test.ts, 5 new cases (a)-(e)",
+        "ac1_revert_proof": "(a)(b)(c)(e) fail at HEAD; 4 guards pass",
+        "real_repo_delta": "zero - see communication.json p3_findings.p3_t6_real_repo_measure",
+        "suite": "2614 / 26 skipped / 0 failed"
+      }
     },
     {
       "phase": 4,
@@ -339,6 +418,11 @@
       "id": "ADJ-14",
       "applied": true,
       "description": "/discover trust finding, carried into P2-T6: the working tree holds 23 peer-modified files (10 in src/, incl. every framework detector, plus 5 test files). No overlap with phase 2's target, and tsc is clean at authoring time - but a full-suite verdict during phase 2 runs against peer WIP, so any NEW failure must be attributed by file before it is believed. Baseline to diff against: 2602 passed / 26 skipped / 0 failed."
+    },
+    {
+      "id": "ADJ-15",
+      "applied": true,
+      "description": "Phase 3 authored 2026-08-01 from a live source read plus a three-shape probe against the real pipeline. The probe upgraded the ticket: the miss is not only an unresolved AST import, it also makes the HEADER leg report a correct header as STALE (import-resolver.ts:710-713). Recorded as measured_baseline.worse_than_the_ticket_says."
     }
   ],
   "discovery_required": true,

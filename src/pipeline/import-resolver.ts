@@ -187,6 +187,16 @@ export interface ExportTableEntry {
   kind: 'named' | 'default' | 'namespace' | 'reExport';
   /** For kind === 'reExport': the source module the symbol came from. */
   viaModule?: string;
+  /**
+   * The name to ask the UPSTREAM module for when chain-following, i.e. the
+   * local binding on the far side of the `from` clause. Equal to
+   * `exportedName` except for a renamed re-export — `export { x as y } from
+   * './m'` stores exportedName='y', localName='x', because './m' has never
+   * heard of `y`. Also carries `default` for the `export { default as Foo }`
+   * barrel idiom. Undefined for local named/default exports, whose origin is
+   * resolved directly in buildExportTables and never chased.
+   */
+  localName?: string;
 }
 
 /** Per-module export table. Outer key = module file; inner key = exported name. */
@@ -303,6 +313,12 @@ export function buildExportTables(state: PipelineState): ExportTable {
         originCodeRefId: '',
         kind: fact.kind === 'namespace' ? 'namespace' : 'reExport',
         viaModule: resolvedVia ?? fact.viaModule,
+        // TKT-AF2FYQ: this used to stop at viaModule, dropping fact.localName.
+        // The extractor had already split the two correctly
+        // (relationship-extractor.ts:745-748); the table threw half of the
+        // fact away, so chain-following then asked the upstream module for the
+        // DOWNSTREAM alias and got nothing back.
+        localName: fact.localName,
       });
       continue;
     }
@@ -410,13 +426,26 @@ export function resolveTransitiveReExport(
     // here we recurse via the LOCAL key only when the upstream is already
     // a key in exportTables.
     if (exportTables.has(direct.viaModule)) {
-      return resolveTransitiveReExport(exportTables, direct.viaModule, exportedName, visited);
+      // TKT-AF2FYQ: recurse with the UPSTREAM name. `export { x as y } from
+      // './m'` means './m' exports `x`, not `y` — asking it for `y` produced
+      // reason='symbol_not_in_module_exports', which the AST leg reports as
+      // unresolved and the header leg (:710-713) reports as a STALE header,
+      // i.e. a false accusation against correct source. localName is absent
+      // only on entries built before this field existed; fall back to the
+      // old behaviour there, which is exactly right for an un-renamed
+      // re-export.
+      const upstreamName = direct.localName ?? exportedName;
+      return resolveTransitiveReExport(exportTables, direct.viaModule, upstreamName, visited);
     }
   }
 
   // `export * from './bar'` — wildcard re-export. The fact carries
   // exportedName='*'. Look it up in the local table; if found and the
   // upstream module is in exportTables, recurse for the requested name.
+  //
+  // Deliberately NOT localName-aware: the wildcard entry is keyed '*' with
+  // localName '*', and `export * from` cannot rename, so the name the caller
+  // asked for is the name the upstream module must answer to.
   const wildcard = table.get('*');
   if (wildcard && wildcard.viaModule && exportTables.has(wildcard.viaModule)) {
     return resolveTransitiveReExport(exportTables, wildcard.viaModule, exportedName, visited);
