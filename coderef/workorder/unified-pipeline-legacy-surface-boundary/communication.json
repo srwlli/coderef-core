@@ -6,9 +6,9 @@
   "target_project": "coderef-core",
   "originating_dispatches": [],
   "predecessor_for": null,
-  "status": "implementing",
+  "status": "checkpoint_ready",
   "current_phase": 4,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\unified-pipeline-legacy-surface-boundary\\analysis.json",
@@ -132,6 +132,26 @@
       "id": "ADJ-01",
       "note": "pipeline-map-leg.test.ts asserted the pre-P4 default (scan in default legs) — expectation updated to the new single-parse contract",
       "at": "2026-08-01T06:43:55.690Z"
+    },
+    {
+      "event": "phase_complete",
+      "phase": 4,
+      "commit": "ccaa32e",
+      "suite": "2458 passed / 26 skipped vs baseline 2436/26 (+22 boundary tests)",
+      "at": "2026-08-01T06:44:05.338Z"
+    },
+    {
+      "event": "phase6_foundation_docs_gate",
+      "outcome": "pass",
+      "generator_exit": 0,
+      "validator_exit": 0,
+      "note": "23 invalid UUID anchor warnings (pre-existing class), validator exit 0; self-populate regenerated .coderef post-refactor",
+      "at": "2026-08-01T06:45:15.785Z"
+    },
+    {
+      "event": "doc_discovery",
+      "note": "helper candidate coderef-query-depends-on-me fired against unrelated ASSISTANT-side elements (changed_file \"-\") — SKIPPED; manual inventory applied: README.md, docs/CLI.md (core) + coderef-pipeline/coderef-watch SKILL.md (assistant)",
+      "at": "2026-08-01T06:45:56.138Z"
     }
   ],
   "phase_transitions": [
@@ -155,6 +175,13 @@
       "commit": "f986791",
       "verdict": "PASS",
       "at": "2026-08-01T06:38:23.672Z"
+    },
+    {
+      "phase": 4,
+      "to_status": "complete",
+      "commit": "ccaa32e",
+      "verdict": "PASS",
+      "at": "2026-08-01T06:44:05.338Z"
     }
   ],
   "plan_adjustments": [],
@@ -163,6 +190,11 @@
       "timestamp": "2026-08-01T02:29:19.575214+00:00",
       "event": "creation",
       "message": "Workorder created from stub STUB-J2BYDN"
+    },
+    {
+      "timestamp": "2026-08-01T06:47:08.434Z",
+      "event": "workorder_complete",
+      "message": "All 4 phases executed this run. Commits: P1 1853426, P2 27d36ab, P3 f986791, P4 ccaa32e (all pushed+verified). Suite 2458 passed / 26 skipped vs baseline 2436/26 (+22 = new boundary tests). ADJ-01: pipeline-map-leg.test updated to single-parse default. Terminal Phase-4 hard stop is UNAPPROVED -> checkpoint_ready awaiting operator /close-workorder. Evidence: phase1-boundary-inventory.md, final-surface-inventory.md, contract suites __tests__/boundary/ (22 tests, 0 expected-fail). Validator: 5 pre-existing drift failures (STUB-QXH23Q class), none on this WO rows."
     }
   ],
   "required_skills": [
@@ -170,5 +202,6 @@
     "/close-workorder",
     "/log-session"
   ],
-  "git_branch": "main"
+  "git_branch": "main",
+  "execution_completed_at": "2026-08-01T06:47:08.434Z"
 }
