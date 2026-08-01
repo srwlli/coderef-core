@@ -14,6 +14,61 @@ This document provides a comprehensive inventory of all reusable components, uti
 - **API.md**: Complete function reference and endpoints
 - **SCHEMA.md**: Data models and validation rules
 
+## Component tree
+
+"Component" here means a **library module**, not a UI element — this package renders
+nothing. The tree below is the composition order: a component may use anything beneath it
+and nothing above it.
+
+```
+@coderef/core
+│
+├── 1. Parser Components ......... the tag grammar; depends on nothing
+│   ├── parseCodeRef ............. tag string  → structured object
+│   ├── generateCodeRef .......... structured object → tag string  (inverse of parse)
+│   └── extractCodeRefs .......... free text → tag list            (uses parseCodeRef)
+│
+├── 2. Scanner Components ........ source tree → elements
+│   ├── Scanner .................. per-language extraction
+│   ├── ScannerRegistry .......... language → Scanner dispatch
+│   └── scanCurrentElements ...... drives the registry over a tree; emits tags via §1
+│
+├── 3. File System Utilities ..... used by §2 and everything above it
+│   ├── normalizeCoderefPath ..... the single path-shape authority
+│   ├── collectFiles ............. tree walk honoring ignore rules
+│   └── loadJsonFile / saveJsonFile  the only .coderef/ read+write pair
+│
+├── 4. State Management Patterns . holds what §2 produced
+│   ├── Element Data Management .. the element collection
+│   └── Tag State Management ..... tag lifecycle over that collection
+│
+├── 5. Validation Components ..... gates §1 and §4 output
+│   └── Tag Validation ........... grammar + referent checks
+│
+└── 6. Performance Optimization .. cross-cutting; wraps §2–§5
+    ├── Batch Processing ......... amortizes per-file cost
+    └── Caching Components ....... incremental reuse across runs
+```
+
+Composition rule: **parsing is the base and caching is the outermost wrapper.** A
+component that reaches upward — a parser calling the cache, say — inverts the tree and is
+a defect, not a shortcut.
+
+## Styling
+
+**Not applicable.** `@coderef/core` is a headless library: it ships no CSS, no stylesheets,
+no theme tokens, no markup, and no framework binding. There is no visual surface to style
+because the package produces data structures and JSON artifacts, never rendered output.
+
+Presentation belongs to consumers. The dashboard estate and any IDE integration own their
+own styling entirely, and this package deliberately does not constrain it — the
+*React Hook Pattern* under **Integration Patterns** is illustrative of that boundary and is
+explicitly marked hypothetical.
+
+The one output-formatting concern that does live here is **terminal formatting**
+(`src/formatter/`), which controls text layout for CLI output. That is formatting, not
+styling, and it carries no design system.
+
 ## Core Components Inventory
 
 ### 1. Parser Components
