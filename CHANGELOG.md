@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-08-01] — test_dsl reclassify: the resolution denominator is now honest
+
+WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 Phase 1 (operator-delegated ruling A, 2026-08-01 — the P3c `js_prototype_member` shape extended to test-framework DSLs, both sides).
+
+- **`call-resolver.ts`**: test-framework DSL calls in test-origin files that would otherwise classify `unresolved` now classify `builtin` — ambient callees (`describe`/`it`/`expect`/`beforeEach`/... — vitest + jest vocabularies) with `reason='test_dsl_ambient_callee'`, and `expect()`-rooted matcher receivers (plus the ambient `vi`/`jest`/`expect` objects) with `reason='test_dsl_matcher_receiver'`. Project symbols always win (only would-be-unresolved results flip); ambiguous results never flip; plain dotted receivers (the FU-2 frontier) are untouched; production files are guarded by the test-origin path check. Classification-only: edge ids are status-invariant (`computeEdgeId` excludes `resolutionStatus`).
+- **`output-validator.ts`**: new `test_dsl_count` report scalar (sub-count of `builtin_count`) discloses the reclassified population — the denominator shrink is auditable, never silent.
+- **Self-scan effect**: `unresolved_count` 18,527 → **1,871**; `resolved_of_resolvable` 32.83% → **73.38%**; `test_dsl_count` 16,717 (9,974 ambient + 6,743 matcher); `unresolved_src_count` 959 → 959 (EXACT — zero production edges touched); `ambiguous_count` 1,730 → 1,730 (EXACT). `resolution_rate` (22.42%) is unchanged by construction — its denominator is all emitted calls including builtin. Not one edge was newly resolved: this makes the measurement honest; the recall work is Phases 2–4 (dotted-chain receivers, heritage-aware lookup, incremental keying).
+- **`rename_apply`/`rename_preview` disclosure updated**: `resolution_disclosure` now carries `test_dsl_count` and drops the "pending ruling" confound note.
+- Contract: `__tests__/pipeline/test-dsl-reclassify.contract.test.ts` (7 tests, authored before the implementation).
+
+---
+
 ## [2026-08-01] — rename_apply: the first scoped source-write MCP tool (MCP 37 → 38 tools)
 
 WO-GX-003-MIRRORED-RENAME-APPLY-SCOPED-SOURCE-WRITE-001 (core-improvements-731 program, GX-003). **Scoped supersession of the "no MCP tool writes source files" rule** (operator ruling 2026-08-01), confined to exactly one tool:

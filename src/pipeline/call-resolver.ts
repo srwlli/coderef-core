@@ -355,6 +355,86 @@ export const JS_PROTOTYPE_METHODS = new Set<string>([
 ]);
 
 /**
+ * Test-framework DSL vocabulary (WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001
+ * P1, operator-delegated ruling A 2026-08-01 — the P3c js_prototype_member
+ * shape extended to test DSLs, superseding the narrower GX-002 FU-1 slice).
+ *
+ * Ambient callees injected as globals by vitest/jest (globals mode) can NEVER
+ * be in the project symbol table; a bare call to one of these inside a
+ * test-origin file that would otherwise classify 'unresolved' is honestly a
+ * framework builtin, not a resolver failure. Both sides are covered:
+ *   - TEST_DSL_AMBIENT_CALLEES: bare describe/it/expect/... calls
+ *     -> reason='test_dsl_ambient_callee'
+ *   - isTestDslReceiver: expect()-rooted matcher chains plus the ambient
+ *     vi/jest/expect receiver objects -> reason='test_dsl_matcher_receiver'
+ *
+ * Guards (the envelope pinned by test-dsl-reclassify.contract.test.ts):
+ *   - test-origin files only (TEST_DSL_FILE_RE, kept in lockstep with
+ *     graph-builder's TEST_ORIGIN_RE — same pattern, duplicated to keep the
+ *     resolver import-free of graph-builder);
+ *   - only a would-be 'unresolved' result flips (project symbols always win;
+ *     ambiguous results are never flipped);
+ *   - plain dotted receivers (obj.a.b — the FU-2 recall frontier) are NOT
+ *     matched by the receiver predicate.
+ */
+export const TEST_DSL_AMBIENT_CALLEES = new Set<string>([
+  // vitest + jest shared vocabulary
+  'describe', 'it', 'test', 'expect', 'beforeEach', 'afterEach',
+  'beforeAll', 'afterAll',
+  // vitest extras
+  'suite', 'bench', 'onTestFinished', 'onTestFailed',
+  // jest focused/skipped variants (ambient in jest globals mode)
+  'fit', 'fdescribe', 'xit', 'xdescribe', 'xtest',
+]);
+
+// Same pattern as graph-builder's TEST_ORIGIN_RE (STUB-K5YBFN); keep in sync.
+const TEST_DSL_FILE_RE = /__tests__|\.test\.|\.spec\./;
+
+function isTestDslFile(file: string): boolean {
+  return TEST_DSL_FILE_RE.test(file.split('\\').join('/'));
+}
+
+/**
+ * Matcher-side receiver predicate: expect()-rooted chains
+ * (`expect(x)`, `expect(x).resolves`, `expect.soft(x)`) and the bare ambient
+ * framework objects (`vi`, `jest`, `expect`). Deliberately NOT a general
+ * dotted-receiver match — `output.byType.fetch` stays unresolved for FU-2.
+ */
+function isTestDslReceiver(receiverText: string): boolean {
+  return receiverText === 'vi'
+    || receiverText === 'jest'
+    || receiverText === 'expect'
+    || receiverText.startsWith('expect(')
+    || receiverText.startsWith('expect.');
+}
+
+/**
+ * Post-classification override applying the test_dsl disposition. Pure and
+ * narrow: fires ONLY when the classifier already concluded 'unresolved' (so
+ * symbol-table, import, scope-binding, and builtin branches all keep
+ * priority), ONLY in test-origin files, and ONLY for the two ruled sides.
+ * Classification-only by construction — edge identity is untouched
+ * (computeEdgeId excludes resolutionStatus).
+ */
+function applyTestDslReclassify(
+  fact: { sourceFile: string; calleeName: string; receiverText: string | null },
+  result: { kind: CallResolutionKind; reason?: string; candidates?: string[] },
+): { kind: CallResolutionKind; reason?: string; candidates?: string[] } {
+  if (result.kind !== 'unresolved') return result;
+  if (!isTestDslFile(fact.sourceFile)) return result;
+  if (fact.receiverText === null) {
+    if (TEST_DSL_AMBIENT_CALLEES.has(fact.calleeName)) {
+      return { kind: 'builtin', reason: 'test_dsl_ambient_callee' };
+    }
+    return result;
+  }
+  if (isTestDslReceiver(fact.receiverText)) {
+    return { kind: 'builtin', reason: 'test_dsl_matcher_receiver' };
+  }
+  return result;
+}
+
+/**
  * Entry point. Drives pass 1 then pass 2 and returns every CallResolution
  * the RawCallFact set produced. Caller is responsible for writing the
  * result onto state.callResolutions and emitting graph edges for
@@ -592,7 +672,7 @@ export function resolveCallsAgainstTable(
         receiverText: fact.receiverText,
         scopePath: [...fact.scopePath],
         line: fact.line,
-        ...result,
+        ...applyTestDslReclassify(fact, result),
       });
       continue;
     }
@@ -610,7 +690,7 @@ export function resolveCallsAgainstTable(
       receiverText: null,
       scopePath: [...fact.scopePath],
       line: fact.line,
-      ...result,
+      ...applyTestDslReclassify(fact, result),
     });
   }
 

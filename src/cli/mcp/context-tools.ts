@@ -30,12 +30,13 @@ export type ContextTools = Pick<ToolHandlers, 'pack_context' | 'rename_preview' 
 /**
  * Graph-resolution blind-spot disclosure, STRATIFIED per
  * discovery-resolution-core-issue.md REC-R2: report the src-only numbers
- * (unresolved_src_count, resolved_of_resolvable) ALONGSIDE the raw totals —
- * quoting the raw headline alone overstates the production blind spot ~19x
- * because ~95% of raw unresolved edges are test-DSL calls (vitest ambient
- * globals + matcher chains), a denominator artifact pending the test_dsl
- * reclassify ruling. Surfaces, not verdicts. Absent report => disclosed
- * no_data, never a silent omit.
+ * (unresolved_src_count, resolved_of_resolvable) ALONGSIDE the raw totals.
+ * The test_dsl reclassify (WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 P1,
+ * ruling A 2026-08-01) resolved the former denominator artifact: test-DSL
+ * calls now classify builtin with test_dsl_* reasons and are disclosed via
+ * test_dsl_count, so resolved_of_resolvable reads against an honest
+ * denominator. Surfaces, not verdicts. Absent report => disclosed no_data,
+ * never a silent omit.
  */
 function resolutionDisclosure(projectDir: string): Record<string, unknown> {
   try {
@@ -43,16 +44,18 @@ function resolutionDisclosure(projectDir: string): Record<string, unknown> {
     return {
       note:
         'Rename recall is bounded by graph resolution: sites the graph did not resolve silently survive a rename. ' +
-        'STRATIFIED read (REC-R2): unresolved_src_count + resolved_of_resolvable are the production-code numbers; ' +
-        '~95% of raw unresolved edges are test-DSL calls (vitest ambient globals + matcher chains) — a denominator ' +
-        'artifact pending the test_dsl reclassify ruling. Quoting the raw headline alone overstates the production ' +
-        'blind spot ~19x. Surfaces, not verdicts.',
+        'STRATIFIED read (REC-R2): unresolved_src_count + resolved_of_resolvable are the production-code numbers. ' +
+        'Test-DSL calls (vitest/jest ambient globals + expect matcher chains) are reclassified as builtin ' +
+        '(test_dsl_count, ruling A 2026-08-01) and excluded from the resolvable denominator — ' +
+        'resolved_of_resolvable is the honest resolver-quality read; resolution_rate keeps its ' +
+        'all-emitted-calls denominator by design. Surfaces, not verdicts.',
       unresolved_src_count: report.unresolved_src_count,
       ambiguous_src_count: report.ambiguous_src_count,
       resolved_of_resolvable: report.resolved_of_resolvable,
       resolution_rate: report.resolution_rate,
       unresolved_edges_total: report.unresolved_count,
       ambiguous_edges_total: report.ambiguous_count,
+      test_dsl_count: (report as { test_dsl_count?: number }).test_dsl_count,
     };
   } catch {
     return {

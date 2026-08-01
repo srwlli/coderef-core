@@ -144,6 +144,17 @@ export interface ValidationReport {
   /** Edges with resolutionStatus='ambiguous' NOT tagged testOrigin (src-only). */
   ambiguous_src_count: number;
   /**
+   * Builtin edges carrying a test_dsl_* reason (WO-EDGE-RESOLUTION-
+   * IMPROVEMENT-PROGRAM-001 P1, operator-delegated ruling A 2026-08-01):
+   * test-framework DSL calls (ambient describe/it/expect callees + expect()-
+   * rooted matcher receivers) reclassified unresolved -> builtin by
+   * call-resolver's applyTestDslReclassify. This is a SUB-count of
+   * builtin_count — the flipped population is disclosed here so the
+   * denominator shrink is auditable, never silent. test_dsl_count <=
+   * builtin_count always. Additive under the additive-only allowance.
+   */
+  test_dsl_count: number;
+  /**
    * Resolved call edges carrying evidence.confidence='provisional' (STUB-6CWWHQ,
    * Phase 2): the single_candidate_unknown_receiver tier that was resolved to
    * its one candidate but LABELED provisional (guardrail-4 preserved). This is
@@ -625,6 +636,10 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
   // provisional_count (STUB-6CWWHQ, Phase 2): sub-count of valid_edge_count for
   // resolved edges carrying evidence.confidence='provisional'.
   let provisional_count = 0;
+  // test_dsl_count (WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 P1): builtin
+  // edges whose resolver reason is test_dsl_* — the disclosed sub-count of the
+  // reclassified test-framework DSL population.
+  let test_dsl_count = 0;
   for (const edge of graph.edges) {
     const evidence = edge.evidence as { testOrigin?: boolean; confidence?: string } | undefined;
     const testOrigin = evidence?.testOrigin === true;
@@ -646,6 +661,9 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
         break;
       case 'builtin':
         builtin_count++;
+        if (typeof edge.reason === 'string' && edge.reason.startsWith('test_dsl')) {
+          test_dsl_count++;
+        }
         break;
       default:
         break;
@@ -726,6 +744,7 @@ function buildReport(state: PipelineState, graph: ExportedGraph): ValidationRepo
     builtin_count,
     unresolved_src_count,
     ambiguous_src_count,
+    test_dsl_count,
     provisional_count,
     header_defined_count,
     header_missing_count,

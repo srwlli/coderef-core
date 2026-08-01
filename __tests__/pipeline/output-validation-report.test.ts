@@ -43,8 +43,11 @@ const POPULATE_CLI = path.join(REPO_ROOT, 'dist', 'src', 'cli', 'populate.js');
 // Schema bump 15 -> 19 (WO-RESOLVER-SYMBOL-TABLE-DEDUP-FIX-001 Phase 5,
 // STUB-CXZ7VZ): resolution_rate + resolved_of_resolvable + ambiguous_rate +
 // provisional_rate added additive-only under the same rule — resolution
-// reconciliation so codebase_summary and validation_status agree. The locked
-// set below is the new contract.
+// reconciliation so codebase_summary and validation_status agree.
+// Schema bump 19 -> 20 (WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 P1,
+// ruling A 2026-08-01): test_dsl_count added additive-only — the disclosed
+// sub-count of builtin_count for reclassified test-framework DSL calls. The
+// locked set below is the new contract.
 const REQUIRED_REPORT_FIELDS = [
   'valid_edge_count',
   'unresolved_count',
@@ -53,6 +56,7 @@ const REQUIRED_REPORT_FIELDS = [
   'builtin_count',
   'unresolved_src_count',
   'ambiguous_src_count',
+  'test_dsl_count',
   'provisional_count',
   'header_defined_count',
   'header_missing_count',
@@ -86,7 +90,7 @@ async function makeMinimalFixture(): Promise<string> {
 }
 
 describe('Phase 6 validation-report.json contract (AC-04, AC-05)', () => {
-  it('writes .coderef/validation-report.json with all 19 fields as numbers', async () => {
+  it('writes .coderef/validation-report.json with all 20 fields as numbers', async () => {
     const dir = await makeMinimalFixture();
     const result = spawnSync('node', [POPULATE_CLI, dir, '--mode', 'minimal'], {
       encoding: 'utf-8',

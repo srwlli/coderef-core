@@ -1,11 +1,11 @@
 ---
 title: Using CodeRef — the agent-consumer playbook
 status: living
-updated: 2026-07-31
+updated: 2026-08-01
 documents: src/cli/coderef-mcp-server.ts (38-tool MCP registry) + docs/CLI.md (26 CLI entrypoints)
 doc_type: guide
 audience: any agent in any repo with mcp__coderef-core__* available
-provenance: /discover code-intelligence leverage run 2026-07-20 (REC-005) + playbook-gaps pass same day + WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P4-P6 sync (orient, change_dossier, run_command) + WO-SKILLS-CORE-PLAYBOOK-ALIGNMENT-001 sync (REC-008 /coderef-rename EDIT-leg front-door) + 2026-07-31 post-close sync (decompose + clone-surface: near-miss clone passes, type_hierarchy LSP projection, resolution 23.4%)
+provenance: /discover code-intelligence leverage run 2026-07-20 (REC-005) + playbook-gaps pass same day + WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P4-P6 sync (orient, change_dossier, run_command) + WO-SKILLS-CORE-PLAYBOOK-ALIGNMENT-001 sync (REC-008 /coderef-rename EDIT-leg front-door) + 2026-07-31 post-close sync (decompose + clone-surface: near-miss clone passes, type_hierarchy LSP projection) + 2026-08-01 test_dsl reclassify sync (resolved_of_resolvable 73.38%)
 ---
 
 # Using CodeRef — the agent-consumer playbook
@@ -57,7 +57,7 @@ provenance: /discover code-intelligence leverage run 2026-07-20 (REC-005) + play
 
 - **Surfaces, not verdicts.** Every output shows WHERE to look, never WHAT is wrong. READ the files before concluding.
 - **Absence = no-data, never signal.** An empty `what_calls` result means *no resolved edge*, not *no callers* — CHECK `unresolved_edges` and `validation_status` for the coverage picture before trusting a negative. Fall back to `rg`/`find_all_references` on any load-bearing negative.
-- **Edges carry confidence tiers.** Self-reported resolution is ~23.4% by default; `scip_resolution_delta` shows what a compiler-grade index resolves that CodeRef didn't (read-only surface). The LIVE wire now exists (STUB-BQQJSY, opt-in): `populate-coderef --scip <path-to-.scip>` runs a post-resolution overlay that flips co-located unresolved/ambiguous **call** edges to `resolved` with SCIP provenance (`evidence.kind:'scip'`, confidence tier **heuristic** — SCIP resolved the *symbol*, not a proven intra-project `targetId`). No-regress by construction: already-resolved edges are never touched, no edges are invented, and no `.scip` = zero change. Generate the index locally with `npx @sourcegraph/scip-typescript index` (no cloud). Cross-repo resolution is still out of scope (STUB-6PGFZ3).
+- **Edges carry confidence tiers.** The honest resolver-quality read is `resolved_of_resolvable` (~73% post test_dsl reclassify, ruling A 2026-08-01): test-framework DSL calls (vitest/jest ambient globals + expect matcher chains) classify `builtin` with `test_dsl_*` reasons, disclosed via `test_dsl_count` — they were never resolvable and no longer pollute the denominator. The raw `resolution_rate` (~22%) keeps its all-emitted-calls denominator (includes builtin/external) by design. `scip_resolution_delta` shows what a compiler-grade index resolves that CodeRef didn't (read-only surface). The LIVE wire now exists (STUB-BQQJSY, opt-in): `populate-coderef --scip <path-to-.scip>` runs a post-resolution overlay that flips co-located unresolved/ambiguous **call** edges to `resolved` with SCIP provenance (`evidence.kind:'scip'`, confidence tier **heuristic** — SCIP resolved the *symbol*, not a proven intra-project `targetId`). No-regress by construction: already-resolved edges are never touched, no edges are invented, and no `.scip` = zero change. Generate the index locally with `npx @sourcegraph/scip-typescript index` (no cloud). Cross-repo resolution is still out of scope (STUB-6PGFZ3).
 - **Single-repo scope.** Zero cross-repo edges today (cross-repo linkage = STUB-6PGFZ3). An import into a sibling repo resolves as `external` — that is a scope boundary, not an answer.
 
 ## MCP vs CLI twins

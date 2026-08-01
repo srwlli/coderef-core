@@ -203,7 +203,7 @@ The CLI (`populate-coderef`) loads `layerEnum` from `ASSISTANT/STANDARDS/layers.
 - Emits an `IndexingResult` with the top-level `status: 'success' | 'partial' | 'failed'` per the DR-PHASE-7-C threshold table.
 - Wires `--layer` / `--capability` filter pass-through to the vector store metadata filter (DR-PHASE-7-D — capped at two new flags on `rag-search`; no new flags on `rag-index`).
 
-The post-Phase-7 baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`): `valid_edge_count=3464`, `header_missing_count=262`, all other counts `0`. (Current self-scan, 2026-07-31: `valid_edge_count=9680`, `resolution_rate=23.39%`, headers 358/358 files @ 100.00%, dependency cycles 0.)
+The post-Phase-7 baseline (from coderef-core's own scan, committed at `.coderef/validation-report.json`): `valid_edge_count=3464`, `header_missing_count=262`, all other counts `0`. (Current self-scan, 2026-08-01 post test_dsl reclassify: `valid_edge_count=9927`, `resolved_of_resolvable=73.38%` (honest read; raw all-calls `resolution_rate=22.42%`), `test_dsl_count=16717` disclosed, dependency cycles 0.)
 
 ---
 
