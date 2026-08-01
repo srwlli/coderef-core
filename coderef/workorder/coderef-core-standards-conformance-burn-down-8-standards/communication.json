@@ -100,6 +100,27 @@
       "at": "2026-08-01",
       "detail": "The data kind v1.4.0 adds a CORE check: a keying doc naming any hash primitive must declare an 'Engine binding' (canonical engine = keying-core, ASSISTANT/ENGINES/keying-core/SPEC.md section 6). CORE's CANONICAL id scheme is a natural key with no hash, which the kind exempts -- but CORE has two subordinate hash-derived handles (the registry v5 UUID and the sha1/16-hex edge content-address), so an honest doc names sha1 and trips the check. The binding was declared TRUTHFULLY: each handle mints through exactly one shared exported function (the property the check exists to enforce), cited with conformance proof (src/registry/__tests__/entity-registry.test.ts:28-42 proves cross-platform equality, per-component distinctness, and cross-instance reproducibility). The doc states explicitly that CORE does NOT vendor keying-core and why: keying-core mints {prefix}-hex(BLAKE2b(...)), while an RFC 4122 v5 UUID is SPECIFIED to be sha1-based with set version/variant bits, so substituting BLAKE2b would not yield a v5 UUID; the edge handle is a content-address, not an entity uid. Adopting the engine would change both id shapes and break every stored reference keyed to them.",
       "surfaced_question": "Should coderef-core carry a keying-core binding at all, given NEITHER hash site is entity-uid minting? (A) accept CORE's own single-mint-point declaration as satisfying the intent (shipped state), (B) vendor keying-core and migrate the two handles, accepting the id-shape break, (C) amend the data kind so the engine-binding check keys on entity-uid minting rather than on any hash primitive appearing in the text. This is a fleet-convention call of the same family as the STUB-CT0DRT git-hook posture question -- NOT decided unilaterally."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 3,
+      "task": "P3-T6",
+      "at": "2026-08-01",
+      "detail": "execution kind 4 FAIL -> 0 FAIL (13 pass / 0 warn / 0 fail / 1 skip). Authored the four missing sub-type docs under docs/standards/execution/: GENERATION-STANDARD.md (2321618), CONTRACTS-STANDARD.md (5b9edbb), TOPOLOGY-STANDARD.md (790b537), WRITE-DISCIPLINE-STANDARD.md (36fc047). Same root cause as the data kind: the checker's doc scan is non-recursive, the pre-existing SURFACES/ docs sit one level too deep, and the four sub-type docs were never written. Note this kind carries an EXTRA core check beyond data's shape check -- subtype.<id>.routes-not-restates FAILs any doc carrying rule prose with no authority pointer; all four docs route via cross-links to the data-kind standards rather than restating keying/schema/provenance rules."
+    },
+    {
+      "event": "finding",
+      "phase": 3,
+      "task": "P3-T2",
+      "at": "2026-08-01",
+      "detail": "THREE WO task premises do not hold for CODEREF-CORE and were NOT written as if they did. (1) P3-T2 names 'ULID-derived id minting' -- CORE has no ULID anywhere (grep of src/ and package.json returns nothing); ULID-style ids are ASSISTANT workorder/stub tooling, not this repo. (2) P3-T4 names the anchored '{anchor}:{relative}' path form as a rule to state -- that form is an ASSISTANT tracking concept and is not a CORE concept; CORE's actual rule is project-relative POSIX resolved through three shared normalizers (normalizeSlashes, normalizeProjectPath, toRepoRelativePosix). (3) P2-T5 named EdgeEvidence as 10 variants; the code carries 12. In each case the doc states CORE's real practice rather than inventing conformance to a premise imported from a sibling project. Pattern worth noting for the P7 aggregator: this WO's task text was drafted against fleet-general assumptions, and at least three did not survive contact with the actual repo."
+    },
+    {
+      "event": "finding",
+      "phase": 3,
+      "task": "P3-T4",
+      "at": "2026-08-01",
+      "detail": "TOPOLOGY DEFECT found while inventorying the on-disk layout: coderef/ carries BOTH resource-sheets/ AND resources-sheets/ (singular vs plural), and both hold sheets. Two homes for one artifact class is exactly what a canonical location is meant to preclude -- a reader cannot tell which is authoritative and a writer picks by coin-flip. Recorded in TOPOLOGY-STANDARD.md as a known defect and NOT repaired there, because consolidating requires the P5-T3 provenance ruling on which sheets belong to this project at all. This finding raises the stakes on that ruling: it is not only a relocation question, it resolves a live ambiguity in the canonical layout."
     }
   ],
   "phase_transitions": [],
