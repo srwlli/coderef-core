@@ -84,15 +84,75 @@
     },
     {
       "phase": 2,
-      "name": "dotted-chain-receiver-walking \u2014 DEFERRED",
+      "name": "external/builtin receiver disposition completion (dotted-chain pivot, data-backed)",
       "hard_stop": true,
       "stub_ref": "STUB-VYBKRV",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P2-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 2 tasks not yet authored. Pre-condition: Phase 1 must be COMPLETED + REVIEWED before this phase's plan is authored."
+          "id": "P2-T1",
+          "verb": "READ",
+          "description": "Confirm the classification seams for the pivot: classifyMethodCall branches 3.5 (node-builtin receiver), 3.6 (python-stdlib receiver), 4 (project-import receiver, kind==='resolved' only - the gap), and the branch-1 exact-match BUILTIN_RECEIVERS check. Post-P1 tail characterized: 726 single-identifier receivers dominated by external namespace imports (ts.*), 377 cast-wrapped receivers ((ts as any).*), 27 two-part incl. process.stderr/stdout, 20 this-chains on external clients.",
+          "touches": [
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P2-T2",
+          "verb": "RUN",
+          "description": "BEFORE metrics: capture the post-P1 state as metrics-p2-before.json (scalars + edge totals + resolved-ids hash + unresolved-by-reason).",
+          "touches": [
+            ".coderef/validation-report.json"
+          ]
+        },
+        {
+          "id": "P2-T3",
+          "verb": "TEST",
+          "description": "Contract tests BEFORE implementation (__tests__/pipeline/external-receiver-disposition.contract.test.ts): (a) member calls on receivers bound to EXTERNAL package imports (namespace, default, named local binding) classify external with reason='external_module_receiver', including dotted roots (ts.factory.createIdentifier); (b) cast/paren-wrapped receivers ((ts as any).x, (ts).x) normalize to the underlying identifier and classify the same; (c) node-builtin receivers still classify builtin_module_receiver (precedence unchanged); (d) PROJECT-import receivers still take branch 4 (ambiguous/imported_receiver_method_unknown) - never external; (e) unknown non-import receivers stay unresolved; (f) dotted receivers whose ROOT is in BUILTIN_RECEIVERS (process.stderr.write) classify builtin; (g) zero resolved-edge mutation (this phase adds NO resolved edges).",
+          "touches": [
+            "__tests__/pipeline/external-receiver-disposition.contract.test.ts"
+          ]
+        },
+        {
+          "id": "P2-T4",
+          "verb": "EDIT",
+          "description": "Implement in call-resolver.ts: (i) receiver-core normalization helper stripping cast/paren wrappers to a root identifier; (ii) new branch 3.7 - receiver (or its dotted/normalized root) bound by an ImportResolution with kind='external' => {kind:'external', reason:'external_module_receiver'} (after 3.5/3.6 so builtin/stdlib keep precedence, before branch 4); (iii) extend branch-1 builtin check with a pure-dotted-chain root match against BUILTIN_RECEIVERS (reason='builtin_root_receiver'). Classification-only: no new resolved edges, edge ids status-invariant.",
+          "touches": [
+            "src/pipeline/call-resolver.ts"
+          ]
+        },
+        {
+          "id": "P2-T5",
+          "verb": "RUN",
+          "description": "AFTER metrics: rebuild, re-populate, diff vs metrics-p2-before.json. Assert resolved-edge ids hash IDENTICAL (zero fabricated edges); unresolved_count and unresolved_src_count drop by the flipped population; external_count/builtin_count absorb it; record metrics-p2-diff.md with per-branch attribution.",
+          "touches": [
+            ".coderef/validation-report.json"
+          ]
+        },
+        {
+          "id": "P2-T6",
+          "verb": "EDIT",
+          "description": "Docs sync: CHANGELOG entry (P2 pivot rationale + numbers), README/ARCHITECTURE baseline refresh, USING-CODEREF trust-rule numbers if shifted materially. Record the pivot decision (dotted-chain FU-2 estimate obsolete post-P1; ruling-A-style data-backed disposition completion) in communication.json decisions_log.",
+          "touches": [
+            "CHANGELOG.md",
+            "README.md",
+            "docs/ARCHITECTURE.md",
+            "USING-CODEREF.md"
+          ]
+        },
+        {
+          "id": "P2-T7",
+          "verb": "CHECK",
+          "description": "Full verification: new contract tests green; graph-selected tests via tests_for_change; full suite (isolate any 5s subprocess flakes before calling them failures); confirm report-shape test still green (no new scalar this phase).",
+          "touches": [
+            "__tests__/pipeline/output-validation-report.test.ts"
+          ]
+        },
+        {
+          "id": "P2-T8",
+          "verb": "COMMIT",
+          "description": "Guarded commit with explicit --paths + --done; phase-transition record (agent-side on anchor-gap); HARD STOP at the rolling-plan boundary with the before/after report; P3/P4 remain deferred.",
+          "touches": []
         }
       ]
     },
@@ -128,8 +188,8 @@
   "hard_stops": [
     {
       "phase": 2,
-      "approved": false,
-      "reason": "Phase 2 plan_deferred=true. Hard stop fires at phase planning gate."
+      "approved": true,
+      "reason": "P2 planning gate satisfied 2026-08-01T09:50:28Z: plan authored at checkpoint (rolling contract), data-backed pivot from field-path walking to external/builtin receiver disposition completion recorded in decisions_log"
     },
     {
       "phase": 3,

@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [2026-08-01] — external/builtin receiver disposition completion (edge-resolution P2)
+
+WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 Phase 2 (data-backed pivot from the FU-2 field-path-walking hypothesis, recorded at the P2 planning gate).
+
+- **`call-resolver.ts`**: member calls on receivers bound to EXTERNAL package imports (namespace/default/named local bindings, dotted roots like `ts.factory`, and single-layer cast/paren wrappers like `(ts as any)`) now classify `external` with `reason='external_module_receiver'` (new branch 3.7; node-builtin/python-stdlib bindings keep their canonical `builtin` disposition). Pure dotted receivers whose ROOT is allowlisted (`process.stderr.write()`) classify `builtin` with `reason='builtin_root_receiver'` (branch 1b).
+- **Self-scan effect**: 415 disposition flips (394 external + 21 builtin-root); `unresolved_count` 1,871 → **1,673**; `unresolved_src_count` 959 → **782**; `resolved_of_resolvable` 73.38% → **74.62%**. Zero resolved edges carry a P2 reason (dispositions only, no fabricated project edges); `ambiguous` counts byte-exact invariant. ~154 flips moved from `test_dsl_matcher_receiver` to `external_module_receiver` (test files that import `vi`/`expect` from the external 'vitest' package) — same denominator effect, cleaner provenance.
+- Contract: `__tests__/pipeline/external-receiver-disposition.contract.test.ts` (8 tests, authored before the implementation).
+
+---
+
 ## [2026-08-01] — test_dsl reclassify: the resolution denominator is now honest
 
 WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 Phase 1 (operator-delegated ruling A, 2026-08-01 — the P3c `js_prototype_member` shape extended to test-framework DSLs, both sides).

@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "checkpoint_ready",
-  "current_phase": 1,
-  "phase_status": "complete",
+  "status": "implementing",
+  "current_phase": 2,
+  "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\analysis.json",
@@ -84,6 +84,12 @@
       "event": "phase_transition_writer_anchor_gap",
       "at": "2026-08-01T09:42:12Z",
       "note": "write-phase-transition.cjs no-oped on the coderef-core: anchored registry path (KZ-01KYY49T family); writer semantics applied agent-side"
+    },
+    {
+      "event": "p2_planning_gate",
+      "at": "2026-08-01T09:50:28Z",
+      "decision": "PIVOT (data-backed): P2 re-scoped from dotted-chain field-path walking (FU-2 hypothesis, ~5,050-edge estimate) to external/builtin receiver disposition completion. Post-P1 characterization shows the FU-2 estimate was dominated by matcher chains P1 already flipped; the real remaining receiver tail is 726 external-namespace-import receivers (ts.*), 377 cast-wrapped ((ts as any).*), 27 dotted-builtin-root (process.stderr), 20 external-client this-chains. Same P3c disposition family: zero fabricated project edges. True field-path walking deferred - the genuinely project-typed chain population is near-zero post-P1.",
+      "stub_ref": "STUB-VYBKRV"
     }
   ],
   "phase_transitions": [
@@ -112,5 +118,23 @@
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "close_metadata": {
+    "follow_ups": [
+      {
+        "status": "candidate",
+        "captured_at": "2026-08-01T09:56:23Z",
+        "source": "P2 residue analysis",
+        "title": "test_dsl matcher predicate: vi.-rooted call-expression chains",
+        "detail": "vi.fn().mockReturnValue()-style receivers (~84 test-origin edges) stay unresolved: the matcher predicate covers expect(-rooted and bare vi/jest/expect receivers but not vi.fn() call-expression chains. Extend with a startsWith(\"vi.\")/startsWith(\"jest.\") leg (test-file-guarded)."
+      },
+      {
+        "status": "candidate",
+        "captured_at": "2026-08-01T09:56:23Z",
+        "source": "P2 residue analysis",
+        "title": "branch 3.5 dotted-root matching for node-builtin receivers",
+        "detail": "fs.promises.readFile()-style receivers (~22 edges) miss branch 3.5 (exact localName match only). Mirror the python_stdlib root-matching for node_builtin bindings."
+      }
+    ]
+  }
 }

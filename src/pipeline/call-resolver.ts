@@ -655,6 +655,23 @@ export function resolveCallsAgainstTable(
       continue;
     }
 
+    // Branch 1b (P2): pure dotted chain whose ROOT is allowlisted
+    // (`process.stderr.write()`). Same disposition family as Branch 1 with a
+    // distinct reason so the flip is separately auditable.
+    if (isBuiltinRootReceiver(fact.receiverText)) {
+      resolutions.push({
+        sourceFile: fact.sourceFile,
+        callerCodeRefId,
+        calleeName: fact.calleeName,
+        receiverText: fact.receiverText,
+        scopePath: [...fact.scopePath],
+        line: fact.line,
+        kind: 'builtin',
+        reason: 'builtin_root_receiver',
+      });
+      continue;
+    }
+
     // Branch 2: member-access calls (this/super/imported/local-typed/unknown).
     if (fact.receiverText !== null) {
       const result = classifyMethodCall(
@@ -705,6 +722,44 @@ export function resolveCallsAgainstTable(
 export function isBuiltinReceiver(receiverText: string | null): boolean {
   if (receiverText === null) return false;
   return BUILTIN_RECEIVERS.has(receiverText);
+}
+
+/** Pure dotted identifier chain with at least two parts (a.b, a.b.c, ...). */
+const PURE_DOTTED_CHAIN_RE = /^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)+$/;
+
+/**
+ * WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 P2: dotted receivers whose ROOT
+ * identifier is in the builtin allowlist (`process.stderr.write()`,
+ * `Array.prototype.map.call()`) are honestly builtin member calls — the exact
+ * receiverText (`process.stderr`) just never matched the allowlist's exact-set
+ * check. Pure dotted chains only: call-expression receivers (`f(x).g`) and
+ * cast forms are deliberately NOT matched here.
+ */
+export function isBuiltinRootReceiver(receiverText: string | null): boolean {
+  if (receiverText === null) return false;
+  if (!PURE_DOTTED_CHAIN_RE.test(receiverText)) return false;
+  return BUILTIN_RECEIVERS.has(receiverText.split('.')[0]);
+}
+
+/**
+ * Extract the ROOT identifier a receiver expression is anchored on, for the
+ * import-binding disposition branches (P2). Handles exactly two shapes:
+ *   - a pure dotted identifier chain: `ts.factory` -> `ts`
+ *   - a single-layer cast/paren wrapper around an identifier:
+ *     `(ts as any)` / `(ts)` / `(ts!)` -> `ts`, including a trailing dotted
+ *     tail: `(ts as any).factory` -> `ts`
+ * Anything else (call-expression receivers `f(x)`, `this.`/`super.` forms,
+ * literals) returns null — those receivers are NOT import-binding shaped and
+ * must keep their existing classification paths.
+ */
+function receiverRootIdentifier(receiverText: string): string | null {
+  const core = receiverText.trim();
+  const paren = /^\(\s*([A-Za-z_$][\w$]*)\s*(?:!|as\s+[^()]*)?\s*\)(?:\.[A-Za-z_$][\w$]*)*$/.exec(core);
+  if (paren) return paren[1];
+  if (/^[A-Za-z_$][\w$]*(\.[A-Za-z_$][\w$]*)*$/.test(core)) {
+    return core.split('.')[0];
+  }
+  return null;
 }
 
 /**
@@ -876,6 +931,31 @@ export function classifyMethodCall(
     );
     if (pyStdlibBinding) {
       return { kind: 'builtin', reason: 'python_stdlib_receiver' };
+    }
+  }
+
+  // (3.7) localName.X() where localName (the receiver's root identifier,
+  //     after unwrapping single-layer cast/paren forms like `(ts as any)` and
+  //     dotted tails like `ts.factory`) is bound to an EXTERNAL package import
+  //     (WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 P2). The call targets a
+  //     third-party package member — honestly `external`, not an unresolvable
+  //     project edge. node_builtin / python_stdlib bindings are excluded so
+  //     branches 3.5/3.6 keep their canonical `builtin` disposition. Post-P1
+  //     this class was 726 bare + 377 cast-wrapped receiver_not_in_symbol_table
+  //     edges on this repo (`ts.*` alone dominating).
+  if (receiver !== null) {
+    const externalRoot = receiverRootIdentifier(receiver);
+    if (externalRoot !== null) {
+      const externalBinding = importResolutions.find(
+        ir => ir.sourceFile === fact.sourceFile
+          && ir.kind === 'external'
+          && ir.reason !== 'node_builtin'
+          && ir.reason !== 'python_stdlib'
+          && (ir.localName === receiver || ir.localName === externalRoot),
+      );
+      if (externalBinding) {
+        return { kind: 'external', reason: 'external_module_receiver' };
+      }
     }
   }
 
