@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "implementing",
+  "status": "checkpoint_ready",
   "current_phase": 3,
-  "phase_status": "in_progress",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\edge-resolution-improvement-program\\analysis.json",
@@ -118,6 +118,13 @@
       "commit": "419d532",
       "verdict": "PASS",
       "at": "2026-08-01T10:04:30Z"
+    },
+    {
+      "phase": 3,
+      "to_status": "complete",
+      "commit": "25d696d",
+      "verdict": "PASS",
+      "at": "2026-08-01T10:36:00Z"
     }
   ],
   "plan_adjustments": [],
@@ -136,6 +143,11 @@
       "timestamp": "2026-08-01T10:04:30Z",
       "event": "phase2_complete_holding",
       "detail": "P2 external/builtin receiver disposition 8/8 tasks (planning-gate pivot from FU-2 field-path walking); 415 disposition flips (394 external_module_receiver + 21 builtin_root_receiver); unresolved 1871->1673, unresolved_src 959->782, resolved_of_resolvable 73.38->74.62; zero resolved edges from new branches; suite 2515/26/0; commit 419d532 pushed+verified; rolling-plan hard stop before P3 planning gate (STUB-9B66EN heritage-aware lookup)"
+    },
+    {
+      "timestamp": "2026-08-01T10:36:00Z",
+      "event": "phase3_complete_holding",
+      "detail": "P3 heritage-aware method lookup 8/8 tasks (STUB-9B66EN, guardrail-3 retired); heritage-index module (BFS, nearest-level-wins, cycle guard, depth 16) wired into all three classifyMethodCall branches; new reason heritage_method_lookup (EXACT) + super_method_not_in_heritage; self-scan flips ZERO proven by controlled A/B (raw diff confounded by peer-commit id turnover); metrics valid 10049 / unresolved 1674 / ror 74.67; 9-test contract envelope; suite 2524/26/0; commit 25d696d pushed+verified; rolling-plan hard stop before P4 planning gate (STUB-QPAAY0 incremental path-keying)"
     }
   ],
   "required_skills": [

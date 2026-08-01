@@ -1,33 +1,38 @@
 =============================================================
-WORKORDER: WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001  |  edge-resolution-improvement-program  |  PHASE 2 of 4 COMPLETE (checkpoint_ready)
-Session: SES-2026-08-01-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM  |  Phases run: 2 (rolling single-phase mode, one per invocation)  |  Commits: 4  |  Pushes: 4
-Parent stub: STUB-EVR39N (promoted)  |  Promoted: STUB-VYBKRV (P2, pivoted)  |  Deferred: STUB-9B66EN (P3) / STUB-QPAAY0 (P4)
+WORKORDER: WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001  |  edge-resolution-improvement-program  |  PHASE 3 of 4 COMPLETE (checkpoint_ready)
+Session: SES-2026-08-01-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM  |  Phases run: 3 (rolling single-phase mode, one per invocation)  |  Commits: 6  |  Pushes: 6
+Parent stub: STUB-EVR39N (promoted)  |  Promoted: STUB-VYBKRV (P2, pivoted) / STUB-9B66EN (P3)  |  Deferred: STUB-QPAAY0 (P4)
 
 FILES CREATED:
+  + src/pipeline/heritage-index.ts  (25d696d - BFS chain walk, nearest-level-wins, cycle guard, MAX_HERITAGE_DEPTH=16)
+  + __tests__/pipeline/heritage-method-lookup.contract.test.ts  (25d696d - 9 tests)
   + __tests__/pipeline/test-dsl-reclassify.contract.test.ts  (d03a61d)
   + __tests__/pipeline/external-receiver-disposition.contract.test.ts  (419d532)
-  + coderef/workorder/.../metrics-before.json + metrics-after.json + metrics-after-diff.md  (d03a61d)
-  + coderef/workorder/.../metrics-p2-before.json + metrics-p2-after.json + metrics-p2-diff.md  (419d532)
+  + coderef/workorder/.../metrics-{before,after,p2-*,p3-*}.json + 3 diff.md  (per phase)
 
 FILES MODIFIED:
-  ~ src/pipeline/call-resolver.ts  (d03a61d P1 test_dsl; 419d532 P2 branches 3.7 + 1b)
+  ~ src/pipeline/call-resolver.ts  (d03a61d P1 test_dsl; 419d532 P2 branches 3.7 + 1b; 25d696d P3 heritage wiring in branches 1/2/3)
   ~ src/pipeline/output-validator.ts + src/cli/mcp/context-tools.ts  (d03a61d)
-  ~ __tests__/pipeline/output-validation-report.test.ts (19->20 field contract)  (d03a61d)
-  ~ docs/CLI.md + docs/ARCHITECTURE.md + README.md + USING-CODEREF.md + CHANGELOG.md  (both phases)
-  ~ communication.json + plan.json (P2 authored in-place at the planning gate)  (419d532)
+  ~ docs/CLI.md + docs/ARCHITECTURE.md + README.md + USING-CODEREF.md + CHANGELOG.md  (all phases)
+  ~ communication.json + plan.json (P2+P3 authored in-place at their planning gates)
 
 PHASE CHECKLIST:
   [x] Phase 1: test_dsl reclassify, 8/8 tasks  (d03a61d)  suite 2503/26/0
   [x] Phase 2: external/builtin receiver disposition, 8/8 tasks  (419d532)  suite 2515/26/0
       (planning-gate PIVOT from FU-2 field-path walking - data-backed, recorded in decisions_log)
-  [ ] Phase 3: heritage-aware method lookup - DEFERRED (planning gate, STUB-9B66EN)
+  [x] Phase 3: heritage-aware method lookup, 8/8 tasks  (25d696d)  suite 2524/26/0
+      (guardrail-3 retired; new reasons heritage_method_lookup EXACT + super_method_not_in_heritage)
   [ ] Phase 4: incremental path-keying fix - DEFERRED (planning gate, STUB-QPAAY0)
 
-RESULTS (cumulative): unresolved 18,527 -> 1,673  |  unresolved_src 959 -> 782  |  resolved_of_resolvable 32.83% -> 74.62%
-P2 SPECIFIC: 415 disposition flips (394 external_module_receiver + 21 builtin_root_receiver)  |  external 322 -> 717
-GUARDS:  zero resolved edges carry a P2 reason  |  ambiguous 1,730 -> 1,730 EXACT  |  edge ids status-invariant
+RESULTS (cumulative): unresolved 18,527 -> 1,674  |  unresolved_src 959 -> 783  |  resolved_of_resolvable 32.83% -> 74.67%
+P3 SPECIFIC: self-scan flips ZERO - proven by controlled A/B (heritage neutralized vs live, identical resolved-id sets;
+  raw before/after diff was confounded by peer src commits turning over line-anchored ids). 22-edge heritage estate here;
+  value is repo-agnostic (super.x(), inherited this.x(), typed-receiver inherited methods EXACT) pinned by the 9-test contract.
+GUARDS:  zero fabricated targets  |  zero lost resolutions (A/B: A-only 0, B-only 0)  |  external supertypes never resolve
 
-Session: logged (rich, both phases)  |  Registry: active_work heartbeat live  |  Follow-ups: 2 candidates in close_metadata
+Session: logged (rich, all three phases)  |  Registry: active_work heartbeat live  |  Follow-ups: 2 candidates in close_metadata
+Audit sidecars metrics-p3-*.resolved-ids.txt on disk only (id-vintage-bound, excluded from commit by design)
 
-NEXT: review the P2 numbers, then P3 planning gate + /execute-workorder WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 --phase=3
+NEXT: review the P3 result, then P4 planning gate + /execute-workorder WO-EDGE-RESOLUTION-IMPROVEMENT-PROGRAM-001 --phase=4
+      (close_after_phase=4: after P4 the close ceremony follows via /close-workorder - operator-invoked, never automatic)
 =============================================================
