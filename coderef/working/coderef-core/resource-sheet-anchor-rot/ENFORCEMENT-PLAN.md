@@ -57,7 +57,7 @@ Both gates hang off the same parser fix. `TKT-017SAB` is one small ticket gating
 ## Two enforcement points, and why both are needed
 
 - **Continuous (`STUB-34YBWR`)** — the resource-sheet kind checker, run by `standards-validate` on every close and every sweep. Catches drift wherever it already exists, across all domains. Must ship **WARN-first**: the corpus starts at 9 genuinely-stale sheets, and a FAIL gate on day one trains bypass, which is the failure mode that produced this situation.
-- **Per-change (close-workorder)** — `check-doc-code-tie.mjs` already runs at close, but it answers a *different* question: "was the paired doc touched in this WO's commits?" It never asks whether the doc's claims are still TRUE, and it is inert when a plan declares no `doc_binding` — which is exactly what happened to this session's own workorder. **This is the one gap with no owner yet** (see below).
+- **Per-change (close-workorder)** — `check-doc-code-tie.mjs` already runs at close, but it answers a *different* question: "was the paired doc touched in this WO's commits?" It never asks whether the doc's claims are still TRUE, and it is inert when a plan declares no `doc_binding` — which is exactly what happened to this session's own workorder. Now owned: **`STUB-B70KHC`**.
 
 ## Gaps with no owner yet — operator ruling needed
 
