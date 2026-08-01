@@ -186,6 +186,7 @@
     "/log-session"
   ],
   "close_metadata": {
+    "what_shipped": "Close commit dbd32a5 (main, pushed) - WO dir finalization (communication.json -> closed). Corrective b5f4ee8 untracked the four disk-only .resolved-ids.txt audit sidecars dbd32a5 had swept in via directory staging (-40,250 lines; files kept on disk). Program payload shipped in phase commits d03a61d / 419d532 / 25d696d / fb6e987: call-resolver test_dsl reclassify, external/builtin receiver disposition, heritage-aware method lookup (heritage-index.ts), incremental path-keying fix (canonicalFactKey/dedupeFactSet/storeKeyFor). Validation: suite 2532 passed / 26 skipped / 0 failed; E2E incremental parity sha256-identical; unresolved 18,527 -> 1,674; resolved_of_resolvable 32.83% -> 74.8%.",
     "closed_via": "/close-workorder",
     "close_mode": "close-only",
     "review_status": "PASS",
