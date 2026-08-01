@@ -69,6 +69,37 @@
       "task": "P1-T9",
       "at": "2026-08-01",
       "detail": "generate-quickstart template fixed at source (ASSISTANT ea0aa0c10) to emit title/status/updated + derived/generated_by/documents, per the generated-view-is-derived doctrine. The generated file was NOT regenerated: discover.cjs currently mis-derives project_name as \"-coderef-core\" (leading dash) and project_description as \"title: @coderef/core\" (leaks the frontmatter key), so a regeneration would DEGRADE the existing correct output. The output was instead synced to the fixed template by hand. discover.cjs defect is unfixed and belongs to the generate-quickstart skill owner."
+    },
+    {
+      "event": "phase_complete",
+      "phase": 2,
+      "task": "P2-T6",
+      "at": "2026-08-01",
+      "detail": "data kind 4 FAIL -> 0 FAIL (12 pass / 0 warn / 0 fail / 1 skip). Authored the four missing sub-type docs under docs/standards/data/: ENTITIES-STANDARD.md (3e2bd8a), KEYING-STANDARD.md (a45a665), SCHEMA-STANDARD.md (4d540e5), PROVENANCE-STANDARD.md (5041b7d). Filenames were chosen AFTER reading kind.json's file_hints and confirming each maps to exactly one sub-type under the most-specific-wins matcher, per the P2-T6 instruction not to guess the naming convention. Root cause of the original 4/4 FAIL confirmed: check.mjs pushMdIn() is NON-RECURSIVE, scanning only docs/standards/*.md and docs/standards/data/*.md -- the pre-existing ENTITIES/AUDIT.md and ENTITIES/TEMPLATE.md sit one directory too deep to ever be scored. The four sub-type docs were never written at all."
+    },
+    {
+      "event": "finding",
+      "phase": 2,
+      "task": "P2-T4",
+      "at": "2026-08-01",
+      "detail": "docs/SCHEMA.md is STALE against the code on two counts: it documents EdgeEvidence as a 10-variant union (code carries 12 -- adds calls-endpoint, serves-endpoint, src/pipeline/graph-builder.ts:144) and EdgeRelationship as 4 values (code carries 8 -- adds extends, implements, calls_endpoint, serves_endpoint, src/pipeline/graph-builder.ts:103). Drift dates from the API-surface-mapping and genre-features work, which added graph surface without refreshing the reference doc. This is STALE DOCUMENTATION, not a schema defect -- the code is correct and internally consistent. NOTE: the WO task text for P2-T5 inherits the same stale '10 variants' premise; the authored docs use the code's counts. Recorded as a follow-up rather than patched inside this WO, because SCHEMA.md is the schema sub-type's cited authority and repairing it is a separate, verifiable change.",
+      "follow_up": "Refresh docs/SCHEMA.md EdgeEvidence (10->12) and EdgeRelationship (4->8) to match src/pipeline/graph-builder.ts."
+    },
+    {
+      "event": "finding",
+      "phase": 2,
+      "task": "P2-T3",
+      "at": "2026-08-01",
+      "detail": "KNOWN TENSION declared, not resolved: the data kind's keying rule requires ONE id format per object, but a code element carries TWO shapes derived from the same (file, name, line) triple -- the canonical codeRefId natural key (src/utils/coderef-id.ts:49) AND the registry RFC-4122 v5 UUID (src/registry/entity-registry.ts:37). Both are deterministic and stable, so neither is a correctness bug, but a second shape for one object is exactly the cross-surface alias hazard the sub-type warns about. Plausibly implicated in the separately-tracked unresolved-UUID-anchor defect KZ-01KYX9P4 (309 of 311 UUID anchors do not resolve against .coderef/index.json) -- P7-T3 should consider this link. The doc declares the tension and does NOT pick a survivor.",
+      "surfaced_question": "Which id shape is canonical for a code element going forward: the readable codeRefId natural key, or the registry v5 UUID? Resolving this is a prerequisite to closing KZ-01KYX9P4 cleanly. NOT decided unilaterally."
+    },
+    {
+      "event": "surfaced_question",
+      "phase": 2,
+      "task": "P2-T3",
+      "at": "2026-08-01",
+      "detail": "The data kind v1.4.0 adds a CORE check: a keying doc naming any hash primitive must declare an 'Engine binding' (canonical engine = keying-core, ASSISTANT/ENGINES/keying-core/SPEC.md section 6). CORE's CANONICAL id scheme is a natural key with no hash, which the kind exempts -- but CORE has two subordinate hash-derived handles (the registry v5 UUID and the sha1/16-hex edge content-address), so an honest doc names sha1 and trips the check. The binding was declared TRUTHFULLY: each handle mints through exactly one shared exported function (the property the check exists to enforce), cited with conformance proof (src/registry/__tests__/entity-registry.test.ts:28-42 proves cross-platform equality, per-component distinctness, and cross-instance reproducibility). The doc states explicitly that CORE does NOT vendor keying-core and why: keying-core mints {prefix}-hex(BLAKE2b(...)), while an RFC 4122 v5 UUID is SPECIFIED to be sha1-based with set version/variant bits, so substituting BLAKE2b would not yield a v5 UUID; the edge handle is a content-address, not an entity uid. Adopting the engine would change both id shapes and break every stored reference keyed to them.",
+      "surfaced_question": "Should coderef-core carry a keying-core binding at all, given NEITHER hash site is entity-uid minting? (A) accept CORE's own single-mint-point declaration as satisfying the intent (shipped state), (B) vendor keying-core and migrate the two handles, accepting the id-shape break, (C) amend the data kind so the engine-binding check keys on entity-uid minting rather than on any hash primitive appearing in the text. This is a fleet-convention call of the same family as the STUB-CT0DRT git-hook posture question -- NOT decided unilaterally."
     }
   ],
   "phase_transitions": [],
