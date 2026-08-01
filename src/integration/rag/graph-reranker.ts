@@ -192,6 +192,28 @@ export class GraphReRanker {
       opts.complexityWeight +
       opts.semanticWeight;
 
+    // TKT-G8GWG0: a weight vector that sums to zero has no normalization, and
+    // dividing by it produced NaN for EVERY field of EVERY result. The damage
+    // was not merely a non-finite number in the output: the final
+    // `sort((a,b) => b.rerankedScore - a.rerankedScore)` comparator returns
+    // NaN for those pairs, so the ordering became implementation-defined and a
+    // degenerate result could sort above a genuine match.
+    //
+    // Rejecting beats substituting equal weights: silently inventing a uniform
+    // weighting would be a ranking policy the caller never asked for, applied
+    // invisibly. This turns a silent NaN into a loud error at the call site.
+    //
+    // Note this catches more than the all-zero case in the ticket — weights
+    // that merely SUM to zero (e.g. +1 and -1) were equally broken.
+    if (!Number.isFinite(totalWeight) || totalWeight <= 0) {
+      throw new Error(
+        `GraphReRanker: ranking weights must sum to a positive finite number, got ${totalWeight}. ` +
+        `Weights: dependency=${opts.dependencyWeight}, dependent=${opts.dependentWeight}, ` +
+        `coverage=${opts.coverageWeight}, complexity=${opts.complexityWeight}, ` +
+        `semantic=${opts.semanticWeight}`
+      );
+    }
+
     const normalizedWeights = {
       dependencyWeight: opts.dependencyWeight / totalWeight,
       dependentWeight: opts.dependentWeight / totalWeight,
@@ -214,9 +236,28 @@ export class GraphReRanker {
       const queryBoost = this.calculateQueryBoost(result, opts.queryStrategy);
       rerankedScore *= (1.0 + queryBoost);
 
-      // Cap at maxBoost
-      const boostFactor = Math.min(rerankedScore / result.score, opts.maxBoost);
-      rerankedScore = result.score * boostFactor;
+      // Cap at maxBoost.
+      //
+      // TKT-G8GWG0: `rerankedScore / result.score` is a RATIO, so it is
+      // undefined when the semantic layer scored this result 0 — and 0 is
+      // ordinary input, not corruption. Measured at HEAD, both branches were
+      // wrong: 0/0 gave NaN (which then poisoned the sort comparator and let a
+      // zero-relevance document outrank a real match), and n/0 gave Infinity,
+      // capped to maxBoost, so the result reported boostFactor 2.0 — a claim
+      // that it had been doubled when its score never moved off zero.
+      //
+      // A result the search layer scored zero has no relevance to scale, so it
+      // stays at zero with an explicit no-boost factor. Unlike the weight
+      // check above this does NOT throw: a zero score is legitimate data from
+      // upstream, not a caller configuration error.
+      let boostFactor: number;
+      if (!Number.isFinite(result.score) || result.score <= 0) {
+        boostFactor = 1;
+        rerankedScore = 0;
+      } else {
+        boostFactor = Math.min(rerankedScore / result.score, opts.maxBoost);
+        rerankedScore = result.score * boostFactor;
+      }
 
       // Apply minimum threshold
       if (rerankedScore < opts.minScore) {

@@ -221,6 +221,23 @@
       "ac1_proof": "RAN. Reverted json-store.ts to HEAD: the 4 defect cases fail, both guards pass.",
       "suite": "2620 passed / 26 skipped / 0 failed (2614 phase-3 baseline + the 6 new cases). tsc --noEmit exit 0.",
       "at": "2026-08-02T00:15:00Z"
+    },
+    {
+      "event": "p5_findings",
+      "summary": "GraphReRanker degenerate-input guards. The ticket framed this as non-finite scores; the measured damage is an ORDERING bug.",
+      "the_finding": "rerank() ends with sort((a,b) => b.rerankedScore - a.rerankedScore). A NaN comparator result makes the sort implementation-defined, and MEASURED at HEAD a result the semantic layer scored 0 came back ranked ABOVE one it scored 0.5. One degenerate document silently reorders the whole answer. That is what the lead test asserts - ordering, not finiteness.",
+      "second_branch": "The n/0 case never went non-finite and would survive an isFinite-only fix: Infinity capped to maxBoost gave boostFactor 2.0, so the result CLAIMED it had been doubled while its score never left zero. Pinned as its own case.",
+      "why_the_existing_guard_test_did_not_catch_it": "graph-reranker.test.ts:159 is named \"should handle zero weights\" but zeroes only four of five, leaving semanticWeight at 0.2 - the sum is 0.2 and nothing degenerates. And its assertion toEqual(NaN, NaN) passes under vitest Object.is semantics, so a fully-NaN result set would have satisfied the very test meant to guard this.",
+      "design_call": "Two degeneracies, two dispositions, deliberately. A non-positive weight sum THROWS - substituting equal weights would invent a ranking policy the caller never asked for, invisibly. A zero result.score CLAMPS to no-boost/zero - that is legitimate data from the search layer, not a configuration error. Also catches more than the ticket: weights that merely SUM to zero (+1, -1) were equally broken.",
+      "no_caller_regression": "The pre-existing graph-reranker.test.ts passes 17/17 UNCHANGED alongside the throw.",
+      "suite": "2627 passed / 26 skipped / 0 failed. tsc --noEmit exit 0.",
+      "at": "2026-08-02T00:45:00Z"
+    },
+    {
+      "event": "operator_scope_addition",
+      "summary": "Operator added two cross-cutting tasks mid-phase-5, 2026-08-01: (1) update the docs/headers of every file this WO touched, using coderef itself; (2) ensure the MCP and CLI surfaces carry the capabilities this WO adds.",
+      "disposition": "Tracked as tasks #44 and #45. Task #45 must report honestly which changes are genuine capabilities with a surface to expose versus internal corrections with none - not every phase here adds a capability.",
+      "at": "2026-08-02T00:50:00Z"
     }
   ],
   "phase_transitions": [
