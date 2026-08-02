@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<!--
+  coderef map viewer — Ecosystem Topology Graph (graph.html alias)
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>coderef — Ecosystem Topology (Intel Engine + Parsed Surfaces)</title>
+  <link rel="stylesheet" href="./tokens.css">
+  <link rel="stylesheet" href="./viewer.css">
+  <script id="coderef-map-data">
+    window.__CODEREF_MAP_DATA__ = {
+      "meta": {
+        "schemaVersion": "1.8.0",
+        "projectPath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+        "repoName": "coderef-ecosystem-topology",
+        "generatedAt": "2026-08-02T03:11:00.000Z",
+        "source": { "nodeCount": 10, "edgeCount": 11, "elementCount": 32 }
+      },
+      "nodes": [
+        { "id": "coderef-intel-engine", "label": "coderef-intel-engine (Headless Core)", "layer": "engine", "sub": "Pure Headless Code Intelligence Producer", "elementCount": 12 },
+        { "id": "mcp-feed-server", "label": "MCP Feed Server (@feed/mcp)", "layer": "feed", "sub": "Graph, Search & Refactor MCP feed tools", "elementCount": 6 },
+        { "id": "cli-stream-bins", "label": "CLI Stream Bins (@feed/cli)", "layer": "feed", "sub": "Streaming JSON CLI query bins", "elementCount": 4 },
+        { "id": "sse-watch-emitter", "label": "Real-Time Watch SSE Emitter", "layer": "feed", "sub": "Real-time incremental AST delta emitter", "elementCount": 2 },
+        { "id": "coderef-map-viewer", "label": "coderef-map-viewer (Visualizer)", "layer": "parsed-surface", "sub": "Interactive D3/Canvas map web app", "elementCount": 5 },
+        { "id": "coderef-doc-gen", "label": "coderef-doc-gen (Doc Pipeline)", "layer": "parsed-surface", "sub": "Automated markdown resource sheet author", "elementCount": 4 },
+        { "id": "coderef-context-pack", "label": "coderef-context-pack (AI Packager)", "layer": "parsed-surface", "sub": "Token-budgeted AI prompt packager", "elementCount": 4 },
+        { "id": "cursor-ide-plugin", "label": "Cursor IDE Plugin", "layer": "external-agent", "sub": "External AI IDE extension", "elementCount": 2 },
+        { "id": "claude-agent-cli", "label": "Claude Agent / Antigravity CLI", "layer": "external-agent", "sub": "External agent pairing runtime", "elementCount": 2 },
+        { "id": "ci-cd-audit-pipeline", "label": "CI/CD Pre-Flight Audit Scripts", "layer": "external-agent", "sub": "Automated pre-commit contract checker", "elementCount": 1 }
+      ],
+      "edges": [
+        { "source": "coderef-intel-engine", "target": "mcp-feed-server" },
+        { "source": "coderef-intel-engine", "target": "cli-stream-bins" },
+        { "source": "coderef-intel-engine", "target": "sse-watch-emitter" },
+        { "source": "mcp-feed-server", "target": "coderef-map-viewer" },
+        { "source": "mcp-feed-server", "target": "coderef-doc-gen" },
+        { "source": "cli-stream-bins", "target": "coderef-context-pack" },
+        { "source": "mcp-feed-server", "target": "cursor-ide-plugin" },
+        { "source": "mcp-feed-server", "target": "claude-agent-cli" },
+        { "source": "sse-watch-emitter", "target": "claude-agent-cli" },
+        { "source": "cli-stream-bins", "target": "ci-cd-audit-pipeline" }
+      ]
+    };
+  </script>
+</head>
+<body>
+  <div id="toolbar">
+    <span id="repo-name">coderef-ecosystem-topology</span>
+    <input id="search-input" type="search" placeholder="Search ecosystem components..." autocomplete="off">
+    <button id="reset-view" title="Fit graph to screen">Reset view</button>
+    <span id="stats"></span>
+  </div>
+  <canvas id="graph-canvas"></canvas>
+  <aside id="detail-panel" hidden>
+    <button id="detail-close" title="Close">&times;</button>
+    <h2 id="detail-title"></h2>
+    <div id="detail-meta"></div>
+    <div id="detail-edges"></div>
+  </aside>
+  <script src="./viewer.js"></script>
+</body>
+</html>

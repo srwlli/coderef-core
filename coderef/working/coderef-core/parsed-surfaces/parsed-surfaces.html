@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!--
+  coderef map viewer — Parsed Downstream Surfaces Graph
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>coderef — Extracted Downstream Consumer Surfaces Map</title>
+  <link rel="stylesheet" href="./tokens.css">
+  <link rel="stylesheet" href="./viewer.css">
+  <script id="coderef-map-data">
+    window.__CODEREF_MAP_DATA__ = {
+      "meta": {
+        "schemaVersion": "1.8.0",
+        "projectPath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+        "repoName": "coderef-parsed-surfaces (Extracted Consumers)",
+        "generatedAt": "2026-08-02T03:11:00.000Z",
+        "source": { "nodeCount": 7, "edgeCount": 6, "elementCount": 18 }
+      },
+      "nodes": [
+        { "id": "coderef-map-viewer", "label": "coderef-map-viewer (D3 Visualizer)", "layer": "map-viewer", "sub": "Web app canvas map viewer", "elementCount": 5 },
+        { "id": "coderef-doc-gen", "label": "coderef-doc-gen (Doc Pipeline)", "layer": "doc-gen", "sub": "Markdown sheet & foundation doc author", "elementCount": 4 },
+        { "id": "coderef-context-pack", "label": "coderef-context-pack (AI Packager)", "layer": "context-pack", "sub": "Prompt dossier & context envelope packager", "elementCount": 4 },
+        { "id": "coderef-exporter", "label": "coderef-exporter (Static Reports)", "layer": "exporter", "sub": "Static HTML/PDF report exporter", "elementCount": 3 },
+        { "id": "ui-tokens-theme", "label": "UI Tokens & CSS Theme Engine", "layer": "map-viewer", "sub": "Shared tokens.css design system", "elementCount": 1 },
+        { "id": "doc-template-registry", "label": "Doc Template Registry", "layer": "doc-gen", "sub": "Markdown resource sheet templates", "elementCount": 1 }
+      ],
+      "edges": [
+        { "source": "coderef-map-viewer", "target": "ui-tokens-theme" },
+        { "source": "coderef-doc-gen", "target": "doc-template-registry" },
+        { "source": "coderef-exporter", "target": "coderef-map-viewer" },
+        { "source": "coderef-context-pack", "target": "coderef-exporter" }
+      ]
+    };
+  </script>
+</head>
+<body>
+  <div id="toolbar">
+    <span id="repo-name">coderef-parsed-surfaces</span>
+    <input id="search-input" type="search" placeholder="Search consumer systems..." autocomplete="off">
+    <button id="reset-view" title="Fit graph to screen">Reset view</button>
+    <span id="stats"></span>
+  </div>
+  <canvas id="graph-canvas"></canvas>
+  <aside id="detail-panel" hidden>
+    <button id="detail-close" title="Close">&times;</button>
+    <h2 id="detail-title"></h2>
+    <div id="detail-meta"></div>
+    <div id="detail-edges"></div>
+  </aside>
+  <script src="./viewer.js"></script>
+</body>
+</html>

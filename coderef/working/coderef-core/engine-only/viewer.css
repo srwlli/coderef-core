@@ -1,0 +1,120 @@
+/* coderef map viewer stylesheet */
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+#toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+  background: var(--surface-toolbar);
+  border-bottom: 1px solid var(--border);
+  z-index: 10;
+}
+
+#repo-name {
+  font-weight: 600;
+  margin-right: 4px;
+  white-space: nowrap;
+}
+
+#search-input {
+  flex: 0 1 340px;
+  padding: 6px 10px;
+  background: var(--surface-input);
+  color: var(--foreground);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  outline: none;
+}
+#search-input:focus { border-color: var(--accent); }
+
+#toolbar button {
+  padding: 6px 10px;
+  background: var(--surface-button);
+  color: var(--text-strong);
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+#toolbar button:hover { background: var(--hover); }
+
+#stats {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+#graph-canvas {
+  position: fixed;
+  inset: 44px 0 0 0;
+  width: 100%;
+  height: calc(100% - 44px);
+  display: block;
+}
+
+#detail-panel {
+  position: fixed;
+  top: 44px;
+  right: 0;
+  bottom: 0;
+  width: 360px;
+  overflow-y: auto;
+  background: var(--surface-panel);
+  border-left: 1px solid var(--border);
+  padding: 14px 16px;
+  z-index: 15;
+}
+#detail-panel h2 {
+  font-size: 14px;
+  margin: 0 24px 10px 0;
+  word-break: break-all;
+  color: var(--accent);
+}
+#detail-panel h3 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 14px 0 6px;
+}
+#detail-panel ul {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 13px;
+}
+#detail-panel li { margin: 2px 0; word-break: break-all; }
+#detail-panel a { color: var(--link); text-decoration: none; }
+#detail-panel a:hover { text-decoration: underline; }
+.meta-row { font-size: 13px; margin: 3px 0; }
+
+#detail-close {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 20px;
+  cursor: pointer;
+}
+
+#empty-state[hidden],
+#detail-panel[hidden] {
+  display: none;
+}

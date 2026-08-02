@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<!--
+  coderef map viewer — native CodeRef clean rebuild blueprint viewer
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>coderef map — Clean Rebuild Target Blueprint</title>
+  <link rel="stylesheet" href="./tokens.css">
+  <link rel="stylesheet" href="./viewer.css">
+  <script id="coderef-map-data">
+    window.__CODEREF_MAP_DATA__ = {
+      "meta": {
+        "schemaVersion": "1.8.0",
+        "projectPath": "C:/Users/willh/Desktop/CODEREF/CODEREF-CORE",
+        "repoName": "CODEREF-CORE Clean Rebuild Blueprint",
+        "generatedAt": "2026-08-02T03:00:00.000Z",
+        "source": {
+          "nodeCount": 17,
+          "edgeCount": 17,
+          "resolvedEdgeCount": 17,
+          "elementCount": 42
+        }
+      },
+      "nodes": [
+        {
+          "id": "src/adapters/cli/runner-suite.ts",
+          "label": "runner-suite.ts (18 CLI Bins)",
+          "dir": "src/adapters/cli",
+          "layer": "presentation",
+          "inWeight": 0,
+          "outWeight": 2,
+          "hotspotScore": 2,
+          "elementCount": 4,
+          "elements": [
+            {"name": "coderefPipeline", "type": "function", "line": 1},
+            {"name": "coderefMcpServer", "type": "function", "line": 1},
+            {"name": "coderefQuery", "type": "function", "line": 1},
+            {"name": "coderefMap", "type": "function", "line": 1}
+          ]
+        },
+        {
+          "id": "src/adapters/mcp/tool-adapters.ts",
+          "label": "tool-adapters.ts (MCP Servers)",
+          "dir": "src/adapters/mcp",
+          "layer": "presentation",
+          "inWeight": 0,
+          "outWeight": 2,
+          "hotspotScore": 2,
+          "elementCount": 4,
+          "elements": [
+            {"name": "graphTools", "type": "constant", "line": 10},
+            {"name": "lookupTools", "type": "constant", "line": 10},
+            {"name": "searchTools", "type": "constant", "line": 10},
+            {"name": "verificationTools", "type": "constant", "line": 10}
+          ]
+        },
+        {
+          "id": "src/application/services/query-service.ts",
+          "label": "query-service.ts (QueryService Facade)",
+          "dir": "src/application/services",
+          "layer": "service",
+          "inWeight": 2,
+          "outWeight": 3,
+          "hotspotScore": 5,
+          "elementCount": 4,
+          "elements": [
+            {"name": "QueryService", "type": "class", "line": 12},
+            {"name": "queryGraph", "type": "method", "line": 24},
+            {"name": "searchLexical", "type": "method", "line": 45},
+            {"name": "calculateImpact", "type": "method", "line": 68}
+          ]
+        },
+        {
+          "id": "src/application/pipeline/executor.ts",
+          "label": "executor.ts (Pipeline Phase Executor)",
+          "dir": "src/application/pipeline",
+          "layer": "service",
+          "inWeight": 1,
+          "outWeight": 8,
+          "hotspotScore": 9,
+          "elementCount": 3,
+          "elements": [
+            {"name": "runPhases", "type": "function", "line": 15},
+            {"name": "PipelineContext", "type": "interface", "line": 30},
+            {"name": "PipelinePhase", "type": "interface", "line": 50}
+          ]
+        },
+        {
+          "id": "src/pipeline/phases/01-discover-phase.ts",
+          "label": "01-discover-phase.ts",
+          "dir": "src/pipeline/phases",
+          "layer": "pipeline",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 1,
+          "elements": [{"name": "FileDiscoveryPhase", "type": "class", "line": 10}]
+        },
+        {
+          "id": "src/pipeline/phases/02-cache-phase.ts",
+          "label": "02-cache-phase.ts",
+          "dir": "src/pipeline/phases",
+          "layer": "pipeline",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 1,
+          "elements": [{"name": "IncrementalCachePhase", "type": "class", "line": 10}]
+        },
+        {
+          "id": "src/pipeline/phases/03-scan-phase.ts",
+          "label": "03-scan-phase.ts",
+          "dir": "src/pipeline/phases",
+          "layer": "pipeline",
+          "inWeight": 1,
+          "outWeight": 1,
+          "hotspotScore": 2,
+          "elementCount": 1,
+          "elements": [{"name": "ASTElementScanPhase", "type": "class", "line": 10}]
+        },
+        {
+          "id": "src/pipeline/phases/04-import-phase.ts",
+          "label": "04-import-phase.ts",
+          "dir": "src/pipeline/phases",
+          "layer": "pipeline",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 1,
+          "elements": [{"name": "ImportResolutionPhase", "type": "class", "line": 10}]
+        },
+        {
+          "id": "src/pipeline/phases/05-call-phase.ts",
+          "label": "05-call-phase.ts",
+          "dir": "src/pipeline/phases",
+          "layer": "pipeline",
+          "inWeight": 1,
+          "outWeight": 1,
+          "hotspotScore": 2,
+          "elementCount": 1,
+          "elements": [{"name": "ScopeCallResolutionPhase", "type": "class", "line": 10}]
+        },
+        {
+          "id": "src/pipeline/phases/06-scip-phase.ts",
+          "label": "06-scip-phase.ts",
+          "dir": "src/pipeline/phases",
+          "layer": "pipeline",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 1,
+          "elements": [{"name": "SCIPPrecisionOverlayPhase", "type": "class", "line": 10}]
+        },
+        {
+          "id": "src/pipeline/phases/07-doc-phase.ts",
+          "label": "07-doc-phase.ts",
+          "dir": "src/pipeline/phases",
+          "layer": "pipeline",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 1,
+          "elements": [{"name": "DocFactIngestionPhase", "type": "class", "line": 10}]
+        },
+        {
+          "id": "src/pipeline/phases/08-graph-phase.ts",
+          "label": "08-graph-phase.ts",
+          "dir": "src/pipeline/phases",
+          "layer": "pipeline",
+          "inWeight": 1,
+          "outWeight": 1,
+          "hotspotScore": 2,
+          "elementCount": 1,
+          "elements": [{"name": "CanonicalGraphEmissionPhase", "type": "class", "line": 10}]
+        },
+        {
+          "id": "src/domain/graph/canonical-graph.ts",
+          "label": "canonical-graph.ts (Graph Engine)",
+          "dir": "src/domain/graph",
+          "layer": "domain",
+          "inWeight": 2,
+          "outWeight": 0,
+          "hotspotScore": 2,
+          "elementCount": 2,
+          "elements": [
+            {"name": "CanonicalGraphQuery", "type": "class", "line": 15},
+            {"name": "loadCanonicalGraph", "type": "function", "line": 120}
+          ]
+        },
+        {
+          "id": "src/domain/symbol/symbol-table.ts",
+          "label": "symbol-table.ts (Symbol Table)",
+          "dir": "src/domain/symbol",
+          "layer": "domain",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 2,
+          "elements": [
+            {"name": "SymbolTable", "type": "class", "line": 10},
+            {"name": "buildScopeBindingMap", "type": "function", "line": 40}
+          ]
+        },
+        {
+          "id": "src/infrastructure/search/sparse-bm25.ts",
+          "label": "sparse-bm25.ts (BM25 Sub-Token N-Gram)",
+          "dir": "src/infrastructure/search",
+          "layer": "search",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 1,
+          "elements": [{"name": "SparseRetriever", "type": "class", "line": 15}]
+        },
+        {
+          "id": "src/infrastructure/search/vector-store.ts",
+          "label": "vector-store.ts (Ollama Embeddings)",
+          "dir": "src/infrastructure/search",
+          "layer": "search",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 1,
+          "elements": [{"name": "VectorStore", "type": "class", "line": 15}]
+        },
+        {
+          "id": "src/infrastructure/parser/grammar-registry.ts",
+          "label": "grammar-registry.ts (Tree-Sitter Registry)",
+          "dir": "src/infrastructure/parser",
+          "layer": "parser",
+          "inWeight": 1,
+          "outWeight": 0,
+          "hotspotScore": 1,
+          "elementCount": 1,
+          "elements": [{"name": "GrammarRegistry", "type": "class", "line": 10}]
+        }
+      ],
+      "edges": [
+        {"source": "src/adapters/cli/runner-suite.ts", "target": "src/application/services/query-service.ts", "weight": 4},
+        {"source": "src/adapters/cli/runner-suite.ts", "target": "src/application/pipeline/executor.ts", "weight": 4},
+        {"source": "src/adapters/mcp/tool-adapters.ts", "target": "src/application/services/query-service.ts", "weight": 6},
+        {"source": "src/application/pipeline/executor.ts", "target": "src/pipeline/phases/01-discover-phase.ts", "weight": 1},
+        {"source": "src/application/pipeline/executor.ts", "target": "src/pipeline/phases/02-cache-phase.ts", "weight": 1},
+        {"source": "src/application/pipeline/executor.ts", "target": "src/pipeline/phases/03-scan-phase.ts", "weight": 1},
+        {"source": "src/application/pipeline/executor.ts", "target": "src/pipeline/phases/04-import-phase.ts", "weight": 1},
+        {"source": "src/application/pipeline/executor.ts", "target": "src/pipeline/phases/05-call-phase.ts", "weight": 1},
+        {"source": "src/application/pipeline/executor.ts", "target": "src/pipeline/phases/06-scip-phase.ts", "weight": 1},
+        {"source": "src/application/pipeline/executor.ts", "target": "src/pipeline/phases/07-doc-phase.ts", "weight": 1},
+        {"source": "src/application/pipeline/executor.ts", "target": "src/pipeline/phases/08-graph-phase.ts", "weight": 1},
+        {"source": "src/pipeline/phases/03-scan-phase.ts", "target": "src/infrastructure/parser/grammar-registry.ts", "weight": 2},
+        {"source": "src/pipeline/phases/05-call-phase.ts", "target": "src/domain/symbol/symbol-table.ts", "weight": 3},
+        {"source": "src/pipeline/phases/08-graph-phase.ts", "target": "src/domain/graph/canonical-graph.ts", "weight": 5},
+        {"source": "src/application/services/query-service.ts", "target": "src/domain/graph/canonical-graph.ts", "weight": 8},
+        {"source": "src/application/services/query-service.ts", "target": "src/infrastructure/search/sparse-bm25.ts", "weight": 3},
+        {"source": "src/application/services/query-service.ts", "target": "src/infrastructure/search/vector-store.ts", "weight": 3}
+      ]
+    };
+  </script>
+</head>
+<body>
+  <div id="toolbar">
+    <span id="repo-name">coderef map</span>
+    <input id="search-input" type="search" placeholder="Search files and elements..." autocomplete="off">
+    <button id="reset-view" title="Fit graph to screen">Reset view</button>
+    <span id="stats"></span>
+  </div>
+  <div id="search-results" hidden></div>
+  <canvas id="graph-canvas"></canvas>
+  <aside id="detail-panel" hidden>
+    <button id="detail-close" title="Close">&times;</button>
+    <h2 id="detail-title"></h2>
+    <div id="detail-meta"></div>
+    <div id="detail-edges"></div>
+    <div id="detail-elements"></div>
+  </aside>
+  <div id="empty-state" hidden>No map data. Run: coderef-map &lt;path&gt;</div>
+  <script src="./viewer.js"></script>
+</body>
+</html>

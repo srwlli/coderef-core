@@ -1,0 +1,115 @@
+flowchart LR
+  subgraph contracts["Contracts"]
+    contracts_paths["RepoPath<br/><i>P0</i>"]
+    contracts_index["Index schema<br/><i>P0</i>"]
+    contracts_graph["Graph schema<br/><i>P0</i>"]
+    contracts_map["Map schema<br/><i>P0</i>"]
+    contracts_headers["Header codec<br/><i>P0</i>"]
+    contracts_rag["RAG schema<br/><i>P0</i>"]
+    contracts_envelope["Staleness envelope<br/><i>P0</i>"]
+  end
+  subgraph engine["Engine"]
+    engine_loader["Source loader<br/><i>P1 · A</i>"]
+    engine_parser["Parser registry<br/><i>P1 · A</i>"]
+    engine_extract["Extractors<br/><i>P1 · A</i>"]
+    engine_symbols["Symbol table<br/><i>P1 · A</i>"]
+    engine_resolve["Resolver<br/><i>P1 · A</i>"]
+    engine_graph["Graph builder<br/><i>P1 · A</i>"]
+    engine_enrich["Enrichment<br/><i>P2 · A</i>"]
+    engine_analytics["Analytics<br/><i>P2 · A</i>"]
+    engine_measure["Measurement<br/><i>P2 · A</i>"]
+    engine_rag["RAG engine<br/><i>P1 · D</i>"]
+    engine_headers["Header enrichment<br/><i>P2 · D</i>"]
+    engine_watchcore["Watch core<br/><i>P2 · A</i>"]
+    engine_mutate["Mutation<br/><i>P2 · A</i>"]
+    engine_api["Engine API<br/><i>P1 · B</i>"]
+  end
+  subgraph transports["Transports"]
+    transport_mcp["MCP server<br/><i>P1 · B</i>"]
+    transport_cli["CLI bins<br/><i>P1 · B</i>"]
+    transport_watch["Watch daemon<br/><i>P2 · B</i>"]
+  end
+  subgraph surfaces["Surfaces"]
+    surface_viewer["Map viewer<br/><i>P1 · C</i>"]
+    surface_docgen["Doc generator<br/><i>P1 · C</i>"]
+    surface_pack["Context packer<br/><i>P1 · C</i>"]
+  end
+  subgraph verification["Verification"]
+    verify_fixture["Frozen fixture<br/><i>P0</i>"]
+    verify_rules["Rules gate<br/><i>P0</i>"]
+    verify_parity["Parity harness<br/><i>P2</i>"]
+    verify_drift["Drift check<br/><i>P2</i>"]
+  end
+  subgraph external["External"]
+    ext_agents["AI agents & IDEs<br/><i>P3</i>"]
+    ext_ci["CI / CD<br/><i>P3</i>"]
+    ext_humans["Humans<br/><i>P3</i>"]
+    ext_reference["CODEREF-CORE<br/><i>P2</i>"]
+  end
+  contracts_index --> contracts_paths
+  contracts_graph --> contracts_paths
+  contracts_map --> contracts_graph
+  contracts_rag --> contracts_index
+  engine_loader --> contracts_paths
+  engine_parser --> engine_loader
+  engine_extract --> engine_parser
+  engine_extract --> contracts_index
+  engine_symbols --> engine_extract
+  engine_resolve --> engine_symbols
+  engine_resolve --> contracts_graph
+  engine_graph --> engine_resolve
+  engine_graph --> engine_enrich
+  engine_graph --> contracts_graph
+  engine_graph --> contracts_envelope
+  engine_enrich --> engine_extract
+  engine_analytics --> engine_graph
+  engine_analytics --> contracts_map
+  engine_measure --> engine_graph
+  engine_measure --> engine_resolve
+  engine_measure --> contracts_envelope
+  engine_rag --> contracts_rag
+  engine_rag --> contracts_index
+  engine_headers --> contracts_headers
+  engine_headers --> engine_extract
+  engine_watchcore --> engine_graph
+  engine_watchcore --> engine_loader
+  engine_mutate --> engine_graph
+  engine_api --> engine_mutate
+  engine_api --> engine_graph
+  engine_api --> engine_analytics
+  engine_api --> engine_rag
+  engine_api --> engine_measure
+  engine_api --> engine_watchcore
+  engine_api --> engine_headers
+  engine_api --> contracts_envelope
+  transport_mcp --> engine_api
+  transport_cli --> engine_api
+  transport_watch --> engine_api
+  surface_viewer --> contracts_map
+  surface_docgen --> contracts_index
+  surface_docgen --> contracts_graph
+  surface_pack --> contracts_index
+  surface_pack --> contracts_rag
+  verify_parity --> engine_api
+  verify_parity --> verify_fixture
+  verify_rules --> transport_cli
+  verify_drift --> contracts_map
+  transport_mcp -.-> ext_agents
+  transport_watch -.-> ext_agents
+  transport_cli -.-> ext_ci
+  engine_analytics -.-> surface_viewer
+  engine_graph -.-> surface_docgen
+  engine_rag -.-> surface_pack
+  surface_viewer -.-> ext_humans
+  surface_docgen -.-> ext_humans
+  verify_parity -.->|verifies| ext_reference
+  classDef band_contracts stroke:#2a78d6,stroke-width:2px;
+  class contracts_paths,contracts_index,contracts_graph,contracts_map,contracts_headers,contracts_rag,contracts_envelope band_contracts;
+  classDef band_engine stroke:#eb6834,stroke-width:2px;
+  class engine_loader,engine_parser,engine_extract,engine_symbols,engine_resolve,engine_graph,engine_enrich,engine_analytics,engine_measure,engine_rag,engine_headers,engine_watchcore,engine_mutate,engine_api band_engine;
+  classDef band_transports stroke:#1baf7a,stroke-width:2px;
+  class transport_mcp,transport_cli,transport_watch band_transports;
+  classDef band_surfaces stroke:#eda100,stroke-width:2px;
+  class surface_viewer,surface_docgen,surface_pack band_surfaces;
+  classDef band_verification stroke:#e87ba4,stroke-width:2px;
+  class verify_fixture,verify_rules,verify_parity,verify_drift band_verification;

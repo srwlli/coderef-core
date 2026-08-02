@@ -1,0 +1,29 @@
+/* ecosystem-topology UI tokens */
+:root {
+  color-scheme: light dark;
+  --ground:     light-dark(#fbfbfa, #14161a);
+  --ink:        light-dark(#1b1d21, #e6e7e9);
+  --dim:        light-dark(#6a6f78, #9198a3);
+  --line:       light-dark(#e2e2df, #2a2e35);
+  --card-bg:    light-dark(#ffffff, #191c21);
+  --accent-ci:  light-dark(#2f6f6a, #5aa9a1);
+
+  --background:          var(--ground);
+  --foreground:          var(--ink);
+  --text-strong:         var(--ink);
+  --text-muted:          var(--dim);
+  --surface-toolbar:     var(--card-bg);
+  --surface-panel:       color-mix(in srgb, var(--card-bg) 97%, transparent);
+  --surface-input:       var(--card-bg);
+  --surface-button:      color-mix(in srgb, var(--line) 55%, var(--card-bg));
+  --hover:               color-mix(in srgb, var(--accent-ci) 12%, transparent);
+  --active:              var(--accent-ci);
+  --on-active:           var(--card-bg);
+  --border:              var(--line);
+  --border-strong:       color-mix(in srgb, var(--dim) 30%, var(--line));
+  --accent:              var(--accent-ci);
+  --link:                var(--accent-ci);
+}
+
+:root[data-theme="dark"]  { color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }

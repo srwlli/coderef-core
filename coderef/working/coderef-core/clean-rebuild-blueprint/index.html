@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>coderef-core — Clean Rebuild Target Architecture Graph</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg: #0d1117;
+      --card-bg: #161b22;
+      --border: #30363d;
+      --text: #c9d1d9;
+      --text-muted: #8b949e;
+      --accent: #58a6ff;
+      --accent-green: #3fb950;
+      --accent-purple: #bc8cff;
+      --accent-orange: #d29922;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      line-height: 1.5;
+      padding: 2rem;
+      min-height: 100vh;
+    }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto 2rem auto;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(88, 166, 255, 0.3);
+      margin-bottom: 0.75rem;
+    }
+
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #f0f6fc;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    p.subtitle {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .mermaid-container {
+      background: #090d13;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      display: flex;
+      justify-content: center;
+    }
+
+    .layers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .layer-card {
+      background: rgba(22, 27, 34, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+      border-left: 4px solid var(--accent);
+    }
+
+    .layer-card.l6 { border-left-color: #bc8cff; }
+    .layer-card.l5 { border-left-color: #58a6ff; }
+    .layer-card.l4 { border-left-color: #3fb950; }
+    .layer-card.l3 { border-left-color: #d29922; }
+    .layer-card.l2 { border-left-color: #f0883e; }
+    .layer-card.l1 { border-left-color: #ff7b72; }
+
+    .layer-card h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #f0f6fc;
+      margin-bottom: 0.35rem;
+    }
+
+    .layer-card p {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    footer {
+      max-width: 1200px;
+      margin: 3rem auto 0 auto;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="badge">Architecture Blueprint</div>
+    <h1>coderef-core — Target Architecture Graph</h1>
+    <p class="subtitle">Clean-slate 6-layer rebuild blueprint for coderef-core with decoupled phase middleware</p>
+  </header>
+
+  <div class="container">
+    
+    <div class="card">
+      <div class="card-title">
+        <span>📐 Decoupled Architecture Diagram</span>
+      </div>
+      <div class="mermaid-container">
+        <pre class="mermaid">
+graph TD
+    subgraph Presentation_Layer ["Layer 6: Presentation & Adapters"]
+        CLI_ADAPTER["CLI Runner Suite<br/>@adapters/cli/*<br/>(18 thin CLI adapters)"]
+        MCP_ADAPTER["MCP Tool Server Adapters<br/>@adapters/mcp/*<br/>(Graph, Lookup, Map, RAG, Verification)"]
+    end
+
+    subgraph Application_Layer ["Layer 5: Service & Application"]
+        PIPELINE_MIDDLEWARE["Pipeline Phase Middleware Chain<br/>@application/pipeline/executor.ts"]
+        MUTATION_ENGINE["AST Safe Mutation Engine<br/>@application/refactor/ast-mutation.ts"]
+        QUERY_SERVICE["Unified Code Intelligence Query Service<br/>@application/services/query-service.ts"]
+    end
+
+    subgraph Middleware_Handlers ["Layer 4: Pipeline Phase Handlers"]
+        PH_DISCOVER["01. FileDiscoveryPhase"]
+        PH_CACHE["02. IncrementalCachePhase"]
+        PH_SCAN["03. ASTElementScanPhase"]
+        PH_IMPORT["04. ImportResolutionPhase"]
+        PH_CALL["05. ScopeCallResolutionPhase"]
+        PH_SCIP["06. SCIPPrecisionOverlayPhase"]
+        PH_DOC["07. DocFactIngestionPhase"]
+        PH_GRAPH["08. CanonicalGraphEmissionPhase"]
+    end
+
+    subgraph Domain_Layer ["Layer 3: Canonical Domain & Graph Engine"]
+        CANONICAL_GRAPH["Canonical Graph Engine<br/>@domain/graph/canonical-graph.ts"]
+        SYMBOL_TABLE["Global Symbol Table & Scope Stack<br/>@domain/symbol/symbol-table.ts"]
+        INDEX_STORAGE["Atomic Graph Index Storage (.coderef/)<br/>@domain/storage/index-storage.ts"]
+    end
+
+    subgraph Infrastructure_Search ["Layer 2: RAG & Search Substrate"]
+        SPARSE_BM25["BM25 Sub-Token N-Gram Retriever<br/>@infrastructure/search/sparse-bm25.ts"]
+        DENSE_VECTOR["Ollama Vector Embeddings<br/>@infrastructure/search/vector-store.ts"]
+        RRF_FUSION["Reciprocal Rank Fusion (RRF) Reranker<br/>@infrastructure/search/rrf-fusion.ts"]
+    end
+
+    subgraph Infrastructure_Parser ["Layer 1: Core Parser Substrate"]
+        TREE_SITTER["Tree-Sitter Multi-Language Grammar Registry<br/>@infrastructure/parser/grammar-registry.ts"]
+        AST_VISITORS["Language AST Element Visitors<br/>@infrastructure/parser/visitors/*"]
+        LRU_CACHE["LRU Scan Disk/Memory Cache<br/>@infrastructure/cache/lru-cache.ts"]
+    end
+
+    CLI_ADAPTER --> QUERY_SERVICE
+    CLI_ADAPTER --> PIPELINE_MIDDLEWARE
+    MCP_ADAPTER --> QUERY_SERVICE
+    MCP_ADAPTER --> MUTATION_ENGINE
+
+    PIPELINE_MIDDLEWARE --> PH_DISCOVER
+    PIPELINE_MIDDLEWARE --> PH_CACHE
+    PIPELINE_MIDDLEWARE --> PH_SCAN
+    PIPELINE_MIDDLEWARE --> PH_IMPORT
+    PIPELINE_MIDDLEWARE --> PH_CALL
+    PIPELINE_MIDDLEWARE --> PH_SCIP
+    PIPELINE_MIDDLEWARE --> PH_DOC
+    PIPELINE_MIDDLEWARE --> PH_GRAPH
+
+    PH_SCAN --> TREE_SITTER
+    PH_SCAN --> AST_VISITORS
+    PH_SCAN --> LRU_CACHE
+    PH_CALL --> SYMBOL_TABLE
+    PH_GRAPH --> CANONICAL_GRAPH
+    PH_GRAPH --> INDEX_STORAGE
+
+    QUERY_SERVICE --> CANONICAL_GRAPH
+    QUERY_SERVICE --> SPARSE_BM25
+    QUERY_SERVICE --> DENSE_VECTOR
+    SPARSE_BM25 --> RRF_FUSION
+    DENSE_VECTOR --> RRF_FUSION
+        </pre>
+      </div>
+
+      <div class="layers-grid">
+        <div class="layer-card l6">
+          <h3>Layer 6: Presentation & Adapters</h3>
+          <p>18 decoupled CLI runner scripts and isolated domain-specific MCP tool handlers (graph, lookup, search, verification).</p>
+        </div>
+        <div class="layer-card l5">
+          <h3>Layer 5: Service & Application</h3>
+          <p>Unified <code>QueryService</code> facade, AST mutation engine, and deterministic pipeline phase executor.</p>
+        </div>
+        <div class="layer-card l4">
+          <h3>Layer 4: Pipeline Middleware</h3>
+          <p>8 single-responsibility <code>PipelinePhase</code> handlers executing sequentially over shared <code>PipelineContext</code>.</p>
+        </div>
+        <div class="layer-card l3">
+          <h3>Layer 3: Canonical Graph Engine</h3>
+          <p>Immutable <code>CanonicalGraphQuery</code>, global scope-stack symbol table, and atomic <code>.coderef/</code> index storage.</p>
+        </div>
+        <div class="layer-card l2">
+          <h3>Layer 2: RAG & Search Substrate</h3>
+          <p>3-character BM25 sub-token sparse index + dense vector store + Reciprocal Rank Fusion (RRF) reranker.</p>
+        </div>
+        <div class="layer-card l1">
+          <h3>Layer 1: Core Parser Substrate</h3>
+          <p>Tree-Sitter multi-language Wasm/native grammar registry, language AST visitors, and LRU scan cache.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>Generated by Antigravity AI • Target Architecture Blueprint • coderef-core v2.0.0 Clean Rebuild</p>
+  </footer>
+
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: 'dark',
+      securityLevel: 'loose',
+      flowchart: {
+        useMaxWidth: true,
+        htmlLabels: true,
+        curve: 'basis'
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,55 @@
+/*
+ * coderef map-viewer — shared UI token standard.
+ * WO-UNIFY-THE-MAP-VIEWER-UI-TOKEN-STANDARD-SO-001
+ */
+
+:root {
+  color-scheme: light dark;
+
+  --ground:     light-dark(#fbfbfa, #14161a);
+  --ink:        light-dark(#1b1d21, #e6e7e9);
+  --dim:        light-dark(#6a6f78, #9198a3);
+  --line:       light-dark(#e2e2df, #2a2e35);
+  --card-bg:    light-dark(#ffffff, #191c21);
+  --accent-ci:  light-dark(#2f6f6a, #5aa9a1);
+
+  --fact:       light-dark(#2f6f6a, #5aa9a1);
+  --absent:     light-dark(#8a6d1f, #c9a227);
+  --nodata:     light-dark(#7a7f88, #7d848f);
+
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+
+  --background:          var(--ground);
+  --foreground:          var(--ink);
+  --text-strong:         var(--ink);
+  --text-muted:          var(--dim);
+  --text-evidence:       var(--dim);
+  --text-evidence-head:  var(--ink);
+
+  --surface-toolbar:     var(--card-bg);
+  --surface-panel:       color-mix(in srgb, var(--card-bg) 97%, transparent);
+  --surface-strip:       color-mix(in srgb, var(--card-bg) 94%, transparent);
+  --surface-input:       var(--card-bg);
+  --surface-evidence:    color-mix(in srgb, var(--line) 45%, var(--ground));
+  --surface-button:      color-mix(in srgb, var(--line) 55%, var(--card-bg));
+
+  --hover:               color-mix(in srgb, var(--accent-ci) 12%, transparent);
+  --active:              var(--accent-ci);
+  --on-active:           var(--card-bg);
+
+  --border:              var(--line);
+  --border-strong:       color-mix(in srgb, var(--dim) 30%, var(--line));
+  --border-evidence:     color-mix(in srgb, var(--dim) 45%, var(--line));
+
+  --accent:              var(--accent-ci);
+  --link:                var(--accent-ci);
+
+  --data-drift-ring: #ffb300;
+  --data-metric-lo:  #1e88e5;
+  --data-metric-hi:  #ffca28;
+  --data-api-edge:   #26a69a;
+}
+
+:root[data-theme="dark"]  { color-scheme: dark; }
+:root[data-theme="light"] { color-scheme: light; }

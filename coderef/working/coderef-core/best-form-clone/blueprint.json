@@ -1,0 +1,585 @@
+{
+  "$schema": "best-form-clone/blueprint.v1",
+  "version": "1.0.0",
+  "program": "best-form-clone",
+  "created": "2026-08-02",
+  "source_of_truth": "This file is the blueprint. The HTML graphs are rendered FROM it (tools/gen.mjs), the clone's dependency-rules gate is DERIVED from it (verify.rules), and future workorder tasks cite node ids from it. Edit this file, regenerate; never edit the HTML.",
+  "meta": {
+    "program": "Best-Form Clone",
+    "repo_root": "../../../..",
+    "contract_band": "contracts",
+    "core_assets": "../../../../assets/map-viewer",
+    "band_views": ["contracts", "engine", "transports", "surfaces"],
+    "subtitle": "The build follows this graph: solid arrows are the ONLY imports allowed (deny-by-default, enforced by verify.rules), dashed arrows are data flows, pills are build phase · parallel track. Filter by phase to watch the four disjoint P1 tracks appear — that disjointness is the parallel-work plan.",
+    "nav_links": []
+  },
+  "bands": [
+    {
+      "id": "contracts",
+      "name": "Contracts",
+      "slot": 1,
+      "color_light": "#2a78d6",
+      "color_dark": "#3987e5",
+      "desc": "Versioned artifact schemas + exactly one codec per artifact. The seams of the old system, promoted to first-class citizens with round-trip tests.",
+      "layout": { "kind": "strip" }
+    },
+    {
+      "id": "engine",
+      "name": "Engine",
+      "slot": 2,
+      "color_light": "#eb6834",
+      "color_dark": "#d95926",
+      "desc": "Pure intelligence: parse, extract, resolve, graph, analytics, RAG. No filesystem access outside the loader and codecs. No presentation, no process artifacts.",
+      "layout": { "kind": "column", "subcols": 2 }
+    },
+    {
+      "id": "transports",
+      "name": "Transports",
+      "slot": 3,
+      "color_light": "#1baf7a",
+      "color_dark": "#199e70",
+      "desc": "Zero-logic adapters over one typed facade: MCP server, CLI bins, watch/SSE daemon. Parity between them is by construction, not by parity tests.",
+      "layout": { "kind": "column" }
+    },
+    {
+      "id": "surfaces",
+      "name": "Surfaces",
+      "slot": 4,
+      "color_light": "#eda100",
+      "color_dark": "#c98500",
+      "desc": "Consumers: map viewer, doc generator, context packer. They import contracts only — they must run against fixture artifacts with no engine present.",
+      "layout": { "kind": "column" }
+    },
+    {
+      "id": "verification",
+      "name": "Verification",
+      "slot": 5,
+      "color_light": "#e87ba4",
+      "color_dark": "#d55181",
+      "desc": "The instruments that make the clone unable to lie to itself: frozen fixture, A/B parity vs today's CODEREF-CORE, blueprint-derived rules gate, map-vs-blueprint drift.",
+      "layout": { "kind": "strip" }
+    },
+    {
+      "id": "external",
+      "name": "External",
+      "slot": 0,
+      "color_light": null,
+      "color_dark": null,
+      "desc": "Ghosts outside the build: AI agents and IDEs, CI, humans, and today's CODEREF-CORE as the parity baseline.",
+      "layout": { "kind": "ghost", "label": "EXTERNAL" }
+    }
+  ],
+  "problems": [
+    { "id": "P1", "title": "Seam disagreement — two components, no seam test" },
+    { "id": "P2", "title": "Duplicated surfaces kept in parity by hand" },
+    { "id": "P3", "title": "Monolith accretion and layer erosion" },
+    { "id": "P4", "title": "Dishonest or unmeasured numbers" },
+    { "id": "P5", "title": "Path fragility on Windows" },
+    { "id": "P6", "title": "Engine / presentation / process entanglement" },
+    { "id": "P7", "title": "RAG coupled to headers" },
+    { "id": "P8", "title": "Config and build sprawl" }
+  ],
+  "nodes": [
+    {
+      "id": "contracts.paths",
+      "band": "contracts",
+      "name": "RepoPath",
+      "kind": "schema+lib",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "Branded repo-relative POSIX path type. Construction and normalization happen only at boundaries (loader, codecs, adapters); raw path strings die on entry. Windows-first test matrix.",
+      "neutralizes": ["P5"]
+    },
+    {
+      "id": "contracts.index",
+      "band": "contracts",
+      "name": "Index schema",
+      "kind": "schema+codec",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "File + element records: identity (@Type/file#name:line), spans, exports, docstrings. The artifact every downstream reader joins on.",
+      "neutralizes": ["P1"]
+    },
+    {
+      "id": "contracts.graph",
+      "band": "contracts",
+      "name": "Graph schema",
+      "kind": "schema+codec",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "Node/edge kinds, resolution provenance enum, confidence tiers, evidence blocks. One vocabulary for every edge the system will ever emit — a new edge kind is a schema change here, and every reader learns it at compile time.",
+      "neutralizes": ["P1", "P2"]
+    },
+    {
+      "id": "contracts.map",
+      "band": "contracts",
+      "name": "Map schema",
+      "kind": "schema+codec",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "MapData projection: dir/file nodes, aggregated edges, overlays, analytics blocks. Exactly what surface.viewer renders — versioned so viewer and engine can never silently disagree.",
+      "neutralizes": ["P1"]
+    },
+    {
+      "id": "contracts.headers",
+      "band": "contracts",
+      "name": "Header codec",
+      "kind": "schema+codec",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "Semantic-header grammar with generator and parser as ONE co-located codec, round-trip property-tested: parse(generate(x)) === x for all x. The hash-asymmetry class dies here.",
+      "neutralizes": ["P1"]
+    },
+    {
+      "id": "contracts.rag",
+      "band": "contracts",
+      "name": "RAG schema",
+      "kind": "schema+codec",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "Chunk records, embedding metadata, scoring envelope. Joins to contracts.index by element id — never by header presence.",
+      "neutralizes": ["P7"]
+    },
+    {
+      "id": "contracts.envelope",
+      "band": "contracts",
+      "name": "Staleness envelope",
+      "kind": "schema",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "Provenance + staleness block REQUIRED on every artifact and every query response. Readers must distinguish empty (measured zero) from absent (no data). Vector-vs-index and source-vs-graph axes both stamped.",
+      "neutralizes": ["P4"]
+    },
+    {
+      "id": "engine.loader",
+      "band": "engine",
+      "name": "Source loader",
+      "kind": "module",
+      "phase": "P1",
+      "track": "A",
+      "responsibility": "Owns scan scope: allowlist-first discovery (source globs in; build output, planning trees, and generated artifacts out by construction, not by ignore-file discipline). The only module that walks the filesystem.",
+      "neutralizes": ["P6", "P8"]
+    },
+    {
+      "id": "engine.parser",
+      "band": "engine",
+      "name": "Parser registry",
+      "kind": "module",
+      "phase": "P1",
+      "track": "A",
+      "responsibility": "Grammar registry + per-language adapters (TS/JS first, then Python/Go/…) producing exactly one AST session per file per run.",
+      "neutralizes": []
+    },
+    {
+      "id": "engine.extract",
+      "band": "engine",
+      "name": "Extractors",
+      "kind": "module",
+      "phase": "P1",
+      "track": "A",
+      "responsibility": "Single-walk extraction: elements, raw call/reference sites, and docstrings ride ONE traversal. An extractor that sees frames the others skip (the arrow-function class) is structurally impossible — there is only one walk.",
+      "neutralizes": ["P1"]
+    },
+    {
+      "id": "engine.symbols",
+      "band": "engine",
+      "name": "Symbol table",
+      "kind": "module",
+      "phase": "P1",
+      "track": "A",
+      "responsibility": "Symbol table + scope stack: bindings, heritage, receiver typing. Feeds resolution; owned by exactly one writer.",
+      "neutralizes": []
+    },
+    {
+      "id": "engine.resolve",
+      "band": "engine",
+      "name": "Resolver",
+      "kind": "module",
+      "phase": "P1",
+      "track": "A",
+      "responsibility": "Import-origin classification and call-resolution tiering. Every edge is stamped with provenance and confidence from contracts.graph — an unstamped edge cannot be constructed.",
+      "neutralizes": ["P1", "P4"]
+    },
+    {
+      "id": "engine.graph",
+      "band": "engine",
+      "name": "Graph builder",
+      "kind": "module",
+      "phase": "P1",
+      "track": "A",
+      "responsibility": "Builds the canonical graph and owns THE single adjacency index. Every query path — MCP, CLI, analytics, surfaces — reads this one structure.",
+      "neutralizes": ["P2"]
+    },
+    {
+      "id": "engine.enrich",
+      "band": "engine",
+      "subcol": 1,
+      "name": "Enrichment",
+      "kind": "module",
+      "phase": "P2",
+      "track": "A",
+      "responsibility": "Framework, route, and middleware detection; @Endpoint and @Doc as first-class graph nodes; doc-code ties.",
+      "neutralizes": []
+    },
+    {
+      "id": "engine.analytics",
+      "band": "engine",
+      "subcol": 1,
+      "name": "Analytics",
+      "kind": "module",
+      "phase": "P2",
+      "track": "A",
+      "responsibility": "Cycles, hotspots, impact BFS, path search, clones, ast-metrics, and the map projection (emits contracts.map artifacts) — pure functions over the one graph.",
+      "neutralizes": []
+    },
+    {
+      "id": "engine.measure",
+      "band": "engine",
+      "subcol": 1,
+      "name": "Measurement",
+      "kind": "module",
+      "phase": "P2",
+      "track": "A",
+      "responsibility": "Owns every published number: denominators, unresolved taxonomy, exclusions applied at the source (never left to ignore files). No consumer computes its own counts.",
+      "neutralizes": ["P4"]
+    },
+    {
+      "id": "engine.rag",
+      "band": "engine",
+      "subcol": 1,
+      "name": "RAG engine",
+      "kind": "module",
+      "phase": "P1",
+      "track": "D",
+      "responsibility": "Chunking, embedder port (local Ollama adapter), BM25 sub-token index, RRF fusion. Consumes contracts.index; fully functional on repos with zero headers.",
+      "neutralizes": ["P7"]
+    },
+    {
+      "id": "engine.headers",
+      "band": "engine",
+      "subcol": 1,
+      "name": "Header enrichment",
+      "kind": "module",
+      "phase": "P2",
+      "track": "D",
+      "responsibility": "Emits and refreshes semantic headers exclusively through the contracts.headers codec. Optional everywhere — nothing downstream requires headers to exist.",
+      "neutralizes": []
+    },
+    {
+      "id": "engine.watchcore",
+      "band": "engine",
+      "subcol": 1,
+      "name": "Watch core",
+      "kind": "module",
+      "phase": "P2",
+      "track": "A",
+      "responsibility": "Pure incremental invalidation: file delta in, minimal re-scan set + graph patch out. No filesystem watching here — that lives in the transport.",
+      "neutralizes": []
+    },
+    {
+      "id": "engine.mutate",
+      "band": "engine",
+      "subcol": 1,
+      "name": "Mutation",
+      "kind": "module",
+      "phase": "P2",
+      "track": "A",
+      "responsibility": "AST-guarded rename/refactor: impact-aware preview plans and atomic apply. The single sanctioned source-writer in the system (carries the GX-003 scoped-write posture forward).",
+      "neutralizes": []
+    },
+    {
+      "id": "engine.api",
+      "band": "engine",
+      "subcol": 1,
+      "name": "Engine API",
+      "kind": "facade",
+      "phase": "P1",
+      "track": "B",
+      "responsibility": "THE typed facade. Every query and command the system offers is a function here; transports may import nothing else. MCP/CLI parity is by construction — there is no second implementation to drift.",
+      "neutralizes": ["P2"]
+    },
+    {
+      "id": "transport.mcp",
+      "band": "transports",
+      "name": "MCP server",
+      "kind": "adapter",
+      "phase": "P1",
+      "track": "B",
+      "responsibility": "Tool schema in, engine.api call, envelope out. Zero query logic; size-budgeted handlers so logic physically cannot accrete here.",
+      "neutralizes": []
+    },
+    {
+      "id": "transport.cli",
+      "band": "transports",
+      "name": "CLI bins",
+      "kind": "adapter",
+      "phase": "P1",
+      "track": "B",
+      "responsibility": "The same engine.api functions behind argv. ONE build config shared with the engine — the stale-dist trap has nowhere to live.",
+      "neutralizes": ["P8"]
+    },
+    {
+      "id": "transport.watch",
+      "band": "transports",
+      "name": "Watch daemon",
+      "kind": "adapter",
+      "phase": "P2",
+      "track": "B",
+      "responsibility": "Filesystem events in, engine.watchcore via engine.api, SSE delta feed out to editors and agents.",
+      "neutralizes": []
+    },
+    {
+      "id": "surface.viewer",
+      "band": "surfaces",
+      "name": "Map viewer",
+      "kind": "consumer",
+      "phase": "P1",
+      "track": "C",
+      "responsibility": "Interactive map web app. Reads MapData artifacts (contracts.map) and nothing else — it must render a fixture artifact with no engine installed.",
+      "neutralizes": []
+    },
+    {
+      "id": "surface.docgen",
+      "band": "surfaces",
+      "name": "Doc generator",
+      "kind": "consumer",
+      "phase": "P1",
+      "track": "C",
+      "responsibility": "Resource sheets, foundation docs, READMEs generated from index + graph artifacts. Lives outside the engine so doc churn never dirties the scan loop.",
+      "neutralizes": ["P6"]
+    },
+    {
+      "id": "surface.pack",
+      "band": "surfaces",
+      "name": "Context packer",
+      "kind": "consumer",
+      "phase": "P1",
+      "track": "C",
+      "responsibility": "Token-budgeted context packs and change dossiers assembled from index, graph, and RAG artifacts.",
+      "neutralizes": []
+    },
+    {
+      "id": "verify.fixture",
+      "band": "verification",
+      "name": "Frozen fixture",
+      "kind": "instrument",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "Hand-verified mini-repos per language with pinned truth: exact element and edge counts, known cycles, known unresolved calls. Every track builds against it; a count drift is a red build, not a surprise.",
+      "neutralizes": ["P4"]
+    },
+    {
+      "id": "verify.rules",
+      "band": "verification",
+      "name": "Rules gate",
+      "kind": "instrument",
+      "phase": "P0",
+      "track": "*",
+      "responsibility": "Dependency rules DERIVED from this blueprint.json. The clone scans itself with its own CLI; an import edge not present in this graph fails CI, and the intra-engine cycle count is pinned at zero from the first commit.",
+      "neutralizes": ["P3", "P6"]
+    },
+    {
+      "id": "verify.parity",
+      "band": "verification",
+      "name": "Parity harness",
+      "kind": "instrument",
+      "phase": "P2",
+      "track": "*",
+      "responsibility": "A/B: clone vs today's CODEREF-CORE over the fixture and live repos. Every count difference is adjudicated improvement-or-bug in writing before any cutover.",
+      "neutralizes": ["P4"]
+    },
+    {
+      "id": "verify.drift",
+      "band": "verification",
+      "name": "Drift check",
+      "kind": "instrument",
+      "phase": "P2",
+      "track": "*",
+      "responsibility": "The clone's own map, diffed against this blueprint. As-built converges on as-designed visibly, every build.",
+      "neutralizes": ["P3"]
+    },
+    {
+      "id": "ext.agents",
+      "band": "external",
+      "name": "AI agents & IDEs",
+      "kind": "ghost",
+      "phase": "P3",
+      "track": "*",
+      "responsibility": "Claude, Cursor, VS Code — consume MCP tools and SSE deltas.",
+      "neutralizes": []
+    },
+    {
+      "id": "ext.ci",
+      "band": "external",
+      "name": "CI / CD",
+      "kind": "ghost",
+      "phase": "P3",
+      "track": "*",
+      "responsibility": "Pre-flight gates and audits via CLI JSON streams.",
+      "neutralizes": []
+    },
+    {
+      "id": "ext.humans",
+      "band": "external",
+      "name": "Humans",
+      "kind": "ghost",
+      "phase": "P3",
+      "track": "*",
+      "responsibility": "Browse the map, read the docs.",
+      "neutralizes": []
+    },
+    {
+      "id": "ext.reference",
+      "band": "external",
+      "name": "CODEREF-CORE",
+      "kind": "ghost",
+      "phase": "P2",
+      "track": "*",
+      "responsibility": "The parity baseline during the build. Retired at cutover — not carried as a legacy door (L10).",
+      "neutralizes": []
+    }
+  ],
+  "edges": [
+    { "from": "contracts.index", "to": "contracts.paths", "kind": "dep" },
+    { "from": "contracts.graph", "to": "contracts.paths", "kind": "dep" },
+    { "from": "contracts.map", "to": "contracts.graph", "kind": "dep" },
+    { "from": "contracts.rag", "to": "contracts.index", "kind": "dep" },
+
+    { "from": "engine.loader", "to": "contracts.paths", "kind": "dep" },
+    { "from": "engine.parser", "to": "engine.loader", "kind": "dep" },
+    { "from": "engine.extract", "to": "engine.parser", "kind": "dep" },
+    { "from": "engine.extract", "to": "contracts.index", "kind": "dep" },
+    { "from": "engine.symbols", "to": "engine.extract", "kind": "dep" },
+    { "from": "engine.resolve", "to": "engine.symbols", "kind": "dep" },
+    { "from": "engine.resolve", "to": "contracts.graph", "kind": "dep" },
+    { "from": "engine.graph", "to": "engine.resolve", "kind": "dep" },
+    { "from": "engine.graph", "to": "engine.enrich", "kind": "dep" },
+    { "from": "engine.graph", "to": "contracts.graph", "kind": "dep" },
+    { "from": "engine.graph", "to": "contracts.envelope", "kind": "dep" },
+    { "from": "engine.enrich", "to": "engine.extract", "kind": "dep" },
+    { "from": "engine.analytics", "to": "engine.graph", "kind": "dep" },
+    { "from": "engine.analytics", "to": "contracts.map", "kind": "dep" },
+    { "from": "engine.measure", "to": "engine.graph", "kind": "dep" },
+    { "from": "engine.measure", "to": "engine.resolve", "kind": "dep" },
+    { "from": "engine.measure", "to": "contracts.envelope", "kind": "dep" },
+    { "from": "engine.rag", "to": "contracts.rag", "kind": "dep" },
+    { "from": "engine.rag", "to": "contracts.index", "kind": "dep" },
+    { "from": "engine.headers", "to": "contracts.headers", "kind": "dep" },
+    { "from": "engine.headers", "to": "engine.extract", "kind": "dep" },
+    { "from": "engine.watchcore", "to": "engine.graph", "kind": "dep" },
+    { "from": "engine.watchcore", "to": "engine.loader", "kind": "dep" },
+    { "from": "engine.mutate", "to": "engine.graph", "kind": "dep" },
+    { "from": "engine.api", "to": "engine.mutate", "kind": "dep" },
+    { "from": "engine.api", "to": "engine.graph", "kind": "dep" },
+    { "from": "engine.api", "to": "engine.analytics", "kind": "dep" },
+    { "from": "engine.api", "to": "engine.rag", "kind": "dep" },
+    { "from": "engine.api", "to": "engine.measure", "kind": "dep" },
+    { "from": "engine.api", "to": "engine.watchcore", "kind": "dep" },
+    { "from": "engine.api", "to": "engine.headers", "kind": "dep" },
+    { "from": "engine.api", "to": "contracts.envelope", "kind": "dep" },
+
+    { "from": "transport.mcp", "to": "engine.api", "kind": "dep" },
+    { "from": "transport.cli", "to": "engine.api", "kind": "dep" },
+    { "from": "transport.watch", "to": "engine.api", "kind": "dep" },
+
+    { "from": "surface.viewer", "to": "contracts.map", "kind": "dep" },
+    { "from": "surface.docgen", "to": "contracts.index", "kind": "dep" },
+    { "from": "surface.docgen", "to": "contracts.graph", "kind": "dep" },
+    { "from": "surface.pack", "to": "contracts.index", "kind": "dep" },
+    { "from": "surface.pack", "to": "contracts.rag", "kind": "dep" },
+
+    { "from": "verify.parity", "to": "engine.api", "kind": "dep" },
+    { "from": "verify.parity", "to": "verify.fixture", "kind": "dep" },
+    { "from": "verify.rules", "to": "transport.cli", "kind": "dep", "note": "the clone scans itself with its own CLI, then diffs the result against this blueprint" },
+    { "from": "verify.drift", "to": "contracts.map", "kind": "dep" },
+
+    { "from": "transport.mcp", "to": "ext.agents", "kind": "flow", "note": "38-tool surface" },
+    { "from": "transport.watch", "to": "ext.agents", "kind": "flow", "note": "SSE deltas" },
+    { "from": "transport.cli", "to": "ext.ci", "kind": "flow", "note": "JSON streams" },
+    { "from": "engine.analytics", "to": "surface.viewer", "kind": "flow", "note": "MapData artifact (contracts.map)" },
+    { "from": "engine.graph", "to": "surface.docgen", "kind": "flow", "note": "graph + index artifacts" },
+    { "from": "engine.rag", "to": "surface.pack", "kind": "flow", "note": "search results + chunks" },
+    { "from": "surface.viewer", "to": "ext.humans", "kind": "flow" },
+    { "from": "surface.docgen", "to": "ext.humans", "kind": "flow" },
+    { "from": "verify.parity", "to": "ext.reference", "kind": "gate", "note": "A/B comparison baseline" }
+  ],
+  "laws": [
+    { "id": "L1", "text": "One codec per artifact: every artifact is read and written only through its contracts codec, and every codec ships a round-trip property test.", "kills": ["P1"] },
+    { "id": "L2", "text": "Single parse: one AST session per file per run; every extractor rides the same walk.", "kills": ["P1"] },
+    { "id": "L3", "text": "One adjacency index: exactly one graph store; every query surface reads it.", "kills": ["P2"] },
+    { "id": "L4", "text": "Zero-logic adapters: transports import engine.api and nothing else; handler bodies are schema-map + call, size-budgeted in CI.", "kills": ["P2", "P3"] },
+    { "id": "L5", "text": "Deny-by-default imports: an import edge not present in blueprint.json fails verify.rules in CI.", "kills": ["P3", "P6"] },
+    { "id": "L6", "text": "Branded paths: repo-relative POSIX RepoPath at every boundary; raw path strings die at the loader. Windows is a first-class CI target.", "kills": ["P5"] },
+    { "id": "L7", "text": "Honest numbers: denominators and exclusions are owned by engine.measure; every artifact and response carries the staleness envelope; readers distinguish empty from unknown.", "kills": ["P4"] },
+    { "id": "L8", "text": "Engine-repo purity: no planning trees, no process machinery, no generated output inside scan scope — allowlist discovery makes pollution structurally impossible.", "kills": ["P6", "P8"] },
+    { "id": "L9", "text": "Cycles pinned at zero inside the engine from the first commit.", "kills": ["P3"] },
+    { "id": "L10", "text": "Delete, don't quarantine: superseded code is removed in the same phase its replacement proves parity. No legacy doors.", "kills": ["P3", "P6"] }
+  ],
+  "phases": [
+    {
+      "id": "P0",
+      "name": "Foundation",
+      "content": "Pin the seams before any behavior: all seven contracts (schemas + codecs + round-trip tests), the frozen fixture with hand-verified truth, and the rules-gate scaffold that derives dependency rules from this blueprint.",
+      "exit": "Schemas versioned and frozen; every codec round-trips on fixture data; rules gate demonstrably turns red on a forbidden import and green on the allowed set."
+    },
+    {
+      "id": "P1",
+      "name": "Parallel build",
+      "content": "Four tracks with no shared edges except the frozen contracts: A engine core chain (loader→parser→extract→symbols→resolve→graph), B engine.api signature + MCP/CLI shells against fixture artifacts, C surfaces against fixture artifacts, D RAG against the index contract + local Ollama.",
+      "exit": "Each track green on the fixture in isolation; the phase filter on the blueprint shows four disjoint subtrees — that disjointness is the parallelism claim, and verify.rules enforces it."
+    },
+    {
+      "id": "P2",
+      "name": "Integration & instruments",
+      "content": "Enrichment, analytics, measurement, watch; bind engine.api to the real engine; stand up verify.parity (clone vs CODEREF-CORE) and verify.drift (map vs blueprint).",
+      "exit": "Parity report exists and every count difference is adjudicated improvement-or-bug in writing; drift check clean; cycles zero; rules gate green."
+    },
+    {
+      "id": "P3",
+      "name": "Cutover",
+      "content": "Per-surface adoption behind parity proof — MCP consumers first, then CLI/CI, then viewer/doc-gen/pack. Superseded paths deleted in the same phase (L10).",
+      "exit": "Consumers run on the clone; ext.reference retired; nothing survives behind a legacy door."
+    }
+  ],
+  "tracks": [
+    { "id": "A", "name": "Engine core", "nodes": ["engine.loader", "engine.parser", "engine.extract", "engine.symbols", "engine.resolve", "engine.graph", "engine.enrich", "engine.analytics", "engine.measure", "engine.watchcore", "engine.mutate"] },
+    { "id": "B", "name": "API + transports", "nodes": ["engine.api", "transport.mcp", "transport.cli", "transport.watch"] },
+    { "id": "C", "name": "Surfaces", "nodes": ["surface.viewer", "surface.docgen", "surface.pack"] },
+    { "id": "D", "name": "RAG + headers", "nodes": ["engine.rag", "engine.headers"] }
+  ],
+  "asis": {
+    "map_data": ".coderef/map/data.json",
+    "routes": {
+      "src/scanner":      { "band": "engine",    "dest": ["engine.loader", "engine.parser"] },
+      "src/pipeline":     { "band": "engine",    "dest": ["engine.extract", "engine.resolve", "engine.graph"], "note": "orchestrator run/runIncremental duplication dissolves into the phase chain; its public face becomes engine.api" },
+      "src/parser":       { "band": "contracts", "dest": ["contracts.index"], "note": "the @-reference string parser is codec logic — it moves next to the schema it parses" },
+      "src/query":        { "band": "engine",    "dest": ["engine.graph", "engine.analytics"] },
+      "src/analyzer":     { "band": "engine",    "dest": ["engine.enrich"] },
+      "src/semantic":     { "band": "engine",    "dest": ["engine.headers", "contracts.headers"], "mixed": true, "note": "generator + parser reunite as ONE codec (contracts.headers); enrichment logic stays engine-side" },
+      "src/indexer":      { "band": "engine",    "dest": ["engine.graph", "contracts.index"], "mixed": true },
+      "src/integration":  { "band": "engine",    "dest": ["engine.rag"], "note": "rag/llm/vector/scip adapters ride along; Ollama stays the only live LLM dependency" },
+      "src/cache":        { "band": "engine",    "dest": ["engine.loader"] },
+      "src/artifacts":    { "band": "contracts", "dest": ["contracts.envelope"], "note": "atomic artifact writing is a codec concern" },
+      "src/utils":        { "band": "contracts", "dest": ["contracts.paths"], "note": "normalizeSlashes carries fan-in 146 today — the ad-hoc demand law L6 formalizes" },
+      "src/types":        { "band": "contracts", "dest": ["contracts.index"] },
+      "src/context":      { "band": "surfaces",  "dest": ["surface.pack", "engine.analytics"], "mixed": true, "note": "packing is a surface; breaking-change detection is engine analytics" },
+      "src/map":          { "band": "engine",    "dest": ["engine.analytics", "surface.viewer"], "mixed": true, "note": "projection math stays in the engine; viewer assets leave for surface.viewer" },
+      "src/cli":          { "band": "transports", "dest": ["transport.cli", "transport.mcp", "engine.api"], "mixed": true, "note": "verify-tools fan-out 111 and graph-tools fan-out 98 are query logic living inside adapters — it moves behind engine.api (L4)" },
+      "src/legacy":       { "band": null,        "dest": [], "note": "deleted under L10 — quarantined writers do not ride along" },
+      "src/refactor":     { "band": "engine",    "dest": ["engine.mutate"] },
+      "src/registry":     { "band": "engine",    "dest": ["engine.parser"] },
+      "src/tests":        { "band": "verification", "dest": ["verify.fixture"] },
+      "src/formatter":    { "band": "transports", "dest": ["transport.cli"], "note": "output formatting is an adapter concern" },
+      "src/config":       { "band": "contracts", "dest": ["contracts.envelope"], "note": "config schemas move next to the artifacts they govern" },
+      "src/export":       { "band": "surfaces",  "dest": ["surface.pack"], "note": "exporters are surface output" },
+      "src/search":       { "band": "engine",    "dest": ["engine.analytics"] },
+      "src/validator":    { "band": "engine",    "dest": ["engine.enrich"] },
+      "src/generator":    { "band": "engine",    "dest": ["engine.enrich"] },
+      "src/fileGeneration": { "band": "contracts", "dest": ["contracts.index"], "mixed": true, "note": "saveIndex is a codec concern" },
+      "__tests__":        { "band": "verification", "dest": ["verify.fixture", "verify.parity"], "note": "becomes fixture-pinned suites; counts asserted against hand-verified truth" },
+      "scripts":          { "band": "surfaces",  "dest": ["surface.docgen"], "mixed": true, "note": "doc-gen scripts leave the engine repo entirely" },
+      "coderef":          { "band": null,        "dest": [], "note": "process + planning artifacts inside the engine repo. LIVE RECEIPT: 2 of the repo's 3 current call cycles are viewer.js files under coderef/working/ — planning HTML polluting the self-scan. The clone excludes this by construction (L8)." },
+      "root":             { "band": null,        "dest": [], "note": "config and loose files; the clone keeps one build config per package (P8)" }
+    }
+  }
+}
