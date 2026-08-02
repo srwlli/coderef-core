@@ -504,17 +504,79 @@
     },
     {
       "phase": 7,
-      "name": "query-and-answer-diagnostics-can-report-incomplete-or — DEFERRED",
+      "name": "query-and-answer-diagnostics-report-incomplete-or-non-finite-metrics",
       "hard_stop": true,
       "stub_ref": "STUB-V0HQ5J",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P7-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 7 tasks not yet authored. Pre-condition: Phase 6 must be COMPLETED + REVIEWED before this phase's plan is authored."
+          "id": "P7-T1",
+          "verb": "READ",
+          "description": "Locate both diagnostics. NOTE: the word \"compound\" appears nowhere in src - the ticket's \"compound query\" is QueryEngine.complex()."
+        },
+        {
+          "id": "P7-T2",
+          "verb": "EDIT",
+          "description": "Move `start` to the top of complex(), before any filtering."
+        },
+        {
+          "id": "P7-T3",
+          "verb": "EDIT",
+          "description": "Guard processingEfficiency: floor the denominator at 1ms and clamp a non-finite/negative token count to 0."
+        },
+        {
+          "id": "P7-T4",
+          "verb": "TEST",
+          "description": "New __tests__/diagnostics-finite.contract.test.ts - 10 cases, 5 defect and 5 guard, including the JSON round-trip case and a negative-elapsed-time case not named in the ticket."
+        },
+        {
+          "id": "P7-T5",
+          "verb": "VERIFY",
+          "description": "Revert both sources to HEAD: 5 defect cases fail, 5 guards pass. Restore, then run the pre-existing indexer.test.ts unchanged alongside."
+        },
+        {
+          "id": "P7-T6",
+          "verb": "VERIFY",
+          "description": "tsc + full suite."
+        },
+        {
+          "id": "P7-T7",
+          "verb": "DOCS",
+          "description": "Operator standing task: header check."
         }
-      ]
+      ],
+      "authored_at": "2026-08-01",
+      "ticket_ref": "TKT-XQEZW6",
+      "measured_baseline": {
+        "measured_at": "2026-08-01",
+        "method": "Throwaway probe driving the real QueryEngine.complex() over 20,000 seeded records with a deliberately expensive filter predicate, and the real analyzeAnswer() over degenerate token/time pairs. Probe deleted after measuring.",
+        "observed": [
+          {
+            "site": "src/indexer/query-engine.ts complex()",
+            "result": "reported execution_time_ms = 0 against 31 ms of ACTUAL wall-clock filtering.",
+            "root_cause": "`const start = Date.now()` sat on the line IMMEDIATELY BEFORE `Date.now() - start`, after every filter had already run. The two calls were adjacent, so the timer never spanned any work at all. This is stronger than the ticket wording: not \"timing starts after filtering\", but \"timing measures nothing, structurally, always\"."
+          },
+          {
+            "site": "src/integration/rag/answer-generation-service.ts analyzeAnswer()",
+            "result": "totalTokens=100 / processingTimeMs=0 -> Infinity; 0/0 -> NaN. Field is declared `number`."
+          }
+        ],
+        "consequence_the_ticket_does_not_state": "JSON.stringify(Infinity) and JSON.stringify(NaN) are BOTH `null`. Measured directly: any consumer that serializes this diagnostic - an MCP response, a written report - receives null where the type promised a number, and nothing raises anywhere. That is the form the damage actually takes, so it is asserted as its own case (g).",
+        "why_the_existing_suite_missed_it": "indexer.test.ts:559 DOES exercise complex(), but its only assertion is expect(result.count).toBeGreaterThanOrEqual(0) - true of every possible result - and it never looks at execution_time_ms. analyzeAnswer had no degenerate-input coverage at all.",
+        "contrast_that_localised_the_bug": "Every other public query on QueryEngine is timed correctly, because they all route through the private executeQuery(), which takes `start` BEFORE invoking queryFn. complex() is the only one that does not route through it, and it is the only one that drifted. The correct pattern was already in the same file."
+      },
+      "status": "complete",
+      "verdict": "PASS",
+      "completed_at": "2026-08-01",
+      "evidence": {
+        "source_change": "src/indexer/query-engine.ts, src/integration/rag/answer-generation-service.ts",
+        "tests": "__tests__/diagnostics-finite.contract.test.ts, 10 cases",
+        "ac1_revert_proof": "5 defect cases fail at HEAD (a,e,f,g,h), 5 guards pass (b,c,d,i,j)",
+        "no_caller_regression": "pre-existing __tests__/indexer.test.ts passes UNCHANGED alongside the fix (72 total across both files)",
+        "suite": "2644 / 26 skipped / 0 failed (was 2634)",
+        "tsc": "exit 0",
+        "headers": "populate --source-headers --stale-only reported the touched files up-to-date. Neither edit changed an export, so no header content is owed. The 3 files the scan reports stale (context-generator.ts, incremental-front.ts, resolve-tail.ts) are peer drift, NOT touched by this WO."
+      }
     }
   ],
   "hard_stops": [
@@ -640,6 +702,11 @@
       "id": "ADJ-18",
       "applied": true,
       "description": "Phase 6 scope call. The ticket names only the parser reimplementation. The local-only predicate copy in the SAME file is the identical defect class, so it was fixed with it and said so. The matching inline copy in rag-search.ts was deliberately NOT touched: it is a different CLI, outside this test file, and changing a file no test in scope covers would be widening without evidence. Routed as a follow-up instead."
+    },
+    {
+      "id": "ADJ-19",
+      "applied": true,
+      "description": "Phase 7 disposition call, consistent with ADJ-17. A zero processingTimeMs is LEGITIMATE data - a cached or sub-millisecond answer genuinely rounds to 0 - so it clamps rather than throwing. Flooring the denominator at 1ms was chosen over returning 0 because it keeps the metric a true LOWER BOUND on throughput and monotonic in token count, where a flat 0 would report the fastest possible answer as the least efficient one."
     }
   ],
   "discovery_required": true,

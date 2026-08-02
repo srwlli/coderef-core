@@ -447,9 +447,29 @@ export class AnswerGenerationService {
           answer.sources.length
         : 0;
 
-    // Processing efficiency: tokens per millisecond
-    const processingEfficiency =
-      answer.tokenUsage.totalTokens / answer.processingTimeMs;
+    // Processing efficiency: tokens per millisecond.
+    //
+    // WO-ELEMENTEXTRACTOR-...-001 phase 7 (TKT-XQEZW6). This was a bare
+    // division. MEASURED at HEAD: totalTokens=100 / processingTimeMs=0 gave
+    // Infinity, and 0/0 gave NaN — both on a field the return type declares as
+    // `number`. The consequence the ticket does not mention is what happens
+    // next: JSON.stringify turns BOTH into `null`, so any consumer that
+    // serializes this diagnostic (an MCP response, a written report) receives
+    // null where it was promised a number, with no error anywhere.
+    //
+    // A zero processingTimeMs is legitimate data, not a caller error — a cached
+    // or sub-millisecond answer genuinely rounds to 0 — so this clamps rather
+    // than throwing (the same split phase 5 drew for GraphReRanker). The
+    // denominator floors at 1ms, which makes the result a true LOWER BOUND on
+    // throughput instead of an unbounded one, and keeps the metric monotonic in
+    // token count.
+    const tokens = Number.isFinite(answer.tokenUsage.totalTokens)
+      ? Math.max(answer.tokenUsage.totalTokens, 0)
+      : 0;
+    const elapsedMs = Number.isFinite(answer.processingTimeMs)
+      ? Math.max(answer.processingTimeMs, 1)
+      : 1;
+    const processingEfficiency = tokens / elapsedMs;
 
     return {
       hasCodeRefs: codeRefCount > 0,

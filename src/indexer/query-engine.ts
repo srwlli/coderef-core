@@ -207,6 +207,16 @@ export class QueryEngine {
       filter?: QueryFilter;
     }
   ): QueryResult {
+    // WO-ELEMENTEXTRACTOR-...-001 phase 7 (TKT-XQEZW6). `start` used to be
+    // captured on the line immediately before `execution_time_ms` was computed,
+    // AFTER every filter below had already run — so the two Date.now() calls
+    // were adjacent and this method structurally reported ~0 no matter how much
+    // work it did. Measured: 31ms of real filtering over 20k records, reported
+    // as 0. Every other query path times itself correctly via executeQuery(),
+    // which takes its `start` before calling queryFn; complex() is the one that
+    // does not route through it, and so was the one that drifted.
+    const start = Date.now();
+
     let results = this.indexStore.getAll();
 
     // Apply type filter
@@ -238,7 +248,6 @@ export class QueryEngine {
       results = results.filter(conditions.filter);
     }
 
-    const start = Date.now();
     const execution_time_ms = Date.now() - start;
 
     return {

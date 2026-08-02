@@ -291,6 +291,19 @@
       "scope_discipline": "rag-search.ts keeps its inline copy. It is a different CLI outside this test file, and editing a file no in-scope test covers would be widening without evidence. Routed as a follow-up rather than absorbed.",
       "suite": "2634 passed / 26 skipped / 0 failed. tsc --noEmit exit 0.",
       "at": "2026-08-02T02:10:00Z"
+    },
+    {
+      "event": "p7_findings",
+      "summary": "Two diagnostics reporting numbers nobody could act on. Both worse than the ticket states.",
+      "finding_1": "QueryEngine.complex() did not time late - it timed NOTHING. `const start = Date.now()` was on the line immediately before `Date.now() - start`, after all filtering. The two calls were adjacent, so the method structurally reported ~0 regardless of work done. MEASURED: 31ms of real filtering over 20,000 records, reported as 0.",
+      "what_localised_it": "Every other public query on the class is timed correctly, because they route through the private executeQuery() which takes `start` BEFORE calling queryFn. complex() is the only public query that bypasses it. The correct pattern was already three methods away in the same file.",
+      "finding_2": "analyzeAnswer().processingEfficiency was a bare division: 100/0 -> Infinity, 0/0 -> NaN, on a field typed `number`. The consequence the ticket omits is serialization - JSON.stringify turns BOTH into `null`, so an MCP response or report file carries null where a number was promised and nothing raises. Asserted as its own case rather than settling for a finiteness check.",
+      "beyond_the_ticket": "Added a negative-elapsed-time case: a clock adjustment mid-request would have reported a NEGATIVE efficiency. Finite, so an isFinite-only guard would have passed it through.",
+      "why_the_existing_test_did_not_catch_it": "indexer.test.ts:559 exercises complex() but asserts only count >= 0 - true of every possible result - and never reads execution_time_ms. Same shape as phase 5 and phase 6: a test that exists, runs, and proves nothing.",
+      "disposition": "Clamp, not throw - consistent with ADJ-17. A zero processing time is legitimate data, not a caller error. Denominator floors at 1ms rather than returning 0, so the metric stays a true lower bound and monotonic in token count.",
+      "no_caller_regression": "pre-existing indexer.test.ts passes UNCHANGED alongside the fix.",
+      "suite": "2644 passed / 26 skipped / 0 failed. tsc --noEmit exit 0.",
+      "at": "2026-08-02T02:40:00Z"
     }
   ],
   "phase_transitions": [
