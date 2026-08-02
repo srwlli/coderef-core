@@ -5,8 +5,8 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "plan_created",
-  "current_phase": 2,
+  "status": "closed",
+  "current_phase": 7,
   "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\elementextractor-revisits-rust-impl-and-java-or-c\\context.json",
@@ -304,6 +304,20 @@
       "no_caller_regression": "pre-existing indexer.test.ts passes UNCHANGED alongside the fix.",
       "suite": "2644 passed / 26 skipped / 0 failed. tsc --noEmit exit 0.",
       "at": "2026-08-02T02:40:00Z"
+    },
+    {
+      "event": "close_time_bookkeeping_correction",
+      "summary": "The phased-terminal close guard REFUSED (exit 1) because communication.json.current_phase was still 2 while all 7 phases had shipped.",
+      "what_was_stale": "current_phase never advanced past 2 after the phase-2 execution, and plan.json phases 1 and 2 carried no status/verdict/completed_at at all. Phases 3-7, authored later in the run, were each stamped correctly - so the drift is confined to the two phases executed before the rolling-authoring rhythm settled.",
+      "the_guard_was_right": "Recorded deliberately: check-phased-terminal.mjs did exactly its job. It reads current_phase, and on a rolling plan a WO sitting at phase 2 of 7 must not full-close - that is the failure class the gate exists to catch. The fix was to correct the ledger to match reality, never to bypass the gate (it has no --force by design, and should not).",
+      "verification_before_stamping": "Both phases were verified as genuinely shipped BEFORE anything was stamped: git log confirms commit 3d81268 (phase 1 element-extractor) and fb3eadc (phase 2 scanner), the phase-1 terminal-post-exec.txt audit record carries AC-1/AC-2/AC-3 all PASS with the measured element counts, and the phase-2 P2-T7 real-repo verification over all 316 src files is already in this log. No verdict was reconstructed from recollection.",
+      "at": "2026-08-02T03:00:00Z"
+    },
+    {
+      "event": "workorder_closed",
+      "summary": "All 7 phases complete. Close-only (not archived).",
+      "verdict": "WARNING - closed over a proven-false-positive culture gate, operator-ruled.",
+      "at": "2026-08-02T03:20:00Z"
     }
   ],
   "phase_transitions": [
@@ -334,5 +348,75 @@
     "/execute-workorder",
     "/close-workorder",
     "/log-session"
-  ]
+  ],
+  "closed_at": "2026-08-02T03:20:00Z",
+  "completed_at": "2026-08-02T03:20:00Z",
+  "closed_via": "/close-workorder",
+  "close_metadata": {
+    "review_status": "WARNING",
+    "closed_at": "2026-08-02T03:20:00Z",
+    "close_mode": "close-only (no --archive)",
+    "phases": "7 of 7 complete",
+    "suite_at_close": "2644 passed / 26 skipped / 0 failed",
+    "tsc": "exit 0",
+    "gates": {
+      "phased_terminal": "PASS (phase 7 of 7, after the close-time bookkeeping correction recorded as ADJ-20)",
+      "tracking_validator": "PASS 18/18, scoped",
+      "doc_code_tie": "PASS (no doc_binding declared)",
+      "session_log": "SELF-HEALED (minimal fallback authored; linked 0 commits because it searches the ASSISTANT repo while every commit for this WO is in coderef-core - the same cross-project blind spot as the culture gate below)",
+      "culture": "FAIL alignment_gate_skipped - PROVEN FALSE POSITIVE, operator ruled to proceed. See culture_gate_false_positive below."
+    },
+    "culture_gate_false_positive": {
+      "ticket": "TKT-0QTKY6 (severity high, scope=ecosystem, routed to DEBUG as STUB-K2Q0GG)",
+      "claim": "The WO-scoped culture verdict is FAIL/alignment_gate_skipped, but the alignment evidence is genuinely current and PASS. The gate cannot see it.",
+      "proof": [
+        "align-coderef-culture verify --workorder-id=WO-ELEMENTEXTRACTOR-... --domain=CODEREF-CORE returns {\"ok\":true,\"reason\":\"ok\",\"verdict\":\"PASS\"} against the CURRENT plan digest (re-recorded at close after phases 3-7 grew plan.json, 44 rows, 13 reused verbatim from the prior PASS event and 31 newly filled).",
+        "standards-validate returns culture FAIL with alignment detail \"no plan.json for WO-ELEMENTEXTRACTOR-...\".",
+        "ALIGNMENT-EVIDENCE-CONTRACT.md section 4 says the close gate implements the reader-selection algorithm VERBATIM so the gate and the runtime verify agree row-for-row. They do not."
+      ],
+      "root_cause": "TWO resolvers for one job; one fixed, one not. align-coderef-culture/run.mjs:130-143 honors the registry row stored path (rec.path || rec.workorder_path), and its own comment at :116-117 states the naive reconstruction is \"wrong twice over\" for a cross-project workorder. culture-lib.mjs:275-283 still performs exactly that naive reconstruction - join(repoRoot,\"coderef\",\"workorder\",rec.feature_name) - ignoring rec.path. This WO is target_project=coderef-core and its dir has only ever lived in CODEREF-CORE, so the gate looks under ASSISTANT, finds no plan.json, and returns alignment_missing. gateRan = legacyGateRan || commsAlignmentOk then goes false and computeVerdict short-circuits to FAIL/alignment_gate_skipped.",
+      "irony_worth_recording": "This is the same defect class the workorder itself spent seven phases on - two components that disagree about the same thing with nothing testing the seam between them. The close gate for the WO reproduced the WO.",
+      "operator_ruling": "Proceed and record the false positive. Ruled 2026-08-01 after being shown the file:line evidence and three named options (proceed / halt at checkpoint_ready / fix culture-lib from this WO). Option C was declined as a cross-domain write; the fix belongs to DEBUG via STUB-K2Q0GG.",
+      "not_bypassed": "No gate was skipped or forced. standards-validate was run, its verdict read, the disagreement traced to source, a ticket filed, and the override ruled by the operator and recorded here."
+    },
+    "tickets_resolved": [
+      "TKT-ZMVP33 (phase 1)",
+      "TKT-XGZA82 (phase 2)",
+      "TKT-AF2FYQ (phase 3)",
+      "TKT-2ZSHSZ (phase 4)",
+      "TKT-G8GWG0 (phase 5)",
+      "TKT-GERVWS (phase 6)",
+      "TKT-XQEZW6 (phase 7)"
+    ],
+    "follow_ups_routed_at_close": [
+      {
+        "id": "TKT-JGQPGY / STUB-M1E342",
+        "door": "ticket (defect)",
+        "what": "Same-named methods collide into one node id in buildDependencyGraph.ts:96 and generateDiagrams.ts:96. Identity uniqueness and callee resolution pull in opposite directions on element.name, so the fix needs a separate identity key."
+      },
+      {
+        "id": "TKT-SCBB58 / STUB-B17B19",
+        "door": "ticket (defect)",
+        "what": "element.imports assigns the whole file import list to every element (D3). Left alone in phase 2 on purpose: narrowing it redefines the field for six consumers."
+      },
+      {
+        "id": "STUB-MJ6VT7",
+        "door": "stub (work, not a defect)",
+        "what": "Collapse the last inline CODEREF_RAG_LOCAL_ONLY predicate in rag-search.ts onto the canonical isLocalOnly(). Measured behaviourally identical, so it is drift RISK not live drift - which is why it is work, not a bug."
+      },
+      {
+        "id": "TKT-0QTKY6 / STUB-K2Q0GG",
+        "door": "ticket (ecosystem defect, DEBUG)",
+        "what": "The culture-gate cross-project resolver defect found by this very close."
+      }
+    ],
+    "kaizen_logged": [
+      "KZ-01KYZWXN correctness - ticket repro text can name code vocabulary that does not exist in the repo (TKT-XQEZW6 said \"compound query\"; the string appears nowhere in src, the subject is QueryEngine.complex()).",
+      "kaizen-log ergonomics - kaizen-log/run.mjs resolves its SKILLS root from cwd, so an absolute-path invocation from a product repo dies ENOENT while sibling runners do not."
+    ],
+    "operator_added_tasks": {
+      "docs": "Every touched file header checked with the real tool (populate --source-headers, --stale-only where applicable), never hand-edited. Only import-resolver.ts was genuinely stale and was refreshed. cli-layer files carry no @exports by convention (verified against rag-search.ts, rag-status.ts, populate.ts), so rag-index.ts owed no header change despite gaining an export.",
+      "mcp_cli_surface": "Audited per phase. HONEST HEADLINE: this workorder adds NO new user-facing capability - all seven phases correct existing behaviour. Phases 1/3/4/6/7 reach both surfaces through shared code with no flag needed; phase 2 is scanner-path-only by design; phase 5 reaches NEITHER surface (rerankingOptions is declared and read but never populated anywhere in src, and AnswerGenerationService has no callers under src/cli), which is a finding rather than a gap."
+    }
+  }
 }

@@ -72,7 +72,26 @@
         "AC-4 NO TS REGRESSION: the \"Phase 1 regression: class_declaration recursion leak\" block (element-extractor.test.ts:425) still passes unchanged - the TS path was already fixed for this exact shape and must not be re-broken.",
         "AC-5 RULING TRANSCRIBED: ruling (A) and its rationale are written into communication.json decisions_log before P1-T2 edits anything.",
         "AC-6 PHASE-2 SPEC: the qualified name strings asserted by P1-T3 are the handoff contract for phase 2 (TKT-XGZA82). No compatibility shim is emitted - that was considered and rejected with the ruling."
-      ]
+      ],
+      "status": "complete",
+      "verdict": "PASS",
+      "completed_at": "2026-08-01",
+      "ticket_ref": "TKT-ZMVP33",
+      "evidence": {
+        "source_change": "src/pipeline/extractors/element-extractor.ts (commit 3d81268, +19/-1)",
+        "tests": "__tests__/element-extractor.test.ts, 5 cases added",
+        "ac1_revert_proof": "3 defect cases FAIL at HEAD, pass after",
+        "ac2": "no duplicate identity; scope = lexically enclosing type; duplication does not grow with nesting depth",
+        "ac3": "requireParser() fails loudly",
+        "measured": "Java 13->6 elements for 6 declarations; C++ 9->4 (function beta was emitted x4 at depth 2); Rust 5->3. API delta 0/0/0. tsc exit 0.",
+        "suite": "2602 passed / 26 skipped / 0 failed",
+        "terminal_record": "terminal-post-exec.txt (commit 676161c)",
+        "commits": [
+          "3d81268",
+          "b90536b",
+          "676161c"
+        ]
+      }
     },
     {
       "phase": 2,
@@ -163,7 +182,25 @@
         "AC-4 PHASE-1 CONTRACT HONORED: the qualified identities phase 1 established are used for call matching. Whether they SURVIVE onto element.name is the P2-T2 ruling; what is not negotiable is that matching no longer happens on a collapsed name.",
         "AC-5 NO CONSUMER REGRESSION: whatever the ruling, every consumer named in bare_name_contract_status is checked against it explicitly, not assumed.",
         "AC-6 SUITE GREEN: full suite at or above the phase-1 baseline of 2602 passed / 26 skipped / 0 failed, plus the new cases."
-      ]
+      ],
+      "status": "complete",
+      "verdict": "PASS",
+      "completed_at": "2026-08-01",
+      "ticket_ref": "TKT-XGZA82",
+      "evidence": {
+        "source_change": "src/scanner/tree-sitter-file-scan.ts + src/pipeline/extractors/relationship-extractor.ts (commit fb3eadc)",
+        "tests": "__tests__/scanner/tree-sitter-file-scan.contract.test.ts, 7 cases",
+        "operator_ruling": "(A) element.name stays BARE - D5 in, D3 out",
+        "p2_t7_real_repo_check": "All 316 .ts files under src/ scanned through scanFileWithTreeSitter: 0 grammar failures, 1535 elements carrying calls, 0 identical call sets (the union-bug signature), 5 nested functions recovered that previously received NO callees. Recorded in communication.json as p2_t7_real_repo_verification.",
+        "commits": [
+          "fb3eadc",
+          "7fa6db2",
+          "d820e99",
+          "85e2ced",
+          "b19e328"
+        ],
+        "later_correction": "The phase-2 claim that ctx.calls \"feeds the canonical graph builder\" was found IMPRECISE during the phase-5 surface audit and corrected in source and test (commit 8d54d37). The default-off decision stands, for a narrower reason."
+      }
     },
     {
       "phase": 3,
@@ -707,6 +744,11 @@
       "id": "ADJ-19",
       "applied": true,
       "description": "Phase 7 disposition call, consistent with ADJ-17. A zero processingTimeMs is LEGITIMATE data - a cached or sub-millisecond answer genuinely rounds to 0 - so it clamps rather than throwing. Flooring the denominator at 1ms was chosen over returning 0 because it keeps the metric a true LOWER BOUND on throughput and monotonic in token count, where a flat 0 would report the fastest possible answer as the least efficient one."
+    },
+    {
+      "id": "ADJ-20",
+      "applied": true,
+      "description": "BOOKKEEPING CORRECTION APPLIED AT CLOSE, not during execution - recorded as such so the ledger does not imply it was done live. Phases 1 and 2 shipped real commits (3d81268 and fb3eadc, both verified present at close) but their plan.json entries were never stamped with status/verdict/completed_at, and communication.json.current_phase was left at 2 for the rest of the run. The close-workorder phased-terminal guard correctly REFUSED (exit 1) on that stale current_phase, which is the guard working as designed. The stamps written here were reconstructed from committed evidence only - phase 1 from its terminal-post-exec.txt audit record, phase 2 from the p2_t7_real_repo_verification entry - never from recollection."
     }
   ],
   "discovery_required": true,
