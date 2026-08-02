@@ -24,6 +24,7 @@ import * as path from 'path';
 // remains a lazy optional dependency here.
 import { createLLMProvider, createVectorStore, resolveRagProvider } from '../integration/llm/provider-factory.js';
 import { parseFlags, failUsage } from './shared/cli-args.js';
+import { isLocalOnly } from '../integration/rag/rag-config.js';
 // Phase 9 (STUB-014M9C): the lexical-first router core — pure, no embeddings.
 import {
   classifyQuery,
@@ -287,6 +288,39 @@ function estimateTokens(text: string): number {
 }
 
 /**
+ * RAG local-only enforcement: is `provider` allowed under CODEREF_RAG_LOCAL_ONLY?
+ *
+ * Returns the error message to print, or null when the provider is allowed.
+ *
+ * WO-ELEMENT-IMPORTS-...-001 phase 2 (STUB-MJ6VT7). This used to be an inline
+ * re-derivation of the CODEREF_RAG_LOCAL_ONLY predicate, the LAST of four copies
+ * (rag-config.ts, rag-index.ts, here, and one inside a test file). All four were
+ * measured behaviourally identical, so this collapse is a no-op at runtime — the
+ * point is that a copy no test can reach is a copy that can drift.
+ *
+ * Extracted from main() rather than left inline because rag-search.ts had NO
+ * exports and called main() unconditionally at import, which made every previous
+ * attempt to pin this contract assert a private copy of the predicate instead of
+ * the CLI that uses it. That is exactly how the predicate reached four copies.
+ *
+ * `localOnlyRaw` is read separately because the message quotes the raw value and
+ * isLocalOnly() does not expose it — same split rag-index.ts:342-351 already uses.
+ * The message text deliberately does NOT match rag-index's (which adds a
+ * CODEREF_LLM_BASE_URL hint); unifying observable CLI output is not this phase.
+ */
+export function assertLocalOnlyAllows(provider: string): string | null {
+  const localOnlyRaw = process.env.CODEREF_RAG_LOCAL_ONLY;
+  if (isLocalOnly() && (provider === 'openai' || provider === 'anthropic')) {
+    return (
+      `Error: RAG local-only mode is enabled (CODEREF_RAG_LOCAL_ONLY=${localOnlyRaw}) ` +
+      `but provider '${provider}' is a cloud provider. ` +
+      `Set CODEREF_LLM_PROVIDER=ollama (or pass --provider ollama).`
+    );
+  }
+  return null;
+}
+
+/**
  * Main CLI function
  */
 async function main(): Promise<void> {
@@ -309,16 +343,12 @@ async function main(): Promise<void> {
       process.exit(2);
     }
 
-    // RAG local-only enforcement (mirrors rag-index.ts).
-    const localOnlyRaw = process.env.CODEREF_RAG_LOCAL_ONLY;
-    const localOnly = localOnlyRaw && localOnlyRaw.toLowerCase() !== '0' &&
-      localOnlyRaw.toLowerCase() !== 'false' && localOnlyRaw.toLowerCase() !== 'no';
-    if (localOnly && (args.provider === 'openai' || args.provider === 'anthropic')) {
-      console.error(
-        `Error: RAG local-only mode is enabled (CODEREF_RAG_LOCAL_ONLY=${localOnlyRaw}) ` +
-        `but provider '${args.provider}' is a cloud provider. ` +
-        `Set CODEREF_LLM_PROVIDER=ollama (or pass --provider ollama).`
-      );
+    // RAG local-only enforcement. The predicate and the message both live in
+    // assertLocalOnlyAllows() above so a test can drive this exact decision;
+    // main() is not reachable from a test because it reads argv and exits.
+    const localOnlyError = assertLocalOnlyAllows(args.provider);
+    if (localOnlyError) {
+      console.error(localOnlyError);
       process.exit(2);
     }
 
@@ -541,5 +571,13 @@ async function main(): Promise<void> {
   }
 }
 
-// Run CLI
-main();
+// Run CLI only when executed as a bin — never on import. This module used to
+// call main() unconditionally, which meant importing it from a test parsed
+// process.argv and process.exit()-ed the runner: the seam was live but
+// unreachable. rag-index.ts, rag-status.ts and rag-eval.ts already guard this
+// way; rag-search was the only one of the four rag-* CLIs that did not, which
+// is the same "sibling fixed, sibling not" divergence that let the local-only
+// predicate reach four copies.
+if (require.main === module) {
+  main();
+}
