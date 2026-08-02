@@ -5,9 +5,9 @@
   "owner_domain": "CODEREF-CORE",
   "target_project": "coderef-core",
   "originating_dispatches": [],
-  "status": "plan_created",
+  "status": "checkpoint_ready",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "complete",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\land-doc-code-tie-in-core\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\land-doc-code-tie-in-core\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\land-doc-code-tie-in-core\\analysis.json",
@@ -32,9 +32,32 @@
       "count": 6,
       "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/afe01006-6c4c-4a78-a71d-09665b82982b/scratchpad/doc-code-tie-tasks.json",
       "at": "2026-08-02T03:05:00.626411+00:00"
+    },
+    {
+      "event": "P1-COMPLETE",
+      "timestamp": "2026-08-02T03:21:18.368Z",
+      "detail": "Executed and committed bf28aaf (CODEREF-CORE). Wave-1 scope = 3 files chosen on measured import fan-in from .coderef/graph.json. orchestrator.ts EXCLUDED despite ranking highest (fan-in 62) because its resource sheet grades WARN and a wave must start clean, or its first run reports a failure the wave did not cause. call-resolver.ts excluded for known api-complete drift. Checker moved not_applicable -> PASS 8 pass / 0 warn / 0 fail."
+    },
+    {
+      "event": "TRAP-SCOPES-HEADING",
+      "timestamp": "2026-08-02T03:21:18.368Z",
+      "detail": "parseScopes() in the doc-code-tie checker keys LITERALLY on a level-2 heading spelled exactly 'Scopes'. The first draft of CORE's standard used 'Declared scope' and the ENTIRE kind silently reported not_applicable: standard present, scope table right there, nothing graded, exit 0. Nothing in that output distinguishes it from a project that declared no standard at all. A comment marking the heading load-bearing now sits in CORE's doc-code-tie.md. FOLLOW-UP CANDIDATE: the checker should WARN when it finds a doc-code-tie standard whose Scopes section it cannot locate, instead of silently grading nothing — a false not_applicable is indistinguishable from a true one, which is the same silent-failure class this kind exists to catch."
+    },
+    {
+      "event": "BOOKKEEPING-DIVERGENCE",
+      "timestamp": "2026-08-02T03:21:18.368Z",
+      "detail": "SELF-REPORTED DEFECT in this WO's own execution. The registry row was flipped to checkpoint_ready while communication.json still read plan_created and carried ZERO phase_transitions — for a WO whose work was fully committed and verified. The DB said ready-to-close, the disk said never executed, and neither was the truth. Repaired by writing the phase-1 transition (commit bf28aaf) and bringing the on-disk status UP to the truth rather than reverting the row down to a stale value. Cause: the registry write was done by hand at the end of execution instead of through the phase-transition writer, which updates both. The close-time scoped tracking-validator would likely have caught this, which is an argument for running it rather than trusting the executing agent to remember."
     }
   ],
-  "phase_transitions": [],
+  "phase_transitions": [
+    {
+      "phase": 1,
+      "to_status": "complete",
+      "commit": "bf28aaf",
+      "verdict": "PASS",
+      "at": "2026-08-02T03:20:31.928Z"
+    }
+  ],
   "plan_adjustments": [],
   "communication_log": [
     {
