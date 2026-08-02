@@ -1,0 +1,110 @@
+#!/bin/sh
+# CODEREF-CORE pre-commit — the THIN delegating hook.
+#
+# WO-REPO-SAFE-SHARED-PRECOMMIT-CHASSIS-001 P2-T3.
+#
+# THIS is the chain git actually runs, once `core.hooksPath=.githooks` is set for
+# this clone. .git/hooks is the git DEFAULT and hooksPath OVERRIDES it, so any
+# gate added there silently never fires. ASSISTANT lived that failure for weeks —
+# its rich gate chain had been appended only to the .git/hooks copy AFTER
+# hooksPath was repointed, leaving five gates dead (see the reconcile note at
+# ASSISTANT/.githooks/pre-commit, WO-SKILL-MUTATION-ROUTING-GATE-AND-PRECOMMIT-
+# CHAIN-RECONCILE-001). Add gates HERE.
+#
+# WHAT THIS SHARES, AND WHAT IT DOES NOT.
+# CORE shares ASSISTANT's CHASSIS — the hooksPath wiring, the named-bypass
+# convention, the gate-tier discipline, the staged-pattern self-skip — NOT its
+# gate bodies. Of the 20 gates in ASSISTANT's chain, 18 are inert here by
+# construction: CORE has no SKILLS/, TRACKING/, SURFACES/ or automation/, zero
+# .ps1 files and zero skill.json. Copying them would be dead weight that reads
+# as coverage. Wave 1 is deliberately two gates.
+#
+# WAVE-1 POSTURE IS WARN-FIRST, AND THAT IS A MEASURED DECISION, NOT TIMIDITY.
+# Measured 2026-08-01 across CORE's 93 plan.json: 23 PASS / 70 FAIL overall, and
+# among LIVE plans (coderef/workorder/**) 20 PASS / 22 FAIL. The failures are
+# structural old-shape drift — 113 missing task `id`, 86 missing `verb`, the
+# governance quartet absent on 21 plans. A BLOCKING gate on day one would refuse
+# commits touching more than half the live plans over drift the committer did not
+# cause, and a gate that blames the wrong author gets bypassed reflexively — at
+# which point it detects nothing. This repo's sibling already made that call for
+# the same reason (the cutover-completion check runs advisory with 8 pre-existing
+# violations). Ratchet to blocking once the live-plan count reaches zero; that is
+# a one-line change below.
+#
+# Bypass envs are NAMED and ECHOED — never silent:
+#   CODEREF_SKIP_CORE_HOOK=1            skip this whole chain
+#   SKIP_PLAN_SCHEMA_CHECK=1            skip the plan-schema gate
+#   SKIP_PHASE_LANGUAGE_CHECK=1         skip the phase-language gate
+#   CODEREF_ASSISTANT_ROOT=<abs path>   point at a non-sibling ASSISTANT checkout
+
+if [ "$CODEREF_SKIP_CORE_HOOK" = "1" ]; then
+    echo "[core-hook] SKIPPED entirely (CODEREF_SKIP_CORE_HOOK=1)"
+    exit 0
+fi
+
+REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
+if [ -z "$REPO_ROOT" ]; then
+    echo "[core-hook] WARN: cannot resolve the repo root; skipping (commit not blocked)"
+    exit 0
+fi
+
+# Resolve ASSISTANT through the shared, marker-verified resolver. Degrades to a
+# loud skip rather than a refusal: a missing sibling checkout is an ENVIRONMENT
+# gap, and refusing every commit on a laptop that has not cloned ASSISTANT would
+# be punishing the wrong thing. It is loud so it cannot be mistaken for coverage.
+# Invoked as a FILE, not as `node -e` with a hand-built file:// URL. The inline
+# form needs backslash escaping that survives both sh and node, and on Windows
+# paths that is a live footgun — it broke once during authoring. pathToFileURL
+# inside the bootstrap does the same job with nothing to escape.
+ASSISTANT_ROOT=$(node "$REPO_ROOT/.githooks/resolve-assistant-cli.mjs" "$REPO_ROOT" 2>/tmp/core-hook-resolve.err)
+
+if [ -z "$ASSISTANT_ROOT" ]; then
+    echo "[core-hook] WARN: ASSISTANT checkout not found — gates SKIPPED, commit NOT blocked."
+    sed 's/^/           /' /tmp/core-hook-resolve.err 2>/dev/null
+    echo "           Set CODEREF_ASSISTANT_ROOT=<abs path> if it lives outside the expected layout."
+    rm -f /tmp/core-hook-resolve.err
+    exit 0
+fi
+rm -f /tmp/core-hook-resolve.err
+echo "[core-hook] chain from: $ASSISTANT_ROOT"
+
+# --- WAVE 1, gate 1: plan-schema drift (WARN-first) --------------------------
+# Self-skips when no plan.json is staged, so unrelated commits cost nothing.
+STAGED_PLANS=$(git diff --cached --name-only --diff-filter=ACM | grep -E '(^|/)plan\.json$' || true)
+if [ -n "$STAGED_PLANS" ] && [ "$SKIP_PLAN_SCHEMA_CHECK" != "1" ]; then
+    echo "[core-hook] plan-schema gate (WARN-first) on $(echo "$STAGED_PLANS" | wc -l) staged plan(s)..."
+    # shellcheck disable=SC2086
+    if python "$ASSISTANT_ROOT/scripts/validate-plan-schema.py" $STAGED_PLANS; then
+        echo "[core-hook] [PASS] plan-schema"
+    else
+        echo "[core-hook] [WARN] plan-schema violations above — NOT blocking this commit."
+        echo "           Wave-1 posture is WARN-first: 22 of 42 live CORE plans carry"
+        echo "           pre-existing old-shape drift, so blocking would refuse commits"
+        echo "           over defects the committer did not introduce."
+        echo "           Authoring new plans via /create-workorder emits conformant shape."
+    fi
+elif [ "$SKIP_PLAN_SCHEMA_CHECK" = "1" ]; then
+    echo "[core-hook] [SKIP] plan-schema (SKIP_PLAN_SCHEMA_CHECK=1)"
+else
+    echo "[core-hook] [INFO] no staged plan.json; plan-schema gate skipped"
+fi
+
+# --- WAVE 1, gate 2: phase-language (WARN-first) -----------------------------
+# --repo-root is passed EXPLICITLY. The gate resolves it via the shared
+# resolveRepoRoot, so it grades CORE's index rather than ASSISTANT's. That is the
+# whole reason this WO existed: before it, gates pinned their git cwd to their own
+# repo and returned PASS for commits they never inspected.
+if [ "$SKIP_PHASE_LANGUAGE_CHECK" != "1" ]; then
+    echo "[core-hook] phase-language gate (WARN-first)..."
+    if node "$ASSISTANT_ROOT/scripts/validate-phase-language.mjs" --repo-root="$REPO_ROOT"; then
+        echo "[core-hook] [PASS] phase-language"
+    else
+        echo "[core-hook] [WARN] phase-language violations above — NOT blocking this commit."
+        echo "           Wave 1 lands WARN-first; CORE prose has never been graded by this"
+        echo "           rule, so its baseline is unmeasured. Ratchet after a clean sweep."
+    fi
+else
+    echo "[core-hook] [SKIP] phase-language (SKIP_PHASE_LANGUAGE_CHECK=1)"
+fi
+
+exit 0
