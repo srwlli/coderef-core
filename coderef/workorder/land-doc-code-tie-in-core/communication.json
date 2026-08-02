@@ -1,0 +1,51 @@
+{
+  "workorder_id": "WO-LAND-DOC-CODE-TIE-IN-CORE-001",
+  "feature_name": "land-doc-code-tie-in-core",
+  "created": "2026-08-02T03:05:00.626411+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\land-doc-code-tie-in-core\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\land-doc-code-tie-in-core\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\land-doc-code-tie-in-core\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-FVPA3Z",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-FVPA3Z",
+      "plan_type": "strict",
+      "timestamp": "2026-08-02T03:05:00.626411+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 6,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/afe01006-6c4c-4a78-a71d-09665b82982b/scratchpad/doc-code-tie-tasks.json",
+      "at": "2026-08-02T03:05:00.626411+00:00"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-02T03:05:00.626411+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-FVPA3Z"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

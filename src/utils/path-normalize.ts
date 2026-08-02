@@ -2,6 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer utility
  * @capability path-slash-normalization
+ * @doc-ref: coderef/resource-sheets/path_normalize-RESOURCE-SHEET.md
  * @exports normalizeSlashes, toRepoRelativePosix
  * @used_by src/utils/coderef-id.ts, src/registry/entity-registry.ts, src/scanner/scanner.ts, src/pipeline/ignore-rules.ts, src/cli/coderef-mcp-server.ts, src/query/scip-resolution-delta.ts, src/pipeline/scip-overlay.ts
  */

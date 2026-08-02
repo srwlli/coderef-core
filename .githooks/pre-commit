@@ -107,4 +107,42 @@ else
     echo "[core-hook] [SKIP] phase-language (SKIP_PHASE_LANGUAGE_CHECK=1)"
 fi
 
+# --- WAVE 1, gate 3: doc-code-tie (WARN-first) -------------------------------
+# WO-LAND-DOC-CODE-TIE-IN-CORE-001. Grades the code<->doc binding for the files
+# declared in docs/standards/doc-code-tie.md — THREE today, not the repo.
+#
+# SELF-SKIP: runs only when a staged file is in the declared scope, or is one of
+# the paired docs. The checker is repo-wide by nature, so without this an
+# unrelated commit would pay for grading files it never touched.
+#
+# WARN-first even though the scope starts clean (8 pass / 0 warn / 0 fail at
+# landing). The failure mode being pre-empted is not today's three files, it is
+# the next widening: a FAIL gate the first time a wave lands dirty teaches the
+# reflexive bypass, and a bypassed gate detects nothing.
+if [ "$SKIP_DOC_CODE_TIE_CHECK" != "1" ] && [ -f "$REPO_ROOT/docs/standards/doc-code-tie.md" ]; then
+    SCOPE_RE=$(sed -n '/^## Scopes/,/^## /p' "$REPO_ROOT/docs/standards/doc-code-tie.md" \
+        | grep -E '^\| *[a-zA-Z0-9_.*/-]+ *\|' | awk -F'|' '{gsub(/ /,"",$2); print $2}' \
+        | grep -v '^glob$' | grep -v '^-*$' | paste -sd'|' -)
+    STAGED_TIED=""
+    if [ -n "$SCOPE_RE" ]; then
+        STAGED_TIED=$(git diff --cached --name-only --diff-filter=ACM \
+            | grep -E "($SCOPE_RE)|^coderef/resource-sheets/|^docs/standards/doc-code-tie\.md$" || true)
+    fi
+    if [ -n "$STAGED_TIED" ]; then
+        echo "[core-hook] doc-code-tie gate (WARN-first) — staged file(s) in the tied scope..."
+        if node "$ASSISTANT_ROOT/SKILLS/STANDARDS/kinds/doc-code-tie/check.mjs" \
+             --project-root="$REPO_ROOT" --standard=docs/standards/doc-code-tie.md; then
+            echo "[core-hook] [PASS] doc-code-tie"
+        else
+            echo "[core-hook] [WARN] doc-code-tie findings above — NOT blocking this commit."
+            echo "           Scope is 3 files, declared in docs/standards/doc-code-tie.md."
+            echo "           An unresolved @doc-ref: is the serious one; reciprocity is advisory."
+        fi
+    else
+        echo "[core-hook] [INFO] no staged file in the tied scope; doc-code-tie gate skipped"
+    fi
+elif [ "$SKIP_DOC_CODE_TIE_CHECK" = "1" ]; then
+    echo "[core-hook] [SKIP] doc-code-tie (SKIP_DOC_CODE_TIE_CHECK=1)"
+fi
+
 exit 0

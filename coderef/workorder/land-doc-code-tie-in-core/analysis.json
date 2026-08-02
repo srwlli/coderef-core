@@ -1,0 +1,15 @@
+{
+  "workorder_id": "WO-LAND-DOC-CODE-TIE-IN-CORE-001",
+  "feature_name": "land-doc-code-tie-in-core",
+  "analysis_authored_at": "2026-08-02T03:05:00.626411+00:00",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": []
+}

@@ -1,0 +1,86 @@
+{
+  "plan_type": "strict",
+  "goal": "Land the doc-code-tie standard in CODEREF-CORE, riding the pre-commit chassis activated by WO-REPO-SAFE-SHARED-PRECOMMIT-CHASSIS-001. GAP (measured 2026-08-01): the doc-code-tie KIND is fully built (5 checks, own checker, establish+maintain docs) and ASSISTANT declares it, but CORE resolves not_applicable because the kind's applies predicate requires a declared scope in docs/standards/doc-code-tie.md and CORE has none - plus ZERO @doc-ref: tags in src/. So no doc-code drift is gated in CORE at all, in either direction. PREREQ NOW SATISFIED: CORE had no git hooks whatsoever until 2026-08-01; it now runs .githooks/pre-commit with a repo-safe resolution contract, so a checker wired there grades CORE's own staged set rather than ASSISTANT's. WORK: (1) author CORE docs/standards/doc-code-tie.md declaring a WAVE-1 scope of 2-4 high-traffic src files - NOT a broad glob, per the standard's own explicit warning that widening to a whole subtree WARNs on every untagged file and trains bypass; (2) add @doc-ref: tags to those files and reciprocal documents:/tracks: frontmatter to their docs; (3) add the doc-code-tie checker to CORE's hook wave-1 subset, WARN-first, self-skipping when nothing in scope is staged. CONTRACT NOTE: unresolved @doc-ref path is FAIL, non-reciprocal is WARN, in-scope file with no tag is WARN - ratchet only after the current scope runs clean.",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": true,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "WRITE",
+          "description": "Author CODEREF-CORE/docs/standards/doc-code-tie.md declaring a WAVE-1 scope of THREE files, modeled on ASSISTANT's own declaration. SCOPE (chosen on measured import fan-in from .coderef/graph.json, and each already carries a resource sheet whose documents: frontmatter names it, so the doc->code half exists and only code->doc is missing): src/cli/mcp/shared.ts (fan-in 59, mcp_shared-RESOURCE-SHEET.md), src/utils/path-normalize.ts (38, path_normalize-RESOURCE-SHEET.md), src/scanner/scanner.ts (27, scanner-RESOURCE-SHEET.md). DELIBERATELY EXCLUDED: src/pipeline/orchestrator.ts, the highest fan-in at 62 \u2014 its sheet currently grades WARN on the drift checker, and a wave must START CLEAN or its first run reports a failure the wave did not cause. Excluded for the same reason: src/pipeline/call-resolver.ts, which carries known api-complete membership drift. Copy ASSISTANT's warning comment forbidding a widen-to-whole-subtree in one step, verbatim in spirit: the opt-in scope exists precisely to prevent an estate-wide wall of WARNs.",
+          "touches": [
+            "CODEREF-CORE/docs/standards/doc-code-tie.md"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "EDIT",
+          "description": "Add a `// @doc-ref: coderef/resource-sheets/<name>-RESOURCE-SHEET.md` comment near the top of each of the three in-scope source files. This is the code->doc half; the doc->code half already exists as each sheet's documents: frontmatter, which is why these three were chosen. Place the tag in the file's existing header comment rather than bolting a new block on top \u2014 a tag that looks like an afterthought gets deleted by the next person reformatting the header. Verify the referenced path resolves from the project root, because an unresolved @doc-ref is a hard FAIL in the kind's contract, not a WARN.",
+          "touches": [
+            "CODEREF-CORE/src/cli/mcp/shared.ts",
+            "CODEREF-CORE/src/utils/path-normalize.ts",
+            "CODEREF-CORE/src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "TEST",
+          "description": "Run the doc-code-tie kind checker against CORE and assert it moved from not_applicable to applicable-and-graded. Required assertions: (a) doc-code-tie.applicable now PASSES, where before the standard's absence made the whole kind inert; (b) all three code-ref-resolves checks PASS \u2014 an unresolved path is a FAIL and would mean a mistyped tag; (c) reciprocity resolves for all three, since each sheet's documents: already names the file back; (d) NOTHING OUTSIDE THE DECLARED SCOPE is graded \u2014 this is the load-bearing assertion, because if the scope glob leaks, the estate-wide wall of WARNs is exactly what the opt-in design exists to prevent, and it would show up as dozens of doc-ref-present warnings on untagged files.",
+          "touches": []
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "Add the doc-code-tie checker to CORE's .githooks/pre-commit wave-1 subset, WARN-first and self-skipping. SELF-SKIP CONDITION: run only when a staged file is inside the declared scope OR is one of the paired docs \u2014 an unrelated commit must cost nothing, matching how the other two wave-1 gates already behave. Invoke it with an explicit --project-root so it grades CORE, per the chassis contract in DOCS/standards/precommit-chassis.md. WARN-first even though the scope starts clean: the failure mode being avoided is not today's three files but the next widening, where a FAIL gate on day one trains the reflexive bypass that makes a gate detect nothing.",
+          "touches": [
+            "CODEREF-CORE/.githooks/pre-commit"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "TEST",
+          "description": "Verify the wired gate through REAL git commits in CORE, reverted with reset --soft so concurrent peer WIP is never at risk, and with HEAD confirmed identical before and after. (a) Stage an in-scope source file and confirm the gate RUNS and reports. (b) Stage an unrelated file and confirm the gate SELF-SKIPS at no cost. (c) Temporarily break one @doc-ref path, confirm the gate NOTICES, then restore \u2014 a gate never observed failing is a gate never observed at all. (d) Confirm the other two wave-1 gates still behave, so this addition did not perturb them.",
+          "touches": []
+        },
+        {
+          "id": "P1-T6",
+          "verb": "COMMIT",
+          "description": "Commit via the guarded runner, in CORE. The message must state the wave-1 scope and WHY those three (measured fan-in, plus an existing clean doc->code half), why orchestrator was excluded despite ranking highest, and that this is WARN-first. Also state plainly what remains ungated: every CORE source file outside the three, which is most of them. The number to avoid implying is 'CORE now has doc-code drift enforcement' \u2014 it has it for three files.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-FVPA3Z"
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 1,
+      "approved": false,
+      "reason": "strict phase gate"
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260802T030514Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "workorder_id": "WO-LAND-DOC-CODE-TIE-IN-CORE-001",
+  "feature_name": "land-doc-code-tie-in-core",
+  "created": "2026-08-02T03:05:00.626411+00:00",
+  "plan_type_rationale": "Category feature maps to strict"
+}

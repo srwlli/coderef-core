@@ -2,6 +2,7 @@
  * @coderef-semantic: 1.0.0
  * @layer cli
  * @capability mcp-shared-substrate
+ * @doc-ref: coderef/resource-sheets/mcp_shared-RESOURCE-SHEET.md
  * @exports ExportedNode, ExportedEdge, DEFAULT_LIMIT, MAX_LIMIT, IndexElement, IndexData, ArtifactCache, emptyCache, attachStaleness, BuildHintError, loadGraph, loadIndex, loadValidationReport, loadCanonical, Resolution, resolveNodes, nodeSummary, clampLimit, ambiguous, notFound, ToolHandlers, isTestFile, isDemoFile, edgeConfidenceOf, computeChangedElements, HandlerContext
  * @used_by src/cli/coderef-mcp-server.ts, src/cli/mcp/context-tools.ts, src/cli/mcp/graph-tools.ts, src/cli/mcp/lookup-tools.ts, src/cli/mcp/map-tools.ts, src/cli/mcp/rag-tools.ts, src/cli/mcp/verify-tools.ts
  */
