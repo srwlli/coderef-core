@@ -26,6 +26,7 @@ import { toAbsolute } from '../integration/rag/path-types.js';
 // remains a lazy optional dependency here.
 import { createLLMProvider, createVectorStore, resolveRagProvider } from '../integration/llm/provider-factory.js';
 import { parseFlags, failUsage } from './shared/cli-args.js';
+import { isLocalOnly } from '../integration/rag/rag-config.js';
 
 let IndexingOrchestrator: any;
 
@@ -129,9 +130,17 @@ export function defaultRagIndexArgs(projectDir: string): CliArgs {
 }
 
 /**
- * Parse command line arguments
+ * Parse command line arguments.
+ *
+ * EXPORTED for tests — WO-ELEMENTEXTRACTOR-...-001 phase 6 (TKT-GERVWS).
+ * `__tests__/rag-index-cli.test.ts` could not import this, so it carried a
+ * private copy of a long-obsolete parser and asserted THAT. The copy defaulted
+ * provider=openai / store=sqlite; this one defaults ollama/json. Fifteen green
+ * tests were describing a CLI that had not existed for months. Exporting it is
+ * the whole structural fix: there is now exactly one parser and the tests can
+ * reach it.
  */
-function parseArgs(argv: string[]): CliArgs {
+export function parseArgs(argv: string[]): CliArgs {
   // WO-REPO-REVIEW-2026-07-REMEDIATION-001 Phase 3 (P2-18): parsing moved
   // onto the shared helper (see rag-search) — --flag=value and --flag value
   // both work everywhere, numerics are NaN-checked, unknown flags error out.
@@ -331,8 +340,12 @@ export async function runRagIndex(
     // selected. This mirrors RAGConfigLoader.getLLMProvider() but covers
     // the rag-index CLI's parallel provider-resolution path.
     const localOnlyRaw = process.env.CODEREF_RAG_LOCAL_ONLY;
-    const localOnly = localOnlyRaw && localOnlyRaw.toLowerCase() !== '0' &&
-      localOnlyRaw.toLowerCase() !== 'false' && localOnlyRaw.toLowerCase() !== 'no';
+    // Was a fourth hand-rolled copy of this predicate (rag-config.ts:144,
+    // rag-search.ts:314, and one inside the test file). Byte-for-byte identical
+    // logic, so this is a no-op at runtime — but a copy the tests could not
+    // reach is a copy that can drift, which is the defect TKT-GERVWS is about.
+    // The test now exercises isLocalOnly() BECAUSE this line does.
+    const localOnly = isLocalOnly();
     if (localOnly && (args.provider === 'openai' || args.provider === 'anthropic')) {
       console.error(
         `Error: RAG local-only mode is enabled (CODEREF_RAG_LOCAL_ONLY=${localOnlyRaw}) ` +

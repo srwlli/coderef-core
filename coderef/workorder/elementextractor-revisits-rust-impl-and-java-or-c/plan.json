@@ -398,17 +398,109 @@
     },
     {
       "phase": 6,
-      "name": "rag-index-cli-tests-validate-a-stale-reimplemented — DEFERRED",
+      "name": "rag-index-cli-tests-validate-a-stale-reimplemented-parser",
       "hard_stop": true,
       "stub_ref": "STUB-5SBBAT",
-      "plan_deferred": true,
+      "plan_deferred": false,
       "tasks": [
         {
-          "id": "P6-T0",
-          "verb": "STOP",
-          "description": "PLACEHOLDER. Phase 6 tasks not yet authored. Pre-condition: Phase 5 must be COMPLETED + REVIEWED before this phase's plan is authored."
+          "id": "P6-T1",
+          "verb": "READ",
+          "description": "Diff __tests__/rag-index-cli.test.ts against src/cli/rag-index.ts. Establish the structural cause: parseArgs was NOT EXPORTED, so the test could not import it even if it wanted to."
+        },
+        {
+          "id": "P6-T2",
+          "verb": "EDIT",
+          "description": "Export parseArgs from src/cli/rag-index.ts. No behaviour change - the whole structural fix is that there is now one parser and tests can reach it."
+        },
+        {
+          "id": "P6-T3",
+          "verb": "EDIT",
+          "description": "Replace the inline local-only predicate in rag-index.ts with the canonical isLocalOnly() from rag-config.ts. Byte-identical logic, verified; the point is that the test now exercises the function the CLI actually calls."
+        },
+        {
+          "id": "P6-T4",
+          "verb": "TEST",
+          "description": "Rewrite the test file: delete both private reimplementations, import production parseArgs + defaultRagIndexArgs + isLocalOnly, assert the current contract. 29 cases, one per measured divergence plus the CLI/MCP default parity check."
+        },
+        {
+          "id": "P6-T5",
+          "verb": "VERIFY",
+          "description": "False-green proof: simulate the cloud-default regression and run both suites against it. Old passes 22/22, new fails 7. Restore production, re-verify 29/29."
+        },
+        {
+          "id": "P6-T6",
+          "verb": "VERIFY",
+          "description": "tsc --noEmit + full suite."
+        },
+        {
+          "id": "P6-T7",
+          "verb": "DOCS",
+          "description": "Operator standing task: header check on every touched file."
         }
-      ]
+      ],
+      "authored_at": "2026-08-01",
+      "ticket_ref": "TKT-GERVWS",
+      "measured_baseline": {
+        "measured_at": "2026-08-01",
+        "method": "Differential probe: ran HEAD production parseArgs and the private copy from __tests__/rag-index-cli.test.ts over the same 10-argv matrix and diffed every field. Probe was deleted after measuring.",
+        "divergences_found": 6,
+        "observed": [
+          {
+            "n": 1,
+            "field": "provider default",
+            "production": "ollama",
+            "test_copy": "openai",
+            "severity": "HIGHEST - inverts a standing policy of this environment"
+          },
+          {
+            "n": 2,
+            "field": "store default",
+            "production": "json",
+            "test_copy": "sqlite",
+            "note": "the copy's type union did not even admit 'json'"
+          },
+          {
+            "n": 3,
+            "field": "unknown flags",
+            "production": "accepts --coverage-floor, --strict-coverage, --include-headerless, --concurrency, --embed-cache/--no-embed-cache",
+            "test_copy": "had never heard of any of the five"
+          },
+          {
+            "n": 4,
+            "field": "consequence of (3)",
+            "production": "--concurrency 8 -> concurrency=8",
+            "test_copy": "--concurrency 8 -> 8 read as a bare POSITIONAL, projectDir='8'. Not merely uncovered - actively wrong. Same for --coverage-floor 80 -> projectDir=80."
+          },
+          {
+            "n": 5,
+            "field": "projectDir precedence",
+            "production": "--project-dir /a /b -> /a (flag wins)",
+            "test_copy": "-> /b (last positional wins)"
+          },
+          {
+            "n": 6,
+            "field": "unknown flag disposition",
+            "production": "failUsage -> process.exit(1)",
+            "test_copy": "silently ignored, so a typo like --lanugage ts would index the whole repo"
+          }
+        ],
+        "the_false_green_proof": "The decisive experiment, run rather than argued. Simulated a regression that repoints the production defaults at cloud OpenAI + sqlite, then ran BOTH suites against it: the OLD test file passed 22/22, the NEW test file failed 7. The old suite could not have caught the exact regression it was nominally guarding.",
+        "why_this_is_the_worst_kind": "This environment is Ollama local-only by standing operator policy - no cloud LLM keys, ever. The test suite was ASSERTING that the default provider is the cloud one. A test that inverts the policy it exists to protect is worse than no test: it converts a policy violation into a green check.",
+        "second_reimplementation": "Same file also carried a private copy of the CODEREF_RAG_LOCAL_ONLY predicate (isLocalOnlyEnforced). Counting it, the predicate existed FOUR times: rag-config.ts:144 (canonical, exported), rag-index.ts:333 inline, rag-search.ts:314 inline, and the test. All four were behaviourally identical when measured - so this is drift RISK, not live drift."
+      },
+      "status": "complete",
+      "verdict": "PASS",
+      "completed_at": "2026-08-01",
+      "evidence": {
+        "source_change": "src/cli/rag-index.ts (export parseArgs; inline local-only predicate -> canonical isLocalOnly)",
+        "tests": "__tests__/rag-index-cli.test.ts rewritten, 22 -> 29 cases, zero private reimplementations remaining",
+        "ac1_false_green_proof": "simulated cloud-default regression: OLD 22/22 pass, NEW 7 fail",
+        "restored_and_reverified": "29/29 pass against unmodified production",
+        "suite": "2634 / 26 skipped / 0 failed (was 2627; +7 net = 29 new minus 22 old)",
+        "tsc": "exit 0",
+        "headers": "populate --source-headers --stale-only reported the touched file up-to-date. rag-index.ts carries no @exports field - VERIFIED to be the cli-layer convention (rag-search.ts, rag-status.ts, populate.ts all omit it), so no header change is owed and none was hand-made."
+      }
     },
     {
       "phase": 7,
@@ -543,6 +635,11 @@
       "id": "ADJ-17",
       "applied": true,
       "description": "Phase 5 design call: weights that do not sum positive THROW rather than falling back to equal weights - silently inventing a uniform weighting would be a ranking policy the caller never asked for, applied invisibly. A zero result.score does NOT throw, because that is legitimate data from the search layer, not a caller configuration error; it clamps to no-boost/zero. Two different dispositions for two different kinds of degeneracy, on purpose."
+    },
+    {
+      "id": "ADJ-18",
+      "applied": true,
+      "description": "Phase 6 scope call. The ticket names only the parser reimplementation. The local-only predicate copy in the SAME file is the identical defect class, so it was fixed with it and said so. The matching inline copy in rag-search.ts was deliberately NOT touched: it is a different CLI, outside this test file, and changing a file no test in scope covers would be widening without evidence. Routed as a follow-up instead."
     }
   ],
   "discovery_required": true,

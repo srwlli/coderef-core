@@ -279,6 +279,18 @@
       ],
       "docs_updated": "Ran the real tool rather than hand-editing: populate --source-headers --include scoped to the six touched source files. Five were reported \"already has semantic headers, skipping\" - the generator does not overwrite an existing header. One, import-resolver.ts, was flagged stale by exports_match_ast and refreshed with --stale-only --include: applyWorkspaceLinkage was exported but absent from @exports (pre-existing drift from the cross-repo workspace-linkage WO, in a file this WO touched), and @used_by was rebuilt from reality. No CLI.md or ARCHITECTURE.md change is owed, because no flag, tool or option was added - see per_phase above.",
       "at": "2026-08-02T01:30:00Z"
+    },
+    {
+      "event": "p6_findings",
+      "summary": "The rag-index CLI test file asserted a private parser copy that had gone stale months earlier. Measured SIX divergences from production, not one.",
+      "headline": "The test asserted provider=openai as the CLI default. This environment is Ollama local-only by standing operator policy - no cloud LLM keys, ever. The suite was pinning the exact opposite of the policy, so a regression that repointed rag-index at a paid cloud API would have turned the test GREEN.",
+      "proof_not_assertion": "Simulated that regression in production and ran both suites against it. OLD test file: 22/22 PASS. NEW test file: 7 FAIL. The old suite demonstrably could not catch the regression it was nominally guarding. Production was then restored and re-verified 29/29.",
+      "structural_cause": "parseArgs was not exported. The test could not have imported it, so the comment at the top of the old file - \"we re-implement the same interface so we can test without spawning a child process\" - was a reasonable-sounding workaround that became a fiction the moment production moved. Exporting it IS the fix.",
+      "sharpest_divergence": "Because the copy did not know --concurrency, `--concurrency 8` made it read 8 as a bare positional and return projectDir=\"8\". Same for --coverage-floor 80. Not merely uncovered - actively wrong about which directory to index.",
+      "second_reimplementation": "The file also carried a fourth hand-rolled copy of the CODEREF_RAG_LOCAL_ONLY predicate. The predicate exists in rag-config.ts (canonical, exported), rag-index.ts, rag-search.ts and the test. Measured all four as behaviourally identical - drift RISK, not live drift. rag-index.ts now calls the canonical isLocalOnly(), so the test exercises real code.",
+      "scope_discipline": "rag-search.ts keeps its inline copy. It is a different CLI outside this test file, and editing a file no in-scope test covers would be widening without evidence. Routed as a follow-up rather than absorbed.",
+      "suite": "2634 passed / 26 skipped / 0 failed. tsc --noEmit exit 0.",
+      "at": "2026-08-02T02:10:00Z"
     }
   ],
   "phase_transitions": [
