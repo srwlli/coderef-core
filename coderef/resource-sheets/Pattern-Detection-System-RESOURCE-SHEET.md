@@ -22,7 +22,7 @@ The Pattern Detection System is a TypeScript function that detects common archit
 ## Audience & Intent
 
 - **Markdown (this document):** Architectural truth for pattern detection algorithms, pattern types, and output format
-- **TypeScript (detectPatterns function):** Runtime behavior for pattern matching, element analysis, and file generation
+- **TypeScript (detectPatterns function):** Runtime behavior for pattern matching, element analysis, and file generation [ref](src/fileGeneration/detectPatterns.ts#detectPatterns)
 - **JSON Schema (patterns.json):** Validation contract for pattern report structure
 - **Analysis Workflows:** Pattern insights for documentation, architecture analysis, and code review
 

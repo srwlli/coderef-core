@@ -18,7 +18,7 @@ status: draft
 
 ## Audience and Intent
 
-CLI, MCP RAG, and indexing maintainers use `runRagIndex` so interactive and agent surfaces share one pipeline. Programmatic mode suppresses transport-breaking stdout/exits and throws/returns summaries; CLI mode retains help, progress, JSON/human output, and process exit behavior.
+CLI, MCP RAG, and indexing maintainers use `runRagIndex` so interactive and agent surfaces share one pipeline. Programmatic mode suppresses transport-breaking stdout/exits and throws/returns summaries; CLI mode retains help, progress, JSON/human output, and process exit behavior. [ref](src/cli/rag-index.ts#runRagIndex)
 
 ## Architecture / Behavior
 
@@ -30,7 +30,7 @@ The orchestrator receives language, validation, header, and cache options. The c
 
 This module is authoritative for RAG-index CLI defaults/flags, programmatic parity, local-only enforcement, preflight/reset/gate orchestration, metadata shape, output messaging, and exit propagation. Provider/store/orchestrator modules own construction, embedding, storage, incremental/cache behavior, and result computation [ref](src/cli/rag-index.ts).
 
-Persistent outputs are vector-store state, `.coderef/rag-index.json`, and orchestrator incremental/cache sidecars; runtime configuration includes `CliArgs` and documented environment variables. `mcp-server.test.ts` drives the real programmatic path for unavailable Ollama; `rag-index-cli.test.ts` tests a local parser copy rather than importing the live parser and is currently stale relative to live defaults/options [ref](__tests__/mcp-server.test.ts) [ref](__tests__/rag-index-cli.test.ts).
+Persistent outputs are vector-store state, `.coderef/rag-index.json`, and orchestrator incremental/cache sidecars; runtime configuration includes `CliArgs` and documented environment variables. `mcp-server.test.ts` drives the real programmatic path for unavailable Ollama; `rag-index-cli.test.ts` tests a local parser copy rather than importing the live parser and is currently stale relative to live defaults/options [ref](__tests__/mcp-server.test.ts) [ref](__tests__/rag-index-cli.test.ts). [ref](src/cli/rag-index.ts#CliArgs)
 
 ## Public API / Contracts
 

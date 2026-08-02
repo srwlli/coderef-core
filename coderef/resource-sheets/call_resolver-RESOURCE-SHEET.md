@@ -34,7 +34,7 @@ The `CallResolver` module [ref](src/pipeline/call-resolver.ts) is designed to pe
 
 ### Architecture / Behavior
 
-The `CallResolver` operates in two distinct phases: **Pass 1 (buildSymbolTable)** and **Pass 2 (resolveCallsAgainstTable)**. Each phase serves a specific purpose and is executed in sequence to achieve the desired outcomes.
+The `CallResolver` operates in two distinct phases: **Pass 1 (buildSymbolTable)** and **Pass 2 (resolveCallsAgainstTable)**. Each phase serves a specific purpose and is executed in sequence to achieve the desired outcomes. [ref](src/pipeline/call-resolver.ts#buildSymbolTable)
 
 #### Pass 1: buildSymbolTable [ref](src/pipeline/call-resolver.ts)
 
@@ -43,7 +43,7 @@ The `CallResolver` operates in two distinct phases: **Pass 1 (buildSymbolTable)*
 - **Process**:
   - The `buildSymbolTable` function iterates over each file in the pipeline state.
   - It collects symbols from `PipelineState.element`, `RawCallFact.sourceElementCandidate`, and `ImportResolution.localName`.
-  - Each symbol is added to a `Map<string, SymbolTableEntry[]>`, where the key is the symbol's name. This allows for multi-valued entries due to potential duplicates across files.
+  - Each symbol is added to a `Map<string, SymbolTableEntry[]>`, where the key is the symbol's name. This allows for multi-valued entries due to potential duplicates across files. [ref](src/pipeline/call-resolver.ts#SymbolTableEntry)
   - The symbol table includes details such as `codeRefId`, `name`, `sourceFile`, and `scope`.
 
 - **Invariants**:
@@ -55,8 +55,8 @@ The `CallResolver` operates in two distinct phases: **Pass 1 (buildSymbolTable)*
 - **Purpose**: The second pass uses the constructed symbol table to classify each call fact (`RawCallFact`) into one of five categories: resolved, unresolved, ambiguous, external, or builtin.
 
 - **Process**:
-  - For each `RawCallFact`, the `resolveCallsAgainstTable` function classifies it based on the receiver text, scope path, and the symbol table.
-  - Built-in receivers are identified using a whitelist (`BUILTIN_RECEIVERS`) and classified as 'builtin'.
+  - For each `RawCallFact`, the `resolveCallsAgainstTable` function classifies it based on the receiver text, scope path, and the symbol table. [ref](src/pipeline/call-resolver.ts#resolveCallsAgainstTable)
+  - Built-in receivers are identified using a whitelist (`BUILTIN_RECEIVERS`) and classified as 'builtin'. [ref](src/pipeline/call-resolver.ts#BUILTIN_RECEIVERS)
   - Calls to imported symbols are resolved through `ImportResolution.localName`.
   - The resolution process does not mutate the pipeline state, ensuring that it remains pure and deterministic.
 
@@ -75,8 +75,8 @@ The `CallResolver` operates in two distinct phases: **Pass 1 (buildSymbolTable)*
 
 The module relies on several external dependencies:
 - `BUILTIN_RECEIVERS`: A set of JavaScript/Node.js global functions that classify as 'builtin'.
-- `JS_GLOBAL_CALLEES`: A set of Python global functions that also classify as 'builtin'.
-- `PYTHON_BUILTIN_CALLEES`: A set of Python builtin functions.
+- `JS_GLOBAL_CALLEES`: A set of Python global functions that also classify as 'builtin'. [ref](src/pipeline/call-resolver.ts#JS_GLOBAL_CALLEES)
+- `PYTHON_BUILTIN_CALLEES`: A set of Python builtin functions. [ref](src/pipeline/call-resolver.ts#PYTHON_BUILTIN_CALLEES)
 
 These sets ensure that calls to these specific functions are correctly classified, regardless of the project's current state.
 

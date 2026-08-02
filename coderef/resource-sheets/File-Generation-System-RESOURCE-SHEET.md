@@ -82,7 +82,7 @@ File Generation System
 
 1. **Parallel Execution:** Core analysis (Phase 2) and reports (Phase 3) run in parallel using `Promise.all()` and `Promise.allSettled()` for fault tolerance.
 2. **Fault Tolerance:** Analysis and diagram generation use `Promise.allSettled()` so one failure doesn't block others.
-3. **Critical Path:** `saveIndex()` must succeed before parallel execution (ensures `.coderef/index.json` exists for drift detection).
+3. **Critical Path:** `saveIndex()` must succeed before parallel execution (ensures `.coderef/index.json` exists for drift detection). [ref](src/fileGeneration/saveIndex.ts#saveIndex)
 4. **No Re-scanning:** All functions accept pre-scanned `ElementData[]` to avoid redundant AST parsing.
 5. **Directory Auto-creation:** Each function ensures required directories exist via `fs.mkdir(..., { recursive: true })`.
 

@@ -210,7 +210,7 @@ interface ContextData {
     - **Blocking:** Must complete before proceeding
 
 11. **Return Result:**
-    - Returns `ContextResult` with `markdown`, `json`, and `stats`
+    - Returns `ContextResult` with `markdown`, `json`, and `stats` [ref](src/context/context-generator.ts#ContextResult)
     - Execution time calculated and included in stats
 
 ## 5. Behaviors (Events & Side Effects)

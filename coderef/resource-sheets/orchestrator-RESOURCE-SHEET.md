@@ -43,7 +43,7 @@ Developers and maintainers will open this sheet to:
    - **Grammar Caching**: Utilizes the GrammarRegistry to reuse loaded parsers, optimizing parsing efficiency.
    - **Memory Efficiency**: Handles files in batches and processes deleted files from previous runs if incremental mode is enabled.
 4. **Learn the Architecture of the Pipeline Orchestrator**:
-   - The module's public interface (`PipelineOrchestrator`) is clearly documented, making it easy to understand how to integrate it into other systems.
+   - The module's public interface (`PipelineOrchestrator`) is clearly documented, making it easy to understand how to integrate it into other systems. [ref](src/pipeline/orchestrator.ts#PipelineOrchestrator)
 5. **Review Dependencies**: Familiarize themselves with all necessary dependencies such as `fs/promises`, `path`, and various utility modules.
 
 The sheet provides a comprehensive overview of the pipeline orchestrator module's capabilities, architecture, and usage, enabling developers to make informed decisions about integrating or maintaining this component within their CodeRef tool.

@@ -22,7 +22,7 @@ The Dependency Graph Builder is a TypeScript function that generates `.coderef/g
 ## Audience & Intent
 
 - **Markdown (this document):** Architectural truth for graph structure, node/edge contracts, and file output format
-- **TypeScript (buildDependencyGraph function):** Runtime behavior for graph construction, file I/O, and relationship detection
+- **TypeScript (buildDependencyGraph function):** Runtime behavior for graph construction, file I/O, and relationship detection [ref](src/fileGeneration/buildDependencyGraph.ts#buildDependencyGraph)
 - **JSON Schema (graph.json):** Validation contract for graph file structure
 - **Graph Consumers:** MCP tools, analysis workflows, impact analysis, context discovery
 
@@ -33,7 +33,7 @@ The Dependency Graph Builder is a TypeScript function that generates `.coderef/g
 The Dependency Graph Builder is a **core analysis function** within the File Generation System, positioned between:
 - **Input:** `ElementData[]` from scanner (Phase 1)
 - **Processing:** Graph construction from elements
-- **Output:** `DependencyGraph` structure and JSON files
+- **Output:** `DependencyGraph` structure and JSON files [ref](src/fileGeneration/buildDependencyGraph.ts#DependencyGraph)
 
 **Integration Points:**
 - **File Generation System:** Called in Phase 2 (parallel with `generateContext()`)
