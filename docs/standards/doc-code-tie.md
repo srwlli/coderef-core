@@ -50,6 +50,7 @@ Globs are project-root-relative.
 | src/cli/mcp/shared.ts | wave 1 — import fan-in 59; tied to mcp_shared-RESOURCE-SHEET.md |
 | src/utils/path-normalize.ts | wave 1 — import fan-in 38; tied to path_normalize-RESOURCE-SHEET.md |
 | src/scanner/scanner.ts | wave 1 — import fan-in 27; tied to scanner-RESOURCE-SHEET.md |
+| src/cli/coderef-mcp-server.ts | wave 2 — CHANGE-COUPLING evidence: co-changes with docs/CLI.md 39x and docs/AGENT-CONTRACT.md 24x over 500 commits, with no static edge. Highest-churn file in the repo (55 commits, +4676/-3525) |
 
 <!-- Add one row per in-scope subtree, by WAVE. Do NOT widen to src/**/*.ts in one
      step — that would WARN on every untagged file in the repo, which is precisely
@@ -74,6 +75,26 @@ Two higher-ranked candidates were **excluded on purpose**:
 - `src/pipeline/call-resolver.ts` — carries known `drift.api-complete` membership drift.
   Same reasoning.
 
+### How wave 2 was chosen — and why the wave-1 method was the weaker one
+
+Wave 2 came from **change-coupling**, not import fan-in, and the difference is worth
+recording because it changed the answer.
+
+Fan-in asks *what is imported a lot*. That is a structural proxy, and for a doc↔code tie
+it is the wrong question. `coderef-map --git` asks *what actually changes together*, and
+its answer was unambiguous: over a 500-commit window, `src/cli/coderef-mcp-server.ts`
+co-changed with `docs/CLI.md` **39 times** and with `docs/AGENT-CONTRACT.md` **24 times**,
+with **no static edge between them** — so nothing structural would ever have surfaced the
+pair. It is also the highest-churn file in the repo (55 commits, +4676/−3525).
+
+That is exactly the shape a doc↔code tie exists to protect: two files that move together
+constantly, and no mechanism noticing when one moves without the other. It sat outside
+wave 1 because fan-in could not see it.
+
+The repo carries **1,008 co-change pairs with no static edge**. Most are not doc↔code and
+are not this standard's business, but the doc↔code subset is the natural source for
+future waves — evidence rather than intuition.
+
 ## How to tie a doc and its code
 
 1. In the **code** file, near the top: `// @doc-ref: <doc-path>`
@@ -86,10 +107,12 @@ Two higher-ranked candidates were **excluded on purpose**:
 
 ## What this does NOT cover
 
-**Most of CORE.** Three files are in scope; every other source file is ungated, in
-both directions. "CORE has doc-code drift enforcement" is not a true sentence — "CORE
-has it for three files" is. That distinction is the whole point of wave-based rollout,
-and it should stay written down until the scope is wide enough that it stops mattering.
+**Most of CORE.** Four files are in scope, out of 404 indexed; every other source file is
+ungated, in both directions. "CORE has doc-code drift enforcement" is not a true sentence
+— "CORE has it for four files" is. That distinction is the whole point of wave-based
+rollout, and it should stay written down until the scope is wide enough that it stops
+mattering. Update this count whenever a wave lands: a standard that misstates its own
+coverage is the first doc-code drift anyone should catch.
 
 This standard also does not check whether a doc's **claims** are still true — only that
 the binding resolves and is reciprocal. Claim-truth for resource sheets is a separate

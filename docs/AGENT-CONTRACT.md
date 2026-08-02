@@ -1,3 +1,6 @@
+---
+documents: src/cli/coderef-mcp-server.ts
+---
 # Agent Usage Contract — `@coderef/core`
 
 **Last updated:** 2026-07-20 (server `instructions` handshake + explicit write-scope contract — WO-CODE-INTELLIGENCE-LEVERAGE-WIRING-PROGRAM-001 P1)

@@ -1,3 +1,6 @@
+---
+documents: src/cli/coderef-mcp-server.ts
+---
 # CodeRef CLI Reference
 
 > **Agent Playbook:** Looking for agent-consumer patterns? See [USING-CODEREF.md](../USING-CODEREF.md) in the project root.
