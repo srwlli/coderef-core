@@ -1,48 +1,114 @@
 ================================================================
   WORKORDER: WO-ELEMENT-IMPORTS-ASSIGNS-THE-WHOLE-FILE-IMPORT-LIST-001
   Feature:   element-imports-assigns-the-whole-file-import-list
-  Domain:    CODEREF-CORE      Mode: --phase=1 (rolling, non-terminal halt)
-  Phases:    2 (1 complete, 1 deferred)   Commits: 1   Pushes: 0
-  Stub:      STUB-B17B19 (parent)   Deferred: STUB-MJ6VT7
+  Session:   SES-2026-08-02-ELEMENT-IMPORTS-AND-RAG-LOCAL-ONLY
+  Domain:    CODEREF-CORE      Mode: --phase=2 (rolling, TERMINAL phase)
+  Phases:    2 (both complete)   Commits: 3   Pushes: 0
+  Stub:      STUB-B17B19 (parent)   Phase 2: STUB-MJ6VT7
+================================================================
+  Supersedes the phase-1 render of this file (commit 6064acd).
 ================================================================
 
 PHASE CHECKLIST
   [x] Phase 1  element.imports per-element + TS import bindings   0b91bb4
-  [ ] Phase 2  rag-search local-only collapse   DEFERRED (hard_stop, approved=false)
+  [x] Phase 2  rag-search local-only collapse + seam reachable    3f8163f
+
+FILES CREATED
+  __tests__/element-imports-scope.contract.test.ts                0b91bb4
+  __tests__/rag-search-local-only.contract.test.ts                3f8163f
+  coderef/workorder/<feature>/terminal-post-exec.txt              6064acd
+  .coderef/sessions/SES-2026-08-02-ELEMENT-IMPORTS-AND-RAG-LOCAL-ONLY.yaml
+      (operational artifact - .coderef/ is gitignored, not committed)
 
 FILES MODIFIED
-  src/pipeline/extractors/relationship-extractor.ts        0b91bb4
-  src/scanner/tree-sitter-file-scan.ts                     0b91bb4
-FILES CREATED
-  __tests__/element-imports-scope.contract.test.ts         0b91bb4
+  src/pipeline/extractors/relationship-extractor.ts               0b91bb4
+  src/scanner/tree-sitter-file-scan.ts                            0b91bb4
+  src/cli/rag-search.ts                                           3f8163f
+  coderef/workorder/<feature>/plan.json                     0b91bb4 3f8163f
+  coderef/workorder/<feature>/communication.json            0b91bb4 3f8163f
 
-MEASURED
-  over-assignment      2,445 / 2,778 elements carried imports; 11,578 entries
-                       203 / 203 importing files gave every element an
-                       IDENTICAL copy of the whole-file list
-  clones triviality    193 -> 1,264 eligible elements
-  import bindings      specifiers/default/namespace were NEVER populated on
-                       the TS path; 3 separate field-lookup defects
+----------------------------------------------------------------
+PHASE 1 - what shipped
+----------------------------------------------------------------
+  Measured first: 256 files / 2,778 elements / 2,445 with imports /
+  11,578 entries attached. In ALL 203 files that have imports, every
+  element carried a byte-identical copy of the whole-file list.
 
+  Blocking finding (ADJ-01): the field the narrowing would match AGAINST
+  did not exist. relationship-extractor.ts resolved the import clause via
+  childForFieldName, which tree-sitter-typescript returns NULL for, so
+  its specifiers/default/namespace block had never executed for any TS
+  file. The working lookup was already 640 lines away in the same class.
+  Operator ruled (A) repair AND narrow. The repair turned out to be THREE
+  instances of the same lookup bug, not one.
+
+  Live consequence fixed: clones.ts:247 triviality, 193 -> 1,264.
+  Revert-proof: 8/10 fail at HEAD; the 2 passers are the conservatism
+  guards, which is the correct shape.
+
+----------------------------------------------------------------
+PHASE 2 - what shipped
+----------------------------------------------------------------
+  Predicate equivalence RE-MEASURED, not inherited: 0 divergent guard
+  outcomes across 22 inputs (unset, "", 0/false/no + case variants,
+  1/true/yes, and off/disabled/-1/00/" "/"0 "/null). The collapse is
+  provably inert.
+
+  The load-bearing finding: rag-search.ts had ZERO exports and called
+  main() unconditionally at module load, so importing it from a test
+  parsed argv and process.exit()-ed the runner. That is WHY a four-line
+  predicate reached four copies - every prior attempt to pin the contract
+  asserted a private copy instead of the CLI using it. rag-index,
+  rag-status and rag-eval all already guard main() behind
+  require.main === module; rag-search was the only one of the four.
+  Measured, not asserted: 5 of 23 src/cli files carry the guard (so NOT a
+  repo norm) but 3 of the 3 sibling rag-* CLIs do (the argument that holds).
+
+  Operator ruled (A) collapse AND mirror the siblings at the P2-T3 halt.
+
+  Revert-proof: 21/21 fail at HEAD, and the failure is
+  "process.exit unexpectedly called with 1" thrown from main() during the
+  IMPORT statement - the defect demonstrating itself.
+
+----------------------------------------------------------------
 VERIFICATION
-  revert-proof         8 of 10 cases FAIL against reverted HEAD;
-                       the 2 passers are the conservatism guards (f)(g)
-  suite before         Test Files 1 failed | 245 passed | 2 skipped
-                       Tests 2637 passed | 33 skipped
-  suite after          Test Files 1 failed | 246 passed | 2 skipped
-                       Tests 2647 passed | 33 skipped
-  delta                +10 passed = exactly the new cases; ZERO regressions
-  tsc                  exit 0
-  pre-existing FAIL    populate-cli.test.ts, beforeAll tsc hook timeout,
-                       IDENTICAL before and after (baseline taken pre-edit)
+----------------------------------------------------------------
+  Suite    : 2637 -> 2675 passed, 26 skipped, ZERO regressions, UNPIPED
+  Typecheck: npx tsc --noEmit exit 0; tsc -p tsconfig.cli.json exit 0
+  End-to-end (built bin, phase 2):
+    --help                          -> usage, exit 0
+    LOCAL_ONLY=1 --provider openai  -> exit 2, identical message
+    LOCAL_ONLY=1 --provider ollama  -> passes guard, fails later on
+                                       project-dir (the control)
+  Headers  : "refreshed 0 stale-header file(s)". Checked WHY, not just the
+             verdict - no rag-* CLI header lists @exports (rag-index exports
+             5 symbols and carries none), so nothing was owed and none was
+             invented. The 3 files reported stale are PEER drift.
+  Session  : written, YAML parse gate exit 0, vault sync exit 0, registry
+             row inserted.
+  Registry : active_work row LIVE by design - /close-workorder owns the delete.
+  Validator: NOT RUN (tracking-validator all) - deferred to /close-workorder.
 
-  Session: updated     Registry: synced     Validator: see close
-  Push: NOT PUSHED - 2 commits ahead of origin/main
+----------------------------------------------------------------
+STATED HONESTLY
+----------------------------------------------------------------
+  * populate-cli.test.ts passing in the final run is a TIMING ARTEFACT of
+    the tsc warm-up that preceded it, NOT a repair by this workorder. Its
+    beforeAll builds with tsc against a 10s hook timeout and will fail
+    again from cold.
+  * The phase-1 narrowing is a whole-word TEXT heuristic, not symbol
+    resolution. A name in a comment keeps its import; a symbol reached by
+    computed access may be dropped. The code says so.
+  * A re-scan is required before the phase-1 change is visible downstream.
+  * require.main === module means rag-search's main() will not run if a
+    future caller require()s the module instead of executing it. Nothing
+    does today.
+  * The phase-2 planning hard stop was SATISFIED (plan authored on the
+    operator's explicit --phase=2 invocation), NOT bypassed. No
+    --bypass-hard-stops flag was passed.
+  * NOT PUSHED. The unpushed range also contains a PEER commit (1c11ffa),
+    so the push is not purely this workorder's to make.
 
-NEXT
-  Phase 2 is deferred behind an unapproved hard stop. It does NOT auto-advance
-  and the wake loop is not armed, so it needs an explicit:
-      /execute-workorder WO-ELEMENT-IMPORTS-ASSIGNS-THE-WHOLE-FILE-IMPORT-LIST-001 --phase=2
-  Or close here:
-      /close-workorder WO-ELEMENT-IMPORTS-ASSIGNS-THE-WHOLE-FILE-IMPORT-LIST-001
+================================================================
+  APPROVE -> /close-workorder WO-ELEMENT-IMPORTS-ASSIGNS-THE-WHOLE-FILE-IMPORT-LIST-001
 ================================================================
