@@ -40,6 +40,67 @@ import type { ElementData } from '../types/types.js';
 const elementExtractor = new ElementExtractor();
 const relationshipExtractor = new RelationshipExtractor();
 
+/** One attached import entry, as element.imports carries it. */
+type AttachedImport = NonNullable<ElementData['imports']>[number];
+
+/**
+ * The local names an import binds into file scope: named specifiers, the default
+ * binding, and the namespace alias. These are the only tokens an element body can
+ * mention, so they are the only basis on which ownership can be decided.
+ */
+function importBindings(imp: AttachedImport): string[] {
+  const names: string[] = [];
+  for (const s of imp.specifiers ?? []) if (s) names.push(s);
+  if (imp.default) names.push(imp.default);
+  if (imp.namespace) names.push(imp.namespace);
+  return names;
+}
+
+/**
+ * Does this element's own source span mention anything the import binds?
+ *
+ * CONSERVATIVE BY DESIGN — the two error directions are not symmetric. A false
+ * KEEP leaves an unused import attached, which is exactly the pre-fix behaviour
+ * and harms nothing. A false DROP discards an import the element genuinely uses,
+ * which is data loss. So anything we cannot decide is KEPT:
+ *   - an import that binds no names (side-effect `import './x.js'`, dynamic
+ *     `import()`) has nothing to match on, so it stays;
+ *   - an element with no usable body span (no endLine) keeps the whole list.
+ *
+ * This is a TEXT match, not symbol resolution. A name appearing only in a comment
+ * or string keeps its import, and a symbol reached by computed access may be
+ * dropped. Real resolution needs the symbol table and is far larger than this
+ * change; the limitation is recorded rather than papered over.
+ */
+function importUsedBy(imp: AttachedImport, body: string): boolean {
+  const names = importBindings(imp);
+  if (names.length === 0) return true; // nothing to match on -> keep
+  return names.some(n => new RegExp(`\\b${n.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`).test(body));
+}
+
+/**
+ * Narrow a file's import list to the entries an element actually references.
+ *
+ * Replaces the whole-file assignment both legs used to do. Measured before the
+ * change, across 256 src files: 2,445 of 2,778 elements carried imports and
+ * 11,578 entries were attached, and in ALL 203 files that had imports every
+ * element carried a byte-identical copy of the file list. The live consequence
+ * was in query/clones.ts:247, which gates triviality on
+ * `importSources(el.imports).length === 0` — so inside any file with imports no
+ * element could ever be trivial. 193 elements qualified where 1,264 should.
+ */
+function ownImports(
+  element: ElementData,
+  fileImports: AttachedImport[],
+  lines: string[]
+): AttachedImport[] {
+  if (!element.line || !element.endLine || element.endLine < element.line) {
+    return fileImports; // no body span to reason about -> keep everything
+  }
+  const body = lines.slice(element.line - 1, element.endLine).join('\n');
+  return fileImports.filter(imp => importUsedBy(imp, body));
+}
+
 /**
  * Scan one file with tree-sitter: extract elements and attach imports/calls.
  *
@@ -60,6 +121,10 @@ export async function scanFileWithTreeSitter(
 
   const tree = parser.parse(content);
   const elements = elementExtractor.extract(tree.rootNode, file, content, realExt);
+
+  // Split once, not per element per leg — ownImports() slices each element's own
+  // [line, endLine] span out of this to decide which imports it references.
+  const lines = content.split('\n');
 
   // WO-ELEMENTEXTRACTOR-...-001 phase 2 (TKT-XGZA82).
   //
@@ -93,19 +158,23 @@ export async function scanFileWithTreeSitter(
         const elementCalls = fileCalls
           .filter(call => call.source === element.name)
           .map(call => call.target);
-        // KNOWN, OUT OF SCOPE for TKT-XGZA82: this assigns the file's ENTIRE
-        // import list to every element in the file. That is over-assignment, not
-        // a dropped or fabricated relationship, and changing it redefines what
-        // the field means for six consumers — so it is left alone deliberately
-        // rather than absorbed into this fix.
-        if (fileImports.length > 0) {
-          element.imports = fileImports.map(imp => ({
-            source: imp.target,
-            specifiers: imp.specifiers ?? [],
-            default: imp.default,
-            dynamic: imp.dynamic || false,
-            line: imp.line
-          }));
+        // element.imports is the imports THIS element references, not the file's
+        // whole list (TKT-SCBB58, WO-ELEMENT-IMPORTS-...-001 phase 1). The old
+        // behaviour handed every element an identical copy of the file list; see
+        // ownImports() above for the measured baseline and the conservatism rule.
+        // `namespace` is carried through now that the repaired extractor actually
+        // populates it — it was silently dropped here even before the repair.
+        const attached = fileImports.map(imp => ({
+          source: imp.target,
+          specifiers: imp.specifiers ?? [],
+          default: imp.default,
+          namespace: imp.namespace,
+          dynamic: imp.dynamic || false,
+          line: imp.line
+        }));
+        const mine = ownImports(element, attached, lines);
+        if (mine.length > 0) {
+          element.imports = mine;
         }
         if (elementCalls.length > 0) {
           element.calls = [...new Set(elementCalls)];
@@ -142,14 +211,20 @@ export async function scanFileWithTreeSitter(
             return qualified === element.name;
           })
           .map(call => call.calleeFunction);
-        if (fileImports.length > 0) {
-          element.imports = fileImports.map(imp => ({
-            source: imp.source,
-            specifiers: imp.specifiers.filter(s => s !== 'default'),
-            default: imp.isDefault ? imp.specifiers[0] : undefined,
-            dynamic: imp.dynamic || false,
-            line: imp.line
-          }));
+        // Same narrowing as the ts leg. These two legs are the pair that must not
+        // drift: the JS detector already populated specifiers correctly while the
+        // ts extractor silently returned none, so the SAME field meant different
+        // things depending on the file extension.
+        const attached = fileImports.map(imp => ({
+          source: imp.source,
+          specifiers: imp.specifiers.filter(s => s !== 'default'),
+          default: imp.isDefault ? imp.specifiers[0] : undefined,
+          dynamic: imp.dynamic || false,
+          line: imp.line
+        }));
+        const mine = ownImports(element, attached, lines);
+        if (mine.length > 0) {
+          element.imports = mine;
         }
         if (elementCalls.length > 0) {
           // Deduped to match the ts leg. The two legs previously disagreed about

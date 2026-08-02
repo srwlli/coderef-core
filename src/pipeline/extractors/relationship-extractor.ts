@@ -112,11 +112,24 @@ export class RelationshipExtractor {
    * @param currentScope Current scope context (for tracking source element)
    * @param qualifyScopes OPT-IN. When true, a method's `source` is COMPOSED as
    *   `Class.method` instead of overwriting the class scope with the bare method
-   *   name. Default false — and that default is load-bearing, not politeness:
-   *   the other consumer of this method (orchestrator.ts:463) feeds `ctx.calls`
-   *   straight into the canonical graph builder (resolve-tail.ts:47), so
-   *   changing `source` semantics globally would move the graph. Only the
-   *   scanner path opts in.
+   *   name. Default false, and only the scanner path opts in.
+   *
+   *   CORRECTED (WO-ELEMENT-IMPORTS-...-001 phase 1). This block used to say the
+   *   default was load-bearing because orchestrator.ts:463 feeds `ctx.calls`
+   *   "straight into the canonical graph builder", so flipping it "would move the
+   *   graph". That is NOT what happens, and commit 8d54d37 corrected the claim in
+   *   tree-sitter-file-scan.ts while leaving this copy — the same
+   *   two-comments-one-seam split this workorder exists to close.
+   *
+   *   What actually happens: resolve-tail.ts:47 builds a SEED graph from
+   *   `ctx.calls`, and constructGraphPhase at resolve-tail.ts:109 then
+   *   Object.assign-s the canonical nodes/edges over it, built from
+   *   extractRawCalls — whose RawCallFact.scopePath is a string[] and so never
+   *   lost the enclosing class. The canonical graph was never exposed to the
+   *   defect. The default therefore stays off to avoid re-specifying a legacy
+   *   seam mid-fix, NOT to protect the canonical graph from it — a weaker reason
+   *   than the old wording implied, and one that makes the default cheap to
+   *   revisit rather than dangerous to touch.
    *
    *   WO-ELEMENTEXTRACTOR-...-001 phase 2 (TKT-XGZA82): without composition,
    *   two same-named methods on different classes both emit `source: "run"`,
@@ -1103,7 +1116,20 @@ export class RelationshipExtractor {
     imports: ImportRelationship[]
   ): void {
     if (node.type === 'import_statement') {
-      const importClause = node.childForFieldName('import_clause');
+      // WO-ELEMENT-IMPORTS-...-001 phase 1 (TKT-SCBB58). This used to be
+      // `node.childForFieldName('import_clause')`, which tree-sitter-typescript
+      // returns NULL for — so the whole `if (importClause)` block below was
+      // UNREACHABLE and specifiers/default/namespace were never populated once,
+      // for any TypeScript file, ever. Measured: 26/26 import entries across four
+      // importing src files carried `specifiers: []`, including files whose
+      // source plainly reads `import { X } from`.
+      //
+      // The correct lookup was already in this class — extractRawImports uses it
+      // at :467 and its comment states the reason. One extractor was fixed and
+      // the other, 640 lines away, was not; nothing tested the seam between them.
+      // Same defect class the predecessor workorder spent seven phases on.
+      const importClause =
+        node.namedChildren.find(c => c.type === 'import_clause') ?? null;
       const source = node.childForFieldName('source');
 
       if (!source) return;
@@ -1127,16 +1153,25 @@ export class RelationshipExtractor {
           }).filter(Boolean);
         }
 
-        // Default import: import Foo from 'module'
-        const identifier = importClause.childForFieldName('name');
-        if (identifier) {
-          relationship.default = content.slice(identifier.startIndex, identifier.endIndex);
+        // Default import: import Foo from 'module'. Same lookup defect as the
+        // import_clause one above — `childForFieldName('name')` returns null
+        // here; the default binding is an `identifier` DIRECT CHILD of the
+        // clause. Mirrors extractRawImports at :494-499.
+        for (const child of importClause.namedChildren) {
+          if (child.type === 'identifier') {
+            relationship.default = content.slice(child.startIndex, child.endIndex);
+            break;
+          }
         }
 
-        // Namespace import: import * as Foo from 'module'
+        // Namespace import: import * as Foo from 'module'. Third instance of the
+        // same defect. Mirrors extractRawImports at :515-522, keeping the
+        // childForFieldName call as the fallback it uses.
         const namespaceImport = importClause.descendantsOfType('namespace_import')[0];
         if (namespaceImport) {
-          const name = namespaceImport.childForFieldName('name');
+          const name =
+            namespaceImport.namedChildren.find(c => c.type === 'identifier')
+            ?? namespaceImport.childForFieldName('name');
           if (name) {
             relationship.namespace = content.slice(name.startIndex, name.endIndex);
           }

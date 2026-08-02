@@ -83,11 +83,96 @@
           "touches": []
         }
       ],
-      "stub_ref": "STUB-B17B19"
+      "stub_ref": "STUB-B17B19",
+      "measured_baseline": {
+        "measured_at": "2026-08-02T02:25:00Z",
+        "method": "Three throwaway probes driving the REAL scanner entry point (scanFileWithTreeSitter) over all 256 non-test .ts/.tsx files under src/, plus a direct grammar-level probe comparing the two import extractors on identical source. All probes deleted after measuring.",
+        "over_assignment": {
+          "files_scanned": 256,
+          "grammar_failures": 0,
+          "elements_total": 2778,
+          "elements_with_imports": 2445,
+          "import_entries_attached_total": 11578,
+          "mean_imports_per_element": 4.74,
+          "files_with_imports": 203,
+          "files_where_every_element_carries_an_IDENTICAL_imports_array": 203,
+          "reading": "The over-assignment is TOTAL and uniform: in all 203 files that have imports, every element carries a byte-identical copy of the whole file list. 11,578 import entries are attached where 203 file-level lists would carry the same information."
+        },
+        "clones_triviality_impact": {
+          "trivial_today": 193,
+          "trivial_if_narrowed_to_own_imports": 1264,
+          "reading": "clones.ts:247 gates triviality on paramNames==0 AND importSources==0. The whole-file assignment suppresses the flag on 1,071 elements that would otherwise qualify - a 6.5x understatement. This is the one MEASURED downstream consequence; it is a real wrong answer in a live query surface, not a latent risk."
+        },
+        "BLOCKING_FINDING": {
+          "claim": "element.imports[].specifiers is DEAD DATA. It is declared, always emitted as [], and never populated for TypeScript. Same for .default and .namespace.",
+          "measured": "26 of 26 import entries across 4 importing files carried specifiers: [], default: absent, namespace: absent - including files whose source plainly contains `import { X } from ...`.",
+          "proof": "Grammar-level probe on the identical 3-line source. `node.childForFieldName(\"import_clause\")` returns NULL for all three import forms; `node.namedChildren.find(c => c.type === \"import_clause\")` returns the import_clause node. relationship-extractor.ts:1106 uses the FORMER, so the entire specifiers/default/namespace block at :1120-1144 is UNREACHABLE for TypeScript. Legacy extractImports returned {sourceFile,target,line} only; extractRawImports on the SAME source returned specifiers [alpha,beta], defaultImport Def, namespaceImport NS, plus typeOnly.",
+          "the_defect_class_again": "TWO import extractors in ONE class. The raw-facts path at :467 carries a comment stating \"tree-sitter-typescript exposes `import_clause` as an unnamed-field child rather than via childForFieldName, so look it up by type.\" That fix was never backported to the legacy path 640 lines below it. This is the THIRD instance of the same class in this codebase - two components disagreeing about one seam, one fixed and one not, with nothing testing the seam.",
+          "blast_radius_today": "LOW and measured: NO consumer of element.imports reads .specifiers. Every `specifiers` reference in src/ outside the extractor is the separate Acorn-based js-call-detector (which populates its own) or a type declaration. The dead field currently harms nothing.",
+          "why_it_BLOCKS_this_phase": "P1-T3 planned to narrow element.imports to the imports an element actually references. That rule needs specifier / default / namespace tokens to match against the element body. Those tokens do not exist in the data the scanner path produces. The plan assumed a field that is structurally empty."
+        },
+        "consumers_verified_first_hand": [
+          "src/query/clones.ts:247 (isTrivial) and :382 (clone signature) - reads source only",
+          "src/semantic/projections.ts:161",
+          "src/semantic/orchestrator.ts:280",
+          "src/scanner/semantic-analyzer.ts:68,126,129 (dedupe + merge with fileImports)",
+          "src/pipeline/generators/context-generator.ts:1227",
+          "src/pipeline/semantic-elements.ts:28 (normalizeImportsField)",
+          "src/scanner/scanner.ts:672 (winner.imports ?? loser.imports)",
+          "COUNT: 7 read sites across 7 modules. The source comment at tree-sitter-file-scan.ts:99 claimed \"six consumers\" - close, and now verified rather than repeated. NONE of them reads .specifiers."
+        ],
+        "extractImports_callers": [
+          "src/scanner/tree-sitter-file-scan.ts:88 (the path this phase edits)",
+          "src/pipeline/orchestrator.ts:462 - and :465 calls extractRawImports on the SAME node, so the orchestrator already computes the CORRECT data alongside the broken data. Same shape as the ctx.calls finding: a legacy seed layer beside a correct canonical one."
+        ]
+      },
+      "narrowing_rule_ruled": {
+        "ruled_at": "2026-08-02T02:32:00Z",
+        "ruling": "(A) repair the extractor AND narrow",
+        "rule": "An import is retained on an element when ANY of its bound local names (named specifiers, default, namespace alias) appears as a whole word in the element body span [line, endLine].",
+        "conservative_by_design": "Keep-on-any-match. The two error directions are NOT symmetric: a false KEEP retains an unused import (harmless, and it is the status quo), while a false DROP discards an import the element genuinely uses (data loss). The rule therefore errs toward keeping.",
+        "known_limits": "This is a TEXT heuristic, not symbol resolution. A name appearing only in a comment or string keeps its import; a symbol reached dynamically or by computed access may be dropped. Real resolution needs the symbol table, which is far larger than this phase. Recorded so no reader mistakes the heuristic for precision.",
+        "operator_accepted_tradeoff": "Occasional retained-but-unused import, in exchange for fixing the measured 193-vs-1264 clones.ts triviality understatement."
+      },
+      "surface_audit_P1_T10": {
+        "headline": "YES - this phase DOES reach both the CLI and the MCP surface, through the clones tool. That is a change in user-visible output, not an internal-only correction.",
+        "reaches_both_surfaces": {
+          "tool": "clones",
+          "mcp": "mcp__coderef-core__clones (registered coderef-mcp-server.ts:807)",
+          "cli": "coderef-analyze --type=clones (coderef-analyze.ts:999)",
+          "why": "element.imports is not merely READ by clones - it is part of the clone SIGNATURE KEY. clones.ts:382-385 builds sig = {kind, name, arity, params, imports} and keys groups on JSON.stringify([kind, name, arity, params, imports]). Before narrowing, the imports component was FILE-CONSTANT, so it contributed nothing to discrimination between two elements in the same file and over-discriminated between files. After narrowing it is per-element, so clone GROUPING changes, not just the triviality flag at :247.",
+          "measured_triviality_effect": "193 -> 1264 elements eligible for the trivial flag."
+        },
+        "NOT_affected": {
+          "what_this_imports": "graph-tools.ts:237 - built from RESOLVED graph import edges (rawImports), not element.imports. Unchanged.",
+          "symbol_context": "lookup-tools.ts:530 reads card.neighborhood.imports, a graph neighborhood, not element.imports. Unchanged.",
+          "note": "Checked rather than assumed: the two tools whose NAMES suggest they would be affected are fed by the raw-fact/graph path, which never had this defect."
+        },
+        "index_shape": ".coderef/index.json element records now carry (a) narrower per-element imports and (b) specifiers/default/namespace that were previously always empty on the TS path. (b) is purely ADDITIVE - no consumer in src/ reads .specifiers today, verified. (a) is the behavioural change.",
+        "honest_caveat": "A re-scan is required before any of this is visible downstream; the change is in the scanner, so existing .coderef artifacts keep the old shape until regenerated."
+      },
+      "status": "complete",
+      "verdict": "PASS",
+      "completed_at": "2026-08-02T02:45:00Z",
+      "evidence": {
+        "source_changes": [
+          "src/pipeline/extractors/relationship-extractor.ts - THREE field-lookup repairs (import_clause, default binding, namespace alias) + the stale qualifyScopes docblock correction",
+          "src/scanner/tree-sitter-file-scan.ts - importBindings/importUsedBy/ownImports helpers + narrowing applied at BOTH legs (ts and js) + namespace carried through"
+        ],
+        "test": "__tests__/element-imports-scope.contract.test.ts, 10 cases",
+        "revert_proof": "Both source files reverted to HEAD with git checkout: 8 of 10 cases FAIL (a,b,c,d,e,h,i,j). The 2 that pass are (f) side-effect-import keep and (g) dynamic-import keep - the CONSERVATISM guards, which assert behaviour the fix deliberately does not change. A guard that failed at HEAD would mean the fix altered something it promised not to.",
+        "suite_before": "Test Files 1 failed | 245 passed | 2 skipped (248); Tests 2637 passed | 33 skipped",
+        "suite_after": "Test Files 1 failed | 246 passed | 2 skipped (249); Tests 2647 passed | 33 skipped",
+        "delta": "+10 passed = exactly the 10 new cases. ZERO regressions.",
+        "pre_existing_failure": "__tests__/populate-cli.test.ts fails IDENTICALLY before and after - beforeAll hook timeout at 10000ms running the tsc build (7 tests skipped in that file both runs). Baseline captured BEFORE any source edit, so it cannot be attributed to this phase.",
+        "tsc": "npx tsc --noEmit exit 0",
+        "exit_code_caveat": "The baseline run was piped through tail and reported shell exit 0 while vitest had actually failed a file - the KZ-01KXQC15 trap, reproduced live. The after-run was UNPIPED and returned VITEST_EXIT=1 for the same pre-existing failure. Counts were read from the runner text in both cases, never from the exit code.",
+        "headers": "populate --source-headers --stale-only --include <the two touched files>: \"refreshed 0 stale-header file(s), skipped 2 up-to-date file(s)\". Neither touched file changed an export, so no header content was owed and none was invented. The 3 files the scan reports stale (context-generator.ts, incremental-front.ts, resolve-tail.ts) are PEER drift, untouched by this WO - the same three the predecessor workorder also declined to touch."
+      }
     },
     {
       "phase": 2,
-      "name": "collapse-the-remaining-inline-coderef-rag-local-only \u2014 DEFERRED",
+      "name": "collapse-the-remaining-inline-coderef-rag-local-only — DEFERRED",
       "hard_stop": true,
       "stub_ref": "STUB-MJ6VT7",
       "plan_deferred": true,
@@ -107,7 +192,13 @@
       "reason": "Phase 2 plan_deferred=true. Hard stop fires at phase planning gate."
     }
   ],
-  "plan_adjustments_needed": [],
+  "plan_adjustments_needed": [
+    {
+      "id": "ADJ-01",
+      "applied": true,
+      "description": "P1-T3 HALT fired as designed, and the operator ruled (A) REPAIR + NARROW on 2026-08-02. The plan assumed element.imports carried specifier/default/namespace tokens to narrow against. Measured: it does not - relationship-extractor.ts:1106 resolves import_clause via childForFieldName, which tree-sitter-typescript returns NULL for, so the block at :1120-1144 has never executed for TS. The repair is the lookup the SAME FILE already proves correct at :465-467, with a comment explaining exactly this. Phase 1 therefore gains a prerequisite edit it did not plan: repair the extractor, THEN narrow. This is not scope creep - it is the phase discovering that its stated work had an unmet precondition."
+    }
+  ],
   "discovery_required": true,
   "foundation_docs_gate": true,
   "approved_verbs": [

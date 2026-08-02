@@ -7,7 +7,7 @@
   "originating_dispatches": [],
   "status": "plan_created",
   "current_phase": 1,
-  "phase_status": "ready",
+  "phase_status": "in_progress",
   "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\element-imports-assigns-the-whole-file-import-list\\plan.json",
   "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\element-imports-assigns-the-whole-file-import-list\\context.json",
   "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\element-imports-assigns-the-whole-file-import-list\\analysis.json",
@@ -47,6 +47,32 @@
       "count": 10,
       "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/b2c4b05d-34f6-46c3-bf81-a42459146225/scratchpad/p1-tasks.json",
       "at": "2026-08-02T02:07:25.521974+00:00"
+    },
+    {
+      "event": "p1_t1_t2_measured_baseline",
+      "summary": "Measured the over-assignment, then hit a blocking finding the plan did not anticipate.",
+      "over_assignment": "2,445 of 2,778 elements carry imports; 11,578 entries attached; in ALL 203 files that have imports every element carries a byte-identical copy of the whole-file list.",
+      "measured_consequence": "clones.ts:247 triviality: 193 elements qualify today, 1,264 would qualify under per-element imports. 1,071 elements are wrongly excluded - a live wrong answer, 6.5x.",
+      "blocking_finding": "element.imports[].specifiers/.default/.namespace are NEVER populated. relationship-extractor.ts:1106 looks up import_clause via childForFieldName, which tree-sitter-typescript returns NULL for; the raw-facts path at :467 already works around exactly this and documents it in a comment. The block at :1120-1144 is dead code. Proven at grammar level on identical source.",
+      "consequence_for_the_plan": "P1-T3 cannot pick the planned narrowing rule: matching an element body against import specifiers requires specifiers, and there are none. HALTING to report per P1-T3 rather than silently re-scoping the phase.",
+      "at": "2026-08-02T02:25:00Z"
+    },
+    {
+      "event": "p1_t3_narrowing_rule_ruled",
+      "ruling": "(A) repair the extractor AND narrow",
+      "why_a_ruling_was_needed": "The measured baseline showed the planned rule was unimplementable: there are no specifiers to match against. Options were put to the operator rather than re-scoped silently.",
+      "rule": "keep an import on an element when any bound local name appears as a whole word in the element body span",
+      "error_asymmetry": "false keep = harmless (status quo); false drop = data loss. Rule errs toward keeping.",
+      "honest_limit": "text heuristic, not symbol resolution - comments/strings can cause a false keep, dynamic access can cause a false drop",
+      "at": "2026-08-02T02:32:00Z"
+    },
+    {
+      "event": "p1_complete",
+      "summary": "Phase 1 complete. The repair turned out to be THREE instances of one lookup defect, not one.",
+      "what_widened": "P1-T6 first ran 8/10 green: specifiers worked but default and namespace did not. Same root cause one level deeper - childForFieldName(\"name\") also returns null for the default binding and the namespace alias. Fixed by mirroring extractRawImports:494-499 and :515-522 rather than inventing a third approach.",
+      "revert_proof": "8/10 fail at HEAD; the 2 passers are the conservatism guards, which is the correct shape.",
+      "suite": "2637 -> 2647 passed, 33 skipped, zero regressions. populate-cli.test.ts fails identically before and after (pre-existing beforeAll tsc hook timeout).",
+      "at": "2026-08-02T02:45:00Z"
     }
   ],
   "phase_transitions": [],
