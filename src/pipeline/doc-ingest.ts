@@ -632,6 +632,11 @@ export function collectDocFacts(projectPath: string): DocIngestResult {
     try {
       text = fs.readFileSync(path.join(projectPath, rel), 'utf8');
     } catch {
+      // TKT-QQ8QDE: this lane used to `continue` WITHOUT recording the skip, while the
+      // resource-sheet and foundation lanes both push `unreadable`. The DocIngestResult
+      // docblock promises "unreadable — fs error reading the file; scanning continues",
+      // so an unreadable report candidate vanished with no record anywhere. Silent.
+      skipped.push({ path: rel, reason: 'unreadable' });
       continue;
     }
     const fm = parseDocFrontmatter(text);
