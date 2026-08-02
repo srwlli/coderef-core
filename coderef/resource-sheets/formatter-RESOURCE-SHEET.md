@@ -1,213 +1,135 @@
 ---
-Agent: Claude Sonnet 4.5
-Date: 2025-01-27
-Task: DOCUMENT
+agent: LLOYD
+date: 2026-08-01
+task: STUB-CC9094
+subject: formatter
+parent_project: coderef-core
+category: module
+version: 1.0.0
+documents: src/formatter/formatter.ts
+related_files:
+  - src/formatter/formatter.ts
+status: approved
 ---
 
-# Formatter Module — Authoritative Documentation
+# formatter Resource Sheet
 
 ## Executive Summary
 
-The formatter module normalizes CodeRef reference strings to canonical format per the CodeRef2 specification. It converts parsed `ParsedCodeRef` objects back into standardized string representations with consistent whitespace, path normalization, metadata key sorting, and value formatting. The formatter ensures all references follow the canonical format rules (specification lines 464-471), enabling consistent reference comparison and storage.
+The `src/formatter/formatter.ts` module implements a CodeRef2 Reference Formatter that converts parsed CodeRef objects into standardized, canonical strings according to specified rules. This process includes normalizing paths, sorting metadata keys alphabetically, standardizing boolean values, and ensuring consistent quoting of string metadata. The module is structured around the `CodeRefFormatter` class, which provides methods for formatting a single reference (`format`) and batch formatting multiple references (`formatCodeRefs`). Additionally, it exposes a convenience function `formatCodeRef` to format individual parsed CodeRefs directly.
 
-## Audience & Intent
+[inference] The above characterizes `src/formatter/formatter.ts` from a local-model reading of the source; the verified API and dependency facts are in the projected Public API / Dependencies sections.
 
-- **Markdown (this document):** Defines canonical format rules, normalization behavior, and formatting contracts
-- **TypeScript/Code:** Implements formatting logic with strict validation
-- **Parser integration:** Works with parser output to produce canonical strings
+## Audience and Intent
 
-## 1. Architecture Overview
+This module is designed for developers working with CodeRef references in their codebases. The audience includes anyone who needs to normalize and format CodeRef references according to a specific set of rules. This could be developers building IDE features, tools that manipulate or analyze code, or anyone involved in the documentation and version control of code references.
 
-The formatter module provides canonical string generation from parsed references:
+The intent here is to provide a standardized way to handle CodeRef references across different parts of an application. By using this module, developers can ensure that their references are consistently formatted, reducing potential errors and inconsistencies that could arise from manual formatting.
 
-```
-ParsedCodeRef → CodeRefFormatter.format() → Canonical String
-```
+[inference] The above characterizes `src/formatter/formatter.ts` from a local-model reading of the source; the verified API and dependency facts are in the projected Public API / Dependencies sections.
 
-**Component Structure:**
-- `CodeRefFormatter`: Main formatting class
-- `format()`: Primary formatting method
-- `normalizePath()`: Path normalization logic
-- `formatMetadata()`: Metadata formatting logic
-- `formatter`: Singleton instance
-- `formatCodeRef()`: Convenience function
-- `formatCodeRefs()`: Batch formatting function
+## Architecture / Behavior
 
-**Integration Points:**
-- **Input:** `ParsedCodeRef` from parser module
-- **Output:** Canonical CodeRef string
-- **Dependencies:** `parser/parser.ts` for `ParsedCodeRef` interface
+The `src/formatter/formatter.ts` module implements a CodeRef2 Reference Formatter, responsible for formatting and normalizing CodeRef references into their canonical form as specified in the reference documentation (lines 466-471).
 
-## 2. State Ownership & Source of Truth
+At its core, the formatter operates through a class named `CodeRefFormatter`, which encapsulates the logic for formatting individual CodeRef references. The primary method within this class is `format(parsed: ParsedCodeRef): string`, which takes a parsed CodeRef object and returns a formatted string representation of it.
 
-| State | Owner | Type | Persistence | Source of Truth |
-|-------|-------|------|-------------|-----------------|
-| Parsed reference | Caller | Domain | Function parameter | `ParsedCodeRef` input |
-| Canonical string | Formatter | Domain | Return value | `format()` output |
-| Path segments | Formatter | Domain | Ephemeral | `normalizePath()` internal |
-| Metadata entries | Formatter | Domain | Ephemeral | `formatMetadata()` internal |
+The formatting process involves several key steps:
+1. **Validation**: Before proceeding, the formatter checks if the parsed CodeRef is valid. If not, it throws an error detailing the validation issues [ref](src/formatter/formatter.ts).
+2. **Normalization**: The path segment of the CodeRef is normalized by removing redundant segments such as `.` (current directory) and `..` (parent directory) [ref](src/formatter/formatter.ts).
+3. **Metadata Formatting**: If metadata exists, it is formatted to ensure that keys are sorted alphabetically and values adhere to specific formatting rules. This includes converting boolean values to lowercase and quoting strings with special characters or empty strings [ref](src/formatter/formatter.ts).
 
-**Precedence Rules:**
-- Parsed reference is authoritative input
-- Formatter applies deterministic normalization rules
-- Invalid parsed references throw errors (cannot format invalid input)
+Additionally, the module provides utility functions for convenience:
+- `formatCodeRef(parsed: ParsedCodeRef): string`: A function that uses a singleton instance of `CodeRefFormatter` to format a single parsed CodeRef.
+- `formatCodeRefs(parsed: ParsedCodeRef[]): string[]`: A batch formatting function that applies the formatter to an array of parsed CodeRef objects and returns an array of formatted strings.
 
-## 3. Data Persistence
+This design ensures that the module is modular, with clear separation between the core formatting logic within `CodeRefFormatter` and the utility functions for easy integration and usage.
 
-No persistent state. Formatting is stateless and idempotent.
+[inference] The above characterizes `src/formatter/formatter.ts` from a local-model reading of the source; the verified API and dependency facts are in the projected Public API / Dependencies sections.
 
-## 4. State Lifecycle
+## Source of Truth
 
-1. **Input Validation:** Verify `parsed.isValid === true` and no errors
-2. **Type & Path:** Format `@Type/path` segment
-3. **Element:** Append `#element` if present
-4. **Line Reference:** Append `:line` or `:blockType{identifier}` if present
-5. **Metadata:** Append `{metadata}` with sorted keys and normalized values
-6. **Output:** Return canonical string
+This section addresses what the source of truth is for the `formatter.ts` module, including where authoritative information can be found and how changes should be managed.
 
-## 5. Behaviors (Events & Side Effects)
+1. **Source Files**: The single source of truth for this behavior is the file itself, `src/formatter/formatter.ts`. This file contains the `CodeRefFormatter` class and the exported constants and functions (`formatter`, `formatCodeRef`, `formatCodeRefs`) and their implementations, ensuring that any modifications to these behaviors must occur within this file.
 
-### User Behaviors
-- **Format single:** `formatter.format(parsed)` — Formats one reference
-- **Format batch:** `formatCodeRefs(parsedArray)` — Formats multiple references
-- **Convenience:** `formatCodeRef(parsed)` — Wrapper function
+2. **Tests**: Tests exist and are authoritative for validating the correctness of the code. The integration tests located in `__tests__/integration.test.ts` provide concrete examples and scenarios that the formatter implementation must pass. This ensures that changes are made with confidence in their accuracy.
 
-### System Behaviors
-- **Validation:** Throws error if `parsed.isValid === false`
-- **Path normalization:** Removes redundant segments (`.`, `..`)
-- **Metadata sorting:** Alphabetically sorts metadata keys
-- **Value normalization:** Formats booleans, numbers, strings, arrays, objects
+3. **Hardcoded vs. Configurable Values**:
+   - **Hardcoded**: There are no hardcoded values or thresholds in this file. All configurations, such as path normalization rules and metadata formatting, are hard-coded within the logic.
+   - **Configurable**: The configuration is driven by the input data (`ParsedCodeRef`) rather than being set through external means.
 
-## 6. Event & Callback Contracts
+4. **Ownership**: Changes to this module should be managed by the domain or module that owns `formatter.ts`. This typically includes developers who specialize in code reference formatting and parsing. They are responsible for maintaining and evolving the formatter logic based on business requirements and technical advancements.
 
-| Event | Trigger | Payload | Side Effects |
-|-------|---------|---------|--------------|
-| `format()` | Method call | `parsed: ParsedCodeRef` | Returns canonical string |
-| `formatCodeRef()` | Function call | `parsed: ParsedCodeRef` | Returns canonical string |
-| `formatCodeRefs()` | Function call | `parsed: ParsedCodeRef[]` | Returns string array |
+[inference] The above characterizes `src/formatter/formatter.ts` from a local-model reading of the source; the verified API and dependency facts are in the projected Public API / Dependencies sections.
 
-**Formatting Rules (Canonical Format):**
-- No extraneous whitespace
-- Paths normalized (redundant segments removed)
-- Metadata keys alphabetically sorted
-- Boolean values lowercase (`true`, `false`)
-- Consistent quoting in metadata strings
-- Special characters in strings quoted with `"`
+## Public API / Contracts
 
-## 7. Performance Considerations
+- `CodeRefFormatter` (class) [ref](src/formatter/formatter.ts#CodeRefFormatter)
+- `formatCodeRef` (function) [ref](src/formatter/formatter.ts#formatCodeRef)
+- `formatCodeRefs` (function) [ref](src/formatter/formatter.ts#formatCodeRefs)
 
-**Known Limits:**
-- Linear time complexity: O(n) where n = reference components
-- Metadata sorting: O(k log k) where k = metadata keys
-- Path normalization: O(p) where p = path segments
+## Dependencies
 
-**Bottlenecks:**
-- Large metadata objects (>100 keys) may take 1-2ms
-- Deeply nested metadata objects may slow JSON serialization
+- `../parser/parser.js` [ref](src/formatter/formatter.ts)
 
-**Optimization Opportunities:**
-- Cache formatted strings (not implemented)
-- Lazy metadata sorting (not implemented)
+_Semantic header (projected): layer `formatter` · capability `formatter-code-ref-formatter` · version `1.0.0`_
 
-**Deferred Optimizations:**
-- Streaming formatting for large batches
-- Parallel batch processing
+## Risks & Edge Cases
 
-## 8. Accessibility
+1. **Invalid CodeRefs**: If a `ParsedCodeRef` is invalid or contains errors, the `format` method will throw an error [ref](src/formatter/formatter.ts). This could cause issues in client code if not handled properly.
 
-Not applicable (library module, no UI).
+2. **Empty Metadata Values**: Boolean values are correctly formatted to lowercase (`true`, `false`). However, metadata entries with empty strings or `null/undefined` values are omitted from the output. This might be unexpected behavior for clients expecting these values to be present [ref](src/formatter/formatter.ts).
 
-## 9. Testing Strategy
+3. **Special Characters in Metadata Strings**: The `formatMetadataValue` method quotes strings that contain special characters (`,={},#:\[\]`) or are empty [ref](src/formatter/formatter.ts). This ensures correctness but may not be desired for all use cases, especially if the output needs to be compatible with certain systems.
 
-**Must-Cover Scenarios:**
-- Basic reference formatting (type, path, element, line)
-- Path normalization (`.`, `..`, redundant segments)
-- Metadata formatting (all value types)
-- Metadata key sorting
-- Boolean value normalization
-- String quoting rules
-- Array and object formatting
-- Block reference formatting
-- Invalid input rejection
-- Batch formatting
+4. **Array Formatting**: Arrays in metadata are formatted as JSON strings, which might not always be desirable. For example, `[true, false]` is formatted as `"[true,false]"`. This could lead to issues when parsing back into a structured format [ref](src/formatter/formatter.ts).
 
-**Explicitly Not Tested:**
-- Parser integration (tested separately)
-- Reference validation (validator responsibility)
+5. **Boolean Values in Metadata**: Boolean values are directly used as keys when the corresponding value is `true`, and omitted otherwise. This might not be intuitive for clients expecting a consistent representation of boolean metadata.
 
-## 10. Non-Goals / Out of Scope
+6. **Empty Paths**: The `normalizePath` method removes redundant segments from paths, including `.`, but does not handle empty paths gracefully. If an empty path is provided, it will result in an invalid output [ref](src/formatter/formatter.ts).
 
-- Reference parsing (parser responsibility)
-- Reference validation (validator responsibility)
-- Custom formatting rules (follows specification)
-- Format migration (not implemented)
-- Format versioning (not implemented)
+7. **Block Type and Identifier Consistency**: When `parsed.line` is set AND both `blockType` and `blockIdentifier` are present, they are formatted as `:${blockType}{${blockIdentifier}}`. If `parsed.line` is set but only a line number (not a block reference) is present, it will be formatted as `:${parsed.line}` (with optional `-${parsed.lineEnd}`). If `parsed.line` is not set, neither block references nor line ranges are emitted, which could lead to unexpected output for CodeRefs that only carry block information without a line value [ref](src/formatter/formatter.ts).
 
-## 11. Common Pitfalls & Sharp Edges
+8. **Performance with Large Metadata**: The current implementation sorts metadata keys alphabetically and formats each entry individually. For very large objects or arrays in metadata, this could result in performance issues [inference].
 
-**Invalid Input:**
-- Formatter throws error if `parsed.isValid === false`
-- Must validate before formatting (use validator)
+## Validation Checklist
 
-**Path Normalization:**
-- Removes `.` (current directory) segments
-- Resolves `..` (parent directory) segments
-- Does not validate path existence (assumes valid)
+1. **Verify that `formatCodeRef` and `formatCodeRefs` correctly utilize the `CodeRefFormatter` class**:
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
 
-**Metadata Sorting:**
-- Keys sorted alphabetically (case-sensitive)
-- Category-prefixed keys (e.g., `status:active`) sorted by full key
+2. **Confirm that an invalid `ParsedCodeRef` throws an error when passed to `formatCodeRef` or `formatCodeRefs`**:
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
 
-**Boolean Values:**
-- `true` formatted as key only (no `=true`)
-- `false` formatted as key only (no `=false`)
-- Empty strings treated as `false` (omitted)
+3. **Check that paths are normalized by removing redundant segments and handling `..` and `.` correctly**:
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
 
-**String Quoting:**
-- Strings with special characters (`[,={}#:\[\]]`) are quoted
-- Empty strings are quoted
-- Unquoted strings must not contain special characters
+4. **Ensure that metadata keys are alphabetically sorted**:
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
 
-**Array Formatting:**
-- Arrays formatted as `[item1,item2,item3]`
-- Items with special characters are quoted
-- Nested arrays not supported (serialized as JSON)
+5. **Validate that boolean values are formatted as lowercase (`true` and `false`)**:
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
 
-**Object Formatting:**
-- Objects serialized as JSON strings
-- No custom object formatting (uses `JSON.stringify`)
+6. **Check that metadata strings are quoted if they contain special characters or are empty**:
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
 
-## 12. Diagrams (Optional)
+7. **Ensure arrays in metadata are formatted correctly, quoting string items with special characters**:
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
 
-**Formatting Pipeline:**
-```
-ParsedCodeRef {
-  type: "Fn"
-  path: "./utils/../logger.ts"
-  element: "logInfo"
-  line: "42"
-  metadata: { status: "active", scope: "public" }
-}
+8. **Verify that the `formatter` instance is correctly exported for public use and is utilized by both `formatCodeRef` and `formatCodeRefs`**:
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
+   - [ref](src/formatter/formatter.ts)
 
-        ↓ format()
+[inference] The above characterizes `src/formatter/formatter.ts` from a local-model reading of the source; the verified API and dependency facts are in the projected Public API / Dependencies sections.
 
-"@Fn/utils/logger.ts#logInfo:42{scope=public,status=active}"
-```
-
-**Path Normalization:**
-```
-"./utils/../logger.ts"
-  ↓ normalizePath()
-"utils/logger.ts"
-
-"../../src/auth.ts"
-  ↓ normalizePath()
-"src/auth.ts"
-```
-
-> Diagrams are **illustrative**, not authoritative. Formatting logic in code defines truth.
-
-## Conclusion
-
-The formatter module provides canonical string generation from parsed CodeRef references, ensuring consistent format across the codebase. It applies deterministic normalization rules for paths, metadata keys, and values, following the CodeRef2 specification. The formatter is stateless, idempotent, and throws errors for invalid input. Maintainers must preserve canonical format rules to ensure reference consistency and comparability.
 

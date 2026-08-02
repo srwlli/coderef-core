@@ -8,7 +8,7 @@ version: 1.0.0
 documents: src/pipeline/orchestrator.ts
 related_files:
   - src/pipeline/orchestrator.ts
-status: draft
+status: approved
 ---
 
 # orchestrator Resource Sheet
@@ -122,39 +122,46 @@ In summary, the `PipelineOrchestrator` class manages the entire codebase analysi
 
 ## Public API / Contracts
 
-- `PipelineOrchestrator` (class) [ref](src/pipeline/orchestrator.ts:72)
+<!-- PROJECTED from .coderef/index.json — do not hand-edit; regenerate via project-spine.mjs -->
+- `PipelineOrchestrator` (class) [ref](src/pipeline/orchestrator.ts)
 
 ## Dependencies
 
-- `fs/promises` [ref](src/pipeline/orchestrator.ts:29)
-- `path` [ref](src/pipeline/orchestrator.ts:30)
-- `../utils/logger.js` [ref](src/pipeline/orchestrator.ts:31)
-- `./grammar-registry.js` [ref](src/pipeline/orchestrator.ts:32)
-- `./extractors/element-extractor.js` [ref](src/pipeline/orchestrator.ts:33)
-- `./extractors/relationship-extractor.js` [ref](src/pipeline/orchestrator.ts:34)
-- `./ignore-rules.js` [ref](src/pipeline/orchestrator.ts:35)
-- `../registry/entity-registry.js` [ref](src/pipeline/orchestrator.ts:36)
-- `../cache/incremental-cache.js` [ref](src/pipeline/orchestrator.ts:37)
-- `./types.js` [ref](src/pipeline/orchestrator.ts:38)
-- `./import-resolver.js` [ref](src/pipeline/orchestrator.ts:53)
-- `./call-resolver.js` [ref](src/pipeline/orchestrator.ts:54)
-- `./graph-builder.js` [ref](src/pipeline/orchestrator.ts:55)
-- `./symbol-table-cache.js` [ref](src/pipeline/orchestrator.ts:56)
-- `./element-taxonomy.js` [ref](src/pipeline/orchestrator.ts:64)
-- `../types/types.js` [ref](src/pipeline/orchestrator.ts:65)
-- `../export/graph-exporter.js` [ref](src/pipeline/orchestrator.ts:66)
-- `../utils/coderef-id.js` [ref](src/pipeline/orchestrator.ts:67)
+<!-- PROJECTED from .coderef/index.json imports[] -->
+- `fs/promises` [ref](src/pipeline/orchestrator.ts)
+- `path` [ref](src/pipeline/orchestrator.ts)
+- `../utils/logger.js` [ref](src/pipeline/orchestrator.ts)
+- `./grammar-registry.js` [ref](src/pipeline/orchestrator.ts)
+- `./extractors/element-extractor.js` [ref](src/pipeline/orchestrator.ts)
+- `./extractors/relationship-extractor.js` [ref](src/pipeline/orchestrator.ts)
+- `./extractors/route-extractor.js` [ref](src/pipeline/orchestrator.ts)
+- `./ignore-rules.js` [ref](src/pipeline/orchestrator.ts)
+- `../registry/entity-registry.js` [ref](src/pipeline/orchestrator.ts)
+- `../cache/incremental-cache.js` [ref](src/pipeline/orchestrator.ts)
+- `./types.js` [ref](src/pipeline/orchestrator.ts)
+- `./import-resolver.js` [ref](src/pipeline/orchestrator.ts)
+- `./call-resolver.js` [ref](src/pipeline/orchestrator.ts)
+- `./graph-builder.js` [ref](src/pipeline/orchestrator.ts)
+- `./doc-ingest.js` [ref](src/pipeline/orchestrator.ts)
+- `./scip-overlay.js` [ref](src/pipeline/orchestrator.ts)
+- `./symbol-table-cache.js` [ref](src/pipeline/orchestrator.ts)
+- `./element-taxonomy.js` [ref](src/pipeline/orchestrator.ts)
+- `../types/types.js` [ref](src/pipeline/orchestrator.ts)
+- `../export/graph-exporter.js` [ref](src/pipeline/orchestrator.ts)
+- `../utils/coderef-id.js` [ref](src/pipeline/orchestrator.ts)
 
 _Semantic header (projected): layer `service` · capability `pipeline-orchestrator` · version `1.0.0`_
 
 ## Risks & Edge Cases
 
-> [generation-timed-out] The local model did not return this section within 420000ms (cpu-batch) after 2 attempts. Re-run with a larger --timeout-ms or on the gpu-interactive lane. Reason: fetch failed.
-
-[inference] This section is a placeholder pending regeneration; the verified API and dependency facts are in the projected Public API / Dependencies sections.
+1. **Incremental Cache Corruption:** If the incremental cache is corrupted or missing, the pipeline orchestrator gracefully falls back to a full run (`run()` instead of `runIncremental()`), ensuring it does not resolve against a partial universe.
+2. **Missing SCIP Index:** If the `--scip` option is provided but the SCIP index cannot be mapped, it won't crash but will skip flipping edges.
+3. **Parse Errors During Extraction:** Individual file processing failures (e.g., malformed syntax causing extractors to throw) are caught and logged, allowing the rest of the codebase to be processed without halting the pipeline.
+4. **Stale Fact Set Persistence:** A failure to write the full fact set after a non-incremental run is caught and logged as a warning; it does not fail the build, though it limits future incremental efficiency.
 
 ## Validation Checklist
 
-> [generation-timed-out] The local model did not return this section within 420000ms (cpu-batch) after 2 attempts. Re-run with a larger --timeout-ms or on the gpu-interactive lane. Reason: fetch failed.
-
-[inference] This section is a placeholder pending regeneration; the verified API and dependency facts are in the projected Public API / Dependencies sections.
+- **Graph construction logic:** Ensure that phase 5 (`constructGraph`) correctly builds canonical graph edges from the resolved state elements and replaces the legacy graph endpoints.
+- **Incremental state updates:** Confirm that `runIncremental()` only rescans the `changedFiles`, merges them with the `factBundles`, and correctly cascades resolutions without performing file IO for unchanged files.
+- **Cache persistence:** Verify that `writeFactSet()` correctly serializes the `factBundles` map to disk.
+- **SCIP Overlay integration:** Ensure `applyScipOverlay` only flips `unresolved` and `ambiguous` edges and never touches an already-resolved edge, keeping graph integrity intact.

@@ -8,7 +8,7 @@ version: 1.0.0
 documents: src/scanner/lru-cache.ts
 related_files:
   - src/scanner/lru-cache.ts
-status: draft
+status: approved
 ---
 
 # lru-cache Resource Sheet
@@ -103,7 +103,7 @@ This architecture ensures efficient memory management in scenarios where caching
 - `../types/types.js`: Module containing type definitions used throughout the codebase.
 
 **Semantic Header:**
-- Layer: service
+- Layer: utility
 - Capability: lru-cache-cache-entry
 
 **Ownership:**
@@ -129,15 +129,15 @@ By explicitly stating these points, we establish that the code in `src/scanner/l
 
 ## Public API / Contracts
 
-- `LRUCache` (class) [ref](src/scanner/lru-cache.ts:33)
-- `ScanCacheEntry` (interface) [ref](src/scanner/lru-cache.ts:211)
-- `createScannerCache` (function) [ref](src/scanner/lru-cache.ts:219)
+- `LRUCache` (class) [ref](src/scanner/lru-cache.ts#LRUCache)
+- `ScanCacheEntry` (interface) [ref](src/scanner/lru-cache.ts#ScanCacheEntry)
+- `createScannerCache` (function) [ref](src/scanner/lru-cache.ts#createScannerCache)
 
 ## Dependencies
 
-- `../types/types.js` [ref](src/scanner/lru-cache.ts:18)
+- `../types/types.js` [ref](src/scanner/lru-cache.ts)
 
-_Semantic header (projected): layer `service` · capability `lru-cache-cache-entry` · version `1.0.0`_
+_Semantic header (projected): layer `utility` · capability `lru-cache-cache-entry` · version `1.0.0`_
 
 ## Risks & Edge Cases
 
@@ -255,6 +255,6 @@ _Semantic header (projected): layer `service` · capability `lru-cache-cache-ent
 #### 8. Dependency Verification
 
 - Ensure that the `LRUCache` class correctly imports the necessary types from the `types/types.js` file and that the import statement is correct in the source code.
-- [ref](src/scanner/lru-cache.ts): Confirm that the module's semantic header (layer, capability) matches the expected values (`service` and `lru-cache-cache-entry`) as specified in the export statements.
+- [ref](src/scanner/lru-cache.ts): Confirm that the module's semantic header (layer, capability) matches the expected values (`utility` and `lru-cache-cache-entry`) as specified in the export statements.
 
 [inference] The above characterizes `src/scanner/lru-cache.ts` from a local-model reading of the source; the verified API and dependency facts are in the projected Public API / Dependencies sections.
