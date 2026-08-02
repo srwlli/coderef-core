@@ -1,0 +1,219 @@
+{
+  "event": "culture_alignment_recorded",
+  "domain": "CODEREF-CORE",
+  "skill": "align-coderef-culture",
+  "schema_version": "2.0.0",
+  "workorder_id": "WO-ELEMENT-IMPORTS-ASSIGNS-THE-WHOLE-FILE-IMPORT-LIST-001",
+  "target_project": "coderef-core",
+  "intended_work": "[from TKT-SCBB58] element.imports assigns the whole file import list to every element in the file",
+  "plan_digest": "sha256:b20f57d5eb25ca0f3b86ace1b8f52b2619417b4d372db780e3eddafb3cfc0379",
+  "inventory_digest": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+  "source_digests": {
+    "STANDARDS/layers.json": "sha256:2d5e1202a74e36d326978aa7fd86135ae425d181eb724e5f255d248c9feaa4e2",
+    "STANDARDS/VOCABULARY.json": "sha256:f426b702bf8e0cd8f0659dbbb0f954a21b4fddab5ed80892d540530272c66d9a",
+    "TRACKING/registries.json": "sha256:8b0f86c7696f6984565538e02ebbb1538bd6ed12b1ff2866377f9998c9ab0bfc",
+    "TRACKING/skills.json": "sha256:b671282860a86a2a5923c8d274e51dea1fdf4924784331a5664715ed2cea0a94",
+    "STANDARDS/coderef-inventory.json": "sha256:b1ea6a85cea8cbe3c5a4256af43e28cb18b7295b818f73cb1ab31e3fbbeb8bf5",
+    "TRACKING/agent-domains.json": "sha256:15568aa8c132c323e676b1f8cbe68b2dc76e97ca4349d1d508b8121b20c48ff9",
+    "SKILLS/WORKFLOW/_shared/planner/schemas/plan.schema.json": "sha256:654edd538307eddd798f5f145247c35f8b2933f3678ddd9477cd5757cd09a2ea",
+    "DOCS/standards/data/COMMS-DATA-STANDARD.md": "sha256:2b3289c9ed81322e9d244620d0df780214933f65138e72d870987887bbae75c7",
+    "STANDARDS/event-catalog.md": "sha256:4cc6fe172b3df18f67f1cb9075da9a111ef20b5325f14a092a561df0e4e180ba",
+    "SKILLS/META/coderef-skill/references/SKILL-CONTRACTS.md": "sha256:c86b97bbce08a3655ba9f3a9efd95e1846197b8761874cc46817a740e5203508",
+    "SKILLS/ANALYSIS/analyze-coderef-semantics/SKILL.md": "sha256:bdabb1ed33860aff929ae5e720ff3f4c148ac1502d46d46c74c9b68d31e12d16"
+  },
+  "rows": [
+    {
+      "task_id": "P1-T1",
+      "step": "MEASURE the over-assignment on the real repo before changing anything. Scan src/ through the live scanner path and record: how many elements carry an imports array, how many of those reference NONE of the listed specifiers in their own body, and the mean imports-per-element. This is the measured_baseline; do not author the fix from the ticket summary. Note both assignment sites exist: tree-sitter-file-scan.ts:102 (TS/TSX path) and tree-sitter-file-scan.ts:146 (JS/JSX path). A fix that lands on one is half a fix.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T2",
+      "step": "ENUMERATE every reader of element.imports and record what each one would do under a narrowed field. Known readers: src/query/clones.ts:247+382 (importSources; :247 gates triviality so today NO element in a file with imports is ever trivial - a concrete wrong answer, and the strongest argument for narrowing), src/semantic/projections.ts:161, src/semantic/orchestrator.ts:280, src/scanner/semantic-analyzer.ts:68+126+129 (dedupe-and-merge with fileImports), src/pipeline/generators/context-generator.ts:1227, src/pipeline/semantic-elements.ts:28 (normalizeImportsField), src/scanner/scanner.ts:672 (winner.imports ?? loser.imports). Confirm the count first-hand; the source comment claims six and this task exists to verify that, not to repeat it.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T3",
+      "step": "DECIDE the narrowing rule and RECORD it in communication.json decisions_log before editing. The candidates: (a) keep only imports whose specifiers appear in the element body, (b) keep only imports the element's own calls resolve to, (c) leave the field whole-file but rename it so the name stops lying. Each consumer from P1-T2 must be checked against the chosen rule. HALT AND REPORT with named options if any two consumers require incompatible semantics - do not pick one and absorb the conflict silently. That disagreement is the same defect class this residue came from.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T4",
+      "step": "APPLY the ruled narrowing at BOTH sites - tree-sitter-file-scan.ts:102 and :146 - and replace the KNOWN, OUT OF SCOPE comment at :96 with what the field now means. Keep the TS and JS paths behaviourally identical; they diverging is how this class of defect starts.",
+      "tools": [
+        "execute-workorder",
+        "git-commit"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T5",
+      "step": "CORRECT the stale docblock at src/pipeline/extractors/relationship-extractor.ts:116-118. It still asserts that ctx.calls feeds straight into the canonical graph builder and that changing source semantics globally would move the graph. Commit 8d54d37 corrected that claim in tree-sitter-file-scan.ts:77-85 only: resolve-tail.ts:47 builds a SEED graph, and constructGraphPhase at resolve-tail.ts:109 Object.assigns canonical nodes/edges over it from extractRawCalls, whose RawCallFact.scopePath is a string[] and never lost the enclosing class. Two comments on one seam, disagreeing - fix the one that was missed and state the narrower true reason the qualifyScopes default stays off (not re-specifying a legacy seam, NOT protecting the canonical graph).",
+      "tools": [
+        "execute-workorder",
+        "git-commit"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T6",
+      "step": "AUTHOR a contract test that pins per-element imports on BOTH the TS and JS scanner paths, including an element that references no imports at all and one file where two elements reference disjoint imports. Add the clones.ts triviality case: an element with no own imports in a file that has imports MUST be eligible for trivial. The test must exercise the real scanner entry point, not a reimplementation - a private copy of production logic in a test file is exactly what phase 6 of the predecessor WO had to delete.",
+      "tools": [
+        "execute-workorder",
+        "git-commit"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T7",
+      "step": "PROVE the test earns its place: revert the P1-T4 source edit only, re-run the new test, and record which cases fail at HEAD and which pass. A test that stays green against the un-fixed source proves nothing. Restore the edit afterwards.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T8",
+      "step": "RUN tsc --noEmit and the full vitest suite. Record exact pass/skip/fail counts against the pre-phase baseline. Note vitest 4 rejects --reporter=basic and the resulting startup crash reads as a failure - confirm real test counts before calling anything a regression.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T9",
+      "step": "OPERATOR STANDING TASK - docs. Check and refresh the coderef header of every file this phase touched using the real tool (populate --source-headers, --stale-only), never by hand-editing a header block. Report which files were genuinely stale versus which were already current, and do not claim a refresh that did not happen.",
+      "tools": [
+        "execute-workorder",
+        "populate-coderef"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P1-T10",
+      "step": "OPERATOR STANDING TASK - surface audit. Determine whether the narrowed element.imports reaches the CLI and the MCP surface, and say plainly if it reaches neither. element.imports flows into projections and context-generator, so an honest answer names the specific tools whose output changes. Report a finding, not a checkbox.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    },
+    {
+      "task_id": "P2-T0",
+      "step": "PLACEHOLDER. Phase 2 tasks not yet authored. Pre-condition: Phase 1 must be COMPLETED + REVIEWED before this phase's plan is authored.",
+      "tools": [
+        "execute-workorder"
+      ],
+      "communication": [
+        "coderef/workorder/element-imports-assigns-the-whole-file-import-list/communication.json"
+      ],
+      "closure": [
+        "close-workorder"
+      ],
+      "tracking": [
+        "TRACKING/workorders.json"
+      ],
+      "status": "resolved"
+    }
+  ],
+  "gaps": [],
+  "verdict": "PASS"
+}

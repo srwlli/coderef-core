@@ -1,0 +1,15 @@
+{
+  "workorder_id": "WO-ELEMENT-IMPORTS-ASSIGNS-THE-WHOLE-FILE-IMPORT-LIST-001",
+  "feature_name": "element-imports-assigns-the-whole-file-import-list",
+  "analysis_authored_at": "2026-08-02T02:07:25.521974+00:00",
+  "blast_radius": {
+    "files_modified": [],
+    "files_created": [],
+    "downstream_consumers": []
+  },
+  "risks": [],
+  "candidates": [],
+  "dependencies": [],
+  "public_api_hits": [],
+  "decision_records": []
+}

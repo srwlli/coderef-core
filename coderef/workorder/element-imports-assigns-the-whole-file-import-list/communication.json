@@ -1,0 +1,66 @@
+{
+  "workorder_id": "WO-ELEMENT-IMPORTS-ASSIGNS-THE-WHOLE-FILE-IMPORT-LIST-001",
+  "feature_name": "element-imports-assigns-the-whole-file-import-list",
+  "created": "2026-08-02T02:07:25.521974+00:00",
+  "owner_domain": "CODEREF-CORE",
+  "target_project": "coderef-core",
+  "originating_dispatches": [],
+  "status": "plan_created",
+  "current_phase": 1,
+  "phase_status": "ready",
+  "plan_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\element-imports-assigns-the-whole-file-import-list\\plan.json",
+  "context_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\element-imports-assigns-the-whole-file-import-list\\context.json",
+  "analysis_file": "C:\\Users\\willh\\Desktop\\CODEREF\\CODEREF-CORE\\coderef\\workorder\\element-imports-assigns-the-whole-file-import-list\\analysis.json",
+  "handoff": {
+    "from": "create-workorder-engine",
+    "to": "execute-workorder",
+    "reason": "Stub promotion workflow complete"
+  },
+  "execution_rules": [],
+  "hard_constraints": [],
+  "blockers": [],
+  "parent_stub_id": "STUB-B17B19",
+  "decisions_log": [
+    {
+      "event": "stub_promotion",
+      "stub_id": "STUB-B17B19",
+      "plan_type": "phased",
+      "timestamp": "2026-08-02T02:07:25.521974+00:00"
+    },
+    {
+      "event": "plan_type_forced",
+      "from": "strict",
+      "to": "phased",
+      "reason": "--phased-stubs implies phased",
+      "timestamp": "2026-08-02T02:07:25.521974+00:00"
+    },
+    {
+      "event": "rolling_plan_authored",
+      "deferred_stubs": [
+        "STUB-MJ6VT7"
+      ],
+      "close_after_phase": 2,
+      "timestamp": "2026-08-02T02:07:25.521974+00:00"
+    },
+    {
+      "event": "approved_tasks_injected",
+      "count": 10,
+      "source": "C:/Users/willh/AppData/Local/Temp/claude/C--Users-willh-Desktop-CODEREF-CODEREF-CORE/b2c4b05d-34f6-46c3-bf81-a42459146225/scratchpad/p1-tasks.json",
+      "at": "2026-08-02T02:07:25.521974+00:00"
+    }
+  ],
+  "phase_transitions": [],
+  "plan_adjustments": [],
+  "communication_log": [
+    {
+      "timestamp": "2026-08-02T02:07:25.521974+00:00",
+      "event": "creation",
+      "message": "Workorder created from stub STUB-B17B19"
+    }
+  ],
+  "required_skills": [
+    "/execute-workorder",
+    "/close-workorder",
+    "/log-session"
+  ]
+}

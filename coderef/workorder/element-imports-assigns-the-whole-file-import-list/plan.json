@@ -1,0 +1,136 @@
+{
+  "plan_type": "phased",
+  "goal": "[from TKT-SCBB58] element.imports assigns the whole file import list to every element in the file",
+  "phases": [
+    {
+      "phase": 1,
+      "name": "Phase 1",
+      "hard_stop": false,
+      "description": "",
+      "tasks": [
+        {
+          "id": "P1-T1",
+          "verb": "READ",
+          "description": "MEASURE the over-assignment on the real repo before changing anything. Scan src/ through the live scanner path and record: how many elements carry an imports array, how many of those reference NONE of the listed specifiers in their own body, and the mean imports-per-element. This is the measured_baseline; do not author the fix from the ticket summary. Note both assignment sites exist: tree-sitter-file-scan.ts:102 (TS/TSX path) and tree-sitter-file-scan.ts:146 (JS/JSX path). A fix that lands on one is half a fix.",
+          "touches": [
+            "src/scanner/tree-sitter-file-scan.ts"
+          ]
+        },
+        {
+          "id": "P1-T2",
+          "verb": "READ",
+          "description": "ENUMERATE every reader of element.imports and record what each one would do under a narrowed field. Known readers: src/query/clones.ts:247+382 (importSources; :247 gates triviality so today NO element in a file with imports is ever trivial - a concrete wrong answer, and the strongest argument for narrowing), src/semantic/projections.ts:161, src/semantic/orchestrator.ts:280, src/scanner/semantic-analyzer.ts:68+126+129 (dedupe-and-merge with fileImports), src/pipeline/generators/context-generator.ts:1227, src/pipeline/semantic-elements.ts:28 (normalizeImportsField), src/scanner/scanner.ts:672 (winner.imports ?? loser.imports). Confirm the count first-hand; the source comment claims six and this task exists to verify that, not to repeat it.",
+          "touches": [
+            "src/query/clones.ts",
+            "src/semantic/projections.ts",
+            "src/semantic/orchestrator.ts",
+            "src/scanner/semantic-analyzer.ts",
+            "src/pipeline/generators/context-generator.ts",
+            "src/pipeline/semantic-elements.ts",
+            "src/scanner/scanner.ts"
+          ]
+        },
+        {
+          "id": "P1-T3",
+          "verb": "CHECK",
+          "description": "DECIDE the narrowing rule and RECORD it in communication.json decisions_log before editing. The candidates: (a) keep only imports whose specifiers appear in the element body, (b) keep only imports the element's own calls resolve to, (c) leave the field whole-file but rename it so the name stops lying. Each consumer from P1-T2 must be checked against the chosen rule. HALT AND REPORT with named options if any two consumers require incompatible semantics - do not pick one and absorb the conflict silently. That disagreement is the same defect class this residue came from.",
+          "touches": []
+        },
+        {
+          "id": "P1-T4",
+          "verb": "EDIT",
+          "description": "APPLY the ruled narrowing at BOTH sites - tree-sitter-file-scan.ts:102 and :146 - and replace the KNOWN, OUT OF SCOPE comment at :96 with what the field now means. Keep the TS and JS paths behaviourally identical; they diverging is how this class of defect starts.",
+          "touches": [
+            "src/scanner/tree-sitter-file-scan.ts"
+          ]
+        },
+        {
+          "id": "P1-T5",
+          "verb": "EDIT",
+          "description": "CORRECT the stale docblock at src/pipeline/extractors/relationship-extractor.ts:116-118. It still asserts that ctx.calls feeds straight into the canonical graph builder and that changing source semantics globally would move the graph. Commit 8d54d37 corrected that claim in tree-sitter-file-scan.ts:77-85 only: resolve-tail.ts:47 builds a SEED graph, and constructGraphPhase at resolve-tail.ts:109 Object.assigns canonical nodes/edges over it from extractRawCalls, whose RawCallFact.scopePath is a string[] and never lost the enclosing class. Two comments on one seam, disagreeing - fix the one that was missed and state the narrower true reason the qualifyScopes default stays off (not re-specifying a legacy seam, NOT protecting the canonical graph).",
+          "touches": [
+            "src/pipeline/extractors/relationship-extractor.ts"
+          ]
+        },
+        {
+          "id": "P1-T6",
+          "verb": "TEST",
+          "description": "AUTHOR a contract test that pins per-element imports on BOTH the TS and JS scanner paths, including an element that references no imports at all and one file where two elements reference disjoint imports. Add the clones.ts triviality case: an element with no own imports in a file that has imports MUST be eligible for trivial. The test must exercise the real scanner entry point, not a reimplementation - a private copy of production logic in a test file is exactly what phase 6 of the predecessor WO had to delete.",
+          "touches": []
+        },
+        {
+          "id": "P1-T7",
+          "verb": "CHECK",
+          "description": "PROVE the test earns its place: revert the P1-T4 source edit only, re-run the new test, and record which cases fail at HEAD and which pass. A test that stays green against the un-fixed source proves nothing. Restore the edit afterwards.",
+          "touches": []
+        },
+        {
+          "id": "P1-T8",
+          "verb": "RUN",
+          "description": "RUN tsc --noEmit and the full vitest suite. Record exact pass/skip/fail counts against the pre-phase baseline. Note vitest 4 rejects --reporter=basic and the resulting startup crash reads as a failure - confirm real test counts before calling anything a regression.",
+          "touches": []
+        },
+        {
+          "id": "P1-T9",
+          "verb": "CHECK",
+          "description": "OPERATOR STANDING TASK - docs. Check and refresh the coderef header of every file this phase touched using the real tool (populate --source-headers, --stale-only), never by hand-editing a header block. Report which files were genuinely stale versus which were already current, and do not claim a refresh that did not happen.",
+          "touches": []
+        },
+        {
+          "id": "P1-T10",
+          "verb": "CHECK",
+          "description": "OPERATOR STANDING TASK - surface audit. Determine whether the narrowed element.imports reaches the CLI and the MCP surface, and say plainly if it reaches neither. element.imports flows into projections and context-generator, so an honest answer names the specific tools whose output changes. Report a finding, not a checkbox.",
+          "touches": []
+        }
+      ],
+      "stub_ref": "STUB-B17B19"
+    },
+    {
+      "phase": 2,
+      "name": "collapse-the-remaining-inline-coderef-rag-local-only \u2014 DEFERRED",
+      "hard_stop": true,
+      "stub_ref": "STUB-MJ6VT7",
+      "plan_deferred": true,
+      "tasks": [
+        {
+          "id": "P2-T0",
+          "verb": "STOP",
+          "description": "PLACEHOLDER. Phase 2 tasks not yet authored. Pre-condition: Phase 1 must be COMPLETED + REVIEWED before this phase's plan is authored."
+        }
+      ]
+    }
+  ],
+  "hard_stops": [
+    {
+      "phase": 2,
+      "approved": false,
+      "reason": "Phase 2 plan_deferred=true. Hard stop fires at phase planning gate."
+    }
+  ],
+  "plan_adjustments_needed": [],
+  "discovery_required": true,
+  "foundation_docs_gate": true,
+  "approved_verbs": [
+    "READ",
+    "WRITE",
+    "EDIT",
+    "RUN",
+    "TEST",
+    "COMMIT",
+    "CHECK",
+    "STOP",
+    "DELETE"
+  ],
+  "discovery_ref": "planning-discovery-20260802T020738Z",
+  "plan_type_decided_by": "create-workorder-engine@1.0.0",
+  "rolling_plan": {
+    "mode": "rolling",
+    "close_after_phase": 2,
+    "report_back_required_after_each_phase": true,
+    "next_phase_authoring": "ad-hoc plan.json edit until /plan-next-phase skill exists (STUB-358)"
+  },
+  "workorder_id": "WO-ELEMENT-IMPORTS-ASSIGNS-THE-WHOLE-FILE-IMPORT-LIST-001",
+  "feature_name": "element-imports-assigns-the-whole-file-import-list",
+  "created": "2026-08-02T02:07:25.521974+00:00",
+  "plan_type_rationale": "Category fix maps to phased"
+}
